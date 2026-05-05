@@ -1,0 +1,145 @@
+from __future__ import annotations
+
+from copy import deepcopy
+
+from pastpapergen.models import PaperConfig, SectionConfig
+
+
+_BUILTIN_CONFIGS: dict[str, PaperConfig] = {
+    "paper_1": PaperConfig(
+        id="paper_1",
+        code="9EC0/01",
+        title="Markets and Business Behaviour",
+        allowed_themes={1, 3},
+        duration_minutes=120,
+        total_marks=100,
+        sections=[
+            SectionConfig(
+                name="A",
+                title="Multiple-choice and short-answer questions",
+                marks=25,
+                answer_marks=25,
+                question_marks=[5, 5, 5, 5, 5],
+                command_words=["mixed", "mixed", "mixed", "mixed", "mixed"],
+                part_marks=[[4, 1], [4, 1], [1, 4], [4, 1], [4, 1]],
+                part_command_words=[
+                    ["calculate", "mcq"],
+                    ["explain", "mcq"],
+                    ["mcq", "explain"],
+                    ["explain", "mcq"],
+                    ["draw", "mcq"],
+                ],
+                stimulus_kinds=[
+                    "cost_revenue_graph",
+                    "data_table",
+                    "market_diagram",
+                    "context_extract",
+                    "bar_chart",
+                ],
+            ),
+            SectionConfig(
+                name="B",
+                title="Data response",
+                marks=50,
+                answer_marks=50,
+                question_marks=[5, 8, 12, 10, 15],
+                command_words=["explain", "examine", "discuss", "assess", "discuss"],
+            ),
+            SectionConfig(
+                name="C",
+                title="Extended open-response choice",
+                marks=25,
+                answer_marks=25,
+                question_marks=[25, 25],
+                command_words=["evaluate", "evaluate"],
+                choice_groups=[[0, 1]],
+            ),
+        ],
+    ),
+    "paper_2": PaperConfig(
+        id="paper_2",
+        code="9EC0/02",
+        title="The National and Global Economy",
+        allowed_themes={2, 4},
+        duration_minutes=120,
+        total_marks=100,
+        sections=[
+            SectionConfig(
+                name="A",
+                title="Multiple-choice and short-answer questions",
+                marks=25,
+                answer_marks=25,
+                question_marks=[5, 5, 5, 5, 5],
+                command_words=["mixed", "mixed", "mixed", "mixed", "mixed"],
+                part_marks=[[4, 1], [4, 1], [1, 4], [4, 1], [4, 1]],
+                part_command_words=[
+                    ["calculate", "mcq"],
+                    ["explain", "mcq"],
+                    ["mcq", "calculate"],
+                    ["explain", "mcq"],
+                    ["draw", "mcq"],
+                ],
+                stimulus_kinds=[
+                    "macro_chart",
+                    "data_table",
+                    "trade_cycle",
+                    "context_extract",
+                    "bar_chart",
+                ],
+            ),
+            SectionConfig(
+                name="B",
+                title="Data response",
+                marks=50,
+                answer_marks=50,
+                question_marks=[5, 8, 12, 10, 15],
+                command_words=["explain", "examine", "discuss", "assess", "discuss"],
+            ),
+            SectionConfig(
+                name="C",
+                title="Extended open-response choice",
+                marks=25,
+                answer_marks=25,
+                question_marks=[25, 25],
+                command_words=["evaluate", "evaluate"],
+                choice_groups=[[0, 1]],
+            ),
+        ],
+    ),
+    "paper_3": PaperConfig(
+        id="paper_3",
+        code="9EC0/03",
+        title="Microeconomics and Macroeconomics",
+        allowed_themes={1, 2, 3, 4},
+        duration_minutes=120,
+        total_marks=100,
+        sections=[
+            SectionConfig(
+                name="A",
+                title="Data response",
+                marks=50,
+                answer_marks=50,
+                question_marks=[5, 8, 12, 25, 25],
+                command_words=["explain", "examine", "discuss", "evaluate", "evaluate"],
+                choice_groups=[[3, 4]],
+            ),
+            SectionConfig(
+                name="B",
+                title="Data response",
+                marks=50,
+                answer_marks=50,
+                question_marks=[5, 8, 12, 25, 25],
+                command_words=["explain", "examine", "discuss", "evaluate", "evaluate"],
+                choice_groups=[[3, 4]],
+            ),
+        ],
+    ),
+}
+
+
+def load_builtin_paper_config(paper_id: str) -> PaperConfig:
+    try:
+        return deepcopy(_BUILTIN_CONFIGS[paper_id])
+    except KeyError as error:
+        known = ", ".join(sorted(_BUILTIN_CONFIGS))
+        raise ValueError(f"Unknown paper config '{paper_id}'. Known: {known}") from error

@@ -1,0 +1,68 @@
+from pathlib import Path
+
+from pastpapergen.generator import build_paper_blueprint
+from pastpapergen.paper_configs import load_builtin_paper_config
+from pastpapergen.render_pdf import render_mark_scheme
+from pastpapergen.syllabus import load_syllabus
+
+
+def test_mark_scheme_uses_reference_style_sections(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, syllabus, output)
+
+    text = _pdf_text(output)
+    assert "Mark Scheme (Results)" in text
+    assert "General Marking Guidance" in text
+    assert "Question" in text
+    assert "Answer" in text
+    assert "Mark" in text
+    assert "Knowledge" in text
+    assert "Application" in text
+    assert _pdf_page_count(output) >= 24
+
+
+def test_mark_scheme_has_subquestion_tables_mcq_explanations_and_levels(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, syllabus, output)
+
+    text = _pdf_text(output)
+    assert "Question" in text
+    assert "Number" in text
+    assert "1(a)" in text
+    assert "1(b)" in text
+    assert "The only correct answer is" in text
+    assert "Indicative content" in text
+    assert "Level 1" in text
+    assert "Level 2" in text
+    assert "Level 3" in text
+    assert "Level 4" in text
+    assert "Level 5" in text
+
+
+def _pdf_text(path: Path) -> str:
+    import subprocess
+
+    return subprocess.run(
+        ["pdftotext", "-layout", str(path), "-"],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+
+
+def _pdf_page_count(path: Path) -> int:
+    import subprocess
+
+    result = subprocess.run(["pdfinfo", str(path)], check=True, capture_output=True, text=True)
+    for line in result.stdout.splitlines():
+        if line.startswith("Pages:"):
+            return int(line.split(":", 1)[1].strip())
+    raise AssertionError("Pages not found")

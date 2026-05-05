@@ -1,0 +1,30 @@
+{
+  "qualification": "Pearson Edexcel Level 3 Advanced GCE in Economics A",
+  "source": "Pearson Edexcel A Level Economics A specification, Issue 2, October 2016",
+  "topics": [
+    {"id": "1.1", "theme": 1, "title": "Nature of economics", "points": ["positive and normative economics", "scarcity", "opportunity cost"]},
+    {"id": "1.2.1", "theme": 1, "title": "Rational decision making", "points": ["utility", "margin", "economic incentives"]},
+    {"id": "1.2.2", "theme": 1, "title": "Demand", "points": ["demand curves", "price elasticity of demand", "income elasticity of demand"]},
+    {"id": "1.2.3", "theme": 1, "title": "Supply", "points": ["supply curves", "price elasticity of supply"]},
+    {"id": "1.2.4", "theme": 1, "title": "Price determination", "points": ["market equilibrium", "consumer and producer surplus"]},
+    {"id": "1.3", "theme": 1, "title": "Market failure", "points": ["externalities", "public goods", "information gaps"]},
+    {"id": "1.4", "theme": 1, "title": "Government intervention", "points": ["taxation", "subsidies", "maximum and minimum prices"]},
+    {"id": "2.1", "theme": 2, "title": "Measures of economic performance", "points": ["economic growth", "inflation", "unemployment", "balance of payments"]},
+    {"id": "2.2", "theme": 2, "title": "Aggregate demand", "points": ["consumption", "investment", "government expenditure", "net trade"]},
+    {"id": "2.3", "theme": 2, "title": "Aggregate supply", "points": ["short-run aggregate supply", "long-run aggregate supply"]},
+    {"id": "2.4", "theme": 2, "title": "National income", "points": ["circular flow of income", "multiplier"]},
+    {"id": "2.5", "theme": 2, "title": "Economic growth", "points": ["causes of growth", "costs and benefits of growth"]},
+    {"id": "2.6", "theme": 2, "title": "Macroeconomic objectives and policies", "points": ["fiscal policy", "monetary policy", "supply-side policies"]},
+    {"id": "3.1", "theme": 3, "title": "Business growth", "points": ["organic growth", "mergers", "demergers"]},
+    {"id": "3.2", "theme": 3, "title": "Business objectives", "points": ["profit maximisation", "revenue maximisation", "satisficing"]},
+    {"id": "3.3", "theme": 3, "title": "Revenues, costs and profits", "points": ["fixed costs", "variable costs", "economies of scale"]},
+    {"id": "3.4", "theme": 3, "title": "Market structures", "points": ["perfect competition", "monopoly", "oligopoly", "contestability"]},
+    {"id": "3.5", "theme": 3, "title": "Labour market", "points": ["demand for labour", "supply of labour", "wage determination"]},
+    {"id": "3.6", "theme": 3, "title": "Government intervention in markets", "points": ["regulation", "competition policy", "nationalisation"]},
+    {"id": "4.1", "theme": 4, "title": "International economics", "points": ["globalisation", "trade", "exchange rates", "protectionism"]},
+    {"id": "4.2", "theme": 4, "title": "Poverty and inequality", "points": ["absolute poverty", "relative poverty", "Lorenz curve", "Gini coefficient"]},
+    {"id": "4.3", "theme": 4, "title": "Emerging and developing economies", "points": ["HDI", "primary product dependency", "development strategies"]},
+    {"id": "4.4", "theme": 4, "title": "Financial sector", "points": ["financial markets", "market failure", "central banks"]},
+    {"id": "4.5", "theme": 4, "title": "Role of the state in the macroeconomy", "points": ["public expenditure", "taxation", "public sector finances"]}
+  ]
+}

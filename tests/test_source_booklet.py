@@ -1,0 +1,74 @@
+from pathlib import Path
+
+from pastpapergen.generator import build_paper_blueprint
+from pastpapergen.paper_configs import load_builtin_paper_config
+from pastpapergen.render_pdf import render_source_booklet
+from pastpapergen.syllabus import load_syllabus
+
+
+def test_source_booklet_for_paper_1_only_uses_section_b(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "source.pdf"
+
+    render_source_booklet(blueprint, syllabus, output)
+    pdf_bytes = output.read_bytes()
+
+    assert b"Source Booklet" in pdf_bytes
+    assert b"Paper" in pdf_bytes
+    assert b"reference" in pdf_bytes
+    assert b"Sources for use with SECTION B" in pdf_bytes
+    assert b"Figure 1" in pdf_bytes
+    assert b"Extract A" in pdf_bytes
+    assert b"SECTION C" not in pdf_bytes
+    assert _pdf_page_count(output) == 4
+
+
+def test_source_booklet_has_figure_extracts_and_source_attributions(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "source.pdf"
+
+    render_source_booklet(blueprint, syllabus, output)
+    text = _pdf_text(output)
+
+    assert "Figure 1:" in text
+    assert "Extract A" in text
+    assert "Extract B" in text
+    assert "Source: constructed economic data for revision practice" in text
+
+
+def test_source_booklet_for_paper_3_uses_both_sections(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_3")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "source.pdf"
+
+    render_source_booklet(blueprint, syllabus, output)
+    pdf_bytes = output.read_bytes()
+
+    assert b"Sources for use with SECTION A" in pdf_bytes
+    assert b"Sources for use with SECTION B" in pdf_bytes
+
+
+def _pdf_page_count(path: Path) -> int:
+    import subprocess
+
+    result = subprocess.run(["pdfinfo", str(path)], check=True, capture_output=True, text=True)
+    for line in result.stdout.splitlines():
+        if line.startswith("Pages:"):
+            return int(line.split(":", 1)[1].strip())
+    raise AssertionError("Pages not found")
+
+
+def _pdf_text(path: Path) -> str:
+    import subprocess
+
+    return subprocess.run(
+        ["pdftotext", "-layout", str(path), "-"],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
