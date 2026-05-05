@@ -169,23 +169,22 @@ def test_paper_1_section_b_uses_coherent_source_case_and_references():
     assert len({question.topic_id for question in section_b}) == 1
     assert [question.source_reference for question in section_b] == [
         "Extract A",
-        "Extract A",
-        "Extract B",
+        "",
+        "",
         "Extract C",
-        "source material",
+        "Extract D",
     ]
-    assert len({question.source_text for question in section_b[:4]}) >= 3
+    assert len({question.source_text for question in section_b}) >= 4
 
 
-def test_section_b_15_marker_uses_reference_style_discuss_question_without_source_prefix():
+def test_section_b_15_marker_references_extract_d_like_reference_papers():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
 
     blueprint = build_paper_blueprint(config, syllabus, seed=7)
     section_b = [question for question in blueprint.questions if question.section == "B"]
 
-    assert section_b[-1].prompt.startswith("Discuss ")
-    assert not section_b[-1].prompt.startswith("With reference")
+    assert section_b[-1].prompt.startswith("With reference to Extract D, discuss ")
 
 
 def test_market_structure_sources_are_specific_not_template_like():
@@ -252,6 +251,17 @@ def test_section_c_extracts_are_short_realistic_and_not_formulaic():
     assert all(80 <= len(source) <= 360 for source in section_c_sources)
     assert all("In 2025, a UK report highlighted an issue" not in source for source in section_c_sources)
     assert any(name in " ".join(section_c_sources) for name in ["HS2", "TikTok", "Ofgem", "Low Pay Commission", "CMA"])
+
+
+def test_low_level_section_b_supply_sources_are_long_enough_for_extract_pages():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    section_b_sources = [question.source_text for question in blueprint.questions if question.section == "B"]
+
+    assert min(len(source) for source in section_b_sources[:4]) >= 300
+    assert any(name in " ".join(section_b_sources) for name in ["semiconductor", "SMMT", "housebuilding", "National Grid"])
 
 
 def test_essay_questions_do_not_use_shallow_nature_of_economics_topic():

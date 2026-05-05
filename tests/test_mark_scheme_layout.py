@@ -15,7 +15,10 @@ def test_mark_scheme_uses_reference_style_sections(tmp_path):
     render_mark_scheme(blueprint, syllabus, output)
 
     text = _pdf_text(output)
+    first_page = text.split("\f")[0]
     assert "Mark Scheme (Results)" in text
+    assert "Summer" in first_page
+    assert "Practice Paper" not in first_page
     assert "General Marking Guidance" in text
     assert "Question" in text
     assert "Answer" in text

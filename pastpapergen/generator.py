@@ -388,15 +388,26 @@ def _section_a_stem(topic: str, stimulus_kind: str) -> str:
 def _source_question_prompt(command_word: str, marks: int, topic: str, source_reference: str) -> str:
     reference = "the source material" if source_reference == "source material" else source_reference
     if marks == 5:
-        return f"With reference to {reference}, explain one likely effect of {topic}."
+        if reference:
+            return f"With reference to {reference}, explain one likely effect of {topic}."
+        return f"Explain one likely effect of {topic}."
     if marks == 8:
+        if not reference:
+            return f"Examine two likely factors affecting {topic}."
         return f"With reference to {reference}, examine two likely factors affecting {topic}."
     if marks == 10:
+        if not reference:
+            return f"Assess whether {topic} is significant in this context."
         return f"With reference to {reference}, assess whether {topic} is significant in this context."
     if marks == 12:
+        if not reference:
+            return f"Discuss whether the evidence supports one interpretation of {topic}."
         return f"With reference to {reference}, discuss whether the evidence supports one interpretation of {topic}."
     if marks == 15:
-        return _section_b_15_marker_prompt(topic)
+        prompt = _section_b_15_marker_prompt(topic)
+        if reference:
+            return f"With reference to {reference}, {prompt[:1].lower()}{prompt[1:]}"
+        return prompt
     return f"Evaluate the view that {topic} is the most important issue in this market."
 
 
@@ -415,7 +426,7 @@ def _source_reference(paper_id: str, section_name: str, index: int) -> str:
     if section_name == "A" and paper_id in {"paper_1", "paper_2"}:
         return "Figure 1"
     if section_name == "B" and paper_id in {"paper_1", "paper_2"}:
-        return ["Extract A", "Extract A", "Extract B", "Extract C", "source material"][index]
+        return ["Extract A", "", "", "Extract C", "Extract D"][index]
     if paper_id == "paper_3":
         return ["Extract A", "Extract A", "Extract B", "Extract C", "source material"][index]
     return ""
@@ -437,7 +448,8 @@ def _source_text(
     if section_name == "C":
         return _section_c_extract(topic_id, topic_title, points, index)
     if section_name == "B":
-        return _data_response_extract(topic_title, points, index)
+        extract_index = [0, 1, 2, 2, 3][min(index, 4)]
+        return _data_response_extract(topic_title, points, extract_index)
     if section_name == "A":
         return _section_a_context(topic_id, topic_title, focus, points)
     if stimulus_kind == "data_table":

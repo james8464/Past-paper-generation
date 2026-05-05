@@ -19,8 +19,8 @@ def test_source_booklet_for_paper_1_only_uses_section_b(tmp_path):
     assert b"Paper" in pdf_bytes
     assert b"reference" in pdf_bytes
     assert b"Sources for use with SECTION B" in pdf_bytes
-    assert b"Figure 1" in pdf_bytes
     assert b"Extract A" in pdf_bytes
+    assert b"Extract D" in pdf_bytes
     assert b"SECTION C" not in pdf_bytes
     assert _pdf_page_count(output) == 4
 
@@ -34,10 +34,10 @@ def test_source_booklet_has_figure_extracts_and_source_attributions(tmp_path):
     render_source_booklet(blueprint, syllabus, output)
     text = _pdf_text(output)
 
-    assert "Figure 1:" in text
     assert "Extract A" in text
     assert "Extract B" in text
     assert "Extract C" in text
+    assert "Extract D" in text
     assert "Source: adapted from public reports and economic data" in text
     assert "constructed economic data" not in text
 

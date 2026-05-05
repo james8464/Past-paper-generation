@@ -15,10 +15,12 @@ from pastpapergen.notes import note_points_for_topic
 from pastpapergen.source_cases import GENERIC_SOURCE_ATTRIBUTION
 
 ANSWER_LINE_GAP_PT = 28
+ANSWER_LINE_COLOR_HEX = "#d0d0d0"
+ANSWER_LINE_DASH = None
 BODY_FONT_SIZE_PT = 12
 BODY_LEADING_PT = 14
-FONT_REGULAR = "Arial"
-FONT_BOLD = "Arial-Bold"
+FONT_REGULAR = "ExamSans"
+FONT_BOLD = "ExamSans-Bold"
 MS_ANSWER_WRAP_CHARS = 58
 SECTION_A_INSTRUCTION_LINES = [
     "Answer ALL questions. Write your answers in the spaces provided.",
@@ -33,13 +35,13 @@ SECTION_A_INSTRUCTION_LINES = [
 
 def _register_fonts() -> None:
     fonts = [
-        (FONT_REGULAR, Path("/System/Library/Fonts/Supplemental/Arial.ttf"), 0),
-        (FONT_BOLD, Path("/System/Library/Fonts/Supplemental/Arial Bold.ttf"), 0),
+        (FONT_REGULAR, Path("/System/Library/Fonts/Supplemental/Seravek.ttc"), 0),
+        (FONT_BOLD, Path("/System/Library/Fonts/Supplemental/Seravek.ttc"), 3),
     ]
     if not fonts[0][1].exists():
         fonts = [
-            (FONT_REGULAR, Path("/System/Library/Fonts/Helvetica.ttc"), 0),
-            (FONT_BOLD, Path("/System/Library/Fonts/Helvetica.ttc"), 1),
+            (FONT_REGULAR, Path("/System/Library/Fonts/Supplemental/Arial.ttf"), 0),
+            (FONT_BOLD, Path("/System/Library/Fonts/Supplemental/Arial Bold.ttf"), 0),
         ]
     for name, path, subfont_index in fonts:
         if name not in pdfmetrics.getRegisteredFontNames() and path.exists():
@@ -129,7 +131,7 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.setFont(FONT_BOLD, 10)
     pdf.drawString(panel_x + 22, y + 29, "You must have:")
     pdf.setFont(FONT_REGULAR, 10)
-    pdf.drawString(panel_x + 22, y + 13, "Source Booklet (enclosed)")
+    pdf.drawString(panel_x + 22, y + 13, "a calculator.")
     pdf.drawCentredString(panel_x + panel_w - 42, y + 24, "Total Marks")
 
     text_x = 114
@@ -271,6 +273,7 @@ def _draw_question_pages(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
             current_section = question.section
             y = _draw_section_intro(pdf, blueprint, current_section, y)
             if blueprint.paper_id in {"paper_1", "paper_2"} and question.section == "B":
+                page_number, y = _draw_section_b_source_pages(pdf, blueprint, questions, page_number, y)
                 y = _draw_section_b_prompt_page(pdf, questions, y)
                 _draw_question_footer(pdf, blueprint, page_number)
                 pdf.showPage()
@@ -364,6 +367,72 @@ def _draw_section_b_prompt_page(pdf: canvas.Canvas, questions: list, y: float) -
         pdf.drawRightString(width - 76, y - (len(prompt_lines) - 1) * BODY_LEADING_PT - 2, f"({question.marks})")
         pdf.setFillColor(colors.black)
         y -= max(1, len(prompt_lines)) * BODY_LEADING_PT + 22
+    return y
+
+
+def _draw_section_b_source_pages(
+    pdf: canvas.Canvas,
+    blueprint: PaperBlueprint,
+    questions: list,
+    page_number: int,
+    y: float,
+) -> tuple[int, float]:
+    section_b = [question for question in questions if question.section == "B"]
+    extracts = _section_b_extracts(section_b)
+    y = _draw_section_b_extract_block(pdf, section_b, extracts[:2], y)
+    _draw_question_footer(pdf, blueprint, page_number)
+    pdf.showPage()
+    page_number += 1
+    y = _prepare_answer_page(pdf, blueprint, page_number)
+    y = _draw_section_b_extract_block(pdf, section_b, extracts[2:], y, include_question_title=False)
+    _draw_question_footer(pdf, blueprint, page_number)
+    pdf.showPage()
+    page_number += 1
+    return page_number, _prepare_answer_page(pdf, blueprint, page_number)
+
+
+def _section_b_extracts(section_b: list) -> list[tuple[str, str]]:
+    if not section_b:
+        return []
+    texts = [question.source_text for question in section_b]
+    indices = [0, 1, 2, 4 if len(texts) > 4 else 3]
+    labels = ["Extract A", "Extract B", "Extract C", "Extract D"]
+    return [(label, texts[min(index, len(texts) - 1)]) for label, index in zip(labels, indices, strict=True)]
+
+
+def _draw_section_b_extract_block(
+    pdf: canvas.Canvas,
+    section_b: list,
+    extracts: list[tuple[str, str]],
+    y: float,
+    include_question_title: bool = True,
+) -> float:
+    margin = 76
+    width, _ = A4
+    if include_question_title:
+        first_question = section_b[0].number.split("(")[0] if section_b else "6"
+        source_title = section_b[0].source_title.split(":", 1)[0] if section_b else "Economic context"
+        pdf.setFont(FONT_BOLD, 10)
+        pdf.drawString(margin, y, f"Question {first_question}")
+        y -= 18
+        pdf.drawString(margin, y, source_title)
+        y -= 24
+    for extract_index, (label, text) in enumerate(extracts):
+        if extract_index:
+            y -= 8
+        pdf.setFont(FONT_BOLD, 10)
+        pdf.drawString(margin, y, label)
+        y -= 14
+        pdf.setFont(FONT_REGULAR, 9)
+        line_number_y = y
+        for line in _wrap(text, 76):
+            pdf.drawString(margin, y, line)
+            y -= 11
+        pdf.setFont(FONT_REGULAR, 7.5)
+        pdf.drawRightString(width - 88, line_number_y - 44, str((extract_index + 1) * 5))
+        pdf.setFont(FONT_REGULAR, 8)
+        pdf.drawRightString(width - 94, y - 3, GENERIC_SOURCE_ATTRIBUTION)
+        y -= 22
     return y
 
 
@@ -519,8 +588,7 @@ def _draw_section_intro(
 def _section_instruction_lines(paper_id: str, section: str) -> list[str]:
     if paper_id in {"paper_1", "paper_2"} and section == "B":
         return [
-            "Read Figure 1 and the following extracts (A to C)",
-            "in the Source Booklet before answering Question 6.",
+            "Read the following extracts (A to D) before answering Question 6.",
             "Write your answers in the spaces provided.",
             "You are advised to spend 1 hour on this section.",
         ]
@@ -641,10 +709,17 @@ def _draw_section_a_question(
         _draw_question_footer(pdf, blueprint, page_number)
         pdf.showPage()
         page_number += 1
+        return page_number, _prepare_answer_page(pdf, blueprint, page_number)
+
+    if first_part and first_part.command_word == "calculate" and second_part and second_part.marks == 1:
+        y = _draw_calculate_part_with_working_lines(pdf, first_part, x, y)
+        y = _draw_mcq_part(pdf, second_part, x, y)
+        _draw_total_for_question(pdf, question.number, question.marks, x, y)
         if question.number == "5":
-            _draw_section_transition_blank(pdf, blueprint, page_number, "QUESTION 6 BEGINS ON THE NEXT PAGE")
-            pdf.showPage()
-            page_number += 1
+            _draw_section_a_total(pdf, x, y - 34)
+        _draw_question_footer(pdf, blueprint, page_number)
+        pdf.showPage()
+        page_number += 1
         return page_number, _prepare_answer_page(pdf, blueprint, page_number)
 
     if first_part and first_part.marks == 1:
@@ -674,9 +749,7 @@ def _draw_section_a_question(
     pdf.showPage()
     page_number += 1
     if question.number == "5":
-        _draw_section_transition_blank(pdf, blueprint, page_number, "QUESTION 6 BEGINS ON THE NEXT PAGE")
-        pdf.showPage()
-        page_number += 1
+        return page_number, _prepare_answer_page(pdf, blueprint, page_number)
     return page_number, _prepare_answer_page(pdf, blueprint, page_number)
 
 
@@ -699,7 +772,19 @@ def _draw_draw_part_with_axes(pdf: canvas.Canvas, part, x: float, y: float) -> f
     pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({part.marks})")
     pdf.setFillColor(colors.black)
     y -= 18
-    return _draw_blank_answer_axes(pdf, x + 34, y, width - x - 130, 185) - 18
+    return _draw_blank_answer_axes(pdf, x + 34, y, width - x - 130, 130) - 10
+
+
+def _draw_calculate_part_with_working_lines(pdf: canvas.Canvas, part, x: float, y: float) -> float:
+    width, _ = A4
+    y = _draw_part_prompt(pdf, part, x, y)
+    pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+    pdf.setFillColor(colors.HexColor("#999999"))
+    pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({part.marks})")
+    pdf.setFillColor(colors.black)
+    y -= 20
+    y = _draw_answer_lines(pdf, x, y, width - x, 6)
+    return y - 12
 
 
 def _draw_blank_answer_axes(pdf: canvas.Canvas, x: float, y: float, w: float, h: float) -> float:
@@ -792,16 +877,6 @@ def _draw_section_a_total(pdf: canvas.Canvas, x: float, y: float) -> None:
     pdf.drawRightString(width - x, y - 18, "TOTAL FOR SECTION A = 25 MARKS")
 
 
-def _draw_section_transition_blank(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_number: int, message: str) -> None:
-    width, height = A4
-    _prepare_answer_page(pdf, blueprint, page_number)
-    pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
-    pdf.drawCentredString(width / 2, height / 2 + 22, message)
-    pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
-    pdf.drawCentredString(width / 2, height / 2, "BLANK PAGE")
-    _draw_question_footer(pdf, blueprint, page_number)
-
-
 def _draw_answer_lines(pdf: canvas.Canvas, x: float, y: float, right_x: float, line_count: int) -> float:
     _set_answer_line_style(pdf)
     for _ in range(line_count):
@@ -829,9 +904,12 @@ def _draw_answer_lines_until(
 
 
 def _set_answer_line_style(pdf: canvas.Canvas) -> None:
-    pdf.setStrokeColor(colors.HexColor("#333333"))
+    pdf.setStrokeColor(colors.HexColor(ANSWER_LINE_COLOR_HEX))
     pdf.setLineWidth(0.35)
-    pdf.setDash(0.45, 1.65)
+    if ANSWER_LINE_DASH:
+        pdf.setDash(*ANSWER_LINE_DASH)
+    else:
+        pdf.setDash()
 
 
 def _reset_line_style(pdf: canvas.Canvas) -> None:
@@ -1158,16 +1236,7 @@ def render_source_booklet(
         pdf.drawString(margin, y, _source_title(section_questions, syllabus))
         y -= 24
 
-        figure_question = section_questions[0]
-        topic = syllabus.get_topic(figure_question.topic_id)
-        pdf.setFont(FONT_BOLD, 9)
-        pdf.drawString(margin, y, f"Figure 1: {topic.title}")
-        y -= 14
-        y = _draw_source_graph(pdf, margin, y, figure_question.stimulus_kind or "bar_chart")
-        y -= 8
-
         for extract_index, question in enumerate(_extract_source_questions(section_questions)):
-            topic = syllabus.get_topic(question.topic_id)
             label = chr(65 + extract_index)
             heading = f"Extract {label}"
             pdf.setFont(FONT_BOLD, 9)
@@ -1175,8 +1244,8 @@ def render_source_booklet(
             y -= 14
             pdf.setFont(FONT_REGULAR, 9)
             source_text = question.source_text or (
-                f"This source concerns {topic.title.lower()}. It may include evidence on "
-                f"{', '.join(topic.points[:3])}."
+                "This source concerns the economic context in Question 6. It may include "
+                "evidence for analysis and evaluation."
             )
             for line in _wrap(source_text, 92):
                 pdf.drawString(margin, y, line)
@@ -1200,18 +1269,10 @@ def _pad_pdf_pages(pdf: canvas.Canvas, target_pages: int) -> None:
         _draw_crop_marks(pdf)
 
 
-def _draw_source_graph(pdf: canvas.Canvas, x: float, y: float, kind: str) -> float:
-    if kind == "data_table":
-        return _draw_data_table(pdf, x + 55, y)
-    if kind in {"cost_revenue_graph", "market_diagram", "macro_chart", "trade_cycle"}:
-        return _draw_economics_graph(pdf, x + 82, y, kind)
-    return _draw_bar_chart(pdf, x + 75, y)
-
-
 def _extract_source_questions(section_questions: list) -> list:
-    if len(section_questions) >= 4:
-        return [section_questions[0], section_questions[2], section_questions[3]]
-    return section_questions[:3]
+    if len(section_questions) >= 5:
+        return [section_questions[0], section_questions[1], section_questions[3], section_questions[4]]
+    return section_questions[:4]
 
 
 def _draw_source_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
@@ -1278,7 +1339,7 @@ def _source_sections(paper_id: str) -> list[str]:
 
 def _source_reading_prompt(paper_id: str, section: str) -> str:
     if paper_id in {"paper_1", "paper_2"}:
-        return "Read the following figure and extracts before answering Question 6."
+        return "Read the following extracts (A to D) before answering Question 6."
     question_number = "1" if section == "A" else "2"
     return f"Read the following figures and extracts before answering Question {question_number}."
 
@@ -1297,18 +1358,24 @@ def render_mark_scheme(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     pdf = canvas.Canvas(str(output_path), pagesize=A4, pageCompression=0)
     width, height = A4
-    margin = 42
+    margin = 54
     blue = colors.HexColor("#006f95")
     pdf.setFillColor(blue)
-    pdf.setFont(FONT_BOLD, 20)
-    pdf.drawString(margin, height - 110, "Pearson Edexcel")
-    pdf.setFont(FONT_REGULAR, 26)
-    pdf.drawString(margin, height - 235, "Mark Scheme (Results)")
-    pdf.drawString(margin, height - 300, "Practice Paper")
+    pdf.circle(margin + 11, height - 96, 10, stroke=0, fill=1)
+    pdf.setFillColor(colors.white)
+    pdf.setFont(FONT_BOLD, 13)
+    pdf.drawCentredString(margin + 11, height - 100, "P")
+    pdf.setFillColor(colors.black)
+    pdf.setFont(FONT_REGULAR, 14)
+    pdf.drawString(margin, height - 120, "Pearson")
+    pdf.setFillColor(blue)
     pdf.setFont(FONT_REGULAR, 18)
-    pdf.drawString(margin, height - 405, "Pearson Edexcel GCE A Level")
-    pdf.drawString(margin, height - 430, f"In Economics A ({blueprint.paper_code.split('/')[0]})")
-    pdf.drawString(margin, height - 455, f"Paper {blueprint.paper_id[-1].zfill(2)} {blueprint.title}")
+    pdf.drawString(margin, height - 205, "Mark Scheme (Results)")
+    pdf.drawString(margin, height - 258, f"Summer {date.today().year}")
+    pdf.setFont(FONT_REGULAR, 13)
+    pdf.drawString(margin, height - 340, "Pearson Edexcel GCE A Level")
+    pdf.drawString(margin, height - 362, f"In Economics A ({blueprint.paper_code.split('/')[0]})")
+    pdf.drawString(margin, height - 384, f"Paper {blueprint.paper_id[-1].zfill(2)} {blueprint.title}")
     pdf.setFillColor(colors.black)
     pdf.showPage()
 

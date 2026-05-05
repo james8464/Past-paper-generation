@@ -77,8 +77,15 @@ def test_question_paper_uses_closer_reference_font_family(tmp_path):
     render_question_paper(blueprint, output)
     fonts = subprocess.run(["pdffonts", str(output)], check=True, capture_output=True, text=True).stdout
 
-    assert "Arial" in fonts
+    assert "Seravek" in fonts
     assert "HelveticaNeue" not in fonts
+
+
+def test_answer_line_style_matches_reference_solid_lines():
+    from pastpapergen.render_pdf import ANSWER_LINE_COLOR_HEX, ANSWER_LINE_DASH
+
+    assert ANSWER_LINE_COLOR_HEX == "#d0d0d0"
+    assert ANSWER_LINE_DASH is None
 
 
 def test_section_a_instruction_lines_fit_question_frame():
@@ -104,7 +111,7 @@ def test_paper_1_section_b_starts_near_reference_page(tmp_path):
 
     render_question_paper(blueprint, output)
 
-    assert _first_page_containing(output, "SECTION B") == 12
+    assert _first_page_containing(output, "SECTION B") == 10
 
 
 def test_paper_1_25_mark_questions_get_multiple_answer_pages():
@@ -139,12 +146,26 @@ def test_paper_1_section_b_intro_matches_reference_wording(tmp_path):
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
-    section_b_page = _pdf_text(output).split("\f")[11]
+    section_b_page = _pdf_text(output).split("\f")[9]
 
-    assert "Read Figure 1 and the following extracts (A to C)" in section_b_page
-    assert "in the Source Booklet before answering Question 6" in section_b_page
+    assert "Read the following extracts (A to D) before answering Question 6" in section_b_page
     assert "Write your answers in the spaces provided." in section_b_page
     assert "You are advised to spend 1 hour on this section." in section_b_page
+    assert "Extract A" in section_b_page
+
+
+def test_paper_1_section_b_embeds_extracts_before_question_page(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    text = _pdf_text(output)
+
+    assert "Source Booklet (enclosed)" not in text
+    assert text.index("SECTION B") < text.index("Extract A") < text.index("Extract D")
+    assert text.index("Extract D") < text.index("6    (a)")
 
 
 def test_paper_1_section_b_prompt_page_lists_subquestions_with_marks(tmp_path):
@@ -215,7 +236,7 @@ def test_section_a_question_3_not_rotated_or_garbled(tmp_path):
     assert page_with_q3_a.count("DO NOT WRITE IN THIS AREA") <= 6
 
 
-def test_section_a_draw_question_keeps_mcq_on_same_page_before_section_blank(tmp_path):
+def test_section_a_draw_question_keeps_mcq_on_same_page_before_section_b_sources(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
     blueprint = build_paper_blueprint(config, syllabus, seed=4)
@@ -228,7 +249,8 @@ def test_section_a_draw_question_keeps_mcq_on_same_page_before_section_blank(tmp
     assert "Draw a diagram" in draw_page
     assert "Which one of the following" in draw_page
     assert "TOTAL FOR SECTION A = 25 MARKS" in _pdf_text(output)
-    assert "QUESTION 6 BEGINS ON THE NEXT PAGE" in _pdf_text(output)
+    assert "Read the following extracts (A to D) before answering Question 6" in _pdf_text(output)
+    assert "QUESTION 6 BEGINS ON THE NEXT PAGE" not in _pdf_text(output)
 
 
 def test_section_a_context_uses_specific_source_text(tmp_path):
