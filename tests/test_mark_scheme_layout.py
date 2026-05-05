@@ -65,7 +65,7 @@ def test_mark_scheme_mcq_explanations_are_option_specific(tmp_path):
 def test_mark_scheme_includes_question_specific_focus_and_answer_points(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
-    blueprint = build_paper_blueprint(config, syllabus, seed=7)
+    blueprint = _blueprint_with_section_b_topic(config, syllabus, "3.4")
     output = tmp_path / "ms.pdf"
 
     render_mark_scheme(blueprint, syllabus, output)
@@ -108,3 +108,11 @@ def _pdf_page_count(path: Path) -> int:
         if line.startswith("Pages:"):
             return int(line.split(":", 1)[1].strip())
     raise AssertionError("Pages not found")
+
+
+def _blueprint_with_section_b_topic(config, syllabus, topic_id: str):
+    for seed in range(500):
+        blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+        if any(question.section == "B" and question.topic_id == topic_id for question in blueprint.questions):
+            return blueprint
+    raise AssertionError(f"No Section B blueprint found for topic {topic_id}")

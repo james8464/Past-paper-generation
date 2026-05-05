@@ -63,16 +63,28 @@ _DATA_RESPONSE_CASES: dict[str, list[str]] = {
         "Policy makers may use regulation, taxes or information campaigns to reduce market failure. The overall effect depends on the size of the external cost, enforcement costs and whether consumers and firms change behaviour.",
     ],
     "government intervention": [
-        "Ofgem's energy price cap limited the maximum unit price charged to many households. Supporters said the cap protected consumers from sudden price rises, while suppliers argued it reduced incentives for new firms to enter the market.",
-        "The Soft Drinks Industry Levy encouraged some producers to reformulate drinks with lower sugar content. Public health groups said this could reduce negative externalities, while some businesses said the levy increased compliance costs.",
-        "London's Ultra Low Emission Zone charged some drivers of more polluting vehicles. The policy aimed to reduce air pollution, but critics argued it placed a higher burden on low-income drivers who could not easily replace older cars.",
-        "Government intervention can create winners and losers. A subsidy may increase output and reduce prices, but it also has an opportunity cost because public funds could be used elsewhere.",
+        "Ofgem's energy price cap limited the maximum unit price charged to many households during a period of volatile wholesale gas prices. Supporters said the cap protected consumers from sudden price rises and reduced uncertainty. Some suppliers argued that tight price controls reduced incentives for new firms to enter and made it harder to recover higher short-run costs.",
+        "The Soft Drinks Industry Levy encouraged some producers to reformulate drinks with lower sugar content. Public health groups said this could reduce negative externalities linked to obesity and pressure on the NHS. Some businesses argued that reformulation, labelling changes and administration increased costs, although demand for lower-sugar products also grew.",
+        "London's Ultra Low Emission Zone charged some drivers of more polluting vehicles. The policy aimed to reduce air pollution and improve public health, but critics argued it placed a higher burden on low-income drivers who could not easily replace older cars. The effect depended on price elasticity of demand for car journeys and availability of substitutes.",
+        "Government intervention can create winners and losers. A subsidy may increase output and reduce prices, but it also has an opportunity cost because public funds could be used elsewhere. Economists said the final welfare effect depends on the size of the external benefit, the accuracy of targeting and whether firms pass support on to consumers.",
     ],
     "government intervention in markets": [
         "Ofgem's energy price cap limited the maximum unit price charged to many households. Supporters said the cap protected consumers from sudden price rises, while suppliers argued it reduced incentives for new firms to enter the market.",
         "The Soft Drinks Industry Levy encouraged some producers to reformulate drinks with lower sugar content. Public health groups said this could reduce negative externalities, while some businesses said the levy increased compliance costs.",
         "London's Ultra Low Emission Zone charged some drivers of more polluting vehicles. The policy aimed to reduce air pollution, but critics argued it placed a higher burden on low-income drivers who could not easily replace older cars.",
         "Government intervention can create winners and losers. A subsidy may increase output and reduce prices, but it also has an opportunity cost because public funds could be used elsewhere.",
+    ],
+    "business growth": [
+        "Greggs expanded its UK shop estate and invested in supply-chain capacity after demand for lower-priced food-to-go increased. Managers said centralised production helped reduce average costs, while new stores and longer opening hours increased total revenue. Competitors argued that larger chains could negotiate lower rents and supplier prices than independent bakeries.",
+        "Aldi and Lidl increased their UK market share by opening new stores and attracting price-sensitive consumers. Larger scale helped spread marketing, logistics and technology costs across more outlets. However, rapid growth also created risks, including pressure on managers, higher distribution costs and difficulty maintaining product availability in all regions.",
+        "Some firms used mergers and takeovers to grow more quickly than would be possible through organic expansion. Supporters argued that external growth may create economies of scale and access to new markets. The Competition and Markets Authority may investigate if a merger reduces competition, increases barriers to entry or gives firms excessive market power.",
+        "Business growth may lead to demergers if a firm becomes too complex to manage efficiently. Shareholders may support selling divisions when diseconomies of scale reduce profitability. Workers and suppliers can be affected if restructuring leads to store closures, job losses or changes in long-term contracts.",
+    ],
+    "business objectives": [
+        "The John Lewis Partnership is employee-owned and has often emphasised service quality, long-term reputation and worker interests. After weaker trading conditions, managers still needed to improve profitability to fund investment. This created a possible conflict between profit, employee benefits and maintaining prices that consumers considered competitive.",
+        "Amazon has often reinvested profits into logistics, cloud computing and new services. Supporters of growth objectives argue that increasing market share can strengthen brand loyalty and generate future economies of scale. Critics argue that rapid expansion can increase pressure on workers and smaller rivals.",
+        "Some UK water companies faced criticism over dividends, executive pay and environmental performance. Regulators and consumers argued that firms should give greater weight to service quality and pollution targets. Investors argued that profits were needed to finance infrastructure and improve long-run performance.",
+        "Managers may satisfice rather than maximise profits if ownership and control are separated. A firm might accept satisfactory profits while pursuing growth, staff retention or reputation. The final objective may depend on shareholder pressure, competition, regulation and the stage of the business cycle.",
     ],
     "measures of economic performance": [
         "The Office for National Statistics (ONS) reported that UK CPI inflation reached 11.1% in October 2022 before falling during 2023 and 2024. Households on low incomes said food and energy prices had a larger effect on living standards than the headline rate suggested.",
@@ -159,6 +171,22 @@ _SECTION_C_CASES: dict[str, list[str]] = {
     "market failure": [
         "Local authorities considered clean-air zones to reduce congestion and pollution. Evaluate whether government intervention is likely to correct market failure in transport.",
         "Consumer groups reported unresolved problems in the used-car market. Evaluate the microeconomic effects of imperfect information in a market of your choice.",
+    ],
+    "business growth": [
+        "Greggs expanded its shop estate and invested in larger supply-chain capacity as demand for lower-priced food-to-go increased. Evaluate the likely effects of business growth on firms and consumers.",
+        "The CMA may investigate mergers where external growth risks reducing competition. Evaluate the likely benefits and drawbacks of external growth for firms.",
+    ],
+    "business objectives": [
+        "The John Lewis Partnership has had to balance employee ownership, service quality and profitability during difficult trading conditions. Evaluate whether profit maximisation is likely to be the most important objective for firms.",
+        "Some water companies faced pressure from regulators over dividends, pollution and investment. Evaluate the likely effects of firms pursuing objectives other than profit maximisation.",
+    ],
+    "demand": [
+        "UK supermarkets reported that consumers switched towards own-brand products when food prices increased. Evaluate the likely microeconomic effects of a significant change in demand in a market.",
+        "Demand for rail travel changed after more workers adopted hybrid working. Evaluate the likely effects of a fall in demand for a service.",
+    ],
+    "supply": [
+        "Shortages of semiconductors and batteries affected the supply of new cars after the pandemic. Evaluate the likely microeconomic effects of a decrease in supply in a market.",
+        "Housebuilders said planning delays and higher borrowing costs restricted the supply of new homes. Evaluate the likely effects of price inelastic supply in a market.",
     ],
     "international economics": [
         "ONS data showed the UK continued to run a services surplus while importing many goods. Evaluate the likely effects of a persistent trade deficit in goods.",

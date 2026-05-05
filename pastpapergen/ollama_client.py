@@ -241,6 +241,9 @@ def _matches_expected_question_style(question: QuestionBlueprint, prompt: str) -
     lowered = prompt.lower()
     command = question.command_word.lower()
     if question.marks == 15 and question.section == "B":
+        if question.source_reference:
+            reference = question.source_reference.lower()
+            return lowered.startswith(f"with reference to {reference}") and "discuss" in lowered
         return lowered.startswith("discuss")
     if question.section in {"A", "B"} and question.source_reference:
         reference = (
@@ -251,13 +254,21 @@ def _matches_expected_question_style(question: QuestionBlueprint, prompt: str) -
         if f"with reference to {reference}" not in lowered:
             return False
     if question.marks == 12:
-        return lowered.startswith("with reference to") and "discuss whether" in lowered
+        if question.source_reference:
+            return lowered.startswith("with reference to") and "discuss whether" in lowered
+        return lowered.startswith("discuss whether")
     if question.marks == 10:
-        return lowered.startswith("with reference to") and "assess whether" in lowered
+        if question.source_reference:
+            return lowered.startswith("with reference to") and "assess whether" in lowered
+        return lowered.startswith("assess whether")
     if question.marks == 8:
-        return lowered.startswith("with reference to") and "examine" in lowered
+        if question.source_reference:
+            return lowered.startswith("with reference to") and "examine" in lowered
+        return lowered.startswith("examine")
     if question.marks == 5 and question.section in {"A", "B"}:
-        return lowered.startswith("with reference to") and "explain" in lowered
+        if question.source_reference:
+            return lowered.startswith("with reference to") and "explain" in lowered
+        return lowered.startswith("explain")
     if question.marks == 25:
         return lowered.startswith("evaluate")
     return command in lowered

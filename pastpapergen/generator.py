@@ -52,13 +52,14 @@ def build_paper_blueprint(
             excluded_ids = set(section_topic_ids)
             if group_index is not None:
                 excluded_ids.update(choice_group_topics.get(group_index, set()))
+            part_marks, part_commands, stimulus_kind = _section_template(section, section_templates, index)
             available_topics = _topic_pool_for_question(topics, essay_topic_ids, marks, section.name)
             if index < len(section_theme_targets):
                 available_topics = _topics_for_theme(available_topics, section_theme_targets[index])
+            available_topics = _topics_suitable_for_template(available_topics, part_commands, stimulus_kind)
             topic = source_context_topic or _choose_topic(rng, available_topics, excluded_ids)
             command_word = section.command_words[index]
             number = _question_number(config.id, section.name, absolute_question_number, index)
-            part_marks, part_commands, stimulus_kind = _section_template(section, section_templates, index)
             parts = _build_parts(part_marks, part_commands, topic.title)
             source_reference = _source_reference(config.id, section.name, index)
             if group_index is not None:
@@ -174,6 +175,22 @@ def _topic_pool_for_question(topics, essay_topic_ids: set[str], marks: int, sect
     return topics
 
 
+def _topics_suitable_for_template(topics, part_commands: list[str], stimulus_kind: str):
+    suitable_ids = _STIMULUS_TOPIC_IDS.get(stimulus_kind)
+    if suitable_ids:
+        matched = [topic for topic in topics if topic.id in suitable_ids]
+        if matched:
+            return matched
+        if part_commands and part_commands[0] == "draw":
+            draw_matched = [topic for topic in topics if topic.id in _DRAW_CAPABLE_TOPIC_IDS]
+            return draw_matched or topics
+        return topics
+    if part_commands and part_commands[0] == "draw":
+        matched = [topic for topic in topics if topic.id in _DRAW_CAPABLE_TOPIC_IDS]
+        return matched or topics
+    return topics
+
+
 def _uses_single_source_context(paper_id: str, section_name: str) -> bool:
     return paper_id in {"paper_1", "paper_2"} and section_name == "B"
 
@@ -206,14 +223,244 @@ def _question_number(
     return f"{section_number}({chr(97 + section_index)})"
 
 
+_EXAM_FOCUS = {
+    "rational decision making": "consumers comparing marginal benefit and marginal cost",
+    "demand": "a change in consumer demand",
+    "supply": "changes in production costs and the availability of inputs",
+    "price determination": "changes in equilibrium price and quantity",
+    "market failure": "external costs and the socially efficient level of output",
+    "government intervention": "indirect taxes, subsidies or regulation",
+    "government intervention in markets": "a government policy affecting prices and output",
+    "business growth": "a firm expanding to achieve economies of scale",
+    "business objectives": "a firm choosing between profit maximisation and growth",
+    "revenues, costs and profits": "changes in fixed costs, variable costs and profit",
+    "market structures": "market concentration, barriers to entry and contestability",
+    "labour market": "wage rates, vacancies and labour market flexibility",
+    "measures of economic performance": "changes in inflation, GDP, unemployment and living standards",
+    "aggregate demand": "changes in consumption, investment and aggregate demand",
+    "aggregate supply": "changes in costs, productivity and productive capacity",
+    "national income": "changes in injections, leakages and the multiplier",
+    "economic growth": "changes in real GDP and productive potential",
+    "macroeconomic objectives and policies": "conflicts between inflation, growth, unemployment and the current account",
+    "international economics": "changes in trade, exchange rates and protectionism",
+    "poverty and inequality": "changes in income inequality and living standards",
+    "emerging and developing economies": "barriers to development and strategies to reduce poverty",
+    "financial sector": "credit creation, regulation and financial market failure",
+    "role of the state in the macroeconomy": "taxation, public spending and regulation",
+}
+
+
+_DRAW_CAPABLE_TOPIC_IDS = {
+    "1.2.2",
+    "1.2.3",
+    "1.2.4",
+    "1.3",
+    "1.4",
+    "2.2",
+    "2.3",
+    "2.5",
+    "2.6",
+    "3.1",
+    "3.3",
+    "3.4",
+    "3.5",
+    "3.6",
+    "4.1",
+    "4.2",
+    "4.4",
+    "4.5",
+}
+
+
+_STIMULUS_TOPIC_IDS = {
+    "cost_revenue_graph": {"3.2", "3.3", "3.4"},
+    "market_diagram": {"1.2.2", "1.2.3", "1.2.4", "1.3", "1.4", "3.6"},
+    "demand_shift_graph": {"1.2.2", "1.2.4"},
+    "supply_shift_graph": {"1.2.3", "1.2.4"},
+    "perfect_competition_diagram": {"3.3", "3.4"},
+    "monopoly_diagram": {"3.3", "3.4"},
+    "monopsony_diagram": {"3.5"},
+    "labour_market_diagram": {"3.5"},
+    "payoff_matrix": {"3.2", "3.4"},
+    "externality_diagram": {"1.3", "1.4", "3.6"},
+    "consumer_surplus_diagram": {"1.2.2", "1.2.3", "1.2.4", "1.3", "1.4", "3.6"},
+    "producer_surplus_diagram": {"1.2.2", "1.2.3", "1.2.4", "1.3", "1.4", "3.6"},
+    "minimum_price_diagram": {"1.4", "3.6", "3.5"},
+    "maximum_price_diagram": {"1.4", "3.6"},
+    "tax_subsidy_diagram": {"1.4", "3.6", "1.3"},
+}
+
+
+_EXAM_CONTEXT = {
+    "rational decision making": "consumer choice where marginal benefit is compared with marginal cost",
+    "business objectives": "a firm deciding whether to prioritise profit, growth or sales revenue",
+    "market failure": "a market where external costs may cause overproduction",
+    "government intervention in markets": "a market where a price control, tax or subsidy may change incentives",
+    "business growth": "a firm considering whether expansion will reduce average costs",
+}
+
+
+_TOPIC_MCQ_OPTIONS = {
+    "demand": [
+        ("A", "A rise in consumer income may increase demand for a normal good"),
+        ("B", "A movement along the demand curve is caused by a change in advertising"),
+        ("C", "An increase in demand always reduces equilibrium price"),
+        ("D", "Demand is price inelastic when price elasticity of demand is greater than one"),
+    ],
+    "supply": [
+        ("A", "Higher production costs may shift the supply curve to the left"),
+        ("B", "Price elasticity of supply measures responsiveness of demand to income"),
+        ("C", "An increase in supply always increases equilibrium price"),
+        ("D", "Supply is perfectly elastic when firms cannot change output"),
+    ],
+    "rational decision making": [
+        ("A", "Consumers may compare marginal benefit with marginal cost when making choices"),
+        ("B", "Sunk costs should always determine current decisions"),
+        ("C", "Rational consumers must have perfect information"),
+        ("D", "Opportunity cost is zero when a consumer makes a choice"),
+    ],
+    "market failure": [
+        ("A", "External costs may cause free-market output to exceed the socially efficient level"),
+        ("B", "Indirect taxes always increase consumer surplus"),
+        ("C", "Public goods are usually overprovided by the free market"),
+        ("D", "Positive externalities mean marginal social cost is zero"),
+    ],
+    "government intervention in markets": [
+        ("A", "A subsidy may lower production costs and increase market supply"),
+        ("B", "A maximum price is always set above the market equilibrium"),
+        ("C", "An indirect tax shifts the demand curve to the right"),
+        ("D", "Regulation always eliminates government failure"),
+    ],
+    "business objectives": [
+        ("A", "A firm may prioritise sales growth instead of short-run profit maximisation"),
+        ("B", "Revenue maximisation always occurs where marginal cost is zero"),
+        ("C", "Profit maximisation means output is produced where price is lowest"),
+        ("D", "Satisficing means a firm always makes a loss"),
+    ],
+    "business growth": [
+        ("A", "Internal growth may allow a firm to exploit economies of scale"),
+        ("B", "External growth always reduces market concentration"),
+        ("C", "Diseconomies of scale only occur in perfectly competitive markets"),
+        ("D", "A merger always reduces barriers to entry"),
+    ],
+    "market structures": [
+        ("A", "High barriers to entry may allow incumbent firms to maintain market power"),
+        ("B", "A high concentration ratio proves that a market is perfectly competitive"),
+        ("C", "Contestability falls when sunk costs become lower"),
+        ("D", "Product differentiation is impossible in oligopoly"),
+    ],
+    "labour market": [
+        ("A", "A rise in job vacancies may increase pressure on firms to raise wages"),
+        ("B", "Monopsony power means there are many buyers of labour"),
+        ("C", "Occupational immobility always increases labour supply immediately"),
+        ("D", "A minimum wage is always set below the equilibrium wage"),
+    ],
+}
+
+
+_SECTION_B_PROMPTS = {
+    "supply": {
+        5: "With reference to {reference}, explain one reason why shortages of semiconductors may affect the supply of cars.",
+        8: "Examine two factors that may influence price elasticity of supply in the housebuilding market.",
+        10: "With reference to {reference}, assess whether time lags are the main reason why renewable energy supply is slow to respond.",
+        12: "Discuss whether investment in transmission infrastructure is likely to increase renewable energy supply.",
+        15: "With reference to {reference}, discuss the likely effects of higher production costs on producers and consumers.",
+    },
+    "market structures": {
+        5: "With reference to {reference}, explain one reason why a merger may affect market concentration.",
+        8: "Examine two barriers to entry that may affect independent firms in digital games markets.",
+        10: "With reference to {reference}, assess whether economies of scale are the main reason for large firms' market power.",
+        12: "Discuss whether exclusive content is likely to reduce contestability in this market.",
+        15: "With reference to {reference}, discuss the likely benefits and drawbacks of mergers for consumers.",
+    },
+    "labour market": {
+        5: "With reference to {reference}, explain one likely effect of a rise in hourly pay on firms.",
+        8: "Examine two factors that might influence the supply of labour in hospitality or care markets.",
+        10: "With reference to {reference}, assess whether monopsony power is likely to reduce wage rates.",
+        12: "Discuss whether labour shortages are likely to increase wages in low-paid occupations.",
+        15: "With reference to {reference}, discuss the likely effects of a higher National Minimum Wage on workers and firms.",
+    },
+    "revenues, costs and profits": {
+        5: "With reference to {reference}, explain one reason why high fixed costs may affect airline pricing.",
+        8: "Examine two factors that may influence a firm's profit margins during a period of rising costs.",
+        10: "With reference to {reference}, assess whether price discounts are likely to increase total revenue.",
+        12: "Discuss whether economies of scale are likely to reduce average costs for growing firms.",
+        15: "With reference to {reference}, discuss the likely effects of rising production costs on firms and consumers.",
+    },
+    "market failure": {
+        5: "With reference to {reference}, explain one reason why imperfect information may cause market failure.",
+        8: "Examine two external costs that may arise from road transport.",
+        10: "With reference to {reference}, assess whether regulation is likely to improve consumer welfare.",
+        12: "Discuss whether behavioural biases reduce the effectiveness of competition in this market.",
+        15: "With reference to {reference}, discuss the likely effects of government intervention to correct market failure.",
+    },
+    "government intervention": {
+        5: "With reference to {reference}, explain one likely effect of an energy price cap on consumers.",
+        8: "Examine two reasons why a tax on sugary drinks may affect producer behaviour.",
+        10: "With reference to {reference}, assess whether charges on polluting vehicles are likely to reduce external costs.",
+        12: "Discuss whether government intervention is likely to improve welfare in this market.",
+        15: "With reference to {reference}, discuss the likely costs and benefits of subsidies for consumers and firms.",
+    },
+    "business growth": {
+        5: "With reference to {reference}, explain one reason why business growth may reduce average costs.",
+        8: "Examine two problems a firm may experience when expanding rapidly.",
+        10: "With reference to {reference}, assess whether mergers are likely to reduce competition.",
+        12: "Discuss whether external growth is more beneficial to firms than organic growth.",
+        15: "With reference to {reference}, discuss the likely effects of business growth on consumers and firms.",
+    },
+    "business objectives": {
+        5: "With reference to {reference}, explain one reason why a firm may pursue objectives other than profit maximisation.",
+        8: "Examine two possible conflicts between profit and non-profit objectives.",
+        10: "With reference to {reference}, assess whether regulation is likely to change business objectives.",
+        12: "Discuss whether firms are likely to prioritise sales growth over profit maximisation.",
+        15: "With reference to {reference}, discuss the likely effects of firms pursuing objectives other than profit maximisation.",
+    },
+    "measures of economic performance": {
+        5: "With reference to {reference}, explain one reason why CPI inflation may not fully measure changes in living standards.",
+        8: "Examine two limitations of using real GDP to compare economic performance.",
+        10: "With reference to {reference}, assess whether unemployment data understate weakness in the labour market.",
+        12: "Discuss whether GDP per head is the best measure of economic welfare.",
+        15: "With reference to {reference}, discuss the usefulness of economic indicators for government policy.",
+    },
+    "aggregate demand": {
+        5: "With reference to {reference}, explain one likely effect of higher interest rates on consumption.",
+        8: "Examine two factors that may affect consumer spending during a period of high inflation.",
+        10: "With reference to {reference}, assess whether government spending is likely to increase aggregate demand.",
+        12: "Discuss whether a fall in consumer confidence is likely to reduce real output.",
+        15: "With reference to {reference}, discuss the likely macroeconomic effects of a fall in aggregate demand.",
+    },
+    "international economics": {
+        5: "With reference to {reference}, explain one reason why the UK may run a trade deficit in goods.",
+        8: "Examine two factors that may affect the price elasticity of demand for UK exports.",
+        10: "With reference to {reference}, assess whether a depreciation is likely to improve the current account.",
+        12: "Discuss whether protectionism is likely to improve domestic economic performance.",
+        15: "With reference to {reference}, discuss the likely effects of increased trade barriers on an economy.",
+    },
+    "poverty and inequality": {
+        5: "With reference to {reference}, explain one reason why inflation may worsen poverty.",
+        8: "Examine two causes of income inequality in an advanced economy.",
+        10: "With reference to {reference}, assess whether progressive taxation is likely to reduce inequality.",
+        12: "Discuss whether welfare payments improve incentives for low-income households.",
+        15: "With reference to {reference}, discuss the likely effects of policies designed to reduce poverty.",
+    },
+    "emerging and developing economies": {
+        5: "With reference to {reference}, explain one reason why extreme poverty may persist in developing economies.",
+        8: "Examine two ways foreign direct investment may affect development.",
+        10: "With reference to {reference}, assess whether rapid growth is likely to reduce poverty.",
+        12: "Discuss whether aid is likely to promote economic development.",
+        15: "With reference to {reference}, discuss the likely benefits and drawbacks of foreign direct investment.",
+    },
+}
+
+
 def _placeholder_prompt(command_word: str, marks: int, topic_title: str) -> str:
-    phrase = _topic_phrase(topic_title)
+    phrase = _exam_focus(topic_title)
     if command_word == "mcq":
-        return f"Which one of the following is correct about {phrase}?"
+        return f"Which one of the following is correct about {_topic_phrase(topic_title)}?"
     if command_word == "calculate":
         return f"Calculate the change shown in the data for {phrase}. You are advised to show your working."
     if command_word == "draw":
-        return f"Draw a diagram to show the likely impact of a change in {phrase}."
+        return f"Draw a diagram to show the likely impact of {phrase}."
     if command_word == "explain":
         return f"Explain one likely effect of {phrase}."
     if command_word == "examine":
@@ -230,15 +477,17 @@ def _placeholder_prompt(command_word: str, marks: int, topic_title: str) -> str:
 def _essay_question_prompt(topic_title: str) -> str:
     topic = topic_title.lower()
     if topic == "demand":
-        return "Evaluate the likely microeconomic effects of a significant increase in demand in a market."
+        return "Evaluate the likely microeconomic effects of a significant increase in demand for a product."
     if topic == "supply":
-        return "Evaluate the likely microeconomic effects of rising production costs in a market."
+        return "Evaluate the likely microeconomic effects of rising production costs in a market of your choice."
     if topic == "price determination":
         return "Evaluate the likely effects of a change in equilibrium price on consumers and producers."
     if topic == "market failure":
         return "Evaluate whether government intervention is likely to correct market failure."
     if topic == "government intervention":
-        return "Evaluate the likely microeconomic effects of government intervention in a market."
+        return "Evaluate the view that indirect taxation is the most effective way to correct market failure."
+    if topic == "government intervention in markets":
+        return "Evaluate the likely microeconomic effects of a maximum price in a market of your choice."
     if topic == "business growth":
         return "Evaluate the likely benefits and drawbacks of business growth for firms and consumers."
     if topic == "business objectives":
@@ -248,7 +497,7 @@ def _essay_question_prompt(topic_title: str) -> str:
     if topic == "market structures":
         return "Evaluate the level of contestability in a market or industry of your choice."
     if topic == "labour market":
-        return "Evaluate the likely effects of changes in wage rates on workers and firms."
+        return "Evaluate the likely effects of a significant increase in the National Minimum Wage."
     if topic == "international economics":
         return "Evaluate the likely effects of increased protectionism on an economy."
     if topic == "poverty and inequality":
@@ -285,7 +534,7 @@ def _build_part(
             label=label,
             marks=marks,
             command_word=command,
-            prompt=f"Which one of the following is correct about {_topic_phrase(topic_title)}?",
+            prompt=_mcq_prompt(topic_title),
             options=options,
             correct_option=correct,
             mark_breakdown="1 mark",
@@ -311,13 +560,33 @@ def _build_part(
 
 def _mcq_options(topic_title: str) -> list[MultipleChoiceOption]:
     topic = _topic_phrase(topic_title)
+    topic_key = topic_title.lower()
+    topic_options = _TOPIC_MCQ_OPTIONS.get(topic_key)
+    if topic_options:
+        return [MultipleChoiceOption(label=label, text=text) for label, text in topic_options]
     sentence_topic = topic[0].upper() + topic[1:]
     return [
-        MultipleChoiceOption(label="A", text=f"Changes in {topic} can alter incentives for consumers or firms"),
-        MultipleChoiceOption(label="B", text=f"{sentence_topic} means resources are no longer scarce"),
-        MultipleChoiceOption(label="C", text=f"{sentence_topic} only affects government decisions"),
-        MultipleChoiceOption(label="D", text=f"{sentence_topic} always leaves prices unchanged"),
+        MultipleChoiceOption(label="A", text=f"Changes in {topic} can alter incentives and resource allocation"),
+        MultipleChoiceOption(label="B", text=f"{sentence_topic} means opportunity cost no longer exists"),
+        MultipleChoiceOption(label="C", text=f"{sentence_topic} only affects consumers and never affects firms"),
+        MultipleChoiceOption(label="D", text=f"{sentence_topic} always leaves market price unchanged"),
     ]
+
+
+def _mcq_prompt(topic_title: str) -> str:
+    topic = _normal_topic_key(topic_title)
+    prompts = {
+        "demand": "Which one of the following is likely to increase demand for a normal good?",
+        "supply": "Which one of the following is a likely cause of a decrease in market supply?",
+        "rational decision making": "Which one of the following is most likely to influence a rational consumer's choice?",
+        "market failure": "Which one of the following is a likely cause of market failure?",
+        "government intervention in markets": "Which one of the following is a likely effect of a subsidy?",
+        "business objectives": "Which one of the following is a possible business objective?",
+        "business growth": "Which one of the following is a possible benefit of internal growth?",
+        "market structures": "Which one of the following is a likely source of market power?",
+        "labour market": "Which one of the following is likely to affect wage rates in a labour market?",
+    }
+    return prompts.get(topic, f"Which one of the following is correct about {_topic_phrase(topic_title)}?")
 
 
 def _stimulus_kind(section, index: int) -> str:
@@ -350,8 +619,8 @@ def _question_prompt(
     topic = _topic_phrase(topic_title)
     if parts:
         if parts[0].command_word == "draw":
-            return f"Read the information below about a market affected by {topic}."
-        return _section_a_stem(topic, stimulus_kind)
+            return _section_a_draw_stem(topic_title)
+        return _section_a_stem(topic_title, stimulus_kind)
     if section_name in {"A", "B"} and paper_id == "paper_3":
         return _source_question_prompt(command_word, marks, topic, source_reference)
     if section_name == "B":
@@ -359,49 +628,61 @@ def _question_prompt(
     return _placeholder_prompt(command_word, marks, topic_title)
 
 
-def _section_a_stem(topic: str, stimulus_kind: str) -> str:
+def _section_a_draw_stem(topic_title: str) -> str:
+    return f"Read the information below about {_exam_context(topic_title)}."
+
+
+def _section_a_stem(topic_title: str, stimulus_kind: str) -> str:
+    topic = _topic_phrase(topic_title)
+    focus = _exam_focus(topic_title)
     if stimulus_kind == "cost_revenue_graph":
-        return f"The diagram below shows cost and revenue curves for a firm considering a change in {topic}."
+        return f"The diagram below shows cost and revenue curves for a firm affected by {focus}."
     if stimulus_kind in {"data_table", "elasticity_data_table", "concentration_ratio_table", "balance_payments_table", "inflation_index_table"}:
-        return f"The table below shows selected economic data for a market affected by {topic}."
+        return f"The table below shows selected economic data linked to {focus}."
     if stimulus_kind in {"market_diagram", "demand_shift_graph", "supply_shift_graph"}:
-        return f"The diagram below shows demand and supply in a market affected by {topic}."
+        return f"The diagram below shows demand and supply in a market affected by {focus}."
     if stimulus_kind in {"tax_subsidy_diagram", "externality_diagram", "minimum_price_diagram", "maximum_price_diagram"}:
-        return f"The diagram below shows a possible intervention or market failure linked to {topic}."
+        return f"The diagram below shows a possible intervention or market failure linked to {focus}."
     if stimulus_kind in {"consumer_surplus_diagram", "producer_surplus_diagram"}:
-        return f"The diagram below shows welfare effects in a market affected by {topic}."
+        return f"The diagram below shows welfare effects in a market affected by {focus}."
     if stimulus_kind in {"perfect_competition_diagram", "monopoly_diagram", "monopsony_diagram", "labour_market_diagram"}:
-        return f"The diagram below shows a market structure or labour market linked to {topic}."
+        return f"The diagram below shows a market structure or labour market linked to {focus}."
     if stimulus_kind in {"macro_chart", "ad_as_diagram", "keynesian_as_diagram", "trade_cycle", "phillips_curve", "lorenz_curve", "exchange_rate_diagram", "tariff_diagram", "money_market_diagram", "laffer_curve", "poverty_trap_diagram", "production_possibility_frontier"}:
-        return f"The diagram below shows an economic relationship linked to {topic}."
+        return f"The diagram below shows an economic relationship linked to {focus}."
     if stimulus_kind == "payoff_matrix":
-        return f"The pay-off matrix below shows possible outcomes for firms affected by {topic}."
+        return f"The pay-off matrix below shows possible outcomes for firms affected by {focus}."
     if stimulus_kind in {"line_graph", "index_number_chart"}:
-        return f"The line graph below shows changes in data linked to {topic}."
+        return f"The line graph below shows changes in data linked to {focus}."
     if stimulus_kind == "context_extract":
-        return f"Read the information below about a market affected by {topic}."
+        return f"Read the information below about {_exam_context(topic_title)}."
     if stimulus_kind == "bar_chart":
-        return f"The information below concerns changes in {topic}."
+        return f"The information below concerns changes in {focus}."
     return f"The information below concerns {topic}."
 
 
 def _source_question_prompt(command_word: str, marks: int, topic: str, source_reference: str) -> str:
     reference = "the source material" if source_reference == "source material" else source_reference
+    topic_prompt = _SECTION_B_PROMPTS.get(_normal_topic_key(topic), {}).get(marks)
+    if topic_prompt:
+        prompt = topic_prompt.format(reference=reference or "the evidence")
+        if reference and not prompt.lower().startswith("with reference"):
+            return f"With reference to {reference}, {prompt[:1].lower()}{prompt[1:]}"
+        return prompt
     if marks == 5:
         if reference:
             return f"With reference to {reference}, explain one likely effect of {topic}."
-        return f"Explain one likely effect of {topic}."
+        return f"Explain one likely effect of {_exam_focus(topic)}."
     if marks == 8:
         if not reference:
-            return f"Examine two likely factors affecting {topic}."
+            return f"Examine two likely factors affecting {_exam_focus(topic)}."
         return f"With reference to {reference}, examine two likely factors affecting {topic}."
     if marks == 10:
         if not reference:
-            return f"Assess whether {topic} is significant in this context."
+            return f"Assess whether {_exam_focus(topic)} is significant in this context."
         return f"With reference to {reference}, assess whether {topic} is significant in this context."
     if marks == 12:
         if not reference:
-            return f"Discuss whether the evidence supports one interpretation of {topic}."
+            return f"Discuss whether the evidence supports one interpretation of {_exam_focus(topic)}."
         return f"With reference to {reference}, discuss whether the evidence supports one interpretation of {topic}."
     if marks == 15:
         prompt = _section_b_15_marker_prompt(topic)
@@ -554,6 +835,21 @@ def _topic_phrase(topic_title: str) -> str:
     if topic == "role of the state in the macroeconomy":
         return "the role of the state in the macroeconomy"
     return topic
+
+
+def _normal_topic_key(topic_title: str) -> str:
+    topic = topic_title.lower().strip()
+    return topic[4:] if topic.startswith("the ") else topic
+
+
+def _exam_focus(topic_title: str) -> str:
+    topic = _normal_topic_key(topic_title)
+    return _EXAM_FOCUS.get(topic, _topic_phrase(topic_title))
+
+
+def _exam_context(topic_title: str) -> str:
+    topic = _normal_topic_key(topic_title)
+    return _EXAM_CONTEXT.get(topic, f"a market affected by {_exam_focus(topic_title)}")
 
 
 def _mark_breakdown(marks: int, parts: list[QuestionPart]) -> str:

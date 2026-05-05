@@ -119,8 +119,10 @@ def test_section_a_can_cover_all_allowed_paper_1_topics_across_random_seeds():
 def test_section_a_uses_note_context_for_generic_topics():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
-    blueprint = build_paper_blueprint(config, syllabus, seed=8)
-    section_a_text = " ".join(question.source_text for question in blueprint.questions if question.section == "A")
+    section_a_text = " ".join(
+        " ".join(question.source_text for question in build_paper_blueprint(config, syllabus, seed=seed).questions if question.section == "A")
+        for seed in range(20)
+    )
 
     assert "The evidence highlights changes in" not in section_a_text
     assert "ceteris paribus" in section_a_text.lower() or "price elasticity" in section_a_text.lower()
@@ -191,7 +193,7 @@ def test_market_structure_sources_are_specific_not_template_like():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
 
-    blueprint = build_paper_blueprint(config, syllabus, seed=7)
+    blueprint = _blueprint_with_section_b_topic(config, syllabus, "3.4")
     section_b_text = " ".join(question.source_text for question in blueprint.questions if question.section == "B")
 
     assert "video games" in section_b_text or "digital" in section_b_text
@@ -216,7 +218,7 @@ def test_section_b_sources_use_realistic_named_cases_not_generic_templates():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
 
-    blueprint = build_paper_blueprint(config, syllabus, seed=5)
+    blueprint = _blueprint_with_section_b_topic(config, syllabus, "3.3")
     section_b_sources = [question.source_text for question in blueprint.questions if question.section == "B"]
     section_b_text = " ".join(section_b_sources)
 
@@ -231,7 +233,7 @@ def test_paper_2_sources_use_real_world_macro_data_and_varied_lengths():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_2")
 
-    blueprint = build_paper_blueprint(config, syllabus, seed=4)
+    blueprint = _blueprint_with_section_b_topic(config, syllabus, "2.1")
     section_b_sources = [question.source_text for question in blueprint.questions if question.section == "B"]
     section_b_text = " ".join(section_b_sources)
 
@@ -250,18 +252,82 @@ def test_section_c_extracts_are_short_realistic_and_not_formulaic():
 
     assert all(80 <= len(source) <= 360 for source in section_c_sources)
     assert all("In 2025, a UK report highlighted an issue" not in source for source in section_c_sources)
-    assert any(name in " ".join(section_c_sources) for name in ["HS2", "TikTok", "Ofgem", "Low Pay Commission", "CMA"])
+    assert any(name in " ".join(section_c_sources) for name in ["HS2", "TikTok", "Ofgem", "Low Pay Commission", "CMA", "ULEZ", "John Lewis"])
 
 
 def test_low_level_section_b_supply_sources_are_long_enough_for_extract_pages():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
 
-    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    blueprint = _blueprint_with_section_b_topic(config, syllabus, "1.2.3")
     section_b_sources = [question.source_text for question in blueprint.questions if question.section == "B"]
 
     assert min(len(source) for source in section_b_sources[:4]) >= 300
     assert any(name in " ".join(section_b_sources) for name in ["semiconductor", "SMMT", "housebuilding", "National Grid"])
+
+
+def test_low_level_section_b_supply_questions_are_not_bare_topic_prompts():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    blueprint = _blueprint_with_section_b_topic(config, syllabus, "1.2.3")
+    section_b_prompts = [question.prompt for question in blueprint.questions if question.section == "B"]
+    prompt_text = " ".join(section_b_prompts).lower()
+
+    assert "effect of supply" not in prompt_text
+    assert "likely effects of supply" not in prompt_text
+    assert "affecting supply" not in prompt_text
+    assert "semiconductors" in prompt_text
+    assert "price elasticity of supply" in prompt_text
+    assert "production costs" in prompt_text
+
+
+def test_section_a_prompts_and_mcqs_use_topic_specific_language():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    text = " ".join(
+        [question.prompt for question in blueprint.questions if question.section == "A"]
+        + [part.prompt for question in blueprint.questions if question.section == "A" for part in question.parts]
+        + [option.text for question in blueprint.questions if question.section == "A" for part in question.parts for option in part.options]
+    ).lower()
+
+    assert "market affected by rational decision making" not in text
+    assert "correct about rational decision making" not in text
+    assert "production costs" in text or "marginal benefit" in text or "utility" in text
+    assert "subsidy" in text or "external costs" in text
+    assert "opportunity cost no longer exists" not in text
+    assert "price elasticity of supply" in text
+    assert "vacancies" in text or "barriers to entry" in text
+
+
+def test_section_a_draw_questions_use_diagram_suitable_topics():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    unsuitable = {"1.1", "1.2.1"}
+
+    for seed in range(80):
+        blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+        draw_questions = [
+            question
+            for question in blueprint.questions
+            if question.section == "A" and question.parts and question.parts[0].command_word == "draw"
+        ]
+
+        assert all(question.topic_id not in unsuitable for question in draw_questions)
+
+
+def test_ollama_accepts_new_extract_d_section_b_15_marker_style():
+    from pastpapergen.ollama_client import _matches_expected_question_style
+
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    blueprint = build_paper_blueprint(config, syllabus, seed=7)
+    question = [question for question in blueprint.questions if question.section == "B"][-1]
+
+    assert _matches_expected_question_style(question, question.prompt)
 
 
 def test_essay_questions_do_not_use_shallow_nature_of_economics_topic():
@@ -320,3 +386,11 @@ def test_choice_pairs_do_not_repeat_topic_for_seed_that_would_duplicate():
 
     assert section_b[3].choice_group == section_b[4].choice_group
     assert section_b[3].topic_id != section_b[4].topic_id
+
+
+def _blueprint_with_section_b_topic(config, syllabus, topic_id: str):
+    for seed in range(500):
+        blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+        if any(question.section == "B" and question.topic_id == topic_id for question in blueprint.questions):
+            return blueprint
+    raise AssertionError(f"No Section B blueprint found for topic {topic_id}")
