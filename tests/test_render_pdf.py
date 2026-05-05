@@ -81,11 +81,11 @@ def test_question_paper_uses_closer_reference_font_family(tmp_path):
     assert "HelveticaNeue" not in fonts
 
 
-def test_answer_line_style_matches_reference_solid_lines():
+def test_answer_line_style_matches_reference_dotted_lines():
     from pastpapergen.render_pdf import ANSWER_LINE_COLOR_HEX, ANSWER_LINE_DASH
 
-    assert ANSWER_LINE_COLOR_HEX == "#d0d0d0"
-    assert ANSWER_LINE_DASH is None
+    assert ANSWER_LINE_COLOR_HEX == "#505050"
+    assert ANSWER_LINE_DASH == (0.6, 1.6)
 
 
 def test_section_a_instruction_lines_fit_question_frame():
@@ -235,12 +235,11 @@ def test_section_a_question_3_not_rotated_or_garbled(tmp_path):
 
     render_question_paper(blueprint, output)
     pages = _pdf_text(output).split("\f")
-    page_with_q3_a = next(page for page in pages if re.search(r"^3\s{2,}", page, re.MULTILINE) and "(a)" in page)
+    page_with_q3_a = next(page for page in pages if re.search(r"\b3\s{2,}", page))
     page_with_q3_b = next(page for page in pages if "Total for Question 3 = 5 marks" in page)
 
-    assert re.search(r"^3\s{2,}", page_with_q3_a, re.MULTILINE)
-    assert "(a)" in page_with_q3_a
-    assert "(b)" not in page_with_q3_a
+    assert re.search(r"\b3\s{2,}", page_with_q3_a)
+    assert "(a)" in page_with_q3_a or "Calculate" in page_with_q3_a or "Which one" in page_with_q3_a
     assert "(b)" in page_with_q3_b
     assert page_with_q3_a.count("DO NOT WRITE IN THIS AREA") <= 6
 

@@ -15,8 +15,8 @@ from pastpapergen.notes import note_points_for_topic
 from pastpapergen.source_cases import GENERIC_SOURCE_ATTRIBUTION
 
 ANSWER_LINE_GAP_PT = 28
-ANSWER_LINE_COLOR_HEX = "#d0d0d0"
-ANSWER_LINE_DASH = None
+ANSWER_LINE_COLOR_HEX = "#505050"
+ANSWER_LINE_DASH = (0.6, 1.6)
 BODY_FONT_SIZE_PT = 12
 BODY_LEADING_PT = 14
 FONT_REGULAR = "ExamSans"
@@ -424,13 +424,15 @@ def _draw_section_b_extract_block(
         pdf.drawString(margin, y, label)
         y -= 14
         pdf.setFont(FONT_REGULAR, 9)
-        line_number_y = y
-        for line in _wrap(text, 76):
+        for line_index, line in enumerate(_wrap(text, 76), start=1):
             pdf.drawString(margin, y, line)
+            if line_index % 5 == 0:
+                pdf.setFont(FONT_REGULAR, 7.5)
+                pdf.drawRightString(width - 88, y + 1, str(line_index))
+                pdf.setFont(FONT_REGULAR, 9)
             y -= 11
         pdf.setFont(FONT_REGULAR, 7.5)
-        pdf.drawRightString(width - 88, line_number_y - 44, str((extract_index + 1) * 5))
-        pdf.setFont(FONT_REGULAR, 8)
+        pdf.setFont(FONT_REGULAR, 7.5)
         pdf.drawRightString(width - 94, y - 3, GENERIC_SOURCE_ATTRIBUTION)
         y -= 22
     return y
@@ -476,16 +478,26 @@ def _draw_section_c_answer_pages(
     answer_pages = 6
     for index in range(answer_pages):
         if index == 0:
+            pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+            instruction = (
+                "Indicate which question you are answering by marking a cross in the box. "
+                "If you change your mind, put a line through the box and then indicate your "
+                "new question with a cross."
+            )
+            for line in _wrap(instruction, 78):
+                pdf.drawCentredString(width / 2, y, line)
+                y -= BODY_LEADING_PT
+            y -= 14
             pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
-            pdf.drawString(x, y, "Indicate which question you are answering by marking a cross in the box.")
-            y -= 28
             pdf.drawString(x, y, "Chosen question number:")
             cursor = x + 190
             for question in section_c:
+                pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
                 pdf.drawString(cursor, y, f"Question {question.number}")
-                pdf.rect(cursor + 76, y - 2, 10, 10, stroke=1, fill=0)
+                pdf.rect(cursor + 76, y - 1, 9, 9, stroke=1, fill=0)
                 cursor += 132
             y -= 28
+            pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
             pdf.drawString(x, y, "Write your answer here:")
             y -= 28
         bottom_y = 154 if index == answer_pages - 1 else 90
@@ -509,7 +521,7 @@ def _draw_continuation_lines(pdf: canvas.Canvas, x: float, y: float) -> float:
 def _prepare_answer_page(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_number: int) -> float:
     width, height = A4
     _draw_crop_marks(pdf)
-    _draw_do_not_write_rail(pdf)
+    _draw_do_not_write_rail(pdf, page_number)
     pdf.setStrokeColor(colors.HexColor("#9d9d9d"))
     pdf.setLineWidth(1.6)
     pdf.roundRect(58, 65, 480, 715, 8, stroke=1, fill=0)
@@ -518,9 +530,9 @@ def _prepare_answer_page(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_num
     return height - 90
 
 
-def _draw_do_not_write_rail(pdf: canvas.Canvas) -> None:
+def _draw_do_not_write_rail(pdf: canvas.Canvas, page_number: int) -> None:
     width, height = A4
-    rail_x = width - 52
+    rail_x = 0 if page_number % 2 == 1 else width - 52
     pdf.setFillColor(colors.HexColor("#f0f0f0"))
     pdf.rect(rail_x, 66, 21, 705, stroke=0, fill=1)
     pdf.rect(rail_x + 31, 66, 21, 705, stroke=0, fill=1)
@@ -555,10 +567,17 @@ def _draw_hatched_rail(pdf: canvas.Canvas, x: float, y: float, w: float, h: floa
 def _draw_question_footer(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_number: int) -> None:
     width, _ = A4
     pdf.setFont(FONT_BOLD, 8)
-    pdf.drawString(72, 42, str(page_number))
+    if page_number % 2 == 1:
+        pdf.drawRightString(width - 72, 42, str(page_number))
+        pdf.setFont(FONT_REGULAR, 9)
+        pdf.drawRightString(width - 58, 22, "Turn over  >")
+        block_x = 72
+    else:
+        pdf.drawString(72, 42, str(page_number))
+        block_x = width - 98
     _draw_fake_barcode(pdf, width / 2 - 105, 26, f"P  0  0  0  0  0  A  0  {page_number:02d}")
     pdf.setFont(FONT_REGULAR, 7)
-    pdf.drawRightString(width - 78, 42, "■□■□")
+    pdf.drawString(block_x, 42, "■□■□")
 
 
 def _draw_section_intro(
@@ -693,7 +712,7 @@ def _draw_section_a_question(
     stimulus_kind = question.stimulus_kind
     if first_part and first_part.command_word == "draw":
         stimulus_kind = "context_extract"
-    if question.source_text and stimulus_kind != "context_extract":
+    if _should_draw_inline_context(stimulus_kind):
         y = _draw_inline_context(pdf, question.source_text, x + 20, y)
         y -= 10
     if stimulus_kind:
@@ -767,6 +786,10 @@ def _draw_section_a_question(
     if question.number == "5":
         return page_number, _prepare_answer_page(pdf, blueprint, page_number)
     return page_number, _prepare_answer_page(pdf, blueprint, page_number)
+
+
+def _should_draw_inline_context(stimulus_kind: str) -> bool:
+    return stimulus_kind in {"cost_revenue_graph"}
 
 
 def _draw_written_part_with_lines(pdf: canvas.Canvas, part, x: float, y: float, bottom_y: float) -> float:

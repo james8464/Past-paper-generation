@@ -661,6 +661,13 @@ _TOPIC_MCQ_OPTIONS = {
 
 
 _SECTION_B_PROMPTS = {
+    "demand": {
+        5: "With reference to {reference}, explain one likely reason why demand for own-brand food increased.",
+        8: "Examine two likely factors affecting the price elasticity of demand for rail travel.",
+        10: "With reference to {reference}, assess whether demand for electronic devices is likely to be price inelastic.",
+        12: "Discuss whether changes in real income are the main cause of changes in demand for consumer goods.",
+        15: "With reference to {reference}, discuss the likely effects of a significant change in demand on firms and consumers.",
+    },
     "supply": {
         5: "With reference to {reference}, explain one reason why shortages of semiconductors may affect the supply of cars.",
         8: "Examine two factors that may influence price elasticity of supply in the housebuilding market.",

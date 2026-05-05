@@ -135,7 +135,7 @@ def generate_questions_with_ollama(
         )
         payload = client.generate_json(build_question_prompt(question, topic))
         question_text = _merge_question_text(question, str(payload.get("question_text") or ""))
-        source_text = _merge_source_text(str(payload.get("source_text") or ""), question.source_text)
+        source_text = _merge_source_text(str(payload.get("source_text") or ""), question.source_text, question)
         source_reference = str(payload.get("source_reference") or question.source_reference)
         mark_breakdown = str(payload.get("mark_breakdown") or question.mark_breakdown)
         indicative_content = _merge_text_list(payload.get("indicative_content"), question.indicative_content)
@@ -274,13 +274,17 @@ def _matches_expected_question_style(question: QuestionBlueprint, prompt: str) -
     return command in lowered
 
 
-def _merge_source_text(generated: str, fallback: str) -> str:
+def _merge_source_text(generated: str, fallback: str, question: QuestionBlueprint) -> str:
     cleaned = " ".join(generated.split())
     lowered = cleaned.lower()
     if (
         not cleaned
         or lowered.startswith("this source concerns")
         or "may include evidence" in lowered
+        or "|" in cleaned
+        or "---" in cleaned
+        or (question.section == "B" and len(cleaned) < 260)
+        or (question.section == "C" and len(cleaned) < 80)
     ):
         return fallback
     return cleaned
