@@ -65,9 +65,9 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     _draw_crop_marks(pdf)
 
     panel_x = 114
-    panel_y = 452
+    panel_y = 447
     panel_w = 406
-    panel_h = 330
+    panel_h = 335
     grey = colors.HexColor("#666666")
     dark = colors.HexColor("#4d494b")
     pdf.setStrokeColor(grey)
@@ -125,14 +125,15 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     paper_number = blueprint.paper_id[-1]
     pdf.drawString(panel_x + 22, y + 26, f"PAPER {paper_number}: {blueprint.title}")
 
-    y -= 54
-    pdf.roundRect(panel_x + 14, y, panel_w - 88, 45, 7, stroke=1, fill=0)
-    pdf.roundRect(panel_x + panel_w - 70, y, 56, 45, 7, stroke=1, fill=0)
+    y -= 45
+    required_h = 40
+    pdf.roundRect(panel_x + 14, y, panel_w - 88, required_h, 7, stroke=1, fill=0)
+    pdf.roundRect(panel_x + panel_w - 70, y, 56, required_h, 7, stroke=1, fill=0)
     pdf.setFont(FONT_BOLD, 10)
-    pdf.drawString(panel_x + 22, y + 29, "You must have:")
+    pdf.drawString(panel_x + 22, y + 25, "You must have:")
     pdf.setFont(FONT_REGULAR, 10)
-    pdf.drawString(panel_x + 22, y + 13, "a calculator.")
-    pdf.drawCentredString(panel_x + panel_w - 42, y + 24, "Total Marks")
+    pdf.drawString(panel_x + 22, y + 9, "a calculator.")
+    pdf.drawCentredString(panel_x + panel_w - 42, y + 21, "Total Marks")
 
     text_x = 114
     y = 430
@@ -721,6 +722,10 @@ def _draw_section_a_question(
 
     if first_part and first_part.command_word == "draw" and second_part and second_part.marks == 1:
         y = _draw_draw_part_with_axes(pdf, first_part, x, y)
+        _draw_question_footer(pdf, blueprint, page_number)
+        pdf.showPage()
+        page_number += 1
+        y = _prepare_answer_page(pdf, blueprint, page_number)
         y = _draw_mcq_part(pdf, second_part, x, y)
         _draw_total_for_question(pdf, question.number, question.marks, x, y)
         if question.number == "5":
@@ -1448,9 +1453,9 @@ def _draw_source_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     width, height = A4
     _draw_crop_marks(pdf)
     panel_x = 114
-    panel_y = 528
+    panel_y = 523
     panel_w = 406
-    panel_h = 255
+    panel_h = 260
     grey = colors.HexColor("#666666")
     dark = colors.HexColor("#4d494b")
     pdf.setStrokeColor(grey)
@@ -1486,12 +1491,12 @@ def _draw_source_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.setFont(FONT_BOLD, 14)
     pdf.drawString(panel_x + 22, y + 43, "Advanced")
     pdf.drawString(panel_x + 22, y + 26, f"PAPER {blueprint.paper_id[-1]}: {blueprint.title}")
-    y -= 54
-    pdf.roundRect(panel_x + 14, y, panel_w - 28, 45, 7, stroke=1, fill=0)
+    y -= 45
+    pdf.roundRect(panel_x + 14, y, panel_w - 28, 40, 7, stroke=1, fill=0)
     pdf.setFont(FONT_BOLD, 12)
-    pdf.drawString(panel_x + 22, y + 27, "Source Booklet")
+    pdf.drawString(panel_x + 22, y + 24, "Source Booklet")
     pdf.setFont(FONT_BOLD, 10)
-    pdf.drawString(panel_x + 22, y + 12, "Do not return this Booklet with the question paper.")
+    pdf.drawString(panel_x + 22, y + 9, "Do not return this Booklet with the question paper.")
     pdf.setFont(FONT_REGULAR, 9)
     pdf.drawRightString(width - 64, 75, "Turn over  >")
     pdf.setFont(FONT_REGULAR, 7)

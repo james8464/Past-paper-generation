@@ -58,6 +58,21 @@ def test_cover_includes_exam_date(tmp_path):
     assert "Morning (Time: 2 hours)" in first_page
 
 
+def test_cover_inner_boxes_stay_inside_outer_panel(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    first_stream = next(stream for stream in _pdf_streams(output) if b"Please check" in stream)
+    move_commands = re.findall(rb"\n(?:135|457) ([0-9.]+) m", first_stream)
+    bottom_edges = [float(y) for y in move_commands if 430 <= float(y) <= 490]
+
+    assert bottom_edges
+    assert min(bottom_edges) >= 452
+
+
 def test_answer_line_spacing_matches_measured_reference():
     assert ANSWER_LINE_GAP_PT == 28
 
@@ -100,7 +115,7 @@ def test_paper_1_render_uses_question_specific_pages(tmp_path):
 
     render_question_paper(blueprint, output)
 
-    assert _pdf_page_count(output) == 32
+    assert _pdf_page_count(output) == 33
 
 
 def test_paper_1_section_b_starts_near_reference_page(tmp_path):
@@ -111,7 +126,7 @@ def test_paper_1_section_b_starts_near_reference_page(tmp_path):
 
     render_question_paper(blueprint, output)
 
-    assert _first_page_containing(output, "SECTION B") == 10
+    assert _first_page_containing(output, "SECTION B") == 11
 
 
 def test_paper_1_25_mark_questions_get_multiple_answer_pages():
@@ -146,7 +161,8 @@ def test_paper_1_section_b_intro_matches_reference_wording(tmp_path):
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
-    section_b_page = _pdf_text(output).split("\f")[9]
+    pages = _pdf_text(output).split("\f")
+    section_b_page = pages[_first_page_containing(output, "SECTION B") - 1]
 
     assert "Read the following extracts (A to D) before answering Question 6" in section_b_page
     assert "Write your answers in the spaces provided." in section_b_page
@@ -165,7 +181,9 @@ def test_paper_1_section_b_embeds_extracts_before_question_page(tmp_path):
 
     assert "Source Booklet (enclosed)" not in text
     assert text.index("SECTION B") < text.index("Extract A") < text.index("Extract D")
-    assert text.index("Extract D") < text.index("6    (a)")
+    question_6_match = re.search(r"\b6\s+\(a\)", text)
+    assert question_6_match
+    assert text.index("Extract D") < question_6_match.start()
 
 
 def test_paper_1_section_b_prompt_page_lists_subquestions_with_marks(tmp_path):
@@ -175,7 +193,7 @@ def test_paper_1_section_b_prompt_page_lists_subquestions_with_marks(tmp_path):
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
-    section_b_page = _pdf_text(output).split("\f")[11]
+    section_b_page = next(page for page in _pdf_text(output).split("\f") if re.search(r"\b6\s+\(a\)", page))
 
     for mark in ["(5)", "(8)", "(12)", "(10)", "(15)"]:
         assert mark in section_b_page
@@ -261,7 +279,7 @@ def test_section_a_question_3_not_rotated_or_garbled(tmp_path):
     assert page_with_q3_a.count("DO NOT WRITE IN THIS AREA") <= 6
 
 
-def test_section_a_draw_question_keeps_mcq_on_same_page_before_section_b_sources(tmp_path):
+def test_section_a_draw_question_moves_mcq_to_next_page_when_spacing_is_tight(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
     blueprint = build_paper_blueprint(config, syllabus, seed=4)
@@ -270,9 +288,12 @@ def test_section_a_draw_question_keeps_mcq_on_same_page_before_section_b_sources
     render_question_paper(blueprint, output)
     pages = _pdf_text(output).split("\f")
     draw_page = next(page for page in pages if "Draw a diagram" in page)
+    next_page = pages[pages.index(draw_page) + 1]
 
     assert "Draw a diagram" in draw_page
-    assert "which one of the following" in draw_page.lower()
+    assert "which one of the following" not in draw_page.lower()
+    assert "which one of the following" in next_page.lower()
+    assert "Total for Question 1 = 5 marks" in next_page
     assert "TOTAL FOR SECTION A = 25 MARKS" in _pdf_text(output)
     assert "Read the following extracts (A to D) before answering Question 6" in _pdf_text(output)
     assert "QUESTION 6 BEGINS ON THE NEXT PAGE" not in _pdf_text(output)
@@ -324,6 +345,10 @@ def _pdf_text(path: Path) -> str:
         capture_output=True,
         text=True,
     ).stdout
+
+
+def _pdf_streams(path: Path) -> list[bytes]:
+    return re.findall(rb"stream\r?\n(.*?)endstream", path.read_bytes(), re.S)
 
 
 def _first_page_containing(path: Path, text: str) -> int | None:
