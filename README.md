@@ -45,11 +45,8 @@ Command-word rules are encoded for Ollama prompts:
 
 ## Source Material Needed
 
-Upload these when ready:
+The runtime uses:
 
-- Edexcel Economics A specification PDF
-- 1-3 recent question papers
-- matching source booklets
-- matching mark schemes
-
-Those are needed for exact typography, spacing, wording patterns, source-booklet layout, and mark-scheme style.
+- `data/syllabus_seed.json`
+- extracted note text in `data/notes/text`
+- local Ollama, unless `--dry-run` is used
