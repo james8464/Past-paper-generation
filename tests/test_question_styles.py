@@ -15,24 +15,26 @@ def test_paper_1_uses_edexcel_command_word_pattern():
 
     section_a = [question for question in blueprint.questions if question.section == "A"]
     assert [question.number for question in section_a] == ["1", "2", "3", "4", "5"]
-    assert [[part.marks for part in question.parts] for question in section_a] == [
+    assert sorted([[part.marks for part in question.parts] for question in section_a]) == sorted([
         [4, 1],
         [4, 1],
         [1, 4],
         [4, 1],
         [4, 1],
-    ]
+    ])
     one_mark_parts = [part for question in section_a for part in question.parts if part.marks == 1]
     assert one_mark_parts
     assert all(part.command_word == "mcq" for part in one_mark_parts)
     assert all("Which one of the following" in part.prompt for part in one_mark_parts)
-    assert [question.stimulus_kind for question in section_a] == [
-        "cost_revenue_graph",
-        "data_table",
-        "market_diagram",
-        "context_extract",
-        "bar_chart",
-    ]
+    assert sorted(question.stimulus_kind for question in section_a) == sorted(
+        [
+            "cost_revenue_graph",
+            "data_table",
+            "market_diagram",
+            "context_extract",
+            "bar_chart",
+        ]
+    )
     assert [question.number for question in section_b] == ["6(a)", "6(b)", "6(c)", "6(d)", "6(e)"]
     assert [question.number for question in section_c] == ["7", "8"]
     assert [(q.marks, q.command_word) for q in section_b] == [
@@ -48,6 +50,56 @@ def test_paper_1_uses_edexcel_command_word_pattern():
     ]
     assert section_c[0].choice_group == section_c[1].choice_group
     assert section_c[0].topic_id != section_c[1].topic_id
+
+
+def test_section_a_templates_are_not_fixed_to_question_positions():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    first_stimuli = {
+        build_paper_blueprint(config, syllabus, seed=seed).questions[0].stimulus_kind
+        for seed in range(20)
+    }
+    q5_part_orders = {
+        tuple(part.command_word for part in build_paper_blueprint(config, syllabus, seed=seed).questions[4].parts)
+        for seed in range(20)
+    }
+
+    assert len(first_stimuli) > 1
+    assert len(q5_part_orders) > 1
+
+
+def test_section_a_can_cover_all_allowed_paper_1_topics_across_random_seeds():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    expected_topic_ids = syllabus.topic_ids_for_themes(config.allowed_themes)
+
+    seen_topic_ids = set()
+    for seed in range(50):
+        blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+        seen_topic_ids.update(question.topic_id for question in blueprint.questions if question.section == "A")
+
+    assert seen_topic_ids == expected_topic_ids
+
+
+def test_section_a_uses_note_context_for_generic_topics():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=8)
+    section_a_text = " ".join(question.source_text for question in blueprint.questions if question.section == "A")
+
+    assert "The evidence highlights changes in" not in section_a_text
+    assert "ceteris paribus" in section_a_text.lower() or "price elasticity" in section_a_text.lower()
+
+
+def test_section_a_note_contexts_are_rewritten_as_exam_evidence():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=0)
+    section_a_text = " ".join(question.source_text for question in blueprint.questions if question.section == "A")
+
+    assert "unable to gain through organic growth" not in section_a_text
+    assert "A market report on business growth" in section_a_text
 
 
 def test_deterministic_questions_use_exam_like_contexts_not_generic_placeholders():
@@ -118,15 +170,13 @@ def test_paper_1_labour_market_sources_are_exam_like_not_generic():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
 
-    blueprint = build_paper_blueprint(config, syllabus, seed=243)
+    blueprint = build_paper_blueprint(config, syllabus, seed=2)
     section_b_text = " ".join(question.source_text for question in blueprint.questions if question.section == "B")
-    section_a_q5 = next(question for question in blueprint.questions if question.number == "5")
 
     assert "vacancies" in section_b_text
     assert "hourly pay" in section_b_text
     assert "monopsony" in section_b_text
     assert "average prices changed" not in section_b_text
-    assert "National Minimum Wage" in section_a_q5.source_text
 
 
 def test_essay_questions_do_not_use_shallow_nature_of_economics_topic():

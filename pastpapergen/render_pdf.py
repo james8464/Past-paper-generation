@@ -15,8 +15,8 @@ from pastpapergen.notes import note_points_for_topic
 ANSWER_LINE_GAP_PT = 28
 BODY_FONT_SIZE_PT = 12
 BODY_LEADING_PT = 14
-FONT_REGULAR = "HelveticaNeue"
-FONT_BOLD = "HelveticaNeue-Medium"
+FONT_REGULAR = "Arial"
+FONT_BOLD = "Arial-Bold"
 MS_ANSWER_WRAP_CHARS = 58
 SECTION_A_INSTRUCTION_LINES = [
     "Answer ALL questions. Write your answers in the spaces provided.",
@@ -30,15 +30,14 @@ SECTION_A_INSTRUCTION_LINES = [
 
 
 def _register_fonts() -> None:
-    helvetica_neue = Path("/System/Library/Fonts/HelveticaNeue.ttc")
     fonts = [
-        (FONT_REGULAR, helvetica_neue, 0),
-        (FONT_BOLD, helvetica_neue, 10),
+        (FONT_REGULAR, Path("/System/Library/Fonts/Supplemental/Arial.ttf"), 0),
+        (FONT_BOLD, Path("/System/Library/Fonts/Supplemental/Arial Bold.ttf"), 0),
     ]
-    if not helvetica_neue.exists():
+    if not fonts[0][1].exists():
         fonts = [
-            (FONT_REGULAR, Path("/System/Library/Fonts/Supplemental/Arial.ttf"), 0),
-            (FONT_BOLD, Path("/System/Library/Fonts/Supplemental/Arial Bold.ttf"), 0),
+            (FONT_REGULAR, Path("/System/Library/Fonts/Helvetica.ttc"), 0),
+            (FONT_BOLD, Path("/System/Library/Fonts/Helvetica.ttc"), 1),
         ]
     for name, path, subfont_index in fonts:
         if name not in pdfmetrics.getRegisteredFontNames() and path.exists():
@@ -554,9 +553,10 @@ def _draw_section_a_question(
         _draw_question_footer(pdf, blueprint, page_number)
         pdf.showPage()
         page_number += 1
-        _draw_section_transition_blank(pdf, blueprint, page_number, "QUESTION 6 BEGINS ON THE NEXT PAGE")
-        pdf.showPage()
-        page_number += 1
+        if question.number == "5":
+            _draw_section_transition_blank(pdf, blueprint, page_number, "QUESTION 6 BEGINS ON THE NEXT PAGE")
+            pdf.showPage()
+            page_number += 1
         return page_number, _prepare_answer_page(pdf, blueprint, page_number)
 
     if first_part and first_part.marks == 1:
@@ -580,9 +580,15 @@ def _draw_section_a_question(
         total_y = y
 
     _draw_total_for_question(pdf, question.number, question.marks, x, total_y)
+    if question.number == "5":
+        _draw_section_a_total(pdf, x, total_y - 34)
     _draw_question_footer(pdf, blueprint, page_number)
     pdf.showPage()
     page_number += 1
+    if question.number == "5":
+        _draw_section_transition_blank(pdf, blueprint, page_number, "QUESTION 6 BEGINS ON THE NEXT PAGE")
+        pdf.showPage()
+        page_number += 1
     return page_number, _prepare_answer_page(pdf, blueprint, page_number)
 
 

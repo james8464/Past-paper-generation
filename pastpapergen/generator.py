@@ -30,6 +30,7 @@ def build_paper_blueprint(
         choice_lookup = _choice_lookup(section.choice_groups)
         choice_group_topics: dict[int, set[str]] = {}
         section_topic_ids: set[str] = set()
+        section_templates = _section_templates(section, rng)
         source_context_topic = (
             _choose_topic(rng, _topics_matching(topics, essay_topic_ids), set())
             if _uses_single_source_context(config.id, section.name)
@@ -46,8 +47,8 @@ def build_paper_blueprint(
             topic = source_context_topic or _choose_topic(rng, available_topics, excluded_ids)
             command_word = section.command_words[index]
             number = _question_number(config.id, section.name, absolute_question_number, index)
-            stimulus_kind = _stimulus_kind(section, index)
-            parts = _build_parts(section, index, topic.title)
+            part_marks, part_commands, stimulus_kind = _section_template(section, section_templates, index)
+            parts = _build_parts(part_marks, part_commands, topic.title)
             source_reference = _source_reference(config.id, section.name, index)
             if group_index is not None:
                 choice_group_topics.setdefault(group_index, set()).add(topic.id)
@@ -74,7 +75,7 @@ def build_paper_blueprint(
                     choice_group=_choice_group_name(config.id, section.name, group_index),
                     source_reference=source_reference,
                     source_title=_source_title(topic.title, section.name),
-                    source_text=_source_text(topic.title, topic.points, section.name, index, stimulus_kind),
+                    source_text=_source_text(topic.id, topic.title, topic.points, section.name, index, stimulus_kind),
                     mark_breakdown=_mark_breakdown(marks, parts),
                     mark_scheme=_mark_scheme(command_word, marks, topic.title),
                     indicative_content=_indicative_content(topic.id, topic.title, topic.points),
@@ -103,6 +104,20 @@ def _choice_lookup(choice_groups: list[list[int]]) -> dict[int, int]:
 def _choose_topic(rng: random.Random, topics, excluded_ids: set[str]):
     available = [topic for topic in topics if topic.id not in excluded_ids]
     return rng.choice(available or topics)
+
+
+def _section_templates(section, rng: random.Random) -> list[tuple[list[int], list[str], str]]:
+    if not section.part_marks:
+        return []
+    templates = list(zip(section.part_marks, section.part_command_words, section.stimulus_kinds, strict=True))
+    rng.shuffle(templates)
+    return [(list(part_marks), list(part_commands), stimulus_kind) for part_marks, part_commands, stimulus_kind in templates]
+
+
+def _section_template(section, templates: list[tuple[list[int], list[str], str]], index: int) -> tuple[list[int], list[str], str]:
+    if templates:
+        return templates[index]
+    return [], [], _stimulus_kind(section, index)
 
 
 def _topics_matching(topics, topic_ids: set[str]):
@@ -204,11 +219,9 @@ def _essay_question_prompt(topic_title: str) -> str:
     return f"Evaluate the likely effects of changes in {topic_title.lower()} on economic agents."
 
 
-def _build_parts(section, index: int, topic_title: str) -> list[QuestionPart]:
-    if not section.part_marks:
+def _build_parts(part_marks: list[int], part_commands: list[str], topic_title: str) -> list[QuestionPart]:
+    if not part_marks:
         return []
-    part_marks = section.part_marks[index]
-    part_commands = section.part_command_words[index]
     return [
         _build_part(chr(97 + part_index), marks, command, topic_title, part_index)
         for part_index, (marks, command) in enumerate(zip(part_marks, part_commands, strict=True))
@@ -356,6 +369,7 @@ def _source_title(topic_title: str, section_name: str) -> str:
 
 
 def _source_text(
+    topic_id: str,
     topic_title: str,
     points: list[str],
     section_name: str,
@@ -368,7 +382,7 @@ def _source_text(
     if section_name == "B":
         return _data_response_extract(topic_title, points, index)
     if section_name == "A":
-        return _section_a_context(topic_title, focus)
+        return _section_a_context(topic_id, topic_title, focus, points)
     if stimulus_kind == "data_table":
         return (
             f"The table shows how indicators linked to {topic_title.lower()} changed over time. "
@@ -466,7 +480,7 @@ def _labour_market_extract(index: int) -> str:
     return variants[min(index, len(variants) - 1)]
 
 
-def _section_a_context(topic_title: str, focus: str) -> str:
+def _section_a_context(topic_id: str, topic_title: str, focus: str, points: list[str]) -> str:
     topic = topic_title.lower()
     if topic == "labour market":
         return (
@@ -483,7 +497,63 @@ def _section_a_context(topic_title: str, focus: str) -> str:
             "The government is considering a new policy to influence market outcomes. The policy may affect prices, "
             "output, consumer surplus and producer incentives."
         )
-    return f"The evidence highlights changes in {_topic_phrase(topic_title)}, including {focus}."
+    note_points = note_points_for_topic(topic_id, title=topic_title, keywords=points, limit=8) if topic_id else []
+    context_point = _best_section_a_context_point(note_points)
+    if context_point:
+        return (
+            f"A market report on {_topic_phrase(topic_title)} states: {context_point} "
+            f"The evidence can be used to analyse {focus}."
+        )
+    return (
+        f"A market report on {_topic_phrase(topic_title)} includes evidence on {focus}. The information can be used "
+        "to consider incentives, opportunity cost and likely market outcomes."
+    )
+
+
+def _best_section_a_context_point(note_points: list[str]) -> str:
+    weak_endings = {
+        "a",
+        "and",
+        "after",
+        "from",
+        "in",
+        "new",
+        "of",
+        "or",
+        "that",
+        "the",
+        "to",
+        "where",
+        "which",
+        "who",
+        "with",
+        "word",
+    }
+    for point in note_points:
+        cleaned = point.lstrip("●•-– ").strip()
+        if not cleaned or cleaned[0].islower() or cleaned.startswith("("):
+            continue
+        if cleaned.endswith(":") or cleaned[0].isdigit():
+            continue
+        candidate = _first_sentence(cleaned)
+        if candidate.rstrip(".").endswith(","):
+            continue
+        if candidate.rstrip(".").split()[-1].lower() in weak_endings:
+            continue
+        return _sentence(candidate)
+    return ""
+
+
+def _first_sentence(text: str) -> str:
+    for delimiter in [". ", "? ", "! "]:
+        if delimiter in text:
+            return text.split(delimiter, 1)[0] + delimiter[0]
+    return text
+
+
+def _sentence(text: str) -> str:
+    cleaned = text.strip()
+    return cleaned if cleaned.endswith((".", "?", "!")) else f"{cleaned}."
 
 
 def _topic_phrase(topic_title: str) -> str:

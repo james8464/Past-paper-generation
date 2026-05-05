@@ -77,7 +77,7 @@ def test_mark_scheme_includes_question_specific_focus_and_answer_points(tmp_path
 def test_mark_scheme_uses_uploaded_note_points_for_extended_questions(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
-    blueprint = build_paper_blueprint(config, syllabus, seed=1)
+    blueprint = build_paper_blueprint(config, syllabus, seed=4)
     output = tmp_path / "ms.pdf"
 
     render_mark_scheme(blueprint, syllabus, output)

@@ -48,6 +48,21 @@ def test_question_text_size_matches_reference_body_scale():
     assert BODY_FONT_SIZE_PT == 12
 
 
+def test_question_paper_uses_closer_reference_font_family(tmp_path):
+    import subprocess
+
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    fonts = subprocess.run(["pdffonts", str(output)], check=True, capture_output=True, text=True).stdout
+
+    assert "Arial" in fonts
+    assert "HelveticaNeue" not in fonts
+
+
 def test_section_a_instruction_lines_fit_question_frame():
     assert max(len(line) for line in SECTION_A_INSTRUCTION_LINES) <= 78
 
@@ -148,15 +163,14 @@ def test_section_a_question_3_not_rotated_or_garbled(tmp_path):
 
     render_question_paper(blueprint, output)
     pages = _pdf_text(output).split("\f")
-    page_6 = pages[5]
-    page_7 = pages[6]
+    page_with_q3_a = next(page for page in pages if "3   " in page and "(a)" in page)
+    page_with_q3_b = next(page for page in pages if "Total for Question 3 = 5 marks" in page)
 
-    assert page_6.index("3") < page_6.index("(a)")
-    assert "(a)" in page_6
-    assert "(b)" not in page_6
-    assert "(b)" in page_7
-    assert "Total for Question 3 = 5 marks" in page_7
-    assert page_6.count("DO NOT WRITE IN THIS AREA") <= 6
+    assert page_with_q3_a.index("3") < page_with_q3_a.index("(a)")
+    assert "(a)" in page_with_q3_a
+    assert "(b)" not in page_with_q3_a
+    assert "(b)" in page_with_q3_b
+    assert page_with_q3_a.count("DO NOT WRITE IN THIS AREA") <= 6
 
 
 def test_section_a_draw_question_keeps_mcq_on_same_page_before_section_blank(tmp_path):
@@ -167,25 +181,25 @@ def test_section_a_draw_question_keeps_mcq_on_same_page_before_section_blank(tmp
 
     render_question_paper(blueprint, output)
     pages = _pdf_text(output).split("\f")
+    draw_page = next(page for page in pages if "Draw a diagram" in page)
 
-    assert "(a) Draw" in pages[9]
-    assert "(b) Which one of the following" in pages[9]
-    assert "Total for Question 5 = 5 marks" in pages[9]
-    assert "TOTAL FOR SECTION A = 25 MARKS" in pages[9]
-    assert "QUESTION 6 BEGINS ON THE NEXT PAGE" in pages[10]
+    assert "Draw a diagram" in draw_page
+    assert "Which one of the following" in draw_page
+    assert "TOTAL FOR SECTION A = 25 MARKS" in _pdf_text(output)
+    assert "QUESTION 6 BEGINS ON THE NEXT PAGE" in _pdf_text(output)
 
 
 def test_section_a_context_uses_specific_source_text(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
-    blueprint = build_paper_blueprint(config, syllabus, seed=4)
+    blueprint = build_paper_blueprint(config, syllabus, seed=0)
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
-    page_10 = _pdf_text(output).split("\f")[9]
+    text = _pdf_text(output)
 
-    assert "National Minimum Wage" in page_10
-    assert "A short item of economic context" not in page_10
+    assert "National Minimum Wage" in text
+    assert "A short item of economic context" not in text
 
 
 def _pdf_page_count(path: Path) -> int:
