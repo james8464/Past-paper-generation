@@ -99,8 +99,50 @@ def test_section_a_stimulus_pool_is_wide_and_random():
         blueprint = build_paper_blueprint(config, syllabus, seed=seed)
         seen_stimuli.update(question.stimulus_kind for question in blueprint.questions if question.section == "A")
 
-    assert len(seen_stimuli) >= 18
-    assert {"payoff_matrix", "line_graph", "externality_diagram", "monopsony_diagram"} <= seen_stimuli
+    assert len(seen_stimuli) >= 28
+    assert {
+        "ped_data_table",
+        "pes_data_table",
+        "market_share_bar_chart",
+        "business_objective_context",
+        "xed_context",
+        "imperfect_information_context",
+        "minimum_wage_context",
+        "payoff_matrix",
+        "line_graph",
+        "externality_diagram",
+        "monopsony_diagram",
+    } <= seen_stimuli
+
+
+def test_paper_2_section_a_covers_reference_three_part_styles_and_macro_data():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_2")
+
+    seen_stimuli = set()
+    seen_shapes = set()
+    for seed in range(160):
+        blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+        for question in blueprint.questions:
+            if question.section == "A":
+                seen_stimuli.add(question.stimulus_kind)
+                seen_shapes.add(tuple((part.command_word, part.marks) for part in question.parts))
+
+    assert {
+        "household_savings_line_chart",
+        "investment_line_chart",
+        "financial_market_context",
+        "development_data_table",
+        "current_account_line_chart",
+        "gdp_growth_bar_chart",
+        "terms_of_trade_index_chart",
+        "labour_inactivity_context",
+        "multiplier_context",
+        "tariff_context",
+    } <= seen_stimuli
+    assert (("mcq", 1), ("calculate", 2), ("explain", 2)) in seen_shapes
+    assert (("explain", 2), ("mcq", 1), ("explain", 2)) in seen_shapes
+    assert (("calculate", 2), ("explain", 2), ("mcq", 1)) in seen_shapes
 
 
 def test_section_a_can_cover_all_allowed_paper_1_topics_across_random_seeds():
@@ -247,8 +289,13 @@ def test_section_c_extracts_are_short_realistic_and_not_formulaic():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
 
-    blueprint = build_paper_blueprint(config, syllabus, seed=42)
-    section_c_sources = [question.source_text for question in blueprint.questions if question.section == "C"]
+    section_c_sources = [
+        question.source_text
+        for seed in range(20)
+        for blueprint in [build_paper_blueprint(config, syllabus, seed=seed)]
+        for question in blueprint.questions
+        if question.section == "C"
+    ]
 
     assert all(80 <= len(source) <= 360 for source in section_c_sources)
     assert all("In 2025, a UK report highlighted an issue" not in source for source in section_c_sources)
@@ -286,11 +333,15 @@ def test_section_a_prompts_and_mcqs_use_topic_specific_language():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
 
-    blueprint = build_paper_blueprint(config, syllabus, seed=42)
     text = " ".join(
-        [question.prompt for question in blueprint.questions if question.section == "A"]
-        + [part.prompt for question in blueprint.questions if question.section == "A" for part in question.parts]
-        + [option.text for question in blueprint.questions if question.section == "A" for part in question.parts for option in part.options]
+        item
+        for seed in range(40)
+        for blueprint in [build_paper_blueprint(config, syllabus, seed=seed)]
+        for item in (
+            [question.prompt for question in blueprint.questions if question.section == "A"]
+            + [part.prompt for question in blueprint.questions if question.section == "A" for part in question.parts]
+            + [option.text for question in blueprint.questions if question.section == "A" for part in question.parts for option in part.options]
+        )
     ).lower()
 
     assert "market affected by rational decision making" not in text

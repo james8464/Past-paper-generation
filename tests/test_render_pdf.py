@@ -197,7 +197,16 @@ def test_section_a_question_splits_written_answer_before_mcq(tmp_path):
 def test_section_a_pages_include_graph_labels(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
-    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    blueprint = next(
+        build_paper_blueprint(config, syllabus, seed=seed)
+        for seed in range(100)
+        if any(
+            question.section == "A"
+            and question.stimulus_kind == "cost_revenue_graph"
+            and question.parts[0].command_word != "draw"
+            for question in build_paper_blueprint(config, syllabus, seed=seed).questions
+        )
+    )
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
@@ -247,7 +256,7 @@ def test_section_a_draw_question_keeps_mcq_on_same_page_before_section_b_sources
     draw_page = next(page for page in pages if "Draw a diagram" in page)
 
     assert "Draw a diagram" in draw_page
-    assert "Which one of the following" in draw_page
+    assert "which one of the following" in draw_page.lower()
     assert "TOTAL FOR SECTION A = 25 MARKS" in _pdf_text(output)
     assert "Read the following extracts (A to D) before answering Question 6" in _pdf_text(output)
     assert "QUESTION 6 BEGINS ON THE NEXT PAGE" not in _pdf_text(output)
@@ -264,6 +273,20 @@ def test_section_a_context_uses_specific_source_text(tmp_path):
 
     assert "National Minimum Wage" in text
     assert "A short item of economic context" not in text
+
+
+def test_paper_2_three_part_section_a_questions_render_all_parts(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_2")
+    blueprint = build_paper_blueprint(config, syllabus, seed=0)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    text = _pdf_text(output)
+    three_part_question = next(question for question in blueprint.questions if question.section == "A" and len(question.parts) == 3)
+
+    assert f"Total for Question {three_part_question.number} = 5 marks" in text
+    assert all(f"({part.label})" in text for part in three_part_question.parts)
 
 
 def _pdf_page_count(path: Path) -> int:

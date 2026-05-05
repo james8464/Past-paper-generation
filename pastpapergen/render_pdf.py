@@ -722,6 +722,22 @@ def _draw_section_a_question(
         page_number += 1
         return page_number, _prepare_answer_page(pdf, blueprint, page_number)
 
+    if len(question.parts) > 2:
+        y = _draw_compact_part(pdf, question.parts[0], x, y)
+        _draw_question_footer(pdf, blueprint, page_number)
+        pdf.showPage()
+        page_number += 1
+        y = _prepare_answer_page(pdf, blueprint, page_number)
+        for part in question.parts[1:]:
+            y = _draw_compact_part(pdf, part, x, y - 4)
+        _draw_total_for_question(pdf, question.number, question.marks, x, y)
+        if question.number == "5":
+            _draw_section_a_total(pdf, x, y - 34)
+        _draw_question_footer(pdf, blueprint, page_number)
+        pdf.showPage()
+        page_number += 1
+        return page_number, _prepare_answer_page(pdf, blueprint, page_number)
+
     if first_part and first_part.marks == 1:
         y = _draw_mcq_part(pdf, first_part, x, y)
     elif first_part:
@@ -785,6 +801,20 @@ def _draw_calculate_part_with_working_lines(pdf: canvas.Canvas, part, x: float, 
     y -= 20
     y = _draw_answer_lines(pdf, x, y, width - x, 6)
     return y - 12
+
+
+def _draw_compact_part(pdf: canvas.Canvas, part, x: float, y: float) -> float:
+    width, _ = A4
+    if part.command_word == "mcq":
+        return _draw_mcq_part(pdf, part, x, y)
+    y = _draw_part_prompt(pdf, part, x, y)
+    pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+    pdf.setFillColor(colors.HexColor("#999999"))
+    pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({part.marks})")
+    pdf.setFillColor(colors.black)
+    y -= 18
+    lines = 4 if part.marks <= 2 else 7
+    return _draw_answer_lines(pdf, x, y, width - x, lines) - 12
 
 
 def _draw_blank_answer_axes(pdf: canvas.Canvas, x: float, y: float, w: float, h: float) -> float:
@@ -935,10 +965,10 @@ def _draw_stimulus(pdf: canvas.Canvas, kind: str, x: float, y: float, context_te
         return _draw_economics_graph(pdf, x, y, kind)
     if kind in _TABLE_KINDS:
         return _draw_data_table(pdf, x - 35, y, kind)
-    if kind in {"bar_chart", "index_number_chart"}:
-        return _draw_bar_chart(pdf, x - 10, y)
-    if kind == "line_graph":
-        return _draw_line_graph(pdf, x - 10, y)
+    if kind in _BAR_CHART_KINDS:
+        return _draw_bar_chart(pdf, x - 10, y, kind)
+    if kind in _LINE_CHART_KINDS:
+        return _draw_line_graph(pdf, x - 10, y, kind)
     if kind == "payoff_matrix":
         return _draw_payoff_matrix(pdf, x - 25, y)
     return _draw_context_box(pdf, x - 70, y, context_text)
@@ -948,6 +978,7 @@ _ECONOMICS_GRAPH_KINDS = {
     "cost_revenue_graph",
     "market_diagram",
     "macro_chart",
+    "multiplier_context",
     "trade_cycle",
     "demand_shift_graph",
     "supply_shift_graph",
@@ -975,10 +1006,28 @@ _ECONOMICS_GRAPH_KINDS = {
 
 _TABLE_KINDS = {
     "data_table",
+    "ped_data_table",
+    "pes_data_table",
+    "development_data_table",
     "elasticity_data_table",
     "concentration_ratio_table",
     "balance_payments_table",
     "inflation_index_table",
+}
+
+_BAR_CHART_KINDS = {
+    "bar_chart",
+    "market_share_bar_chart",
+    "gdp_growth_bar_chart",
+}
+
+_LINE_CHART_KINDS = {
+    "line_graph",
+    "index_number_chart",
+    "household_savings_line_chart",
+    "investment_line_chart",
+    "current_account_line_chart",
+    "terms_of_trade_index_chart",
 }
 
 
@@ -1002,7 +1051,7 @@ def _draw_economics_graph(pdf: canvas.Canvas, x: float, y: float, kind: str) -> 
         pdf.drawString(x + 177, y - 56, "MC")
         pdf.bezier(x + 12, bottom + 54, x + 88, bottom + 32, x + 168, bottom + 66, x + 222, y - 76)
         pdf.drawString(x + 226, y - 78, "AC")
-    elif kind == "trade_cycle":
+    elif kind in {"trade_cycle", "multiplier_context"}:
         pdf.bezier(x + 10, bottom + 40, x + 65, y - 16, x + 140, bottom + 25, x + 250, y - 42)
         pdf.drawString(x + 180, y - 36, "Trend")
     elif kind == "production_possibility_frontier":
@@ -1104,46 +1153,101 @@ def _draw_demand_supply(pdf: canvas.Canvas, x: float, bottom: float) -> None:
 
 
 def _draw_data_table(pdf: canvas.Canvas, x: float, y: float, kind: str = "data_table") -> float:
-    w = 300
-    h = 86
+    rows = _table_rows(kind)
+    col_count = max(len(row) for row in rows)
+    col_width = 92 if col_count >= 4 else 100
+    w = col_width * col_count
+    row_h = 21
+    h = row_h * len(rows) + 2
     pdf.rect(x, y - h, w, h, stroke=1, fill=0)
-    for i in range(1, 4):
-        pdf.line(x, y - i * 21, x + w, y - i * 21)
-    for i in range(1, 3):
-        pdf.line(x + i * 100, y, x + i * 100, y - h)
-    pdf.setFont(FONT_REGULAR, 11)
-    rows = [["Year", "Value A", "Value B"], ["2021", "74.2", "68.5"], ["2022", "81.6", "71.4"], ["2023", "88.0", "75.2"]]
+    for i in range(1, len(rows)):
+        pdf.line(x, y - i * row_h, x + w, y - i * row_h)
+    for i in range(1, col_count):
+        pdf.line(x + i * col_width, y, x + i * col_width, y - h)
+    pdf.setFont(FONT_REGULAR, 9 if col_count >= 4 else 11)
     for r, row in enumerate(rows):
         for c, text in enumerate(row):
-            pdf.drawString(x + c * 100 + 8, y - 14 - r * 21, text)
+            pdf.drawString(x + c * col_width + 6, y - 14 - r * row_h, text)
     return y - h - 8
 
 
-def _draw_bar_chart(pdf: canvas.Canvas, x: float, y: float) -> float:
+def _table_rows(kind: str) -> list[list[str]]:
+    if kind == "ped_data_table":
+        return [["Age group", "PED"], ["16-18", "-0.7"], ["Adult", "-0.4"]]
+    if kind == "pes_data_table":
+        return [["Region", "PES"], ["Urban", "+0.5"], ["Rural", "+1.8"]]
+    if kind == "development_data_table":
+        return [
+            ["Country", "HDI", "GNI per head", "GDP per capita"],
+            ["Morocco", "0.683", "7 303", "3 795"],
+            ["Pakistan", "0.544", "4 624", "1 473"],
+        ]
+    if kind == "balance_payments_table":
+        return [["Year", "Exports", "Imports"], ["2021", "612", "645"], ["2022", "701", "748"], ["2023", "742", "789"]]
+    if kind == "inflation_index_table":
+        return [["Year", "CPI index", "Inflation"], ["2021", "100.0", "2.5%"], ["2022", "109.1", "9.1%"], ["2023", "116.0", "6.3%"]]
+    if kind == "concentration_ratio_table":
+        return [["Firm", "Market share", "Rank"], ["A", "26.6%", "1"], ["B", "19.5%", "2"], ["C", "12.7%", "3"]]
+    if kind == "elasticity_data_table":
+        return [["Good", "PED", "YED"], ["Bus travel", "-0.6", "+0.2"], ["Cinema", "-1.4", "+1.8"], ["Fuel", "-0.2", "+0.1"]]
+    return [["Year", "Value A", "Value B"], ["2021", "74.2", "68.5"], ["2022", "81.6", "71.4"], ["2023", "88.0", "75.2"]]
+
+
+def _draw_bar_chart(pdf: canvas.Canvas, x: float, y: float, kind: str = "bar_chart") -> float:
     bottom = y - 120
     pdf.line(x, bottom, x, y - 10)
     pdf.line(x, bottom, x + 250, bottom)
     pdf.setFont(FONT_REGULAR, 11)
-    pdf.drawString(x - 28, y - 18, "%")
-    pdf.drawRightString(x + 255, bottom - 12, "Firms")
-    for i, h in enumerate([52, 80, 38, 96]):
+    y_label, x_label, values = _bar_chart_data(kind)
+    pdf.drawString(x - 28, y - 18, y_label)
+    pdf.drawRightString(x + 255, bottom - 12, x_label)
+    max_value = max(values)
+    for i, value in enumerate(values):
+        h = 92 * value / max_value
         pdf.rect(x + 35 + i * 48, bottom, 22, h, stroke=1, fill=0)
+        pdf.setFont(FONT_REGULAR, 8)
+        pdf.drawCentredString(x + 46 + i * 48, bottom - 11, chr(65 + i))
     return bottom - 10
 
 
-def _draw_line_graph(pdf: canvas.Canvas, x: float, y: float) -> float:
+def _bar_chart_data(kind: str) -> tuple[str, str, list[float]]:
+    if kind == "market_share_bar_chart":
+        return "%", "Firms", [26.6, 19.5, 12.7, 11.7, 10.9]
+    if kind == "gdp_growth_bar_chart":
+        return "%", "Quarter", [0.4, 0.1, -0.1, 0.1, 0.1]
+    return "%", "Firms", [52, 80, 38, 96]
+
+
+def _draw_line_graph(pdf: canvas.Canvas, x: float, y: float, kind: str = "line_graph") -> float:
     bottom = y - 120
     pdf.line(x, bottom, x, y - 10)
     pdf.line(x, bottom, x + 250, bottom)
     pdf.setFont(FONT_REGULAR, 11)
-    pdf.drawString(x - 28, y - 18, "Index")
-    pdf.drawRightString(x + 255, bottom - 12, "Year")
-    points = [(x + 28, bottom + 34), (x + 82, bottom + 58), (x + 138, bottom + 47), (x + 196, bottom + 86)]
-    for start, end in zip(points, points[1:], strict=True):
+    y_label, x_label, values = _line_chart_data(kind)
+    pdf.drawString(x - 28, y - 18, y_label)
+    pdf.drawRightString(x + 255, bottom - 12, x_label)
+    minimum = min(values)
+    maximum = max(values)
+    span = maximum - minimum or 1
+    step = 210 / max(1, len(values) - 1)
+    points = [(x + 24 + i * step, bottom + 18 + (value - minimum) * 84 / span) for i, value in enumerate(values)]
+    for start, end in zip(points, points[1:]):
         pdf.line(*start, *end)
     for px, py in points:
         pdf.circle(px, py, 2.2, stroke=1, fill=1)
     return bottom - 10
+
+
+def _line_chart_data(kind: str) -> tuple[str, str, list[float]]:
+    if kind == "household_savings_line_chart":
+        return "%", "Quarter", [8.8, 9.6, 7.3, 4.8, 5.1, 22.8, 13.4, 16.9, 10.1]
+    if kind == "investment_line_chart":
+        return "% GDP", "Quarter", [22.7, 23.3, 21.6, 24.2, 23.1, 21.6, 20.8, 22.4, 22.7, 22.8, 22.5]
+    if kind == "current_account_line_chart":
+        return "% GDP", "Year", [-3.8, -4.6, -4.9, -4.8, -5.2, -3.8, -4.2, -3.5, -3.7, -1.1, -4.3]
+    if kind == "terms_of_trade_index_chart":
+        return "Index", "Year", [82, 79, 80, 81, 83, 92, 92, 88, 85, 86, 91]
+    return "Index", "Year", [74.2, 81.6, 78.5, 88.0]
 
 
 def _draw_payoff_matrix(pdf: canvas.Canvas, x: float, y: float) -> float:

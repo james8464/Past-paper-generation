@@ -56,11 +56,19 @@ def build_paper_blueprint(
             available_topics = _topic_pool_for_question(topics, essay_topic_ids, marks, section.name)
             if index < len(section_theme_targets):
                 available_topics = _topics_for_theme(available_topics, section_theme_targets[index])
+            stimulus_kind = _compatible_stimulus_kind(
+                section.stimulus_kinds,
+                part_commands,
+                available_topics,
+                excluded_ids,
+                stimulus_kind,
+                rng,
+            )
             available_topics = _topics_suitable_for_template(available_topics, part_commands, stimulus_kind)
             topic = source_context_topic or _choose_topic(rng, available_topics, excluded_ids)
             command_word = section.command_words[index]
             number = _question_number(config.id, section.name, absolute_question_number, index)
-            parts = _build_parts(part_marks, part_commands, topic.title)
+            parts = _build_parts(part_marks, part_commands, topic.title, stimulus_kind)
             source_reference = _source_reference(config.id, section.name, index)
             if group_index is not None:
                 choice_group_topics.setdefault(group_index, set()).add(topic.id)
@@ -191,6 +199,39 @@ def _topics_suitable_for_template(topics, part_commands: list[str], stimulus_kin
     return topics
 
 
+def _compatible_stimulus_kind(
+    stimulus_kinds: list[str],
+    part_commands: list[str],
+    topics,
+    excluded_ids: set[str],
+    preferred_kind: str,
+    rng: random.Random,
+) -> str:
+    if not stimulus_kinds:
+        return preferred_kind
+    candidates = [preferred_kind, *rng.sample(stimulus_kinds, len(stimulus_kinds))]
+    seen: set[str] = set()
+    for kind in candidates:
+        if kind in seen:
+            continue
+        seen.add(kind)
+        if not _stimulus_matches_commands(kind, part_commands):
+            continue
+        suitable_ids = _STIMULUS_TOPIC_IDS.get(kind)
+        if suitable_ids and not any(topic.id in suitable_ids and topic.id not in excluded_ids for topic in topics):
+            continue
+        if not suitable_ids and not any(topic.id not in excluded_ids for topic in topics):
+            continue
+        return kind
+    return preferred_kind
+
+
+def _stimulus_matches_commands(stimulus_kind: str, part_commands: list[str]) -> bool:
+    if part_commands and part_commands[0] == "draw":
+        return stimulus_kind in _DRAW_FIRST_STIMULI
+    return stimulus_kind not in _DRAW_ONLY_CONTEXTS
+
+
 def _uses_single_source_context(paper_id: str, section_name: str) -> bool:
     return paper_id in {"paper_1", "paper_2"} and section_name == "B"
 
@@ -272,8 +313,51 @@ _DRAW_CAPABLE_TOPIC_IDS = {
 }
 
 
+_DRAW_FIRST_STIMULI = {
+    "business_objective_context",
+    "minimum_wage_context",
+    "context_extract",
+    "cost_revenue_graph",
+    "market_diagram",
+    "demand_shift_graph",
+    "supply_shift_graph",
+    "tax_subsidy_diagram",
+    "externality_diagram",
+    "consumer_surplus_diagram",
+    "producer_surplus_diagram",
+    "minimum_price_diagram",
+    "maximum_price_diagram",
+    "production_possibility_frontier",
+    "perfect_competition_diagram",
+    "monopoly_diagram",
+    "monopsony_diagram",
+    "labour_market_diagram",
+}
+
+
+_DRAW_ONLY_CONTEXTS = set()
+
+
 _STIMULUS_TOPIC_IDS = {
+    "ped_data_table": {"1.2.2"},
+    "pes_data_table": {"1.2.3"},
+    "market_share_bar_chart": {"3.4"},
+    "business_objective_context": {"3.2"},
+    "xed_context": {"1.2.2"},
+    "imperfect_information_context": {"1.3"},
+    "minimum_wage_context": {"3.5"},
+    "household_savings_line_chart": {"2.1", "2.2"},
+    "investment_line_chart": {"2.2"},
+    "financial_market_context": {"4.4"},
+    "development_data_table": {"2.1", "4.2", "4.3"},
+    "current_account_line_chart": {"4.1", "2.6"},
+    "gdp_growth_bar_chart": {"2.1", "2.5"},
+    "terms_of_trade_index_chart": {"4.1"},
+    "labour_inactivity_context": {"2.1", "2.6"},
+    "multiplier_context": {"2.4", "2.2"},
+    "tariff_context": {"4.1"},
     "cost_revenue_graph": {"3.2", "3.3", "3.4"},
+    "data_table": {"1.2.2", "1.2.3", "1.2.4", "2.1", "4.1", "4.2", "4.3"},
     "market_diagram": {"1.2.2", "1.2.3", "1.2.4", "1.3", "1.4", "3.6"},
     "demand_shift_graph": {"1.2.2", "1.2.4"},
     "supply_shift_graph": {"1.2.3", "1.2.4"},
@@ -288,6 +372,224 @@ _STIMULUS_TOPIC_IDS = {
     "minimum_price_diagram": {"1.4", "3.6", "3.5"},
     "maximum_price_diagram": {"1.4", "3.6"},
     "tax_subsidy_diagram": {"1.4", "3.6", "1.3"},
+    "macro_chart": {"2.2", "2.3", "2.5", "2.6"},
+    "trade_cycle": {"2.1", "2.5"},
+    "balance_payments_table": {"4.1", "2.6"},
+    "inflation_index_table": {"2.1", "2.6"},
+    "ad_as_diagram": {"2.2", "2.3", "2.5", "2.6"},
+    "keynesian_as_diagram": {"2.2", "2.3", "2.5", "2.6"},
+    "phillips_curve": {"2.1", "2.6"},
+    "lorenz_curve": {"4.2"},
+    "exchange_rate_diagram": {"4.1"},
+    "tariff_diagram": {"4.1"},
+    "money_market_diagram": {"4.4"},
+    "laffer_curve": {"4.5"},
+    "poverty_trap_diagram": {"4.2", "4.3"},
+    "index_number_chart": {"1.2.4", "2.1", "3.1", "3.3", "4.1"},
+    "line_graph": {"1.2.2", "1.2.3", "1.2.4", "2.1", "2.5", "3.1", "3.3", "3.4", "3.5", "4.1", "4.2"},
+    "bar_chart": {"2.1", "2.5", "3.4", "4.2"},
+}
+
+
+_STIMULUS_PART_PROMPTS = {
+    "ped_data_table": {
+        (None, "explain", 4): "With reference to the data above, explain one likely reason for the difference in price elasticity of demand.",
+        (None, "calculate", 4): "Calculate the likely percentage change in quantity demanded following the price change. You are advised to show your working.",
+    },
+    "pes_data_table": {
+        (None, "explain", 4): "With reference to the data above, explain one likely reason for the difference in price elasticity of supply.",
+        (None, "calculate", 4): "Calculate the percentage increase in price if quantity supplied increases by 3.6%. You are advised to show your working.",
+    },
+    "market_share_bar_chart": {
+        (None, "explain", 4): "With reference to the information above, explain the market structure of the industry shown.",
+        (None, "calculate", 4): "Calculate the value of the largest firm's sales from the market share shown. You are advised to show your working.",
+    },
+    "cost_revenue_graph": {
+        (None, "calculate", 4): "Calculate the change in total supernormal profit if the firm changes output. You are advised to show your working.",
+        (None, "explain", 4): "Explain one likely reason why the firm may choose the output shown in the diagram.",
+    },
+    "business_objective_context": {
+        (None, "draw", 4): "Draw a cost and revenue diagram to illustrate profit maximisation and revenue maximisation.",
+        (None, "explain", 4): "With reference to the information above, explain one reason why a firm may prioritise sales growth.",
+    },
+    "xed_context": {
+        (None, "explain", 4): "With reference to the data above, explain the likely relationship between the two goods.",
+    },
+    "imperfect_information_context": {
+        (None, "explain", 4): "With reference to the data above, explain how imperfect market information may lead to a misallocation of resources.",
+    },
+    "minimum_wage_context": {
+        (None, "draw", 4): "Draw a labour market diagram to show the likely impact of the increase in the National Minimum Wage.",
+        (None, "explain", 4): "Explain one likely effect of the increase in the National Minimum Wage on firms.",
+    },
+    "household_savings_line_chart": {
+        (1, "calculate", 2): "Calculate the total amount saved by the average household. You are advised to show your working.",
+        (2, "explain", 2): "Explain one likely reason for the change in household savings over the period shown.",
+    },
+    "investment_line_chart": {
+        (None, "explain", 4): "With reference to the data, explain one likely effect of the fall in investment on aggregate demand.",
+    },
+    "financial_market_context": {
+        (None, "explain", 4): "With reference to the information above, explain what is meant by market rigging.",
+    },
+    "development_data_table": {
+        (None, "explain", 4): "With reference to the data provided, explain one limitation of using GDP to compare living standards between countries.",
+    },
+    "current_account_line_chart": {
+        (None, "explain", 4): "With reference to the chart above, explain one likely reason for the change in the current account balance.",
+    },
+    "gdp_growth_bar_chart": {
+        (1, "explain", 2): "Explain one likely disadvantage of a decline in GDP for workers.",
+        (2, "explain", 2): "Explain one likely disadvantage of a decline in GDP for the government.",
+    },
+    "terms_of_trade_index_chart": {
+        (0, "explain", 2): "Explain what is meant by terms of trade.",
+        (2, "explain", 2): "Explain the likely impact of the change in the terms of trade on the current account.",
+    },
+    "labour_inactivity_context": {
+        (0, "calculate", 2): "Calculate the total number of inactive workers. You are advised to show your working.",
+        (1, "explain", 2): "Explain one likely reason for the high level of inactivity in the labour force.",
+    },
+    "multiplier_context": {
+        (None, "calculate", 4): "Calculate the total increase in aggregate demand from an increase in government spending. You are advised to show your working.",
+    },
+    "tariff_context": {
+        (None, "explain", 4): "Explain the likely impact of this tariff on the market for the imported good.",
+    },
+}
+
+
+_STIMULUS_MCQ_PROMPTS = {
+    "ped_data_table": "With reference to the table above, which one of the following is most likely to be correct?",
+    "pes_data_table": "Which one of the following is the percentage increase in price implied by the data?",
+    "market_share_bar_chart": "Which one of the following is the value of the largest firm's market share?",
+    "cost_revenue_graph": "Refer to the previous diagram. Which one of the following is most likely after a fall in demand?",
+    "business_objective_context": "Which one of the following is most likely to occur if the firm changes to sales maximisation?",
+    "xed_context": "Which one of the following is the most likely impact if the price of the substitute falls?",
+    "imperfect_information_context": "Which one of the following is the most likely explanation of this behaviour?",
+    "minimum_wage_context": "Which one of the following is the most likely cause of a decrease in the supply of workers?",
+    "household_savings_line_chart": "With reference to the chart above, which one of the following is correct?",
+    "investment_line_chart": "Which one of the following is the percentage point fall in investment between the two dates shown?",
+    "financial_market_context": "Which one of the following is a role of financial markets?",
+    "development_data_table": "With reference to the table above, which one of the following is correct?",
+    "current_account_line_chart": "With reference to the chart above, which one of the following is correct?",
+    "gdp_growth_bar_chart": "With reference to the chart above, which one of the following is correct?",
+    "terms_of_trade_index_chart": "Which one of the following is the percentage change in the terms of trade?",
+    "labour_inactivity_context": "Which one of the following would be the most likely result of an increase in labour force inactivity?",
+    "multiplier_context": "Which one point on the trade cycle diagram above illustrates a boom?",
+    "tariff_context": "Which one of the following is likely to give a country a comparative advantage in production?",
+}
+
+
+_STIMULUS_MCQ_OPTIONS = {
+    "ped_data_table": [
+        ("A", "Demand is more price elastic for the younger age group shown"),
+        ("B", "Demand is perfectly price inelastic for both age groups"),
+        ("C", "A rise in price always increases total revenue for both groups"),
+        ("D", "Adults are more responsive to price changes than students"),
+    ],
+    "pes_data_table": [
+        ("A", "2%"),
+        ("B", "6.5%"),
+        ("C", "15%"),
+        ("D", "23.6%"),
+    ],
+    "market_share_bar_chart": [
+        ("A", "£426 billion"),
+        ("B", "£126 billion"),
+        ("C", "£312 billion"),
+        ("D", "£920 billion"),
+    ],
+    "cost_revenue_graph": [
+        ("A", "Average revenue and marginal revenue both fall"),
+        ("B", "Average revenue rises and marginal revenue stays the same"),
+        ("C", "Average revenue falls and marginal revenue increases"),
+        ("D", "Average revenue increases and marginal revenue falls"),
+    ],
+    "business_objective_context": [
+        ("A", "Average cost equals average revenue"),
+        ("B", "Average cost is minimised"),
+        ("C", "Price elasticity of demand is equal to -1"),
+        ("D", "Price equals marginal cost"),
+    ],
+    "xed_context": [
+        ("A", "Demand for the substitute good is likely to fall"),
+        ("B", "Demand for the substitute good is likely to rise"),
+        ("C", "Supply of the substitute good is likely to fall"),
+        ("D", "Supply of the substitute good is likely to rise"),
+    ],
+    "imperfect_information_context": [
+        ("A", "A firm is attempting to maximise sales or profit using market power"),
+        ("B", "A firm is demonstrating allocative efficiency"),
+        ("C", "A firm is removing information failure completely"),
+        ("D", "A firm is operating in perfect competition"),
+    ],
+    "minimum_wage_context": [
+        ("A", "Improved productivity in other industries"),
+        ("B", "Higher net migration of workers into the industry"),
+        ("C", "More workers retraining for the occupation"),
+        ("D", "Lower real wages in the occupation"),
+    ],
+    "household_savings_line_chart": [
+        ("A", "The savings rate was highest during the period of economic uncertainty"),
+        ("B", "The savings rate was unchanged throughout the period"),
+        ("C", "The savings rate was lowest at the end of the period"),
+        ("D", "The savings rate was negative in every quarter shown"),
+    ],
+    "investment_line_chart": [
+        ("A", "2.1"),
+        ("B", "4.6"),
+        ("C", "8.0"),
+        ("D", "21.6"),
+    ],
+    "financial_market_context": [
+        ("A", "To provide forward markets and credit"),
+        ("B", "To promote moral hazard"),
+        ("C", "To remove all risk from borrowers"),
+        ("D", "To restrict trade"),
+    ],
+    "development_data_table": [
+        ("A", "The country with the higher GNI per head also has the higher HDI"),
+        ("B", "Life expectancy is shown directly in the table"),
+        ("C", "Both countries have identical living standards"),
+        ("D", "The country with lower GDP per capita has no economic activity"),
+    ],
+    "current_account_line_chart": [
+        ("A", "The current account deficit narrowed during part of the period shown"),
+        ("B", "The current account was always in surplus"),
+        ("C", "The deficit was unchanged in every year"),
+        ("D", "Exports must have been zero throughout the period"),
+    ],
+    "gdp_growth_bar_chart": [
+        ("A", "Real GDP growth was negative in one of the quarters shown"),
+        ("B", "Real GDP growth increased in every quarter shown"),
+        ("C", "Real GDP growth was exactly zero in every quarter shown"),
+        ("D", "The chart shows nominal GDP only"),
+    ],
+    "terms_of_trade_index_chart": [
+        ("A", "12%"),
+        ("B", "18%"),
+        ("C", "35%"),
+        ("D", "52%"),
+    ],
+    "labour_inactivity_context": [
+        ("A", "A decrease in the productive potential of the economy"),
+        ("B", "An increase in the labour force participation rate"),
+        ("C", "A fall in the dependency ratio"),
+        ("D", "A rightward shift of aggregate supply"),
+    ],
+    "multiplier_context": [
+        ("A", "C"),
+        ("B", "A"),
+        ("C", "B"),
+        ("D", "D"),
+    ],
+    "tariff_context": [
+        ("A", "Higher productivity of workers"),
+        ("B", "Higher corporation tax"),
+        ("C", "Higher unit labour costs"),
+        ("D", "Lower investment in capital goods"),
+    ],
 }
 
 
@@ -511,11 +813,16 @@ def _essay_question_prompt(topic_title: str) -> str:
     return f"Evaluate the likely effects of changes in {topic_title.lower()} on economic agents."
 
 
-def _build_parts(part_marks: list[int], part_commands: list[str], topic_title: str) -> list[QuestionPart]:
+def _build_parts(
+    part_marks: list[int],
+    part_commands: list[str],
+    topic_title: str,
+    stimulus_kind: str,
+) -> list[QuestionPart]:
     if not part_marks:
         return []
     return [
-        _build_part(chr(97 + part_index), marks, command, topic_title, part_index)
+        _build_part(chr(97 + part_index), marks, command, topic_title, stimulus_kind, part_index)
         for part_index, (marks, command) in enumerate(zip(part_marks, part_commands, strict=True))
     ]
 
@@ -525,16 +832,17 @@ def _build_part(
     marks: int,
     command: str,
     topic_title: str,
+    stimulus_kind: str,
     part_index: int,
 ) -> QuestionPart:
     if command == "mcq":
-        options = _mcq_options(topic_title)
+        options = _mcq_options(topic_title, stimulus_kind)
         correct = "A"
         return QuestionPart(
             label=label,
             marks=marks,
             command_word=command,
-            prompt=_mcq_prompt(topic_title),
+            prompt=_mcq_prompt(topic_title, stimulus_kind),
             options=options,
             correct_option=correct,
             mark_breakdown="1 mark",
@@ -551,14 +859,26 @@ def _build_part(
         label=label,
         marks=marks,
         command_word=command,
-        prompt=_placeholder_prompt(command, marks, topic_title),
+        prompt=_part_prompt(command, marks, topic_title, stimulus_kind, part_index),
         mark_breakdown=_part_mark_breakdown(marks, command),
         mark_scheme=_mark_scheme(command, marks, topic_title),
         indicative_content=_indicative_content("", topic_title, []),
     )
 
 
-def _mcq_options(topic_title: str) -> list[MultipleChoiceOption]:
+def _part_prompt(command: str, marks: int, topic_title: str, stimulus_kind: str, part_index: int) -> str:
+    stimulus_prompts = _STIMULUS_PART_PROMPTS.get(stimulus_kind, {})
+    return stimulus_prompts.get((part_index, command, marks)) or stimulus_prompts.get((None, command, marks)) or _placeholder_prompt(
+        command,
+        marks,
+        topic_title,
+    )
+
+
+def _mcq_options(topic_title: str, stimulus_kind: str = "") -> list[MultipleChoiceOption]:
+    stimulus_options = _STIMULUS_MCQ_OPTIONS.get(stimulus_kind)
+    if stimulus_options:
+        return [MultipleChoiceOption(label=label, text=text) for label, text in stimulus_options]
     topic = _topic_phrase(topic_title)
     topic_key = topic_title.lower()
     topic_options = _TOPIC_MCQ_OPTIONS.get(topic_key)
@@ -567,13 +887,16 @@ def _mcq_options(topic_title: str) -> list[MultipleChoiceOption]:
     sentence_topic = topic[0].upper() + topic[1:]
     return [
         MultipleChoiceOption(label="A", text=f"Changes in {topic} can alter incentives and resource allocation"),
-        MultipleChoiceOption(label="B", text=f"{sentence_topic} means opportunity cost no longer exists"),
+        MultipleChoiceOption(label="B", text=f"{sentence_topic} means economic agents no longer face trade-offs"),
         MultipleChoiceOption(label="C", text=f"{sentence_topic} only affects consumers and never affects firms"),
         MultipleChoiceOption(label="D", text=f"{sentence_topic} always leaves market price unchanged"),
     ]
 
 
-def _mcq_prompt(topic_title: str) -> str:
+def _mcq_prompt(topic_title: str, stimulus_kind: str = "") -> str:
+    stimulus_prompt = _STIMULUS_MCQ_PROMPTS.get(stimulus_kind)
+    if stimulus_prompt:
+        return stimulus_prompt
     topic = _normal_topic_key(topic_title)
     prompts = {
         "demand": "Which one of the following is likely to increase demand for a normal good?",
@@ -635,6 +958,40 @@ def _section_a_draw_stem(topic_title: str) -> str:
 def _section_a_stem(topic_title: str, stimulus_kind: str) -> str:
     topic = _topic_phrase(topic_title)
     focus = _exam_focus(topic_title)
+    if stimulus_kind == "ped_data_table":
+        return "The table below shows price elasticity of demand for selected consumer groups."
+    if stimulus_kind == "pes_data_table":
+        return "The table below shows price elasticity of supply for selected regional markets."
+    if stimulus_kind == "market_share_bar_chart":
+        return "The graph below shows the largest firms in a UK market by market share."
+    if stimulus_kind == "business_objective_context":
+        return "Read the information below about a firm changing its business objectives."
+    if stimulus_kind == "xed_context":
+        return "Read the information below about cross elasticity of demand for two related goods."
+    if stimulus_kind == "imperfect_information_context":
+        return "Read the information below about imperfect information in a consumer market."
+    if stimulus_kind == "minimum_wage_context":
+        return "Read the information below about changes in the National Minimum Wage."
+    if stimulus_kind == "household_savings_line_chart":
+        return "The chart below shows household saving as a percentage of disposable income."
+    if stimulus_kind == "investment_line_chart":
+        return "The chart below shows investment as a percentage of GDP over time."
+    if stimulus_kind == "financial_market_context":
+        return "Read the information below about firms operating in financial markets."
+    if stimulus_kind == "development_data_table":
+        return "The table below shows selected economic development indicators for two countries."
+    if stimulus_kind == "current_account_line_chart":
+        return "The chart below shows the current account of the balance of payments as a percentage of GDP."
+    if stimulus_kind == "gdp_growth_bar_chart":
+        return "The chart below shows real GDP percentage growth over recent quarters."
+    if stimulus_kind == "terms_of_trade_index_chart":
+        return "The chart below shows a terms of trade index over time."
+    if stimulus_kind == "labour_inactivity_context":
+        return "Read the information below about the labour force inactivity rate."
+    if stimulus_kind == "multiplier_context":
+        return "The diagram below shows a trade cycle and information about the multiplier."
+    if stimulus_kind == "tariff_context":
+        return "Read the information below about a tariff on imported goods."
     if stimulus_kind == "cost_revenue_graph":
         return f"The diagram below shows cost and revenue curves for a firm affected by {focus}."
     if stimulus_kind in {"data_table", "elasticity_data_table", "concentration_ratio_table", "balance_payments_table", "inflation_index_table"}:
@@ -732,7 +1089,7 @@ def _source_text(
         extract_index = [0, 1, 2, 2, 3][min(index, 4)]
         return _data_response_extract(topic_title, points, extract_index)
     if section_name == "A":
-        return _section_a_context(topic_id, topic_title, focus, points)
+        return _section_a_context(topic_id, topic_title, focus, points, stimulus_kind)
     if stimulus_kind == "data_table":
         return (
             f"The table shows how indicators linked to {topic_title.lower()} changed over time. "
@@ -752,7 +1109,34 @@ def _section_c_extract(topic_id: str, topic_title: str, points: list[str], index
     return section_c_extract(topic_title, points, index)
 
 
-def _section_a_context(topic_id: str, topic_title: str, focus: str, points: list[str]) -> str:
+def _section_a_context(
+    topic_id: str,
+    topic_title: str,
+    focus: str,
+    points: list[str],
+    stimulus_kind: str = "",
+) -> str:
+    stimulus_contexts = {
+        "ped_data_table": "The data compares responsiveness to a price change for two groups of consumers using the same service.",
+        "pes_data_table": "The data compares how quickly producers in two regional markets can respond to changes in price.",
+        "market_share_bar_chart": "The figures show market shares for the largest firms in an industry where brand recognition and scale may matter.",
+        "business_objective_context": "A firm selling a consumer product is considering whether to prioritise revenue growth rather than maximum profit.",
+        "xed_context": "The cross elasticity of demand for one good with respect to the price of a related good is positive.",
+        "imperfect_information_context": "A regulator received complaints from consumers who could not accurately judge product quality before purchase.",
+        "minimum_wage_context": "The statutory minimum wage increased, raising hourly pay for low-paid workers and changing firms' labour costs.",
+        "household_savings_line_chart": "Households changed their saving behaviour during a period of uncertainty about future income and prices.",
+        "investment_line_chart": "Investment changed as firms responded to weaker confidence, higher costs and expectations about future demand.",
+        "financial_market_context": "Several banks were fined after traders shared information that could distort prices in a foreign exchange market.",
+        "development_data_table": "The data can be used to compare living standards and economic development in two emerging economies.",
+        "current_account_line_chart": "The balance changed as export revenue, import spending and exchange rates altered over time.",
+        "gdp_growth_bar_chart": "Quarterly real GDP growth varied as consumption, investment and government spending changed.",
+        "terms_of_trade_index_chart": "The index compares average export prices with average import prices, using a base year of 100.",
+        "labour_inactivity_context": "A higher share of working-age people were neither in work nor actively seeking employment.",
+        "multiplier_context": "A survey estimates the marginal propensity to consume after households receive extra income.",
+        "tariff_context": "A government imposed an import tariff to protect domestic producers from overseas competition.",
+    }
+    if stimulus_kind in stimulus_contexts:
+        return stimulus_contexts[stimulus_kind]
     topic = topic_title.lower()
     if topic == "labour market":
         return (
