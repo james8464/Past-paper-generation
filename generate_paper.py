@@ -33,7 +33,6 @@ def main() -> int:
     print(paths["question_paper"])
     print(paths["source_booklet"])
     print(paths["mark_scheme"])
-    print(paths["audit"])
     return 0
 
 

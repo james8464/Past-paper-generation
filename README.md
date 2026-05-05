@@ -15,7 +15,6 @@ Outputs:
 ~/Downloads/paper-1-question-paper.pdf
 ~/Downloads/paper-1-source-booklet.pdf
 ~/Downloads/paper-1-mark-scheme.pdf
-~/Downloads/paper-1-audit.json
 ```
 
 ## Ollama

@@ -22,7 +22,6 @@ def test_runner_accepts_simple_paper_choice(monkeypatch, tmp_path):
             "question_paper": tmp_path / "paper-2-question-paper.pdf",
             "source_booklet": tmp_path / "paper-2-source-booklet.pdf",
             "mark_scheme": tmp_path / "paper-2-mark-scheme.pdf",
-            "audit": tmp_path / "paper-2-audit.json",
         },
     )
 
@@ -53,7 +52,6 @@ def test_runner_prints_progress_messages(monkeypatch, tmp_path, capsys):
             "question_paper": tmp_path / "paper-1-question-paper.pdf",
             "source_booklet": tmp_path / "paper-1-source-booklet.pdf",
             "mark_scheme": tmp_path / "paper-1-mark-scheme.pdf",
-            "audit": tmp_path / "paper-1-audit.json",
         }
 
     monkeypatch.setattr(generate_paper, "generate_package", fake_generate_package)

@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 import argparse
-import json
 import secrets
 from pathlib import Path
 from typing import Callable
 
 from pastpapergen.generator import build_paper_blueprint
-from pastpapergen.models import PaperBlueprint, Syllabus
 from pastpapergen.ollama_client import OllamaClient, generate_questions_with_ollama
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.render_pdf import (
@@ -49,7 +47,6 @@ def main(argv: list[str] | None = None) -> int:
     print(paths["question_paper"])
     print(paths["source_booklet"])
     print(paths["mark_scheme"])
-    print(paths["audit"])
     return 0
 
 
@@ -88,7 +85,6 @@ def generate_package(
     question_paper = output_dir / f"{stem}-question-paper.pdf"
     source_booklet = output_dir / f"{stem}-source-booklet.pdf"
     mark_scheme = output_dir / f"{stem}-mark-scheme.pdf"
-    audit_path = output_dir / f"{stem}-audit.json"
 
     emit("Rendering question paper")
     render_question_paper(blueprint, question_paper)
@@ -96,15 +92,12 @@ def generate_package(
     render_source_booklet(blueprint, syllabus, source_booklet)
     emit("Rendering mark scheme")
     render_mark_scheme(blueprint, syllabus, mark_scheme)
-    emit("Writing audit file")
-    _write_audit(blueprint, syllabus, audit_path, run_seed)
     emit("Done")
 
     return {
         "question_paper": question_paper,
         "source_booklet": source_booklet,
         "mark_scheme": mark_scheme,
-        "audit": audit_path,
     }
 
 
@@ -125,31 +118,3 @@ def _normalise_paper_id(value: str) -> str:
         return mapping[key]
     except KeyError as error:
         raise SystemExit("--paper must be one of: 1, 2, 3, paper_1, paper_2, paper_3") from error
-
-
-def _write_audit(blueprint: PaperBlueprint, syllabus: Syllabus, output_path: Path, seed: int) -> None:
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    questions = []
-    for question in blueprint.questions:
-        topic = syllabus.get_topic(question.topic_id)
-        questions.append(
-            {
-                "number": question.number,
-                "section": question.section,
-                "marks": question.marks,
-                "topic_id": topic.id,
-                "theme": topic.theme,
-                "topic_title": topic.title,
-            }
-        )
-
-    audit = {
-        "paper_id": blueprint.paper_id,
-        "paper_code": blueprint.paper_code,
-        "seed": seed,
-        "title": blueprint.title,
-        "total_marks": blueprint.total_marks,
-        "syllabus_source": syllabus.source,
-        "questions": questions,
-    }
-    output_path.write_text(json.dumps(audit, indent=2), encoding="utf-8")
