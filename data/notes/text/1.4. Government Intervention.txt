@@ -1,0 +1,385 @@
+ Edexcel Economics (A) A-level
+Theme 1: Introduction to Markets
+              and
+        Market Failure
+   1.4 Government Intervention
+                Detailed Notes
+
+
+
+
+        www.pmt.education
+             1.4.1 Government intervention in markets
+Indirect taxation:
+
+When the good has a negative externality, the government can introduce indirect taxation to
+prevent market failure. This will cause a fall in supply and increase the costs to the
+individual, so the supply curve/MPC curve will shift from S1 to S2. The free market would
+produce at P1Q1, where MPC=MPB, but the social optimum position is P2Q2, where
+MSB=MSC. Following the introduction of the tax, the equilibrium position is S2=MPB=MSB,
+at P2Q2. The tax internalises the externality and social welfare is now maximised.
+This diagram shows a specific tax but an ad valorem tax could also be introduced, which
+would have the same effect, but the shift of the curve would look slightly different.
+
+
+
+
+Advantages:
+
+   ●   It internalises the externality- the market now produces at the social equilibrium
+       position and ​social welfare is maximised.
+   ●   It raises ​government revenue​, which could be used to solve the externality in other
+       ways such as through education. This may help goods to become more elastic in the
+       long run. The effect will depend on what the government does with the revenue they
+       raise.
+
+
+
+
+                           www.pmt.education
+Disadvantages​:
+
+   ●   It is difficult to know the size of the externality and so it is ​difficult to target the tax​;
+       the effect depends on where the tax is set. The government suffers from imperfect
+       information when setting the tax.
+   ●   There could be ​conflict between the government goal of raising revenue and solving
+       the externality, which makes setting the tax difficult.
+   ●   It could lead to the creation of a ​black market
+   ●   If demand for the good is inelastic, then the tax will be ineffective at reducing output.
+   ●   Taxes are ​politically unpopular and so governments may be reluctant to introduce
+       them.
+   ●   They are ​regressive​, meaning they the poor spend a larger proportion of their
+       income on indirect taxes than the rich do.
+
+Some examples of indirect taxes used for externalities in the UK are: landfill taxes, fuel
+duties, alcohol duties, tobacco duties, air passenger duties and sugar taxes.
+
+
+
+Subsidies:
+
+In order to solve positive externalities, the government can introduce subsidies. Subsidies
+can also be introduced in order to fix information gaps. This will shift the
+supply curve to the right as it will lower the cost of production. The free market would
+produce where MPC=MPB at Q1P1 whilst the social optimum position is where
+MSC=MSB at P2Q2. The introduction of the subsidy means that the equilibrium point
+is Q2P3, at the social optimum output. This means that social welfare is maximised since
+the market produces at the output that best allocates resources.
+
+
+
+
+                             www.pmt.education
+Advantages:
+
+   ●   Society reaches the social optimum output and ​welfare is maximised​.
+   ●   They can have ​other positive impacts​, such as encouraging small businesses,
+       bringing about equality and encouraging exports.
+
+
+
+Disadvantages:
+
+   ●   The government has to spend a large amount of money, which will have a ​high
+       opportunity cost​.
+   ●   As with taxes, they are ​difficult to target since the exact size of the externality is
+       unknown.
+   ●   Subsidies can cause producers to become ​inefficient​, especially if they are in place
+       for a long time.
+   ●   Once introduced, subsidies are ​difficult to remove​.
+
+Some examples of subsidies are those on: biofuels, solar panels, apprenticeship schemes,
+wind farms and rail industries.
+
+
+
+Maximum and minimum prices:
+
+For a maximum price to have an effect, it must be set below the current price equilibrium.
+For a minimum price to have an effect, it must be above the current price equilibrium.
+
+A ​maximum price is a legally imposed price for a good that the suppliers cannot charge
+above. They are set on goods with positive externalities. For example, they are set on food
+as a lack of food will have a negative impact on the NHS. This approach has sometimes
+been applied to rents for accommodation when prices are too high. They can prevent
+monopolies from exploiting customers. The equilibrium position is P1Q1 but the imposition of
+the maximum price means there is excess demand of QD-QS, shown by the shaded area.
+
+
+
+
+                           www.pmt.education
+A ​minimum price ​is a legally imposed price at which the price of the good cannot go below.
+They can be set on goods with negative externalities, so that the price is raised to the social
+optimum point and consumption is discouraged. They also encourage producers to produce
+goods, so can be set on goods with social benefits that are underprovided by the market. In
+the diagram, the market equilibrium price is P1Q1. However, the minimum price is set at P2
+and as a result QD is demanded but QS is supplied so there is excess supply of QS-QD,
+shown by the shaded area.
+
+
+
+
+Advantages:
+
+   ●   They can be set where MSB=MSC, so allow for some consideration of externalities,
+       and so help to increase social welfare.
+   ●   A maximum price will ensure that goods are affordable, whilst a minimum price will
+       ensure that producers get a fair price. Both of these are able to reduce poverty and
+       can increase equity/equality.
+
+
+Disadvantages:
+
+   ●   There is a distortion of price signals and this causes ​excess supply/demand​.
+       Excess demand will lead to questions about how to allocate goods and excess
+       supply will lead to questions about what to do with the surplus goods.
+   ●   It is ​difficult for the government to know where to set the prices​, because of the
+       difficulty of knowing the size of externalities and because it will have implications on
+       the size of excess supply/demand.
+   ●   Both can lead to the creation of ​black markets​. Maximum prices may also lead to
+       illegal bribes or discriminatory policies in allocating goods.
+
+Maximum prices have been implemented in Manhattan in the from of rent controls on
+properties. On top of this, there are price caps on milk, toilet paper, medicine, petrol and
+
+
+
+
+                            www.pmt.education
+other key goods in Venezuela: this has led to the creation of a black market and the goods
+are no longer sold in supermarkets as the firms are unable to make a profit at those prices.
+
+In Scotland, a minimum price has been imposed on alcohol. It targets the cheapest drinks,
+which aims to cut down on binge drinking, but it will have negative effects on poverty for
+those who are addicted. Minimum prices on Limousines in Nashville have stifled competition
+as the most price competitive firms are forced out of business.
+
+
+
+
+Tradable pollution permits:
+
+A pollution permit allows the owner to pollute up to a specific amount of pollution and the
+government controls how many permits there are so limits the maximum amount of pollution.
+Companies have to buy permits in order to pollute so, in an attempt to cut costs and
+increase profits, companies may use greener technology. Unused permits can be sold to
+other companies, hence why they are tradeable. Companies exceeding their limit of pollution
+will face legal action. As a fixed supply of permits is allocated, an increase in demand will
+lead to an increase in price for the permits, so companies will have more incentive to cut
+emissions by using green technology.
+
+
+
+
+                           www.pmt.education
+Advantages:
+
+   ●   Since the government caps the number of permits, it is ​guaranteed that pollution
+       will fall ​to the targets set by the government. This will maximise social welfare.
+   ●   The government can ​raise revenue by selling permits and by fining firms who
+       exceed their pollution limit.
+   ●   This encourages companies to use and invest in ​green technology.
+   ●   Firms are able to make their own decisions about whether to cut pollution or buy
+       more permits. This helps encourage efficiency, as seen by the numerical example
+       (this is not necessary in an exam but helps to understand the concept).
+
+Disadvantages:
+
+   ●   This can be ​expensive to monitor and police​, but it will only work if it is monitored
+       well. The government needs to impose fines that are large enough to ensure firms
+       follow the regulation.
+   ●   It will ​raise costs for businesses, and it is likely that these higher costs will be
+       passed onto consumers
+   ●   It may be difficult to know ​how many permits​ the government should allow.
+
+One successful example is the US Sulphur trading scheme, which reduced sulphur dioxide
+by 40%. The EU Emissions Trading Scheme (ETS) was launched in 2005 and it represents
+a 21% reduction in greenhouse gases. Since then, other greenhouse gases like nitrous
+oxide have been included and the scheme has been extended to the airline industry. The
+permit scheme has also been introduced in China.
+
+
+
+State provision of public goods:
+
+Public goods are non-excludable and non-rivalry and so the free rider problem says they will
+be under-provided by the free market, leading to market failure. As a result, the government
+provides these public goods directly through taxation. Similarly, the government can provide
+merit goods.
+
+Advantages:
+
+   ● This ​corrects market failure by providing important goods which would otherwise
+     not be provided. It will lead to improved social welfare.
+   ● It can help to bring about ​equality,​ by ensuring everyone has access to basic goods.
+   ● There will be ​benefits of the goods themselves​, for example by providing
+     healthcare, the government ensures that the workforce is healthy and so this can
+     improve economic growth.
+   ● By using competitive tenders (looked at in Theme 3), the government can ensure
+     efficiency.
+
+
+
+
+                           www.pmt.education
+Disadvantages:
+
+   ●   This is ​expensive and represents a ​high opportunity cost ​for the government.
+       Administration costs are a problem
+   ●   Since the market is not involved, the government may produce the ​wrong
+       combination of goods as consumers can not indicate their preferences. For
+       example, there may be too many soldiers and too few hospital beds: if they were
+       provided by the market, price signals would lead to a shift in resources. Democracy
+       aims to reduce this problem, since consumers can vote for political parties whose
+       aims are similar to their own.
+   ●   The government may be ​inefficient at production since they have no incentive to cut
+       costs.
+   ●   Government officials may suffer from ​corruption and conflicting objectives​.
+
+In the UK, the government provides a number of goods including roads, education and
+healthcare. The NHS suffers from severe underfunding and many schools are having their
+budgets cut. Moreover, more money is spent on improving railways than roads, even though
+92% of all journeys in the UK are made on roads, suggesting incorrect resource allocation​.
+
+
+
+Provision of information:
+
+When there is asymmetric information, the government provides information to allow people
+to make informed decisions. They may also force companies to provide information.
+
+Advantages:
+
+   ●   This helps consumers to act​ rationally,​ which allows the market to work properly.
+   ●   It is best if the government uses this ​alongside other policies​. For example, it can
+       make demand more elastic in the long run and so help indirect taxes to become more
+       effective at reducing output.
+
+Disadvantages:
+
+   ●   This can be ​expensive​ for the government to do, incurring an opportunity cost.
+   ●   The government themselves may not always have all the information, so it may be
+       difficult to inform consumers.
+   ●   Consumers may ​not listen ​to the information provided due to irrational behaviour.
+
+Some examples of information provision are labels on cigarette packages and information
+campaigns on speeding, obesity, drinking and smoking. Consumer protection laws and
+industry standards help to overcome problems relating to second hand products. The ‘traffic
+light system’, where foods are rated green, orange or red on calories, sugar, salt etc. helps
+to easily show consumers the healthier options. Despite these information campaigns, many
+consumers still undertake harmful and dangerous activities.
+
+
+
+
+                           www.pmt.education
+Regulation:
+
+Governments are able to impose laws and caps to ensure that levels are set where
+MSB=MSC or to ensure that companies provide full information on products. The
+government can also introduce regulatory bodies such as OFCOM for communications and
+OFGEN for energy. These ensure firms follow regulation and do not exploit their customers
+or take advantage of market position.
+
+Advantages:
+
+   ●   This can ensure consideration of externalities, prevent exploitation of consumers and
+       keep consumers fully informed. This will help to overcome market failure and
+       maximise social welfare.
+
+Disadvantages:
+
+   ●   Laws may be ​expensive​ for the government to monitor, incurring an opportunity cost.
+   ●   They don’t take into account the different costs of following the laws for different
+       companies. Compared with tradable pollution permits, regulation is a ​less efficient
+       method of reducing pollution.
+   ●   The government can suffer from ​regulatory capture​ (looked at in Theme 3).
+   ●   Firms may ​pass on costs​ to the consumer in the form of higher prices.
+   ●   Excessive regulation may reduce competition in a market and efficiency, by
+       increasing bureaucracy and reducing innovation.
+
+A number of regulations are in place to correct market failure in the UK such as: EU fishing
+quotas, smoking bans, minimum ages laws and maximum vehicle CO2 emissions.
+
+
+
+
+                          1.4.2 Government failure
+Government failure:
+
+Government failure is when government intervention in the market leads to net welfare loss
+and a misallocation of resources. The total social costs arising from the intervention are
+greater than the social benefit. There are a number of causes of government failure:
+
+Distortion of price signals:
+
+
+
+
+                           www.pmt.education
+   ●   Some types of government intervention change price signals in the market and distort
+       the free market mechanism. As a result, they keep some companies in business
+       when they are inefficient so the resources should be switched to somewhere else
+       (subsidies) or make consumers pay too much for a good (taxes).
+
+   ●   For example, subsidies keep farmers in employment when they cannot produce
+       cheaply enough to be competitive. The result is that the government keeps them in
+       business when they should close down and find an alternative use for their
+       resources.
+
+   ●   Maximum and minimum prices lead to excess demand/supply and make it difficult to
+       allocate resources.
+
+   ●   The price mechanism aims to allocate resources to their best use and where
+       consumers want and value them most highly. By intervening, the government distorts
+       the mechanism and so resources may be allocated inefficiently.
+
+Unintended consequences:
+
+   ●   Some interventions cause effects which the government did not intend to happen.
+       Consumers and producers may react to new policies in unexpected ways and so the
+       policy doesn’t have the effect it should.
+
+   ●   One example is the introduction of the buffer stock scheme CAP (Common
+       Agricultural Policy) in the EU. This was meant to smooth out the price fluctuations but
+       it ended up leading to overproduction in the EU and a fall in agricultural prices in
+       other parts of the world as EU surpluses were disposed of at cheap prices outside of
+       Europe; this was not the intention of the scheme​.
+
+   ●   On top of this, targets for treating patients on the NHS has led to a reduction in the
+       quality of care. This is not what the government intended when they introduced the
+       targets.
+
+Excessive administration costs:
+
+   ●   In many cases, a lot of money that is allocated by the government is actually used up
+       on basic administration costs. The social costs may be higher than social benefits,
+       once administration costs are taken into account.
+
+   ●   A lot of money given to the NHS etc. is actually spent on organisational adminstration
+       rather than putting the money into medical care​.
+
+   ●   Excessive administration on the Apprenticeship Levy, which aims to increase the
+       quality and quantity of apprenticeships, has meant that little money is spent by firms.
+
+Information gaps:
+
+
+
+
+                           www.pmt.education
+●   Any decisions that the government makes must be based on some data but the
+    information they have is always going to be limited, for example you cannot
+    accurately predict the number of cancer patients or the number of cars on the road.
+
+●   Cost and benefit forecasts of investment are often wrong and so the government
+    invests in a system where the costs are higher than the benefits, so there is welfare
+    loss. It is impractical, and usually impossible, for the government to get every piece of
+    information they need.
+
+
+
+
+                        www.pmt.education
+

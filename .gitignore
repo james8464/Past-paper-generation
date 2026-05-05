@@ -6,6 +6,7 @@ out/
 out-*/
 debug_images/
 analysis/
+graphify-out/cache/
 .DS_Store
 .idea/
 example papers/

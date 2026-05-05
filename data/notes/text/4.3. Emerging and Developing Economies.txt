@@ -1,0 +1,910 @@
+Edexcel Economics (A) A-level
+Theme 4: A Global Perspective
+ 4.3 Emerging and Developing
+             Economies
+               Detailed Notes
+
+
+
+
+       www.pmt.education
+                     4.3.1 Measures of development
+Whilst economic growth is measured purely by real GDP and the productive potential of the
+country, economic development is about ​improvements in living standards​.
+
+
+
+
+Human Development Index:
+
+HDI is a measure of economic development calculated by the UN. It is a ​composite index
+based on three factors:
+   o health​ as measured by life expectancy at birth
+   o education as measured by the mean years of schooling of adults aged 25+ and the
+       expected years of schooling of a current 5-year-old over their lives
+   o income ​as measured by real GNI per capita at purchasing power parity.
+Each of the three indicators is given equal weighting and a mean is taken to give a figure
+between 0 and 1. The higher the number, the greater the level of development.
+
+Advantages and disadvantages:
+   ●   It takes into account ​three key factors ​which are important for the development of a
+       country.
+   ●   It is ​relatively easy to calculate because governments tend to collect the statistics
+       used in the data.
+   ●   However, there are some ​issues with the figures​: health takes no notice of the
+       quality of life that people enjoy and education doesn’t take into account the quality
+       and success of education.
+   ●   There is no consideration for the ​equality of income​.
+   ●   Also, there are ​other factors which affect development, for example freedom from
+       corruption or the environment.
+
+
+
+
+                           www.pmt.education
+It is ​only an indicator and not a precise measure​, so should not be expected to be perfect.
+
+
+Other indicators:
+
+The Inequality-adjusted Human Development Index (IHDI):
+
+   ●   This is an adjustment of HDI which includes a fourth indicator of development:
+       inequality. ​The Atkinson Index adjusts measures for education, health and income
+       according to the level of inequality. It is ​broader than HDI ​but can still be criticised
+       for not taking into account more measures and quality.
+
+The Multidimensional Poverty Index (MPI):
+
+   ●   This measures the ​percentage of the population that is multidimensional poor​. It
+       uses data for health, education and standard of living but uses a broader range of
+       indicators within these categories.
+
+   ●   Years of schooling and school attendance data is used for education; child mortality
+       and nutrition data for health; and availability of electricity, sanitation and safe drinking
+       water in households, cooking fuel used, assets owned and the type of floor in a
+       house for standard of living.
+
+   ●   It highlights the countries where some areas are extremely rich but where most of the
+       population is not and ​focuses on poverty​. However, it cannot be calculated for all
+       countries as the ​data is not always available​. It also doesn’t take into account the
+       environment.
+
+The Genuine Progress Indicator:
+
+   ●   It is calculated from ​26 different indicators grouped into three main categories:
+       economic, environmental and social​. It aims to look at ​economic sustainability​,
+       to ensure development does not limit the amount produced and consumed in the
+       future.
+
+   ●   The economic category looks at personal consumption, inequality and the cost of
+       unemployment. Environmental accounts for the cost of pollution, loss of natural
+       areas, CO​2 emissions, ozone depletion and the depletion of non-renewable
+       resources. In social, the 10 indicators range from the value of housework and
+       parenting to the cost of crime and commuting to the value of volunteer work.
+
+   ●   They tend to show developed countries experiencing negative growth over time, due
+       to their impact on the environment. Some argue this proves that development is
+       unsustainable whilst others argue the index is biased and is constructed to prove
+       the ​anti-growth case​.
+
+
+
+
+                            www.pmt.education
+Moreover, figures like changes in ​electricity production or the ​numbers with a mobile
+phone per thousand of the population can show development levels. These are easier to
+calculate than indexes.
+
+
+
+       4.3.2 Factors influencing growth and development
+
+Economic factors:
+
+Primary product dependency:
+
+   ●   Primary products include agriculture, mining etc. A large amount of most developing
+       country’s economic activity is based on a primary product. These cause issues for a
+       number of reasons.
+
+   ●   Natural disasters can wipe out production of the primary product and so means that
+       farmers are left with no income. They are often ​non-renewable​, which means the
+       country will suffer when they run out of the product.
+
+   ●   They tend to have a ​low-income elasticity of demand​, which means as people get
+       wealthier, they don’t continue to increase the amount of primary products they buy
+       whereas they are likely to increase their demand for manufactured goods. The
+       Prebisch Singer Hypothesis ​suggests the long run price of primary goods declines
+       in proportion to manufactured goods, which means those dependent on primary
+       exports will see a fall in their terms of trade. However, in recent years, there has been
+       a ​rise in the prices of some key commodities​, such as food and a fall in prices of
+       some manufactured goods due to the expansion to places like China.
+
+   ●   Another issue caused by this is the ​Dutch disease​. This is when a country becomes
+       a significant commodity producer in a short amount of time, causing an increase in
+       demand for the currency (to enable people to buy the goods) which pushes its value
+       up. This increases export prices and leads to a reduction in competitiveness of the
+       economy, causing a fall in output in other areas. This occurred for the non-oil sectors
+       in ​Venezuela and Nigeria​.
+
+   ●   Some countries have been able to use primary products to develop, for example
+       Saudi Arabia and oil​. It is suggested that countries should use primary product
+       revenue to invest ​in manufacturing etc.
+
+   ●   Not all primary products have a low income elasticity of demand, for example
+       diamonds.
+
+
+
+
+                           www.pmt.education
+   ●   One example of a country that suffers from this is ​Ghana​. ​Gold, cocoa and oil
+       account for 75% of their total exports and they had to ask the IMF for a loan in 2014
+       due to their unsustainable balance of payments deficit.​ (IMF website)
+
+
+Volatility of commodity prices:
+
+   ●   Primary products tend to have ​inelastic demand and supply curves which means
+       relatively small changes in demand or supply leads to ​huge fluctuations in price.
+
+   ●   These large changes in price mean that ​producers’ income and the ​country’s
+       earnings are also rapidly fluctuating, making it ​difficult to plan and carry out long
+       term investment as well as meaning that producers can see their income fall very
+       rapidly, causing ​poverty.
+
+   ●   When prices of commodities rise for a number of years, there tends to be
+       over-investment in the production of the commodity causing long term risk when the
+       price eventually falls.
+
+
+Savings gap:
+
+   ●   Developing countries have lower incomes and thus they save less. This means there
+       is less money for banks to lend, reducing borrowing and thus reducing
+       investment/consumption. A savings gap is the ​difference between actual savings
+       and the level of savings needed to achieve a higher growth rate.
+
+   ●   The savings rate in Africa is around 17% of GDP compared to 31% on average for
+       middle income countries (Tutor2u). ​India is another country with a low savings as a
+       share of GDP.
+
+   ●   The ​Harrod-Domar model suggests savings provide the funds which are borrowed
+       for investment purposes and that growth rates depend on the level of saving and the
+       productivity of investment. It concludes that economic growth depends on the amount
+       of labour and capital and that developing countries have a vast labour supply, so
+       their problems are caused by capital. In order to improve capital, investment is
+       necessary and investment requires savings.
+
+   ●   However, there are problems with this model. ​Economic growth is not the same as
+       economic development. ​It is difficult for individuals to save when they have little
+       income and borrowing from overseas causes problems with debt. It is possible that
+       investment could be wasted​.
+
+
+
+
+                           www.pmt.education
+Foreign currency gap:
+
+   ●    This is when ​exports from a developing country are too low ​compared to imports
+        to finance the ​purchase of investment or other goods from overseas required for
+        faster economic growth.
+
+
+   ●    One country which suffers from this is ​Ethiopia. In 2018, public debt was around 60%
+        of GDP; most of it in foreign currency so it is possible that they will not have enough
+        foreign currency to repay their debt. It is thought there are only enough currency
+        reserves to pay for a month of imports. ​(The Economist)
+
+
+Capital flight:
+
+   ●    Large amounts of money are ​taken out of the country​, rather than being left there
+        for people to borrow and invest. If money was placed in banks within the country,
+        then credit could be created by banks for consumers and businesses to spend.
+
+   ●    This can occur because of lack of confidence in the country’s stability, to hide it from
+        government authorities or simply for profit repatriation.
+
+   ●    This caused the ​Argentine economic crisis in 2001.
+
+
+Demographic factors:
+
+   ●    Developing countries tend to have ​higher population growth​, which limits
+        development. If population grows by 5%, the economy needs to grow by 5% to even
+        maintain living standards. This means developing countries need to have higher
+        rates of growth to develop than more developed countries would do.
+
+   ●    The high population growth is caused by high birth rates, which increases ​the
+        number of dependents within a country but does not immediately increase those of
+        working age. It places strains on the ​education system and leads to ​youth
+        unemployment​.
+
+   ●    The ​population of Africa is expected to more than double by 2050, complicating
+        efforts to reduce hunger.
+
+
+Debt:
+
+   ●    During the 1970s and 1980s, developing countries received vast loans from banks in
+        the developed world. Now, they suffer from ​high levels of interest repayment​;
+        sometimes even higher than the loans and aid they receive from developed
+        countries, meaning ​money is flowing from developing to developed countries​.
+
+
+
+
+                            www.pmt.education
+   ●   This means they have ​less money to spend on services for their population and
+       they may need to ​raise taxes​, which limits growth and development.
+
+   ●   Borrowing for growth makes sense, just as firms borrow to expand, but the problem
+       occurs when governments take on too much debt and do not spend it well.
+
+   ●   Nigeria’s debt is 52% of GDP.
+
+
+Access to credit and banking:
+
+   ●   Developing countries have ​limited access to credit and banking compared to
+       developed countries, who have complex systems. This means those in developing
+       countries cannot access ​funds for investment and they struggle to ​save for the
+       future​.
+
+   ● Some families may use ​loan sharks​, who give high interest rates and leave
+       individuals permanently in debt.
+
+
+Infrastructure:
+
+   ●   In a developed country, there is a complex network of buildings, roads, ports,
+       railways, airports, utilities and electricity cables.
+
+   ●   Low levels of infrastructure make it ​hard for businesses to trade and set up ​within
+       the country, for example if there are a lack of roads. It makes their services and
+       production less reliable.
+
+   ●   However, the development of infrastructure can be ​expensive and tends to conflict
+       with ​environmental goals.
+
+   ●   India is a good example of country suffering from poor infrastructure. For example,
+       they saw power blackouts in 2012 and this damages their potential tourism industry.
+       About half their roads are not paved and they need to invest around $400bn in the
+       power sector. ​(Tutor2u)
+
+
+Education/skills:
+
+   ●   Poor education within these countries means that workers are low skilled, sometimes
+       unable to read and write, so have ​low levels of productivity​.
+
+   ●   Countries like ​China and South Korea invested heavily in their human capital when
+       they were developing, and this has benefitted them in the long term. Ethiopia suffers
+       from ​high illiteracy rates at around only 49%.​ (Unesco)
+
+
+
+
+                           www.pmt.education
+   ●   However, there is debate about what ​type of education is needed and problems
+       concerning ​over-education​ i.e. if graduates are unable to find graduate level jobs.
+
+
+Absence of property rights:
+
+
+   ●   Property rights are where individuals are allowed to own and decide what happens to
+       certain resources. A lack of rights mean that individuals and businesses c​annot use
+       the law to protect their assets, leading to reduced investment. They will be
+       unwilling to buy machinery, build factories or establish brands.
+
+
+   ●   The loss of property rights in ​Zimbabwe​ led to economic collapse.
+
+
+
+Non-economic factors:
+
+   ●   Many developing countries suffer from ​corruption​. Corruption means individuals will
+       make decisions which maximise the bribes they receive as oppose to those which
+       maximise development and output. Leaders are likely to make decisions which
+       benefit themselves rather than benefiting the economy. ​High levels of bureaucracy
+       are often linked to corruption and this is costly and time-consuming, deterring new
+       businesses and reducing output of those already established. ​Ghana’s high level of
+       freedom and democracy ​is one reason why it has been able to develop so quickly.
+
+   ●   Diseases such as HIV/AIDS and malaria have a negative impact on economic
+       growth.
+
+   ●   Countries with ​poor climates and geographical terrain ​may suffer from natural
+       disasters and it may be difficult for farmers or to set up businesses.
+
+   ●   Many countries suffer from ​civil wars, ​for example ​Syria and Iraq. This causes high
+       levels of poverty and destroys infrastructure, making it very difficult for the country to
+       rebuild even after the war has ended.
+
+
+
+
+                            www.pmt.education
+       4.3.3 Strategies influencing growth and development
+
+
+
+
+Market-orientated strategies:
+
+Trade liberalisation​:
+
+   ●    Countries can aim for export led-growth.
+
+   ●    Removing trade barriers will mean that domestic industries either close or are forced
+        to become as efficient as other world producers. Resources will be allocated to
+        their best use where the country has a comparative advantage.
+
+
+   ●    Countries like Singapore and South Korea and regions like Hong Kong have
+        benefitted from this method.
+
+Promotion of FDI:
+
+   ●    FDI is ​investment by one private sector company in one country into another
+        private sector company in another​. It includes direct acquisition of a foreign firm,
+        construction of a facility, investment in a joint venture with a local firm or licensing of
+        intellectual property.
+
+   ●    Firms tend to undertake FDI because production costs are lower in developing
+        countries and because it enables them access to a new market.
+
+   ●    It is different from a loan because if the investment fails, it is the company who has to
+        deal with it and the ​country does not owe money to foreigners​.
+
+
+
+
+                             www.pmt.education
+  ●   It also involves the ​transfer of knowledge from one country to another, with the
+      company bringing production and management techniques and training for staff
+      which will benefit the country as a whole.
+
+  ●   It will ​create jobs and leads to the effect of the multiplier. Labour productivity tends to
+      increase and wages are often higher. It is a source of investment and can help to ​fill
+      the savings gap​.
+
+  ●   However, there is usually a ​repatriation of profits and developing countries may
+      find the company ​exploits them, by offering lower wages and poorer conditions than
+      they would in a developed country.
+
+  ●   The country will also ​lose some sovereignty and become dependent on another
+      firm. Local competition may find it hard to set up and compete and the best jobs often
+      go to imported labour, leaving only low skilled jobs for locals.
+
+  ●   Environmental damage and exploitation of natural resources and tend to
+      become problems.
+
+  ●   India has benefited greatly from FDI. The Make In India initiative liberalised FDI
+      policy and led to a 48% increase in FDI in a range of sectors, including
+      pharmaceuticals, manufacturing and railways.
+
+  ●   Samsung’s investment in Vietnam has been crucial. Many local firms are now a part
+      of their supply chain and other businesses have set up around their factories, for
+      example hotels and restaurants.
+
+Removal of government subsidies:
+
+  ●   Subsidies are placed on essential items within a country, such as food or fuel, or
+      target agriculture and industry in an attempt to increase output and investment. They
+      can be an effective way of ​minimising absolute poverty and ​ensuring a minimum
+      standard of living​ but they create many problems.
+
+  ●   They are often ​poorly targeted since subsidies on basic goods like rice will benefit
+      everyone in the country, not just the poor. Economic theory suggests the problem
+      would be better solved by giving poor households cash payments, as this would
+      mean they were targeted at the poor.
+
+  ●   Subsidies to farmers and producers tend to lead to ​inefficiency and if they are given
+      a large amount over a long period of time, the subsidy becomes ineffective in
+      increasing development. In other cases, they can be beneficial in allowing an ​infant
+      industry​ to grow.
+
+  ●   They represent a ​large amount of government spending​, incurring an opportunity
+      cost and often leading to high levels of debt.
+
+
+
+
+                           www.pmt.education
+  ●    They can also cause problems in terms of ​corruption and criminality, for example ​in
+       Venezuela subsidised fuel is smuggled across its borders and sold in neighbouring
+       countries for profit. The fuel subsidies have also led to high emissions, an unintended
+       consequence.
+
+  ●    Removing a subsidy can be very ​politically unpopular and some governments have
+       even been thrown out because of attempting to do this. The best time to remove a
+       subsidy is when the free market price is falling, as this means the removal is less
+       noticeable to the people.
+
+  ●    Venezuela has placed subsides on almost all goods due to high inflation and low
+       wages, but this is still not enough and demand is still higher than supply.
+
+Floating exchange rate systems:
+
+  ●    In these systems, market forces determine the currency. The country does not have
+       to worry about their ​gold and foreign currency reserves and the government does
+       not intervene.
+
+  ●    However, there are problems with this. It means that the currency can be ​volatile
+       which makes it difficult for exporters/importers to make decisions about the ​future
+       and can cause large changes in macroeconomic variables, including economic
+       growth.
+
+Microfinance schemes:
+
+  ●    These schemes aim to give poor and near-poor households ​permanent access to a
+       range of financial services​, including loans, savings, insurance and fund transfers.
+       It is used to refer to loans from providers known as microfinance institutions (MFI)
+       who deliver small loans to unsalaried borrowers, such as ‘​Opportunity​’.
+
+  ●    They take little or no collateral and use group lending, pre-loan saving requirements
+       and an implicit guarantee of access to future loans if present loans are repaid fully
+       and promptly. It allows borrowers to ​invest​ in their businesses or start up new ones.
+
+   ●   The scheme tends to target groups who would be less likely to otherwise receive
+       loans, for example ​women​.
+
+  ●    However, ​South Africa ​has shown the problems that can occur with this system. It
+       has become a method of ​financing consumption spending and unemployment
+       means that most people ​do not have the funds necessary to ensure repayment of
+       their loan, meaning they have to sell off family assets, borrow from friends and family
+       or simply take out new loans to repay the old ones. When actually used for
+       investment, it has simply ​increased the informal economy with very little being
+       spent on sustainable methods of development. Financial resources have been
+
+
+
+
+                           www.pmt.education
+       diverted away from more productive and sustainable activities, for example
+       manufacturing.
+
+Privatisation:
+
+   ●   Privatisation can ​end the corruption within a firm who is owned by the state, as well
+       as encouraging them to be more efficient by ​increasing competition​.
+
+   ●   Selling off a firm, particularly if it is loss making, will ​improve government finances
+       and reduce levels of debt.
+
+   ●   However, if the firm is privatised as a ​monopoly ​there will be no competition within
+       the market. On top of this, it can be ​associated with corruption where politicians or
+       officials sell the company at below market price to a friend or family member or
+       receive bribes to accept one company’s bid.
+
+   ●   The ​water industry in Ghana was privatised in 2006 but when the contract was
+       expired in 2011, the government did not extend it. Water quality improved but
+       reliability did not. There had been increased revenue and efficiency and improved
+       customer service.
+
+
+
+Interventionist strategies:
+
+Development of human capital:
+
+   ●   This would provide workers with skills and training and thus help them to be more
+       efficient and ​improve productivity​. Businesses struggle to expand where there are
+       skills shortages and it also limits innovation.
+
+   ●   Human capital could be developed through schools or vocational training, whether
+       this be apprenticeships or simply classes provided for business people.
+
+   ●   Higher skills would allow the country to develop from the primary sector to a
+       manufacturing sector, ​overcoming primary product dependency.
+
+   ●   Better education also improves ​quality of life​.
+
+   ●   Both ​China and South Korea developed their human capital massively in order to
+       develop.
+
+
+
+
+                            www.pmt.education
+Protectionism:
+
+   ●   Protectionism ​allows domestic industries to grow by keeping foreign goods out
+       and protects them from strong competition. They can use a policy of ​import
+       substitution​, where they deliberately attempt to replace imported goods with
+       domestically produced goods by adopting protectionist measures.
+
+   ●   This will ​create jobs in the short run and will allow the industry to develop, perhaps
+       to the extent where the ​barriers can be removed​, and the industry can compete
+       globally.
+
+   ●   However, it means countries ​lose out from the benefits of specialisation and
+       comparative advantage and could cause ​inefficiency​, since domestic producers
+       suffer from a lack of competition. Other countries are likely to ​retaliate.
+
+Managed exchange rates:
+
+   ●   The currency could be ​fixed against a number of different exchange rates​. They
+       can introduce high exchange rates for the import of essential products and lower
+       exchange rates for others. There could be an even lower one for exports. A high
+       exchange rate for essential products will mean that the price within the country is low,
+       which helps to reduce poverty if the goods are consumer goods and encourages
+       investment if they are capital goods. A lower exchange rate for other imports will
+       mean that the price of these goods within the country is higher, discouraging their
+       import and encouraging consumers to buy from domestic producers.
+
+   ●   The problem with these tiered exchange rates is that they often ​fail to work in
+       practice​; black markets in foreign exchange develop which can destabilise the
+       system and corruption becomes an issue, when government officials buy currency at
+       one exchange rate and sell it for profit at another.
+
+   ●   Alternatively, governments can manage a ​single exchange rate which will ​reduce
+       volatility​, but speculation may mean that countries find it difficult to maintain an
+       exchange rate over a number of years.
+
+Infrastructure development:
+
+   ●   Infrastructure is ​essential for development​; a country needs roads, airports,
+       schools, hospitals, railways etc.
+
+   ●   Interventionists believe the government should provide these systems whilst a
+       market-based system would be for the private sector to provide them. Infrastructure
+       tends to suffer from the ​free rider problem and has ​very high capital costs​, making
+       it unlikely the private sector will develop it. Moreover, it has ​many positive social
+       benefits​ which suggests the government should provide it.
+
+
+
+
+                           www.pmt.education
+   ●   One problem of this is that the ​government may not have the funds to provide the
+       infrastructure and it is argued that they may be ​inefficient. Infrastructure projects are
+       often associated with ​bribery and corruption​, cause ​environmental damage and
+       may be poorly built and maintained.
+
+   ●   Some argue that ​intermediate technology​, which uses local materials and can be
+       fixed locally, is better than large scale infrastructure.
+
+Promoting joint ventures with global companies:
+
+   ●   One way to ​reduce the exploitation of countries as a result of FDI would be to set
+       up a joint venture. The government may insist that firms setting up production plants
+       in their country find a local partner to create a jointly owned company with. This will
+       help to keep some of the ​profits generated within the country​, which can be used
+       in investment.
+
+   ●   Tata Starbucks Pvt.Ltd is a joint venture company with Starbucks in India
+
+Buffer stock schemes:
+
+   ●   This is where the government imposes both a ​maximum and minimum price for
+       goods​, ​buying up stocks when there is excess supply and ​selling them off when
+       there is excess demand. As a result, it should be ​self-financing​: money is raised
+       when selling the products, which allows the government to buy the next lot of stocks.
+
+   ●   It is used on ​commodities, ​where the prices are volatile, and can either be set up by
+       a group of countries or within a country. When it works effectively, it is beneficial
+       because it ​stabilises prices and thus encourages investment since producers can
+       plan for the long term. It also prevents sharp falls in prices, meaning that producers
+       are kept from falling into absolute poverty, and prevents sharp rises in prices,
+       meaning that consumers are able to afford the good. It can solve some of the issues
+       relating to ​primary product dependency​.
+
+   ●   However, it ​requires stocks to go up and down​; if they keep rising, then the
+       scheme will run out of money and if they keep falling, the scheme will run out of
+       stocks. They require ​huge start-up costs​, as well as administration costs and
+       problems of storage.
+
+   ●   Other countries may benefit from a buffer stock system since it keeps global prices
+       fairly stable when undertaken by a group of countries, and so they can be seen as
+       free riders of the system. This may mean that some countries will not want to
+       introduce the system.
+
+   ●   The biggest issue is that minimum prices may be set too high, encouraging
+       producers to become ​inefficient​. They will produce as much as they like and know
+
+
+
+
+                            www.pmt.education
+       they will be able to sell it anyway, meaning that supply is high and the government
+       has to continually buy up the stocks.
+
+   ●   If the scheme is operating at a loss, the taxpayer feels the burden and ​government
+       finances ​are worsened.
+
+   ●   The Ivory Coast and Ghana implemented a buffer stock scheme for cocoa in 2017
+       due to low prices
+
+
+
+Other strategies:
+Industrialisation:
+
+   ●   The ​Lewis model assumed that developing countries had ​dual economies with a
+       traditional agricultural sector, which had low wages, low productivity,
+       underemployment and low savings, and a modern industrial sector, with high levels
+       of investment and urbanisation.
+
+   ●   It suggested that the ​modern industrial sector would attract workers from rural
+       areas by offering higher wages. Lewis believed that labour productivity was so low in
+       agricultural areas that people leaving the area would have no impact on output and
+       would in fact mean there was a surplus of food, since the same amount was being
+       shared amongst less people. Those who moved to the urban areas would have
+       higher incomes​ and thus ​more savings for investment​.
+
+   ●   He believed ​savings and investment were the key to growth and thus growth
+       could be achieved through rural-to-urban migration.
+
+   ●   However, although labour productivity is low for some parts of the year, during
+       planting and harvesting ​vast amounts of labour is needed. Also, it is not necessarily
+       true that those with ​higher wages will save and invest​ their money.
+
+   ●   Recently, migration has led to ​urban poverty replacing rural poverty as the industrial
+       sector is unable to provide jobs for all those who have moved. ​Improvements in
+       technology​ will lead to a reduced demand for labour.
+
+   ●   It can be argued that industrialisation is a ​result of development​, rather than a
+       cause.
+
+   ●   It is possible for the government to build factories and plants to ​encourage the
+       transition to industrialisation. This has been successful in countries such as ​South
+       Korea​, but in many countries the industry fails and so there is just a waste of scarce
+       resources.
+
+
+
+
+                           www.pmt.education
+  ●   Instead of industrialising, ​India went from agriculture to services as this is where they
+      had a comparative advantage. This shows that ​not all countries will develop in the
+      same way​.
+
+Development of tourism:
+
+  ●   Some countries have decided to take advantage of their climate and geography to
+      build up a tourism industry, such as the ​Caribbean. This provides them with the
+      funds to develop their economy​ and improve living standards.
+
+  ●   The ​income elastic nature of tourism means that as the global economy grows,
+      demand for the industry will increase even further, allowing the developing country to
+      continue development. However, it also means that they will suffer in times of
+      recession.
+
+  ●   Tourists represent a source of ​foreign currency​, which will fill the currency gap. so
+      countries will be able to fund their imports without negative consequences. However,
+      holidaymakers’ demands for products from their home countries mean that the
+      tourism industry is associated with an ​increase in imports and so may not help the
+      foreign currency gap at all.
+
+  ●   Countries are likely to attract ​investment from transnational hotel companies, who
+      will also bring knowledge with them. It can help to fund ​improvements in
+      infrastructure​, as tourism requires reliable electricity, airports, clean water etc. and
+      so the government have an incentive to provide this. This investment will have a
+      multiplier effect through the economy.
+
+  ●   Jobs are created locally since the tourism industry relies on low skilled workers who
+      know the local area, rather than to high skilled workers which may be sourced from
+      abroad. It is very labour intensive.
+
+  ●   The government will see ​higher tax revenues due to higher income and higher
+      profits. It can provide funds to allow countries to diversify.
+
+  ●   However, the industry is ​seasonal and involves ​low skilled, low paid jobs which
+      means the effect of the multiplier is limited. ​Tourism destinations can go in and
+      out of fashion​, meaning some areas will see a loss of employment and that
+      investment may only receive a short-term return.
+
+  ●   A large amount of wealth created will be withdrawn as TNCs ​repatriate their profits​,
+      causing problems involving capital flight.
+
+  ●   On top of this, the country can suffer from a large number of ​externalities, including
+      pollution, waste, environmental damage and impact on culture.
+
+
+
+
+                           www.pmt.education
+   ●   In Morocco, 7 eco-resorts are being built on the north coast where unemployment is
+       40%.​ (The Economist)
+
+Development of primary industries:
+
+   ●   Some countries, such as ​Saudi Arabia, Norway and Australia​, were able to develop
+       because of an abundance in natural resources. The development of a primary
+       industry provides ​funds to allow a country to diversify as well as allowing
+       infrastructure development​ and ​better education​.
+
+   ●   However, primary products are volatile and ​primary product dependency causes
+       many issues. Primary industries also suffer from ​corruption.
+
+   ●   The government can ​address the Dutch Disease​, for example ​in Norway the
+       government uses some of its oil revenues to invest overseas and this increases
+       supply of their currency, depreciating it and helping other industries to compete
+       overseas.
+
+Fairtrade schemes:
+
+   ●   Fairtrade is defined as being ‘a trading partnership based on dialogue, transparency
+       and respect, which seeks greater equity in international trade’. (WTFO) There are a
+       number of organisations which monitor that what is being sold under the Fairtrade
+       label conforms to a number of key principles: ​a fair price, community development,
+       fair working conditions and protecting the environment.
+
+   ●   A fair price typically means that agreements are made to buy a guaranteed amount of
+       produce over a period of time at a price which is above the market price when the
+       agreement was made. This gives producers ​stability and raises their income​.
+
+   ●   The system means that ​child labour is not used and that production is sustainable
+       and does not take place at the expense of ​environmental degradation​.
+
+   ●   A study carried out in ​Sri Lanka showed that those under fair trade had ​higher
+       income and satisfaction, a greater understanding of the market and a more
+       optimistic view of the future than those not under fair trade. They were able to ​save
+       for the future and invest or provide financial support for their children. However, they
+       still did not feel their income was sufficient.
+
+   ●   It is argued that the system has an ​insignificant impact on the developing world. It
+       benefits the Fairtrade producers but can leave others worse off since non-Fairtrade
+       producers see a fall in demand. In the long term, the higher price for Fairtrade goods
+       will increase supply and thus this could bring price back down, but this will depend on
+       the price elasticity of supply.
+
+
+
+
+                           www.pmt.education
+   ●   Another issue is that higher incomes ​reduces the incentive to diversify and keeps
+       farmers engaged in low profit activities. On the other hand, it can be argued that it
+       allows parents to send their ​children to school (whether because it provides the
+       funds necessary or means children are no longer expected to stay at home to work
+       the land) and this will allow them to gain skills which in the future will allow them to
+       move away from agriculture.
+
+Aid:
+
+   ●   This is when a country voluntarily transfers resources to another or gives loans on
+       concessionary terms. There are different types of aid:
+          o tied aid is aid with conditions attached, such as economic or political reforms
+               or a commitment to buy goods from the donor country
+          o bilateral aid is directly from one country to another
+          o multilateral aid is when countries give aid to an international organisation who
+               distributes it to other countries.
+          o concessional loans are loans given on lower, or no, interest rates
+
+   ●   Egypt, Afghanistan and Vietnam are the greatest recipients of aid, whilst the EU and
+       US are the largest donors.
+
+   ●   Aid is good as it is able to ​reduce absolute pove​rty, particularly emergency relief
+       provided after disasters such as the ​Haiti earthquake (2010). However, it is unclear
+       whether the money really reduces absolute poverty, as improving infrastructure does
+       little to help those who suffering most.
+
+   ●   It can ​fill the savings gap​, as outlined by Harrod-Domar, and thus provides funds for
+       investment, whether this be in infrastructure or in human capital. Both of these often
+       have to be done by the government because they can be seen as public goods and
+       suffer from the free rider problem. It also provides foreign exchange to ​fill the
+       foreign currency gap​.
+
+   ●   It can contribute to ​increased globalisation and trade as well as reducing world
+       inequality.
+
+   ●   However, some argue it results in a ​dependency culture where countries are
+       unconcerned by their finances as they know they can receive aid from another
+       country.
+
+   ●   Corruption means that money does not always go to where it is meant to. In the long
+       term, tied aid and concessional loans may mean that the country loses out. Since
+       concessional loans still have to be repaid, this may limit where the money is spent;
+       countries may only spend money on things they know will see a return in the short
+       term.
+
+
+
+
+                           www.pmt.education
+   ●   It is difficult to know the best way to develop a country and therefore it is ​difficult to
+       know the best place to spend the aid.
+
+Debt relief:
+
+   ●   Many countries suffer greatly from the ​high interest repayments to loans they have
+       taken out. It limits the growth of some of the poorest countries, whilst being relatively
+       small for the countries and agencies that are owed the money. Therefore, it seems
+       reasonable for the debt of developing countries to be written off.
+
+   ●   It will ease government finances and allow more ​money to be spent on provision
+       of services​ and infrastructure to aid development.
+
+   ●   However, it causes ​moral hazard because it creates a precedent: every poor country
+       may now expect to receive debt relief. It also ​eases pressure on weak governments
+       to adopt reforms and good economic policies.
+
+
+
+
+International institutions and NGOs:
+
+World Bank:
+
+   ●   The World Bank was founded at the Bretton Woods Conference after the Second
+       World War. It aims to bring about ​long-term development and a reduction in
+       poverty​.
+
+   ●   It is made up of:
+            o the International Bank for Reconstruction and Development (IBRD)
+            o the International Development Association (IDA)
+            o the International Finance Corporation (IFC)
+            o the Multilateral Investment Guarantee Agency (MIGA)
+            o and the International Centre for Settle of Investment Disputes (ICSID).
+       The IBRD and IDA provide ​financing, policy advice and technical assistance​: IDA
+       helps the poorest countries whilst IBRD helps middle income and creditworthy poorer
+       countries. IFC, MIGA and ICSID help ​strengthen the private sector in developing
+       countries by providing them with ​finance, technical assistance, political risk
+       insurance and settlement of disputes​.
+
+   ●   The World Bank has funded over ​12,000 development projects since 1947 through
+       interest free loans and grants and supports long term human and social
+       development.
+
+
+
+
+                            www.pmt.education
+International Monetary Fund (IMF):
+
+   ●   Like the World Bank, the IMF was set up in the Bretton Woods Conference but it was
+       not set up to promote economic development, instead to ensure that ​exchange rate
+       systems work well.
+
+   ●   They provide loans to help countries when there are ​international exchange rate
+       crises​ or when they cannot afford to pay off their international debt.
+
+   ●   When providing loans, the IMF insists that countries make ​macroeconomic reforms
+       to resolve the problems. The IMF has received criticism for this because it causes
+       problems for countries. Usually, it involves ​reducing imports and increasing
+       exports which reduces the amount of resources available for domestic consumption.
+       It can also be in the form of ​lower government spending​.
+
+   ●   However, countries are not forced to turn to the IMF for help but many do because
+       the ​alternative is defaulting on their loans​, which would cause even more
+       problems than the reforms do. The reforms intend to ​help countries to overcome
+       issues and should allow a country to develop in the long term; they are not meant to
+       be a punishment.
+
+   ●   The IMF also provides ​advice which aims to bring about ​economic stability and
+       raise living standards ​and help countries to ​develop their economic institutions
+       through training and technical assistance, for example the ​central bank in Kosovo.
+
+
+NGOs:
+
+   ●   These are ​non-profit organisations that are run independently from the
+       government​.
+
+   ●   Firstly, they can provide ​direct assistance to countries in the form of project work,
+       for example Oxfam or CAFOD. This can range from education to wells to healthcare
+       and can either be emergency or long term.
+
+   ●   On top of this, they can act as ​pressure groups to lobby governments to adopt more
+       pro-development strategies.
+
+   ●   A problem of NGOs is that it is believed that ​they alone can never solve the
+       problem​, it is the government who has to fix the issues.
+
+   ●   On top of this, many see them as having an ​anti-capitalist agenda which blames
+       problems on the World Bank, the IMF and the WTO. This causes divisions in the
+       development project and is also an issue since past experience suggests global
+       capitalism is the best system for development.
+
+
+
+
+                           www.pmt.education
+

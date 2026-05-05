@@ -1,0 +1,409 @@
+Edexcel Economics (A) A-level
+ Theme 2: The UK Economy -
+  Performance and Policies
+    2.2 Aggregate Demand
+               Detailed Notes
+
+
+
+
+       www.pmt.education
+         2.2.1 The characteristics of Aggregate Demand
+
+Aggregate demand (AD) is the ​total level of spending ​in the economy at any given price
+
+
+Components of AD:
+
+AD= C+I+G+(X-M)
+Aggregate demand is made up of consumption (C), investment (I), government spending (G)
+and net exports (X-M).
+
+   ●   Consumption ​is consumer spending on goods and services; it makes up about 60%
+       of AD, so is the biggest part.
+
+   ●   Investment is spending by businesses on capital goods, such as new equipment
+       and buildings as well as working capital e.g. stocks and work in progress; it makes up
+       about 15-20% of AD. Most investment is by the private sector (about 75%) but there
+       is also investment by the government.
+
+   ●   Government spending is spending by the government on providing goods and
+       services, generally public and merit goods, both on wages and salaries of public
+       sector workers and on investment goods like new roads and schools. This will
+       change year on year as governments decides how much they spend. Transfer
+       payments such as pensions and jobseekers’ allowances aren’t included in the figure
+       as money is just transferred from one group to another. Government spending tends
+       to be around 18-20% of GDP.
+
+   ●   Net exports is exports minus imports: when imports are higher than exports this is a
+       minus figure as more money leaves the UK than comes in. The UK has a large trade
+       deficit, but this minor figure and is the least significant part of AD at around 5%.
+
+
+The AD curve:
+The AD curve is the same as the demand curve for an individual market, but instead of
+showing the relationship between price and output, it shows the ​relationship between price
+level and real GDP. Like the demand curve, the AD curve is ​downward sloping as a rise in
+prices causes a fall in real GDP and there are four key reasons for this:
+
+   ●   Income effect: As a rise in prices is not matched straight away by a rise in income,
+       people have lower real incomes so can afford to buy less, leading to a contraction
+       demand.
+
+   ●   Substitution effect: If prices in the UK rise, less foreigners will want to buy British
+       exports and more UK residents will want to buy imported foreign goods because they
+       are cheaper. The rise in imports and fall of exports will decrease net exports so AD
+       will contract.
+
+
+
+
+                           www.pmt.education
+   ●   Real balance effect​: A rise in prices will mean that the amount people have saved
+       up will no longer be worth as much and so will offer less security. As a result, they will
+       want to save more and so reduce their spending, causing a contraction in AD.
+
+   ●   Interest rate effect: Rising prices mean firms have to pay their workers more and so
+       there is higher demand for money. If supply stays the same, then the ‘price of money’
+       i.e. interest rates will rise because of this higher demand. Higher interest rates mean
+       that more people will save and less will borrow and will also mean that businesses
+       invest less, so AD will contract.
+
+
+
+
+Movement and shifts along the AD curve​: Like with demand, there can be movements
+in the AD curve or there can be shifts. A movement along the AD curve is caused by a
+change in prices​, caused by inflation or deflation. A shift of the AD curve is caused by a
+change in any other variable​. Again, as with demand, a shift to the right represents an
+increase in AD and a shift to the left represents a fall in AD.
+
+   ●   It is important to distinguish between rates of change and absolute change: a fall in
+       the amount of consumption will reduce AD but a fall in the rate of rise of consumption
+       means that consumption is still rising so AD will still increase but by not as much.
+
+   ●   Some factors, for example interest rates, could cause a movement or a shift in the
+       AD curve. When prices increase, interest rates rise (because of the interest rate
+       effect) and this causes a movement along the AD curve but if the government
+       increases the interest rate then there is a shift in the AD curve. It is important to
+       always ​look at whether the change is because of price or not.
+
+
+
+
+                            www.pmt.education
+                              2.2.2 Consumption
+Consumption is ​spending on consumer goods and services​ over a period of time.
+
+
+Disposable income:
+
+Disposable income (Y) is the ​money consumers have left to spend​, after taxes have been
+taken away and any state benefits have been added. This means that disposable income is
+affected by government taxation as well as wages.
+
+   ●   It is the ​most important factor in determining the level of consumption​. Those
+       who are earning a large income will be able to spend much more than those on a
+       minimum wage.
+
+   ●   However, we are also concerned with how much an increase in income affects
+       consumption, this is called the ​marginal propensity to consume (MPC). For most
+       people, MPC will be positive but less than 1 i.e. an increase in income increases
+       spending but spending doesn’t increase by as much as income. Some people will
+       have an MPC of more than one as they use borrowing or savings to fulfil the demand
+       for goods which is higher than their increase in income.
+
+   ●   Poorer people tend to have a higher MPC as they are likely to spend much more of
+       their increase in income whilst richer people are more likely to save it.
+
+   ●   The average propensity to consume (APC) is the average amount spent on
+       consumption out of total income. In an industrialised country, the APC for the
+       economy is likely to be less than one as people save some of their earnings.
+
+MPC= ​change in consumption
+        change in income
+
+APC= ​total consumption
+        total income
+
+
+
+Relationship between savings and consumption:
+
+   ●   Savings is what is not spent out of income. An increase in consumption decreases
+       savings so the same factors which affect consumption are those which affect
+       savings- but in the opposite way. For example, a rise in confidence will decrease
+       savings.
+
+   ●   The marginal propensity to save (MPS) is how much of an increase in income is
+       saved whilst the average propensity to save (APS) is the average amount saved out
+       of income.
+
+
+
+
+                          www.pmt.education
+MPS= ​change in savings
+      change in income
+
+APS= ​total savings
+      total income
+
+
+Other influences on consumer spending:
+
+   ●   Interest rates​: ​Most major expenditures are bought on credit so therefore the
+       interest rate will affect the cost of the good for consumers. If interest rates are high,
+       the price of the good will effectively be higher since more interest needs to be paid
+       back and this will lead to a reduction in consumption. High interest rates also
+       increase mortgage repayments so reduce consumption. Also, a rise in interest rates
+       decreases the value of shares and so people experience a negative wealth effect.
+
+
+   ●   Consumer confidence: ​One major factor that affects people’s spending is what
+       they think will happen in the future. If people are confident about the future and
+       expect pay rises, then they will continue or increase their spending. If they expect
+       high levels of inflation in the future, they will buy now as it will be at a cheaper price,
+       so consumption will increase. If they expect a recession and fear possible
+       unemployment, consumption will decrease as people may save more. Expectations
+       about a change in the taxation level will affect consumption: if consumers expect tax
+       to increase prices in the future, they will buy now whilst if they expect it to reduce
+       prices in the future, they will delay their purchases. Similarly, expectations on interest
+       rates will affect consumption: if consumers expect interest rates to fall they may delay
+       their purchases as things on credit will be cheaper.
+
+
+   ●   Wealth effects​: Wealth is a stock of assets. People with greater wealth tend to
+       have greater levels of consumption, known as the wealth effect: a change in
+       consumption following a change in wealth. The wealth effect is experienced when
+       real house prices rise as owners now have more wealth so are more confident with
+       spending as they know that if they go into financial difficulty they could simply borrow
+       more against the house, since their house is worth more than their current mortgage.
+       It can also be experienced when share prices rise as people may sell some of their
+       shares and spend the money or may be more confident in spending the money they
+       have as they know they have the shares to fall back on in case of financial difficulty.
+       Greater wealth will improve a consumer’s confidence and thus lead to greater
+       spending.
+
+
+   ●   Distribution of income: ​Those on high incomes tend to save a higher percentage
+       of their income than those on low incomes and so a change in the distribution of
+       money in the economy will affect the level of consumption. If money is moved from
+       the rich to the poor, consumption is likely to increase as the poor have a higher MPC.
+
+
+
+
+                            www.pmt.education
+   ●   Tastes and attitudes: ​In our modern society, there is a strong materialistic drive
+       that encourages people to have the newest and the best and therefore spending can
+       be very high, in some cases even above income. If people were less materialistic,
+       consumption would decrease.
+
+
+
+                                 2.2.3 Investment
+
+Investment is the ​addition of capital stock to the economy i.e. machines and factories
+used to produce other goods and services. It is only seen as investment if real products are
+created so buying a share in a company would be saving but buying new machinery is
+investment.
+
+
+Gross and net investment
+
+Machinery depreciates (loses its value) over time as it wears out or gets used up. ​Gross
+investment is the amount of investment carried out and ignores the level of depreciation,
+whilst ​net investment​ is gross investment minus the value of depreciation.
+
+For example, if a firm was to buy 5 new machines then the gross investment would be the
+value of these 5 machines but if they also got rid of 2 old machines then the net investment
+would be the value of the 5 machines minus the value of the 2 old machines. The distinction
+between net and gross investment is important as in the UK ​depreciation accounts for about
+75% of gross investment​.
+
+
+
+Influences on investment:
+
+   ●   Rate of economic growth: ​In a growing economy, there will be higher levels of
+       investment as businesses would be more confident about their investments and the
+       higher demand would lead to a higher return rate on the investment. For example,
+       buying a new machine would lead to more products being made, but if the economy
+       was declining these products wouldn’t be bought so there would be no or little return
+       on the investment. On top of this, a growing economy needs more investment in
+       order to cope with the higher levels of demand. If the same products and the same
+       output is being produced every year, and no more is demanded, investment will stay
+       the same as firms only have to replace old machines. However, if the economy is
+       growing, firms will need to increase investment to match the level of demand and if it
+       is shrinking, firms will not need to replace their old machines and so investment will
+       fall.
+
+
+
+
+                           www.pmt.education
+●   Business expectations and confidence- ‘Animal spirits’: ​When businesses
+    are confident about the future and expect future growth, investment will increase as
+    they want to prepare for the future. If they are fearful of the future, then they will not
+    invest money in new ideas or machinery. John Maynard Keynes used the term
+    ‘animal spirits’ to describe the feeling of managers and owners of firms on whether
+    their investment would be profitable. He argued that it is difficult to measure.
+
+●   Demand for exports: ​If the world economy is booming, demand for exports is
+    likely to increase and therefore exporting firms’ investment is likely to increase to
+    cope with this extra demand. This will have a knock-on effect and encourage other
+    firms to increase their investment.
+
+●   Interest rates: ​Most investment is done through borrowing. High interest rates
+    mean that borrowing is more expensive, so a business needs to be more confident of
+    good profits in order to cover the extra costs of borrowing. Other investment is done
+    through retained profits or savings. A rise in interest rates increases the opportunity
+    cost of a business using retained profits as they are able to get higher interest
+    payments than before. Keynes’ Marginal Efficiency of Capital (MEC) graph shows
+    how higher interest rates will lead to a fall in investment. This displays the expected
+    rate of return from an investment at a particular given time. If interest rate is at 10%
+    then firms need an expected rate of return which is at least equal to 10% to make it
+    worthwhile.
+
+●   Influence of government and regulations: ​Governments can encourage
+    investment by their own policy decisions. For example, they could offer tax breaks or
+    grants to businesses to try and encourage them to invest. Regulations also affects
+    investment as a highly regulated economy tends to see less investment as regulation
+    increases the cost and time taken to invest, such as planning regulations.
+
+●   Access to credit: ​Investment will be lower when an investment has a high risk
+    attached to it, as it means there will be less access to credit and interest rates will be
+    higher. In recessions, it is usually more difficult to access credit as risks are higher
+    and banks become more risk aware, fearing firms will not be able to pay the money
+    back.
+
+●   Retained profit: ​Retained profits are the profits kept by a firm and not shared with
+    shareholders or used to pay taxes. Not all firms, particularly small firms, take into
+    account the opportunity cost of investment from their retained profits i.e. the interest
+
+
+
+
+                         www.pmt.education
+       gained from keeping it in a bank account. Many firms are also unwilling to borrow
+       money for investment in case the investment fails to make a profit and they are
+       unable to pay it back. Therefore, if firms are making higher retained profits,
+       investment is likely to increase as they have money available to invest.
+
+   ●   Technological change: ​Improvements in technology will improve or speed up
+       production which will increase the level of profitability, meaning the investment has a
+       better prospect of success. Change also means businesses need to invest to keep
+       up with the best technology.
+
+   ●   Costs: ​A rise in the cost of any capital project increases the level of risk that you are
+       taking and therefore leads to lower levels of investment. Also, rises in the costs of
+       making goods, such as the raw materials and wage, will decrease investment as it
+       will reduce profitability. This means firms have less money to invest and decreases
+       the rate of return on their investment.
+
+
+
+                         2.2.4 Government spending
+The government has a very significant part to play in the level of AD, through spending. They
+spend money on defence, education, the NHS etc. The impact of a rise in government
+spending depends on the changes in tax: if government spending and tax rise by the same
+amount then there is likely to be no overall increase in demand as people have less
+disposable income so C decreases but G increases.
+
+
+Influences on government expenditure:
+
+   ●   The trade cycle​: Decisions over government expenditure may be made in order to
+       manage AD, and therefore regulate the trade cycle. In a recession, the government
+       may increase spending in order to increase demand to reduce unemployment.
+       Government spending also automatically rises during a recession as they have to
+       spend more on unemployment benefits. During booms, the government may
+       decrease spending to decrease demand and reduce inflation.
+
+   ●   Fiscal policy: ​Some government spending is fixed from year to year, for example
+       schools must be funded and pensions must be paid. However, governments can vary
+       what they spend each year, and this is set out in their budget. Fiscal policy is the
+       decisions about government spending and taxes and it will depend on the priorities of
+       the government. The level of government spending depends on what they lay out in
+       their fiscal policy.
+
+   ●   Age distribution of the population: ​An ageing population leads to increased
+       government expenditure on pensions, social care etc. whilst a young population
+       leads to increased spending on education. The more dependents in the economy
+       (the young and old), the higher government spending tends to be.
+
+
+
+
+                            www.pmt.education
+                                     2.2.5 Net trade
+Exporting goods abroad brings money into the country as there is an increase in AD whilst
+importing goods means money leaves the country. Net trade is the ​total exports minus the
+total imports.
+
+
+Influences on net trade balance:
+
+   ●   Real income: ​When real income in the UK is high, there tends to be increased
+       imports as people demand more goods and services and the UK is unable to meet
+       their needs. This will mean that net trade decreases. However, if an increase in real
+       income is due to export-led growth then net trade will increase. Therefore, the effect
+       of changes in real incomes is dependent on many factors.
+
+   ●   Exchange rates: A strong pound (when the pound is worth a lot in comparison to
+       other countries) makes imports cheap and exports dear because it costs foreigners
+       more to buy pounds with their local currency. As a result, imports will increase and
+       exports will decrease so net trade will decrease. This depends on the elasticity of
+       imports and exports. If imports are price elastic, a rise in price will cause a large fall in
+       demand so the value of imports will fall. If imports are inelastic, a rise in price only
+       leads to a small fall in the amount of imports so the value of imports will rise. This is
+       the same for exports: if prices rise and PED is inelastic then there will be a rise in
+       value but if they are elastic then it will cause a fall in value. If both imports and
+       exports are elastic, a rise in the value of the pound will lead to a fall in net trade. This
+       is looked at in more detail in Theme Four (4.1.8)
+
+   ●   State of world economy: If the UK’s main export country is doing well, then UK
+       exports are likely to rise and so net trade is likely to rise. The effect of the state of the
+       world economy is dependent on which countries are doing well and the trade
+       relationship the UK has with them.
+
+   ●   Degree of protectionism: ​Protectionism is an attempt to prevent domestic
+       producers suffering from competition abroad. Tariffs, quotas and technical barriers
+       are introduced which makes it harder for producers from abroad to sell their goods in
+       the UK. If there is high protectionism on UK exports in other countries, exports will
+       decrease as it will be harder for UK firms to sell their goods in other countries. If there
+       is high protectionism on imports into the UK, imports will decrease. If the UK imposes
+       protectionist measures, other countries are likely to retaliate and therefore exports
+       are likely to decrease. Free trade means that net trade will be a more significant part
+       of AD, whether this be in a positive or negative sense.
+
+   ●   Non-price factors: ​Two non-price factors which affect net trade are quality and
+       design and marketing. If UK goods are of a higher quality and design, exports will be
+
+
+
+
+                            www.pmt.education
+    high as foreign demand for UK goods will increase and imports will decrease as
+    people will buy the British goods instead of foreign goods. This means net trade will
+    increase. If UK goods are well marketed, people will have a stronger desire to buy
+    British goods so exports will increase and imports will decrease, so net trade will
+    increase. Strong quality/design and marketing will mean that British exports are likely
+    to be more inelastic.
+
+●   Prices: ​High prices of UK goods will mean that the goods are less competitive
+    compared to international goods since people make decisions partly based on price.
+    This means the volume of exports will decrease and the volume of imports will
+    increase Prices are affected by the inflation rate: if the UK inflation rate is higher than
+    other countries, prices will rise faster. They are also affected by productivity in UK
+    (output per worker) as higher productivity leads to lower costs and so prices will be
+    low. The effects of changing prices on the value of imports and exports depends on
+    the price elasticity of demand. If PED is elastic, then higher prices will lead to a fall in
+    net trade.
+
+
+
+
+                         www.pmt.education
+

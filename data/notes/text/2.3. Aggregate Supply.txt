@@ -1,0 +1,255 @@
+Edexcel Economics (A) A-level
+ Theme 2: The UK Economy -
+  Performance and Policies
+    2.3 Aggregate Supply
+               Detailed Notes
+
+
+
+
+       www.pmt.education
+          2.3.1 The characteristics of Aggregate Supply
+
+The AS curve:
+
+Aggregate supply is the ​volume of goods and services produced within the economy at
+a given price level. It indicates the ability of an economy to produce goods and services
+and shows the relationship between the ​real GDP​ and the ​average price levels​.
+
+
+
+
+   ●   This diagram shows the short-run AS curve. In the short run, if a business wants to
+       increase production they need to increase the hours of work their employees do.
+       They will not necessarily want to employ additional full-time, permanent staff as they
+       would then be committed to them and have to potentially sack them if sales fell later,
+       which would create a bad reputation and may be expensive (redundancy packages).
+
+   ●   Firms may decide to take on temporary workers or get present workers to work
+       overtime or work harder, which would entail offering ​some form of incentive such as
+       bonuses or one and a half times the basic rate of pay for overtime.
+
+   ●   Even though basic wage rates have stayed the same, both the ​average and
+       marginal cost of labour per good produced will rise​- the business is paying more
+       in wages for every good they produce. This would be passed on to the consumer in
+       terms of increased prices and there only needs to be rising prices in some sectors for
+       the price level of the economy to rise.
+
+   ●   Therefore, the curve is ​upward sloping as firms are willing to supply more but only
+       at a higher price.
+
+
+
+
+                           www.pmt.education
+   ●   Short run AS is likely to be ​elastic (i.e. output is relatively responsive to a change in
+       price- it changes by a bigger percentage than price). An increase in output by firms is
+       likely to lead to an increase in costs which leads to a rise in prices as they pass these
+       costs onto consumers. However, because the factor prices are constant, the
+       increase in prices will be relatively small. If demand falls firms will react by cutting
+       prices in an attempt to stimulate sales. However, they will not be able to achieve
+       much of a reduction because of constant prices and an unwillingness in the short run
+       to lay off workers.
+
+Movement and shifts: ​A change in price level will lead to a movement along the curve
+(contraction or expansion), but a shift in the curve is caused by a range of other factors.
+These factors depend on whether it is the short or long run AS curve.
+
+
+
+Relationship between long and short run:
+
+Short run is the period of time when ​at least one factor of production is fixed and cannot
+be changed. On the AS curve, in the short run, money wage rates, factor prices (prices of
+the factor of production) and the state of technology are fixed and can’t change; a change in
+these results in a shift of the curve. In the long run, ​all factors of production are variable​.
+There is disagreement amongst economists on the shape of the LRAS. This is discussed in
+2.3.3.
+
+
+
+                                 2.3.2 Short-run AS
+
+Factors influencing short run AS:
+
+The main cause of a shift in SRAS is a change in the cost of production, which can be
+caused by these three factors:
+
+   ●   Changes in costs of raw materials and energy​: An increase in the cost of raw
+       materials and energy increases the cost of production. This means the SRAS curve
+       will shift left as it will cost more to make the same amount of goods and therefore
+       businesses will only produce this amount of goods if prices rise. Oil prices are an
+       important cost in determining the level of SRAS, since they affect costs for almost all
+       businesses.
+
+   ●   Changes in exchange rates​: A weaker pound will lead to an increase in the price
+       of imports and this will cause SRAS to decrease as production becomes more
+       expensive. If the pound becomes stronger, imports will be cheaper and so SRAS will
+       increase. This is particularly important in the UK as we are heavily dependent on
+       imports. ​The inflation the UK experienced after Brexit was caused by the fall in the
+       pound, which pushed import prices up and led to cost-push inflation.
+
+
+
+
+                            www.pmt.education
+   ●   Changes in tax rates: Taxes increase the cost of production and thus they cause
+       a fall in SRAS, shifting it to the left. Subsidies shift it the curve right as they decrease
+       costs.
+
+Supply side shocks ​occur when there are significant changes in any of these factors.
+
+
+
+
+                                 2.3.3 Long-run AS
+In the short run, supply can be increased by offering overtime but in the long run ​there will
+be a limit on how much supply can be increased. There is a limit on the number of
+people and machines that are available and once labour productivity is maximised, supply
+cannot be increased any further. On the LRAS curve, unlike the SRAS curve, wage rates are
+variable and can change.
+
+
+Different shapes of long run AS curve:
+
+Classical:
+
+   ●   In the long run, AS is ​independent of the price level and is ​determined by the
+       level of all factors of production and the quality of technology​. The LRAS is a
+       measure of a country’s potential output and the concept is linked to the idea of PPF;
+       it shows the productive potential of the economy. It shows the ​full capacity output
+       i.e. where all resources are being fully utilised, and this can be linked to output gaps
+       between the GDP trend line and the actual GDP.
+
+   ●   In the short run it is possible for an economy to ​exceed the maximum potential
+       LRAS by allowing factors of production to ​work overtime or not allow time for
+       maintenance of machinery etc. However, this is ​not possible in the long run as
+       machines will eventually stop and workers will want a break.
+
+   ●   The vertical AS curve is based on the classical view that ​markets tend to correct
+       themselves fairly quickly. This means although an economy can be in
+       disequilibrium at any moment in time it will naturally move towards equilibrium
+       position where all resources are employed and the economy is producing at its
+       productive potential; on its PPF. This means LRAS is vertical.
+
+
+
+
+                            www.pmt.education
+Keynesian: ​The classical view of the LRAS curve was agreed until the 1930s when
+Keynes expressed the view that if the economy can be in disequilibrium for 20-30 years, it
+can’t be correct to imply the AS curve is vertical. Keynes came up with his own LRAS curve.
+
+
+   ●   At point B, the LRAS curve is ​vertical as with the classical view​; this is the
+       maximum potential output with current resources and technology, so it is the PPF.
+
+   ●   However, it does not stay vertical: if the curve was vertical this would mean that
+       wages and prices fall when unemployment exists. This fall in wages thus makes it
+       worthwhile employing people and so employment increases and the economy returns
+       to full employment.
+
+   ●   Keynes thought this was true to an extent but wages tend to be ​‘sticky downwards’​.
+       They will not fall below a certain level because:
+          o unions are able to prevent wages falling too low
+          o businesses are unwilling to risk demotivation of their staff by offering low
+             wages
+          o workers are unwilling to work unless a certain wage is offered
+          o there may be full employment in one area and unemployment in another area
+             due to lack of labour mobility
+          o the minimum wage means wages cannot fall below a certain level.
+
+   ●   When there is high unemployment (the horizontal line on the graph- anything below
+       point A) and a firm wants to recruit, they do not have to offer high wages to attract
+       staff as the LRAS is ​perfectly elastic at this point. At the point between A and B, as
+       employment rises, there are less people looking for jobs and labour is becoming
+       scarce enough that firms have to offer higher wages to attract the best workers.
+       These higher wages lead to a higher average price level. Output becomes more price
+
+
+
+
+                           www.pmt.education
+       inelastic until it reaches point B, where an increase in prices no longer affects output
+       as the PPF has been reached.
+
+
+
+
+Factors influencing long run AS:
+
+A ​shift of the LRAS to the right means that economies are able to produce more and is
+the same as an outward shift of the PPF. There are a number of ways that this can be
+achieved, most of these involve increasing productivity which means more goods can be
+produced with the same resources or increasing resources which allow more goods to be
+produced. As with SRAS, there can be ​supply-side shocks to the LRAS curve, for example
+a huge technological advancement or a war.
+
+
+   ●   Technological advances: ​Improvements in technology shift the LRAS curve to
+       the right, meaning more can be produced. This is because it will speed up
+       production, so more goods can be produced with the same amount of resources.
+       Increased investment in technology, whether this be new technology or current
+       technology, will increase the LRAS as it means that more goods can be produced
+       because there are more machines etc.
+
+   ●   Changes in relative productivity: ​The more productive the economy is, the
+       more that will be produced with the given resources. Productivity depends on a range
+       of factors, such as efficiency, skill of labour and technology. Additionally, if the UK is
+       more productive than other countries it will encourage production of that good in the
+       UK, so investment will be increased, and this will increase LRAS.
+
+   ●   Changes in education and skills: ​A more skilled workforce will be more
+       employable and work quicker and more efficiently within their jobs, so the output per
+       worker will increase, which will shift the LRAS to the right. Education could also be
+       used to improve the occupational mobility of labour which decreases structural
+
+
+
+
+                            www.pmt.education
+    unemployment as people are able to switch to new jobs. This will ensure all
+    resources are used efficiently.
+
+●   Changes in government regulations: ​Government regulations are able to
+    impact LRAS through a number of different ways.
+       o They can increase the size of the workforce. One way they can do this is by
+           encouraging people to go back to work and decreasing the level of inactivity.
+           Stay at home mums can be enticed back to work by free childcare at
+           pre-school. Unemployment can be decreased by reducing benefits, which will
+           encourage those living off benefits to find a job. Moreover, they can change
+           the working age which will expand the workforce as more people are able to
+           work. Increasing the workforce will shift LRAS because it means there are
+           more resources in the economy and so more can be produced.
+       o Additionally, government policy can increase research and development as
+           they can offer tax breaks to businesses who invest money into research,
+           which will encourage them to do so. If a business is able to come up with a
+           good idea, it will increase the LRAS as it will improve productivity.
+       o They could make it easier to set up businesses and increase incentives to be
+           entrepreneurial (i.e. lower corporation tax) which would increase companies,
+           jobs and output so increase LRAS.
+       o In general, high regulation on businesses will limit LRAS as it will increase
+           costs and the time taken to undertake tasks, which will reduce output.
+
+●   Demographic changes and migration: ​If immigration is higher than emigration,
+    the population will grow and so therefore there will be more workers which will
+    increase the LRAS. The value and importance of this immigration will depend on the
+    age of the immigrants and their skills. In an ageing population or a young population,
+    LRAS will be lower as the working population is smaller so therefore less goods can
+    be produced. The more people who are of working age, the higher the LRAS.
+
+●   Competition policy: The government can promote competition between
+    businesses and markets which will force them to improve the quality of their goods or
+    lower prices. In order for businesses to do this and still make a profit, they have to
+    improve their efficiency and this efficiency will mean that more goods and services
+    can be produced, so LRAS will increase. However, less competition can sometimes
+    be beneficial if it encourages investment and innovation. For example, copyright laws
+    mean that businesses’ new ideas can’t be copied which will encourage them to do
+    more research as they know they will be the ones who benefit in terms of higher
+    profits.
+
+
+
+
+                        www.pmt.education
+

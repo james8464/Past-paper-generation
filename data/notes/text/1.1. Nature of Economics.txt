@@ -1,0 +1,562 @@
+ Edexcel Economics (A) A-level
+Theme 1: Introduction to Markets
+              and
+        Market Failure
+    1.1 Nature of Economics
+                Detailed Notes
+
+
+
+
+        www.pmt.education
+                   1.1.1 Economic as a social science
+Developing models:
+
+   ●   Economists ​develop models to explain how the economy works​, for example
+       theories of supply and demand or the circular flow of income. These are developed
+       by putting forward a model, gathering evidence and then accepting, changing or
+       disregarding the model.
+
+   ●   The words ​“theory​” and “​model​” can be used interchangeably and there is no exact
+       distinction between the two. However, theories can often be expressed in words
+       whilst models, because they require greater precision, are expressed in mathematical
+       terms. The purpose of theories and modelling is to explain why something is as it is.
+       They are ​simplified​ to make them more useful.
+
+   ●   There are too many variables which can change within an economic model and so
+       assumptions​ must be made.
+
+Ceteris paribus:
+
+   ●   All sciences make assumptions when developing models and theories, and this
+       allows them to simplify the problem. Economists use the term ‘​ceteris paribus​’
+       meaning ‘all other things remaining equal’. For example, ​when there is a change in
+       income, demand will shift, ceteris paribus.
+
+
+
+Scientific experiments:
+
+   ●   There are many different types of science covering a wide field of knowledge, all
+       linked by the method of building a model or theory. Theories or models which gain
+       universal acceptance are called laws.
+
+   ●   However, economics is a ​social science and so, unlike with natural sciences like
+       physics and chemistry, it is ​difficult to set up experiments to test hypothesis​. As
+       the economist has to gather data in the ordinary, everyday world, ​other variables
+       are always changing so it difficult to decide whether or not evidence supports or
+       disagrees with a hypothesis. Therefore, economists tend to come up with very
+       different conclusions for a particular set of data.
+
+   ●   Some people argue economics is ​not a science because it studies human behaviour
+       and human behaviour cannot be reduced to scientific law. However, groups of
+       individuals are much more predictable than individuals themselves, and much of
+       economics deals with groups rather than individuals. The ​laws can not be definite
+       because we cannot know exactly what each individual will do.
+
+
+
+
+                           www.pmt.education
+       1.1.2 Positive and normative economic statements
+   ●   A ​positive statement is a statement which is objective and made without any
+       obvious value judgements or emotions. They can be tested to be proven or disproven
+       and they are often expressed in the form of a hypothesis that can be analysed and
+       evaluated. Statements about the future can be positive if they can be proven or
+       disproven in the future.
+
+   ●   For example, “​Raising taxes will lead to an increase in tax revenue​” is a positive
+       statement as it can be tested to see whether it is true or false. Another example is
+       “​Warm weather will lead to an increase in ice cream sales​”.
+
+   ●   A ​normative statement ​is one which is subjective and based on opinion, so cannot
+       be proven or disproven. It often includes words such as ought, maybe, unwise,
+       should etc. or says that one action is better than another.
+
+   ●   One example of a normative statement is “​The free market is the best way to allocate
+       resources​” as it is suggesting one method of resource allocation is better than
+       another, which cannot be tested. “​The government should increase taxes​” is also a
+       normative statement, since it presents an opinion.
+
+
+The role of value judgements:
+   ●   Economists tend to ​use positive statements to back up normative statements​.
+       For example, ‘​The government should increase the interest rate’ is a normative
+       statement which can be a backed up by ‘​The rate of inflation is at 5%​’, a positive
+       statement.
+
+   ●   Value judgements can influence economic decision making and policy. Different
+       economists may make different judgements from the same statistic, for example
+       rising inflation could mean different things.
+
+
+
+
+                        1.1.3 The economic problem
+Problem of scarcity:
+
+   ●   The ​basic problem of economics is that of scarcity​. People have ​finite needs​,
+       but ​infinite wants​, as no one would choose to live at the level of basic human living
+       standards if they can enjoy more. Although wants are infinite, ​resources are finite
+       and limited​.
+
+   ●   Scarcity is a ​relative concept as resources are not necessarily scarce in themselves
+       but they are ​scarce in relation to the demands placed upon them​.
+
+   ●   Some examples of scarcity is ​water in India and China and ​food shortages around
+       the world.
+
+
+
+
+                           www.pmt.education
+  ●   Economies try to solve the basic economy problem by working out ​what to produce​,
+      how to produce it​ and ​for whom production should take place​.
+
+
+
+Renewable and non-renewable resources:
+
+  ●   A ​renewable resource is resource of economic value that can be replenished or
+      replaced on a level equal to consumption. For example, ​oxygen, solar power and
+      fish are renewable. As long as the rate of consumption is less than or equal to the
+      rate of replenishment, the stock will not decrease.
+
+  ●   A ​non-renewable resource is a resource of economic value that cannot be readily
+      replaced by natural means on a level equal to consumption. This includes ​fossil fuels
+      such as coal, oil and gas.
+
+
+
+Opportunity costs:
+
+  ●   The same resources ​cannot be used to produce different goods at the same
+      time so decisions have to be made on how to use them, this leads to the opportunity
+      cost. The limited amount of resources allied to the unlimited wants means that
+      choices have to be made.
+
+  ●   The opportunity cost is the ​cost of one thing in terms of the next best option
+      which has been given up.
+
+  ●   For example, if you go into a shop with £1, you can only buy a chocolate bar or a bag
+      of crisps. If you chose the chocolate bar, the opportunity cost is the bag of crisps that
+      you could not buy due to your limited resources.
+
+  ●   Consumers will make choices on how to use their limited income based on what
+      gives them the greatest level of satisfaction. Producers must choose what to do with
+      their limited resources and their decisions will be based on profit. The government
+      must make decisions on where they should spend their limited tax revenues based
+      on what will maximise social welfare. There is no opportunity cost for free resources.
+
+
+
+
+                          www.pmt.education
+              1.1.4 Production possibility frontiers
+
+
+●   The PFF shows the ​maximum possible combinations of capital and consumer
+    goods that the economy can produce with its current resources and
+    technology.
+
+●   It tends to be drawn as a ​curve because the first resources switched from capital to
+    consumer good production are resources that are not adding much to capital goods
+    but will be much more productive in the production of consumer goods, and vice
+    versa.
+
+●   It gives no indication of which combination of goods is best and so countries have a
+    choice of what to produce: economics is concerned with explaining why they chose
+    this point.
+
+
+
+
+                        www.pmt.education
+The maximum potential potential of an economy:
+
+   ●   Any point on the curve represents the maximum productive potential of the economy,
+       the most that the country can produce.
+
+
+
+
+Opportunity cost:
+
+This diagram can be used to work out the opportunity cost:
+
+   ●   Moving from A to B, the opportunity cost of producing an extra 15 consumer goods is
+       30 capital goods.
+   ●   The opportunity cost of producing 60 capital goods is 20 consumer goods. If they
+       produced 0 capital goods, then 80 consumer goods could be produced. By producing
+       60 capital goods, they can only produce 60 consumer goods. Producing these 60
+       capital goods means they lose 20 consumer goods.
+
+
+
+
+                           www.pmt.education
+This diagram can also be used to work out the opportunity cost:
+
+   ●   The opportunity cost of producing 1 consumer good is 3 capital goods because
+       600/200=3. This means for every 1 consumer good produced, 3 capital goods are
+       lost.
+   ●   The opportunity cost of producing one capital good is ⅓ of a consumer good as
+       200/600= ⅓. For every 1 capital good produced, ⅓ of a consumer good is lost.
+
+
+
+
+Economic growth or decline:
+
+   ●   The purple arrows show that the economy has grown because it can produce more of
+       both goods. This growth may be achieved by increasing the quantity and/or quality of
+       resources.
+   ●   The orange arrows show the economy is declining as it can produce less goods than
+       previously. This could be caused by a number of factors such as: natural disasters;
+       natural resources running out; or a decrease in the quantity/quality of labour, due to
+       war, migration or a fall in spending on education.
+
+
+
+
+                           www.pmt.education
+Efficient or inefficient allocation of resources and possible or unobtainable
+production:
+   ●   Economic efficiency is achieved when resources are used for their best use. At all
+       points on the PPF, resources are allocated efficiently.
+   ●   The economy will aim to produce at point A (or any other point on the curve), this is
+       possible and efficient production. Point B is possible but inefficient, as they are
+       producing within the curve so not maximising output. Point C is unobtainable
+       production, because it is beyond the PPF so they don’t have enough
+       resources/technology to produce there.
+   ●   If the economy decides to use all its resources to produce consumer goods, they can
+       produce at D whilst if they decide to produce only capital goods, they can produce at
+       E. Neither of these points are likely.
+
+
+
+
+Change in production:
+   ●   The diagram below shows a fall in capital production but no change in consumer
+       production. This shows a fall in efficiency or a change in resources that only affects
+       capital good manufacture.
+
+
+
+
+                           www.pmt.education
+   ●   The diagram below shows an increase in the ability to produce consumer goods but
+       no change in capital goods which could be due to an improvement in technology that
+       makes production of consumer goods more efficient.
+
+
+
+
+Movement and shifts:
+
+   ●   A movement along the curve indicates a ​change in the combination of goods
+       produced​: more capital goods are produced and less consumer goods are
+       produced, or vice versa. The same amount of resources are allocated amongst the
+       two goods differently.
+
+   ●   A shift of the curve indicates a change in the productive potential of the
+       economy​: more consumer and capital goods can be produced or less consumer and
+       capital goods can be produced. There has been a change in the number of resources
+       and/or the technology available to the country and so their potential output has
+       changed.
+
+Capital and consumer goods:
+Goods are split into two types of goods: consumer and capital goods. ​Consumer goods
+are goods that are demanded and bought by households and individuals. ​Capital goods
+are goods that are produced in order to aid the production of consumer goods in the future.
+Some goods can be both consumer and capital goods, for example computers.
+
+
+
+
+                           www.pmt.education
+         1.1.5 Specialisation and the division of labour
+  ●   Specialisation is the production of a limited range of goods by a
+      company/individual/country which means that trade is essential as it is the only way
+      they are able to access all that they need.
+
+  ●   The division of labour is when labour becomes specialised in a particular part of the
+      production process.
+
+  ●   Whilst some resources have many different uses, some may only have one use.
+      Labour can differ greatly in terms of what they can do and what they are good at:
+      some may be good at building things, whilst others may be good at designing
+      computers. Therefore, if a country wants to maximise the amount of goods and
+      services it can produce they ​need to ensure that all factors of production,
+      including workers, undertake the tasks that they are best at.
+
+
+Adam Smith:
+
+  ●   Adam Smith stated the concept of specialisation and the division of labour and
+      showed how it can ​increase labour productivity ​(output per worker), allowing firms
+      to increase efficiency and lower their costs of production.
+
+  ●   He visited a factory and observed that the pin making process had been split into ​18
+      different operations​. As a result, the company were able to produce 5,000 pins per
+      person employed. If the work had been carried out by workers making the whole pin
+      from start to finish, it would have been less a few dozen.
+
+
+
+Specialisation and the division of labour in organising production:
+
+Advantages:
+  ●   The division of labour enables ​labour productivity to be increased​. Workers will be
+      quicker, better and more efficient as they are concentrating on one thing and so can
+      quickly develop their skills. It also is likely they will have natural abilities or talents in
+      their task.
+  ●   This may also lead to a ​higher quality of goods and services, ​since workers are
+      more skilled at their jobs.
+  ●   It is more cost effective to ​develop specialist tools​, improving speed or quality.
+  ●   Time is not wasted​ moving between jobs and getting out tools etc.
+  ●   Workers only need to be ​trained to do one specific task​, rather than many, saving
+      time and money.
+
+
+
+
+                            www.pmt.education
+Disadvantages:
+   ●   If someone is only doing one specific task, it can make work very boring which will
+       lead to ​poor quality of work and people leaving the business. Firms can take some
+       action to reduce this, for example by playing music.
+   ●   There is a ​reduction of craftsmanship and a much more standardised product
+       because of mechanisation.
+   ●   If for some reason production in one process is delayed, every other task has to stop
+       until that problem is solved.
+   ●   The workforce do not have wide industrial training and could therefore suffer from
+       structural unemployment​.
+
+The degree to which specialisation or the division of labour is possible will ​depend on the
+nature of the task and the size of the firm​.
+
+
+
+Specialising in the production of goods and services to trade:
+
+If countries specialise, it is essential that they trade in order to obtain all the goods and
+services that consumers demand. Trade has some advantages and disadvantages.
+
+Advantages:
+   ●   The theory of ​comparative advantage states countries should specialise in
+       producing those goods where they have a lower opportunity cost, and so they are
+       relatively best at producing. This will help them boost their economy. On the whole,
+       there is ​greater output​ globally.
+
+Disadvantages:
+   ●   Countries may become ​over-dependent on one particular export and if this fails their
+       economy may collapse. For example, ​many developing countries specialise in
+       farming and if crops fail due to weather they will have no income​. ​Areas such as
+       Manchester suffered high unemployment as traditional areas of employment, like
+       shipbuilding, became less important​.
+   ●   Other countries specialise in non-renewable resources and these could run out​,
+       which will result in a huge loss of income for that country. It will also mean the loss of
+       these resources.
+   ●   There will be ​high interdependence and this will cause problems if trade is
+       prevented, for example because of war.
+   ●   Some say that increased specialisation means there will be more competition to cut
+       costs and therefore ​wages will fall​, but this is not necessarily true.
+
+
+
+
+                            www.pmt.education
+Functions of money:
+
+The introduction of specialisation in production means that a form of exchange is necessary
+to allow everyone to access what they need. The earliest method of exchange was barter
+but this had many problems. These problems led to the development of money which has
+four key functions:
+
+   ●   A medium of exchange: It can be used to buy and sell goods and services and is
+       acceptable everywhere. The problem with barter was that people could only trade if
+       there was a double coincidence of wants: where both parties want the good the other
+       party offers. Since money can be used to buy all goods and services, everyone will
+       accept money as they know they can use it to buy what they want.
+   ●   A measure of value: It can compare the value of two goods, such as a table and a
+       skirt. It is also able to put a value on labour.
+   ●   A store of value: It is able to keep its value and can be kept for a long time. With
+       barter, goods such as fruits often went out of date and so could not keep their value.
+   ●   A method for deferred payment: Money can allow for debts to be created. People
+       can therefore pay for things without having money in the present, and can pay for it
+       later. This relies on money storing its value.
+
+
+
+
+       1.1.6 Free market economies, mixed economy and
+                      command economy
+Different types of markets answer the ‘what to produce’, ‘how to produce it’ and ‘for whom to
+produce it’ questions in different ways.
+
+Free market economy:
+
+In a free market economy, individuals are ​free to make their own choices and own the
+factors of production without government interference. Resources are allocated through
+the price ​mechanism​. The consumer determines what is produced by their willingness to
+spend their money on a good. Consumers make decisions based on ​satisfaction and
+producers based on ​profit​. There are ​no completely free markets in the world today​,
+because the government has to intervene at least to an extent, for example by issuing
+money, protecting property rights and breaking up monopolies. Without this, the market
+mechanism could not work.
+
+Adam Smith ​(1723-1790) believed in the free market economy and the laissez-faire
+approach by governments. He explained how there was an ‘invisible hand’ in the market
+which allocated resources to everyone’s advantage, allowing the greatest good for the
+greatest number of people. He believed competition in the market caused lower prices as
+firms wanted to be competitive and so this benefits the consumer as they can get goods
+cheaply. Smith concluded that each individual’s self-interest managed to produce and
+purchase the goods and services that society needed. However, he did argue that the state
+
+
+
+
+                           www.pmt.education
+needed to provide goods/services which free markets wouldn’t such as. the laws, property
+rights and goods such as bridges and roads.
+
+Friedrich Hayek ​(1899-1992) argued that state control of the economy leads to the loss of
+freedom. He believed that the poor in free market (or freer market) countries were better off
+than those in command economies because at least they had personal freedom. Also, he
+said that central planning by governments led to what a small minority wanted being forced
+on the whole of society. Hayek believed that, although individuals don’t make supply and
+demand decisions based on perfect information, they best know what they need in their own
+situation i.e. a consumer knows how much bread they need and a manager knows how
+many raw materials they need.
+
+Advantages:
+
+   ●   The system is ​automatic ​due to the invisible hand; resources are moved out of
+       production of a good when people stop wanting it or costs are too high.
+   ●   Consumers have freedom of choice, called ​consumer sovereignty​.
+   ●   There is ​high motivation as people know working hard could lead to high potential
+       rewards, creating conditions where initiative and enterprise flourish.
+   ●   There is ​political freedom​.
+   ●   Because firms are in competition, they will produce goods at the lowest cost they
+       can, ensuring ​productive efficiency​.
+   ●   In general, freer market economies tend to have ​higher growth​.
+
+Disadvantages:
+
+   ●   There tends to be high levels of ​inequality, ​since the rich own more factors of
+       production and so can grow richer​.
+   ●   There may be a ​lack of merit goods (goods considered as intrinsically good) and
+       little control of ​demerit goods​ (intrinsically bad).
+   ●   Resources could be wasted on ​unproductive expenses such as advertising,
+       switching the factors of production and providing competitive services.
+   ●   If competition disappears then there may be ​monopolies​, who charge high prices
+       and offer low quality of service.
+   ●   There is the problem of ​externalities​.
+
+
+
+Command economy:
+
+In a command (planned) economy, ​all factors of production, except labour, is owned by
+the state and labour is directed by the state. There is ​no private property and everyone is
+assumed to be selfless, ​working for a common good. Resource allocation is carried out by
+the government, rather than the price mechanism. The government’s allocation may
+represent the wishes of the consumer and often focuses on the need to expand certain
+areas of the economy, such as weapon building. However, planning is so complex that
+some decisions are left up to the consumer. Workers receive wages and can spend this
+on what they want, within limits. Some goods can be purchased whilst others, such as
+houses, are allocated. Income distribution is determined by the government and ​all workers,
+
+
+
+
+                           www.pmt.education
+no matter their job, tend to receive the same wage, ​products are standardised and
+prices are limited causing excess demand and queueing.
+
+Karl Marx ​(1818-1883) believed in the command economy and criticised capitalism. Marx
+believed that capitalist’s profit came from exploiting labour as they underpaid workers for the
+value that they actually created. He wanted remove the difference between the incomes of
+owners and workers and believed that capitalism would collapse leading to communism.
+Marx saw businesses growing and workers getting poorer, creating a two class system with
+a few wealthy capitalists and many underpaid workers. He thought more firms would fail
+because of competition causing unemployment, lower wages and higher prices and this
+would lead to discontent amongst the working class. His theory stated that these workers
+would inevitably rise against property owners and seize control of the means of production.
+This would lead to a democratic society where everything would be owned by everyone i.e.
+the fall of capitalism to begin communism.
+
+Advantages:
+
+   ●   The state provides a ​minimum standard of living​, ensuring no one is extremely
+       poor as there is less inequality.
+   ●   There is ​less wastage of resources as there is no need for competitive services nor
+       advertising, which is very expensive.
+   ●   Long term planning ​means that the industry doesn’t have to keep changing and
+       shifting resources. This is important as some industries may take a number of years
+       to get established and would fail if planning was short term.
+   ●   Standardised products​ means that they are produced cost effectively.
+   ●   As the government, who are generally motivated by the ​wellbeing of the country,
+       rather than the companies, who are motivated by profit, decide resource allocation,
+       objectives other than profit can be followed: merit goods are encouraged and
+       increased whilst demerit goods aren’t produced.
+
+Disadvantages:
+
+   ●   It is impossible for the state to make so many decisions correctly, which could lead to
+       over or under supply and a ​waste of resources​.
+   ●   Decision making will be slow as it has to go through various stages and there could
+       be an increase in ​bribery and corruption​ (an increase in bureaucracy).
+   ●   As everyone receives the same wage, there is ​less motivation and efficiency
+       because people know that working harder will not increase their standard of living.
+   ●   Consumers ​lose their freedom ​and it is often led by dictators.
+
+
+
+Mixed economy:
+
+Both types of economies have benefits but also major problems so most economies have
+tried to move towards ​some form of compromise economy​, called a mixed economy. This
+is an economy where ​both the free market mechanism and the government planning
+process allocate a significant amount of the total resources in the country​. Each
+
+
+
+
+                            www.pmt.education
+country will have a different amount of control by the government, but it is usually between
+40-60%.
+
+The government’s role in a mixed economy:
+
+   ●   Creating a framework of rules: They prevent the abuse of monopolies: a company
+       with more than 25% of market share can be considered as having monopoly power
+       so can take advantage of their customers due to the lack of competition and charge
+       higher prices/provide a poorer service. They can protect customers as they pass a
+       large amount of consumer protection laws to protect the consumers from poor quality
+       products or services. They protect property rights, ensuring whatever a person owns
+       cannot be taken away by someone else. Also, they ensure safety standards,
+       protecting employers and employees.
+
+   ●   Supplements and modifies the price system: They produce public and merit
+       goods, such as emergency services and transport, and limit the production of demerit
+       goods like child pornography. Government action ensures the consideration of
+       externalities.
+
+   ●   Redistributes income​: They move income from one group of people to another,
+       from the rich to the poor. They use tax, such as income tax, to take money away from
+       one group then give the money to the poor. This is in the form of benefits for those
+       who are out of work or on low incomes, and in the provision of services for all, such
+       as education and the NHS, allowing the poor to access these services when they
+       might not have been able to afford to.
+
+   ●   Stabilises the economy: The government will attempt to manage the level of
+       demand in the economy to prevent extremes of too much or too little demand. They
+       do this through fiscal and monetary policy, which is looked at in Theme 2.
+
+
+
+
+                           www.pmt.education
+

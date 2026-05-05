@@ -1,0 +1,906 @@
+ Edexcel Economics (A) A-level
+Theme 3: Business Behaviour and
+              the
+         Labour Market
+      3.4 Market Structures
+                Detailed Notes
+
+
+
+
+        www.pmt.education
+                                    3.4.1 Efficiency
+Efficiency can be used to judge how well the market allocates resources, and the
+relationship between scarce inputs and outputs. There are a range of different types of
+efficiency.
+
+   ●   Allocative efficiency: This is achieved when resources are used to produce goods
+       and services which consumers want and value most highly and social welfare is
+       maximised. It will occur when the value to society from consumption is equal to the
+       marginal cost of production, where​ P=MC​.
+
+   ●   Productive efficiency: ​A firm has productive efficiency when its products are
+       produced at the lowest average cost so the fewest resources are used to produce
+       each product. The minimum resources are used to produce the maximum output.
+       This can only exist if firms produce at the bottom of the AC curve, in the short run this
+       is where ​MC=AC​. It is only possible if there is technical efficiency, where a given
+       output is produced with minimum inputs- but not all technically efficient firms are
+       productively efficient.
+
+   ●   Dynamic efficiency: ​This is achieved when resources are allocated efficiently over
+       time. It is concerned with investment, which brings new products and new production
+       techniques. The alternative is static efficiency: efficiency at a set point in time.
+       Allocative and productive efficiency are examples of static efficiency. Dynamic
+       efficiency will be achieved in markets where competition encourages innovation but
+       where there are differences in products and copyright/patent laws. Supernormal profit
+       is required to provide firms with the incentive to invest and the ability to do so.
+
+   ●   X-inefficiency: ​If a firm fails to minimise its average costs at a given level of output, it
+       is X-inefficient and there is organisational slack. This is a specific type of productive
+       inefficiency as it occurs when they fail to minimise their cost for that specific output.
+       For example, the minimum point on the AC curve may be at 100 goods at a cost of
+       £5 each. The firm is producing 125 goods and so is not productively efficient. It costs
+       them £8 to produce each good, but they could produce 125 goods at £7. Therefore,
+       they are X-inefficient since they are not producing on the lowest AC curve. It often
+       occurs where there is a lack of competition so firms have little incentive to cut costs.
+
+
+
+                            3.4.2 Perfect competition
+Perfect competition is a market where there is a high degree of competition, but the word
+‘perfect’ does not mean it maximises welfare or produces ideal results. There are few
+industries which fit this type of market structure, one example may be ​agriculture but
+government interferences may prevent it from being so. In reality, the assumptions made
+rarely hold and no market is completely perfectly competitive.
+
+
+
+
+                            www.pmt.education
+Characteristics of perfect competition:
+
+For a market to be perfectly competitive, there must be four key characteristics. These mean
+that demand for the firm’s goods is perfectly elastic, and prices are solely determined by
+interaction of demand and supply; the firms are ​price takers​.
+
+   ●   There must be ​many buyers and sellers. ​This means that no one firm or customer
+       will be able to influence the market. For example, the decision of one firm to double
+       their output or the decision of one buyer to double their consumption will have no
+       effect. If the firm did manage to have an effect, this would mean the market was no
+       longer perfectly competitive as there would be one large firm and other smaller firms,
+       or one large buyer and other smaller buyers.
+
+   ●   There must be ​freedom of entry and exit from the industry​. This is important as it
+       means that when a business is making profits anyone can enter that market and start
+       producing that product for themselves. As a result, business are unable to make
+       huge profits in the long run and if they are making losses they are able to leave. In
+       the long run, they make normal profits.
+
+   ●   There must be ​perfect knowledge​. This enables firms to know when other firms are
+       making profits which will attract them to join the market. Moreover, all firms have the
+       same costs as they can use the same production techniques. It also means that any
+       attempt to raise prices above the level determined by the market will lead to no sales,
+       as customers will be aware they can buy the same good for a lower price and firms
+       know there is no point lowering the price as they will sell all their goods at the higher
+       price determined by the market.
+
+   ●   The product must be ​homogenous​, where they are identical so it is impossible to tell
+       the difference between one make and another e.g. semi-skimmed milk. This is
+       important because it means if a firm raises it price above the competitors’ no one will
+       buy it and they will not gain from lowering their price because they can sell all of your
+       product at the same price as everyone else.
+
+
+
+Profit maximising equilibrium:
+
+Firms are assumed to short run profit maximise and so the firm will produce at MC=MR. In
+the short run, it is possible for the firm to make a normal profit, a supernormal profit or a loss.
+However, firms in perfect competition can only make ​normal profit in the long run​. This
+can be seen on the diagram.
+
+In the short run, firms are making the supernormal profit of the shaded area. Prices are set
+by the market at P1, where S1=D1. As a result, the firm faces the demand curve of
+AR1=MR1 and produce where MC=MR1 at Q1 goods. However, since there is perfect
+information and ease of entry, the fact they are making supernormal profits will encourage
+new entrants to the market. This will increase supply from S1 to S2 and lead to a fall in price
+from P1 to P2. The firm now has the demand curve AR2=MR2 and produces where
+MC=MR2 at Q2. This is also where AR2=AC and so they are making normal profits. If the
+
+
+
+
+                             www.pmt.education
+firm was making a loss, firms would leave the industry and this would decrease supply,
+pushing prices up and reverting to the long run equilibrium.
+
+
+
+
+.
+
+Efficiency:
+
+    ●   Perfect competition is ​productively efficient​, since they produce where MC=AC.
+        They are also ​allocative efficient since they produce where P=MC. Thus, they are
+        static efficient​.
+
+    ●   However, they are ​not dynamic efficient​. No single firm will have enough for
+        research and development and small firms struggle to receive finance. The existence
+        of perfect information also means one firms’ invention will be adopted by another firm
+        and so the investment will give the firm no competitive benefit. Governments tend to
+        have to do all the research.
+
+    ●   Competition should keep costs, and therefore prices, low. However, firms will be
+        unable to benefit from economies of scale and this may mean costs are higher
+        than they otherwise could be.
+
+
+
+                       3.4.3 Monopolistic competition
+Monopolistic competition is a form of imperfect competition, with a downward sloping
+demand curve. It lies in between the two extremes of perfect competition and monopoly,
+both of which rarely exist in a pure form in real life. Some examples of firms in monopolistic
+competition are ​hairdressers, estate agents and restaurants.
+
+
+
+
+                            www.pmt.education
+Characteristics:
+
+   ●   There must be a ​large number of buyers and sellers in the market, each of whom
+       are relatively small and act independently. This means that no one buyer or seller
+       has a large price setting power.
+
+   ●   There are ​no barriers to entry or exit​, allowing new firms to enter when
+       supernormal profits are being made and some to leave in the case of losses. As a
+       result, only normal profits can be made in the long run.
+
+   ●   The difference between monopolistic competition and perfect competition is that in
+       monopolistic competition firms produce ​differentiated, non-homogenous goods or
+       services. This means that individual firms do have some price setting power, and so
+       the curve is downward sloping.
+
+
+
+Profit maximising equilibrium:
+
+In the short run, firms can make supernormal profits, losses or normal profits. However, due
+to the lack of barriers to entry/exit, firms can only make normal profits in the long run. This is
+shown by the diagram.
+
+
+
+
+Firms are assumed to be short run profit maximisers, producing at MC=MR1 in the short run.
+As a result, they produce Q1 at price P1 and make a supernormal profit of the shaded area.
+However, in the long run, new firms will enter the industry as they know that supernormal
+profits are being earnt. This will cause demand for the individual firm to decrease and
+therefore the AR and MR curves will shift to the lift. The firm will produce where MC=MR2 at
+P2Q2. At this point, AC=AR2 and so the firm is making normal profits. If the firm was making
+
+
+
+
+                             www.pmt.education
+a loss, firms would leave the industry and thus demand for the individual firm would increase
+as they had less competition. This would lead to normal profits in the long run.
+
+The limitation of this model is that information may be imperfect and so firms will not enter
+the market as predicted as they are unaware of the existence of abnormal profits. Also, firms
+are likely to be different in their size and cost structure as well as in their products, which
+may allow some firms to maintain supernormal profits because firms cannot compete on
+equal terms.
+
+
+
+Efficiency:
+
+   ●   Since they can only make normal profit in the long run, AC=AR and since they profit
+       maximise, MR=MC. Therefore, the firm will ​not be allocatively or productively
+       efficient, ​as MR does not equal AR so AC cannot equal MC and AC cannot equal
+       MR.
+
+   ●   They are likely to be ​dynamically efficient since there are differentiated products
+       and so know that innovative products will give them an edge over their competitors
+       and enable them to make supernormal profits in the short run. However, since the
+       firms are small they may struggle to receive finance or have the retained profits
+       necessary to invest.
+
+   ●   In monopolistic competition compared to perfect competition, ​less is sold at a
+       higher price and firms may not necessarily be producing at the lowest cost.
+       However, the market will offer ​greater variety and may be able to enjoy some
+       degree of ​economies of scale​.
+
+
+
+
+                            www.pmt.education
+                                   3.4.4 Oligopoly
+Characteristics of oligopoly:
+
+Oligopoly is where there are a few firms that dominate the market and have the majority of
+market share, although this does not mean there won’t be other firms in the market. There
+are four key characteristics of oligopoly: products are generally differentiated; supply in the
+industry must be concentrated in the hands of a relatively small number of firms, meaning
+there is a high concentration ratio​; firms must be ​interdependent ​(so the actions of one
+firm will directly affect another); and there are ​barriers to entry.
+
+
+
+
+N-firm concentration ratios:
+
+   ●   The concentration of supply in the industry can be indicated by the concentration
+       ratio which measures the ​percentage of the total market that a particular number
+       of firms have​. The 3 firm concentration ratio shows the percentage of the total
+
+
+
+
+                            www.pmt.education
+       market held by the three biggest firms, whilst the 4 firm ratio shows the percentage
+       by the four biggest firms and so on.
+
+   ●   It is worked out by adding the percentages of market share for the firms or using the
+       formula: ​total sales of n firms​ x100
+                  total size of market
+       The method used will depend on the information in the question.
+
+
+
+Collusive and non-collusive behaviour:
+
+Collusion is when firms make ​collective agreements that reduce competition​. When firms
+don’t collude, this is a competitive oligopoly. ​The UK energy market is an oligopoly that is
+suspected of collusion.
+
+   ●   If firms compete, they know lowering prices to gain new customers is likely to cause
+       other firms to lower their prices;. However, if they work together, they could
+       maximise industry profits​.
+
+   ●   Collusion ​reduces the uncertainty firms face and reduces the fear of engaging in
+       competitive price cutting or advertising, which will reduce industry profits.
+
+   ●   Despite this, firms may decide to be a non-collusive oligopoly since collusion is
+       illegal ​and due to the ​risks of collusion​, such as other firms breaking the cartel or
+       prices being set where they don’t want it.
+
+   ●   A firm with a ​strong business model and something that ​sets it apart from other
+       firms will not want to collude if they feel they can increase market share and/or
+       charge higher prices than competitors.
+
+   ●   Collusion between firms works best when: there are a few firms which are all well
+       known to each other; the firms are not secretive about costs and production methods
+       and the costs and production methods are similar; they produce similar products;
+       there is a dominant firm which the others are happy to follow; the market is relatively
+       stable; and there are high barriers to entry.
+
+Collusive oligopoly:
+
+   ●   When firms engage in collusion, they may agree on prices, market share or
+       advertising expenditure. There are two main types of collusion: ​overt and tacit
+       collusion​. Overt collusion is when firms come to a formal agreement whilst tacit
+       collusion means there is no formal agreement.
+
+   ●   A formal collusive agreement is called a cartel, ​which is a group of firms who enter
+       into agreement to mutually set prices. The rules will be laid out in a ​formal
+       document which may be legally enforced and fines will be charged for firms who
+       break these rules.
+
+
+
+
+                           www.pmt.education
+   ●   There are two ways a cartel could operate: ​agree on a price for the goods and then
+       compete freely using non-price competition to maximise their market share; or ​agree
+       to divide up the market ​according to the present market share of each business.
+
+   ●   The problem with any cartel is that no firm is likely to set their prices/output at the
+       level they would not ideally choose and there is ​constant temptation to break the
+       cartel​. The more successful the cartel, the greater the incentive to break it; it is
+       important for firms to be the first to break it and not the firm who is left to deal with the
+       after effects.
+
+   ●   Since collusion is illegal, firms may be involved in tacit collusion such as price
+       leadership and barometric firm.
+
+   ●   Price leadership is where one firm has advantages due to its size or costs and
+       becomes the dominant firm. Other firms will tend to follow this firm because they
+       would be fearful of taking on the firm on in any form of price war. As a result, the
+       dominant firm will decide the price and allow the other firms to supply as much as
+       they wish at this price.
+
+   ●   Barometric firm price leadership is where a firm develops a reputation for being
+       good at predicting the next move in the industry and other firms decide to follow their
+       leader.
+
+   ●   Other examples could be unwritten rules about keeping advertising low or not trying
+       to take each other’s customers.
+
+Non-collusive oligopoly:
+
+   ●   The behaviour of a firm under non-collusive oligopoly will depend on how it thinks
+       other firms will react to its policies. ​Game theory ​can be used to examine the best
+       strategy a firm can adopt for each assumption about its rivals.
+
+
+
+Game theory:
+
+Game theory explores the ​reactions of one player to changes in strategy by another
+player. The aim is to examine the best strategy a firm can adopt for each assumption about
+its rival’s behaviour and it provides insight into interdependent decision making that
+occurs in competitive markets. The easiest way of demonstrating this is where ​duopoly
+exists in the market, so there are two identical firms.
+
+   ●   There are two strategies the firm could take: a maximin policy or a maximax. The
+       maximin policy involves firms working out the strategy where the worst possible
+       outcome is the least bad. Alternatively, the ​maximax policy involves firms working
+       out the policy with the best possible outcome.
+
+
+
+
+                            www.pmt.education
+   ●   If the maximin and maximax strategies end up with the same solution, this is called
+       the ​dominant ​strategy. However, ​dominant strategies aren’t that common in real
+       life​ and the best strategy for a firm tends to depend on what the other firm does.
+
+   ●   In some cases, there is a ​Nash Equilibrium where neither player is able to improve
+       their position and has optimised their outcome based on the other players expected
+       decision. They have no incentive to change behaviour, unless someone else
+       changes theirs.
+
+
+
+
+Game theory is used as an explanation for why firms in oligopoly tend to have ​stable prices​:
+  ● In this case, there is no dominant strategy for X. The maximin strategy will be to keep
+      prices unchanged, as profits will not change, whilst the maximax policy is to raise
+      prices, as they could gain £5m. Most firms will want to reduce risk and so adopt the
+      maximin strategy; they will keep prices unchanged.
+  ● Firm Y will also choose to leave its prices unchanged if it pursues a maximin strategy:
+      if they raise price they could lose £5m whilst the worst that could happen if they don’t
+      change is for profits to remain the same.
+  ● Therefore, both firms will leave their price unchanged and there is a Nash equilibrium
+      since neither firm is able to improve their position given the position of the other
+      player.
+
+Similar matrices can be drawn to show how firms are likely to undertake large amounts of
+advertising and research and development.
+
+Prisoner’s dilemma​:
+
+
+
+
+One common example of game theory is the prisoner’s dilemma. In the situation, two people
+are questioned over their involvement in a crime and are kept apart so they can’t
+
+
+
+
+                           www.pmt.education
+communicate. The dominant strategy in this situation is to confess: it’s the greatest reward (3
+months rather than a year) and the least bad (3 years rather than 10 years). However, if the
+prisoners could collude or had confidence in one another, the best option would be to deny
+the crime; this is the Nash equilibrium.
+
+Types of price competition:
+
+Prices wars:
+
+   ●   These occur in markets where ​non-price competition is weak​; where goods have
+       weak brands and consumers are price conscious. They also occur when it is ​difficult
+       to collude.
+   ●   A price war will drive prices down to ​levels where firms are frequently making
+       losses. In the short term, firms will continue to produce if their AVC is below AR but
+       in the long run, they will ​leave the market and prices will have to rise since supply
+       falls.
+   ●   It ​lowers industry profits​.
+   ●   Supermarkets are one example of an industry using heavy price wars, with firms
+       desperately trying to offer lower prices than their rivals.
+
+Predatory pricing:
+
+   ●   This occurs when an ​established firm is threatened by a new entrant or if one firm
+       feels that another is gaining too much market share.
+   ●   The established firm will set such a ​low price that other firms are unable to make a
+       profit and so will be ​driven out the market. The existing firm is then able to ​put their
+       price back up.
+   ●   This is ​illegal and only works when one firm is large enough to be able to have low
+       prices and ​sustain losses​.
+
+Limit pricing​:
+
+   ●   In order to prevent new entrants​, firms will set prices low (the limit price). The price
+       needs to be high enough for them to make at least normal profit ​but low enough to
+       discourage any other firm from entering the market.
+   ●   The greater the barriers to entry, the higher the limit price. It is mainly used in
+       contestable markets.
+   ●   The drawback of this is that it means firms cannot make profits as high as they would
+       be otherwise be able to.
+
+
+
+
+                            www.pmt.education
+Types of non-price competition:
+
+An oligopolistic market tends to have a ​lot of non-price competition due to the fact that
+prices are relatively stable. They spend a long time and a lot of money on ​advertising and
+promotions​, for example the ​Tesco club-card or the computers for schools scheme​. ​The
+soft drink market is one good example of a market with high levels of non-price competition.
+
+   ●   Advertising: ​This creates an awareness of the company/product and can persuade
+       a customer to purchase the product. If advertising is successful, it can increase sales
+       and market share for a business which in the long run can increase profits.
+       Advertising can also make the demand for a product/service more inelastic.
+
+   ●   Loyalty cards: ​These encourage repeat purchases by rewarding customers for their
+       loyalty. They also provide firms with lots of data on consumers’ buying habits, which
+       the firm can use to increase sales.
+
+   ●   Branding: ​A successful brand can help increase loyalty and repeat purchases for a
+       business. People will trust the brand and the quality it represents so will more likely
+       keep buying from them. An established brand should find it easier to release new
+
+
+
+
+                           www.pmt.education
+       products.
+
+   ●   Quality: A firm that is known for good quality may be able to charge higher prices,
+       and is likely to have strong brand loyalty. They are likely to have good reputation and
+       benefit from positive recommendations,
+
+   ●   Customer service: This will encourage loyalty amongst customers and give the
+       business a more positive reputation.
+
+   ●    Product development: ​A business that invests in product development will have a
+        competitive advantage over rivals. If they're the first firm to release a new product,
+        they would see an increase in sales and this is likely to help with branding.
+The problem with these methods is that they are often ​expensive ​and so firms need the
+money before they are able to undertake the competition. Similarly, only large firms will be
+able to do large scale advertising, research and development etc.. There is ​no guarantee
+that it will be successful.
+
+
+
+Efficiency:
+
+   ●   Firms will be ​statically inefficient​, since they are not productively or allocative
+       efficient.
+
+   ●   They are likely to be ​dynamically efficient. ​They make supernormal profits, so have
+       the funds to invest, and they have an incentive to invest, due to competition.
+       However, some may just share its profits with its shareholders or decide not to
+       invest. It will depend on the market.
+
+   ●   They will be able to exploit ​economies of scale​, lowering costs.
+
+
+
+                                  3.4.5 Monopoly
+
+Characteristics of monopoly:
+
+   ●   Pure monopoly exists where one firm is the ​sole seller of a product in a market​.
+       One of the closest examples to a pure monopoly is Google, who have 88% of the
+       market​.
+
+   ●   However, in the real world, pure monopoly rarely exists but a firm can be legally
+       considered as having monopoly power if it has ​more than 25% of the market. The
+       model assumes there is only one firm in the industry, they short run profit maximise
+       and there are ​high barriers to entry. ​Tesco is a legal monopoly as it has 28% of the
+       market. Some local monopolies exist, such as Stagecoach in Cambridge.
+
+
+
+
+                           www.pmt.education
+Profit maximising equilibrium:
+
+The demand curve for a monopolist will be the demand curve for the product (since the
+monopoly firm is the industry itself). It will be downward sloping, since even though the firm
+is a monopolist, people can still choose whether to buy the good or not. Profit maximising is
+at MC=MR, so this is the output they will produce at. They produce Q1 at price P1 and make
+supernormal profits of the shaded area. Since there is a monopoly, the firm may be able to
+earn supernormal profits or a loss in the long run as there is no freedom of entry and exit to
+the market.
+
+
+
+
+Third degree price discrimination:
+
+   ●   This is when monopolists ​charge different prices to different people for the same
+       good or service​. There are different examples of where this can occur: different
+       times of the day, for example peak and off-peak train times; different prices in
+       different places, such as between London and smaller towns; and between different
+       incomes, for example discounts for elderly people.
+
+   ●   In order for price discrimination to occur: the firm must be able to clearly ​separate
+       the market into groups of buyers; the customers must have ​different elasticities of
+       demand​; and they must be able to ​control supply and prevent buyers from the
+       expensive market from buying in the cheaper market.
+
+
+
+
+                           www.pmt.education
+   ●   The diagram shows the seperate markets for separate groups: those with inelastic
+       demand and those with elastic demand. ​If the example was about travelling up to
+       London, the workers would be the inelastic market since they have little choice other
+       than to pay the increased price as they have to go to London to work, whilst
+       shoppers are the elastic market since they can decide to shop elsewhere.
+
+The diagram assumes the industry is a constant cost industry, in order to make it clearer.
+The firm produces where MC=MR in each market. Therefore, in the inelastic market they
+produce at Q1P1 and make supernormal profit of the orange area; in the elastic market they
+produce at Q2P2 and make supernormal profit of the purple area; and in the combined
+market they produce at Q3P3 and make supernormal profit of the yellow area. This shows
+that by price discriminating and having two separate markets, the inelastic market and the
+elastic market, rather than a combined market, the firm can make higher profits. The orange
+area plus the purple area is larger than the yellow area.
+
+
+
+
+Costs and benefits:
+
+   ●   Firms benefit since they are able to increase their profits​. This can go into research
+       and development, improving dynamic efficiency.
+   ●   Those in the elastic market gain as they are able to pay a lower price than they
+       otherwise would; they benefit from cross subsidisation. These consumers may have
+       been unable to access the good if it were not for the price discrimination and so this
+       may ​increase equality.​ .
+   ●   Consumers lose some of their consumer surplus to the producers and some
+       consumers have to pay a ​higher price.
+
+
+
+
+                           www.pmt.education
+Natural monopoly:
+
+   ●   Some companies are said to be natural monopolies. In these industries, the
+       economies of scale are so large that even a single producer is not able to fully
+       exploit all of them​. These are decreasing cost industries. There are no pure natural
+       monopolies in real life, but some examples include the ​National Grid, Royal Mail and
+       National Rail.
+
+
+
+
+The diagram shows a natural monopoly: AC and MC continue to fall. The firm will profit
+maximise and produce where MC=MR at Q1P1, making supernormal profit of the shaded
+area.
+
+   ●   It would be ​pointless to encourage competition ​since it would raise average costs
+       for the industry. If any new firm enters the market, they will be easily priced out as
+       their costs will be so much higher. This raises questions for competition policy and
+       nationalisation.
+   ●   Natural monopolies tend to be found in industries with ​very high fixed costs​, such
+       as ​railways. In order to run one train you would need to invest billions in track,
+       tunnels, bridges and stations whilst running extra trains represents a much smaller
+       relative increase in costs, meaning average costs will decrease drastically.
+
+   ●   These firms are neither allocative nor productively efficient as there is no minimum on
+       the AC curve and at allocative efficiency there would be a loss.
+
+
+
+
+                           www.pmt.education
+Costs and benefits:
+
+Firms:
+
+   ●   Monopolists have the potential to make ​huge profits for their shareholders through
+       profit maximisation.
+   ●   The existence of supernormal profits means firms will have finance for investments
+       and will be able to build up ​reserves to overcome short term difficulties​.
+   ●   Firms with monopoly power will be able to ​compete against large overseas
+       organisations​.
+   ●   Large firms will be able to maximise economies of scale, reducing costs and
+       increasing profit further.
+   ●   However, firms may ​not always choose to profit maximise ​because of
+       X-inefficiencies, sales or revenue maximising, profit satisficing or contestability
+       leading to limit pricing. In the long run, the lack of competition ​may mean that firms
+       become complacent and so they may not make maximum profits.
+
+Employees:
+
+   ●   Monopolists produce at lower outputs, so will ​employ fewer workers​.
+   ●   However, the ​inefficiency of the monopoly may mean employees receive higher
+       wages, particularly directors and senior managers. Profit satisficing or sales/revenue
+       maximising may mean output is higher and so more employees are employed.
+
+Suppliers:
+
+   ●   For suppliers, the impact of a monopolist will depend on the extent to which the
+       monopolist is also a monopsonist​. If the monopolist buys all or most of the
+       suppliers’ goods (so is a monopsonist), it will reduce the suppliers’ profits as the
+       monopolist will decrease prices.
+
+Consumers:
+
+   ●   With a ​natural monopoly​, consumers tend to be better off than if there was
+       competition.
+   ●   When firms enjoy ​economies of scale​, they will be more efficient and customers will
+       enjoy a higher consumer surplus.
+   ●   Monopolists may produce an ​increased range of goods or services due to cross
+       subsidisation.
+   ●   The use of price discrimination will allow for ​survival of a product or service​, and
+       benefits some customers (those in the cheap market) whilst is negative for others.
+       For example, it is said that​ economy class flights are funded by business class flights
+   ●   Consumers may pay ​higher prices and see a ​poorer quality service​, due to a lack
+       of competition.
+   ●   There is ​less choice​ for consumers, since there is only one firm producing the good.
+
+
+
+
+                           www.pmt.education
+Efficiency:
+
+   ●   A monopoly is ​productively inefficient, ​since they don’t produce at MC=AC. They
+       are also ​not allocative efficient​ as P>MC.
+   ●   Since a monopolist is likely to make supernormal profits, they will be ​dynamically
+       efficient.​ However, if there is no competition, they may have no incentive to invest.
+
+
+
+
+   ●   The shift from perfect competition to monopoly has meant ​less production of the
+       good and therefore less resources used, which causes ​deadweight loss of BCD, the
+       orange area.
+   ●   There is a ​fall in consumer surplus from ADP1, the total shaded area, to ABP2, the
+       yellow area. P2BCP1, the purple area, has been turned into producer surplus whilst
+       BCD has been lost as deadweight loss.
+   ●   Monopolists may suffer from X-inefficiency because of the lack of competition.
+       MC=AC may rise and this will cause an even further fall in consumer surplus.
+   ●   Alternatively, a large monopolist may enjoy ​large economies of scale ​which allow
+       AC to fall. If these fall by a large enough amount, then consumer surplus will grow
+       larger than would exist in perfect competition.
+
+
+
+
+                           www.pmt.education
+   ●   Schumpeter argued that monopolies will have large retained profits and will be able
+       to exploit new products or production techniques without worrying about competitors.
+       This would make them ​more productively efficient​, as costs are lower, ​more
+       allocative efficient, as there are new products in the market, and ​dynamically
+       efficient.
+   ●   Also, monopolists ​avoid undesirable duplication of services and prevent a
+       misallocation of resources.
+   ●   Cross subsidisation may waste resources since profits from one sector finance
+       losses in another, whilst instead they should just stop production of this good.
+
+
+There are ​few permanent monopolies since supernormal profits give an incentive for other
+firms to break down the monopoly through a process of ​creative destruction​. Some
+suggest a monopoly, or the possibility of having a monopoly, is ​good in the short run as it
+provides incentive to invest and innovate which is good for both the company and the
+economy. The bad aspects of monopoly are more likely to become true in the long run as
+firms can simply enjoy the benefits and become complacent. The effects of a monopoly will
+depend on the industry​: in industries with high fixed costs, the gains from economies of
+scale will be higher.
+
+
+
+                                 3.4.6 Monopsony
+
+
+Characteristics and conditions of monopsony:
+
+   ●   This is where there is ​only one buyer in the market, and other than this it has the
+       same basic characteristics as monopoly. They can prevent new firms entering the
+       market and aim to profit maximise.
+
+   ●   In real life, pure monopsonies rarely exist but many firms experience monopsony
+       power, when they buy a large percentage of the market. ​One example could be the
+       NHS, who pay less for cancer drugs than a number of other high-income countries.
+       Moreover, food retailers have power when purchasing supplies from farmers; farmers
+       can either sell them all their goods at a low price or risk not selling them at all.
+
+   ●   They will pay their suppliers the ​lowest price possible to minimise their costs and
+       make the most of their position as the only buyer. This will enable them to maximise
+       their profit. The value of the goods they buy will depend on how much money they
+       can make with these goods, and this is determined by the demand curve of the
+       goods they make and sell.
+
+
+
+
+                           www.pmt.education
+They will produce where the cost to them (MC) is equal to the value they get (AR). Hence,
+they will produce where MC=D. The supply curve for the firm is the supply curve for the
+market so will be upward sloping. This means the MC curve is above the supply curve, since
+it costs more to pay for the last good than the average cost of all the goods (as cost rises
+with output). If the market was competitive, they would produce where supply is equal to
+demand, at Q2P2. However, in a monopsony, the firm will decide to produce where MC=AR
+at Q1P1.
+
+
+
+Costs and benefits:
+
+Firms:
+
+   ●   The monopsony gains ​higher profits by being able to buy at lower prices. This
+       increases the funding for research and development and leads to more return for
+       shareholders.
+   ●   They achieve ​purchasing economies of scale, which will lower costs and increase
+       profits.
+   ●   The NHS is a monopsonist buyer of pharmaceuticals, and this leads to significantly
+       lower prices. As a result, they can invest more and pay for more treatments.
+
+Consumers:
+
+   ●   Customers may gain from ​lower prices​ as reduced costs are passed on.
+   ●   It could lead to a fall in supply, ​since the business buys fewer inputs. The extent to
+       which supply to customers will fall will depend on the price elasticity of supply in the
+
+
+
+
+                           www.pmt.education
+       market of which the monopsonist is a buyer: if it is inelastic, there will be little fall in
+       supply.
+   ●   They may act as a ​counter-weight to monopolists.
+   ●   There may be a ​fall in quality ​as prices are driven down.
+
+Employees:
+
+   ●   The supplier will sell less goods and so employ less people, whilst the monopsonist
+       may employ fewer, more or the same amount of people since they have less inputs
+       to use for production but their costs are also lower.
+   ●   Monopsonists may pay​ higher wages​ as they are making higher profits.
+
+Suppliers:
+
+   ●   Suppliers will lose out as they will ​receive lower prices​; less will be supplied leading
+       to some firms leaving the market.
+
+
+
+                                3.4.7 Contestability
+This model is concerned with the possibility of other firms entering the market if they see the
+opportunity to make money, rather than the number of firms in the industry at a point in time.
+A contestable market is one with a high threat of new entrants, which keeps firms producing
+at a competitive level. Even in a monopoly, a firm may be forced to be efficient due to the
+potential of new entrants to the market. Any attempt to make a huge profit will mean other
+businesses will be attracted to the industry.
+
+
+
+Characteristics of contestable markets:
+
+   ●   Within a contestable market there is ​perfect knowledge so if one firm is making
+       abnormal profits, other firms will enter the market.
+
+   ●   There is ​freedom of entry and exit ​meaning any firms can enter/leave the market.
+       There will be a ​relative absence of sunk costs. Firms will be able to and have the
+       legal right to use the best available technology​, meaning their average cost curve
+       will be the same as the original firms’.
+
+   ●   There will be ​low product loyalty​, meaning people don’t consistently use one brand
+       and are happy to switch if a new one enters the market.
+
+   ●   We assume firms are short run profit maximisers and do not collude with each other.
+
+   ●   Some examples of contestable markets are: the taxi industry, with the introduction of
+       Uber; the hotel market, with AirBnB; and fast food, due to Five Guys​. Another
+       example of contestability is Ocado, who are set to replace M&S in the FTSE 100
+       (2018), showing the new replacing the old.
+
+
+
+
+                            www.pmt.education
+Implications:
+
+   ●   In a contestable market, firms will enter the market if they see other firms are making
+       huge profits. They will remain in the market until competition prevents them from
+       making a profit. This will take away profit from the original firms, and could even force
+       them out of business. The only way to prevent this is by using ​limit pricing​, which
+       reduces the incentive for firms to enter the market.
+
+   ●   In a perfectly contestable market, firms will only be able to make ​normal profits and
+       produce where AC=AR because new firms will enter the market if price was any
+       higher and they were making monopoly profits.
+
+   ●   Firms are likely to be ​productive and allocative efficient. If they are not producing
+       at the lowest point on their AC curve (i.e. not productively efficient), new firms can
+       enter the market and undercut them by offering lower prices. Due to this, and the fact
+       they can only make normal profits in the long run, they must also be allocative
+       efficient. Since they can only make normal profits AC=AR, and since they produce at
+       the lowest point on their AC curve AC=MC. Therefore, AC=MC=AR, so the value to
+       society is equal to the cost.
+
+Types of barrier to entry and exit:
+
+Some barriers are natural barriers, sometimes called ​innocent entry barriers. ​These
+include natural monopolies and high entry/sunk costs. However, others are put in place by
+existing firms in the industry. They include patents and copyrights as well as high levels of
+advertising and branding. Both the costs to entry and exit must be high for the market to
+have low contestability, since if entry costs are high but the firm is able to make profit once in
+business and not lose much of this profit if they leave, then the market is still contestable.
+
+   ●   Legal barriers ​can prevent new firms from entering an industry. Laws are put in
+       place which make it more difficult for firms to enter the market, or explicitly mean they
+       cannot enter. For example, ​patents and exclusive rights to production (such as with
+       television) mean other firms cannot enter the market. ​Some industries, such as the
+       taxi industry, gain market licences to operate​.
+
+   ●   Other firms can put up ​marketing barriers. High levels of advertising build up
+       consumer loyalty, so demand becomes more price inelastic, and consumers are less
+       likely to try other brands. Sometimes a brand can become associated with a product,
+       such as ​‘Hoover’ with vacuum cleaners​. New firms entering the industry are unlikely
+       to have the funds to undertake large scale advertising so struggle to compete with
+       the incumbent firms. This may also be a barrier to exit, since losing a brand and
+       consumer loyalty will be a cost of leaving the market.
+
+   ●   The ​pricing decisions of incumbent firms can be a barrier to entry. Predatory
+       pricing means prices are so low that firms are driven out of the market, and so it
+       would be extremely difficult for new firms to enter. Limit pricing discourages the entry
+       of other firms as prices are set at a level to prevent new entrants. Some firms might
+
+
+
+
+                             www.pmt.education
+      employ anti-competitive practices, such as refusing to supply retailers which stock
+      competitors.
+
+  ●   Some industries have high ​capital start up costs​, for example buying the machinery
+      necessary to begin production. ​Sunk costs ​may also be high.
+
+  ●   Economies of scale mean that new firms are unable to produce on the same AC
+      curve as large, incumbent firms. If they were to enter the industry, their costs would
+      be higher and so prices would be higher and they would be unable to compete.
+
+  ●   Barriers to exit prevent firms from leaving a market quickly and cheaply. They include
+      the ​cost to write off assets, pay leases and make workers redundant​.
+
+
+
+Sunk costs and the degree of contestability:
+
+  ●   A ​sunk cost is a ​fixed cost that a business cannot recover if it leaves the
+      industry. It includes ​property (if the lease is longer than it is actually used for),
+      machinery and equipment that cannot be resold, and advertising​.
+
+  ●   All businesses will face sunk costs because even if things are resold it is ​generally
+      for a lower price.
+
+  ●   The degree of contestability is measured by the ​extent to which the gains from
+      market entry for a firm exceed the costs of entering the market​. A market with no
+      sunk costs and no barriers to entry and exit is a perfectly contestable market. The
+      more contestable a market, the more unstable it will be as there can be regular hit
+      and run competition.
+
+  ●   In reality, ​no market is likely to be perfectly contestable as there is always likely to
+      be some sunk cost.
+
+
+
+
+                          www.pmt.education
+In order to test the theory, we would need a lot of information about the cost structure of the
+business. Since the theory centres on the threat of entry and not necessarily entry itself, it is
+difficult to test. Even if there has not been new competition over time, this does not
+necessarily mean the firm isn’t contestable. New firms entering the industry and low profits
+being made suggests that an industry is contestable.
+
+
+
+
+                            www.pmt.education
+

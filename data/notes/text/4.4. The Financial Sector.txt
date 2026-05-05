@@ -1,0 +1,190 @@
+Edexcel Economics (A) A-level
+Theme 4: A Global Perspective
+   4.4 The Financial Sector
+               Detailed Notes
+
+
+
+
+       www.pmt.education
+                      4.4.1 Role of financial markets
+Financial markets are ​where buyers and sellers can buy and trade a range of services
+or assets that are fundamentally monetary in nature.
+
+They exist for two main reasons: to meet the ​demand for services​, such as saving and
+borrowing, from individuals, businesses and the government and ​to allow speculation and
+financial gains​.
+
+
+
+
+Role of the financial market
+
+   ●   One role of the financial market is to ​facilitate savings​, which allows people to
+       transfer their spending power from the present to the future. It can be done through a
+       range of assets, such as storing money in savings account and holding stocks and
+       shares.
+
+   ●   On top of this, they ​lend to businesses and individuals which allows consumption
+       and investment. They are sometimes referred to as a financial intermediary, the step
+       between taking money from one person to give to another since money from savings
+       is used for investment.
+
+   ●   Also, they ​facilitate the exchange of goods and service​s by creating a payment
+       system. Central banks print paper money, institutions process cheque transactions,
+       companies offer credit card services and banks and bureau de changes buy and sell
+       foreign currencies.
+
+   ●   Similarly, they ​provide forward markets​. This is where firms are able to buy and sell
+       in the future at a set price, for example if a farmer wants to sell the crop they are
+
+
+
+
+                           www.pmt.education
+       growing at a guaranteed price in a month’s time. The forward market exists for
+       commodities and in foreign exchange and helps to provide stability.
+
+   ●   On top of this, they provide a ​market for equities​, company’s shares. Issuing shares
+       is an important way for companies to finance expansion but people would be unlikely
+       to buy shares if they were unable to sell them on in the future. Financial markets
+       provide the ability for shares to be sold on in the future, making the asset more
+       appealing.
+
+
+
+
+              4.4.2 Market failure in the financial sector
+The combination of speculation and provision of genuine services means that financial
+markets are prone to regular crises that cause significant damage to the real economy.
+
+Asymmetric information:
+
+One problem with the financial sector is that financial institutions often have ​more
+knowledge compared to their customers​, both consumers and other institutions. This
+means they can sell them products that they do not need, are cheaper elsewhere or are
+riskier than the buyer realises. ​The Global Financial Crisis was partially caused by banks
+selling packages of prime and subprime mortgages, but advertising them as all prime
+mortgages​. Those buying these packages suffered from asymmetric information and it is
+unlikely they would have bought them if they knew the risk involved. Additionally, there can
+be asymmetric information between ​financial institutions and regulators​. The institutions
+have little incentive to help regulators understand their business and this causes difficulties
+for the regulators so may allow institutions to undertake harmful activities.
+
+Externalities:
+
+There are a number of costs placed on firms, individuals and the government that ​the
+financial market does not pay​. One example of this is the cost to the taxpayer ​of bailing
+out the banks after the 2007-8 financial crisis​. Even higher than this, was ​the long-term cost
+to the economy of the crisis due to its effects on demand and growth. Moral hazard also
+shows some external costs.
+
+
+
+
+                            www.pmt.education
+Moral hazard:
+
+This is where individuals ​make decisions in their own best interests knowing there are
+potential risks​. This can happen in two main ways in the financial markets. Firstly, it will
+occur where individual workers take ​adverse risk in order to increase their salary​. Any
+problems they cause will be the problem of the company and not the problem of the
+individual, the worst that can happen is to lose their job whilst the company may lose millions
+of pounds. ​The Global Financial Crisis was caused by moral hazard, when employees sold
+mortgages to those who would not be unable to pay them back. By selling more mortgages,
+they would see higher salaries and bonuses but would not see the negative effects if the
+loan was not repaid. On top of this, financial institutions may take excessive risk because
+they know the ​central bank is the lender of last resort and so will not allow them to fail
+because of the impact it would have on the economy.
+
+Speculation and market bubbles:
+
+Almost all trading in financial markets is speculative and this leads to the ​creation of market
+bubbles​, where the price of a particular assets rises massively and then falls. They tend to
+occur because investors see the price of an asset is rising and so decide to purchase this
+asset as they believe the price will continue to rise and will profit them in the future. This
+leads to prices becoming excessively high and eventually enough investors decide that the
+price will fall, so they sell their assets and panic sets in, causing mass selling. This is known
+as ​herding behaviour​. Moreover, the financial market has also caused market bubbles in
+the ​housing market by lending too much in mortgages and increasing demand for houses.
+When this bubble bursts, for example due to a rise in real interest rates, there is a fall in
+demand for houses and a negative wealth effect, reducing AD, and banks are left with loans
+that will not be repaid in full. Other bubbles included the ​dot com bubble in the 1990s and the
+Wall Street Crash in 1929.
+
+Market rigging:
+
+This is where a group of individuals or institutions ​collude to fix prices or exchange
+information that will lead to gains for themselves at the expense of other participants in
+the market. One example of this is ​insider trading​, where an individual or institution has
+knowledge about something that will happen in the future that others do not know and so
+can buy or sell shares to make a profit. Another example is where ​individuals or
+institutions affect the price of a commodity, currency or asset to benefit themselves, for
+example large trades in a currency will shift its value and this will make a difference to
+individuals selling or buying assets with that currency. ​In the Libor scandal of 2008, financial
+institutions were accused of fixing the London Interbank Lending Rate (LIBOR), one of the
+most important rates in the world.
+
+
+
+
+                            www.pmt.education
+                           4.4.3 Role of central banks
+Role of the central bank
+
+   ●   Firstly, the central bank ​controls monetary policy through interest rates and
+       controlling money supply in order to keep inflation low and stable.
+
+   ●   It acts as a ​banker to the government​. The exact nature of the services offered by
+       the bank differs from country to country, for example the Bank of England was
+       previously responsible for managing the national debt but this role was transferred to
+       the Debt Management Office in 1998. They often hold the government's bank
+       account and lend to them, holding government debt, as well as holding gold and
+       foreign exchange reserves.
+
+   ●   Similarly, they act as a ​bank to other banks​. Banks deposit their money within the
+       central bank and this is often used to balance the accounts of banks at the end of
+       each day, when banks owe each other money because cheques have been paid in
+       by consumers etc. The most important part of this role is the fact they are a lender of
+       last resort. If banks experience liquidity problems, they can turn to the central bank to
+       sell their illiquid assets or to take a loan in the short term. If the bank is on the brink of
+       collapse as its assets have fallen too far in value e.g. the financial crisis of 2007-8,
+       then the bank can lend them money to prevent them from collapsing. Banks tend to
+       lend to each other and so the collapse of one bank will lead to the collapse of other
+       banks; this means that this role is important since as it allows the bank to ensure
+       financial stability.
+
+   ●   Moreover, central banks in some countries ​regulate the financial system​. This is
+       important to prevent financial institutions from undertaking activities which harm
+       consumers or engage in risky activities which would lead to collapse and to prevent
+       systemic risk, the risk of the whole system collapsing. The financial sector plays a
+       huge role in the economy because it impacts investment and can cause huge
+       externalities if market failure occurs.
+
+Financial regulation:
+
+   ●   Regulation can include: banning market rigging; preventing the sale of unsuitable
+       products; maximum interest rates to prevent consumer exploitation and prevent
+       excessively risky lending; deposit insurance to protect consumer deposits and
+       increase stability; and liquidity ratios, when banks are forced to hold a certain
+       percentage of liquid assets.
+
+   ●   There are three key bodies for financial regulation:
+          o The FPC identifies and reduces system risk and supports government
+              economic policy (macroprudential)
+
+
+
+
+                             www.pmt.education
+o   The PRA ensures competition, ensures consumers have access to services,
+    minimises risk should a bank fail and ensures banks take responsible action.
+    (microprudential)
+o   The FCA protects consumers, promotes competition and enhances the
+    integrity of the system by preventing market rigging.
+
+
+
+
+                www.pmt.education
+

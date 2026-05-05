@@ -1,0 +1,820 @@
+ Edexcel Economics (A) A-level
+  Theme 2: The UK Economy -
+   Performance and Policies
+2.6 Macroeconomic Objectives and
+            Policies
+                Detailed Notes
+
+
+
+
+        www.pmt.education
+              2.6.1 Possible macroeconomic objectives
+Possible macroeconomic objectives:
+
+Governments intervene in the economy in an attempt to improve its economic performance.
+The government have four key macroeconomic objectives:
+
+    ●   Economic growth: In the UK, the long run trend of economic growth is about ​2.5%.
+        Governments aim to have sustainable economic growth for the long run. In emerging
+        and developing economies, governments might aim to increase economic
+        development before economic growth, which will improve living standards, increase
+        life expectancy and improve literacy rates.
+
+    ●   Low unemployment: Governments aim to have as near to full employment as
+        possible. They account for frictional unemployment by aiming for an unemployment
+        rate of around ​3%​. The labour force should also be employed in productive work.
+
+    ●   Low and stable inflation: In the UK, the government target is ​2%​, measured by
+        CPI. This aims to provide price stability for firms and consumers and will help them
+        make decisions for the long run. If the inflation rate falls 1% outside the target, the
+        Governor of the Bank of England has to write a letter to the Chancellor of the
+        Exchequer to explain why this has happened and what the Bank intends to do about
+        it.
+
+    ●   Balance of payment equilibrium on the current account: ​This is important to
+        allow the country to sustainably finance the current account, which is important for
+        long term growth.
+
+They have some other macroeconomic objectives:
+
+    ●   Balance government budget: This ensures the government keeps control of state
+        borrowing, so the national debt does not escalate. This allows governments to
+        borrow cheaply in the future should they need to and makes repayments easier.
+
+    ●   Protection of the environment: This aims to provide long run environmental
+        stability. It ensures resources used are not exploited, such as oil and natural gas,
+        and that they are used sustainably, so future generations can access them too.
+        Moreover, it means there is not excessive pollution.
+
+    ●   Greater income equality: ​This minimises the gap between the rich and poor. It is
+        generally associated with a fairer society.
+
+To achieve their macroeconomic objectives, governments are able to manage demand
+through monetary or fiscal policy. In times of recession, they often increase AD to increase
+employment and economic growth whilst in a boom, they will decrease AD to decrease
+
+
+
+
+                            www.pmt.education
+inflationary pressures. They may also use supply side policies, which aim to bring about
+long-term growth.
+
+
+
+
+                          2.6.2 Demand-side policies
+Demand side policies are policies designed to manipulate consumer demand.
+Expansionary policy ​is aimed at increasing AD to bring about growth, whilst ​deflationary
+policy ​attempts to decrease AD to control inflation.
+
+Monetary policy ​is where the central bank or regulatory authority attempts to control the
+level of AD by altering base interest rates or the amount of money in the economy.
+
+Fiscal policy ​is use of borrowing, government spending and taxation to manipulate the
+level of aggregate demand and improve macroeconomic performance.
+
+
+
+Monetary policy:
+
+Interest rates​:
+
+The interest rate is the price of money and the MPC are able to change the official base rate
+in order to tackle inflation. This is called the ​repo rate​, the rate the Bank of England will
+charge for short-term loans to other banks or financial institutions. A change in the repo rate
+affects market rates offered by banks to consumers and businesses as the Bank of England
+is the lender of last resort. If they are short of money, they will have to borrow from the Bank
+at the repo rate and therefore they need to make sure that their interest rates are based on
+this rate so that they are able to make a reasonable return.
+
+A rise in interest rates causes a fall in AD through four key mechanisms:
+
+   ●   The rise in interest rates will ​increase the cost of borrowing for firms and
+       consumers. This will lead to a fall in investment and consumption, reducing AD. Two
+       particular areas of consumption that will decrease are consumer durables and
+       houses. Higher interest rates require higher rates of return for investment. It also
+       makes ​savings more attractive​, as the interest earnt on them will be higher.
+
+   ●   Since less people are borrowing and more are saving, there is a fall in demand for
+       assets such as stocks, shares and government bonds. This leads to a ​fall in prices
+       for these assets​. Therefore, consumers will experience a negative wealth effect
+       since the value of their assets fall, which will lead to a fall in consumption. Moreover,
+       investment is less attractive since firms are likely to see lower profits if prices fall. AD
+       falls because of the fall in consumption and investment.
+
+
+
+
+                            www.pmt.education
+   ●   People will become ​less confident about borrowing and spending if interest rates
+       rise. The fall in consumer and business confidence leads to a fall in consumption and
+       investment, causing a fall in AD. On top of this, other loans, such as mortgages, will
+       become more expensive to repay and so consumers have to dedicate more of their
+       income to paying back these debts. This means they have less income to spend on
+       goods and services, so consumption will fall, causing AD to fall.
+
+   ●   Higher rates will increase the incentive for foreigners to hold their money in British
+       banks as they can see a higher rate of return. As a result, there will be increased
+       demand for pounds and the ​value of the pound will rise​. This means that imports
+       will be cheaper, and exports will be more expensive. This decreases net trade and
+       therefore AD.
+
+There are some ​problems​ with this method of demand management:
+   o Firstly, the exchange rate may be affected so much that exports fall significantly and
+       imports rise significantly, causing a ​balance of trade deficit​.
+   o Moreover, changes in interest rates take up to ​2 years to have their full effect and
+       small changes in interest rates may not affect people’s decisions.
+   o Sometimes, ​interest rates are so low that they cannot be decreased any further to
+       stimulate demand. This is a particular issue for many countries today, and something
+       most people never thought would be a problem.
+   o There are a range of different interest rates and ​not all of them are affected by the
+       Bank of England base rate.
+   o A ​lack of confidence in the economy may mean that, no matter how low interest
+       rates are, consumers and businesses do not want to borrow or banks do not want to
+       lend to them.
+   o High interest rates over a long period of time will ​discourage investment and
+       decrease LRAS.
+
+Monetary supply​:
+
+Quantitative easing:
+
+This is when the Bank of England ​buys assets in exchange for money ​in order to increase
+money supply and get money moving around the economy during times of very low demand.
+‘Quantitative’ means a set amount of money is being created and ‘easing’ refers to reducing
+pressure on banks. It can prevent the ​liquidity trap​, where even low interest rates cannot
+stimulate AD.
+
+One way of buying assets is for the Bank of England to simply increase the size of banks’
+accounts at the Bank of England, called the ‘reserves’, which encourages them to lend
+money. Following the financial crisis, the Bank of England found that many banks preferred
+to keep their money in reserves rather than lending it out so buying assets from the bank did
+not have the effect they wanted. As a result, the Bank bought securities or bonds from
+private sector institutions such as insurance companies, pension funds and banks.
+
+
+
+
+                           www.pmt.education
+Quantitative easing has the effect of increasing consumption and investment, which
+increases AD and ensures the country meets its inflation target:
+
+   ●   Since the bank is buying assets, there is a rise in demand and so ​asset prices rise​.
+       This causes a positive wealth effect since shares, houses etc. are worth more so
+       people will increase their consumption. Moreover, the cost of borrowing will decrease
+       as higher asset prices mean lower yields (money earnt from assets), making it
+       cheaper for households and businesses to finance spending.
+   ●   Moreover, the ​money supply increases​. Private sector companies receive more
+       money which they can spend on goods and services or other financial assets, which
+       may increase investment or consumption and therefore increase AD. It may also
+       push asset prices up further. Banks have higher reserves, meaning they can increase
+       their lending to households and businesses so both consumption and investment
+       increase as people can buy on credit.
+
+   ●   Commercial banks may ​lower their interest rates as they are receiving so much
+       money from the Bank of England and so can offer very low interest deals to their
+       customers. The increased money supply will mean that the price of money falls;
+       interest rates are the price of money. This will encourage borrowing, and therefore
+       increase investment and consumption so increase AD. If many banks decide to lower
+       their interest rates, the same mechanisms will apply as those following a reduction in
+       the base rate.
+
+However, there are also​ problems ​with using quantitative easing:
+  o It is very risky and, if not controlled properly, could cause high inflation and even
+     hyperinflation.
+  o Others say it would only lead to increased demand for ​second hand goods which
+     pushes up prices but does not increase aggregate demand. For example, it would
+     not lead to more new houses being built but only second hand houses becoming
+     more expensive.
+  o There is ​no guarantee that higher asset prices lead into higher consumption
+     through the wealth effect, especially if confidence remains low.
+  o It had a large effect on the ​housing market by stimulating demand and leading to
+     rapid price rises since 2013, helping to worsen the issues of geographical mobility. It
+     also led to rising ​share prices which increases inequality, since the rich grow richer
+     whilst the poor see none of the gains.
+  o It was not meant to be permanent and there are concerns that banks and economies
+     are ​too dependent on quantitative easing​, particularly within the ​Eurozone​.
+
+
+
+
+                           www.pmt.education
+Role of the Bank of England:
+
+   ●   Monetary policy is controlled by the Bank of England rather than the government.
+       The ​Monetary Policy Committee (MPC) makes the most important decisions,
+       including the Bank of England base rate and the actions over quantitative easing.
+
+   ●   Their main aim is ​keep inflation at 2% and if it goes below 1% or above 3% the
+       governor of the Bank of England has to write a letter to the Chancellor of the
+       Exchequer explaining why this is happened and what the Bank of England is doing to
+       bring it back to the target. They use CPI in order to see whether this target has been
+       met.
+
+   ●   Since 2009, the MPC has kept the bank rate at 0.5% and policy has become
+       focussed on boosting economic growth and employment. It was reduced to 0.25%
+       following the Brexit vote but rose again in November 2017 due to the inflation that the
+       weak pound brought about. They plan to raise the interest rate once the negative
+       output gap has been eliminated and the economy is growing strongly.
+
+   ●   The Committee is made up of ​nine people​: five are from of the Bank of England,
+       including the Governor of the Bank of England, and the other four are independent
+       outside experts, mainly economists.
+
+
+
+
+                           www.pmt.education
+Fiscal policy:
+
+There are two main ways the government can influence AD through fiscal policy:
+
+   ●   A rise in income tax will cause a fall in disposable income. This will lead to a
+       reduction in consumption and thus decrease AD. Alternatively, a rise in corporation
+       tax will decrease a firm’s post-tax profits. This will lead to a reduction in investment
+       and thus decrease AD.
+
+   ●   A rise in ​government spending​ will increase AD since it is one component.
+
+Government budgets:
+
+The government’s fiscal (spending, borrowing and taxation) plans are outlined in the budget.
+A ​budget deficit is when the government spends more money than they receive. A ​budget
+surplus​ is when the government receives more money than they spend.
+
+Indirect and direct taxation:
+
+Direct taxes are paid directly to the government by the individual taxpayer. An ​indirect tax
+is where the person charged with paying the money to the government is able to pass on the
+cost to someone else i.e. the supplier can pass on the burden to indirect tax to the
+consumer. The four highest revenue raising taxes are ​income tax, national insurance, VAT
+and corporation tax​. Other taxes include ​council tax, excise duties, capital gains tax,
+inheritance taxes and stamp duty land tax.
+
+It is a good idea to have an understanding of the different rates of tax in the UK. For
+example:
+
+   ●   Income tax is a direct tax and is the biggest source of revenue for the government,
+       around 25% of all taxation revenue. It is paid as a percentage of income and all
+       income earned below a certain threshold is not taxed (£11,850 as of Summer 2018).
+       The basic rate is 20%, the higher rate is 40% and 45% is the additional rate for
+       incomes over £150,000.
+   ●   VAT is an indirect tax and the standard rate of VAT is 20%. Not all goods pay the
+       standard rate, for example food and children clothes aren’t charged and domestic
+       fuel/power are charged 5%.
+
+There are ​problems​ which need to be considered when evaluating fiscal policy:
+   o Government spending also ​impacts LRAS​. For example, by cutting government
+       spending to reduce AD, the government may be reducing the quality of education or
+       spending on research and technology.
+   o Taxes and spending have an impact on ​inequality​, so some decisions aimed to
+       reduce/increase demand may increase income inequality. They also have an impact
+       on ​incentives​, for example high taxes reduce incentives.
+
+
+
+
+                           www.pmt.education
+   o   The government also has to worry about ​political issues​, for example they may be
+       unwilling to raise taxes in order to reduce demand as this may lead to them being
+       voted out of government
+   o   Expansionary fiscal policy is difficult to undertake during a period of ​austerity​. The
+       government needs to consider the effect of policies on the budget.
+   o   The impact of fiscal policy ​depends on the multiplier​: the bigger the multiplier, the
+       bigger the impact on AD. Classical economists argue that the multiplier is almost zero
+       whilst Keynesian economists argue that it can be large if targeted correctly.
+
+The impact of changes in government spending and taxation is looked at in more detail in
+A2. For A2 questions on fiscal policy, it is important to also bring in some of these points.
+
+
+
+Evaluation of demand-side policies:
+
+It is clear there are some issues with the individual policies, for example the effect on the
+budget following fiscal policy or hyperinflation risks with quantitative easing. However,
+demand-side policies on the whole have some issues:
+
+   ●   Classical economists argue that any demand management, whether fiscal or
+       monetary, will have ​no effect on long-run output so supply side policies should be
+       used. They believe that increasing AD during a depression will have no effect other
+       than to increase prices. If the economy is in short-run disequilibrium, it will quickly
+       return to long run equilibrium, whilst Keynesians argue that it can be in long-run
+       equilibrium for years.
+
+   ●   On a Keynesian LRAS, the impact of changes in AD d​epend on where the
+       economy is operating​: if the economy is at full employment then a rise in AD will
+       only lead to higher prices. However, if unemployment is very high, then a rise in AD
+       will only lead to higher output.
+
+   ●   Both policies see significant ​time lags ​between their introduction and their full effect.
+
+   ●   The biggest issue of demand-side policies is that, in most cases, an expansionary
+       policy is ​inflationary whilst a deflationary policy brings ​unemployment​. This
+       depends on the elasticity of the curve and the curve which you perceive to be correct
+       (Keynesian or classical), but holds in most scenarios. Thus, through demand
+       management, the government cannot bring about both low and stable inflation and
+       high economic growth/low unemployment.
+
+Monetary vs fiscal policy:
+
+   ●   Monetary policy is useful as the government is able to increase demand without
+       having to increase their spending, which would result in a larger fiscal deficit.
+       Classicists argue that if demand management is going to be done only monetary
+       policy should be used.
+
+
+
+
+                            www.pmt.education
+   ●   Fiscal policy can have significant impacts on the supply side of the economy, for
+       example increases in spending on education to increase AD will also increase LRAS.
+       Moreover, it is more effective at targeting specific groups and reduce poverty, for
+       example by increasing benefits it can increase AD and reduce inequality.
+
+A range of demand-side policies should be used alongside other policies, such as
+supply-side policies, in order to achieve all the government’s goals.
+
+
+
+
+Great Depression:
+
+In the 1930s, the world experienced a severe depression known as the Great Depression- in
+the UK, unemployment was over 15% and in the US it was almost 25%. The areas most
+affected in the UK were the primary industry and the manufacturing industry which relied on
+exports and so were impacted by the collapse of world trade.
+
+Causes of the Great Depression:
+
+The Great Depression was set off by the ​Wall Street Crash of 1929 when there was a
+sharp fall in share prices on the New York Stock Exchange, but economists have different
+views in what they believed caused the following depression:
+
+   ●   Firstly, it may have been caused by the ​loss of consumer and business
+       confidence​: shareholders lost money in the crash, others became worried about
+       what would happen, and firms cut back investment which led to a downward spiral in
+       AD.
+
+   ●   Moreover, it could have been caused by the ​US banking system​. Banks had lent too
+       much during the 1920s, which had created an unsustainable boom and the system
+       was unable to deal with issues following the crash. The government allowed banks to
+       fail after the crash, which decreased confidence further and reduced loans to
+       businesses and consumers, causing a fall in AD.
+
+   ●   Protectionism may also have been another cause of the Great Depression. It
+       reduced world trade which decreased AD and lowered confidence. Firms involved in
+       exports were no longer able to pay bank their loans, which caused bank failures in
+       the USA. America introduced the Smoot-Hawley Tariff Act in 1930 which decreased
+
+
+
+
+                          www.pmt.education
+       imports to the USA. Countries which traded with America saw a reduction in exports
+       which decreased in AD in their countries. American also suffered from a fall in
+       exports as other countries retaliated.
+
+   ●   The UK was also affected by its commitment to the ​gold standard, in which its
+       currency was fixed to the value of gold and therefore fixed to other currencies. It left
+       the gold standard in 1914 but re-joined in 1925 at the 1914 level and value, despite
+       the fact the value of the pound had fallen. The rejoining of the gold standard meant
+       the pound was appreciated rapidly and exports fell as they became more expensive.
+       The UK went into the Great Depression with an overvalued exchange rate.
+
+Policy responses in the UK:
+
+   ●   The UK government believed that ​balancing the government budget was key to
+       recovery and that borrowing money would prevent the private sector from doing so.
+       They introduced an emergency budget which ​cut public sector wages and
+       unemployment benefit ​by 10% and ​raised income tax from 22.5% to 25%. This
+       reduced AD at a time when it needed to be increased.
+
+   ●   The pound came under attack from speculators and needed to be defended to
+       prevent the UK being forced out of the gold standard. A balanced budget meant the
+       UK didn’t have to borrow from abroad, which helped the exchange rate as did the
+       high interest rates used to defend the high exchange rate. However, the ​high
+       interest​ ​rates​ also decreased demand.
+
+   ●   The UK was forced to ​leave the gold standard on 21​st September 1931 due to
+       continued speculation against it. This caused the value of the pound to fall by 25%
+       compared to other currencies and allowed the Bank of England to ​cut interest rates
+       by 2.5%, both of which helped the increase AD by increasing exports or increasing
+       consumption/investment.
+
+   ● There was recovery in London and the South East but Wales, the north and Scotland
+       did not reach full employment until 1941.
+
+Policy responses in the USA:
+
+   ●   The US government originally had the same view over a balanced budget as the UK.
+
+   ●   However, Franklin Roosevelt was elected in 1932 with ​his New Deal which promised
+       public sector investment, work schemes for the unemployed and fiscal stimulus.
+
+   ●   The USA reached full employment in 1943 (two years after joining the war- the same
+       as Britain). Roosevelt’s New Deal is an example of ​Keynesian expansionary fiscal
+       policy but can be argued it was not large enough to be successful, although it did
+       have a large impact as the US unemployment figure was so high.
+
+
+
+
+                           www.pmt.education
+Global Financial Crisis (2008/9):
+
+There are many parallels between the Great Depression and the Global Financial Crisis:
+both were started in the US and spread throughout the world and both had large, long term
+effects on the economy. However, the Global Financial Crisis was much less severe than the
+Great Depression.
+
+Causes of the Global Financial Crisis:
+
+   ●   The 2008 crisis was started by issues in ​mortgage lending in the USA. In the early
+       2000s, relatively poor people were encouraged by the government and banks to take
+       out mortgages to buy their own homes. This was an example of moral hazard, as the
+       bank workers saw higher bonuses for selling more mortgages. They were given low
+       interest rates on the loan for the first few years, but many were no longer able to
+       continue paying with the higher repayments. Houses were repossessed, demand fell,
+       and prices fell meaning the value of the houses was now less than the mortgage of
+       the house. This is known as negative equity.
+
+   ●   At the same time, banks had been ​grouping ‘prime’ mortgages (people who were
+       likely to pay back their loans) ​and ‘sub-prime’ mortgages (those who weren’t) and
+       selling packages to other banks and investors as if they were all prime mortgages.
+       The aim was to reduce risk since it meant no bank was highly dependent on risky
+       mortgages. However, it increased risk as many were now holding assets worth less
+       than they had paid for them; it spread the effects of the housing crash and the unpaid
+       loans.
+
+   ●   When this was revealed, there was a ​fall in confidence and banks stopped lending
+       between each other, fearing that they would lose money if the other bank were to
+       collapse. Similar events occurred in the UK, Ireland, Spain and Portugal. Northern
+       Rock Building Society was the first affected in the UK in 2007 with too many loans
+       not being repaid, and savers beginning to withdraw their money. In 2008, Lehman
+       Brothers, an investment bank, was allowed to fail. This caused panic as people
+       believed bank after bank would be allowed to collapse, leading to losses for savers.
+
+Policy responses in the UK and the USA:
+
+   ●   Both governments were forced to ​nationalise banks and building societies and
+       guarantee savers ​their money in order to prevent the chaos of a collapsed banking
+       system. For example, the British government bought Northern Rock and most of
+       Royal Bank of Scotland and Lloyds Bank.
+
+   ●   They used ​expansionary monetary policies with record low interest rates and
+       quantitative easing. The Bank of England said the QE led to lower unemployment
+       and higher growth than would otherwise have been the case.
+
+
+
+
+                           www.pmt.education
+   ●   However, the USA government had a more ​expansionary fiscal policy and this is
+       perhaps why it recovered faster. In 2010, the UK prioritised reducing ​National Debt
+       over providing a fiscal stimulus, but the USA did not make this decision until 2013.
+
+
+
+                          2.6.3 Supply-side policies
+Supply side policies are government policies aimed at ​increasing the productive potential
+of the economy and moving the supply curve to the right. Over time, there tend to be
+supply-side improvements independent of the government, through actions of the private
+sector such as investment. However, the government is able to use supply-side policies in
+order to increase and speed up these improvements. They may be across the whole
+economy or in certain markets to target economic growth in that sector.
+
+
+Market based and interventionist methods:
+
+   ●   Market based policies are policies which are designed to remove anything that
+       prevents the free market system working efficiently, causing lower output and higher
+       prices. These barriers include those which reduce willingness of workers to take jobs
+       or lead to inefficient production, high prices or a lack of risk-taking.
+
+   ●   Interventionist policies are policies designed to correct market failure, for example
+       the free market under provides education and so the government provides it. Also,
+       firms may only look into the short term and look to maximise short run profits to give
+       to shareholders instead of investing, so governments may take actions to encourage
+       investment.
+
+   ●   Free market economists tend to argue for market-based policies as they want the
+       government to have as small a role as possible. Economists who support
+       interventionist policies suggest the free market is not as efficient as people believe
+       and so the government needs to intervene to improve it.
+
+
+
+
+                           www.pmt.education
+Policies:
+
+Increase incentives:
+
+   ●   By increasing the incentive for people to go to work or firms to employ people, the
+       government will increase the ​size of the workforce and this would mean more
+       goods and services would be produced.
+          o A ​reduction in benefits/taxes will increase the opportunity cost of being out
+              of work and mean that people are always better off within work than on
+              benefits. This is why the government have introduced ​Universal Credit​, which
+              helps to ease the transition into and out of work.
+          o A reduction in benefits may prevent the ​poverty/unemployment trap​, where
+              low income workers end up in the same or an even worse position after they
+              gain a new job because of the benefits they lose. The unemployment/poverty
+              trap can also be solved by subsiding workers i.e. lower income workers
+              receive income tax credits instead of paying income tax.
+          o Moreover, they could encourage parts of the workforce back to work, for
+              example women could be offered free childcare and flexible hours.
+          o Taxes on firms when they take on new staff, such as ​National Insurance
+              Contributions, decrease the incentive for businesses to employ. Reducing
+              these taxes would increase incentives for firms to employ.
+          o A ​reduction/removal of the minimum wage ​would increase the incentive for
+              firms to employ.
+
+
+   ●   Moreover, they could increase incentives for people to ​take risks or for firms to
+       invest. One way they could do this would be lowering taxes, which will mean people
+       see a bigger return on their investment.
+
+   ●   The ​problem with this method is that many people will argue a small change in any
+       tax, for example from 25% to 20%, will have little impact on people’s incentive to
+       work. Reductions of tax on high income earners will lead to more income inequality
+       and any reduction will mean governments have less revenue so have to decrease
+       spending or borrow more. Reducing benefits will also worsen equality.
+
+
+Promote competition:
+
+   ●   Privatisation, selling nationalised companies to private sectors, or ​deregulation​,
+       reducing restriction on businesses which restrict entry to the market, makes firms
+       more competitive.
+
+   ●   Competition ​policy is used to prevent monopolies in the market and make cartels
+       and price fixing agreements illegal. The ​CMA is the body in the UK which ensures
+       markets are competitive and the ​Competition Act (1998) and ​Enterprise Act (2002)
+       were passed with the same aim. These are looked at in more detail in Theme 3.
+
+
+
+
+                           www.pmt.education
+  ●    The belief is that competition is necessary to make firms efficient as they have to
+       offer a cheaper or better service if there is competition. Free market economists
+       argue that governments have little incentive to cut costs or innovate so nationalised
+       industries are inefficient and causes government failure.
+
+  ●    However, deregulation and privatisation may lead to a poorer quality service. It could
+       also cause environmental issues if deregulation is seen in environmental regulations.
+
+Reform the labour market:
+
+  ●    By ​increasing the retirement age​, there will be more people working and so more
+       goods and services could be produced.
+
+   ●   Moreover, the labour market could become ​more flexible ​in order to make it more
+       efficient as it can respond to external changes, such as changes in demand for a
+       product or population changes.
+            o One way to do this is through ​weakening of unions​. For example, ​the
+               government has introduced postal ballots, banned secondary picketing and
+               reduced the picket line to only 7 people. Unions now have to give 14 days’
+               notice before strikes and have a higher turnout and support for strikes in
+               ballots​. Trade unions push up wages which can lead to businesses laying off
+               some workers and reducing production, which limits AS, and so therefore
+               reducing their power will hope to prevent this.
+            o Also, businesses have attempted to be more flexible by ​changing
+               employment contracts,​ for example ​zero-hour contracts​.
+            o Flexibility could also be in the form of making it easier to change jobs, through
+               higher mobility of labour​: improved information about job vacancies,
+               improved flexibility of pensions and improved geographical mobility; or in
+               making it easier to sack people from jobs which would encourage more firms
+               to employ people. In order to improve geographical mobility, the government
+               is trying to improve the affordability of housing. To do this, they have ​cut VAT
+               and relaxed planning laws.
+
+   ●   If the ​minimum wage is set above the equilibrium level it will cause increased
+       unemployment, so some people argue the minimum wage should be scrapped to
+       prevent real-wage inflexibility unemployment.
+
+   ●   The ​reduction of benefits will also increase incentive to work and help to reform the
+       labour market. ​Universal Credit is helping to reform the labour market, although it is
+       currently experiencing problems in setting it up.
+
+   ●   On the whole, all of these methods would ​reduce unemployment​, which represents
+       a waste of resources, and mean that more goods and services can be produced as
+       the labour force is bigger.
+
+
+
+
+                           www.pmt.education
+   ●   On the other hand​, trade unions are already very weak in the UK so reducing their
+       power further may have little effect. Similarly, reducing benefits will lower AD if these
+       people are unable to get jobs and this will cause a further fall in employment. The
+       reduction in benefits is likely to have a multiplied effect as the poor have a very high
+       MPC and so a reduction in their income will cause a large fall in spending, meaning
+       AD falls by a lot. It may also mean there is increased income inequality. Making the
+       labour force more flexible will lead to decreased quality of life as people are less
+       secure in their jobs and may have to work odd hours. It will also mean some people
+       receive very low pay, which will increase income inequality and may reduce AD.
+
+Improve skills and quality of the labour force:
+
+   ●   They could ​increase spending on education and training ​to create a more
+       educated workforce who will be more efficient and be able to do more skilled jobs,
+       increasing the number of goods and services produced. This could be in terms of
+       academic education, such as free university tuition, more spending on secondary
+       school etc., or improving the quality of on the job training, such as apprenticeships.
+       T-Levels have been introduced by the government as an A Level equivalent which
+       focuses on technical education. The government are also ​working with trade unions
+       and firms to improve the skills of the long term unemployed.
+
+
+   ●   Alternatively, they could introduce ​regulation ​which forces businesses to
+       continuously train their own staff, to keep them up with developments etc. ​The
+       Apprenticeship Levy is effectively a tax on salaries in large companies where the
+       money is held online for them to spend on training. However, it has not been very
+       effective as there has been a fall in the quality and number of apprenticeships.
+
+
+   ●   An ​increase in high skilled migrants ​would also improve the quality of the
+       workforce. The government have introduced ​more lax rules for skilled immigration​. It
+       is hoped this will improve the skills shortages in the UK, where there are ​800,000
+       unfilled vacancies ​due to incorrect skills.
+
+   ●   Overall, improvements in skills will mean that workers are ​more efficient ​and so can
+       produce more goods and services as well as being more skilled so be able to
+       develop new technology etc.
+
+   ●   However, ​improving education may have no effect if it is in skills not relevant to the
+       workforce. Increasing education will incur an opportunity cost as it means
+       government money will be lost in other sectors. It will also take time to see the effects
+       of increased education and more investment may not necessarily increase the quality
+       of education
+
+
+
+
+                           www.pmt.education
+Improve infrastructure:
+
+   ●   This could be done through offering ​tax incentives or subsidies on investment. For
+       example, businesses who invest their profits could see lower tax rates.. Investment in
+       the UK is just ​17% of GDP compared to 35% in South Korea. In order to improve this,
+       the government plans to ​reduce corporation tax to 18% in 2020​. Moreover, the
+       Enterprise Investment Scheme provides tax relief for people who buy shares in a
+       small company when the finance raised is used for investment purposes​.
+
+   ●   Alternatively, the ​government could spend money to improve infrastructure
+       themselves. Some government action includes ​building new roads, HS2, CrossRail
+       and the Transforming Cities Fund.
+
+   ●   This will mean new technology will be developed and more will be invested in buying
+       new technology. Improvements in technology will mean that production is ​more
+       efficient so less resources are needed to produce the same amount of goods whilst
+       more technology will mean more goods and services can be produced. The UK is
+       24th in the world for infrastructure and so it is clear that more action needs to be
+       taken.
+
+   ●   However, there are ​some issues​. Offering tax breaks/subsidies could have adverse
+       effects on the government budget as it will mean they lose tax revenue or incur an
+       opportunity cost as they have to spend money on subsidies. Some businesses may
+       not actually invest this money and instead used it as a method of tax evasion.
+       Moreover, not all investment will be successful in improving supply as it may not
+       achieve its aim or it may not be aimed at increasing supply.
+
+
+
+Evaluation of supply-side policies:
+
+   ●   Unlike demand-side policies, supply side policies are able to both ​increase output
+       and decrease prices​.
+
+   ●   They are more ​long-term policies and lead to long term economic growth, rather
+       than small changes in economic growth following changes in AD.
+
+
+   ●   Moreover, they can be directed at increasing exports which will also ​improve the
+       balance of payments.
+
+
+
+
+                           www.pmt.education
+   ●   Supply side policies allow ​two different types of approaches​: market based and
+       interventionist, and this will mean that both free market economists and more
+       interventionist economists will accept and use supply side policies.
+
+
+   ●   However, the Keynesian LRAS curve shows that they have ​no impact when LRAS
+       is elastic​, and so demand-side policies are needed to fix the problem in the short
+       run.
+
+
+   ●   Moreover, ​not all supply side policies work at actually increasing supply, whilst
+       others cause conflicts and both these issues vary depending on which policies are
+       used.
+
+
+   ●   Often, the government has to spend more money (for example on education) or
+       decrease taxes, which will decrease their revenue and lead to a ​budget deficit​.
+
+
+   ●   These actions may also have ​undesirable impacts on AD and could cause higher
+       unemployment or higher inflation.
+
+
+   ●   Supply side policies can also take a ​long time to have any effect on output and this
+       makes them less useful.
+
+
+
+
+    2.6.4 Conflicts and trade-offs between objectives and
+                                         policies
+
+Conflicts and trade-offs between objectives:
+
+There are many different trade-offs between the macroeconomic objectives. Two objectives
+which tend to go hand in hand are economic growth and unemployment, but the rest tend to
+be achieved at the expense of another.
+
+Economic growth vs. protection of the environment: ​As the economy grows, we
+expect more resources to be used. As we use resources and produce goods, we produce
+pollution and noise and destroy habitats. Economic growth in ​China has been rapid but it has
+
+
+
+
+                           www.pmt.education
+led to serious levels of pollution. Economic growth can be achieved without damaging the
+environment, but the growth is likely to be slower and have higher costs.
+
+Economic growth vs. Balance of Payments: ​Some countries such as ​India have seen
+rapid economic growth leading to balance of payments problems. The country is so large
+that its industry is largely producing goods for its own people and the wealth of the people
+has led to increased demand for imported goods. In comparison, ​China has seen massive
+growth but that has been largely been by producing goods for exports and therefore their
+balance of payments is in a surplus.
+
+Unemployment vs Inflation- Short run Phillips curve: ​A. W. Phillips found a
+trade-off between inflation and unemployment, called the Phillips curve. He found the
+existence of an empirical regularity, which said that the rate of change in money wages
+increased as the rate of unemployment fell. This was then generalised into a relationship
+between unemployment and inflation, by arguing that firms pass on increases in wages to
+the customer in increased prices. The reason for this connection is that businesses know
+that if there is a high level of unemployment, they can attract the workers they want with low
+wages. If there is high employment, firms are competing for the best workers and the way to
+obtain the best is by offering higher wages. Initially, the Phillips curve seemed to accurately
+show the relationship well. However, ​during the 1970s​, we saw high levels of unemployment
+and low inflation, called stagflation.
+
+
+
+
+Conflict and trade-offs between policies:
+
+Expansionary and deflationary fiscal and monetary policies: Expansionary
+policies will increase AD, to increase output, employment and economic growth but will lead
+to increased inflation and may worsen the balance of payments as some of the increased
+demand for goods and services will be met by imports. On the other hand, deflationary
+
+
+
+
+                            www.pmt.education
+policies will decrease AD to improve inflation but will decrease employment and economic
+growth.
+
+Changes in interest rates: ​An increase in interest rates will be used to decrease
+inflation. However, continuously high rates will damage long-term investment as less
+businesses will want to invest, and this will decrease long-term growth. Moreover, they will
+raise the value of the pound which will decrease exports and increase imports, worsening
+the balance of payments. Also, the interest rate will affect distribution of wealth: high interest
+rates benefit savers and lenders, tending to be older people as they are more likely to have
+savings. Low interest rates tend to increase income inequality, as the richest people hold a
+larger proportion of their wealth in non-money assets, such as stocks, shares and
+belongings and so aren’t affected much by interest rates, whilst middle and working-class
+people are more likely to have savings in the bank.
+
+Supply-side policies: ​Supply side policies intend to increase aggregate supply, and
+therefore improve long term economic growth. They are also able to decrease long term
+inflation but may increase it in the short term if they encourage investment as this will
+increase AD. Moreover, policies which decrease trade union power, reduce wages, lower
+benefits, change taxation etc. may increase income equality as these will negatively affect
+the poorest in the country. Some supply-side policies have adverse effects on the budget or
+on the environment.
+
+Fiscal deficits: In order to reduce fiscal deficits, the government may decide to reduce
+government spending and increase taxes. Firstly, this will reduce AD and decrease short
+term economic growth and higher unemployment. Also, the higher the fall in output as a
+result of these measures, the higher the fall in tax revenues will be and so therefore the
+more ineffective the policy. Moreover, it is likely to affect income equality as the poor are the
+ones who use the government services most and so will be worst affected.
+
+
+
+
+                             www.pmt.education
+

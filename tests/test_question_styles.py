@@ -50,6 +50,108 @@ def test_paper_1_uses_edexcel_command_word_pattern():
     assert section_c[0].topic_id != section_c[1].topic_id
 
 
+def test_deterministic_questions_use_exam_like_contexts_not_generic_placeholders():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    blueprint = build_paper_blueprint(config, syllabus, seed=8464)
+    text = " ".join(
+        [question.prompt for question in blueprint.questions]
+        + [part.prompt for question in blueprint.questions for part in question.parts]
+        + [option.text for question in blueprint.questions for part in question.parts for option in part.options]
+        + [question.source_text for question in blueprint.questions]
+    )
+
+    assert "The following data relates to" not in text
+    assert "A key concept in" not in text
+    assert "removes the need for opportunity cost" not in text
+    assert "constructed data" not in text
+    assert "A UK market linked to" not in text
+    assert "market affected by labour market" not in text
+    assert "linked to labour market" not in text
+    assert "effect of labour market" not in text
+    assert "with reference to Extract A" in text or "With reference to Extract A" in text
+
+
+def test_paper_1_section_b_uses_coherent_source_case_and_references():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    blueprint = build_paper_blueprint(config, syllabus, seed=8464)
+    section_b = [question for question in blueprint.questions if question.section == "B"]
+
+    assert len({question.topic_id for question in section_b}) == 1
+    assert [question.source_reference for question in section_b] == [
+        "Extract A",
+        "Extract A",
+        "Extract B",
+        "Extract C",
+        "source material",
+    ]
+    assert len({question.source_text for question in section_b[:4]}) >= 3
+
+
+def test_section_b_15_marker_uses_reference_style_discuss_question_without_source_prefix():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    blueprint = build_paper_blueprint(config, syllabus, seed=7)
+    section_b = [question for question in blueprint.questions if question.section == "B"]
+
+    assert section_b[-1].prompt.startswith("Discuss ")
+    assert not section_b[-1].prompt.startswith("With reference")
+
+
+def test_market_structure_sources_are_specific_not_template_like():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    blueprint = build_paper_blueprint(config, syllabus, seed=7)
+    section_b_text = " ".join(question.source_text for question in blueprint.questions if question.section == "B")
+
+    assert "video games" in section_b_text or "digital" in section_b_text
+    assert "A UK market linked to market structures" not in section_b_text
+    assert "average prices changed" not in section_b_text
+
+
+def test_paper_1_labour_market_sources_are_exam_like_not_generic():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    blueprint = build_paper_blueprint(config, syllabus, seed=243)
+    section_b_text = " ".join(question.source_text for question in blueprint.questions if question.section == "B")
+    section_a_q5 = next(question for question in blueprint.questions if question.number == "5")
+
+    assert "vacancies" in section_b_text
+    assert "hourly pay" in section_b_text
+    assert "monopsony" in section_b_text
+    assert "average prices changed" not in section_b_text
+    assert "National Minimum Wage" in section_a_q5.source_text
+
+
+def test_essay_questions_do_not_use_shallow_nature_of_economics_topic():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    for seed in range(200):
+        blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+        essay_topic_ids = [question.topic_id for question in blueprint.questions if question.marks >= 15]
+
+        assert "1.1" not in essay_topic_ids
+
+
+def test_essay_question_prompts_are_broad_enough_for_extended_answers():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    blueprint = build_paper_blueprint(config, syllabus, seed=13)
+    essays = [question for question in blueprint.questions if question.marks >= 15]
+    essay_text = " ".join(question.prompt for question in essays)
+
+    assert "positive and normative" not in essay_text.lower()
+    assert "likely effects" in essay_text or "benefits and drawbacks" in essay_text or "contestability" in essay_text
+
+
 def test_paper_3_has_choice_25_marker_per_section():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_3")

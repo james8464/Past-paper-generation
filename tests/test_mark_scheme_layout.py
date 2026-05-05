@@ -47,6 +47,45 @@ def test_mark_scheme_has_subquestion_tables_mcq_explanations_and_levels(tmp_path
     assert "Level 5" in text
 
 
+def test_mark_scheme_mcq_explanations_are_option_specific(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, syllabus, output)
+
+    text = _pdf_text(output)
+    assert "does not match" not in text
+
+
+def test_mark_scheme_includes_question_specific_focus_and_answer_points(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=7)
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, syllabus, output)
+
+    text = _pdf_text(output)
+    assert "Question focus:" in text
+    assert "Relevant source evidence:" in text
+    assert "Valid points may include:" in text
+    assert "digital games" in text
+
+
+def test_mark_scheme_uses_uploaded_note_points_for_extended_questions(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=1)
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, syllabus, output)
+
+    text = _pdf_text(output).lower()
+    assert "perfect competition" in text or "contestability" in text
+
+
 def _pdf_text(path: Path) -> str:
     import subprocess
 

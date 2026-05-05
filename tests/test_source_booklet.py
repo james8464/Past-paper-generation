@@ -37,7 +37,9 @@ def test_source_booklet_has_figure_extracts_and_source_attributions(tmp_path):
     assert "Figure 1:" in text
     assert "Extract A" in text
     assert "Extract B" in text
-    assert "Source: constructed economic data for revision practice" in text
+    assert "Extract C" in text
+    assert "Source: generated revision material based on the specification" in text
+    assert "constructed economic data" not in text
 
 
 def test_source_booklet_for_paper_3_uses_both_sections(tmp_path):

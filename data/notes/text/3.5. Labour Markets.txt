@@ -1,0 +1,497 @@
+ Edexcel Economics (A) A-level
+Theme 3: Business Behaviour and
+              the
+         Labour Market
+       3.5 Labour Markets
+                Detailed Notes
+
+
+
+
+        www.pmt.education
+                           3.5.1 Demand for labour
+The demand curve for labour shows the ​quantity of labour that employers would wish to
+hire at each possible wage rate.
+
+
+
+
+Derived demand:
+
+Firms hire workers in order to produce goods to meet their aim, usually of making a profit.
+Therefore, the demand for labour is derived demand as it is derived from demand for the
+product the labour produces. Businesses only want the worker for as long as people are
+willing and able to buy the product they produce.
+
+
+
+Factors influencing demand for labour:
+
+   ●   Wage rates: ​A wage is the price of labour and so has the same influence on demand
+       for labour as price has on the demand for a product. As wage rates increase,
+       demand for labour contracts since the MRP of labour must be higher for it to be
+       worthwhile employing more people, so less people are employed.
+
+   ●   Demand for the product: ​Since labour is a derived demand, if there is no demand
+       for the product, there is no demand for the labour. Firms won’t employ people if the
+       goods they make aren’t going to be sold and make a profit. An increase in demand
+       for the product leads to an increase in demand for labour. This is linked to the
+       concept of MRP: an increase in output or price of a good will increase demand for the
+       labour that produces that good.
+
+   ●   Prices of other factors of production: ​If machinery and equipment becomes
+       cheap, people will switch machinery for labour and therefore the demand for labour
+       will fall.
+
+   ●   Wages in other countries: ​If wages are lower in other countries and therefore
+       wages in the UK are relatively high, people will be employed in other countries as it
+       represents a lower cost for businesses. This means that demand in the UK is low.
+
+
+
+
+                           www.pmt.education
+   ●   Technology: ​Improvements in computers and technology means that many jobs
+       have been lost with the work being done by machines. This means that there is less
+       demand for labour, but demand for labour in technological based industries is
+       increasing. ​By 2040, about 47% of jobs could be lost to technology.
+
+   ●   Regulation: ​As laws are passed some jobs disappear, such conductors, whilst other
+       jobs are made. High regulation within the labour market is likely to discourage firms
+       from hiring since it can be very costly and time-consuming so this will reduce demand
+       for labour in these areas. ​France is a country that used to have high levels of labour
+       regulation and this is something the new president, Emmanuel Macron, is trying to
+       change​.
+
+
+
+
+Price elasticity of demand:
+
+This is the ​responsiveness of the quantity demanded of labour to the wage rate​.
+
+Factors affecting PED of labour:
+
+   ●   It is ​directly correlated to the price elasticity of demand for the product the
+       labour produces. If the good is elastic, then a rise in wages and hence a rise in prices
+       for consumers will have a large impact on the quantity the business sells. This will
+       mean that the business will reduce the number of people it employs, in order to help
+       it make a profit.
+
+   ●   It is affected by the ​proportion of wages to the total cost of production​: if wages
+       are a huge proportion of costs, then an increase in wages will increase costs
+       massively and so there will be a large fall in demand for labour hence it will be
+       elastic.
+
+   ●   If there are many ​substitutes​, such as machinery and labour in other countries, then
+       the demand will be elastic. This means high skilled jobs tend to be more inelastic
+       than low skilled jobs as the labour cannot be easily replaced.
+
+   ●   Time also plays a role. In the long run, it is more elastic as machinery can be
+       developed and jobs can be moved whilst in the short run firms have to employ
+       workers and redundancy payments can be expensive.
+
+
+
+
+                           www.pmt.education
+                              3.5.2 Supply of labour
+The supply of labour curve shows the ​ability and willingness of people to make
+themselves available to work at different wage rates.
+
+Factors influencing supply of labour:
+
+   ●   Wages: The supply of labour curve for an individual is a backward bending curve: an
+       increase in wages will lead to an increase in hours worked at first but beyond a
+       certain point, it will lead to a decrease in hours worked. However, we are concerned
+       with the supply curve for a particularly occupation; this is more likely to be the typical
+       upward sloping curve. Firms can increase the number of hours worked by its
+       workforce in two ways: it can increase the number of hours by its existing labour
+       force or it can recruit new workers. Therefore, although an increase in wage rates
+       may not increase the number of hours worked by existing labour, it will increase the
+       number of workers. This is because new workers may join from other industries or
+       from being unemployed.
+
+   ●   Population and distribution of age: A high population will mean there is a large
+       supply of labour. The distribution of age is important as there needs to be many
+       people of high working age to ensure there is lots of labour. Migration plays a role in
+       determining the workforce, since many migrants are of working age and come to the
+       UK to work.
+
+   ●   Non-monetary benefits: ​Supply of labour will increase if there is high job
+       satisfaction, for example in vocational jobs. Some jobs are attractive because they
+       are close by or in an area with good social life, such as London, require little
+       commuting or are near friends and family. Similarly, some jobs offer perks such as
+       free private healthcare etc. which will increase supply. Factors such as holiday, hours
+       of work, flexibility and opportunities for promotion also play a significant part.
+
+   ●   Education/training/qualification: ​More educated workers means there is a higher
+       supply of workers. This is particularly important for some industries which require
+       qualifications. Occupations which require high levels of education may suffer from
+       lower supply of labour compared to low skilled jobs.
+
+   ●   Trade unions and barriers to entry: Trade unions may be able to restrict the supply
+       of labour by introducing barriers to entry, for example you have to have a degree for
+       teaching.
+
+   ●   Wages and conditions of other jobs: ​If many jobs in a local area are considered to
+       be unpleasant and offer low wages, then supply for alternatives will be higher.
+
+   ●   Legislation: The government rules can affect supply of labour, for example school
+       leaving age and the retirement age.
+
+
+
+
+                            www.pmt.education
+Market failure:
+
+The labour market should operate in the same way as any other. An increase in wages
+should attract labour to the industry and a fall in wages should mean labour leaves
+industry. However, labour is not a perfectly free market.
+Immobility:
+
+   ●   Labour can suffer from either occupational or geographical immobility.
+
+   ●   They can suffer from ​occupational immobility where workers find it difficult to move
+       from one job to another because of a lack of transferable skills. It is particularly
+       difficult in the short term when workers need to get new training but in the long run it
+       may only be possible at a high cost.
+
+   ●   Moreover, they can suffer from ​geographical immobility where they find it difficult to
+       move from one place to another due to the cost of movement, family etc. There may
+       be no jobs available in Glasgow, but jobs in London. Unfortunately, someone from
+       Glasgow will struggle to get a job in London as they may not know about the
+       vacancies, it would be expensive to attend interviews and they would have to leave
+       their family behind. Housing is also a big issue because people may not be able to
+       afford to buy a house in their new area. They may also struggle if they need to find
+       social housing and it is difficult for young people, since they often do not have the
+       money to move out of their parents’ home. In general, those on lower incomes are
+       more geographically immobile.
+
+   ●   Immobility can mean that there can be excess supply ​of labour in one
+       area/occupation and excess demand ​in another. Even if wages are higher where
+       there is excess demand, people will be unable to leave where there is excess supply
+       to get a job in that area/occupation because of their immobility.
+
+The UK suffers from a severe skills shortage and this could cost £90bn a year following
+Brexit. There are four million too few high skilled people but six million too many low skilled
+people. Engineering is one industry suffering particularly badly from skills shortages.
+
+
+
+Elasticity of supply:
+
+   ●   This is the ​responsiveness of supply to a change in wage rates​.
+
+   ●   It will depend on the ​level of qualifications and training since if there is a high level
+       of qualifications necessary for the job, people will not easily be able to take up the job
+       so the supply of labour will be inelastic.
+
+   ●   Similarly, it can depend upon the ​availability of suitable labour in other industries​,
+       for example if a company can ‘poach’ workers from other industries, then it will be
+       more elastic.
+
+
+
+
+                            www.pmt.education
+   ●   Moreover, it depends on ​time as in the long run supply of labour will be more elastic
+       as people will have time to train. If the job is vocational, it will be inelastic since even
+       if wages fall people won’t leave the job.
+
+
+
+
+           3.5.3 Wage determination in competitive and
+                           non-competitive markets
+Wage rates differ within an occupation due to age, education, training, work experience,
+skill/talent/ability to perform tasks, sex and ethnic background. These last two are illegal but
+average wages suggest that this still can be an issue. For the highest paid workers, there will
+be a low supply and a high MRP. The immobility of labour means that there may be excess
+supply in one area/occupation, causing low wages, and not enough workers in another,
+meaning high wages. The lower the elasticity of supply/demand, the greater the change in
+the real wage rate and the smaller the change in employment as a result of a change in
+demand/supply for labour. The effect will also depend on the size of the shift.
+
+
+
+Wage determination:
+
+Perfect competition:
+
+In a perfectly competitive labour market, we make the same assumptions as in a perfectly
+competitive product market. Therefore, wages are determined purely by demand and supply
+and all workers are paid the same. If workers were not paid the same, they would simply
+move somewhere else where the wage rate in the industry was higher. For example, a
+waiter in Liverpool would move to be a waiter in Portsmouth if the wage rate was higher.
+This would reduce supply and lead to an increase in wages in Liverpool, and increase supply
+and lead to a fall in wages in Portsmouth.
+
+
+
+
+                            www.pmt.education
+However, in an ​imperfectly competitive market, wages will not always be set where
+demand equals supply.
+
+Monopsony in the labour market:
+In a monopsony market, there is only one buyer of the labour. In this situation, businesses
+know that if they want to increase their labour force they will have to increase the wage they
+offer and, just like with monopsony product markets,an increase in the wage for one
+increases the wage for all. Therefore, the MC curve is above the supply curve (AC) of labour
+because it costs more to employ an additional worker than the average cost of labour. A firm
+will determine how many workers to employ where the cost of employing them is equal to
+the value of that worker to the company. They employ where MC=D at Q1 and at this output,
+they will pay their workers W1 (determined by the S curve). Compared to a perfectly
+competitive market (which would produce at W2Q2), they employ ​less people at a lower
+wage rate​.
+
+
+
+
+                           www.pmt.education
+Monopoly in the labour market:
+
+The existence of trade unions means they can operate as the only seller of labour. A trade
+union is an organisation with members who are usually workers or employees, which
+protects the rights and pay of workers through a process of collective bargaining.
+
+There are two ways they could increase wages. Firstly, they could set barriers of entry which
+would reduce supply. ​Teachers’ unions lobbied for a rule which means that all teachers must
+have degrees​. Alternatively, they could set wages at a specific wage and ensure workers are
+not prepared to work for less, creating a kinked supply curve as seen in the diagram (the
+grey line). Supply is perfectly elastic up to output of QS and if the company wanted to
+employ more than this, they would have to increase wages further. The firm will employ
+where supply is equal to demand, at QDW2. Both of these methods will lead to ​higher
+wages but cause a fall in employment​ from the perfectly competitive equilibrium of Q1W1​.
+
+
+
+
+The government have been able to reduce the power of trade unions through acts which
+have introduced postal ballots, outlawed secondary picketing, restricted the size of the picket
+line and forced unions to provide 14 days’ notice of action. The Trade Union Act 2016 was
+the most recent act, and this included a clause saying that at least 50% of people must vote
+in the ballot; the most recent teachers union ballot only had 28% voting turnout​.
+
+Bilateral monopoly:
+
+It is possible for there to be both monopoly and monopsony in a labour market, called a
+bilateral monopoly. The firm is a monopsonist and wants to employ at Q2W2. However, the
+union may decide to set a minimum wage at W1 and ensure that there is no one willing to
+work below this price, creating a kinked supply curve. The new MC and AC curves are the
+purple curves. In this situation, there is a battle going on between the two parties. The ​wage
+that is set will depend on the relative bargaining strength of both​. This is dependent on
+a number of factors, including the size of the union and the strength of the economy.
+
+
+
+
+                            www.pmt.education
+In a time of economic recession and unemployment the unions may have less bargaining
+power and wage is most likely to be down at W1. In times of full employment, they may have
+the power to influence and wages could be at W3​. This
+                                                   ​    diagram highlights that Unions can
+have a positive impact on both wages and the number of people employed​: they are
+able to increase wages to W3 without negatively impacting the number of workers. This
+increase in wages and employment is able to make the economy more efficient.
+
+
+
+
+Labour market issues:
+
+There are a number of current issues in the labour market which you need to be aware of.
+The best way to do this is to do some research close to the exam but some of the issues
+include:
+
+   ●   Skills shortages: The UK suffers from geographical and occupational immobility,
+       which means that even if there are enough engineers, there aren’t enough engineers
+       in certain areas.
+
+   ●   Young workers: Workers who join the workforce during recessions tend to receive
+       lower lifetime earnings than those who enter the labour force in better times. Youth
+       unemployment can be a particular issue; during hard times, firms are unlikely to
+       employ new workers but are reluctant to let go of their current workers and so the
+       young struggle to get a job.
+
+   ●   Retirement: Rising life expectancy and an increase in the number of people reaching
+       retirement age, as the ‘baby boomers’ reach retirement, has negative effects on the
+       government budget. Pensioners now makeup over 50% of welfare spending. The
+
+
+
+
+                          www.pmt.education
+       retirement age will have to continue to rise and the government is trying to encourage
+       people to save for their own pensions.
+
+   ●   Wage inequality: Over time, those on the highest wages have seen their wages
+       grow by a bigger percentage than those on the lowest wages. This is a contentious
+       issue and raises questions over relative poverty and the level of redistribution
+       required.
+
+   ●   Zero-hour contracts: ​There has been a rise in zero-hour contracts and this causes
+       problems for employees who do not know how much they will earn a week and
+       receive little notice of when they will be required to work.
+
+   ●   The ‘Gig economy”: Many more people are now self-employed and undertake short
+       term contracts, working for companies such as Uber and Deliveroo. There are
+       concerns over the rights of these workers and the unreliability of their pay each week.
+
+   ●   Migration: ​Many people suggest that migration causes a fall in wages but it allows
+       employers to recruit from a larger pool of workers and helps to fill skills shortages.
+
+There are also issues over the correct level of unemployment, underemployment, the
+minimum wage, conditions in work etc.
+
+
+
+Government intervention:
+
+National minimum wage:
+
+   ●   Labour introduced the National Minimum Wage in April 1999 to raise people out of
+       poverty and decent minimum standards in the workplace. ​It changes every April, all
+       workers over school leaving age receive their minimum wage and a failure to pay
+       employees can lead to the firm being fined. The National Living Wage has been
+       introduced for over 25 year olds, and the government pledge for it to be £9 by 2020.
+
+Arguments for the national minimum wage:
+
+   ●   The wage is able to ​reduce poverty as it mainly impacts the lowest wages and
+       ensures that these people have enough to live on.
+   ●   It can ​reduce male/female wage differentials as women are more likely to take up
+       lower paid jobs (because they are vocational, offer more flexible hours etc.) and so a
+       minimum wage is able to decrease the gaps between men and women.
+   ●   It may make employees less likely to leave their job as they feel more ​loyal to the
+       businesses​, which will decrease labour turnover, and therefore recruitment and
+       training costs. This will increase profit but is a ​weak argument since if they are
+       offered a higher wage elsewhere, then they will leave.
+   ●   There could also be a ​more content workforce ​who will be more motivated and,
+       thus making the business more productive and increasing its profits. However, this
+       assumes all people are ​motivated by money​ and this is not necessarily the case.
+
+
+
+
+                           www.pmt.education
+   ● Moreover, a minimum wage provides an incentive to work and prevents the
+     ‘unemployment trap’, when benefits are higher than the wage people would
+     otherwise receive.
+   ● It ensures everyone receives a ​fair wage, ​and is not exploited by being drastically
+     underpaid.
+Arguments against the national minimum wage:
+
+   ●   The most notable negative consequence is the potential ​loss of jobs in the industry
+       (or unemployment on a macro level).
+   ●   Moreover, the minimum wage will ​raise costs for the companies ​and so may
+       increase their prices, which is liking to lead to a fall in profit.
+   ●   Another negative impact could be the ​wage spiral as individuals will try to protect
+       wage differentials between them and the lowest price workers. An increase in the
+       wage of the lowest paid will mean that others expect theirs to rise too. This will
+       reduce profit and further reduce competitiveness.
+   ●   There is ​no consideration of regional differences​, and so this, alongside the fact
+       many people on minimum wages are ​secondary earners​, means the minimum wage
+       may be ineffective at reducing poverty.
+
+The impact of any minimum wage will depend on where it is set, and whether this is
+above or below the current wage. The level of job losses is dependent on the elasticity of
+supply and demand. If both are relatively elastic, there will be large job losses but if both are
+relatively inelastic, the losses will be small.
+
+
+
+
+Maximum wages:
+
+   ●   Minimum wages are fairly common but few places set maximum wages. Some
+       people suggest there should be a maximum wage for chief executives or a
+       maximum pay ratio ​compared to the lowest wage earners. The government can set
+       maximum pay limits for public sector workers in order to keep public sector
+       spending down. It will help to ​reduce inequality.
+
+   ●   The introduction of maximum wages will lead to ​excess demand within the industry,
+       since people may not put themselves forward for the job if they don’t think the salary
+       matches the stress and responsibilities or they know they could get higher wages
+
+
+
+
+                            www.pmt.education
+       abroad. The UK may suffer from a ​loss of the best workers​, which will reduce the
+       quality of businesses and decrease competitiveness.
+
+   ●   The impact of this depends on the elasticities of supply and demand: inelastic means
+       there will be little impact. It is argued that supply and demand for the highest paid
+       workers, such as chief executives, is ​very inelastic since there is a small supply of
+       chief executives and firms only need one chief executive so their cost is a very small
+       part of total costs. This could mean maximum wages will have ​almost no effect on
+       the market,​ other than causing a reduction in wages.
+
+Public sector wage setting:
+
+   ●   Since trade unions in the UK are weak, in the ​short run​, the government can
+       effectively ​make whatever wage decisions it decides ​in order to improve the
+       budget.
+
+   ●   Between 2010 and 2015, public sector workers experienced a ​pay freeze​. This put
+       downward pressure on private sector wages ​since few people were likely to leave
+       the private sector for the public sector and private sector employers could use this as
+       evidence to limit pay rises for their workers.
+
+   ●   However, in the ​long run​, if private sector workers receive pay rises and public
+       sector workers don’t, people will move from the public sector to the private sector and
+       this will ​force the government to increase public sector wages in order to expand
+       supply.
+
+   ●   As a result, the wages of public and private sector workers tend to rise by the same
+       percentage over a long period of time but in the short term they can rise by different
+       rates.
+
+Tackling immobility:
+
+The government can attempt to improve geographical mobility of labour through many
+different methods:
+
+   ●   They could improve the ​supply of houses and reduce the price of properties making
+       it easier for people to move. They could make renting cheaper to help people working
+       in temporary jobs.
+   ●   They could ​improve transport links which will allow people to work further away
+       from where they live and if they do move, it will be easier for them to visit family and
+       get to job interviews.
+   ●   National advertising​ could be used so people know about jobs all over the country.
+   ●   The government could introduce subsidies on houses, taxes etc. in ​areas where
+       there are labour shortages to encourage people to move to the area and take up
+       jobs.
+   ●   One action taken has been to ​move public agencies out of London, for example the
+       DVLA was moved to Swansea​. Although this doesn’t improve the mobility of labour, it
+
+
+
+
+                           www.pmt.education
+       helps to prevent excess demand for labour in one place and excess supply in
+       another.
+
+Additionally, they can improve occupational mobility of labour, through education. This will
+help to make the workforce more employable and better at a wider range of jobs:
+
+   ●   Vocational training​ can be increased, particularly for younger students.
+   ●   They could encourage ​further study​, such as university or technical courses at
+       college. They have been ​encouraging engineering degrees.
+   ●   They could encourage greater spending on ​training within work​.
+   ●   Education could be targeted at improving skills shortages and helping with job
+       applications, for example interview skills.
+
+They could also encourage ​flexible work patterns which will allow more parents to work.
+On top of this, ​discrimination in the labour market could be reduced and employers who
+take on unemployed individuals from groups with above average unemployment rates could
+be subsidised.
+
+
+
+
+                           www.pmt.education
+

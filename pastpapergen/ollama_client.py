@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from typing import Callable
 
 from pastpapergen.models import MultipleChoiceOption, PaperBlueprint, QuestionBlueprint, Syllabus, SyllabusTopic
+from pastpapergen.notes import note_context_for_topic
 
 
 @dataclass(frozen=True)
@@ -42,6 +43,7 @@ class OllamaClient:
 
 def build_question_prompt(question: QuestionBlueprint, topic: SyllabusTopic) -> str:
     points = "\n".join(f"- {point}" for point in topic.points)
+    note_context = note_context_for_topic(topic.id, title=topic.title, keywords=topic.points)
     return f"""You are writing an unofficial A-Level Economics practice paper.
 
 Use only this syllabus topic:
@@ -50,6 +52,9 @@ Theme: {topic.theme}
 Title: {topic.title}
 Allowed points:
 {points}
+
+Uploaded revision-note context:
+{note_context}
 
 Write one Edexcel A-style question.
 Question number: {question.number}
@@ -66,7 +71,10 @@ Style rules:
 - 10-mark questions usually use assess whether and require judgement.
 - 15-mark questions usually use discuss and require developed evaluation.
 - 25-mark questions usually use evaluate and must sound like an essay choice question.
+- Preserve the command word and source reference pattern from the draft intent.
+- Do not add instructions such as 'Consider both positive and negative arguments' or 'include relevant theories'.
 - Do not include '(4 marks)' or similar mark text in any question or part text.
+- Mark scheme bullets must be specific to the generated question, using its source data, correct option, likely answer points and evaluation judgement.
 - If parts are supplied, rewrite each part separately rather than combining the parts into the main question text.
 - If a one-mark MCQ is supplied, return four options A-D and one correct_option.
 
@@ -123,14 +131,12 @@ def generate_questions_with_ollama(
             f"(Section {question.section}, {question.marks} marks, {topic.title})"
         )
         payload = client.generate_json(build_question_prompt(question, topic))
-        question_text = _clean_prompt(str(payload.get("question_text") or question.prompt))
-        source_text = str(payload.get("source_text") or "")
+        question_text = _merge_question_text(question, str(payload.get("question_text") or ""))
+        source_text = _merge_source_text(str(payload.get("source_text") or ""), question.source_text)
         source_reference = str(payload.get("source_reference") or question.source_reference)
         mark_breakdown = str(payload.get("mark_breakdown") or question.mark_breakdown)
-        indicative_raw = payload.get("indicative_content") or question.indicative_content
-        indicative_content = [str(item) for item in indicative_raw] if isinstance(indicative_raw, list) else question.indicative_content
-        mark_scheme_raw = payload.get("mark_scheme") or []
-        mark_scheme = [str(item) for item in mark_scheme_raw] if isinstance(mark_scheme_raw, list) else []
+        indicative_content = _merge_text_list(payload.get("indicative_content"), question.indicative_content)
+        mark_scheme = _merge_text_list(payload.get("mark_scheme"), question.mark_scheme)
         parts = _merge_parts(question, payload.get("parts"))
         questions.append(
             question.model_copy(
@@ -171,10 +177,10 @@ def _merge_parts(question: QuestionBlueprint, raw_parts: object) -> list:
         merged.append(
             part.model_copy(
                 update={
-                    "prompt": _clean_prompt(str(raw.get("prompt") or part.prompt)) if isinstance(raw, dict) else part.prompt,
+                    "prompt": _merge_part_prompt(part, raw),
                     "mark_breakdown": str(raw.get("mark_breakdown") or part.mark_breakdown) if isinstance(raw, dict) else part.mark_breakdown,
-                    "mark_scheme": [str(item) for item in mark_scheme_raw] if isinstance(mark_scheme_raw, list) else part.mark_scheme,
-                    "indicative_content": [str(item) for item in indicative_raw] if isinstance(indicative_raw, list) else part.indicative_content,
+                    "mark_scheme": _merge_text_list(mark_scheme_raw, part.mark_scheme),
+                    "indicative_content": _merge_text_list(indicative_raw, part.indicative_content),
                     "options": options,
                     "correct_option": str(raw.get("correct_option") or part.correct_option) if isinstance(raw, dict) else part.correct_option,
                 }
@@ -183,5 +189,84 @@ def _merge_parts(question: QuestionBlueprint, raw_parts: object) -> list:
     return merged
 
 
+def _merge_text_list(raw: object, fallback: list[str]) -> list[str]:
+    if not isinstance(raw, list):
+        return fallback
+    items = [str(item).strip() for item in raw if str(item).strip()]
+    return items or fallback
+
+
 def _clean_prompt(prompt: str) -> str:
-    return " ".join(re.sub(r"\(\s*\d+\s*marks?\s*\)", "", prompt, flags=re.IGNORECASE).split())
+    cleaned = re.sub(r"[\(\[]\s*\d+\s*marks?\s*[\)\]]", "", prompt, flags=re.IGNORECASE)
+    cleaned = re.sub(
+        r"\bConsider both positive and negative arguments to support your answer\.?",
+        "",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+    cleaned = re.sub(r",?\s*considering both positive and negative impacts\.?", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bInclude relevant economic theories to support your discussion\.?", "", cleaned, flags=re.IGNORECASE)
+    return " ".join(cleaned.split())
+
+
+def _merge_part_prompt(part, raw: dict) -> str:
+    if not isinstance(raw, dict):
+        return part.prompt
+    candidate = _clean_prompt(str(raw.get("prompt") or part.prompt))
+    lowered = candidate.lower()
+    if part.command_word == "draw" and "explain your answer" in lowered:
+        return part.prompt
+    if part.command_word == "calculate" and "calculate" not in lowered:
+        return part.prompt
+    if part.command_word == "explain" and "explain" not in lowered:
+        return part.prompt
+    if part.command_word == "mcq" and "which one of the following" not in lowered:
+        return part.prompt
+    return candidate
+
+
+def _merge_question_text(question: QuestionBlueprint, generated: str) -> str:
+    if question.parts:
+        return question.prompt
+    cleaned = _clean_prompt(generated or question.prompt)
+    if not _matches_expected_question_style(question, cleaned):
+        return question.prompt
+    return cleaned
+
+
+def _matches_expected_question_style(question: QuestionBlueprint, prompt: str) -> bool:
+    lowered = prompt.lower()
+    command = question.command_word.lower()
+    if question.marks == 15 and question.section == "B":
+        return lowered.startswith("discuss")
+    if question.section in {"A", "B"} and question.source_reference:
+        reference = (
+            "the source material"
+            if question.source_reference == "source material"
+            else question.source_reference.lower()
+        )
+        if f"with reference to {reference}" not in lowered:
+            return False
+    if question.marks == 12:
+        return lowered.startswith("with reference to") and "discuss whether" in lowered
+    if question.marks == 10:
+        return lowered.startswith("with reference to") and "assess whether" in lowered
+    if question.marks == 8:
+        return lowered.startswith("with reference to") and "examine" in lowered
+    if question.marks == 5 and question.section in {"A", "B"}:
+        return lowered.startswith("with reference to") and "explain" in lowered
+    if question.marks == 25:
+        return lowered.startswith("evaluate")
+    return command in lowered
+
+
+def _merge_source_text(generated: str, fallback: str) -> str:
+    cleaned = " ".join(generated.split())
+    lowered = cleaned.lower()
+    if (
+        not cleaned
+        or lowered.startswith("this source concerns")
+        or "may include evidence" in lowered
+    ):
+        return fallback
+    return cleaned

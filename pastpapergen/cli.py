@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import secrets
 from pathlib import Path
 from typing import Callable
 
@@ -68,8 +69,10 @@ def generate_package(
     syllabus = load_syllabus(syllabus_path)
     paper_id = _normalise_paper_id(paper)
     config = load_builtin_paper_config(paper_id)
+    run_seed = seed if seed is not None else secrets.randbits(64)
+    emit(f"Using seed {run_seed}")
     emit("Building paper blueprint")
-    blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+    blueprint = build_paper_blueprint(config, syllabus, seed=run_seed)
 
     if not dry_run:
         emit(f"Generating questions with Ollama model {model}")
@@ -94,7 +97,7 @@ def generate_package(
     emit("Rendering mark scheme")
     render_mark_scheme(blueprint, syllabus, mark_scheme)
     emit("Writing audit file")
-    _write_audit(blueprint, syllabus, audit_path)
+    _write_audit(blueprint, syllabus, audit_path, run_seed)
     emit("Done")
 
     return {
@@ -124,7 +127,7 @@ def _normalise_paper_id(value: str) -> str:
         raise SystemExit("--paper must be one of: 1, 2, 3, paper_1, paper_2, paper_3") from error
 
 
-def _write_audit(blueprint: PaperBlueprint, syllabus: Syllabus, output_path: Path) -> None:
+def _write_audit(blueprint: PaperBlueprint, syllabus: Syllabus, output_path: Path, seed: int) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     questions = []
     for question in blueprint.questions:
@@ -143,6 +146,7 @@ def _write_audit(blueprint: PaperBlueprint, syllabus: Syllabus, output_path: Pat
     audit = {
         "paper_id": blueprint.paper_id,
         "paper_code": blueprint.paper_code,
+        "seed": seed,
         "title": blueprint.title,
         "total_marks": blueprint.total_marks,
         "syllabus_source": syllabus.source,

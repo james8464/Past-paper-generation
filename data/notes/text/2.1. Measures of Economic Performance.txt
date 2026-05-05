@@ -1,0 +1,856 @@
+  Edexcel Economics (A) A-level
+   Theme 2: The UK Economy -
+    Performance and Policies
+2.1 Measures of Economic Performance
+                  Detailed Notes
+
+
+
+
+          www.pmt.education
+                             2.1.1 Economic growth
+
+Rates of GDP as a measure of economic growth:
+
+   ●    Economic growth is the ​rate of change of output​. It is an ​increase in the long term
+        productive potential of the country ​which means there is an increase in the
+        amount of goods and services that a country produces.
+
+   ●    This is typically measured by the ​percentage change in real GDP per annum​. It
+        can also be shown through the ​shift of PPF​.
+
+Gross Domestic Product: ​The standard measure of output, which allows us to compare
+countries. It is the total value of goods and services produced in a country within a year.
+
+   ●    GDP is an indicator of the standard of living in a country.
+
+   ●    Total GDP represents the overall GDP for the country whilst ​GDP per capita is the
+        total GDP divided by the number of people in a country.
+
+   ●    GDP per capita grows if national output grows faster than population over a given
+        time period, so there are more goods and services to enjoy per person.
+
+   ●    Real GDP​ strips out the effects of inflation whilst ​nominal GDP​ does not.
+
+   ●    Real values can be described as the ​volume of national income i.e. the size of the
+        basket of goods, whilst nominal values represent the ​value ​of the national income i.e.
+        the monetary cost of this basket of goods. The value is equal to the volume times the
+        current price level. The value of national income is its monetary value at the prices of
+        the day; the volume is national income adjusted for inflation and is expressed either
+        as index number or in money terms.
+
+e.g. Using 2014 as a base year for prices, work out nominal and real GDP:
+
+           2014                 2015                  Nominal GDP          Real GDP
+           P (£)     Q          P (£)       Q         2014     2015        2014     2015
+Fish       4         100        5           120       400      600         400      480
+Chips      1         400        1.2         400       400      480         400      600
+Total                                                 800      1080        800      880
+
+1. To work out nominal GDP: times the price by the quantity for each year e.g. fish in 2014 is
+4x100
+2. To work out the total: add the fish and the chips
+3. To work out the real GDP: multiply the quantity by the price in 2014- this will strip out the
+effects of a rising price e.g. real fish in 2015 is 4x120
+
+
+
+
+                             www.pmt.education
+Other national income measures:
+
+  ●   Gross National Income ​(GNI): The value of goods and services produced by a
+      country over a period of time plus net overseas interest payments and dividends.
+      This means that it adds what a country earns from overseas investments and
+      subtracts what foreigners earn in a country and send back home from the GDP. It is
+      affected by profits from businesses owned overseas and remittances sent home by
+      migrant workers. This is increasingly used rather than GDP because of the growing
+      size of remittances and aid.
+
+  ●   Gross National Product ​(GNP): The value of goods and services over a period of
+      time through labour or property supplied by citizens of a country both domestically
+      (GDP) and overseas. This means it is the value of all the goods produced by citizens
+      of a country, whether they live in the country or not, whilst GDP is the value of all
+      goods produced inside the country, whether they were produced by citizens of the
+      country or not.
+
+
+Making comparisons about growth:
+
+  ●   Over time: ​Changing national income levels will show us whether the country has
+      grown or shrunk over a period of time.
+         o The data is compared to other countries to put figures in a context. Growth
+            figures over a set period of time can be compared against similar countries to
+            see whether the country has done well or not.
+         o The figures can also make judgements about economic welfare as growth in
+            national income means a rise in living standards as the economy is producing
+            more goods and services so people have access to more things.
+         o It is important to use real, per capita figures. If a country’s population grows
+            over time, then this may cause a rise in GDP without a rise in living standards
+            and so provide inaccurate comparisons. We use real GDP in order to strip out
+            the effect of inflation. Inflation is rising prices and therefore can give the
+            impression of GDP growing without any more services and goods being
+            produced.
+
+  ●   Between countries: ​When countries have a difference in population, a difference
+      in total GDP doesn’t necessarily mean a difference in living standards so to make
+      comparisons, we work out GDP per capita. It is possible for GDP to increase simply
+      because of an increase in prices in the country and inflation is different in every
+      country, so real GDP figures need to be calculated.
+
+
+
+Purchasing Power Parities:
+
+  ●   An exchange rate of one currency for another which compares how much a ​typical
+      basket of goods ​in the country costs compared to one in another country.
+
+
+
+
+                          www.pmt.education
+   ●   They provide an alternative to using exchange rates for comparisons of GDP.
+
+   ●   These are useful when comparing countries as it takes into account the ​cost of
+       living (how much has to be spent to maintain living standards), and so will help us
+       better compare living standards.
+   ●   The difference between the highest and lowest GDPs will be smaller when PPP is
+       used as poorer countries have a much lower cost of living than richer ones. For
+       example, in Kenya £2 a day in their own currency is enough to survive on, whilst it
+       isn’t in the UK​.
+
+   ●   One example of this is the ​Big Mac Index​, comparing the cost of the Big Mac
+       throughout the world.
+
+
+
+Problems of using GDP to compare standard of living:
+
+National income statistics can be used to compare between countries and overtime to give
+some indication of the relative living standards: the quality of life enjoyed by people in a
+country. However, there can be problems with this.
+
+   ●   Inaccuracy of data:
+          o Some countries are ​inefficient at collecting or calculating data and
+             therefore comparisons can become less effective.
+          o There is a ‘​hidden’ or ‘black’ market in which people work without declaring
+             their income to avoid tax or to continue claiming benefits, and so GDP is
+             underestimated because these incomes aren’t taken into account. This varies
+             hugely between countries and may change overtime.
+          o GDP does not take into account ​home-produced services​, for example in
+             many poorer countries people work as subsistence farmers where they grow
+             and consume their own crops without trading, and so the GDP is
+             underestimated. This can also be true in the UK where DIY or the service of
+             house-wives/husbands are not recorded.
+          o Errors in calculating the ​inflation rate means real GDP will be slightly
+             inaccurate.
+          o Over time, ​methods used to calculate GDP will change and so therefore it
+             can be difficult to compare countries overtime. Similarly, different countries
+             may use different methods to calculate their GDP.
+          o Also, it is important to take away ​transfer payments​, when money is paid to
+             a person without any corresponding increase in output in the economy. For
+             example, the government taxes people who are employed and then gives it
+             straight to the people who are unemployed. Other examples include pocket
+             money and the selling of second hand goods.
+
+
+
+
+                           www.pmt.education
+   ●   Inequalities: An increase in GDP may be due to a growth in income of just one
+       group of people and so therefore a growth in the national income may not increase
+       living standards everywhere. Income distribution changes overtime and varies
+       between countries so makes comparisons difficult.
+
+   ●   Quality of goods and services​: The quality of goods and services is much higher
+       than those fifty years ago, but this is not necessarily reflected in the real price of
+       these goods and services. Therefore, living standards may have increased more than
+       GDP would suggest since the quality of goods and services has improved greatly.
+       Improved technology may allow prices to fall, suggesting falling living standards,
+       when this is not the case.
+
+   ●   Comparing different currencies: ​There are issues over which unit should be used
+       to compare figures: they are usually converted into US dollars because of the size of
+       the American economy. Some people argue that Purchasing Power Parity should be
+       used to take into account the impact of differences in the cost of living in different
+       countries.
+
+   ●   Spending: Some types of expenditure, such as defence, does not increase standard
+       of living but will increase GDP. For example, ​the GDP of the UK was higher during
+       the Second World War than in the 1930s because a lot of money was spent on
+       defence which increased GDP but it is difficult to argue that standard of living was
+       higher in the Second World War. This therefore makes comparisons difficult as
+       spending varies overtime and between countries.
+
+   ●   There are also many ​other factors ​which are involved in living standards, such as
+       education.
+
+
+
+National happiness:
+
+GDP only measures income but there are other factors affecting welfare. The UN happiness
+report found ​six key factors​: real GDP per capita, health, life expectancy, having someone
+to count on, perceived freedom to make life choices, freedom from corruption, and
+generosity.
+
+UK national wellbeing:
+
+   ●   In 2010, the UK Prime Minister launched the ​Measuring National Wellbeing ​report
+       to measure how lives are improving. They found that self-reported health, relationship
+       status and employment status most affect personal well-being.
+
+   ●   They ask ​4 key questions about life satisfaction, anxiety, happiness and
+       worthwhileness​, where people answer on a scale of 0 “not at all” to 10 “completely”.
+       The report is now updated on a quarterly basis, rather than annually.
+
+
+
+
+                           www.pmt.education
+   ●   In 2012-2016, life satisfaction, happiness and worthwhile have continued to rise
+       whilst anxiety levels fell but have begun to rise slightly. This could be as
+       unemployment is falling/GDP is rising but concerns over global security could be
+       causing anxiety.
+
+Real incomes and subjective happiness:
+
+   ●   One key finding of psychological research is that ​happiness and income are
+       positively related at low incomes i.e. if you are poor and your income increases,
+       you will be happier, but ​higher levels of income aren’t associated with increases
+       in happiness i.e. rich people aren’t necessarily happy and increases in their income
+       won’t necessarily make them happier. This is called the ​Easterlin Paradox​. An
+       increase in consumption of material goods will increase happiness if basic needs
+       aren’t met (shelter and food), but once these needs are met, an increase in
+       consumption won’t increase long term happiness. For example, in the UK as we
+       already enjoy a high standard of living, even if GDP doubles, happiness will not
+       increase.
+
+
+   ●   Another finding is that income and happiness ​depends on the people around us​.
+       For example, if you are the richest out of everyone you associate yourself with, then
+       you will be happier than someone who has the exact same income but is the poorest
+       out of everyone they associate with. Income is linked to ​social status and higher
+       social status tends to make us happier.
+
+
+
+
+                                      2.1.2 Inflation
+Inflation is the general increase of prices in the economy which erodes the purchasing
+power of money. Low inflation is generally considered to be better than high inflation
+Deflation ​is the fall of prices and indicates a slowdown in the rate of growth of output in the
+economy.
+Disinflation ​is a reduction in the rate of inflation i.e. prices are still rising but they are not
+rising by as much.
+
+
+
+Calculations:
+Maths questions based on inflation are similar to GCSE-level percentage questions:
+
+e.g. If the level of inflation is 10%, what will £500 worth of goods in year 1 cost in year
+2?
+110%x 500= £550
+
+e.g. If the level of inflation is 50%, what will £1000 worth of goods in year 2 in year 1?
+
+
+
+
+                             www.pmt.education
+1000=150%
+(1000/150)= 1%
+(1000/150)x 100=100%=£666.67                                (This      requires       reverse
+percentages)
+
+Indices: ​Nominal figures must be changed into real figures to make comparisons. This is
+done by choosing one year for the base year and adjusting all other figures into equivalent
+figures. In Britain, the most well-known indices are the retail price index (RPI) and the
+consumer price index (CPI). The base figure is given an index figure of 100 and all the
+figures before or after that time are then compared to that figure.
+
+(new figure/base figure) x100
+
+e.g. If the base year is 2005, work out the index of consumer spending for the
+following data:
+
+
+ Year                           Consumer spending              Index
+
+ 2000                           625.1                          (625.1/712.5)x100=87.73
+
+ 2005                           712.5                          100
+
+ 2010                           630.9                          (630.9/712.5)x100=88.55
+
+ 2015                           715.5                          (715.5/712.5)x100=100.4
+
+
+Consumers Price Index (CPI):
+
+
+   ●    The Office for National Statistics (ONS) collects prices on ​710 goods and services
+        from 20,000 shops in 141 locations and online sites and the prices are updated every
+        month, with collectors visiting the same retailers to monitor identical goods. New
+        items are added to the list every year, such as ​microwaveable rice and nail varnish​,
+        whilst others are taken away, including ​organic carrots.
+   ●    All these prices are combined using information on the average household spending
+        pattern to produce an overall price index. The average household spending is worked
+        out through the ​Living Costs and Food Survey, ​where around 5,500 families keep
+        diaries of what they spend over a fortnight.
+   ●    It takes into account how much is spent on each item so they are ​weighted i.e. we
+        spend more on petrol than on postage stamps so an increase in petrol will have a
+        bigger impact on the overall rate of inflation.
+
+
+
+
+                            www.pmt.education
+Limitations of CPI:
+
+   ●   It is impossible for the figure to take into account every single good that is sold in the
+       country and so therefore the CPI is ​not totally representative​. Similarly, different
+       households spend different amounts on each good and so therefore the CPI only
+       measures an average rate of inflation, and is not totally representative.
+   ●   Moreover, it does not include the ​price of housing and so, since this has tended to
+       rise more than the price of other goods, the data may be lower than it should be.
+   ●   Since the figure is more recent than RPI, it is ​difficult to make comparisons with
+       historical data. It was only used since 1996 with estimates going back to 1988 which
+       means that levels of inflation using CPI can only be accurately compared back to
+       then.
+
+
+Some people argue that ​all inflation indices overestimate inflation because they don’t
+  take into account the fact that goods and services have improved in quality, and so will
+  obviously be more expensive. For example, a car in the 1950s would be far less
+  comfortable and reliable than today’s. It has no way of indicating the change of goods
+  that is bought.
+
+
+
+Retail Price Index (RPI):
+
+The RPI is very similar to the CPI. However, there are some differences between the data
+included and the way it is calculated.
+
+   ●   RPI includes ​housing costs such as mortgage and interest payments and council
+       tax, whereas CPI does not.
+   ●   CPI takes into account the fact that when prices rise people will switch to product
+       that has gone up by less. Therefore, the CPI is generally lower than the RPI.
+   ●   RPI excludes the top 4% of income earners and low income pensioners as they are
+       not ​‘average’ households​ whilst CPI covers all households and all incomes.
+
+RPI is no longer considered as the best method and has had its national statistic status
+removed, although the Office for National Statistics still calculates it every month.
+
+
+
+Causes of inflation:
+
+Demand pull:
+
+   ●   Prices in a market are determined by demand and supply and a shift in either will
+       cause price to change. Inflation can therefore be caused by an increase in aggregate
+       demand (AD), total demand for goods and services in the economy.
+
+   ●   If any factor which increases AD was to increase (2.2), then inflation would increase
+
+
+
+
+                            www.pmt.education
+Cost push:
+
+  ●   Whilst an increase in aggregate demand can push prices up, a decrease in
+      aggregate supply may also push prices up.
+  ●   When businesses find their costs have risen, they will put up prices to maintain their
+      profit margins. This can be caused by any factor which decreases AS (2.3)
+
+Growth of money supply:
+
+  ●   Another potential cause of inflation is there being too much money in the economy. If
+      people have access to money they will want to spend it but if there is no increase in
+      the amount of goods and services supplied, then prices will have to rise.
+
+
+
+
+  ●   The government can also increase the amount of money that they print and decisions
+      to increase government borrowing can also increase the money supply.
+
+
+
+
+Effects of inflation:
+
+Consumers:
+
+  ●   If people’s incomes do not rise with inflation then they will have ​less to spend​, which
+      could cause a fall in living standards.
+  ●   Those who ​are in debt will be able to pay it off at a price which is of cheaper value,
+      but those who are owed money lose because the money they get back is of cheaper
+      value. Consumers who have ​saved ​will lose out as their money is worth less.
+  ●   Inflation has ​psychological effects ​on consumers: because prices are rising, they
+      may feel less well-off, even if their income is rising in line with inflation, and so this
+      may cause them to decrease their spending.
+
+
+
+
+                           www.pmt.education
+Firms:
+
+   ●   If inflation in Britain is higher than other countries, British goods will be more
+       expensive. They will become ​less competitive ​and make them more difficult to
+       export. This will also affect the balance of payments.
+   ●   Deflation isn’t good as it encourages people to ​postpone their purchases ​as they
+       wait for the price to fall further. People will be more likely to save as the value of their
+       money will rise in the future and they will be prevented from borrowing as deflation
+       means the real value of their debt increases. This can lead to a fall in demand for
+       goods, leading to a fall in firms’ profit, and in business confidence which can lead to a
+       long term reluctance to invest.
+   ●   In general, inflation/deflation/disinflation is ​difficult to predict and so this means that
+       firms cannot plan for the future.
+   ●   Another effect of changing prices is that firms will have to calculate new prices then
+       change their menus, labelling​ etc. and this can be expensive.
+
+Governments:
+
+   ●   If the government fails to change excise taxes (taxes at a set amount e.g. £1) in line
+       with inflation then real government revenue will fall. However, if they fail to change
+       personal income tax allowances (the amount a worker can earn tax free) then real
+       government income will increase and taxpayers will have less money.
+
+Workers:
+
+   ●   If workers do not receive yearly pay rises of the rate of inflation, they will be worse
+       off and their living standard will decrease. Those in weaker unions tend to be most
+       affected as they are unable to win wage rises in line with inflation.
+   ●   Deflation could cause some staff to ​lose their jobs as there is a lack of demand
+       meaning firms see a fall in profit and have to decrease staff to cut costs.
+
+Some of these costs can be reduced if inflation is anticipated, which will allow groups to plan
+for the future. This can be done through ​indexation, ​so wages or taxes are increased in line
+with inflation. An example of this is workers negotiating with employers for wage rises in line
+with the predicted CPI or RPI. However, indexation may in itself further inflation because
+wage increases will reflect past increases. Therefore, if inflation has been at 10% previously
+but the government wants to reduce it to 2%, this will be difficult if workers are still getting a
+10% pay rise due to indexation agreements.
+
+
+
+
+                             www.pmt.education
+Synoptic point:
+
+The effect on individuals, such as firms, consumers or workers, are microeconomic impacts
+whilst the inflation figure itself is a macroeconomic concept. This shows how the
+macro-economy has microeconomic effects.
+
+
+
+
+                  2.1.3 Employment and unemployment
+Unemployment represents a waste of resources and so the level of unemployment is a good
+indicator of a country’s economy. Employment tends to be linked to economic growth as fast
+economic growth will lead to more jobs being created. The level of unemployment can be
+stated as a number or as a percentage of the population of working age.
+
+
+
+Measures of unemployment:
+
+Claimant count:
+
+   ●   The Claimant Count is the ​number of people receiving benefits for being
+       unemployed​. It provides the number of claimants on particular day each month and
+       the numbers joining and leaving the count each month.
+
+
+International Labour Organisation and UK Labour Force Survey:
+
+   ●   The Office of National Statistics (ONS) uses the International Labour Organisation
+       (ILO) definition of unemployment and employed.
+   ●   Through the ILO, anyone over 16 can be classed as employed, unemployed or
+       economically inactive.
+           o Employed: Those who do more than 1 hour of paid work a week or are
+              temporarily away from work (e.g. on holiday), are on a government supported
+              training scheme or do minimum 15 hours of unpaid work for their family
+              business.
+           o Unemployed: Those of working age who are without work, able to work and
+              seeking work and have actively sought work in the last 4 weeks and are
+              available to start work in the next 2 weeks.
+           o Inactive: Those who are neither employed nor unemployed; they are people
+              of working age not seeking employment as well as those seeking employment
+              but not able to start work e.g. those in study, looking after family, health
+              related issues, discouraged workers (those who are fed up of applying),
+              retirement and those who do not want or need a job.
+
+
+
+
+                          www.pmt.education
+   ●   The Labour Force Survey (LFS) is a ​sample of people living in households and is
+       a legal requirement for every country in the EU. It asks questions about personal
+       circumstances and activity in the labour market to class people as employed,
+       unemployed or inactive by the ILO definitions. The figures are only an ​estimate of
+       the true level of unemployment as it is measured by a sample.
+
+Comparisons between the Claimant Count and LFS:
+
+   ●   Some people may not be included in the LFS unemployment measure but would be
+       in the Claimant Count. These may include people working in the ​hidden economy or
+       those who ​fraudulently claim benefits.
+   ●   However, ​some people aren’t eligible for benefits but are classed as unemployed
+       so would appear in the LFS but not the Claimant count. This can be if their partner is
+       working, if they are looking for work along full-time study or if they are around State
+       Pension Age. The ​LFS tends to be higher than the Claimant Count because of
+       these reasons.
+   ●   Sometimes, the claimant count and LFS rates can be going in ​different directions​.
+       This could be due to the fact that the LFS is only a sample and different types of
+       people have been asked which can lead to short term changes in the rate. Also,
+       there may be things happening in the labour market not covered by the Claimant
+       Count, for example more students could look for work along their studies or more
+       people above State Pension Age may look for work.
+
+It is argued that ​both underestimate​ ​the figure​ as they do not include those:
+      o working part time but would like to work full time
+      o on government training schemes who would prefer employment
+      o classed as sick or disabled
+      o who aren’t actively looking for jobs but would take a job if offered or are in education
+          because they can’t get a job
+
+These are the ​hidden unemployed.
+
+Rates:
+
+   ●   The ​economically active ​are the employed and unemployed. They are engaged in
+       labour market and are people employers can look to recruit. The ​workless are the
+       unemployed and inactive.
+   ●   The ​employment rate ​is the percentage of the population of working age who are
+       employed, and the ​unemployment rate ​is the percentage of the economically active
+       who are unemployed.
+   ●   The ​activity/participation rate is the percentage of the population of working age
+       who are economically active whilst the ​inactivity rate is percentage of the population
+       of working age who are inactive.
+
+
+
+
+                            www.pmt.education
+Under-employment
+
+   ●   The underemployed are those who are in ​part time or zero hour contracts when
+       they would prefer to be full time and people who are ​self-employed but would rather
+       be employees.
+   ●   It also includes those who are in jobs which ​do not reflect their skill level​, for
+       example a university graduate that can’t find a graduate job so is working as a
+       bartender.
+   ●   The underemployed aren’t included in any unemployment statistics.
+   ●   Underemployment tends to ​increase during recessions because firms will just
+       reduce staff hours instead of making them redundant and having to pay expensive
+       redundancies packages. It doesn’t have as many negative effects as official
+       unemployment, but it does mean the underemployed have lower incomes and so will
+       spend less, reducing aggregate demand and growth of the economy.
+
+
+
+Significance of changes in activity:
+
+   ●   Increases in inactivity will decrease the size of the labour force, therefore causing a
+       fall in ​productive potential of the country​. There will be a lower GDP and lower tax
+       revenues as less people are working.
+
+   ●   However, decreases in inactivity could just result in more people being unemployed if
+       there are ​no jobs available​ to them.
+
+
+
+Types of unemployment
+
+Frictional unemployment:
+
+   ●   Frictional unemployment is due to ​people moving between jobs. This could be due
+       to new workers entering the labour market or people who have chosen to leave their
+       previous job. These people may take a while to locate and gain a job that they are
+       willing to accept.
+   ●   This isn’t a serious problem as it is only ​short term.
+
+
+
+Structural unemployment​:
+
+   ●   This is a much more ​serious form of unemployment as it is a ​long term decline in
+       demand in an industry leading to reduction in employment perhaps because of
+       increasing international competition or technology. It is where the demand for labour
+       is lower than the supply in an individual labour market e.g. ship building.
+
+
+
+
+                           www.pmt.education
+   ●   The lack of ​geographical and occupational mobility ​means that people will remain
+       unemployed, so need to be retrained in order to gain a job.
+   ●   There are different types of structural unemployment.
+          o Regional unemployment is where certain areas of a country suffer from very
+              low levels of employment due to industry closures; this is made even worse
+              by the fact that the loss of jobs can mean a fall in demand for other
+              businesses in the area, forcing more closures and job losses.
+          o Sectoral unemployment is where one sector (primary, secondary and
+              tertiary) suffers a dramatic fall in employment.
+          o Technological unemployment is where an improvement in technology
+              means that jobs are replaced.
+
+Seasonal unemployment:
+
+   ●   Some employment is ​strongly seasonal in demand​. Industries such tourism are
+       only prominent during certain times of the year so only demand large numbers of
+       workers at a specific time. Once that time of the year has passed then the labour
+       force is drastically reduced.
+   ●   There is little that can be done to prevent this from occurring in a free market
+       economy.
+
+Cyclical unemployment:
+
+   ●   This is unemployment due to a ​general lack of demand of goods and services
+       within the country. This is also known a ​Keynesian ‘demand deficient’
+       unemployment.
+
+   ●   When there is a recession or severe slowdown in economic growth, we see a rising
+       unemployment because of plant closures, business failures and an increase in
+       worker layoffs and redundancies. This is due to a decrease in demand causing
+       businesses to cut employment in order to control costs and restore some of their
+       profitability.
+
+Real wage inflexibility:
+
+   ●   This is unemployment considered to be the result of ​real wages being above their
+       market clearing level leading to an excess supply of labour. Some workers might be
+       prepared to work for less than the minimum wage and companies may be prepared
+       to take on more workers if they could pay them less than the minimum wage, but this
+       is illegal and so unemployed workers cannot get a job.
+   ●   Some economists believe that the minimum wage risks creating unemployment in
+       industries where ​international competition from low-labour cost producers is
+       severe. As yet, there is ​relatively little evidence that the minimum wage has created
+       rising unemployment on the scale that was feared.
+
+
+
+
+                           www.pmt.education
+   ●      It can also be caused by unemployed workers refusing to take low paid jobs because
+          they can receive more in welfare benefits.
+
+
+
+Migration and skills:
+
+Migration​:
+
+   ●      An increase in net inward migration tends to lead to ​increased jobs​. Since the
+          1990s, the UK has seen a large increase in immigration from mainly Eastern
+          European countries. Most of these people come to the UK to work, are of working
+          age and often take lower skilled jobs; they are less likely to claim benefits than the
+          existing population. Due to the ​circular flow of income, immigrants’ spending
+          creates jobs and total employment increases without an increase in unemployment.
+          This depends how much money immigrant workers send back home.
+   ●      However, it also leads to ​lower wages, particularly for lower-paid, low skilled jobs.
+          UK firms are able to recruit foreign workers meaning that ​supply of labour ​is
+          increased and so the price equilibrium of labour is reduced. There is more
+          competition for jobs and UK workers who have low motivation to work and are ​low
+          skilled are most affected as they are competing in the job market with hard working,
+          more skilled workers prepared to take the same jobs as them. The impact of this is
+          only small and middle and higher income wages are rarely affected.
+
+Skills:
+
+   ●      Economies progress over time, and as a result, ​higher skills are needed to work in
+          them. In the UK 50 years ago, many jobs were available for those who couldn’t read
+          or write but now there are few.
+
+   ●      For the UK to maintain its employment levels, it needs to increase the skills of its
+          workforce over time. Structural unemployment is caused by a ​lack of, or the wrong,
+          skills​. ​For example, engineering companies struggles to recruit skilled workers even
+          though there are unemployed workers in the local area.
+   ●      If firms will not train staff, the government has to step in to correct the market failure
+          but this is costly. As a result, people become ​long-term unemployed as their skills
+          don’t fit the jobs on offer.
+   ●      Migrant workers may fill these shortages​ if their skills fit.
+
+
+
+
+                               www.pmt.education
+Impacts of unemployment:
+
+Workers:
+
+  ●   Those who are made unemployed normally have a ​loss of income which usually
+      results in a decline in their living standards.
+  ●   They often suffer from the ​stigma ​of being unemployed and feel degraded by the
+      process of signing on to receive benefits to support their family. This can lead to
+      stress, marital breakdown, suicide, physical illness etc.
+  ●   The long-term unemployed (those unemployed for more than 12 months) often find it
+      more difficult to get another job as they ​lose skills​.
+  ●   Those who are in jobs will suffer from ​lower job security and will fear being made
+      redundant. They could also see a fall in wages because the firm can easily find
+      someone to replace them if they complain about pay.
+
+
+
+Firms:
+
+  ●   There will tend to be a decrease in demand for their goods (but this depends on the
+      YED) and so this could lead to a ​fall in profit​.
+  ●   Long term unemployment can lead to loss of skills and reduce employability of
+      workers, so firms have a ​smaller pool of skilled people​ to employ.
+  ●   They can offer ​low wages as people will take the job anyway because they know
+      there is a lack of jobs so have few options.
+
+Consumers:
+
+  ●   Consumers in areas of high unemployment lose out because local shopping centres
+      tend to be run down and don’t offer the range of shops available to those in areas of
+      low unemployment. They suffer from ​less choice​. The quality of goods may also
+      decrease.
+  ●   The unemployed consumers lose out as they have less available to spend.
+  ●   However, firms may lower prices and put on ​sales ​in order to increase demand for
+      their product.
+
+Government:
+
+  ●   The reduced income results in a ​fall in ​tax revenues and ​higher spending on
+      welfare payments for families with people out of work, incurring an opportunity cost
+      as the money could be better spent elsewhere.
+  ●   This will result in an increase in the ​budget deficit​. It will be likely that the
+      government will have to raise taxation or scale back plans for public spending on
+      public and merit goods, such as the NHS or education. They may need to increase
+      borrowing.
+
+
+
+
+                          www.pmt.education
+Society as a whole:
+
+    ●   Rising unemployment is linked to ​social deprivation​. There is a relationship with
+        crime and social dislocation (increased divorce rates, worsening health and lower life
+        expectancy).
+    ●   Areas of high unemployment often see a fall in demand for local goods and services,
+        leading to a fall in income for those working in the services and sometimes further
+        loss of jobs.
+    ●   It results in a ​loss of potential national output and represents an inefficient use of
+        scarce resources. If people chose to leave the labour market permanently, then this
+        will have a negative effect on LRAS and therefore damage the economy’s growth
+        potential so the country is unable to achieve their desired PPF.
+    ●   Taxpayers paying money to the unemployed is not a loss for the economy as it is a
+        transfer payment but the economy is affected because there is a fall in national
+        output and the social costs of the unemployed e.g. violence and crime.
+
+
+
+
+                            2.1.4 Balance of payments
+The balance of payments is a ​record of all financial dealings over a period of time
+between economic agents of one country and all other countries​. Imports are when
+goods/services come in, so money goes out. Exports are when money comes in, so the
+good/service goes out.
+
+
+Components of the balance of payment:
+
+    ●   The balance of payments is made up of the ​current account which records
+        payments for the purchase and sale of goods and services; and the ​capital and
+        financial account which records flows of money associated with saving, investment,
+        speculation and currency stabilisation. Theme 2 focuses only on the current account.
+    ●   Flows of money into the country are given a positive sign and flows of money out are
+        given a negative sign. It is important to remember that the balance of payments looks
+        at where the ​money ​flows.
+
+Current account:
+
+The current account itself is split into different parts:
+
+
+
+
+                              www.pmt.education
+   ●   Trade in goods: These are known as visibles because you can physically see them.
+       They are goods that are traded, whether raw materials or finished goods. The
+       difference between visible exports and visible imports is known as the balance of
+       trade.
+   ●   Trade in services: These are services traded in or out of the country, known as
+       invisibles. A holiday to Spain by a British family is an invisible import as money
+       leaves the UK and goes to Spain, whilst a Japanese firm buying insurance from a city
+       of London firm is an invisible export as money enters the UK.
+
+The ​balance of trade in goods and services​ is the balance of trade + balance of invisibles.
+
+   ●   Income and current transfers: ​Wages, interest, profit or dividends can be
+       repatriated into the country. For example, a Polish person could send the money they
+       make in the UK back home to Poland or a British person could take the profits from
+       their overseas country back to the UK. Current transfers are usually done by
+       governments and are when they transfer money into or out of overseas organisations
+       such as the EU. Income and current transfers can be split into primary and secondary
+       incomes: primary income is the result of loans of the factors of production abroad e.g.
+       interest, profits and dividends (including wages sent to other countries) whilst
+       secondary income is a range of mainly government transfers to overseas
+       organisations, such as the EU.
+
+
+
+Current account deficits and surpluses:
+
+The ​current balance​= Balance of trade + Balance of invisibles + Net income and current
+transfers.
+
+A ​current account surplus is where exports are greater than imports, so the current
+balance is positive. A ​current account deficit is where imports are greater than exports, so
+the current balance is negative.
+
+
+
+Macroeconomic objectives:
+
+   ●   Governments tend to have four main objectives: low unemployment, low and stable
+       inflation, economic growth at a similar rate to other economies and a balance of
+       payment equilibrium, including current account balance. However, achieving a
+       balance of payment equilibrium can be affected by achieving other aims.
+   ●   High economic growth tends to mean that the current account becomes a deficit as
+       there is increased imports due to increased demand, and it is during times of high
+       unemployment etc. that the current account deficit tends to improve.
+   ●   Governments tend to want ​export led growth​, which would cause economic growth,
+       high employment and improve the current account balance; although it could lead to
+
+
+
+
+                           www.pmt.education
+       inflation. There have been frequent export initiatives but successive UK governments
+       have been unable to achieve this.
+
+
+
+Interconnectedness of economies:
+
+Over time, the world economy has become increasingly interconnected, this is due to four
+key ways which have led to globalisation:
+
+   ●   The proportion of output of an individual economy which is ​traded internationally is
+       growing.
+   ●   Many more people (or companies) ​own assets in other countries such as shares,
+       loans or businesses.
+   ●   There is increasing ​migration​ between countries
+   ●   More ​technology ​being shared on a faster basis.
+
+International trade has meant countries have become more ​interdependent so a change in
+the economic condition of one country will affect another, since the quantity they import or
+export changes. In theory, all current balances should add up to zero as what one country
+exports another imports.
+
+
+
+
+                           www.pmt.education
+

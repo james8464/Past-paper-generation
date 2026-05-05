@@ -1,0 +1,866 @@
+ Edexcel Economics (A) A-level
+Theme 1: Introduction to Markets
+              and
+        Market Failure
+          1.2 How Markets Work
+                            Detailed Notes
+
+
+
+
+               https://bit.ly/pmt-edu-cc
+  This work by PMT                                  https://bit.ly/pmt-cc
+                        Education is licensed under CC BY-NC-ND      4.0
+
+
+                                                                            https://bit.ly/pmt-cc
+                  https://bit.ly/pmt-edu                                    https://bit.ly/pmt-cc
+                      1.2.1 Rational decision making
+
+The underlying assumptions of rational economic decision making:
+
+   ●   Consumers aim to maximise utility: Utility is the satisfaction gained from
+       consuming a product. The rational consumer is called Homo Economicus, who
+       makes decisions by calculating the utility gained from each decision and chooses the
+       one which will give them the most satisfaction.
+
+   ●   Firms aim to maximise profit: Economic theory assumes that firms are run for their
+       owners and shareholders and so aim to maximise profit in order to keep the
+       shareholders happy.
+
+   ●   Governments aim to maximise social welfare: Governments are voted in by the
+       public and work for the public, so should aim to maximise their satisfaction by taking
+       decisions which increase social welfare.
+
+This is the basis for economic thinking, but it is currently being questioned by behavioral
+economists. Economic agents do not always have the information necessary to act rationally
+and consumers do not always make calculated decisions.
+
+
+
+
+                                      1.2.2 Demand
+Demand is the ability and willingness to buy a particular good at a given price and at a given
+moment in time.
+
+Movements and shifts of the demand curve:
+
+   ●   A movement along the demand curve, for example from A to B, is caused by a
+       change in the price of the good. A shift of the demand curve, for example D1 to D2,
+       is caused by a change in any of the factors which affect demand, the conditions of
+       demand.
+
+   ●   A movement from A to B is a contraction in demand, the quantity demanded falls
+       because of an increase in price. A movement from A to C is an extension in
+       demand, the quantity demanded rises due to a decrease in price. Movements along
+       the curve are not called increases or decreases- this only occurs when the curve
+       shifts.
+
+   ●   A shift from D1 to D2 is a decrease in demand, because fewer goods are demanded
+       at each and every price. For example, at price P only Q2 goods are demanded rather
+       than Q1 goods. A shift from D1 to D3 is an increase in demand, as more goods are
+       demanded at each and every price. Now, Q3 goods are demanded at price P.
+
+
+
+
+                                                                                                 https://bit.ly/pmt-cc
+                           https://bit.ly/pmt-edu                                                https://bit.ly/pmt-cc
+The conditions of demand:
+
+The conditions of demand are the factors which cause the demand curve to shift. A shift to
+the right is an increase in demand and a shift to the left is a decrease in demand. One way
+to remember this is the mnemonic PIRATES.
+
+   ●   Population: If population rises, we would expect demand for all products to increase
+       and so the demand curve will shift to the right. This is because the more people there
+       are in the country, the more people who will want a good.
+
+   ●   Income: For most goods, if income increases, demand increases because a person
+       can afford to buy more of the product. If there is a fall in income then the demand
+       would decrease and shift to the left. However, for some goods an increase in income
+       can lead to a fall in demand and vice versa, this is a concept called income elasticity
+       of demand.
+
+   ●   Related goods: If goods are complements or substitutes of each other then a
+       change in the price of another good can cause a shift in the demand curve.
+       Substitutes are where you either buy one good or the other, for example you either
+       buy a pair of Nike trainers or a pair of Adidas trainers. An increase in the price of
+       Nike trainers would lead to a contraction in demand for Nike trainers and an increase
+       in demand of Adidas trainers, as we would expect people to buy them instead.
+       Complements are goods such as DVDs and DVD players where if you have one, you
+       need the other to go with it. If the price of DVD players drops, demand for DVD
+       players would extend and we would expect the demand curve for DVDs to increase.
+       This is linked to the concept of cross elasticity of demand.
+
+
+
+
+                                                                                                 https://bit.ly/pmt-cc
+                           https://bit.ly/pmt-edu                                                https://bit.ly/pmt-cc
+  ●   Advertising: If a firm carries out a successful advertising campaign, demand is likely
+      to increase. If a competitor firm carries out a successful advertising campaign,
+      demand for the first firm will fall. A successful advertising campaign by Tesco will
+      increase demand for Tesco but reduce demand for Asda.
+
+  ●   Taste/fashion: If something becomes more fashionable, we expect demand to
+      increase and if it becomes less fashionable, then demand will fall.
+
+  ●   Expectations: Expectations of what might happen in the future can have a big
+      impact on the level of demand for some goods. If people expect a shortage of
+      something, or that price will rise in the future, then demand for that product will
+      increase. If people expect that price will fall in the future, demand will decrease.
+
+  ●   Seasons: Some products will find their demand affected by the weather. For
+      example, hot summers cause an increase in demand for sun cream whilst wet
+      summers cause a decrease in demand for umbrellas.
+
+  ●   Government legislation can also have an effect on the demand for goods. Demand
+      for car seats increased after the government made it a legal requirement that young
+      children have to sit in them.
+
+
+
+Diminishing marginal utility:
+
+  ●   The demand curve slopes downward, showing the inverse relationship between
+      price and quantity. This can be explained by the law of diminishing marginal utility.
+
+  ●   In order to explain or predict how people will spend their money, we have to assume
+      that they are going to behave rationally, expecting them to spend it according to
+      what gives them the greatest level of satisfaction or welfare.
+
+  ●   Total utility represents the satisfaction gained by a customer as a result of their
+      overall consumption of a good e.g. the satisfaction of eating the whole bar of
+      chocolate, whilst marginal utility represents the change in satisfaction resulting from
+      the consumption of the next unit of a good e.g. the increased satisfaction by eating
+      another bite of chocolate.
+
+  ●   The Law of Diminishing Marginal Utility states that the satisfaction derived from
+      the consumption of an additional unit of a good will decrease as more of a
+      good is consumed, assuming the consumption of all other goods remains constant.
+
+  ●   This explains why the demand curve slopes downwards: if more of a good is
+      consumed, there is less satisfaction derived from the good. This means that
+      consumers are less willing to pay high prices at high quantities since they are
+      gaining less satisfaction.
+
+
+
+
+                                                                                                https://bit.ly/pmt-cc
+                          https://bit.ly/pmt-edu                                                https://bit.ly/pmt-cc
+       1.2.3 Price, income and cross elasticities of demand
+Elasticity of demand is an attempt to measure the responsiveness of quantity demanded to
+changes in other variables: its own price, the price of other goods and real income. If a good
+is elastic, it is relatively responsive and if it is inelastic, it is relatively unresponsive
+
+Price elasticity of demand (PED):
+
+This is the responsiveness of demand to a change in the price of the good.
+
+%change in quantity demanded
+     %change in price
+
+e.g. If the original price was £5 and 100 were sold and the new price is £3 and 120 are
+sold, what is the PED?
+%change in quantity demanded: (20/100)x100=20%
+%change in price: (-2/5)x100=-40%
+PED= 20%/-40%= -½
+
+Numerical values:
+
+Most values of PED are negative, since a rise in price leads to a fall in output. Therefore, we
+look at the integer alone, disregarding the negative sign.
+
+   ●    Unitary elastic PED is where PED=1: quantity demanded changes by exactly the
+        same percentage as price. This would be shown as a reciprocal curve.
+   ●    Relatively elastic PED is where PED>1: quantity demanded changes by a larger
+        percentage than price so demand is relatively responsive to price. The curve will be
+        more sloping.
+   ●    Relatively inelastic PED is where PED<1: quantity demanded changes by a smaller
+        percentage than price so demand is relatively unresponsive to price. The curve will
+        be steep.
+   ●    Perfectly elastic PED is where PED=infinity: a change in price means that quantity
+        falls to 0 and demand is very responsive to price. This would be shown by a
+        horizontal line
+   ●    Perfectly inelastic PED is where PED=0: a change in price has no effect on output
+        so demand is completely unresponsive to price. This would be shown by a vertical
+        line.
+
+
+
+
+                                                                                                  https://bit.ly/pmt-cc
+                            https://bit.ly/pmt-edu                                                https://bit.ly/pmt-cc
+Factors influencing PED:
+
+   ●   Availability of substitutes: If a product has lots of substitutes (for example instead
+       of buying Coke you could buy Pepsi), people will switch to other products when
+       prices go up. Therefore, PED will be elastic. If there are no substitutes, then the
+       demand curve will be inelastic since even if prices go up, people will have to buy that
+       good if they want it as there are no alternatives.
+
+   ●   Time: The longer the time, the easier it will be for a person to find an alternative
+       product/supplier of the product so the more elastic the good is. In the short term,
+       many goods are inelastic as people may not even notice the price difference.
+
+   ●   Necessity: If you need something, the demand curve will be inelastic because even
+       if the price goes up, you still need to buy it.
+
+   ●   How large of a % of total expenditure: If a good/service represents a very small
+       percentage of a person’s expenditure, a significant increase in price will have a
+       relatively small impact on how much they buy of that product so it will be inelastic e.g.
+       matches.
+
+   ●   Addictive: If a product is addictive, then the demand curve will be inelastic. No
+       matter how high prices are, people will still buy the good to fulfill their addiction.
+
+Significance of PED:
+
+   ●   The price elasticity of demand, along with the price elasticity of supply, determine the
+       effects of the imposition of indirect taxes and subsidies.
+
+   ●   The more elastic the demand curve, the lower the incidence of tax on the consumer.
+       This means that when PED is elastic, a tax will only lead to a small increase in price
+       and the supplier will have to cover the majority of the cost of the tax.
+
+   ●   When demand is inelastic, the tax will be mainly passed onto the consumer. Since
+       consumers are relatively unresponsive to the price of this good, quantity demanded
+       will not fall by a large amount. This means that the tax will be ineffective at
+       reducing output. However, it also means that there is higher tax revenue for the
+       government. The more inelastic the demand curve, the higher the tax revenue for
+       the government.
+
+These effects can be seen on the diagrams: the first diagram shows inelastic demand, as
+the demand curve is steep. The tax leads to a small fall in output but a large increase in
+price, with a large consumer burden. The second diagram shows elastic demand, as the
+demand curve is sloping. Output falls significantly and the producer burden is high. These
+diagrams also show that revenue generated is higher when demand is inelastic.
+
+
+
+
+                                                                                                   https://bit.ly/pmt-cc
+                           https://bit.ly/pmt-edu                                                  https://bit.ly/pmt-cc
+   ●   With a subsidy, elastic demand means that the consumer sees a small fall in price
+       whilst the producer gains a lot in extra revenue. The more inelastic demand, the
+       more the price falls. Elastic demand also means there is a large change in output
+       following a subsidy, whilst inelastic demand means that there is little change in
+       output. Therefore, subsidies on goods with inelastic demand are ineffective at
+       increasing output. They are cheaper for the government to impose since output
+       increases by less and so the government have to pay the subsidy on less goods.
+
+These effects can also be seen on the diagram. In the first diagram, demand is inelastic and
+there is a small rise in output but a large fall in price, with little producer gain. In the second
+diagram, demand is elastic and there is a large rise in output but a small fall in price. They
+show that the government has to spend more for subsidies on elastic goods.
+
+
+
+
+                                                                                                      https://bit.ly/pmt-cc
+                             https://bit.ly/pmt-edu                                                   https://bit.ly/pmt-cc
+The shift from S1 to S2 on tax diagrams is a result of the imposition of an indirect tax: this
+raises the cost of production and shifts supply to the left. The opposite occurs with a subsidy.
+Diagrammatic analysis of indirect taxation and subsidies is looked at in more detail at the
+end of this unit.
+
+
+
+
+                                                                                                   https://bit.ly/pmt-cc
+                            https://bit.ly/pmt-edu                                                 https://bit.ly/pmt-cc
+PED and revenue:
+
+   ●   For an elastic demand curve: A decrease in price leads to an increase in revenue
+       and an increase in price leads to a decrease in revenue.
+   ●   For an inelastic demand curve: A decrease in price leads to a decrease in revenue
+       and an increase in price leads to an increase in revenue.
+   ●   For a unitary elastic curve, a change in price does not affect total revenue.
+
+e.g. PED= -0.5. The firm currently sells 10,000 at a price of £5. What will happen to
+total revenue if the price falls to £4?
+Original total revenue: 10,000x£5= £50,000
+%change in price: (-1/5)x100=-20%
+Change in output: -0.5=Q/-20%
+        -0.5x20%=Q=10%                          (by rearranging the PED formula)
+New output: 10% of 10,000=1000 10,000+1000= 11,000            (using the fact that output
+increases by 10%)
+New total revenue: 11,000x4=44,000
+Difference in revenue: 44,000-50,000 = -6,000.
+Revenue will fall by £6,000
+
+
+
+Income elasticity of demand (YED):
+
+This is the responsiveness of demand to a change in income.
+
+%change in quantity demanded
+   %change in income.
+
+Numerical values:
+
+   ●   An inferior good is when YED<0: a rise in income will lead to a fall in demand for
+       the good. For example, Tesco Value goods are inferior goods.
+   ●   A normal good is when YED>0: a rise in income will lead to a rise in demand for the
+       good.
+   ●   A luxury good is a type of normal good, when YED>1.
+   ●   Goods can also be as elastic or inelastic in income. If the integer is bigger than
+       one, the good is elastic. If the integer is smaller than one, the good is inelastic and
+       this tends to be necessities.
+
+Significance of YED:
+
+   ●   It is important for businesses to know how their sales will be affected by changes
+       in the income of the population. If the economy is improving and people’s incomes
+       are rising it is vital that a business knows whether this is likely to increase their sales
+       or not.
+
+
+
+
+                                                                                                     https://bit.ly/pmt-cc
+                            https://bit.ly/pmt-edu                                                   https://bit.ly/pmt-cc
+   ●   It may have an impact on the type of goods that a firm produces. During times of
+       prosperity, firms might produce more luxury goods and less inferior goods.
+
+
+
+Cross elasticity of demand (XED):
+This is the responsiveness of demand for one product (A) to the change in price of another
+product (B).
+
+%change in quantity demanded of A
+  %change in price of B.
+
+Numerical values:
+
+   ●   Substitutes are where XED>0: an increase in the price of good B will increase
+       demand for good A. For example, Coca Cola and Pepsi are substitutes.
+   ●   Complementary goods are where XED<0: an increase in the price of good B will
+       decrease demand for good A. One example is DVDs and DVD players.
+   ●   Unrelated goods are where XED=0: a change in the price of good B has no impact
+       on good A.
+   ●   The size of the integer represents the strength of the relationship: the larger the
+       number, the stronger the relationship between the two.
+
+Significance of XED:
+
+   ●   Firms need to be aware of their competition and those producing complementary
+       goods. They need to know how price changes by other firms will impact them so
+       they can take appropriate action.
+
+
+
+                                         1.2.4 Supply
+Supply is the ability and the willingness to provide a good or service at a particular price at a
+given moment in time.
+
+Movements and shifts of the supply curve:
+
+   ●   A movement along the supply curve, for example from A to B, is caused by a change
+       in the price of the good. A shift of the supply curve, for example S1 to S2, is caused
+       by a change in any of the factors which affect supply, the conditions of supply.
+
+   ●   A movement from A to B is a contraction in supply, the quantity supplied falls
+       because of a decrease in price. A movement from A to C is an extension in supply,
+       the quantity supplied rises due to an increase in price. Movements along the curve
+       are not called increases or decreases- this only occurs when the curve shifts.
+
+   ●   A shift from S1 to S2 is a decrease in supply, because fewer goods are supplied at
+       each and every price. For example, at price P only Q2 goods are supplied rather than
+
+
+
+
+                                                                                                    https://bit.ly/pmt-cc
+                            https://bit.ly/pmt-edu                                                  https://bit.ly/pmt-cc
+      Q1 goods. A shift from S1 to S3 is an increase in supply, as more goods are
+      supplied at each and every price. Now, Q3 goods are supplied at price P.
+
+
+
+
+The conditions of supply:
+
+  ●   Costs of production: If a business has in an increase in their costs but their selling
+      price stays the same, they will make less money on what they sell. They will put up
+      their prices in order to avoid making a loss and so less is supplied at each price,
+      meaning the supply curve will shift to the left. If they have a decrease in their costs,
+      then it will shift to the right.
+
+  ●   Price of other goods: Joint supply is where the production of one good
+      automatically causes the production of another goods e.g. the production of beef
+      automatically produces leather. Therefore, if the price of beef rises, farmers will
+      slaughter their cows and so will get more leather, causing a shift to the right and an
+      increase in supply. Competitive supply is where the production of one good prevents
+      the supply of another e.g. if the farmer kills his cows, he can no longer produce the
+      milk. Therefore, the rise in the price of beef may cause a decrease in the supply of
+      milk and a shift to the left.
+
+  ●   Weather: For some goods, particularly agricultural goods, the supply is dependent
+      on weather e.g. if the weather is good, more wheat will be produced so the curve will
+      shift to the right. If the weather is bad, the producers won’t be able to supply as much
+      wheat and so it will shift to the left.
+
+
+
+
+                                                                                                 https://bit.ly/pmt-cc
+                          https://bit.ly/pmt-edu                                                 https://bit.ly/pmt-cc
+   ●   Technology: If new technology is introduced then it will lead to a fall in production
+       costs as there is higher productive efficiency. This will encourage firms to lower
+       prices or produce more goods for the same price and so the curve will shift to the
+       right. During war or natural disasters, companies may have to use less efficient
+       technology so the supply curve will shift to the left as they produce less at each price.
+
+   ●   Goals of the supplier: If a supplier is motivated by helping society and providing a
+       service, they may increase supply even when that doesn’t provide extra profit.
+
+   ●   Government legislation: If the government passes laws that mean more cars have
+       to have catalytic converters, supply of cars with catalytic converters will increase.
+       High levels of regulation may increase costs and so decrease supply.
+
+   ●   Taxes and subsidies: A tax decreases supply and a subsidy increases supply by
+       affecting the costs of production.
+
+   ●   Producer cartels: Some firms or countries come together in order to decrease
+       supply and therefore increase the price of their good to increase profit.
+
+
+
+
+                           1.2.4 Elasticity of supply
+Price elasticity of supply (PES):
+
+This is the responsiveness of supply to a change in price of the good.
+
+%change in quantity supplied
+   %change in price
+
+
+
+
+                                                                                                   https://bit.ly/pmt-cc
+                           https://bit.ly/pmt-edu                                                  https://bit.ly/pmt-cc
+Numerical values:
+
+   ●   Unitary elastic PES is where PES=1: quantity supplied changes by exactly the
+       same percentage as price. This would be shown as a curve which starts in the origin,
+       is steeper than an elastic curve but more sloping than an inelastic curve.
+   ●   Relatively elastic PES is where PES>1: quantity supplied changes by a larger
+       percentage than price so supply is relatively responsive to price. The curve will be
+       more sloping, starting on the price axis.
+   ●   Relatively inelastic PES is where PES<1: quantity supplied changes by a smaller
+       percentage than price so supply is relatively unresponsive to price. The curve will be
+       steep, starting on the quantity line axis.
+   ●   Perfectly elastic PES is where PES=infinity: a change in prices means that quantity
+       supplied falls to 0 and supply is very responsive to price. This would be shown by a
+       horizontal line.
+   ●   Perfectly inelastic PES is where PES=0: a change in price has no effect on output
+       so demand is completely unresponsive to price. This would be shown by a vertical
+       line.
+
+The diagram shows the curves with different elasticities. S1 shows a unitary elastic supply
+curve, S2 shows a relatively elastic supply curve and S3 shows a relatively inelastic supply
+curve.
+
+
+
+
+Factors affecting PES:
+
+   ●   Time: This will have an impact on the amount of a good that can be supplied at any
+       price. In the immediate term, no matter how high the price is, a supplier can only sell
+       the amount of product they have so supply is perfectly inelastic. In economics, the
+       short term is the period of time when at least one factor of production is fixed
+
+
+
+
+                                                                                                 https://bit.ly/pmt-cc
+                           https://bit.ly/pmt-edu                                                https://bit.ly/pmt-cc
+       and the long term is when all factors of production are variable. In the short term,
+       they could sell more products but will still be restricted by the factors of production,
+       meaning it will still be relatively inelastic. In the long term, they can increase
+       production and all factors are variable and therefore the supply curve will be elastic.
+       The longer the period of time the supplier has to make a change and increase
+       production, the more elastic the curve will be.
+
+   ●   Stocks: If a business has a stockpile of goods, when the price goes up, they will
+       simply decide to use up some or all of their stockpiles and therefore supply will be
+       more elastic.
+
+   ●   Working below full capacity: If a business is working below full capacity (e.g. they
+       are producing 50 goods but could produce 100) and there is an increase in price,
+       they can easily respond by producing to their full capacity so the supply curve will be
+       more elastic.
+
+   ●   Availability of factors of production: For example, labour may need particular
+       skills or training so cannot be instantly increased. If wages of a doctor rise by a large
+       amount, it would still take years before there would be an increase in the number of
+       doctors so it is inelastic.
+
+   ●   Ease of entry into the market: Large costs of start-up equipment could make it
+       difficult to increase supply, which makes it inelastic. Trade unions or professional
+       associations can restrict entry.
+
+   ●   Availability of substitutes: If a good has a lot of producer substitutes, it will have
+       high elasticity. One model of car is a substitute for another model of car as producers
+       can easily switch between the two meaning suppliers can alter the pattern of
+       production if price rises or falls so supply will change.
+
+
+
+                           1.2.6 Price determination
+
+Price determination:
+
+The equilibrium point refers to the point at which there are no more forces bringing about
+change. Price equilibrium is where supply is equal to demand, so where the demand and
+supply curves cross. This price is also known as the market clearing price because all
+products supplied to the market are cleared (bought), but no buyers are unable to buy the
+good. If the price was higher, there would be unsold goods and if the price was lower, there
+would be consumers who would want to buy the good but would be unable to do so.
+
+
+
+
+                                                                                                   https://bit.ly/pmt-cc
+                           https://bit.ly/pmt-edu                                                  https://bit.ly/pmt-cc
+In this example, the market clearing price is P1 with a quantity of Q1.
+
+
+
+
+Excess demand:
+
+If price is set below equilibrium, then there is excess demand. At the price P2, suppliers are
+willing to supply QS but consumers demand QD, meaning there is excess demand of the
+orange shaded area.
+     ● As a result, there is a shortage in the market. Firms know they can charge higher
+         prices and still sell their goods, so this will cause an extension in supply and they will
+         now charge P1 for quantity Q1. This higher price will lead to a contraction in demand.
+         The prices are now in equilibrium.
+
+
+
+
+                                                                                                      https://bit.ly/pmt-cc
+                             https://bit.ly/pmt-edu                                                   https://bit.ly/pmt-cc
+Excess supply:
+If the price is set higher than the equilibrium, then there is excess supply. At price P2,
+suppliers are willing to supply QS but consumers only demand QD, meaning there is excess
+supply of the orange shaded area. Prices would have to fall.
+    ● As a result, firms have unsold goods. This will encourage them to put on sales to sell
+       the excess goods, causing prices to fall and supply to contract to P1. As a result,
+       demand will extend to P1. The market will now be in equilibrium.
+
+
+
+
+Shifts in demand and supply:
+An increase in demand from D1 to D2 will lead to an increase in price from P1 to P2 and an
+increase in output from Q1 to Q2. A decrease in demand would decrease price and output
+
+
+
+
+                                                                                               https://bit.ly/pmt-cc
+                           https://bit.ly/pmt-edu                                              https://bit.ly/pmt-cc
+An increase in supply from S1 to S2 will increase output from Q1 to Q2 and decrease price
+from P1 to P2. A decrease in supply would increase price and decrease output.
+
+
+
+
+                            1.2.7 Price mechanism
+
+In a free market economy, the price mechanism allocates resources. Price is determined by
+the interactions of demand and supply, which also determines how much is bought and sold
+and by whom. Prices rise when buyers want to purchase more than suppliers want to sell,
+encouraging suppliers to sell more as they will be able to make a higher profit. Adam Smith
+described the ‘invisible hand’ of the market, how the price mechanism is able to set prices.
+
+   ●   The rationing function: The price system is a way of rationing goods because when
+       price increases, some people will no longer be able to afford to buy the product and
+       others may no longer have the desire the buy the good. The limited resources can be
+       rationed and allocated to the people who are able to afford them and those who
+       value them most highly.
+
+   ●   The signalling function: The price mechanism acts as a signal where resources
+       should be used. When prices rise, producers move resources into the manufacture of
+       that product. The change in price indicates to suppliers and consumers that market
+       conditions have changed so they should change the quantity bought and sold- when
+       price equilibrium moves, output equilibrium moves with it.
+
+   ●   The incentive function: It acts as an incentive for people to work hard. Buyers
+       realise that the more money they have, they are able to buy more products. Suppliers
+
+
+
+
+                                                                                               https://bit.ly/pmt-cc
+                           https://bit.ly/pmt-edu                                              https://bit.ly/pmt-cc
+       realise that if they produce more of the goods, they will make more money. Also, low
+       prices act as an incentive for consumers to buy more of a good and high prices act
+       as an incentive to suppliers to sell more of a good. The price mechanism encourages
+       people to behave a certain way.
+
+
+
+The price mechanism in the context of different types of markets,
+including local, national and global markets:
+
+   ●   Local: The coronavirus pandemic has disrupted supply chains across the planet, and
+       many countries have blocked imports to prevent the spread of the virus. If we take
+       the example of British supermarkets, less imports from other countries means there
+       are fewer goods on supermarket shelves. As the demand for food is high but the
+       supply is low, the price of food rises to ration off the excess demand so that only the
+       consumers who value the food most highly buy them. This is an example of the
+       rationing function.
+
+   ●   National: The price of housing differs across the UK, from being high in the south and
+       low in the north. There are multiple reasons to explain these discrepancies. London,
+       not only the capital, is the second largest financial centre in the world, as well as
+       home to many tourist attractions. As the population of London is high relative to the
+       rest of the UK, house prices will rise through the rationing function, i.e. to ration off
+       excess demand and only provide houses to those who value them the most. The
+       high house prices in London also offer an incentive for firms to allocate resources to
+       the production of more houses, as there is profit to be made in this industry. This is
+       an example of the incentive function.
+
+   ●   Global: In 1973 the Organisation for Petroleum Exporting Countries (OPEC)
+       proclaimed an oil embargo (i.e. restricted the supply of oil on an insurmountable
+       scale), due to geopolitical factors regarding America and the Middle East. This sent
+       the price of oil at record-breaking levels across the planet, as oil was an invaluable
+       resource to countries. This perfectly exemplifies the rationing function because the
+       disequilibrium of supply and demand meant the high prices deterred consumers who
+       didn’t value oil highly, which left the market open only to those consumers who did.
+       By raising the price of oil, the market once again returned to a state of equilibrium.
+
+
+
+
+                1.2.8 Consumer and producer surplus
+
+Consumer and producer surplus:
+
+Consumer surplus is the difference between the price the consumer is willing to pay and
+the price they actually pay, set by the price mechanism. This is illustrated by the orange
+triangle in the diagram, ABP1. The demand curve shows the price consumers are willing to
+
+
+
+
+                                                                                                   https://bit.ly/pmt-cc
+                           https://bit.ly/pmt-edu                                                  https://bit.ly/pmt-cc
+pay, and so the difference between the demand curve and the price shows the consumer
+surplus.
+
+Producer surplus is the difference between the price the supplier is willing to produce their
+product at and the price they actually produce at, set by the price mechanism. This is
+illustrated by the purple triangle in the diagram, P1B0. The supply curve shows the price
+suppliers are willing to sell the good for, and so the difference between the supply curve and
+the price shows the consumer surplus.
+
+
+
+
+Consumer and producer surpluses show the economic gain from the buying and selling of
+the good. Consumer surplus shows the welfare gained by consumers for buying the good.
+The total satisfaction consumers receive from buying the good is the total area under the
+demand curve: ABQ10. They spend P1BQ10 to gain this satisfaction. Therefore, their net
+gain is ABP1, the consumer surplus. Similarly, producer surplus shows the economic gain
+for producers by selling the good.
+
+Perfectly elastic demand will mean that there is no consumer surplus, whilst perfectly
+inelastic demand will mean that consumer surplus is infinite. The more inelastic demand, the
+higher consumer surplus is likely to be. When supply is perfectly elastic, producer surplus is
+0 and when it is perfectly inelastic, producer surplus is infinite. The more inelastic supply, the
+higher producer surplus is likely to be.
+
+
+
+
+                                                                                                     https://bit.ly/pmt-cc
+                            https://bit.ly/pmt-edu                                                   https://bit.ly/pmt-cc
+Shifts of demand and supply:
+
+
+
+
+A decrease in demand from D1 to D2 will lead to a fall in consumer and producer
+surplus, as both price and output decrease. Consumer surplus falls from ABP1 to CDP2
+and producer surplus falls from P1B0 to P2D0. An increase in demand would have the
+opposite effect and increase consumer and producer surplus.
+
+
+
+
+                                                                                       https://bit.ly/pmt-cc
+                         https://bit.ly/pmt-edu                                        https://bit.ly/pmt-cc
+A decrease in supply from S1 to S2 will lead to a fall in consumer and producer surplus .
+Consumer surplus falls from ABP1 to ADP2 and producer surplus falls from P1B0 to
+P2DC. An increase in supply would have the opposite effect and increase consumer and
+producer surplus.
+
+
+
+
+                    1.2.9 Indirect taxes and subsidies
+Indirect taxes:
+
+An indirect tax is a tax on expenditure where the person who is ultimately charged the tax
+is not the person responsible for paying the sum to the government. The business is
+required to pay the tax but the customer is charged instead. There are two types of indirect
+tax:
+
+   ●   Ad valorem tax is where the tax payable increases in proportion to the value of the
+       good. The tax is a percentage of the cost of the good, for example VAT.
+   ●   Specific tax is where an amount is added to the price. The tax increases with the
+       amount bought rather than the value of goods. For example, excise duties on
+       alcohol, tobacco and petrol are a specific amount (e.g. 10p a litre).
+
+Impacts of a tax:
+
+The diagram shows a specific tax. The introduction of the tax causes supply to shift from S1
+to S2 because it leads to an increase in the cost of production. This leads to a rise in price
+from P1 to P2 and a fall in output from Q1 to Q2. The consumer sees higher prices and
+suffers from a tax burden of the orange area. The producer sees a rise in costs and a fall in
+output, suffering from the tax burden of the grey area. The government gains tax revenue of
+the shaded areas. The size of the tax is the vertical distance between S1 and S2, shown by
+the line AB. The revenue the government raises will be equal to ABxQ2.
+
+
+
+
+                                                                                                 https://bit.ly/pmt-cc
+                           https://bit.ly/pmt-edu                                                https://bit.ly/pmt-cc
+This diagram shows an ad valorem tax. The effects are the same but the supply curve shifts
+and tilts, so that the gap between S1 and S2 grows. This is because the tax is a percentage
+of the value. When the price is small, the tax will only be a small amount but when the price
+is high, the tax will be a large amount. The vertical distance between the curve represents
+the size of the tax, and so the distance grows since the tax grows.
+
+
+
+
+                                                                                                https://bit.ly/pmt-cc
+                           https://bit.ly/pmt-edu                                               https://bit.ly/pmt-cc
+ Price (£)        Quantity demanded               Quantity supplied   Quantity supplied after tax
+
+ 10               100                             1100                900
+
+ 9                200                             1000                800
+
+ 8                300                             900                 700
+
+ 7                400                             800                 600
+
+ 6                500                             700                 500
+
+ 5                600                             600                 400
+
+ 4                700                             500                 300
+
+ 3                800                             400                 200
+
+ 2                900                             300                 100
+
+
+
+This table shows the effect of a £2 tax being imposed. The initial equilibrium price was £5.
+With the new tax, when the business charges £5 for their product they only get £3 as £2 is
+passed onto the government. As a result, if they are charging £5 with the tax, they are are
+only willing to supply the same amount they were willing to if the price was £3 without the
+tax. Quantity supplied moves up two boxes in the table, and the equilibrium price is now £6
+where quantity demanded is equal to quantity supplied after tax. This means that the
+incidence on the consumer is only £1 of the tax and the supplier is also only paying £1.
+
+The incidence of tax:
+
+      ●   The incidence of tax is the tax burden on the taxpayer.
+
+      ●   If the demand curve (PED) is perfectly elastic, or the supply curve (PES) is perfectly
+          inelastic, the supplier will pay all the tax. If the demand curve is perfectly inelastic,
+          or the supply curve is perfectly elastic, all the tax will be passed on to the
+          consumer.
+
+      ●   In general, the more elastic the demand curve, or the more inelastic the supply curve,
+          the lower the incidence of tax on the consumer, meaning the supplier has to pay
+          more.
+
+      ●   This means that, all other things being equal, the more inelastic the demand curve,
+          the higher the revenue of tax for the government because quantity demanded falls
+          less and the more goods that are bought, the higher the tax revenue.
+
+
+
+
+                                                                                                      https://bit.ly/pmt-cc
+                              https://bit.ly/pmt-edu                                                  https://bit.ly/pmt-cc
+Subsidies:
+
+A subsidy is a grant given by the government and is the opposite of a tax, an extra
+payment to encourage production/consumption of a good or service. They could be given to
+necessities e.g. bread, companies employing disadvantaged workers or those manufacturing
+in the UK to keep them competitive with imported goods.
+
+
+
+
+The diagram shows an increase in supply from S1 to S2, since the producer sees a fall in
+production costs due to the subsidy. As a result, there is a rise in output from Q1 to Q2 and a
+fall in price from P1 to P2. The consumer subsidy is the orange box and the producer
+subsidy is the grey box. The total shaded area represents government spending: this is
+equal to the size of the subsidy (AB) times the new output (Q2).
+
+
+
+
+         1.2.10 Alternative views of consumer behaviour
+The underlying assumptions for all rational decision making is that customers aim to
+maximise utility, companies aim to maximise profit and governments aim to maximise
+welfare of citizens. However, people do not always behave rationally and this occurs for
+three main reasons:
+
+
+
+
+                                                                                                  https://bit.ly/pmt-cc
+                           https://bit.ly/pmt-edu                                                 https://bit.ly/pmt-cc
+●   Influences of other people: Rationality assumes people act individually to maximise
+    their own benefits but sometimes individuals are influenced by social norms, known
+    as a bias. For example, someone may buy something to ‘fit-in’ or because everyone
+    else has it, and so they are expected to too. Consumers become unwilling to change
+    the bias, even if doing so will benefit them, if it goes against the norms of society.
+    ‘Herding behaviour’ occurs when an individual copies the actions of a large group.
+    One example is the stock market, and this causes huge market bubbles.
+
+●   Influence of habitual behaviour: Most people have habits and these habits reduce
+    the amount of time it takes to do something, because consumers no longer have to
+    consciously think about their actions. Habits create a barrier to decision making since
+    they limit or prevent consumers considering an alternative. Habitual behaviour
+    includes addictions and so this influences people’s decisions, for example consumers
+    will buy more drugs/alcohol even though they know they should give up. Another
+    habit many consumers have is buying their products at eye level so supermarkets
+    tend to keep higher priced products near the top and lower priced products lower.
+
+●   Consumer weakness at computation: Many consumers aren’t willing or able to
+    make comparisons between prices and so they will buy more expensive goods than
+    needed, for example many customers buy multipack goods because they assume
+    they are cheaper but this is not always the case. Also, consumers are sometimes
+    poor at self-control and so do things they know they shouldn’t. Similarly, consumers
+    will make decisions without looking at the long term effects, and so make irrational
+    decisions. One example of this is consumers saving up for their pensions: many put
+    off doing this because they fail to look long term.
+
+
+
+
+                                                                                              https://bit.ly/pmt-cc
+                        https://bit.ly/pmt-edu                                                https://bit.ly/pmt-cc
+

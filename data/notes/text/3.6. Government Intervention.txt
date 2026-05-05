@@ -1,0 +1,399 @@
+ Edexcel Economics (A) A-level
+Theme 3: Business Behaviour and
+              the
+         Labour Market
+   3.6 Government Intervention
+                Detailed Notes
+
+
+
+
+        www.pmt.education
+                       3.6.1 Government Intervention
+The ​Competition and Markets Authority (CMA) ​work to promote competition for the
+benefit of consumers and investigate mergers and breaches of UK and EU competition law,
+enforce consumer protection law and bring criminal cases against individuals who participate
+in cartels. They are able impose financial penalties, prevent mergers taking place and force
+businesses to reverse actions already taken.
+
+
+
+Controlling mergers:
+
+   ●   In the UK, mergers are assessed in terms of the specific circumstances of each case,
+       considering whether there will be a ​substantial lessening of competition ​(SLC).
+       The CMA will consider the likely competitive situation if the merger goes ahead
+       compared to if it does not, and the merger will be approved if its potential benefits are
+       greater than its cost.
+
+   ●   A merger is investigated if it will result in market share greater than 25% or if it meets
+       the turnover test of a combined turnover of £70 million or more.
+
+   ●   The aim of preventing two large companies merging is so they do not ​exploit their
+       customers by raising price, offering poorer quality service and reducing choice. It
+       can prevent firms from gaining monopoly power.
+
+   ●   However, the problem is that ​very few mergers are investigated ​each year. The
+       CMA can suffer from regulatory capture and may not have all the information
+       necessary to make a decision.
+
+Tesco’s takeover of Booker was allowed as the CMA believed the impact on competition
+would not be too high since supermarkets are in a hypercompetitive industry. However, the
+European Commission blocked the merger of Ryanair & Aerlingus in 2010 as they would
+control more than than 80% of all Europe flights from Ireland.
+
+
+
+Controlling monopolies:
+
+Holding a dominant position in an industry is not wrong in itself but if the firm exploits this to
+stifle competition, they are deemed to be anti-competitive. Monopolies are allocative and
+productively inefficient and so it can be argued that they need to be controlled. Most of this
+regulation occurs for utilities, which are natural monopoles.
+
+Price regulation:
+
+   ●   Regulators can set price controls to force monopolists to charge a price below profit
+       maximising price, using the RPI-X formula. X represents the ​expected efficiency
+       gains of the firms and the aim is to ensure firms pass on their efficiency gains to
+       consumers. ​This is used in the airport industry.
+
+
+
+
+                             www.pmt.education
+   ●   Arguably, a better system is ​‘RPI-X+K’​, where K represents the level of ​investment​.
+       This is used in the water industry and has allowed investment of £130bn.
+
+   ●   It gives an incentive for firms to be ​as efficient as possible as if they can lower
+       costs by more than X they will enjoy increased profit. It ​prevents excessive prices
+       and ensures that gains are passed onto the consumer.
+
+   ●   The problem is that it is difficult to know where to set X due to rapid improvement
+       in technology and because any information on what the efficiency gains will be have
+       to come from the firm, who could easily lie as there is ​asymmetric information​. As a
+       result, there may be sudden price falls or rebates for customers, for example ​the
+       water industry was forced to cut prices by 10% in 2000.
+
+   ●   Moreover, ​maximum prices ​could be set where the price is equal to the MSC,
+       ensuring monopolies are ​allocative efficient​. However, it is difficult for governments
+       to know where they should set the price as they do not know the exact allocative
+       efficient output. It can also increase dynamic inefficiency as firms are unable to
+       maximise profit so may not invest.
+
+Profit regulation:
+
+   ●   In the ​USA, ​‘rate of return’ regulation is used where prices are set to allow coverage
+       of operating costs and to earn a ‘fair’ rate of return on capital invested, based on
+       typical rates of return in a competitive market.
+
+   ●   This aims to ​encourage investment ​and prevents firms from setting high prices.
+       However, it gives firms an incentive to ​employ too much capital in order to increase
+       their profits.
+
+   ●   It is also criticised since a reduction in costs will not improve the firm’s situation and
+       so there is ​little incentive to be efficient​. As with ‘RPI-X’ it also means that
+       regulators need sufficient knowledge of the industry and so will suffer from
+       asymmetric information.
+
+Quality standards:
+
+   ●   Monopolists will only produce high quality goods if this is the best way to maximise
+       profits. The government can introduce quality standards, which will ensure that firms
+       do not exploit their customers​ by offering poor quality.
+
+   ●   For example, the Post Office has to deliver letters on a daily basis to all areas and
+       electricity generators are forced to have enough capacity to prevent blackouts.
+
+   ●   The problem is that it requires​ political will and understanding​ to introduce.
+
+
+
+
+                            www.pmt.education
+Performance targets:
+
+  ●   Regulators can introduce ​yardstick competition​, such as setting punctuality targets
+      for train operating companies based on the best-performing European train
+      operators. It is also possible to split up a service into regional sectors to ​compare the
+      performance of one region against another​; ​this is used in the water industry​.
+
+  ●   They could set targets over price, quality, consumer choice and costs of production. It
+      will help firms to improve their service and lead to ​gains for customers.
+
+  ●   The problem is that firms will ​resist the introduction of targets, so again it requires
+      political will and understanding. They will also attempt to find ways to ​meet targets
+      without actually improving​, for example changing train timetables to prevent trains
+      officially arriving late.
+
+  ●   Other firms will ​fail to meet their performance targets and so there will be no
+      improvements. ​Network Rail failed to deliver on the performance targets for their long
+      distance sector in 2013-14. The government need to ensure that fines and other
+      deterrents are strong enough that firms at least work to ensure targets are met.
+
+
+
+
+                           www.pmt.education
+Promoting competition and contestability:
+
+Promotion of small business:
+
+   ●   The government can give training and grants to new entrepreneurs and
+       encourage small businesses through ​tax incentives or subsidies​. This will increase
+       competition since there will be more firms within the market, and will offer a chance
+       for more firms to join.
+
+   ●   It ​increases innovation and efficiency​, since new firms are likely to provide new
+       products and incumbent firms will no longer be able to be X-inefficient.
+
+   ●   The Red Tape Challenge aims to decrease regulation, particularly for small
+       businesses. There are also schemes, such as the Enterprise Investment Schemes
+       and Seed Enterprise Investment Scheme, which provide tax relief for people who buy
+       shares in small companies to help them grow.
+
+Deregulation:
+
+   ●   This is the ​removal of legal barriers to entry to a previously protected market to
+       allow private enterprises to compete. This will ​increase efficiency in the market by
+       allowing greater competition as more firms can enter and conduct more activities
+       than they could before. ​The Deregulation Act of 2015 aims to continue deregulation.
+
+   ●   The government can also ​privatise industries, which will allow for competition in the
+       market.
+
+   ●   However, it can have some negative effects, leading to ​poor business behaviour​.
+       Licenses for specific industries are necessary to ensure standards are upheld. Some
+       have argued that the deregulation of financial markets was a major contributor to the
+       financial crisis in 2008.
+
+Competitive tendering:
+
+   ●   The government has to provide certain goods and services because they are merit or
+       public goods but this does not mean that the state has to be the producer of all these
+       goods and services. Goods, such as the sheets in NHS hospitals, are ​produced by
+       the private sector and then bought by the public sector.
+
+   ●   A similar thing can be done with services; the government can ​contract out the
+       provision of a good or service to private companies ​e.g. private firms could be
+       employed to run hospitals. These are called ​Private Finance Initiatives (PFI)
+
+   ●   Competition can be introduced into the market as the government will request
+       competitive tenders by drawing up a specification for the good or service and inviting
+       private firms to bid for the contract to deliver it. The firm offering the lowest price wins
+       the contract, subject to quality guarantees.
+
+
+
+
+                            www.pmt.education
+   ●   This helps to ​minimise costs for the government and ensures efficiency by
+       allowing for competition in the market. The private sector will have ​more experience
+       running the projects, so it is likely they will be better managed.
+
+   ●   However, it may not always be the most cost effective way and the process of
+       collecting bids is ​costly and time-consuming​. The private sector may not aim to
+       maximise social welfare in the same way the government would and could use
+       cost-cutting methods that ​reduce quality​.
+
+It is important that they prevent firms undertaking ​anti-competitive practices​, such as
+collusion and predatory pricing. ​The Enterprise Act (2002) means firms engaging in these
+practices can be fined up to 10% of worldwide annual sales and those who organise cartels
+can face up to five years in prison and unlimited fines. ​In 2011, the 9 supermarkets in the UK
+were found to be fixing the price of milk and cheese products and Tesco alone was fined for
+£10 million. The problem is that it is very difficult to prove overt collusion and almost
+impossible to prove tacit collusion.
+
+
+
+Protecting suppliers and employees:
+
+Restrictions on monopsony power:
+
+   ●   Monopsonists are able to exploit suppliers by reducing prices. The government can
+       prevent these by passing ​anti-monopsony laws ​which make certain practices illegal
+       and can introduce an ​independent regulator ​who will force monopsonists to buy
+       fairly.
+
+   ●   Fines ​can be put in place for those who exploit their power and ​minimum prices
+       may be introduced to ensure suppliers are paid a fair amount. ​Self-regulation can
+       also be used, but this is weak.
+
+Workers’ rights:
+
+   ●   The government protects employees through ​health and safety laws, employment
+       contracts, redundancy processes, maximum hours at work and the right to be
+       in a trade union. The government can also encourage firms to draw up ​codes of
+       conduct​ relating to employment practice.
+
+   ●   The problem is that if workers’ rights are too strong, employers will be ​unwilling to
+       take on new workers​ due to the extra cost of employing these workers.
+
+
+
+Privatisation and nationalisation:
+
+   ●   Privatisation is the sale of government equity in nationalised industries or other firms
+       to private investors. ​The aim is to revitalise inefficient industries but can sometimes
+       lead to higher prices and poor services.
+
+
+
+
+                            www.pmt.education
+   ●   Nationalisation is when a private sector company or industry is brought under state
+       control, to be owned and managed by the government.
+
+Advantages and disadvantages of privatisation:
+
+   ●   It encourages ​greater competition​, which reduces X-inefficiency and ensures low
+       prices and high quality as firms realise they need to be competitive.
+   ●   Managers become more accountable​, since they know poor performance will mean
+       a fall in share prices and/or shareholders wanting them to be replaced.
+   ●   In both the long and short run, it can ​reduce the public sector net cash
+       requirement (PSNCR) as the initial sale of shares raises revenue for the government
+       and they no longer have to cover any of the firm’s losses.
+   ●   It ​reduces government interference which some see as a benefit in itself. This also
+       means that firms can ​invest with greater certainty​, instead of worrying about
+       change when a government is elected every 5 years.
+   ●   An ideological argument is that it puts ​utilities into the hands of the people​, since
+       they can own shares. Workers will be more motivated as they know their hard-work
+       will be rewarded by high dividends.
+   ●   On the other hand, when there are natural monopolies it may be fairer for the
+       government to own the firm since they won’t ​abuse their monopoly position​.
+   ●   Some people argue that ​industries such as electricity, water and transport are
+       important ​because they directly affect the success of other industries, and so
+       therefore it makes more sense for the government to own them in order to coordinate
+       them properly.
+   ●   There are problems over ​externalities and inequality.
+   ●   Some argue that it ​negatively affects that the PSNCR as firms are under-priced
+       when they are sold and the government no long receives a firm’s profit.
+
+Between 1994 and 1997, the railway industry was privatised. This has seen a rise in
+passenger satisfaction and a growth in investment. Season tickets have risen with inflation
+but standard single fairs have risen by 200%.
+
+Advantages and disadvantages of nationalisation:
+
+   ●   Investment is needed for the long term​, but in a private company investment is
+       only short term as shareholders will see no benefit from long term investment. This
+       may lead to a poor quality of service.
+   ●   In the case of a ​natural monopoly​, it is better for monopoly to be run by the state as
+       they aim to maximise social welfare rather than a private business who will maximise
+       profits.
+   ●   The government will ​consider externalities​.
+   ●   The government will guarantee a ​minimum level of service for people who suffer
+       the risk of being cut off from the service, due to the lack of potential profit from
+       providing for them.
+   ●   Some say it would be dangerous to allow key strategic industries to fall into private
+       hands as this could have disastrous effects for the country.
+
+
+
+
+                           www.pmt.education
+   ●    However, nationalised industries suffer from the ​principal-agent problem and
+        moral hazard, as managers know that any loss they make will be covered by the
+        government.
+    ● They will experience ​X-inefficiency and this could cause higher prices for
+        consumers, especially since the industry will become a monopoly.
+    ● They will be ​influenced by government’s decisions and the government may not
+        have enough money to invest.
+Post WWII brought high levels of nationalisation and this is known as the ‘golden age, a
+period of high growth before a period of stagflation that led to privatisation of these same
+industries. It became apparent that they suffered from high losses and were X-inefficient.
+
+The NHS is a nationalised industry which suffers from a lack of funding and a lack of
+competition, both of which lead to poor quality. They also suffer from uncertainty as
+spending on the NHS changes every five years with the new government; this causes
+problems and is something Jeremy Hunt has tried to change.
+
+Natural monopolies:
+
+Natural monopolies bring about the question of nationalisation. It is argued that if the
+industry is likely to end up as a monopoly it is better for the consumer if that monopoly is
+controlled by the government, who will maximise welfare. If the firm is private and decides to
+profit maximise, it will produce where MC=MR and therefore produce at P1Q1 and make
+supernormal profit of the orange area. However, if it was nationalised the firm would instead
+aim to maximise welfare and so would produce where AR=MC, the allocative efficient output.
+This would mean they produce at Q2P2 and would make a loss of the purple area. The
+nationalisation leads to higher output at lower prices but causes a loss for the industry, which
+the government would need to cover.
+
+
+
+
+                            www.pmt.education
+           3.6.2 The impact of government intervention
+
+Impacts:
+
+   ●   Governments are able to ​prevent monopolies charging excessive prices ​and aim
+       to ​limit their profit. They try to ensure that ​consumers pay fair prices, receive a
+       good quality service and have a lot of choice through different methods of
+       regulation and target setting. High regulation may force some firms out of the
+       industry, which would reduce choice.
+
+   ●   They can increase ​efficiency in a market by increasing competition and
+       contestability. By regulating prices, they ensure a business keeps their costs low and
+       so prevent X-inefficiency. They try to increase ​dynamic efficiency by encouraging
+       investment. However, if the government regulates too strongly, they can ​push costs
+       up​ and led to inefficiency.
+
+   ●   If the government runs a business, in theory, they should ​reduce prices and
+       increase quality ​as they aim to benefit consumers. A public sector business is likely
+       to be ​allocative efficient, as they aim to maximise social welfare. They will see lower
+       costs due to ​economies of scale​. However, the government may suffer from
+       X-inefficiency as they have no incentive to be efficient due to the lack of
+       competition. This may push up prices and reduce the quality of a good; the private
+       sector may have expertise and knowledge which the government might not have.
+       The government are likely to offer ​less choice, since there is only one company
+       producing the good.
+
+   ●   Government intervention on the whole tends to be limited because of the political
+       power of large firms and industries as a whole. They are able to lobby the
+       government and set up pressure groups.
+
+
+
+Limits:
+
+Regulatory capture:
+
+   ●   This occurs when the regulator is captured by the firm/industry they are regulating.
+       The fact that the regulator will often meet with the firm’s employees will mean they
+       become ​more empathetic and able to ‘​see things from their perspective’​, which
+       will remove impartiality and weakens their ability to regulate.
+
+   ●   Large corporations can ​invest huge amounts in learning how to play the system and
+       in gaining the support of their regulator. It also is likely that the regulator will have
+       worked in the sector for many years, as these people will have experience and
+       knowledge of the industry. As a result, they will have ​personal connections with
+       those that they are regulating and this makes it difficult for them to be unbiased.
+
+
+
+
+                           www.pmt.education
+  ●   This is an example of ​government failure​, and argues that government regulation is
+      not the most effective method of achieving competition and efficiency.
+
+  ●   One example is the alleged capture of HMRC by Vodafone, who negotiated a tax
+      reduction from £7bn to £1bn in 2009-10​.
+
+Asymmetric information:
+
+  ●   This is where regulatory bodies have to ​use information provided to them by the
+      industries ​when setting price targets etc. It is in the industry’s best interest to
+      maximise their profits and so may provide inaccurate or limited information, meaning
+      regulators are unable to set correct targets, prices etc.
+
+  ●   As a result, ​government failure may occur if regulation such as RPI-X or quality
+      standards are not set correctly. The government will be unable to regulate the
+      companies accurately.
+
+
+
+
+                         www.pmt.education
+

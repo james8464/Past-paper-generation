@@ -10,6 +10,7 @@ from pastpapergen.models import (
     QuestionPart,
     Syllabus,
 )
+from pastpapergen.notes import essay_capable_topic_ids, note_points_for_topic
 
 
 def build_paper_blueprint(
@@ -21,20 +22,36 @@ def build_paper_blueprint(
     topics = syllabus.topics_for_themes(config.allowed_themes)
     if not topics:
         raise ValueError("No syllabus topics available for this paper.")
+    essay_topic_ids = essay_capable_topic_ids({topic.id for topic in topics})
 
     questions: list[QuestionBlueprint] = []
     absolute_question_number = 1
     for section in config.sections:
         choice_lookup = _choice_lookup(section.choice_groups)
         choice_group_topics: dict[int, set[str]] = {}
+        section_topic_ids: set[str] = set()
+        source_context_topic = (
+            _choose_topic(rng, _topics_matching(topics, essay_topic_ids), set())
+            if _uses_single_source_context(config.id, section.name)
+            else None
+        )
+        if source_context_topic:
+            section_topic_ids.add(source_context_topic.id)
         for index, marks in enumerate(section.question_marks):
             group_index = choice_lookup.get(index)
-            topic = _choose_topic(rng, topics, choice_group_topics.get(group_index, set()))
+            excluded_ids = set(section_topic_ids)
+            if group_index is not None:
+                excluded_ids.update(choice_group_topics.get(group_index, set()))
+            available_topics = _topic_pool_for_question(topics, essay_topic_ids, marks, section.name)
+            topic = source_context_topic or _choose_topic(rng, available_topics, excluded_ids)
             command_word = section.command_words[index]
             number = _question_number(config.id, section.name, absolute_question_number, index)
+            stimulus_kind = _stimulus_kind(section, index)
             parts = _build_parts(section, index, topic.title)
+            source_reference = _source_reference(config.id, section.name, index)
             if group_index is not None:
                 choice_group_topics.setdefault(group_index, set()).add(topic.id)
+            section_topic_ids.add(topic.id)
             questions.append(
                 QuestionBlueprint(
                     section=section.name,
@@ -42,16 +59,25 @@ def build_paper_blueprint(
                     marks=marks,
                     command_word=command_word,
                     topic_id=topic.id,
-                    prompt=_question_prompt(config.id, section.name, command_word, marks, topic.title, parts),
+                    prompt=_question_prompt(
+                        config.id,
+                        section.name,
+                        command_word,
+                        marks,
+                        topic.title,
+                        parts,
+                        stimulus_kind,
+                        source_reference,
+                    ),
                     parts=parts,
-                    stimulus_kind=_stimulus_kind(section, index),
+                    stimulus_kind=stimulus_kind,
                     choice_group=_choice_group_name(config.id, section.name, group_index),
-                    source_reference=_source_reference(config.id, section.name, index),
+                    source_reference=source_reference,
                     source_title=_source_title(topic.title, section.name),
-                    source_text=_source_text(topic.title, topic.points, section.name, index),
+                    source_text=_source_text(topic.title, topic.points, section.name, index, stimulus_kind),
                     mark_breakdown=_mark_breakdown(marks, parts),
                     mark_scheme=_mark_scheme(command_word, marks, topic.title),
-                    indicative_content=_indicative_content(topic.title, topic.points),
+                    indicative_content=_indicative_content(topic.id, topic.title, topic.points),
                 )
             )
         absolute_question_number += _section_question_increment(config.id, section.name)
@@ -77,6 +103,21 @@ def _choice_lookup(choice_groups: list[list[int]]) -> dict[int, int]:
 def _choose_topic(rng: random.Random, topics, excluded_ids: set[str]):
     available = [topic for topic in topics if topic.id not in excluded_ids]
     return rng.choice(available or topics)
+
+
+def _topics_matching(topics, topic_ids: set[str]):
+    matched = [topic for topic in topics if topic.id in topic_ids]
+    return matched or topics
+
+
+def _topic_pool_for_question(topics, essay_topic_ids: set[str], marks: int, section_name: str):
+    if marks >= 15 or section_name in {"B", "C"}:
+        return _topics_matching(topics, essay_topic_ids)
+    return topics
+
+
+def _uses_single_source_context(paper_id: str, section_name: str) -> bool:
+    return paper_id in {"paper_1", "paper_2"} and section_name == "B"
 
 
 def _choice_group_name(paper_id: str, section_name: str, group_index: int | None) -> str | None:
@@ -108,27 +149,59 @@ def _question_number(
 
 
 def _placeholder_prompt(command_word: str, marks: int, topic_title: str) -> str:
-    topic = topic_title.lower()
+    phrase = _topic_phrase(topic_title)
     if command_word == "mcq":
-        return (
-            f"Which one of the following is correct about {topic}? "
-            "A statement one; B statement two; C statement three; D statement four."
-        )
+        return f"Which one of the following is correct about {phrase}?"
     if command_word == "calculate":
-        return f"With reference to the data provided, calculate one relevant value for {topic}."
+        return f"Calculate the change shown in the data for {phrase}. You are advised to show your working."
     if command_word == "draw":
-        return f"Draw a diagram to show one likely effect related to {topic}."
+        return f"Draw a diagram to show the likely impact of a change in {phrase}."
     if command_word == "explain":
-        return f"Explain one likely effect of {topic}."
+        return f"Explain one likely effect of {phrase}."
     if command_word == "examine":
-        return f"Examine two likely factors affecting {topic}."
+        return f"Examine two likely factors affecting {phrase}."
     if command_word == "discuss":
         if marks == 12:
-            return f"Discuss whether the evidence supports one interpretation of {topic}."
-        return f"Discuss the likely effects of {topic}."
+            return f"Discuss whether the evidence supports one interpretation of {phrase}."
+        return f"Discuss the likely effects of {phrase}."
     if command_word == "assess":
-        return f"Assess whether {topic} is significant in this context."
-    return f"Evaluate the likely effects of {topic}."
+        return f"Assess whether {phrase} is significant in this context."
+    return _essay_question_prompt(topic_title)
+
+
+def _essay_question_prompt(topic_title: str) -> str:
+    topic = topic_title.lower()
+    if topic == "demand":
+        return "Evaluate the likely microeconomic effects of a significant increase in demand in a market."
+    if topic == "supply":
+        return "Evaluate the likely microeconomic effects of rising production costs in a market."
+    if topic == "price determination":
+        return "Evaluate the likely effects of a change in equilibrium price on consumers and producers."
+    if topic == "market failure":
+        return "Evaluate whether government intervention is likely to correct market failure."
+    if topic == "government intervention":
+        return "Evaluate the likely microeconomic effects of government intervention in a market."
+    if topic == "business growth":
+        return "Evaluate the likely benefits and drawbacks of business growth for firms and consumers."
+    if topic == "business objectives":
+        return "Evaluate whether profit maximisation is likely to be the most important objective for firms."
+    if topic == "revenues, costs and profits":
+        return "Evaluate the likely effects of economies of scale on firms and consumers in a market."
+    if topic == "market structures":
+        return "Evaluate the level of contestability in a market or industry of your choice."
+    if topic == "labour market":
+        return "Evaluate the likely effects of changes in wage rates on workers and firms."
+    if topic == "international economics":
+        return "Evaluate the likely effects of increased protectionism on an economy."
+    if topic == "poverty and inequality":
+        return "Evaluate the likely effects of policies designed to reduce income inequality."
+    if topic == "emerging and developing economies":
+        return "Evaluate the likely effects of rapid economic growth on an emerging economy."
+    if topic == "financial sector":
+        return "Evaluate the likely effects of financial market failure on an economy."
+    if topic == "role of the state in the macroeconomy":
+        return "Evaluate the likely macroeconomic effects of increased government intervention."
+    return f"Evaluate the likely effects of changes in {topic_title.lower()} on economic agents."
 
 
 def _build_parts(section, index: int, topic_title: str) -> list[QuestionPart]:
@@ -156,7 +229,7 @@ def _build_part(
             label=label,
             marks=marks,
             command_word=command,
-            prompt=f"Which one of the following is correct about {topic_title.lower()}?",
+            prompt=f"Which one of the following is correct about {_topic_phrase(topic_title)}?",
             options=options,
             correct_option=correct,
             mark_breakdown="1 mark",
@@ -176,17 +249,18 @@ def _build_part(
         prompt=_placeholder_prompt(command, marks, topic_title),
         mark_breakdown=_part_mark_breakdown(marks, command),
         mark_scheme=_mark_scheme(command, marks, topic_title),
-        indicative_content=_indicative_content(topic_title, []),
+        indicative_content=_indicative_content("", topic_title, []),
     )
 
 
 def _mcq_options(topic_title: str) -> list[MultipleChoiceOption]:
-    topic = topic_title.lower()
+    topic = _topic_phrase(topic_title)
+    sentence_topic = topic[0].upper() + topic[1:]
     return [
-        MultipleChoiceOption(label="A", text=f"A key concept in {topic} affects economic decisions"),
-        MultipleChoiceOption(label="B", text=f"{topic.title()} removes the need for opportunity cost"),
-        MultipleChoiceOption(label="C", text=f"{topic.title()} only applies to public sector markets"),
-        MultipleChoiceOption(label="D", text=f"{topic.title()} has no effect on incentives"),
+        MultipleChoiceOption(label="A", text=f"Changes in {topic} can alter incentives for consumers or firms"),
+        MultipleChoiceOption(label="B", text=f"{sentence_topic} means resources are no longer scarce"),
+        MultipleChoiceOption(label="C", text=f"{sentence_topic} only affects government decisions"),
+        MultipleChoiceOption(label="D", text=f"{sentence_topic} always leaves prices unchanged"),
     ]
 
 
@@ -214,36 +288,66 @@ def _question_prompt(
     marks: int,
     topic_title: str,
     parts: list[QuestionPart],
+    stimulus_kind: str,
+    source_reference: str,
 ) -> str:
-    topic = topic_title.lower()
+    topic = _topic_phrase(topic_title)
     if parts:
-        return f"The following data relates to {topic}."
+        return _section_a_stem(topic, stimulus_kind)
     if section_name in {"A", "B"} and paper_id == "paper_3":
-        return _source_question_prompt(command_word, marks, topic, "Extract A")
+        return _source_question_prompt(command_word, marks, topic, source_reference)
     if section_name == "B":
-        return _source_question_prompt(command_word, marks, topic, "Extract A")
+        return _source_question_prompt(command_word, marks, topic, source_reference)
     return _placeholder_prompt(command_word, marks, topic_title)
 
 
+def _section_a_stem(topic: str, stimulus_kind: str) -> str:
+    if stimulus_kind == "cost_revenue_graph":
+        return f"The diagram below shows cost and revenue curves for a firm considering a change in {topic}."
+    if stimulus_kind == "data_table":
+        return f"The table below shows selected economic data for a market affected by {topic}."
+    if stimulus_kind == "market_diagram":
+        return f"The diagram below shows demand and supply in a market affected by {topic}."
+    if stimulus_kind == "context_extract":
+        return f"Read the information below about a market affected by {topic}."
+    if stimulus_kind == "bar_chart":
+        return f"The information below concerns changes in {topic}."
+    return f"The information below concerns {topic}."
+
+
 def _source_question_prompt(command_word: str, marks: int, topic: str, source_reference: str) -> str:
+    reference = "the source material" if source_reference == "source material" else source_reference
     if marks == 5:
-        return f"With reference to {source_reference}, explain one likely effect of {topic}."
+        return f"With reference to {reference}, explain one likely effect of {topic}."
     if marks == 8:
-        return f"With reference to {source_reference}, examine two likely factors affecting {topic}."
+        return f"With reference to {reference}, examine two likely factors affecting {topic}."
     if marks == 10:
-        return f"With reference to {source_reference}, assess whether {topic} is significant in this context."
+        return f"With reference to {reference}, assess whether {topic} is significant in this context."
     if marks == 12:
-        return f"With reference to {source_reference}, discuss whether the evidence supports one interpretation of {topic}."
+        return f"With reference to {reference}, discuss whether the evidence supports one interpretation of {topic}."
     if marks == 15:
-        return f"With reference to the source material, discuss the likely effects of {topic}."
+        return _section_b_15_marker_prompt(topic)
     return f"Evaluate the view that {topic} is the most important issue in this market."
+
+
+def _section_b_15_marker_prompt(topic: str) -> str:
+    title = topic.lower()
+    if title == "market structures":
+        return "Discuss the likely benefits of mergers for firms in this market."
+    if title == "labour market":
+        return "Discuss the likely effects of changes in the National Minimum Wage on workers and firms."
+    if title == "market failure":
+        return "Discuss the likely effects of government intervention in this market."
+    return f"Discuss the likely effects of {topic} on firms and consumers."
 
 
 def _source_reference(paper_id: str, section_name: str, index: int) -> str:
     if section_name == "A" and paper_id in {"paper_1", "paper_2"}:
         return "Figure 1"
-    if section_name in {"B"} or paper_id == "paper_3":
-        return "Extract A" if index % 3 else "Figure 1"
+    if section_name == "B" and paper_id in {"paper_1", "paper_2"}:
+        return ["Extract A", "Extract A", "Extract B", "Extract C", "source material"][index]
+    if paper_id == "paper_3":
+        return ["Extract A", "Extract A", "Extract B", "Extract C", "source material"][index]
     return ""
 
 
@@ -251,15 +355,144 @@ def _source_title(topic_title: str, section_name: str) -> str:
     return f"{topic_title}: economic context" if section_name in {"B", "A"} else topic_title
 
 
-def _source_text(topic_title: str, points: list[str], section_name: str, index: int) -> str:
+def _source_text(
+    topic_title: str,
+    points: list[str],
+    section_name: str,
+    index: int,
+    stimulus_kind: str,
+) -> str:
     if section_name == "C":
         return ""
-    focus = ", ".join(points[:3]) if points else topic_title.lower()
+    focus = ", ".join(points[:3]) if points else _topic_phrase(topic_title)
+    if section_name == "B":
+        return _data_response_extract(topic_title, points, index)
+    if section_name == "A":
+        return _section_a_context(topic_title, focus)
+    if stimulus_kind == "data_table":
+        return (
+            f"The table shows how indicators linked to {topic_title.lower()} changed over time. "
+            f"The data may be used to analyse {focus} and to support short-run and long-run judgements."
+        )
     return (
-        f"Recent constructed data on {topic_title.lower()} suggests changes in {focus}. "
-        f"Firms, households and policy makers may respond differently depending on incentives, "
-        f"market conditions and the time period considered."
+        f"The evidence on {topic_title.lower()} suggests changes in {focus}. Firms, consumers and policy makers "
+        f"may respond differently depending on incentives, market conditions and the time period considered."
     )
+
+
+def _data_response_extract(topic_title: str, points: list[str], index: int) -> str:
+    if topic_title.lower() == "labour market":
+        return _labour_market_extract(index)
+    if topic_title.lower() == "market structures":
+        return _market_structures_extract(index)
+    title = _topic_phrase(topic_title)
+    first = points[0] if points else title
+    second = points[1] if len(points) > 1 else first
+    third = points[2] if len(points) > 2 else second
+    variants = [
+        (
+            f"A UK case study on {title} reports that firms and consumers changed their behaviour over three "
+            f"years. Survey evidence suggests {first} affected decisions about prices, output and resource "
+            f"allocation."
+        ),
+        (
+            f"Businesses affected by {title} reported higher costs and weaker profit margins. Some firms invested "
+            f"in technology or training to respond to {second}, but smaller firms said adjustment was slower and "
+            f"riskier than expected."
+        ),
+        (
+            f"Industry evidence shows that larger firms adapted more quickly than new entrants. Managers argued "
+            f"that access to finance, skilled labour and customer loyalty influenced the extent to which {title} "
+            f"changed market outcomes."
+        ),
+        (
+            f"Policy makers are considering whether intervention is needed. Supporters argue that action could "
+            f"improve outcomes linked to {third}; critics argue that intervention may create unintended "
+            f"consequences and reduce incentives for firms."
+        ),
+    ]
+    return variants[min(index, len(variants) - 1)]
+
+
+def _market_structures_extract(index: int) -> str:
+    variants = [
+        (
+            "UK spending on digital games rose by 17% over three years, while the average price of popular online "
+            "subscriptions increased from GBP8.99 to GBP10.99 per month. Larger firms said cloud gaming and app "
+            "stores helped them reach more consumers at lower marginal cost."
+        ),
+        (
+            "Independent developers reported that access to finance, skilled programmers and platform fees made "
+            "entry difficult. Some new firms used online distribution to grow quickly, but marketing costs remained "
+            "high in markets where consumers were loyal to established brands."
+        ),
+        (
+            "The four largest firms accounted for 68% of UK console game sales in 2024. A proposed merger would "
+            "increase the combined firm's catalogue of games, although rivals argued that exclusive content could "
+            "reduce contestability."
+        ),
+        (
+            "Competition authorities are considering whether further intervention is needed. Supporters argue that "
+            "mergers may create economies of scale and fund innovation; critics argue that market power could lead "
+            "to higher prices and less choice for consumers."
+        ),
+    ]
+    return variants[min(index, len(variants) - 1)]
+
+
+def _labour_market_extract(index: int) -> str:
+    variants = [
+        (
+            "UK hospitality firms reported vacancy rates of 7.8% in 2023, compared with 3.1% across the whole "
+            "economy. Average hourly pay rose from GBP10.42 to GBP11.44 after the National Minimum Wage increase, "
+            "but some firms reduced overtime and training budgets."
+        ),
+        (
+            "Care providers and hotels said recruitment was difficult because workers could earn similar hourly pay "
+            "in retail with more predictable hours. Some firms responded by offering flexible shifts, while others "
+            "invested in booking and cleaning technology."
+        ),
+        (
+            "The five largest employers in one regional labour market account for 58% of local vacancies. Trade "
+            "unions argued that this gives firms monopsony power, while employers said higher wage costs could "
+            "reduce the number of entry-level jobs."
+        ),
+        (
+            "The government is considering further increases in the statutory minimum wage. Supporters argue that "
+            "higher wages improve living standards and work incentives; critics argue that the effect depends on "
+            "labour productivity and the price elasticity of demand for labour."
+        ),
+    ]
+    return variants[min(index, len(variants) - 1)]
+
+
+def _section_a_context(topic_title: str, focus: str) -> str:
+    topic = topic_title.lower()
+    if topic == "labour market":
+        return (
+            "The National Minimum Wage increased for workers aged 21 and over. Some firms report higher wage costs, "
+            "while others say vacancies remain difficult to fill."
+        )
+    if topic == "market failure":
+        return (
+            "A market creates external costs for third parties. Policy makers are considering whether output is above "
+            "the socially efficient level."
+        )
+    if topic.startswith("government intervention"):
+        return (
+            "The government is considering a new policy to influence market outcomes. The policy may affect prices, "
+            "output, consumer surplus and producer incentives."
+        )
+    return f"The evidence highlights changes in {_topic_phrase(topic_title)}, including {focus}."
+
+
+def _topic_phrase(topic_title: str) -> str:
+    topic = topic_title.lower()
+    if topic in {"labour market", "financial sector"}:
+        return f"the {topic}"
+    if topic == "role of the state in the macroeconomy":
+        return "the role of the state in the macroeconomy"
+    return topic
 
 
 def _mark_breakdown(marks: int, parts: list[QuestionPart]) -> str:
@@ -307,8 +540,14 @@ def _mark_scheme(command_word: str, marks: int, topic_title: str) -> list[str]:
     ]
 
 
-def _indicative_content(topic_title: str, points: list[str]) -> list[str]:
-    content = points[:4] if points else []
+def _indicative_content(topic_id: str, topic_title: str, points: list[str]) -> list[str]:
+    note_points = note_points_for_topic(topic_id, title=topic_title, keywords=points, limit=4) if topic_id else []
+    content = [*note_points, *points[:4]]
+    unique_content = []
+    for item in content:
+        if item not in unique_content:
+            unique_content.append(item)
+    content = unique_content[:6]
     return content or [
         f"Definition and core features of {topic_title.lower()}",
         "Relevant source evidence",

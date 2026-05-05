@@ -1,0 +1,212 @@
+ Edexcel Economics (A) A-level
+Theme 1: Introduction to Markets
+              and
+        Market Failure
+       1.3 Market Failure
+                Detailed Notes
+
+
+
+
+        www.pmt.education
+                        1.3.1 Types of market failure
+Market failure occurs when the market fails to allocate scarce resources efficiently, causing a
+loss in social welfare loss. There are three main types of market failure:
+
+   ●   Externalities: An externality is the cost or benefit a third party receives from an
+       economic transaction outside of the market mechanism. In other words, it is the
+       spillover effect of the production or consumption of a good or service. This leads to
+       the over or under-production of goods, meaning resources aren’t allocated efficiently.
+       For example, ​cars and cigarettes have negative externalities whilst education and
+       healthcare have positive externalities​.
+
+   ●   Under-provision of public goods: Public goods are non-rivalry and non-excludable,
+       meaning they are underprovided by the private sector due to the free-rider problem.
+       The market is unable to ensure enough of these goods are provided. One of the best
+       examples of a public good is ​streetlights​.
+
+   ●   Information gaps: Homo economicus is assumed to have perfect information,
+       allowing them to make rational decisions. Similarly, firms are assumed to have
+       perfect information on their cost and revenue curves and governments are assumed
+       to know the full cost and benefits of each decision. In reality, this is not the case.
+       Therefore, economic agents do not always make rational decisions and so resources
+       are not allocated to maximise welfare. For example, ​consumers do not know the
+       quality of second hand products, such as cars, and pension schemes are complex so
+       it is difficult to know which one is best.
+
+
+
+                                 1.3.2 Externalities
+When there are asymmetric markets, the government provides information to allow people to
+make informed decisions. For example, they provide information on smoking and drink
+driving. They may force companies to provide information.
+
+Private, external and social costs and benefits:
+
+Private costs/benefits ​are the costs/benefits to the individual participating in the economic
+activity. The demand curve represents private benefits and the supply curve represents
+private costs.
+Social costs/benefits​ are the costs/benefits of the activity to society as a whole.
+External costs/benefits are the costs/benefits to a third party not involved in the economic
+activity. They are the difference between private costs/benefits and social costs/benefits.
+
+A merit good is a good with external benefits, where the benefit to society is greater than the
+benefit to the individual. These goods tend to be underprovided by the free market. A
+demerit good is a good with external costs, where the cost to society is greater than the cost
+to the individual. They tend to be over-provided by the free market.
+
+
+
+
+                            www.pmt.education
+Externalities diagram look at marginal costs and benefits. A marginal cost/benefit is the extra
+cost/benefit of producing/consuming one extra unit of the good. For example, the marginal
+private benefit (MPB) is the extra satisfaction gained by the individual from consuming one
+more of a good and the marginal social benefit (MSB) is the extra gain to society from the
+consumption of one more good. The marginal private cost (MPC) is the extra cost to the
+individual from producing one more of the good and the marginal social cost (MSC) is the
+extra cost to society from the production of one more good.
+
+
+
+Negative production externalities:
+
+
+
+
+Negative externalities of production occur when social costs are greater than private costs.
+The market left to operate freely will ignore the external costs involved in producing a good.
+It will produce where MPB=MPC, the market equilibrium, at Q1P1.​. At   ​   Q1, the costs to the
+society are higher than the benefits to society resulting in the loss of welfare equal to the
+shaded area. The external cost at Q1 is equal to the line AB. The economy should produce
+where MSB=MSC, the social optimum position, at Q2P2. The difference between marginal
+social cost and the marginal private cost increases as output grows, because external costs
+grow the more that people do something. If one person drove their car, then the external
+costs of pollution would be very small. The more people that drive cars, the larger the
+external cost of pollution. ​The noise pollution from airplanes and industrial waste are two
+examples of negative production externalities.
+
+
+
+
+                            www.pmt.education
+Positive consumption externalities:
+
+
+
+
+Positive externalities of consumption occur when social benefits are greater than social
+costs. In the diagram, the market left to its own devices will produce where MPB=MPC, it will
+not consider the benefits to society so will produce Q1P1. If the market considers all the
+benefits, it would produce where MSB=MSC at Q2P2. The failure of the market to consider
+the external benefits has led to the misallocation of resources and so there is an
+underproduction of Q1-Q2. This leads to a welfare loss of the shaded area. The line AB
+represents the external benefit. Again, the difference between marginal private benefit and
+marginal social benefit grows since external benefits grow the more people that undertake
+the activity, for example the external benefits of vaccinations are larger the more people that
+have the vaccination. ​Healthcare and education are two examples of positive consumption
+externalities.
+
+It is ​difficult to work out the size of the externality ​as it tends to be placed on value
+judgements, since it is difficult to monetise external costs. Many externalities are involved
+with ​information gaps​, as people are unaware of the full implications of their decisions.
+
+
+
+Government intervention:
+
+There are a number of ways that the government can intervene to ensure the market
+considers the external costs and benefits:
+
+   ●   Indirect taxes and subsidies: ​Taxes can be put on goods with negative externalities
+       and subsidies on goods with positive externalities. These help to internalise the
+       externalities, moving production closer to the social optimum position.
+
+   ●   Tradable pollution permits: ​These allow firms to produce up to a certain amount of
+       pollution, and can be traded amongst firms so give them choice whilst reducing the
+       total level of pollution.
+
+
+
+
+                            www.pmt.education
+   ●   Provision of the good: ​When social benefits are very high, the government may
+       decide to provide the good through taxation. They do this with healthcare and
+       education.
+
+   ●   Provision of information: Since some externalities are associated with information
+       gaps, the government can provide information to help people make informed
+       decisions and acknowledge external costs.
+
+   ●   Regulation: This could limit consumption of goods with negative externalities, for
+       example banning advertising of smoking etc.
+
+Government intervention is looked at in more detail in unit 1.4 .
+
+
+
+                                 1.3.3 Public goods
+Public goods are missing from the free market, but they offer many benefits to society. They
+have two key characteristics:
+
+   ●   They are ​non-rivalry​, which means that one person’s use of the good doesn’t stop
+       someone else from using it
+   ●   They are also ​non-excludable​, meaning that you cannot stop someone from
+       accessing the good and someone cannot chose not to access the good.
+
+A good example of a public good is streetlights as you cannot prevent someone using the
+street light nor does their use prevent someone else seeing the light. There are very few
+examples of pure public goods, which are non-rivalry and non-excludable.
+
+
+
+
+Free rider problem:
+
+   ●   This says that you ​cannot charge an individual a price for the provision of a
+       non-excludable good because someone else will gain the benefit from it without
+       paying anything. A ​free rider is someone who receives the benefits without paying
+       for it.
+
+   ●   Private sector producers will not provide public goods to people because they ​cannot
+       be sure of making a profit​, due to the non-excludability of public goods. Therefore,
+       if the provision of public goods was left to the market mechanism, the market would
+       fail and so they are ​provided by the government​ and financed through taxation.
+
+
+
+
+                            www.pmt.education
+                         1.3.4 Information gaps
+●   Symmetric information ​occurs where buyers and sellers have potential access to
+    the same information; this is perfect information. However, many decisions are based
+    on imperfect information and so economic agents are unable to make an informed
+    decision; they suffer from an ​information gap​.
+
+●   Asymmetric information is when one party has superior knowledge compared to
+    another. Usually, the seller has more information than the buyer and this means they
+    can take advantage of the other party’s lack of knowledge, by charging them a higher
+    price.
+
+●   Most ​advertising leads to information gaps as it is designed to change attitudes of
+    the consumers to encourage them to buy the good. It could cause them to think the
+    benefits are greater than they actually are. Increases in ​technology mean
+    information gaps are on the decline as people can get more information.
+
+●   Information gaps lead to market failure as there is a ​misallocation of resources
+    because people do not buy things that maximise their welfare. It means that
+    consumer demand for a good or producer supply of a good may be too high or too
+    low, and thus price and quantity are not at the social optimum position. Economic
+    agents are unable to make rational decisions due to the information gap.
+
+●   Some examples of information gaps are: ​drugs, where users do not see the long term
+    problems; pensions, where young people do not see the long term benefits of paying
+    into their pension schemes; financial services, where the suppliers have more
+    information than the consumers so abuse their customers for their own benefit (moral
+    hazard)​.
+
+
+
+
+                       www.pmt.education
+

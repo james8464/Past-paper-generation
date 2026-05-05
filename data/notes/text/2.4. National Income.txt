@@ -1,0 +1,350 @@
+Edexcel Economics (A) A-level
+ Theme 2: The UK Economy -
+  Performance and Policies
+     2.4 National Income
+               Detailed Notes
+
+
+
+
+       www.pmt.education
+                           2.4.1 National income
+
+The circular flow of income:
+
+
+
+
+  ●   The most basic form of the model shows a ​two-sector economy​: with just the
+      households and the sellers.
+         o Households ​own all the wealth and resources so provide the firms with
+            land, labour and capital in return for rent, wages, interest and profits.
+         o They use this money to buy goods and services produced by the firms.
+         o Money ​(represented by the green arrows) flows in one direction and goods,
+            services and ​factors of production​ (orange arrows) flow in another.
+         o In this model there are three ways of measuring the level of economic activity:
+            the national output, the value of the flow of goods and services from firms to
+            households; the national expenditure, the value of spending by households
+            on goods and services; and the national income; of income paid by firms to
+            households in return for land, labour, capital and enterprise.
+         o In this simple model, the ​national output=national expenditure=national
+            income​.
+
+
+  ●   However, the two-sector model is ​too simplified ​to represent the actual economy:
+        o Firstly, the ​government needs to be added: they take money out of the
+           economy through ​taxation ​(T) and add money by ​spending ​(G). If the
+           government spends more than it takes away, it can increase the flow of
+           income.
+        o Next, we add to the model by introducing ​financial services who can inject
+           money into the system through ​investment ​(I) and take money away when
+           consumers or producers ​save​ (S).
+
+
+
+
+                         www.pmt.education
+           o   Finally, ​foreign markets are added as foreigners buy British goods so
+               exports ​(X) add money to the flow but British people want to buy foreign
+               goods so ​imports (M) take money away from the flow. The difference
+               between the level of imports and exports is the balance of trade.
+
+
+Income and wealth:
+
+Wealth is a ​stock of assets whilst income is a ​flow​. Wealth is the things people own e.g.
+houses, possessions whilst income is the money they receive e.g. money from work, interest
+from savings. Countries with high levels of wealth tend to have high levels of income and
+vice versa but there is not a perfect correlation between wealth and income.
+
+
+
+                     2.4.2 Injections and withdrawals
+
+Injections and withdrawals:
+   ●   Injections are monetary additions to the economy:
+           o government spending (G),
+           o investment (I)
+           o exports (X).
+
+   ●   Withdrawals or leakages are where money is removed from the economy:
+          o taxes (T)
+          o savings (S)
+          o imports (M).
+
+   ●   If the sum of injections is greater than the sum of leakages/withdrawals, then the
+       economy will be growing whilst if injections are smaller than withdrawals, it will be
+       shrinking.
+
+   ●   In an equilibrium, injections must be equal to withdrawals and so the national income
+       remains the same.
+
+
+
+          2.4.3 Equilibrium levels of real national output
+The equilibrium position of national output is where the ​AD and AS curves intersect. If
+either AS or AD are shifted, then the equilibrium position will change. The size of this change
+will depend on the size of the shift and the elasticity of the curve which has not moved i.e.
+the elasticity of AS if AD has moved.
+
+
+
+
+                            www.pmt.education
+Short term:
+
+   ●   Both Keynesian and Classical economists agree that in the short run ​AD will be
+       downward sloping and AS will be upward sloping.
+
+
+
+
+The initial equilibrium level is P1Y1, where AD1 and SRAS1 intersect. However, the increase
+in SRAS to SRAS2 has changed the equilibrium position to P2Y2. There has been a fall in
+the price level and an increase in real GDP. A decrease in SRAS would lead to higher prices
+and lower real GDP.
+
+
+
+
+The initial equilibrium level is P1Y1 where AD1=SRAS1. The increase in the AD curve to
+AD2 has led to a change in equilibrium to P2Y2. Prices and real GDP are higher. A fall in AD
+would lead to lower prices and lower real GDP.
+
+
+
+
+                           www.pmt.education
+Long term:
+
+Classical LRAS:
+
+   ●   As the classical LRAS curve is ​perfectly inelastic (i.e. a change in price has no
+       effect on change in output), a ​shift of the AD curve would not affect long run
+       national output and would only affect price levels. Classical economists believe that
+       the economy will always return to full employment level and therefore there will be no
+       unemployment in the long run.
+
+
+
+
+They believe that the increase in AD from AD​1 to AD​2 will lead to a positive output gap. The
+economy is in long term disequilibrium as SRAS​1 and AD​2 do not intersect on the LRAS
+curve. The short-term equilibrium is P2Y2. This means that there is over-full employment
+and firms will end up bidding up wages of labour (as each of them offers a higher salary in
+order to attract the best workers) and the other factor prices. As a result, SRAS shifts to
+SRAS​2 as​ the cost of production has increased. Eventually, the economy is producing the
+same amount but now at higher prices: they are producing at Y1P3. The short run
+equilibrium has shifted and is now the same as the long run equilibrium.
+
+   ●   Classicists conclude that an increase in AD will increase price and output in the short
+       run but over time, prices will continue to rise as the economy moves back to the
+       long-term equilibrium. Therefore, output has not changed and ​the only way to
+       increase output is by increasing the LRAS​. Changes in AD without a change in
+       the LRAS are only inflationary.
+
+
+
+
+                           www.pmt.education
+The initial equilibrium is where AD1=LRAS1 at P1Y1. The increase in LRAS from LRAS1 to
+LRAS2 has caused lower prices and higher output, at P2Y2. Although there is short term
+disequilibrium, as SRAS1 does not intersect the curve at this point, they believe this will be
+closed by a shift in SRAS.
+
+   ●   A rise in long run aggregate supply is likely to lead to ​lower prices and higher
+       output​. When this is compared to a rise in AD which causes increase prices and no
+       higher output, it is clear to see why classical economists ​favour supply-side
+       policies over demand management​.
+
+
+Keynesian LRAS:
+
+   ●   Keynesian economists agree with classicists that there is full employment where the
+       LRAS is vertical. However, they believe ​there can be equilibrium at less than full
+       employment​- where the curve is horizontal. This is because they don’t believe that a
+       rise in unemployment rapidly leads to a fall in real wages.
+
+
+
+
+                           www.pmt.education
+Keynesians would agree with classicists that a shift from AD​3 to AD​4 is purely inflationary
+and would only increase price not output, as equilibrium point changes from P2Y3 to P3Y3.
+However, they believe if the economy is in a deep recession then an increase from AD​1 to
+AD​2 is
+     ​  the opposite and only increases output not price. The equilibrium changes from P1Y1
+to P1Y2. A shift of any AD curve to or from AD5 would lead to a change both in price and
+equilibrium.
+
+   ●   With a Keynesian curve, the impact of a shift in AD strongly ​depends on the
+       elasticity of the curve, and hence whether the economy is at or near full
+       employment.
+
+
+
+
+If the economy is producing at or near full employment, for example at AD1, then a rise in
+LRAS will increase output and decrease the price level. This is seen by the change in
+equilibrium from P1Y1 to P2Y2 following the shift. However, if the economy is in a deep
+recession, for example producing at AD2, then an increase in LRAS will have no effect on
+prices or output. This is shown by the fact the equilibrium is still at P3Y3.
+
+   ●   This is why Keynesians argue that ​during recessions the government needs to
+       work to increase AD​ rather than using supply side policies.
+
+
+
+Increasing aggregate demand and supply:
+
+In microeconomics, any factor which affected demand would not affect supply and vice
+versa. However, with macroeconomics, ​a factor which affects AD can easily affect AS​.
+One example of this could be investment: investment is a component of AD so an increase
+in investment will increase AD but it could also increase LRAS as firms are able to produce
+more if they have more machines etc. This may mean that the long run disequilibrium
+caused by the shift in AD will be brought back to equilibrium by an increase in LRAS rather
+
+
+
+
+                           www.pmt.education
+than a fall in AD. However, not all investment results in increased production (e.g. a firm may
+invest but then go out of business) and so the LRAS will not increase. Therefore, the extent
+to which investment increases output and lessens inflation depends on its rate of return.
+
+
+
+                                2.4.4 The Multiplier
+
+The multiplier process and ratio:
+
+   ●   The multiplier process is the idea that an increase in AD because of an ​increased
+       injection ​(exports, government spending or investment) can lead to a ​further
+       increase in national income.
+
+   ●   It is the ratio of ​the final change in income to the initial change in injection​; and
+       the figure multiplied by the original injection to find the final change in income.
+
+
+   ●   The initial injection will represent an increase in spending and will increase income
+       for someone else which will then lead to further consumption spending. For example,
+       if the government spends £100m to create jobs and withdrawals are taken into
+       account, the £100m of government spending could lead to an extra £90m being
+       spent by those who have the jobs, of which another £81m will be spent by those who
+       received the £90m and so on. In this case, the MPC is 0.9 and the multiplier is 10.
+       The extra consumption creates more jobs and increases output.
+
+
+   ●   The size of the multiplier will be determined by how much of an increase in income
+       people will spend, ​the marginal propensity to consume (MPC). The lower the
+       leakages, the higher the MPC, the bigger the multiplier.
+
+
+   ●   The multiplier is able to work due to the concept of ​circular flow​, since one person’s
+       spending is another’s income. The IMF have calculated that in developed countries,
+       the ​multiplier tends to be around 1.5 in the long run and about 1.6 for developing
+       countries​.
+
+   ●   A ​negative multiplier effect can also occur i.e. a withdrawal from the economy
+       could lead to an even further fall in income, decreasing economic growth and
+       possibly leading to a decline in the economy. This means that government plans to
+       cut deficits will lead to an even further decrease of the economy.
+
+
+
+
+                            www.pmt.education
+Effects on the economy:
+
+   ●   The multiplier means that ​growth can occur quicker​, as any injections lead to a
+       bigger increase in national income. Injections can be ​targeted at those with the
+       biggest MPC​ in order to increase the size of the multiplier.
+
+
+   ●   For example, if the government is trying to stimulate the economy they will want to
+       give the more money to people with the highest MPC: those on low incomes.
+       Governments use changes in spending to influence macroeconomic performance,
+       but it is ​impossible for the government to know the exact effect of their
+       spending​ as it is difficult to know the size of the multiplier.
+
+
+   ●   As with many things in macroeconomics, there will also be a ​time lag between the
+       increase in income and the full effect of that increase as not everyone will spend the
+       money straight away.
+
+
+   ●   The overall effect on the economy will depend on the change in AD and the elasticity
+       of the AS curve.
+
+
+
+
+Effects of the marginal propensities:
+
+Marginal propensity to consume (MPC): The increase in consumption following an
+increase in income
+
+Marginal propensity to save (MPS): ​The increase in savings following an increase in
+income
+Marginal propensity to tax (MPT):​ The increase in taxation following an increase in income
+Marginal propensity to import (MPM): The increase in imports following an increase in
+income
+
+Marginal propensity to withdraw (MPW): The increase in leakages following an increase
+in income ​MPW=MPS+MPT+MPM
+
+
+   ●   The multiplier is dependent on MPC and so can change all the time. MPC depends
+       on a range of factors; any factor that affects consumption (as a component of AD) will
+       affect the MPC, for example a change in interest rates will affect the MPC.
+
+   ●   The higher the MPC, the bigger the multiplier as this means more money of income is
+       spent so more money is transferred through the circular flow and less is withdrawn.
+
+
+
+
+                           www.pmt.education
+   ●   The other marginal propensities show how much of a change is income is withdrawn
+       from the economy i.e. how much is not spent. An increase in any of these will
+       decrease the MPC. A change in tax will affect MPC (ceteris paribus) as it will
+       increase the MPT. Any factor other than income that affects imports, for example the
+       quality of imported goods, will affect MPM and therefore MPC.
+
+Multiplier= ​ 1   ​= ​ 1
+           (1-MPC) MPW
+
+e.g. If MPC is 0.9 and the increase in government spending is £50,000, what will the
+increase in national income be?
+
+Multiplier = ​ 1 ​ =10
+            1-0.9
+Increase in national income: 50,000 x 10=£500,000
+
+
+Effects of a change in AD:
+
+   ●   The multiplier leads to an increase in AD higher than the original increase but for it to
+       have the desired effect, there must be sufficient ​spare capacity in the economy (i.e.
+       it cannot be at full output) for extra output to be produced.
+
+   ●   If the AS is perfectly inelastic, like on the classical LRAS curve, then the only impact
+       of the multiplier will be to increase price; it will not affect output in the long run,
+       although it will in the short run. The more ​elastic the curve, the smaller the effect on
+       price but the bigger the effect on output.
+
+   ●   Therefore, as with any increase in AD, the effect of the multiplier depends on the
+       shape of the AS curve and whether it is short run or long run. ​The size of the
+       increase in AD will depend on both the size of the initial increase in AD and the size
+       of the multiplier.
+
+
+In general, the multiplier will have a big effect when there is plenty of spare capacity in the
+economy and the MPW is low/MPC is higher. It has little effect on output when there is little
+spare capacity in the economy so the rising demand only creates rising prices.
+
+
+
+
+                            www.pmt.education
+

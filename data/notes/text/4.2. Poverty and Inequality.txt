@@ -1,0 +1,201 @@
+Edexcel Economics (A) A-level
+Theme 4: A Global Perspective
+   4.2 Poverty and Inequality
+                Detailed Notes
+
+
+
+
+        www.pmt.education
+                   4.2.1 Absolute and relative poverty
+
+Absolute poverty:
+
+   ●   Absolute poverty is when people are ​unable to afford sufficient necessities to
+       maintain life. The UN defines absolute poverty as ‘a condition characterised by
+       severe deprivation of basic human needs, including food, safe drinking water,
+       sanitation facilities, health, shelter, education and information.
+
+   ●   The World Bank defines anyone living on ​less than US$1.90 ​a day as living in
+       absolute poverty.
+
+   ●   Economic development tends to be correlated with absolute poverty- the more
+       developed a country, the fewer people in absolute poverty. In developed countries,
+       the government tends to intervene to attempt to provide the necessities.
+
+
+Relative poverty:
+
+   ●   Within the UK, relative poverty is a bigger issue. It will always exist in a society that is
+       not completely equal. Relative poverty is about ​people’s income compared to
+       others in their area​. Someone is said to be in relative poverty if their income falls
+       below an average income threshold for the economy; they are at the bottom end of
+       the income scale.
+
+   ●   In Britain, relative poverty is classed as those with an ​income of less than 60% of
+       median household income (£27,300 in 2017) after deducting household costs. ​One
+       in 5 people in the UK live below the official poverty line, with 14m people in relative
+       poverty​.
+
+   ●   Another way of defining relative poverty is those who cannot afford to buy goods
+       which they need to buy in order to not be considered poor according to ​social
+       norms​, for example an electric fridge or mobile phone.
+
+The ​poverty line is the minimum level of income deemed necessary to achieve an adequate
+standard of living in a given country. The ​poverty trap affects people on low incomes, when
+the tax and benefits system creates a disincentive to look for work or work for longer hours.
+By working longer hours, individuals may find they lose income due to income tax and
+national insurance contributions as well as losing some income-related state benefits.
+
+
+
+
+                            www.pmt.education
+Causes of changes:
+
+  ●   Poverty is caused by unemployment, a lack of skills, health problems and income
+      dependency.
+
+  ●   Absolute poverty tends to fall as GDP increases​, assuming that the state provides
+      support to those who are unable to benefit from a growing economy.
+
+  ●   The two main causes of growth of relative poverty are if those on ​higher salaries
+      see larger income growth than those on lower salaries or changes in ​government
+      spending and taxation​.
+
+  ●   In the UK​, relative poverty has been growing for a number of reasons:
+          o There has been growing ​inequality in wages growth​, with the highest paid
+              jobs seeing their wages increase higher than those on lower wages. Those in
+              the public sector have had low wage increases and several years of falling
+              real wages, due to the policy of austerity. ​The wages of the richest are now
+              170 times the average worker, ​compared to 60 times before.
+          o De-industrialisation has increased the number of service sector jobs which
+              tend to be lower paid.
+          o There has been a growth in ​underemployment, zero-hour contracts,
+              part-time jobs and temporary jobs, all of which mean lower wages for
+              workers.
+          o The decline of ​trade unions has left many workers unable to bargain for
+              higher wages.
+          o On top of this, ​state benefits have fallen in relative value whilst taxes have
+              become more ​regressive​.
+          o Moreover, ​long term and structural unemployment​ has risen.
+
+
+
+
+                                 4.2.2 Inequality
+Distinction between wealth and income inequality:
+
+  ● Income is a ​flow ​of earnings, whilst wealth is a ​stock of asset. Income inequality
+      refers to the extent to which income is distributed in an uneven manner.
+
+
+
+
+                          www.pmt.education
+   ● Wealth is likely to be more unequally distributed than income because assets that
+       make up wealth can be accumulated over time. People who are wealthy now can
+       generate an income from those assets and as long as income exceeds expenditure,
+       they are able to build up a stock of assets. This accumulation of wealth can occur
+       over successive generations through inheritance.
+
+
+
+Measurements of income inequality:
+Information on distribution of income and wealth tends to be presented in percentiles, deciles
+and quintiles.
+
+
+
+
+   ●   The Lorenz curve: ​This shows the cumulative percentage of the population plotted
+       against the cumulative percentage of income that those people have. A perfectly
+       equal society would have a straight line from corner to corner; the degree of the bend
+       away from that straight line indicates the degree of inequality.
+
+   ●   The Gini coefficient: ​A/(A+B)- the ratio of the area between the 45-degree line
+       and the Lorenz curve divided by the whole triangle under the 45-degree curve. It is
+       measured between 1 and 0 and the bigger the coefficient, the more unequal the
+       country.
+
+
+
+
+                           www.pmt.education
+Causes of wealth and income inequality:
+
+Within countries:
+
+   ●   Wages: Some workers simply earn more than others. This can be because of higher
+       educational achievements, because they work longer hours or because their skills
+       are more in demand. Those who aren’t in work will have a lower income than others
+       e.g. pensioners or those on benefits. Moreover, the higher the level of income, the
+       more someone can save and thus the more wealth they can build up. Those on high
+       incomes will be able to build up a stock of assets whilst those on lower incomes may
+       have to spend most of their money on everyday items like food.
+
+   ●   Wealth levels: Someone who already has a high level of wealth, whether through
+       inheritance or saving, is able to build up larger wealth than those on lower levels of
+       wealth. For example, they may undertake more risky investment which will give a
+       higher rate of return. They could buy property in London which they hope will rise in
+       price and make a huge return. Those with lower levels of wealth are unable to do so.
+       Inheritance often allows high levels of wealth. Moreover, high levels of wealth mean
+       people can earn rent and interest on their assets and so therefore see increased
+       income.
+
+   ●   Chance: Those who bought houses in the right area or bought the right assets will
+       see a huge increase in the price of their assets and hence an increase in their
+       wealth. They may have been lucky to inherit wealth. Those who chose the right sort
+       of job will have seen their income rise higher than other areas.
+
+   ●   Age: Working adults at the peak of their career will earn a higher income than those
+       who have just started. Those who are older will have had a chance to build up more
+       assets, although some of this stock may have been used up to pay for retirement.
+
+Between countries:
+
+   ●   Some countries have been held back by wars, droughts, famines and earthquakes.
+       Certain social groups may have been excluded and marginalised. Developed
+       countries tend to favour each other when trading, negotiating etc. and this helps them
+       to develop more than countries who are not involved in the agreements.
+
+
+
+Impact of economic change and development:
+
+   ●   The ​Kuznets hypothesis says that as society develops and moves from agriculture
+       to industry, inequality increases as the wages of industrial workers rises faster than
+       farmers. Then, wealth is redistributed through taxation and government spending and
+       so inequality falls.
+
+
+
+
+                           www.pmt.education
+  ●   However, ​Piketty ​discredited this theory by arguing that inequality rises as the
+      country develops as the rate of return on capital grows, so the rich get richer and
+      inequality increases.
+
+
+Significance of capitalism:
+
+  ●   A capitalist economy leads to income inequality because of ​wage differentials​.
+      Wages vary as they are based on demand and supply, and demand and supply vary
+      for different jobs.
+
+  ●   Individuals also ​own resources and thus wealth differs based on the assets they
+      own. Wealth can be passed on or gained through saving of incomes.
+
+  ●   It is argued that equality can never be achieved in a capitalist society where the
+      possibility of having more is important to encourage hard work. Without the incentive
+      to gain more, people will not try hard or take risks since they have no reason to and
+      this means the economy won’t grow; ​inequality is essential for capitalism to work​.
+
+  ●   A degree of inequality is necessary and desirable, but ​excessive inequality causes
+      problems​ with efficiency and social justice.
+
+
+
+
+                          www.pmt.education
+

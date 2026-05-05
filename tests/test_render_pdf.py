@@ -6,6 +6,7 @@ from pastpapergen.render_pdf import (
     ANSWER_LINE_GAP_PT,
     BODY_FONT_SIZE_PT,
     SECTION_A_INSTRUCTION_LINES,
+    _extra_answer_pages,
     render_question_paper,
 )
 from pastpapergen.syllabus import load_syllabus
@@ -59,7 +60,7 @@ def test_paper_1_render_uses_question_specific_pages(tmp_path):
 
     render_question_paper(blueprint, output)
 
-    assert _pdf_page_count(output) == 32
+    assert _pdf_page_count(output) == 40
 
 
 def test_paper_1_section_b_starts_near_reference_page(tmp_path):
@@ -71,6 +72,43 @@ def test_paper_1_section_b_starts_near_reference_page(tmp_path):
     render_question_paper(blueprint, output)
 
     assert _first_page_containing(output, "SECTION B") == 12
+
+
+def test_paper_1_25_mark_questions_get_multiple_answer_pages():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    question_7 = next(question for question in blueprint.questions if question.number == "7")
+
+    assert _extra_answer_pages("paper_1", question_7) >= 3
+
+
+def test_paper_1_section_b_intro_matches_reference_wording(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    section_b_page = _pdf_text(output).split("\f")[11]
+
+    assert "Read Figure 1 and the following extracts (A to C)" in section_b_page
+    assert "in the Source Booklet before answering Question 6" in section_b_page
+    assert "Write your answers in the spaces provided." in section_b_page
+    assert "You are advised to spend 1 hour on this section." in section_b_page
+
+
+def test_paper_1_section_b_prompt_page_lists_subquestions_with_marks(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    section_b_page = _pdf_text(output).split("\f")[11]
+
+    for mark in ["(5)", "(8)", "(12)", "(10)", "(15)"]:
+        assert mark in section_b_page
 
 
 def test_section_a_question_splits_written_answer_before_mcq(tmp_path):
@@ -100,6 +138,54 @@ def test_section_a_pages_include_graph_labels(tmp_path):
     assert "Costs/revenues" in text
     assert "Price" in text
     assert "Quantity" in text
+
+
+def test_section_a_question_3_not_rotated_or_garbled(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=4)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    pages = _pdf_text(output).split("\f")
+    page_6 = pages[5]
+    page_7 = pages[6]
+
+    assert page_6.index("3") < page_6.index("(a)")
+    assert "(a)" in page_6
+    assert "(b)" not in page_6
+    assert "(b)" in page_7
+    assert "Total for Question 3 = 5 marks" in page_7
+    assert page_6.count("DO NOT WRITE IN THIS AREA") <= 6
+
+
+def test_section_a_draw_question_keeps_mcq_on_same_page_before_section_blank(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=4)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    pages = _pdf_text(output).split("\f")
+
+    assert "(a) Draw" in pages[9]
+    assert "(b) Which one of the following" in pages[9]
+    assert "Total for Question 5 = 5 marks" in pages[9]
+    assert "TOTAL FOR SECTION A = 25 MARKS" in pages[9]
+    assert "QUESTION 6 BEGINS ON THE NEXT PAGE" in pages[10]
+
+
+def test_section_a_context_uses_specific_source_text(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=4)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    page_10 = _pdf_text(output).split("\f")[9]
+
+    assert "National Minimum Wage" in page_10
+    assert "A short item of economic context" not in page_10
 
 
 def _pdf_page_count(path: Path) -> int:

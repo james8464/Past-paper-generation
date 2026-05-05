@@ -1,0 +1,457 @@
+ Edexcel Economics (A) A-level
+Theme 3: Business Behaviour and
+              the
+         Labour Market
+ 3.3 Revenues, Costs and Profits
+                            Detailed Notes
+
+
+
+
+               https://bit.ly/pmt-edu-cc
+  This work by PMT                                  https://bit.ly/pmt-cc
+                        Education is licensed under CC BY-NC-ND      4.0
+
+
+                                                                            https://bit.ly/pmt-cc
+                  https://bit.ly/pmt-edu                                    https://bit.ly/pmt-cc
+                                      3.3.1 Revenue
+
+Types of revenue:
+
+Revenue is the money earned from the sale of goods and services:
+
+   ●   Total revenue (TR): The total amount of money coming into the business through
+       the sale of goods and services. quantity x price
+   ●   Average revenue (AR)​: Demand is equal to AR: ​total revenue
+                                                               output
+   ●   Marginal revenue (MR): The extra revenue that the firm earns from selling one more
+       unit of production: total revenue from ‘N’ goods- total revenue from (N-1) goods OR
+        ​change in total revenue
+            change in output
+
+
+
+Price elasticity:
+
+Some firms experience a ​perfectly elastic demand curve​; these are firms in perfect
+competition, a concept looked at in the next unit. These firms have no price setting power. In
+this case, the price received by the firm for the good is constant and so MR=AR=D. Their
+demand curve is horizontal. The TR curve is upward sloping because prices are constant
+and so the more goods that are sold, the higher the revenue made.
+
+
+
+
+                                                                                                 https://bit.ly/pmt-cc
+                           https://bit.ly/pmt-edu                                                https://bit.ly/pmt-cc
+However, for most goods, the price decreases as output increases and there is a ​downward
+sloping demand curve ​and therefore a downward sloping AR curve. The demand curve for
+the firm is the same as the firm’s AR revenue curve, as it indicates the price that consumers
+are willing to pay for each quantity sold. Firms with a downward sloping demand curve are
+firms that are in imperfect competition and so they have some ​price setting power​.
+
+
+
+
+For goods with a downward sloping demand curve, the ​elasticity of the curve is linked to
+marginal revenue​. In Theme 1, we ignored that the price elasticity of demand changes
+along the demand curve. The concept of price elasticity and revenue learnt in Theme 1 can
+be developed and connected to MR in this unit:
+
+   ●   If ​marginal revenue is positive​, when the firm sells the product at a lower price (or
+       when they increase output), total revenue still grows and so the demand curve is
+       elastic​. Up until output Q, the demand curve is elastic.
+   ●   If ​MR is negative​, TR decreases as price decreases (or output increases) and so the
+       demand curve is​ inelastic​. After output Q, the demand curve is inelastic.
+   ●   When ​MR=0​, ​TR is maximised and the demand curve is ​unitary elastic​; this is at
+       point Q.
+
+This explains why the ​TR curve is a U-shape​: at first, total revenue rises with output (when
+MR is positive) but it then begins to decline (when MR is negative).
+
+
+
+
+                                                                                                 https://bit.ly/pmt-cc
+                           https://bit.ly/pmt-edu                                                https://bit.ly/pmt-cc
+                                          3.3.2 Costs
+
+Types of costs:
+
+The economic cost of production for a firm is the ​opportunity cost of production​; the value
+that could have been generated had the resources been employed in their next best use.
+
+In the short run, at least one factor of production is fixed and cannot be changed and so
+therefore some costs are fixed whilst in the long run, all costs are variable e.g. more property
+can be used so rent becomes higher.
+
+   ●   Total cost (TC)​: The cost of producing a given level of output: fixed + variable costs
+   ●   Total fixed cost (TFC)​: Costs that do not change with output and remain constant
+       e.g. rent, machinery
+   ●   Total variable cost (TVC): ​Costs that change directly with output e.g. materials
+   ●   Average (total) cost (ATC)​: ​total costs
+                                      output
+   ●   Average fixed cost (AFC)​: ​total fixed cost
+                                        output
+   ●   Average variable cost (AVC):​ ​total variable cost
+                                            output
+   ●   Marginal cost (MC):​ The extra cost of producing one extra unit of a good:
+       total cost of producing N goods - total cost of producing (N-1) goods OR
+       change in total cost
+        change in output
+
+
+
+Short run cost curves:
+
+   ●   The short run is the length of time when ​at least one factor of production is fixed
+       and cannot be changed; this varies massively with different types of production. The
+       long run is when ​all factors of production become variable.
+
+Diminishing marginal productivity:
+
+   ●   If a factor of production is fixed, this will ​affect the business if it decides to
+       expand. More workers can be added relatively easily and this will see an increase in
+       production as machinery is used more efficiently. However, it will take a long time for
+       the factory to expand and adding more labour will mean that they will have less and
+       less impact on the amount produced as they get in the way and have no machines to
+       use. This is called the Law of Diminishing Returns or ​diminishing marginal
+       productivity​.
+
+   ●   Diminishing marginal productivity means that if a variable factor is increased when
+       another factor is fixed, there will come a point when each extra unit of the variable
+       factor will produce less extra output than the previous unit.
+
+
+
+
+                                                                                                   https://bit.ly/pmt-cc
+                            https://bit.ly/pmt-edu                                                 https://bit.ly/pmt-cc
+   ●   Marginal output will decrease as more inputs are added in the short run. This will
+       mean that the ​marginal cost of production will rise.
+
+
+Curves:
+
+
+
+
+   ●   The ​average fixed cost curve (AFC) starts high because the whole fixed costs are
+       being divided by a small output. As output is increased, AFC falls as the same
+       amount is divided by a larger number.
+   ●   The ​average total cost curve (AC/ATC) is U-Shaped due to the law of diminishing
+       marginal productivity. Costs initially fall as machinery is used more efficiently but as
+       production continues to expand, efficiency falls as machinery is overused.
+   ●   The ​average variable cost curve (AVC) is also U-Shaped, but it gets closer to ATC
+       as output increases since AFC gets smaller.
+   ●   The ​marginal cost (MC) will also be U-Shaped due to the law of diminishing
+       marginal productivity. It will initially fall as the machines are used more efficiently but
+       will rise as production continues to rise.
+
+The marginal cost line will always cut the AC line at the lowest point on the AC curve: if MC
+is below AC, then AC will continue to fall since producing one more costs less than the
+average so the average falls; but if MC is above AC, then AC will rise. Marginal costs can be
+rising whilst AC is still falling, as long as MC is still below AC.
+
+Each firm will have a different ​total cost curve. If average costs are constant, the line would
+be a straight diagonal line beginning at the origin. When output is 0, fixed costs are equal to
+total costs since there are no variable costs. Average costs can be worked out from the total
+cost curve: at point A, average costs are C/D whilst at point B, average costs are E/F.
+
+
+
+
+                                                                                                     https://bit.ly/pmt-cc
+                            https://bit.ly/pmt-edu                                                   https://bit.ly/pmt-cc
+Average costs at B are lower than at A, since the gradient of A is steeper than B. The
+tangent to the total cost curve is marginal cost.
+
+
+
+
+The relationship between short-run and long-run cost curves:
+
+Short run average cost (SRAC) curves are U-Shaped because of the law of diminishing
+returns whilst long run average cost (LRAC) curves are ​U-Shaped because of ​economies
+and diseconomies of scale.
+
+
+
+
+                                                                                         https://bit.ly/pmt-cc
+                         https://bit.ly/pmt-edu                                          https://bit.ly/pmt-cc
+The LRAC is an ‘​envelope’ for all associated SRAC curves because the LRAC is either
+equal to or below the relevant SRAC as shown in the diagram. The firm may initially be set
+up to produce a certain amount a day and have enough machinery to do so effectively. They
+may become popular and need to produce more than that this amount and in the short run
+this will cause a rise in SRAC due to the law of diminishing returns as some factors of
+production are fixed. In the long run, all factors become variable and so the SRAC curve can
+be shifted. The new SRAC curve will be lower since the firm is able to enjoy economies of
+scale. This will continue to occur until the firm begins to experience constant returns to scale
+and eventually diseconomies of scale.
+
+   ●   Up until output Q1, the firm experiences economies of scale and so sees falling
+       LRAC.
+   ●   From output Q1 until output Q2, the firm has constant returns to scale where their
+       LRAC are constant
+   ●   Any output above Q2 means the firm experiences diseconomies of scale and their
+       LRAC rises.
+
+Shifts and movement of the LRAC curve:
+
+   ●   The long run average cost curve is a boundary representing the ​minimum level of
+       average costs attainable at any given level of output. Points below the LRAC are
+       unattainable and producing above the LRAC is inefficient.
+
+   ●   Movement along the LRAC is due to a ​change in output ​which changes the average
+       cost of production due to internal economies/diseconomies of scale. A shift can occur
+       due to external economies/diseconomies, taxes or technology, which affects the cost
+       of production for a given level of output.
+
+
+
+
+            3.3.3 Economies and diseconomies of scale
+
+Economies of scale are the ​advantages of large scale production ​that enable a large
+business to produce at a lower average cost than a smaller business. As a result, the firm is
+able to experience ​increasing returns to scale where an increase in inputs by a certain
+percentage will lead to a greater percentage increase in output.
+
+
+
+
+                                                                                                   https://bit.ly/pmt-cc
+                            https://bit.ly/pmt-edu                                                 https://bit.ly/pmt-cc
+Diseconomies of scale are the ​disadvantages that arise in large businesses that reduce
+efficiency and cause average costs to rise. The firm experiences ​decreasing returns to
+scale,​ where output increases by a small percentage than inputs.
+
+Constant returns to scale is where firms increase inputs and receive an increase in output
+by the same percentage.
+
+The ​minimum efficient scale is the minimum level of output needed for a business to fully
+exploit economies of scale. It is the point where the LRAC curve first levels off and when
+constant returns to scale is first met.
+
+
+
+
+Internal economies of scale:
+
+An internal economy of scale is an advantage that a firm is able to enjoy because of a
+growth in the firm, independent of anything happening to other firms or the industry in
+general.
+
+Technical economies: ​These arise as a result of what happens to the production
+process.
+
+   ●   Specialisation: Large firms will be able to appoint specialist workers and buy
+       specialist machines which will be able to do their jobs more quickly and better than
+       machines/workers which are not specialised.
+
+   ●   Balanced teams of machines: Large firms can afford to buy a number of every kind
+       of machine for each stage of production. By combining these machines, they can
+       ensure they run each machine at its optimal level. Smaller companies may only be
+
+
+
+
+                                                                                              https://bit.ly/pmt-cc
+                          https://bit.ly/pmt-edu                                              https://bit.ly/pmt-cc
+      able to afford one machine for each stage and if one stage of production runs faster
+      than the other, machines will spend a long time turned off.
+
+  ●   Increased dimensions: This relates to the fact that if you double the size of the
+      walls you can increase the area by four times, or if you double the size of a container
+      you increase the amount it can carry by more than double. This all occurs without
+      doubling the cost.
+
+  ●   Indivisibility of Capital: Some processes require huge items of machinery and
+      investment that make it only possible for them to produce on a large scale.
+
+  ●   Research and development: ​Often it is only large firms that can afford to carry out
+      large scale research and development, which means they are able to gain a large
+      advantage over their competitor.
+
+Financial economies:
+
+  ●   Large firms have greater security because they have more assets and are therefore
+      less likely to be forced out of business overnight. As a result, it is easier for them to
+      obtain finance and interest rates will be lower due to lower risk. This makes
+      investment more accessible.
+
+Risk bearing economies:
+
+  ●   Large companies are able to operate in a range of different markets, producing
+      different products which means that if one area of business fails, their whole
+      business will not collapse.
+
+Managerial economies:
+
+  ●   Large companies can afford to appoint specialist managers in every field, who are
+      specialised and so have greater knowledge and are able to do their job better. Staff
+      represent an indivisibility and so small firms cannot employ specialist staff.
+
+Marketing and purchasing economies:
+
+  ●   Buying in bulk: Large firms are able to buy in large numbers so may be able to buy
+      their raw materials at a cheaper price than competitors.
+
+  ●   Specialisation: ​Like other areas, businesses can afford to take on specialist buyers
+      and sellers who could be more efficient due to the extra time and knowledge.
+
+  ●   Distribution: ​Large firms are able to enjoy preferential rates from transport
+      companies because they offer the company a lot of businesses. They will be
+      transporting in large batches which means that they will be able to transport in full,
+      large transporters which are cheaper per item than half-full or smaller transporters.
+      Large businesses can also establish regional distribution centres which enables them
+      to reduce transport costs by using large transporters over long distances, storing
+
+
+
+
+                                                                                                  https://bit.ly/pmt-cc
+                          https://bit.ly/pmt-edu                                                  https://bit.ly/pmt-cc
+       goods in the distribution centre and using smaller transport to take stock to individual
+       shops.
+
+
+
+External economies of scale:
+
+An external economy of scale is an advantage which arises from the growth of the industry
+within which the firm operates, independent to the firm itself. These cause the LRAC curve to
+shift downwards.
+
+Labour​:
+
+   ●   Businesses established in an area with other successful firms from the same industry
+       find that ​labour tends to come to that area if they want a job in that industry, for
+       example ​Silicon Valley​. This reduces the cost and time take to recruit.
+
+   ●   Another advantage for large industries is that ​local education and training
+       providers are more likely to develop courses to prepare people to take up jobs in
+       these businesses.
+
+   ●   Firms will be able to hire staff who have been ​trained by other businesses​, which is
+       cheaper and more efficient for the firm than training the workers themselves.
+
+Support services:
+
+   ●   Businesses who provide products or services for large businesses will naturally move
+       to the area where those businesses are based, which reduces transport cost/time
+       delays for the business.
+
+
+
+Diseconomies of scale:
+
+Workers:
+
+   ●   In a large business, people can think their efforts go unnoticed and have less chance
+       of promotion so lose motivation and work less hard. They can also lose their sense of
+       belonging and have less personal commitment and identification with the business.
+
+Geography:
+
+   ●   A firm may have to transport finished products huge distances and firms may find it
+       harder to control parts of the business which is miles away.
+
+
+
+
+                                                                                                  https://bit.ly/pmt-cc
+                           https://bit.ly/pmt-edu                                                 https://bit.ly/pmt-cc
+Change:
+
+   ●   It takes much longer and is much more difficult for a large firm to respond to change.
+
+Prices of materials:
+
+   ●   As business grows so does their demand for raw materials and equipment. Although
+       this can increase their bargaining power as they buy in bulk, an increase in demand
+       can cause prices to rise and therefore increase production costs. This could also
+       occur if the whole industry increases and so firms bid up prices.
+
+Management:
+
+   ●   Coordination and control: As a business grows, it will become progressively more
+       difficult to coordinate and keep control of all the different parts of the business.
+       Coordination of a multinational company producing different parts of a car around the
+       world is much more difficult than coordinating and controlling the work of a local
+       garage. This could lead to poorer quality to work and business decisions which don’t
+       work well together.
+
+   ●   Communication: ​Within a large business, communication can be slow and also can
+       lose accuracy because of the distance and the number of people it has to be passed
+       through.
+
+
+
+
+                                                                                                https://bit.ly/pmt-cc
+                           https://bit.ly/pmt-edu                                               https://bit.ly/pmt-cc
+       3.3.4 Normal profits, supernormal profits and losses
+.
+Profit is the difference between revenue and costs.
+
+Condition for profit maximisation:
+
+   ●    Profit is maximised when ​TR and TC are furthest apart​, with TR above TC.
+   ●    It also occurs when ​MC=MR​: this will always be true because if producing one more
+        adds more to revenues than it does to cost (i.e. MR is higher than MC), producing
+        that must have increased profit and vice versa. Sometimes, MR and MC may cross
+        at two points and thus the profit maximising point is where marginal cost rises as it
+        crosses the MR line.
+
+
+
+Normal profit, supernormal profit and losses:
+
+   ●    Normal profit is the ​return that is sufficient to keep the factors of production
+        committed to the business​. In economics, costs include the level of profit needed
+        to keep the producer in the market and to cover the opportunity cost. Therefore, if the
+        firm covers its costs it earns normal profit. This is at the point where AC=AR or
+        TC=TR.
+   ●    If the ​profit is greater than normal profit​, it is earning supernormal, abnormal or
+        monopoly. This occurs where AR>AC or TR>TC.
+   ●    A loss is where the firm ​fails to cover its costs,​ AR<AC or TR<TC.
+
+
+
+Short-run and long-run shut-down points:
+
+   ●    When a business is making a loss, it may not necessarily be the best decision to shut
+        down straight away: this ​depends on the average variable cost​.
+   ●    If ​AVC<AR then ​firms should continue production​. Each good they make will
+        generate more revenue than it cost for them to make it, and so this will help them to
+        reduce the size of the loss by covering some of the fixed cost. In this case, they
+        should only shut down when their fixed costs increase e.g. when machinery needs to
+        be replaced, when their lease is up etc.
+   ●    However, if ​AVC>AR then producing more goods will increase the loss. As a result,
+        they ​should leave the industry immediately​.
+   ●    In the long run, the firm needs to make at least normal profit for them at stay in the
+        industry. However, in the short run they should produce as long as their revenue
+        covers their variable costs. Hence, the short run shut-down point is where ​AVC=AR​.
+   ●    Firms tend to produce on the shut run point even though it does not affect their
+        losses as they do not want to let go of their workers or let down customers.
+
+
+
+
+                                                                                                  https://bit.ly/pmt-cc
+                            https://bit.ly/pmt-edu                                                https://bit.ly/pmt-cc
+In the diagram, the business will continue to produce in the short run. If they are profit
+maximising, they will produce where MR=MC at the output Q1. This will mean their price is
+P1, determined by the AR curve at this level of output, and their costs are C1, determined by
+the AC curve. They are making a loss of the shaded area. However, their AVC cost is only
+C2 and AR>AVC so they will produce in the short run.
+
+
+
+
+                                                                                                https://bit.ly/pmt-cc
+                           https://bit.ly/pmt-edu                                               https://bit.ly/pmt-cc
+
