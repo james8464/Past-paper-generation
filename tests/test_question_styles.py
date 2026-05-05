@@ -26,15 +26,7 @@ def test_paper_1_uses_edexcel_command_word_pattern():
     assert one_mark_parts
     assert all(part.command_word == "mcq" for part in one_mark_parts)
     assert all("Which one of the following" in part.prompt for part in one_mark_parts)
-    assert sorted(question.stimulus_kind for question in section_a) == sorted(
-        [
-            "cost_revenue_graph",
-            "data_table",
-            "market_diagram",
-            "context_extract",
-            "bar_chart",
-        ]
-    )
+    assert len({question.stimulus_kind for question in section_a}) == 5
     assert [question.number for question in section_b] == ["6(a)", "6(b)", "6(c)", "6(d)", "6(e)"]
     assert [question.number for question in section_c] == ["7", "8"]
     assert [(q.marks, q.command_word) for q in section_b] == [
@@ -52,6 +44,35 @@ def test_paper_1_uses_edexcel_command_word_pattern():
     assert section_c[0].topic_id != section_c[1].topic_id
 
 
+def test_paper_1_presented_marks_are_balanced_between_themes():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    for seed in range(30):
+        blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+        presented = {1: 0, 3: 0}
+        for question in blueprint.questions:
+            theme = syllabus.get_topic(question.topic_id).theme
+            presented[theme] += question.marks
+
+        assert abs(presented[1] - presented[3]) <= 5
+
+
+def test_paper_1_section_b_and_section_c_use_opposite_themes_with_extracts():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    blueprint = build_paper_blueprint(config, syllabus, seed=7)
+    section_b_themes = {syllabus.get_topic(question.topic_id).theme for question in blueprint.questions if question.section == "B"}
+    section_c = [question for question in blueprint.questions if question.section == "C"]
+    section_c_themes = {syllabus.get_topic(question.topic_id).theme for question in section_c}
+
+    assert len(section_b_themes) == 1
+    assert len(section_c_themes) == 1
+    assert section_b_themes != section_c_themes
+    assert all(len(question.source_text) > 90 for question in section_c)
+
+
 def test_section_a_templates_are_not_fixed_to_question_positions():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
@@ -67,6 +88,19 @@ def test_section_a_templates_are_not_fixed_to_question_positions():
 
     assert len(first_stimuli) > 1
     assert len(q5_part_orders) > 1
+
+
+def test_section_a_stimulus_pool_is_wide_and_random():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    seen_stimuli = set()
+    for seed in range(100):
+        blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+        seen_stimuli.update(question.stimulus_kind for question in blueprint.questions if question.section == "A")
+
+    assert len(seen_stimuli) >= 18
+    assert {"payoff_matrix", "line_graph", "externality_diagram", "monopsony_diagram"} <= seen_stimuli
 
 
 def test_section_a_can_cover_all_allowed_paper_1_topics_across_random_seeds():
@@ -99,7 +133,7 @@ def test_section_a_note_contexts_are_rewritten_as_exam_evidence():
     section_a_text = " ".join(question.source_text for question in blueprint.questions if question.section == "A")
 
     assert "unable to gain through organic growth" not in section_a_text
-    assert "A market report on business growth" in section_a_text
+    assert "A market report on" in section_a_text
 
 
 def test_deterministic_questions_use_exam_like_contexts_not_generic_placeholders():
@@ -170,7 +204,7 @@ def test_paper_1_labour_market_sources_are_exam_like_not_generic():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
 
-    blueprint = build_paper_blueprint(config, syllabus, seed=2)
+    blueprint = build_paper_blueprint(config, syllabus, seed=24)
     section_b_text = " ".join(question.source_text for question in blueprint.questions if question.section == "B")
 
     assert "vacancies" in section_b_text

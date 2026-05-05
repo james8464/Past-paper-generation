@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from datetime import date
 from pathlib import Path
 
 from reportlab.lib import colors
@@ -90,7 +91,10 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     y = box_y - 22
     pdf.setFont(FONT_BOLD, 17)
     pdf.drawString(panel_x + 14, y, "Pearson Edexcel Level 3 GCE")
-    y -= 40
+    y -= 19
+    pdf.setFont(FONT_REGULAR, 10)
+    pdf.drawString(panel_x + 14, y, _exam_date_line())
+    y -= 31
     pdf.roundRect(panel_x + 14, y, panel_w - 28, 28, 7, stroke=1, fill=0)
     pdf.setFont(FONT_BOLD, 18)
     pdf.drawString(panel_x + 22, y + 8, "Mock Examination")
@@ -171,6 +175,11 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.drawString(58, 43, "P00000A")
     pdf.drawString(58, 31, "Practice paper generated for revision use.")
     _draw_fake_barcode(pdf, width / 2 - 105, 32, "P  0  0  0  0  0  A  0  1")
+
+
+def _exam_date_line(today: date | None = None) -> str:
+    today = today or date.today()
+    return f"{today:%A} {today.day} {today:%B %Y}"
 
 
 def _draw_boxes(pdf: canvas.Canvas, x: float, y: float, count: int, size: int = 13) -> None:
@@ -266,6 +275,15 @@ def _draw_question_pages(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
                 pdf.showPage()
                 page_number += 1
                 y = _prepare_answer_page(pdf, blueprint, page_number)
+            if blueprint.paper_id in {"paper_1", "paper_2"} and question.section == "C":
+                section_c = [item for item in questions if item.section == "C"]
+                y = _draw_section_c_choice_page(pdf, section_c, y)
+                _draw_question_footer(pdf, blueprint, page_number)
+                pdf.showPage()
+                page_number += 1
+                y = _prepare_answer_page(pdf, blueprint, page_number)
+                _draw_section_c_answer_pages(pdf, blueprint, section_c, page_number, margin, y)
+                return
         if blueprint.paper_id in {"paper_1", "paper_2"} and question.section == "A":
             page_number, y = _draw_section_a_question(pdf, blueprint, question, page_number, margin, y)
             if next_question is None or next_question.section != question.section:
@@ -316,7 +334,7 @@ def _extra_answer_pages(paper_id: str, question) -> int:
         return 1
     if paper_id not in {"paper_1", "paper_2"} or question.section != "B":
         return 0
-    return {5: 1, 8: 2, 10: 2, 12: 3, 15: 4}.get(question.marks, 0)
+    return {5: 0, 8: 1, 10: 1, 12: 2, 15: 4}.get(question.marks, 0)
 
 
 def _draw_section_b_prompt_page(pdf: canvas.Canvas, questions: list, y: float) -> float:
@@ -346,6 +364,72 @@ def _draw_section_b_prompt_page(pdf: canvas.Canvas, questions: list, y: float) -
         pdf.setFillColor(colors.black)
         y -= max(1, len(prompt_lines)) * BODY_LEADING_PT + 22
     return y
+
+
+def _draw_section_c_choice_page(pdf: canvas.Canvas, section_c: list, y: float) -> float:
+    width, _ = A4
+    for index, question in enumerate(section_c):
+        if index:
+            pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+            pdf.drawString(72, y, "OR")
+            y -= 24
+        pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+        pdf.drawString(72, y, question.number)
+        pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
+        source_lines = _wrap(question.source_text, 72)[:5]
+        for line_index, line in enumerate(source_lines):
+            pdf.drawString(92, y - line_index * BODY_LEADING_PT, line)
+        y -= max(1, len(source_lines)) * BODY_LEADING_PT + 8
+        pdf.setFont(FONT_REGULAR, 8)
+        pdf.drawString(92, y, "Source: generated revision material based on the specification")
+        y -= 24
+        pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
+        prompt_lines = _wrap(question.prompt, 70)
+        for line in prompt_lines:
+            pdf.drawString(92, y, line)
+            y -= BODY_LEADING_PT
+        pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+        pdf.drawRightString(width - 76, y + 2, f"(Total for Question {question.number} = {question.marks} marks)")
+        y -= 28
+    return y
+
+
+def _draw_section_c_answer_pages(
+    pdf: canvas.Canvas,
+    blueprint: PaperBlueprint,
+    section_c: list,
+    page_number: int,
+    x: float,
+    y: float,
+) -> None:
+    width, _ = A4
+    answer_pages = 6
+    for index in range(answer_pages):
+        if index == 0:
+            pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
+            pdf.drawString(x, y, "Indicate which question you are answering by marking a cross in the box.")
+            y -= 28
+            pdf.drawString(x, y, "Chosen question number:")
+            cursor = x + 190
+            for question in section_c:
+                pdf.drawString(cursor, y, f"Question {question.number}")
+                pdf.rect(cursor + 76, y - 2, 10, 10, stroke=1, fill=0)
+                cursor += 132
+            y -= 28
+            pdf.drawString(x, y, "Write your answer here:")
+            y -= 28
+        bottom_y = 154 if index == answer_pages - 1 else 90
+        _draw_answer_lines_until(pdf, x, y, width - x, bottom_y=bottom_y)
+        if index == answer_pages - 1:
+            pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+            pdf.drawRightString(width - x, 122, "TOTAL FOR SECTION C = 25 MARKS")
+            pdf.drawRightString(width - x, 98, f"TOTAL FOR PAPER = {blueprint.total_marks} MARKS")
+            _draw_question_footer(pdf, blueprint, page_number)
+            return
+        _draw_question_footer(pdf, blueprint, page_number)
+        pdf.showPage()
+        page_number += 1
+        y = _prepare_answer_page(pdf, blueprint, page_number)
 
 
 def _draw_continuation_lines(pdf: canvas.Canvas, x: float, y: float) -> float:
@@ -538,8 +622,11 @@ def _draw_section_a_question(
     first_part = question.parts[0] if question.parts else None
     second_part = question.parts[1] if len(question.parts) > 1 else None
     stimulus_kind = question.stimulus_kind
-    if first_part and first_part.command_word == "draw" and stimulus_kind == "bar_chart":
+    if first_part and first_part.command_word == "draw":
         stimulus_kind = "context_extract"
+    if question.source_text and stimulus_kind != "context_extract":
+        y = _draw_inline_context(pdf, question.source_text, x + 20, y)
+        y -= 10
     if stimulus_kind:
         y = _draw_stimulus(pdf, stimulus_kind, x + 110, y, question.source_text)
         y -= 28
@@ -611,7 +698,7 @@ def _draw_draw_part_with_axes(pdf: canvas.Canvas, part, x: float, y: float) -> f
     pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({part.marks})")
     pdf.setFillColor(colors.black)
     y -= 18
-    return _draw_blank_answer_axes(pdf, x + 34, y, width - x - 130, 260) - 22
+    return _draw_blank_answer_axes(pdf, x + 34, y, width - x - 130, 185) - 18
 
 
 def _draw_blank_answer_axes(pdf: canvas.Canvas, x: float, y: float, w: float, h: float) -> float:
@@ -629,6 +716,14 @@ def _draw_part_prompt(pdf: canvas.Canvas, part, x: float, y: float) -> float:
     lines = _wrap(f"({part.label}) {part.prompt}", 66)
     for line in lines:
         pdf.drawString(x + 18, y, line)
+        y -= BODY_LEADING_PT
+    return y
+
+
+def _draw_inline_context(pdf: canvas.Canvas, text: str, x: float, y: float) -> float:
+    pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
+    for line in _wrap(text, 66)[:3]:
+        pdf.drawString(x, y, line)
         y -= BODY_LEADING_PT
     return y
 
@@ -757,13 +852,55 @@ def _answer_line_count(marks: int) -> int:
 
 
 def _draw_stimulus(pdf: canvas.Canvas, kind: str, x: float, y: float, context_text: str = "") -> float:
-    if kind in {"cost_revenue_graph", "market_diagram", "macro_chart", "trade_cycle"}:
+    if kind in _ECONOMICS_GRAPH_KINDS:
         return _draw_economics_graph(pdf, x, y, kind)
-    if kind == "data_table":
-        return _draw_data_table(pdf, x - 35, y)
-    if kind == "bar_chart":
+    if kind in _TABLE_KINDS:
+        return _draw_data_table(pdf, x - 35, y, kind)
+    if kind in {"bar_chart", "index_number_chart"}:
         return _draw_bar_chart(pdf, x - 10, y)
+    if kind == "line_graph":
+        return _draw_line_graph(pdf, x - 10, y)
+    if kind == "payoff_matrix":
+        return _draw_payoff_matrix(pdf, x - 25, y)
     return _draw_context_box(pdf, x - 70, y, context_text)
+
+
+_ECONOMICS_GRAPH_KINDS = {
+    "cost_revenue_graph",
+    "market_diagram",
+    "macro_chart",
+    "trade_cycle",
+    "demand_shift_graph",
+    "supply_shift_graph",
+    "tax_subsidy_diagram",
+    "externality_diagram",
+    "consumer_surplus_diagram",
+    "producer_surplus_diagram",
+    "minimum_price_diagram",
+    "maximum_price_diagram",
+    "production_possibility_frontier",
+    "perfect_competition_diagram",
+    "monopoly_diagram",
+    "monopsony_diagram",
+    "labour_market_diagram",
+    "ad_as_diagram",
+    "keynesian_as_diagram",
+    "phillips_curve",
+    "lorenz_curve",
+    "exchange_rate_diagram",
+    "tariff_diagram",
+    "money_market_diagram",
+    "laffer_curve",
+    "poverty_trap_diagram",
+}
+
+_TABLE_KINDS = {
+    "data_table",
+    "elasticity_data_table",
+    "concentration_ratio_table",
+    "balance_payments_table",
+    "inflation_index_table",
+}
 
 
 def _draw_economics_graph(pdf: canvas.Canvas, x: float, y: float, kind: str) -> float:
@@ -773,30 +910,121 @@ def _draw_economics_graph(pdf: canvas.Canvas, x: float, y: float, kind: str) -> 
     pdf.line(x, bottom, x, y - 8)
     pdf.line(x, bottom, x + 270, bottom)
     pdf.setFont(FONT_REGULAR, 11)
-    y_label = "Costs/revenues" if kind == "cost_revenue_graph" else "Price"
+    y_label = _axis_label(kind)
     pdf.drawString(x - 46, y - 20, y_label)
-    pdf.drawRightString(x + 275, bottom - 12, "Quantity")
+    pdf.drawRightString(x + 275, bottom - 12, _x_axis_label(kind))
     if kind == "cost_revenue_graph":
-        pdf.line(x, y - 24, x + 240, bottom + 10)
-        pdf.drawString(x + 245, bottom + 6, "AR")
-        pdf.line(x + 10, y - 24, x + 150, bottom - 18)
-        pdf.drawString(x + 154, bottom - 24, "MR")
-        pdf.bezier(x + 8, bottom + 30, x + 60, bottom + 10, x + 120, bottom + 55, x + 170, y - 55)
-        pdf.drawString(x + 175, y - 56, "MC")
-        pdf.bezier(x + 8, bottom + 52, x + 85, bottom + 30, x + 165, bottom + 65, x + 220, y - 76)
-        pdf.drawString(x + 224, y - 78, "AC")
+        geometry = _cost_revenue_geometry(x, y)
+        pdf.line(*geometry["ar"][0], *geometry["ar"][1])
+        pdf.drawString(geometry["ar"][1][0] + 5, geometry["ar"][1][1] - 3, "AR")
+        pdf.line(*geometry["mr"][0], *geometry["mr"][1])
+        pdf.drawString(geometry["mr"][1][0] + 5, geometry["mr"][1][1] - 3, "MR")
+        pdf.bezier(x + 12, bottom + 32, x + 62, bottom + 12, x + 120, bottom + 55, x + 172, y - 55)
+        pdf.drawString(x + 177, y - 56, "MC")
+        pdf.bezier(x + 12, bottom + 54, x + 88, bottom + 32, x + 168, bottom + 66, x + 222, y - 76)
+        pdf.drawString(x + 226, y - 78, "AC")
     elif kind == "trade_cycle":
         pdf.bezier(x + 10, bottom + 40, x + 65, y - 16, x + 140, bottom + 25, x + 250, y - 42)
         pdf.drawString(x + 180, y - 36, "Trend")
-    else:
+    elif kind == "production_possibility_frontier":
+        pdf.bezier(x + 18, y - 20, x + 132, y - 30, x + 225, bottom + 72, x + 248, bottom + 18)
+        pdf.drawString(x + 210, bottom + 74, "PPF")
+    elif kind in {"phillips_curve", "lorenz_curve", "laffer_curve", "poverty_trap_diagram"}:
+        pdf.bezier(x + 15, bottom + 18, x + 72, bottom + 90, x + 166, y - 50, x + 245, y - 34)
+        pdf.drawString(x + 210, y - 34, _curve_label(kind))
+    elif kind in {"monopsony_diagram", "labour_market_diagram"}:
         pdf.line(x + 20, bottom + 112, x + 230, bottom + 20)
-        pdf.drawString(x + 235, bottom + 18, "D")
+        pdf.drawString(x + 235, bottom + 18, "MRP")
         pdf.line(x + 25, bottom + 20, x + 230, bottom + 112)
         pdf.drawString(x + 235, bottom + 110, "S")
+        if kind == "monopsony_diagram":
+            pdf.line(x + 44, bottom + 20, x + 252, bottom + 122)
+            pdf.drawString(x + 254, bottom + 120, "MC")
+    elif kind in {"tax_subsidy_diagram", "minimum_price_diagram", "maximum_price_diagram", "tariff_diagram"}:
+        _draw_demand_supply(pdf, x, bottom)
+        pdf.setDash(2, 2)
+        pdf.line(x + 38, bottom + 76, x + 235, bottom + 76)
+        pdf.setDash()
+        pdf.drawString(x + 238, bottom + 73, "P")
+    elif kind == "externality_diagram":
+        _draw_demand_supply(pdf, x, bottom)
+        pdf.line(x + 30, bottom + 36, x + 230, bottom + 128)
+        pdf.drawString(x + 235, bottom + 126, "MSC")
+    elif kind in {"perfect_competition_diagram", "monopoly_diagram"}:
+        pdf.line(x + 20, bottom + 92, x + 238, bottom + 92)
+        pdf.drawString(x + 242, bottom + 89, "AR=MR")
+        pdf.bezier(x + 16, bottom + 30, x + 78, bottom + 16, x + 132, bottom + 72, x + 190, y - 48)
+        pdf.drawString(x + 195, y - 49, "MC")
+    elif kind in {"macro_chart", "ad_as_diagram", "keynesian_as_diagram"}:
+        pdf.line(x + 20, bottom + 112, x + 230, bottom + 20)
+        pdf.drawString(x + 235, bottom + 18, "AD")
+        pdf.line(x + 25, bottom + 20, x + 230, bottom + 112)
+        pdf.drawString(x + 235, bottom + 110, "SRAS")
+        if kind == "keynesian_as_diagram":
+            pdf.line(x + 38, bottom + 32, x + 170, bottom + 32)
+            pdf.line(x + 170, bottom + 32, x + 170, y - 16)
+            pdf.drawString(x + 176, y - 20, "LRAS")
+    else:
+        _draw_demand_supply(pdf, x, bottom)
     return bottom - 8
 
 
-def _draw_data_table(pdf: canvas.Canvas, x: float, y: float) -> float:
+def _cost_revenue_geometry(x: float, y: float) -> dict[str, object]:
+    bottom = y - 150
+    return {
+        "axis": {"left": x, "right": x + 270, "bottom": bottom, "top": y - 8},
+        "ar": ((x + 16, y - 26), (x + 238, bottom + 18)),
+        "mr": ((x + 16, y - 26), (x + 146, bottom + 16)),
+    }
+
+
+def _axis_label(kind: str) -> str:
+    if kind == "cost_revenue_graph":
+        return "Costs/revenues"
+    if kind in {"macro_chart", "ad_as_diagram", "keynesian_as_diagram"}:
+        return "Price level"
+    if kind in {"phillips_curve"}:
+        return "Inflation"
+    if kind in {"lorenz_curve"}:
+        return "% income"
+    if kind in {"production_possibility_frontier"}:
+        return "Good A"
+    if kind in {"labour_market_diagram", "monopsony_diagram"}:
+        return "Wage rate"
+    return "Price"
+
+
+def _x_axis_label(kind: str) -> str:
+    if kind in {"macro_chart", "ad_as_diagram", "keynesian_as_diagram"}:
+        return "Real output"
+    if kind == "phillips_curve":
+        return "Unemployment"
+    if kind == "lorenz_curve":
+        return "% population"
+    if kind == "production_possibility_frontier":
+        return "Good B"
+    if kind in {"labour_market_diagram", "monopsony_diagram"}:
+        return "Labour"
+    return "Quantity"
+
+
+def _curve_label(kind: str) -> str:
+    return {
+        "phillips_curve": "PC",
+        "lorenz_curve": "Lorenz curve",
+        "laffer_curve": "Laffer curve",
+        "poverty_trap_diagram": "Trap",
+    }.get(kind, "Curve")
+
+
+def _draw_demand_supply(pdf: canvas.Canvas, x: float, bottom: float) -> None:
+    pdf.line(x + 20, bottom + 112, x + 230, bottom + 20)
+    pdf.drawString(x + 235, bottom + 18, "D")
+    pdf.line(x + 25, bottom + 20, x + 230, bottom + 112)
+    pdf.drawString(x + 235, bottom + 110, "S")
+
+
+def _draw_data_table(pdf: canvas.Canvas, x: float, y: float, kind: str = "data_table") -> float:
     w = 300
     h = 86
     pdf.rect(x, y - h, w, h, stroke=1, fill=0)
@@ -822,6 +1050,45 @@ def _draw_bar_chart(pdf: canvas.Canvas, x: float, y: float) -> float:
     for i, h in enumerate([52, 80, 38, 96]):
         pdf.rect(x + 35 + i * 48, bottom, 22, h, stroke=1, fill=0)
     return bottom - 10
+
+
+def _draw_line_graph(pdf: canvas.Canvas, x: float, y: float) -> float:
+    bottom = y - 120
+    pdf.line(x, bottom, x, y - 10)
+    pdf.line(x, bottom, x + 250, bottom)
+    pdf.setFont(FONT_REGULAR, 11)
+    pdf.drawString(x - 28, y - 18, "Index")
+    pdf.drawRightString(x + 255, bottom - 12, "Year")
+    points = [(x + 28, bottom + 34), (x + 82, bottom + 58), (x + 138, bottom + 47), (x + 196, bottom + 86)]
+    for start, end in zip(points, points[1:], strict=True):
+        pdf.line(*start, *end)
+    for px, py in points:
+        pdf.circle(px, py, 2.2, stroke=1, fill=1)
+    return bottom - 10
+
+
+def _draw_payoff_matrix(pdf: canvas.Canvas, x: float, y: float) -> float:
+    w = 260
+    h = 105
+    pdf.rect(x, y - h, w, h, stroke=1, fill=0)
+    pdf.line(x + 86, y, x + 86, y - h)
+    pdf.line(x + 173, y, x + 173, y - h)
+    pdf.line(x, y - 35, x + w, y - 35)
+    pdf.line(x, y - 70, x + w, y - 70)
+    pdf.setFont(FONT_REGULAR, 10)
+    entries = [
+        ("Firm B", x + 106, y - 15),
+        ("High price", x + 95, y - 52),
+        ("Low price", x + 184, y - 52),
+        ("Firm A", x + 18, y - 52),
+        ("High price", x + 10, y - 87),
+        ("Low price", x + 96, y - 87),
+        ("8, 8", x + 112, y - 87),
+        ("4, 10", x + 196, y - 87),
+    ]
+    for text, tx, ty in entries:
+        pdf.drawString(tx, ty, text)
+    return y - h - 12
 
 
 def _draw_context_box(pdf: canvas.Canvas, x: float, y: float, context_text: str = "") -> float:
@@ -961,7 +1228,10 @@ def _draw_source_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     y = panel_y + panel_h - 34
     pdf.setFont(FONT_BOLD, 17)
     pdf.drawString(panel_x + 14, y, "Pearson Edexcel Level 3 GCE")
-    y -= 42
+    y -= 19
+    pdf.setFont(FONT_REGULAR, 10)
+    pdf.drawString(panel_x + 14, y, _exam_date_line())
+    y -= 32
     pdf.roundRect(panel_x + 14, y, panel_w - 28, 28, 7, stroke=1, fill=0)
     pdf.setFont(FONT_BOLD, 18)
     pdf.drawString(panel_x + 22, y + 8, "Mock Examination")

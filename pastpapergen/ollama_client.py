@@ -62,6 +62,7 @@ Section: {question.section}
 Marks: {question.marks}
 Command word: {question.command_word}
 Parts: {_parts_for_prompt(question)}
+Stimulus kind: {question.stimulus_kind or "none"}
 Draft intent: {question.prompt}
 
 Style rules:
@@ -72,6 +73,8 @@ Style rules:
 - 15-mark questions usually use discuss and require developed evaluation.
 - 25-mark questions usually use evaluate and must sound like an essay choice question.
 - Preserve the command word and source reference pattern from the draft intent.
+- For Section A, match the stimulus kind: graph, table, pay-off matrix, line graph or short context.
+- For Section C, write a short source-style extract in source_text; the question paper displays both choices first.
 - Do not add instructions such as 'Consider both positive and negative arguments' or 'include relevant theories'.
 - Do not include '(4 marks)' or similar mark text in any question or part text.
 - Mark scheme bullets must be specific to the generated question, using its source data, correct option, likely answer points and evaluation judgement.

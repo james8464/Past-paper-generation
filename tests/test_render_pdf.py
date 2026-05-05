@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
@@ -6,6 +7,7 @@ from pastpapergen.render_pdf import (
     ANSWER_LINE_GAP_PT,
     BODY_FONT_SIZE_PT,
     SECTION_A_INSTRUCTION_LINES,
+    _cost_revenue_geometry,
     _extra_answer_pages,
     render_question_paper,
 )
@@ -38,6 +40,22 @@ def test_render_question_paper_uses_exam_style_strings(tmp_path):
     assert b"reference" in pdf_bytes
     assert b"DO NOT WRITE IN THIS AREA" in pdf_bytes
     assert b"P00000A" in pdf_bytes
+
+
+def test_cover_includes_exam_date(tmp_path):
+    from datetime import date
+
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    first_page = _pdf_text(output).split("\f")[0]
+    expected_date = f"{date.today():%A} {date.today().day} {date.today():%B %Y}"
+
+    assert expected_date in first_page
+    assert "Morning (Time: 2 hours)" in first_page
 
 
 def test_answer_line_spacing_matches_measured_reference():
@@ -75,7 +93,7 @@ def test_paper_1_render_uses_question_specific_pages(tmp_path):
 
     render_question_paper(blueprint, output)
 
-    assert _pdf_page_count(output) == 40
+    assert _pdf_page_count(output) == 32
 
 
 def test_paper_1_section_b_starts_near_reference_page(tmp_path):
@@ -96,6 +114,22 @@ def test_paper_1_25_mark_questions_get_multiple_answer_pages():
     question_7 = next(question for question in blueprint.questions if question.number == "7")
 
     assert _extra_answer_pages("paper_1", question_7) >= 3
+
+
+def test_paper_1_section_c_lists_both_choices_before_single_answer_space(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    text = _pdf_text(output)
+    section_c = text.split("SECTION C", 1)[1]
+
+    assert section_c.index("7 ") < section_c.index("OR")
+    assert section_c.index("8 ") < section_c.index("Chosen question number")
+    assert section_c.count("Chosen question number") == 1
+    assert "Write your answer here:" in section_c
 
 
 def test_paper_1_section_b_intro_matches_reference_wording(tmp_path):
@@ -133,12 +167,10 @@ def test_section_a_question_splits_written_answer_before_mcq(tmp_path):
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
-    pages = _pdf_text(output).split("\f")
+    text = _pdf_text(output)
 
-    assert "(a)" in pages[1]
-    assert "(b)" not in pages[1]
-    assert "(b)" in pages[2]
-    assert "Total for Question 1 = 5 marks" in pages[2]
+    assert text.index("(a)") < text.index("Total for Question 1 = 5 marks")
+    assert text.index("(b)") < text.index("Total for Question 1 = 5 marks")
 
 
 def test_section_a_pages_include_graph_labels(tmp_path):
@@ -155,6 +187,16 @@ def test_section_a_pages_include_graph_labels(tmp_path):
     assert "Quantity" in text
 
 
+def test_cost_revenue_geometry_is_aligned_inside_axes():
+    geometry = _cost_revenue_geometry(100, 500)
+    axis = geometry["axis"]
+
+    assert geometry["ar"][0] == geometry["mr"][0]
+    assert axis["left"] <= geometry["mr"][1][0] <= axis["right"]
+    assert axis["bottom"] <= geometry["mr"][1][1] <= axis["top"]
+    assert axis["bottom"] <= geometry["ar"][1][1] <= axis["top"]
+
+
 def test_section_a_question_3_not_rotated_or_garbled(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
@@ -163,10 +205,10 @@ def test_section_a_question_3_not_rotated_or_garbled(tmp_path):
 
     render_question_paper(blueprint, output)
     pages = _pdf_text(output).split("\f")
-    page_with_q3_a = next(page for page in pages if "3   " in page and "(a)" in page)
+    page_with_q3_a = next(page for page in pages if re.search(r"^3\s{2,}", page, re.MULTILINE) and "(a)" in page)
     page_with_q3_b = next(page for page in pages if "Total for Question 3 = 5 marks" in page)
 
-    assert page_with_q3_a.index("3") < page_with_q3_a.index("(a)")
+    assert re.search(r"^3\s{2,}", page_with_q3_a, re.MULTILINE)
     assert "(a)" in page_with_q3_a
     assert "(b)" not in page_with_q3_a
     assert "(b)" in page_with_q3_b

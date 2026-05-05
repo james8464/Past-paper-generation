@@ -23,6 +23,7 @@ def build_paper_blueprint(
     if not topics:
         raise ValueError("No syllabus topics available for this paper.")
     essay_topic_ids = essay_capable_topic_ids({topic.id for topic in topics})
+    theme_plan = _theme_plan(config, rng)
 
     questions: list[QuestionBlueprint] = []
     absolute_question_number = 1
@@ -31,8 +32,15 @@ def build_paper_blueprint(
         choice_group_topics: dict[int, set[str]] = {}
         section_topic_ids: set[str] = set()
         section_templates = _section_templates(section, rng)
+        section_theme_targets = theme_plan.get(section.name, [])
         source_context_topic = (
-            _choose_topic(rng, _topics_matching(topics, essay_topic_ids), set())
+            _choose_topic(
+                rng,
+                _topics_for_theme(_topics_matching(topics, essay_topic_ids), section_theme_targets[0])
+                if section_theme_targets
+                else _topics_matching(topics, essay_topic_ids),
+                set(),
+            )
             if _uses_single_source_context(config.id, section.name)
             else None
         )
@@ -44,6 +52,8 @@ def build_paper_blueprint(
             if group_index is not None:
                 excluded_ids.update(choice_group_topics.get(group_index, set()))
             available_topics = _topic_pool_for_question(topics, essay_topic_ids, marks, section.name)
+            if index < len(section_theme_targets):
+                available_topics = _topics_for_theme(available_topics, section_theme_targets[index])
             topic = source_context_topic or _choose_topic(rng, available_topics, excluded_ids)
             command_word = section.command_words[index]
             number = _question_number(config.id, section.name, absolute_question_number, index)
@@ -106,12 +116,44 @@ def _choose_topic(rng: random.Random, topics, excluded_ids: set[str]):
     return rng.choice(available or topics)
 
 
+def _theme_plan(config: PaperConfig, rng: random.Random) -> dict[str, list[int]]:
+    if config.id not in {"paper_1", "paper_2"}:
+        return {}
+    themes = sorted(config.allowed_themes)
+    data_response_theme = rng.choice(themes)
+    essay_theme = next(theme for theme in themes if theme != data_response_theme)
+    section_a_themes = [data_response_theme, data_response_theme, essay_theme, essay_theme, essay_theme]
+    rng.shuffle(section_a_themes)
+    return {
+        "A": section_a_themes,
+        "B": [data_response_theme] * 5,
+        "C": [essay_theme] * 2,
+    }
+
+
+def _topics_for_theme(topics, theme: int):
+    matched = [topic for topic in topics if topic.theme == theme]
+    return matched or topics
+
+
 def _section_templates(section, rng: random.Random) -> list[tuple[list[int], list[str], str]]:
     if not section.part_marks:
         return []
-    templates = list(zip(section.part_marks, section.part_command_words, section.stimulus_kinds, strict=True))
+    templates = list(zip(section.part_marks, section.part_command_words, strict=True))
     rng.shuffle(templates)
-    return [(list(part_marks), list(part_commands), stimulus_kind) for part_marks, part_commands, stimulus_kind in templates]
+    stimulus_kinds = _selected_stimulus_kinds(section.stimulus_kinds, len(templates), rng)
+    return [
+        (list(part_marks), list(part_commands), stimulus_kinds[index])
+        for index, (part_marks, part_commands) in enumerate(templates)
+    ]
+
+
+def _selected_stimulus_kinds(stimulus_kinds: list[str], count: int, rng: random.Random) -> list[str]:
+    if not stimulus_kinds:
+        return [""] * count
+    if len(stimulus_kinds) >= count:
+        return rng.sample(stimulus_kinds, count)
+    return [rng.choice(stimulus_kinds) for _ in range(count)]
 
 
 def _section_template(section, templates: list[tuple[list[int], list[str], str]], index: int) -> tuple[list[int], list[str], str]:
@@ -306,6 +348,8 @@ def _question_prompt(
 ) -> str:
     topic = _topic_phrase(topic_title)
     if parts:
+        if parts[0].command_word == "draw":
+            return f"Read the information below about a market affected by {topic}."
         return _section_a_stem(topic, stimulus_kind)
     if section_name in {"A", "B"} and paper_id == "paper_3":
         return _source_question_prompt(command_word, marks, topic, source_reference)
@@ -317,10 +361,22 @@ def _question_prompt(
 def _section_a_stem(topic: str, stimulus_kind: str) -> str:
     if stimulus_kind == "cost_revenue_graph":
         return f"The diagram below shows cost and revenue curves for a firm considering a change in {topic}."
-    if stimulus_kind == "data_table":
+    if stimulus_kind in {"data_table", "elasticity_data_table", "concentration_ratio_table", "balance_payments_table", "inflation_index_table"}:
         return f"The table below shows selected economic data for a market affected by {topic}."
-    if stimulus_kind == "market_diagram":
+    if stimulus_kind in {"market_diagram", "demand_shift_graph", "supply_shift_graph"}:
         return f"The diagram below shows demand and supply in a market affected by {topic}."
+    if stimulus_kind in {"tax_subsidy_diagram", "externality_diagram", "minimum_price_diagram", "maximum_price_diagram"}:
+        return f"The diagram below shows a possible intervention or market failure linked to {topic}."
+    if stimulus_kind in {"consumer_surplus_diagram", "producer_surplus_diagram"}:
+        return f"The diagram below shows welfare effects in a market affected by {topic}."
+    if stimulus_kind in {"perfect_competition_diagram", "monopoly_diagram", "monopsony_diagram", "labour_market_diagram"}:
+        return f"The diagram below shows a market structure or labour market linked to {topic}."
+    if stimulus_kind in {"macro_chart", "ad_as_diagram", "keynesian_as_diagram", "trade_cycle", "phillips_curve", "lorenz_curve", "exchange_rate_diagram", "tariff_diagram", "money_market_diagram", "laffer_curve", "poverty_trap_diagram", "production_possibility_frontier"}:
+        return f"The diagram below shows an economic relationship linked to {topic}."
+    if stimulus_kind == "payoff_matrix":
+        return f"The pay-off matrix below shows possible outcomes for firms affected by {topic}."
+    if stimulus_kind in {"line_graph", "index_number_chart"}:
+        return f"The line graph below shows changes in data linked to {topic}."
     if stimulus_kind == "context_extract":
         return f"Read the information below about a market affected by {topic}."
     if stimulus_kind == "bar_chart":
@@ -376,9 +432,9 @@ def _source_text(
     index: int,
     stimulus_kind: str,
 ) -> str:
-    if section_name == "C":
-        return ""
     focus = ", ".join(points[:3]) if points else _topic_phrase(topic_title)
+    if section_name == "C":
+        return _section_c_extract(topic_id, topic_title, points, index)
     if section_name == "B":
         return _data_response_extract(topic_title, points, index)
     if section_name == "A":
@@ -478,6 +534,23 @@ def _labour_market_extract(index: int) -> str:
         ),
     ]
     return variants[min(index, len(variants) - 1)]
+
+
+def _section_c_extract(topic_id: str, topic_title: str, points: list[str], index: int) -> str:
+    note_points = note_points_for_topic(topic_id, title=topic_title, keywords=points, limit=8) if topic_id else []
+    context_point = _best_section_a_context_point(note_points)
+    focus = points[index % len(points)] if points else _topic_phrase(topic_title)
+    if context_point:
+        return (
+            f"In 2025, a UK report highlighted an issue linked to {_topic_phrase(topic_title)}. "
+            f"It stated: {context_point} Policy makers and firms may need to consider the wider "
+            f"effects on efficiency, incentives and welfare."
+        )
+    return (
+        f"In 2025, a UK report highlighted an issue linked to {_topic_phrase(topic_title)}. "
+        f"The report suggested that {focus} could affect consumers, firms and government decisions. "
+        "Economists disagreed about the likely short-run and long-run effects."
+    )
 
 
 def _section_a_context(topic_id: str, topic_title: str, focus: str, points: list[str]) -> str:
