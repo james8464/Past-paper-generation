@@ -223,10 +223,13 @@ def _compatible_stimulus_kind(
         if not suitable_ids and not any(topic.id not in excluded_ids for topic in topics):
             continue
         return kind
-    return preferred_kind
+    command_compatible = [kind for kind in stimulus_kinds if _stimulus_matches_commands(kind, part_commands)]
+    return rng.choice(command_compatible or [preferred_kind])
 
 
 def _stimulus_matches_commands(stimulus_kind: str, part_commands: list[str]) -> bool:
+    if any(command == "calculate" for command in part_commands):
+        return stimulus_kind in _CALCULATION_STIMULI
     if part_commands and part_commands[0] == "draw":
         return stimulus_kind in _DRAW_FIRST_STIMULI
     return stimulus_kind not in _DRAW_ONLY_CONTEXTS
@@ -336,6 +339,20 @@ _DRAW_FIRST_STIMULI = {
 
 
 _DRAW_ONLY_CONTEXTS = set()
+
+
+_CALCULATION_STIMULI = {
+    "ped_data_table",
+    "pes_data_table",
+    "market_share_bar_chart",
+    "data_table",
+    "elasticity_data_table",
+    "concentration_ratio_table",
+    "development_data_table",
+    "balance_payments_table",
+    "inflation_index_table",
+    "labour_inactivity_context",
+}
 
 
 _STIMULUS_TOPIC_IDS = {

@@ -115,6 +115,31 @@ def test_section_a_stimulus_pool_is_wide_and_random():
     } <= seen_stimuli
 
 
+def test_section_a_calculation_questions_only_use_visible_numeric_stimuli():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    numeric_stimuli = {
+        "ped_data_table",
+        "pes_data_table",
+        "market_share_bar_chart",
+        "data_table",
+        "elasticity_data_table",
+        "concentration_ratio_table",
+        "development_data_table",
+        "balance_payments_table",
+        "inflation_index_table",
+        "labour_inactivity_context",
+    }
+
+    for paper_id in ("paper_1", "paper_2"):
+        config = load_builtin_paper_config(paper_id)
+        for seed in range(120):
+            blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+            section_a = [question for question in blueprint.questions if question.section == "A"]
+            for question in section_a:
+                if any(part.command_word == "calculate" for part in question.parts):
+                    assert question.stimulus_kind in numeric_stimuli
+
+
 def test_paper_2_section_a_covers_reference_three_part_styles_and_macro_data():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_2")

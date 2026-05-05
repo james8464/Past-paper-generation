@@ -61,6 +61,18 @@ class DriftedPartsOllamaClient:
         }
 
 
+class OverlongSectionASourceClient:
+    def generate_json(self, prompt: str) -> dict[str, object]:
+        return {
+            "source_text": (
+                "In an online marketplace, consumers see many conflicting claims about product quality, "
+                "side effects, delivery times and prices. Some reviews are paid for by sellers, some are "
+                "out of date, and some compare products that are not close substitutes, which means the "
+                "source text is too long for a Section A context box."
+            )
+        }
+
+
 def test_generate_questions_with_ollama_keeps_source_and_mark_scheme():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
@@ -91,6 +103,16 @@ def test_generate_questions_with_ollama_strips_bracketed_marks_and_keeps_better_
     assert "[5 marks]" not in first.prompt
     assert "[4 marks]" not in first.parts[0].prompt
     assert first.source_text == blueprint.questions[0].source_text
+
+
+def test_generate_questions_with_ollama_rejects_overlong_section_a_sources():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=8464)
+
+    enriched = generate_questions_with_ollama(OverlongSectionASourceClient(), blueprint, syllabus)
+
+    assert enriched.questions[0].source_text == blueprint.questions[0].source_text
 
 
 def test_generate_questions_with_ollama_rejects_drifted_section_b_wording():

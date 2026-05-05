@@ -217,6 +217,23 @@ def test_section_a_pages_include_graph_labels(tmp_path):
     assert "Quantity" in text
 
 
+def test_market_share_chart_uses_reference_style_labels(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = next(
+        build_paper_blueprint(config, syllabus, seed=seed)
+        for seed in range(100)
+        if any(question.section == "A" and question.stimulus_kind == "market_share_bar_chart" for question in build_paper_blueprint(config, syllabus, seed=seed).questions)
+    )
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    text = _pdf_text(output)
+
+    assert "26.6%" in text
+    assert "Lloyds" in text
+
+
 def test_cost_revenue_geometry_is_aligned_inside_axes():
     geometry = _cost_revenue_geometry(100, 500)
     axis = geometry["axis"]

@@ -770,6 +770,9 @@ def _draw_section_a_question(
     if second_part and first_part and first_part.marks == 1:
         y = _draw_written_part_with_lines(pdf, second_part, x, y - 4, bottom_y=125)
         total_y = max(y + 26, 88)
+    elif second_part and second_part.command_word == "mcq":
+        y = _draw_mcq_part(pdf, second_part, x, y - 4)
+        total_y = y
     else:
         y = _draw_answer_lines(pdf, x, y - 4, width - x, 8)
         y -= 22
@@ -1218,18 +1221,30 @@ def _table_rows(kind: str) -> list[list[str]]:
 
 def _draw_bar_chart(pdf: canvas.Canvas, x: float, y: float, kind: str = "bar_chart") -> float:
     bottom = y - 120
+    max_scale = 30 if kind == "market_share_bar_chart" else max(_bar_chart_data(kind)[2])
+    if kind == "market_share_bar_chart":
+        pdf.setStrokeColor(colors.HexColor("#d2d2d2"))
+        pdf.setLineWidth(0.35)
+        for tick in range(5, 31, 5):
+            tick_y = bottom + 92 * tick / max_scale
+            pdf.line(x, tick_y, x + 250, tick_y)
+        pdf.setStrokeColor(colors.black)
+        pdf.setLineWidth(1)
     pdf.line(x, bottom, x, y - 10)
     pdf.line(x, bottom, x + 250, bottom)
     pdf.setFont(FONT_REGULAR, 11)
     y_label, x_label, values = _bar_chart_data(kind)
     pdf.drawString(x - 28, y - 18, y_label)
     pdf.drawRightString(x + 255, bottom - 12, x_label)
-    max_value = max(values)
     for i, value in enumerate(values):
-        h = 92 * value / max_value
-        pdf.rect(x + 35 + i * 48, bottom, 22, h, stroke=1, fill=0)
+        h = 92 * value / max_scale
+        pdf.setFillColor(colors.HexColor("#bdbdbd") if kind == "market_share_bar_chart" else colors.white)
+        pdf.rect(x + 30 + i * 42, bottom, 22, h, stroke=1, fill=kind == "market_share_bar_chart")
+        pdf.setFillColor(colors.black)
         pdf.setFont(FONT_REGULAR, 8)
-        pdf.drawCentredString(x + 46 + i * 48, bottom - 11, chr(65 + i))
+        pdf.drawCentredString(x + 41 + i * 42, bottom - 11, _bar_label(kind, i))
+        if kind == "market_share_bar_chart":
+            pdf.drawCentredString(x + 41 + i * 42, bottom + h + 4, f"{value:.1f}%")
     return bottom - 10
 
 
@@ -1239,6 +1254,12 @@ def _bar_chart_data(kind: str) -> tuple[str, str, list[float]]:
     if kind == "gdp_growth_bar_chart":
         return "%", "Quarter", [0.4, 0.1, -0.1, 0.1, 0.1]
     return "%", "Firms", [52, 80, 38, 96]
+
+
+def _bar_label(kind: str, index: int) -> str:
+    if kind == "market_share_bar_chart":
+        return ["Lloyds", "NatWest", "Barclays", "HSBC", "Santander"][index]
+    return chr(65 + index)
 
 
 def _draw_line_graph(pdf: canvas.Canvas, x: float, y: float, kind: str = "line_graph") -> float:
@@ -1333,58 +1354,24 @@ def render_source_booklet(
     pdf = canvas.Canvas(str(output_path), pagesize=A4, pageCompression=0)
     _draw_source_cover(pdf, blueprint)
     pdf.showPage()
-    width, height = A4
-    margin = 58
-    _draw_crop_marks(pdf)
-    pdf.setFont(FONT_REGULAR, 9)
-    pdf.drawCentredString(width / 2, height - 40, "Do not return this Booklet with the question paper.")
-    y = height - 86
-
+    first_content_page = True
     for section in _source_sections(blueprint.paper_id):
-        if y < 220:
-            pdf.showPage()
-            y = height - 58
-        pdf.setFont(FONT_BOLD, 11)
-        pdf.drawCentredString(width / 2, y, f"Sources for use with SECTION {section}")
-        y -= 18
-        pdf.setFont(FONT_REGULAR, 9)
-        prompt = _source_reading_prompt(blueprint.paper_id, section)
-        for line in _wrap(prompt, 92):
-            pdf.drawCentredString(width / 2, y, line)
-            y -= 12
-        y -= 16
-
         section_questions = [question for question in blueprint.questions if question.section == section]
-        first_question = section_questions[0].number.split("(")[0]
-        pdf.setFont(FONT_BOLD, 10)
-        pdf.drawString(margin, y, f"Question {first_question}")
-        y -= 16
-        pdf.setFont(FONT_BOLD, 10)
-        pdf.drawString(margin, y, _source_title(section_questions, syllabus))
-        y -= 24
-
-        for extract_index, question in enumerate(_extract_source_questions(section_questions)):
-            label = chr(65 + extract_index)
-            heading = f"Extract {label}"
-            pdf.setFont(FONT_BOLD, 9)
-            pdf.drawString(margin, y, heading)
-            y -= 14
-            pdf.setFont(FONT_REGULAR, 9)
-            source_text = question.source_text or (
-                "This source concerns the economic context in Question 6. It may include "
-                "evidence for analysis and evaluation."
+        extracts = _extract_source_questions(section_questions)
+        for start in range(0, len(extracts), 2):
+            if not first_content_page:
+                pdf.showPage()
+            first_content_page = False
+            _draw_source_content_page(
+                pdf,
+                blueprint,
+                syllabus,
+                section,
+                section_questions,
+                extracts[start : start + 2],
+                start_label=start,
+                include_title=start == 0,
             )
-            for line in _wrap(source_text, 92):
-                pdf.drawString(margin, y, line)
-                y -= 12
-                if y < 70:
-                    pdf.showPage()
-                    y = height - 58
-            pdf.setFont(FONT_REGULAR, 8)
-            pdf.drawString(margin, y, GENERIC_SOURCE_ATTRIBUTION)
-            y -= 12
-            y -= 12
-        y -= 12
 
     _pad_pdf_pages(pdf, 4 if blueprint.paper_id in {"paper_1", "paper_2"} else 6)
     pdf.save()
@@ -1400,6 +1387,61 @@ def _extract_source_questions(section_questions: list) -> list:
     if len(section_questions) >= 5:
         return [section_questions[0], section_questions[1], section_questions[3], section_questions[4]]
     return section_questions[:4]
+
+
+def _draw_source_content_page(
+    pdf: canvas.Canvas,
+    blueprint: PaperBlueprint,
+    syllabus: Syllabus,
+    section: str,
+    section_questions: list,
+    questions: list,
+    start_label: int = 0,
+    include_title: bool = True,
+) -> None:
+    width, height = A4
+    margin = 58
+    _draw_crop_marks(pdf)
+    y = height - 58
+    if include_title:
+        pdf.setFont(FONT_REGULAR, 9)
+        pdf.drawCentredString(width / 2, y, "Do not return this Booklet with the question paper.")
+        y -= 46
+        pdf.setFont(FONT_BOLD, 11)
+        pdf.drawCentredString(width / 2, y, f"Sources for use with SECTION {section}")
+        y -= 18
+        pdf.setFont(FONT_REGULAR, 9)
+        prompt = _source_reading_prompt(blueprint.paper_id, section)
+        for line in _wrap(prompt, 92):
+            pdf.drawCentredString(width / 2, y, line)
+            y -= 12
+        y -= 16
+        first_question = section_questions[0].number.split("(")[0]
+        pdf.setFont(FONT_BOLD, 10)
+        pdf.drawString(margin, y, f"Question {first_question}")
+        y -= 16
+        pdf.drawString(margin, y, _source_title(section_questions, syllabus))
+        y -= 24
+
+    for extract_index, question in enumerate(questions, start=start_label):
+        pdf.setFont(FONT_BOLD, 9)
+        pdf.drawString(margin, y, f"Extract {chr(65 + extract_index)}")
+        y -= 14
+        pdf.setFont(FONT_REGULAR, 9)
+        source_text = question.source_text or (
+            "This source concerns the economic context in Question 6. It may include "
+            "evidence for analysis and evaluation."
+        )
+        for line in _wrap(source_text, 92):
+            if y < 70:
+                pdf.showPage()
+                _draw_crop_marks(pdf)
+                y = height - 58
+            pdf.drawString(margin, y, line)
+            y -= 12
+        pdf.setFont(FONT_REGULAR, 8)
+        pdf.drawString(margin, y, GENERIC_SOURCE_ATTRIBUTION)
+        y -= 24
 
 
 def _draw_source_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:

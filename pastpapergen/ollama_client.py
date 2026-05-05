@@ -283,6 +283,7 @@ def _merge_source_text(generated: str, fallback: str, question: QuestionBlueprin
         or "may include evidence" in lowered
         or "|" in cleaned
         or "---" in cleaned
+        or (question.section == "A" and len(cleaned) > 220)
         or (question.section == "B" and len(cleaned) < 260)
         or (question.section == "C" and len(cleaned) < 80)
     ):
