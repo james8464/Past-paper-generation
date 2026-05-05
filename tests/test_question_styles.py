@@ -213,6 +213,47 @@ def test_paper_1_labour_market_sources_are_exam_like_not_generic():
     assert "average prices changed" not in section_b_text
 
 
+def test_section_b_sources_use_realistic_named_cases_not_generic_templates():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    blueprint = build_paper_blueprint(config, syllabus, seed=5)
+    section_b_sources = [question.source_text for question in blueprint.questions if question.section == "B"]
+    section_b_text = " ".join(section_b_sources)
+
+    assert "A UK case study on" not in section_b_text
+    assert "changed their behaviour over three years" not in section_b_text
+    assert any(name in section_b_text for name in ["Ryanair", "Tesco", "CMA", "Ofgem", "Bank of England"])
+    assert max(len(source) for source in section_b_sources) - min(len(source) for source in section_b_sources) > 80
+    assert sum(any(token in source for token in ["£", "%", "2023", "2024"]) for source in section_b_sources) >= 3
+
+
+def test_paper_2_sources_use_real_world_macro_data_and_varied_lengths():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_2")
+
+    blueprint = build_paper_blueprint(config, syllabus, seed=4)
+    section_b_sources = [question.source_text for question in blueprint.questions if question.section == "B"]
+    section_b_text = " ".join(section_b_sources)
+
+    assert "A UK case study on" not in section_b_text
+    assert any(name in section_b_text for name in ["ONS", "Bank of England", "World Bank", "IMF", "UK trade"])
+    assert max(len(source) for source in section_b_sources) - min(len(source) for source in section_b_sources) > 80
+    assert sum(any(token in source for token in ["£", "%", "$", "2023", "2024"]) for source in section_b_sources) >= 3
+
+
+def test_section_c_extracts_are_short_realistic_and_not_formulaic():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    section_c_sources = [question.source_text for question in blueprint.questions if question.section == "C"]
+
+    assert all(80 <= len(source) <= 360 for source in section_c_sources)
+    assert all("In 2025, a UK report highlighted an issue" not in source for source in section_c_sources)
+    assert any(name in " ".join(section_c_sources) for name in ["HS2", "TikTok", "Ofgem", "Low Pay Commission", "CMA"])
+
+
 def test_essay_questions_do_not_use_shallow_nature_of_economics_topic():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")

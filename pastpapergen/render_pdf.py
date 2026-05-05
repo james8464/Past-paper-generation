@@ -12,6 +12,7 @@ from reportlab.pdfgen import canvas
 
 from pastpapergen.models import PaperBlueprint, Syllabus
 from pastpapergen.notes import note_points_for_topic
+from pastpapergen.source_cases import GENERIC_SOURCE_ATTRIBUTION
 
 ANSWER_LINE_GAP_PT = 28
 BODY_FONT_SIZE_PT = 12
@@ -381,7 +382,7 @@ def _draw_section_c_choice_page(pdf: canvas.Canvas, section_c: list, y: float) -
             pdf.drawString(92, y - line_index * BODY_LEADING_PT, line)
         y -= max(1, len(source_lines)) * BODY_LEADING_PT + 8
         pdf.setFont(FONT_REGULAR, 8)
-        pdf.drawString(92, y, "Source: generated revision material based on the specification")
+        pdf.drawString(92, y, GENERIC_SOURCE_ATTRIBUTION)
         y -= 24
         pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
         prompt_lines = _wrap(question.prompt, 70)
@@ -1098,7 +1099,7 @@ def _draw_context_box(pdf: canvas.Canvas, x: float, y: float, context_text: str 
     for idx, line in enumerate(lines):
         pdf.drawCentredString(x + 170, y - idx * 12, line)
     pdf.setFont(FONT_REGULAR, 8)
-    pdf.drawCentredString(x + 170, y - len(lines) * 12 - 4, "Source: generated revision material based on the specification")
+    pdf.drawCentredString(x + 170, y - len(lines) * 12 - 4, GENERIC_SOURCE_ATTRIBUTION)
     return y - len(lines) * 12 - 20
 
 
@@ -1184,7 +1185,7 @@ def render_source_booklet(
                     pdf.showPage()
                     y = height - 58
             pdf.setFont(FONT_REGULAR, 8)
-            pdf.drawString(margin, y, "Source: generated revision material based on the specification")
+            pdf.drawString(margin, y, GENERIC_SOURCE_ATTRIBUTION)
             y -= 12
             y -= 12
         y -= 12

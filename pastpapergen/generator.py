@@ -11,6 +11,7 @@ from pastpapergen.models import (
     Syllabus,
 )
 from pastpapergen.notes import essay_capable_topic_ids, note_points_for_topic
+from pastpapergen.source_cases import data_response_extract, section_c_extract
 
 
 def build_paper_blueprint(
@@ -451,106 +452,11 @@ def _source_text(
 
 
 def _data_response_extract(topic_title: str, points: list[str], index: int) -> str:
-    if topic_title.lower() == "labour market":
-        return _labour_market_extract(index)
-    if topic_title.lower() == "market structures":
-        return _market_structures_extract(index)
-    title = _topic_phrase(topic_title)
-    first = points[0] if points else title
-    second = points[1] if len(points) > 1 else first
-    third = points[2] if len(points) > 2 else second
-    variants = [
-        (
-            f"A UK case study on {title} reports that firms and consumers changed their behaviour over three "
-            f"years. Survey evidence suggests {first} affected decisions about prices, output and resource "
-            f"allocation."
-        ),
-        (
-            f"Businesses affected by {title} reported higher costs and weaker profit margins. Some firms invested "
-            f"in technology or training to respond to {second}, but smaller firms said adjustment was slower and "
-            f"riskier than expected."
-        ),
-        (
-            f"Industry evidence shows that larger firms adapted more quickly than new entrants. Managers argued "
-            f"that access to finance, skilled labour and customer loyalty influenced the extent to which {title} "
-            f"changed market outcomes."
-        ),
-        (
-            f"Policy makers are considering whether intervention is needed. Supporters argue that action could "
-            f"improve outcomes linked to {third}; critics argue that intervention may create unintended "
-            f"consequences and reduce incentives for firms."
-        ),
-    ]
-    return variants[min(index, len(variants) - 1)]
-
-
-def _market_structures_extract(index: int) -> str:
-    variants = [
-        (
-            "UK spending on digital games rose by 17% over three years, while the average price of popular online "
-            "subscriptions increased from GBP8.99 to GBP10.99 per month. Larger firms said cloud gaming and app "
-            "stores helped them reach more consumers at lower marginal cost."
-        ),
-        (
-            "Independent developers reported that access to finance, skilled programmers and platform fees made "
-            "entry difficult. Some new firms used online distribution to grow quickly, but marketing costs remained "
-            "high in markets where consumers were loyal to established brands."
-        ),
-        (
-            "The four largest firms accounted for 68% of UK console game sales in 2024. A proposed merger would "
-            "increase the combined firm's catalogue of games, although rivals argued that exclusive content could "
-            "reduce contestability."
-        ),
-        (
-            "Competition authorities are considering whether further intervention is needed. Supporters argue that "
-            "mergers may create economies of scale and fund innovation; critics argue that market power could lead "
-            "to higher prices and less choice for consumers."
-        ),
-    ]
-    return variants[min(index, len(variants) - 1)]
-
-
-def _labour_market_extract(index: int) -> str:
-    variants = [
-        (
-            "UK hospitality firms reported vacancy rates of 7.8% in 2023, compared with 3.1% across the whole "
-            "economy. Average hourly pay rose from GBP10.42 to GBP11.44 after the National Minimum Wage increase, "
-            "but some firms reduced overtime and training budgets."
-        ),
-        (
-            "Care providers and hotels said recruitment was difficult because workers could earn similar hourly pay "
-            "in retail with more predictable hours. Some firms responded by offering flexible shifts, while others "
-            "invested in booking and cleaning technology."
-        ),
-        (
-            "The five largest employers in one regional labour market account for 58% of local vacancies. Trade "
-            "unions argued that this gives firms monopsony power, while employers said higher wage costs could "
-            "reduce the number of entry-level jobs."
-        ),
-        (
-            "The government is considering further increases in the statutory minimum wage. Supporters argue that "
-            "higher wages improve living standards and work incentives; critics argue that the effect depends on "
-            "labour productivity and the price elasticity of demand for labour."
-        ),
-    ]
-    return variants[min(index, len(variants) - 1)]
+    return data_response_extract(topic_title, points, index)
 
 
 def _section_c_extract(topic_id: str, topic_title: str, points: list[str], index: int) -> str:
-    note_points = note_points_for_topic(topic_id, title=topic_title, keywords=points, limit=8) if topic_id else []
-    context_point = _best_section_a_context_point(note_points)
-    focus = points[index % len(points)] if points else _topic_phrase(topic_title)
-    if context_point:
-        return (
-            f"In 2025, a UK report highlighted an issue linked to {_topic_phrase(topic_title)}. "
-            f"It stated: {context_point} Policy makers and firms may need to consider the wider "
-            f"effects on efficiency, incentives and welfare."
-        )
-    return (
-        f"In 2025, a UK report highlighted an issue linked to {_topic_phrase(topic_title)}. "
-        f"The report suggested that {focus} could affect consumers, firms and government decisions. "
-        "Economists disagreed about the likely short-run and long-run effects."
-    )
+    return section_c_extract(topic_title, points, index)
 
 
 def _section_a_context(topic_id: str, topic_title: str, focus: str, points: list[str]) -> str:
