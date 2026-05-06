@@ -140,6 +140,23 @@ def test_section_a_calculation_questions_only_use_visible_numeric_stimuli():
                     assert question.stimulus_kind in numeric_stimuli
 
 
+def test_section_a_calculation_prompts_are_specific_to_visible_data():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+
+    for paper_id in ("paper_1", "paper_2"):
+        config = load_builtin_paper_config(paper_id)
+        for seed in range(180):
+            blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+            for question in blueprint.questions:
+                if question.section != "A":
+                    continue
+                for part in question.parts:
+                    if part.command_word == "calculate":
+                        lowered = part.prompt.lower()
+                        assert "calculate" in lowered
+                        assert "change shown in the data" not in lowered
+
+
 def test_paper_2_section_a_covers_reference_three_part_styles_and_macro_data():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_2")
@@ -176,7 +193,7 @@ def test_section_a_can_cover_all_allowed_paper_1_topics_across_random_seeds():
     expected_topic_ids = syllabus.topic_ids_for_themes(config.allowed_themes)
 
     seen_topic_ids = set()
-    for seed in range(50):
+    for seed in range(120):
         blueprint = build_paper_blueprint(config, syllabus, seed=seed)
         seen_topic_ids.update(question.topic_id for question in blueprint.questions if question.section == "A")
 
@@ -376,6 +393,24 @@ def test_section_a_prompts_and_mcqs_use_topic_specific_language():
     assert "opportunity cost no longer exists" not in text
     assert "price elasticity of supply" in text
     assert "vacancies" in text or "barriers to entry" in text
+
+
+def test_section_a_stimuli_keep_topic_specific_exam_language():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    for seed in range(120):
+        blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+        for question in blueprint.questions:
+            if question.section != "A":
+                continue
+            combined = " ".join([question.prompt, *(part.prompt for part in question.parts)]).lower()
+            assert "market structure or labour market" not in combined
+            assert "changes in fixed costs, variable costs and profit" not in combined
+            if question.stimulus_kind == "concentration_ratio_table":
+                assert question.topic_id == "3.4"
+            if question.stimulus_kind == "elasticity_data_table":
+                assert question.topic_id == "1.2.2"
 
 
 def test_section_a_draw_questions_use_diagram_suitable_topics():

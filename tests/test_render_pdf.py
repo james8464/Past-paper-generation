@@ -287,16 +287,32 @@ def test_section_a_draw_question_moves_mcq_to_next_page_when_spacing_is_tight(tm
 
     render_question_paper(blueprint, output)
     pages = _pdf_text(output).split("\f")
-    draw_page = next(page for page in pages if "Draw a diagram" in page)
+    draw_page = next(page for page in pages if "draw a" in page.lower())
     next_page = pages[pages.index(draw_page) + 1]
 
-    assert "Draw a diagram" in draw_page
+    assert "draw a" in draw_page.lower()
     assert "which one of the following" not in draw_page.lower()
     assert "which one of the following" in next_page.lower()
     assert "Total for Question 1 = 5 marks" in next_page
     assert "TOTAL FOR SECTION A = 25 MARKS" in _pdf_text(output)
     assert "Read the following extracts (A to D) before answering Question 6" in _pdf_text(output)
     assert "QUESTION 6 BEGINS ON THE NEXT PAGE" not in _pdf_text(output)
+
+
+def test_section_a_calculate_question_moves_mcq_to_next_page_when_spacing_is_tight(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=0)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    pages = _pdf_text(output).split("\f")
+    calculate_page = next(page for page in pages if "calculate the percentage change" in page.lower())
+    next_page = pages[pages.index(calculate_page) + 1]
+
+    assert "which one of the following" not in calculate_page.lower()
+    assert "which one of the following" in next_page.lower()
+    assert "Total for Question 1 = 5 marks" in next_page
 
 
 def test_section_a_context_uses_specific_source_text(tmp_path):

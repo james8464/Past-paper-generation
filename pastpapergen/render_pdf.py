@@ -22,6 +22,7 @@ BODY_LEADING_PT = 14
 FONT_REGULAR = "ExamSans"
 FONT_BOLD = "ExamSans-Bold"
 MS_ANSWER_WRAP_CHARS = 58
+SECTION_A_FOOTER_SAFE_Y = 128
 SECTION_A_INSTRUCTION_LINES = [
     "Answer ALL questions. Write your answers in the spaces provided.",
     "Some questions must be answered with a cross in a box. If you change your mind",
@@ -737,6 +738,11 @@ def _draw_section_a_question(
 
     if first_part and first_part.command_word == "calculate" and second_part and second_part.marks == 1:
         y = _draw_calculate_part_with_working_lines(pdf, first_part, x, y)
+        if y - _estimate_mcq_height(second_part) < SECTION_A_FOOTER_SAFE_Y:
+            _draw_question_footer(pdf, blueprint, page_number)
+            pdf.showPage()
+            page_number += 1
+            y = _prepare_answer_page(pdf, blueprint, page_number)
         y = _draw_mcq_part(pdf, second_part, x, y)
         _draw_total_for_question(pdf, question.number, question.marks, x, y)
         if question.number == "5":
@@ -860,7 +866,7 @@ def _draw_blank_answer_axes(pdf: canvas.Canvas, x: float, y: float, w: float, h:
 
 def _draw_part_prompt(pdf: canvas.Canvas, part, x: float, y: float) -> float:
     pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
-    lines = _wrap(f"({part.label}) {part.prompt}", 66)
+    lines = _wrap(f"({part.label}) {_part_prompt_text(part)}", 66)
     for line in lines:
         pdf.drawString(x + 18, y, line)
         y -= BODY_LEADING_PT
@@ -900,10 +906,32 @@ def _draw_mcq_part(pdf: canvas.Canvas, part, x: float, y: float) -> float:
     return y - 4
 
 
+def _estimate_mcq_height(part) -> float:
+    question_text, choices = _mcq_choices(part)
+    height = len(_wrap(f"({part.label}) {question_text}", 66)) * BODY_LEADING_PT
+    height += 24
+    for _, text in choices:
+        height += max(1, len(_wrap(text, 58))) * BODY_LEADING_PT + 10
+    return height + 22
+
+
 def _mcq_choices(part) -> tuple[str, list[tuple[str, str]]]:
     if part.options:
-        return part.prompt, [(option.label, option.text) for option in part.options]
-    return _split_mcq_prompt(part.prompt)
+        return _part_prompt_text(part), [(option.label, option.text) for option in part.options]
+    return _split_mcq_prompt(_part_prompt_text(part))
+
+
+def _part_prompt_text(part) -> str:
+    cleaned = part.prompt.strip()
+    label = re.escape(part.label)
+    for _ in range(3):
+        updated = re.sub(rf"^(?:question\s+\d+\s*)?\(\s*{label}\s*\)\s*", "", cleaned, count=1, flags=re.IGNORECASE)
+        updated = re.sub(rf"^{label}\)\s*", "", updated, count=1, flags=re.IGNORECASE)
+        updated = re.sub(rf"^{label}\.\s*", "", updated, count=1, flags=re.IGNORECASE).strip()
+        if updated == cleaned:
+            break
+        cleaned = updated
+    return cleaned
 
 
 def _split_mcq_prompt(prompt: str) -> tuple[str, list[tuple[str, str]]]:

@@ -79,6 +79,7 @@ Style rules:
 - Do not include '(4 marks)' or similar mark text in any question or part text.
 - Mark scheme bullets must be specific to the generated question, using its source data, correct option, likely answer points and evaluation judgement.
 - If parts are supplied, rewrite each part separately rather than combining the parts into the main question text.
+- Do not start part prompts with labels such as '(a)', 'a)' or 'Question 1(a)' because labels are rendered separately.
 - If a one-mark MCQ is supplied, return four options A-D and one correct_option.
 
 Return JSON only with this schema:
@@ -201,6 +202,8 @@ def _merge_text_list(raw: object, fallback: list[str]) -> list[str]:
 
 def _clean_prompt(prompt: str) -> str:
     cleaned = re.sub(r"[\(\[]\s*\d+\s*marks?\s*[\)\]]", "", prompt, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bfigure\s+\d+\b", "the diagram", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\btable\s+\d+\b", "the table", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(
         r"\bConsider both positive and negative arguments to support your answer\.?",
         "",
@@ -215,17 +218,39 @@ def _clean_prompt(prompt: str) -> str:
 def _merge_part_prompt(part, raw: dict) -> str:
     if not isinstance(raw, dict):
         return part.prompt
-    candidate = _clean_prompt(str(raw.get("prompt") or part.prompt))
+    fallback = _strip_part_label(_clean_prompt(part.prompt), part.label)
+    if part.command_word in {"calculate", "draw"}:
+        return fallback
+    candidate = _strip_part_label(_clean_prompt(str(raw.get("prompt") or part.prompt)), part.label)
     lowered = candidate.lower()
     if part.command_word == "draw" and "explain your answer" in lowered:
-        return part.prompt
+        return fallback
     if part.command_word == "calculate" and "calculate" not in lowered:
-        return part.prompt
+        return fallback
     if part.command_word == "explain" and "explain" not in lowered:
-        return part.prompt
+        return fallback
     if part.command_word == "mcq" and "which one of the following" not in lowered:
-        return part.prompt
+        return fallback
     return candidate
+
+
+def _strip_part_label(prompt: str, label: str) -> str:
+    cleaned = prompt.strip()
+    label_pattern = re.escape(label)
+    patterns = [
+        rf"^(?:question\s+\d+\s*)?\(\s*{label_pattern}\s*\)\s*",
+        rf"^{label_pattern}\)\s*",
+        rf"^{label_pattern}\.\s*",
+    ]
+    changed = True
+    while changed:
+        changed = False
+        for pattern in patterns:
+            updated = re.sub(pattern, "", cleaned, count=1, flags=re.IGNORECASE).strip()
+            if updated != cleaned:
+                cleaned = updated
+                changed = True
+    return cleaned
 
 
 def _merge_question_text(question: QuestionBlueprint, generated: str) -> str:

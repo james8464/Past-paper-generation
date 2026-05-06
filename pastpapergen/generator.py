@@ -277,7 +277,7 @@ _EXAM_FOCUS = {
     "government intervention in markets": "a government policy affecting prices and output",
     "business growth": "a firm expanding to achieve economies of scale",
     "business objectives": "a firm choosing between profit maximisation and growth",
-    "revenues, costs and profits": "changes in fixed costs, variable costs and profit",
+    "revenues, costs and profits": "a firm's costs, revenues and profit",
     "market structures": "market concentration, barriers to entry and contestability",
     "labour market": "wage rates, vacancies and labour market flexibility",
     "measures of economic performance": "changes in inflation, GDP, unemployment and living standards",
@@ -374,6 +374,8 @@ _STIMULUS_TOPIC_IDS = {
     "multiplier_context": {"2.4", "2.2"},
     "tariff_context": {"4.1"},
     "cost_revenue_graph": {"3.2", "3.3", "3.4"},
+    "elasticity_data_table": {"1.2.2"},
+    "concentration_ratio_table": {"3.4"},
     "data_table": {"1.2.2", "1.2.3", "1.2.4", "2.1", "4.1", "4.2", "4.3"},
     "market_diagram": {"1.2.2", "1.2.3", "1.2.4", "1.3", "1.4", "3.6"},
     "demand_shift_graph": {"1.2.2", "1.2.4"},
@@ -421,9 +423,43 @@ _STIMULUS_PART_PROMPTS = {
         (None, "explain", 4): "With reference to the information above, explain the market structure of the industry shown.",
         (None, "calculate", 4): "Calculate the value of the largest firm's sales from the market share shown. You are advised to show your working.",
     },
+    "data_table": {
+        (None, "calculate", 2): "Using the data above, calculate the difference between Value A and Value B in 2023. You are advised to show your working.",
+        (None, "calculate", 4): "Using the data above, calculate the percentage change in Value A between 2021 and 2023. You are advised to show your working.",
+    },
+    "elasticity_data_table": {
+        (None, "calculate", 4): "Assume the price of cinema tickets falls by 5%. Using the PED value shown, calculate the expected percentage change in quantity demanded. You are advised to show your working.",
+    },
+    "concentration_ratio_table": {
+        (None, "calculate", 4): "Using the data above, calculate the three-firm concentration ratio. You are advised to show your working.",
+    },
+    "balance_payments_table": {
+        (None, "calculate", 2): "Using the data provided, calculate the change in exports between 2021 and 2023. You are advised to show your working.",
+        (None, "calculate", 4): "Using the data provided, calculate the trade deficit in 2023. You are advised to show your working.",
+    },
+    "inflation_index_table": {
+        (None, "calculate", 2): "Using the CPI index, calculate the index-point increase between 2021 and 2023. You are advised to show your working.",
+        (None, "calculate", 4): "Using the CPI index, calculate the percentage increase between 2021 and 2023. You are advised to show your working.",
+    },
     "cost_revenue_graph": {
         (None, "calculate", 4): "Calculate the change in total supernormal profit if the firm changes output. You are advised to show your working.",
         (None, "explain", 4): "Explain one likely reason why the firm may choose the output shown in the diagram.",
+    },
+    "perfect_competition_diagram": {
+        (None, "draw", 4): "Draw a cost and revenue diagram to show a firm in perfect competition making normal profit.",
+        (None, "explain", 4): "Explain one likely reason why firms in perfect competition may make only normal profit in the long run.",
+    },
+    "monopoly_diagram": {
+        (None, "draw", 4): "Draw a cost and revenue diagram to show a profit-maximising monopoly making supernormal profit.",
+        (None, "explain", 4): "Explain one likely reason why the firm in the diagram may earn supernormal profit.",
+    },
+    "monopsony_diagram": {
+        (None, "draw", 4): "Draw a labour market diagram to show the wage and employment level set by a monopsonist.",
+        (None, "explain", 4): "Explain one likely effect of monopsony power in a labour market.",
+    },
+    "labour_market_diagram": {
+        (None, "draw", 4): "Draw a labour market diagram to show the likely impact of an increase in demand for labour.",
+        (None, "explain", 4): "Explain one likely reason why wage rates may differ between labour markets.",
     },
     "business_objective_context": {
         (None, "draw", 4): "Draw a cost and revenue diagram to illustrate profit maximisation and revenue maximisation.",
@@ -450,6 +486,8 @@ _STIMULUS_PART_PROMPTS = {
         (None, "explain", 4): "With reference to the information above, explain what is meant by market rigging.",
     },
     "development_data_table": {
+        (None, "calculate", 2): "Using the data provided, calculate the difference in HDI between Morocco and Pakistan. You are advised to show your working.",
+        (None, "calculate", 4): "Using the data provided, calculate the difference in GDP per capita between Morocco and Pakistan. You are advised to show your working.",
         (None, "explain", 4): "With reference to the data provided, explain one limitation of using GDP to compare living standards between countries.",
     },
     "current_account_line_chart": {
@@ -464,6 +502,7 @@ _STIMULUS_PART_PROMPTS = {
         (2, "explain", 2): "Explain the likely impact of the change in the terms of trade on the current account.",
     },
     "labour_inactivity_context": {
+        (None, "calculate", 2): "Calculate the total number of inactive workers. You are advised to show your working.",
         (0, "calculate", 2): "Calculate the total number of inactive workers. You are advised to show your working.",
         (1, "explain", 2): "Explain one likely reason for the high level of inactivity in the labour force.",
     },
@@ -1026,8 +1065,14 @@ def _section_a_stem(topic_title: str, stimulus_kind: str) -> str:
         return f"The diagram below shows a possible intervention or market failure linked to {focus}."
     if stimulus_kind in {"consumer_surplus_diagram", "producer_surplus_diagram"}:
         return f"The diagram below shows welfare effects in a market affected by {focus}."
-    if stimulus_kind in {"perfect_competition_diagram", "monopoly_diagram", "monopsony_diagram", "labour_market_diagram"}:
-        return f"The diagram below shows a market structure or labour market linked to {focus}."
+    if stimulus_kind == "perfect_competition_diagram":
+        return "The diagram below shows cost and revenue curves for a firm in perfect competition."
+    if stimulus_kind == "monopoly_diagram":
+        return "The diagram below shows cost and revenue curves for a firm with monopoly power."
+    if stimulus_kind == "monopsony_diagram":
+        return "The diagram below shows a monopsonist in a labour market."
+    if stimulus_kind == "labour_market_diagram":
+        return "The diagram below shows demand for and supply of labour in a labour market."
     if stimulus_kind in {"macro_chart", "ad_as_diagram", "keynesian_as_diagram", "trade_cycle", "phillips_curve", "lorenz_curve", "exchange_rate_diagram", "tariff_diagram", "money_market_diagram", "laffer_curve", "poverty_trap_diagram", "production_possibility_frontier"}:
         return f"The diagram below shows an economic relationship linked to {focus}."
     if stimulus_kind == "payoff_matrix":

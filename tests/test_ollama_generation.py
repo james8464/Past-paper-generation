@@ -73,6 +73,26 @@ class OverlongSectionASourceClient:
         }
 
 
+class LabelledVaguePartsClient:
+    def generate_json(self, prompt: str) -> dict[str, object]:
+        return {
+            "parts": [
+                {"label": "a", "prompt": "(a) Draw a vague diagram and explain your answer."},
+                {"label": "b", "prompt": "(b) Which one of the following is correct?"},
+            ]
+        }
+
+
+class FigureReferencePartsClient:
+    def generate_json(self, prompt: str) -> dict[str, object]:
+        return {
+            "parts": [
+                {"label": "a", "prompt": "Explain one reason why the firm in Figure 1 may earn supernormal profit."},
+                {"label": "b", "prompt": "Which one of the following is correct?"},
+            ]
+        }
+
+
 def test_generate_questions_with_ollama_keeps_source_and_mark_scheme():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
@@ -136,6 +156,39 @@ def test_generate_questions_with_ollama_cleans_essay_and_draw_prompt_drift():
 
     assert "explain your answer" not in q5.parts[0].prompt.lower()
     assert "positive and negative" not in q7.prompt.lower()
+
+
+def test_generate_questions_with_ollama_strips_part_labels_and_preserves_layout_safe_draw_prompts():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=8464)
+
+    enriched = generate_questions_with_ollama(LabelledVaguePartsClient(), blueprint, syllabus)
+
+    for question in enriched.questions:
+        for part in question.parts:
+            assert not part.prompt.lower().startswith(f"({part.label})")
+            assert not part.prompt.lower().startswith(f"{part.label})")
+            if part.command_word == "draw":
+                assert "explain your answer" not in part.prompt.lower()
+
+
+def test_generate_questions_with_ollama_normalises_unlabelled_figure_references():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=12397218355689870975)
+
+    enriched = generate_questions_with_ollama(FigureReferencePartsClient(), blueprint, syllabus)
+    explain_parts = [
+        part
+        for question in enriched.questions
+        for part in question.parts
+        if part.command_word == "explain"
+    ]
+
+    assert explain_parts
+    assert all("Figure 1" not in part.prompt for part in explain_parts)
+    assert any("the diagram" in part.prompt.lower() for part in explain_parts)
 
 
 def test_generate_questions_with_ollama_preserves_fallback_mark_schemes_when_llm_returns_empty_lists():
