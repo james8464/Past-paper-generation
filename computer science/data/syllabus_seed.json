@@ -1,0 +1,92 @@
+{
+  "qualification": "AQA A-level Computer Science 7517 Paper 2",
+  "source": "AQA 7517 specification and local Paper 2 notes",
+  "topics": [
+    {
+      "id": "4.5",
+      "title": "Fundamentals of data representation",
+      "points": [
+        "Number systems, number bases and units of information",
+        "Unsigned binary, two's complement, fixed point and floating point representation",
+        "Character coding systems including ASCII and Unicode",
+        "Bitmap image storage, colour depth and resolution",
+        "Sound sampling, sampling rate, sample resolution and Nyquist theorem",
+        "Compression including run length encoding and dictionary based methods"
+      ]
+    },
+    {
+      "id": "4.6",
+      "title": "Fundamentals of computer systems",
+      "points": [
+        "Hardware, software and classification of programming languages",
+        "System software and application software",
+        "Types of program translator and stages of translation",
+        "Logic gates, truth tables and Boolean algebra",
+        "Measures to protect computer systems from malware and unauthorised access"
+      ]
+    },
+    {
+      "id": "4.7",
+      "title": "Fundamentals of computer organisation and architecture",
+      "points": [
+        "Internal hardware components of a computer",
+        "Stored program concept and the fetch-execute cycle",
+        "Processor components including ALU, control unit, registers and clock",
+        "Address, data and control buses",
+        "External hardware devices and secondary storage"
+      ]
+    },
+    {
+      "id": "4.8",
+      "title": "Consequences of uses of computing",
+      "points": [
+        "Legal, moral, cultural and ethical issues",
+        "Privacy, surveillance, environmental impact and ownership of data",
+        "Impact of automated decision making and artificial intelligence",
+        "Stakeholders affected by computer systems"
+      ]
+    },
+    {
+      "id": "4.9",
+      "title": "Fundamentals of communication and networking",
+      "points": [
+        "Communication methods, transmission media and protocols",
+        "Network topologies, packet switching and routing",
+        "The Internet, IP addressing, URLs, DNS and client-server architecture",
+        "TCP/IP stack, ports, sockets and standard application protocols",
+        "Network security threats and protection measures"
+      ]
+    },
+    {
+      "id": "4.10",
+      "title": "Fundamentals of databases",
+      "points": [
+        "Relational databases, entities, attributes, relationships and keys",
+        "Entity relationship modelling",
+        "Normalisation to reduce data redundancy and update anomalies",
+        "SQL queries including SELECT, WHERE, ORDER BY, joins and aggregate functions",
+        "Referential integrity and transaction processing"
+      ]
+    },
+    {
+      "id": "4.11",
+      "title": "Big Data",
+      "points": [
+        "Characteristics of Big Data: volume, velocity, variety and veracity",
+        "Distributed storage and processing",
+        "NoSQL databases and scaling large datasets",
+        "Data mining, pattern discovery and risks of using large datasets"
+      ]
+    },
+    {
+      "id": "4.12",
+      "title": "Fundamentals of functional programming",
+      "points": [
+        "Functional programming paradigm, immutability and stateless computation",
+        "First-class functions, higher-order functions and function composition",
+        "Map, filter, reduce and recursion",
+        "Lists, heads, tails and writing functional programs"
+      ]
+    }
+  ]
+}

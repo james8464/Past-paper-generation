@@ -10,3 +10,7 @@ graphify-out/cache/
 .DS_Store
 .idea/
 example papers/
+computer science/data/notes/raw/*
+!computer science/data/notes/raw/.gitkeep
+computer science/data/notes/text/*
+!computer science/data/notes/text/.gitkeep
