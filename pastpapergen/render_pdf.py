@@ -1465,12 +1465,16 @@ def _draw_source_content_page(
             "This source concerns the economic context in Question 6. It may include "
             "evidence for analysis and evaluation."
         )
-        for line in _wrap(source_text, 92):
+        for line_index, line in enumerate(_wrap(source_text, 88), start=1):
             if y < 70:
                 pdf.showPage()
                 _draw_crop_marks(pdf)
                 y = height - 58
             pdf.drawString(margin, y, line)
+            if line_index % 5 == 0:
+                pdf.setFont(FONT_REGULAR, 7.5)
+                pdf.drawRightString(width - 88, y + 1, str(line_index))
+                pdf.setFont(FONT_REGULAR, 9)
             y -= 12
         pdf.setFont(FONT_REGULAR, 8)
         pdf.drawString(margin, y, GENERIC_SOURCE_ATTRIBUTION)
@@ -1581,19 +1585,7 @@ def render_mark_scheme(
     pdf.setFillColor(colors.black)
     pdf.showPage()
 
-    pdf.setFont(FONT_BOLD, 13)
-    pdf.drawString(margin, height - 70, "Qualification and publication information")
-    pdf.setFont(FONT_REGULAR, 10)
-    y = height - 105
-    front_matter = [
-        "This unofficial mark scheme is generated for revision practice.",
-        f"Question Paper Log Number P00000A",
-        f"Publications Code {blueprint.paper_code.replace('/', '_')}_PRACTICE_MS",
-        "All material is generated for private revision and is not an official Pearson document.",
-    ]
-    for item in front_matter:
-        pdf.drawString(margin, y, item)
-        y -= 16
+    _draw_mark_scheme_qualification_page(pdf, blueprint, margin, height)
     pdf.showPage()
 
     pdf.setFont(FONT_BOLD, 14)
@@ -1627,11 +1619,55 @@ def render_mark_scheme(
 
 
 def _pad_mark_scheme_pages(pdf: canvas.Canvas, target_pages: int) -> None:
-    width, height = A4
     while pdf.getPageNumber() < target_pages:
         pdf.showPage()
-        pdf.setFont(FONT_BOLD, 9)
-        pdf.drawCentredString(width / 2, height / 2, "BLANK PAGE")
+
+
+def _draw_mark_scheme_qualification_page(pdf: canvas.Canvas, blueprint: PaperBlueprint, margin: float, height: float) -> None:
+    y = height - 70
+    pdf.setFont(FONT_BOLD, 14)
+    pdf.drawString(margin, y, "Edexcel and BTEC Qualifications")
+    y -= 28
+    pdf.setFont(FONT_REGULAR, 10)
+    paragraphs = [
+        (
+            "Edexcel and BTEC qualifications are awarded by Pearson. This unofficial practice "
+            "mark scheme is generated for private revision and is not an official Pearson document."
+        ),
+        (
+            "For official qualification information, students should use Pearson's published "
+            "specification, question papers and examiner materials."
+        ),
+    ]
+    for paragraph in paragraphs:
+        for line in _wrap(paragraph, 82):
+            pdf.drawString(margin, y, line)
+            y -= 13
+        y -= 12
+
+    y -= 28
+    pdf.setFont(FONT_BOLD, 12)
+    pdf.drawString(margin, y, "Pearson: helping people progress, everywhere")
+    y -= 24
+    pdf.setFont(FONT_REGULAR, 10)
+    for line in _wrap(
+        "This generated document follows the style of public mark schemes so that students can practise applying assessment objectives and levels-based descriptors.",
+        82,
+    ):
+        pdf.drawString(margin, y, line)
+        y -= 13
+
+    y = 132
+    front_matter = [
+        f"Summer {date.today().year}",
+        "Question Paper Log Number P00000A",
+        f"Publications Code {blueprint.paper_code.replace('/', '_')}_PRACTICE_MS",
+        f"All generated material in this practice publication is for revision use.",
+        f"(c) Pearson Education Ltd style referenced for private study, {date.today().year}",
+    ]
+    for item in front_matter:
+        pdf.drawString(margin, y, item)
+        y -= 14
 
 
 def _draw_ms_table_header(pdf: canvas.Canvas, y: float) -> None:
@@ -1676,6 +1712,7 @@ def _part_mark_scheme_lines(question, part, topic) -> list[str]:
             *_specific_mark_scheme_context(question, part.prompt, topic),
             "Knowledge 2, Application 2",
             "",
+            *_calculation_answer_lines(part.prompt),
             "Knowledge/Understanding: (up to 2 marks)",
             "1 mark for identifying the relevant values from the figure or data.",
             "1 mark for identifying the correct calculation or economic relationship.",
@@ -1763,6 +1800,65 @@ def _scheme_bullets(items: list[str]) -> list[str]:
     return [f"- {item}" for item in items[:8]]
 
 
+def _calculation_answer_lines(prompt: str) -> list[str]:
+    lowered = prompt.lower()
+    if "cinema tickets falls by 5%" in lowered and "ped value" in lowered:
+        return [
+            "Correct working:",
+            "5% x 1.4 = 7%",
+            "Correct answer: quantity demanded increases by 7%.",
+            "",
+        ]
+    if "three-firm concentration ratio" in lowered:
+        return [
+            "Correct working:",
+            "24.6% + 19.5% + 7.7% = 51.8%",
+            "Correct answer: the three-firm concentration ratio is 51.8%.",
+            "",
+        ]
+    if "percentage change in value a" in lowered:
+        return [
+            "Correct working:",
+            "((132 - 100) / 100) x 100 = 32%",
+            "Correct answer: Value A increased by 32%.",
+            "",
+        ]
+    if "difference between value a and value b" in lowered:
+        return [
+            "Correct working:",
+            "132 - 121 = 11",
+            "Correct answer: the difference is 11 index points.",
+            "",
+        ]
+    if "trade deficit in 2023" in lowered:
+        return [
+            "Correct working:",
+            "imports - exports = trade deficit",
+            "Correct answer: the trade deficit is the gap between imports and exports.",
+            "",
+        ]
+    if "index-point increase" in lowered:
+        return [
+            "Correct working:",
+            "2023 CPI index - 2021 CPI index",
+            "Correct answer: the increase is measured in index points.",
+            "",
+        ]
+    if "hdi" in lowered:
+        return [
+            "Correct working:",
+            "0.683 - 0.544 = 0.139",
+            "Correct answer: the difference in HDI is 0.139.",
+            "",
+        ]
+    return [
+        "Correct working:",
+        "Award marks for a valid calculation using the data shown.",
+        "Correct answer: award marks for a final answer with units or direction of change.",
+        "",
+    ]
+
+
 def _specific_mark_scheme_context(question, prompt: str, topic) -> list[str]:
     lines = [
         f"Question focus: {_sentence(prompt)}",
@@ -1772,7 +1868,7 @@ def _specific_mark_scheme_context(question, prompt: str, topic) -> list[str]:
             [
                 "",
                 "Relevant source evidence:",
-                f"- {_sentence(question.source_text)}",
+                f"- {_brief_source_evidence(question.source_text)}",
             ]
         )
     points = _specific_answer_points(question, topic)
@@ -1800,6 +1896,13 @@ def _specific_answer_points(question, topic) -> list[str]:
 def _sentence(text: str) -> str:
     cleaned = " ".join(str(text).split())
     return cleaned[:1].upper() + cleaned[1:].rstrip(".") + "." if cleaned else ""
+
+
+def _brief_source_evidence(text: str, limit: int = 260) -> str:
+    cleaned = " ".join(str(text).split())
+    if len(cleaned) > limit:
+        cleaned = cleaned[:limit].rsplit(" ", 1)[0].rstrip(",;:") + "..."
+    return _sentence(cleaned)
 
 
 def _draw_ms_row(

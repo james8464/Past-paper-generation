@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
@@ -40,6 +41,19 @@ def test_source_booklet_has_figure_extracts_and_source_attributions(tmp_path):
     assert "Extract D" in text
     assert "Source: adapted from public reports and economic data" in text
     assert "constructed economic data" not in text
+
+
+def test_source_booklet_extracts_have_reference_style_line_numbers(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "source.pdf"
+
+    render_source_booklet(blueprint, syllabus, output)
+    text = _pdf_text(output)
+
+    assert re.search(r"\b5\b", text)
+    assert re.search(r"\b10\b", text)
 
 
 def test_source_booklet_for_paper_3_uses_both_sections(tmp_path):

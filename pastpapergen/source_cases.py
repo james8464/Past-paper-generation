@@ -8,7 +8,7 @@ def data_response_extract(topic_title: str, points: list[str], index: int) -> st
     cases = _DATA_RESPONSE_CASES.get(title)
     if cases is None:
         cases = _macro_fallback(topic_title, points) if _is_macro_title(title) else _micro_fallback(topic_title, points)
-    return cases[index % len(cases)]
+    return _article_length_extract(cases[index % len(cases)], topic_title, points)
 
 
 def section_c_extract(topic_title: str, points: list[str], index: int) -> str:
@@ -23,6 +23,40 @@ def _normalise(title: str) -> str:
 
 def _is_macro_title(title: str) -> bool:
     return title.startswith(("measures", "aggregate", "national", "economic growth", "macroeconomic", "international", "poverty", "emerging", "financial", "role of"))
+
+
+def _article_length_extract(text: str, topic_title: str, points: list[str]) -> str:
+    first = points[0] if points else topic_title.lower()
+    second = points[1] if len(points) > 1 else first
+    third = points[2] if len(points) > 2 else second
+    additions = [
+        (
+            f"Analysts said the outcome would depend on {first}, {second} and the speed at which "
+            "households, firms or policy makers adjusted their behaviour."
+        ),
+        (
+            f"The short-run effect may differ from the long-run effect if contracts, spare capacity, "
+            f"expectations or access to finance influence decisions linked to {third}."
+        ),
+        (
+            "Industry representatives said that higher costs, changing demand and uncertainty over future "
+            "policy made it difficult to predict whether prices, output or investment would adjust first."
+        ),
+        (
+            "Consumer groups argued that the distribution of costs and benefits mattered because lower-income "
+            "households and smaller firms may have less ability to absorb sudden changes."
+        ),
+        (
+            "Economists noted that candidates should distinguish between private incentives and wider social "
+            "effects when judging whether the outcome improves economic welfare."
+        ),
+    ]
+    expanded = text
+    for addition in additions:
+        if len(expanded) >= 760:
+            break
+        expanded = f"{expanded} {addition}"
+    return expanded
 
 
 _DATA_RESPONSE_CASES: dict[str, list[str]] = {

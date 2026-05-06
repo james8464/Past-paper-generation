@@ -73,6 +73,20 @@ class OverlongSectionASourceClient:
         }
 
 
+class ShortSectionBSourceClient:
+    def generate_json(self, prompt: str) -> dict[str, object]:
+        return {
+            "question_text": "With reference to Extract A, explain one likely impact of externalities in this market.",
+            "source_text": (
+                "A short extract gives some context about market failure and possible government intervention. "
+                "It mentions costs, consumers and firms, but it is too brief to look like a full data-response source."
+                " The regulator is considering a tax, a subsidy or direct rules to change incentives, while firms "
+                "argue that higher costs could be passed on to consumers. The final effect depends on elasticity, "
+                "information and whether the intervention is targeted accurately."
+            ),
+        }
+
+
 class LabelledVaguePartsClient:
     def generate_json(self, prompt: str) -> dict[str, object]:
         return {
@@ -133,6 +147,17 @@ def test_generate_questions_with_ollama_rejects_overlong_section_a_sources():
     enriched = generate_questions_with_ollama(OverlongSectionASourceClient(), blueprint, syllabus)
 
     assert enriched.questions[0].source_text == blueprint.questions[0].source_text
+
+
+def test_generate_questions_with_ollama_rejects_short_section_b_sources():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+
+    enriched = generate_questions_with_ollama(ShortSectionBSourceClient(), blueprint, syllabus)
+    section_b = [question for question in enriched.questions if question.section == "B"]
+
+    assert min(len(question.source_text) for question in section_b) >= 700
 
 
 def test_generate_questions_with_ollama_rejects_drifted_section_b_wording():

@@ -73,6 +73,16 @@ def test_paper_1_section_b_and_section_c_use_opposite_themes_with_extracts():
     assert all(len(question.source_text) > 90 for question in section_c)
 
 
+def test_section_b_sources_are_article_length_for_source_booklets():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    for seed in range(80):
+        blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+        section_b_sources = [question.source_text for question in blueprint.questions if question.section == "B"]
+        assert min(len(source) for source in section_b_sources) >= 360
+
+
 def test_section_a_templates_are_not_fixed_to_question_positions():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")

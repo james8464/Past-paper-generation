@@ -2,7 +2,7 @@ from pathlib import Path
 
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
-from pastpapergen.render_pdf import render_mark_scheme
+from pastpapergen.render_pdf import _mark_scheme_rows, _ms_row_height, render_mark_scheme
 from pastpapergen.syllabus import load_syllabus
 
 
@@ -48,6 +48,56 @@ def test_mark_scheme_has_subquestion_tables_mcq_explanations_and_levels(tmp_path
     assert "Level 3" in text
     assert "Level 4" in text
     assert "Level 5" in text
+
+
+def test_mark_scheme_front_matter_matches_reference_structure(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, syllabus, output)
+
+    text = _pdf_text(output)
+    assert "Edexcel and BTEC Qualifications" in text
+    assert "Pearson: helping people progress, everywhere" in text
+    assert "Question Paper Log Number" in text
+    assert "Publications Code" in text
+    assert "Pearson Education Ltd" in text
+
+
+def test_mark_scheme_does_not_print_fake_blank_page_labels(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, syllabus, output)
+
+    assert "BLANK PAGE" not in _pdf_text(output)
+
+
+def test_mark_scheme_calculation_rows_include_specific_working(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=12397218355689870975)
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, syllabus, output)
+
+    text = _pdf_text(output)
+    assert "5% x 1.4 = 7%" in text
+    assert "quantity demanded increases by 7%" in text.lower()
+
+
+def test_mark_scheme_rows_fit_within_single_page_after_long_extracts():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=12397218355689870975)
+
+    row_heights = [_ms_row_height(row["answer_lines"]) for row in _mark_scheme_rows(blueprint, syllabus)]
+
+    assert max(row_heights) <= 720
 
 
 def test_mark_scheme_mcq_explanations_are_option_specific(tmp_path):
