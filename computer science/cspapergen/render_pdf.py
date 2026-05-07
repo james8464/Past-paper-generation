@@ -20,6 +20,7 @@ BOTTOM = 58
 RAIL_X = 516
 LINE_GAP = 20
 AQA_A4 = (595.32, 841.92)
+EXTRA_ANSWER_PAGES = 7
 
 
 def _register_fonts() -> None:
@@ -57,7 +58,7 @@ def render_question_paper(blueprint: PaperBlueprint, output_path: Path, *, inclu
     pdf.setFont(FONT_BOLD, 10)
     pdf.drawCentredString(282, state.y - 20, "END OF QUESTIONS")
     state.y -= 80
-    for _index in range(4):
+    for _index in range(EXTRA_ANSWER_PAGES):
         _draw_extra_answer_page(pdf, state.page + 1)
         state.page += 1
     pdf.save()
@@ -240,8 +241,7 @@ def _render_question(pdf: canvas.Canvas, question: Question, state: _QuestionRen
 
 def _render_part(pdf: canvas.Canvas, question: Question, part: QuestionPart, state: _QuestionRenderState) -> _QuestionRenderState:
     line_count = _answer_line_count(part)
-    estimated = 58 + line_count * LINE_GAP
-    state = _ensure_space(pdf, state, estimated)
+    state = _ensure_space(pdf, state, 92)
     _draw_question_ref(pdf, 52, state.y + 1, question.number, part.label)
     pdf.setFont(FONT, 10.5)
     prompt_y = state.y
@@ -260,15 +260,13 @@ def _render_part(pdf: canvas.Canvas, question: Question, part: QuestionPart, sta
             pdf.drawString(160, state.y, option.text)
             state.y -= 20
     elif part.answer_unit:
-        _answer_lines(pdf, state.y, line_count)
-        state.y -= line_count * LINE_GAP
+        state = _answer_lines_paginated(pdf, state, line_count)
         pdf.setFont(FONT, 10)
         pdf.drawString(338, state.y + LINE_GAP, "Answer")
         pdf.line(382, state.y + LINE_GAP - 2, 455, state.y + LINE_GAP - 2)
         pdf.drawString(460, state.y + LINE_GAP, part.answer_unit)
     else:
-        _answer_lines(pdf, state.y, line_count)
-        state.y -= line_count * LINE_GAP
+        state = _answer_lines_paginated(pdf, state, line_count)
     state.y -= 14
     return state
 
@@ -423,6 +421,22 @@ def _answer_lines(pdf: canvas.Canvas, y: float, count: int) -> None:
         line_y = y - index * LINE_GAP
         pdf.line(118, line_y, 492, line_y)
     pdf.setStrokeColor(colors.black)
+
+
+def _answer_lines_paginated(pdf: canvas.Canvas, state: _QuestionRenderState, count: int) -> _QuestionRenderState:
+    remaining = count
+    while remaining:
+        available = int((state.y - (BOTTOM + 60)) // LINE_GAP)
+        if available <= 0:
+            state = _new_question_page(pdf, state)
+            continue
+        lines = min(remaining, available)
+        _answer_lines(pdf, state.y, lines)
+        state.y -= lines * LINE_GAP
+        remaining -= lines
+        if remaining:
+            state = _new_question_page(pdf, state)
+    return state
 
 
 def _lozenge(pdf: canvas.Canvas, x: float, y: float) -> None:

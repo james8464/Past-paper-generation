@@ -25,9 +25,11 @@ REFERENCE_PATTERNS = {
     "mark_scheme": ("*2024*MS*Paper*2*.pdf", "*MS*Paper*2*.pdf", "*Mark*Scheme*2*.pdf"),
 }
 
-QP_CONTENT_RECT = (46, 92, 571, 785)
-QP_FIRST_CONTENT_RECT = QP_CONTENT_RECT
+QP_CONTENT_RECT = (46, 70, 571, 785)
+QP_FIRST_CONTENT_RECT = (46, 112, 571, 785)
 QP_FOOTER_RECT = (40, 785, 520, 842)
+QP_PAGE_NUMBER_RECT = (250, 24, 345, 58)
+QP_CLEAN_HEADER_RECT = (46, 35, 595, 112)
 MS_CONTENT_RECT = (0, 35, 595, 790)
 MS_FOOTER_RECT = (0, 790, 595, 842)
 WATERMARK_RECTS = (
@@ -53,12 +55,29 @@ def ensure_reference_pdf(kind: str, reference_dir: Path | None = None) -> Path:
 
 def apply_question_paper_template(generated_pdf: Path, output_pdf: Path, *, reference_pdf: Path | None = None) -> None:
     reference = reference_pdf or ensure_reference_pdf("question_paper")
-    _apply_template(generated_pdf, output_pdf, reference_pdf=reference, content_rect=QP_CONTENT_RECT, footer_rect=QP_FOOTER_RECT, first_content_rect=QP_FIRST_CONTENT_RECT)
+    _apply_template(
+        generated_pdf,
+        output_pdf,
+        reference_pdf=reference,
+        content_rect=QP_CONTENT_RECT,
+        footer_rect=QP_FOOTER_RECT,
+        first_content_rect=QP_FIRST_CONTENT_RECT,
+        top_rect=QP_PAGE_NUMBER_RECT,
+        clean_header_rect=QP_CLEAN_HEADER_RECT,
+        repeat_reference_page=1,
+    )
 
 
 def apply_mark_scheme_template(generated_pdf: Path, output_pdf: Path, *, reference_pdf: Path | None = None) -> None:
     reference = reference_pdf or ensure_reference_pdf("mark_scheme")
-    _apply_template(generated_pdf, output_pdf, reference_pdf=reference, content_rect=MS_CONTENT_RECT, footer_rect=MS_FOOTER_RECT)
+    _apply_template(
+        generated_pdf,
+        output_pdf,
+        reference_pdf=reference,
+        content_rect=MS_CONTENT_RECT,
+        footer_rect=MS_FOOTER_RECT,
+        preserve_reference_until_index=4,
+    )
 
 
 def _find_local_reference(kind: str, reference_dir: Path | None) -> Path | None:
@@ -93,6 +112,10 @@ def _apply_template(
     content_rect: tuple[int, int, int, int],
     footer_rect: tuple[int, int, int, int],
     first_content_rect: tuple[int, int, int, int] | None = None,
+    top_rect: tuple[int, int, int, int] | None = None,
+    clean_header_rect: tuple[int, int, int, int] | None = None,
+    repeat_reference_page: int | None = None,
+    preserve_reference_until_index: int | None = None,
 ) -> None:
     try:
         import fitz
@@ -110,22 +133,36 @@ def _apply_template(
     content = fitz.Rect(*content_rect)
     first_content = fitz.Rect(*(first_content_rect or content_rect))
     footer = fitz.Rect(*footer_rect)
+    top = fitz.Rect(*top_rect) if top_rect else None
+    clean_header = fitz.Rect(*clean_header_rect) if clean_header_rect else None
 
     try:
         for page_index in range(generated.page_count):
             generated_page = generated[page_index]
             page = output.new_page(width=generated_page.rect.width, height=generated_page.rect.height)
             if page_index == 0:
-                page.show_pdf_page(page.rect, generated, page_index)
+                page.show_pdf_page(page.rect, reference, 0)
+                _redact_rects(page, [fitz.Rect(*rect) for rect in WATERMARK_RECTS], fitz)
                 continue
 
-            reference_index = min(page_index, reference.page_count - 1)
+            if preserve_reference_until_index is not None and page_index <= preserve_reference_until_index:
+                page.show_pdf_page(page.rect, reference, min(page_index, reference.page_count - 1))
+                _redact_rects(page, [fitz.Rect(*rect) for rect in WATERMARK_RECTS], fitz)
+                continue
+
+            reference_index = repeat_reference_page if repeat_reference_page is not None else min(page_index, reference.page_count - 1)
             page_content = first_content if page_index == 1 else content
             page.show_pdf_page(page.rect, reference, reference_index)
-            _whiteout(page, page_content, fitz)
-            _whiteout(page, footer, fitz)
-            for rect in WATERMARK_RECTS:
-                _whiteout(page, fitz.Rect(*rect), fitz)
+            redactions = [page_content, footer, *(fitz.Rect(*rect) for rect in WATERMARK_RECTS)]
+            if top:
+                redactions.append(top)
+            if clean_header:
+                redactions.append(clean_header)
+            _redact_rects(page, redactions, fitz)
+            if top:
+                page.show_pdf_page(top, generated, page_index, clip=top)
+            if clean_header:
+                page.show_pdf_page(clean_header, generated, page_index, clip=clean_header)
             page.show_pdf_page(page_content, generated, page_index, clip=page_content)
             page.show_pdf_page(footer, generated, page_index, clip=footer)
 
@@ -139,5 +176,7 @@ def _apply_template(
         temp_output.replace(output_pdf)
 
 
-def _whiteout(page, rect, fitz) -> None:
-    page.draw_rect(rect, color=(1, 1, 1), fill=(1, 1, 1), overlay=True)
+def _redact_rects(page, rects, fitz) -> None:
+    for rect in rects:
+        page.add_redact_annot(rect, fill=(1, 1, 1))
+    page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE)

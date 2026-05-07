@@ -83,7 +83,7 @@ def generate_package(
     question_paper = output_dir / "cs-paper-2-question-paper.pdf"
     mark_scheme = output_dir / "cs-paper-2-mark-scheme.pdf"
     emit("Rendering question paper")
-    render_question_paper(blueprint, question_paper, include_front_instruction=not template_overlay)
+    render_question_paper(blueprint, question_paper)
     emit("Rendering mark scheme")
     render_mark_scheme(blueprint, mark_scheme)
     if template_overlay:
