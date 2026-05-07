@@ -9,6 +9,7 @@ from cspapergen.notes import DEFAULT_NOTES_SOURCE, cache_notes
 from cspapergen.ollama_client import OllamaClient, improve_questions_with_ollama
 from cspapergen.render_pdf import render_mark_scheme, render_question_paper
 from cspapergen.syllabus import DEFAULT_SYLLABUS_PATH, load_syllabus
+from cspapergen.template_overlay import apply_mark_scheme_template, apply_question_paper_template, ensure_reference_pdf
 from cspapergen.validation import validate_blueprint
 
 
@@ -23,6 +24,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--model", default="qwen2.5:14b")
     parser.add_argument("--ollama-url", default="http://localhost:11434")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--no-template-overlay", action="store_true")
+    parser.add_argument("--template-reference-dir", default=None)
     parser.add_argument("--syllabus", default=str(DEFAULT_SYLLABUS_PATH))
     parser.add_argument("--notes", default=str(DEFAULT_NOTES_SOURCE))
     args = parser.parse_args(argv)
@@ -35,6 +38,8 @@ def main(argv: list[str] | None = None) -> int:
         dry_run=args.dry_run,
         syllabus_path=Path(args.syllabus),
         notes_source=Path(args.notes),
+        template_overlay=not args.no_template_overlay,
+        template_reference_dir=Path(args.template_reference_dir) if args.template_reference_dir else None,
         progress=print,
     )
     print(paths["question_paper"])
@@ -51,6 +56,8 @@ def generate_package(
     ollama_url: str = "http://localhost:11434",
     syllabus_path: Path = DEFAULT_SYLLABUS_PATH,
     notes_source: Path = DEFAULT_NOTES_SOURCE,
+    template_overlay: bool = False,
+    template_reference_dir: Path | None = None,
     progress: Callable[[str], None] | None = None,
 ) -> dict[str, Path]:
     emit = progress or (lambda _message: None)
@@ -76,8 +83,13 @@ def generate_package(
     question_paper = output_dir / "cs-paper-2-question-paper.pdf"
     mark_scheme = output_dir / "cs-paper-2-mark-scheme.pdf"
     emit("Rendering question paper")
-    render_question_paper(blueprint, question_paper)
+    render_question_paper(blueprint, question_paper, include_front_instruction=not template_overlay)
     emit("Rendering mark scheme")
     render_mark_scheme(blueprint, mark_scheme)
+    if template_overlay:
+        emit("Applying AQA question paper template overlay")
+        apply_question_paper_template(question_paper, question_paper, reference_pdf=ensure_reference_pdf("question_paper", template_reference_dir))
+        emit("Applying AQA mark scheme template overlay")
+        apply_mark_scheme_template(mark_scheme, mark_scheme, reference_pdf=ensure_reference_pdf("mark_scheme", template_reference_dir))
     emit("Done")
     return {"question_paper": question_paper, "mark_scheme": mark_scheme}

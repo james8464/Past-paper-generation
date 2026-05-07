@@ -1,5 +1,5 @@
 from cspapergen.generator import build_paper2_blueprint
-from cspapergen.question_bank import STYLE_IDS
+from cspapergen.question_bank import QUESTION_STYLES, STYLE_IDS
 from cspapergen.syllabus import load_syllabus
 
 
@@ -29,6 +29,22 @@ def test_blueprint_varies_between_unseeded_runs():
     second = build_paper2_blueprint(syllabus)
 
     assert first.model_dump() != second.model_dump()
+
+
+def test_seeded_runs_randomise_first_and_final_question_styles():
+    syllabus = load_syllabus()
+
+    blueprints = [build_paper2_blueprint(syllabus, seed=seed) for seed in range(40)]
+
+    assert len({paper.questions[0].style_id for paper in blueprints}) > 1
+    assert len({paper.questions[-1].style_id for paper in blueprints}) > 1
+
+
+def test_all_question_styles_are_specific_to_paper2_spec_topics():
+    syllabus = load_syllabus()
+
+    assert {style.topic_id for style in QUESTION_STYLES} <= syllabus.topic_ids
+    assert all(style.topic_id.startswith(("4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12")) for style in QUESTION_STYLES)
 
 
 def test_question_bank_covers_expected_aqa_paper2_styles():

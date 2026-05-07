@@ -22,6 +22,7 @@ def main() -> int:
             dry_run=not use_ollama,
             model="qwen2.5:14b",
             ollama_url="http://localhost:11434",
+            template_overlay=True,
             progress=progress,
         )
 

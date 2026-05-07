@@ -19,6 +19,8 @@ PROCESS_STEPS = (
     "Validating paper",
     "Rendering question paper",
     "Rendering mark scheme",
+    "Applying AQA question paper template overlay",
+    "Applying AQA mark scheme template overlay",
     "Done",
 )
 

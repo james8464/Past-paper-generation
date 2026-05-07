@@ -16,6 +16,12 @@ class QuestionStyle:
 
 QUESTION_STYLES = [
     QuestionStyle("short_security", "4.6", (4,), "short_security"),
+    QuestionStyle("binary_arithmetic_short", "4.5", (4,), "binary_short"),
+    QuestionStyle("unicode_ascii_short", "4.5", (4,), "unicode_short"),
+    QuestionStyle("fde_register_short", "4.7", (4,), "fde_short"),
+    QuestionStyle("protocol_layers_short", "4.9", (4,), "protocol_short"),
+    QuestionStyle("database_key_short", "4.10", (4,), "database_key_short"),
+    QuestionStyle("big_data_short", "4.11", (4,), "big_data_short"),
     QuestionStyle("bitmap_size", "4.5", (7, 8, 10, 14), "bitmap"),
     QuestionStyle("sound_sampling", "4.5", (7, 8, 10, 14), "sound"),
     QuestionStyle("rle_compression", "4.5", (7, 8, 9, 10, 14), "rle"),
@@ -52,6 +58,12 @@ def build_question(style: QuestionStyle, number: int, total: int, rng: random.Ra
     builders = {
         "bitmap": _bitmap_question,
         "short_security": _short_security_question,
+        "binary_short": _binary_short_question,
+        "unicode_short": _unicode_short_question,
+        "fde_short": _fde_short_question,
+        "protocol_short": _protocol_short_question,
+        "database_key_short": _database_key_short_question,
+        "big_data_short": _big_data_short_question,
         "sound": _sound_question,
         "rle": _rle_question,
         "float": _floating_point_question,
@@ -156,6 +168,57 @@ def _short_security_question(style: QuestionStyle, number: int, total: int, rng:
         )
     ]
     return _question(style, number, "Malware protection", "Anti-virus software and user training are measures that can be used to reduce the threat posed by malware.", None, parts)
+
+
+def _binary_short_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+    first, second = rng.choice([(57, 39), (86, 41), (103, 24), (118, 17)])
+    parts = _parts([
+        ("1", 2, f"Add the denary numbers {first} and {second}. Give your answer as an 8-bit unsigned binary number.", ["Correct conversion or binary addition method;", "Correct 8-bit binary result;"], "", 4),
+        ("2", 2, "Explain what is meant by overflow in unsigned binary arithmetic.", ["Result is too large for the available number of bits;", "Most significant/carry bit is lost or cannot be represented;"], "", 4),
+    ])
+    return _question(style, number, "Unsigned binary arithmetic", "Unsigned binary is used to store integer values.", None, _fit_parts(parts, total))
+
+
+def _unicode_short_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+    context = rng.choice(["an international messaging app", "a website storing customer names", "a school database storing pupils' home languages"])
+    parts = _parts([
+        ("1", 2, "State two differences between ASCII and Unicode.", ["Unicode can represent a much larger character set;", "ASCII uses fewer bits per character than many Unicode encodings;", "Unicode supports characters from many languages;"], "", 4),
+        ("2", 2, f"Explain why Unicode would be suitable for {context}.", ["It can represent non-English characters/symbols;", "This avoids data loss or incorrect display for users' text;"], "", 4),
+    ])
+    return _question(style, number, "Character coding", "Text characters must be represented in binary.", None, _fit_parts(parts, total))
+
+
+def _fde_short_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+    parts = _parts([
+        ("1", 2, "Describe the role of the program counter during the fetch-execute cycle.", ["Stores address of the next instruction;", "Is incremented or updated after an instruction is fetched/branch executed;"], "", 4),
+        ("2", 2, "Describe the role of the memory address register during the fetch stage.", ["Holds the address to be accessed in main memory;", "Receives the address copied from the program counter before the memory read;"], "", 4),
+    ])
+    return _question(style, number, "Processor registers", "Registers are used while instructions are fetched and executed.", None, _fit_parts(parts, total))
+
+
+def _protocol_short_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+    layer = rng.choice(["application", "transport", "network", "link"])
+    parts = _parts([
+        ("1", 2, "State two reasons why network protocols are needed.", ["Allow devices/software from different manufacturers to communicate;", "Define rules/formats/order for messages;", "Support error control, addressing or routing;"], "", 4),
+        ("2", 2, f"Describe one function of the {layer} layer in the TCP/IP protocol stack.", ["Valid function of the named layer;", "Description linked to communication between hosts or applications;"], "", 4),
+    ])
+    return _question(style, number, "Network protocols", "The TCP/IP stack is used when data is transmitted across a network.", None, _fit_parts(parts, total))
+
+
+def _database_key_short_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+    parts = _parts([
+        ("1", 2, "Explain the difference between a primary key and a foreign key.", ["Primary key uniquely identifies a record in its table;", "Foreign key is an attribute that refers to a primary key in another table;"], "", 4),
+        ("2", 2, "Explain why referential integrity is important in a relational database.", ["It prevents foreign key values referring to non-existent records;", "It helps keep relationships between tables consistent/valid;"], "", 4),
+    ])
+    return _question(style, number, "Relational database keys", "A relational database stores data in linked tables.", None, _fit_parts(parts, total))
+
+
+def _big_data_short_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+    parts = _parts([
+        ("1", 2, "State two characteristics commonly associated with Big Data.", ["Volume;", "Velocity;", "Variety;", "Veracity;"], "", 4),
+        ("2", 2, "Explain why distributed processing may be used to analyse Big Data.", ["Data/work can be split across many machines;", "This can reduce processing time or allow datasets too large for one machine to be handled;"], "", 4),
+    ])
+    return _question(style, number, "Big Data", "An organisation collects large quantities of data from online services.", None, _fit_parts(parts, total))
 
 
 def _sound_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
