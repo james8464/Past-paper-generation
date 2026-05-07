@@ -836,7 +836,7 @@ def _draw_calculate_part_with_working_lines(pdf: canvas.Canvas, part, x: float, 
     pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({part.marks})")
     pdf.setFillColor(colors.black)
     y -= 20
-    y = _draw_answer_lines(pdf, x, y, width - x, 6)
+    y = _draw_answer_lines(pdf, x, y, width - x, 6, bottom_y=SECTION_A_FOOTER_SAFE_Y)
     return y - 12
 
 
@@ -851,7 +851,7 @@ def _draw_compact_part(pdf: canvas.Canvas, part, x: float, y: float) -> float:
     pdf.setFillColor(colors.black)
     y -= 18
     lines = 4 if part.marks <= 2 else 7
-    return _draw_answer_lines(pdf, x, y, width - x, lines) - 12
+    return _draw_answer_lines(pdf, x, y, width - x, lines, bottom_y=SECTION_A_FOOTER_SAFE_Y) - 12
 
 
 def _draw_blank_answer_axes(pdf: canvas.Canvas, x: float, y: float, w: float, h: float) -> float:
@@ -966,10 +966,17 @@ def _draw_section_a_total(pdf: canvas.Canvas, x: float, y: float) -> None:
     pdf.drawRightString(width - x, y - 18, "TOTAL FOR SECTION A = 25 MARKS")
 
 
-def _draw_answer_lines(pdf: canvas.Canvas, x: float, y: float, right_x: float, line_count: int) -> float:
+def _draw_answer_lines(
+    pdf: canvas.Canvas,
+    x: float,
+    y: float,
+    right_x: float,
+    line_count: int,
+    bottom_y: float = 90,
+) -> float:
     _set_answer_line_style(pdf)
     for _ in range(line_count):
-        if y < 90:
+        if y < bottom_y:
             break
         pdf.line(x, y, right_x, y)
         y -= ANSWER_LINE_GAP_PT

@@ -7,7 +7,9 @@ from pastpapergen.render_pdf import (
     ANSWER_LINE_GAP_PT,
     BODY_FONT_SIZE_PT,
     SECTION_A_INSTRUCTION_LINES,
+    SECTION_A_FOOTER_SAFE_Y,
     _cost_revenue_geometry,
+    _draw_answer_lines,
     _extra_answer_pages,
     render_question_paper,
 )
@@ -101,6 +103,31 @@ def test_answer_line_style_matches_reference_dotted_lines():
 
     assert ANSWER_LINE_COLOR_HEX == "#505050"
     assert ANSWER_LINE_DASH == (0.6, 1.6)
+
+
+def test_answer_lines_honor_footer_safe_area():
+    class Recorder:
+        def __init__(self):
+            self.lines = []
+
+        def setStrokeColor(self, _color):
+            pass
+
+        def setLineWidth(self, _width):
+            pass
+
+        def setDash(self, *_dash):
+            pass
+
+        def line(self, x1, y1, x2, y2):
+            self.lines.append((x1, y1, x2, y2))
+
+    pdf = Recorder()
+
+    _draw_answer_lines(pdf, 70, SECTION_A_FOOTER_SAFE_Y + 18, 520, 4, bottom_y=SECTION_A_FOOTER_SAFE_Y)
+
+    assert pdf.lines
+    assert all(line[1] >= SECTION_A_FOOTER_SAFE_Y for line in pdf.lines)
 
 
 def test_section_a_instruction_lines_fit_question_frame():
