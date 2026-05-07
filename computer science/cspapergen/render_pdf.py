@@ -4,12 +4,15 @@ from datetime import date
 from pathlib import Path
 
 from reportlab.lib import colors
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
 from cspapergen.models import PaperBlueprint, Question, QuestionPart, Stimulus
 
-FONT = "Helvetica"
-FONT_BOLD = "Helvetica-Bold"
+FONT = "AQAArial"
+FONT_BOLD = "AQAArial-Bold"
+FONT_MONO = "AQACourier"
 LEFT = 54
 RIGHT = 500
 TOP = 770
@@ -17,6 +20,22 @@ BOTTOM = 58
 RAIL_X = 516
 LINE_GAP = 20
 AQA_A4 = (595.32, 841.92)
+
+
+def _register_fonts() -> None:
+    font_paths = {
+        "AQAArial": Path("/System/Library/Fonts/Supplemental/Arial.ttf"),
+        "AQAArial-Bold": Path("/System/Library/Fonts/Supplemental/Arial Bold.ttf"),
+        "AQACourier": Path("/System/Library/Fonts/Supplemental/Courier New.ttf"),
+    }
+    for font_name, font_path in font_paths.items():
+        if font_name in pdfmetrics.getRegisteredFontNames():
+            continue
+        if font_path.exists():
+            pdfmetrics.registerFont(TTFont(font_name, str(font_path)))
+
+
+_register_fonts()
 
 
 def render_question_paper(blueprint: PaperBlueprint, output_path: Path) -> None:
@@ -294,7 +313,7 @@ def _draw_code_box(pdf: canvas.Canvas, code: str, x: float, y: float) -> float:
     lines = code.splitlines() or [code]
     h = 18 + 14 * len(lines)
     pdf.rect(x, y - h, 340, h, stroke=1, fill=0)
-    pdf.setFont("Courier", 9)
+    pdf.setFont(FONT_MONO, 9)
     cursor = y - 18
     for line in lines:
         pdf.drawString(x + 8, cursor, line)
