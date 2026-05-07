@@ -21,3 +21,13 @@ def test_generated_pdfs_are_a4(tmp_path):
     for path in paths.values():
         output = subprocess.check_output(["pdfinfo", str(path)], text=True)
         assert "Page size:       595.32 x 841.92 pts (A4)" in output
+
+
+def test_question_paper_uses_realistic_aqa_page_count(tmp_path):
+    paths = generate_package(output_dir=tmp_path, seed=42, dry_run=True)
+
+    output = subprocess.check_output(["pdfinfo", str(paths["question_paper"])], text=True)
+
+    assert "Pages:" in output
+    pages = int(next(line.split()[1] for line in output.splitlines() if line.startswith("Pages:")))
+    assert pages >= 28

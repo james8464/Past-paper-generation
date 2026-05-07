@@ -29,9 +29,17 @@ def render_question_paper(blueprint: PaperBlueprint, output_path: Path) -> None:
     pdf.setFont(FONT_BOLD, 11)
     pdf.drawCentredString(297, state.y, "Answer all questions.")
     state.y -= 44
-    for question in blueprint.questions:
+    for index, question in enumerate(blueprint.questions):
+        if index:
+            state = _new_question_page(pdf, state)
         state = _render_question(pdf, question, state)
-    _draw_extra_answer_page(pdf, state.page + 1)
+    state = _ensure_space(pdf, state, 90)
+    pdf.setFont(FONT_BOLD, 10)
+    pdf.drawCentredString(282, state.y - 20, "END OF QUESTIONS")
+    state.y -= 80
+    for _index in range(4):
+        _draw_extra_answer_page(pdf, state.page + 1)
+        state.page += 1
     pdf.save()
 
 
@@ -42,13 +50,21 @@ def render_mark_scheme(blueprint: PaperBlueprint, output_path: Path) -> None:
     pdf.showPage()
     _mark_scheme_intro(pdf, 2)
     pdf.showPage()
-    _mark_scheme_annotations(pdf, 3)
+    _mark_scheme_levels(pdf, 3)
     pdf.showPage()
-    page = 4
+    _mark_scheme_annotations(pdf, 4)
+    pdf.showPage()
+    _mark_scheme_examiner_notes(pdf, 5)
+    pdf.showPage()
+    page = 6
     y = _mark_scheme_table_header(pdf, page)
-    for question in blueprint.questions:
+    for question_index, question in enumerate(blueprint.questions):
+        if question_index:
+            pdf.showPage()
+            page += 1
+            y = _mark_scheme_table_header(pdf, page)
         for part in question.parts:
-            needed = 42 + 12 * (len(part.marking.points) + len(part.marking.accept) + len(part.marking.reject) + len(part.marking.levels))
+            needed = 56 + 15 * (len(part.marking.points) + len(part.marking.accept) + len(part.marking.reject) + len(part.marking.levels))
             if y - needed < 70:
                 pdf.showPage()
                 page += 1
@@ -82,29 +98,29 @@ def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.drawString(302, 458, "Time allowed: 2 hours 30 minutes")
 
     y = 430
-    y = _cover_section(pdf, y, "Materials", ["For this paper you must have:", "- a calculator."])
+    y = _cover_section(pdf, y, "Materials", ["For this paper you must have:", "\u2022 a calculator."])
     y = _cover_section(
         pdf,
         y - 8,
         "Instructions",
         [
-            "- Use black ink or black ball-point pen.",
-            "- Fill in the boxes at the top of this page.",
-            "- Answer all questions.",
-            "- You must answer the questions in the spaces provided. Do not write outside the box around each page or on blank pages.",
-            "- If you need extra space for your answer(s), use the lined page at the end of this book.",
-            "- Do all rough work in this book. Cross through any work you do not want to be marked.",
+            "\u2022 Use black ink or black ball-point pen.",
+            "\u2022 Fill in the boxes at the top of this page.",
+            "\u2022 Answer all questions.",
+            "\u2022 You must answer the questions in the spaces provided. Do not write outside the box around each page or on blank pages.",
+            "\u2022 If you need extra space for your answer(s), use the lined pages at the end of this book. Write the question number against your answer(s).",
+            "\u2022 Do all rough work in this book. Cross through any work you do not want to be marked.",
         ],
     )
-    y = _cover_section(pdf, y - 8, "Information", ["- The marks for questions are shown in brackets.", f"- The maximum mark for this paper is {blueprint.total_marks}."])
+    y = _cover_section(pdf, y - 8, "Information", ["\u2022 The marks for questions are shown in brackets.", f"\u2022 The maximum mark for this paper is {blueprint.total_marks}."])
     _cover_section(
         pdf,
         y - 8,
         "Advice",
         [
-            "- In some questions you are required to indicate your answer by completely shading a lozenge alongside the appropriate answer.",
-            "- If you want to change your answer you must cross out your original answer.",
-            "- If you wish to return to an answer previously crossed out, ring the answer you now wish to select.",
+            "\u2022 In some questions you are required to indicate your answer by completely shading a lozenge alongside the appropriate answer.",
+            "\u2022 If you want to change your answer you must cross out your original answer.",
+            "\u2022 If you wish to return to an answer previously crossed out, ring the answer you now wish to select.",
         ],
     )
 
@@ -175,17 +191,17 @@ def _draw_question_page_header(pdf: canvas.Canvas, page: int) -> None:
     pdf.drawCentredString(552, 758, "box")
     pdf.setLineWidth(0.7)
     pdf.rect(44, 48, 470, 735, stroke=1, fill=0)
+    pdf.line(44, 742, 514, 742)
     pdf.setFont(FONT, 8)
-    pdf.drawString(52, 28, f"*{page:02d}*")
+    _draw_footer_barcode(pdf, 52, 2, page)
     pdf.drawRightString(510, 28, "IB/G/Jun26/7517/2")
 
 
 def _render_question(pdf: canvas.Canvas, question: Question, state: _QuestionRenderState) -> _QuestionRenderState:
-    if state.y < 330:
+    if state.y < 520:
         state = _new_question_page(pdf, state)
     state = _ensure_space(pdf, state, 80)
-    pdf.setFont(FONT_BOLD, 12)
-    pdf.drawString(64, state.y, _format_question_number(question.number))
+    _draw_question_ref(pdf, 52, state.y + 1, question.number)
     pdf.setFont(FONT, 10.5)
     for line in _wrap(question.stem, 78):
         pdf.drawString(118, state.y, line)
@@ -203,17 +219,17 @@ def _render_question(pdf: canvas.Canvas, question: Question, state: _QuestionRen
 
 
 def _render_part(pdf: canvas.Canvas, question: Question, part: QuestionPart, state: _QuestionRenderState) -> _QuestionRenderState:
-    estimated = 52 + part.answer_lines * LINE_GAP
+    line_count = _answer_line_count(part)
+    estimated = 58 + line_count * LINE_GAP
     state = _ensure_space(pdf, state, estimated)
-    pdf.setFont(FONT_BOLD, 11)
-    pdf.drawString(64, state.y, f"{_format_question_number(question.number)} . {part.label}")
+    _draw_question_ref(pdf, 52, state.y + 1, question.number, part.label)
     pdf.setFont(FONT, 10.5)
     prompt_y = state.y
     for line in _wrap(part.prompt.replace("{q}", f"{question.number:02d}"), 58):
         pdf.drawString(118, prompt_y, line)
         prompt_y -= 14
     pdf.setFont(FONT_BOLD, 10)
-    pdf.drawRightString(492, state.y, f"[{part.marks} mark{'s' if part.marks != 1 else ''}]")
+    pdf.drawRightString(492, prompt_y + 14, f"[{part.marks} mark{'s' if part.marks != 1 else ''}]")
     state.y = prompt_y - 12
     if part.options:
         for option in part.options:
@@ -224,15 +240,15 @@ def _render_part(pdf: canvas.Canvas, question: Question, part: QuestionPart, sta
             pdf.drawString(160, state.y, option.text)
             state.y -= 20
     elif part.answer_unit:
-        _answer_lines(pdf, state.y, part.answer_lines)
-        state.y -= part.answer_lines * LINE_GAP
+        _answer_lines(pdf, state.y, line_count)
+        state.y -= line_count * LINE_GAP
         pdf.setFont(FONT, 10)
         pdf.drawString(338, state.y + LINE_GAP, "Answer")
         pdf.line(382, state.y + LINE_GAP - 2, 455, state.y + LINE_GAP - 2)
         pdf.drawString(460, state.y + LINE_GAP, part.answer_unit)
     else:
-        _answer_lines(pdf, state.y, part.answer_lines)
-        state.y -= part.answer_lines * LINE_GAP
+        _answer_lines(pdf, state.y, line_count)
+        state.y -= line_count * LINE_GAP
     state.y -= 14
     return state
 
@@ -258,19 +274,19 @@ def _render_stimulus(pdf: canvas.Canvas, stimulus: Stimulus, state: _QuestionRen
 
 
 def _draw_table(pdf: canvas.Canvas, stimulus: Stimulus, x: float, y: float) -> float:
-    width = 340
+    width = 390
     cols = max(1, len(stimulus.headers))
     col_w = width / cols
     row_h = 20
     rows = [stimulus.headers, *stimulus.rows]
-    pdf.setFont(FONT_BOLD, 9)
+    pdf.setFont(FONT_BOLD, 8)
     for r_index, row in enumerate(rows):
         y0 = y - r_index * row_h
         for c_index in range(cols):
             pdf.rect(x + c_index * col_w, y0 - row_h, col_w, row_h, stroke=1, fill=0)
             value = row[c_index] if c_index < len(row) else ""
-            pdf.drawString(x + c_index * col_w + 4, y0 - 14, value[:32])
-        pdf.setFont(FONT, 9)
+            pdf.drawString(x + c_index * col_w + 4, y0 - 14, value[:34])
+        pdf.setFont(FONT, 8)
     return y - len(rows) * row_h - 8
 
 
@@ -343,6 +359,43 @@ def _format_question_number(number: int) -> str:
     return f"{number // 10} {number % 10}"
 
 
+def _draw_question_ref(pdf: canvas.Canvas, x: float, y: float, number: int, part_label: str | None = None) -> None:
+    digits = list(f"{number:02d}")
+    cursor = x
+    pdf.setFont(FONT_BOLD, 10)
+    for digit in digits:
+        pdf.rect(cursor, y - 16, 17, 16, stroke=1, fill=0)
+        pdf.drawCentredString(cursor + 8.5, y - 12, digit)
+        cursor += 17
+    if part_label is not None:
+        pdf.setFont(FONT_BOLD, 12)
+        pdf.drawCentredString(cursor + 5, y - 13, ".")
+        cursor += 10
+        pdf.setFont(FONT_BOLD, 10)
+        pdf.rect(cursor, y - 16, 17, 16, stroke=1, fill=0)
+        pdf.drawCentredString(cursor + 8.5, y - 12, str(part_label))
+
+
+def _answer_line_count(part: QuestionPart) -> int:
+    if part.options:
+        return 0
+    if part.answer_unit:
+        return max(part.answer_lines, 5 if part.marks == 1 else 7 if part.marks == 2 else part.marks * 3)
+    if part.marks == 1:
+        return max(part.answer_lines, 4)
+    if part.marks == 2:
+        return max(part.answer_lines, 7)
+    if part.marks == 3:
+        return max(part.answer_lines, 10)
+    if part.marks == 4:
+        return max(part.answer_lines, 15)
+    if part.marks <= 6:
+        return max(part.answer_lines, 20)
+    if part.marks < 12:
+        return max(part.answer_lines, 26)
+    return max(part.answer_lines, 42)
+
+
 def _answer_lines(pdf: canvas.Canvas, y: float, count: int) -> None:
     pdf.setStrokeColor(colors.HexColor("#404040"))
     pdf.setLineWidth(0.45)
@@ -357,9 +410,10 @@ def _lozenge(pdf: canvas.Canvas, x: float, y: float) -> None:
 
 
 def _mark_total_box(pdf: canvas.Canvas, marks: int, y: float) -> None:
-    pdf.rect(466, y - 20, 28, 20, stroke=1, fill=0)
+    pdf.rect(528, y - 42, 32, 42, stroke=1, fill=0)
+    pdf.line(532, y - 18, 556, y - 18)
     pdf.setFont(FONT_BOLD, 10)
-    pdf.drawCentredString(480, y - 14, str(marks))
+    pdf.drawCentredString(544, y - 32, str(marks))
 
 
 def _draw_extra_answer_page(pdf: canvas.Canvas, page: int) -> None:
@@ -369,6 +423,19 @@ def _draw_extra_answer_page(pdf: canvas.Canvas, page: int) -> None:
     pdf.drawCentredString(282, 725, "Additional answer space")
     y = 680
     _answer_lines(pdf, y, 25)
+
+
+def _draw_footer_barcode(pdf: canvas.Canvas, x: float, y: float, page: int) -> None:
+    widths = [1, 1, 2, 1, 3, 1, 1, 2, 1, 2, 3, 1, 1, 1, 2, 2, 1, 3]
+    cursor = x
+    pdf.setFillColor(colors.black)
+    for index, width in enumerate(widths * 3):
+        if index % 2 == 0:
+            pdf.rect(cursor, y + 11, width, 27, stroke=0, fill=1)
+        cursor += width + 1
+    pdf.setFont(FONT, 8)
+    pdf.drawCentredString(x + 31, y, f"{page:02d}")
+    pdf.setFillColor(colors.black)
 
 
 def _mark_scheme_cover(pdf: canvas.Canvas) -> None:
@@ -393,12 +460,34 @@ def _mark_scheme_intro(pdf: canvas.Canvas, page: int) -> None:
     y = 705
     pdf.setFont(FONT, 10)
     paragraphs = [
-        "This mark scheme is for an unofficial practice paper. It follows the structure and marking style of AQA Computer Science Paper 2.",
-        "Award credit for valid alternative answers that show equivalent understanding. Do not award credit for vague statements unless the point is developed enough to answer the question.",
-        "For extended responses, assign the level that best fits the response as a whole, then choose a mark within that level using the quality of technical detail and judgement.",
+        "Mark schemes are prepared to support consistent marking. This unofficial practice mark scheme follows the structure of AQA A-level Computer Science Paper 2.",
+        "The standardisation process ensures that responses are judged in the same way by different examiners. Alternative answers not listed in the mark scheme should be credited where they are technically correct and answer the question set.",
+        "It must be stressed that a mark scheme is a working document. Details vary with the content of a particular question paper, while the assessment principles remain consistent.",
+        "No student should be disadvantaged by the way they refer to themselves or others in written responses. Credit relevant technical content wherever it is communicated clearly.",
     ]
     for paragraph in paragraphs:
         for line in _wrap(paragraph, 92):
+            pdf.drawString(55, y, line)
+            y -= 14
+        y -= 10
+
+
+def _mark_scheme_levels(pdf: canvas.Canvas, page: int) -> None:
+    _ms_header(pdf, page)
+    y = 705
+    pdf.setFont(FONT_BOLD, 13)
+    pdf.drawString(55, y, "Level of response marking instructions")
+    y -= 26
+    pdf.setFont(FONT, 10)
+    paragraphs = [
+        "Level of response mark schemes are broken down into levels, each of which has a descriptor. The descriptor indicates the average performance expected at that level.",
+        "Start at the lowest level and use it as a ladder. Decide whether the answer meets that descriptor, then move upwards until the best match is found.",
+        "When assigning a level, consider the overall quality of the response. Do not focus on small weak parts if the response is otherwise stronger.",
+        "Once a level has been selected, choose a mark within the level by considering accuracy, technical detail, application to the scenario and the quality of the final judgement.",
+        "Indicative content is a guide for examiners. It is not exhaustive, and students do not need to include every listed point to reach the highest level.",
+    ]
+    for paragraph in paragraphs:
+        for line in _wrap(paragraph, 94):
             pdf.drawString(55, y, line)
             y -= 14
         y -= 10
@@ -427,42 +516,72 @@ def _mark_scheme_annotations(pdf: canvas.Canvas, page: int) -> None:
         y -= 22
 
 
+def _mark_scheme_examiner_notes(pdf: canvas.Canvas, page: int) -> None:
+    _ms_header(pdf, page)
+    y = 705
+    pdf.setFont(FONT_BOLD, 12)
+    pdf.drawString(55, y, "To Examiners:")
+    y -= 28
+    pdf.setFont(FONT, 10)
+    paragraphs = [
+        "A mark of 0 should be awarded where a candidate has attempted a question but failed to write anything creditworthy.",
+        "Insert a hyphen when a candidate has not attempted a question, so that a distinction can be made between no response and nothing creditworthy.",
+        "This mark scheme contains the correct responses candidates are most likely to give. Other valid responses are possible and should be credited.",
+        "Where a candidate makes a valid point and then contradicts it, do not award the mark for that point.",
+    ]
+    for paragraph in paragraphs:
+        for line in _wrap(paragraph, 94):
+            pdf.drawString(70, y, "\u2022 " + line if line == _wrap(paragraph, 94)[0] else "  " + line)
+            y -= 14
+        y -= 8
+
+
 def _mark_scheme_table_header(pdf: canvas.Canvas, page: int) -> float:
     _ms_header(pdf, page)
     y = 710
     pdf.setFont(FONT_BOLD, 9)
     pdf.rect(45, y - 24, 505, 24, stroke=1, fill=0)
+    pdf.line(73, y - 24, 73, y)
+    pdf.line(106, y - 24, 106, y)
+    pdf.line(500, y - 24, 500, y)
     pdf.drawString(52, y - 16, "Qu")
     pdf.drawString(84, y - 16, "Pt")
     pdf.drawString(125, y - 16, "Marking guidance")
-    pdf.drawString(494, y - 16, "Total marks")
+    pdf.drawCentredString(525, y - 10, "Total")
+    pdf.drawCentredString(525, y - 21, "marks")
     return y - 38
 
 
 def _render_mark_scheme_part(pdf: canvas.Canvas, question: Question, part: QuestionPart, y: float) -> float:
     start_y = y
-    pdf.setFont(FONT_BOLD, 9)
+    pdf.setFont(FONT_BOLD, 10)
     pdf.drawString(52, y, f"{question.number:02d}")
     pdf.drawString(86, y, part.label)
     pdf.drawRightString(528, y, str(part.marks))
-    pdf.setFont(FONT, 8.5)
+    pdf.setFont(FONT_BOLD, 9.5)
     pdf.drawString(125, y, f"All marks {part.marking.ao}")
     y -= 14
+    pdf.setFont(FONT, 9.5)
     for point in part.marking.points:
         for line in _wrap(point, 70):
             pdf.drawString(125, y, line)
-            y -= 11
+            y -= 13
     for item in part.marking.accept:
         pdf.drawString(125, y, f"A. {item}")
-        y -= 11
+        y -= 13
     for item in part.marking.reject:
         pdf.drawString(125, y, f"R. {item}")
-        y -= 11
+        y -= 13
     for item in part.marking.levels:
         for line in _wrap(item, 70):
             pdf.drawString(125, y, line)
-            y -= 11
-    pdf.line(45, y - 5, 550, y - 5)
+            y -= 13
+    bottom = y - 5
+    top = start_y + 10
+    pdf.rect(45, bottom, 505, top - bottom, stroke=1, fill=0)
+    pdf.line(73, bottom, 73, top)
+    pdf.line(106, bottom, 106, top)
+    pdf.line(500, bottom, 500, top)
     return min(start_y - 34, y - 18)
 
 

@@ -15,23 +15,26 @@ class QuestionStyle:
 
 
 QUESTION_STYLES = [
-    QuestionStyle("bitmap_size", "4.5", (8, 10), "bitmap"),
-    QuestionStyle("sound_sampling", "4.5", (8, 10), "sound"),
-    QuestionStyle("rle_compression", "4.5", (8, 9, 10), "rle"),
+    QuestionStyle("short_security", "4.6", (4,), "short_security"),
+    QuestionStyle("bitmap_size", "4.5", (7, 8, 10, 14), "bitmap"),
+    QuestionStyle("sound_sampling", "4.5", (7, 8, 10, 14), "sound"),
+    QuestionStyle("rle_compression", "4.5", (7, 8, 9, 10, 14), "rle"),
     QuestionStyle("floating_point", "4.5", (8, 9, 10), "float"),
-    QuestionStyle("logic_truth_table", "4.6", (8, 9), "logic"),
-    QuestionStyle("boolean_algebra", "4.6", (8, 9, 10), "boolean"),
+    QuestionStyle("logic_truth_table", "4.6", (8, 9, 14), "logic"),
+    QuestionStyle("boolean_algebra", "4.6", (8, 9, 10, 14), "boolean"),
     QuestionStyle("translator_language", "4.6", (8, 10), "translator"),
     QuestionStyle("security_measures", "4.6", (8, 10), "security"),
     QuestionStyle("processor_buses", "4.7", (8, 10), "processor"),
     QuestionStyle("stored_program", "4.7", (8, 10), "stored"),
-    QuestionStyle("packet_switching", "4.9", (8, 9, 10), "packet"),
+    QuestionStyle("packet_switching", "4.9", (7, 8, 9, 10, 14), "packet"),
     QuestionStyle("tcpip_dns", "4.9", (8, 9, 10), "tcpip"),
-    QuestionStyle("sql_normalisation", "4.10", (8, 10), "sql"),
+    QuestionStyle("sql_normalisation", "4.10", (8, 10, 14), "sql"),
     QuestionStyle("erd_keys", "4.10", (8, 9, 10), "erd"),
     QuestionStyle("big_data", "4.11", (8, 10), "bigdata"),
-    QuestionStyle("functional_programming", "4.12", (8, 10), "functional"),
+    QuestionStyle("functional_programming", "4.12", (8, 10, 14), "functional"),
     QuestionStyle("functional_recursion", "4.12", (8, 9), "recursion"),
+    QuestionStyle("assembly_trace", "4.7", (11,), "assembly"),
+    QuestionStyle("functional_type_short", "4.12", (4,), "functional_type"),
     QuestionStyle("ethics_extended", "4.8", (12,), "ethics12"),
     QuestionStyle("database_extended", "4.10", (12,), "database12"),
     QuestionStyle("network_security_extended", "4.9", (12,), "network12"),
@@ -48,6 +51,7 @@ def styles_for_total(total: int) -> list[QuestionStyle]:
 def build_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
     builders = {
         "bitmap": _bitmap_question,
+        "short_security": _short_security_question,
         "sound": _sound_question,
         "rle": _rle_question,
         "float": _floating_point_question,
@@ -64,6 +68,8 @@ def build_question(style: QuestionStyle, number: int, total: int, rng: random.Ra
         "bigdata": _big_data_question,
         "functional": _functional_question,
         "recursion": _recursion_question,
+        "assembly": _assembly_trace_question,
+        "functional_type": _functional_type_question,
         "ethics12": _ethics_extended_question,
         "database12": _database_extended_question,
         "network12": _network_extended_question,
@@ -125,6 +131,31 @@ def _bitmap_question(style: QuestionStyle, number: int, total: int, rng: random.
         ("4", 3, "A lossy compression algorithm is applied to the image. Explain one advantage and one disadvantage of using lossy compression.", ["Advantage: smaller file size / faster transmission;", "Disadvantage: some original data is permanently removed;", "Linked explanation to image quality or suitability for purpose;"], "", 6),
     ])
     return _question(style, number, "Bitmap image data", "A digital camera stores images as bitmaps.", stimulus, _fit_parts(parts, total))
+
+
+def _short_security_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+    parts = [
+        QuestionPart(
+            label="1",
+            marks=4,
+            prompt="Describe four measures, other than anti-virus software and user training, that can reduce the threat posed by malware.",
+            answer_lines=15,
+            marking=MarkingGuidance(
+                ao="AO1 (understanding)",
+                points=[
+                    "Firewall can filter or block suspicious network traffic;",
+                    "Access rights can limit the files/data malware can modify;",
+                    "Regular updates patch vulnerabilities in applications or operating systems;",
+                    "Backups kept offline can allow data to be recovered;",
+                    "Sandboxing or virtual machines can isolate untrusted files/programs;",
+                    "Disabling macros or removable media can reduce infection routes;",
+                ],
+                accept=["Any other technically valid preventative or recovery measure."],
+                reject=["Anti-virus software or user training, as these are excluded by the question."],
+            ),
+        )
+    ]
+    return _question(style, number, "Malware protection", "Anti-virus software and user training are measures that can be used to reduce the threat posed by malware.", None, parts)
 
 
 def _sound_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
@@ -304,6 +335,42 @@ def _recursion_question(style: QuestionStyle, number: int, total: int, rng: rand
         ("3", 4, "Explain how head and tail are used when processing a list recursively.", ["Head is the first item in a list;", "Tail is the remaining list;", "Recursive function processes head and calls itself on tail;", "Base case stops recursion when list is empty;"], "", 7),
     ])
     return _question(style, number, "Recursion in functional programming", "A recursive function processes a list.", stimulus, _fit_parts(parts, total))
+
+
+def _assembly_trace_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+    code = "\n".join(
+        [
+            "      MOV R0, #0",
+            "      MOV R1, #13",
+            "      MOV R2, #0",
+            "loop: CMP R1, #0",
+            "      BEQ end",
+            "      ADD R0, R0, #1",
+            "      AND R3, R1, #1",
+            "      ADD R2, R2, R3",
+            "      LSR R1, R1, #1",
+            "      B loop",
+            "end:  STR R2, 120",
+            "      HALT",
+        ]
+    )
+    stimulus = Stimulus(kind="code", title="Figure 1", code=code)
+    parts = _parts([
+        ("1", 6, "Complete a trace table to show the results of executing the assembly language program in Figure 1.", ["Initial register values copied correctly;", "Each loop iteration updates R0 and R1 correctly;", "AND result in R3 is recorded correctly;", "Running total in R2 is updated correctly;", "Loop stops when R1 is 0;", "Final value stored in memory location 120 is correct;"], "", 20),
+        ("2", 2, "By considering your trace table, describe the purpose of the program.", ["Counts the number of 1 bits in the binary representation of the input value;", "Stores the count in memory location 120;"], "", 7),
+        ("3", 2, "Describe two advantages of writing programs in assembly language rather than a high-level language.", ["Can directly control registers/hardware;", "Can produce efficient code for a specific processor;", "Useful for low-level embedded/system routines;"], "", 7),
+        ("4", 1, "Some high-level languages are described as imperative. Explain what imperative means in this context.", ["The program is written as a sequence of commands/statements that change state;"], "", 4),
+    ])
+    return _question(style, number, "Assembly language trace", "Figure 1 shows an assembly language program for a processor using general purpose registers.", stimulus, parts)
+
+
+def _functional_type_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+    stimulus = Stimulus(kind="code", title="Function type", code="f: \u2115 -> \u211d")
+    parts = _parts([
+        ("1", 1, "Describe the co-domain of the function f.", ["The co-domain is the set of real numbers / possible output type \u211d;"], "", 4),
+        ("2", 3, "Describe two features of functional programming languages that make it easier to write code that can be distributed to run across multiple servers.", ["Functions avoid side effects / use immutable data;", "This reduces shared-state conflicts between servers;", "Higher-order functions such as map/reduce can split processing across data items;", "Pure functions can be evaluated independently/in parallel;"], "", 10),
+    ])
+    return _question(style, number, "Functional programming function type", "A functional programming function f has the function type shown below.", stimulus, parts)
 
 
 def _extended_part(prompt: str, points: list[str]) -> list[QuestionPart]:

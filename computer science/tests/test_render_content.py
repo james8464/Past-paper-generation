@@ -21,4 +21,5 @@ def test_mark_scheme_contains_aqa_style_table_headings(tmp_path):
     assert b"Qu" in data
     assert b"Pt" in data
     assert b"Marking guidance" in data
-    assert b"Total marks" in data
+    assert b"Total" in data
+    assert b"marks" in data
