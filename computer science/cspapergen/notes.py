@@ -5,9 +5,8 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_NOTES_SOURCE = Path("/Users/james/Downloads/CS Notes")
-DEFAULT_NOTES_CACHE = PROJECT_ROOT / "data" / "notes"
+DEFAULT_NOTES_CACHE = Path.home() / "Library" / "Caches" / "Past Paper Creation" / "cs-notes"
 
 
 @dataclass(frozen=True)

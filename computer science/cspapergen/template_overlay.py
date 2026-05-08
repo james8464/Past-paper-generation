@@ -6,8 +6,7 @@ import urllib.request
 from urllib.error import URLError
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-REFERENCE_CACHE = PROJECT_ROOT / "data" / "templates" / "reference"
+REFERENCE_CACHE = Path.home() / "Library" / "Caches" / "Past Paper Creation" / "cs-templates"
 LOCAL_REFERENCE_DIR = Path.home() / "Downloads" / "CS paper 2"
 
 REFERENCE_URLS = {

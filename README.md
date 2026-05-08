@@ -6,6 +6,7 @@ Subject folders:
 - `computer science/` - AQA A-Level Computer Science Paper 2 practice paper generator.
 
 Each subject keeps its own README, package, tests and data inside its folder.
+Generated PDFs go to `~/Downloads`; runtime caches live under `~/Library/Caches/Past Paper Creation/`.
 
 ## Economics Quick Start
 

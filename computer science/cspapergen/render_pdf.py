@@ -39,16 +39,15 @@ def _register_fonts() -> None:
 _register_fonts()
 
 
-def render_question_paper(blueprint: PaperBlueprint, output_path: Path, *, include_front_instruction: bool = True) -> None:
+def render_question_paper(blueprint: PaperBlueprint, output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     pdf = canvas.Canvas(str(output_path), pagesize=AQA_A4, pageCompression=0)
     _cover_page(pdf, blueprint)
     pdf.showPage()
     state = _QuestionRenderState(page=2, y=720)
     _draw_question_page_header(pdf, state.page)
-    if include_front_instruction:
-        pdf.setFont(FONT_BOLD, 11)
-        pdf.drawCentredString(297, state.y, "Answer all questions.")
+    pdf.setFont(FONT_BOLD, 11)
+    pdf.drawCentredString(297, state.y, "Answer all questions.")
     state.y -= 44
     for index, question in enumerate(blueprint.questions):
         if index:
