@@ -825,7 +825,8 @@ def _draw_draw_part_with_axes(pdf: canvas.Canvas, part, x: float, y: float) -> f
     pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({part.marks})")
     pdf.setFillColor(colors.black)
     y -= 18
-    return _draw_blank_answer_axes(pdf, x + 34, y, width - x - 130, 130) - 10
+    y_label, x_label = _axis_labels_for_draw_prompt(part.prompt)
+    return _draw_blank_answer_axes(pdf, x + 34, y, width - x - 130, 130, x_label=x_label, y_label=y_label) - 10
 
 
 def _draw_calculate_part_with_working_lines(pdf: canvas.Canvas, part, x: float, y: float) -> float:
@@ -854,12 +855,41 @@ def _draw_compact_part(pdf: canvas.Canvas, part, x: float, y: float) -> float:
     return _draw_answer_lines(pdf, x, y, width - x, lines, bottom_y=SECTION_A_FOOTER_SAFE_Y) - 12
 
 
-def _draw_blank_answer_axes(pdf: canvas.Canvas, x: float, y: float, w: float, h: float) -> float:
+def _axis_labels_for_draw_prompt(prompt: str) -> tuple[str, str]:
+    text = prompt.lower()
+    if "cost" in text and "revenue" in text:
+        return "Costs/revenues", "Output"
+    if "aggregate demand" in text or "aggregate supply" in text:
+        return "Price level", "Real output"
+    if "labour" in text or "wage" in text:
+        return "Wage rate", "Quantity of labour"
+    if "ppc" in text or "production possibility" in text:
+        return "Good Y", "Good X"
+    return "Price", "Quantity"
+
+
+def _draw_blank_answer_axes(
+    pdf: canvas.Canvas,
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    *,
+    x_label: str = "Quantity",
+    y_label: str = "Price",
+) -> float:
     bottom = y - h
     pdf.setStrokeColor(colors.black)
     pdf.setLineWidth(0.7)
     pdf.line(x, bottom, x, y)
     pdf.line(x, bottom, x + w, bottom)
+    pdf.line(x, y, x - 3, y - 7)
+    pdf.line(x, y, x + 3, y - 7)
+    pdf.line(x + w, bottom, x + w - 7, bottom + 3)
+    pdf.line(x + w, bottom, x + w - 7, bottom - 3)
+    pdf.setFont(FONT_REGULAR, 8)
+    pdf.drawString(x - 5, y + 8, y_label)
+    pdf.drawRightString(x + w, bottom - 14, x_label)
     pdf.setLineWidth(1)
     return bottom
 

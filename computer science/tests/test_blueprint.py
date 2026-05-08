@@ -1,5 +1,7 @@
+import random
+
 from cspapergen.generator import build_paper2_blueprint
-from cspapergen.question_bank import QUESTION_STYLES, STYLE_IDS
+from cspapergen.question_bank import QUESTION_STYLES, STYLE_IDS, build_question
 from cspapergen.syllabus import load_syllabus
 
 
@@ -64,3 +66,12 @@ def test_question_bank_covers_expected_aqa_paper2_styles():
     }
 
     assert expected <= STYLE_IDS
+
+
+def test_packet_stimulus_is_introduced_as_figure_context():
+    style = next(style for style in QUESTION_STYLES if style.id == "packet_switching")
+
+    question = build_question(style, number=6, total=10, rng=random.Random(1))
+
+    assert "Figure 1" in question.stem
+    assert "packet" in question.stem.lower()

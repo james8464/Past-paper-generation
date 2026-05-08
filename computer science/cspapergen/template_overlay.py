@@ -3,6 +3,7 @@ from __future__ import annotations
 import shutil
 import ssl
 import urllib.request
+from datetime import date
 from urllib.error import URLError
 from pathlib import Path
 
@@ -29,6 +30,10 @@ QP_FIRST_CONTENT_RECT = (46, 112, 571, 785)
 QP_FOOTER_RECT = (40, 785, 520, 842)
 QP_PAGE_NUMBER_RECT = (250, 24, 345, 58)
 QP_CLEAN_HEADER_RECT = (46, 35, 595, 112)
+QP_COVER_DATE_RECTS = (
+    (35, 386, 565, 416),
+    (50, 379, 500, 390),
+)
 MS_CONTENT_RECT = (0, 35, 595, 790)
 MS_FOOTER_RECT = (0, 790, 595, 842)
 WATERMARK_RECTS = (
@@ -64,6 +69,7 @@ def apply_question_paper_template(generated_pdf: Path, output_pdf: Path, *, refe
         top_rect=QP_PAGE_NUMBER_RECT,
         clean_header_rect=QP_CLEAN_HEADER_RECT,
         repeat_reference_page=1,
+        current_cover_date=True,
     )
 
 
@@ -115,6 +121,7 @@ def _apply_template(
     clean_header_rect: tuple[int, int, int, int] | None = None,
     repeat_reference_page: int | None = None,
     preserve_reference_until_index: int | None = None,
+    current_cover_date: bool = False,
 ) -> None:
     try:
         import fitz
@@ -141,7 +148,12 @@ def _apply_template(
             page = output.new_page(width=generated_page.rect.width, height=generated_page.rect.height)
             if page_index == 0:
                 page.show_pdf_page(page.rect, reference, 0)
-                _redact_rects(page, [fitz.Rect(*rect) for rect in WATERMARK_RECTS], fitz)
+                redactions = [fitz.Rect(*rect) for rect in WATERMARK_RECTS]
+                if current_cover_date:
+                    redactions.extend(fitz.Rect(*rect) for rect in QP_COVER_DATE_RECTS)
+                _redact_rects(page, redactions, fitz)
+                if current_cover_date:
+                    _draw_current_cover_date(page)
                 continue
 
             if preserve_reference_until_index is not None and page_index <= preserve_reference_until_index:
@@ -179,3 +191,11 @@ def _redact_rects(page, rects, fitz) -> None:
     for rect in rects:
         page.add_redact_annot(rect, fill=(1, 1, 1))
     page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE)
+
+
+def _draw_current_cover_date(page) -> None:
+    today = date.today()
+    cover_date = f"{today:%A} {today.day} {today:%B %Y}"
+    page.insert_text((41, 405), cover_date, fontsize=13, fontname="helv", color=(0, 0, 0))
+    page.insert_text((224, 405), "Morning", fontsize=13, fontname="helv", color=(0, 0, 0))
+    page.insert_text((324, 405), "Time allowed: 2 hours 30 minutes", fontsize=13, fontname="helv", color=(0, 0, 0))

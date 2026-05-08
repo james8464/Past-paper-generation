@@ -326,6 +326,19 @@ def test_section_a_draw_question_moves_mcq_to_next_page_when_spacing_is_tight(tm
     assert "QUESTION 6 BEGINS ON THE NEXT PAGE" not in _pdf_text(output)
 
 
+def test_section_a_cost_revenue_draw_axes_have_labels(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=4)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    draw_page = next(page for page in _pdf_text(output).split("\f") if "Draw a cost and revenue diagram" in page)
+
+    assert "Costs/revenues" in draw_page
+    assert "Output" in draw_page
+
+
 def test_section_a_calculate_question_moves_mcq_to_next_page_when_spacing_is_tight(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")

@@ -332,7 +332,7 @@ def _packet_question(style: QuestionStyle, number: int, total: int, rng: random.
         ("3", 2, "Describe the role of a router in packet switching.", ["Router examines destination address;", "Router forwards packet along an appropriate next route/path;"], "", 4),
         ("4", 2, "Explain one advantage of packet switching compared with circuit switching.", ["No dedicated circuit is required;", "Network capacity can be shared more efficiently/resiliently;"], "", 4),
     ])
-    return _question(style, number, "Packet switching", "Data is transmitted across a packet-switched network.", stimulus, _fit_parts(parts, total))
+    return _question(style, number, "Packet switching", "Figure 1 shows selected fields from a packet transmitted across a packet-switched network.", stimulus, _fit_parts(parts, total))
 
 
 def _tcpip_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
