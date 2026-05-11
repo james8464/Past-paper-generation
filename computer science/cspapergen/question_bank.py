@@ -428,9 +428,9 @@ def _assembly_trace_question(style: QuestionStyle, number: int, total: int, rng:
 
 
 def _functional_type_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
-    stimulus = Stimulus(kind="code", title="Function type", code="f: \u2115 -> \u211d")
+    stimulus = Stimulus(kind="code", title="Function type", code="f: Natural -> Real")
     parts = _parts([
-        ("1", 1, "Describe the co-domain of the function f.", ["The co-domain is the set of real numbers / possible output type \u211d;"], "", 4),
+        ("1", 1, "Describe the co-domain of the function f.", ["The co-domain is the set of real numbers / possible output type Real;"], "", 4),
         ("2", 3, "Describe two features of functional programming languages that make it easier to write code that can be distributed to run across multiple servers.", ["Functions avoid side effects / use immutable data;", "This reduces shared-state conflicts between servers;", "Higher-order functions such as map/reduce can split processing across data items;", "Pure functions can be evaluated independently/in parallel;"], "", 10),
     ])
     return _question(style, number, "Functional programming function type", "A functional programming function f has the function type shown below.", stimulus, parts)

@@ -355,6 +355,34 @@ def test_section_a_calculate_question_moves_mcq_to_next_page_when_spacing_is_tig
     assert "Total for Question 1 = 5 marks" in next_page
 
 
+def test_section_a_calculate_page_fills_remaining_answer_space(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=0)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    pages = _pdf_text(output).split("\f")
+    page_number = next(index + 1 for index, page in enumerate(pages) if "calculate the percentage change" in page.lower())
+
+    assert _long_horizontal_line_count(output, page_number) >= 12
+
+
+def test_section_a_generic_data_table_uses_economic_labels(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=0)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    text = _pdf_text(output)
+
+    assert "Value A" not in text
+    assert "Value B" not in text
+    assert "Quantity demanded index" in text
+    assert "Average price index" in text
+
+
 def test_section_a_context_uses_specific_source_text(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
@@ -412,3 +440,22 @@ def _first_page_containing(path: Path, text: str) -> int | None:
         if text in page:
             return page_no
     return None
+
+
+def _long_horizontal_line_count(path: Path, page_number: int) -> int:
+    import fitz
+
+    doc = fitz.open(path)
+    try:
+        page = doc[page_number - 1]
+        count = 0
+        for drawing in page.get_drawings():
+            for item in drawing["items"]:
+                if item[0] != "l":
+                    continue
+                start, end = item[1], item[2]
+                if abs(start.y - end.y) < 0.5 and abs(end.x - start.x) > 250 and 100 < start.y < 760:
+                    count += 1
+        return count
+    finally:
+        doc.close()

@@ -739,6 +739,7 @@ def _draw_section_a_question(
     if first_part and first_part.command_word == "calculate" and second_part and second_part.marks == 1:
         y = _draw_calculate_part_with_working_lines(pdf, first_part, x, y)
         if y - _estimate_mcq_height(second_part) < SECTION_A_FOOTER_SAFE_Y:
+            _draw_answer_lines_until(pdf, x, y + 12, width - x, bottom_y=SECTION_A_FOOTER_SAFE_Y)
             _draw_question_footer(pdf, blueprint, page_number)
             pdf.showPage()
             page_number += 1
@@ -1251,7 +1252,7 @@ def _draw_demand_supply(pdf: canvas.Canvas, x: float, bottom: float) -> None:
 def _draw_data_table(pdf: canvas.Canvas, x: float, y: float, kind: str = "data_table") -> float:
     rows = _table_rows(kind)
     col_count = max(len(row) for row in rows)
-    col_width = 92 if col_count >= 4 else 100
+    col_width = 124 if kind == "data_table" else 92 if col_count >= 4 else 100
     w = col_width * col_count
     row_h = 21
     h = row_h * len(rows) + 2
@@ -1260,7 +1261,7 @@ def _draw_data_table(pdf: canvas.Canvas, x: float, y: float, kind: str = "data_t
         pdf.line(x, y - i * row_h, x + w, y - i * row_h)
     for i in range(1, col_count):
         pdf.line(x + i * col_width, y, x + i * col_width, y - h)
-    pdf.setFont(FONT_REGULAR, 9 if col_count >= 4 else 11)
+    pdf.setFont(FONT_REGULAR, 8.5 if kind == "data_table" else 9 if col_count >= 4 else 11)
     for r, row in enumerate(rows):
         for c, text in enumerate(row):
             pdf.drawString(x + c * col_width + 6, y - 14 - r * row_h, text)
@@ -1286,7 +1287,12 @@ def _table_rows(kind: str) -> list[list[str]]:
         return [["Firm", "Market share", "Rank"], ["A", "26.6%", "1"], ["B", "19.5%", "2"], ["C", "12.7%", "3"]]
     if kind == "elasticity_data_table":
         return [["Good", "PED", "YED"], ["Bus travel", "-0.6", "+0.2"], ["Cinema", "-1.4", "+1.8"], ["Fuel", "-0.2", "+0.1"]]
-    return [["Year", "Value A", "Value B"], ["2021", "74.2", "68.5"], ["2022", "81.6", "71.4"], ["2023", "88.0", "75.2"]]
+    return [
+        ["Year", "Quantity demanded index", "Average price index"],
+        ["2021", "74.2", "68.5"],
+        ["2022", "81.6", "71.4"],
+        ["2023", "88.0", "75.2"],
+    ]
 
 
 def _draw_bar_chart(pdf: canvas.Canvas, x: float, y: float, kind: str = "bar_chart") -> float:
@@ -1853,18 +1859,18 @@ def _calculation_answer_lines(prompt: str) -> list[str]:
             "Correct answer: the three-firm concentration ratio is 51.8%.",
             "",
         ]
-    if "percentage change in value a" in lowered:
+    if "percentage change in the quantity demanded index" in lowered:
         return [
             "Correct working:",
-            "((132 - 100) / 100) x 100 = 32%",
-            "Correct answer: Value A increased by 32%.",
+            "((88.0 - 74.2) / 74.2) x 100 = 18.6%",
+            "Correct answer: the quantity demanded index increased by 18.6%.",
             "",
         ]
-    if "difference between value a and value b" in lowered:
+    if "difference between the quantity demanded index and the average price index" in lowered:
         return [
             "Correct working:",
-            "132 - 121 = 11",
-            "Correct answer: the difference is 11 index points.",
+            "88.0 - 75.2 = 12.8",
+            "Correct answer: the difference is 12.8 index points.",
             "",
         ]
     if "trade deficit in 2023" in lowered:

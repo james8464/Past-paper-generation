@@ -1,6 +1,9 @@
 import subprocess
 from datetime import date
 
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+
 from cspapergen.cli import generate_package
 from cspapergen.generator import build_paper2_blueprint
 from cspapergen.render_pdf import render_question_paper
@@ -42,3 +45,42 @@ def test_question_paper_template_overlay_replaces_reference_cover_date(tmp_path,
     expected_date = f"{date.today():%A} {date.today().day} {date.today():%B %Y}"
     assert expected_date in first_page
     assert "Tuesday 18 June 2024" not in first_page
+
+
+def test_question_paper_template_overlay_preserves_reference_inner_page_chrome(tmp_path):
+    generated = tmp_path / "generated.pdf"
+    reference = tmp_path / "reference.pdf"
+    templated = tmp_path / "templated.pdf"
+    _two_page_pdf(generated, header_x=300, body_x=300, footer_x=300)
+    _two_page_pdf(reference, header_x=55, body_x=55, footer_x=55)
+
+    apply_question_paper_template(generated, templated, reference_pdf=reference)
+
+    assert _dark_pixels(templated, (55, 31, 115, 41)) > 250
+    assert _dark_pixels(templated, (300, 31, 360, 41)) < 20
+    assert _dark_pixels(templated, (300, 151, 360, 161)) > 250
+    assert _dark_pixels(templated, (55, 151, 115, 161)) < 20
+    assert _dark_pixels(templated, (55, 801, 115, 811)) > 250
+    assert _dark_pixels(templated, (300, 801, 360, 811)) < 20
+
+
+def _two_page_pdf(path, *, header_x: int, body_x: int, footer_x: int) -> None:
+    pdf = canvas.Canvas(str(path), pagesize=A4)
+    pdf.drawString(55, 405, "Tuesday 18 June 2024")
+    pdf.showPage()
+    pdf.rect(header_x, 800, 60, 10, stroke=0, fill=1)
+    pdf.rect(body_x, 680, 60, 10, stroke=0, fill=1)
+    pdf.rect(footer_x, 30, 60, 10, stroke=0, fill=1)
+    pdf.showPage()
+    pdf.save()
+
+
+def _dark_pixels(path, rect: tuple[int, int, int, int]) -> int:
+    import fitz
+
+    doc = fitz.open(path)
+    try:
+        pixmap = doc[1].get_pixmap(clip=fitz.Rect(*rect), colorspace=fitz.csGRAY)
+        return sum(1 for value in pixmap.samples if value < 32)
+    finally:
+        doc.close()

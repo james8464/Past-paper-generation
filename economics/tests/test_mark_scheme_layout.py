@@ -90,6 +90,21 @@ def test_mark_scheme_calculation_rows_include_specific_working(tmp_path):
     assert "quantity demanded increases by 7%" in text.lower()
 
 
+def test_mark_scheme_generic_data_calculation_matches_table_values(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=0)
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, syllabus, output)
+
+    text = _pdf_text(output)
+    assert "((88.0 - 74.2) / 74.2) x 100 = 18.6%" in text
+    assert "quantity demanded index increased by" in text.lower()
+    assert "18.6%." in text
+    assert "Value A" not in text
+
+
 def test_mark_scheme_rows_fit_within_single_page_after_long_extracts():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")

@@ -44,11 +44,8 @@ def render_question_paper(blueprint: PaperBlueprint, output_path: Path) -> None:
     pdf = canvas.Canvas(str(output_path), pagesize=AQA_A4, pageCompression=0)
     _cover_page(pdf, blueprint)
     pdf.showPage()
-    state = _QuestionRenderState(page=2, y=720)
+    state = _QuestionRenderState(page=2, y=676)
     _draw_question_page_header(pdf, state.page)
-    pdf.setFont(FONT_BOLD, 11)
-    pdf.drawCentredString(297, state.y, "Answer all questions.")
-    state.y -= 44
     for index, question in enumerate(blueprint.questions):
         if index:
             state = _new_question_page(pdf, state)
@@ -355,7 +352,7 @@ def _ensure_space(pdf: canvas.Canvas, state: _QuestionRenderState, height: float
     pdf.drawRightString(500, 62, "Turn over >")
     pdf.showPage()
     state.page += 1
-    state.y = 720
+    state.y = 676
     _draw_question_page_header(pdf, state.page)
     return state
 
@@ -365,7 +362,7 @@ def _new_question_page(pdf: canvas.Canvas, state: _QuestionRenderState) -> _Ques
     pdf.drawRightString(500, 62, "Turn over >")
     pdf.showPage()
     state.page += 1
-    state.y = 720
+    state.y = 676
     _draw_question_page_header(pdf, state.page)
     return state
 

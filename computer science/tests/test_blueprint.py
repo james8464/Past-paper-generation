@@ -75,3 +75,12 @@ def test_packet_stimulus_is_introduced_as_figure_context():
 
     assert "Figure 1" in question.stem
     assert "packet" in question.stem.lower()
+
+
+def test_functional_type_stimulus_uses_renderable_exam_notation():
+    style = next(style for style in QUESTION_STYLES if style.id == "functional_type_short")
+
+    question = build_question(style, number=1, total=4, rng=random.Random(1))
+
+    assert question.stimulus is not None
+    assert question.stimulus.code == "f: Natural -> Real"

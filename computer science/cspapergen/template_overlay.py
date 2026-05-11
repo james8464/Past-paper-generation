@@ -25,11 +25,13 @@ REFERENCE_PATTERNS = {
     "mark_scheme": ("*2024*MS*Paper*2*.pdf", "*MS*Paper*2*.pdf", "*Mark*Scheme*2*.pdf"),
 }
 
-QP_CONTENT_RECT = (46, 70, 571, 785)
-QP_FIRST_CONTENT_RECT = (46, 112, 571, 785)
-QP_FOOTER_RECT = (40, 785, 520, 842)
-QP_PAGE_NUMBER_RECT = (250, 24, 345, 58)
-QP_CLEAN_HEADER_RECT = (46, 35, 595, 112)
+QP_CONTENT_RECTS = (
+    (52, 132, 508, 755),
+    (526, 132, 562, 755),
+)
+QP_REDACT_RECTS = (
+    (52, 96, 571, 755),
+)
 QP_COVER_DATE_RECTS = (
     (35, 386, 565, 416),
     (50, 379, 500, 390),
@@ -63,12 +65,9 @@ def apply_question_paper_template(generated_pdf: Path, output_pdf: Path, *, refe
         generated_pdf,
         output_pdf,
         reference_pdf=reference,
-        content_rect=QP_CONTENT_RECT,
-        footer_rect=QP_FOOTER_RECT,
-        first_content_rect=QP_FIRST_CONTENT_RECT,
-        top_rect=QP_PAGE_NUMBER_RECT,
-        clean_header_rect=QP_CLEAN_HEADER_RECT,
-        repeat_reference_page=1,
+        content_rect=QP_CONTENT_RECTS,
+        footer_rect=None,
+        redraw_rect=QP_REDACT_RECTS,
         current_cover_date=True,
     )
 
@@ -114,11 +113,12 @@ def _apply_template(
     output_pdf: Path,
     *,
     reference_pdf: Path,
-    content_rect: tuple[int, int, int, int],
-    footer_rect: tuple[int, int, int, int],
-    first_content_rect: tuple[int, int, int, int] | None = None,
+    content_rect: tuple[int, int, int, int] | tuple[tuple[int, int, int, int], ...],
+    footer_rect: tuple[int, int, int, int] | None,
+    first_content_rect: tuple[int, int, int, int] | tuple[tuple[int, int, int, int], ...] | None = None,
     top_rect: tuple[int, int, int, int] | None = None,
     clean_header_rect: tuple[int, int, int, int] | None = None,
+    redraw_rect: tuple[int, int, int, int] | tuple[tuple[int, int, int, int], ...] | None = None,
     repeat_reference_page: int | None = None,
     preserve_reference_until_index: int | None = None,
     current_cover_date: bool = False,
@@ -136,9 +136,10 @@ def _apply_template(
     generated = fitz.open(str(generated_pdf))
     reference = fitz.open(str(reference_pdf))
     output = fitz.open()
-    content = fitz.Rect(*content_rect)
-    first_content = fitz.Rect(*(first_content_rect or content_rect))
-    footer = fitz.Rect(*footer_rect)
+    content = _rects(content_rect, fitz)
+    first_content = _rects(first_content_rect, fitz) if first_content_rect else content
+    redraw = _rects(redraw_rect, fitz) if redraw_rect else None
+    footer = fitz.Rect(*footer_rect) if footer_rect else None
     top = fitz.Rect(*top_rect) if top_rect else None
     clean_header = fitz.Rect(*clean_header_rect) if clean_header_rect else None
 
@@ -164,7 +165,9 @@ def _apply_template(
             reference_index = repeat_reference_page if repeat_reference_page is not None else min(page_index, reference.page_count - 1)
             page_content = first_content if page_index == 1 else content
             page.show_pdf_page(page.rect, reference, reference_index)
-            redactions = [page_content, footer, *(fitz.Rect(*rect) for rect in WATERMARK_RECTS)]
+            redactions = [*(redraw or page_content), *(fitz.Rect(*rect) for rect in WATERMARK_RECTS)]
+            if footer:
+                redactions.append(footer)
             if top:
                 redactions.append(top)
             if clean_header:
@@ -174,8 +177,10 @@ def _apply_template(
                 page.show_pdf_page(top, generated, page_index, clip=top)
             if clean_header:
                 page.show_pdf_page(clean_header, generated, page_index, clip=clean_header)
-            page.show_pdf_page(page_content, generated, page_index, clip=page_content)
-            page.show_pdf_page(footer, generated, page_index, clip=footer)
+            for rect in page_content:
+                page.show_pdf_page(rect, generated, page_index, clip=rect)
+            if footer:
+                page.show_pdf_page(footer, generated, page_index, clip=footer)
 
         output.save(str(temp_output), garbage=4, deflate=True)
     finally:
@@ -191,6 +196,12 @@ def _redact_rects(page, rects, fitz) -> None:
     for rect in rects:
         page.add_redact_annot(rect, fill=(1, 1, 1))
     page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE)
+
+
+def _rects(rect_or_rects, fitz):
+    if rect_or_rects and isinstance(rect_or_rects[0], (tuple, list)):
+        return [fitz.Rect(*rect) for rect in rect_or_rects]
+    return [fitz.Rect(*rect_or_rects)]
 
 
 def _draw_current_cover_date(page) -> None:

@@ -424,8 +424,8 @@ _STIMULUS_PART_PROMPTS = {
         (None, "calculate", 4): "Calculate the value of the largest firm's sales from the market share shown. You are advised to show your working.",
     },
     "data_table": {
-        (None, "calculate", 2): "Using the data above, calculate the difference between Value A and Value B in 2023. You are advised to show your working.",
-        (None, "calculate", 4): "Using the data above, calculate the percentage change in Value A between 2021 and 2023. You are advised to show your working.",
+        (None, "calculate", 2): "Using the data above, calculate the difference between the quantity demanded index and the average price index in 2023. You are advised to show your working.",
+        (None, "calculate", 4): "Using the data above, calculate the percentage change in the quantity demanded index between 2021 and 2023. You are advised to show your working.",
     },
     "elasticity_data_table": {
         (None, "calculate", 4): "Assume the price of cinema tickets falls by 5%. Using the PED value shown, calculate the expected percentage change in quantity demanded. You are advised to show your working.",
