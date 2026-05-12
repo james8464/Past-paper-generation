@@ -10,19 +10,9 @@ struct GeneratorWorkspace: View {
 
                 if board.isReady {
                     ReadinessBanner()
-
-                    ResponsiveColumns {
-                        VStack(spacing: 18) {
-                            PaperPanel(board: board)
-                            OutputPanel()
-                            DocumentsPanel()
-                        }
-                    } trailing: {
-                        VStack(spacing: 18) {
-                            ModelPanel()
-                            ActivityPanel()
-                        }
-                    }
+                    SetupPanel(board: board)
+                    ActivityPanel()
+                    DocumentsPanel()
                 } else {
                     PlaceholderPanel(board: board)
                 }
@@ -187,13 +177,61 @@ private struct ReadinessBanner: View {
     }
 }
 
-private struct PaperPanel: View {
+private struct SetupPanel: View {
+    let board: ExamBoardOption
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            PanelHeader(title: "Setup", systemImage: "slider.horizontal.3")
+
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .top, spacing: 22) {
+                    SetupPaperSection(board: board)
+                    SectionDivider()
+                    SetupOutputSection()
+                    SectionDivider()
+                    SetupEngineSection()
+                }
+
+                VStack(alignment: .leading, spacing: 18) {
+                    SetupPaperSection(board: board)
+                    Divider()
+                    SetupOutputSection()
+                    Divider()
+                    SetupEngineSection()
+                }
+            }
+        }
+        .nativePanel()
+    }
+}
+
+private struct SectionDivider: View {
+    var body: some View {
+        Divider()
+            .frame(height: 104)
+    }
+}
+
+private struct SetupSectionHeader: View {
+    let title: String
+    let systemImage: String
+
+    var body: some View {
+        Label(title, systemImage: systemImage)
+            .font(.subheadline.weight(.semibold))
+            .symbolRenderingMode(.hierarchical)
+            .foregroundStyle(.secondary)
+    }
+}
+
+private struct SetupPaperSection: View {
     @EnvironmentObject private var appModel: AppViewModel
     let board: ExamBoardOption
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            PanelHeader(title: "Paper", systemImage: "doc.text")
+            SetupSectionHeader(title: "Paper", systemImage: "doc.text")
 
             Picker(
                 "Paper",
@@ -211,45 +249,51 @@ private struct PaperPanel: View {
             Text(appModel.selectedPaperDetail)
                 .foregroundStyle(.secondary)
         }
-        .nativePanel()
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
-private struct OutputPanel: View {
+private struct SetupOutputSection: View {
     @EnvironmentObject private var appModel: AppViewModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            PanelHeader(title: "Output", systemImage: "folder")
+            SetupSectionHeader(title: "Output", systemImage: "folder")
 
-            HStack {
+            HStack(spacing: 10) {
                 Text(appModel.outputFolder.path)
                     .lineLimit(1)
                     .truncationMode(.middle)
                     .foregroundStyle(.secondary)
                 Spacer()
-                Button(action: appModel.openOutputFolder) {
-                    Label("Open", systemImage: "folder")
+                ControlGroup {
+                    Button(action: appModel.openOutputFolder) {
+                        Label("Open", systemImage: "folder")
+                    }
+                    .help("Open output folder")
+
+                    Button(action: appModel.chooseOutputFolder) {
+                        Label("Choose", systemImage: "ellipsis")
+                    }
+                    .help("Choose output folder")
                 }
                 .labelStyle(.iconOnly)
-                .help("Open output folder")
-                Button("Choose...", action: appModel.chooseOutputFolder)
             }
 
             Text("Generated PDFs are saved here.")
                 .font(.callout)
                 .foregroundStyle(.secondary)
         }
-        .nativePanel()
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
-private struct ModelPanel: View {
+private struct SetupEngineSection: View {
     @EnvironmentObject private var appModel: AppViewModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            PanelHeader(title: "AI Engine", systemImage: appModel.aiProvider.systemImage)
+            SetupSectionHeader(title: "AI Engine", systemImage: appModel.aiProvider.systemImage)
 
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
@@ -265,8 +309,6 @@ private struct ModelPanel: View {
                 }
             }
 
-            Divider()
-
             HStack {
                 if appModel.isRefreshingOllama {
                     ProgressView()
@@ -280,7 +322,7 @@ private struct ModelPanel: View {
                     .lineLimit(2)
             }
         }
-        .nativePanel()
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var modelStatusIcon: String {

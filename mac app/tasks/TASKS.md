@@ -56,3 +56,14 @@
    Claimed at: 2026-05-12T20:42:53Z
    Done by: CODEX
    Done at: 2026-05-12T20:48:45Z
+
+6. generator-view-layout
+   Id: 6-generator-view-layout
+   Scope: Refine generator workspace hierarchy, spacing, and alignment
+   Files: PastPaperCreator/GeneratorWorkspaceView.swift PastPaperCreator/SharedViews.swift PastPaperCreator/NativeVisualStyle.swift
+   Note: Reworked generator workspace into a HIG-style full-width hierarchy: header, readiness, setup, activity, documents. Verified with Swift tests.
+   Detail: tasks/details/6-generator-view-layout.md
+   Claimed by: CODEX
+   Claimed at: 2026-05-12T20:53:50Z
+   Done by: CODEX
+   Done at: 2026-05-12T20:57:52Z

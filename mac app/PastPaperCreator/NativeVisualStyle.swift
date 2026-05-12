@@ -21,11 +21,13 @@ extension View {
 
     func nativePanel() -> some View {
         self
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding(18)
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .stroke(.quaternary, lineWidth: 1)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
