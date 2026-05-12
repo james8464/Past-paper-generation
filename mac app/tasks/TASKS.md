@@ -45,3 +45,14 @@
    Claimed at: 2026-05-12T20:35:37Z
    Done by: CODEX
    Done at: 2026-05-12T20:37:04Z
+
+5. backend-launch-hardening
+   Id: 5-backend-launch-hardening
+   Scope: Fix Xcode generation crash, harden backend launch errors, and consolidate launch configuration
+   Files: PastPaperCreator/*.swift project.yml Makefile Tests/*.swift
+   Note: Fixed direct/App Store signing split, hardened backend Python errors, added BackendClient launch test. Verified direct build/test, Python tests, dry-run generation, and App Store build.
+   Detail: tasks/details/5-backend-launch-hardening.md
+   Claimed by: CODEX
+   Claimed at: 2026-05-12T20:42:53Z
+   Done by: CODEX
+   Done at: 2026-05-12T20:48:45Z

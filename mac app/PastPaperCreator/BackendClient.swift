@@ -3,6 +3,7 @@
 enum BackendClientError: LocalizedError {
     case backendMissing
     case pythonMissing
+    case pythonVenvUnreadable(String)
 
     var errorDescription: String? {
         switch self {
@@ -10,6 +11,11 @@ enum BackendClientError: LocalizedError {
             "Could not find app_backend.py."
         case .pythonMissing:
             "Could not find a Python interpreter."
+        case let .pythonVenvUnreadable(path):
+            """
+            The local Python environment is not readable: \(path). \
+            Use the direct development build or choose a Python environment the app can access.
+            """
         }
     }
 }
@@ -18,6 +24,7 @@ final class BackendClient: @unchecked Sendable {
     private enum BackendFile {
         static let bridgeScript = "app_backend.py"
         static let localPython = ".venv/bin/python"
+        static let localPythonConfig = ".venv/pyvenv.cfg"
         static let rootOverrideEnvironmentKey = "PAPER_CREATOR_ROOT"
         static let bundleSearchDepth = 8
         static let pythonName = "python3"
@@ -68,7 +75,7 @@ final class BackendClient: @unchecked Sendable {
             process.waitUntilExit()
             let stderr = await errorTask.value.trimmingCharacters(in: .whitespacesAndNewlines)
             if process.terminationStatus != 0, !stderr.isEmpty {
-                await onEvent(.error(message: stderr))
+                await onEvent(.error(message: Self.displayMessage(forBackendError: stderr)))
             }
             await onFinish(.success(process.terminationStatus))
         }
@@ -101,7 +108,7 @@ final class BackendClient: @unchecked Sendable {
             if process.terminationStatus != 0,
                let errorText = String(data: errorData, encoding: .utf8),
                !errorText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                return events + [.error(message: errorText.trimmingCharacters(in: .whitespacesAndNewlines))]
+                return events + [.error(message: Self.displayMessage(forBackendError: errorText))]
             }
             return events
         }.value
@@ -152,6 +159,14 @@ final class BackendClient: @unchecked Sendable {
     private func pythonExecutable(root: URL) throws -> URL {
         let localPython = root.appendingPathComponent(BackendFile.localPython)
         if fileManager.isExecutableFile(atPath: localPython.path) {
+            let venvConfig = root.appendingPathComponent(BackendFile.localPythonConfig)
+            if fileManager.fileExists(atPath: venvConfig.path),
+               !fileManager.isReadableFile(atPath: venvConfig.path) {
+                if let systemPython = executable(named: BackendFile.pythonName) {
+                    return systemPython
+                }
+                throw BackendClientError.pythonVenvUnreadable(venvConfig.path)
+            }
             return localPython
         }
 
@@ -180,5 +195,18 @@ final class BackendClient: @unchecked Sendable {
         }
 
         return nil
+    }
+
+    private static func displayMessage(forBackendError error: String) -> String {
+        let trimmed = error.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.contains("init_import_site"),
+           trimmed.contains("pyvenv.cfg"),
+           trimmed.contains("Operation not permitted") {
+            return "Python could not read the project virtual environment. In Xcode, use the Direct build settings, then run again."
+        }
+
+        let maximumLength = 1_200
+        guard trimmed.count > maximumLength else { return trimmed }
+        return String(trimmed.prefix(maximumLength)) + "\n..."
     }
 }

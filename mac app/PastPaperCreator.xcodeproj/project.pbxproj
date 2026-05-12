@@ -22,7 +22,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		1F6A8B2E52D4415097C4E811 /* Exceptions for "PastPaperCreator" folder in "PastPaperCreator" target */ = {
+		2E8FB77F4933E8C78347D4FA /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = BD8401FFEA4776BDEE4E36BB /* PastPaperCreatorTests */;
+		};
+		A9BE755A2A44CC0846EA72EE /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -30,20 +37,17 @@
 			);
 			target = 8C3E7885A2648CDD7FF39C46 /* PastPaperCreator */;
 		};
-		2E8FB77F4933E8C78347D4FA /* Exceptions for "Tests" folder in "PastPaperCreatorTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = BD8401FFEA4776BDEE4E36BB /* PastPaperCreatorTests */;
-		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		349267A15271A90157E0B0F0 /* Tests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				2E8FB77F4933E8C78347D4FA /* Exceptions for "Tests" folder in "PastPaperCreatorTests" target */,
+				2E8FB77F4933E8C78347D4FA /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -51,7 +55,11 @@
 		B6F2167E620A721CB7630B49 /* PastPaperCreator */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				1F6A8B2E52D4415097C4E811 /* Exceptions for "PastPaperCreator" folder in "PastPaperCreator" target */,
+				A9BE755A2A44CC0846EA72EE /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
 			);
 			path = PastPaperCreator;
 			sourceTree = "<group>";
@@ -302,14 +310,16 @@
 		363DCB1031751BF0D15C7224 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_SANDBOX_ENABLED = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = PastPaperCreator/PastPaperCreator.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(CODE_SIGN_ENTITLEMENTS_FILE)";
+				CODE_SIGN_ENTITLEMENTS_FILE = PastPaperCreator/PastPaperCreatorDirect.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DISTRIBUTION_MODE = direct;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = "$(APP_SANDBOX_ENABLED)";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
@@ -394,14 +404,16 @@
 		DF6B17DB2C3D85838C447ADC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_SANDBOX_ENABLED = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = PastPaperCreator/PastPaperCreator.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(CODE_SIGN_ENTITLEMENTS_FILE)";
+				CODE_SIGN_ENTITLEMENTS_FILE = PastPaperCreator/PastPaperCreatorDirect.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DISTRIBUTION_MODE = direct;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = "$(APP_SANDBOX_ENABLED)";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;

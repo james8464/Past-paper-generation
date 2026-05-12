@@ -12,6 +12,16 @@ final class PastPaperCreatorTests: XCTestCase {
         XCTAssertEqual(event, .file(role: "mark_scheme", path: "/tmp/ms.pdf"))
     }
 
+    func testBackendClientLaunchesBridge() async throws {
+        let events = try await BackendClient().collect(arguments: ["ollama-status"])
+        XCTAssertTrue(events.contains { event in
+            if case .ollamaStatus = event {
+                return true
+            }
+            return false
+        })
+    }
+
     func testBenchmarkSampleEventDecodes() throws {
         let event = try BackendEvent(jsonLine: #"{"type":"benchmark_sample","elapsed":2,"cpu_load":18.5,"memory_available_gb":9.25,"disk_write_mb_s":420,"disk_read_mb_s":900,"network_latency_ms":42}"#)
         if case let .benchmarkSample(sample) = event {
