@@ -4,7 +4,7 @@ Status: generation-ready for Paper 2.
 
 Runtime generator:
 
-- `../../../computer science/cspapergen`
+- `generator/cspapergen`
 
 Resource folders:
 
@@ -14,4 +14,4 @@ Resource folders:
 - `notes/`
 - `templates/`
 
-The current generator also uses curated data in `../../../computer science/data`.
+The current generator also uses curated data in `generator/data`.

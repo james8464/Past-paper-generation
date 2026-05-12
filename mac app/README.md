@@ -19,8 +19,8 @@ sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 ```mermaid
 flowchart LR
   SwiftUI["SwiftUI app"] --> Backend["app_backend.py JSONL bridge"]
-  Backend --> Econ["economics/pastpapergen"]
-  Backend --> CS["computer science/cspapergen"]
+  Backend --> Econ["a-levels/economics/edexcel-a/generator/pastpapergen"]
+  Backend --> CS["a-levels/computer-science/aqa/generator/cspapergen"]
   Backend --> Ollama["Local Ollama"]
   Econ --> PDFs["PDFs in chosen folder"]
   CS --> PDFs

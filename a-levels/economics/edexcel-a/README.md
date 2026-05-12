@@ -4,7 +4,7 @@ Status: generation-ready.
 
 Runtime generator:
 
-- `../../../economics/pastpapergen`
+- `generator/pastpapergen`
 
 Resource folders:
 
@@ -14,4 +14,4 @@ Resource folders:
 - `notes/`
 - `templates/`
 
-The current generator also uses curated data in `../../../economics/data`.
+The current generator also uses curated data in `generator/data`.

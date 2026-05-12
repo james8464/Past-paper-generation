@@ -1,6 +1,6 @@
 # A-Level Resource Packs
 
-This folder is the future-facing resource catalog for the app.
+This folder is the resource catalog for the app.
 
 Each exam-board pack follows:
 
@@ -18,4 +18,4 @@ Only these packs are generation-ready:
 - `economics/edexcel-a`
 - `computer-science/aqa`
 
-All other folders are placeholders. To enable a placeholder, add syllabus, real past papers, mark schemes, notes, document templates, and a generator profile.
+All other folders are coming soon. Keep the empty folders in place so the app can show them, but do not add downloads until a generator profile is being built for that subject/board.

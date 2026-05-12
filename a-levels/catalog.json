@@ -1,6 +1,6 @@
 {
   "qualification": "A-Level",
-  "layout_version": 1,
+  "layout_version": 3,
   "resource_pack_shape": [
     "syllabus",
     "past-papers",
@@ -13,30 +13,74 @@
       "subject": "economics",
       "exam_board": "edexcel-a",
       "backend_subject": "economics",
+      "generator_path": "a-levels/economics/edexcel-a/generator",
       "papers": ["1", "2", "3"]
     },
     {
       "subject": "computer-science",
       "exam_board": "aqa",
       "backend_subject": "computer_science",
+      "generator_path": "a-levels/computer-science/aqa/generator",
       "papers": ["2"]
     }
   ],
-  "placeholder_subjects": [
-    "accounting",
-    "biology",
-    "business",
-    "chemistry",
-    "english-literature",
-    "further-mathematics",
-    "geography",
-    "history",
-    "law",
-    "mathematics",
-    "physics",
-    "politics",
-    "psychology",
-    "religious-studies",
-    "sociology"
+  "subjects": [
+    {
+      "id": "biology",
+      "title": "Biology",
+      "boards": [
+        {"id": "aqa", "title": "AQA", "status": "coming-soon"},
+        {"id": "edexcel-a", "title": "Edexcel Biology A (SNAB)", "status": "coming-soon"}
+      ]
+    },
+    {
+      "id": "chemistry",
+      "title": "Chemistry",
+      "boards": [
+        {"id": "aqa", "title": "AQA", "status": "coming-soon"},
+        {"id": "cambridge-international", "title": "Cambridge International", "status": "coming-soon"},
+        {"id": "edexcel", "title": "Edexcel", "status": "coming-soon"},
+        {"id": "ocr-a", "title": "OCR A", "status": "coming-soon"}
+      ]
+    },
+    {
+      "id": "computer-science",
+      "title": "Computer Science",
+      "boards": [
+        {"id": "aqa", "title": "AQA", "status": "ready"},
+        {"id": "cambridge-international", "title": "Cambridge International", "status": "coming-soon"},
+        {"id": "ocr", "title": "OCR", "status": "coming-soon"}
+      ]
+    },
+    {
+      "id": "economics",
+      "title": "Economics",
+      "boards": [
+        {"id": "aqa", "title": "AQA", "status": "coming-soon"},
+        {"id": "cambridge-international", "title": "Cambridge International", "status": "coming-soon"},
+        {"id": "edexcel-a", "title": "Edexcel A", "status": "ready"},
+        {"id": "ocr", "title": "OCR", "status": "coming-soon"}
+      ]
+    },
+    {
+      "id": "mathematics",
+      "title": "Mathematics",
+      "boards": [
+        {"id": "aqa", "title": "AQA", "status": "coming-soon"},
+        {"id": "cambridge-international", "title": "Cambridge International", "status": "coming-soon"},
+        {"id": "edexcel", "title": "Edexcel", "status": "coming-soon"},
+        {"id": "ocr-a", "title": "OCR A", "status": "coming-soon"}
+      ]
+    },
+    {
+      "id": "physics",
+      "title": "Physics",
+      "boards": [
+        {"id": "aqa", "title": "AQA", "status": "coming-soon"},
+        {"id": "cambridge-international", "title": "Cambridge International", "status": "coming-soon"},
+        {"id": "edexcel", "title": "Edexcel", "status": "coming-soon"},
+        {"id": "ocr-a", "title": "OCR A", "status": "coming-soon"}
+      ]
+    }
   ]
 }

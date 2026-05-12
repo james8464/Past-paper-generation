@@ -115,7 +115,7 @@ private struct BoardRow: View {
                 Image(systemName: "clock")
                     .font(.caption)
                     .foregroundStyle(.tertiary)
-                    .help("Placeholder")
+                    .help("Coming soon")
             }
         }
     }
@@ -206,7 +206,7 @@ private struct HeaderPanel: View {
     }
 
     private var generateHelp: String {
-        if !board.isReady { return "This exam board is a placeholder." }
+        if !board.isReady { return "This exam board is coming soon." }
         if appModel.aiProvider == .ollama && !appModel.ollamaState.running { return "Refresh Ollama before generating." }
         return "Generate paper"
     }
@@ -415,16 +415,14 @@ private struct PlaceholderPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            PanelHeader(title: "Generator Placeholder", systemImage: "tray")
-            Text("\(board.subjectTitle) \(board.title) is present in the catalog, but does not have a generator yet.")
+            PanelHeader(title: "Coming Soon", systemImage: "clock")
+            Text("\(board.subjectTitle) \(board.title) is in the catalog, but generation is not available yet.")
                 .foregroundStyle(.secondary)
             LabeledContent("Resource folder", value: board.resourcePath)
             Divider()
             VStack(alignment: .leading, spacing: 8) {
-                Label("Add syllabus PDFs to syllabus/", systemImage: "doc.text")
-                Label("Add past papers to past-papers/", systemImage: "doc.on.doc")
-                Label("Add mark schemes to mark-schemes/", systemImage: "checklist")
-                Label("Add renderer and prompt profile before enabling generation", systemImage: "hammer")
+                Label("Economics Edexcel A and Computer Science AQA are ready now.", systemImage: "checkmark.circle")
+                Label("Other subjects will be enabled after their resources and generator profiles are added.", systemImage: "hourglass")
             }
             .foregroundStyle(.secondary)
         }

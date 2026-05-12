@@ -34,7 +34,7 @@ def build_parser() -> argparse.ArgumentParser:
     generate.add_argument("--api-key", default="")
     generate.add_argument("--ollama-url", default="http://localhost:11434")
     generate.add_argument("--dry-run", action="store_true")
-    generate.add_argument("--notes", default=str(Path("/Users/james/Downloads/CS Notes")))
+    generate.add_argument("--notes", default="")
     generate.add_argument("--no-template-overlay", action="store_true")
     generate.add_argument("--template-reference-dir", default=None)
     generate.set_defaults(handler=handle_generate)

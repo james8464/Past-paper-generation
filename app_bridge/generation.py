@@ -7,7 +7,7 @@ import traceback
 from pathlib import Path
 
 from app_bridge.events import emit, emit_progress, progress_emitter
-from app_bridge.paths import CS_ROOT, ECONOMICS_ROOT
+from app_bridge.paths import CS_PACK_ROOT, CS_ROOT, ECONOMICS_ROOT
 from app_bridge.preview import emit_preview_pages
 from app_bridge.providers import hosted_client
 
@@ -74,7 +74,7 @@ def generate_computer_science(args: argparse.Namespace, output_dir: Path) -> int
         sys.path.insert(0, str(CS_ROOT))
     from cspapergen.cli import generate_package
 
-    notes = Path(args.notes).expanduser() if args.notes else Path("/Users/james/Downloads/CS Notes")
+    notes = Path(args.notes).expanduser() if args.notes else CS_PACK_ROOT / "notes"
     reference_dir = Path(args.template_reference_dir).expanduser() if args.template_reference_dir else None
 
     emit_progress("Generating AQA Computer Science Paper 2", stage="start", progress=0.02)

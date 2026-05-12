@@ -2,15 +2,15 @@
 
 Subject folders:
 
-- `economics/` - A-Level Economics Edexcel A practice paper generator.
-- `computer science/` - AQA A-Level Computer Science Paper 2 practice paper generator.
-- `a-levels/` - resource-pack placeholders by subject and exam board.
+- `a-levels/economics/edexcel-a/generator/` - A-Level Economics Edexcel A practice paper generator.
+- `a-levels/computer-science/aqa/generator/` - AQA A-Level Computer Science Paper 2 practice paper generator.
+- `a-levels/` - resource packs by subject and exam board. Non-ready boards are kept as coming-soon folders.
 - `mac app/` - native SwiftUI wrapper around the Python generators.
 - `app_bridge/` - JSONL backend package used by the mac app.
 - `app_backend.py` - stable executable shim for the Swift app and tests.
 - `tests/` - root-level bridge tests.
 
-Each subject keeps its own README, package, tests and data inside its folder.
+Each ready board keeps its own README, package, tests and data inside its `generator/` folder.
 Generated PDFs go to `~/Downloads`; runtime caches live under `~/Library/Caches/Past Paper Creation/`.
 
 ## Project Layout
@@ -25,27 +25,27 @@ flowchart TD
   Bridge --> Preview["preview.py"]
   Bridge --> Generation["generation.py"]
   Generation --> Packs["a-levels/<subject>/<board>"]
-  Generation --> Econ["economics/pastpapergen"]
-  Generation --> CS["computer science/cspapergen"]
+  Generation --> Econ["a-levels/economics/edexcel-a/generator/pastpapergen"]
+  Generation --> CS["a-levels/computer-science/aqa/generator/cspapergen"]
 ```
 
 `app_backend.py` should stay tiny. Add app-facing backend work inside `app_bridge/`.
-The app catalog can show placeholder A-level subjects before their generators exist.
+The app catalog can show coming-soon A-level subjects before their generators exist.
 
 ## Economics Quick Start
 
 ```bash
-cd economics
-../.venv/bin/python -m pip install -e ".[dev]"
-../.venv/bin/python generate_paper.py
+cd a-levels/economics/edexcel-a/generator
+../../../../.venv/bin/python -m pip install -e ".[dev]"
+../../../../.venv/bin/python generate_paper.py
 ```
 
 ## Computer Science Quick Start
 
 ```bash
-cd "computer science"
-../.venv/bin/python -m pip install -e ".[dev]"
-../.venv/bin/python generate_cs_paper.py
+cd a-levels/computer-science/aqa/generator
+../../../../.venv/bin/python -m pip install -e ".[dev]"
+../../../../.venv/bin/python generate_cs_paper.py
 ```
 
 Computer Science outputs:

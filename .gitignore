@@ -11,3 +11,4 @@ graphify-out/.graphify_*
 .DS_Store
 .idea/
 example papers/
+a-levels/**/*.pdf

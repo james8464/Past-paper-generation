@@ -137,7 +137,7 @@ final class AppViewModel: ObservableObject {
         generatedFiles.removeAll()
         previewPages.removeAll()
         progressEntries.removeAll()
-        status = board.isReady ? "Ready" : "Placeholder"
+        status = board.isReady ? "Ready" : "Coming Soon"
     }
 
     func selectPaperID(_ paperID: String) {
@@ -152,7 +152,7 @@ final class AppViewModel: ObservableObject {
     func generate() {
         guard canGenerate else { return }
         guard let backendSubject = selectedBoard.backendSubject else {
-            setError("This exam board is a placeholder. Add its syllabus, past papers and generator profile first.")
+            setError("This exam board is coming soon.")
             return
         }
 

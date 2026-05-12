@@ -7,7 +7,7 @@ enum BoardStatus: String, Equatable {
     var title: String {
         switch self {
         case .ready: "Ready"
-        case .placeholder: "Placeholder"
+        case .placeholder: "Coming Soon"
         }
     }
 }
@@ -43,6 +43,7 @@ struct CatalogSubject: Identifiable, Hashable {
 enum ExamCatalog {
     static let subjects: [CatalogSubject] = [
         subject("economics", "Economics", "chart.line.uptrend.xyaxis", [
+            placeholderBoard("economics-aqa", "AQA"),
             readyBoard(
                 subjectID: "economics",
                 subjectTitle: "Economics",
@@ -56,7 +57,6 @@ enum ExamCatalog {
                     PaperOption(id: "3", title: "Paper 3", detail: "Microeconomics and macroeconomics"),
                 ]
             ),
-            placeholderBoard("economics-aqa", "AQA"),
             placeholderBoard("economics-ocr", "OCR"),
             placeholderBoard("economics-cambridge-international", "Cambridge International"),
         ]),
@@ -75,21 +75,23 @@ enum ExamCatalog {
             placeholderBoard("computer-science-ocr", "OCR"),
             placeholderBoard("computer-science-cambridge-international", "Cambridge International"),
         ]),
-        placeholderSubject("accounting", "Accounting", "number.square", ["AQA", "Cambridge International"]),
-        placeholderSubject("biology", "Biology", "leaf", ["AQA", "Edexcel A", "OCR A", "Cambridge International"]),
-        placeholderSubject("business", "Business", "briefcase", ["AQA", "Edexcel A", "OCR", "Cambridge International"]),
-        placeholderSubject("chemistry", "Chemistry", "flask", ["AQA", "Edexcel A", "OCR A", "Cambridge International"]),
-        placeholderSubject("english-literature", "English Literature", "book", ["AQA", "Edexcel", "OCR", "Cambridge International"]),
-        placeholderSubject("further-mathematics", "Further Mathematics", "function", ["AQA", "Edexcel", "OCR A", "Cambridge International"]),
-        placeholderSubject("geography", "Geography", "globe.europe.africa", ["AQA", "Edexcel", "OCR", "Cambridge International"]),
-        placeholderSubject("history", "History", "building.columns", ["AQA", "Edexcel", "OCR", "Cambridge International"]),
-        placeholderSubject("law", "Law", "scale.3d", ["AQA", "OCR"]),
+        subject("biology", "Biology", "leaf", [
+            placeholderBoard("biology-aqa", "AQA", subjectID: "biology", subjectTitle: "Biology", systemImage: "leaf"),
+            placeholderBoard("biology-edexcel-a", "Edexcel Biology A (SNAB)", subjectID: "biology", subjectTitle: "Biology", systemImage: "leaf"),
+        ]),
+        subject("chemistry", "Chemistry", "flask", [
+            placeholderBoard("chemistry-aqa", "AQA", subjectID: "chemistry", subjectTitle: "Chemistry", systemImage: "flask"),
+            placeholderBoard("chemistry-cambridge-international", "Cambridge International", subjectID: "chemistry", subjectTitle: "Chemistry", systemImage: "flask"),
+            placeholderBoard("chemistry-edexcel", "Edexcel", subjectID: "chemistry", subjectTitle: "Chemistry", systemImage: "flask"),
+            placeholderBoard("chemistry-ocr-a", "OCR A", subjectID: "chemistry", subjectTitle: "Chemistry", systemImage: "flask"),
+        ]),
         placeholderSubject("mathematics", "Mathematics", "x.squareroot", ["AQA", "Edexcel", "OCR A", "Cambridge International"]),
-        placeholderSubject("physics", "Physics", "atom", ["AQA", "Edexcel A", "OCR A", "Cambridge International"]),
-        placeholderSubject("politics", "Politics", "person.2.wave.2", ["AQA", "Edexcel"]),
-        placeholderSubject("psychology", "Psychology", "brain.head.profile", ["AQA", "Edexcel", "OCR", "Cambridge International"]),
-        placeholderSubject("religious-studies", "Religious Studies", "text.book.closed", ["AQA", "Edexcel", "OCR"]),
-        placeholderSubject("sociology", "Sociology", "person.3", ["AQA", "Edexcel", "OCR"]),
+        subject("physics", "Physics", "atom", [
+            placeholderBoard("physics-aqa", "AQA", subjectID: "physics", subjectTitle: "Physics", systemImage: "atom"),
+            placeholderBoard("physics-cambridge-international", "Cambridge International", subjectID: "physics", subjectTitle: "Physics", systemImage: "atom"),
+            placeholderBoard("physics-edexcel", "Edexcel", subjectID: "physics", subjectTitle: "Physics", systemImage: "atom"),
+            placeholderBoard("physics-ocr-a", "OCR A", subjectID: "physics", subjectTitle: "Physics", systemImage: "atom"),
+        ]),
     ]
 
     static var readyBoards: [ExamBoardOption] {
@@ -148,6 +150,7 @@ enum ExamCatalog {
         systemImage: String? = nil
     ) -> ExamBoardOption {
         let resolvedSubjectID = subjectID ?? id.components(separatedBy: "-").dropLast().joined(separator: "-")
+        let boardSlug = String(id.dropFirst("\(resolvedSubjectID)-".count))
         return ExamBoardOption(
             id: id,
             subjectID: resolvedSubjectID,
@@ -158,9 +161,9 @@ enum ExamCatalog {
             status: .placeholder,
             backendSubject: nil,
             papers: [
-                PaperOption(id: "placeholder", title: "Paper", detail: "Add syllabus, past papers, mark schemes and a generator profile."),
+                PaperOption(id: "coming-soon", title: "Coming Soon", detail: "Generator support will be added later."),
             ],
-            resourcePath: "a-levels/\(resolvedSubjectID)/\(title.slugID)"
+            resourcePath: "a-levels/\(resolvedSubjectID)/\(boardSlug)"
         )
     }
 }
