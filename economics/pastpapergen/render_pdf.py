@@ -35,15 +35,17 @@ SECTION_A_INSTRUCTION_LINES = [
 
 
 def _register_fonts() -> None:
-    fonts = [
-        (FONT_REGULAR, Path("/System/Library/Fonts/Supplemental/Arial.ttf"), 0),
-        (FONT_BOLD, Path("/System/Library/Fonts/Supplemental/Arial Bold.ttf"), 0),
-    ]
-    if not fonts[0][1].exists():
-        fonts = [
+    font_sets = [
+        [
+            (FONT_REGULAR, Path("/System/Library/Fonts/HelveticaNeue.ttc"), 0),
+            (FONT_BOLD, Path("/System/Library/Fonts/HelveticaNeue.ttc"), 1),
+        ],
+        [
             (FONT_REGULAR, Path("/System/Library/Fonts/Supplemental/Arial.ttf"), 0),
             (FONT_BOLD, Path("/System/Library/Fonts/Supplemental/Arial Bold.ttf"), 0),
-        ]
+        ],
+    ]
+    fonts = next((candidate for candidate in font_sets if all(path.exists() for _, path, _ in candidate)), font_sets[-1])
     for name, path, subfont_index in fonts:
         if name not in pdfmetrics.getRegisteredFontNames() and path.exists():
             pdfmetrics.registerFont(TTFont(name, str(path), subfontIndex=subfont_index))
@@ -1826,12 +1828,12 @@ def _question_mark_scheme_lines(question, topic) -> list[str]:
             "",
             "Analysis:",
             "Credit clear logical chains of reasoning.",
-            *_scheme_bullets(question.mark_scheme),
+            *_scheme_bullets(question.mark_scheme, topic),
         ]
     return [
-        *_specific_mark_scheme_context(question, question.prompt, topic),
+        *_specific_mark_scheme_context(question, question.prompt, topic, include_points=False),
         "Indicative content",
-        *[f"- {item}" for item in (question.indicative_content or topic.points[:4])],
+        *_scheme_bullets(question.indicative_content or topic.points[:4], topic, limit=5),
         "",
         "Level 1: displays isolated knowledge and limited understanding of economic terms.",
         "Level 2: applies knowledge to the context with partial chains of reasoning.",
@@ -1840,12 +1842,19 @@ def _question_mark_scheme_lines(question, topic) -> list[str]:
         "Level 5: shows sustained judgement, coherent chains of reasoning and developed evaluation.",
         "",
         question.mark_breakdown or "Knowledge, Application, Analysis and Evaluation",
-        *_scheme_bullets(question.mark_scheme),
+        *_scheme_bullets(question.mark_scheme, topic),
     ]
 
 
-def _scheme_bullets(items: list[str]) -> list[str]:
-    return [f"- {item}" for item in items[:8]]
+def _scheme_bullets(items: list[str], topic=None, limit: int = 8) -> list[str]:
+    points: list[str] = []
+    for item in items:
+        point = _normalise_mark_point(item, topic)
+        if point:
+            points.append(f"- {point}")
+        if len(points) == limit:
+            break
+    return points
 
 
 def _calculation_answer_lines(prompt: str) -> list[str]:
@@ -1855,6 +1864,13 @@ def _calculation_answer_lines(prompt: str) -> list[str]:
             "Correct working:",
             "5% x 1.4 = 7%",
             "Correct answer: quantity demanded increases by 7%.",
+            "",
+        ]
+    if "pes value for the rural market" in lowered and "quantity supplied increases by 3.6%" in lowered:
+        return [
+            "Correct working:",
+            "3.6% / 1.8 = 2.0%",
+            "Correct answer: price increases by 2.0%.",
             "",
         ]
     if "three-firm concentration ratio" in lowered:
@@ -1907,7 +1923,7 @@ def _calculation_answer_lines(prompt: str) -> list[str]:
     ]
 
 
-def _specific_mark_scheme_context(question, prompt: str, topic) -> list[str]:
+def _specific_mark_scheme_context(question, prompt: str, topic, *, include_points: bool = True) -> list[str]:
     lines = [
         f"Question focus: {_sentence(prompt)}",
     ]
@@ -1919,7 +1935,7 @@ def _specific_mark_scheme_context(question, prompt: str, topic) -> list[str]:
                 f"- {_brief_source_evidence(question.source_text)}",
             ]
         )
-    points = _specific_answer_points(question, topic)
+    points = _specific_answer_points(question, topic) if include_points else []
     if points:
         lines.extend(["", "Valid points may include:", *[f"- {point}" for point in points]])
     lines.append("")
@@ -1931,7 +1947,7 @@ def _specific_answer_points(question, topic) -> list[str]:
     points: list[str] = []
     note_points = note_points_for_topic(topic.id, title=topic.title, keywords=topic.points, limit=6)
     for item in [*question.indicative_content, *note_points, *question.mark_scheme, *topic.points]:
-        cleaned = _sentence(item)
+        cleaned = _normalise_mark_point(item, topic)
         key = cleaned.lower()
         if cleaned and key not in seen:
             seen.add(key)
@@ -1942,8 +1958,40 @@ def _specific_answer_points(question, topic) -> list[str]:
 
 
 def _sentence(text: str) -> str:
+    cleaned = _strip_leading_bullet(text)
+    cleaned = cleaned.rstrip(" .;:")
+    return cleaned[:1].upper() + cleaned[1:] + "." if cleaned else ""
+
+
+def _normalise_mark_point(text: str, topic=None) -> str:
+    cleaned = _strip_leading_bullet(text)
+    if not cleaned:
+        return ""
+    lowered = cleaned.lower()
+    weak_starts = (
+        "advantage",
+        "disadvantage",
+        "advantages",
+        "disadvantages",
+        "as a result",
+        "this diagram",
+        "some example",
+    )
+    if lowered.startswith(weak_starts):
+        return ""
+    phrase = cleaned.rstrip(" .;:")
+    if len(phrase.split()) <= 4:
+        if not topic:
+            return ""
+        return f"Credit explanation of {phrase.lower()} where applied to {topic.title.lower()}."
+    return _sentence(cleaned)
+
+
+def _strip_leading_bullet(text: str) -> str:
     cleaned = " ".join(str(text).split())
-    return cleaned[:1].upper() + cleaned[1:].rstrip(".") + "." if cleaned else ""
+    cleaned = re.sub(r"^(?:[•●]\s*|\-\s+|o\s+)+", "", cleaned)
+    cleaned = re.sub(r"\s+([,.;:])", r"\1", cleaned)
+    return cleaned.strip()
 
 
 def _brief_source_evidence(text: str, limit: int = 260) -> str:

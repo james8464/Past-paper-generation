@@ -15,3 +15,12 @@ def test_note_context_and_points_are_relevant_to_topic():
 
     assert "perfect competition" in context.lower()
     assert any("efficiency" in point.lower() for point in points)
+
+
+def test_note_points_are_complete_clean_bullets():
+    points = note_points_for_topic("1.4", title="government intervention", keywords=["regulation", "taxation"], limit=6)
+
+    assert points
+    assert all(not point.startswith(("●", "•", "-", "o ")) for point in points)
+    assert all(point[-1] in ".;)" for point in points)
+    assert all(len(point.split()) >= 8 for point in points)

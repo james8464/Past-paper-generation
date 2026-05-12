@@ -3,9 +3,10 @@ from __future__ import annotations
 import shutil
 import ssl
 import urllib.request
-from datetime import date
 from urllib.error import URLError
 from pathlib import Path
+
+from cspapergen.exam_dates import formatted_paper2_exam_date, paper2_exam_date
 
 REFERENCE_CACHE = Path.home() / "Library" / "Caches" / "Past Paper Creation" / "cs-templates"
 LOCAL_REFERENCE_DIR = Path.home() / "Downloads" / "CS paper 2"
@@ -89,6 +90,7 @@ def apply_mark_scheme_template(generated_pdf: Path, output_pdf: Path, *, referen
         content_rect=MS_CONTENT_RECT,
         footer_rect=MS_FOOTER_RECT,
         preserve_reference_until_index=4,
+        current_ms_year=True,
     )
 
 
@@ -131,6 +133,7 @@ def _apply_template(
     repeat_reference_page: int | None = None,
     preserve_reference_until_index: int | None = None,
     current_cover_date: bool = False,
+    current_ms_year: bool = False,
     generated_pages_after_cover: bool = False,
 ) -> None:
     try:
@@ -168,6 +171,8 @@ def _apply_template(
                 if current_cover_date:
                     _draw_current_cover_date(page)
                     _draw_current_cover_footer(page)
+                if current_ms_year:
+                    _replace_reference_year(page, fitz)
                 continue
 
             if generated_pages_after_cover:
@@ -177,6 +182,8 @@ def _apply_template(
             if preserve_reference_until_index is not None and page_index <= preserve_reference_until_index:
                 page.show_pdf_page(page.rect, reference, min(page_index, reference.page_count - 1))
                 _redact_rects(page, [fitz.Rect(*rect) for rect in WATERMARK_RECTS], fitz)
+                if current_ms_year:
+                    _replace_reference_year(page, fitz)
                 continue
 
             reference_index = repeat_reference_page if repeat_reference_page is not None else min(page_index, reference.page_count - 1)
@@ -222,8 +229,7 @@ def _rects(rect_or_rects, fitz):
 
 
 def _draw_current_cover_date(page) -> None:
-    today = date.today()
-    cover_date = f"{today:%A} {today.day} {today:%B %Y}"
+    cover_date = formatted_paper2_exam_date()
     page.insert_text((41, 405), cover_date, fontsize=13, fontname="helv", color=(0, 0, 0))
     page.insert_text((224, 405), "Morning", fontsize=13, fontname="helv", color=(0, 0, 0))
     page.insert_text((324, 405), "Time allowed: 2 hours 30 minutes", fontsize=13, fontname="helv", color=(0, 0, 0))
@@ -232,7 +238,7 @@ def _draw_current_cover_date(page) -> None:
 def _draw_current_cover_footer(page) -> None:
     import fitz
 
-    year = date.today().strftime("%y")
+    year = paper2_exam_date().strftime("%y")
     widths = [1, 1, 2, 1, 3, 1, 1, 2, 1, 2, 3, 1, 1, 1, 2, 2, 1, 3]
     cursor = 49
     for index, width in enumerate(widths * 5):
@@ -243,3 +249,28 @@ def _draw_current_cover_footer(page) -> None:
         cursor += width + 1
     page.insert_text((49, 833), f"J U N {year} 7 5 1 7 2 0 1", fontsize=7, fontname="helv", color=(0, 0, 0))
     page.insert_text((322, 820), f"IB/G/Jun{year}/G4003/E12", fontsize=7, fontname="helv", color=(0, 0, 0))
+
+
+def _replace_reference_year(page, fitz) -> None:
+    target_year = str(paper2_exam_date().year)
+    if target_year == "2024":
+        return
+    copyright_rects = list(page.search_for("Copyright © 2024 AQA"))
+    for rect in copyright_rects:
+        padded = fitz.Rect(rect.x0 - 1, rect.y0 - 1, rect.x1 + 1, rect.y1 + 1)
+        page.add_redact_annot(padded, fill=(1, 1, 1))
+    if copyright_rects:
+        page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE)
+        for rect in copyright_rects:
+            fontsize = max(7, min(10, rect.height * 0.72))
+            page.insert_text((rect.x0, rect.y1 - 1), f"Copyright © {target_year} AQA", fontsize=fontsize, fontname="helv", color=(0, 0, 0))
+    rects = list(page.search_for("2024"))
+    if not rects:
+        return
+    for rect in rects:
+        padded = fitz.Rect(rect.x0 - 1, rect.y0 - 1, rect.x1 + 1, rect.y1 + 1)
+        page.add_redact_annot(padded, fill=(1, 1, 1))
+    page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE)
+    for rect in rects:
+        fontsize = max(7, min(13, rect.height * 0.88))
+        page.insert_text((rect.x0, rect.y1 - 1), f"{target_year} ", fontsize=fontsize, fontname="helv", color=(0, 0, 0))

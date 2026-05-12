@@ -417,7 +417,7 @@ _STIMULUS_PART_PROMPTS = {
     },
     "pes_data_table": {
         (None, "explain", 4): "With reference to the data above, explain one likely reason for the difference in price elasticity of supply.",
-        (None, "calculate", 4): "Calculate the percentage increase in price if quantity supplied increases by 3.6%. You are advised to show your working.",
+        (None, "calculate", 4): "Using the PES value for the rural market, calculate the percentage increase in price if quantity supplied increases by 3.6%. You are advised to show your working.",
     },
     "market_share_bar_chart": {
         (None, "explain", 4): "With reference to the information above, explain the market structure of the industry shown.",

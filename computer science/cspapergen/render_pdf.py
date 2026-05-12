@@ -8,6 +8,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
+from cspapergen.exam_dates import formatted_paper2_exam_date
 from cspapergen.models import PaperBlueprint, Question, QuestionPart, Stimulus
 
 FONT = "AQAArial"
@@ -97,7 +98,6 @@ class _QuestionRenderState:
 
 
 def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
-    today = date.today()
     pdf.setFont(FONT, 11)
     pdf.drawString(55, 790, "Please write clearly in block capitals.")
     _candidate_fields(pdf)
@@ -109,7 +109,7 @@ def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.setFont(FONT_BOLD, 16)
     pdf.drawString(55, 483, "Paper 2")
     pdf.setFont(FONT, 10.5)
-    pdf.drawString(55, 458, f"{today:%A} {today.day} {today:%B %Y}")
+    pdf.drawString(55, 458, formatted_paper2_exam_date())
     pdf.drawString(225, 458, "Morning")
     pdf.setFont(FONT, 9.5)
     pdf.drawString(302, 458, "Time allowed: 2 hours 30 minutes")

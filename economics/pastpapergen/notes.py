@@ -38,7 +38,7 @@ def note_points_for_topic(
     points: list[str] = []
     for chunk in _ranked_note_chunks(topic_id, title, keywords):
         cleaned = _clean_chunk(chunk)
-        if 45 <= len(cleaned) <= 240 and cleaned not in points:
+        if _is_exam_point(cleaned) and cleaned not in points:
             points.append(cleaned)
         if len(points) == limit:
             break
@@ -66,9 +66,14 @@ def _note_text(topic_id: str) -> str:
 
 
 def _ranked_note_chunks(topic_id: str, title: str, keywords: list[str] | tuple[str, ...]) -> list[str]:
+    return _ranked_note_chunks_cached(topic_id, title, tuple(keywords))
+
+
+@lru_cache(maxsize=512)
+def _ranked_note_chunks_cached(topic_id: str, title: str, keywords: tuple[str, ...]) -> list[str]:
     text = _note_text(topic_id)
-    chunks = [_clean_chunk(line) for line in re.split(r"[\n•]+", text)]
-    chunks = [chunk for chunk in chunks if 35 <= len(chunk) <= 280]
+    chunks = [_clean_chunk(chunk) for chunk in _note_chunks(text)]
+    chunks = [chunk for chunk in chunks if 35 <= len(chunk) <= 320]
     terms = _search_terms(title, keywords)
 
     def score(chunk: str) -> tuple[int, int]:
@@ -79,6 +84,55 @@ def _ranked_note_chunks(topic_id: str, title: str, keywords: list[str] | tuple[s
 
     ranked = sorted(chunks, key=score, reverse=True)
     return ranked or [_clean_chunk(text[:280])]
+
+
+def _note_chunks(text: str) -> list[str]:
+    chunks: list[str] = []
+    current: list[str] = []
+    for raw_line in text.replace("\f", "\n").splitlines():
+        line = _clean_chunk(raw_line)
+        if not line:
+            _flush_note_chunk(chunks, current)
+            current = []
+            continue
+        if _is_note_noise(line):
+            continue
+        bullet = re.match(r"^(?:[•●]|\-\s+|o\s+)(.+)$", line)
+        if bullet:
+            _flush_note_chunk(chunks, current)
+            current = [bullet.group(1).strip()]
+            continue
+        if current and _looks_like_heading(line):
+            _flush_note_chunk(chunks, current)
+            current = []
+            continue
+        current.append(line)
+    _flush_note_chunk(chunks, current)
+    return chunks
+
+
+def _flush_note_chunk(chunks: list[str], current: list[str]) -> None:
+    cleaned = _clean_chunk(" ".join(current))
+    if cleaned:
+        chunks.append(cleaned)
+
+
+def _is_note_noise(line: str) -> bool:
+    lowered = line.lower()
+    return (
+        lowered.startswith("theme ")
+        or lowered.startswith("edexcel economics")
+        or lowered == "detailed notes"
+        or "www.pmt.education" in lowered
+        or "bit.ly/pmt" in lowered
+        or "licensed under" in lowered
+    )
+
+
+def _looks_like_heading(line: str) -> bool:
+    if line.endswith(":") and len(line.split()) <= 7:
+        return True
+    return bool(re.match(r"^\d+(?:\.\d+)+\s+[A-Z]", line))
 
 
 def _search_terms(title: str, keywords: list[str] | tuple[str, ...]) -> list[str]:
@@ -93,5 +147,34 @@ def _search_terms(title: str, keywords: list[str] | tuple[str, ...]) -> list[str
 
 def _clean_chunk(chunk: str) -> str:
     cleaned = " ".join(chunk.split())
+    cleaned = re.sub(r"^(?:[•●]\s*|\-\s+|o\s+)+", "", cleaned)
     cleaned = re.sub(r"\s+([,.;:])", r"\1", cleaned)
     return cleaned.strip()
+
+
+def _is_exam_point(cleaned: str) -> bool:
+    if not 45 <= len(cleaned) <= 260:
+        return False
+    if len(cleaned.split()) < 8:
+        return False
+    lowered = cleaned.lower()
+    if "http" in lowered or "pmt" in lowered:
+        return False
+    if cleaned[-1] not in ".;?)":
+        return False
+    if cleaned[0].islower() or cleaned[0].isdigit():
+        return False
+    if cleaned.endswith(":"):
+        return False
+    weak_starts = (
+        "advantage",
+        "disadvantage",
+        "advantages",
+        "disadvantages",
+        "some example",
+        "as a result",
+        "this diagram",
+        "this shifts",
+        "shown by",
+    )
+    return not lowered.startswith(weak_starts)

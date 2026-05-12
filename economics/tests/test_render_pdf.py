@@ -118,8 +118,8 @@ def test_question_paper_uses_closer_reference_font_family(tmp_path):
     render_question_paper(blueprint, output)
     fonts = subprocess.run(["pdffonts", str(output)], check=True, capture_output=True, text=True).stdout
 
-    assert "Arial" in fonts
-    assert "HelveticaNeue" not in fonts
+    assert "HelveticaNeue" in fonts
+    assert "ArialMT" not in fonts
 
 
 def test_answer_line_style_matches_reference_dotted_lines():

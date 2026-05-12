@@ -167,6 +167,23 @@ def test_section_a_calculation_prompts_are_specific_to_visible_data():
                         assert "change shown in the data" not in lowered
 
 
+def test_pes_calculation_prompt_names_the_market_used():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+
+    for seed in range(1000):
+        blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+        for question in blueprint.questions:
+            if question.stimulus_kind != "pes_data_table":
+                continue
+            for part in question.parts:
+                if part.command_word == "calculate":
+                    lowered = part.prompt.lower()
+                    assert "rural" in lowered or "urban" in lowered
+                    return
+    raise AssertionError("No PES calculation question generated")
+
+
 def test_paper_2_section_a_covers_reference_three_part_styles_and_macro_data():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_2")

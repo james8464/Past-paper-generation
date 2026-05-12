@@ -155,6 +155,20 @@ def test_mark_scheme_includes_question_specific_focus_and_answer_points(tmp_path
     assert "digital games" in text
 
 
+def test_mark_scheme_valid_points_are_clean_exam_sentences(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=3005729008840236763)
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, syllabus, output)
+
+    text = _pdf_text(output)
+    assert "●" not in text
+    assert ":." not in text
+    assert "\n           - Regulation." not in text
+
+
 def test_mark_scheme_uses_uploaded_note_points_for_extended_questions(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")

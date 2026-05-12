@@ -5,6 +5,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
 from cspapergen.cli import generate_package
+from cspapergen.exam_dates import formatted_paper2_exam_date, paper2_exam_date
 from cspapergen.generator import build_paper2_blueprint
 from cspapergen.render_pdf import render_question_paper
 from cspapergen.syllabus import load_syllabus
@@ -42,11 +43,26 @@ def test_question_paper_template_overlay_replaces_reference_cover_date(tmp_path,
     apply_question_paper_template(generated, templated, reference_pdf=reference)
 
     first_page = subprocess.check_output(["pdftotext", "-layout", "-f", "1", "-l", "1", str(templated), "-"], text=True)
-    expected_date = f"{date.today():%A} {date.today().day} {date.today():%B %Y}"
+    expected_date = formatted_paper2_exam_date()
     assert expected_date in first_page
     assert "Tuesday 18 June 2024" not in first_page
-    assert f"IB/G/Jun{date.today():%y}/G4003/E12" in first_page
+    assert f"IB/G/Jun{paper2_exam_date():%y}/G4003/E12" in first_page
     assert "IB/G/Jun24/G4003/E12" not in first_page
+
+
+def test_mark_scheme_template_overlay_replaces_reference_year(tmp_path):
+    paths = generate_package(output_dir=tmp_path, seed=44, dry_run=True, template_overlay=True)
+
+    first_pages = subprocess.check_output(
+        ["pdftotext", "-layout", "-f", "1", "-l", "5", str(paths["mark_scheme"]), "-"],
+        text=True,
+    )
+
+    assert f"June {paper2_exam_date():%Y}" in first_pages
+    assert f"JUNE {paper2_exam_date():%Y}" in first_pages
+    assert "June 2024" not in first_pages
+    assert "JUNE 2024" not in first_pages
+    assert f"Copyright © {paper2_exam_date():%Y} AQA" in first_pages
 
 
 def test_question_paper_template_overlay_uses_generated_inner_pages(tmp_path):
