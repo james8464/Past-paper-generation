@@ -35,6 +35,7 @@ final class AppViewModel: ObservableObject {
 
     private let backend = BackendClient()
     private let defaults = UserDefaults.standard
+    private let notificationCenter = UNUserNotificationCenter.current()
     private var runningProcess: Process?
     private var didReceiveBackendError = false
     private var didCancelRun = false
@@ -97,6 +98,7 @@ final class AppViewModel: ObservableObject {
         anthropicModel = defaults.string(forKey: "anthropicModel") ?? "claude-sonnet-4-20250514"
         openAIAPIKey = SecretStore.read("openai-api-key")
         anthropicAPIKey = SecretStore.read("anthropic-api-key")
+        notificationCenter.delegate = NotificationPresenter.shared
         if defaults.object(forKey: "notificationsEnabled") != nil {
             notificationsEnabled = defaults.bool(forKey: "notificationsEnabled")
         }
@@ -238,6 +240,7 @@ final class AppViewModel: ObservableObject {
             } onFinish: { [weak self] result in
                 self?.finishGeneration(result)
             }
+            notifyStarted(for: .generation)
         } catch {
             finishGeneration(.failure(error))
         }
@@ -291,6 +294,7 @@ final class AppViewModel: ObservableObject {
                 self?.finishGeneration(result)
                 self?.refreshOllama()
             }
+            notifyStarted(for: .modelPull)
         } catch {
             finishGeneration(.failure(error))
         }
@@ -435,6 +439,20 @@ final class AppViewModel: ObservableObject {
         }
     }
 
+    private func notifyStarted(for operation: RunningOperation) {
+        switch operation {
+        case .generation:
+            sendNotification(
+                title: "Paper generation started",
+                body: "Past Paper Creator is generating \(selectedBoard.subjectTitle) \(selectedPaper.title) in the background. You will be notified when it finishes."
+            )
+        case .modelPull:
+            sendNotification(title: "Model download started", body: "Ollama is downloading \(modelToPull). You will be notified when it finishes.")
+        case .none:
+            break
+        }
+    }
+
     private func notifyFailure(for operation: RunningOperation, message: String) {
         switch operation {
         case .generation:
@@ -448,21 +466,20 @@ final class AppViewModel: ObservableObject {
 
     private func requestNotificationAuthorization() {
         Task {
-            _ = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound])
+            _ = try? await notificationCenter.requestAuthorization(options: [.alert, .sound])
         }
     }
 
     private func sendNotification(title: String, body: String) {
         guard notificationsEnabled else { return }
         Task {
-            let center = UNUserNotificationCenter.current()
-            let settings = await center.notificationSettings()
+            let settings = await notificationCenter.notificationSettings()
             let allowed: Bool
             switch settings.authorizationStatus {
             case .authorized, .provisional, .ephemeral:
                 allowed = true
             case .notDetermined:
-                allowed = (try? await center.requestAuthorization(options: [.alert, .sound])) ?? false
+                allowed = (try? await notificationCenter.requestAuthorization(options: [.alert, .sound])) ?? false
             default:
                 allowed = false
             }
@@ -473,8 +490,24 @@ final class AppViewModel: ObservableObject {
             content.body = body
             content.sound = .default
             let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-            try? await center.add(request)
+            try? await notificationCenter.add(request)
         }
+    }
+}
+
+@MainActor
+final class NotificationPresenter: NSObject, UNUserNotificationCenterDelegate {
+    static let shared = NotificationPresenter()
+
+    private override init() {
+        super.init()
+    }
+
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification
+    ) async -> UNNotificationPresentationOptions {
+        [.banner, .sound]
     }
 }
 

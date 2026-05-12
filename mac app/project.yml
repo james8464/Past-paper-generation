@@ -76,25 +76,25 @@ targets:
     sources:
       - path: PastPaperCreator
         type: syncedFolder
+        excludes:
+          - Info.plist
+          - PastPaperCreator.entitlements
     settings:
       base:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_ENTITLEMENTS: PastPaperCreator/PastPaperCreator.entitlements
         CODE_SIGN_STYLE: Automatic
         COMBINE_HIDPI_IMAGES: YES
         CURRENT_PROJECT_VERSION: 1
+        DISTRIBUTION_MODE: direct
         ENABLE_APP_SANDBOX: YES
         ENABLE_HARDENED_RUNTIME: YES
         ENABLE_PREVIEWS: YES
         ENABLE_OUTGOING_NETWORK_CONNECTIONS: YES
         ENABLE_USER_SELECTED_FILES: readwrite
-        GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleDisplayName: Past Paper Creator
-        INFOPLIST_KEY_DistributionMode: direct
-        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.education
-        INFOPLIST_KEY_NSDocumentsFolderUsageDescription: Past Paper Creator can save generated PDFs to a folder you choose.
-        INFOPLIST_KEY_NSDownloadsFolderUsageDescription: Past Paper Creator saves generated PDFs to the selected output folder.
-        INFOPLIST_KEY_NSHumanReadableCopyright: Unofficial practice material. Not affiliated with any exam board.
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: PastPaperCreator/Info.plist
         LD_RUNPATH_SEARCH_PATHS:
           - "$(inherited)"
           - "@executable_path/../Frameworks"

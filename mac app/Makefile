@@ -5,6 +5,8 @@ APP_SCHEME ?= PastPaperCreator
 APP_PLATFORM := macos
 APP_GENERATOR := xcodegen
 CONFIGURATION ?= Debug
+DISTRIBUTION_MODE ?= direct
+CODE_SIGN_INJECT_BASE_ENTITLEMENTS ?= YES
 SIM_NAME ?=
 TARGET_PREFIX :=
 SCRIPTS_DIR := ./scripts
@@ -49,7 +51,8 @@ APP_PATH := $(BUILD_PRODUCTS)/$(APP_SCHEME).app
 
 PHONY_TARGETS := $(TARGET_PREFIX)help $(TARGET_PREFIX)diagnose $(TARGET_PREFIX)build \
 	$(TARGET_PREFIX)test $(TARGET_PREFIX)run $(TARGET_PREFIX)build-and-run \
-	$(TARGET_PREFIX)build-and-run-background $(TARGET_PREFIX)clean $(TARGET_PREFIX)agent-verify
+	$(TARGET_PREFIX)build-and-run-background $(TARGET_PREFIX)build-app-store \
+	$(TARGET_PREFIX)clean $(TARGET_PREFIX)agent-verify
 .PHONY: $(PHONY_TARGETS)
 
 $(TARGET_PREFIX)help:
@@ -61,6 +64,7 @@ $(TARGET_PREFIX)help:
 		"  make $(TARGET_PREFIX)run                      Run app (assumes prior build)" \
 		"  make $(TARGET_PREFIX)build-and-run            Build then run" \
 		"  make $(TARGET_PREFIX)build-and-run-background Build then run in background" \
+		"  make $(TARGET_PREFIX)build-app-store          Release build with App Store restrictions enabled" \
 		"  make $(TARGET_PREFIX)clean                    Clean derived data + logs" \
 		"  make $(TARGET_PREFIX)agent-verify             Build and test"
 
@@ -104,6 +108,8 @@ ifeq ($(APP_PLATFORM),ios)
 		GCC_TREAT_WARNINGS_AS_ERRORS=YES \
 		SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
 		SWIFT_STRICT_CONCURRENCY=complete \
+		DISTRIBUTION_MODE=$(DISTRIBUTION_MODE) \
+		CODE_SIGN_INJECT_BASE_ENTITLEMENTS=$(CODE_SIGN_INJECT_BASE_ENTITLEMENTS) \
 		build
 else
 	@LOG_DIR="$(LOG_DIR)" CACHE_ROOT="$(CACHE_ROOT)" TMPDIR="$(TMPDIR_PATH)" $(XCBUILD) --label "$(AGENT_NAME)" --action build -- \
@@ -115,6 +121,8 @@ else
 		GCC_TREAT_WARNINGS_AS_ERRORS=YES \
 		SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
 		SWIFT_STRICT_CONCURRENCY=complete \
+		DISTRIBUTION_MODE=$(DISTRIBUTION_MODE) \
+		CODE_SIGN_INJECT_BASE_ENTITLEMENTS=$(CODE_SIGN_INJECT_BASE_ENTITLEMENTS) \
 		build
 endif
 
@@ -131,6 +139,8 @@ ifeq ($(APP_PLATFORM),ios)
 		GCC_TREAT_WARNINGS_AS_ERRORS=YES \
 		SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
 		SWIFT_STRICT_CONCURRENCY=complete \
+		DISTRIBUTION_MODE=$(DISTRIBUTION_MODE) \
+		CODE_SIGN_INJECT_BASE_ENTITLEMENTS=$(CODE_SIGN_INJECT_BASE_ENTITLEMENTS) \
 		test
 else
 	@LOG_DIR="$(LOG_DIR)" CACHE_ROOT="$(CACHE_ROOT)" TMPDIR="$(TMPDIR_PATH)" $(XCBUILD) --label "$(AGENT_NAME)" --action test -- \
@@ -142,6 +152,8 @@ else
 		GCC_TREAT_WARNINGS_AS_ERRORS=YES \
 		SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
 		SWIFT_STRICT_CONCURRENCY=complete \
+		DISTRIBUTION_MODE=$(DISTRIBUTION_MODE) \
+		CODE_SIGN_INJECT_BASE_ENTITLEMENTS=$(CODE_SIGN_INJECT_BASE_ENTITLEMENTS) \
 		test
 endif
 
@@ -160,6 +172,9 @@ ifeq ($(APP_PLATFORM),ios)
 else
 	@$(SCRIPTS_DIR)/run_app_macos.sh --app-path "$(APP_PATH)" --background
 endif
+
+$(TARGET_PREFIX)build-app-store:
+	@$(MAKE) --no-print-directory $(TARGET_PREFIX)build CONFIGURATION=Release DISTRIBUTION_MODE=app-store CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO
 
 $(TARGET_PREFIX)clean:
 	@$(SCRIPTS_DIR)/clean.sh

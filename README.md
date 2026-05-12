@@ -22,7 +22,6 @@ flowchart TD
   Bridge --> Events["events.py"]
   Bridge --> Providers["providers.py"]
   Bridge --> Ollama["ollama.py"]
-  Bridge --> Preview["preview.py"]
   Bridge --> Generation["generation.py"]
   Generation --> Packs["a-levels/<subject>/<board>"]
   Generation --> Econ["a-levels/economics/edexcel-a/generator/pastpapergen"]
@@ -58,6 +57,7 @@ Computer Science outputs:
 ```bash
 cd "mac app"
 make build
+make build-app-store
 ```
 
 If `xcodebuild` reports that the active developer directory is Command Line Tools, run:
@@ -66,8 +66,19 @@ If `xcodebuild` reports that the active developer directory is Command Line Tool
 sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 ```
 
-The app calls `app_backend.py`, which emits JSON progress events while reusing the subject generators. The direct download build can open the Ollama download page and pull local models. An App Store build must keep those installer features disabled and only detect an existing Ollama setup.
+The app calls `app_backend.py`, which emits JSON progress events while reusing the subject generators. Generation runs without blocking the UI and can send optional macOS notifications when a job starts, completes, or fails. The direct download build can open the Ollama download page and pull local models. `make build-app-store` sets `DistributionMode=app-store`, which disables those installer/model-management features and only detects an existing Ollama setup.
 
 ## Privacy
 
 Generation is local-only through the Python generators and Ollama. No analytics, tracking, accounts, or remote paper upload are included.
+
+Hosted AI providers are optional. If selected, prompts are sent only to that provider using the API key configured by the user. The macOS app includes a privacy manifest declaring no collected data and UserDefaults usage for app preferences.
+
+## App Store Review Notes
+
+- App Sandbox is enabled.
+- Notifications are optional and are not required to use the app.
+- The App Store build path is explicit: `cd "mac app" && make build-app-store`.
+- App Store builds must not install Ollama, pull model executables, or materially change app functionality after review.
+- App metadata should avoid implying Pearson, Edexcel, AQA, or any exam-board affiliation.
+- The review notes should explain the direct/App Store build difference and provide a working model/API setup for review.

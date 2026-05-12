@@ -579,9 +579,14 @@ private struct AISettingsTab: View {
                 HStack {
                     Button("Refresh Models", action: appModel.refreshOllama)
                     Button("Pull Model", action: appModel.requestPullModel)
-                        .disabled(appModel.modelToPull.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || appModel.isRunning)
+                        .disabled(appModel.modelToPull.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || appModel.isRunning || !appModel.distributionMode.canManageOllama)
                     Button("Install Ollama", action: appModel.openOllamaDownload)
                         .disabled(appModel.distributionMode == .appStore)
+                }
+
+                if appModel.distributionMode == .appStore {
+                    Text("The App Store build can detect an existing Ollama installation, but cannot install Ollama or download models.")
+                        .foregroundStyle(.secondary)
                 }
 
                 if let command = appModel.ollamaState.command {
@@ -634,13 +639,13 @@ private struct OutputSettingsTab: View {
 
             Section("Notifications") {
                 Toggle(
-                    "Notify when jobs finish",
+                    "Notify when generation starts and finishes",
                     isOn: Binding(
                         get: { appModel.notificationsEnabled },
                         set: { appModel.setNotificationsEnabled($0) }
                     )
                 )
-                Text("macOS notifications are only used for completed or failed generation jobs.")
+                Text("macOS notifications are optional and only used for generation/model-download status.")
                     .foregroundStyle(.secondary)
             }
         }
@@ -657,6 +662,15 @@ private struct PrivacySettingsTab: View {
                 LabeledContent("Distribution", value: appModel.distributionMode.title)
                 Link("Privacy Policy", destination: URL(string: "https://github.com/james8464/Past-paper-generation#privacy")!)
                 Text("Ollama generation is local. Hosted providers send prompts to the provider you select.")
+                    .foregroundStyle(.secondary)
+            }
+
+            Section("App Store Readiness") {
+                LabeledContent("Sandbox", value: "Enabled")
+                LabeledContent("Tracking", value: "None")
+                LabeledContent("Analytics", value: "None")
+                LabeledContent("External installers", value: appModel.distributionMode == .appStore ? "Disabled" : "Direct build only")
+                Text("Exam-board names are used only to identify specifications. Generated practice materials remain unofficial.")
                     .foregroundStyle(.secondary)
             }
 
