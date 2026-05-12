@@ -59,6 +59,7 @@ def generate_package(
     template_overlay: bool = False,
     template_reference_dir: Path | None = None,
     progress: Callable[[str], None] | None = None,
+    client: object | None = None,
 ) -> dict[str, Path]:
     emit = progress or (lambda _message: None)
     emit("Caching notes")
@@ -73,9 +74,9 @@ def generate_package(
     if dry_run:
         emit("Using built-in draft questions")
     else:
-        emit(f"Generating questions with Ollama model {model}")
-        client = OllamaClient(base_url=ollama_url, model=model)
-        blueprint = improve_questions_with_ollama(client, blueprint, syllabus, progress=progress)
+        emit(f"Generating questions with model {model}")
+        question_client = client or OllamaClient(base_url=ollama_url, model=model)
+        blueprint = improve_questions_with_ollama(question_client, blueprint, syllabus, progress=progress)
 
     emit("Validating paper")
     validate_blueprint(blueprint, syllabus)

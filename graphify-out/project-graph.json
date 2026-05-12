@@ -1,0 +1,667 @@
+{
+  "nodes": [
+    {
+      "id": "repo",
+      "label": "Past Paper Creation repo",
+      "type": "system",
+      "summary": "Root project containing subject generators, shared app bridge, native mac app, and future resource packs.",
+      "source_file": ""
+    },
+    {
+      "id": "a_levels",
+      "label": "a-levels resource catalog",
+      "type": "data",
+      "summary": "Placeholder hierarchy for A-Level subjects and exam boards.",
+      "source_file": ""
+    },
+    {
+      "id": "catalog_json",
+      "label": "a-levels/catalog.json",
+      "type": "data",
+      "summary": "Machine-readable ready/placeholder generator catalog.",
+      "source_file": "a-levels/catalog.json"
+    },
+    {
+      "id": "economics_pack",
+      "label": "a-levels/economics/edexcel-a",
+      "type": "data",
+      "summary": "Resource pack placeholder for Edexcel A Economics.",
+      "source_file": "a-levels/economics/edexcel-a"
+    },
+    {
+      "id": "cs_pack",
+      "label": "a-levels/computer-science/aqa",
+      "type": "data",
+      "summary": "Resource pack placeholder for AQA Computer Science.",
+      "source_file": "a-levels/computer-science/aqa"
+    },
+    {
+      "id": "economics",
+      "label": "economics package",
+      "type": "python",
+      "summary": "Edexcel A Economics paper generator.",
+      "source_file": ""
+    },
+    {
+      "id": "econ_cli",
+      "label": "economics/pastpapergen/cli.py",
+      "type": "python",
+      "summary": "Top-level Economics generate_package entrypoint.",
+      "source_file": "economics/pastpapergen/cli.py"
+    },
+    {
+      "id": "econ_blueprint",
+      "label": "economics blueprint/builders",
+      "type": "python",
+      "summary": "Chooses topics, marks, question forms, and source booklet content.",
+      "source_file": "economics blueprint/builders"
+    },
+    {
+      "id": "econ_renderers",
+      "label": "economics PDF renderers",
+      "type": "python",
+      "summary": "Renders question paper, source booklet, and mark scheme.",
+      "source_file": ""
+    },
+    {
+      "id": "computer_science",
+      "label": "computer science package",
+      "type": "python",
+      "summary": "AQA CS Paper 2 generator.",
+      "source_file": ""
+    },
+    {
+      "id": "cs_cli",
+      "label": "computer science/cspapergen/cli.py",
+      "type": "python",
+      "summary": "Top-level CS generate_package entrypoint.",
+      "source_file": "computer science/cspapergen/cli.py"
+    },
+    {
+      "id": "cs_blueprint",
+      "label": "CS blueprint/builders",
+      "type": "python",
+      "summary": "Builds 100-mark AQA Paper 2 question blueprint.",
+      "source_file": "CS blueprint/builders"
+    },
+    {
+      "id": "cs_renderers",
+      "label": "CS PDF renderers",
+      "type": "python",
+      "summary": "Renders AQA-style question paper and mark scheme.",
+      "source_file": ""
+    },
+    {
+      "id": "app_backend",
+      "label": "app_backend.py",
+      "type": "python",
+      "summary": "Tiny executable shim used by Swift and tests.",
+      "source_file": "app_backend.py"
+    },
+    {
+      "id": "app_bridge",
+      "label": "app_bridge package",
+      "type": "python",
+      "summary": "JSONL backend adapter for the macOS app.",
+      "source_file": ""
+    },
+    {
+      "id": "bridge_cli",
+      "label": "app_bridge/cli.py",
+      "type": "python",
+      "summary": "Parses app commands: status, list models, pull model, generate.",
+      "source_file": "app_bridge/cli.py"
+    },
+    {
+      "id": "bridge_generation",
+      "label": "app_bridge/generation.py",
+      "type": "python",
+      "summary": "Routes generation to Economics or CS and emits files/previews.",
+      "source_file": "app_bridge/generation.py"
+    },
+    {
+      "id": "bridge_events",
+      "label": "app_bridge/events.py",
+      "type": "python",
+      "summary": "Emits JSON progress/error/file events.",
+      "source_file": "app_bridge/events.py"
+    },
+    {
+      "id": "bridge_ollama",
+      "label": "app_bridge/ollama.py",
+      "type": "python",
+      "summary": "Detects Ollama, lists models, pulls models.",
+      "source_file": "app_bridge/ollama.py"
+    },
+    {
+      "id": "bridge_providers",
+      "label": "app_bridge/providers.py",
+      "type": "python",
+      "summary": "Hosted OpenAI/Anthropic JSON client adapter.",
+      "source_file": "app_bridge/providers.py"
+    },
+    {
+      "id": "bridge_preview",
+      "label": "app_bridge/preview.py",
+      "type": "python",
+      "summary": "Converts generated PDFs to preview page images.",
+      "source_file": "app_bridge/preview.py"
+    },
+    {
+      "id": "mac_app",
+      "label": "mac app/PastPaperCreator",
+      "type": "swift",
+      "summary": "Native SwiftUI macOS app wrapper.",
+      "source_file": "mac app/PastPaperCreator"
+    },
+    {
+      "id": "content_view",
+      "label": "ContentView.swift",
+      "type": "swift",
+      "summary": "NavigationSplitView UI, sidebar catalog, generator workspace, settings.",
+      "source_file": "ContentView.swift"
+    },
+    {
+      "id": "app_view_model",
+      "label": "AppViewModel.swift",
+      "type": "swift",
+      "summary": "App state, backend subprocess control, progress, files, models.",
+      "source_file": "AppViewModel.swift"
+    },
+    {
+      "id": "backend_client",
+      "label": "BackendClient.swift",
+      "type": "swift",
+      "summary": "Runs app_backend.py and streams JSONL events.",
+      "source_file": "BackendClient.swift"
+    },
+    {
+      "id": "app_models",
+      "label": "AppModels.swift",
+      "type": "swift",
+      "summary": "Catalog model, paper options, provider model, event structs.",
+      "source_file": "AppModels.swift"
+    },
+    {
+      "id": "native_style",
+      "label": "NativeVisualStyle.swift",
+      "type": "swift",
+      "summary": "Small native panel, material, glass, button styles.",
+      "source_file": "NativeVisualStyle.swift"
+    },
+    {
+      "id": "secret_store",
+      "label": "SecretStore.swift",
+      "type": "swift",
+      "summary": "Keychain storage for hosted API keys.",
+      "source_file": "SecretStore.swift"
+    },
+    {
+      "id": "tests_root",
+      "label": "tests/test_app_backend.py",
+      "type": "test",
+      "summary": "Bridge CLI regression tests.",
+      "source_file": "tests/test_app_backend.py"
+    },
+    {
+      "id": "tests_swift",
+      "label": "mac app/Tests/AppTests.swift",
+      "type": "test",
+      "summary": "Swift model/event/catalog regression tests.",
+      "source_file": "mac app/Tests/AppTests.swift"
+    },
+    {
+      "id": "ollama",
+      "label": "Ollama local model",
+      "type": "external",
+      "summary": "Default local provider, normally qwen2.5:14b.",
+      "source_file": ""
+    },
+    {
+      "id": "openai",
+      "label": "OpenAI provider",
+      "type": "external",
+      "summary": "Optional hosted provider via API key.",
+      "source_file": ""
+    },
+    {
+      "id": "anthropic",
+      "label": "Anthropic provider",
+      "type": "external",
+      "summary": "Optional hosted provider via API key.",
+      "source_file": ""
+    },
+    {
+      "id": "downloads",
+      "label": "~/Downloads output",
+      "type": "output",
+      "summary": "Generated PDFs are written here by default.",
+      "source_file": "~/Downloads output"
+    },
+    {
+      "id": "preview_cache",
+      "label": "~/Library/Caches/Past Paper Creation",
+      "type": "output",
+      "summary": "Generated preview PNG cache for app live preview.",
+      "source_file": "~/Library/Caches/Past Paper Creation"
+    }
+  ],
+  "edges": [
+    {
+      "source": "repo",
+      "target": "a_levels",
+      "type": "contains",
+      "evidence": "CURATED",
+      "label": "contains"
+    },
+    {
+      "source": "repo",
+      "target": "economics",
+      "type": "contains",
+      "evidence": "CURATED",
+      "label": "contains"
+    },
+    {
+      "source": "repo",
+      "target": "computer_science",
+      "type": "contains",
+      "evidence": "CURATED",
+      "label": "contains"
+    },
+    {
+      "source": "repo",
+      "target": "app_bridge",
+      "type": "contains",
+      "evidence": "CURATED",
+      "label": "contains"
+    },
+    {
+      "source": "repo",
+      "target": "mac_app",
+      "type": "contains",
+      "evidence": "CURATED",
+      "label": "contains"
+    },
+    {
+      "source": "a_levels",
+      "target": "catalog_json",
+      "type": "indexed_by",
+      "evidence": "CURATED",
+      "label": "indexed_by"
+    },
+    {
+      "source": "a_levels",
+      "target": "economics_pack",
+      "type": "contains",
+      "evidence": "CURATED",
+      "label": "contains"
+    },
+    {
+      "source": "a_levels",
+      "target": "cs_pack",
+      "type": "contains",
+      "evidence": "CURATED",
+      "label": "contains"
+    },
+    {
+      "source": "econ_cli",
+      "target": "econ_blueprint",
+      "type": "builds",
+      "evidence": "CURATED",
+      "label": "builds"
+    },
+    {
+      "source": "econ_cli",
+      "target": "econ_renderers",
+      "type": "renders",
+      "evidence": "CURATED",
+      "label": "renders"
+    },
+    {
+      "source": "econ_cli",
+      "target": "ollama",
+      "type": "uses_default",
+      "evidence": "CURATED",
+      "label": "uses_default"
+    },
+    {
+      "source": "econ_cli",
+      "target": "bridge_providers",
+      "type": "can_use_hosted",
+      "evidence": "CURATED",
+      "label": "can_use_hosted"
+    },
+    {
+      "source": "econ_renderers",
+      "target": "downloads",
+      "type": "writes_pdfs",
+      "evidence": "CURATED",
+      "label": "writes_pdfs"
+    },
+    {
+      "source": "cs_cli",
+      "target": "cs_blueprint",
+      "type": "builds",
+      "evidence": "CURATED",
+      "label": "builds"
+    },
+    {
+      "source": "cs_cli",
+      "target": "cs_renderers",
+      "type": "renders",
+      "evidence": "CURATED",
+      "label": "renders"
+    },
+    {
+      "source": "cs_cli",
+      "target": "ollama",
+      "type": "uses_default",
+      "evidence": "CURATED",
+      "label": "uses_default"
+    },
+    {
+      "source": "cs_cli",
+      "target": "bridge_providers",
+      "type": "can_use_hosted",
+      "evidence": "CURATED",
+      "label": "can_use_hosted"
+    },
+    {
+      "source": "cs_renderers",
+      "target": "downloads",
+      "type": "writes_pdfs",
+      "evidence": "CURATED",
+      "label": "writes_pdfs"
+    },
+    {
+      "source": "app_backend",
+      "target": "bridge_cli",
+      "type": "calls",
+      "evidence": "CURATED",
+      "label": "calls"
+    },
+    {
+      "source": "bridge_cli",
+      "target": "bridge_ollama",
+      "type": "routes",
+      "evidence": "CURATED",
+      "label": "routes"
+    },
+    {
+      "source": "bridge_cli",
+      "target": "bridge_generation",
+      "type": "routes",
+      "evidence": "CURATED",
+      "label": "routes"
+    },
+    {
+      "source": "bridge_generation",
+      "target": "econ_cli",
+      "type": "calls_for_economics",
+      "evidence": "CURATED",
+      "label": "calls_for_economics"
+    },
+    {
+      "source": "bridge_generation",
+      "target": "cs_cli",
+      "type": "calls_for_cs",
+      "evidence": "CURATED",
+      "label": "calls_for_cs"
+    },
+    {
+      "source": "bridge_generation",
+      "target": "bridge_events",
+      "type": "emits",
+      "evidence": "CURATED",
+      "label": "emits"
+    },
+    {
+      "source": "bridge_generation",
+      "target": "bridge_preview",
+      "type": "emits_previews",
+      "evidence": "CURATED",
+      "label": "emits_previews"
+    },
+    {
+      "source": "bridge_ollama",
+      "target": "ollama",
+      "type": "checks_or_pulls",
+      "evidence": "CURATED",
+      "label": "checks_or_pulls"
+    },
+    {
+      "source": "bridge_providers",
+      "target": "openai",
+      "type": "calls",
+      "evidence": "CURATED",
+      "label": "calls"
+    },
+    {
+      "source": "bridge_providers",
+      "target": "anthropic",
+      "type": "calls",
+      "evidence": "CURATED",
+      "label": "calls"
+    },
+    {
+      "source": "bridge_preview",
+      "target": "preview_cache",
+      "type": "writes_pngs",
+      "evidence": "CURATED",
+      "label": "writes_pngs"
+    },
+    {
+      "source": "mac_app",
+      "target": "content_view",
+      "type": "contains",
+      "evidence": "CURATED",
+      "label": "contains"
+    },
+    {
+      "source": "mac_app",
+      "target": "app_view_model",
+      "type": "contains",
+      "evidence": "CURATED",
+      "label": "contains"
+    },
+    {
+      "source": "mac_app",
+      "target": "backend_client",
+      "type": "contains",
+      "evidence": "CURATED",
+      "label": "contains"
+    },
+    {
+      "source": "mac_app",
+      "target": "app_models",
+      "type": "contains",
+      "evidence": "CURATED",
+      "label": "contains"
+    },
+    {
+      "source": "mac_app",
+      "target": "native_style",
+      "type": "contains",
+      "evidence": "CURATED",
+      "label": "contains"
+    },
+    {
+      "source": "mac_app",
+      "target": "secret_store",
+      "type": "contains",
+      "evidence": "CURATED",
+      "label": "contains"
+    },
+    {
+      "source": "content_view",
+      "target": "app_view_model",
+      "type": "binds_to",
+      "evidence": "CURATED",
+      "label": "binds_to"
+    },
+    {
+      "source": "content_view",
+      "target": "app_models",
+      "type": "renders_catalog",
+      "evidence": "CURATED",
+      "label": "renders_catalog"
+    },
+    {
+      "source": "content_view",
+      "target": "native_style",
+      "type": "uses",
+      "evidence": "CURATED",
+      "label": "uses"
+    },
+    {
+      "source": "app_view_model",
+      "target": "backend_client",
+      "type": "runs_backend",
+      "evidence": "CURATED",
+      "label": "runs_backend"
+    },
+    {
+      "source": "app_view_model",
+      "target": "secret_store",
+      "type": "stores_keys",
+      "evidence": "CURATED",
+      "label": "stores_keys"
+    },
+    {
+      "source": "backend_client",
+      "target": "app_backend",
+      "type": "executes",
+      "evidence": "CURATED",
+      "label": "executes"
+    },
+    {
+      "source": "app_models",
+      "target": "catalog_json",
+      "type": "mirrors_ready_and_placeholder_boards",
+      "evidence": "CURATED",
+      "label": "mirrors_ready_and_placeholder_boards"
+    },
+    {
+      "source": "tests_root",
+      "target": "app_backend",
+      "type": "verifies",
+      "evidence": "CURATED",
+      "label": "verifies"
+    },
+    {
+      "source": "tests_swift",
+      "target": "app_models",
+      "type": "verifies",
+      "evidence": "CURATED",
+      "label": "verifies"
+    },
+    {
+      "source": "tests_swift",
+      "target": "backend_client",
+      "type": "verifies_events",
+      "evidence": "CURATED",
+      "label": "verifies_events"
+    }
+  ],
+  "adjacency": {
+    "Past Paper Creation repo": [
+      "a-levels resource catalog",
+      "economics package",
+      "computer science package",
+      "app_bridge package",
+      "mac app/PastPaperCreator"
+    ],
+    "a-levels resource catalog": [
+      "a-levels/catalog.json",
+      "a-levels/economics/edexcel-a",
+      "a-levels/computer-science/aqa"
+    ],
+    "a-levels/catalog.json": [],
+    "a-levels/economics/edexcel-a": [],
+    "a-levels/computer-science/aqa": [],
+    "economics package": [],
+    "economics/pastpapergen/cli.py": [
+      "economics blueprint/builders",
+      "economics PDF renderers",
+      "Ollama local model",
+      "app_bridge/providers.py"
+    ],
+    "economics blueprint/builders": [],
+    "economics PDF renderers": [
+      "~/Downloads output"
+    ],
+    "computer science package": [],
+    "computer science/cspapergen/cli.py": [
+      "CS blueprint/builders",
+      "CS PDF renderers",
+      "Ollama local model",
+      "app_bridge/providers.py"
+    ],
+    "CS blueprint/builders": [],
+    "CS PDF renderers": [
+      "~/Downloads output"
+    ],
+    "app_backend.py": [
+      "app_bridge/cli.py"
+    ],
+    "app_bridge package": [],
+    "app_bridge/cli.py": [
+      "app_bridge/ollama.py",
+      "app_bridge/generation.py"
+    ],
+    "app_bridge/generation.py": [
+      "economics/pastpapergen/cli.py",
+      "computer science/cspapergen/cli.py",
+      "app_bridge/events.py",
+      "app_bridge/preview.py"
+    ],
+    "app_bridge/events.py": [],
+    "app_bridge/ollama.py": [
+      "Ollama local model"
+    ],
+    "app_bridge/providers.py": [
+      "OpenAI provider",
+      "Anthropic provider"
+    ],
+    "app_bridge/preview.py": [
+      "~/Library/Caches/Past Paper Creation"
+    ],
+    "mac app/PastPaperCreator": [
+      "ContentView.swift",
+      "AppViewModel.swift",
+      "BackendClient.swift",
+      "AppModels.swift",
+      "NativeVisualStyle.swift",
+      "SecretStore.swift"
+    ],
+    "ContentView.swift": [
+      "AppViewModel.swift",
+      "AppModels.swift",
+      "NativeVisualStyle.swift"
+    ],
+    "AppViewModel.swift": [
+      "BackendClient.swift",
+      "SecretStore.swift"
+    ],
+    "BackendClient.swift": [
+      "app_backend.py"
+    ],
+    "AppModels.swift": [
+      "a-levels/catalog.json"
+    ],
+    "NativeVisualStyle.swift": [],
+    "SecretStore.swift": [],
+    "tests/test_app_backend.py": [
+      "app_backend.py"
+    ],
+    "mac app/Tests/AppTests.swift": [
+      "AppModels.swift",
+      "BackendClient.swift"
+    ],
+    "Ollama local model": [],
+    "OpenAI provider": [],
+    "Anthropic provider": [],
+    "~/Downloads output": [],
+    "~/Library/Caches/Past Paper Creation": []
+  }
+}

@@ -1,0 +1,358 @@
+import Foundation
+
+enum BoardStatus: String, Equatable {
+    case ready
+    case placeholder
+
+    var title: String {
+        switch self {
+        case .ready: "Ready"
+        case .placeholder: "Placeholder"
+        }
+    }
+}
+
+struct PaperOption: Identifiable, Hashable {
+    let id: String
+    let title: String
+    let detail: String
+}
+
+struct ExamBoardOption: Identifiable, Hashable {
+    let id: String
+    let subjectID: String
+    let subjectTitle: String
+    let title: String
+    let shortTitle: String
+    let systemImage: String
+    let status: BoardStatus
+    let backendSubject: String?
+    let papers: [PaperOption]
+    let resourcePath: String
+
+    var isReady: Bool { status == .ready && backendSubject != nil }
+}
+
+struct CatalogSubject: Identifiable, Hashable {
+    let id: String
+    let title: String
+    let systemImage: String
+    let boards: [ExamBoardOption]
+}
+
+enum ExamCatalog {
+    static let subjects: [CatalogSubject] = [
+        subject("economics", "Economics", "chart.line.uptrend.xyaxis", [
+            readyBoard(
+                subjectID: "economics",
+                subjectTitle: "Economics",
+                systemImage: "chart.line.uptrend.xyaxis",
+                boardID: "edexcel-a",
+                title: "Edexcel A",
+                backendSubject: "economics",
+                papers: [
+                    PaperOption(id: "1", title: "Paper 1", detail: "Markets and business behaviour"),
+                    PaperOption(id: "2", title: "Paper 2", detail: "National and global economy"),
+                    PaperOption(id: "3", title: "Paper 3", detail: "Microeconomics and macroeconomics"),
+                ]
+            ),
+            placeholderBoard("economics-aqa", "AQA"),
+            placeholderBoard("economics-ocr", "OCR"),
+            placeholderBoard("economics-cambridge-international", "Cambridge International"),
+        ]),
+        subject("computer-science", "Computer Science", "cpu", [
+            readyBoard(
+                subjectID: "computer-science",
+                subjectTitle: "Computer Science",
+                systemImage: "cpu",
+                boardID: "aqa",
+                title: "AQA",
+                backendSubject: "computer_science",
+                papers: [
+                    PaperOption(id: "2", title: "Paper 2", detail: "AQA A-level Computer Science 7517/2"),
+                ]
+            ),
+            placeholderBoard("computer-science-ocr", "OCR"),
+            placeholderBoard("computer-science-cambridge-international", "Cambridge International"),
+        ]),
+        placeholderSubject("accounting", "Accounting", "number.square", ["AQA", "Cambridge International"]),
+        placeholderSubject("biology", "Biology", "leaf", ["AQA", "Edexcel A", "OCR A", "Cambridge International"]),
+        placeholderSubject("business", "Business", "briefcase", ["AQA", "Edexcel A", "OCR", "Cambridge International"]),
+        placeholderSubject("chemistry", "Chemistry", "flask", ["AQA", "Edexcel A", "OCR A", "Cambridge International"]),
+        placeholderSubject("english-literature", "English Literature", "book", ["AQA", "Edexcel", "OCR", "Cambridge International"]),
+        placeholderSubject("further-mathematics", "Further Mathematics", "function", ["AQA", "Edexcel", "OCR A", "Cambridge International"]),
+        placeholderSubject("geography", "Geography", "globe.europe.africa", ["AQA", "Edexcel", "OCR", "Cambridge International"]),
+        placeholderSubject("history", "History", "building.columns", ["AQA", "Edexcel", "OCR", "Cambridge International"]),
+        placeholderSubject("law", "Law", "scale.3d", ["AQA", "OCR"]),
+        placeholderSubject("mathematics", "Mathematics", "x.squareroot", ["AQA", "Edexcel", "OCR A", "Cambridge International"]),
+        placeholderSubject("physics", "Physics", "atom", ["AQA", "Edexcel A", "OCR A", "Cambridge International"]),
+        placeholderSubject("politics", "Politics", "person.2.wave.2", ["AQA", "Edexcel"]),
+        placeholderSubject("psychology", "Psychology", "brain.head.profile", ["AQA", "Edexcel", "OCR", "Cambridge International"]),
+        placeholderSubject("religious-studies", "Religious Studies", "text.book.closed", ["AQA", "Edexcel", "OCR"]),
+        placeholderSubject("sociology", "Sociology", "person.3", ["AQA", "Edexcel", "OCR"]),
+    ]
+
+    static var readyBoards: [ExamBoardOption] {
+        subjects.flatMap(\.boards).filter(\.isReady)
+    }
+
+    static var defaultBoard: ExamBoardOption {
+        board(id: "economics-edexcel-a") ?? readyBoards[0]
+    }
+
+    static func board(id: String) -> ExamBoardOption? {
+        subjects.flatMap(\.boards).first { $0.id == id }
+    }
+
+    private static func subject(_ id: String, _ title: String, _ systemImage: String, _ boards: [ExamBoardOption]) -> CatalogSubject {
+        CatalogSubject(id: id, title: title, systemImage: systemImage, boards: boards)
+    }
+
+    private static func placeholderSubject(_ id: String, _ title: String, _ systemImage: String, _ boards: [String]) -> CatalogSubject {
+        subject(
+            id,
+            title,
+            systemImage,
+            boards.map { placeholderBoard("\(id)-\($0.slugID)", $0, subjectID: id, subjectTitle: title, systemImage: systemImage) }
+        )
+    }
+
+    private static func readyBoard(
+        subjectID: String,
+        subjectTitle: String,
+        systemImage: String,
+        boardID: String,
+        title: String,
+        backendSubject: String,
+        papers: [PaperOption]
+    ) -> ExamBoardOption {
+        return ExamBoardOption(
+            id: "\(subjectID)-\(boardID)",
+            subjectID: subjectID,
+            subjectTitle: subjectTitle,
+            title: title,
+            shortTitle: title,
+            systemImage: systemImage,
+            status: .ready,
+            backendSubject: backendSubject,
+            papers: papers,
+            resourcePath: "a-levels/\(subjectID)/\(boardID)"
+        )
+    }
+
+    private static func placeholderBoard(
+        _ id: String,
+        _ title: String,
+        subjectID: String? = nil,
+        subjectTitle: String? = nil,
+        systemImage: String? = nil
+    ) -> ExamBoardOption {
+        let resolvedSubjectID = subjectID ?? id.components(separatedBy: "-").dropLast().joined(separator: "-")
+        return ExamBoardOption(
+            id: id,
+            subjectID: resolvedSubjectID,
+            subjectTitle: subjectTitle ?? resolvedSubjectID.replacingOccurrences(of: "-", with: " ").capitalized,
+            title: title,
+            shortTitle: title,
+            systemImage: systemImage ?? "doc.text",
+            status: .placeholder,
+            backendSubject: nil,
+            papers: [
+                PaperOption(id: "placeholder", title: "Paper", detail: "Add syllabus, past papers, mark schemes and a generator profile."),
+            ],
+            resourcePath: "a-levels/\(resolvedSubjectID)/\(title.slugID)"
+        )
+    }
+}
+
+private extension String {
+    var slugID: String {
+        lowercased()
+            .replacingOccurrences(of: "&", with: "and")
+            .replacingOccurrences(of: " ", with: "-")
+            .replacingOccurrences(of: ".", with: "")
+    }
+}
+
+enum SidebarItem: Hashable {
+    case board(String)
+    case settings
+}
+
+enum AIProvider: String, CaseIterable, Identifiable {
+    case ollama
+    case openAI
+    case anthropic
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .ollama: "Ollama"
+        case .openAI: "OpenAI"
+        case .anthropic: "Anthropic"
+        }
+    }
+
+    var subtitle: String {
+        switch self {
+        case .ollama: "Runs locally"
+        case .openAI: "Uses an API key"
+        case .anthropic: "Uses an API key"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .ollama: "desktopcomputer"
+        case .openAI: "sparkles"
+        case .anthropic: "text.bubble"
+        }
+    }
+
+    var backendID: String {
+        switch self {
+        case .ollama: "ollama"
+        case .openAI: "openai"
+        case .anthropic: "anthropic"
+        }
+    }
+}
+
+enum DistributionMode: String {
+    case direct
+    case appStore
+
+    static var current: DistributionMode {
+        let rawValue = Bundle.main.object(forInfoDictionaryKey: "DistributionMode") as? String
+        return rawValue == "app-store" ? .appStore : .direct
+    }
+
+    var title: String {
+        switch self {
+        case .direct: "Direct Download"
+        case .appStore: "App Store"
+        }
+    }
+
+    var canManageOllama: Bool { self == .direct }
+}
+
+struct OllamaState: Equatable {
+    var installed = false
+    var running = false
+    var command: String?
+    var message = "Not checked"
+}
+
+struct ProgressEntry: Identifiable, Equatable {
+    let id = UUID()
+    let date = Date()
+    let stage: String?
+    let message: String
+}
+
+struct GeneratedFile: Identifiable, Equatable {
+    let id = UUID()
+    let role: String
+    let url: URL
+
+    var title: String {
+        switch role {
+        case "question_paper": "Question Paper"
+        case "source_booklet": "Source Booklet"
+        case "mark_scheme": "Mark Scheme"
+        default: role.replacingOccurrences(of: "_", with: " ").capitalized
+        }
+    }
+}
+
+struct GeneratedPage: Identifiable, Equatable {
+    let id = UUID()
+    let role: String
+    let pageNumber: Int
+    let url: URL
+    let sourcePDF: URL
+
+    var title: String {
+        "Page \(pageNumber)"
+    }
+
+    var sortKey: String {
+        "\(role)-\(pageNumber)"
+    }
+}
+
+enum BackendEvent: Equatable {
+    case progress(stage: String?, message: String, progress: Double?)
+    case file(role: String, path: String)
+    case previewPage(role: String, page: Int, path: String, sourcePDF: String)
+    case done(message: String)
+    case error(message: String)
+    case models([String], message: String?)
+    case ollamaStatus(installed: Bool, running: Bool, command: String?, message: String?)
+
+    init(jsonLine: String) throws {
+        let data = Data(jsonLine.utf8)
+        let payload = try JSONDecoder().decode(BackendEventPayload.self, from: data)
+
+        switch payload.type {
+        case "progress":
+            self = .progress(stage: payload.stage, message: payload.message ?? "", progress: payload.progress)
+        case "file":
+            self = .file(role: payload.role ?? "file", path: payload.path ?? "")
+        case "preview_page":
+            self = .previewPage(
+                role: payload.role ?? "file",
+                page: payload.page ?? 0,
+                path: payload.path ?? "",
+                sourcePDF: payload.sourcePDF ?? ""
+            )
+        case "done":
+            self = .done(message: payload.message ?? "Done")
+        case "error":
+            self = .error(message: payload.message ?? "Unknown backend error")
+        case "models":
+            self = .models(payload.models ?? [], message: payload.message)
+        case "ollama_status":
+            self = .ollamaStatus(
+                installed: payload.installed ?? false,
+                running: payload.running ?? false,
+                command: payload.command,
+                message: payload.message
+            )
+        default:
+            self = .progress(stage: payload.type, message: payload.message ?? payload.type, progress: payload.progress)
+        }
+    }
+}
+
+private struct BackendEventPayload: Decodable {
+    let type: String
+    let stage: String?
+    let message: String?
+    let role: String?
+    let path: String?
+    let page: Int?
+    let sourcePDF: String?
+    let progress: Double?
+    let models: [String]?
+    let installed: Bool?
+    let running: Bool?
+    let command: String?
+
+    enum CodingKeys: String, CodingKey {
+        case type
+        case stage
+        case message
+        case role
+        case path
+        case page
+        case sourcePDF = "source_pdf"
+        case progress
+        case models
+        case installed
+        case running
+        case command
+    }
+}

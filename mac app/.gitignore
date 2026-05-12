@@ -1,0 +1,5 @@
+build/
+DerivedData/
+agents/current_name.txt
+*.xcresult
+*.xcuserstate

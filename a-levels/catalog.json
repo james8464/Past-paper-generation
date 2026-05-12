@@ -1,0 +1,42 @@
+{
+  "qualification": "A-Level",
+  "layout_version": 1,
+  "resource_pack_shape": [
+    "syllabus",
+    "past-papers",
+    "mark-schemes",
+    "notes",
+    "templates"
+  ],
+  "ready_generators": [
+    {
+      "subject": "economics",
+      "exam_board": "edexcel-a",
+      "backend_subject": "economics",
+      "papers": ["1", "2", "3"]
+    },
+    {
+      "subject": "computer-science",
+      "exam_board": "aqa",
+      "backend_subject": "computer_science",
+      "papers": ["2"]
+    }
+  ],
+  "placeholder_subjects": [
+    "accounting",
+    "biology",
+    "business",
+    "chemistry",
+    "english-literature",
+    "further-mathematics",
+    "geography",
+    "history",
+    "law",
+    "mathematics",
+    "physics",
+    "politics",
+    "psychology",
+    "religious-studies",
+    "sociology"
+  ]
+}

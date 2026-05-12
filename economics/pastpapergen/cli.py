@@ -60,6 +60,7 @@ def generate_package(
     ollama_url: str,
     dry_run: bool,
     progress: Callable[[str], None] | None = None,
+    client: object | None = None,
 ) -> dict[str, Path]:
     emit = progress or (lambda _message: None)
     emit("Loading syllabus")
@@ -72,9 +73,9 @@ def generate_package(
     blueprint = build_paper_blueprint(config, syllabus, seed=run_seed)
 
     if not dry_run:
-        emit(f"Generating questions with Ollama model {model}")
-        client = OllamaClient(base_url=ollama_url, model=model)
-        blueprint = generate_questions_with_ollama(client, blueprint, syllabus, progress=progress)
+        emit(f"Generating questions with model {model}")
+        question_client = client or OllamaClient(base_url=ollama_url, model=model)
+        blueprint = generate_questions_with_ollama(question_client, blueprint, syllabus, progress=progress)
     else:
         emit("Using built-in draft questions")
 
