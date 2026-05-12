@@ -31,6 +31,13 @@ final class AppViewModel: ObservableObject {
     @Published var showWelcome = false
     @Published var showHelp = false
     @Published var notificationsEnabled = true
+    @Published var sidebarSelection: SidebarItem?
+    @Published var generationEstimate: GenerationEstimate?
+    @Published var isBenchmarkRunning = false
+    @Published var benchmarkProgress: Double?
+    @Published var benchmarkSamples: [BenchmarkSample] = []
+    @Published var benchmarkMetrics: [BenchmarkMetric] = []
+    @Published var benchmarkVerdict: BenchmarkVerdict?
 
     let distributionMode = DistributionMode.current
 
@@ -38,9 +45,11 @@ final class AppViewModel: ObservableObject {
     private let defaults = UserDefaults.standard
     private let notificationCenter = UNUserNotificationCenter.current()
     private var runningProcess: Process?
+    private var benchmarkProcess: Process?
     private var didReceiveBackendError = false
     private var didCancelRun = false
     private var activeOperation = RunningOperation.none
+    private var etaTimer: AnyCancellable?
 
     var selectedBoard: ExamBoardOption {
         ExamCatalog.board(id: selectedBoardID) ?? ExamCatalog.defaultBoard
@@ -64,6 +73,7 @@ final class AppViewModel: ObservableObject {
 
     var generationBlocker: String? {
         if isRunning { return "Generation is already running." }
+        if isBenchmarkRunning { return "Benchmark is running." }
         if !selectedBoard.isReady { return "\(selectedBoard.subjectTitle) \(selectedBoard.title) is coming soon." }
         if dryRun { return nil }
         if activeModelName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -113,6 +123,7 @@ final class AppViewModel: ObservableObject {
         }
         selectedBoardID = defaults.string(forKey: "selectedBoardID") ?? ExamCatalog.defaultBoard.id
         selectedPaperID = defaults.string(forKey: "selectedPaperID") ?? selectedBoard.papers[0].id
+        sidebarSelection = .board(selectedBoardID)
     }
 
     private static func defaultOutputFolder() -> URL {
@@ -206,6 +217,10 @@ final class AppViewModel: ObservableObject {
         persistSettings()
     }
 
+    func showBenchmarkPage() {
+        sidebarSelection = .benchmark
+    }
+
     func generate() {
         guard canGenerate else { return }
         guard let backendSubject = selectedBoard.backendSubject else {
@@ -222,6 +237,7 @@ final class AppViewModel: ObservableObject {
         status = "Starting"
         generationProgress = 0.02
         activeOperation = .generation
+        beginGenerationEstimate()
 
         var arguments = [
             "generate",
@@ -271,6 +287,9 @@ final class AppViewModel: ObservableObject {
         isRunning = false
         status = "Cancelled"
         generationProgress = nil
+        generationEstimate = nil
+        etaTimer?.cancel()
+        etaTimer = nil
         activeOperation = .none
         progressEntries.append(ProgressEntry(stage: "cancel", message: "Generation cancelled."))
     }
@@ -300,6 +319,9 @@ final class AppViewModel: ObservableObject {
         didReceiveBackendError = false
         didCancelRun = false
         activeOperation = .modelPull
+        generationEstimate = nil
+        etaTimer?.cancel()
+        etaTimer = nil
 
         do {
             runningProcess = try backend.run(arguments: ["pull-model", "--model", model]) { [weak self] event in
@@ -392,6 +414,8 @@ final class AppViewModel: ObservableObject {
             "Ollama: \(ollamaState.message)",
             "Output folder: \(outputFolder.path)",
             "Status: \(status)",
+            "Latest ETA: \(generationEstimate?.remainingText ?? "None")",
+            "Benchmark: \(benchmarkVerdict.map { "\($0.verdict) (\(Int($0.score * 100))%)" } ?? "Not run")",
             "Generated files: \(generatedFiles.map { $0.url.lastPathComponent }.joined(separator: ", "))",
         ].joined(separator: "\n")
 
@@ -407,6 +431,35 @@ final class AppViewModel: ObservableObject {
         if enabled {
             requestNotificationAuthorization()
         }
+    }
+
+    func startBenchmark() {
+        guard !isRunning, !isBenchmarkRunning else { return }
+        benchmarkSamples.removeAll()
+        benchmarkMetrics.removeAll()
+        benchmarkVerdict = nil
+        benchmarkProgress = 0
+        isBenchmarkRunning = true
+        status = "Benchmarking"
+        sidebarSelection = .benchmark
+
+        do {
+            benchmarkProcess = try backend.run(arguments: ["benchmark", "--duration", "30", "--output", outputFolder.path]) { [weak self] event in
+                self?.apply(event)
+            } onFinish: { [weak self] result in
+                self?.finishBenchmark(result)
+            }
+        } catch {
+            finishBenchmark(.failure(error))
+        }
+    }
+
+    func cancelBenchmark() {
+        benchmarkProcess?.terminate()
+        benchmarkProcess = nil
+        isBenchmarkRunning = false
+        benchmarkProgress = nil
+        status = "Benchmark cancelled"
     }
 
     private func persistSettings() {
@@ -433,6 +486,7 @@ final class AppViewModel: ObservableObject {
         case let .progress(stage, message, progress):
             status = message
             generationProgress = progress ?? generationProgress
+            updateGenerationEstimate()
             progressEntries.append(ProgressEntry(stage: stage, message: message))
         case let .file(role, path):
             let file = GeneratedFile(role: role, url: URL(fileURLWithPath: path))
@@ -442,6 +496,7 @@ final class AppViewModel: ObservableObject {
         case let .done(message):
             status = message
             generationProgress = 1.0
+            updateGenerationEstimate()
             progressEntries.append(ProgressEntry(stage: "done", message: message))
         case let .error(message):
             didReceiveBackendError = true
@@ -463,6 +518,15 @@ final class AppViewModel: ObservableObject {
         case let .ollamaStatus(installed, running, command, message):
             ollamaState = OllamaState(installed: installed, running: running, command: command, message: message ?? "")
             status = message ?? status
+        case let .benchmarkMetric(metric):
+            benchmarkMetrics.append(metric)
+        case let .benchmarkSample(sample):
+            benchmarkSamples.append(sample)
+            benchmarkProgress = min(1.0, sample.elapsed / 30.0)
+        case let .benchmarkDone(verdict):
+            benchmarkVerdict = verdict
+            benchmarkProgress = 1.0
+            status = verdict.verdict
         }
     }
 
@@ -471,10 +535,13 @@ final class AppViewModel: ObservableObject {
         activeOperation = .none
         runningProcess = nil
         isRunning = false
+        etaTimer?.cancel()
+        etaTimer = nil
         if didCancelRun {
             didCancelRun = false
             status = "Cancelled"
             generationProgress = nil
+            generationEstimate = nil
             return
         }
 
@@ -483,6 +550,7 @@ final class AppViewModel: ObservableObject {
             if code == 0 {
                 status = status == "Starting" ? "Done" : status
                 generationProgress = 1.0
+                generationEstimate = nil
                 notifySuccess(for: operation)
             } else if !didReceiveBackendError {
                 let message = "Generation failed without a backend error message. Refresh Ollama, check the selected model, then try again. Backend exited with code \(code)."
@@ -500,7 +568,53 @@ final class AppViewModel: ObservableObject {
         showError = true
         status = "Error"
         generationProgress = nil
+        if activeOperation == .generation {
+            generationEstimate = nil
+            etaTimer?.cancel()
+            etaTimer = nil
+        }
         progressEntries.append(ProgressEntry(stage: "error", message: message))
+    }
+
+    private func beginGenerationEstimate() {
+        generationEstimate = GenerationEstimator.initialEstimate(
+            board: selectedBoard,
+            paper: selectedPaper,
+            provider: aiProvider,
+            model: activeModelName,
+            dryRun: dryRun,
+            benchmark: benchmarkVerdict
+        )
+        etaTimer?.cancel()
+        etaTimer = Timer.publish(every: 1, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                self?.updateGenerationEstimate()
+            }
+    }
+
+    private func updateGenerationEstimate() {
+        guard let estimate = generationEstimate else { return }
+        generationEstimate = GenerationEstimator.update(estimate: estimate, progress: generationProgress)
+    }
+
+    private func finishBenchmark(_ result: Result<Int32, Error>) {
+        benchmarkProcess = nil
+        isBenchmarkRunning = false
+        if benchmarkVerdict != nil {
+            benchmarkProgress = 1.0
+        } else {
+            benchmarkProgress = nil
+        }
+
+        switch result {
+        case let .success(code):
+            if code != 0 {
+                setError("Benchmark exited with code \(code).")
+            }
+        case let .failure(error):
+            setError(error.localizedDescription)
+        }
     }
 
     private func notifySuccess(for operation: RunningOperation) {

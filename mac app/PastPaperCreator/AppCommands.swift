@@ -96,6 +96,25 @@ struct AppCommands: Commands {
                 .disabled(appModel.distributionMode == .appStore)
         }
 
+        CommandMenu("Tools") {
+            Button("Show Benchmark") {
+                appModel.showBenchmarkPage()
+            }
+            .keyboardShortcut("b", modifiers: [.command, .shift])
+
+            Divider()
+
+            Button("Run Benchmark", action: appModel.startBenchmark)
+                .disabled(appModel.isRunning || appModel.isBenchmarkRunning)
+
+            Button("Cancel Benchmark", action: appModel.cancelBenchmark)
+                .disabled(!appModel.isBenchmarkRunning)
+
+            Divider()
+
+            Button("Copy Diagnostic Summary", action: appModel.copyDiagnosticSummary)
+        }
+
         CommandGroup(replacing: .help) {
             Button("Past Paper Creator Help", action: appModel.showHelpGuide)
                 .keyboardShortcut("/", modifiers: [.command, .shift])

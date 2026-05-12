@@ -120,6 +120,14 @@ def test_bad_output_path_returns_json_error(tmp_path: Path) -> None:
     assert "output folder" in str(events[-1]["message"])
 
 
+def test_benchmark_emits_samples_and_verdict(tmp_path: Path) -> None:
+    events = run_bridge("benchmark", "--duration", "1", "--output", str(tmp_path))
+    assert any(event["type"] == "benchmark_metric" for event in events)
+    assert any(event["type"] == "benchmark_sample" for event in events)
+    assert events[-1]["type"] == "benchmark_done"
+    assert 0 <= float(events[-1]["score"]) <= 1
+
+
 def test_hosted_json_parser_accepts_markdown_wrapped_json() -> None:
     assert parse_json_object('```json\n{"ok": true}\n```') == {"ok": True}
     assert parse_json_object('Here is the object:\n{"ok": true}\nDone.') == {"ok": True}

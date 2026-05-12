@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 from typing import Callable
 
+from app_bridge.benchmark import handle_benchmark
 from app_bridge.generation import handle_generate
 from app_bridge.ollama import handle_list_models, handle_ollama_status, handle_pull_model
 from app_bridge.paths import REPO_ROOT
@@ -23,6 +24,11 @@ def build_parser() -> argparse.ArgumentParser:
     pull = subparsers.add_parser("pull-model")
     pull.add_argument("--model", required=True)
     pull.set_defaults(handler=handle_pull_model)
+
+    benchmark = subparsers.add_parser("benchmark")
+    benchmark.add_argument("--duration", type=float, default=30.0)
+    benchmark.add_argument("--output", default=str(Path.home() / "Downloads"))
+    benchmark.set_defaults(handler=handle_benchmark)
 
     generate = subparsers.add_parser("generate")
     generate.add_argument("--subject", choices=["economics", "computer_science"], required=True)

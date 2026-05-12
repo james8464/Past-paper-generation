@@ -179,6 +179,7 @@ private extension String {
 
 enum SidebarItem: Hashable {
     case board(String)
+    case benchmark
     case settings
 }
 
@@ -255,6 +256,75 @@ struct ProgressEntry: Identifiable, Equatable {
     let message: String
 }
 
+struct EstimateFactor: Identifiable, Equatable {
+    let id = UUID()
+    let title: String
+    let detail: String
+    let impact: Double
+}
+
+struct GenerationEstimate: Equatable {
+    let startedAt: Date
+    var totalSeconds: TimeInterval
+    var remainingSeconds: TimeInterval
+    var confidence: Double
+    var factors: [EstimateFactor]
+
+    var etaDate: Date {
+        Date().addingTimeInterval(max(0, remainingSeconds))
+    }
+
+    var remainingText: String {
+        Self.formatDuration(remainingSeconds)
+    }
+
+    static func formatDuration(_ seconds: TimeInterval) -> String {
+        let clamped = max(0, Int(seconds.rounded()))
+        if clamped < 60 {
+            return "\(clamped)s"
+        }
+        let minutes = clamped / 60
+        let remainder = clamped % 60
+        return remainder == 0 ? "\(minutes)m" : "\(minutes)m \(remainder)s"
+    }
+}
+
+struct BenchmarkSample: Identifiable, Equatable {
+    let id = UUID()
+    let elapsed: Double
+    let cpuLoad: Double
+    let memoryAvailableGB: Double
+    let diskWriteMBs: Double
+    let diskReadMBs: Double
+    let networkLatencyMS: Double?
+}
+
+struct BenchmarkMetric: Identifiable, Equatable {
+    let id = UUID()
+    let name: String
+    let value: Double?
+    let unit: String?
+    let detail: String?
+    let score: Double?
+
+    var displayValue: String {
+        if let value {
+            let formatted = value.formatted(.number.precision(.fractionLength(0...2)))
+            if let unit, !unit.isEmpty {
+                return "\(formatted) \(unit)"
+            }
+            return formatted
+        }
+        return detail ?? "Unknown"
+    }
+}
+
+struct BenchmarkVerdict: Equatable {
+    let score: Double
+    let verdict: String
+    let detail: String
+}
+
 struct GeneratedFile: Identifiable, Equatable {
     let id = UUID()
     let role: String
@@ -277,6 +347,9 @@ enum BackendEvent: Equatable {
     case error(message: String)
     case models([String], message: String?)
     case ollamaStatus(installed: Bool, running: Bool, command: String?, message: String?)
+    case benchmarkMetric(BenchmarkMetric)
+    case benchmarkSample(BenchmarkSample)
+    case benchmarkDone(BenchmarkVerdict)
 
     init(jsonLine: String) throws {
         let data = Data(jsonLine.utf8)
@@ -300,6 +373,35 @@ enum BackendEvent: Equatable {
                 command: payload.command,
                 message: payload.message
             )
+        case "benchmark_metric":
+            self = .benchmarkMetric(
+                BenchmarkMetric(
+                    name: payload.name ?? "Metric",
+                    value: payload.value,
+                    unit: payload.unit,
+                    detail: payload.detail ?? payload.message,
+                    score: payload.score
+                )
+            )
+        case "benchmark_sample":
+            self = .benchmarkSample(
+                BenchmarkSample(
+                    elapsed: payload.elapsed ?? 0,
+                    cpuLoad: payload.cpuLoad ?? 0,
+                    memoryAvailableGB: payload.memoryAvailableGB ?? 0,
+                    diskWriteMBs: payload.diskWriteMBs ?? 0,
+                    diskReadMBs: payload.diskReadMBs ?? 0,
+                    networkLatencyMS: payload.networkLatencyMS
+                )
+            )
+        case "benchmark_done":
+            self = .benchmarkDone(
+                BenchmarkVerdict(
+                    score: payload.score ?? 0,
+                    verdict: payload.verdict ?? "Unknown",
+                    detail: payload.detail ?? payload.message ?? ""
+                )
+            )
         default:
             self = .progress(stage: payload.type, message: payload.message ?? payload.type, progress: payload.progress)
         }
@@ -319,6 +421,18 @@ private struct BackendEventPayload: Decodable {
     let installed: Bool?
     let running: Bool?
     let command: String?
+    let name: String?
+    let value: Double?
+    let unit: String?
+    let detail: String?
+    let score: Double?
+    let elapsed: Double?
+    let cpuLoad: Double?
+    let memoryAvailableGB: Double?
+    let diskWriteMBs: Double?
+    let diskReadMBs: Double?
+    let networkLatencyMS: Double?
+    let verdict: String?
 
     enum CodingKeys: String, CodingKey {
         case type
@@ -333,5 +447,17 @@ private struct BackendEventPayload: Decodable {
         case installed
         case running
         case command
+        case name
+        case value
+        case unit
+        case detail
+        case score
+        case elapsed
+        case cpuLoad = "cpu_load"
+        case memoryAvailableGB = "memory_available_gb"
+        case diskWriteMBs = "disk_write_mb_s"
+        case diskReadMBs = "disk_read_mb_s"
+        case networkLatencyMS = "network_latency_ms"
+        case verdict
     }
 }
