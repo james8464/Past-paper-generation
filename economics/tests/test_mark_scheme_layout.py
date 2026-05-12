@@ -66,6 +66,19 @@ def test_mark_scheme_front_matter_matches_reference_structure(tmp_path):
     assert "Pearson Education Ltd" in text
 
 
+def test_mark_scheme_cover_title_uses_reference_scale_and_position(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, syllabus, output)
+    x0, y0, _x1, y1 = _text_block_bbox(output, "Mark Scheme (Results)")
+
+    assert 285 <= y0 <= 325
+    assert y1 - y0 >= 30
+
+
 def test_mark_scheme_does_not_print_fake_blank_page_labels(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
@@ -173,6 +186,20 @@ def _pdf_page_count(path: Path) -> int:
         if line.startswith("Pages:"):
             return int(line.split(":", 1)[1].strip())
     raise AssertionError("Pages not found")
+
+
+def _text_block_bbox(path: Path, needle: str) -> tuple[float, float, float, float]:
+    import fitz
+
+    doc = fitz.open(path)
+    try:
+        for block in doc[0].get_text("blocks"):
+            x0, y0, x1, y1, text, *_ = block
+            if needle in text:
+                return x0, y0, x1, y1
+    finally:
+        doc.close()
+    raise AssertionError(f"Text block not found: {needle}")
 
 
 def _blueprint_with_section_b_topic(config, syllabus, topic_id: str):

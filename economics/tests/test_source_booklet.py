@@ -88,3 +88,15 @@ def _pdf_text(path: Path) -> str:
         capture_output=True,
         text=True,
     ).stdout
+
+
+def test_source_cover_uses_date_panel_not_mock_examination_label(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "source.pdf"
+
+    render_source_booklet(blueprint, syllabus, output)
+    first_page = _pdf_text(output).split("\f")[0]
+
+    assert "Mock Examination" not in first_page

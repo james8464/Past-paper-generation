@@ -60,6 +60,30 @@ def test_cover_includes_exam_date(tmp_path):
     assert "Morning (Time: 2 hours)" in first_page
 
 
+def test_cover_uses_date_panel_not_mock_examination_label(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    first_page = _pdf_text(output).split("\f")[0]
+
+    assert "Mock Examination" not in first_page
+
+
+def test_even_answer_pages_have_one_right_do_not_write_rail(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+
+    assert _dark_pixels(output, page_index=1, rect=(543, 180, 557, 700)) < 500
+    assert _dark_pixels(output, page_index=1, rect=(567, 180, 590, 700)) > 100
+
+
 def test_cover_inner_boxes_stay_inside_outer_panel(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
@@ -68,8 +92,8 @@ def test_cover_inner_boxes_stay_inside_outer_panel(tmp_path):
 
     render_question_paper(blueprint, output)
     first_stream = next(stream for stream in _pdf_streams(output) if b"Please check" in stream)
-    move_commands = re.findall(rb"\n(?:135|457) ([0-9.]+) m", first_stream)
-    bottom_edges = [float(y) for y in move_commands if 430 <= float(y) <= 490]
+    move_commands = re.findall(rb"\n([0-9.]+) ([0-9.]+) m", first_stream)
+    bottom_edges = [float(y) for x, y in move_commands if 90 <= float(x) <= 130 and 430 <= float(y) <= 490]
 
     assert bottom_edges
     assert min(bottom_edges) >= 452
@@ -94,7 +118,7 @@ def test_question_paper_uses_closer_reference_font_family(tmp_path):
     render_question_paper(blueprint, output)
     fonts = subprocess.run(["pdffonts", str(output)], check=True, capture_output=True, text=True).stdout
 
-    assert "Seravek" in fonts
+    assert "Arial" in fonts
     assert "HelveticaNeue" not in fonts
 
 
@@ -457,5 +481,16 @@ def _long_horizontal_line_count(path: Path, page_number: int) -> int:
                 if abs(start.y - end.y) < 0.5 and abs(end.x - start.x) > 250 and 100 < start.y < 760:
                     count += 1
         return count
+    finally:
+        doc.close()
+
+
+def _dark_pixels(path: Path, *, page_index: int, rect: tuple[int, int, int, int]) -> int:
+    import fitz
+
+    doc = fitz.open(path)
+    try:
+        pixmap = doc[page_index].get_pixmap(matrix=fitz.Matrix(3, 3), clip=fitz.Rect(*rect), colorspace=fitz.csGRAY)
+        return sum(1 for value in pixmap.samples if value < 160)
     finally:
         doc.close()

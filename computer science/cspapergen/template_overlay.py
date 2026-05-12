@@ -32,15 +32,21 @@ QP_CONTENT_RECTS = (
 QP_REDACT_RECTS = (
     (52, 96, 571, 755),
 )
+QP_ARTIFACT_RECTS = (
+    (46, 103, 64, 119),
+)
 QP_COVER_DATE_RECTS = (
     (35, 386, 565, 416),
     (50, 379, 500, 390),
+)
+QP_COVER_FOOTER_RECTS = (
+    (45, 785, 245, 835),
+    (285, 808, 430, 832),
 )
 MS_CONTENT_RECT = (0, 35, 595, 790)
 MS_FOOTER_RECT = (0, 790, 595, 842)
 WATERMARK_RECTS = (
     (468, 0, 595, 42),
-    (468, 800, 595, 842),
 )
 
 
@@ -68,7 +74,9 @@ def apply_question_paper_template(generated_pdf: Path, output_pdf: Path, *, refe
         content_rect=QP_CONTENT_RECTS,
         footer_rect=None,
         redraw_rect=QP_REDACT_RECTS,
+        artifact_rects=QP_ARTIFACT_RECTS,
         current_cover_date=True,
+        generated_pages_after_cover=True,
     )
 
 
@@ -119,9 +127,11 @@ def _apply_template(
     top_rect: tuple[int, int, int, int] | None = None,
     clean_header_rect: tuple[int, int, int, int] | None = None,
     redraw_rect: tuple[int, int, int, int] | tuple[tuple[int, int, int, int], ...] | None = None,
+    artifact_rects: tuple[tuple[int, int, int, int], ...] | None = None,
     repeat_reference_page: int | None = None,
     preserve_reference_until_index: int | None = None,
     current_cover_date: bool = False,
+    generated_pages_after_cover: bool = False,
 ) -> None:
     try:
         import fitz
@@ -139,6 +149,7 @@ def _apply_template(
     content = _rects(content_rect, fitz)
     first_content = _rects(first_content_rect, fitz) if first_content_rect else content
     redraw = _rects(redraw_rect, fitz) if redraw_rect else None
+    artifacts = _rects(artifact_rects, fitz) if artifact_rects else []
     footer = fitz.Rect(*footer_rect) if footer_rect else None
     top = fitz.Rect(*top_rect) if top_rect else None
     clean_header = fitz.Rect(*clean_header_rect) if clean_header_rect else None
@@ -152,9 +163,15 @@ def _apply_template(
                 redactions = [fitz.Rect(*rect) for rect in WATERMARK_RECTS]
                 if current_cover_date:
                     redactions.extend(fitz.Rect(*rect) for rect in QP_COVER_DATE_RECTS)
+                    redactions.extend(fitz.Rect(*rect) for rect in QP_COVER_FOOTER_RECTS)
                 _redact_rects(page, redactions, fitz)
                 if current_cover_date:
                     _draw_current_cover_date(page)
+                    _draw_current_cover_footer(page)
+                continue
+
+            if generated_pages_after_cover:
+                page.show_pdf_page(page.rect, generated, page_index)
                 continue
 
             if preserve_reference_until_index is not None and page_index <= preserve_reference_until_index:
@@ -165,7 +182,7 @@ def _apply_template(
             reference_index = repeat_reference_page if repeat_reference_page is not None else min(page_index, reference.page_count - 1)
             page_content = first_content if page_index == 1 else content
             page.show_pdf_page(page.rect, reference, reference_index)
-            redactions = [*(redraw or page_content), *(fitz.Rect(*rect) for rect in WATERMARK_RECTS)]
+            redactions = [*(redraw or page_content), *artifacts, *(fitz.Rect(*rect) for rect in WATERMARK_RECTS)]
             if footer:
                 redactions.append(footer)
             if top:
@@ -210,3 +227,19 @@ def _draw_current_cover_date(page) -> None:
     page.insert_text((41, 405), cover_date, fontsize=13, fontname="helv", color=(0, 0, 0))
     page.insert_text((224, 405), "Morning", fontsize=13, fontname="helv", color=(0, 0, 0))
     page.insert_text((324, 405), "Time allowed: 2 hours 30 minutes", fontsize=13, fontname="helv", color=(0, 0, 0))
+
+
+def _draw_current_cover_footer(page) -> None:
+    import fitz
+
+    year = date.today().strftime("%y")
+    widths = [1, 1, 2, 1, 3, 1, 1, 2, 1, 2, 3, 1, 1, 1, 2, 2, 1, 3]
+    cursor = 49
+    for index, width in enumerate(widths * 5):
+        if cursor > 245:
+            break
+        if index % 2 == 0:
+            page.draw_rect(fitz.Rect(cursor, 790, cursor + width, 824), color=(0, 0, 0), fill=(0, 0, 0), width=0)
+        cursor += width + 1
+    page.insert_text((49, 833), f"J U N {year} 7 5 1 7 2 0 1", fontsize=7, fontname="helv", color=(0, 0, 0))
+    page.insert_text((322, 820), f"IB/G/Jun{year}/G4003/E12", fontsize=7, fontname="helv", color=(0, 0, 0))

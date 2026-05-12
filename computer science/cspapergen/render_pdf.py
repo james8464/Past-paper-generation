@@ -14,9 +14,9 @@ FONT = "AQAArial"
 FONT_BOLD = "AQAArial-Bold"
 FONT_MONO = "AQACourier"
 LEFT = 54
-RIGHT = 500
+RIGHT = 534
 TOP = 770
-BOTTOM = 58
+BOTTOM = 76
 RAIL_X = 516
 LINE_GAP = 20
 AQA_A4 = (595.32, 841.92)
@@ -44,7 +44,7 @@ def render_question_paper(blueprint: PaperBlueprint, output_path: Path) -> None:
     pdf = canvas.Canvas(str(output_path), pagesize=AQA_A4, pageCompression=0)
     _cover_page(pdf, blueprint)
     pdf.showPage()
-    state = _QuestionRenderState(page=2, y=676)
+    state = _QuestionRenderState(page=2, y=724)
     _draw_question_page_header(pdf, state.page)
     for index, question in enumerate(blueprint.questions):
         if index:
@@ -202,16 +202,19 @@ def _examiner_table(pdf: canvas.Canvas, count: int, y_top: float = 470) -> None:
 def _draw_question_page_header(pdf: canvas.Canvas, page: int) -> None:
     pdf.setFont(FONT, 10)
     pdf.drawCentredString(297, 805, str(page))
-    pdf.setFont(FONT_BOLD, 8)
-    pdf.drawCentredString(552, 780, "Do not write")
-    pdf.drawCentredString(552, 769, "outside the")
-    pdf.drawCentredString(552, 758, "box")
+    pdf.setFont(FONT, 8)
+    pdf.drawCentredString(564, 780, "Do not write")
+    pdf.drawCentredString(564, 769, "outside the")
+    pdf.drawCentredString(564, 758, "box")
     pdf.setLineWidth(0.7)
-    pdf.rect(44, 48, 470, 735, stroke=1, fill=0)
-    pdf.line(44, 742, 514, 742)
+    pdf.rect(39, 76, 500, 713, stroke=1, fill=0)
+    pdf.line(39, 751, 539, 751)
+    if page == 2:
+        pdf.setFont(FONT, 11)
+        pdf.drawCentredString(289, 768, "Answer all questions.")
     pdf.setFont(FONT, 8)
     _draw_footer_barcode(pdf, 52, 2, page)
-    pdf.drawRightString(510, 28, "IB/G/Jun26/7517/2")
+    pdf.drawRightString(539, 28, "IB/G/Jun26/7517/2")
 
 
 def _render_question(pdf: canvas.Canvas, question: Question, state: _QuestionRenderState) -> _QuestionRenderState:
@@ -227,25 +230,35 @@ def _render_question(pdf: canvas.Canvas, question: Question, state: _QuestionRen
     if question.stimulus:
         state = _render_stimulus(pdf, question.stimulus, state)
         state.y -= 8
+    single_part = len(question.parts) == 1
     for part in question.parts:
-        state = _render_part(pdf, question, part, state)
+        state = _render_part(pdf, question, part, state, draw_reference=not single_part)
     state = _ensure_space(pdf, state, 34)
     _mark_total_box(pdf, question.total_marks, state.y)
     state.y -= 42
     return state
 
 
-def _render_part(pdf: canvas.Canvas, question: Question, part: QuestionPart, state: _QuestionRenderState) -> _QuestionRenderState:
+def _render_part(
+    pdf: canvas.Canvas,
+    question: Question,
+    part: QuestionPart,
+    state: _QuestionRenderState,
+    *,
+    draw_reference: bool = True,
+) -> _QuestionRenderState:
     line_count = _answer_line_count(part)
     state = _ensure_space(pdf, state, 92)
-    _draw_question_ref(pdf, 52, state.y + 1, question.number, part.label)
+    if draw_reference:
+        _draw_question_ref(pdf, 52, state.y + 1, question.number, part.label)
     pdf.setFont(FONT, 10.5)
     prompt_y = state.y
-    for line in _wrap(part.prompt.replace("{q}", f"{question.number:02d}"), 58):
+    wrap_width = 58 if draw_reference else 70
+    for line in _wrap(part.prompt.replace("{q}", f"{question.number:02d}"), wrap_width):
         pdf.drawString(118, prompt_y, line)
         prompt_y -= 14
     pdf.setFont(FONT_BOLD, 10)
-    pdf.drawRightString(492, prompt_y + 14, f"[{part.marks} mark{'s' if part.marks != 1 else ''}]")
+    pdf.drawRightString(534, prompt_y + 14, f"[{part.marks} mark{'s' if part.marks != 1 else ''}]")
     state.y = prompt_y - 12
     if part.options:
         for option in part.options:
@@ -352,7 +365,7 @@ def _ensure_space(pdf: canvas.Canvas, state: _QuestionRenderState, height: float
     pdf.drawRightString(500, 62, "Turn over >")
     pdf.showPage()
     state.page += 1
-    state.y = 676
+    state.y = 724
     _draw_question_page_header(pdf, state.page)
     return state
 
@@ -362,7 +375,7 @@ def _new_question_page(pdf: canvas.Canvas, state: _QuestionRenderState) -> _Ques
     pdf.drawRightString(500, 62, "Turn over >")
     pdf.showPage()
     state.page += 1
-    state.y = 676
+    state.y = 724
     _draw_question_page_header(pdf, state.page)
     return state
 
@@ -415,7 +428,7 @@ def _answer_lines(pdf: canvas.Canvas, y: float, count: int) -> None:
     pdf.setLineWidth(0.45)
     for index in range(count):
         line_y = y - index * LINE_GAP
-        pdf.line(118, line_y, 492, line_y)
+        pdf.line(118, line_y, 534, line_y)
     pdf.setStrokeColor(colors.black)
 
 
@@ -440,10 +453,10 @@ def _lozenge(pdf: canvas.Canvas, x: float, y: float) -> None:
 
 
 def _mark_total_box(pdf: canvas.Canvas, marks: int, y: float) -> None:
-    pdf.rect(528, y - 42, 32, 42, stroke=1, fill=0)
-    pdf.line(532, y - 18, 556, y - 18)
+    pdf.rect(547, y - 42, 32, 42, stroke=1, fill=0)
+    pdf.line(551, y - 18, 575, y - 18)
     pdf.setFont(FONT_BOLD, 10)
-    pdf.drawCentredString(544, y - 32, str(marks))
+    pdf.drawCentredString(563, y - 32, str(marks))
 
 
 def _draw_extra_answer_page(pdf: canvas.Canvas, page: int) -> None:

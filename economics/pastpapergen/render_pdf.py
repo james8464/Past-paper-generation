@@ -36,8 +36,8 @@ SECTION_A_INSTRUCTION_LINES = [
 
 def _register_fonts() -> None:
     fonts = [
-        (FONT_REGULAR, Path("/System/Library/Fonts/Supplemental/Seravek.ttc"), 0),
-        (FONT_BOLD, Path("/System/Library/Fonts/Supplemental/Seravek.ttc"), 3),
+        (FONT_REGULAR, Path("/System/Library/Fonts/Supplemental/Arial.ttf"), 0),
+        (FONT_BOLD, Path("/System/Library/Fonts/Supplemental/Arial Bold.ttf"), 0),
     ]
     if not fonts[0][1].exists():
         fonts = [
@@ -65,10 +65,10 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     width, height = A4
     _draw_crop_marks(pdf)
 
-    panel_x = 114
-    panel_y = 447
-    panel_w = 406
-    panel_h = 335
+    panel_x = 96
+    panel_y = 457
+    panel_w = 440
+    panel_h = 348
     grey = colors.HexColor("#666666")
     dark = colors.HexColor("#4d494b")
     pdf.setStrokeColor(grey)
@@ -95,26 +95,23 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     y = box_y - 22
     pdf.setFont(FONT_BOLD, 17)
     pdf.drawString(panel_x + 14, y, "Pearson Edexcel Level 3 GCE")
-    y -= 19
-    pdf.setFont(FONT_REGULAR, 10)
-    pdf.drawString(panel_x + 14, y, _exam_date_line())
-    y -= 31
+    y -= 50
     pdf.roundRect(panel_x + 14, y, panel_w - 28, 28, 7, stroke=1, fill=0)
     pdf.setFont(FONT_BOLD, 18)
-    pdf.drawString(panel_x + 22, y + 8, "Mock Examination")
+    pdf.drawString(panel_x + 22, y + 8, _exam_date_line())
 
     y -= 36
     pdf.setFont(FONT_REGULAR, 10)
     pdf.drawString(panel_x + 14, y + 11, f"Morning (Time: {blueprint.duration_minutes // 60} hours)")
-    pdf.rect(panel_x + 195, y, 58, 30, stroke=1, fill=0)
+    pdf.rect(panel_x + 216, y, 58, 30, stroke=1, fill=0)
     pdf.setFont(FONT_BOLD, 10)
-    pdf.drawString(panel_x + 200, y + 18, "Paper")
-    pdf.drawString(panel_x + 200, y + 7, "reference")
+    pdf.drawString(panel_x + 221, y + 18, "Paper")
+    pdf.drawString(panel_x + 221, y + 7, "reference")
     pdf.setFillColor(dark)
-    pdf.roundRect(panel_x + 253, y, 121, 30, 7, stroke=0, fill=1)
+    pdf.roundRect(panel_x + 274, y, 125, 30, 7, stroke=0, fill=1)
     pdf.setFillColor(colors.white)
     pdf.setFont(FONT_BOLD, 23)
-    pdf.drawCentredString(panel_x + 313, y + 8, blueprint.paper_code)
+    pdf.drawCentredString(panel_x + 337, y + 8, blueprint.paper_code)
     pdf.setFillColor(colors.black)
 
     y -= 90
@@ -136,7 +133,7 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.drawString(panel_x + 22, y + 9, "a calculator.")
     pdf.drawCentredString(panel_x + panel_w - 42, y + 21, "Total Marks")
 
-    text_x = 114
+    text_x = 96
     y = 430
     _draw_front_section(
         pdf,
@@ -176,6 +173,7 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
 
     pdf.setFont(FONT_REGULAR, 9)
     pdf.drawRightString(width - 64, 75, "Turn over  >")
+    _draw_cover_pearson_mark(pdf, width - 88, 44)
     pdf.setFont(FONT_REGULAR, 7)
     pdf.drawString(58, 43, "P00000A")
     pdf.drawString(58, 31, "Practice paper generated for revision use.")
@@ -199,16 +197,16 @@ def _draw_front_section(
     heading: str,
     lines: list[str],
 ) -> None:
-    pdf.setFont(FONT_BOLD, 10)
+    pdf.setFont(FONT_BOLD, 11.5)
     pdf.drawString(x, y, heading)
-    pdf.setFont(FONT_REGULAR, 9)
-    y -= 16
+    pdf.setFont(FONT_REGULAR, 10.5)
+    y -= 18
     for line in lines:
-        wrapped = _wrap(line, 82)
+        wrapped = _wrap(line, 74)
         for idx, part in enumerate(wrapped):
             prefix = "• " if idx == 0 else "  "
             pdf.drawString(x, y, prefix + part)
-            y -= 12
+            y -= 14
 
 
 def _draw_crop_marks(pdf: canvas.Canvas) -> None:
@@ -245,6 +243,18 @@ def _draw_fake_barcode(pdf: canvas.Canvas, x: float, y: float, caption: str) -> 
     pdf.setFillColor(colors.black)
 
 
+def _draw_cover_pearson_mark(pdf: canvas.Canvas, x: float, y: float) -> None:
+    pdf.setFillColor(colors.HexColor("#1f1f1f"))
+    pdf.circle(x, y + 22, 12, stroke=0, fill=1)
+    pdf.setFillColor(colors.white)
+    pdf.setFont(FONT_BOLD, 15)
+    pdf.drawCentredString(x, y + 17, "P")
+    pdf.setFillColor(colors.HexColor("#1f1f1f"))
+    pdf.setFont(FONT_BOLD, 16)
+    pdf.drawCentredString(x, y - 4, "Pearson")
+    pdf.setFillColor(colors.black)
+
+
 def _instruction_line(blueprint: PaperBlueprint) -> str:
     if blueprint.paper_id == "paper_3":
         return (
@@ -259,7 +269,7 @@ def _instruction_line(blueprint: PaperBlueprint) -> str:
 
 def _draw_question_pages(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     width, height = A4
-    margin = 72
+    margin = 48
     y = _prepare_answer_page(pdf, blueprint, 2)
     current_section = None
     page_number = 2
@@ -526,7 +536,7 @@ def _prepare_answer_page(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_num
     _draw_do_not_write_rail(pdf, page_number)
     pdf.setStrokeColor(colors.HexColor("#9d9d9d"))
     pdf.setLineWidth(1.6)
-    pdf.roundRect(58, 65, 480, 715, 8, stroke=1, fill=0)
+    pdf.roundRect(34, 76, 526, 704, 8, stroke=1, fill=0)
     pdf.setStrokeColor(colors.black)
     pdf.setLineWidth(1)
     return height - 90
@@ -534,21 +544,18 @@ def _prepare_answer_page(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_num
 
 def _draw_do_not_write_rail(pdf: canvas.Canvas, page_number: int) -> None:
     width, height = A4
-    rail_x = 0 if page_number % 2 == 1 else width - 52
+    rail_x = 6 if page_number % 2 == 1 else width - 28
     pdf.setFillColor(colors.HexColor("#f0f0f0"))
     pdf.rect(rail_x, 66, 21, 705, stroke=0, fill=1)
-    pdf.rect(rail_x + 31, 66, 21, 705, stroke=0, fill=1)
     _draw_hatched_rail(pdf, rail_x, 66, 21, 705)
-    _draw_hatched_rail(pdf, rail_x + 31, 66, 21, 705)
     pdf.setFillColor(colors.HexColor("#777777"))
     pdf.setFont(FONT_BOLD, 8)
-    for x in (rail_x + 14, rail_x + 45):
-        for y in (135, 330, 525):
-            pdf.saveState()
-            pdf.translate(x, y)
-            pdf.rotate(270)
-            pdf.drawCentredString(0, 0, "DO NOT WRITE IN THIS AREA")
-            pdf.restoreState()
+    for y in (135, 330, 525):
+        pdf.saveState()
+        pdf.translate(rail_x + 14, y)
+        pdf.rotate(270)
+        pdf.drawCentredString(0, 0, "DO NOT WRITE IN THIS AREA")
+        pdf.restoreState()
     pdf.setFillColor(colors.black)
 
 
@@ -1527,9 +1534,9 @@ def _draw_source_content_page(
 def _draw_source_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     width, height = A4
     _draw_crop_marks(pdf)
-    panel_x = 114
+    panel_x = 96
     panel_y = 523
-    panel_w = 406
+    panel_w = 440
     panel_h = 260
     grey = colors.HexColor("#666666")
     dark = colors.HexColor("#4d494b")
@@ -1539,25 +1546,22 @@ def _draw_source_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     y = panel_y + panel_h - 34
     pdf.setFont(FONT_BOLD, 17)
     pdf.drawString(panel_x + 14, y, "Pearson Edexcel Level 3 GCE")
-    y -= 19
-    pdf.setFont(FONT_REGULAR, 10)
-    pdf.drawString(panel_x + 14, y, _exam_date_line())
-    y -= 32
+    y -= 51
     pdf.roundRect(panel_x + 14, y, panel_w - 28, 28, 7, stroke=1, fill=0)
     pdf.setFont(FONT_BOLD, 18)
-    pdf.drawString(panel_x + 22, y + 8, "Mock Examination")
+    pdf.drawString(panel_x + 22, y + 8, _exam_date_line())
     y -= 36
     pdf.setFont(FONT_REGULAR, 10)
     pdf.drawString(panel_x + 14, y + 11, f"Morning (Time: {blueprint.duration_minutes // 60} hours)")
-    pdf.rect(panel_x + 195, y, 58, 30, stroke=1, fill=0)
+    pdf.rect(panel_x + 216, y, 58, 30, stroke=1, fill=0)
     pdf.setFont(FONT_BOLD, 10)
-    pdf.drawString(panel_x + 200, y + 18, "Paper")
-    pdf.drawString(panel_x + 200, y + 7, "reference")
+    pdf.drawString(panel_x + 221, y + 18, "Paper")
+    pdf.drawString(panel_x + 221, y + 7, "reference")
     pdf.setFillColor(dark)
-    pdf.roundRect(panel_x + 253, y, 121, 30, 7, stroke=0, fill=1)
+    pdf.roundRect(panel_x + 274, y, 125, 30, 7, stroke=0, fill=1)
     pdf.setFillColor(colors.white)
     pdf.setFont(FONT_BOLD, 23)
-    pdf.drawCentredString(panel_x + 313, y + 8, blueprint.paper_code)
+    pdf.drawCentredString(panel_x + 337, y + 8, blueprint.paper_code)
     pdf.setFillColor(colors.black)
     y -= 90
     pdf.roundRect(panel_x + 14, y, panel_w - 28, 88, 7, stroke=1, fill=0)
@@ -1574,6 +1578,7 @@ def _draw_source_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.drawString(panel_x + 22, y + 9, "Do not return this Booklet with the question paper.")
     pdf.setFont(FONT_REGULAR, 9)
     pdf.drawRightString(width - 64, 75, "Turn over  >")
+    _draw_cover_pearson_mark(pdf, width - 88, 44)
     pdf.setFont(FONT_REGULAR, 7)
     pdf.drawString(58, 43, "P00000A")
     pdf.drawString(58, 31, "Practice paper generated for revision use.")
@@ -1607,24 +1612,24 @@ def render_mark_scheme(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     pdf = canvas.Canvas(str(output_path), pagesize=A4, pageCompression=0)
     width, height = A4
-    margin = 54
+    margin = 57
     blue = colors.HexColor("#006f95")
     pdf.setFillColor(blue)
-    pdf.circle(margin + 11, height - 96, 10, stroke=0, fill=1)
+    pdf.circle(margin + 100, height - 152, 22, stroke=0, fill=1)
     pdf.setFillColor(colors.white)
-    pdf.setFont(FONT_BOLD, 13)
-    pdf.drawCentredString(margin + 11, height - 100, "P")
+    pdf.setFont(FONT_BOLD, 28)
+    pdf.drawCentredString(margin + 100, height - 162, "P")
     pdf.setFillColor(colors.black)
-    pdf.setFont(FONT_REGULAR, 14)
-    pdf.drawString(margin, height - 120, "Pearson")
+    pdf.setFont(FONT_REGULAR, 28)
+    pdf.drawString(margin + 52, height - 200, "Pearson")
     pdf.setFillColor(blue)
-    pdf.setFont(FONT_REGULAR, 18)
-    pdf.drawString(margin, height - 205, "Mark Scheme (Results)")
-    pdf.drawString(margin, height - 258, f"Summer {date.today().year}")
-    pdf.setFont(FONT_REGULAR, 13)
-    pdf.drawString(margin, height - 340, "Pearson Edexcel GCE A Level")
-    pdf.drawString(margin, height - 362, f"In Economics A ({blueprint.paper_code.split('/')[0]})")
-    pdf.drawString(margin, height - 384, f"Paper {blueprint.paper_id[-1].zfill(2)} {blueprint.title}")
+    pdf.setFont(FONT_REGULAR, 31)
+    pdf.drawString(margin, height - 324, "Mark Scheme (Results)")
+    pdf.drawString(margin, height - 415, f"Summer {date.today().year}")
+    pdf.setFont(FONT_REGULAR, 23)
+    pdf.drawString(margin, height - 500, "Pearson Edexcel GCE A Level")
+    pdf.drawString(margin, height - 540, f"In Economics A ({blueprint.paper_code.split('/')[0]})")
+    pdf.drawString(margin, height - 580, f"Paper {blueprint.paper_id[-1].zfill(2)} {blueprint.title}")
     pdf.setFillColor(colors.black)
     pdf.showPage()
 

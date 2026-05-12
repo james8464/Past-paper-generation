@@ -45,9 +45,11 @@ def test_question_paper_template_overlay_replaces_reference_cover_date(tmp_path,
     expected_date = f"{date.today():%A} {date.today().day} {date.today():%B %Y}"
     assert expected_date in first_page
     assert "Tuesday 18 June 2024" not in first_page
+    assert f"IB/G/Jun{date.today():%y}/G4003/E12" in first_page
+    assert "IB/G/Jun24/G4003/E12" not in first_page
 
 
-def test_question_paper_template_overlay_preserves_reference_inner_page_chrome(tmp_path):
+def test_question_paper_template_overlay_uses_generated_inner_pages(tmp_path):
     generated = tmp_path / "generated.pdf"
     reference = tmp_path / "reference.pdf"
     templated = tmp_path / "templated.pdf"
@@ -56,12 +58,29 @@ def test_question_paper_template_overlay_preserves_reference_inner_page_chrome(t
 
     apply_question_paper_template(generated, templated, reference_pdf=reference)
 
-    assert _dark_pixels(templated, (55, 31, 115, 41)) > 250
-    assert _dark_pixels(templated, (300, 31, 360, 41)) < 20
+    assert _dark_pixels(templated, (55, 31, 115, 41)) < 20
+    assert _dark_pixels(templated, (300, 31, 360, 41)) > 250
     assert _dark_pixels(templated, (300, 151, 360, 161)) > 250
     assert _dark_pixels(templated, (55, 151, 115, 161)) < 20
-    assert _dark_pixels(templated, (55, 801, 115, 811)) > 250
-    assert _dark_pixels(templated, (300, 801, 360, 811)) < 20
+    assert _dark_pixels(templated, (55, 801, 115, 811)) < 20
+    assert _dark_pixels(templated, (300, 801, 360, 811)) > 250
+    assert _dark_pixels(templated, (490, 801, 550, 811)) > 250
+
+
+def test_question_paper_template_overlay_removes_clipped_left_artifact(tmp_path):
+    paths = generate_package(output_dir=tmp_path, seed=6311719426104587507, dry_run=True)
+
+    assert _dark_pixels(paths["question_paper"], (46, 103, 64, 119)) < 200
+
+
+def test_question_paper_template_overlay_has_no_reference_turn_over_bleed(tmp_path):
+    paths = generate_package(output_dir=tmp_path, seed=680685491133987222, dry_run=True)
+
+    text = subprocess.check_output(
+        ["pdftotext", "-layout", "-f", "3", "-l", "3", str(paths["question_paper"]), "-"],
+        text=True,
+    )
+    assert "Turn over for the next question" not in text
 
 
 def _two_page_pdf(path, *, header_x: int, body_x: int, footer_x: int) -> None:
@@ -71,6 +90,7 @@ def _two_page_pdf(path, *, header_x: int, body_x: int, footer_x: int) -> None:
     pdf.rect(header_x, 800, 60, 10, stroke=0, fill=1)
     pdf.rect(body_x, 680, 60, 10, stroke=0, fill=1)
     pdf.rect(footer_x, 30, 60, 10, stroke=0, fill=1)
+    pdf.rect(490, 30, 60, 10, stroke=0, fill=1)
     pdf.showPage()
     pdf.save()
 
@@ -80,7 +100,7 @@ def _dark_pixels(path, rect: tuple[int, int, int, int]) -> int:
 
     doc = fitz.open(path)
     try:
-        pixmap = doc[1].get_pixmap(clip=fitz.Rect(*rect), colorspace=fitz.csGRAY)
+        pixmap = doc[1].get_pixmap(matrix=fitz.Matrix(4, 4), clip=fitz.Rect(*rect), colorspace=fitz.csGRAY)
         return sum(1 for value in pixmap.samples if value < 32)
     finally:
         doc.close()
