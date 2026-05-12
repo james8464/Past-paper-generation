@@ -17,7 +17,6 @@ final class AppViewModel: ObservableObject {
     @Published var generationProgress: Double?
     @Published var progressEntries: [ProgressEntry] = []
     @Published var generatedFiles: [GeneratedFile] = []
-    @Published var previewPages: [GeneratedPage] = []
     @Published var isRefreshingOllama = false
     @Published var ollamaState = OllamaState()
     @Published var availableModels: [String] = []
@@ -174,7 +173,6 @@ final class AppViewModel: ObservableObject {
         defaults.set(board.id, forKey: "selectedBoardID")
         defaults.set(selectedPaperID, forKey: "selectedPaperID")
         generatedFiles.removeAll()
-        previewPages.removeAll()
         progressEntries.removeAll()
         status = board.isReady ? "Ready" : "Coming Soon"
     }
@@ -197,7 +195,6 @@ final class AppViewModel: ObservableObject {
         persistSettings()
 
         generatedFiles.removeAll()
-        previewPages.removeAll()
         progressEntries.removeAll()
         didReceiveBackendError = false
         didCancelRun = false
@@ -362,18 +359,6 @@ final class AppViewModel: ObservableObject {
             let file = GeneratedFile(role: role, url: URL(fileURLWithPath: path))
             if !generatedFiles.contains(where: { $0.url == file.url }) {
                 generatedFiles.append(file)
-            }
-        case let .previewPage(role, page, path, sourcePDF):
-            guard page > 0 else { return }
-            let generatedPage = GeneratedPage(
-                role: role,
-                pageNumber: page,
-                url: URL(fileURLWithPath: path),
-                sourcePDF: URL(fileURLWithPath: sourcePDF)
-            )
-            if !previewPages.contains(where: { $0.role == role && $0.pageNumber == page && $0.sourcePDF == generatedPage.sourcePDF }) {
-                previewPages.append(generatedPage)
-                previewPages.sort { $0.sortKey < $1.sortKey }
             }
         case let .done(message):
             status = message

@@ -54,7 +54,7 @@ def test_economics_dry_run_generates_expected_files(tmp_path: Path) -> None:
     files = {event["role"]: Path(str(event["path"])) for event in events if event["type"] == "file"}
     assert files.keys() == {"question_paper", "source_booklet", "mark_scheme"}
     assert all(path.exists() for path in files.values())
-    assert any(event["type"] == "preview_page" for event in events)
+    assert not any(event["type"] == "preview_page" for event in events)
     assert all("progress" in event for event in events if event["type"] == "progress")
     assert not (tmp_path / "paper-1-audit.json").exists()
     assert events[-1]["type"] == "done"

@@ -25,7 +25,16 @@ struct ContentView: View {
         .toolbar {
             ToolbarItemGroup {
                 Button(action: appModel.refreshOllama) {
-                    Label(appModel.isRefreshingOllama ? "Checking" : "Refresh", systemImage: "arrow.clockwise")
+                    if appModel.isRefreshingOllama {
+                        Label {
+                            Text("Checking")
+                        } icon: {
+                            ProgressView()
+                                .controlSize(.small)
+                        }
+                    } else {
+                        Label("Refresh", systemImage: "arrow.clockwise")
+                    }
                 }
                 .disabled(appModel.isRunning || appModel.isRefreshingOllama)
                 .help("Refresh models")
@@ -221,7 +230,6 @@ private struct GeneratorWorkspace: View {
                         VStack(spacing: 18) {
                             ModelPanel()
                             ActivityPanel()
-                            LivePreviewPanel()
                         }
                         .frame(maxWidth: .infinity)
                     }
@@ -476,65 +484,6 @@ private struct ActivityPanel: View {
             ProgressLog(entries: appModel.progressEntries)
         }
         .nativePanel()
-    }
-}
-
-private struct LivePreviewPanel: View {
-    @EnvironmentObject private var appModel: AppViewModel
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            PanelHeader(title: "Live Preview", systemImage: "rectangle.stack")
-
-            if appModel.previewPages.isEmpty {
-                PanelEmptyState(
-                    title: appModel.isRunning ? "Rendering Pages" : "No Preview",
-                    message: appModel.isRunning ? "Pages appear as PDFs render." : "Generated pages appear here.",
-                    systemImage: appModel.isRunning ? "doc.text.magnifyingglass" : "doc.richtext"
-                )
-                .frame(maxWidth: .infinity, minHeight: 170)
-            } else {
-                ScrollView(.horizontal) {
-                    LazyHStack(alignment: .top, spacing: 14) {
-                        ForEach(appModel.previewPages) { page in
-                            PageThumbnail(page: page)
-                        }
-                    }
-                    .padding(.vertical, 4)
-                }
-                .frame(minHeight: 210)
-            }
-        }
-        .nativePanel()
-    }
-}
-
-private struct PageThumbnail: View {
-    let page: GeneratedPage
-
-    var body: some View {
-        VStack(spacing: 8) {
-            if let image = NSImage(contentsOf: page.url) {
-                Image(nsImage: image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 120, height: 170)
-                    .background(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-                    .shadow(color: .black.opacity(0.16), radius: 8, y: 3)
-            } else {
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(.quaternary)
-                    .frame(width: 120, height: 170)
-            }
-
-            Text(page.title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            Text(page.roleTitle)
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
-        }
     }
 }
 

@@ -12,11 +12,6 @@ final class PastPaperCreatorTests: XCTestCase {
         XCTAssertEqual(event, .file(role: "mark_scheme", path: "/tmp/ms.pdf"))
     }
 
-    func testPreviewPageEventDecodes() throws {
-        let event = try BackendEvent(jsonLine: #"{"type":"preview_page","role":"question_paper","page":2,"path":"/tmp/page.png","source_pdf":"/tmp/paper.pdf"}"#)
-        XCTAssertEqual(event, .previewPage(role: "question_paper", page: 2, path: "/tmp/page.png", sourcePDF: "/tmp/paper.pdf"))
-    }
-
     func testAppStoreModeDisablesOllamaManagement() {
         XCTAssertFalse(DistributionMode.appStore.canManageOllama)
         XCTAssertTrue(DistributionMode.direct.canManageOllama)

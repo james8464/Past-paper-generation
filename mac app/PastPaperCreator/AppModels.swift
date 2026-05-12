@@ -270,35 +270,9 @@ struct GeneratedFile: Identifiable, Equatable {
     }
 }
 
-struct GeneratedPage: Identifiable, Equatable {
-    let id = UUID()
-    let role: String
-    let pageNumber: Int
-    let url: URL
-    let sourcePDF: URL
-
-    var title: String {
-        "Page \(pageNumber)"
-    }
-
-    var roleTitle: String {
-        switch role {
-        case "question_paper": "Question Paper"
-        case "source_booklet": "Source Booklet"
-        case "mark_scheme": "Mark Scheme"
-        default: role.replacingOccurrences(of: "_", with: " ").capitalized
-        }
-    }
-
-    var sortKey: String {
-        "\(role)-\(pageNumber)"
-    }
-}
-
 enum BackendEvent: Equatable {
     case progress(stage: String?, message: String, progress: Double?)
     case file(role: String, path: String)
-    case previewPage(role: String, page: Int, path: String, sourcePDF: String)
     case done(message: String)
     case error(message: String)
     case models([String], message: String?)
@@ -313,13 +287,6 @@ enum BackendEvent: Equatable {
             self = .progress(stage: payload.stage, message: payload.message ?? "", progress: payload.progress)
         case "file":
             self = .file(role: payload.role ?? "file", path: payload.path ?? "")
-        case "preview_page":
-            self = .previewPage(
-                role: payload.role ?? "file",
-                page: payload.page ?? 0,
-                path: payload.path ?? "",
-                sourcePDF: payload.sourcePDF ?? ""
-            )
         case "done":
             self = .done(message: payload.message ?? "Done")
         case "error":

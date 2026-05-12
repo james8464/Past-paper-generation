@@ -8,7 +8,6 @@ from pathlib import Path
 
 from app_bridge.events import emit, emit_progress, progress_emitter
 from app_bridge.paths import CS_PACK_ROOT, CS_ROOT, ECONOMICS_ROOT
-from app_bridge.preview import emit_preview_pages
 from app_bridge.providers import hosted_client
 
 
@@ -103,7 +102,6 @@ def generate_computer_science(args: argparse.Namespace, output_dir: Path) -> int
 def emit_generated_files(paths: dict[str, Path]) -> None:
     for role, path in paths.items():
         emit("file", role=role, path=str(path))
-        emit_preview_pages(role, path)
     emit_progress("Generation complete", stage="done", progress=1.0)
     emit("done", message="Generation complete.")
 
