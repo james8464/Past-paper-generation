@@ -29,6 +29,7 @@ final class AppViewModel: ObservableObject {
     @Published var showError = false
     @Published var errorMessage = ""
     @Published var showWelcome = false
+    @Published var showHelp = false
     @Published var notificationsEnabled = true
 
     let distributionMode = DistributionMode.current
@@ -166,6 +167,18 @@ final class AppViewModel: ObservableObject {
         NSWorkspace.shared.open(outputFolder)
     }
 
+    func openProjectHelp() {
+        openExternalURL("https://github.com/james8464/Past-paper-generation#past-paper-creation")
+    }
+
+    func openPrivacyPolicy() {
+        openExternalURL("https://github.com/james8464/Past-paper-generation#privacy")
+    }
+
+    func openSupportPage() {
+        openExternalURL("https://github.com/james8464/Past-paper-generation/issues")
+    }
+
     func selectBoard(_ board: ExamBoardOption) {
         guard selectedBoardID != board.id || !board.papers.contains(where: { $0.id == selectedPaperID }) else {
             return
@@ -186,6 +199,11 @@ final class AppViewModel: ObservableObject {
         }
         selectedPaperID = paperID
         defaults.set(paperID, forKey: "selectedPaperID")
+    }
+
+    func selectAIProvider(_ provider: AIProvider) {
+        aiProvider = provider
+        persistSettings()
     }
 
     func generate() {
@@ -313,12 +331,32 @@ final class AppViewModel: ObservableObject {
         NSWorkspace.shared.open(file.url)
     }
 
+    func hasGeneratedFile(role: String) -> Bool {
+        generatedFile(role: role) != nil
+    }
+
+    func openGeneratedFile(role: String) {
+        guard let file = generatedFile(role: role) else {
+            setError("Generate a paper first.")
+            return
+        }
+        openGeneratedFile(file)
+    }
+
     func revealGeneratedFile(_ file: GeneratedFile) {
         guard FileManager.default.fileExists(atPath: file.url.path) else {
             setError("This file no longer exists.")
             return
         }
         NSWorkspace.shared.activateFileViewerSelecting([file.url])
+    }
+
+    func revealGeneratedFile(role: String) {
+        guard let file = generatedFile(role: role) else {
+            setError("Generate a paper first.")
+            return
+        }
+        revealGeneratedFile(file)
     }
 
     func saveAISettings() {
@@ -333,6 +371,34 @@ final class AppViewModel: ObservableObject {
 
     func showWelcomeGuide() {
         showWelcome = true
+    }
+
+    func showHelpGuide() {
+        showHelp = true
+    }
+
+    func dismissHelpGuide() {
+        showHelp = false
+    }
+
+    func copyDiagnosticSummary() {
+        let summary = [
+            "Past Paper Creator Diagnostics",
+            "Distribution: \(distributionMode.title)",
+            "Selected board: \(selectedBoard.subjectTitle) \(selectedBoard.title)",
+            "Selected paper: \(selectedPaper.title) - \(selectedPaper.detail)",
+            "AI provider: \(aiProvider.title)",
+            "Model: \(activeModelName)",
+            "Ollama: \(ollamaState.message)",
+            "Output folder: \(outputFolder.path)",
+            "Status: \(status)",
+            "Generated files: \(generatedFiles.map { $0.url.lastPathComponent }.joined(separator: ", "))",
+        ].joined(separator: "\n")
+
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(summary, forType: .string)
+        status = "Diagnostics copied"
     }
 
     func setNotificationsEnabled(_ enabled: Bool) {
@@ -351,6 +417,15 @@ final class AppViewModel: ObservableObject {
         defaults.set(outputFolder.path, forKey: "outputFolderPath")
         SecretStore.save(openAIAPIKey, account: "openai-api-key")
         SecretStore.save(anthropicAPIKey, account: "anthropic-api-key")
+    }
+
+    private func generatedFile(role: String) -> GeneratedFile? {
+        generatedFiles.reversed().first { $0.role == role }
+    }
+
+    private func openExternalURL(_ value: String) {
+        guard let url = URL(string: value) else { return }
+        NSWorkspace.shared.open(url)
     }
 
     private func apply(_ event: BackendEvent) {

@@ -68,6 +68,10 @@ struct ContentView: View {
             WelcomeSheet()
                 .environmentObject(appModel)
         }
+        .sheet(isPresented: $appModel.showHelp) {
+            HelpSheet()
+                .environmentObject(appModel)
+        }
         .onAppear {
             if selection == nil {
                 DispatchQueue.main.async {
@@ -158,6 +162,123 @@ private struct WelcomeRow: View {
                     .foregroundStyle(.secondary)
             }
         }
+    }
+}
+
+private struct HelpSheet: View {
+    @EnvironmentObject private var appModel: AppViewModel
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 14) {
+                Image(systemName: "questionmark.circle")
+                    .font(.system(size: 28, weight: .semibold))
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(.tint)
+                    .frame(width: 54, height: 54)
+                    .background(.tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Past Paper Creator Help")
+                        .font(.title.weight(.semibold))
+                    Text("Quick reference for generating, saving, and troubleshooting papers.")
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+            }
+            .padding(.horizontal, 26)
+            .padding(.top, 24)
+            .padding(.bottom, 18)
+
+            Divider()
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    HelpSection(
+                        title: "Generate",
+                        rows: [
+                            HelpRow("Choose a ready generator in the sidebar: Economics Edexcel A or Computer Science AQA."),
+                            HelpRow("Choose the paper, confirm the AI engine is ready, then use Generate Paper."),
+                            HelpRow("Generation continues in the background; optional notifications report start, finish, or failure."),
+                        ]
+                    )
+
+                    HelpSection(
+                        title: "AI Setup",
+                        rows: [
+                            HelpRow("Ollama runs locally. Use AI > Check Ollama Status if generation is blocked."),
+                            HelpRow("OpenAI and Anthropic require API keys in Settings."),
+                            HelpRow("The App Store build can detect Ollama, but cannot install Ollama or pull models."),
+                        ]
+                    )
+
+                    HelpSection(
+                        title: "Files",
+                        rows: [
+                            HelpRow("Generated PDFs are saved to the selected output folder."),
+                            HelpRow("Use File > Open Latest Question Paper or File > Open Latest Mark Scheme after a run."),
+                            HelpRow("Use File > Choose Output Folder to change where papers are saved."),
+                        ]
+                    )
+
+                    HelpSection(
+                        title: "Shortcuts",
+                        rows: [
+                            HelpRow("Command-G: Generate Paper"),
+                            HelpRow("Command-Period: Cancel Generation"),
+                            HelpRow("Shift-Command-O: Choose Output Folder"),
+                            HelpRow("Option-Command-O: Open Output Folder"),
+                            HelpRow("Shift-Command-/: Help"),
+                        ]
+                    )
+                }
+                .padding(26)
+            }
+
+            Divider()
+
+            HStack {
+                Button("Copy Diagnostics", action: appModel.copyDiagnosticSummary)
+                Button("Report Issue", action: appModel.openSupportPage)
+                Spacer()
+                Button("Done", action: appModel.dismissHelpGuide)
+                    .keyboardShortcut(.defaultAction)
+                    .nativePrimaryActionStyle()
+            }
+            .padding(20)
+        }
+        .frame(width: 680, height: 620)
+        .presentationSizing(.fitted)
+    }
+}
+
+private struct HelpSection: View {
+    let title: String
+    let rows: [HelpRow]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(title)
+                .font(.headline)
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(rows) { row in
+                    Label(row.text, systemImage: "checkmark.circle")
+                        .symbolRenderingMode(.hierarchical)
+                        .foregroundStyle(.primary, .secondary)
+                }
+            }
+            .font(.callout)
+        }
+    }
+}
+
+private struct HelpRow: Identifiable {
+    let id = UUID()
+    let text: String
+
+    init(_ text: String) {
+        self.text = text
     }
 }
 
@@ -680,7 +801,9 @@ private struct PrivacySettingsTab: View {
             }
 
             Section("Help") {
+                Button("Past Paper Creator Help", action: appModel.showHelpGuide)
                 Button("Show Welcome Guide", action: appModel.showWelcomeGuide)
+                Button("Copy Diagnostic Summary", action: appModel.copyDiagnosticSummary)
             }
         }
         .formStyle(.grouped)
