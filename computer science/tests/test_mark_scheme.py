@@ -1,4 +1,9 @@
+import subprocess
+from datetime import date
+
+from cspapergen.exam_dates import paper2_exam_date
 from cspapergen.generator import build_paper2_blueprint
+from cspapergen.render_pdf import render_mark_scheme
 from cspapergen.syllabus import load_syllabus
 from cspapergen.validation import validate_blueprint
 
@@ -26,3 +31,21 @@ def test_validation_rejects_missing_part_mark_scheme():
         assert "has no marking guidance" in str(error)
     else:
         raise AssertionError("validate_blueprint accepted missing marking guidance")
+
+
+def test_mark_scheme_cover_uses_exam_series_year(tmp_path, monkeypatch):
+    import cspapergen.render_pdf as render_pdf
+
+    class OldDate(date):
+        @classmethod
+        def today(cls):
+            return cls(2024, 6, 18)
+
+    monkeypatch.setattr(render_pdf, "date", OldDate)
+    blueprint = build_paper2_blueprint(load_syllabus(), seed=99)
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, output)
+
+    first_page = subprocess.check_output(["pdftotext", "-layout", "-f", "1", "-l", "1", str(output), "-"], text=True)
+    assert f"June {paper2_exam_date().year}" in first_page

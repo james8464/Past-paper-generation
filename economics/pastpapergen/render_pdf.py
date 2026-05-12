@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import re
-from datetime import date
 from pathlib import Path
 
 from reportlab.lib import colors
@@ -10,6 +9,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
+from pastpapergen.exam_dates import economics_exam_schedule, formatted_economics_exam_date
 from pastpapergen.models import PaperBlueprint, Syllabus
 from pastpapergen.notes import note_points_for_topic
 from pastpapergen.source_cases import GENERIC_SOURCE_ATTRIBUTION
@@ -100,11 +100,11 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     y -= 50
     pdf.roundRect(panel_x + 14, y, panel_w - 28, 28, 7, stroke=1, fill=0)
     pdf.setFont(FONT_BOLD, 18)
-    pdf.drawString(panel_x + 22, y + 8, _exam_date_line())
+    pdf.drawString(panel_x + 22, y + 8, _exam_date_line(blueprint.paper_id))
 
     y -= 36
     pdf.setFont(FONT_REGULAR, 10)
-    pdf.drawString(panel_x + 14, y + 11, f"Morning (Time: {blueprint.duration_minutes // 60} hours)")
+    pdf.drawString(panel_x + 14, y + 11, f"{_exam_session(blueprint.paper_id)} (Time: {blueprint.duration_minutes // 60} hours)")
     pdf.rect(panel_x + 216, y, 58, 30, stroke=1, fill=0)
     pdf.setFont(FONT_BOLD, 10)
     pdf.drawString(panel_x + 221, y + 18, "Paper")
@@ -182,9 +182,12 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     _draw_fake_barcode(pdf, width / 2 - 105, 32, "P  0  0  0  0  0  A  0  1")
 
 
-def _exam_date_line(today: date | None = None) -> str:
-    today = today or date.today()
-    return f"{today:%A} {today.day} {today:%B %Y}"
+def _exam_date_line(paper_id: str) -> str:
+    return formatted_economics_exam_date(paper_id)
+
+
+def _exam_session(paper_id: str) -> str:
+    return economics_exam_schedule(paper_id).session
 
 
 def _draw_boxes(pdf: canvas.Canvas, x: float, y: float, count: int, size: int = 13) -> None:
@@ -1551,10 +1554,10 @@ def _draw_source_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     y -= 51
     pdf.roundRect(panel_x + 14, y, panel_w - 28, 28, 7, stroke=1, fill=0)
     pdf.setFont(FONT_BOLD, 18)
-    pdf.drawString(panel_x + 22, y + 8, _exam_date_line())
+    pdf.drawString(panel_x + 22, y + 8, _exam_date_line(blueprint.paper_id))
     y -= 36
     pdf.setFont(FONT_REGULAR, 10)
-    pdf.drawString(panel_x + 14, y + 11, f"Morning (Time: {blueprint.duration_minutes // 60} hours)")
+    pdf.drawString(panel_x + 14, y + 11, f"{_exam_session(blueprint.paper_id)} (Time: {blueprint.duration_minutes // 60} hours)")
     pdf.rect(panel_x + 216, y, 58, 30, stroke=1, fill=0)
     pdf.setFont(FONT_BOLD, 10)
     pdf.drawString(panel_x + 221, y + 18, "Paper")
@@ -1627,7 +1630,8 @@ def render_mark_scheme(
     pdf.setFillColor(blue)
     pdf.setFont(FONT_REGULAR, 31)
     pdf.drawString(margin, height - 324, "Mark Scheme (Results)")
-    pdf.drawString(margin, height - 415, f"Summer {date.today().year}")
+    series_year = economics_exam_schedule(blueprint.paper_id).date.year
+    pdf.drawString(margin, height - 415, f"Summer {series_year}")
     pdf.setFont(FONT_REGULAR, 23)
     pdf.drawString(margin, height - 500, "Pearson Edexcel GCE A Level")
     pdf.drawString(margin, height - 540, f"In Economics A ({blueprint.paper_code.split('/')[0]})")
@@ -1709,11 +1713,11 @@ def _draw_mark_scheme_qualification_page(pdf: canvas.Canvas, blueprint: PaperBlu
 
     y = 132
     front_matter = [
-        f"Summer {date.today().year}",
+        f"Summer {economics_exam_schedule(blueprint.paper_id).date.year}",
         "Question Paper Log Number P00000A",
         f"Publications Code {blueprint.paper_code.replace('/', '_')}_PRACTICE_MS",
         f"All generated material in this practice publication is for revision use.",
-        f"(c) Pearson Education Ltd style referenced for private study, {date.today().year}",
+        f"(c) Pearson Education Ltd style referenced for private study, {economics_exam_schedule(blueprint.paper_id).date.year}",
     ]
     for item in front_matter:
         pdf.drawString(margin, y, item)

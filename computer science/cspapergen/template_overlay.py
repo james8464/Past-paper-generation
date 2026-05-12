@@ -255,6 +255,7 @@ def _replace_reference_year(page, fitz) -> None:
     target_year = str(paper2_exam_date().year)
     if target_year == "2024":
         return
+    _replace_mark_scheme_cover_code(page, fitz)
     copyright_rects = list(page.search_for("Copyright © 2024 AQA"))
     for rect in copyright_rects:
         padded = fitz.Rect(rect.x0 - 1, rect.y0 - 1, rect.x1 + 1, rect.y1 + 1)
@@ -274,3 +275,16 @@ def _replace_reference_year(page, fitz) -> None:
     for rect in rects:
         fontsize = max(7, min(13, rect.height * 0.88))
         page.insert_text((rect.x0, rect.y1 - 1), f"{target_year} ", fontsize=fontsize, fontname="helv", color=(0, 0, 0))
+
+
+def _replace_mark_scheme_cover_code(page, fitz) -> None:
+    target = f"{paper2_exam_date():%y}6A7517/2/MS"
+    rects = list(page.search_for("246A7517/2/MS"))
+    if not rects:
+        return
+    for rect in rects:
+        padded = fitz.Rect(rect.x0 - 1, rect.y0 - 1, rect.x1 + 1, rect.y1 + 1)
+        page.add_redact_annot(padded, fill=(1, 1, 1))
+    page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE)
+    for rect in rects:
+        page.insert_text((rect.x0, rect.y1 - 1), target, fontsize=max(12, rect.height * 0.82), fontname="helv", color=(0, 0, 0))

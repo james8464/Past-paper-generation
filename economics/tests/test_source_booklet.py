@@ -1,6 +1,7 @@
 from pathlib import Path
 import re
 
+from pastpapergen.exam_dates import formatted_economics_exam_date
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.render_pdf import render_source_booklet
@@ -100,3 +101,16 @@ def test_source_cover_uses_date_panel_not_mock_examination_label(tmp_path):
     first_page = _pdf_text(output).split("\f")[0]
 
     assert "Mock Examination" not in first_page
+
+
+def test_paper_2_source_cover_uses_official_date_and_session(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_2")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "source.pdf"
+
+    render_source_booklet(blueprint, syllabus, output)
+    first_page = _pdf_text(output).split("\f")[0]
+
+    assert formatted_economics_exam_date("paper_2") in first_page
+    assert "Afternoon (Time: 2 hours)" in first_page

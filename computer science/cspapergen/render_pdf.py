@@ -8,7 +8,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
-from cspapergen.exam_dates import formatted_paper2_exam_date
+from cspapergen.exam_dates import formatted_paper2_exam_date, paper2_exam_date
 from cspapergen.models import PaperBlueprint, Question, QuestionPart, Stimulus
 
 FONT = "AQAArial"
@@ -492,10 +492,10 @@ def _mark_scheme_cover(pdf: canvas.Canvas) -> None:
     pdf.setFont(FONT_BOLD, 20)
     pdf.drawString(55, 585, "Mark scheme")
     pdf.setFont(FONT, 13)
-    pdf.drawString(55, 555, f"June {date.today():%Y}")
+    pdf.drawString(55, 555, f"June {paper2_exam_date().year}")
     pdf.drawString(55, 530, "Version: 1.0 Practice")
     pdf.setFont(FONT_BOLD, 10)
-    pdf.drawString(55, 40, "*26A7517/2/MS*")
+    pdf.drawString(55, 40, f"*{paper2_exam_date():%y}6A7517/2/MS*")
 
 
 def _mark_scheme_intro(pdf: canvas.Canvas, page: int) -> None:

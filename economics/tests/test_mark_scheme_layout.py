@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from pastpapergen.exam_dates import economics_exam_schedule
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.render_pdf import _mark_scheme_rows, _ms_row_height, render_mark_scheme
@@ -17,7 +18,7 @@ def test_mark_scheme_uses_reference_style_sections(tmp_path):
     text = _pdf_text(output)
     first_page = text.split("\f")[0]
     assert "Mark Scheme (Results)" in text
-    assert "Summer" in first_page
+    assert f"Summer {economics_exam_schedule('paper_1').date.year}" in first_page
     assert "Practice Paper" not in first_page
     assert "General Marking Guidance" in text
     assert "Question" in text

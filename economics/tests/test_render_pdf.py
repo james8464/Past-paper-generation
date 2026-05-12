@@ -1,6 +1,7 @@
 from pathlib import Path
 import re
 
+from pastpapergen.exam_dates import formatted_economics_exam_date
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.render_pdf import (
@@ -45,8 +46,6 @@ def test_render_question_paper_uses_exam_style_strings(tmp_path):
 
 
 def test_cover_includes_exam_date(tmp_path):
-    from datetime import date
-
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
     blueprint = build_paper_blueprint(config, syllabus, seed=42)
@@ -54,10 +53,22 @@ def test_cover_includes_exam_date(tmp_path):
 
     render_question_paper(blueprint, output)
     first_page = _pdf_text(output).split("\f")[0]
-    expected_date = f"{date.today():%A} {date.today().day} {date.today():%B %Y}"
 
-    assert expected_date in first_page
+    assert formatted_economics_exam_date("paper_1") in first_page
     assert "Morning (Time: 2 hours)" in first_page
+
+
+def test_paper_2_cover_uses_official_afternoon_session(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_2")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    first_page = _pdf_text(output).split("\f")[0]
+
+    assert formatted_economics_exam_date("paper_2") in first_page
+    assert "Afternoon (Time: 2 hours)" in first_page
 
 
 def test_cover_uses_date_panel_not_mock_examination_label(tmp_path):

@@ -63,6 +63,8 @@ def test_mark_scheme_template_overlay_replaces_reference_year(tmp_path):
     assert "June 2024" not in first_pages
     assert "JUNE 2024" not in first_pages
     assert f"Copyright © {paper2_exam_date():%Y} AQA" in first_pages
+    assert f"{paper2_exam_date():%y}6A7517/2/MS" in first_pages
+    assert "246A7517/2/MS" not in first_pages
 
 
 def test_question_paper_template_overlay_uses_generated_inner_pages(tmp_path):
