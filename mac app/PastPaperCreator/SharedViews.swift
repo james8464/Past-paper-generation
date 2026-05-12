@@ -1,5 +1,34 @@
 import SwiftUI
 
+struct ResponsiveColumns<Leading: View, Trailing: View>: View {
+    private let leading: () -> Leading
+    private let trailing: () -> Trailing
+
+    init(
+        @ViewBuilder leading: @escaping () -> Leading,
+        @ViewBuilder trailing: @escaping () -> Trailing
+    ) {
+        self.leading = leading
+        self.trailing = trailing
+    }
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .top, spacing: 18) {
+                leading()
+                    .frame(maxWidth: .infinity)
+                trailing()
+                    .frame(maxWidth: .infinity)
+            }
+
+            VStack(spacing: 18) {
+                leading()
+                trailing()
+            }
+        }
+    }
+}
+
 struct PanelHeader: View {
     let title: String
     let systemImage: String
@@ -135,17 +164,11 @@ struct PanelEmptyState: View {
     let systemImage: String
 
     var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: systemImage)
-                .font(.system(size: 26, weight: .regular))
+        ContentUnavailableView {
+            Label(title, systemImage: systemImage)
                 .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(.secondary)
-            Text(title)
-                .font(.headline)
+        } description: {
             Text(message)
-                .font(.callout)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
     }

@@ -69,20 +69,7 @@ private struct BenchmarkOverviewPanel: View {
                 }
                 .progressViewStyle(.linear)
             } else if let verdict = appModel.benchmarkVerdict {
-                HStack(alignment: .top, spacing: 14) {
-                    Image(systemName: verdict.score >= 0.72 ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                        .font(.title2)
-                        .foregroundStyle(verdict.score >= 0.72 ? .green : .orange)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(verdict.verdict)
-                            .font(.headline)
-                        Text(verdict.detail)
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer()
-                    Text(verdict.score.formatted(.percent.precision(.fractionLength(0))))
-                        .font(.title2.monospacedDigit().weight(.semibold))
-                }
+                BenchmarkVerdictSummary(verdict: verdict)
             } else {
                 Text("Run the benchmark to calibrate ETA and check whether this Mac is ready for local generation.")
                     .foregroundStyle(.secondary)
@@ -92,40 +79,88 @@ private struct BenchmarkOverviewPanel: View {
     }
 }
 
+private struct BenchmarkVerdictSummary: View {
+    let verdict: BenchmarkVerdict
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .center, spacing: 16) {
+                scoreGauge
+                verdictText
+                Spacer()
+            }
+
+            VStack(alignment: .leading, spacing: 12) {
+                scoreGauge
+                verdictText
+            }
+        }
+    }
+
+    private var scoreGauge: some View {
+        Gauge(value: verdict.score, in: 0...1) {
+            Text("Score")
+        } currentValueLabel: {
+            Text(verdict.score.formatted(.percent.precision(.fractionLength(0))))
+                .font(.headline.monospacedDigit())
+        }
+        .gaugeStyle(.accessoryCircularCapacity)
+        .tint(verdict.score >= 0.72 ? .green : .orange)
+        .frame(width: 82, height: 82)
+        .accessibilityLabel("Benchmark score")
+    }
+
+    private var verdictText: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Label(verdict.verdict, systemImage: verdict.score >= 0.72 ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
+                .font(.headline)
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(verdict.score >= 0.72 ? .green : .orange)
+            Text(verdict.detail)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
 private struct BenchmarkLiveCharts: View {
     @EnvironmentObject private var appModel: AppViewModel
 
     var body: some View {
-        Grid(alignment: .topLeading, horizontalSpacing: 18, verticalSpacing: 18) {
-            GridRow {
-                BenchmarkChart(
-                    title: "CPU Load",
-                    unit: "%",
-                    samples: appModel.benchmarkSamples,
-                    value: \.cpuLoad
-                )
-                BenchmarkChart(
-                    title: "Free Memory",
-                    unit: "GB",
-                    samples: appModel.benchmarkSamples,
-                    value: \.memoryAvailableGB
-                )
+        ViewThatFits(in: .horizontal) {
+            Grid(alignment: .topLeading, horizontalSpacing: 18, verticalSpacing: 18) {
+                GridRow {
+                    cpuChart
+                    memoryChart
+                }
+                GridRow {
+                    diskWriteChart
+                    diskReadChart
+                }
             }
-            GridRow {
-                BenchmarkChart(
-                    title: "Disk Write",
-                    unit: "MB/s",
-                    samples: appModel.benchmarkSamples,
-                    value: \.diskWriteMBs
-                )
-                BenchmarkChart(
-                    title: "Disk Read",
-                    unit: "MB/s",
-                    samples: appModel.benchmarkSamples,
-                    value: \.diskReadMBs
-                )
+
+            VStack(spacing: 18) {
+                cpuChart
+                memoryChart
+                diskWriteChart
+                diskReadChart
             }
         }
+    }
+
+    private var cpuChart: some View {
+        BenchmarkChart(title: "CPU Load", unit: "%", samples: appModel.benchmarkSamples, value: \.cpuLoad)
+    }
+
+    private var memoryChart: some View {
+        BenchmarkChart(title: "Free Memory", unit: "GB", samples: appModel.benchmarkSamples, value: \.memoryAvailableGB)
+    }
+
+    private var diskWriteChart: some View {
+        BenchmarkChart(title: "Disk Write", unit: "MB/s", samples: appModel.benchmarkSamples, value: \.diskWriteMBs)
+    }
+
+    private var diskReadChart: some View {
+        BenchmarkChart(title: "Disk Read", unit: "MB/s", samples: appModel.benchmarkSamples, value: \.diskReadMBs)
     }
 }
 

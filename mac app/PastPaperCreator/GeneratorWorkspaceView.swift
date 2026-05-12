@@ -11,19 +11,17 @@ struct GeneratorWorkspace: View {
                 if board.isReady {
                     ReadinessBanner()
 
-                    HStack(alignment: .top, spacing: 18) {
+                    ResponsiveColumns {
                         VStack(spacing: 18) {
                             PaperPanel(board: board)
                             OutputPanel()
                             DocumentsPanel()
                         }
-                        .frame(maxWidth: .infinity)
-
+                    } trailing: {
                         VStack(spacing: 18) {
                             ModelPanel()
                             ActivityPanel()
                         }
-                        .frame(maxWidth: .infinity)
                     }
                 } else {
                     PlaceholderPanel(board: board)
@@ -44,6 +42,34 @@ private struct HeaderPanel: View {
     let board: ExamBoardOption
 
     var body: some View {
+        ViewThatFits(in: .horizontal) {
+            horizontalHeader
+            verticalHeader
+        }
+        .nativePanel()
+    }
+
+    private var horizontalHeader: some View {
+        HStack(spacing: 14) {
+            titleBlock
+            Spacer()
+            StatusPill()
+            primaryAction
+        }
+    }
+
+    private var verticalHeader: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            titleBlock
+            HStack {
+                StatusPill()
+                Spacer()
+                primaryAction
+            }
+        }
+    }
+
+    private var titleBlock: some View {
         HStack(spacing: 14) {
             Image(systemName: board.systemImage)
                 .font(.system(size: 26, weight: .semibold))
@@ -61,34 +87,34 @@ private struct HeaderPanel: View {
                     CapsuleLabel(title: board.status.title, systemImage: board.isReady ? "checkmark.circle" : "clock")
                 }
             }
-
-            Spacer()
-            StatusPill()
-
-            if !board.isReady {
-                Label("Coming Soon", systemImage: "clock")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
-                    .background(.thinMaterial, in: Capsule())
-            } else if appModel.isRunning {
-                Button(role: .cancel, action: appModel.cancelGeneration) {
-                    Label("Cancel", systemImage: "xmark.circle")
-                }
-                .controlSize(.large)
-            } else {
-                Button(action: appModel.generate) {
-                    Label("Generate", systemImage: "play.fill")
-                }
-                .keyboardShortcut(.return, modifiers: .command)
-                .disabled(!appModel.canGenerate)
-                .controlSize(.large)
-                .nativePrimaryActionStyle()
-                .help(generateHelp)
-            }
         }
-        .nativePanel()
+    }
+
+    @ViewBuilder
+    private var primaryAction: some View {
+        if !board.isReady {
+            Label("Coming Soon", systemImage: "clock")
+                .font(.headline)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(.thinMaterial, in: Capsule())
+        } else if appModel.isRunning {
+            Button(role: .cancel, action: appModel.cancelGeneration) {
+                Label("Cancel", systemImage: "xmark.circle")
+            }
+            .controlSize(.large)
+        } else {
+            Button(action: appModel.generate) {
+                Label("Generate", systemImage: "play.fill")
+            }
+            .keyboardShortcut(.return, modifiers: .command)
+            .disabled(!appModel.canGenerate)
+            .controlSize(.large)
+            .nativePrimaryActionStyle()
+            .help(generateHelp)
+            .accessibilityHint(generateHelp)
+        }
     }
 
     private var generateHelp: String {
@@ -102,25 +128,17 @@ private struct ReadinessBanner: View {
     @EnvironmentObject private var appModel: AppViewModel
 
     var body: some View {
-        if let blocker = appModel.generationBlocker, !appModel.isRunning, !appModel.isRefreshingOllama {
-            HStack(spacing: 12) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundStyle(.orange)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(blocker)
-                        .font(.headline)
-                    Text(helpText)
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
+        if appModel.generationBlocker != nil, !appModel.isRunning, !appModel.isRefreshingOllama {
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 12) {
+                    message
+                    Spacer()
+                    actions
                 }
-                Spacer()
-                if appModel.aiProvider == .ollama {
-                    Button("Refresh", action: appModel.refreshOllama)
-                    Button("Get Ollama", action: appModel.openOllamaDownload)
-                        .disabled(appModel.distributionMode == .appStore)
-                }
-                SettingsLink {
-                    Label("Settings", systemImage: "slider.horizontal.3")
+
+                VStack(alignment: .leading, spacing: 12) {
+                    message
+                    actions
                 }
             }
             .padding(14)
@@ -128,6 +146,33 @@ private struct ReadinessBanner: View {
             .overlay {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .stroke(.orange.opacity(0.28), lineWidth: 1)
+            }
+        }
+    }
+
+    private var message: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(.orange)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(appModel.generationBlocker ?? "")
+                    .font(.headline)
+                Text(helpText)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    private var actions: some View {
+        HStack(spacing: 8) {
+            if appModel.aiProvider == .ollama {
+                Button("Refresh", action: appModel.refreshOllama)
+                Button("Get Ollama", action: appModel.openOllamaDownload)
+                    .disabled(appModel.distributionMode == .appStore)
+            }
+            SettingsLink {
+                Label("Settings", systemImage: "slider.horizontal.3")
             }
         }
     }

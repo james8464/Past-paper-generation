@@ -34,3 +34,14 @@
    Claimed at: 2026-05-12T20:15:13Z
    Done by: CODEX
    Done at: 2026-05-12T20:28:37Z
+
+4. adaptive-ui-polish
+   Id: 4-adaptive-ui-polish
+   Scope: Adaptive SwiftUI layout polish and native progress/empty states
+   Files: PastPaperCreator/*.swift
+   Note: Finished adaptive UI polish. Verified: make test, pytest backend tests, git diff --check after cleanup, and make build-app-store.
+   Detail: tasks/details/4-adaptive-ui-polish.md
+   Claimed by: CODEX
+   Claimed at: 2026-05-12T20:35:37Z
+   Done by: CODEX
+   Done at: 2026-05-12T20:37:04Z

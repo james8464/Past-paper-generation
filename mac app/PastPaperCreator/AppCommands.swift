@@ -90,7 +90,7 @@ struct AppCommands: Commands {
             Divider()
 
             Button("Check Ollama Status", action: appModel.refreshOllama)
-                .disabled(appModel.isRunning || appModel.isRefreshingOllama)
+                .disabled(appModel.isRunning || appModel.isBenchmarkRunning || appModel.isRefreshingOllama)
 
             Button("Open Ollama Download Page", action: appModel.openOllamaDownload)
                 .disabled(appModel.distributionMode == .appStore)
