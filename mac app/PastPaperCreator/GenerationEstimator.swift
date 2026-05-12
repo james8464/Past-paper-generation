@@ -1,5 +1,21 @@
 import Foundation
 
+private enum EstimateTuning {
+    static let baselineSeconds = 210.0
+    static let minimumSeconds = 20.0
+    static let noBenchmarkConfidence = 0.58
+    static let benchmarkConfidence = 0.76
+    static let observedProgressThreshold = 0.08
+    static let minimumProgress = 0.02
+    static let maximumProgress = 0.995
+    static let priorWeight = 0.35
+    static let observedWeight = 0.65
+    static let maximumConfidence = 0.92
+    static let progressConfidenceBase = 0.65
+    static let progressConfidenceRange = 0.25
+    static let referenceModelBillions = 14.0
+}
+
 enum GenerationEstimator {
     static func initialEstimate(
         board: ExamBoardOption,
@@ -17,7 +33,7 @@ enum GenerationEstimator {
         let deviceFactor = deviceComplexity()
         let benchmarkFactor = benchmark.map { benchmarkComplexity(score: $0.score) } ?? 1.0
 
-        let total = 210 * paperFactor.value * providerFactor.value * modelFactor.value * deviceFactor.value * benchmarkFactor
+        let total = EstimateTuning.baselineSeconds * paperFactor.value * providerFactor.value * modelFactor.value * deviceFactor.value * benchmarkFactor
         let factors = [
             paperFactor.factor,
             providerFactor.factor,
@@ -32,9 +48,9 @@ enum GenerationEstimator {
 
         return GenerationEstimate(
             startedAt: Date(),
-            totalSeconds: max(20, total),
-            remainingSeconds: max(20, total),
-            confidence: benchmark == nil ? 0.58 : 0.76,
+            totalSeconds: max(EstimateTuning.minimumSeconds, total),
+            remainingSeconds: max(EstimateTuning.minimumSeconds, total),
+            confidence: benchmark == nil ? EstimateTuning.noBenchmarkConfidence : EstimateTuning.benchmarkConfidence,
             factors: factors
         )
     }
@@ -46,15 +62,21 @@ enum GenerationEstimator {
     ) -> GenerationEstimate {
         var updated = estimate
         let elapsed = now.timeIntervalSince(estimate.startedAt)
-        let currentProgress = min(max(progress ?? 0, 0.02), 0.995)
+        let currentProgress = min(max(progress ?? 0, EstimateTuning.minimumProgress), EstimateTuning.maximumProgress)
         let scheduleRemaining = max(0, estimate.totalSeconds - elapsed)
 
-        if currentProgress > 0.08 {
+        if currentProgress > EstimateTuning.observedProgressThreshold {
             let observedTotal = elapsed / currentProgress
-            let blendedTotal = (estimate.totalSeconds * 0.35) + (observedTotal * 0.65)
+            let blendedTotal = (estimate.totalSeconds * EstimateTuning.priorWeight) + (observedTotal * EstimateTuning.observedWeight)
             updated.totalSeconds = max(elapsed, blendedTotal)
             updated.remainingSeconds = max(0, updated.totalSeconds - elapsed)
-            updated.confidence = min(0.92, max(estimate.confidence, 0.65 + currentProgress * 0.25))
+            updated.confidence = min(
+                EstimateTuning.maximumConfidence,
+                max(
+                    estimate.confidence,
+                    EstimateTuning.progressConfidenceBase + currentProgress * EstimateTuning.progressConfidenceRange
+                )
+            )
         } else {
             updated.remainingSeconds = scheduleRemaining
         }
@@ -101,7 +123,7 @@ enum GenerationEstimator {
         if lowered.contains("gpt") || lowered.contains("claude") {
             value = 0.9
         } else if let billions {
-            value = min(2.7, max(0.58, sqrt(billions / 14.0)))
+            value = min(2.7, max(0.58, sqrt(billions / EstimateTuning.referenceModelBillions)))
         } else {
             value = 1.0
         }

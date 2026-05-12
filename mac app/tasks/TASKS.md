@@ -23,3 +23,14 @@
    Claimed at: 2026-05-12T16:19:44Z
    Done by: CODEX
    Done at: 2026-05-12T16:24:10Z
+
+3. swift-code-quality
+   Id: 3-swift-code-quality
+   Scope: Swift code quality, portable defaults, backend constants
+   Files: PastPaperCreator/*.swift ../app_bridge/*.py
+   Note: Refactored SwiftUI files, centralized defaults, removed user-specific paths, pytest and xcode tests/build passed
+   Detail: tasks/details/3-swift-code-quality.md
+   Claimed by: CODEX
+   Claimed at: 2026-05-12T20:15:13Z
+   Done by: CODEX
+   Done at: 2026-05-12T20:28:37Z

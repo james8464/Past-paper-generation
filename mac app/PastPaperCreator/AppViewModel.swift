@@ -7,10 +7,10 @@ import UserNotifications
 final class AppViewModel: ObservableObject {
     @Published var selectedBoardID = ExamCatalog.defaultBoard.id
     @Published var selectedPaperID = ExamCatalog.defaultBoard.papers[0].id
-    @Published var selectedModel = "qwen2.5:14b"
+    @Published var selectedModel = AppDefaults.ollamaModel
     @Published var aiProvider: AIProvider = .ollama
-    @Published var ollamaURL = "http://localhost:11434"
-    @Published var outputFolder = AppViewModel.defaultOutputFolder()
+    @Published var ollamaURL = AppDefaults.ollamaURL
+    @Published var outputFolder = AppDefaults.defaultOutputFolder()
     @Published var dryRun = false
     @Published var isRunning = false
     @Published var status = "Ready"
@@ -20,9 +20,9 @@ final class AppViewModel: ObservableObject {
     @Published var isRefreshingOllama = false
     @Published var ollamaState = OllamaState()
     @Published var availableModels: [String] = []
-    @Published var modelToPull = "qwen2.5:14b"
-    @Published var openAIModel = "gpt-4.1"
-    @Published var anthropicModel = "claude-sonnet-4-20250514"
+    @Published var modelToPull = AppDefaults.ollamaModel
+    @Published var openAIModel = AppDefaults.openAIModel
+    @Published var anthropicModel = AppDefaults.anthropicModel
     @Published var openAIAPIKey = ""
     @Published var anthropicAPIKey = ""
     @Published var showPullConfirmation = false
@@ -101,51 +101,33 @@ final class AppViewModel: ObservableObject {
     }
 
     init() {
-        let ollamaModel = defaults.string(forKey: "ollamaModel") ?? "qwen2.5:14b"
-        aiProvider = AIProvider(rawValue: defaults.string(forKey: "aiProvider") ?? "") ?? .ollama
+        let ollamaModel = defaults.string(forKey: AppStorageKey.ollamaModel) ?? AppDefaults.ollamaModel
+        aiProvider = AIProvider(rawValue: defaults.string(forKey: AppStorageKey.aiProvider) ?? "") ?? .ollama
         selectedModel = ollamaModel
         modelToPull = ollamaModel
-        openAIModel = defaults.string(forKey: "openAIModel") ?? "gpt-4.1"
-        anthropicModel = defaults.string(forKey: "anthropicModel") ?? "claude-sonnet-4-20250514"
-        openAIAPIKey = SecretStore.read("openai-api-key")
-        anthropicAPIKey = SecretStore.read("anthropic-api-key")
+        openAIModel = defaults.string(forKey: AppStorageKey.openAIModel) ?? AppDefaults.openAIModel
+        anthropicModel = defaults.string(forKey: AppStorageKey.anthropicModel) ?? AppDefaults.anthropicModel
+        openAIAPIKey = SecretStore.read(SecretAccount.openAIAPIKey)
+        anthropicAPIKey = SecretStore.read(SecretAccount.anthropicAPIKey)
         notificationCenter.delegate = NotificationPresenter.shared
-        if defaults.object(forKey: "notificationsEnabled") != nil {
-            notificationsEnabled = defaults.bool(forKey: "notificationsEnabled")
+        if defaults.object(forKey: AppStorageKey.notificationsEnabled) != nil {
+            notificationsEnabled = defaults.bool(forKey: AppStorageKey.notificationsEnabled)
         }
-        showWelcome = !defaults.bool(forKey: "hasSeenWelcome")
-        if let savedOutput = defaults.string(forKey: "outputFolderPath"), !savedOutput.isEmpty {
-            if Self.isSandboxDownloadsPath(savedOutput) {
-                defaults.set(outputFolder.path, forKey: "outputFolderPath")
+        showWelcome = !defaults.bool(forKey: AppStorageKey.hasSeenWelcome)
+        if let savedOutput = defaults.string(forKey: AppStorageKey.outputFolderPath), !savedOutput.isEmpty {
+            if AppDefaults.isSandboxDownloadsPath(savedOutput) {
+                defaults.set(outputFolder.path, forKey: AppStorageKey.outputFolderPath)
             } else {
                 outputFolder = URL(fileURLWithPath: savedOutput)
             }
         }
-        selectedBoardID = defaults.string(forKey: "selectedBoardID") ?? ExamCatalog.defaultBoard.id
-        selectedPaperID = defaults.string(forKey: "selectedPaperID") ?? selectedBoard.papers[0].id
+        selectedBoardID = defaults.string(forKey: AppStorageKey.selectedBoardID) ?? ExamCatalog.defaultBoard.id
+        selectedPaperID = defaults.string(forKey: AppStorageKey.selectedPaperID) ?? selectedBoard.papers[0].id
         sidebarSelection = .board(selectedBoardID)
     }
 
-    private static func defaultOutputFolder() -> URL {
-        let fallback = URL(fileURLWithPath: "/Users/\(NSUserName())/Downloads")
-        if FileManager.default.fileExists(atPath: fallback.path) {
-            return fallback
-        }
-        if let realHome = NSHomeDirectoryForUser(NSUserName()) {
-            let downloads = URL(fileURLWithPath: realHome).appendingPathComponent("Downloads")
-            if FileManager.default.fileExists(atPath: downloads.path), !isSandboxDownloadsPath(downloads.path) {
-                return downloads
-            }
-        }
-        return FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first ?? fallback
-    }
-
-    private static func isSandboxDownloadsPath(_ path: String) -> Bool {
-        path.contains("/Library/Containers/") && path.contains("/Data/Downloads")
-    }
-
     func refreshOllama() {
-        guard !isRunning, !isRefreshingOllama else { return }
+        guard !isRunning, !isBenchmarkRunning, !isRefreshingOllama else { return }
         isRefreshingOllama = true
         status = "Checking Ollama"
         Task {
@@ -170,7 +152,7 @@ final class AppViewModel: ObservableObject {
 
         if panel.runModal() == .OK, let url = panel.url {
             outputFolder = url
-            defaults.set(url.path, forKey: "outputFolderPath")
+            defaults.set(url.path, forKey: AppStorageKey.outputFolderPath)
         }
     }
 
@@ -179,15 +161,15 @@ final class AppViewModel: ObservableObject {
     }
 
     func openProjectHelp() {
-        openExternalURL("https://github.com/james8464/Past-paper-generation#past-paper-creation")
+        NSWorkspace.shared.open(AppLinks.projectHelp)
     }
 
     func openPrivacyPolicy() {
-        openExternalURL("https://github.com/james8464/Past-paper-generation#privacy")
+        NSWorkspace.shared.open(AppLinks.privacyPolicy)
     }
 
     func openSupportPage() {
-        openExternalURL("https://github.com/james8464/Past-paper-generation/issues")
+        NSWorkspace.shared.open(AppLinks.support)
     }
 
     func selectBoard(_ board: ExamBoardOption) {
@@ -196,8 +178,8 @@ final class AppViewModel: ObservableObject {
         }
         selectedBoardID = board.id
         selectedPaperID = board.papers[0].id
-        defaults.set(board.id, forKey: "selectedBoardID")
-        defaults.set(selectedPaperID, forKey: "selectedPaperID")
+        defaults.set(board.id, forKey: AppStorageKey.selectedBoardID)
+        defaults.set(selectedPaperID, forKey: AppStorageKey.selectedPaperID)
         generatedFiles.removeAll()
         progressEntries.removeAll()
         status = board.isReady ? "Ready" : "Coming Soon"
@@ -205,11 +187,11 @@ final class AppViewModel: ObservableObject {
 
     func selectPaperID(_ paperID: String) {
         guard selectedPaperID != paperID else {
-            defaults.set(paperID, forKey: "selectedPaperID")
+            defaults.set(paperID, forKey: AppStorageKey.selectedPaperID)
             return
         }
         selectedPaperID = paperID
-        defaults.set(paperID, forKey: "selectedPaperID")
+        defaults.set(paperID, forKey: AppStorageKey.selectedPaperID)
     }
 
     func selectAIProvider(_ provider: AIProvider) {
@@ -329,7 +311,7 @@ final class AppViewModel: ObservableObject {
             } onFinish: { [weak self] result in
                 if case .success(0) = result {
                     self?.selectedModel = model
-                    self?.defaults.set(model, forKey: "ollamaModel")
+                    self?.defaults.set(model, forKey: AppStorageKey.ollamaModel)
                 }
                 self?.finishGeneration(result)
                 self?.refreshOllama()
@@ -341,8 +323,7 @@ final class AppViewModel: ObservableObject {
     }
 
     func openOllamaDownload() {
-        guard let url = URL(string: "https://ollama.com/download") else { return }
-        NSWorkspace.shared.open(url)
+        NSWorkspace.shared.open(AppLinks.ollamaDownload)
     }
 
     func openGeneratedFile(_ file: GeneratedFile) {
@@ -387,7 +368,7 @@ final class AppViewModel: ObservableObject {
     }
 
     func dismissWelcome() {
-        defaults.set(true, forKey: "hasSeenWelcome")
+        defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
         showWelcome = false
     }
 
@@ -427,7 +408,7 @@ final class AppViewModel: ObservableObject {
 
     func setNotificationsEnabled(_ enabled: Bool) {
         notificationsEnabled = enabled
-        defaults.set(enabled, forKey: "notificationsEnabled")
+        defaults.set(enabled, forKey: AppStorageKey.notificationsEnabled)
         if enabled {
             requestNotificationAuthorization()
         }
@@ -444,7 +425,13 @@ final class AppViewModel: ObservableObject {
         sidebarSelection = .benchmark
 
         do {
-            benchmarkProcess = try backend.run(arguments: ["benchmark", "--duration", "30", "--output", outputFolder.path]) { [weak self] event in
+            benchmarkProcess = try backend.run(arguments: [
+                "benchmark",
+                "--duration",
+                String(Int(AppDefaults.benchmarkDurationSeconds)),
+                "--output",
+                outputFolder.path,
+            ]) { [weak self] event in
                 self?.apply(event)
             } onFinish: { [weak self] result in
                 self?.finishBenchmark(result)
@@ -463,22 +450,17 @@ final class AppViewModel: ObservableObject {
     }
 
     private func persistSettings() {
-        defaults.set(aiProvider.rawValue, forKey: "aiProvider")
-        defaults.set(selectedModel, forKey: "ollamaModel")
-        defaults.set(openAIModel, forKey: "openAIModel")
-        defaults.set(anthropicModel, forKey: "anthropicModel")
-        defaults.set(outputFolder.path, forKey: "outputFolderPath")
-        SecretStore.save(openAIAPIKey, account: "openai-api-key")
-        SecretStore.save(anthropicAPIKey, account: "anthropic-api-key")
+        defaults.set(aiProvider.rawValue, forKey: AppStorageKey.aiProvider)
+        defaults.set(selectedModel, forKey: AppStorageKey.ollamaModel)
+        defaults.set(openAIModel, forKey: AppStorageKey.openAIModel)
+        defaults.set(anthropicModel, forKey: AppStorageKey.anthropicModel)
+        defaults.set(outputFolder.path, forKey: AppStorageKey.outputFolderPath)
+        SecretStore.save(openAIAPIKey, account: SecretAccount.openAIAPIKey)
+        SecretStore.save(anthropicAPIKey, account: SecretAccount.anthropicAPIKey)
     }
 
     private func generatedFile(role: String) -> GeneratedFile? {
         generatedFiles.reversed().first { $0.role == role }
-    }
-
-    private func openExternalURL(_ value: String) {
-        guard let url = URL(string: value) else { return }
-        NSWorkspace.shared.open(url)
     }
 
     private func apply(_ event: BackendEvent) {
@@ -505,12 +487,12 @@ final class AppViewModel: ObservableObject {
         case let .models(models, message):
             availableModels = models
             if !models.isEmpty, !models.contains(selectedModel) {
-                if models.contains("qwen2.5:14b") {
-                    selectedModel = "qwen2.5:14b"
+                if models.contains(AppDefaults.ollamaModel) {
+                    selectedModel = AppDefaults.ollamaModel
                 } else {
                     selectedModel = models[0]
                 }
-                defaults.set(selectedModel, forKey: "ollamaModel")
+                defaults.set(selectedModel, forKey: AppStorageKey.ollamaModel)
             }
             if let message {
                 status = message
@@ -522,7 +504,7 @@ final class AppViewModel: ObservableObject {
             benchmarkMetrics.append(metric)
         case let .benchmarkSample(sample):
             benchmarkSamples.append(sample)
-            benchmarkProgress = min(1.0, sample.elapsed / 30.0)
+            benchmarkProgress = min(1.0, sample.elapsed / AppDefaults.benchmarkDurationSeconds)
         case let .benchmarkDone(verdict):
             benchmarkVerdict = verdict
             benchmarkProgress = 1.0

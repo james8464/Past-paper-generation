@@ -3,7 +3,6 @@
 enum BackendClientError: LocalizedError {
     case backendMissing
     case pythonMissing
-    case unreadableOutput(String)
 
     var errorDescription: String? {
         switch self {
@@ -11,13 +10,20 @@ enum BackendClientError: LocalizedError {
             "Could not find app_backend.py."
         case .pythonMissing:
             "Could not find a Python interpreter."
-        case let .unreadableOutput(line):
-            "Backend returned unreadable output: \(line)"
         }
     }
 }
 
 final class BackendClient: @unchecked Sendable {
+    private enum BackendFile {
+        static let bridgeScript = "app_backend.py"
+        static let localPython = ".venv/bin/python"
+        static let rootOverrideEnvironmentKey = "PAPER_CREATOR_ROOT"
+        static let bundleSearchDepth = 8
+        static let pythonName = "python3"
+        static let fallbackPythonDirectories = ["/usr/bin", "/opt/homebrew/bin", "/usr/local/bin"]
+    }
+
     private let fileManager = FileManager.default
 
     func run(
@@ -31,7 +37,7 @@ final class BackendClient: @unchecked Sendable {
 
         process.executableURL = try pythonExecutable(root: root)
         process.currentDirectoryURL = root
-        process.arguments = [root.appendingPathComponent("app_backend.py").path] + arguments
+        process.arguments = [root.appendingPathComponent(BackendFile.bridgeScript).path] + arguments
         let errorPipe = Pipe()
         process.standardOutput = pipe
         process.standardError = errorPipe
@@ -79,7 +85,7 @@ final class BackendClient: @unchecked Sendable {
 
             process.executableURL = try self.pythonExecutable(root: root)
             process.currentDirectoryURL = root
-            process.arguments = [root.appendingPathComponent("app_backend.py").path] + arguments
+            process.arguments = [root.appendingPathComponent(BackendFile.bridgeScript).path] + arguments
             process.standardOutput = pipe
             process.standardError = errorPipe
 
@@ -117,9 +123,9 @@ final class BackendClient: @unchecked Sendable {
 
     private func repositoryRoot() throws -> URL {
         let environment = ProcessInfo.processInfo.environment
-        if let override = environment["PAPER_CREATOR_ROOT"] {
+        if let override = environment[BackendFile.rootOverrideEnvironmentKey] {
             let url = URL(fileURLWithPath: override)
-            if fileManager.fileExists(atPath: url.appendingPathComponent("app_backend.py").path) {
+            if hasBackendScript(in: url) {
                 return url
             }
         }
@@ -128,13 +134,13 @@ final class BackendClient: @unchecked Sendable {
             .deletingLastPathComponent()
             .deletingLastPathComponent()
             .deletingLastPathComponent()
-        if fileManager.fileExists(atPath: sourceRoot.appendingPathComponent("app_backend.py").path) {
+        if hasBackendScript(in: sourceRoot) {
             return sourceRoot
         }
 
         var candidate = Bundle.main.bundleURL
-        for _ in 0..<8 {
-            if fileManager.fileExists(atPath: candidate.appendingPathComponent("app_backend.py").path) {
+        for _ in 0..<BackendFile.bundleSearchDepth {
+            if hasBackendScript(in: candidate) {
                 return candidate
             }
             candidate.deleteLastPathComponent()
@@ -144,16 +150,35 @@ final class BackendClient: @unchecked Sendable {
     }
 
     private func pythonExecutable(root: URL) throws -> URL {
-        let localPython = root.appendingPathComponent(".venv/bin/python")
+        let localPython = root.appendingPathComponent(BackendFile.localPython)
         if fileManager.isExecutableFile(atPath: localPython.path) {
             return localPython
         }
 
-        let userPython = URL(fileURLWithPath: "/usr/bin/python3")
-        if fileManager.isExecutableFile(atPath: userPython.path) {
-            return userPython
+        if let systemPython = executable(named: BackendFile.pythonName) {
+            return systemPython
         }
 
         throw BackendClientError.pythonMissing
+    }
+
+    private func hasBackendScript(in root: URL) -> Bool {
+        fileManager.fileExists(atPath: root.appendingPathComponent(BackendFile.bridgeScript).path)
+    }
+
+    private func executable(named name: String) -> URL? {
+        let environmentPaths = ProcessInfo.processInfo.environment["PATH"]?
+            .split(separator: ":")
+            .map(String.init) ?? []
+        let searchPaths = environmentPaths + BackendFile.fallbackPythonDirectories
+
+        for directory in searchPaths {
+            let candidate = URL(fileURLWithPath: directory).appendingPathComponent(name)
+            if fileManager.isExecutableFile(atPath: candidate.path) {
+                return candidate
+            }
+        }
+
+        return nil
     }
 }

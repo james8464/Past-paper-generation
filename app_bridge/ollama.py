@@ -7,16 +7,17 @@ from pathlib import Path
 
 from app_bridge.events import emit, emit_progress, run_subprocess_json
 
+OLLAMA_FALLBACK_COMMANDS = (
+    "/opt/homebrew/bin/ollama",
+    "/usr/local/bin/ollama",
+    "/Applications/Ollama.app/Contents/Resources/ollama",
+)
+
 
 def ollama_command() -> str | None:
     if found := shutil.which("ollama"):
         return found
-    candidates = (
-        "/opt/homebrew/bin/ollama",
-        "/usr/local/bin/ollama",
-        "/Applications/Ollama.app/Contents/Resources/ollama",
-    )
-    return next((candidate for candidate in candidates if Path(candidate).exists()), None)
+    return next((candidate for candidate in OLLAMA_FALLBACK_COMMANDS if Path(candidate).exists()), None)
 
 
 def handle_ollama_status(_args: argparse.Namespace) -> int:
