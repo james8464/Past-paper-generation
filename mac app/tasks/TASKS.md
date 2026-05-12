@@ -67,3 +67,14 @@
    Claimed at: 2026-05-12T20:53:50Z
    Done by: CODEX
    Done at: 2026-05-12T20:57:52Z
+
+7. benchmark-expanded-measures
+   Id: 7-benchmark-expanded-measures
+   Scope: Add broader diagnostic benchmark suitability measures
+   Files: app_bridge/benchmark.py mac app/PastPaperCreator/AppModels.swift mac app/PastPaperCreator/BenchmarkView.swift mac app/Tests/AppTests.swift tests/test_app_backend.py
+   Note: Added memory pressure/swap, output storage, small-file latency, network download, Ollama latency, PDF render throughput, thermal limit and power metrics with Swift decoding and charts.
+   Detail: tasks/details/7-benchmark-expanded-measures.md
+   Claimed by: CODEX
+   Claimed at: 2026-05-12T21:00:44Z
+   Done by: CODEX
+   Done at: 2026-05-12T21:08:02Z

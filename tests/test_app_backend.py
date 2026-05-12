@@ -124,6 +124,14 @@ def test_benchmark_emits_samples_and_verdict(tmp_path: Path) -> None:
     events = run_bridge("benchmark", "--duration", "1", "--output", str(tmp_path))
     assert any(event["type"] == "benchmark_metric" for event in events)
     assert any(event["type"] == "benchmark_sample" for event in events)
+    sample = next(event for event in events if event["type"] == "benchmark_sample")
+    assert "memory_pressure_percent" in sample
+    assert "swap_used_gb" in sample
+    assert "disk_free_gb" in sample
+    assert "small_file_ms" in sample
+    assert "pdf_pages_per_s" in sample
+    metric_names = {event.get("name") for event in events if event["type"] == "benchmark_metric"}
+    assert {"Memory Pressure", "Swap Used", "Output Free Space", "PDF Render", "Small-file Latency"} <= metric_names
     assert events[-1]["type"] == "benchmark_done"
     assert 0 <= float(events[-1]["score"]) <= 1
 

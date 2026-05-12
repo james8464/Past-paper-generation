@@ -293,10 +293,27 @@ struct BenchmarkSample: Identifiable, Equatable {
     let id = UUID()
     let elapsed: Double
     let cpuLoad: Double
+    let cpuThroughputMBs: Double
     let memoryAvailableGB: Double
+    let memoryPressurePercent: Double
+    let swapUsedGB: Double
     let diskWriteMBs: Double
     let diskReadMBs: Double
+    let diskFreeGB: Double
+    let smallFileMS: Double
     let networkLatencyMS: Double?
+    let networkDownloadMBs: Double?
+    let ollamaLatencyMS: Double?
+    let thermalSpeedLimitPercent: Double?
+    let pdfPagesPerSecond: Double
+
+    var networkLatencyDisplayMS: Double {
+        networkLatencyMS ?? 0
+    }
+
+    var thermalSpeedLimitDisplayPercent: Double {
+        thermalSpeedLimitPercent ?? 100
+    }
 }
 
 struct BenchmarkMetric: Identifiable, Equatable {
@@ -388,10 +405,19 @@ enum BackendEvent: Equatable {
                 BenchmarkSample(
                     elapsed: payload.elapsed ?? 0,
                     cpuLoad: payload.cpuLoad ?? 0,
+                    cpuThroughputMBs: payload.cpuMBs ?? 0,
                     memoryAvailableGB: payload.memoryAvailableGB ?? 0,
+                    memoryPressurePercent: payload.memoryPressurePercent ?? 0,
+                    swapUsedGB: payload.swapUsedGB ?? 0,
                     diskWriteMBs: payload.diskWriteMBs ?? 0,
                     diskReadMBs: payload.diskReadMBs ?? 0,
-                    networkLatencyMS: payload.networkLatencyMS
+                    diskFreeGB: payload.diskFreeGB ?? 0,
+                    smallFileMS: payload.smallFileMS ?? 0,
+                    networkLatencyMS: payload.networkLatencyMS,
+                    networkDownloadMBs: payload.networkDownloadMBs,
+                    ollamaLatencyMS: payload.ollamaLatencyMS,
+                    thermalSpeedLimitPercent: payload.thermalSpeedLimitPercent,
+                    pdfPagesPerSecond: payload.pdfPagesPerSecond ?? 0
                 )
             )
         case "benchmark_done":
@@ -428,10 +454,19 @@ private struct BackendEventPayload: Decodable {
     let score: Double?
     let elapsed: Double?
     let cpuLoad: Double?
+    let cpuMBs: Double?
     let memoryAvailableGB: Double?
+    let memoryPressurePercent: Double?
+    let swapUsedGB: Double?
     let diskWriteMBs: Double?
     let diskReadMBs: Double?
+    let diskFreeGB: Double?
+    let smallFileMS: Double?
     let networkLatencyMS: Double?
+    let networkDownloadMBs: Double?
+    let ollamaLatencyMS: Double?
+    let thermalSpeedLimitPercent: Double?
+    let pdfPagesPerSecond: Double?
     let verdict: String?
 
     enum CodingKeys: String, CodingKey {
@@ -454,10 +489,19 @@ private struct BackendEventPayload: Decodable {
         case score
         case elapsed
         case cpuLoad = "cpu_load"
+        case cpuMBs = "cpu_mb_s"
         case memoryAvailableGB = "memory_available_gb"
+        case memoryPressurePercent = "memory_pressure_percent"
+        case swapUsedGB = "swap_used_gb"
         case diskWriteMBs = "disk_write_mb_s"
         case diskReadMBs = "disk_read_mb_s"
+        case diskFreeGB = "disk_free_gb"
+        case smallFileMS = "small_file_ms"
         case networkLatencyMS = "network_latency_ms"
+        case networkDownloadMBs = "network_download_mb_s"
+        case ollamaLatencyMS = "ollama_latency_ms"
+        case thermalSpeedLimitPercent = "thermal_speed_limit_percent"
+        case pdfPagesPerSecond = "pdf_pages_per_s"
         case verdict
     }
 }

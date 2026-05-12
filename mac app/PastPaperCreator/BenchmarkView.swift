@@ -63,7 +63,7 @@ private struct BenchmarkOverviewPanel: View {
 
             if appModel.isBenchmarkRunning {
                 ProgressView(value: appModel.benchmarkProgress ?? 0) {
-                    Text("Running CPU, memory, disk and network checks")
+                    Text("Running CPU, memory, storage, PDF, network, power and Ollama checks")
                 } currentValueLabel: {
                     Text((appModel.benchmarkProgress ?? 0).formatted(.percent.precision(.fractionLength(0))))
                 }
@@ -127,22 +127,34 @@ private struct BenchmarkLiveCharts: View {
 
     var body: some View {
         ViewThatFits(in: .horizontal) {
-            Grid(alignment: .topLeading, horizontalSpacing: 18, verticalSpacing: 18) {
-                GridRow {
-                    cpuChart
-                    memoryChart
+                Grid(alignment: .topLeading, horizontalSpacing: 18, verticalSpacing: 18) {
+                    GridRow {
+                        cpuChart
+                        cpuThroughputChart
+                    }
+                    GridRow {
+                        memoryChart
+                        memoryPressureChart
+                    }
+                    GridRow {
+                        diskWriteChart
+                        networkLatencyChart
+                    }
+                    GridRow {
+                        pdfRenderChart
+                        thermalChart
+                    }
                 }
-                GridRow {
-                    diskWriteChart
-                    diskReadChart
-                }
-            }
 
             VStack(spacing: 18) {
                 cpuChart
+                cpuThroughputChart
                 memoryChart
+                memoryPressureChart
                 diskWriteChart
-                diskReadChart
+                networkLatencyChart
+                pdfRenderChart
+                thermalChart
             }
         }
     }
@@ -151,16 +163,32 @@ private struct BenchmarkLiveCharts: View {
         BenchmarkChart(title: "CPU Load", unit: "%", samples: appModel.benchmarkSamples, value: \.cpuLoad)
     }
 
+    private var cpuThroughputChart: some View {
+        BenchmarkChart(title: "CPU Throughput", unit: "MB/s", samples: appModel.benchmarkSamples, value: \.cpuThroughputMBs)
+    }
+
     private var memoryChart: some View {
         BenchmarkChart(title: "Free Memory", unit: "GB", samples: appModel.benchmarkSamples, value: \.memoryAvailableGB)
+    }
+
+    private var memoryPressureChart: some View {
+        BenchmarkChart(title: "Memory Pressure", unit: "%", samples: appModel.benchmarkSamples, value: \.memoryPressurePercent)
     }
 
     private var diskWriteChart: some View {
         BenchmarkChart(title: "Disk Write", unit: "MB/s", samples: appModel.benchmarkSamples, value: \.diskWriteMBs)
     }
 
-    private var diskReadChart: some View {
-        BenchmarkChart(title: "Disk Read", unit: "MB/s", samples: appModel.benchmarkSamples, value: \.diskReadMBs)
+    private var networkLatencyChart: some View {
+        BenchmarkChart(title: "Network Latency", unit: "ms", samples: appModel.benchmarkSamples, value: \.networkLatencyDisplayMS)
+    }
+
+    private var pdfRenderChart: some View {
+        BenchmarkChart(title: "PDF Render", unit: "pages/s", samples: appModel.benchmarkSamples, value: \.pdfPagesPerSecond)
+    }
+
+    private var thermalChart: some View {
+        BenchmarkChart(title: "Thermal Limit", unit: "%", samples: appModel.benchmarkSamples, value: \.thermalSpeedLimitDisplayPercent)
     }
 }
 

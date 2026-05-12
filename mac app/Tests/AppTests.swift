@@ -23,14 +23,23 @@ final class PastPaperCreatorTests: XCTestCase {
     }
 
     func testBenchmarkSampleEventDecodes() throws {
-        let event = try BackendEvent(jsonLine: #"{"type":"benchmark_sample","elapsed":2,"cpu_load":18.5,"memory_available_gb":9.25,"disk_write_mb_s":420,"disk_read_mb_s":900,"network_latency_ms":42}"#)
+        let event = try BackendEvent(jsonLine: #"{"type":"benchmark_sample","elapsed":2,"cpu_load":18.5,"cpu_mb_s":720,"memory_available_gb":9.25,"memory_pressure_percent":42,"swap_used_gb":0.5,"disk_write_mb_s":420,"disk_read_mb_s":900,"disk_free_gb":128,"small_file_ms":3.2,"network_latency_ms":42,"network_download_mb_s":34,"ollama_latency_ms":12,"thermal_speed_limit_percent":100,"pdf_pages_per_s":22}"#)
         if case let .benchmarkSample(sample) = event {
             XCTAssertEqual(sample.elapsed, 2)
             XCTAssertEqual(sample.cpuLoad, 18.5)
+            XCTAssertEqual(sample.cpuThroughputMBs, 720)
             XCTAssertEqual(sample.memoryAvailableGB, 9.25)
+            XCTAssertEqual(sample.memoryPressurePercent, 42)
+            XCTAssertEqual(sample.swapUsedGB, 0.5)
             XCTAssertEqual(sample.diskWriteMBs, 420)
             XCTAssertEqual(sample.diskReadMBs, 900)
+            XCTAssertEqual(sample.diskFreeGB, 128)
+            XCTAssertEqual(sample.smallFileMS, 3.2)
             XCTAssertEqual(sample.networkLatencyMS, 42)
+            XCTAssertEqual(sample.networkDownloadMBs, 34)
+            XCTAssertEqual(sample.ollamaLatencyMS, 12)
+            XCTAssertEqual(sample.thermalSpeedLimitPercent, 100)
+            XCTAssertEqual(sample.pdfPagesPerSecond, 22)
         } else {
             XCTFail("Expected benchmark sample")
         }
