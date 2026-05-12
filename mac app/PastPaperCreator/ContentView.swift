@@ -25,8 +25,9 @@ struct ContentView: View {
         .toolbar {
             ToolbarItemGroup {
                 Button(action: appModel.refreshOllama) {
-                    Label("Refresh", systemImage: "arrow.clockwise")
+                    Label(appModel.isRefreshingOllama ? "Checking" : "Refresh", systemImage: "arrow.clockwise")
                 }
+                .disabled(appModel.isRunning || appModel.isRefreshingOllama)
                 .help("Refresh models")
 
                 if appModel.isRunning {
@@ -54,6 +55,10 @@ struct ContentView: View {
         } message: {
             Text("Ollama will download this model and make it available locally.")
         }
+        .sheet(isPresented: $appModel.showWelcome) {
+            WelcomeSheet()
+                .environmentObject(appModel)
+        }
         .onAppear {
             if selection == nil {
                 DispatchQueue.main.async {
@@ -71,6 +76,78 @@ struct ContentView: View {
         }
         .task {
             appModel.refreshOllama()
+        }
+    }
+}
+
+private struct WelcomeSheet: View {
+    @EnvironmentObject private var appModel: AppViewModel
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 22) {
+            HStack(spacing: 14) {
+                Image(systemName: "doc.text.magnifyingglass")
+                    .font(.system(size: 30, weight: .semibold))
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(.tint)
+                    .frame(width: 58, height: 58)
+                    .background(.tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Past Paper Creator")
+                        .font(.largeTitle.weight(.semibold))
+                    Text("Generate syllabus-bound practice papers from your local subject packs.")
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 12) {
+                WelcomeRow(systemImage: "graduationcap", title: "Choose a subject", message: "Economics Edexcel A and Computer Science AQA are ready. Other subjects are placeholders.")
+                WelcomeRow(systemImage: "cpu", title: "Pick an AI engine", message: "Use Ollama locally, or configure a hosted provider in Settings.")
+                WelcomeRow(systemImage: "folder", title: "Save PDFs", message: "Generated question papers and mark schemes go to your selected output folder.")
+            }
+
+            Text("Unofficial practice material. Not affiliated with Pearson, Edexcel, AQA, or any exam board.")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+
+            HStack {
+                SettingsLink {
+                    Label("Open Settings", systemImage: "gearshape")
+                }
+                Spacer()
+                Button("Get Started") {
+                    appModel.dismissWelcome()
+                }
+                .keyboardShortcut(.defaultAction)
+                .controlSize(.large)
+                .nativePrimaryActionStyle()
+            }
+        }
+        .padding(28)
+        .frame(width: 620)
+        .presentationSizing(.fitted)
+    }
+}
+
+private struct WelcomeRow: View {
+    let systemImage: String
+    let title: String
+    let message: String
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: systemImage)
+                .font(.title3)
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(.secondary)
+                .frame(width: 28)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.headline)
+                Text(message)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 }
@@ -131,6 +208,8 @@ private struct GeneratorWorkspace: View {
                 HeaderPanel(board: board)
 
                 if board.isReady {
+                    ReadinessBanner()
+
                     HStack(alignment: .top, spacing: 18) {
                         VStack(spacing: 18) {
                             PaperPanel(board: board)
@@ -186,7 +265,14 @@ private struct HeaderPanel: View {
             Spacer()
             StatusPill()
 
-            if appModel.isRunning {
+            if !board.isReady {
+                Label("Coming Soon", systemImage: "clock")
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(.thinMaterial, in: Capsule())
+            } else if appModel.isRunning {
                 Button(role: .cancel, action: appModel.cancelGeneration) {
                     Label("Cancel", systemImage: "xmark.circle")
                 }
@@ -209,6 +295,50 @@ private struct HeaderPanel: View {
         if !board.isReady { return "This exam board is coming soon." }
         if appModel.aiProvider == .ollama && !appModel.ollamaState.running { return "Refresh Ollama before generating." }
         return "Generate paper"
+    }
+}
+
+private struct ReadinessBanner: View {
+    @EnvironmentObject private var appModel: AppViewModel
+
+    var body: some View {
+        if let blocker = appModel.generationBlocker, !appModel.isRunning, !appModel.isRefreshingOllama {
+            HStack(spacing: 12) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.orange)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(blocker)
+                        .font(.headline)
+                    Text(helpText)
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                if appModel.aiProvider == .ollama {
+                    Button("Refresh", action: appModel.refreshOllama)
+                    Button("Get Ollama", action: appModel.openOllamaDownload)
+                        .disabled(appModel.distributionMode == .appStore)
+                }
+                SettingsLink {
+                    Label("Settings", systemImage: "slider.horizontal.3")
+                }
+            }
+            .padding(14)
+            .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(.orange.opacity(0.28), lineWidth: 1)
+            }
+        }
+    }
+
+    private var helpText: String {
+        switch appModel.aiProvider {
+        case .ollama:
+            "Use Ollama locally, or switch provider in Settings."
+        case .openAI, .anthropic:
+            "Save provider credentials in Settings before generating."
+        }
     }
 }
 
@@ -253,6 +383,11 @@ private struct OutputPanel: View {
                     .truncationMode(.middle)
                     .foregroundStyle(.secondary)
                 Spacer()
+                Button(action: appModel.openOutputFolder) {
+                    Label("Open", systemImage: "folder")
+                }
+                .labelStyle(.iconOnly)
+                .help("Open output folder")
                 Button("Choose...", action: appModel.chooseOutputFolder)
             }
 
@@ -288,8 +423,13 @@ private struct ModelPanel: View {
             Divider()
 
             HStack {
-                Image(systemName: modelStatusIcon)
-                    .foregroundStyle(modelStatusColor)
+                if appModel.isRefreshingOllama {
+                    ProgressView()
+                        .controlSize(.small)
+                } else {
+                    Image(systemName: modelStatusIcon)
+                        .foregroundStyle(modelStatusColor)
+                }
                 Text(modelStatusText)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
@@ -347,13 +487,11 @@ private struct LivePreviewPanel: View {
             PanelHeader(title: "Live Preview", systemImage: "rectangle.stack")
 
             if appModel.previewPages.isEmpty {
-                VStack(spacing: 10) {
-                    Image(systemName: appModel.isRunning ? "doc.text.magnifyingglass" : "doc.richtext")
-                        .font(.system(size: 30))
-                        .symbolRenderingMode(.hierarchical)
-                    Text(appModel.isRunning ? "Pages appear as PDFs render." : "Generate a paper to preview pages.")
-                        .foregroundStyle(.secondary)
-                }
+                PanelEmptyState(
+                    title: appModel.isRunning ? "Rendering Pages" : "No Preview",
+                    message: appModel.isRunning ? "Pages appear as PDFs render." : "Generated pages appear here.",
+                    systemImage: appModel.isRunning ? "doc.text.magnifyingglass" : "doc.richtext"
+                )
                 .frame(maxWidth: .infinity, minHeight: 170)
             } else {
                 ScrollView(.horizontal) {
@@ -393,6 +531,9 @@ private struct PageThumbnail: View {
             Text(page.title)
                 .font(.caption)
                 .foregroundStyle(.secondary)
+            Text(page.roleTitle)
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
         }
     }
 }
@@ -416,13 +557,12 @@ private struct PlaceholderPanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             PanelHeader(title: "Coming Soon", systemImage: "clock")
-            Text("\(board.subjectTitle) \(board.title) is in the catalog, but generation is not available yet.")
+            Text("\(board.subjectTitle) \(board.title) is planned for a future release.")
                 .foregroundStyle(.secondary)
-            LabeledContent("Resource folder", value: board.resourcePath)
             Divider()
             VStack(alignment: .leading, spacing: 8) {
-                Label("Economics Edexcel A and Computer Science AQA are ready now.", systemImage: "checkmark.circle")
-                Label("Other subjects will be enabled after their resources and generator profiles are added.", systemImage: "hourglass")
+                Label("Ready now: Economics Edexcel A and Computer Science AQA.", systemImage: "checkmark.circle")
+                Label("More subjects will appear here after their generator profiles are complete.", systemImage: "hourglass")
             }
             .foregroundStyle(.secondary)
         }
@@ -537,9 +677,21 @@ private struct OutputSettingsTab: View {
                 }
             }
 
-            Section("Development") {
-                Toggle("Draft Mode", isOn: $appModel.dryRun)
-                Text("Draft mode uses built-in question templates without contacting a model.")
+            Section("Preview Mode") {
+                Toggle("Use built-in drafts", isOn: $appModel.dryRun)
+                Text("Creates sample PDFs without contacting an AI provider.")
+                    .foregroundStyle(.secondary)
+            }
+
+            Section("Notifications") {
+                Toggle(
+                    "Notify when jobs finish",
+                    isOn: Binding(
+                        get: { appModel.notificationsEnabled },
+                        set: { appModel.setNotificationsEnabled($0) }
+                    )
+                )
+                Text("macOS notifications are only used for completed or failed generation jobs.")
                     .foregroundStyle(.secondary)
             }
         }
@@ -554,7 +706,7 @@ private struct PrivacySettingsTab: View {
         Form {
             Section("Privacy") {
                 LabeledContent("Distribution", value: appModel.distributionMode.title)
-                Link("Privacy Policy", destination: URL(string: "https://github.com/james8464/Economics-Past-Paper-Generation#privacy")!)
+                Link("Privacy Policy", destination: URL(string: "https://github.com/james8464/Past-paper-generation#privacy")!)
                 Text("Ollama generation is local. Hosted providers send prompts to the provider you select.")
                     .foregroundStyle(.secondary)
             }
@@ -562,6 +714,10 @@ private struct PrivacySettingsTab: View {
             Section {
                 Text("Unofficial practice material. Not affiliated with Pearson, Edexcel, AQA, or any exam board.")
                     .foregroundStyle(.secondary)
+            }
+
+            Section("Help") {
+                Button("Show Welcome Guide", action: appModel.showWelcomeGuide)
             }
         }
         .formStyle(.grouped)
@@ -598,7 +754,17 @@ private struct StatusPill: View {
     @EnvironmentObject private var appModel: AppViewModel
 
     var body: some View {
-        Label(appModel.status, systemImage: appModel.isRunning ? "progress.indicator" : "checkmark.circle")
+        HStack(spacing: 7) {
+            if appModel.isRunning || appModel.isRefreshingOllama {
+                ProgressView()
+                    .controlSize(.small)
+                    .frame(width: 16, height: 16)
+            } else {
+                Image(systemName: appModel.status == "Error" ? "exclamationmark.triangle" : "checkmark.circle")
+                    .symbolRenderingMode(.hierarchical)
+            }
+            Text(appModel.status)
+        }
             .font(.callout)
             .foregroundStyle(.secondary)
             .lineLimit(1)
@@ -616,16 +782,20 @@ private struct ProgressLog: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 8) {
                 if entries.isEmpty {
-                    ContentUnavailableView("Waiting", systemImage: "clock")
+                    PanelEmptyState(title: "Ready", message: "Generation activity appears here.", systemImage: "checkmark.circle")
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 24)
                 } else {
                     ForEach(entries.suffix(80)) { entry in
                         HStack(alignment: .firstTextBaseline, spacing: 10) {
+                            Text(entry.date, style: .time)
+                                .font(.caption.monospacedDigit())
+                                .foregroundStyle(.tertiary)
+                                .frame(width: 64, alignment: .leading)
                             Text(entry.stage ?? "step")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                                .frame(width: 92, alignment: .leading)
+                                .frame(width: 74, alignment: .leading)
                             Text(entry.message)
                                 .textSelection(.enabled)
                         }
@@ -645,7 +815,7 @@ private struct GeneratedFilesTable: View {
 
     var body: some View {
         if files.isEmpty {
-            ContentUnavailableView("No Documents", systemImage: "doc")
+            PanelEmptyState(title: "No Documents", message: "Generated PDFs will be listed here.", systemImage: "doc")
                 .frame(maxWidth: .infinity, minHeight: 150)
         } else {
             Table(files) {
@@ -680,6 +850,28 @@ private struct GeneratedFilesTable: View {
                 .width(70)
             }
         }
+    }
+}
+
+private struct PanelEmptyState: View {
+    let title: String
+    let message: String
+    let systemImage: String
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: systemImage)
+                .font(.system(size: 26, weight: .regular))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(.secondary)
+            Text(title)
+                .font(.headline)
+            Text(message)
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 

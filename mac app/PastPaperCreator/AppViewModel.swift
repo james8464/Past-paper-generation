@@ -1,6 +1,7 @@
 import AppKit
 import Combine
 import Foundation
+import UserNotifications
 
 @MainActor
 final class AppViewModel: ObservableObject {
@@ -17,6 +18,7 @@ final class AppViewModel: ObservableObject {
     @Published var progressEntries: [ProgressEntry] = []
     @Published var generatedFiles: [GeneratedFile] = []
     @Published var previewPages: [GeneratedPage] = []
+    @Published var isRefreshingOllama = false
     @Published var ollamaState = OllamaState()
     @Published var availableModels: [String] = []
     @Published var modelToPull = "qwen2.5:14b"
@@ -27,6 +29,8 @@ final class AppViewModel: ObservableObject {
     @Published var showPullConfirmation = false
     @Published var showError = false
     @Published var errorMessage = ""
+    @Published var showWelcome = false
+    @Published var notificationsEnabled = true
 
     let distributionMode = DistributionMode.current
 
@@ -35,6 +39,7 @@ final class AppViewModel: ObservableObject {
     private var runningProcess: Process?
     private var didReceiveBackendError = false
     private var didCancelRun = false
+    private var activeOperation = RunningOperation.none
 
     var selectedBoard: ExamBoardOption {
         ExamCatalog.board(id: selectedBoardID) ?? ExamCatalog.defaultBoard
@@ -53,18 +58,26 @@ final class AppViewModel: ObservableObject {
     }
 
     var canGenerate: Bool {
-        if isRunning { return false }
-        if !selectedBoard.isReady { return false }
-        if dryRun { return true }
+        generationBlocker == nil
+    }
+
+    var generationBlocker: String? {
+        if isRunning { return "Generation is already running." }
+        if !selectedBoard.isReady { return "\(selectedBoard.subjectTitle) \(selectedBoard.title) is coming soon." }
+        if dryRun { return nil }
+        if activeModelName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return "Choose a model before generating."
+        }
         switch aiProvider {
         case .ollama:
-            return ollamaState.running && !selectedModel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            if ollamaState.message == "Not checked" { return "Check Ollama before generating." }
+            if !ollamaState.installed { return "Ollama is not installed." }
+            if !ollamaState.running { return "Ollama is not running." }
+            return nil
         case .openAI:
-            return !openAIModel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                && !openAIAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            return openAIAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Enter an OpenAI API key in Settings." : nil
         case .anthropic:
-            return !anthropicModel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                && !anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            return anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Enter an Anthropic API key in Settings." : nil
         }
     }
 
@@ -85,24 +98,45 @@ final class AppViewModel: ObservableObject {
         anthropicModel = defaults.string(forKey: "anthropicModel") ?? "claude-sonnet-4-20250514"
         openAIAPIKey = SecretStore.read("openai-api-key")
         anthropicAPIKey = SecretStore.read("anthropic-api-key")
+        if defaults.object(forKey: "notificationsEnabled") != nil {
+            notificationsEnabled = defaults.bool(forKey: "notificationsEnabled")
+        }
+        showWelcome = !defaults.bool(forKey: "hasSeenWelcome")
+        if let savedOutput = defaults.string(forKey: "outputFolderPath"), !savedOutput.isEmpty {
+            if Self.isSandboxDownloadsPath(savedOutput) {
+                defaults.set(outputFolder.path, forKey: "outputFolderPath")
+            } else {
+                outputFolder = URL(fileURLWithPath: savedOutput)
+            }
+        }
         selectedBoardID = defaults.string(forKey: "selectedBoardID") ?? ExamCatalog.defaultBoard.id
         selectedPaperID = defaults.string(forKey: "selectedPaperID") ?? selectedBoard.papers[0].id
     }
 
     private static func defaultOutputFolder() -> URL {
+        let fallback = URL(fileURLWithPath: "/Users/\(NSUserName())/Downloads")
+        if FileManager.default.fileExists(atPath: fallback.path) {
+            return fallback
+        }
         if let realHome = NSHomeDirectoryForUser(NSUserName()) {
             let downloads = URL(fileURLWithPath: realHome).appendingPathComponent("Downloads")
-            if FileManager.default.fileExists(atPath: downloads.path) {
+            if FileManager.default.fileExists(atPath: downloads.path), !isSandboxDownloadsPath(downloads.path) {
                 return downloads
             }
         }
-        let fallback = URL(fileURLWithPath: "/Users/\(NSUserName())/Downloads")
         return FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first ?? fallback
     }
 
+    private static func isSandboxDownloadsPath(_ path: String) -> Bool {
+        path.contains("/Library/Containers/") && path.contains("/Data/Downloads")
+    }
+
     func refreshOllama() {
-        guard !isRunning else { return }
+        guard !isRunning, !isRefreshingOllama else { return }
+        isRefreshingOllama = true
+        status = "Checking Ollama"
         Task {
+            defer { isRefreshingOllama = false }
             do {
                 let statusEvents = try await backend.collect(arguments: ["ollama-status"])
                 statusEvents.forEach(apply)
@@ -123,7 +157,12 @@ final class AppViewModel: ObservableObject {
 
         if panel.runModal() == .OK, let url = panel.url {
             outputFolder = url
+            defaults.set(url.path, forKey: "outputFolderPath")
         }
+    }
+
+    func openOutputFolder() {
+        NSWorkspace.shared.open(outputFolder)
     }
 
     func selectBoard(_ board: ExamBoardOption) {
@@ -155,6 +194,7 @@ final class AppViewModel: ObservableObject {
             setError("This exam board is coming soon.")
             return
         }
+        persistSettings()
 
         generatedFiles.removeAll()
         previewPages.removeAll()
@@ -164,6 +204,7 @@ final class AppViewModel: ObservableObject {
         isRunning = true
         status = "Starting"
         generationProgress = 0.02
+        activeOperation = .generation
 
         var arguments = [
             "generate",
@@ -212,6 +253,7 @@ final class AppViewModel: ObservableObject {
         isRunning = false
         status = "Cancelled"
         generationProgress = nil
+        activeOperation = .none
         progressEntries.append(ProgressEntry(stage: "cancel", message: "Generation cancelled."))
     }
 
@@ -239,6 +281,7 @@ final class AppViewModel: ObservableObject {
         progressEntries.removeAll()
         didReceiveBackendError = false
         didCancelRun = false
+        activeOperation = .modelPull
 
         do {
             runningProcess = try backend.run(arguments: ["pull-model", "--model", model]) { [weak self] event in
@@ -278,13 +321,35 @@ final class AppViewModel: ObservableObject {
     }
 
     func saveAISettings() {
+        persistSettings()
+        status = "Settings saved"
+    }
+
+    func dismissWelcome() {
+        defaults.set(true, forKey: "hasSeenWelcome")
+        showWelcome = false
+    }
+
+    func showWelcomeGuide() {
+        showWelcome = true
+    }
+
+    func setNotificationsEnabled(_ enabled: Bool) {
+        notificationsEnabled = enabled
+        defaults.set(enabled, forKey: "notificationsEnabled")
+        if enabled {
+            requestNotificationAuthorization()
+        }
+    }
+
+    private func persistSettings() {
         defaults.set(aiProvider.rawValue, forKey: "aiProvider")
         defaults.set(selectedModel, forKey: "ollamaModel")
         defaults.set(openAIModel, forKey: "openAIModel")
         defaults.set(anthropicModel, forKey: "anthropicModel")
+        defaults.set(outputFolder.path, forKey: "outputFolderPath")
         SecretStore.save(openAIAPIKey, account: "openai-api-key")
         SecretStore.save(anthropicAPIKey, account: "anthropic-api-key")
-        status = "Settings saved"
     }
 
     private func apply(_ event: BackendEvent) {
@@ -317,6 +382,7 @@ final class AppViewModel: ObservableObject {
         case let .error(message):
             didReceiveBackendError = true
             setError(message)
+            notifyFailure(for: activeOperation, message: message)
         case let .models(models, message):
             availableModels = models
             if !models.isEmpty, !models.contains(selectedModel) {
@@ -337,6 +403,8 @@ final class AppViewModel: ObservableObject {
     }
 
     private func finishGeneration(_ result: Result<Int32, Error>) {
+        let operation = activeOperation
+        activeOperation = .none
         runningProcess = nil
         isRunning = false
         if didCancelRun {
@@ -351,11 +419,15 @@ final class AppViewModel: ObservableObject {
             if code == 0 {
                 status = status == "Starting" ? "Done" : status
                 generationProgress = 1.0
+                notifySuccess(for: operation)
             } else if !didReceiveBackendError {
-                setError("Generation failed without a backend error message. Refresh Ollama, check the selected model, then try again. Backend exited with code \(code).")
+                let message = "Generation failed without a backend error message. Refresh Ollama, check the selected model, then try again. Backend exited with code \(code)."
+                setError(message)
+                notifyFailure(for: operation, message: message)
             }
         case let .failure(error):
             setError(error.localizedDescription)
+            notifyFailure(for: operation, message: error.localizedDescription)
         }
     }
 
@@ -366,4 +438,63 @@ final class AppViewModel: ObservableObject {
         generationProgress = nil
         progressEntries.append(ProgressEntry(stage: "error", message: message))
     }
+
+    private func notifySuccess(for operation: RunningOperation) {
+        switch operation {
+        case .generation:
+            sendNotification(title: "Paper ready", body: "The generated PDFs have been saved to \(outputFolder.lastPathComponent).")
+        case .modelPull:
+            sendNotification(title: "Model ready", body: "\(selectedModel) is available in Ollama.")
+        case .none:
+            break
+        }
+    }
+
+    private func notifyFailure(for operation: RunningOperation, message: String) {
+        switch operation {
+        case .generation:
+            sendNotification(title: "Generation failed", body: message)
+        case .modelPull:
+            sendNotification(title: "Model pull failed", body: message)
+        case .none:
+            break
+        }
+    }
+
+    private func requestNotificationAuthorization() {
+        Task {
+            _ = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound])
+        }
+    }
+
+    private func sendNotification(title: String, body: String) {
+        guard notificationsEnabled else { return }
+        Task {
+            let center = UNUserNotificationCenter.current()
+            let settings = await center.notificationSettings()
+            let allowed: Bool
+            switch settings.authorizationStatus {
+            case .authorized, .provisional, .ephemeral:
+                allowed = true
+            case .notDetermined:
+                allowed = (try? await center.requestAuthorization(options: [.alert, .sound])) ?? false
+            default:
+                allowed = false
+            }
+            guard allowed else { return }
+
+            let content = UNMutableNotificationContent()
+            content.title = title
+            content.body = body
+            content.sound = .default
+            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+            try? await center.add(request)
+        }
+    }
+}
+
+private enum RunningOperation {
+    case none
+    case generation
+    case modelPull
 }

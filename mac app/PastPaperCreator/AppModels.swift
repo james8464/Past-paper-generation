@@ -281,6 +281,15 @@ struct GeneratedPage: Identifiable, Equatable {
         "Page \(pageNumber)"
     }
 
+    var roleTitle: String {
+        switch role {
+        case "question_paper": "Question Paper"
+        case "source_booklet": "Source Booklet"
+        case "mark_scheme": "Mark Scheme"
+        default: role.replacingOccurrences(of: "_", with: " ").capitalized
+        }
+    }
+
     var sortKey: String {
         "\(role)-\(pageNumber)"
     }
