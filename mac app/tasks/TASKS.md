@@ -78,3 +78,14 @@
    Claimed at: 2026-05-12T21:00:44Z
    Done by: CODEX
    Done at: 2026-05-12T21:08:02Z
+
+8. paper-render-polish
+   Id: 8-paper-render-polish
+   Scope: Improve generator render efficiency and visual paper fidelity
+   Files: a-levels/economics/edexcel-a/generator/pastpapergen/render_pdf.py a-levels/computer-science/aqa/generator/cspapergen/render_pdf.py tests
+   Note: Matched Edexcel question-paper bleed/crop boxes, tightened answer-frame geometry, cover details and mark-scheme page style; added render regression tests.
+   Detail: tasks/details/8-paper-render-polish.md
+   Claimed by: CODEX
+   Claimed at: 2026-05-13T07:36:26Z
+   Done by: CODEX
+   Done at: 2026-05-13T08:24:18Z

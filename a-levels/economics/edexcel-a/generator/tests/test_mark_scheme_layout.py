@@ -3,7 +3,7 @@ from pathlib import Path
 from pastpapergen.exam_dates import economics_exam_schedule
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
-from pastpapergen.render_pdf import _mark_scheme_rows, _ms_row_height, render_mark_scheme
+from pastpapergen.render_pdf import MARK_SCHEME_MIN_PAGES, _mark_scheme_rows, _ms_row_height, render_mark_scheme
 from pastpapergen.syllabus import load_syllabus
 
 
@@ -26,7 +26,7 @@ def test_mark_scheme_uses_reference_style_sections(tmp_path):
     assert "Mark" in text
     assert "Knowledge" in text
     assert "Application" in text
-    assert _pdf_page_count(output) >= 24
+    assert _pdf_page_count(output) >= MARK_SCHEME_MIN_PAGES["paper_1"]
 
 
 def test_mark_scheme_has_subquestion_tables_mcq_explanations_and_levels(tmp_path):
@@ -65,6 +65,20 @@ def test_mark_scheme_front_matter_matches_reference_structure(tmp_path):
     assert "Question Paper Log Number" in text
     assert "Publications Code" in text
     assert "Pearson Education Ltd" in text
+
+
+def test_mark_scheme_cover_uses_reference_serif_face(tmp_path):
+    import subprocess
+
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, syllabus, output)
+    fonts = subprocess.run(["pdffonts", str(output)], check=True, capture_output=True, text=True).stdout
+
+    assert "Times-Roman" in fonts
 
 
 def test_mark_scheme_cover_title_uses_reference_scale_and_position(tmp_path):

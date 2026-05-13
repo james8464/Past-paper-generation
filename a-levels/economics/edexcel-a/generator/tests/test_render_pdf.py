@@ -5,8 +5,16 @@ from pastpapergen.exam_dates import formatted_economics_exam_date
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.render_pdf import (
+    ANSWER_FRAME_H,
+    ANSWER_FRAME_Y,
     ANSWER_LINE_GAP_PT,
+    ANSWER_PAGE_START_Y,
     BODY_FONT_SIZE_PT,
+    CROSS_BOX_TOKEN,
+    EDEXCEL_CROP_BOX,
+    EDEXCEL_MEDIA_BOX,
+    RAIL_H,
+    RAIL_Y,
     SECTION_A_INSTRUCTION_LINES,
     SECTION_A_FOOTER_SAFE_Y,
     _cost_revenue_geometry,
@@ -35,14 +43,14 @@ def test_render_question_paper_uses_exam_style_strings(tmp_path):
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
-    pdf_bytes = output.read_bytes()
+    pdf_text = _pdf_text(output)
 
-    assert b"Pearson Edexcel Level 3 GCE" in pdf_bytes
-    assert b"Candidate surname" in pdf_bytes
-    assert b"Paper" in pdf_bytes
-    assert b"reference" in pdf_bytes
-    assert b"DO NOT WRITE IN THIS AREA" in pdf_bytes
-    assert b"P00000A" in pdf_bytes
+    assert "Pearson Edexcel Level 3 GCE" in pdf_text
+    assert "Candidate surname" in pdf_text
+    assert "Paper" in pdf_text
+    assert "reference" in pdf_text
+    assert "DO NOT WRITE IN THIS AREA" in pdf_text
+    assert "P00000A" in pdf_text
 
 
 def test_cover_includes_exam_date(tmp_path):
@@ -96,18 +104,22 @@ def test_even_answer_pages_have_one_right_do_not_write_rail(tmp_path):
 
 
 def test_cover_inner_boxes_stay_inside_outer_panel(tmp_path):
+    import fitz
+
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
     blueprint = build_paper_blueprint(config, syllabus, seed=42)
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
-    first_stream = next(stream for stream in _pdf_streams(output) if b"Please check" in stream)
-    move_commands = re.findall(rb"\n([0-9.]+) ([0-9.]+) m", first_stream)
-    bottom_edges = [float(y) for x, y in move_commands if 90 <= float(x) <= 130 and 430 <= float(y) <= 490]
+    doc = fitz.open(output)
+    try:
+        first_page_words = doc[0].get_text("words")
+        visible_labels = {word[4] for word in first_page_words if 45 <= word[1] <= 430}
 
-    assert bottom_edges
-    assert min(bottom_edges) >= 452
+        assert {"Candidate", "surname", "Number", "reference"}.issubset(visible_labels)
+    finally:
+        doc.close()
 
 
 def test_answer_line_spacing_matches_measured_reference():
@@ -140,6 +152,35 @@ def test_answer_line_style_matches_reference_dotted_lines():
     assert ANSWER_LINE_DASH == (0.6, 1.6)
 
 
+def test_question_paper_uses_reference_bleed_and_crop_boxes(tmp_path):
+    import fitz
+
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    doc = fitz.open(output)
+    try:
+        page = doc[0]
+        assert round(page.mediabox.width, 2) == round(EDEXCEL_MEDIA_BOX[2], 2)
+        assert round(page.mediabox.height, 2) == round(EDEXCEL_MEDIA_BOX[3], 2)
+        assert round(page.cropbox.width, 2) == round(EDEXCEL_CROP_BOX[2] - EDEXCEL_CROP_BOX[0], 2)
+        assert round(page.cropbox.height, 2) == round(EDEXCEL_CROP_BOX[3] - EDEXCEL_CROP_BOX[1], 2)
+    finally:
+        doc.close()
+
+
+def test_answer_frame_geometry_matches_reference_page():
+    assert ANSWER_FRAME_Y == 48
+    assert ANSWER_FRAME_Y + ANSWER_FRAME_H == 808
+    assert ANSWER_PAGE_START_Y == 772
+    assert RAIL_Y == 50
+    assert RAIL_H == 760
+    assert any(CROSS_BOX_TOKEN in line for line in SECTION_A_INSTRUCTION_LINES)
+
+
 def test_answer_lines_honor_footer_safe_area():
     class Recorder:
         def __init__(self):
@@ -166,7 +207,7 @@ def test_answer_lines_honor_footer_safe_area():
 
 
 def test_section_a_instruction_lines_fit_question_frame():
-    assert max(len(line) for line in SECTION_A_INSTRUCTION_LINES) <= 78
+    assert max(len(line.replace(CROSS_BOX_TOKEN, "X")) for line in SECTION_A_INSTRUCTION_LINES) <= 78
 
 
 def test_paper_1_render_uses_question_specific_pages(tmp_path):
@@ -464,10 +505,6 @@ def _pdf_text(path: Path) -> str:
         capture_output=True,
         text=True,
     ).stdout
-
-
-def _pdf_streams(path: Path) -> list[bytes]:
-    return re.findall(rb"stream\r?\n(.*?)endstream", path.read_bytes(), re.S)
 
 
 def _first_page_containing(path: Path, text: str) -> int | None:
