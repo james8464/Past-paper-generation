@@ -52,6 +52,12 @@ struct ContentView: View {
         } message: {
             Text(appModel.errorMessage)
         }
+        .alert("Hosted AI Disclosure", isPresented: $appModel.showHostedAIConsent) {
+            Button("Use Hosted AI", action: appModel.acceptHostedAIConsent)
+            Button("Cancel", role: .cancel, action: appModel.cancelHostedAIConsent)
+        } message: {
+            Text("OpenAI and Anthropic generation sends prompts, selected syllabus context, and draft question content to the provider you choose. API keys stay in Keychain. Ollama keeps generation local.")
+        }
         .confirmationDialog(
             "Pull \(appModel.modelToPull)?",
             isPresented: $appModel.showPullConfirmation,

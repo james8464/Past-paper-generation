@@ -54,6 +54,7 @@ APP_PATH := $(BUILD_PRODUCTS)/$(APP_SCHEME).app
 PHONY_TARGETS := $(TARGET_PREFIX)help $(TARGET_PREFIX)diagnose $(TARGET_PREFIX)build \
 	$(TARGET_PREFIX)test $(TARGET_PREFIX)run $(TARGET_PREFIX)build-and-run \
 	$(TARGET_PREFIX)build-and-run-background $(TARGET_PREFIX)build-app-store \
+	$(TARGET_PREFIX)preflight-app-store \
 	$(TARGET_PREFIX)clean $(TARGET_PREFIX)agent-verify
 .PHONY: $(PHONY_TARGETS)
 
@@ -67,6 +68,7 @@ $(TARGET_PREFIX)help:
 		"  make $(TARGET_PREFIX)build-and-run            Build then run" \
 		"  make $(TARGET_PREFIX)build-and-run-background Build then run in background" \
 		"  make $(TARGET_PREFIX)build-app-store          Release build with App Store restrictions enabled" \
+		"  make $(TARGET_PREFIX)preflight-app-store      Lint plist files and build App Store mode" \
 		"  make $(TARGET_PREFIX)clean                    Clean derived data + logs" \
 		"  make $(TARGET_PREFIX)agent-verify             Build and test"
 
@@ -185,6 +187,10 @@ endif
 
 $(TARGET_PREFIX)build-app-store:
 	@$(MAKE) --no-print-directory $(TARGET_PREFIX)build CONFIGURATION=Release DISTRIBUTION_MODE=app-store APP_SANDBOX_ENABLED=YES CODE_SIGN_ENTITLEMENTS_FILE=PastPaperCreator/PastPaperCreator.entitlements CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO
+
+$(TARGET_PREFIX)preflight-app-store:
+	@plutil -lint PastPaperCreator/Info.plist PastPaperCreator/PrivacyInfo.xcprivacy PastPaperCreator/PastPaperCreator.entitlements
+	@$(MAKE) --no-print-directory $(TARGET_PREFIX)build-app-store
 
 $(TARGET_PREFIX)clean:
 	@$(SCRIPTS_DIR)/clean.sh

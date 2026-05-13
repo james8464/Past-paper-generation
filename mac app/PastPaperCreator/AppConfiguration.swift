@@ -29,6 +29,7 @@ enum AppDefaults {
 
 enum AppStorageKey {
     static let aiProvider = "aiProvider"
+    static let hostedAIConsentAccepted = "hostedAIConsentAccepted"
     static let ollamaModel = "ollamaModel"
     static let openAIModel = "openAIModel"
     static let anthropicModel = "anthropicModel"
@@ -48,6 +49,7 @@ enum AppLinks {
     static let projectHelp = webURL("https://github.com/james8464/Past-paper-generation#past-paper-creation")
     static let privacyPolicy = webURL("https://github.com/james8464/Past-paper-generation#privacy")
     static let support = webURL("https://github.com/james8464/Past-paper-generation/issues")
+    static let appStoreReviewNotes = webURL("https://github.com/james8464/Past-paper-generation/blob/main/mac%20app/APP_STORE_SUBMISSION_NOTES.md")
     static let ollamaDownload = webURL("https://ollama.com/download")
 
     private static func webURL(_ value: String) -> URL {

@@ -115,7 +115,7 @@ struct HelpSheet: View {
                         title: "AI Setup",
                         rows: [
                             HelpRow("Ollama runs locally. Use AI > Check Ollama Status if generation is blocked."),
-                            HelpRow("OpenAI and Anthropic require API keys in Settings."),
+                            HelpRow("OpenAI and Anthropic require API keys in Settings and explicit hosted-AI consent before prompts leave the Mac."),
                             HelpRow("The App Store build can detect Ollama, but cannot install Ollama or pull models."),
                         ]
                     )

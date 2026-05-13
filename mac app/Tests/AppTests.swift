@@ -72,6 +72,19 @@ final class PastPaperCreatorTests: XCTestCase {
         XCTAssertTrue(DistributionMode.direct.canManageOllama)
     }
 
+    func testHostedProvidersAreMarkedOffDevice() {
+        XCTAssertFalse(AIProvider.ollama.sendsPromptsOffDevice)
+        XCTAssertTrue(AIProvider.openAI.sendsPromptsOffDevice)
+        XCTAssertTrue(AIProvider.anthropic.sendsPromptsOffDevice)
+    }
+
+    func testReviewLinksAreValidHTTPSURLs() {
+        XCTAssertEqual(AppLinks.privacyPolicy.scheme, "https")
+        XCTAssertEqual(AppLinks.appStoreReviewNotes.scheme, "https")
+        XCTAssertTrue(AppLinks.privacyPolicy.absoluteString.contains("#privacy"))
+        XCTAssertTrue(AppLinks.appStoreReviewNotes.absoluteString.contains("APP_STORE_SUBMISSION_NOTES.md"))
+    }
+
     func testCatalogReadyBoardsUseCorrectResourceFolders() throws {
         let economics = try XCTUnwrap(ExamCatalog.board(id: "economics-edexcel-a"))
         XCTAssertTrue(economics.isReady)

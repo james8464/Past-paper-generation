@@ -26,6 +26,7 @@ final class AppViewModel: ObservableObject {
     @Published var openAIAPIKey = ""
     @Published var anthropicAPIKey = ""
     @Published var showPullConfirmation = false
+    @Published var showHostedAIConsent = false
     @Published var showError = false
     @Published var errorMessage = ""
     @Published var showWelcome = false
@@ -50,6 +51,7 @@ final class AppViewModel: ObservableObject {
     private var didCancelRun = false
     private var activeOperation = RunningOperation.none
     private var etaTimer: AnyCancellable?
+    private var pendingHostedProvider: AIProvider?
 
     var selectedBoard: ExamBoardOption {
         ExamCatalog.board(id: selectedBoardID) ?? ExamCatalog.defaultBoard
@@ -86,10 +88,16 @@ final class AppViewModel: ObservableObject {
             if !ollamaState.running { return "Ollama is not running." }
             return nil
         case .openAI:
+            if !hasHostedAIConsent { return "Review and accept the hosted AI disclosure in Settings." }
             return openAIAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Enter an OpenAI API key in Settings." : nil
         case .anthropic:
+            if !hasHostedAIConsent { return "Review and accept the hosted AI disclosure in Settings." }
             return anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Enter an Anthropic API key in Settings." : nil
         }
+    }
+
+    var hasHostedAIConsent: Bool {
+        defaults.bool(forKey: AppStorageKey.hostedAIConsentAccepted)
     }
 
     var activeModelName: String {
@@ -172,6 +180,10 @@ final class AppViewModel: ObservableObject {
         NSWorkspace.shared.open(AppLinks.support)
     }
 
+    func openAppStoreReviewNotes() {
+        NSWorkspace.shared.open(AppLinks.appStoreReviewNotes)
+    }
+
     func selectBoard(_ board: ExamBoardOption) {
         guard selectedBoardID != board.id || !board.papers.contains(where: { $0.id == selectedPaperID }) else {
             return
@@ -195,8 +207,29 @@ final class AppViewModel: ObservableObject {
     }
 
     func selectAIProvider(_ provider: AIProvider) {
+        guard provider != aiProvider else { return }
+        if provider.sendsPromptsOffDevice && !hasHostedAIConsent {
+            pendingHostedProvider = provider
+            showHostedAIConsent = true
+            return
+        }
         aiProvider = provider
         persistSettings()
+    }
+
+    func acceptHostedAIConsent() {
+        defaults.set(true, forKey: AppStorageKey.hostedAIConsentAccepted)
+        if let provider = pendingHostedProvider {
+            aiProvider = provider
+        }
+        pendingHostedProvider = nil
+        showHostedAIConsent = false
+        persistSettings()
+    }
+
+    func cancelHostedAIConsent() {
+        pendingHostedProvider = nil
+        showHostedAIConsent = false
     }
 
     func showBenchmarkPage() {
@@ -207,6 +240,11 @@ final class AppViewModel: ObservableObject {
         guard canGenerate else { return }
         guard let backendSubject = selectedBoard.backendSubject else {
             setError("This exam board is coming soon.")
+            return
+        }
+        if aiProvider.sendsPromptsOffDevice && !hasHostedAIConsent {
+            pendingHostedProvider = aiProvider
+            showHostedAIConsent = true
             return
         }
         persistSettings()
@@ -392,6 +430,7 @@ final class AppViewModel: ObservableObject {
             "Selected paper: \(selectedPaper.title) - \(selectedPaper.detail)",
             "AI provider: \(aiProvider.title)",
             "Model: \(activeModelName)",
+            "Hosted AI consent: \(hasHostedAIConsent ? "Accepted" : "Not accepted")",
             "Ollama: \(ollamaState.message)",
             "Output folder: \(outputFolder.path)",
             "Status: \(status)",
@@ -412,6 +451,26 @@ final class AppViewModel: ObservableObject {
         if enabled {
             requestNotificationAuthorization()
         }
+    }
+
+    func copyAppReviewNotes() {
+        let notes = [
+            "Past Paper Creator App Review Notes",
+            "",
+            "No account is required.",
+            "The app generates unofficial A-level practice papers and mark schemes for ready subject packs only.",
+            "Exam-board names identify specifications only; the app is not affiliated with Pearson, Edexcel, AQA, or any exam board.",
+            "App Store mode disables Ollama installation and model downloads. It can only detect an existing local Ollama setup.",
+            "Use Settings > Output > Use built-in drafts if a reviewer needs to test the flow without a hosted AI key.",
+            "Hosted OpenAI/Anthropic providers are optional. The app asks for explicit consent before sending prompts off-device, and API keys are stored in Keychain.",
+            "Notifications are optional and limited to generation/model status.",
+            "Generated PDFs are written only to the user-selected output folder.",
+        ].joined(separator: "\n")
+
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(notes, forType: .string)
+        status = "Review notes copied"
     }
 
     func startBenchmark() {

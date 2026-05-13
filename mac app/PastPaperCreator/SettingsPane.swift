@@ -30,7 +30,10 @@ private struct AISettingsTab: View {
     var body: some View {
         Form {
             Section("Provider") {
-                Picker("Provider", selection: $appModel.aiProvider) {
+                Picker("Provider", selection: Binding(
+                    get: { appModel.aiProvider },
+                    set: { appModel.selectAIProvider($0) }
+                )) {
                     ForEach(AIProvider.allCases) { provider in
                         Text(provider.title).tag(provider)
                     }
@@ -39,6 +42,14 @@ private struct AISettingsTab: View {
 
                 Text(appModel.aiProvider.subtitle)
                     .foregroundStyle(.secondary)
+
+                if appModel.aiProvider.sendsPromptsOffDevice {
+                    Label(
+                        "Prompts and subject context may be sent to the selected provider.",
+                        systemImage: "network"
+                    )
+                    .foregroundStyle(.secondary)
+                }
             }
 
             Section("Ollama") {
@@ -139,7 +150,11 @@ private struct PrivacySettingsTab: View {
         Form {
             Section("Privacy") {
                 LabeledContent("Distribution", value: appModel.distributionMode.title)
+                LabeledContent("Accounts", value: "Not required")
+                LabeledContent("API keys", value: "Keychain")
+                LabeledContent("Hosted AI consent", value: appModel.hasHostedAIConsent ? "Accepted" : "Not accepted")
                 Link("Privacy Policy", destination: AppLinks.privacyPolicy)
+                Link("App Store Review Notes", destination: AppLinks.appStoreReviewNotes)
                 Text("Ollama generation is local. Hosted providers send prompts to the provider you select.")
                     .foregroundStyle(.secondary)
             }
@@ -164,6 +179,7 @@ private struct PrivacySettingsTab: View {
                 Button("Show Benchmark") {
                     appModel.showBenchmarkPage()
                 }
+                Button("Copy App Review Notes", action: appModel.copyAppReviewNotes)
                 Button("Copy Diagnostic Summary", action: appModel.copyDiagnosticSummary)
             }
         }

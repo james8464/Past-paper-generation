@@ -58,6 +58,7 @@ Computer Science outputs:
 cd "mac app"
 make build
 make build-app-store
+make preflight-app-store
 ```
 
 If `xcodebuild` reports that the active developer directory is Command Line Tools, run:
@@ -70,9 +71,11 @@ The app calls `app_backend.py`, which emits JSON progress events while reusing t
 
 ## Privacy
 
-Generation is local-only through the Python generators and Ollama. No analytics, tracking, accounts, or remote paper upload are included.
+Ollama generation is local through the Python generators. No analytics, tracking, accounts, or remote paper upload are included.
 
-Hosted AI providers are optional. If selected, prompts are sent only to that provider using the API key configured by the user. The macOS app includes a privacy manifest declaring no collected data and UserDefaults usage for app preferences.
+Hosted AI providers are optional. If selected, prompts, syllabus context, and draft paper content are sent only to the provider chosen by the user. The macOS app asks for explicit consent before hosted AI is used, stores API keys in Keychain, and includes a privacy manifest declaring no collected data and UserDefaults usage for app preferences.
+
+Generated PDFs stay in the output folder selected by the user. API keys can be removed by clearing them in Settings. Local preferences can be reset by deleting the app's container/preferences. No server-side account data is retained by this project.
 
 ## App Store Review Notes
 

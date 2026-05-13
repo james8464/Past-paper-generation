@@ -125,10 +125,12 @@ struct AppCommands: Commands {
 
             Button("Open User Guide", action: appModel.openProjectHelp)
             Button("Privacy Policy", action: appModel.openPrivacyPolicy)
+            Button("App Store Review Notes", action: appModel.openAppStoreReviewNotes)
             Button("Report an Issue", action: appModel.openSupportPage)
 
             Divider()
 
+            Button("Copy App Review Notes", action: appModel.copyAppReviewNotes)
             Button("Copy Diagnostic Summary", action: appModel.copyDiagnosticSummary)
         }
     }

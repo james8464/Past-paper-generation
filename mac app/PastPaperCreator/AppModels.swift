@@ -206,6 +206,10 @@ enum AIProvider: String, CaseIterable, Identifiable {
         }
     }
 
+    var sendsPromptsOffDevice: Bool {
+        self != .ollama
+    }
+
     var systemImage: String {
         switch self {
         case .ollama: "desktopcomputer"
