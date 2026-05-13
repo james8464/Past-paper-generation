@@ -56,9 +56,11 @@ def test_question_bank_covers_expected_aqa_paper2_styles():
         "rle_compression",
         "floating_point",
         "logic_truth_table",
+        "truth_table_completion",
         "boolean_algebra",
         "processor_buses",
         "packet_switching",
+        "network_topology",
         "sql_normalisation",
         "big_data",
         "functional_programming",
@@ -84,3 +86,17 @@ def test_functional_type_stimulus_uses_renderable_exam_notation():
 
     assert question.stimulus is not None
     assert question.stimulus.code == "f: Natural -> Real"
+
+
+def test_new_visual_styles_have_renderable_stimuli():
+    truth_style = next(style for style in QUESTION_STYLES if style.id == "truth_table_completion")
+    network_style = next(style for style in QUESTION_STYLES if style.id == "network_topology")
+
+    truth_question = build_question(truth_style, number=4, total=8, rng=random.Random(2))
+    network_question = build_question(network_style, number=5, total=8, rng=random.Random(3))
+
+    assert truth_question.stimulus is not None
+    assert truth_question.stimulus.kind == "truth_table"
+    assert truth_question.stimulus.headers == ["A", "B", "C", "X"]
+    assert network_question.stimulus is not None
+    assert network_question.stimulus.kind == "network"

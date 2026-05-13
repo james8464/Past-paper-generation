@@ -109,10 +109,12 @@ def test_section_a_stimulus_pool_is_wide_and_random():
         blueprint = build_paper_blueprint(config, syllabus, seed=seed)
         seen_stimuli.update(question.stimulus_kind for question in blueprint.questions if question.section == "A")
 
-    assert len(seen_stimuli) >= 28
+    assert len(seen_stimuli) >= 32
     assert {
         "ped_data_table",
         "pes_data_table",
+        "marginal_utility_table",
+        "opportunity_cost_ppc_table",
         "market_share_bar_chart",
         "business_objective_context",
         "xed_context",
@@ -122,6 +124,8 @@ def test_section_a_stimulus_pool_is_wide_and_random():
         "line_graph",
         "externality_diagram",
         "monopsony_diagram",
+        "shutdown_cost_table",
+        "tax_incidence_diagram",
     } <= seen_stimuli
 
 
@@ -138,6 +142,11 @@ def test_section_a_calculation_questions_only_use_visible_numeric_stimuli():
         "balance_payments_table",
         "inflation_index_table",
         "labour_inactivity_context",
+        "opportunity_cost_ppc_table",
+        "shutdown_cost_table",
+        "wage_rate_table",
+        "income_tax_schedule_table",
+        "public_spending_pie_table",
     }
 
     for paper_id in ("paper_1", "paper_2"):
@@ -208,6 +217,10 @@ def test_paper_2_section_a_covers_reference_three_part_styles_and_macro_data():
         "labour_inactivity_context",
         "multiplier_context",
         "tariff_context",
+        "exchange_rate_index_chart",
+        "unemployment_rate_bar_chart",
+        "income_tax_schedule_table",
+        "public_spending_pie_table",
     } <= seen_stimuli
     assert (("mcq", 1), ("calculate", 2), ("explain", 2)) in seen_shapes
     assert (("explain", 2), ("mcq", 1), ("explain", 2)) in seen_shapes
@@ -316,7 +329,7 @@ def test_paper_1_labour_market_sources_are_exam_like_not_generic():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
 
-    blueprint = build_paper_blueprint(config, syllabus, seed=24)
+    blueprint = _blueprint_with_section_b_topic(config, syllabus, "3.5")
     section_b_text = " ".join(question.source_text for question in blueprint.questions if question.section == "B")
 
     assert "vacancies" in section_b_text

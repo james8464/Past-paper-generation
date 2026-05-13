@@ -348,9 +348,14 @@ _CALCULATION_STIMULI = {
     "data_table",
     "elasticity_data_table",
     "concentration_ratio_table",
+    "opportunity_cost_ppc_table",
+    "shutdown_cost_table",
+    "wage_rate_table",
     "development_data_table",
     "balance_payments_table",
     "inflation_index_table",
+    "income_tax_schedule_table",
+    "public_spending_pie_table",
     "labour_inactivity_context",
 }
 
@@ -359,6 +364,8 @@ _STIMULUS_TOPIC_IDS = {
     "ped_data_table": {"1.2.2"},
     "pes_data_table": {"1.2.3"},
     "market_share_bar_chart": {"3.4"},
+    "marginal_utility_table": {"1.1"},
+    "opportunity_cost_ppc_table": {"1.1"},
     "business_objective_context": {"3.2"},
     "xed_context": {"1.2.2"},
     "imperfect_information_context": {"1.3"},
@@ -370,12 +377,19 @@ _STIMULUS_TOPIC_IDS = {
     "current_account_line_chart": {"4.1", "2.6"},
     "gdp_growth_bar_chart": {"2.1", "2.5"},
     "terms_of_trade_index_chart": {"4.1"},
+    "exchange_rate_index_chart": {"4.1"},
+    "unemployment_rate_bar_chart": {"2.1", "2.6"},
+    "income_tax_schedule_table": {"4.5"},
+    "public_spending_pie_table": {"4.5", "2.6"},
     "labour_inactivity_context": {"2.1", "2.6"},
     "multiplier_context": {"2.4", "2.2"},
     "tariff_context": {"4.1"},
     "cost_revenue_graph": {"3.2", "3.3", "3.4"},
     "elasticity_data_table": {"1.2.2"},
     "concentration_ratio_table": {"3.4"},
+    "shutdown_cost_table": {"3.3"},
+    "wage_rate_table": {"3.5"},
+    "contestability_barrier_table": {"3.4"},
     "data_table": {"1.2.2", "1.2.3", "1.2.4", "2.1", "4.1", "4.2", "4.3"},
     "market_diagram": {"1.2.2", "1.2.3", "1.2.4", "1.3", "1.4", "3.6"},
     "demand_shift_graph": {"1.2.2", "1.2.4"},
@@ -391,6 +405,7 @@ _STIMULUS_TOPIC_IDS = {
     "minimum_price_diagram": {"1.4", "3.6", "3.5"},
     "maximum_price_diagram": {"1.4", "3.6"},
     "tax_subsidy_diagram": {"1.4", "3.6", "1.3"},
+    "tax_incidence_diagram": {"1.2.2", "1.2.3", "1.4"},
     "macro_chart": {"2.2", "2.3", "2.5", "2.6"},
     "trade_cycle": {"2.1", "2.5"},
     "balance_payments_table": {"4.1", "2.6"},
@@ -432,6 +447,24 @@ _STIMULUS_PART_PROMPTS = {
     },
     "concentration_ratio_table": {
         (None, "calculate", 4): "Using the data above, calculate the three-firm concentration ratio. You are advised to show your working.",
+    },
+    "marginal_utility_table": {
+        (None, "explain", 4): "With reference to the data above, explain why a rational consumer may stop buying additional units.",
+    },
+    "opportunity_cost_ppc_table": {
+        (None, "calculate", 4): "Using the data above, calculate the opportunity cost of increasing production of capital goods from 20 to 40 units. You are advised to show your working.",
+        (None, "explain", 4): "With reference to the data above, explain what is meant by opportunity cost.",
+    },
+    "shutdown_cost_table": {
+        (None, "calculate", 4): "Using the data above, calculate the firm's total profit or loss at the current output. You are advised to show your working.",
+        (None, "explain", 4): "With reference to the data above, explain whether the firm should continue producing in the short run.",
+    },
+    "wage_rate_table": {
+        (None, "calculate", 4): "Using the data above, calculate the percentage change in the average hourly wage. You are advised to show your working.",
+        (None, "explain", 4): "With reference to the data above, explain one likely reason for a change in labour supply.",
+    },
+    "contestability_barrier_table": {
+        (None, "explain", 4): "With reference to the data above, explain one factor that may affect the contestability of this market.",
     },
     "balance_payments_table": {
         (None, "calculate", 2): "Using the data provided, calculate the change in exports between 2021 and 2023. You are advised to show your working.",
@@ -512,6 +545,20 @@ _STIMULUS_PART_PROMPTS = {
     "tariff_context": {
         (None, "explain", 4): "Explain the likely impact of this tariff on the market for the imported good.",
     },
+    "exchange_rate_index_chart": {
+        (None, "explain", 4): "With reference to the chart above, explain one likely effect of the change in the exchange rate on exporters.",
+    },
+    "income_tax_schedule_table": {
+        (None, "calculate", 2): "Using the data above, calculate the marginal tax rate for income between £50 271 and £125 140. You are advised to show your working.",
+        (None, "explain", 2): "Explain one likely effect of a progressive income tax system on income inequality.",
+    },
+    "public_spending_pie_table": {
+        (None, "calculate", 2): "Using the data above, calculate the percentage point difference between health and education spending. You are advised to show your working.",
+        (None, "explain", 2): "Explain one likely opportunity cost of increased public spending on health.",
+    },
+    "unemployment_rate_bar_chart": {
+        (None, "explain", 4): "With reference to the chart above, explain one likely macroeconomic effect of rising unemployment.",
+    },
 }
 
 
@@ -519,6 +566,8 @@ _STIMULUS_MCQ_PROMPTS = {
     "ped_data_table": "With reference to the table above, which one of the following is most likely to be correct?",
     "pes_data_table": "Which one of the following is the percentage increase in price implied by the data?",
     "market_share_bar_chart": "Which one of the following is the value of the largest firm's market share?",
+    "marginal_utility_table": "With reference to the table above, which one of the following is most likely to be correct?",
+    "opportunity_cost_ppc_table": "With reference to the table above, which one of the following is the opportunity cost of increasing capital goods output from 20 to 40 units?",
     "cost_revenue_graph": "Refer to the previous diagram. Which one of the following is most likely after a fall in demand?",
     "business_objective_context": "Which one of the following is most likely to occur if the firm changes to sales maximisation?",
     "xed_context": "Which one of the following is the most likely impact if the price of the substitute falls?",
@@ -534,6 +583,13 @@ _STIMULUS_MCQ_PROMPTS = {
     "labour_inactivity_context": "Which one of the following would be the most likely result of an increase in labour force inactivity?",
     "multiplier_context": "Which one point on the trade cycle diagram above illustrates a boom?",
     "tariff_context": "Which one of the following is likely to give a country a comparative advantage in production?",
+    "shutdown_cost_table": "With reference to the table above, which one of the following is most likely to be correct?",
+    "wage_rate_table": "With reference to the table above, which one of the following is the percentage change in hourly wages?",
+    "contestability_barrier_table": "With reference to the table above, which one of the following is most likely to increase contestability?",
+    "exchange_rate_index_chart": "With reference to the chart above, which one of the following is most likely after an appreciation of sterling?",
+    "income_tax_schedule_table": "With reference to the table above, which one of the following describes a progressive tax system?",
+    "public_spending_pie_table": "With reference to the table above, which one of the following is an opportunity cost of increased health spending?",
+    "unemployment_rate_bar_chart": "With reference to the chart above, which one of the following is a likely effect of rising unemployment?",
 }
 
 
@@ -555,6 +611,18 @@ _STIMULUS_MCQ_OPTIONS = {
         ("B", "£126 billion"),
         ("C", "£312 billion"),
         ("D", "£920 billion"),
+    ],
+    "marginal_utility_table": [
+        ("A", "Marginal utility falls as additional units are consumed"),
+        ("B", "Total utility always falls when consumption rises"),
+        ("C", "Consumers never compare benefits and costs"),
+        ("D", "Marginal utility is identical for every unit consumed"),
+    ],
+    "opportunity_cost_ppc_table": [
+        ("A", "15 consumer goods"),
+        ("B", "20 consumer goods"),
+        ("C", "40 consumer goods"),
+        ("D", "85 consumer goods"),
     ],
     "cost_revenue_graph": [
         ("A", "Average revenue and marginal revenue both fall"),
@@ -645,6 +713,48 @@ _STIMULUS_MCQ_OPTIONS = {
         ("B", "Higher corporation tax"),
         ("C", "Higher unit labour costs"),
         ("D", "Lower investment in capital goods"),
+    ],
+    "shutdown_cost_table": [
+        ("A", "The firm covers its variable costs but makes a loss overall"),
+        ("B", "The firm earns supernormal profit"),
+        ("C", "Total revenue is zero"),
+        ("D", "Average variable cost exceeds price by £18"),
+    ],
+    "wage_rate_table": [
+        ("A", "16.7%"),
+        ("B", "6.0%"),
+        ("C", "2.4%"),
+        ("D", "60.0%"),
+    ],
+    "contestability_barrier_table": [
+        ("A", "Lower sunk costs"),
+        ("B", "Higher legal barriers to entry"),
+        ("C", "Exclusive access to key inputs"),
+        ("D", "Stronger brand loyalty for incumbents"),
+    ],
+    "exchange_rate_index_chart": [
+        ("A", "Exports may become more expensive to overseas buyers"),
+        ("B", "Imports must become more expensive for UK consumers"),
+        ("C", "The current account must immediately improve"),
+        ("D", "Inflation must always rise"),
+    ],
+    "income_tax_schedule_table": [
+        ("A", "The average tax rate tends to rise as taxable income rises"),
+        ("B", "Every taxpayer pays the same cash amount of tax"),
+        ("C", "The marginal tax rate is zero for high-income earners"),
+        ("D", "Indirect taxes are always progressive"),
+    ],
+    "public_spending_pie_table": [
+        ("A", "Less funding may be available for other areas of spending"),
+        ("B", "All economic resources become unlimited"),
+        ("C", "Private sector opportunity cost is removed"),
+        ("D", "Tax revenue must fall to zero"),
+    ],
+    "unemployment_rate_bar_chart": [
+        ("A", "Government spending on welfare benefits may increase"),
+        ("B", "Tax revenue from income tax must rise"),
+        ("C", "The economy must be producing beyond full capacity"),
+        ("D", "The labour force participation rate must be 100%"),
     ],
 }
 
@@ -1027,6 +1137,10 @@ def _section_a_stem(topic_title: str, stimulus_kind: str) -> str:
         return "The table below shows price elasticity of supply for selected regional markets."
     if stimulus_kind == "market_share_bar_chart":
         return "The graph below shows the largest firms in a UK market by market share."
+    if stimulus_kind == "marginal_utility_table":
+        return "The table below shows total and marginal utility from consuming a good."
+    if stimulus_kind == "opportunity_cost_ppc_table":
+        return "The table below shows possible combinations of output for an economy."
     if stimulus_kind == "business_objective_context":
         return "Read the information below about a firm changing its business objectives."
     if stimulus_kind == "xed_context":
@@ -1057,11 +1171,22 @@ def _section_a_stem(topic_title: str, stimulus_kind: str) -> str:
         return "Read the information below about a tariff on imported goods."
     if stimulus_kind == "cost_revenue_graph":
         return f"The diagram below shows cost and revenue curves for a firm affected by {focus}."
-    if stimulus_kind in {"data_table", "elasticity_data_table", "concentration_ratio_table", "balance_payments_table", "inflation_index_table"}:
+    if stimulus_kind in {
+        "data_table",
+        "elasticity_data_table",
+        "concentration_ratio_table",
+        "shutdown_cost_table",
+        "wage_rate_table",
+        "contestability_barrier_table",
+        "balance_payments_table",
+        "inflation_index_table",
+        "income_tax_schedule_table",
+        "public_spending_pie_table",
+    }:
         return f"The table below shows selected economic data linked to {focus}."
     if stimulus_kind in {"market_diagram", "demand_shift_graph", "supply_shift_graph"}:
         return f"The diagram below shows demand and supply in a market affected by {focus}."
-    if stimulus_kind in {"tax_subsidy_diagram", "externality_diagram", "minimum_price_diagram", "maximum_price_diagram"}:
+    if stimulus_kind in {"tax_subsidy_diagram", "tax_incidence_diagram", "externality_diagram", "minimum_price_diagram", "maximum_price_diagram"}:
         return f"The diagram below shows a possible intervention or market failure linked to {focus}."
     if stimulus_kind in {"consumer_surplus_diagram", "producer_surplus_diagram"}:
         return f"The diagram below shows welfare effects in a market affected by {focus}."
@@ -1077,8 +1202,10 @@ def _section_a_stem(topic_title: str, stimulus_kind: str) -> str:
         return f"The diagram below shows an economic relationship linked to {focus}."
     if stimulus_kind == "payoff_matrix":
         return f"The pay-off matrix below shows possible outcomes for firms affected by {focus}."
-    if stimulus_kind in {"line_graph", "index_number_chart"}:
+    if stimulus_kind in {"line_graph", "index_number_chart", "exchange_rate_index_chart"}:
         return f"The line graph below shows changes in data linked to {focus}."
+    if stimulus_kind == "unemployment_rate_bar_chart":
+        return "The bar chart below shows unemployment rates in selected economies."
     if stimulus_kind == "context_extract":
         return f"Read the information below about {_exam_context(topic_title)}."
     if stimulus_kind == "bar_chart":
@@ -1189,6 +1316,8 @@ def _section_a_context(
         "ped_data_table": "The data compares responsiveness to a price change for two groups of consumers using the same service.",
         "pes_data_table": "The data compares how quickly producers in two regional markets can respond to changes in price.",
         "market_share_bar_chart": "The figures show market shares for the largest firms in an industry where brand recognition and scale may matter.",
+        "marginal_utility_table": "A consumer records the additional satisfaction gained from each extra unit consumed during a week.",
+        "opportunity_cost_ppc_table": "An economy can switch resources between consumer goods and capital goods, but each change has an opportunity cost.",
         "business_objective_context": "A firm selling a consumer product is considering whether to prioritise revenue growth rather than maximum profit.",
         "xed_context": "The cross elasticity of demand for one good with respect to the price of a related good is positive.",
         "imperfect_information_context": "A regulator received complaints from consumers who could not accurately judge product quality before purchase.",
@@ -1203,6 +1332,13 @@ def _section_a_context(
         "labour_inactivity_context": "A higher share of working-age people were neither in work nor actively seeking employment.",
         "multiplier_context": "A survey estimates the marginal propensity to consume after households receive extra income.",
         "tariff_context": "A government imposed an import tariff to protect domestic producers from overseas competition.",
+        "shutdown_cost_table": "A firm compares price, average revenue and average variable cost when deciding whether to continue production in the short run.",
+        "wage_rate_table": "Average hourly pay changed in an occupation where vacancies and training requirements affected labour supply.",
+        "contestability_barrier_table": "A regulator is examining sunk costs, brand loyalty and switching costs in a concentrated market.",
+        "exchange_rate_index_chart": "Sterling appreciated against a basket of currencies, changing export prices and import costs.",
+        "income_tax_schedule_table": "The income tax schedule shows how marginal rates rise as taxable income increases.",
+        "public_spending_pie_table": "Government spending priorities changed, creating trade-offs between health, education and debt interest.",
+        "unemployment_rate_bar_chart": "Unemployment rates differ between economies due to changes in growth, skills and labour mobility.",
     }
     if stimulus_kind in stimulus_contexts:
         return stimulus_contexts[stimulus_kind]

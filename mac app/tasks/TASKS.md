@@ -89,3 +89,14 @@
    Claimed at: 2026-05-13T07:36:26Z
    Done by: CODEX
    Done at: 2026-05-13T08:24:18Z
+
+9. graph-code-stimulus-variety
+   Id: 9-graph-code-stimulus-variety
+   Scope: Improve graph/table/diagram/code-block rendering and question variety
+   Files: a-levels/economics/edexcel-a/generator/pastpapergen/generator.py a-levels/economics/edexcel-a/generator/pastpapergen/render_pdf.py a-levels/economics/edexcel-a/generator/tests a-levels/computer-science/aqa/generator/cspapergen/question_bank.py a-levels/computer-science/aqa/generator/cspapergen/render_pdf.py a-levels/computer-science/aqa/generator/tests
+   Note: Expanded economics Section A stimulus pools and CS Paper 2 visual question styles; improved graph/table/code/diagram rendering and added regression coverage.
+   Detail: tasks/details/9-graph-code-stimulus-variety.md
+   Claimed by: CODEX
+   Claimed at: 2026-05-13T08:42:55Z
+   Done by: CODEX
+   Done at: 2026-05-13T09:26:35Z

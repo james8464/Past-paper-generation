@@ -285,7 +285,7 @@ def _render_stimulus(pdf: canvas.Canvas, stimulus: Stimulus, state: _QuestionRen
     pdf.setFont(FONT_BOLD, 10)
     pdf.drawCentredString(282, state.y, stimulus.title)
     state.y -= 18
-    if stimulus.kind in {"table", "bitgrid", "packet"}:
+    if stimulus.kind in {"table", "bitgrid", "packet", "truth_table"}:
         state.y = _draw_table(pdf, stimulus, 118, state.y)
     elif stimulus.kind == "code":
         state.y = _draw_code_box(pdf, stimulus.code, 118, state.y)
@@ -293,6 +293,8 @@ def _render_stimulus(pdf: canvas.Canvas, stimulus: Stimulus, state: _QuestionRen
         state.y = _draw_logic_box(pdf, stimulus.diagram, 118, state.y)
     elif stimulus.kind == "erd":
         state.y = _draw_erd(pdf, stimulus.diagram, 118, state.y)
+    elif stimulus.kind == "network":
+        state.y = _draw_network_diagram(pdf, stimulus.diagram, 118, state.y)
     else:
         for line in stimulus.lines:
             pdf.drawString(118, state.y, line)
@@ -306,41 +308,73 @@ def _draw_table(pdf: canvas.Canvas, stimulus: Stimulus, x: float, y: float) -> f
     col_w = width / cols
     row_h = 20
     rows = [stimulus.headers, *stimulus.rows]
-    pdf.setFont(FONT_BOLD, 8)
+    pdf.setFillColor(colors.HexColor("#f4f4f4"))
+    pdf.rect(x, y - row_h, width, row_h, stroke=0, fill=1)
+    pdf.setFillColor(colors.black)
     for r_index, row in enumerate(rows):
         y0 = y - r_index * row_h
         for c_index in range(cols):
             pdf.rect(x + c_index * col_w, y0 - row_h, col_w, row_h, stroke=1, fill=0)
             value = row[c_index] if c_index < len(row) else ""
+            pdf.setFont(FONT_BOLD if r_index == 0 else FONT, 8)
             pdf.drawString(x + c_index * col_w + 4, y0 - 14, value[:34])
-        pdf.setFont(FONT, 8)
     return y - len(rows) * row_h - 8
 
 
 def _draw_code_box(pdf: canvas.Canvas, code: str, x: float, y: float) -> float:
     lines = code.splitlines() or [code]
-    h = 18 + 14 * len(lines)
-    pdf.rect(x, y - h, 340, h, stroke=1, fill=0)
-    pdf.setFont(FONT_MONO, 9)
+    width = 360
+    gutter = 28
+    h = 20 + 14 * len(lines)
+    pdf.setFillColor(colors.HexColor("#f7f7f7"))
+    pdf.rect(x, y - h, width, h, stroke=1, fill=1)
+    pdf.setFillColor(colors.black)
+    pdf.line(x + gutter, y, x + gutter, y - h)
+    pdf.setFont(FONT_MONO, 8.5)
     cursor = y - 18
-    for line in lines:
-        pdf.drawString(x + 8, cursor, line)
+    for index, line in enumerate(lines, start=1):
+        pdf.drawRightString(x + gutter - 7, cursor, str(index))
+        pdf.drawString(x + gutter + 8, cursor, line[:58])
         cursor -= 14
     return y - h - 8
 
 
 def _draw_logic_box(pdf: canvas.Canvas, expression: str, x: float, y: float) -> float:
-    pdf.rect(x, y - 92, 340, 92, stroke=1, fill=0)
+    pdf.rect(x, y - 112, 360, 112, stroke=1, fill=0)
     pdf.setFont(FONT, 9)
     pdf.drawString(x + 18, y - 20, "Inputs")
     for idx, label in enumerate(["A", "B", "C"]):
         pdf.line(x + 24, y - 35 - idx * 16, x + 94, y - 35 - idx * 16)
         pdf.drawString(x + 8, y - 39 - idx * 16, label)
-    pdf.rect(x + 100, y - 62, 64, 38, stroke=1, fill=0)
-    pdf.drawCentredString(x + 132, y - 46, expression[:12])
-    pdf.line(x + 164, y - 43, x + 250, y - 43)
-    pdf.drawString(x + 258, y - 47, "Output")
-    return y - 102
+    first_gate = "XOR" if "XOR" in expression else "AND"
+    second_gate = "OR" if " OR " in expression else "AND"
+    _draw_logic_gate_symbol(pdf, first_gate, x + 102, y - 66)
+    pdf.line(x + 158, y - 48, x + 202, y - 48)
+    _draw_logic_gate_symbol(pdf, second_gate, x + 204, y - 66)
+    pdf.line(x + 260, y - 48, x + 316, y - 48)
+    pdf.drawString(x + 322, y - 52, "X")
+    pdf.setFont(FONT, 8)
+    pdf.drawString(x + 102, y - 92, expression[:44])
+    return y - 122
+
+
+def _draw_logic_gate_symbol(pdf: canvas.Canvas, label: str, x: float, y: float) -> None:
+    top = y + 28
+    bottom = y - 10
+    if label == "OR":
+        pdf.bezier(x + 2, bottom, x + 20, y + 2, x + 20, y + 16, x + 2, top)
+        pdf.bezier(x + 2, top, x + 44, top, x + 54, y + 18, x + 54, y + 9)
+        pdf.bezier(x + 54, y + 9, x + 44, bottom, x + 2, bottom, x + 2, bottom)
+    elif label == "XOR":
+        pdf.bezier(x - 4, bottom, x + 14, y + 2, x + 14, y + 16, x - 4, top)
+        pdf.bezier(x + 2, bottom, x + 20, y + 2, x + 20, y + 16, x + 2, top)
+        pdf.bezier(x + 2, top, x + 44, top, x + 54, y + 18, x + 54, y + 9)
+        pdf.bezier(x + 54, y + 9, x + 44, bottom, x + 2, bottom, x + 2, bottom)
+    else:
+        pdf.line(x, bottom, x, top)
+        pdf.bezier(x, top, x + 58, top, x + 58, bottom, x, bottom)
+    pdf.setFont(FONT_BOLD, 7.5)
+    pdf.drawCentredString(x + 30, y + 6, label)
 
 
 def _draw_erd(pdf: canvas.Canvas, diagram: str, x: float, y: float) -> float:
@@ -356,6 +390,33 @@ def _draw_erd(pdf: canvas.Canvas, diagram: str, x: float, y: float) -> float:
     pdf.setFont(FONT, 8)
     pdf.drawString(x, y - 60, diagram)
     return y - 74
+
+
+def _draw_network_diagram(pdf: canvas.Canvas, diagram: str, x: float, y: float) -> float:
+    nodes = _network_nodes(diagram, x, y)
+    for start, end in [("Client", "Switch"), ("Laptop", "Switch"), ("Switch", "Router"), ("Router", "Server")]:
+        if start in nodes and end in nodes:
+            sx, sy = nodes[start]
+            ex, ey = nodes[end]
+            pdf.line(sx, sy, ex, ey)
+    for label, (cx, cy) in nodes.items():
+        if label in {"Switch", "Router"}:
+            pdf.rect(cx - 22, cy - 12, 44, 24, stroke=1, fill=0)
+        else:
+            pdf.roundRect(cx - 26, cy - 14, 52, 28, 4, stroke=1, fill=0)
+        pdf.setFont(FONT, 7.5)
+        pdf.drawCentredString(cx, cy - 3, label)
+    pdf.setFont(FONT, 8)
+    pdf.drawString(x, y - 118, "Network diagram")
+    return y - 132
+
+
+def _network_nodes(diagram: str, x: float, y: float) -> dict[str, tuple[float, float]]:
+    if diagram == "mesh-wan":
+        return {"Client": (x + 36, y - 42), "Laptop": (x + 36, y - 86), "Switch": (x + 140, y - 64), "Router": (x + 238, y - 64), "Server": (x + 330, y - 64)}
+    if diagram == "star-lan":
+        return {"Client": (x + 44, y - 40), "Laptop": (x + 44, y - 90), "Switch": (x + 178, y - 64), "Router": (x + 290, y - 64), "Server": (x + 342, y - 104)}
+    return {"Client": (x + 40, y - 64), "Laptop": (x + 40, y - 104), "Switch": (x + 152, y - 84), "Router": (x + 252, y - 84), "Server": (x + 340, y - 84)}
 
 
 def _ensure_space(pdf: canvas.Canvas, state: _QuestionRenderState, height: float) -> _QuestionRenderState:

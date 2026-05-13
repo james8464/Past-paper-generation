@@ -27,12 +27,14 @@ QUESTION_STYLES = [
     QuestionStyle("rle_compression", "4.5", (7, 8, 9, 10, 14), "rle"),
     QuestionStyle("floating_point", "4.5", (8, 9, 10), "float"),
     QuestionStyle("logic_truth_table", "4.6", (8, 9, 14), "logic"),
+    QuestionStyle("truth_table_completion", "4.6", (7, 8, 10), "truth_table"),
     QuestionStyle("boolean_algebra", "4.6", (8, 9, 10, 14), "boolean"),
     QuestionStyle("translator_language", "4.6", (8, 10), "translator"),
     QuestionStyle("security_measures", "4.6", (8, 10), "security"),
     QuestionStyle("processor_buses", "4.7", (8, 10), "processor"),
     QuestionStyle("stored_program", "4.7", (8, 10), "stored"),
     QuestionStyle("packet_switching", "4.9", (7, 8, 9, 10, 14), "packet"),
+    QuestionStyle("network_topology", "4.9", (7, 8, 10), "network_topology"),
     QuestionStyle("tcpip_dns", "4.9", (8, 9, 10), "tcpip"),
     QuestionStyle("sql_normalisation", "4.10", (8, 10, 14), "sql"),
     QuestionStyle("erd_keys", "4.10", (8, 9, 10), "erd"),
@@ -68,12 +70,14 @@ def build_question(style: QuestionStyle, number: int, total: int, rng: random.Ra
         "rle": _rle_question,
         "float": _floating_point_question,
         "logic": _logic_question,
+        "truth_table": _truth_table_question,
         "boolean": _boolean_question,
         "translator": _translator_question,
         "security": _security_question,
         "processor": _processor_question,
         "stored": _stored_program_question,
         "packet": _packet_question,
+        "network_topology": _network_topology_question,
         "tcpip": _tcpip_question,
         "sql": _sql_question,
         "erd": _erd_question,
@@ -286,6 +290,23 @@ def _boolean_question(style: QuestionStyle, number: int, total: int, rng: random
     return _question(style, number, "Boolean algebra", "A designer wants to simplify a Boolean expression before implementing it as hardware.", stimulus, _fit_parts(parts, total))
 
 
+def _truth_table_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+    expression, rows = rng.choice(
+        [
+            ("(A AND B) OR C", [["0", "0", "0", ""], ["0", "1", "1", ""], ["1", "0", "0", ""], ["1", "1", "1", ""]]),
+            ("A AND (B OR NOT C)", [["0", "0", "0", ""], ["0", "1", "0", ""], ["1", "0", "1", ""], ["1", "1", "0", ""]]),
+            ("(A XOR B) AND C", [["0", "1", "1", ""], ["1", "0", "1", ""], ["1", "1", "1", ""], ["0", "0", "1", ""]]),
+        ]
+    )
+    stimulus = Stimulus(kind="truth_table", title="Figure 1", headers=["A", "B", "C", "X"], rows=rows)
+    parts = _parts([
+        ("1", 3, f"Complete Figure 1 for the Boolean expression {expression}.", ["All input rows interpreted correctly;", "Intermediate logic applied correctly;", "Final output column completed correctly;"], "", 7),
+        ("2", 2, "State one input combination for which X has the value 1.", ["Correct row identified from the completed truth table;", "Answer uses A, B and C values clearly;"], "", 4),
+        ("3", 3, "Explain why truth tables are useful when testing a logic circuit.", ["They show every possible input combination;", "Expected output can be compared with actual circuit output;", "Errors in the expression or circuit can be found systematically;"], "", 5),
+    ])
+    return _question(style, number, "Truth tables", "A logic circuit has three inputs, A, B and C, and one output, X.", stimulus, _fit_parts(parts, total))
+
+
 def _translator_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
     parts = _parts([
         ("1", 2, "Describe the difference between source code and object code.", ["Source code is written by programmers / human-readable;", "Object code is machine code or translated code executable by the processor;"], "", 4),
@@ -333,6 +354,17 @@ def _packet_question(style: QuestionStyle, number: int, total: int, rng: random.
         ("4", 2, "Explain one advantage of packet switching compared with circuit switching.", ["No dedicated circuit is required;", "Network capacity can be shared more efficiently/resiliently;"], "", 4),
     ])
     return _question(style, number, "Packet switching", "Figure 1 shows selected fields from a packet transmitted across a packet-switched network.", stimulus, _fit_parts(parts, total))
+
+
+def _network_topology_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+    topology = rng.choice(["client-switch-router-server", "mesh-wan", "star-lan"])
+    stimulus = Stimulus(kind="network", title="Figure 1", diagram=topology)
+    parts = _parts([
+        ("1", 2, "Name two devices shown in Figure 1 that are used to connect computers or networks.", ["Switch;", "Router;", "Wireless access point if shown;"], "", 4),
+        ("2", 3, "Describe how data would be sent from a client to the server shown in Figure 1.", ["Data is split into packets or frames as appropriate;", "Switch forwards frames within the local network;", "Router forwards packets between networks using addresses/routing table;"], "", 7),
+        ("3", 3, "Explain one advantage and one disadvantage of the topology shown in Figure 1.", ["Advantage linked to central management, scalability or fault isolation;", "Disadvantage linked to central device failure, cost or cabling;", "Explanation is applied to the network diagram;"], "", 7),
+    ])
+    return _question(style, number, "Network topology", "Figure 1 shows part of a computer network.", stimulus, _fit_parts(parts, total))
 
 
 def _tcpip_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:

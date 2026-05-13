@@ -108,7 +108,7 @@ def test_mark_scheme_does_not_print_fake_blank_page_labels(tmp_path):
 def test_mark_scheme_calculation_rows_include_specific_working(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
-    blueprint = build_paper_blueprint(config, syllabus, seed=12397218355689870975)
+    blueprint = _blueprint_with_section_a_calculation(config, syllabus, "elasticity_data_table")
     output = tmp_path / "ms.pdf"
 
     render_mark_scheme(blueprint, syllabus, output)
@@ -121,7 +121,7 @@ def test_mark_scheme_calculation_rows_include_specific_working(tmp_path):
 def test_mark_scheme_generic_data_calculation_matches_table_values(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
-    blueprint = build_paper_blueprint(config, syllabus, seed=0)
+    blueprint = _blueprint_with_section_a_calculation(config, syllabus, "data_table")
     output = tmp_path / "ms.pdf"
 
     render_mark_scheme(blueprint, syllabus, output)
@@ -237,3 +237,12 @@ def _blueprint_with_section_b_topic(config, syllabus, topic_id: str):
         if any(question.section == "B" and question.topic_id == topic_id for question in blueprint.questions):
             return blueprint
     raise AssertionError(f"No Section B blueprint found for topic {topic_id}")
+
+
+def _blueprint_with_section_a_calculation(config, syllabus, stimulus_kind: str):
+    for seed in range(1000):
+        blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+        for question in blueprint.questions:
+            if question.section == "A" and question.stimulus_kind == stimulus_kind and any(part.command_word == "calculate" for part in question.parts):
+                return blueprint
+    raise AssertionError(f"No Section A calculation found for stimulus {stimulus_kind}")

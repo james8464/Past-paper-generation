@@ -20,9 +20,23 @@ from pastpapergen.render_pdf import (
     _cost_revenue_geometry,
     _draw_answer_lines,
     _extra_answer_pages,
+    _table_rows,
     render_question_paper,
 )
 from pastpapergen.syllabus import load_syllabus
+
+
+def _blueprint_with_section_a_question(config, syllabus, predicate):
+    for seed in range(500):
+        blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+        for question in blueprint.questions:
+            if question.section == "A" and predicate(question):
+                return blueprint, question
+    raise AssertionError("No matching Section A question generated")
+
+
+def _normalised(text: str) -> str:
+    return " ".join(text.split()).lower()
 
 
 def test_render_question_paper_writes_pdf(tmp_path):
@@ -34,6 +48,12 @@ def test_render_question_paper_writes_pdf(tmp_path):
     render_question_paper(blueprint, output)
 
     assert output.read_bytes().startswith(b"%PDF")
+
+
+def test_new_section_a_visual_stimuli_have_renderer_rows():
+    assert _table_rows("marginal_utility_table")[0] == ["Units consumed", "Total utility", "Marginal utility"]
+    assert _table_rows("opportunity_cost_ppc_table")[0] == ["Consumer goods", "100", "85", "60", "20"]
+    assert _table_rows("income_tax_schedule_table")[0] == ["Band", "Taxable income", "Marginal rate"]
 
 
 def test_render_question_paper_uses_exam_style_strings(tmp_path):
@@ -405,11 +425,16 @@ def test_section_a_draw_question_moves_mcq_to_next_page_when_spacing_is_tight(tm
 def test_section_a_cost_revenue_draw_axes_have_labels(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
-    blueprint = build_paper_blueprint(config, syllabus, seed=4)
+    blueprint, question = _blueprint_with_section_a_question(
+        config,
+        syllabus,
+        lambda candidate: any("Draw a cost and revenue diagram" in part.prompt for part in candidate.parts),
+    )
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
-    draw_page = next(page for page in _pdf_text(output).split("\f") if "Draw a cost and revenue diagram" in page)
+    prompt_text = _normalised(next(part.prompt for part in question.parts if "Draw a cost and revenue diagram" in part.prompt))
+    draw_page = next(page for page in _pdf_text(output).split("\f") if prompt_text in _normalised(page))
 
     assert "Costs/revenues" in draw_page
     assert "Output" in draw_page
@@ -418,28 +443,38 @@ def test_section_a_cost_revenue_draw_axes_have_labels(tmp_path):
 def test_section_a_calculate_question_moves_mcq_to_next_page_when_spacing_is_tight(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
-    blueprint = build_paper_blueprint(config, syllabus, seed=0)
+    blueprint, question = _blueprint_with_section_a_question(
+        config,
+        syllabus,
+        lambda candidate: len(candidate.parts) > 1 and candidate.parts[0].command_word == "calculate" and candidate.parts[1].command_word == "mcq",
+    )
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
     pages = _pdf_text(output).split("\f")
-    calculate_page = next(page for page in pages if "calculate the percentage change" in page.lower())
+    prompt_text = _normalised(question.parts[0].prompt)
+    calculate_page = next(page for page in pages if prompt_text in _normalised(page))
     next_page = pages[pages.index(calculate_page) + 1]
 
     assert "which one of the following" not in calculate_page.lower()
     assert "which one of the following" in next_page.lower()
-    assert "Total for Question 1 = 5 marks" in next_page
+    assert f"Total for Question {question.number} = 5 marks" in next_page
 
 
 def test_section_a_calculate_page_fills_remaining_answer_space(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
-    blueprint = build_paper_blueprint(config, syllabus, seed=0)
+    blueprint, question = _blueprint_with_section_a_question(
+        config,
+        syllabus,
+        lambda candidate: len(candidate.parts) > 1 and candidate.parts[0].command_word == "calculate" and candidate.parts[1].command_word == "mcq",
+    )
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
     pages = _pdf_text(output).split("\f")
-    page_number = next(index + 1 for index, page in enumerate(pages) if "calculate the percentage change" in page.lower())
+    prompt_text = _normalised(question.parts[0].prompt)
+    page_number = next(index + 1 for index, page in enumerate(pages) if prompt_text in _normalised(page))
 
     assert _long_horizontal_line_count(output, page_number) >= 12
 
@@ -447,7 +482,7 @@ def test_section_a_calculate_page_fills_remaining_answer_space(tmp_path):
 def test_section_a_generic_data_table_uses_economic_labels(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
-    blueprint = build_paper_blueprint(config, syllabus, seed=0)
+    blueprint, _question = _blueprint_with_section_a_question(config, syllabus, lambda candidate: candidate.stimulus_kind == "data_table")
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
@@ -462,14 +497,26 @@ def test_section_a_generic_data_table_uses_economic_labels(tmp_path):
 def test_section_a_context_uses_specific_source_text(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
-    blueprint = build_paper_blueprint(config, syllabus, seed=0)
+    blueprint, _question = _blueprint_with_section_a_question(config, syllabus, lambda candidate: candidate.stimulus_kind == "minimum_wage_context")
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
     text = _pdf_text(output)
 
-    assert "National Minimum Wage" in text
+    assert "national minimum wage" in _normalised(text)
     assert "A short item of economic context" not in text
+
+
+def test_section_a_surplus_diagrams_label_shaded_area(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint, _question = _blueprint_with_section_a_question(config, syllabus, lambda candidate: candidate.stimulus_kind == "consumer_surplus_diagram")
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    text = _pdf_text(output)
+
+    assert "Consumer surplus" in text
 
 
 def test_paper_2_three_part_section_a_questions_render_all_parts(tmp_path):

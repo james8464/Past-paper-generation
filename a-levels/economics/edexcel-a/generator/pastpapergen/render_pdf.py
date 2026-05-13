@@ -981,12 +981,8 @@ def _draw_blank_answer_axes(
     bottom = y - h
     pdf.setStrokeColor(colors.black)
     pdf.setLineWidth(0.7)
-    pdf.line(x, bottom, x, y)
-    pdf.line(x, bottom, x + w, bottom)
-    pdf.line(x, y, x - 3, y - 7)
-    pdf.line(x, y, x + 3, y - 7)
-    pdf.line(x + w, bottom, x + w - 7, bottom + 3)
-    pdf.line(x + w, bottom, x + w - 7, bottom - 3)
+    _draw_axis_arrow(pdf, x, bottom, x, y)
+    _draw_axis_arrow(pdf, x, bottom, x + w, bottom)
     pdf.setFont(FONT_REGULAR, 8)
     pdf.drawString(x - 5, y + 8, y_label)
     pdf.drawRightString(x + w, bottom - 14, x_label)
@@ -1207,14 +1203,22 @@ _TABLE_KINDS = {
     "development_data_table",
     "elasticity_data_table",
     "concentration_ratio_table",
+    "marginal_utility_table",
+    "opportunity_cost_ppc_table",
+    "shutdown_cost_table",
+    "wage_rate_table",
+    "contestability_barrier_table",
     "balance_payments_table",
     "inflation_index_table",
+    "income_tax_schedule_table",
+    "public_spending_pie_table",
 }
 
 _BAR_CHART_KINDS = {
     "bar_chart",
     "market_share_bar_chart",
     "gdp_growth_bar_chart",
+    "unemployment_rate_bar_chart",
 }
 
 _LINE_CHART_KINDS = {
@@ -1224,6 +1228,7 @@ _LINE_CHART_KINDS = {
     "investment_line_chart",
     "current_account_line_chart",
     "terms_of_trade_index_chart",
+    "exchange_rate_index_chart",
 }
 
 
@@ -1231,8 +1236,8 @@ def _draw_economics_graph(pdf: canvas.Canvas, x: float, y: float, kind: str) -> 
     bottom = y - 150
     pdf.setStrokeColor(colors.black)
     pdf.setLineWidth(0.7)
-    pdf.line(x, bottom, x, y - 8)
-    pdf.line(x, bottom, x + 270, bottom)
+    _draw_axis_arrow(pdf, x, bottom, x, y - 8)
+    _draw_axis_arrow(pdf, x, bottom, x + 270, bottom)
     pdf.setFont(FONT_REGULAR, 11)
     y_label = _axis_label(kind)
     pdf.drawString(x - 46, y - 20, y_label)
@@ -1264,12 +1269,23 @@ def _draw_economics_graph(pdf: canvas.Canvas, x: float, y: float, kind: str) -> 
         if kind == "monopsony_diagram":
             pdf.line(x + 44, bottom + 20, x + 252, bottom + 122)
             pdf.drawString(x + 254, bottom + 120, "MC")
-    elif kind in {"tax_subsidy_diagram", "minimum_price_diagram", "maximum_price_diagram", "tariff_diagram"}:
+    elif kind in {"tax_subsidy_diagram", "tax_incidence_diagram", "minimum_price_diagram", "maximum_price_diagram", "tariff_diagram"}:
         _draw_demand_supply(pdf, x, bottom)
         pdf.setDash(2, 2)
         pdf.line(x + 38, bottom + 76, x + 235, bottom + 76)
         pdf.setDash()
         pdf.drawString(x + 238, bottom + 73, "P")
+        if kind == "tax_incidence_diagram":
+            pdf.line(x + 25, bottom + 42, x + 230, bottom + 134)
+            pdf.drawString(x + 235, bottom + 132, "S + tax")
+    elif kind in {"consumer_surplus_diagram", "producer_surplus_diagram"}:
+        _draw_surplus_area(pdf, x, bottom, consumer=kind == "consumer_surplus_diagram")
+        _draw_demand_supply(pdf, x, bottom)
+        pdf.setDash(2, 2)
+        pdf.line(x + 38, bottom + 66, x + 125, bottom + 66)
+        pdf.line(x + 125, bottom, x + 125, bottom + 66)
+        pdf.setDash()
+        pdf.drawString(x + 132, bottom + 64, "E")
     elif kind == "externality_diagram":
         _draw_demand_supply(pdf, x, bottom)
         pdf.line(x + 30, bottom + 36, x + 230, bottom + 128)
@@ -1348,6 +1364,35 @@ def _draw_demand_supply(pdf: canvas.Canvas, x: float, bottom: float) -> None:
     pdf.drawString(x + 235, bottom + 110, "S")
 
 
+def _draw_surplus_area(pdf: canvas.Canvas, x: float, bottom: float, *, consumer: bool) -> None:
+    path = pdf.beginPath()
+    if consumer:
+        path.moveTo(x + 24, bottom + 112)
+        path.lineTo(x + 125, bottom + 66)
+        path.lineTo(x + 38, bottom + 66)
+    else:
+        path.moveTo(x + 26, bottom + 20)
+        path.lineTo(x + 125, bottom + 66)
+        path.lineTo(x + 38, bottom + 66)
+    path.close()
+    pdf.setFillColor(colors.HexColor("#e3e3e3"))
+    pdf.drawPath(path, stroke=0, fill=1)
+    pdf.setFillColor(colors.black)
+    pdf.setFont(FONT_REGULAR, 8.5)
+    label = "Consumer surplus" if consumer else "Producer surplus"
+    pdf.drawString(x + 48, bottom + (82 if consumer else 42), label)
+
+
+def _draw_axis_arrow(pdf: canvas.Canvas, x1: float, y1: float, x2: float, y2: float) -> None:
+    pdf.line(x1, y1, x2, y2)
+    if abs(x1 - x2) < 0.1:
+        pdf.line(x2, y2, x2 - 3, y2 - 7)
+        pdf.line(x2, y2, x2 + 3, y2 - 7)
+        return
+    pdf.line(x2, y2, x2 - 7, y2 + 3)
+    pdf.line(x2, y2, x2 - 7, y2 - 3)
+
+
 def _draw_data_table(pdf: canvas.Canvas, x: float, y: float, kind: str = "data_table") -> float:
     rows = _table_rows(kind)
     col_count = max(len(row) for row in rows)
@@ -1355,15 +1400,18 @@ def _draw_data_table(pdf: canvas.Canvas, x: float, y: float, kind: str = "data_t
     w = col_width * col_count
     row_h = 21
     h = row_h * len(rows) + 2
+    pdf.setFillColor(colors.HexColor("#f2f2f2"))
+    pdf.rect(x, y - row_h, w, row_h, stroke=0, fill=1)
+    pdf.setFillColor(colors.black)
+    pdf.setFont(FONT_REGULAR, 8.5 if kind == "data_table" else 9 if col_count >= 4 else 11)
+    for r, row in enumerate(rows):
+        for c, text in enumerate(row):
+            pdf.drawString(x + c * col_width + 6, y - 14 - r * row_h, text)
     pdf.rect(x, y - h, w, h, stroke=1, fill=0)
     for i in range(1, len(rows)):
         pdf.line(x, y - i * row_h, x + w, y - i * row_h)
     for i in range(1, col_count):
         pdf.line(x + i * col_width, y, x + i * col_width, y - h)
-    pdf.setFont(FONT_REGULAR, 8.5 if kind == "data_table" else 9 if col_count >= 4 else 11)
-    for r, row in enumerate(rows):
-        for c, text in enumerate(row):
-            pdf.drawString(x + c * col_width + 6, y - 14 - r * row_h, text)
     return y - h - 8
 
 
@@ -1386,6 +1434,20 @@ def _table_rows(kind: str) -> list[list[str]]:
         return [["Firm", "Market share", "Rank"], ["A", "26.6%", "1"], ["B", "19.5%", "2"], ["C", "12.7%", "3"]]
     if kind == "elasticity_data_table":
         return [["Good", "PED", "YED"], ["Bus travel", "-0.6", "+0.2"], ["Cinema", "-1.4", "+1.8"], ["Fuel", "-0.2", "+0.1"]]
+    if kind == "marginal_utility_table":
+        return [["Units consumed", "Total utility", "Marginal utility"], ["1", "42", "42"], ["2", "72", "30"], ["3", "90", "18"], ["4", "98", "8"]]
+    if kind == "opportunity_cost_ppc_table":
+        return [["Consumer goods", "100", "85", "60", "20"], ["Capital goods", "0", "20", "40", "60"]]
+    if kind == "shutdown_cost_table":
+        return [["Output", "Price", "AVC", "AC"], ["500", "£18", "£14", "£22"]]
+    if kind == "wage_rate_table":
+        return [["Year", "Average hourly wage", "Vacancies"], ["2021", "£12.00", "18 400"], ["2024", "£14.00", "26 700"]]
+    if kind == "contestability_barrier_table":
+        return [["Barrier", "Indicator"], ["Sunk costs", "High"], ["Switching costs", "Medium"], ["Legal barriers", "Low"]]
+    if kind == "income_tax_schedule_table":
+        return [["Band", "Taxable income", "Marginal rate"], ["Basic", "£12 571-£50 270", "20%"], ["Higher", "£50 271-£125 140", "40%"], ["Additional", "over £125 140", "45%"]]
+    if kind == "public_spending_pie_table":
+        return [["Area", "Share"], ["Health", "21%"], ["Education", "10%"], ["Debt interest", "8%"], ["Defence", "5%"]]
     return [
         ["Year", "Quantity demanded index", "Average price index"],
         ["2021", "74.2", "68.5"],
@@ -1405,8 +1467,8 @@ def _draw_bar_chart(pdf: canvas.Canvas, x: float, y: float, kind: str = "bar_cha
             pdf.line(x, tick_y, x + 250, tick_y)
         pdf.setStrokeColor(colors.black)
         pdf.setLineWidth(1)
-    pdf.line(x, bottom, x, y - 10)
-    pdf.line(x, bottom, x + 250, bottom)
+    _draw_axis_arrow(pdf, x, bottom, x, y - 10)
+    _draw_axis_arrow(pdf, x, bottom, x + 250, bottom)
     pdf.setFont(FONT_REGULAR, 11)
     y_label, x_label, values = _bar_chart_data(kind)
     pdf.drawString(x - 28, y - 18, y_label)
@@ -1428,19 +1490,23 @@ def _bar_chart_data(kind: str) -> tuple[str, str, list[float]]:
         return "%", "Firms", [26.6, 19.5, 12.7, 11.7, 10.9]
     if kind == "gdp_growth_bar_chart":
         return "%", "Quarter", [0.4, 0.1, -0.1, 0.1, 0.1]
+    if kind == "unemployment_rate_bar_chart":
+        return "%", "Economy", [3.9, 5.8, 7.1, 4.6]
     return "%", "Firms", [52, 80, 38, 96]
 
 
 def _bar_label(kind: str, index: int) -> str:
     if kind == "market_share_bar_chart":
         return ["Lloyds", "NatWest", "Barclays", "HSBC", "Santander"][index]
+    if kind == "unemployment_rate_bar_chart":
+        return ["UK", "FR", "ES", "US"][index]
     return chr(65 + index)
 
 
 def _draw_line_graph(pdf: canvas.Canvas, x: float, y: float, kind: str = "line_graph") -> float:
     bottom = y - 120
-    pdf.line(x, bottom, x, y - 10)
-    pdf.line(x, bottom, x + 250, bottom)
+    _draw_axis_arrow(pdf, x, bottom, x, y - 10)
+    _draw_axis_arrow(pdf, x, bottom, x + 250, bottom)
     pdf.setFont(FONT_REGULAR, 11)
     y_label, x_label, values = _line_chart_data(kind)
     pdf.drawString(x - 28, y - 18, y_label)
@@ -1466,6 +1532,8 @@ def _line_chart_data(kind: str) -> tuple[str, str, list[float]]:
         return "% GDP", "Year", [-3.8, -4.6, -4.9, -4.8, -5.2, -3.8, -4.2, -3.5, -3.7, -1.1, -4.3]
     if kind == "terms_of_trade_index_chart":
         return "Index", "Year", [82, 79, 80, 81, 83, 92, 92, 88, 85, 86, 91]
+    if kind == "exchange_rate_index_chart":
+        return "Index", "Year", [100, 96, 91, 94, 101, 106, 109]
     return "Index", "Year", [74.2, 81.6, 78.5, 88.0]
 
 
