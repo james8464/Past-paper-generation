@@ -9,6 +9,8 @@ from pastpapergen.render_pdf import (
     ANSWER_FRAME_Y,
     ANSWER_LINE_GAP_PT,
     ANSWER_PAGE_START_Y,
+    BLANK_AXIS_HEIGHT_PT,
+    BLANK_AXIS_WIDTH_PT,
     BODY_FONT_SIZE_PT,
     CROSS_BOX_TOKEN,
     EDEXCEL_CROP_BOX,
@@ -440,6 +442,23 @@ def test_section_a_cost_revenue_draw_axes_have_labels(tmp_path):
     assert "Output" in draw_page
 
 
+def test_section_a_blank_draw_axes_match_reference_scale(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    blueprint, _question = _blueprint_with_section_a_question(
+        config,
+        syllabus,
+        lambda candidate: any(part.command_word == "draw" for part in candidate.parts),
+    )
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    axis_lines = _blank_axis_lines(output)
+
+    assert max(axis_lines["horizontal"]) >= BLANK_AXIS_WIDTH_PT - 5
+    assert max(axis_lines["vertical"]) >= BLANK_AXIS_HEIGHT_PT - 5
+
+
 def test_section_a_calculate_question_moves_mcq_to_next_page_when_spacing_is_tight(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
@@ -576,6 +595,33 @@ def _long_horizontal_line_count(path: Path, page_number: int) -> int:
                 if abs(start.y - end.y) < 0.5 and abs(end.x - start.x) > 250 and 100 < start.y < 760:
                     count += 1
         return count
+    finally:
+        doc.close()
+
+
+def _blank_axis_lines(path: Path) -> dict[str, list[float]]:
+    import fitz
+
+    horizontal: list[float] = []
+    vertical: list[float] = []
+    doc = fitz.open(path)
+    try:
+        for page in doc:
+            text = page.get_text()
+            if "Draw a" not in text and "diagram to show" not in text and "diagram to identify" not in text:
+                continue
+            for drawing in page.get_drawings():
+                for item in drawing["items"]:
+                    if item[0] != "l":
+                        continue
+                    start, end = item[1], item[2]
+                    width = abs(end.x - start.x)
+                    height = abs(end.y - start.y)
+                    if height < 0.5 and width > 250:
+                        horizontal.append(width)
+                    if width < 0.5 and height > 180:
+                        vertical.append(height)
+        return {"horizontal": horizontal, "vertical": vertical}
     finally:
         doc.close()
 

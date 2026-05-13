@@ -26,6 +26,8 @@ MS_ANSWER_WRAP_CHARS = 58
 EDEXCEL_MEDIA_BOX = (0.0, 0.0, 651.97, 898.58)
 EDEXCEL_CROP_BOX = (28.35, 28.35, 623.62, 870.24)
 SECTION_A_FOOTER_SAFE_Y = 128
+BLANK_AXIS_WIDTH_PT = 420
+BLANK_AXIS_HEIGHT_PT = 300
 ANSWER_FRAME_X = 34
 ANSWER_FRAME_Y = 48
 ANSWER_FRAME_W = 526
@@ -926,7 +928,9 @@ def _draw_draw_part_with_axes(pdf: canvas.Canvas, part, x: float, y: float) -> f
     pdf.setFillColor(colors.black)
     y -= 18
     y_label, x_label = _axis_labels_for_draw_prompt(part.prompt)
-    return _draw_blank_answer_axes(pdf, x + 34, y, width - x - 130, 130, x_label=x_label, y_label=y_label) - 10
+    axis_width = min(BLANK_AXIS_WIDTH_PT, width - x - 78)
+    axis_height = min(BLANK_AXIS_HEIGHT_PT, max(230, y - (SECTION_A_FOOTER_SAFE_Y + 35)))
+    return _draw_blank_answer_axes(pdf, x + 34, y, axis_width, axis_height, x_label=x_label, y_label=y_label) - 10
 
 
 def _draw_calculate_part_with_working_lines(pdf: canvas.Canvas, part, x: float, y: float) -> float:
