@@ -24,6 +24,7 @@ def economics_exam_schedule(paper_id: str) -> ExamSchedule:
         raise ValueError(f"Unknown Economics A paper id: {paper_id}") from exc
 
 
-def formatted_economics_exam_date(paper_id: str) -> str:
-    exam_date = economics_exam_schedule(paper_id).date
+def formatted_economics_exam_date(paper_id: str, generated_on: date | None = None) -> str:
+    economics_exam_schedule(paper_id)
+    exam_date = generated_on or date.today()
     return f"{exam_date:%A} {exam_date.day} {exam_date:%B %Y}"
