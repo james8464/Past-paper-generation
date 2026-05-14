@@ -1,91 +1,44 @@
-# 🎓 Past Paper Creator
+# Past Paper Creator
 
-[![macOS](https://img.shields.io/badge/Platform-macOS-blue.svg)](https://apple.com)
-[![Python](https://img.shields.io/badge/Language-Python-yellow.svg)](https://python.org)
-[![Privacy](https://img.shields.io/badge/Privacy-Local--First-green.svg)](https://ollama.com)
+A tool for generating practice exam papers using LLMs. It supports local generation via Ollama or hosted providers like OpenAI and Anthropic.
 
-A professional suite for generating exam-style past papers using Local AI (Ollama) or hosted providers. Designed for students and educators to create endless practice materials that match specific syllabus requirements.
+The project is split into a native macOS application and a Python-based bridge that handles the generation logic.
 
----
+## Getting Started
 
-## 🚀 Getting Started
+### macOS App (Recommended)
+The SwiftUI app is the primary way to use the tool. It handles model management and provides a clean interface for paper generation.
 
-This project is designed to be used in two ways: as a native **macOS Application** (recommended) or via a **Python CLI**.
+1. Clone the repo.
+2. Open `macOS/PastPaperCreator.xcodeproj` in Xcode.
+3. Build and run the `PastPaperCreator` scheme.
 
-### 🍏 macOS Application (Recommended)
-The macOS app provides a beautiful SwiftUI interface for generating papers, managing local models, and tracking progress.
+*Note: You'll need [Ollama](https://ollama.com) installed for local generation, otherwise you can use API keys in the app settings.*
 
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/james8464/Past-paper-generation.git
-    cd Past-paper-generation
-    ```
-2.  **Open in Xcode**:
-    Navigate to the `macOS/` directory and open `PastPaperCreator.xcodeproj`.
-3.  **Build and Run**:
-    Select the `PastPaperCreator` scheme and click the Play button.
+### Python CLI
+For terminal usage or headless generation:
 
-> [!TIP]
-> Ensure you have [Ollama](https://ollama.com) installed for local generation, or provide API keys for hosted providers in the app settings.
+1. Setup a virtual environment:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate
+   pip install -e "Backend/Core[dev]"
+   ```
+2. Run the bridge script:
+   ```bash
+   python bridge.py generate --subject economics --paper 1 --output ~/Downloads --dry-run
+   ```
 
-### 🐍 Python CLI
-For developers or power users who prefer the command line.
+## Project Structure
 
-1.  **Set up environment**:
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate
-    pip install -e "Backend/Core[dev]"
-    ```
-2.  **Run the bridge**:
-    ```bash
-    python bridge.py generate --subject economics --paper 1 --output ~/Downloads --dry-run
-    ```
+- `macOS/`: SwiftUI application.
+- `Backend/Core/`: Python package for generation, rendering, and benchmarking.
+- `Resources/`: Subject data and prompt templates.
+- `Tests/`: Integration tests for the bridge.
+- `bridge.py`: Entry point used by the app and CLI.
 
----
+## Privacy
+By default, everything runs locally using Ollama. If you choose to use a hosted provider, your data is only sent to the provider you select. API keys are stored securely in the macOS Keychain.
 
-## 📂 Project Structure
-
-The project is organized to clearly separate the application layers and content.
-
--   **`macOS/`**: Native SwiftUI application built for macOS.
--   **`Backend/`**: Core Python logic and the JSON-lines bridge.
-    -   `Core/`: The main Python package for generation and benchmarking.
--   **`Resources/`**: Subject-specific resource packs (Economics, Computer Science, etc.).
--   **`Tests/`**: Automated test suite for the backend bridge.
--   **`bridge.py`**: The primary entry point for the Python CLI and the macOS app wrapper.
-
----
-
-## 🛠 Features
-
--   **Local AI Integration**: Full support for Ollama, allowing for private, offline generation.
--   **Multi-Subject Support**: Modular architecture for different exam boards and subjects.
--   **Native Experience**: High-performance SwiftUI app with system notifications and smooth progress tracking.
--   **Benchmarking**: Built-in diagnostics to test your Mac's performance for local AI workloads.
--   **Privacy First**: No analytics, no tracking. Your data stays on your machine.
-
----
-
-## 🔒 Privacy & Security
-
-We believe in **Local-First** AI.
--   **Local Models**: By default, generation happens on your machine using Ollama.
--   **No Tracking**: No telemetry or remote data collection is included.
--   **Encrypted Keys**: API keys for hosted providers are stored securely in your macOS Keychain.
-
----
-
-## 👨‍💻 Contributing
-
-Contributions are welcome! Whether it's adding new subjects to `Resources/` or improving the `macOS/` app, feel free to open a PR.
-
-1.  Fork the repository.
-2.  Create your feature branch (`git checkout -b feature/AmazingFeature`).
-3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4.  Push to the branch (`git push origin feature/AmazingFeature`).
-5.  Open a Pull Request.
-
----
-
-*Created with ❤️ by James Durup*
+## Contributing
+Feel free to open a PR if you want to add support for more subjects or improve the UI. New subjects should be added to the `Resources/` directory.
