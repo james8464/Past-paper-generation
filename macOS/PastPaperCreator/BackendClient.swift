@@ -22,7 +22,7 @@ enum BackendClientError: LocalizedError {
 
 final class BackendClient: @unchecked Sendable {
     private enum BackendFile {
-        static let bridgeScript = "app_backend.py"
+        static let bridgeScript = "bridge.py"
         static let localPython = ".venv/bin/python"
         static let localPythonConfig = ".venv/pyvenv.cfg"
         static let rootOverrideEnvironmentKey = "PAPER_CREATOR_ROOT"

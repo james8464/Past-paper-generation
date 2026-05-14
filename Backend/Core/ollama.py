@@ -5,7 +5,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from app_bridge.events import emit, emit_progress, run_subprocess_json
+from Backend.Core.events import emit, emit_progress, run_subprocess_json
 
 OLLAMA_FALLBACK_COMMANDS = (
     "/opt/homebrew/bin/ollama",

@@ -4,7 +4,7 @@ import json
 import re
 from typing import Any
 
-from app_bridge.events import emit_progress
+from Backend.Core.events import emit_progress
 
 
 class HostedLLMClient:

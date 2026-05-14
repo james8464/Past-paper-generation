@@ -1,87 +1,91 @@
-# Past Paper Creation
+# 🎓 Past Paper Creator
 
-Subject folders:
+[![macOS](https://img.shields.io/badge/Platform-macOS-blue.svg)](https://apple.com)
+[![Python](https://img.shields.io/badge/Language-Python-yellow.svg)](https://python.org)
+[![Privacy](https://img.shields.io/badge/Privacy-Local--First-green.svg)](https://ollama.com)
 
-- `a-levels/economics/edexcel-a/generator/` - A-Level Economics Edexcel A practice paper generator.
-- `a-levels/computer-science/aqa/generator/` - AQA A-Level Computer Science Paper 2 practice paper generator.
-- `a-levels/` - resource packs by subject and exam board. Non-ready boards are kept as coming-soon folders.
-- `mac app/` - native SwiftUI wrapper around the Python generators.
-- `app_bridge/` - JSONL backend package used by the mac app.
-- `app_backend.py` - stable executable shim for the Swift app and tests.
-- `tests/` - root-level bridge tests.
+A professional suite for generating exam-style past papers using Local AI (Ollama) or hosted providers. Designed for students and educators to create endless practice materials that match specific syllabus requirements.
 
-Each ready board keeps its own README, package, tests and data inside its `generator/` folder.
-Generated PDFs go to `~/Downloads`; runtime caches live under `~/Library/Caches/Past Paper Creation/`.
+---
 
-## Project Layout
+## 🚀 Getting Started
 
-```mermaid
-flowchart TD
-  App["mac app/PastPaperCreator"] --> Shim["app_backend.py"]
-  Shim --> Bridge["app_bridge"]
-  Bridge --> Events["events.py"]
-  Bridge --> Providers["providers.py"]
-  Bridge --> Ollama["ollama.py"]
-  Bridge --> Generation["generation.py"]
-  Generation --> Packs["a-levels/<subject>/<board>"]
-  Generation --> Econ["a-levels/economics/edexcel-a/generator/pastpapergen"]
-  Generation --> CS["a-levels/computer-science/aqa/generator/cspapergen"]
-```
+This project is designed to be used in two ways: as a native **macOS Application** (recommended) or via a **Python CLI**.
 
-`app_backend.py` should stay tiny. Add app-facing backend work inside `app_bridge/`.
-The app catalog can show coming-soon A-level subjects before their generators exist.
+### 🍏 macOS Application (Recommended)
+The macOS app provides a beautiful SwiftUI interface for generating papers, managing local models, and tracking progress.
 
-## Economics Quick Start
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/james8464/Past-paper-generation.git
+    cd Past-paper-generation
+    ```
+2.  **Open in Xcode**:
+    Navigate to the `macOS/` directory and open `PastPaperCreator.xcodeproj`.
+3.  **Build and Run**:
+    Select the `PastPaperCreator` scheme and click the Play button.
 
-```bash
-cd a-levels/economics/edexcel-a/generator
-../../../../.venv/bin/python -m pip install -e ".[dev]"
-../../../../.venv/bin/python generate_paper.py
-```
+> [!TIP]
+> Ensure you have [Ollama](https://ollama.com) installed for local generation, or provide API keys for hosted providers in the app settings.
 
-## Computer Science Quick Start
+### 🐍 Python CLI
+For developers or power users who prefer the command line.
 
-```bash
-cd a-levels/computer-science/aqa/generator
-../../../../.venv/bin/python -m pip install -e ".[dev]"
-../../../../.venv/bin/python generate_cs_paper.py
-```
+1.  **Set up environment**:
+    ```bash
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install -e "Backend/Core[dev]"
+    ```
+2.  **Run the bridge**:
+    ```bash
+    python bridge.py generate --subject economics --paper 1 --output ~/Downloads --dry-run
+    ```
 
-Computer Science outputs:
+---
 
-- `~/Downloads/cs-paper-2-question-paper.pdf`
-- `~/Downloads/cs-paper-2-mark-scheme.pdf`
+## 📂 Project Structure
 
-## Mac App
+The project is organized to clearly separate the application layers and content.
 
-```bash
-cd "mac app"
-make build
-make build-app-store
-make preflight-app-store
-```
+-   **`macOS/`**: Native SwiftUI application built for macOS.
+-   **`Backend/`**: Core Python logic and the JSON-lines bridge.
+    -   `Core/`: The main Python package for generation and benchmarking.
+-   **`Resources/`**: Subject-specific resource packs (Economics, Computer Science, etc.).
+-   **`Tests/`**: Automated test suite for the backend bridge.
+-   **`bridge.py`**: The primary entry point for the Python CLI and the macOS app wrapper.
 
-If `xcodebuild` reports that the active developer directory is Command Line Tools, run:
+---
 
-```bash
-sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
-```
+## 🛠 Features
 
-The app calls `app_backend.py`, which emits JSON progress events while reusing the subject generators. Generation runs without blocking the UI and can send optional macOS notifications when a job starts, completes, or fails. The direct download build can open the Ollama download page and pull local models. `make build-app-store` sets `DistributionMode=app-store`, which disables those installer/model-management features and only detects an existing Ollama setup.
+-   **Local AI Integration**: Full support for Ollama, allowing for private, offline generation.
+-   **Multi-Subject Support**: Modular architecture for different exam boards and subjects.
+-   **Native Experience**: High-performance SwiftUI app with system notifications and smooth progress tracking.
+-   **Benchmarking**: Built-in diagnostics to test your Mac's performance for local AI workloads.
+-   **Privacy First**: No analytics, no tracking. Your data stays on your machine.
 
-## Privacy
+---
 
-Ollama generation is local through the Python generators. No analytics, tracking, accounts, or remote paper upload are included.
+## 🔒 Privacy & Security
 
-Hosted AI providers are optional. If selected, prompts, syllabus context, and draft paper content are sent only to the provider chosen by the user. The macOS app asks for explicit consent before hosted AI is used, stores API keys in Keychain, and includes a privacy manifest declaring no collected data and UserDefaults usage for app preferences.
+We believe in **Local-First** AI.
+-   **Local Models**: By default, generation happens on your machine using Ollama.
+-   **No Tracking**: No telemetry or remote data collection is included.
+-   **Encrypted Keys**: API keys for hosted providers are stored securely in your macOS Keychain.
 
-Generated PDFs stay in the output folder selected by the user. API keys can be removed by clearing them in Settings. Local preferences can be reset by deleting the app's container/preferences. No server-side account data is retained by this project.
+---
 
-## App Store Review Notes
+## 👨‍💻 Contributing
 
-- App Sandbox is enabled.
-- Notifications are optional and are not required to use the app.
-- The App Store build path is explicit: `cd "mac app" && make build-app-store`.
-- App Store builds must not install Ollama, pull model executables, or materially change app functionality after review.
-- App metadata should avoid implying Pearson, Edexcel, AQA, or any exam-board affiliation.
-- The review notes should explain the direct/App Store build difference and provide a working model/API setup for review.
+Contributions are welcome! Whether it's adding new subjects to `Resources/` or improving the `macOS/` app, feel free to open a PR.
+
+1.  Fork the repository.
+2.  Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4.  Push to the branch (`git push origin feature/AmazingFeature`).
+5.  Open a Pull Request.
+
+---
+
+*Created with ❤️ by James Durup*

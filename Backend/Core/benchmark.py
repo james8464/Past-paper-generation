@@ -15,7 +15,7 @@ import urllib.request
 from pathlib import Path
 from statistics import mean
 
-from app_bridge.events import emit
+from Backend.Core.events import emit
 
 SAMPLE_BYTES = 4 * 1024 * 1024
 CPU_PROBE_SECONDS = 0.18

@@ -5,11 +5,11 @@ import subprocess
 import sys
 from pathlib import Path
 
-from app_bridge.providers import parse_json_object
+from Backend.Core.providers import parse_json_object
 
 
 ROOT = Path(__file__).resolve().parents[1]
-BRIDGE = ROOT / "app_backend.py"
+BRIDGE = ROOT / "bridge.py"
 
 
 def run_bridge(*args: str) -> list[dict[str, object]]:

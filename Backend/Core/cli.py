@@ -5,10 +5,10 @@ import os
 from pathlib import Path
 from typing import Callable
 
-from app_bridge.benchmark import handle_benchmark
-from app_bridge.generation import handle_generate
-from app_bridge.ollama import handle_list_models, handle_ollama_status, handle_pull_model
-from app_bridge.paths import REPO_ROOT
+from Backend.Core.benchmark import handle_benchmark
+from Backend.Core.generation import handle_generate
+from Backend.Core.ollama import handle_list_models, handle_ollama_status, handle_pull_model
+from Backend.Core.paths import REPO_ROOT
 
 DEFAULT_OUTPUT_DIR = Path.home() / "Downloads"
 DEFAULT_MODEL = os.environ.get("PAPER_CREATOR_DEFAULT_MODEL", "qwen2.5:14b")

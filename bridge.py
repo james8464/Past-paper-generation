@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from app_bridge.cli import main
-from app_bridge.providers import parse_json_object
+from Backend.Core.cli import main
+from Backend.Core.providers import parse_json_object
 
 __all__ = ["main", "parse_json_object"]
 

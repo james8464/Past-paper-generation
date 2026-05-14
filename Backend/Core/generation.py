@@ -6,9 +6,9 @@ import sys
 import traceback
 from pathlib import Path
 
-from app_bridge.events import emit, emit_progress, progress_emitter
-from app_bridge.paths import CS_PACK_ROOT, CS_ROOT, ECONOMICS_ROOT
-from app_bridge.providers import hosted_client
+from Backend.Core.events import emit, emit_progress, progress_emitter
+from Backend.Core.paths import CS_PACK_ROOT, CS_ROOT, ECONOMICS_ROOT
+from Backend.Core.providers import hosted_client
 
 
 def handle_generate(args: argparse.Namespace) -> int:
