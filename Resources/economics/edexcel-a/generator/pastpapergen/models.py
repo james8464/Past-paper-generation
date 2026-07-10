@@ -62,6 +62,28 @@ class MultipleChoiceOption(BaseModel):
     text: str
 
 
+class GraphParams(BaseModel):
+    eq_price: float | None = None
+    eq_quantity: float | None = None
+    kind: str = ""
+
+    @classmethod
+    def from_dict(cls, raw: dict[str, object]) -> "GraphParams":
+        if raw:
+            try:
+                return cls.model_validate(raw)
+            except Exception:
+                pass
+        return cls()
+
+    def to_dict(self) -> dict[str, object]:
+        raw = self.model_dump(exclude_none=True)
+        raw.pop("kind", None)
+        if self.kind:
+            raw["kind"] = self.kind
+        return raw
+
+
 class PaperConfig(BaseModel):
     id: str
     code: str
@@ -88,7 +110,7 @@ class QuestionBlueprint(BaseModel):
     mark_breakdown: str = ""
     mark_scheme: list[str] = Field(default_factory=list)
     indicative_content: list[str] = Field(default_factory=list)
-    graph_params: dict[str, object] = Field(default_factory=dict)
+    graph_params: GraphParams = Field(default_factory=GraphParams)
 
 
 class PaperBlueprint(BaseModel):

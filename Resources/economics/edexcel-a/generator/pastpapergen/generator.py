@@ -1271,7 +1271,7 @@ def _source_reference(paper_id: str, section_name: str, index: int) -> str:
     if section_name == "B" and paper_id in {"paper_1", "paper_2"}:
         return ["Extract A", "", "", "Extract C", "Extract D"][index]
     if paper_id == "paper_3":
-        return ["Extract A", "Extract A", "Extract B", "Extract C", "source material"][index]
+        return ["Extract A", "Extract B", "Extract C", "Extract D", "Extract E"][index]
     return ""
 
 
@@ -1486,13 +1486,36 @@ def _mark_scheme(command_word: str, marks: int, topic_title: str) -> list[str]:
             f"Application: relevant use of the data, figure, extract or example for {topic}.",
             "Analysis: clear chain of reasoning showing cause and effect.",
         ]
-    return [
-        "Indicative content should be rewarded where it is relevant and developed.",
+    cmd = command_word.lower()
+    bullets = [
         f"Knowledge and understanding of {topic}.",
         "Application to the source material or a relevant economic example.",
-        "Analysis using logical chains of reasoning.",
-        "Evaluation supported by judgement where required by the command word.",
     ]
+    if cmd in {"evaluate", "assess"}:
+        bullets.extend([
+            "Analysis: developed chains of reasoning showing cause, effect and interdependence.",
+            "Evaluation: well-supported judgement with a concluding decision or ranking of factors.",
+            "Balance: consideration of both advantages and disadvantages or multiple stakeholder perspectives.",
+        ])
+    elif cmd == "discuss":
+        bullets.extend([
+            "Analysis: logical arguments for and against the proposition.",
+            "Discussion: balanced coverage of alternative viewpoints or outcomes.",
+            "Synthesis: connections drawn between different economic concepts or policy effects.",
+        ])
+    elif cmd == "examine":
+        bullets.extend([
+            "Analysis: systematic breakdown of the issue into component parts.",
+            "Examination: detailed investigation of causes, effects or relationships.",
+            "Supported conclusion: a clear outcome based on the evidence examined.",
+        ])
+    else:
+        bullets.extend([
+            "Analysis using logical chains of reasoning.",
+            "Evaluation supported by judgement where required by the command word.",
+        ])
+    bullets.insert(0, "Indicative content should be rewarded where it is relevant and developed.")
+    return bullets
 
 
 def _indicative_content(topic_id: str, topic_title: str, points: list[str]) -> list[str]:

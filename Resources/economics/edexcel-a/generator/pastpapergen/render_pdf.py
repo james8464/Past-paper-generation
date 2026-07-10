@@ -35,7 +35,7 @@ from Backend.Core.overlay.graphs import (
 )
 from Backend.Core.overlay.layouts import EDEXCEL_ECONOMICS as L
 from pastpapergen.exam_dates import economics_exam_schedule, formatted_economics_exam_date
-from pastpapergen.models import PaperBlueprint, Syllabus
+from pastpapergen.models import GraphParams, PaperBlueprint, Syllabus
 from pastpapergen.notes import note_points_for_topic
 from pastpapergen.source_cases import GENERIC_SOURCE_ATTRIBUTION
 
@@ -74,21 +74,32 @@ SECTION_A_INSTRUCTION_LINES = [
 ]
 
 
+_FONT_CANDIDATES: list[tuple[str, str, int]] = [
+    (FONT_REGULAR, "/System/Library/Fonts/HelveticaNeue.ttc", 0),
+    (FONT_BOLD, "/System/Library/Fonts/HelveticaNeue.ttc", 1),
+    (FONT_REGULAR, "/System/Library/Fonts/Supplemental/Arial.ttf", 0),
+    (FONT_BOLD, "/System/Library/Fonts/Supplemental/Arial Bold.ttf", 0),
+    (FONT_REGULAR, "/System/Library/Fonts/Helvetica.ttc", 0),
+    (FONT_BOLD, "/System/Library/Fonts/Helvetica.ttc", 1),
+]
+
+
 def _register_fonts() -> None:
-    font_sets = [
-        [
-            (FONT_REGULAR, Path("/System/Library/Fonts/HelveticaNeue.ttc"), 0),
-            (FONT_BOLD, Path("/System/Library/Fonts/HelveticaNeue.ttc"), 1),
-        ],
-        [
-            (FONT_REGULAR, Path("/System/Library/Fonts/Supplemental/Arial.ttf"), 0),
-            (FONT_BOLD, Path("/System/Library/Fonts/Supplemental/Arial Bold.ttf"), 0),
-        ],
-    ]
-    fonts = next((candidate for candidate in font_sets if all(path.exists() for _, path, _ in candidate)), font_sets[-1])
-    for name, path, subfont_index in fonts:
-        if name not in pdfmetrics.getRegisteredFontNames() and path.exists():
-            pdfmetrics.registerFont(TTFont(name, str(path), subfontIndex=subfont_index))
+    bold_name = FONT_BOLD
+    regular_name = FONT_REGULAR
+    for candidate_name, candidate_path, subfont_index in _FONT_CANDIDATES:
+        path = Path(candidate_path)
+        if candidate_name in pdfmetrics.getRegisteredFontNames():
+            continue
+        if path.exists():
+            try:
+                pdfmetrics.registerFont(TTFont(candidate_name, str(path), subfontIndex=subfont_index))
+            except Exception:
+                continue
+    if bold_name not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont(bold_name, "Times-Bold"))
+    if regular_name not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont(regular_name, "Times-Roman"))
 
 
 _register_fonts()
@@ -253,11 +264,13 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
 
     _draw_turn_over(pdf, width - 64, 75)
     _draw_cover_pearson_mark(pdf, width - 88, 44)
+    paper_code = blueprint.paper_code.partition("/")[0]
+    barcode_text = f"{paper_code}01"
     pdf.setFont(FONT_REGULAR, 15)
-    pdf.drawString(58, 43, "P00000A")
+    pdf.drawString(58, 43, barcode_text)
     pdf.setFont(FONT_REGULAR, 5.5)
     pdf.drawString(58, 31, f"(c){economics_exam_schedule(blueprint.paper_id).date.year} Pearson Education Ltd.")
-    _draw_fake_barcode(pdf, width / 2 - 105, 32, "P  0  0  0  0  0  A  0  1")
+    _draw_fake_barcode(pdf, width / 2 - 105, 32, barcode_text)
 
 
 def _draw_turn_over(pdf: canvas.Canvas, right_x: float, y: float) -> None:
@@ -325,16 +338,31 @@ def _draw_crop_marks(pdf: canvas.Canvas) -> None:
     pdf.setLineWidth(1)
 
 
+_BARCODE_CHAR_PATTERNS: dict[str, list[int]] = {
+    c: [1, 2, 1, 3] if (ord(c) % 4 == 0) else [2, 1, 3, 1] if (ord(c) % 4 == 1) else [3, 1, 1, 2] if (ord(c) % 4 == 2) else [1, 3, 2, 1]
+    for c in "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+}
+
+
+def _encode_barcode(barcode_text: str) -> list[int]:
+    encoded: list[int] = []
+    for char in barcode_text.upper():
+        pattern = _BARCODE_CHAR_PATTERNS.get(char, [2, 2, 2, 2])
+        encoded.extend(pattern)
+    encoded = [encoded[0]] + [max(w, 1) for w in encoded[1:]]
+    return encoded
+
+
 def _draw_fake_barcode(pdf: canvas.Canvas, x: float, y: float, caption: str) -> None:
-    widths = [1, 2, 1, 3, 1, 1, 2, 3, 1, 2, 1, 1, 3, 1, 2, 1, 1, 2, 3, 1, 2, 1, 1]
+    widths = _encode_barcode(caption)
     cursor = x
     pdf.setFillColor(colors.black)
-    for idx, width in enumerate(widths * 4):
+    for idx, width in enumerate(widths):
         if idx % 2 == 0:
             pdf.rect(cursor, y + 13, width, 28, stroke=0, fill=1)
         cursor += width + 1
-    pdf.setFont(FONT_REGULAR, 7)
-    pdf.drawCentredString(x + 92, y, caption)
+    pdf.setFont(FONT_REGULAR, 6.5)
+    pdf.drawCentredString(x + sum(widths) / 2 + len(widths) / 2, y, caption)
     pdf.setFillColor(colors.black)
 
 
@@ -692,7 +720,8 @@ def _draw_question_footer(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_nu
     if not is_last:
         pdf.setFont(FONT_REGULAR, 9)
         pdf.drawRightString(width - 58, 22, "Turn over  >")
-    _draw_fake_barcode(pdf, width / 2 - 105, 26, f"P  0  0  0  0  0  A  0  {page_number:02d}")
+    paper_code = blueprint.paper_code.partition("/")[0]
+    _draw_fake_barcode(pdf, width / 2 - 105, 26, f"{paper_code}{page_number:02d}")
     pdf.setFont(FONT_REGULAR, 7)
     pdf.drawString(block_x, 42, "■□■□")
 
@@ -1239,7 +1268,7 @@ _GRAPH_FUNCS: dict[str, object] = {
 }
 
 
-def _draw_stimulus(pdf: canvas.Canvas, kind: str, x: float, y: float, context_text: str = "", graph_params: dict | None = None) -> float:
+def _draw_stimulus(pdf: canvas.Canvas, kind: str, x: float, y: float, context_text: str = "", graph_params: GraphParams | None = None) -> float:
     if kind in _ECONOMICS_GRAPH_KINDS:
         return _draw_economics_graph(pdf, x, y, kind, graph_params=graph_params)
     if kind in _TABLE_KINDS:
@@ -1329,13 +1358,14 @@ def _draw_axis_arrow(pdf: canvas.Canvas, x1: float, y1: float, x2: float, y2: fl
     pdf.line(x2, y2, x2 - 7, y2 - 3)
 
 
-def _draw_economics_graph(pdf: canvas.Canvas, x: float, y: float, kind: str, graph_params: dict | None = None) -> float:
+def _draw_economics_graph(pdf: canvas.Canvas, x: float, y: float, kind: str, graph_params: GraphParams | None = None) -> float:
     fn = _GRAPH_FUNCS.get(kind)
     if fn is None:
         pdf.setFont("Times-Italic", 10)
         pdf.drawString(x, y - 14, f"[{kind.replace('_', ' ')}]")
         return y - 30
-    img_path = fn(params=graph_params) if graph_params else fn()
+    params = graph_params.to_dict() if graph_params and graph_params.kind else None
+    img_path = fn(params=params) if params else fn()
     _GRAPH_IMG_CACHE.append(img_path)
     graph_w = 260
     graph_h = 140
@@ -1693,11 +1723,13 @@ def _draw_source_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.drawString(panel_x + 22, y + 9, "Do not return this Booklet with the question paper.")
     _draw_turn_over(pdf, width - 64, 75)
     _draw_cover_pearson_mark(pdf, width - 88, 44)
+    paper_code = blueprint.paper_code.partition("/")[0]
+    barcode_text = f"{paper_code}SB"
     pdf.setFont(FONT_REGULAR, 15)
-    pdf.drawString(58, 43, "P00000A")
+    pdf.drawString(58, 43, barcode_text)
     pdf.setFont(FONT_REGULAR, 5.5)
     pdf.drawString(58, 31, f"(c){economics_exam_schedule(blueprint.paper_id).date.year} Pearson Education Ltd.")
-    _draw_fake_barcode(pdf, width / 2 - 80, 32, "P  0  0  0  0  0  A")
+    _draw_fake_barcode(pdf, width / 2 - 80, 32, barcode_text)
 
 
 def _source_sections(paper_id: str) -> list[str]:
@@ -1831,10 +1863,11 @@ def _draw_mark_scheme_qualification_page(pdf: canvas.Canvas, blueprint: PaperBlu
         pdf.drawString(margin, y, line)
         y -= 13
 
+    paper_code = blueprint.paper_code.partition("/")[0]
     y = 132
     front_matter = [
         f"Summer {economics_exam_schedule(blueprint.paper_id).date.year}",
-        "Question Paper Log Number P00000A",
+        f"Question Paper Log Number {paper_code}01",
         f"Publications Code {blueprint.paper_code.replace('/', '_')}_PRACTICE_MS",
         f"All generated material in this practice publication is for revision use.",
         f"(c) Pearson Education Ltd style referenced for private study, {economics_exam_schedule(blueprint.paper_id).date.year}",

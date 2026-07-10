@@ -160,7 +160,7 @@ def generate_questions_with_ollama(
             mark_scheme = _merge_text_list(payload.get("mark_scheme"), question.mark_scheme)
             parts = _merge_parts(question, payload.get("parts"))
             graph_params_raw = payload.get("graph_params")
-            graph_params = graph_params_raw if isinstance(graph_params_raw, dict) else {}
+            graph_params = GraphParams.from_dict(graph_params_raw) if isinstance(graph_params_raw, dict) else GraphParams()
             questions.append(
                 question.model_copy(
                     update={
