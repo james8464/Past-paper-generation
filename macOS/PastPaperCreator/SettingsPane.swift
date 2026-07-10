@@ -98,6 +98,15 @@ private struct AISettingsTab: View {
                     .textFieldStyle(.roundedBorder)
             }
 
+            Section("Apple MLX") {
+                TextField("Model ID / Path", text: $appModel.appleModel)
+                    .textFieldStyle(.roundedBorder)
+                Text("A Hugging Face model ID (e.g. mlx-community/Llama-3.2-3B-Instruct-4bit) or a local path.")
+                    .foregroundStyle(.secondary)
+                Text("Requires the mlx-lm Python package: pip install mlx-lm")
+                    .foregroundStyle(.secondary)
+            }
+
             Button("Save AI Settings", action: appModel.saveAISettings)
         }
         .formStyle(.grouped)

@@ -23,6 +23,7 @@ final class AppViewModel: ObservableObject {
     @Published var modelToPull = AppDefaults.ollamaModel
     @Published var openAIModel = AppDefaults.openAIModel
     @Published var anthropicModel = AppDefaults.anthropicModel
+    @Published var appleModel = AppDefaults.appleModel
     @Published var openAIAPIKey = ""
     @Published var anthropicAPIKey = ""
     @Published var showPullConfirmation = false
@@ -93,6 +94,8 @@ final class AppViewModel: ObservableObject {
         case .anthropic:
             if !hasHostedAIConsent { return "Review and accept the hosted AI disclosure in Settings." }
             return anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Enter an Anthropic API key in Settings." : nil
+        case .apple:
+            return nil
         }
     }
 
@@ -105,6 +108,7 @@ final class AppViewModel: ObservableObject {
         case .ollama: selectedModel
         case .openAI: openAIModel
         case .anthropic: anthropicModel
+        case .apple: appleModel
         }
     }
 
@@ -115,6 +119,7 @@ final class AppViewModel: ObservableObject {
         modelToPull = ollamaModel
         openAIModel = defaults.string(forKey: AppStorageKey.openAIModel) ?? AppDefaults.openAIModel
         anthropicModel = defaults.string(forKey: AppStorageKey.anthropicModel) ?? AppDefaults.anthropicModel
+        appleModel = defaults.string(forKey: AppStorageKey.appleModel) ?? AppDefaults.appleModel
         openAIAPIKey = SecretStore.read(SecretAccount.openAIAPIKey)
         anthropicAPIKey = SecretStore.read(SecretAccount.anthropicAPIKey)
         notificationCenter.delegate = NotificationPresenter.shared
@@ -272,7 +277,7 @@ final class AppViewModel: ObservableObject {
         ]
 
         switch aiProvider {
-        case .ollama:
+        case .ollama, .apple:
             break
         case .openAI:
             arguments.append(contentsOf: ["--api-key", openAIAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)])
@@ -489,6 +494,7 @@ final class AppViewModel: ObservableObject {
         defaults.set(selectedModel, forKey: AppStorageKey.ollamaModel)
         defaults.set(openAIModel, forKey: AppStorageKey.openAIModel)
         defaults.set(anthropicModel, forKey: AppStorageKey.anthropicModel)
+        defaults.set(appleModel, forKey: AppStorageKey.appleModel)
         defaults.set(outputFolder.path, forKey: AppStorageKey.outputFolderPath)
         SecretStore.save(openAIAPIKey, account: SecretAccount.openAIAPIKey)
         SecretStore.save(anthropicAPIKey, account: SecretAccount.anthropicAPIKey)

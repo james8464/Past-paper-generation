@@ -18,7 +18,21 @@ class HostedLLMClient:
             return self._openai(prompt)
         if self.provider == "anthropic":
             return self._anthropic(prompt)
+        if self.provider == "apple":
+            return self._apple(prompt)
         raise RuntimeError(f"Unsupported provider: {self.provider}")
+
+    def _apple(self, prompt: str) -> dict[str, object]:
+        try:
+            from mlx_lm import load, generate
+        except ImportError:
+            raise RuntimeError(
+                "Apple MLX provider requires the 'mlx-lm' package.\n"
+                "Install it with: pip install mlx-lm"
+            ) from None
+        model, tokenizer = load(self.model)
+        response = generate(model, tokenizer, prompt=prompt, max_tokens=4096, verbose=False)
+        return parse_json_object(response)
 
     def _openai(self, prompt: str) -> dict[str, object]:
         payload = json.dumps(
@@ -82,7 +96,7 @@ def hosted_client(*, provider: str, dry_run: bool, model: str, api_key: str) -> 
 
 
 def provider_title(provider: str) -> str:
-    return {"openai": "OpenAI", "anthropic": "Anthropic", "ollama": "Ollama"}.get(provider, provider.title())
+    return {"openai": "OpenAI", "anthropic": "Anthropic", "ollama": "Ollama", "apple": "Apple MLX"}.get(provider, provider.title())
 
 
 def urllib_request(url: str, data: bytes, headers: dict[str, str]) -> Any:

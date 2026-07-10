@@ -4,6 +4,7 @@ enum AppDefaults {
     static let ollamaModel = "qwen2.5:14b"
     static let openAIModel = "gpt-4.1"
     static let anthropicModel = "claude-sonnet-4-20250514"
+    static let appleModel = "mlx-community/Llama-3.2-3B-Instruct-4bit"
     static let ollamaURL = "http://localhost:11434"
     static let benchmarkDurationSeconds = 30.0
 
@@ -33,6 +34,7 @@ enum AppStorageKey {
     static let ollamaModel = "ollamaModel"
     static let openAIModel = "openAIModel"
     static let anthropicModel = "anthropicModel"
+    static let appleModel = "appleModel"
     static let notificationsEnabled = "notificationsEnabled"
     static let hasSeenWelcome = "hasSeenWelcome"
     static let outputFolderPath = "outputFolderPath"

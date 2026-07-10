@@ -72,7 +72,6 @@ def test_cs_dry_run_generates_expected_files_without_audit(tmp_path: Path) -> No
         "--dry-run",
         "--seed",
         "123",
-        "--no-template-overlay",
     )
     files = {event["role"]: Path(str(event["path"])) for event in events if event["type"] == "file"}
     assert files.keys() == {"question_paper", "mark_scheme"}

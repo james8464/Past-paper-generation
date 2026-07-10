@@ -89,11 +89,13 @@ struct AppCommands: Commands {
 
             Divider()
 
-            Button("Check Ollama Status", action: appModel.refreshOllama)
-                .disabled(appModel.isRunning || appModel.isBenchmarkRunning || appModel.isRefreshingOllama)
+            if appModel.aiProvider == .ollama {
+                Button("Check Ollama Status", action: appModel.refreshOllama)
+                    .disabled(appModel.isRunning || appModel.isBenchmarkRunning || appModel.isRefreshingOllama)
 
-            Button("Open Ollama Download Page", action: appModel.openOllamaDownload)
-                .disabled(appModel.distributionMode == .appStore)
+                Button("Open Ollama Download Page", action: appModel.openOllamaDownload)
+                    .disabled(appModel.distributionMode == .appStore)
+            }
         }
 
         CommandMenu("Tools") {

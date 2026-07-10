@@ -68,7 +68,7 @@ def build_paper_blueprint(
             topic = source_context_topic or _choose_topic(rng, available_topics, excluded_ids)
             command_word = section.command_words[index]
             number = _question_number(config.id, section.name, absolute_question_number, index)
-            parts = _build_parts(part_marks, part_commands, topic.title, stimulus_kind)
+            parts = _build_parts(part_marks, part_commands, topic.title, stimulus_kind, rng)
             source_reference = _source_reference(config.id, section.name, index)
             if group_index is not None:
                 choice_group_topics.setdefault(group_index, set()).add(topic.id)
@@ -991,11 +991,12 @@ def _build_parts(
     part_commands: list[str],
     topic_title: str,
     stimulus_kind: str,
+    rng: random.Random,
 ) -> list[QuestionPart]:
     if not part_marks:
         return []
     return [
-        _build_part(chr(97 + part_index), marks, command, topic_title, stimulus_kind, part_index)
+        _build_part(chr(97 + part_index), marks, command, topic_title, stimulus_kind, part_index, rng)
         for part_index, (marks, command) in enumerate(zip(part_marks, part_commands, strict=True))
     ]
 
@@ -1007,24 +1008,32 @@ def _build_part(
     topic_title: str,
     stimulus_kind: str,
     part_index: int,
+    rng: random.Random,
 ) -> QuestionPart:
     if command == "mcq":
         options = _mcq_options(topic_title, stimulus_kind)
-        correct = "A"
+        correct_label = options[0].label
+        if len(options) >= 2:
+            labels = [opt.label for opt in options]
+            rng.shuffle(options)
+            for idx, opt in enumerate(options):
+                opt.label = labels[idx]
+                if idx == 0:
+                    correct_label = opt.label
         return QuestionPart(
             label=label,
             marks=marks,
             command_word=command,
             prompt=_mcq_prompt(topic_title, stimulus_kind),
             options=options,
-            correct_option=correct,
+            correct_option=correct_label,
             mark_breakdown="1 mark",
             mark_scheme=[
-                f"The only correct answer is {correct}",
+                f"The only correct answer is {correct_label}",
                 *[
                     f"{option.label} is not correct because it does not accurately describe {topic_title.lower()}."
                     for option in options
-                    if option.label != correct
+                    if option.label != correct_label
                 ],
             ],
         )

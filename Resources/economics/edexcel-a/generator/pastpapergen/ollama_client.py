@@ -81,6 +81,7 @@ Style rules:
 - If parts are supplied, rewrite each part separately rather than combining the parts into the main question text.
 - Do not start part prompts with labels such as '(a)', 'a)' or 'Question 1(a)' because labels are rendered separately.
 - If a one-mark MCQ is supplied, return four options A-D and one correct_option.
+- If stimulus_kind is set, include a graph_params object with numeric values for equilibrium price and quantity that match the question context. This makes the diagram specific to the question data.
 
 Return JSON only with this schema:
 {{
@@ -90,6 +91,11 @@ Return JSON only with this schema:
   "mark_breakdown": "string such as Knowledge 2, Application 2",
   "indicative_content": ["bullet 1", "bullet 2"],
   "mark_scheme": ["bullet 1", "bullet 2", "bullet 3"],
+  "graph_params": {{
+    "eq_price": 85,
+    "eq_quantity": 110,
+    "kind": "keynesian"
+  }},
   "parts": [
     {{
       "label": "a",
@@ -142,6 +148,8 @@ def generate_questions_with_ollama(
         indicative_content = _merge_text_list(payload.get("indicative_content"), question.indicative_content)
         mark_scheme = _merge_text_list(payload.get("mark_scheme"), question.mark_scheme)
         parts = _merge_parts(question, payload.get("parts"))
+        graph_params_raw = payload.get("graph_params")
+        graph_params = graph_params_raw if isinstance(graph_params_raw, dict) else {}
         questions.append(
             question.model_copy(
                 update={
@@ -152,6 +160,7 @@ def generate_questions_with_ollama(
                     "indicative_content": indicative_content,
                     "mark_scheme": mark_scheme,
                     "parts": parts,
+                    "graph_params": graph_params,
                 }
             )
         )
@@ -262,50 +271,55 @@ def _merge_question_text(question: QuestionBlueprint, generated: str) -> str:
     return cleaned
 
 
+def _has_word_start(text: str, word: str) -> bool:
+    return text.startswith(word) or text.startswith(f"{word} ") or text.startswith(f"{word} the ") or text.startswith(f"critically {word}")
+
+
 def _matches_expected_question_style(question: QuestionBlueprint, prompt: str) -> bool:
-    lowered = prompt.lower()
+    lowered = prompt.lower().lstrip()
     command = question.command_word.lower()
+
+    ref_lowered = question.source_reference.lower() if question.source_reference else None
+
+    if ref_lowered:
+        ref_text = "the source material" if ref_lowered == "source material" else ref_lowered
+        has_ref = f"with reference to {ref_text}" in lowered
+    else:
+        has_ref = True
+
     if question.marks == 15 and question.section == "B":
-        if question.source_reference:
-            reference = question.source_reference.lower()
-            return lowered.startswith(f"with reference to {reference}") and "discuss" in lowered
-        return lowered.startswith("discuss")
-    if question.section in {"A", "B"} and question.source_reference:
-        reference = (
-            "the source material"
-            if question.source_reference == "source material"
-            else question.source_reference.lower()
-        )
-        if f"with reference to {reference}" not in lowered:
-            return False
+        return has_ref and "discuss" in lowered if ref_lowered else "discuss" in lowered
+
     if question.marks == 12:
-        if question.source_reference:
-            return lowered.startswith("with reference to") and "discuss whether" in lowered
-        return lowered.startswith("discuss whether")
+        return (has_ref if ref_lowered else True) and ("discuss whether" in lowered or "discuss the extent" in lowered or "to what extent" in lowered)
+
     if question.marks == 10:
-        if question.source_reference:
-            return lowered.startswith("with reference to") and "assess whether" in lowered
-        return lowered.startswith("assess whether")
+        return (has_ref if ref_lowered else True) and ("assess whether" in lowered or "assess the" in lowered)
+
     if question.marks == 8:
-        if question.source_reference:
-            return lowered.startswith("with reference to") and "examine" in lowered
-        return lowered.startswith("examine")
+        return (has_ref if ref_lowered else True) and _has_word_start(lowered, "examine")
+
     if question.marks == 5 and question.section in {"A", "B"}:
-        if question.source_reference:
-            return lowered.startswith("with reference to") and "explain" in lowered
-        return lowered.startswith("explain")
+        return (has_ref if ref_lowered else True) and _has_word_start(lowered, "explain")
+
     if question.marks == 25:
-        return lowered.startswith("evaluate")
+        return _has_word_start(lowered, "evaluate") or "to what extent" in lowered or "critically evaluate" in lowered
+
+    if ref_lowered and not has_ref:
+        return False
     return command in lowered
 
 
 def _merge_source_text(generated: str, fallback: str, question: QuestionBlueprint) -> str:
     cleaned = " ".join(generated.split())
+    if not cleaned:
+        return fallback
     lowered = cleaned.lower()
+    if lowered.startswith("this source concerns"):
+        cleaned = cleaned[len("this source concerns"):].strip()
+        cleaned = cleaned[0].upper() + cleaned[1:] if cleaned else cleaned
     if (
-        not cleaned
-        or lowered.startswith("this source concerns")
-        or "may include evidence" in lowered
+        "may include evidence" in lowered
         or "|" in cleaned
         or "---" in cleaned
         or (question.section == "A" and len(cleaned) > 220)

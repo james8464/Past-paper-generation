@@ -41,13 +41,11 @@ def build_parser() -> argparse.ArgumentParser:
     generate.add_argument("--output", default=str(DEFAULT_OUTPUT_DIR))
     generate.add_argument("--seed", type=int, default=None)
     generate.add_argument("--model", default=DEFAULT_MODEL)
-    generate.add_argument("--provider", choices=["ollama", "openai", "anthropic"], default="ollama")
+    generate.add_argument("--provider", choices=["ollama", "openai", "anthropic", "apple"], default="ollama")
     generate.add_argument("--api-key", default="")
     generate.add_argument("--ollama-url", default=DEFAULT_OLLAMA_URL)
     generate.add_argument("--dry-run", action="store_true")
     generate.add_argument("--notes", default="")
-    generate.add_argument("--no-template-overlay", action="store_true")
-    generate.add_argument("--template-reference-dir", default=None)
     generate.set_defaults(handler=handle_generate)
     return parser
 

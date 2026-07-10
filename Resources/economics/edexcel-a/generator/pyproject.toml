@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Unofficial Pearson Edexcel A-Level Economics A practice paper generator."
 requires-python = ">=3.11"
 dependencies = [
+  "matplotlib>=3.8",
   "pydantic>=2.0",
   "pymupdf>=1.24",
   "reportlab>=4.0"

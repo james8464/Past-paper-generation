@@ -187,6 +187,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
     case ollama
     case openAI
     case anthropic
+    case apple
 
     var id: String { rawValue }
 
@@ -195,19 +196,21 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .ollama: "Ollama"
         case .openAI: "OpenAI"
         case .anthropic: "Anthropic"
+        case .apple: "Apple MLX"
         }
     }
 
     var subtitle: String {
         switch self {
-        case .ollama: "Runs locally"
+        case .ollama: "Runs locally via Ollama"
         case .openAI: "Uses an API key"
         case .anthropic: "Uses an API key"
+        case .apple: "Runs locally on Apple Silicon"
         }
     }
 
     var sendsPromptsOffDevice: Bool {
-        self != .ollama
+        self == .openAI || self == .anthropic
     }
 
     var systemImage: String {
@@ -215,6 +218,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .ollama: "desktopcomputer"
         case .openAI: "sparkles"
         case .anthropic: "text.bubble"
+        case .apple: "applelogo"
         }
     }
 
@@ -223,6 +227,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .ollama: "ollama"
         case .openAI: "openai"
         case .anthropic: "anthropic"
+        case .apple: "apple"
         }
     }
 }

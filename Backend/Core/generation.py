@@ -74,7 +74,6 @@ def generate_computer_science(args: argparse.Namespace, output_dir: Path) -> int
     from cspapergen.cli import generate_package
 
     notes = Path(args.notes).expanduser() if args.notes else CS_PACK_ROOT / "notes"
-    reference_dir = Path(args.template_reference_dir).expanduser() if args.template_reference_dir else None
 
     emit_progress("Generating AQA Computer Science Paper 2", stage="start", progress=0.02)
     paths = generate_package(
@@ -85,8 +84,6 @@ def generate_computer_science(args: argparse.Namespace, output_dir: Path) -> int
         ollama_url=args.ollama_url,
         syllabus_path=CS_ROOT / "data" / "syllabus_seed.json",
         notes_source=notes,
-        template_overlay=not args.no_template_overlay,
-        template_reference_dir=reference_dir,
         progress=progress_emitter(),
         client=hosted_client(
             provider=args.provider,

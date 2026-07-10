@@ -88,6 +88,7 @@ class QuestionBlueprint(BaseModel):
     mark_breakdown: str = ""
     mark_scheme: list[str] = Field(default_factory=list)
     indicative_content: list[str] = Field(default_factory=list)
+    graph_params: dict[str, object] = Field(default_factory=dict)
 
 
 class PaperBlueprint(BaseModel):

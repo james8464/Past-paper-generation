@@ -19,7 +19,6 @@ from pastpapergen.render_pdf import (
     RAIL_Y,
     SECTION_A_INSTRUCTION_LINES,
     SECTION_A_FOOTER_SAFE_Y,
-    _cost_revenue_geometry,
     _draw_answer_lines,
     _extra_answer_pages,
     _table_rows,
@@ -354,10 +353,11 @@ def test_section_a_pages_include_graph_labels(tmp_path):
 
     render_question_paper(blueprint, output)
     text = _pdf_text(output)
-
-    assert "Costs/revenues" in text
-    assert "Price" in text
-    assert "Quantity" in text
+    import fitz
+    doc = fitz.open(output)
+    image_count = sum(len(page.get_images()) for page in doc)
+    doc.close()
+    assert image_count >= 1, "Expected at least one graph image"
 
 
 def test_market_share_chart_uses_reference_style_labels(tmp_path):
@@ -375,16 +375,6 @@ def test_market_share_chart_uses_reference_style_labels(tmp_path):
 
     assert "26.6%" in text
     assert "Lloyds" in text
-
-
-def test_cost_revenue_geometry_is_aligned_inside_axes():
-    geometry = _cost_revenue_geometry(100, 500)
-    axis = geometry["axis"]
-
-    assert geometry["ar"][0] == geometry["mr"][0]
-    assert axis["left"] <= geometry["mr"][1][0] <= axis["right"]
-    assert axis["bottom"] <= geometry["mr"][1][1] <= axis["top"]
-    assert axis["bottom"] <= geometry["ar"][1][1] <= axis["top"]
 
 
 def test_section_a_question_3_not_rotated_or_garbled(tmp_path):
@@ -529,13 +519,18 @@ def test_section_a_context_uses_specific_source_text(tmp_path):
 def test_section_a_surplus_diagrams_label_shaded_area(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
-    blueprint, _question = _blueprint_with_section_a_question(config, syllabus, lambda candidate: candidate.stimulus_kind == "consumer_surplus_diagram")
+    blueprint, question = _blueprint_with_section_a_question(config, syllabus, lambda candidate: candidate.stimulus_kind == "consumer_surplus_diagram")
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
     text = _pdf_text(output)
 
-    assert "Consumer surplus" in text
+    assert f"Total for Question {question.number}" in text
+    import fitz
+    doc = fitz.open(output)
+    image_count = sum(len(page.get_images()) for page in doc)
+    doc.close()
+    assert image_count >= 1, "Expected at least one graph image"
 
 
 def test_paper_2_three_part_section_a_questions_render_all_parts(tmp_path):
