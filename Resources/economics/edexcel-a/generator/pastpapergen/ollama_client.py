@@ -66,10 +66,10 @@ Use only this syllabus topic:
 Topic ID: {topic.id}
 Theme: {topic.theme}
 Title: {topic.title}
-Allowed points:
+Syllabus points (you must align every mark scheme bullet to these):
 {points}
 
-Uploaded revision-note context:
+Revision-note context (use this data for source figures, extraction content and specific examples):
 {note_context}
 
 Write one Edexcel A-style question.
@@ -87,11 +87,43 @@ Style rules:
 - For Section C, write a short source-style extract in source_text; the question paper displays both choices first.
 - Do not add instructions such as 'Consider both positive and negative arguments' or 'include relevant theories'.
 - Do not include '(4 marks)' or similar mark text in any question or part text.
-- Mark scheme bullets must be specific to the generated question, using its source data, correct option, likely answer points and evaluation judgement.
 - If parts are supplied, rewrite each part separately rather than combining the parts into the main question text.
 - Do not start part prompts with labels such as '(a)', 'a)' or 'Question 1(a)' because labels are rendered separately.
 - If a one-mark MCQ is supplied, return four options A-D and one correct_option.
 - If stimulus_kind is set, include a graph_params object with numeric values for equilibrium price and quantity that match the question context. This makes the diagram specific to the question data.
+- Return ALL JSON fields — do not omit anything.
+
+CRITICAL: MARK SCHEME REQUIREMENTS
+The mark_scheme and indicative_content fields must be EXCESSIVELY DETAILED. Follow these rules exactly:
+
+1. The mark_scheme array must have at least 8-15 bullets, depending on marks.
+2. Each bullet must be explicitly linked to one or more of the syllabus points listed above.
+3. Structure the mark scheme in three sections separated by empty-string bullets:
+   - "AO1 (Knowledge/Understanding):" then 2-4 specific knowledge bullets tied to exact syllabus points (e.g. "AO1: Recall that PED = %ΔQd / %ΔP (syllabus point: price elasticity of demand)")
+   - "AO2 (Application):" then 2-4 bullets using SPECIFIC numeric data from the source text, extract or figure (e.g. "AO2: Using the PED value of -1.4 and the 5% price fall from Figure 1, correctly calculates 5% × 1.4 = 7% increase in quantity demanded")
+   - "AO3 (Analysis):" then 2-4 bullets showing logical chains of reasoning with economic theory (e.g. "AO3: Explains that the price fall increases consumer surplus because the lower price expands the market along the demand curve")
+   - For questions of 10+ marks, also add:
+     - "AO4 (Evaluation):" then 2-4 bullets with counter-arguments, real-world limitations, stakeholder trade-offs, or judgement criteria
+4. Every bullet must reference actual numbers, syllabus concepts, or source data — never generic phrases like "accurate economic theory" or "relevant application".
+5. The indicative_content array must list 8-15 specific, concrete answer points that a top-band student would make, each directly addressing the question.
+6. For parts (sub-questions), each part must have its own mark_scheme and indicative_content following the same level of detail.
+7. Use exact syllabus terminology (e.g., "marginal social cost", "de-mutualisation", "quantitative easing") rather than vague terms.
+
+EXAMPLE of a good 8-mark mark_scheme:
+[
+  "",
+  "AO1 (Knowledge/Understanding):",
+  "Correctly identifies that PES measures the responsiveness of quantity supplied to a change in price (syllabus: price elasticity of supply).",
+  "States the formula PES = %ΔQs / %ΔP and recognises that PES > 1 indicates elastic supply.",
+  "",
+  "AO2 (Application):",
+  "Using the rural market PES value of 1.8 from the extract, correctly applies 3.6% / 1.8 = 2.0%.",
+  "Correctly interprets the result: price increases by 2.0% because supply is relatively elastic.",
+  "",
+  "AO3 (Analysis):",
+  "Explains that elastic supply in the rural market is due to spare capacity, available substitutes or time period (long run).",
+  "Analyses how the smaller price rise benefits consumers by limiting pass-through of cost increases."
+]
 
 Return JSON only with this schema:
 {{
@@ -99,8 +131,8 @@ Return JSON only with this schema:
   "source_text": "string or empty string",
   "source_reference": "Figure 1, Extract A, Extract B, or empty string",
   "mark_breakdown": "string such as 'Knowledge 2, Application 2'",
-  "indicative_content": ["bullet 1", "bullet 2"],
-  "mark_scheme": ["bullet 1", "bullet 2", "bullet 3"],
+  "indicative_content": ["8-15 specific answer points a top student would make"],
+  "mark_scheme": ["8-15 detailed bullets structured as AO1/AO2/AO3(/AO4 for 10+ marks), each tied to specific syllabus points and source data"],
   "graph_params": {{
     "eq_price": <integer between 20 and 200, matching source data>,
     "eq_quantity": <integer between 30 and 300, matching source data>,
@@ -111,8 +143,8 @@ Return JSON only with this schema:
       "label": "a",
       "prompt": "string",
       "mark_breakdown": "string",
-      "mark_scheme": ["bullet 1"],
-      "indicative_content": ["bullet 1"],
+      "mark_scheme": ["8-15 detailed bullets per part, same AO structure"],
+      "indicative_content": ["specific answer points for this part"],
       "options": [
         {{"label": "A", "text": "string"}},
         {{"label": "B", "text": "string"}},

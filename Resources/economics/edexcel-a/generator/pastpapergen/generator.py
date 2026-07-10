@@ -1479,42 +1479,82 @@ def _part_mark_breakdown(marks: int, command_word: str) -> str:
 def _mark_scheme(command_word: str, marks: int, topic_title: str) -> list[str]:
     topic = topic_title.lower()
     if marks == 1:
-        return ["Award 1 mark for the correct answer."]
+        return [
+            "Award 1 mark for the correct answer.",
+            f"Correct answer directly addresses the syllabus point on {topic}.",
+        ]
     if marks <= 5:
         return [
-            f"Knowledge/Understanding: accurate identification or definition linked to {topic}.",
-            f"Application: relevant use of the data, figure, extract or example for {topic}.",
-            "Analysis: clear chain of reasoning showing cause and effect.",
+            "",
+            f"AO1 (Knowledge/Understanding) — up to {max(1, marks // 3)} mark(s):",
+            f"Correctly identifies or defines the relevant economic concept from {topic}.",
+            f"Accurately states the economic relationship or theory from the syllabus: {topic}.",
+            "",
+            f"AO2 (Application) — up to {max(1, marks // 3)} mark(s):",
+            f"Applies the concept to the specific data, figure or context provided in the question.",
+            "Uses relevant numerical values or quotes from the source material.",
+            "",
+            f"AO3 (Analysis) — up to {max(2, marks - 2 * (marks // 3))} mark(s):",
+            "Develops a logical chain of reasoning showing cause and effect.",
+            f"Connects the analysis back to the syllabus framework for {topic}.",
         ]
     cmd = command_word.lower()
+    has_evaluation = marks >= 10
     bullets = [
-        f"Knowledge and understanding of {topic}.",
-        "Application to the source material or a relevant economic example.",
+        "",
+        f"AO1 (Knowledge/Understanding) — syllabus alignment for {topic}:",
+        f"Accurately recalls and defines key terminology from the {topic} section of the specification.",
+        f"Demonstrates knowledge of economic models, theories or relationships relevant to {topic}.",
+        f"Makes precise use of syllabus concepts such as marginal analysis, elasticity, equilibrium or efficiency.",
+        "",
+        f"AO2 (Application) — use of context and data for {topic}:",
+        "Selects and applies relevant data, figures or extract content from the question material.",
+        f"Shows how the theoretical concepts from {topic} operate in the real-world context described.",
+        "Where numerical data is provided, correctly calculates or interprets values to support the argument.",
+        "",
+        f"AO3 (Analysis) — economic reasoning for {topic}:",
+        "Constructs a coherent chain of reasoning linking causes to effects using economic theory.",
+        "Explains the mechanism through which changes in one variable affect another (e.g. price mechanism, multiplier effect, market adjustment processes).",
+        "Uses appropriate economic models or diagrams to support the analytical argument.",
+        "Develops the analysis to show second-round or dynamic effects where relevant.",
     ]
-    if cmd in {"evaluate", "assess"}:
-        bullets.extend([
-            "Analysis: developed chains of reasoning showing cause, effect and interdependence.",
-            "Evaluation: well-supported judgement with a concluding decision or ranking of factors.",
-            "Balance: consideration of both advantages and disadvantages or multiple stakeholder perspectives.",
-        ])
-    elif cmd == "discuss":
-        bullets.extend([
-            "Analysis: logical arguments for and against the proposition.",
-            "Discussion: balanced coverage of alternative viewpoints or outcomes.",
-            "Synthesis: connections drawn between different economic concepts or policy effects.",
-        ])
-    elif cmd == "examine":
-        bullets.extend([
-            "Analysis: systematic breakdown of the issue into component parts.",
-            "Examination: detailed investigation of causes, effects or relationships.",
-            "Supported conclusion: a clear outcome based on the evidence examined.",
-        ])
-    else:
-        bullets.extend([
-            "Analysis using logical chains of reasoning.",
-            "Evaluation supported by judgement where required by the command word.",
-        ])
-    bullets.insert(0, "Indicative content should be rewarded where it is relevant and developed.")
+    if has_evaluation:
+        if cmd in {"evaluate", "assess"}:
+            bullets.extend([
+                "",
+                f"AO4 (Evaluation) — supported judgement for {topic}:",
+                "Weighs competing arguments or stakeholder perspectives to reach a balanced conclusion.",
+                "Assesses the strength of the evidence: considers which factors are most significant and why.",
+                "Identifies limitations, assumptions or real-world complications (e.g. ceteris paribus, time lags, data reliability).",
+                "Makes a final, well-supported judgement that directly answers the question's command word.",
+                "Where appropriate, considers alternative policy options or theoretical viewpoints.",
+            ])
+        elif cmd == "discuss":
+            bullets.extend([
+                "",
+                f"AO4 (Discussion) — balanced consideration for {topic}:",
+                "Presents arguments on multiple sides of the issue, drawing on relevant economic theory.",
+                "Evaluates the relative importance of different factors, effects or stakeholder outcomes.",
+                "Synthesises the discussion into a coherent overall assessment with clear reasoning.",
+                "Considers real-world constraints, empirical evidence or counter-arguments that qualify the analysis.",
+            ])
+        elif cmd == "examine":
+            bullets.extend([
+                "",
+                f"AO4 (Examination) — detailed investigation for {topic}:",
+                "Breaks down the issue into its component parts for systematic investigation.",
+                "Investigates causes, effects and relationships in depth, using specific evidence.",
+                "Draws a supported conclusion based on the weight of evidence examined.",
+                "Identifies any ambiguities, exceptions or further questions raised by the analysis.",
+            ])
+        else:
+            bullets.extend([
+                "",
+                f"AO4 (Evaluation) — supported judgement for {topic}:",
+                "Provides a clear judgement or conclusion supported by the preceding analysis.",
+                "Considers counter-arguments, limitations or alternative viewpoints.",
+            ])
+    bullets.insert(0, "Indicative content should be rewarded where it is relevant and developed, even if not explicitly listed. Credit must be given for accurate and relevant economic understanding demonstrated by the candidate.")
     return bullets
 
 
