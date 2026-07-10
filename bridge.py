@@ -5,6 +5,6 @@ from Backend.Core.providers import parse_json_object
 
 __all__ = ["main", "parse_json_object"]
 
-
 if __name__ == "__main__":
     raise SystemExit(main())
+

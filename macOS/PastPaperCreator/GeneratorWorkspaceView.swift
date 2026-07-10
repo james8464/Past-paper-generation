@@ -171,6 +171,8 @@ private struct ReadinessBanner: View {
         switch appModel.aiProvider {
         case .ollama:
             "Use Ollama locally, or switch provider in Settings."
+        case .apple:
+            "Using Apple MLX local inference. Configure model in Settings."
         case .openAI, .anthropic:
             "Save provider credentials in Settings before generating."
         }
