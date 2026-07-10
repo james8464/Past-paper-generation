@@ -47,7 +47,7 @@ enum SecretStore {
     private static func baseQuery(_ account: String) -> [String: Any] {
         [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: "PastPaperCreator",
+            kSecAttrService as String: "ExamForge",
             kSecAttrAccount as String: account,
         ]
     }

@@ -154,7 +154,6 @@ private struct PrivacySettingsTab: View {
                 LabeledContent("API keys", value: "Keychain")
                 LabeledContent("Hosted AI consent", value: appModel.hasHostedAIConsent ? "Accepted" : "Not accepted")
                 Link("Privacy Policy", destination: AppLinks.privacyPolicy)
-                Link("App Store Review Notes", destination: AppLinks.appStoreReviewNotes)
                 Text("Ollama generation is local. Hosted providers send prompts to the provider you select.")
                     .foregroundStyle(.secondary)
             }
@@ -174,12 +173,11 @@ private struct PrivacySettingsTab: View {
             }
 
             Section("Help") {
-                Button("Past Paper Creator Help", action: appModel.showHelpGuide)
+                Button("ExamForge Help", action: appModel.showHelpGuide)
                 Button("Show Welcome Guide", action: appModel.showWelcomeGuide)
                 Button("Show Benchmark") {
                     appModel.showBenchmarkPage()
                 }
-                Button("Copy App Review Notes", action: appModel.copyAppReviewNotes)
                 Button("Copy Diagnostic Summary", action: appModel.copyDiagnosticSummary)
             }
         }

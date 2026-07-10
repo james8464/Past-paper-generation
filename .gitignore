@@ -2,6 +2,7 @@
 __pycache__/
 .pytest_cache/
 *.egg-info/
+*.pyc
 out/
 out-*/
 debug_images/
@@ -10,5 +11,8 @@ graphify-out/cache/
 graphify-out/.graphify_*
 .DS_Store
 .idea/
+macOS/build/
+macOS/DerivedData/
+*.xcresult
 example papers/
 Resources/**/*.pdf

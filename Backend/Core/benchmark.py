@@ -278,7 +278,7 @@ def network_latency_ms() -> float | None:
     try:
         request = urllib.request.Request(
             NETWORK_PROBE_URL,
-            headers={"User-Agent": "PastPaperCreatorBenchmark/1.0"},
+            headers={"User-Agent": "ExamForgeBenchmark/1.0"},
         )
         with urllib.request.urlopen(request, timeout=NETWORK_TIMEOUT_SECONDS) as response:
             response.read(128)
@@ -294,7 +294,7 @@ def network_download_mb_s() -> float | None:
     try:
         request = urllib.request.Request(
             NETWORK_DOWNLOAD_URL,
-            headers={"User-Agent": "PastPaperCreatorBenchmark/1.0"},
+            headers={"User-Agent": "ExamForgeBenchmark/1.0"},
         )
         with urllib.request.urlopen(request, timeout=NETWORK_TIMEOUT_SECONDS) as response:
             total = 0
@@ -313,7 +313,7 @@ def ollama_latency_ms() -> float | None:
     try:
         request = urllib.request.Request(
             "http://127.0.0.1:11434/api/tags",
-            headers={"User-Agent": "PastPaperCreatorBenchmark/1.0"},
+            headers={"User-Agent": "ExamForgeBenchmark/1.0"},
         )
         with urllib.request.urlopen(request, timeout=0.8) as response:
             response.read(128)
@@ -453,7 +453,7 @@ def pdf_probe(output_dir: Path) -> float:
         pdf = canvas.Canvas(str(path), pagesize=A4)
         for page in range(pages):
             pdf.setFont("Helvetica", 11)
-            pdf.drawString(72, 780, f"Past Paper Creator diagnostic page {page + 1}")
+            pdf.drawString(72, 780, f"ExamForge diagnostic page {page + 1}")
             for line in range(36):
                 y = 744 - line * 18
                 pdf.line(72, y, 520, y)

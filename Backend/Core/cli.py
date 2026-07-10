@@ -17,7 +17,7 @@ DEFAULT_BENCHMARK_DURATION_SECONDS = 30.0
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="JSON-lines bridge for the Past Paper Creator app.")
+    parser = argparse.ArgumentParser(description="JSON-lines bridge for the ExamForge app.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     status = subparsers.add_parser("ollama-status")

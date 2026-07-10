@@ -180,10 +180,6 @@ final class AppViewModel: ObservableObject {
         NSWorkspace.shared.open(AppLinks.support)
     }
 
-    func openAppStoreReviewNotes() {
-        NSWorkspace.shared.open(AppLinks.appStoreReviewNotes)
-    }
-
     func selectBoard(_ board: ExamBoardOption) {
         guard selectedBoardID != board.id || !board.papers.contains(where: { $0.id == selectedPaperID }) else {
             return
@@ -424,7 +420,7 @@ final class AppViewModel: ObservableObject {
 
     func copyDiagnosticSummary() {
         let summary = [
-            "Past Paper Creator Diagnostics",
+            "ExamForge Diagnostics",
             "Distribution: \(distributionMode.title)",
             "Selected board: \(selectedBoard.subjectTitle) \(selectedBoard.title)",
             "Selected paper: \(selectedPaper.title) - \(selectedPaper.detail)",
@@ -451,26 +447,6 @@ final class AppViewModel: ObservableObject {
         if enabled {
             requestNotificationAuthorization()
         }
-    }
-
-    func copyAppReviewNotes() {
-        let notes = [
-            "Past Paper Creator App Review Notes",
-            "",
-            "No account is required.",
-            "The app generates unofficial A-level practice papers and mark schemes for ready subject packs only.",
-            "Exam-board names identify specifications only; the app is not affiliated with Pearson, Edexcel, AQA, or any exam board.",
-            "App Store mode disables Ollama installation and model downloads. It can only detect an existing local Ollama setup.",
-            "Use Settings > Output > Use built-in drafts if a reviewer needs to test the flow without a hosted AI key.",
-            "Hosted OpenAI/Anthropic providers are optional. The app asks for explicit consent before sending prompts off-device, and API keys are stored in Keychain.",
-            "Notifications are optional and limited to generation/model status.",
-            "Generated PDFs are written only to the user-selected output folder.",
-        ].joined(separator: "\n")
-
-        let pasteboard = NSPasteboard.general
-        pasteboard.clearContents()
-        pasteboard.setString(notes, forType: .string)
-        status = "Review notes copied"
     }
 
     func startBenchmark() {
@@ -674,7 +650,7 @@ final class AppViewModel: ObservableObject {
         case .generation:
             sendNotification(
                 title: "Paper generation started",
-                body: "Past Paper Creator is generating \(selectedBoard.subjectTitle) \(selectedPaper.title) in the background. You will be notified when it finishes."
+                body: "ExamForge is generating \(selectedBoard.subjectTitle) \(selectedPaper.title) in the background. You will be notified when it finishes."
             )
         case .modelPull:
             sendNotification(title: "Model download started", body: "Ollama is downloading \(modelToPull). You will be notified when it finishes.")

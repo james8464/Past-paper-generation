@@ -7,7 +7,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_NOTES_SOURCE = PROJECT_ROOT.parent / "notes"
-DEFAULT_NOTES_CACHE = Path.home() / "Library" / "Caches" / "Past Paper Creation" / "cs-notes"
+DEFAULT_NOTES_CACHE = Path.home() / "Library" / "Caches" / "ExamForge" / "cs-notes"
 
 
 @dataclass(frozen=True)

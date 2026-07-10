@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Past Paper Creator</string>
+	<string>ExamForge</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIconName</key>
@@ -29,9 +29,9 @@
 	<key>NSAccentColorName</key>
 	<string>AccentColor</string>
 	<key>NSDocumentsFolderUsageDescription</key>
-	<string>Past Paper Creator can save generated PDFs to a folder you choose.</string>
+	<string>ExamForge can save generated PDFs to a folder you choose.</string>
 	<key>NSDownloadsFolderUsageDescription</key>
-	<string>Past Paper Creator saves generated PDFs to the selected output folder.</string>
+	<string>ExamForge saves generated PDFs to the selected output folder.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Unofficial practice material. Not affiliated with any exam board.</string>
 </dict>

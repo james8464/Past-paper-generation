@@ -14,7 +14,7 @@ struct WelcomeSheet: View {
                     .background(.tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Past Paper Creator")
+                    Text("ExamForge")
                         .font(.largeTitle.weight(.semibold))
                     Text("Generate syllabus-bound practice papers from your local subject packs.")
                         .foregroundStyle(.secondary)
@@ -86,7 +86,7 @@ struct HelpSheet: View {
                     .background(.tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Past Paper Creator Help")
+                    Text("ExamForge Help")
                         .font(.title.weight(.semibold))
                     Text("Quick reference for generating, saving, and troubleshooting papers.")
                         .foregroundStyle(.secondary)

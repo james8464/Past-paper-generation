@@ -116,7 +116,7 @@ struct AppCommands: Commands {
         }
 
         CommandGroup(replacing: .help) {
-            Button("Past Paper Creator Help", action: appModel.showHelpGuide)
+            Button("ExamForge Help", action: appModel.showHelpGuide)
                 .keyboardShortcut("/", modifiers: [.command, .shift])
 
             Button("Show Welcome Guide", action: appModel.showWelcomeGuide)
@@ -125,12 +125,10 @@ struct AppCommands: Commands {
 
             Button("Open User Guide", action: appModel.openProjectHelp)
             Button("Privacy Policy", action: appModel.openPrivacyPolicy)
-            Button("App Store Review Notes", action: appModel.openAppStoreReviewNotes)
             Button("Report an Issue", action: appModel.openSupportPage)
 
             Divider()
 
-            Button("Copy App Review Notes", action: appModel.copyAppReviewNotes)
             Button("Copy Diagnostic Summary", action: appModel.copyDiagnosticSummary)
         }
     }

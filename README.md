@@ -1,44 +1,43 @@
-# Past Paper Creator
+# ExamForge
 
-A tool for generating practice exam papers using LLMs. It supports local generation via Ollama or hosted providers like OpenAI and Anthropic.
+Native macOS app and Python backend for generating unofficial A-level practice papers.
 
-The project is split into a native macOS application and a Python-based bridge that handles the generation logic.
+## Run
 
-## Getting Started
+```bash
+cd macOS
+make build-and-run
+```
 
-### macOS App (Recommended)
-The SwiftUI app is the primary way to use the tool. It handles model management and provides a clean interface for paper generation.
+If Xcode command-line tools are selected instead of Xcode:
 
-1. Clone the repo.
-2. Open `macOS/PastPaperCreator.xcodeproj` in Xcode.
-3. Build and run the `PastPaperCreator` scheme.
+```bash
+sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+```
 
-*Note: You'll need [Ollama](https://ollama.com) installed for local generation, otherwise you can use API keys in the app settings.*
+## Build Checks
 
-### Python CLI
-For terminal usage or headless generation:
+```bash
+cd macOS
+make test
+make preflight-app-store
+```
 
-1. Setup a virtual environment:
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate
-   pip install -e "Backend/Core[dev]"
-   ```
-2. Run the bridge script:
-   ```bash
-   python bridge.py generate --subject economics --paper 1 --output ~/Downloads --dry-run
-   ```
+## CLI
 
-## Project Structure
+```bash
+python bridge.py generate --subject economics --paper 1 --output ~/Downloads --dry-run
+python bridge.py generate --subject computer_science --paper 2 --output ~/Downloads --dry-run
+```
 
-- `macOS/`: SwiftUI application.
-- `Backend/Core/`: Python package for generation, rendering, and benchmarking.
-- `Resources/`: Subject data and prompt templates.
-- `Tests/`: Integration tests for the bridge.
-- `bridge.py`: Entry point used by the app and CLI.
+## Structure
+
+- `macOS/`: SwiftUI app, Xcode project, tests, and build scripts.
+- `Backend/Core/`: JSONL bridge used by the app and CLI.
+- `Resources/economics/edexcel-a/`: Economics generator and local resources.
+- `Resources/computer-science/aqa/`: Computer Science generator and local resources.
+- `tests/`: backend integration tests.
 
 ## Privacy
-By default, everything runs locally using Ollama. If you choose to use a hosted provider, your data is only sent to the provider you select. API keys are stored securely in the macOS Keychain.
 
-## Contributing
-Feel free to open a PR if you want to add support for more subjects or improve the UI. New subjects should be added to the `Resources/` directory.
+Ollama generation runs locally. Hosted providers are optional and require explicit consent before prompts leave the Mac. API keys are stored in Keychain. Generated PDFs are written to the selected output folder.

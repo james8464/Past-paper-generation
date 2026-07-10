@@ -5,7 +5,7 @@ struct PastPaperCreator: App {
     @StateObject private var appModel = AppViewModel()
 
     var body: some Scene {
-        WindowGroup("Past Paper Creator", id: "main") {
+        WindowGroup("ExamForge", id: "main") {
             ContentView()
                 .environmentObject(appModel)
         }

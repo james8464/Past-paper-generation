@@ -80,9 +80,9 @@ final class PastPaperCreatorTests: XCTestCase {
 
     func testReviewLinksAreValidHTTPSURLs() {
         XCTAssertEqual(AppLinks.privacyPolicy.scheme, "https")
-        XCTAssertEqual(AppLinks.appStoreReviewNotes.scheme, "https")
+        XCTAssertEqual(AppLinks.projectHelp.scheme, "https")
         XCTAssertTrue(AppLinks.privacyPolicy.absoluteString.contains("#privacy"))
-        XCTAssertTrue(AppLinks.appStoreReviewNotes.absoluteString.contains("APP_STORE_SUBMISSION_NOTES.md"))
+        XCTAssertTrue(AppLinks.projectHelp.absoluteString.contains("#examforge"))
     }
 
     func testCatalogReadyBoardsUseCorrectResourceFolders() throws {

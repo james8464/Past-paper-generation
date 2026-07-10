@@ -8,7 +8,7 @@ from pathlib import Path
 
 from cspapergen.exam_dates import formatted_paper2_exam_date, paper2_exam_date
 
-REFERENCE_CACHE = Path.home() / "Library" / "Caches" / "Past Paper Creation" / "cs-templates"
+REFERENCE_CACHE = Path.home() / "Library" / "Caches" / "ExamForge" / "cs-templates"
 LOCAL_REFERENCE_DIR = Path.home() / "Downloads" / "CS paper 2"
 
 REFERENCE_URLS = {
