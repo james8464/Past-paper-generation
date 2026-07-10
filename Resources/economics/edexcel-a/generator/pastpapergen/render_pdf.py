@@ -261,6 +261,9 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
             "Check your answers if you have time at the end.",
         ],
     )
+    if blueprint.paper_id in {"paper_1", "paper_2"}:
+        pdf.setFont(FONT_REGULAR, 8)
+        pdf.drawCentredString(width / 2, 196, "SECTION C: Answer ONE question from the two available. The formula page for Section C can be found at the back of this question paper.")
 
     _draw_turn_over(pdf, width - 64, 75)
     _draw_cover_pearson_mark(pdf, width - 88, 44)
@@ -653,6 +656,37 @@ def _draw_continuation_lines(pdf: canvas.Canvas, x: float, y: float) -> float:
     return _draw_answer_lines_until(pdf, x, y, 520)
 
 
+def _draw_answer_page_header(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_number: int) -> None:
+    width, _ = A4
+    if page_number % 2 == 0:
+        return
+    grey = colors.HexColor("#f2f2f2")
+    pdf.setFillColor(grey)
+    pdf.rect(28, 778, 592, 90, stroke=0, fill=1)
+    pdf.setFillColor(colors.black)
+    pdf.setStrokeColor(colors.HexColor("#999999"))
+    pdf.setLineWidth(0.4)
+    name_box_y = 794
+    pdf.roundRect(48, name_box_y, 280, 26, 5, stroke=1, fill=0)
+    pdf.line(188, name_box_y, 188, name_box_y + 26)
+    pdf.setFont(FONT_REGULAR, 7.5)
+    pdf.drawString(56, name_box_y + 17, "Candidate surname")
+    pdf.drawString(196, name_box_y + 17, "Other names")
+    centre_box_y = name_box_y - 28
+    pdf.setFont(FONT_REGULAR, 8)
+    pdf.drawString(48, centre_box_y + 22, "Centre Number")
+    _draw_boxes(pdf, 48, centre_box_y, 5, size=18)
+    pdf.drawString(160, centre_box_y + 22, "Candidate Number")
+    _draw_boxes(pdf, 160, centre_box_y, 4, size=18)
+    pdf.setStrokeColor(colors.black)
+    pdf.setLineWidth(1)
+    header_info_y = centre_box_y - 4
+    pdf.setFont(FONT_BOLD, 8)
+    pdf.drawRightString(width - 48, header_info_y + 13, "Pearson Edexcel Level 3 GCE")
+    pdf.setFont(FONT_REGULAR, 8)
+    pdf.drawRightString(width - 48, header_info_y + 1, f"{blueprint.paper_code}  {_exam_date_line(blueprint.paper_id)}  {_exam_session(blueprint.paper_id)}")
+
+
 def _draw_watermark(pdf: canvas.Canvas) -> None:
     width, height = A4
     pdf.saveState()
@@ -668,6 +702,7 @@ def _prepare_answer_page(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_num
     width, height = A4
     _draw_crop_marks(pdf)
     _draw_watermark(pdf)
+    _draw_answer_page_header(pdf, blueprint, page_number)
     _draw_do_not_write_rail(pdf, page_number)
     pdf.setStrokeColor(colors.HexColor("#9d9d9d"))
     pdf.setLineWidth(1.6)
