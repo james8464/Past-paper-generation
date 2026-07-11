@@ -99,7 +99,11 @@ enum ExamCatalog {
     }
 
     static var defaultBoard: ExamBoardOption {
-        board(id: "economics-edexcel-a") ?? readyBoards.first ?? ExamBoardOption(id: "unknown", subjectID: "unknown", title: "Unknown", detail: "", papers: [], isReady: false)
+        board(id: "economics-edexcel-a") ?? readyBoards.first ?? ExamBoardOption(
+            id: "unknown", subjectID: "unknown", subjectTitle: "Unknown", title: "Unknown",
+            shortTitle: "Unknown", systemImage: "doc.text", status: .placeholder,
+            backendSubject: nil, papers: [], resourcePath: ""
+        )
     }
 
     static func board(id: String) -> ExamBoardOption? {
