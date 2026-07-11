@@ -65,7 +65,7 @@ def build_paper_blueprint(
                 rng,
             )
             available_topics = _topics_suitable_for_template(available_topics, part_commands, stimulus_kind)
-            topic = source_context_topic or _choose_topic(rng, available_topics, excluded_ids)
+            topic = source_context_topic or _choose_topic(rng, available_topics, excluded_ids) or SyllabusTopic(id="unknown", theme=1, title="Economics", points=[])
             command_word = section.command_words[index]
             number = _question_number(config.id, section.name, absolute_question_number, index)
             parts = _build_parts(part_marks, part_commands, topic.title, stimulus_kind, rng)
@@ -123,15 +123,21 @@ def _choice_lookup(choice_groups: list[list[int]]) -> dict[int, int]:
 
 def _choose_topic(rng: random.Random, topics, excluded_ids: set[str]):
     available = [topic for topic in topics if topic.id not in excluded_ids]
-    return rng.choice(available or topics)
+    if not available and not topics:
+        return None
+    pool = available or topics
+    return rng.choice(pool)
 
 
 def _theme_plan(config: PaperConfig, rng: random.Random) -> dict[str, list[int]]:
     if config.id not in {"paper_1", "paper_2"}:
         return {}
     themes = sorted(config.allowed_themes)
+    if not themes:
+        return {}
     data_response_theme = rng.choice(themes)
-    essay_theme = next(theme for theme in themes if theme != data_response_theme)
+    remaining = [t for t in themes if t != data_response_theme]
+    essay_theme = remaining[0] if remaining else data_response_theme
     section_a_themes = [data_response_theme, data_response_theme, essay_theme, essay_theme, essay_theme]
     rng.shuffle(section_a_themes)
     return {
@@ -1269,9 +1275,9 @@ def _source_reference(paper_id: str, section_name: str, index: int) -> str:
     if section_name == "A" and paper_id in {"paper_1", "paper_2"}:
         return "Figure 1"
     if section_name == "B" and paper_id in {"paper_1", "paper_2"}:
-        return ["Extract A", "", "", "Extract C", "Extract D"][index]
+        return ["Extract A", "", "", "Extract C", "Extract D"][index % 5]
     if paper_id == "paper_3":
-        return ["Extract A", "Extract B", "Extract C", "Extract D", "Extract E"][index]
+        return ["Extract A", "Extract B", "Extract C", "Extract D", "Extract E"][index % 5]
     return ""
 
 

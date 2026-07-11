@@ -53,7 +53,8 @@ class HostedLLMClient:
         )
         with request as response:
             raw = json.loads(response.read().decode("utf-8"))
-        text = raw.get("output_text") or _openai_output_text(raw)
+        raw_dict = raw if isinstance(raw, dict) else {}
+        text = raw_dict.get("output_text") or _openai_output_text(raw_dict)
         return parse_json_object(str(text))
 
     def _anthropic(self, prompt: str) -> dict[str, object]:
@@ -80,9 +81,10 @@ class HostedLLMClient:
         )
         with request as response:
             raw = json.loads(response.read().decode("utf-8"))
+        raw_dict = raw if isinstance(raw, dict) else {}
         text = "".join(
             item.get("text", "")
-            for item in raw.get("content", [])
+            for item in raw_dict.get("content", [])
             if isinstance(item, dict) and item.get("type") == "text"
         )
         return parse_json_object(text)
@@ -124,8 +126,11 @@ def parse_json_object(text: str) -> dict[str, object]:
         start = raw.find("{")
         end = raw.rfind("}")
         if start == -1 or end == -1 or end <= start:
-            raise
-        value = json.loads(raw[start : end + 1])
+            raise ValueError("Model returned response with no JSON object.")
+        try:
+            value = json.loads(raw[start : end + 1])
+        except json.JSONDecodeError:
+            raise ValueError("Model returned response that could not be parsed as JSON.") from None
     if not isinstance(value, dict):
         raise ValueError("Model returned JSON, but not an object.")
     return value

@@ -6,7 +6,7 @@ import UserNotifications
 @MainActor
 final class AppViewModel: ObservableObject {
     @Published var selectedBoardID = ExamCatalog.defaultBoard.id
-    @Published var selectedPaperID = ExamCatalog.defaultBoard.papers[0].id
+    @Published var selectedPaperID = ExamCatalog.defaultBoard.papers.first?.id ?? "unknown"
     @Published var selectedModel = AppDefaults.ollamaModel
     @Published var aiProvider: AIProvider = .ollama
     @Published var ollamaURL = AppDefaults.ollamaURL
@@ -59,7 +59,7 @@ final class AppViewModel: ObservableObject {
     }
 
     var selectedPaper: PaperOption {
-        selectedBoard.papers.first { $0.id == selectedPaperID } ?? selectedBoard.papers[0]
+        selectedBoard.papers.first { $0.id == selectedPaperID } ?? selectedBoard.papers.first ?? PaperOption(id: "unknown", title: "Unknown", detail: "")
     }
 
     var selectedPaperTitle: String {
@@ -135,7 +135,7 @@ final class AppViewModel: ObservableObject {
             }
         }
         selectedBoardID = defaults.string(forKey: AppStorageKey.selectedBoardID) ?? ExamCatalog.defaultBoard.id
-        selectedPaperID = defaults.string(forKey: AppStorageKey.selectedPaperID) ?? selectedBoard.papers[0].id
+        selectedPaperID = defaults.string(forKey: AppStorageKey.selectedPaperID) ?? selectedBoard.papers.first?.id ?? "unknown"
         sidebarSelection = .board(selectedBoardID)
     }
 
@@ -190,7 +190,7 @@ final class AppViewModel: ObservableObject {
             return
         }
         selectedBoardID = board.id
-        selectedPaperID = board.papers[0].id
+        selectedPaperID = board.papers.first?.id ?? "unknown"
         defaults.set(board.id, forKey: AppStorageKey.selectedBoardID)
         defaults.set(selectedPaperID, forKey: AppStorageKey.selectedPaperID)
         generatedFiles.removeAll()

@@ -4,10 +4,9 @@ from datetime import date
 from pathlib import Path
 
 from reportlab.lib import colors
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
+from Backend.Core.fonts import register_fonts as _rf
 from cspapergen.exam_dates import formatted_paper2_exam_date, paper2_exam_date
 from cspapergen.models import PaperBlueprint, Question, QuestionPart, Stimulus
 
@@ -23,21 +22,7 @@ LINE_GAP = 20
 AQA_A4 = (595.32, 841.92)
 EXTRA_ANSWER_PAGES = 7
 
-
-def _register_fonts() -> None:
-    font_paths = {
-        "AQAArial": Path("/System/Library/Fonts/Supplemental/Arial.ttf"),
-        "AQAArial-Bold": Path("/System/Library/Fonts/Supplemental/Arial Bold.ttf"),
-        "AQACourier": Path("/System/Library/Fonts/Supplemental/Courier New.ttf"),
-    }
-    for font_name, font_path in font_paths.items():
-        if font_name in pdfmetrics.getRegisteredFontNames():
-            continue
-        if font_path.exists():
-            pdfmetrics.registerFont(TTFont(font_name, str(font_path)))
-
-
-_register_fonts()
+_rf(FONT, FONT_BOLD, FONT_MONO, default_fallback="Times-Roman")
 
 
 def render_question_paper(blueprint: PaperBlueprint, output_path: Path) -> None:

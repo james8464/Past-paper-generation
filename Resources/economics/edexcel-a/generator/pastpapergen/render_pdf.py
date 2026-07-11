@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import io
 import os
 import re
 import sys
@@ -8,14 +9,13 @@ from pathlib import Path
 
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
 _PROJECT_ROOT = str(Path(__file__).resolve().parents[5])
 if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
+from Backend.Core.fonts import register_fonts as _rf
 from Backend.Core.overlay.graphs import (
     ad_as_diagram,
     consumer_producer_surplus,
@@ -46,6 +46,7 @@ BODY_FONT_SIZE_PT = L.body_font_size
 BODY_LEADING_PT = L.body_leading
 FONT_REGULAR = L.font_regular
 FONT_BOLD = L.font_bold
+FONT_ITALIC = "ExamSans-Italic"
 MS_ANSWER_WRAP_CHARS = 58
 EDEXCEL_MEDIA_BOX = L.media_box or (0.0, 0.0, 651.97, 898.58)
 EDEXCEL_CROP_BOX = L.crop_box or (28.35, 28.35, 623.62, 870.24)
@@ -74,39 +75,17 @@ SECTION_A_INSTRUCTION_LINES = [
 ]
 
 
-_FONT_CANDIDATES: list[tuple[str, str, int]] = [
-    (FONT_REGULAR, "/System/Library/Fonts/HelveticaNeue.ttc", 0),
-    (FONT_BOLD, "/System/Library/Fonts/HelveticaNeue.ttc", 1),
-    (FONT_REGULAR, "/System/Library/Fonts/Supplemental/Arial.ttf", 0),
-    (FONT_BOLD, "/System/Library/Fonts/Supplemental/Arial Bold.ttf", 0),
-    (FONT_REGULAR, "/System/Library/Fonts/Helvetica.ttc", 0),
-    (FONT_BOLD, "/System/Library/Fonts/Helvetica.ttc", 1),
-]
+_rf(FONT_REGULAR, FONT_BOLD, default_fallback="Times-Roman")
+_rf(FONT_ITALIC, default_fallback="Times-Italic")
 
 
-def _register_fonts() -> None:
-    bold_name = FONT_BOLD
-    regular_name = FONT_REGULAR
-    for candidate_name, candidate_path, subfont_index in _FONT_CANDIDATES:
-        path = Path(candidate_path)
-        if candidate_name in pdfmetrics.getRegisteredFontNames():
-            continue
-        if path.exists():
-            try:
-                pdfmetrics.registerFont(TTFont(candidate_name, str(path), subfontIndex=subfont_index))
-            except Exception:
-                continue
-    if bold_name not in pdfmetrics.getRegisteredFontNames():
-        pdfmetrics.registerFont(TTFont(bold_name, "Times-Bold"))
-    if regular_name not in pdfmetrics.getRegisteredFontNames():
-        pdfmetrics.registerFont(TTFont(regular_name, "Times-Roman"))
-
-
-_register_fonts()
+_TOTAL_PAPER_PAGES: int = 0
 
 
 def render_question_paper(blueprint: PaperBlueprint, output_path: Path) -> None:
+    global _TOTAL_PAPER_PAGES
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    _TOTAL_PAPER_PAGES = _count_pages(blueprint)
     pdf = canvas.Canvas(str(output_path), pagesize=A4, pageCompression=0)
     try:
         _draw_cover(pdf, blueprint)
@@ -116,6 +95,28 @@ def render_question_paper(blueprint: PaperBlueprint, output_path: Path) -> None:
     finally:
         _cleanup_graph_cache()
     _apply_edexcel_page_boxes(output_path)
+
+
+def _count_pages(blueprint: PaperBlueprint) -> int:
+    buf = io.BytesIO()
+    pdf = canvas.Canvas(buf, pagesize=A4, pageCompression=0)
+    global _TOTAL_PAPER_PAGES
+    _TOTAL_PAPER_PAGES = 0
+    _draw_cover(pdf, blueprint)
+    pdf.showPage()
+    _draw_question_pages(pdf, blueprint)
+    pdf.save()
+    buf.seek(0)
+    try:
+        import fitz
+        doc = fitz.open(stream=buf, filetype="pdf")
+        count = doc.page_count
+        doc.close()
+        return count
+    except ImportError:
+        return 0
+    finally:
+        buf.close()
 
 
 def _apply_edexcel_page_boxes(output_path: Path) -> None:
@@ -370,14 +371,25 @@ def _draw_fake_barcode(pdf: canvas.Canvas, x: float, y: float, caption: str) -> 
 
 
 def _draw_cover_pearson_mark(pdf: canvas.Canvas, x: float, y: float) -> None:
-    pdf.setFillColor(colors.HexColor("#1f1f1f"))
-    pdf.circle(x, y + 22, 12, stroke=0, fill=1)
+    dark = colors.HexColor("#1f1f1f")
+    swoosh = colors.HexColor("#003A5D")
+    pdf.setFillColor(swoosh)
+    path = pdf.beginPath()
+    path.moveTo(x - 14, y + 6)
+    path.curveTo(x - 14, y + 34, x + 14, y + 34, x + 14, y + 6)
+    path.curveTo(x + 14, y - 2, x + 12, y - 6, x + 10, y - 8)
+    path.curveTo(x + 12, y - 2, x + 10, y + 2, x + 8, y + 6)
+    path.curveTo(x + 4, y + 26, x - 4, y + 26, x - 8, y + 6)
+    path.curveTo(x - 10, y - 6, x - 14, y - 2, x - 14, y + 6)
+    pdf.drawPath(path, fill=1, stroke=0)
+    pdf.setFillColor(dark)
+    pdf.circle(x, y + 19, 11, stroke=0, fill=1)
     pdf.setFillColor(colors.white)
-    pdf.setFont(FONT_BOLD, 15)
-    pdf.drawCentredString(x, y + 17, "P")
-    pdf.setFillColor(colors.HexColor("#1f1f1f"))
-    pdf.setFont(FONT_BOLD, 16)
-    pdf.drawCentredString(x, y - 4, "Pearson")
+    pdf.setFont(FONT_BOLD, 14)
+    pdf.drawCentredString(x, y + 14, "P")
+    pdf.setFillColor(dark)
+    pdf.setFont(FONT_BOLD, 14)
+    pdf.drawCentredString(x, y - 6, "Pearson")
     pdf.setFillColor(colors.black)
 
 
@@ -425,6 +437,7 @@ def _draw_question_pages(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
                 page_number += 1
                 y = _prepare_answer_page(pdf, blueprint, page_number)
                 _draw_section_c_answer_pages(pdf, blueprint, section_c, page_number, margin, y)
+                _draw_formula_appendix(pdf, blueprint)
                 return
         if blueprint.paper_id in {"paper_1", "paper_2"} and question.section == "A":
             page_number, y = _draw_section_a_question(pdf, blueprint, question, page_number, margin, y)
@@ -445,7 +458,7 @@ def _draw_question_pages(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
                 pdf.showPage()
                 page_number += 1
                 y = _prepare_answer_page(pdf, blueprint, page_number)
-                y = _draw_continuation_lines(pdf, margin, y)
+                y = _draw_continuation_lines(pdf, margin, y, question_number=question.number)
         pages_needed = _extra_answer_pages(blueprint.paper_id, question)
         if _force_new_page_after_question(blueprint.paper_id, question):
             _draw_question_footer(pdf, blueprint, page_number)
@@ -461,6 +474,71 @@ def _draw_question_pages(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
             page_number += 1
             y = _prepare_answer_page(pdf, blueprint, page_number)
     _draw_question_footer(pdf, blueprint, page_number, is_last=True)
+    _draw_formula_appendix(pdf, blueprint)
+
+
+def _draw_formula_appendix(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
+    if blueprint.paper_id not in {"paper_1", "paper_2"}:
+        return
+    pdf.showPage()
+    width, height = A4
+    _draw_crop_marks(pdf)
+    _draw_watermark(pdf)
+    pdf.setFont(FONT_BOLD, 16)
+    pdf.drawCentredString(width / 2, height - 60, "Formulae for Section C")
+    pdf.setFont(FONT_REGULAR, 8)
+    pdf.drawCentredString(width / 2, height - 78, "The following formulae may be used to answer the Section C questions.")
+    y = height - 120
+    formulae = [
+        ("Price elasticity of demand (PED)", "PED = %ΔQd ÷ %ΔP", "Measures the responsiveness of quantity demanded to a change in price."),
+        ("Cross elasticity of demand (XED)", "XED = %ΔQd of good X ÷ %ΔP of good Y", "Measures the responsiveness of demand for one good to a change in the price of another."),
+        ("Income elasticity of demand (YED)", "YED = %ΔQd ÷ %ΔY", "Measures the responsiveness of demand to a change in consumer income."),
+        ("Price elasticity of supply (PES)", "PES = %ΔQs ÷ %ΔP", "Measures the responsiveness of quantity supplied to a change in price."),
+        ("Total revenue", "TR = P × Q", "Total revenue equals price multiplied by quantity sold."),
+        ("Average revenue", "AR = TR ÷ Q", "Average revenue equals total revenue divided by quantity."),
+        ("Marginal revenue", "MR = ΔTR ÷ ΔQ", "Marginal revenue is the change in total revenue from selling one extra unit."),
+        ("Total cost", "TC = FC + VC", "Total cost is the sum of fixed costs and variable costs."),
+        ("Average total cost (ATC)", "ATC = TC ÷ Q  or  AFC + AVC", "Average total cost equals total cost divided by output."),
+        ("Marginal cost (MC)", "MC = ΔTC ÷ ΔQ", "Marginal cost is the change in total cost from producing one extra unit."),
+        ("Profit", "Profit = TR − TC", "Profit equals total revenue minus total cost."),
+        ("Rate of return on capital employed (ROCE)", "ROCE = (Profit ÷ Capital employed) × 100%", "Measures the profitability of a company relative to its capital base."),
+        ("Consumer surplus", "CS = Total benefit − Total expenditure", "The difference between what consumers are willing to pay and what they actually pay."),
+        ("Producer surplus", "PS = Total revenue − Variable cost", "The difference between what producers receive and the minimum they would accept."),
+        ("Concentration ratio (CR_n)", "CR_n = Market share of top n firms", "Measures the total market share held by the n largest firms in an industry."),
+        ("Labour productivity", "Labour productivity = Total output ÷ Number of workers", "Measures output per worker."),
+        ("Unemployment rate", "Unemployment rate = (Unemployed ÷ Labour force) × 100%", "The percentage of the labour force that is without work but seeking employment."),
+        ("Inflation rate (CPI)", "Inflation rate = ((CPI_new − CPI_old) ÷ CPI_old) × 100%", "The percentage change in the consumer price index over a period."),
+        ("GDP (expenditure method)", "GDP = C + I + G + (X − M)", "GDP equals consumption + investment + government spending + net exports."),
+        ("GDP per capita", "GDP per capita = Real GDP ÷ Population", "A measure of average income per person."),
+        ("Multiplier effect (simple)", "k = 1 ÷ (1 − MPC)", "The multiplier shows the total change in GDP resulting from an initial change in spending, where MPC is the marginal propensity to consume."),
+        ("Accelerator effect", "Investment = a × ΔGDP", "The accelerator principle states that investment is related to the rate of change of GDP."),
+        ("Marshall-Lerner condition", "Depreciation improves the current account if |PED_X + PED_M| > 1", "The condition under which a currency depreciation improves the trade balance."),
+        ("Quantity theory of money (Fisher)", "MV = PT", "The money supply (M) times velocity of circulation (V) equals the price level (P) times transactions (T)."),
+    ]
+    pdf.setFont(FONT_BOLD, 9)
+    for title, formula, description in formulae:
+        if y < 70:
+            pdf.showPage()
+            _draw_crop_marks(pdf)
+            _draw_watermark(pdf)
+            pdf.setFont(FONT_BOLD, 16)
+            pdf.drawCentredString(width / 2, height - 60, "Formulae for Section C (continued)")
+            y = height - 100
+        pdf.setFont(FONT_BOLD, 9)
+        pdf.drawString(58, y, title)
+        y -= 14
+        pdf.setFont(FONT_ITALIC if FONT_ITALIC else FONT_REGULAR, 9)
+        pdf.setFillColor(colors.HexColor("#003A5D"))
+        pdf.drawString(72, y, formula)
+        pdf.setFillColor(colors.black)
+        y -= 14
+        pdf.setFont(FONT_REGULAR, 8)
+        pdf.setFillColor(colors.HexColor("#555555"))
+        for line in _wrap(description, 82):
+            pdf.drawString(72, y, line)
+            y -= 11
+        pdf.setFillColor(colors.black)
+        y -= 10
 
 
 def _force_new_page_after_question(paper_id: str, question) -> bool:
@@ -652,7 +730,19 @@ def _draw_section_c_answer_pages(
         y = _prepare_answer_page(pdf, blueprint, page_number)
 
 
-def _draw_continuation_lines(pdf: canvas.Canvas, x: float, y: float) -> float:
+def _draw_continuation_lines(pdf: canvas.Canvas, x: float, y: float, question_number: str = "") -> float:
+    if question_number:
+        pdf.setFont(FONT_ITALIC, 8)
+        pdf.setFillColor(colors.HexColor("#777777"))
+        pdf.drawString(x, y + 6, f"Question {question_number} continued ...")
+        pdf.setFillColor(colors.black)
+        y -= 16
+        pdf.setStrokeColor(colors.HexColor("#cccccc"))
+        pdf.setLineWidth(0.3)
+        pdf.line(x, y, 520, y)
+        pdf.setStrokeColor(colors.black)
+        pdf.setLineWidth(1)
+        y -= 12
     return _draw_answer_lines_until(pdf, x, y, 520)
 
 
@@ -726,7 +816,20 @@ def _draw_do_not_write_rail(pdf: canvas.Canvas, page_number: int) -> None:
         pdf.rotate(270)
         pdf.drawCentredString(0, 0, "DO NOT WRITE IN THIS AREA")
         pdf.restoreState()
+    _draw_staple_marks(pdf, page_number)
     pdf.setFillColor(colors.black)
+
+
+def _draw_staple_marks(pdf: canvas.Canvas, page_number: int) -> None:
+    width, height = A4
+    x = 12 if page_number % 2 == 1 else width - 15
+    pdf.setFillColor(colors.HexColor("#999999"))
+    pdf.setStrokeColor(colors.HexColor("#999999"))
+    pdf.setLineWidth(0.5)
+    for y in (height - 28, 270, 570):
+        pdf.circle(x, y, 2.5, stroke=1, fill=0)
+    pdf.setStrokeColor(colors.black)
+    pdf.setLineWidth(1)
 
 
 def _draw_hatched_rail(pdf: canvas.Canvas, x: float, y: float, w: float, h: float) -> None:
@@ -745,12 +848,14 @@ def _draw_hatched_rail(pdf: canvas.Canvas, x: float, y: float, w: float, h: floa
 
 def _draw_question_footer(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_number: int, is_last: bool = False) -> None:
     width, _ = A4
+    total = _TOTAL_PAPER_PAGES
+    page_label = str(page_number) if not total else f"Page {page_number} of {total}"
     pdf.setFont(FONT_BOLD, 8)
     if page_number % 2 == 1:
-        pdf.drawRightString(width - 72, 42, str(page_number))
+        pdf.drawRightString(width - 72, 42, page_label)
         block_x = 72
     else:
-        pdf.drawString(72, 42, str(page_number))
+        pdf.drawString(72, 42, page_label)
         block_x = width - 98
     if not is_last:
         pdf.setFont(FONT_REGULAR, 9)

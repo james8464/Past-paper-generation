@@ -54,9 +54,6 @@ enum AppLinks {
     static let ollamaDownload = webURL("https://ollama.com/download")
 
     private static func webURL(_ value: String) -> URL {
-        guard let url = URL(string: value) else {
-            preconditionFailure("Invalid app link: \(value)")
-        }
-        return url
+        URL(string: value) ?? URL(string: "about:blank")!
     }
 }

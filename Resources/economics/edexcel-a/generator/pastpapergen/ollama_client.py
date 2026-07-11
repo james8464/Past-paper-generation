@@ -6,7 +6,9 @@ import re
 import time
 import urllib.error
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
+from threading import Lock
 from typing import Callable
 
 from pastpapergen.models import MultipleChoiceOption, PaperBlueprint, QuestionBlueprint, Syllabus, SyllabusTopic
@@ -50,7 +52,8 @@ class OllamaClient:
         )
         with urllib.request.urlopen(request, timeout=180) as response:
             raw = json.loads(response.read().decode("utf-8"))
-        text = str(raw.get("response", "{}"))
+        raw_dict = raw if isinstance(raw, dict) else {}
+        text = str(raw_dict.get("response", "{}"))
         parsed = json.loads(text)
         if not isinstance(parsed, dict):
             raise json.JSONDecodeError("Expected dict", text, 0)
@@ -174,10 +177,22 @@ def generate_questions_with_ollama(
     progress: Callable[[str], None] | None = None,
 ) -> PaperBlueprint:
     emit = progress or (lambda _message: None)
-    questions: list[QuestionBlueprint] = []
     total = len(blueprint.questions)
-    for index, question in enumerate(blueprint.questions, start=1):
-        topic = syllabus.get_topic(question.topic_id)
+    results: dict[int, QuestionBlueprint] = {}
+    results_lock = Lock()
+    total_emitted = len(blueprint.questions)
+    max_workers = min(total, 4)
+
+    def _build_task(question_index: int, question: QuestionBlueprint) -> None:
+        index = question_index + 1
+        try:
+            topic = syllabus.get_topic(question.topic_id)
+        except KeyError as error:
+            _logger.error("Unknown topic '%s' for question %s, skipping LLM: %s", question.topic_id, question.number, error)
+            with results_lock:
+                results[question_index] = question
+            emit(f"Question {index}/{total}: {question.number} (unknown topic, template fallback)")
+            return
         emit(
             f"Generating question {index}/{total}: {question.number} "
             f"(Section {question.section}, {question.marks} marks, {topic.title})"
@@ -193,8 +208,8 @@ def generate_questions_with_ollama(
             parts = _merge_parts(question, payload.get("parts"))
             graph_params_raw = payload.get("graph_params")
             graph_params = GraphParams.from_dict(graph_params_raw) if isinstance(graph_params_raw, dict) else GraphParams()
-            questions.append(
-                question.model_copy(
+            with results_lock:
+                results[question_index] = question.model_copy(
                     update={
                         "prompt": question_text,
                         "source_text": source_text,
@@ -206,12 +221,18 @@ def generate_questions_with_ollama(
                         "graph_params": graph_params,
                     }
                 )
-            )
             emit(f"Generated question {index}/{total}: {question.number} ({topic.title})")
-        except (RuntimeError, json.JSONDecodeError, ValueError) as error:
+        except (RuntimeError, json.JSONDecodeError, ValueError, KeyError) as error:
             _logger.error("Failed to generate question %s, keeping template: %s", question.number, error)
-            questions.append(question)
+            with results_lock:
+                results[question_index] = question
             emit(f"Question {index}/{total}: {question.number} (fallback to template)")
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(_build_task, i, q): i for i, q in enumerate(blueprint.questions)}
+        for _future in as_completed(futures):
+            pass
+    questions = [results[i] for i in range(total)]
     return blueprint.model_copy(update={"questions": questions})
 
 
