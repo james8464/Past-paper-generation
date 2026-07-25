@@ -31,6 +31,33 @@ def run_bridge_raw(*args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
+def test_relative_output_is_resolved_from_callers_working_directory(tmp_path: Path) -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(BRIDGE),
+            "generate",
+            "--subject",
+            "economics_aqa",
+            "--paper",
+            "1",
+            "--output",
+            "generated",
+            "--dry-run",
+            "--seed",
+            "123",
+        ],
+        cwd=tmp_path,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    events = [json.loads(line) for line in result.stdout.splitlines() if line.strip()]
+    files = [Path(str(event["path"])) for event in events if event["type"] == "file"]
+    assert files
+    assert all(path.parent == tmp_path / "generated" for path in files)
+
+
 def test_ollama_status_emits_json() -> None:
     events = run_bridge("ollama-status")
     assert events
@@ -60,6 +87,143 @@ def test_economics_dry_run_generates_expected_files(tmp_path: Path) -> None:
     assert events[-1]["type"] == "done"
 
 
+def test_aqa_economics_all_papers_generate_expected_files(tmp_path: Path) -> None:
+    for paper in ("1", "2", "3"):
+        output = tmp_path / paper
+        events = run_bridge(
+            "generate",
+            "--subject",
+            "economics_aqa",
+            "--paper",
+            paper,
+            "--output",
+            str(output),
+            "--dry-run",
+            "--seed",
+            "123",
+        )
+        files = {
+            event["role"]: Path(str(event["path"]))
+            for event in events
+            if event["type"] == "file"
+        }
+        expected = (
+            {"question_paper", "source_booklet", "mark_scheme"}
+            if paper == "3"
+            else {"question_paper", "mark_scheme"}
+        )
+        assert files.keys() == expected
+        assert all(path.exists() for path in files.values())
+        assert events[-1]["type"] == "done"
+
+
+def test_ocr_economics_all_papers_generate_expected_files(tmp_path: Path) -> None:
+    for paper in ("1", "2", "3"):
+        output = tmp_path / paper
+        events = run_bridge(
+            "generate",
+            "--subject",
+            "economics_ocr",
+            "--paper",
+            paper,
+            "--output",
+            str(output),
+            "--dry-run",
+            "--seed",
+            "123",
+        )
+        files = {
+            event["role"]: Path(str(event["path"]))
+            for event in events
+            if event["type"] == "file"
+        }
+        assert files.keys() == {"question_paper", "mark_scheme"}
+        assert all(path.exists() for path in files.values())
+        assert events[-1]["type"] == "done"
+
+
+def test_ocr_computer_science_all_papers_generate_expected_files(
+    tmp_path: Path,
+) -> None:
+    for paper in ("1", "2"):
+        output = tmp_path / paper
+        events = run_bridge(
+            "generate",
+            "--subject",
+            "computer_science_ocr",
+            "--paper",
+            paper,
+            "--output",
+            str(output),
+            "--dry-run",
+            "--seed",
+            "123",
+        )
+        files = {
+            event["role"]: Path(str(event["path"]))
+            for event in events
+            if event["type"] == "file"
+        }
+        assert files.keys() == {"question_paper", "mark_scheme"}
+        assert all(path.exists() for path in files.values())
+        assert events[-1]["type"] == "done"
+
+
+def test_aqa_business_all_papers_generate_expected_files(tmp_path: Path) -> None:
+    for paper in ("1", "2", "3"):
+        output = tmp_path / paper
+        events = run_bridge(
+            "generate",
+            "--subject",
+            "business_aqa",
+            "--paper",
+            paper,
+            "--output",
+            str(output),
+            "--dry-run",
+            "--seed",
+            "123",
+        )
+        files = {
+            event["role"]: Path(str(event["path"]))
+            for event in events
+            if event["type"] == "file"
+        }
+        expected = (
+            {"question_paper", "source_booklet", "mark_scheme"}
+            if paper == "3"
+            else {"question_paper", "mark_scheme"}
+        )
+        assert files.keys() == expected
+        assert all(path.exists() for path in files.values())
+        assert events[-1]["type"] == "done"
+
+
+def test_aqa_accounting_all_papers_generate_expected_files(tmp_path: Path) -> None:
+    for paper in ("1", "2"):
+        output = tmp_path / paper
+        events = run_bridge(
+            "generate",
+            "--subject",
+            "accounting_aqa",
+            "--paper",
+            paper,
+            "--output",
+            str(output),
+            "--dry-run",
+            "--seed",
+            "123",
+        )
+        files = {
+            event["role"]: Path(str(event["path"]))
+            for event in events
+            if event["type"] == "file"
+        }
+        assert files.keys() == {"question_paper", "mark_scheme"}
+        assert all(path.exists() for path in files.values())
+        assert events[-1]["type"] == "done"
+
+
 def test_cs_dry_run_generates_expected_files_without_audit(tmp_path: Path) -> None:
     events = run_bridge(
         "generate",
@@ -77,6 +241,32 @@ def test_cs_dry_run_generates_expected_files_without_audit(tmp_path: Path) -> No
     assert files.keys() == {"question_paper", "mark_scheme"}
     assert all(path.exists() for path in files.values())
     assert not any(path.name.endswith("audit.json") for path in tmp_path.iterdir())
+    assert events[-1]["type"] == "done"
+
+
+def test_cs_paper1_dry_run_generates_on_screen_package(tmp_path: Path) -> None:
+    events = run_bridge(
+        "generate",
+        "--subject",
+        "computer_science",
+        "--paper",
+        "1",
+        "--output",
+        str(tmp_path),
+        "--dry-run",
+        "--seed",
+        "123",
+    )
+    files = {event["role"]: Path(str(event["path"])) for event in events if event["type"] == "file"}
+    assert files.keys() == {
+        "question_paper",
+        "preliminary_material",
+        "electronic_answer_document",
+        "skeleton_program",
+        "data_file",
+        "mark_scheme",
+    }
+    assert all(path.exists() for path in files.values())
     assert events[-1]["type"] == "done"
 
 

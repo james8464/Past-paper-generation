@@ -8,7 +8,6 @@ from typing import Callable
 from Backend.Core.benchmark import handle_benchmark
 from Backend.Core.generation import handle_generate
 from Backend.Core.ollama import handle_list_models, handle_ollama_status, handle_pull_model
-from Backend.Core.paths import REPO_ROOT
 
 DEFAULT_OUTPUT_DIR = Path.home() / "Downloads"
 DEFAULT_MODEL = os.environ.get("PAPER_CREATOR_DEFAULT_MODEL", "qwen2.5:14b")
@@ -36,13 +35,25 @@ def build_parser() -> argparse.ArgumentParser:
     benchmark.set_defaults(handler=handle_benchmark)
 
     generate = subparsers.add_parser("generate")
-    generate.add_argument("--subject", choices=["economics", "computer_science"], required=True)
+    generate.add_argument(
+        "--subject",
+        choices=[
+            "economics",
+            "economics_aqa",
+            "economics_ocr",
+            "computer_science",
+            "computer_science_ocr",
+            "business_aqa",
+            "accounting_aqa",
+        ],
+        required=True,
+    )
     generate.add_argument("--paper", default="1")
     generate.add_argument("--output", default=str(DEFAULT_OUTPUT_DIR))
     generate.add_argument("--seed", type=int, default=None)
     generate.add_argument("--model", default=DEFAULT_MODEL)
     generate.add_argument("--provider", choices=["ollama", "openai", "anthropic", "apple"], default="ollama")
-    generate.add_argument("--api-key", default="")
+    generate.add_argument("--api-key", default=os.environ.get("PAPER_CREATOR_API_KEY", ""))
     generate.add_argument("--ollama-url", default=DEFAULT_OLLAMA_URL)
     generate.add_argument("--dry-run", action="store_true")
     generate.add_argument("--notes", default="")
@@ -51,7 +62,6 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
-    os.chdir(REPO_ROOT)
     parser = build_parser()
     args = parser.parse_args(argv)
     handler: Callable[[argparse.Namespace], int] = args.handler

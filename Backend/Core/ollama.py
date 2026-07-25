@@ -3,6 +3,9 @@ from __future__ import annotations
 import argparse
 import shutil
 import subprocess
+import json
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 from Backend.Core.events import emit, emit_progress, run_subprocess_json
@@ -12,6 +15,20 @@ OLLAMA_FALLBACK_COMMANDS = (
     "/usr/local/bin/ollama",
     "/Applications/Ollama.app/Contents/Resources/ollama",
 )
+OLLAMA_API = "http://127.0.0.1:11434"
+
+
+def api_models() -> list[str] | None:
+    try:
+        with urllib.request.urlopen(f"{OLLAMA_API}/api/tags", timeout=5) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except (OSError, urllib.error.URLError, json.JSONDecodeError):
+        return None
+    return [
+        str(model["name"])
+        for model in payload.get("models", [])
+        if isinstance(model, dict) and model.get("name")
+    ]
 
 
 def ollama_command() -> str | None:
@@ -21,6 +38,11 @@ def ollama_command() -> str | None:
 
 
 def handle_ollama_status(_args: argparse.Namespace) -> int:
+    models = api_models()
+    if models is not None:
+        emit("ollama_status", installed=True, running=True, message="Ollama is available.")
+        return 0
+
     command = ollama_command()
     if not command:
         emit("ollama_status", installed=False, running=False, message="Ollama is not installed.")
@@ -43,6 +65,11 @@ def handle_ollama_status(_args: argparse.Namespace) -> int:
 
 
 def handle_list_models(_args: argparse.Namespace) -> int:
+    api_result = api_models()
+    if api_result is not None:
+        emit("models", models=api_result, message=f"Found {len(api_result)} Ollama model(s).")
+        return 0
+
     command = ollama_command()
     if not command:
         emit("models", models=[], message="Ollama is not installed.")
