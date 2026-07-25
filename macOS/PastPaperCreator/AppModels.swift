@@ -41,58 +41,7 @@ struct CatalogSubject: Identifiable, Hashable {
 }
 
 enum ExamCatalog {
-    static let subjects: [CatalogSubject] = [
-        subject("economics", "Economics", "chart.line.uptrend.xyaxis", [
-            placeholderBoard("economics-aqa", "AQA"),
-            readyBoard(
-                subjectID: "economics",
-                subjectTitle: "Economics",
-                systemImage: "chart.line.uptrend.xyaxis",
-                boardID: "edexcel-a",
-                title: "Edexcel A",
-                backendSubject: "economics",
-                papers: [
-                    PaperOption(id: "1", title: "Paper 1", detail: "Markets and business behaviour"),
-                    PaperOption(id: "2", title: "Paper 2", detail: "National and global economy"),
-                    PaperOption(id: "3", title: "Paper 3", detail: "Microeconomics and macroeconomics"),
-                ]
-            ),
-            placeholderBoard("economics-ocr", "OCR"),
-            placeholderBoard("economics-cambridge-international", "Cambridge International"),
-        ]),
-        subject("computer-science", "Computer Science", "cpu", [
-            readyBoard(
-                subjectID: "computer-science",
-                subjectTitle: "Computer Science",
-                systemImage: "cpu",
-                boardID: "aqa",
-                title: "AQA",
-                backendSubject: "computer_science",
-                papers: [
-                    PaperOption(id: "2", title: "Paper 2", detail: "AQA A-level Computer Science 7517/2"),
-                ]
-            ),
-            placeholderBoard("computer-science-ocr", "OCR"),
-            placeholderBoard("computer-science-cambridge-international", "Cambridge International"),
-        ]),
-        subject("biology", "Biology", "leaf", [
-            placeholderBoard("biology-aqa", "AQA", subjectID: "biology", subjectTitle: "Biology", systemImage: "leaf"),
-            placeholderBoard("biology-edexcel-a", "Edexcel Biology A (SNAB)", subjectID: "biology", subjectTitle: "Biology", systemImage: "leaf"),
-        ]),
-        subject("chemistry", "Chemistry", "flask", [
-            placeholderBoard("chemistry-aqa", "AQA", subjectID: "chemistry", subjectTitle: "Chemistry", systemImage: "flask"),
-            placeholderBoard("chemistry-cambridge-international", "Cambridge International", subjectID: "chemistry", subjectTitle: "Chemistry", systemImage: "flask"),
-            placeholderBoard("chemistry-edexcel", "Edexcel", subjectID: "chemistry", subjectTitle: "Chemistry", systemImage: "flask"),
-            placeholderBoard("chemistry-ocr-a", "OCR A", subjectID: "chemistry", subjectTitle: "Chemistry", systemImage: "flask"),
-        ]),
-        placeholderSubject("mathematics", "Mathematics", "x.squareroot", ["AQA", "Edexcel", "OCR A", "Cambridge International"]),
-        subject("physics", "Physics", "atom", [
-            placeholderBoard("physics-aqa", "AQA", subjectID: "physics", subjectTitle: "Physics", systemImage: "atom"),
-            placeholderBoard("physics-cambridge-international", "Cambridge International", subjectID: "physics", subjectTitle: "Physics", systemImage: "atom"),
-            placeholderBoard("physics-edexcel", "Edexcel", subjectID: "physics", subjectTitle: "Physics", systemImage: "atom"),
-            placeholderBoard("physics-ocr-a", "OCR A", subjectID: "physics", subjectTitle: "Physics", systemImage: "atom"),
-        ]),
-    ]
+    static let subjects = (try? CatalogLoader.load(bundle: .main)) ?? []
 
     static var readyBoards: [ExamBoardOption] {
         subjects.flatMap(\.boards).filter(\.isReady)
@@ -109,75 +58,142 @@ enum ExamCatalog {
     static func board(id: String) -> ExamBoardOption? {
         subjects.flatMap(\.boards).first { $0.id == id }
     }
+}
 
-    private static func subject(_ id: String, _ title: String, _ systemImage: String, _ boards: [ExamBoardOption]) -> CatalogSubject {
-        CatalogSubject(id: id, title: title, systemImage: systemImage, boards: boards)
-    }
-
-    private static func placeholderSubject(_ id: String, _ title: String, _ systemImage: String, _ boards: [String]) -> CatalogSubject {
-        subject(
-            id,
-            title,
-            systemImage,
-            boards.map { placeholderBoard("\(id)-\($0.slugID)", $0, subjectID: id, subjectTitle: title, systemImage: systemImage) }
+enum CatalogLoader {
+    static func load(bundle: Bundle) throws -> [CatalogSubject] {
+        guard let catalogURL = bundle.url(forResource: "catalog", withExtension: "json") else {
+            throw CatalogLoadError.missingResource("catalog.json")
+        }
+        guard let registryURL = bundle.url(forResource: "generator-registry", withExtension: "json") else {
+            throw CatalogLoadError.missingResource("generator-registry.json")
+        }
+        return try load(
+            catalogData: Data(contentsOf: catalogURL),
+            registryData: Data(contentsOf: registryURL)
         )
     }
 
-    private static func readyBoard(
-        subjectID: String,
-        subjectTitle: String,
-        systemImage: String,
-        boardID: String,
-        title: String,
-        backendSubject: String,
-        papers: [PaperOption]
-    ) -> ExamBoardOption {
-        return ExamBoardOption(
-            id: "\(subjectID)-\(boardID)",
-            subjectID: subjectID,
-            subjectTitle: subjectTitle,
-            title: title,
-            shortTitle: title,
-            systemImage: systemImage,
-            status: .ready,
-            backendSubject: backendSubject,
-            papers: papers,
-            resourcePath: "a-levels/\(subjectID)/\(boardID)"
-        )
+    static func load(catalogData: Data, registryData: Data) throws -> [CatalogSubject] {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        let catalog = try decoder.decode(CatalogDocument.self, from: catalogData)
+        let registry = try decoder.decode(GeneratorRegistryDocument.self, from: registryData)
+        guard catalog.qualification == "A-Level", registry.qualification == "a-level" else {
+            throw CatalogLoadError.qualificationMismatch
+        }
+
+        var implementations: [String: GeneratorFamilyDocument] = [:]
+        for family in registry.families where family.advertised {
+            let key = implementationKey(subject: family.appSubject, board: family.appBoard)
+            guard implementations[key] == nil else {
+                throw CatalogLoadError.duplicateImplementation(key)
+            }
+            guard !family.papers.isEmpty else {
+                throw CatalogLoadError.emptyImplementation(key)
+            }
+            implementations[key] = family
+        }
+
+        var seenBoards: Set<String> = []
+        let subjects = try catalog.subjects.compactMap { subject -> CatalogSubject? in
+            let boards = try subject.boards.compactMap { board -> ExamBoardOption? in
+                let key = implementationKey(subject: subject.id, board: board.id)
+                guard seenBoards.insert(key).inserted else {
+                    throw CatalogLoadError.duplicateBoard(key)
+                }
+                if let implementation = implementations.removeValue(forKey: key) {
+                    return ExamBoardOption(
+                        id: key,
+                        subjectID: subject.id,
+                        subjectTitle: subject.title,
+                        title: board.title,
+                        shortTitle: board.shortTitle ?? board.title,
+                        systemImage: subject.systemImage,
+                        status: .ready,
+                        backendSubject: implementation.backendSubject,
+                        papers: implementation.papers.map {
+                            PaperOption(id: $0.id, title: $0.title, detail: $0.detail)
+                        },
+                        resourcePath: implementation.resourcePath
+                    )
+                }
+                return nil
+            }
+            guard !boards.isEmpty else { return nil }
+            return CatalogSubject(
+                id: subject.id,
+                title: subject.title,
+                systemImage: subject.systemImage,
+                boards: boards
+            )
+        }
+        if let unmatched = implementations.keys.sorted().first {
+            throw CatalogLoadError.implementationMissingFromCatalog(unmatched)
+        }
+        return subjects
     }
 
-    private static func placeholderBoard(
-        _ id: String,
-        _ title: String,
-        subjectID: String? = nil,
-        subjectTitle: String? = nil,
-        systemImage: String? = nil
-    ) -> ExamBoardOption {
-        let resolvedSubjectID = subjectID ?? id.components(separatedBy: "-").dropLast().joined(separator: "-")
-        let boardSlug = String(id.dropFirst("\(resolvedSubjectID)-".count))
-        return ExamBoardOption(
-            id: id,
-            subjectID: resolvedSubjectID,
-            subjectTitle: subjectTitle ?? resolvedSubjectID.replacingOccurrences(of: "-", with: " ").capitalized,
-            title: title,
-            shortTitle: title,
-            systemImage: systemImage ?? "doc.text",
-            status: .placeholder,
-            backendSubject: nil,
-            papers: [
-                PaperOption(id: "coming-soon", title: "Coming Soon", detail: "Generator support will be added later."),
-            ],
-            resourcePath: "a-levels/\(resolvedSubjectID)/\(boardSlug)"
-        )
+    private static func implementationKey(subject: String, board: String) -> String {
+        "\(subject)-\(board)"
     }
 }
 
-private extension String {
-    var slugID: String {
-        lowercased()
-            .replacingOccurrences(of: "&", with: "and")
-            .replacingOccurrences(of: " ", with: "-")
-            .replacingOccurrences(of: ".", with: "")
+private struct CatalogDocument: Decodable {
+    let qualification: String
+    let subjects: [CatalogSubjectDocument]
+}
+
+private struct CatalogSubjectDocument: Decodable {
+    let id: String
+    let title: String
+    let systemImage: String
+    let boards: [CatalogBoardDocument]
+}
+
+private struct CatalogBoardDocument: Decodable {
+    let id: String
+    let title: String
+    let shortTitle: String?
+}
+
+private struct GeneratorRegistryDocument: Decodable {
+    let qualification: String
+    let families: [GeneratorFamilyDocument]
+}
+
+private struct GeneratorFamilyDocument: Decodable {
+    let appSubject: String
+    let appBoard: String
+    let backendSubject: String
+    let resourcePath: String
+    let advertised: Bool
+    let papers: [GeneratorPaperDocument]
+}
+
+private struct GeneratorPaperDocument: Decodable {
+    let id: String
+    let title: String
+    let detail: String
+}
+
+enum CatalogLoadError: LocalizedError {
+    case missingResource(String)
+    case qualificationMismatch
+    case duplicateImplementation(String)
+    case emptyImplementation(String)
+    case duplicateBoard(String)
+    case implementationMissingFromCatalog(String)
+
+    var errorDescription: String? {
+        switch self {
+        case let .missingResource(name): "Missing bundled catalog resource: \(name)"
+        case .qualificationMismatch: "Catalog and generator registry qualifications do not match."
+        case let .duplicateImplementation(id): "Duplicate generator implementation: \(id)"
+        case let .emptyImplementation(id): "Advertised generator has no papers: \(id)"
+        case let .duplicateBoard(id): "Duplicate catalog board: \(id)"
+        case let .implementationMissingFromCatalog(id): "Generator is missing from the app catalog: \(id)"
+        }
     }
 }
 
@@ -365,6 +381,10 @@ struct GeneratedFile: Identifiable, Equatable {
         case "question_paper": "Question Paper"
         case "source_booklet": "Source Booklet"
         case "mark_scheme": "Mark Scheme"
+        case "preliminary_material": "Preliminary Material"
+        case "electronic_answer_document": "Electronic Answer Document"
+        case "skeleton_program": "Skeleton Program"
+        case "data_file": "Practice Data"
         default: role.replacingOccurrences(of: "_", with: " ").capitalized
         }
     }

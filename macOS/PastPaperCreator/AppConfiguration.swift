@@ -38,6 +38,7 @@ enum AppStorageKey {
     static let notificationsEnabled = "notificationsEnabled"
     static let hasSeenWelcome = "hasSeenWelcome"
     static let outputFolderPath = "outputFolderPath"
+    static let outputFolderBookmark = "outputFolderBookmark"
     static let selectedBoardID = "selectedBoardID"
     static let selectedPaperID = "selectedPaperID"
 }

@@ -1,11 +1,12 @@
 name: PastPaperCreator
 options:
   deploymentTarget:
-    macOS: 26.4
+    macOS: "15.0"
   xcodeVersion: 26.4.1
 settings:
   base:
     ALWAYS_SEARCH_USER_PATHS: NO
+    ARCHS: arm64
     CLANG_ANALYZER_NONNULL: YES
     CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION: YES_AGGRESSIVE
     CLANG_CXX_LANGUAGE_STANDARD: gnu++20
@@ -45,7 +46,7 @@ settings:
     GCC_WARN_UNUSED_FUNCTION: YES
     GCC_WARN_UNUSED_VARIABLE: YES
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES
-    MACOSX_DEPLOYMENT_TARGET: 26.4
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
     MTL_FAST_MATH: YES
     SDKROOT: macosx
 
@@ -79,6 +80,29 @@ targets:
         excludes:
           - Info.plist
           - PastPaperCreator.entitlements
+      - path: ../Resources/catalog.json
+        buildPhase: resources
+      - path: ../Resources/generator-registry.json
+        buildPhase: resources
+    preBuildScripts:
+      - name: Bundle standalone backend
+        script: |
+          "$SRCROOT/scripts/build_backend.sh"
+        inputFiles:
+          - "$(SRCROOT)/../bridge.py"
+          - "$(SRCROOT)/../Backend/Core/cli.py"
+          - "$(SRCROOT)/../Backend/Core/generation.py"
+          - "$(SRCROOT)/../Backend/Core/providers.py"
+          - "$(SRCROOT)/../Resources/economics/edexcel-a/generator/pyproject.toml"
+          - "$(SRCROOT)/../Resources/economics/aqa/generator/pyproject.toml"
+          - "$(SRCROOT)/../Resources/economics/ocr/generator/pyproject.toml"
+          - "$(SRCROOT)/../Resources/computer-science/aqa/generator/pyproject.toml"
+          - "$(SRCROOT)/../Resources/computer-science/ocr/generator/pyproject.toml"
+          - "$(SRCROOT)/../Resources/business/aqa/generator/pyproject.toml"
+          - "$(SRCROOT)/../Resources/accounting/aqa/generator/pyproject.toml"
+        outputFiles:
+          - "$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/ExamForgeBackend/.built"
+        basedOnDependencyAnalysis: false
     settings:
       base:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -93,6 +117,7 @@ targets:
         ENABLE_APP_SANDBOX: "$(APP_SANDBOX_ENABLED)"
         ENABLE_HARDENED_RUNTIME: YES
         ENABLE_PREVIEWS: YES
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
         ENABLE_OUTGOING_NETWORK_CONNECTIONS: YES
         ENABLE_USER_SELECTED_FILES: readwrite
         GENERATE_INFOPLIST_FILE: NO

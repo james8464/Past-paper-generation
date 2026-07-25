@@ -53,6 +53,7 @@ final class AppViewModel: ObservableObject {
     private var activeOperation = RunningOperation.none
     private var etaTimer: AnyCancellable?
     private var pendingHostedProvider: AIProvider?
+    private var securityScopedOutputFolder: URL?
 
     var selectedBoard: ExamBoardOption {
         ExamCatalog.board(id: selectedBoardID) ?? ExamCatalog.defaultBoard
@@ -127,7 +128,9 @@ final class AppViewModel: ObservableObject {
             notificationsEnabled = defaults.bool(forKey: AppStorageKey.notificationsEnabled)
         }
         showWelcome = !defaults.bool(forKey: AppStorageKey.hasSeenWelcome)
-        if let savedOutput = defaults.string(forKey: AppStorageKey.outputFolderPath), !savedOutput.isEmpty {
+        if let bookmark = defaults.data(forKey: AppStorageKey.outputFolderBookmark) {
+            restoreOutputFolder(from: bookmark)
+        } else if let savedOutput = defaults.string(forKey: AppStorageKey.outputFolderPath), !savedOutput.isEmpty {
             if AppDefaults.isSandboxDownloadsPath(savedOutput) {
                 defaults.set(outputFolder.path, forKey: AppStorageKey.outputFolderPath)
             } else {
@@ -164,8 +167,7 @@ final class AppViewModel: ObservableObject {
         panel.directoryURL = outputFolder
 
         if panel.runModal() == .OK, let url = panel.url {
-            outputFolder = url
-            defaults.set(url.path, forKey: AppStorageKey.outputFolderPath)
+            setOutputFolder(url)
         }
     }
 
@@ -276,13 +278,14 @@ final class AppViewModel: ObservableObject {
             ollamaURL,
         ]
 
+        let backendEnvironment: [String: String]
         switch aiProvider {
         case .ollama, .apple:
-            break
+            backendEnvironment = [:]
         case .openAI:
-            arguments.append(contentsOf: ["--api-key", openAIAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)])
+            backendEnvironment = ["PAPER_CREATOR_API_KEY": openAIAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)]
         case .anthropic:
-            arguments.append(contentsOf: ["--api-key", anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)])
+            backendEnvironment = ["PAPER_CREATOR_API_KEY": anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)]
         }
 
         if dryRun {
@@ -290,7 +293,7 @@ final class AppViewModel: ObservableObject {
         }
 
         do {
-            runningProcess = try backend.run(arguments: arguments) { [weak self] event in
+            runningProcess = try backend.run(arguments: arguments, environment: backendEnvironment) { [weak self] event in
                 self?.apply(event)
             } onFinish: { [weak self] result in
                 self?.finishGeneration(result)
@@ -498,6 +501,43 @@ final class AppViewModel: ObservableObject {
         defaults.set(outputFolder.path, forKey: AppStorageKey.outputFolderPath)
         SecretStore.save(openAIAPIKey, account: SecretAccount.openAIAPIKey)
         SecretStore.save(anthropicAPIKey, account: SecretAccount.anthropicAPIKey)
+    }
+
+    private func setOutputFolder(_ url: URL) {
+        securityScopedOutputFolder?.stopAccessingSecurityScopedResource()
+        securityScopedOutputFolder = url.startAccessingSecurityScopedResource() ? url : nil
+        outputFolder = url
+        defaults.set(url.path, forKey: AppStorageKey.outputFolderPath)
+        do {
+            let bookmark = try url.bookmarkData(
+                options: .withSecurityScope,
+                includingResourceValuesForKeys: nil,
+                relativeTo: nil
+            )
+            defaults.set(bookmark, forKey: AppStorageKey.outputFolderBookmark)
+        } catch {
+            defaults.removeObject(forKey: AppStorageKey.outputFolderBookmark)
+        }
+    }
+
+    private func restoreOutputFolder(from bookmark: Data) {
+        var isStale = false
+        do {
+            let url = try URL(
+                resolvingBookmarkData: bookmark,
+                options: .withSecurityScope,
+                relativeTo: nil,
+                bookmarkDataIsStale: &isStale
+            )
+            securityScopedOutputFolder = url.startAccessingSecurityScopedResource() ? url : nil
+            outputFolder = url
+            defaults.set(url.path, forKey: AppStorageKey.outputFolderPath)
+            if isStale {
+                setOutputFolder(url)
+            }
+        } catch {
+            defaults.removeObject(forKey: AppStorageKey.outputFolderBookmark)
+        }
     }
 
     private func generatedFile(role: String) -> GeneratedFile? {

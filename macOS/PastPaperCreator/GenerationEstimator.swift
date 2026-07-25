@@ -86,16 +86,18 @@ enum GenerationEstimator {
     private static func paperComplexity(board: ExamBoardOption, paper: PaperOption) -> (value: Double, factor: EstimateFactor) {
         let value: Double
         let detail: String
-        if board.backendSubject == "economics" {
+        if board.backendSubject?.hasPrefix("economics") == true {
             switch paper.id {
             case "3":
                 value = 0.95
                 detail = "Paper 3 has fewer large sections but longer integrated writing."
             default:
                 value = 1.12
-                detail = "Economics \(paper.title) creates question paper, source booklet, and mark scheme."
+                detail = ["economics_aqa", "economics_ocr"].contains(board.backendSubject ?? "")
+                    ? "Economics \(paper.title) creates a question paper and mark scheme."
+                    : "Economics \(paper.title) creates question paper, source booklet, and mark scheme."
             }
-        } else if board.backendSubject == "computer_science" {
+        } else if ["computer_science", "computer_science_ocr"].contains(board.backendSubject ?? "") {
             value = 1.02
             detail = "Computer Science Paper 2 is self-contained but has more technical subparts."
         } else {

@@ -22,7 +22,7 @@ struct WelcomeSheet: View {
             }
 
             VStack(alignment: .leading, spacing: 12) {
-                WelcomeRow(systemImage: "graduationcap", title: "Choose a subject", message: "Economics Edexcel A and Computer Science AQA are ready. Other subjects are placeholders.")
+                WelcomeRow(systemImage: "graduationcap", title: "Choose a subject", message: "Choose from generators that have complete local resource packs.")
                 WelcomeRow(systemImage: "cpu", title: "Pick an AI engine", message: "Use Ollama locally, or configure a hosted provider in Settings.")
                 WelcomeRow(systemImage: "folder", title: "Save PDFs", message: "Generated question papers and mark schemes go to your selected output folder.")
             }
@@ -105,7 +105,7 @@ struct HelpSheet: View {
                     HelpSection(
                         title: "Generate",
                         rows: [
-                            HelpRow("Choose a ready generator in the sidebar: Economics Edexcel A or Computer Science AQA."),
+                            HelpRow("Choose an available generator in the sidebar."),
                             HelpRow("Choose the paper, confirm the AI engine is ready, then use Generate Paper."),
                             HelpRow("Generation continues in the background; optional notifications report start, finish, or failure."),
                         ]

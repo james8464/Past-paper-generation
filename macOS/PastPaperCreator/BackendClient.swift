@@ -8,7 +8,7 @@ enum BackendClientError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .backendMissing:
-            "Could not find app_backend.py."
+            "The ExamForge generation backend is missing. Reinstall the app."
         case .pythonMissing:
             "Could not find a Python interpreter."
         case let .pythonVenvUnreadable(path):
@@ -22,6 +22,7 @@ enum BackendClientError: LocalizedError {
 
 final class BackendClient: @unchecked Sendable {
     private enum BackendFile {
+        static let bundledExecutable = "Contents/Resources/ExamForgeBackend/ExamForgeBackend"
         static let bridgeScript = "bridge.py"
         static let localPython = ".venv/bin/python"
         static let localPythonConfig = ".venv/pyvenv.cfg"
@@ -35,16 +36,18 @@ final class BackendClient: @unchecked Sendable {
 
     func run(
         arguments: [String],
+        environment: [String: String] = [:],
         onEvent: @escaping @MainActor (BackendEvent) -> Void,
         onFinish: @escaping @MainActor (Result<Int32, Error>) -> Void
     ) throws -> Process {
-        let root = try repositoryRoot()
+        let launch = try launchConfiguration(arguments: arguments)
         let process = Process()
         let pipe = Pipe()
 
-        process.executableURL = try pythonExecutable(root: root)
-        process.currentDirectoryURL = root
-        process.arguments = [root.appendingPathComponent(BackendFile.bridgeScript).path] + arguments
+        process.executableURL = launch.executable
+        process.currentDirectoryURL = launch.workingDirectory
+        process.arguments = launch.arguments
+        process.environment = ProcessInfo.processInfo.environment.merging(environment) { _, newValue in newValue }
         let errorPipe = Pipe()
         process.standardOutput = pipe
         process.standardError = errorPipe
@@ -85,14 +88,14 @@ final class BackendClient: @unchecked Sendable {
 
     func collect(arguments: [String]) async throws -> [BackendEvent] {
         try await Task.detached(priority: .userInitiated) {
-            let root = try self.repositoryRoot()
+            let launch = try self.launchConfiguration(arguments: arguments)
             let process = Process()
             let pipe = Pipe()
             let errorPipe = Pipe()
 
-            process.executableURL = try self.pythonExecutable(root: root)
-            process.currentDirectoryURL = root
-            process.arguments = [root.appendingPathComponent(BackendFile.bridgeScript).path] + arguments
+            process.executableURL = launch.executable
+            process.currentDirectoryURL = launch.workingDirectory
+            process.arguments = launch.arguments
             process.standardOutput = pipe
             process.standardError = errorPipe
 
@@ -112,6 +115,30 @@ final class BackendClient: @unchecked Sendable {
             }
             return events
         }.value
+    }
+
+    private struct LaunchConfiguration {
+        let executable: URL
+        let workingDirectory: URL
+        let arguments: [String]
+    }
+
+    private func launchConfiguration(arguments: [String]) throws -> LaunchConfiguration {
+        let bundledExecutable = Bundle.main.bundleURL.appendingPathComponent(BackendFile.bundledExecutable)
+        if fileManager.isExecutableFile(atPath: bundledExecutable.path) {
+            return LaunchConfiguration(
+                executable: bundledExecutable,
+                workingDirectory: bundledExecutable.deletingLastPathComponent(),
+                arguments: arguments
+            )
+        }
+
+        let root = try repositoryRoot()
+        return LaunchConfiguration(
+            executable: try pythonExecutable(root: root),
+            workingDirectory: root,
+            arguments: [root.appendingPathComponent(BackendFile.bridgeScript).path] + arguments
+        )
     }
 
     @MainActor

@@ -55,6 +55,7 @@ PHONY_TARGETS := $(TARGET_PREFIX)help $(TARGET_PREFIX)diagnose $(TARGET_PREFIX)b
 	$(TARGET_PREFIX)test $(TARGET_PREFIX)run $(TARGET_PREFIX)build-and-run \
 	$(TARGET_PREFIX)build-and-run-background $(TARGET_PREFIX)build-app-store \
 	$(TARGET_PREFIX)preflight-app-store \
+	$(TARGET_PREFIX)backend-env \
 	$(TARGET_PREFIX)clean $(TARGET_PREFIX)agent-verify
 .PHONY: $(PHONY_TARGETS)
 
@@ -69,6 +70,7 @@ $(TARGET_PREFIX)help:
 		"  make $(TARGET_PREFIX)build-and-run-background Build then run in background" \
 		"  make $(TARGET_PREFIX)build-app-store          Release build with App Store restrictions enabled" \
 		"  make $(TARGET_PREFIX)preflight-app-store      Lint plist files and build App Store mode" \
+		"  make $(TARGET_PREFIX)backend-env              Create the standalone-backend build environment" \
 		"  make $(TARGET_PREFIX)clean                    Clean derived data + logs" \
 		"  make $(TARGET_PREFIX)agent-verify             Build and test"
 
@@ -191,6 +193,9 @@ $(TARGET_PREFIX)build-app-store:
 $(TARGET_PREFIX)preflight-app-store:
 	@plutil -lint PastPaperCreator/Info.plist PastPaperCreator/PrivacyInfo.xcprivacy PastPaperCreator/PastPaperCreator.entitlements
 	@$(MAKE) --no-print-directory $(TARGET_PREFIX)build-app-store
+
+$(TARGET_PREFIX)backend-env:
+	@$(SCRIPTS_DIR)/bootstrap_backend.sh
 
 $(TARGET_PREFIX)clean:
 	@$(SCRIPTS_DIR)/clean.sh

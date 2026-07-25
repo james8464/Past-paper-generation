@@ -22,6 +22,12 @@ final class PastPaperCreatorTests: XCTestCase {
         })
     }
 
+    func testBuiltAppContainsStandaloneBackend() throws {
+        let executable = Bundle(for: AppViewModel.self).bundleURL
+            .appendingPathComponent("Contents/Resources/ExamForgeBackend/ExamForgeBackend")
+        XCTAssertTrue(FileManager.default.isExecutableFile(atPath: executable.path))
+    }
+
     func testBenchmarkSampleEventDecodes() throws {
         let event = try BackendEvent(jsonLine: #"{"type":"benchmark_sample","elapsed":2,"cpu_load":18.5,"cpu_mb_s":720,"memory_available_gb":9.25,"memory_pressure_percent":42,"swap_used_gb":0.5,"disk_write_mb_s":420,"disk_read_mb_s":900,"disk_free_gb":128,"small_file_ms":3.2,"network_latency_ms":42,"network_download_mb_s":34,"ollama_latency_ms":12,"thermal_speed_limit_percent":100,"pdf_pages_per_s":22}"#)
         if case let .benchmarkSample(sample) = event {
@@ -88,15 +94,52 @@ final class PastPaperCreatorTests: XCTestCase {
     func testCatalogReadyBoardsUseCorrectResourceFolders() throws {
         let economics = try XCTUnwrap(ExamCatalog.board(id: "economics-edexcel-a"))
         XCTAssertTrue(economics.isReady)
-        XCTAssertEqual(economics.resourcePath, "a-levels/economics/edexcel-a")
+        XCTAssertEqual(economics.resourcePath, "economics/edexcel-a")
         XCTAssertEqual(economics.backendSubject, "economics")
+        XCTAssertEqual(economics.papers.map(\.id), ["1", "2", "3"])
+
+        let aqaEconomics = try XCTUnwrap(ExamCatalog.board(id: "economics-aqa"))
+        XCTAssertTrue(aqaEconomics.isReady)
+        XCTAssertEqual(aqaEconomics.resourcePath, "economics/aqa")
+        XCTAssertEqual(aqaEconomics.backendSubject, "economics_aqa")
+        XCTAssertEqual(aqaEconomics.papers.map(\.id), ["1", "2", "3"])
+
+        let ocrEconomics = try XCTUnwrap(ExamCatalog.board(id: "economics-ocr"))
+        XCTAssertTrue(ocrEconomics.isReady)
+        XCTAssertEqual(ocrEconomics.resourcePath, "economics/ocr")
+        XCTAssertEqual(ocrEconomics.backendSubject, "economics_ocr")
+        XCTAssertEqual(ocrEconomics.papers.map(\.id), ["1", "2", "3"])
 
         let computerScience = try XCTUnwrap(ExamCatalog.board(id: "computer-science-aqa"))
         XCTAssertTrue(computerScience.isReady)
-        XCTAssertEqual(computerScience.resourcePath, "a-levels/computer-science/aqa")
+        XCTAssertEqual(computerScience.resourcePath, "computer-science/aqa")
         XCTAssertEqual(computerScience.backendSubject, "computer_science")
+        XCTAssertEqual(computerScience.papers.map(\.id), ["1", "2"])
 
-        let placeholder = try XCTUnwrap(ExamCatalog.board(id: "biology-aqa"))
-        XCTAssertFalse(placeholder.isReady)
+        let ocrComputerScience = try XCTUnwrap(ExamCatalog.board(id: "computer-science-ocr"))
+        XCTAssertTrue(ocrComputerScience.isReady)
+        XCTAssertEqual(ocrComputerScience.resourcePath, "computer-science/ocr")
+        XCTAssertEqual(ocrComputerScience.backendSubject, "computer_science_ocr")
+        XCTAssertEqual(ocrComputerScience.papers.map(\.id), ["1", "2"])
+
+        let aqaBusiness = try XCTUnwrap(ExamCatalog.board(id: "business-aqa"))
+        XCTAssertTrue(aqaBusiness.isReady)
+        XCTAssertEqual(aqaBusiness.resourcePath, "business/aqa")
+        XCTAssertEqual(aqaBusiness.backendSubject, "business_aqa")
+        XCTAssertEqual(aqaBusiness.papers.map(\.id), ["1", "2", "3"])
+
+        let aqaAccounting = try XCTUnwrap(ExamCatalog.board(id: "accounting-aqa"))
+        XCTAssertTrue(aqaAccounting.isReady)
+        XCTAssertEqual(aqaAccounting.resourcePath, "accounting/aqa")
+        XCTAssertEqual(aqaAccounting.backendSubject, "accounting_aqa")
+        XCTAssertEqual(aqaAccounting.papers.map(\.id), ["1", "2"])
+
+        XCTAssertNil(ExamCatalog.board(id: "biology-aqa"))
+    }
+
+    func testBundledCatalogLoadsFromCanonicalResources() throws {
+        let subjects = try CatalogLoader.load(bundle: .main)
+        XCTAssertEqual(subjects.count, 4)
+        XCTAssertEqual(subjects.flatMap(\.boards).filter(\.isReady).count, 7)
     }
 }

@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		387D00C32A4F101EF97090FD /* catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 1C8F203C107FE43C99297DC7 /* catalog.json */; };
+		93BAF17DCE89667C1DF4BEEC /* generator-registry.json in Resources */ = {isa = PBXBuildFile; fileRef = 7FB6113D44E6A08328841591 /* generator-registry.json */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		88FFD2820A74825E42E99A5B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -17,7 +22,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1C8F203C107FE43C99297DC7 /* catalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalog.json; sourceTree = "<group>"; };
 		2E24BE5FB5B21C46331D0332 /* PastPaperCreatorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PastPaperCreatorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7FB6113D44E6A08328841591 /* generator-registry.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "generator-registry.json"; sourceTree = "<group>"; };
 		8E8611E25BC22DD34A93A419 /* PastPaperCreator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PastPaperCreator.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -76,10 +83,21 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		5A518B1D0A349D6DA3445549 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				1C8F203C107FE43C99297DC7 /* catalog.json */,
+				7FB6113D44E6A08328841591 /* generator-registry.json */,
+			);
+			name = Resources;
+			path = ../Resources;
+			sourceTree = "<group>";
+		};
 		993F4D87939116EE6223D3F4 = {
 			isa = PBXGroup;
 			children = (
 				B6F2167E620A721CB7630B49 /* PastPaperCreator */,
+				5A518B1D0A349D6DA3445549 /* Resources */,
 				349267A15271A90157E0B0F0 /* Tests */,
 				1C2B3BE5A8DB9D03641AFCA9 /* Products */,
 			);
@@ -92,6 +110,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 39AF0728FE8E2AFCC43FD898 /* Build configuration list for PBXNativeTarget "PastPaperCreator" */;
 			buildPhases = (
+				17263C0E97B09B89635EA5C4 /* Bundle standalone backend */,
 				A2C1D3EEAEA941FA133983AE /* Sources */,
 				874F05F4174548168E1735EE /* Resources */,
 			);
@@ -177,10 +196,46 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				387D00C32A4F101EF97090FD /* catalog.json in Resources */,
+				93BAF17DCE89667C1DF4BEEC /* generator-registry.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		17263C0E97B09B89635EA5C4 /* Bundle standalone backend */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../bridge.py",
+				"$(SRCROOT)/../Backend/Core/cli.py",
+				"$(SRCROOT)/../Backend/Core/generation.py",
+				"$(SRCROOT)/../Backend/Core/providers.py",
+				"$(SRCROOT)/../Resources/economics/edexcel-a/generator/pyproject.toml",
+				"$(SRCROOT)/../Resources/economics/aqa/generator/pyproject.toml",
+				"$(SRCROOT)/../Resources/economics/ocr/generator/pyproject.toml",
+				"$(SRCROOT)/../Resources/computer-science/aqa/generator/pyproject.toml",
+				"$(SRCROOT)/../Resources/computer-science/ocr/generator/pyproject.toml",
+				"$(SRCROOT)/../Resources/business/aqa/generator/pyproject.toml",
+				"$(SRCROOT)/../Resources/accounting/aqa/generator/pyproject.toml",
+			);
+			name = "Bundle standalone backend";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/ExamForgeBackend/.built",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"$SRCROOT/scripts/build_backend.sh\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		19D0E2278A5DDEF250EAD982 /* Sources */ = {
@@ -246,6 +301,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -295,7 +351,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.4;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -323,6 +379,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = PastPaperCreator/Info.plist;
@@ -347,6 +404,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -390,7 +448,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.4;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -417,6 +475,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = PastPaperCreator/Info.plist;
