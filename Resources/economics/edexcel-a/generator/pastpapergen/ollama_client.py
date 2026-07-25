@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from threading import Lock
 from typing import Callable
 
-from pastpapergen.models import MultipleChoiceOption, PaperBlueprint, QuestionBlueprint, Syllabus, SyllabusTopic
+from pastpapergen.models import GraphParams, MultipleChoiceOption, PaperBlueprint, QuestionBlueprint, Syllabus, SyllabusTopic
 from pastpapergen.notes import note_context_for_topic
 
 _logger = logging.getLogger(__name__)
@@ -72,7 +72,7 @@ Title: {topic.title}
 Syllabus points (you must align every mark scheme bullet to these):
 {points}
 
-Revision-note context (use this data for source figures, extraction content and specific examples):
+Uploaded revision-note context (use this data for source figures, extraction content and specific examples):
 {note_context}
 
 Write one Edexcel A-style question.
@@ -86,6 +86,9 @@ Draft intent: {question.prompt}
 
 Style rules:
 - Match the command word exactly: {question.command_word}.
+- Preserve the command word and source reference pattern from the draft intent.
+- 12-mark questions usually use discuss whether, discuss the extent, or to what extent.
+- 10-mark questions usually use assess whether, assess the, or to what extent.
 - For Section A, match the stimulus kind: graph, table, pay-off matrix, line graph or short context.
 - For Section C, write a short source-style extract in source_text; the question paper displays both choices first.
 - Do not add instructions such as 'Consider both positive and negative arguments' or 'include relevant theories'.
@@ -97,6 +100,7 @@ Style rules:
 - Return ALL JSON fields — do not omit anything.
 
 CRITICAL: MARK SCHEME REQUIREMENTS
+Mark scheme bullets must be specific to the generated question.
 The mark_scheme and indicative_content fields must be EXCESSIVELY DETAILED. Follow these rules exactly:
 
 1. The mark_scheme array must have at least 8-15 bullets, depending on marks.
@@ -180,7 +184,6 @@ def generate_questions_with_ollama(
     total = len(blueprint.questions)
     results: dict[int, QuestionBlueprint] = {}
     results_lock = Lock()
-    total_emitted = len(blueprint.questions)
     max_workers = min(total, 4)
 
     def _build_task(question_index: int, question: QuestionBlueprint) -> None:
@@ -230,8 +233,19 @@ def generate_questions_with_ollama(
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {executor.submit(_build_task, i, q): i for i, q in enumerate(blueprint.questions)}
-        for _future in as_completed(futures):
-            pass
+        for future in as_completed(futures):
+            question_index = futures[future]
+            try:
+                future.result()
+            except Exception as error:  # noqa: BLE001 - one bad response must not abort the paper.
+                question = blueprint.questions[question_index]
+                _logger.exception("Unexpected generation failure for question %s", question.number)
+                with results_lock:
+                    results[question_index] = question
+                emit(
+                    f"Question {question_index + 1}/{total}: {question.number} "
+                    f"(unexpected failure, template fallback: {error})"
+                )
     questions = [results[i] for i in range(total)]
     return blueprint.model_copy(update={"questions": questions})
 
@@ -282,7 +296,6 @@ def _clean_prompt(prompt: str) -> str:
     cleaned = re.sub(r"\(Total\s+for\s+(Question\s+)?\d+\s*=\s*\d+\s*marks?\s*\)", "", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r"\bfigure\s+\d+\b", "the diagram", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r"\btable\s+\d+\b", "the table", cleaned, flags=re.IGNORECASE)
-    cleaned = re.sub(r"\bextract\s+[abcd]\b", "the extract", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r"\bconsider both positive and negative arguments to support your answer\.?", "", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r",?\s*considering both positive and negative impacts?\.?", "", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r"\b(?:include|use)\s+relevant\s+economic\s+theor(?:y|ies)\s+to\s+support\s+your\s+(?:discussion|answer)\.?", "", cleaned, flags=re.IGNORECASE)
@@ -356,8 +369,18 @@ def _matches_expected_question_style(question: QuestionBlueprint, prompt: str) -
     ref_lowered = question.source_reference.lower() if question.source_reference else None
     has_ref = True
     if ref_lowered:
-        ref_text = "the source material" if ref_lowered == "source material" else ref_lowered
-        has_ref = f"with reference to {ref_text}" in lowered
+        if ref_lowered.startswith("extract "):
+            ref_text = "the extract"
+        elif ref_lowered.startswith("figure "):
+            ref_text = "the diagram"
+        elif ref_lowered.startswith("table "):
+            ref_text = "the table"
+        else:
+            ref_text = "the source material" if ref_lowered == "source material" else ref_lowered
+        has_ref = (
+            f"with reference to {ref_text}" in lowered
+            or f"with reference to {ref_lowered}" in lowered
+        )
 
     if question.section == "C":
         has_ref = True
@@ -375,7 +398,7 @@ def _matches_expected_question_style(question: QuestionBlueprint, prompt: str) -
         return (has_ref or not ref_lowered) and _has_word_starts(lowered, "examine")
 
     if question.marks == 5 and question.section in {"A", "B"}:
-        return (has_ref or not ref_lowered) and _has_word_starts(lowered, "explain")
+        return (has_ref or not ref_lowered) and "explain" in lowered
 
     if question.marks == 25:
         return _has_word_starts(lowered, "evaluate") or "to what extent" in lowered

@@ -68,6 +68,7 @@ def test_source_booklet_for_paper_3_uses_both_sections(tmp_path):
 
     assert b"Sources for use with SECTION A" in pdf_bytes
     assert b"Sources for use with SECTION B" in pdf_bytes
+    assert _pdf_page_count(output) == 8
 
 
 def _pdf_page_count(path: Path) -> int:

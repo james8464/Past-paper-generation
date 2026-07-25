@@ -32,6 +32,7 @@ def build_paper_blueprint(
         choice_lookup = _choice_lookup(section.choice_groups)
         choice_group_topics: dict[int, set[str]] = {}
         section_topic_ids: set[str] = set()
+        section_stimulus_kinds: set[str] = set()
         section_templates = _section_templates(section, rng)
         section_theme_targets = theme_plan.get(section.name, [])
         source_context_topic = (
@@ -63,7 +64,9 @@ def build_paper_blueprint(
                 excluded_ids,
                 stimulus_kind,
                 rng,
+                section_stimulus_kinds,
             )
+            section_stimulus_kinds.add(stimulus_kind)
             available_topics = _topics_suitable_for_template(available_topics, part_commands, stimulus_kind)
             topic = source_context_topic or _choose_topic(rng, available_topics, excluded_ids) or SyllabusTopic(id="unknown", theme=1, title="Economics", points=[])
             command_word = section.command_words[index]
@@ -212,15 +215,19 @@ def _compatible_stimulus_kind(
     excluded_ids: set[str],
     preferred_kind: str,
     rng: random.Random,
+    excluded_kinds: set[str] | None = None,
 ) -> str:
     if not stimulus_kinds:
         return preferred_kind
     candidates = [preferred_kind, *rng.sample(stimulus_kinds, len(stimulus_kinds))]
+    excluded_kinds = excluded_kinds or set()
     seen: set[str] = set()
     for kind in candidates:
         if kind in seen:
             continue
         seen.add(kind)
+        if kind in excluded_kinds:
+            continue
         if not _stimulus_matches_commands(kind, part_commands):
             continue
         suitable_ids = _STIMULUS_TOPIC_IDS.get(kind)
@@ -229,7 +236,12 @@ def _compatible_stimulus_kind(
         if not suitable_ids and not any(topic.id not in excluded_ids for topic in topics):
             continue
         return kind
-    command_compatible = [kind for kind in stimulus_kinds if _stimulus_matches_commands(kind, part_commands)]
+    command_compatible = [
+        kind
+        for kind in stimulus_kinds
+        if kind not in excluded_kinds
+        and _stimulus_matches_commands(kind, part_commands)
+    ]
     return rng.choice(command_compatible or [preferred_kind])
 
 
@@ -569,11 +581,11 @@ _STIMULUS_PART_PROMPTS = {
 
 
 _STIMULUS_MCQ_PROMPTS = {
-    "ped_data_table": "With reference to the table above, which one of the following is most likely to be correct?",
+    "ped_data_table": "Which one of the following is most likely to be correct? Refer to the table above.",
     "pes_data_table": "Which one of the following is the percentage increase in price implied by the data?",
     "market_share_bar_chart": "Which one of the following is the value of the largest firm's market share?",
-    "marginal_utility_table": "With reference to the table above, which one of the following is most likely to be correct?",
-    "opportunity_cost_ppc_table": "With reference to the table above, which one of the following is the opportunity cost of increasing capital goods output from 20 to 40 units?",
+    "marginal_utility_table": "Which one of the following is most likely to be correct? Refer to the table above.",
+    "opportunity_cost_ppc_table": "Which one of the following is the opportunity cost of increasing capital goods output from 20 to 40 units? Refer to the table above.",
     "cost_revenue_graph": "Refer to the previous diagram. Which one of the following is most likely after a fall in demand?",
     "business_objective_context": "Which one of the following is most likely to occur if the firm changes to sales maximisation?",
     "xed_context": "Which one of the following is the most likely impact if the price of the substitute falls?",
@@ -582,19 +594,19 @@ _STIMULUS_MCQ_PROMPTS = {
     "household_savings_line_chart": "With reference to the chart above, which one of the following is correct?",
     "investment_line_chart": "Which one of the following is the percentage point fall in investment between the two dates shown?",
     "financial_market_context": "Which one of the following is a role of financial markets?",
-    "development_data_table": "With reference to the table above, which one of the following is correct?",
+    "development_data_table": "Which one of the following is correct? Refer to the table above.",
     "current_account_line_chart": "With reference to the chart above, which one of the following is correct?",
     "gdp_growth_bar_chart": "With reference to the chart above, which one of the following is correct?",
     "terms_of_trade_index_chart": "Which one of the following is the percentage change in the terms of trade?",
     "labour_inactivity_context": "Which one of the following would be the most likely result of an increase in labour force inactivity?",
-    "multiplier_context": "Which one point on the trade cycle diagram above illustrates a boom?",
+    "multiplier_context": "Which one of the following points on the trade cycle diagram above illustrates a boom?",
     "tariff_context": "Which one of the following is likely to give a country a comparative advantage in production?",
-    "shutdown_cost_table": "With reference to the table above, which one of the following is most likely to be correct?",
-    "wage_rate_table": "With reference to the table above, which one of the following is the percentage change in hourly wages?",
-    "contestability_barrier_table": "With reference to the table above, which one of the following is most likely to increase contestability?",
+    "shutdown_cost_table": "Which one of the following is most likely to be correct? Refer to the table above.",
+    "wage_rate_table": "Which one of the following is the percentage change in hourly wages? Refer to the table above.",
+    "contestability_barrier_table": "Which one of the following is most likely to increase contestability? Refer to the table above.",
     "exchange_rate_index_chart": "With reference to the chart above, which one of the following is most likely after an appreciation of sterling?",
-    "income_tax_schedule_table": "With reference to the table above, which one of the following describes a progressive tax system?",
-    "public_spending_pie_table": "With reference to the table above, which one of the following is an opportunity cost of increased health spending?",
+    "income_tax_schedule_table": "Which one of the following describes a progressive tax system? Refer to the table above.",
+    "public_spending_pie_table": "Which one of the following is an opportunity cost of increased health spending? Refer to the table above.",
     "unemployment_rate_bar_chart": "With reference to the chart above, which one of the following is a likely effect of rising unemployment?",
 }
 

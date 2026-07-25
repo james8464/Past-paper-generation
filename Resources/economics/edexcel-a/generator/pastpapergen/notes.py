@@ -1,11 +1,27 @@
 from __future__ import annotations
 
 import re
+import sys
 from functools import lru_cache
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-NOTES_TEXT_DIR = PROJECT_ROOT / "data" / "notes" / "text"
+_BUNDLE_ROOT = Path(getattr(sys, "_MEIPASS", PROJECT_ROOT))
+_BUNDLED_NOTES_TEXT_DIR = (
+    _BUNDLE_ROOT
+    / "Resources"
+    / "economics"
+    / "edexcel-a"
+    / "generator"
+    / "data"
+    / "notes"
+    / "text"
+)
+NOTES_TEXT_DIR = (
+    _BUNDLED_NOTES_TEXT_DIR
+    if _BUNDLED_NOTES_TEXT_DIR.is_dir()
+    else PROJECT_ROOT / "data" / "notes" / "text"
+)
 
 
 def note_file_for_topic(topic_id: str) -> Path:
@@ -59,7 +75,10 @@ def _note_prefix(topic_id: str) -> str:
 
 @lru_cache(maxsize=None)
 def _note_text(topic_id: str) -> str:
-    text = note_file_for_topic(topic_id).read_text(encoding="utf-8", errors="ignore")
+    try:
+        text = note_file_for_topic(topic_id).read_text(encoding="utf-8", errors="ignore")
+    except FileNotFoundError:
+        return ""
     text = text.replace("\u200b", "").replace("​", "")
     text = re.sub(r"www\\.pmt\\.education|Edexcel Economics \\(A\\) A-level", " ", text)
     return text

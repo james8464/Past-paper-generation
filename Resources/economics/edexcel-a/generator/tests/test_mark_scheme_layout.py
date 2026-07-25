@@ -60,11 +60,13 @@ def test_mark_scheme_front_matter_matches_reference_structure(tmp_path):
     render_mark_scheme(blueprint, syllabus, output)
 
     text = _pdf_text(output)
-    assert "Edexcel and BTEC Qualifications" in text
-    assert "Pearson: helping people progress, everywhere" in text
+    normalised = " ".join(text.split())
+    assert "Unofficial practice qualification material" in text
+    assert "Independent practice material" in text
     assert "Question Paper Log Number" in text
     assert "Publications Code" in text
-    assert "Pearson Education Ltd" in text
+    assert "not produced, endorsed or approved" in normalised
+    assert "Pearson or any exam board" in normalised
 
 
 def test_mark_scheme_cover_uses_reference_serif_face(tmp_path):

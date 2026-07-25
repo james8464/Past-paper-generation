@@ -55,7 +55,7 @@ BLANK_AXIS_WIDTH_PT = 420
 BLANK_AXIS_HEIGHT_PT = 300
 ANSWER_FRAME_X = 34
 ANSWER_FRAME_Y = 48
-ANSWER_FRAME_W = 526
+ANSWER_FRAME_W = 500
 ANSWER_FRAME_H = 760
 ANSWER_PAGE_START_Y = 772
 RAIL_Y = 50
@@ -181,7 +181,7 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
 
     y = box_y - 22
     pdf.setFont(FONT_BOLD, 17)
-    pdf.drawString(panel_x + 14, y, "Pearson Edexcel Level 3 GCE")
+    pdf.drawString(panel_x + 14, y, "Unofficial Level 3 GCE Practice")
     y -= 50
     pdf.roundRect(panel_x + 14, y, panel_w - 28, 28, 7, stroke=1, fill=0)
     pdf.setFont(FONT_BOLD, 18)
@@ -262,18 +262,13 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
             "Check your answers if you have time at the end.",
         ],
     )
-    if blueprint.paper_id in {"paper_1", "paper_2"}:
-        pdf.setFont(FONT_REGULAR, 8)
-        pdf.drawCentredString(width / 2, 196, "SECTION C: Answer ONE question from the two available. The formula page for Section C can be found at the back of this question paper.")
-
     _draw_turn_over(pdf, width - 64, 75)
-    _draw_cover_pearson_mark(pdf, width - 88, 44)
     paper_code = blueprint.paper_code.partition("/")[0]
     barcode_text = f"{paper_code}01"
     pdf.setFont(FONT_REGULAR, 15)
     pdf.drawString(58, 43, barcode_text)
     pdf.setFont(FONT_REGULAR, 5.5)
-    pdf.drawString(58, 31, f"(c){economics_exam_schedule(blueprint.paper_id).date.year} Pearson Education Ltd.")
+    pdf.drawString(58, 31, f"Unofficial practice material, {economics_exam_schedule(blueprint.paper_id).date.year}.")
     _draw_fake_barcode(pdf, width / 2 - 105, 32, barcode_text)
 
 
@@ -370,29 +365,6 @@ def _draw_fake_barcode(pdf: canvas.Canvas, x: float, y: float, caption: str) -> 
     pdf.setFillColor(colors.black)
 
 
-def _draw_cover_pearson_mark(pdf: canvas.Canvas, x: float, y: float) -> None:
-    dark = colors.HexColor("#1f1f1f")
-    swoosh = colors.HexColor("#003A5D")
-    pdf.setFillColor(swoosh)
-    path = pdf.beginPath()
-    path.moveTo(x - 14, y + 6)
-    path.curveTo(x - 14, y + 34, x + 14, y + 34, x + 14, y + 6)
-    path.curveTo(x + 14, y - 2, x + 12, y - 6, x + 10, y - 8)
-    path.curveTo(x + 12, y - 2, x + 10, y + 2, x + 8, y + 6)
-    path.curveTo(x + 4, y + 26, x - 4, y + 26, x - 8, y + 6)
-    path.curveTo(x - 10, y - 6, x - 14, y - 2, x - 14, y + 6)
-    pdf.drawPath(path, fill=1, stroke=0)
-    pdf.setFillColor(dark)
-    pdf.circle(x, y + 19, 11, stroke=0, fill=1)
-    pdf.setFillColor(colors.white)
-    pdf.setFont(FONT_BOLD, 14)
-    pdf.drawCentredString(x, y + 14, "P")
-    pdf.setFillColor(dark)
-    pdf.setFont(FONT_BOLD, 14)
-    pdf.drawCentredString(x, y - 6, "Pearson")
-    pdf.setFillColor(colors.black)
-
-
 def _instruction_line(blueprint: PaperBlueprint) -> str:
     if blueprint.paper_id == "paper_3":
         return (
@@ -420,6 +392,16 @@ def _draw_question_pages(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
                 pdf.showPage()
                 page_number += 1
                 y = _prepare_answer_page(pdf, blueprint, page_number)
+            if (
+                blueprint.paper_id in {"paper_1", "paper_2"}
+                and question.section == "B"
+                and page_number < 12
+            ):
+                while page_number < 12:
+                    _draw_question_footer(pdf, blueprint, page_number)
+                    pdf.showPage()
+                    page_number += 1
+                    y = _prepare_answer_page(pdf, blueprint, page_number)
             current_section = question.section
             y = _draw_section_intro(pdf, blueprint, current_section, y)
             if blueprint.paper_id in {"paper_1", "paper_2"} and question.section == "B":
@@ -437,7 +419,6 @@ def _draw_question_pages(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
                 page_number += 1
                 y = _prepare_answer_page(pdf, blueprint, page_number)
                 _draw_section_c_answer_pages(pdf, blueprint, section_c, page_number, margin, y)
-                _draw_formula_appendix(pdf, blueprint)
                 return
         if blueprint.paper_id in {"paper_1", "paper_2"} and question.section == "A":
             page_number, y = _draw_section_a_question(pdf, blueprint, question, page_number, margin, y)
@@ -474,7 +455,6 @@ def _draw_question_pages(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
             page_number += 1
             y = _prepare_answer_page(pdf, blueprint, page_number)
     _draw_question_footer(pdf, blueprint, page_number, is_last=True)
-    _draw_formula_appendix(pdf, blueprint)
 
 
 def _draw_formula_appendix(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
@@ -554,7 +534,7 @@ def _extra_answer_pages(paper_id: str, question) -> int:
         return 1
     if paper_id not in {"paper_1", "paper_2"} or question.section != "B":
         return 0
-    return {5: 0, 8: 1, 10: 1, 12: 2, 15: 4}.get(question.marks, 0)
+    return {5: 0, 8: 1, 10: 1, 12: 1, 15: 3}.get(question.marks, 0)
 
 
 def _draw_section_b_prompt_page(pdf: canvas.Canvas, questions: list, y: float) -> float:
@@ -772,7 +752,7 @@ def _draw_answer_page_header(pdf: canvas.Canvas, blueprint: PaperBlueprint, page
     pdf.setLineWidth(1)
     header_info_y = centre_box_y - 4
     pdf.setFont(FONT_BOLD, 8)
-    pdf.drawRightString(width - 48, header_info_y + 13, "Pearson Edexcel Level 3 GCE")
+    pdf.drawRightString(width - 48, header_info_y + 13, "Unofficial Level 3 GCE Practice")
     pdf.setFont(FONT_REGULAR, 8)
     pdf.drawRightString(width - 48, header_info_y + 1, f"{blueprint.paper_code}  {_exam_date_line(blueprint.paper_id)}  {_exam_session(blueprint.paper_id)}")
 
@@ -780,11 +760,9 @@ def _draw_answer_page_header(pdf: canvas.Canvas, blueprint: PaperBlueprint, page
 def _draw_watermark(pdf: canvas.Canvas) -> None:
     width, height = A4
     pdf.saveState()
-    pdf.setFillColor(colors.HexColor("#e0e0e0"))
-    pdf.setFont(FONT_BOLD, 48)
-    pdf.translate(width / 2, height / 2)
-    pdf.rotate(45)
-    pdf.drawCentredString(0, 0, "PRACTICE PAPER")
+    pdf.setFillColor(colors.HexColor("#777777"))
+    pdf.setFont(FONT_BOLD, 6)
+    pdf.drawCentredString(width / 2, height - 13, "UNOFFICIAL PRACTICE PAPER")
     pdf.restoreState()
 
 
@@ -804,18 +782,23 @@ def _prepare_answer_page(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_num
 
 def _draw_do_not_write_rail(pdf: canvas.Canvas, page_number: int) -> None:
     width, height = A4
-    rail_x = 6 if page_number % 2 == 1 else width - 28
-    pdf.setFillColor(colors.HexColor("#f0f0f0"))
-    pdf.rect(rail_x, RAIL_Y, 21, RAIL_H, stroke=0, fill=1)
-    _draw_hatched_rail(pdf, rail_x, RAIL_Y, 21, RAIL_H)
-    pdf.setFillColor(colors.HexColor("#777777"))
-    pdf.setFont(FONT_BOLD, 8)
-    for y in (145, 360, 575):
-        pdf.saveState()
-        pdf.translate(rail_x + 14, y)
-        pdf.rotate(270)
-        pdf.drawCentredString(0, 0, "DO NOT WRITE IN THIS AREA")
-        pdf.restoreState()
+    rail_positions = (
+        (6, 30)
+        if page_number % 2 == 1
+        else (width - 54, width - 28)
+    )
+    for rail_x in rail_positions:
+        pdf.setFillColor(colors.HexColor("#f0f0f0"))
+        pdf.rect(rail_x, RAIL_Y, 21, RAIL_H, stroke=0, fill=1)
+        _draw_hatched_rail(pdf, rail_x, RAIL_Y, 21, RAIL_H)
+        pdf.setFillColor(colors.HexColor("#777777"))
+        pdf.setFont(FONT_BOLD, 8)
+        for y in (145, 360, 575):
+            pdf.saveState()
+            pdf.translate(rail_x + 14, y)
+            pdf.rotate(270)
+            pdf.drawCentredString(0, 0, "DO NOT WRITE IN THIS AREA")
+            pdf.restoreState()
     _draw_staple_marks(pdf, page_number)
     pdf.setFillColor(colors.black)
 
@@ -1736,7 +1719,7 @@ def render_source_booklet(
                 include_title=start == 0,
             )
 
-    _pad_pdf_pages(pdf, 4 if blueprint.paper_id in {"paper_1", "paper_2"} else 6)
+    _pad_pdf_pages(pdf, 4 if blueprint.paper_id in {"paper_1", "paper_2"} else 8)
     pdf.save()
 
 
@@ -1825,7 +1808,7 @@ def _draw_source_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.roundRect(panel_x, panel_y, panel_w, panel_h, 9, stroke=1, fill=0)
     y = panel_y + panel_h - 34
     pdf.setFont(FONT_BOLD, 17)
-    pdf.drawString(panel_x + 14, y, "Pearson Edexcel Level 3 GCE")
+    pdf.drawString(panel_x + 14, y, "Unofficial Level 3 GCE Practice")
     y -= 51
     pdf.roundRect(panel_x + 14, y, panel_w - 28, 28, 7, stroke=1, fill=0)
     pdf.setFont(FONT_BOLD, 18)
@@ -1862,13 +1845,12 @@ def _draw_source_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.setFont(FONT_BOLD, 10)
     pdf.drawString(panel_x + 22, y + 9, "Do not return this Booklet with the question paper.")
     _draw_turn_over(pdf, width - 64, 75)
-    _draw_cover_pearson_mark(pdf, width - 88, 44)
     paper_code = blueprint.paper_code.partition("/")[0]
     barcode_text = f"{paper_code}SB"
     pdf.setFont(FONT_REGULAR, 15)
     pdf.drawString(58, 43, barcode_text)
     pdf.setFont(FONT_REGULAR, 5.5)
-    pdf.drawString(58, 31, f"(c){economics_exam_schedule(blueprint.paper_id).date.year} Pearson Education Ltd.")
+    pdf.drawString(58, 31, f"Unofficial practice material, {economics_exam_schedule(blueprint.paper_id).date.year}.")
     _draw_fake_barcode(pdf, width / 2 - 80, 32, barcode_text)
 
 
@@ -1902,14 +1884,9 @@ def render_mark_scheme(
     margin = 57
     accent = colors.HexColor(MARK_SCHEME_ACCENT_COLOR)
     title_blue = colors.HexColor(MARK_SCHEME_TITLE_COLOR)
-    pdf.setFillColor(accent)
-    pdf.circle(margin + 100, height - 152, 22, stroke=0, fill=1)
-    pdf.setFillColor(colors.white)
-    pdf.setFont(FONT_BOLD, 28)
-    pdf.drawCentredString(margin + 100, height - 162, "P")
     pdf.setFillColor(colors.black)
     pdf.setFont("Times-Roman", 30)
-    pdf.drawString(margin + 52, height - 200, "Pearson")
+    pdf.drawString(margin, height - 200, "Unofficial Practice")
     pdf.setFillColor(title_blue)
     pdf.setFont("Times-Roman", 31)
     pdf.drawString(margin, height - 324, "Mark Scheme (Results)")
@@ -1918,7 +1895,7 @@ def render_mark_scheme(
     pdf.drawString(margin, height - 415, f"Summer {series_year}")
     pdf.setFont(FONT_REGULAR, 23)
     pdf.setFillColor(accent)
-    pdf.drawString(margin, height - 500, "Pearson Edexcel GCE A Level")
+    pdf.drawString(margin, height - 500, "Unofficial GCE A Level Practice")
     pdf.drawString(margin, height - 540, f"In Economics A ({blueprint.paper_code.split('/')[0]})")
     pdf.drawString(margin, height - 580, f"Paper {blueprint.paper_id[-1].zfill(2)} {blueprint.title}")
     pdf.setFillColor(colors.black)
@@ -1967,13 +1944,13 @@ def _pad_mark_scheme_pages(pdf: canvas.Canvas, target_pages: int) -> None:
 def _draw_mark_scheme_qualification_page(pdf: canvas.Canvas, blueprint: PaperBlueprint, margin: float, height: float) -> None:
     y = height - 155
     pdf.setFont(FONT_BOLD, 14)
-    pdf.drawString(margin, y, "Edexcel and BTEC Qualifications")
+    pdf.drawString(margin, y, "Unofficial practice qualification material")
     y -= 28
     pdf.setFont(FONT_REGULAR, 10)
     paragraphs = [
         (
-            "Edexcel and BTEC qualifications are awarded by Pearson. This unofficial practice "
-            "mark scheme is generated for private revision and is not an official Pearson document."
+            "This unofficial practice mark scheme is generated for private revision and is "
+            "not produced, endorsed or approved by Pearson or any exam board."
         ),
         (
             "For official qualification information, students should use Pearson's published "
@@ -1993,7 +1970,7 @@ def _draw_mark_scheme_qualification_page(pdf: canvas.Canvas, blueprint: PaperBlu
 
     y -= 28
     pdf.setFont(FONT_BOLD, 12)
-    pdf.drawString(margin, y, "Pearson: helping people progress, everywhere")
+    pdf.drawString(margin, y, "Independent practice material")
     y -= 24
     pdf.setFont(FONT_REGULAR, 10)
     for line in _wrap(
@@ -2010,7 +1987,7 @@ def _draw_mark_scheme_qualification_page(pdf: canvas.Canvas, blueprint: PaperBlu
         f"Question Paper Log Number {paper_code}01",
         f"Publications Code {blueprint.paper_code.replace('/', '_')}_PRACTICE_MS",
         f"All generated material in this practice publication is for revision use.",
-        f"(c) Pearson Education Ltd style referenced for private study, {economics_exam_schedule(blueprint.paper_id).date.year}",
+        f"Unofficial independent practice material, {economics_exam_schedule(blueprint.paper_id).date.year}",
     ]
     for item in front_matter:
         pdf.drawString(margin, y, item)
@@ -2027,22 +2004,45 @@ def _mark_scheme_rows(blueprint: PaperBlueprint, syllabus: Syllabus) -> list[dic
         topic = syllabus.get_topic(question.topic_id)
         if question.parts:
             for part in question.parts:
-                rows.append(
-                    {
-                        "number": f"{question.number}({part.label})",
-                        "mark": f"({part.marks})",
-                        "answer_lines": _part_mark_scheme_lines(question, part, topic),
-                    }
+                rows.extend(
+                    _split_mark_scheme_row(
+                        f"{question.number}({part.label})",
+                        f"({part.marks})",
+                        _part_mark_scheme_lines(question, part, topic),
+                    )
                 )
         else:
-            rows.append(
-                {
-                    "number": question.number,
-                    "mark": f"({question.marks})",
-                    "answer_lines": _question_mark_scheme_lines(question, topic),
-                }
+            rows.extend(
+                _split_mark_scheme_row(
+                    question.number,
+                    f"({question.marks})",
+                    _question_mark_scheme_lines(question, topic),
+                )
             )
     return rows
+
+
+def _split_mark_scheme_row(number: str, mark: str, answer_lines: list[str]) -> list[dict[str, object]]:
+    chunks: list[list[str]] = []
+    current: list[str] = []
+    for line in answer_lines:
+        candidate = [*current, line]
+        if current and _ms_row_height(candidate) > 720:
+            chunks.append(current)
+            current = [line]
+        else:
+            current = candidate
+    if current:
+        chunks.append(current)
+
+    return [
+        {
+            "number": number if index == 0 else f"{number} cont.",
+            "mark": mark if index == len(chunks) - 1 else "",
+            "answer_lines": chunk,
+        }
+        for index, chunk in enumerate(chunks)
+    ]
 
 
 def _part_mark_scheme_lines(question, part, topic) -> list[str]:

@@ -66,12 +66,12 @@ def test_render_question_paper_uses_exam_style_strings(tmp_path):
     render_question_paper(blueprint, output)
     pdf_text = _pdf_text(output)
 
-    assert "Pearson Edexcel Level 3 GCE" in pdf_text
+    assert "Unofficial Level 3 GCE Practice" in pdf_text
     assert "Candidate surname" in pdf_text
     assert "Paper" in pdf_text
     assert "reference" in pdf_text
     assert "DO NOT WRITE IN THIS AREA" in pdf_text
-    assert "P00000A" in pdf_text
+    assert "9EC001" in pdf_text
 
 
 def test_cover_includes_exam_date(tmp_path):
@@ -112,7 +112,7 @@ def test_cover_uses_date_panel_not_mock_examination_label(tmp_path):
     assert "Mock Examination" not in first_page
 
 
-def test_even_answer_pages_have_one_right_do_not_write_rail(tmp_path):
+def test_even_answer_pages_have_two_right_do_not_write_rails(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
     blueprint = build_paper_blueprint(config, syllabus, seed=42)
@@ -120,7 +120,7 @@ def test_even_answer_pages_have_one_right_do_not_write_rail(tmp_path):
 
     render_question_paper(blueprint, output)
 
-    assert _dark_pixels(output, page_index=1, rect=(543, 180, 557, 700)) < 500
+    assert _dark_pixels(output, page_index=1, rect=(543, 180, 557, 700)) > 100
     assert _dark_pixels(output, page_index=1, rect=(567, 180, 590, 700)) > 100
 
 
@@ -239,7 +239,7 @@ def test_paper_1_render_uses_question_specific_pages(tmp_path):
 
     render_question_paper(blueprint, output)
 
-    assert _pdf_page_count(output) == 33
+    assert _pdf_page_count(output) == 32
 
 
 def test_paper_1_section_b_starts_near_reference_page(tmp_path):
@@ -250,7 +250,7 @@ def test_paper_1_section_b_starts_near_reference_page(tmp_path):
 
     render_question_paper(blueprint, output)
 
-    assert _first_page_containing(output, "SECTION B") == 11
+    assert _first_page_containing(output, "SECTION B") == 12
 
 
 def test_paper_1_25_mark_questions_get_multiple_answer_pages():
