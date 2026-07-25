@@ -1,0 +1,23 @@
+{
+  "qualification": "AQA A-level Accounting 7127",
+  "topics": [
+    {"id": "accounting-1", "title": "Role of the accountant", "points": ["purposes of accounting", "stakeholder information needs", "roles and professional responsibilities"]},
+    {"id": "accounting-2", "title": "Types of business organisation", "points": ["sole traders", "partnerships", "limited companies"]},
+    {"id": "accounting-3", "title": "Double entry model", "points": ["books of prime entry", "ledger accounts", "trial balances"]},
+    {"id": "accounting-4", "title": "Verification of accounting records", "points": ["control accounts", "bank reconciliation", "suspense accounts"]},
+    {"id": "accounting-5", "title": "Accounting concepts", "points": ["accruals and matching", "prudence", "consistency and going concern"]},
+    {"id": "accounting-6", "title": "Sole trader financial statements", "points": ["income statements", "statements of financial position", "year-end adjustments"]},
+    {"id": "accounting-7", "title": "Limited company accounts", "points": ["share capital", "reserves", "published financial statements"]},
+    {"id": "accounting-8", "title": "Analysis of financial information", "points": ["profitability ratios", "liquidity ratios", "capital structure"]},
+    {"id": "accounting-9", "title": "Budgeting", "points": ["cash budgets", "budgetary control", "behavioural effects"]},
+    {"id": "accounting-10", "title": "Marginal costing", "points": ["contribution", "break-even", "limiting factors"]},
+    {"id": "accounting-11", "title": "Standard costing and variances", "points": ["material variances", "labour variances", "investigating variances"]},
+    {"id": "accounting-12", "title": "Absorption and activity-based costing", "points": ["overhead absorption", "cost drivers", "costing-method evaluation"]},
+    {"id": "accounting-13", "title": "Capital investment appraisal", "points": ["payback", "net present value", "accounting rate of return"]},
+    {"id": "accounting-14", "title": "Incomplete records", "points": ["missing figures", "mark-up and margin", "statement reconstruction"]},
+    {"id": "accounting-15", "title": "Partnership accounts", "points": ["appropriation accounts", "current accounts", "partnership changes"]},
+    {"id": "accounting-16", "title": "Limited company accounting", "points": ["issue of shares", "dividends", "cash-flow statements"]},
+    {"id": "accounting-17", "title": "Interpretation and communication", "points": ["ratio trends", "limitations of evidence", "recommendations"]},
+    {"id": "accounting-18", "title": "Ethical considerations", "points": ["professional integrity", "conflicts of interest", "public interest"]}
+  ]
+}

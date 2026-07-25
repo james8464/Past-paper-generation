@@ -1,0 +1,19 @@
+{
+  "qualification": "AQA A-level Business 7132",
+  "source": "Independent summaries mapped to AQA 7132 specification",
+  "source_urls": [
+    "https://filestore.aqa.org.uk/resources/business/specifications/AQA-7131-7132-SP-2023.PDF"
+  ],
+  "topics": [
+    {"id": "business-1", "title": "Nature and purpose of business", "points": ["business objectives and stakeholders", "business ownership and external environment", "risk, reward and opportunity cost"]},
+    {"id": "business-2", "title": "Managers, leadership and decision making", "points": ["leadership styles", "decision-making models and data", "stakeholder power and conflict"]},
+    {"id": "business-3", "title": "Marketing management", "points": ["market research and objectives", "segmentation, targeting and positioning", "marketing mix and digital marketing"]},
+    {"id": "business-4", "title": "Operational management", "points": ["capacity, productivity and efficiency", "quality and inventory management", "supply chains and operational objectives"]},
+    {"id": "business-5", "title": "Financial management", "points": ["financial objectives and accounts", "ratios, investment appraisal and budgeting", "cash flow, profit and sources of finance"]},
+    {"id": "business-6", "title": "Human resource management", "points": ["workforce planning and objectives", "motivation and engagement", "organisational design and employer-employee relations"]},
+    {"id": "business-7", "title": "Strategic position", "points": ["mission, objectives and performance", "SWOT, PEST and competitive forces", "investment appraisal and strategic options"]},
+    {"id": "business-8", "title": "Strategic direction", "points": ["Ansoff's matrix", "competitive positioning", "direction, risk and strategic fit"]},
+    {"id": "business-9", "title": "Strategic methods", "points": ["organic growth, mergers and alliances", "innovation and digital technology", "internationalisation and globalisation"]},
+    {"id": "business-10", "title": "Managing strategic change", "points": ["forces for change and resistance", "culture and implementation", "strategic drift and reasons for failure"]}
+  ]
+}

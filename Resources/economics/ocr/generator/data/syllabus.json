@@ -1,0 +1,21 @@
+{
+  "qualification": "OCR A-level Economics H460",
+  "source": "Independent summaries mapped to OCR H460 specification version 3.0",
+  "source_urls": [
+    "https://www.ocr.org.uk/Images/170839-specification-accredited-a-level-gce-economics-h460.pdf",
+    "https://www.ocr.org.uk/qualifications/as-and-a-level/economics-h060-h460-from-2019/specification-at-a-glance/"
+  ],
+  "topics": [
+    {"id": "micro-1", "component": 1, "title": "Introduction to microeconomics", "points": ["scarcity and choice", "resource allocation and incentives", "opportunity cost and production possibility curves"]},
+    {"id": "micro-2", "component": 1, "title": "The role of markets", "points": ["specialisation and trade", "demand, supply and equilibrium", "elasticity and economic welfare"]},
+    {"id": "micro-3", "component": 1, "title": "Business objectives", "points": ["costs, revenues and profit", "growth and efficiency", "objectives of firms"]},
+    {"id": "micro-4", "component": 1, "title": "Market structures", "points": ["competition and monopoly", "contestability and concentration", "price discrimination"]},
+    {"id": "micro-5", "component": 1, "title": "The labour market", "points": ["demand and supply of labour", "wage determination", "trade unions and monopsony"]},
+    {"id": "micro-6", "component": 1, "title": "Market failure and intervention", "points": ["externalities and public goods", "information failure", "taxes, subsidies and regulation"]},
+    {"id": "macro-1", "component": 2, "title": "Aggregate demand and aggregate supply", "points": ["circular flow and national income", "components of aggregate demand", "short-run and long-run aggregate supply"]},
+    {"id": "macro-2", "component": 2, "title": "Economic policy objectives", "points": ["growth and living standards", "inflation and unemployment", "balance of payments and sustainability"]},
+    {"id": "macro-3", "component": 2, "title": "Implementing policy", "points": ["fiscal and monetary policy", "supply-side policy", "policy conflicts and government failure"]},
+    {"id": "macro-4", "component": 2, "title": "The global context", "points": ["international trade and protection", "exchange rates", "globalisation and development"]},
+    {"id": "macro-5", "component": 2, "title": "The financial sector", "points": ["money and credit", "commercial and central banks", "financial regulation and instability"]}
+  ]
+}

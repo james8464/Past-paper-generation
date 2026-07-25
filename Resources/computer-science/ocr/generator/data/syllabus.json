@@ -1,0 +1,20 @@
+{
+  "qualification": "OCR A-level Computer Science H446",
+  "source": "Independent summaries mapped to OCR H446 specification",
+  "source_urls": [
+    "https://www.ocr.org.uk/Images/170844-specification-accredited-a-level-gce-computer-science-h446.pdf"
+  ],
+  "topics": [
+    {"id": "systems-1", "component": 1, "title": "Processors and computer architecture", "points": ["processor components and buses", "fetch-decode-execute cycle", "processor performance and parallel processing", "input, output and storage devices"]},
+    {"id": "systems-2", "component": 1, "title": "Systems and application software", "points": ["operating systems and utilities", "applications and software development", "translators, linkers and loaders", "programming language levels and paradigms"]},
+    {"id": "systems-3", "component": 1, "title": "Exchanging data", "points": ["compression, encryption and hashing", "databases and normalisation", "networks, protocols and topologies", "web technologies and search indexing"]},
+    {"id": "systems-4", "component": 1, "title": "Data representation and structures", "points": ["binary, hexadecimal and arithmetic", "floating-point representation", "character, image and sound representation", "arrays, records, lists, stacks, queues, trees and graphs"]},
+    {"id": "systems-5", "component": 1, "title": "Boolean algebra", "points": ["logic gates and truth tables", "Boolean expressions", "De Morgan laws", "logic circuit simplification"]},
+    {"id": "systems-6", "component": 1, "title": "Legal, moral, cultural and ethical issues", "points": ["data protection and computer misuse", "copyright and software licensing", "automation and algorithmic decisions", "environmental and social effects of computing"]},
+    {"id": "algorithms-1", "component": 2, "title": "Computational thinking", "points": ["abstraction", "thinking ahead and procedurally", "logical reasoning", "concurrent processing"]},
+    {"id": "algorithms-2", "component": 2, "title": "Programming techniques", "points": ["sequence, selection and iteration", "functions, procedures and recursion", "object-oriented programming", "file handling and validation"]},
+    {"id": "algorithms-3", "component": 2, "title": "Computational methods", "points": ["problem decomposition", "backtracking and data mining", "performance modelling", "visualisation and heuristics"]},
+    {"id": "algorithms-4", "component": 2, "title": "Algorithms", "points": ["searching and sorting", "pathfinding and graph traversal", "algorithm design and trace tables", "time and space complexity"]},
+    {"id": "algorithms-5", "component": 2, "title": "Programming data structures", "points": ["arrays and records", "stacks and queues", "linked lists and trees", "graphs and hash tables"]}
+  ]
+}

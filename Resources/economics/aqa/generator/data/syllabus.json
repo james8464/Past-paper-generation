@@ -1,0 +1,24 @@
+{
+  "qualification": "AQA A-level Economics 7136",
+  "source": "Independent topic summaries mapped to the published AQA 7136 specification",
+  "source_urls": [
+    "https://www.aqa.org.uk/subjects/economics/a-level/economics-7136/specification/subject-content",
+    "https://www.aqa.org.uk/subjects/economics/a-level/economics-7136/specification/annex-quantitative-skills-in-economics"
+  ],
+  "topics": [
+    {"id": "4.1.1", "paper": 1, "title": "Economic methodology and the economic problem", "points": ["positive and normative statements", "scarcity, choice and opportunity cost", "production possibility frontiers"]},
+    {"id": "4.1.2", "paper": 1, "title": "Individual economic decision making", "points": ["utility and rationality", "behavioural influences", "asymmetric information"]},
+    {"id": "4.1.3", "paper": 1, "title": "Price determination in a competitive market", "points": ["demand and supply", "elasticities", "equilibrium and consumer surplus"]},
+    {"id": "4.1.4", "paper": 1, "title": "Production, costs and revenue", "points": ["productivity and returns", "short-run and long-run costs", "revenue and profit"]},
+    {"id": "4.1.5", "paper": 1, "title": "Competition, competitive markets and monopoly", "points": ["market structures", "barriers to entry", "price discrimination and contestability"]},
+    {"id": "4.1.6", "paper": 1, "title": "The labour market", "points": ["wage determination", "labour market imperfections", "trade unions and monopsony"]},
+    {"id": "4.1.7", "paper": 1, "title": "Distribution of income and wealth", "points": ["poverty measures", "income and wealth inequality", "redistribution"]},
+    {"id": "4.1.8", "paper": 1, "title": "Market mechanism, market failure and government intervention", "points": ["externalities and public goods", "information failure", "taxes, subsidies and regulation"]},
+    {"id": "4.2.1", "paper": 2, "title": "Measurement of macroeconomic performance", "points": ["national income data", "inflation and unemployment", "living standards"]},
+    {"id": "4.2.2", "paper": 2, "title": "How the macroeconomy works", "points": ["circular flow of income", "aggregate demand and aggregate supply", "multiplier and accelerator"]},
+    {"id": "4.2.3", "paper": 2, "title": "Economic performance", "points": ["growth and cycles", "employment and price stability", "current-account balance"]},
+    {"id": "4.2.4", "paper": 2, "title": "Financial markets and monetary policy", "points": ["money and credit", "commercial and central banks", "interest rates and financial regulation"]},
+    {"id": "4.2.5", "paper": 2, "title": "Fiscal policy and supply-side policies", "points": ["taxation and public spending", "budget balance and debt", "market-based and interventionist supply-side policy"]},
+    {"id": "4.2.6", "paper": 2, "title": "The international economy", "points": ["trade and protection", "exchange rates and balance of payments", "globalisation and development"]}
+  ]
+}

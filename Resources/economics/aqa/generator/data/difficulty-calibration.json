@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "qualification": "AQA A-level Economics 7136",
+  "purpose": "aggregate structural-demand calibration; not a psychometric equivalence claim",
+  "reference": {
+    "documents": 24,
+    "fingerprint": "cec8e76f349b73083e61e3cf5f3e3b1cc7675a42043fabe742a91a5c9c431b89",
+    "derived_aggregate_only": true,
+    "retains_source_text": false,
+    "papers": {
+      "1": {
+        "documents": 6,
+        "printed_mark_sequence": [
+          2,
+          4,
+          9,
+          25,
+          2,
+          4,
+          9,
+          25,
+          15,
+          25,
+          15,
+          25,
+          15,
+          25
+        ],
+        "page_count": {
+          "minimum": 8,
+          "median": 8.0,
+          "maximum": 8
+        }
+      },
+      "2": {
+        "documents": 6,
+        "printed_mark_sequence": [
+          2,
+          4,
+          9,
+          25,
+          2,
+          4,
+          9,
+          25,
+          15,
+          25,
+          15,
+          25,
+          15,
+          25
+        ],
+        "page_count": {
+          "minimum": 8,
+          "median": 8.0,
+          "maximum": 8
+        }
+      },
+      "3": {
+        "documents": 6,
+        "printed_mark_sequence": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          10,
+          15,
+          25
+        ],
+        "page_count": {
+          "minimum": 36,
+          "median": 40.0,
+          "maximum": 44
+        },
+        "source_insert": {
+          "documents": 6,
+          "word_count": {
+            "minimum": 993,
+            "median": 1222.5,
+            "maximum": 1276
+          },
+          "page_count": {
+            "minimum": 4,
+            "median": 8.0,
+            "maximum": 8
+          }
+        }
+      }
+    }
+  },
+  "generated": {
+    "seed_start": 100,
+    "seed_stop": 120,
+    "papers": {
+      "1": {
+        "seeds": 20,
+        "unique_fingerprints": 20,
+        "printed_mark_sequence": [
+          2,
+          4,
+          9,
+          25,
+          2,
+          4,
+          9,
+          25,
+          15,
+          25,
+          15,
+          25,
+          15,
+          25
+        ],
+        "page_count": 8,
+        "covered_topic_ids": [
+          "4.1.1",
+          "4.1.2",
+          "4.1.3",
+          "4.1.4",
+          "4.1.5",
+          "4.1.6",
+          "4.1.7",
+          "4.1.8"
+        ],
+        "checks": {
+          "printed_mark_sequence": true,
+          "page_count": true,
+          "unique_seed_batch": true,
+          "syllabus_coverage": true
+        }
+      },
+      "2": {
+        "seeds": 20,
+        "unique_fingerprints": 20,
+        "printed_mark_sequence": [
+          2,
+          4,
+          9,
+          25,
+          2,
+          4,
+          9,
+          25,
+          15,
+          25,
+          15,
+          25,
+          15,
+          25
+        ],
+        "page_count": 8,
+        "covered_topic_ids": [
+          "4.2.1",
+          "4.2.2",
+          "4.2.3",
+          "4.2.4",
+          "4.2.5",
+          "4.2.6"
+        ],
+        "checks": {
+          "printed_mark_sequence": true,
+          "page_count": true,
+          "unique_seed_batch": true,
+          "syllabus_coverage": true
+        }
+      },
+      "3": {
+        "seeds": 20,
+        "unique_fingerprints": 20,
+        "printed_mark_sequence": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          10,
+          15,
+          25
+        ],
+        "page_count": 40,
+        "covered_topic_ids": [
+          "4.1.1",
+          "4.1.2",
+          "4.1.3",
+          "4.1.4",
+          "4.1.5",
+          "4.1.6",
+          "4.1.7",
+          "4.1.8",
+          "4.2.1",
+          "4.2.2",
+          "4.2.3",
+          "4.2.4",
+          "4.2.5",
+          "4.2.6"
+        ],
+        "checks": {
+          "printed_mark_sequence": true,
+          "page_count": true,
+          "unique_seed_batch": true,
+          "syllabus_coverage": true,
+          "source_insert_page_count": true,
+          "source_insert_word_count": true,
+          "mcq_demand_mix": true
+        },
+        "source_insert": {
+          "page_count": 8,
+          "word_count": 1107
+        },
+        "mcq_demand": {
+          "quantitative": 6,
+          "conceptual": 24
+        }
+      }
+    }
+  },
+  "gates": {
+    "automated_structural_demand": true,
+    "independent_subject_review": false,
+    "student_trial": false,
+    "psychometric_equivalence": false,
+    "difficulty_verified": false
+  }
+}

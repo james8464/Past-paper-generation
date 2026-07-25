@@ -1,0 +1,477 @@
+{
+  "schema_version": 1,
+  "qualification": "AQA A-level Business 7132",
+  "purpose": "aggregate structural-demand calibration against current paper structure; not a psychometric equivalence claim",
+  "reference": {
+    "documents": 24,
+    "fingerprint": "b82b1bf75e16cd68afbc7eff0975c79ea5d11b4f0edfb03ddc7d384cb93013c2",
+    "derived_aggregate_only": true,
+    "retains_source_text": false,
+    "papers": {
+      "1": {
+        "documents": 6,
+        "current_printed_mark_sequence": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          4,
+          4,
+          9,
+          9,
+          9,
+          25,
+          25,
+          25,
+          25
+        ],
+        "printed_mark_sequence_inventory": [
+          {
+            "sequence": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              3,
+              1,
+              9,
+              9,
+              9,
+              25,
+              25,
+              25,
+              25
+            ],
+            "documents": 1
+          },
+          {
+            "sequence": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              2,
+              3,
+              3,
+              9,
+              9,
+              9,
+              25,
+              25,
+              25,
+              25
+            ],
+            "documents": 1
+          },
+          {
+            "sequence": [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              4,
+              4,
+              9,
+              9,
+              9,
+              25,
+              25,
+              25,
+              25
+            ],
+            "documents": 4
+          }
+        ],
+        "page_count": {
+          "minimum": 28,
+          "median": 32.0,
+          "maximum": 32
+        },
+        "document_word_count": {
+          "minimum": 1786,
+          "median": 1984.5,
+          "maximum": 2182
+        }
+      },
+      "2": {
+        "documents": 6,
+        "current_printed_mark_sequence": [
+          3,
+          4,
+          9,
+          16,
+          3,
+          6,
+          9,
+          16,
+          9,
+          9,
+          16
+        ],
+        "printed_mark_sequence_inventory": [
+          {
+            "sequence": [
+              2,
+              3,
+              4,
+              9,
+              16,
+              2,
+              4,
+              9,
+              16,
+              2,
+              2,
+              2,
+              4,
+              9,
+              16
+            ],
+            "documents": 1
+          },
+          {
+            "sequence": [
+              3,
+              2,
+              4,
+              9,
+              16,
+              2,
+              6,
+              9,
+              16,
+              2,
+              6,
+              9,
+              16
+            ],
+            "documents": 1
+          },
+          {
+            "sequence": [
+              3,
+              4,
+              9,
+              16,
+              3,
+              6,
+              9,
+              16,
+              9,
+              9,
+              16
+            ],
+            "documents": 1
+          },
+          {
+            "sequence": [
+              4,
+              3,
+              9,
+              16,
+              9,
+              9,
+              16,
+              9,
+              9,
+              16
+            ],
+            "documents": 1
+          },
+          {
+            "sequence": [
+              4,
+              4,
+              9,
+              16,
+              3,
+              6,
+              9,
+              16,
+              4,
+              4,
+              9,
+              16
+            ],
+            "documents": 1
+          },
+          {
+            "sequence": [
+              6,
+              4,
+              9,
+              16,
+              3,
+              5,
+              9,
+              16,
+              2,
+              5,
+              9,
+              16
+            ],
+            "documents": 1
+          }
+        ],
+        "page_count": {
+          "minimum": 20,
+          "median": 24.0,
+          "maximum": 24
+        },
+        "document_word_count": {
+          "minimum": 1340,
+          "median": 1460.0,
+          "maximum": 1756
+        }
+      },
+      "3": {
+        "documents": 6,
+        "current_printed_mark_sequence": [
+          12,
+          12,
+          16,
+          16,
+          20,
+          24
+        ],
+        "printed_mark_sequence_inventory": [
+          {
+            "sequence": [
+              12,
+              12,
+              16,
+              16,
+              20,
+              24
+            ],
+            "documents": 6
+          }
+        ],
+        "page_count": {
+          "minimum": 24,
+          "median": 28.0,
+          "maximum": 28
+        },
+        "document_word_count": {
+          "minimum": 621,
+          "median": 754.5,
+          "maximum": 785
+        },
+        "source_insert": {
+          "documents": 6,
+          "page_count": {
+            "minimum": 4,
+            "median": 8.0,
+            "maximum": 8
+          },
+          "document_word_count": {
+            "minimum": 716,
+            "median": 848.5,
+            "maximum": 1074
+          }
+        }
+      }
+    }
+  },
+  "generated": {
+    "seed_start": 100,
+    "seed_stop": 120,
+    "papers": {
+      "1": {
+        "seeds": 20,
+        "unique_fingerprints": 20,
+        "unique_stimulus_fingerprints": 20,
+        "printed_mark_sequence": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          4,
+          4,
+          9,
+          9,
+          9,
+          25,
+          25,
+          25,
+          25
+        ],
+        "page_count": 32,
+        "document_word_count": 1207,
+        "mark_scheme_page_count": 6,
+        "covered_topic_ids": [
+          "business-1",
+          "business-10",
+          "business-2",
+          "business-3",
+          "business-4",
+          "business-5",
+          "business-6",
+          "business-7",
+          "business-8",
+          "business-9"
+        ],
+        "checks": {
+          "current_printed_mark_sequence": true,
+          "page_count": true,
+          "unique_seed_batch": true,
+          "unique_stimulus_batch": true,
+          "syllabus_coverage": true,
+          "mcq_demand_mix": true,
+          "distinct_mcq_choices": true
+        },
+        "mcq_demand": {
+          "quantitative": 3,
+          "conceptual": 12
+        }
+      },
+      "2": {
+        "seeds": 20,
+        "unique_fingerprints": 20,
+        "unique_stimulus_fingerprints": 20,
+        "printed_mark_sequence": [
+          3,
+          4,
+          9,
+          16,
+          3,
+          6,
+          9,
+          16,
+          9,
+          9,
+          16
+        ],
+        "page_count": 24,
+        "document_word_count": 1278,
+        "mark_scheme_page_count": 4,
+        "covered_topic_ids": [
+          "business-1",
+          "business-10",
+          "business-2",
+          "business-3",
+          "business-4",
+          "business-5",
+          "business-6",
+          "business-7",
+          "business-8",
+          "business-9"
+        ],
+        "checks": {
+          "current_printed_mark_sequence": true,
+          "page_count": true,
+          "unique_seed_batch": true,
+          "unique_stimulus_batch": true,
+          "syllabus_coverage": true
+        }
+      },
+      "3": {
+        "seeds": 20,
+        "unique_fingerprints": 20,
+        "unique_stimulus_fingerprints": 20,
+        "printed_mark_sequence": [
+          12,
+          12,
+          16,
+          16,
+          20,
+          24
+        ],
+        "page_count": 28,
+        "document_word_count": 365,
+        "mark_scheme_page_count": 3,
+        "covered_topic_ids": [
+          "business-1",
+          "business-10",
+          "business-2",
+          "business-3",
+          "business-4",
+          "business-5",
+          "business-6",
+          "business-7",
+          "business-8",
+          "business-9"
+        ],
+        "checks": {
+          "current_printed_mark_sequence": true,
+          "page_count": true,
+          "unique_seed_batch": true,
+          "unique_stimulus_batch": true,
+          "syllabus_coverage": true,
+          "source_insert_page_count": true,
+          "source_insert_word_count": true
+        },
+        "source_insert": {
+          "page_count": 8,
+          "document_word_count": 728
+        }
+      }
+    }
+  },
+  "gates": {
+    "automated_structural_demand": true,
+    "independent_subject_review": false,
+    "student_trial": false,
+    "psychometric_equivalence": false,
+    "difficulty_verified": false
+  }
+}
