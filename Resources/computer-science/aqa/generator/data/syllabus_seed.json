@@ -1,7 +1,48 @@
 {
-  "qualification": "AQA A-level Computer Science 7517 Paper 2",
-  "source": "AQA 7517 specification and local Paper 2 notes",
+  "qualification": "AQA A-level Computer Science 7517",
+  "source": "Independently summarised AQA 7517 topic scope",
   "topics": [
+    {
+      "id": "4.1",
+      "title": "Fundamentals of programming",
+      "points": [
+        "Data types, variables, constants, assignment and input/output",
+        "Selection, iteration, subroutines, parameters and return values",
+        "Structured programming, validation, testing and exception handling",
+        "Object-oriented programming, classes, objects, inheritance and composition",
+        "Recursive techniques and tracing program execution"
+      ]
+    },
+    {
+      "id": "4.2",
+      "title": "Fundamentals of data structures",
+      "points": [
+        "Arrays, records, files and dynamic data structures",
+        "Stacks, queues, lists, hash tables and dictionaries",
+        "Graphs, trees, binary search trees and traversal",
+        "Choosing and implementing structures appropriate to a problem"
+      ]
+    },
+    {
+      "id": "4.3",
+      "title": "Fundamentals of algorithms",
+      "points": [
+        "Comparing and tracing algorithms",
+        "Searching, sorting, graph traversal and path finding",
+        "Time and space complexity and Big O notation",
+        "Abstraction, decomposition and problem-solving strategies"
+      ]
+    },
+    {
+      "id": "4.4",
+      "title": "Theory of computation",
+      "points": [
+        "Finite state machines, regular expressions and regular languages",
+        "Context-free grammars, syntax diagrams and language classification",
+        "Turing machines, computability and the halting problem",
+        "Classification and complexity of computational problems"
+      ]
+    },
     {
       "id": "4.5",
       "title": "Fundamentals of data representation",
@@ -86,6 +127,16 @@
         "First-class functions, higher-order functions and function composition",
         "Map, filter, reduce and recursion",
         "Lists, heads, tails and writing functional programs"
+      ]
+    },
+    {
+      "id": "4.13",
+      "title": "Systematic approach to problem solving",
+      "points": [
+        "Analysis of requirements and data models",
+        "Design of algorithms, data structures, modules and interfaces",
+        "Iterative development, testing and evaluation",
+        "Selecting representative normal, boundary and erroneous test data"
       ]
     }
   ]

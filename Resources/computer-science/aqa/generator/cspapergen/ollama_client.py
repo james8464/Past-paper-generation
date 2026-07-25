@@ -44,21 +44,33 @@ def improve_questions_with_ollama(
     for index, question in enumerate(blueprint.questions, start=1):
         topic = syllabus.get_topic(question.topic_id)
         emit(f"Generating question {index}/{total}: 0 {question.number:02d} ({topic.title})")
-        payload = client.generate_json(_prompt(question, topic.title, note_context_for_topic(topic.id, topic.title)))
+        payload = client.generate_json(
+            _prompt(
+                question,
+                topic.title,
+                note_context_for_topic(topic.id, topic.title),
+                blueprint,
+            )
+        )
         improved.append(_merge_question(question, payload))
         emit(f"Generated question {index}/{total}: 0 {question.number:02d}")
     return blueprint.model_copy(update={"questions": improved})
 
 
-def _prompt(question: Question, topic_title: str, notes: str) -> str:
+def _prompt(
+    question: Question,
+    topic_title: str,
+    notes: str,
+    blueprint: PaperBlueprint,
+) -> str:
     parts = "\n".join(f"- Part {part.label}: {part.marks} marks, {part.prompt}" for part in question.parts)
-    return f"""You are writing an unofficial AQA A-level Computer Science 7517/2 Paper 2 practice paper.
+    return f"""You are writing an unofficial A-level Computer Science {blueprint.paper_code} Paper {blueprint.paper_number} practice paper.
 
 Use only this syllabus topic: {question.topic_id} {topic_title}
 Revision-note context:
 {notes}
 
-Rewrite this question so it sounds like a real AQA Paper 2 question. Preserve marks, part labels, answer units, stimulus meaning and correct answers.
+Rewrite this question in concise UK exam style. Preserve marks, part labels, answer units, stimulus meaning, scenario names and correct answers. Do not add exam-board branding or copied past-paper text.
 
 Question stem: {question.stem}
 Parts:

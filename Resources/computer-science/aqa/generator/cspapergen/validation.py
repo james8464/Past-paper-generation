@@ -4,8 +4,16 @@ from cspapergen.models import PaperBlueprint, Syllabus
 
 
 def validate_blueprint(blueprint: PaperBlueprint, syllabus: Syllabus) -> None:
-    if blueprint.paper_code != "7517/2":
-        raise ValueError("Paper code must be 7517/2")
+    if blueprint.paper_code not in {"7517/1", "7517/2"}:
+        raise ValueError("Paper code must be 7517/1 or 7517/2")
+    if blueprint.paper_number != blueprint.paper_code.rsplit("/", 1)[-1]:
+        raise ValueError("Paper number must match paper code")
+    if blueprint.delivery_mode not in {"written", "on-screen"}:
+        raise ValueError("Unsupported delivery mode")
+    if blueprint.paper_number == "1" and blueprint.delivery_mode != "on-screen":
+        raise ValueError("Paper 1 must use on-screen delivery")
+    if blueprint.paper_number == "2" and blueprint.delivery_mode != "written":
+        raise ValueError("Paper 2 must use written delivery")
     if blueprint.total_marks != 100:
         raise ValueError("Paper total must be 100")
     if len(blueprint.questions) < 8:

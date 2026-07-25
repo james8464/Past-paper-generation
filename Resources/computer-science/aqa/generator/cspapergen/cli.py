@@ -4,9 +4,10 @@ import argparse
 from pathlib import Path
 from typing import Callable
 
-from cspapergen.generator import build_paper2_blueprint
+from cspapergen.generator import build_paper1_blueprint, build_paper2_blueprint
 from cspapergen.notes import DEFAULT_NOTES_SOURCE, cache_notes
 from cspapergen.ollama_client import OllamaClient, improve_questions_with_ollama
+from cspapergen.paper1_assets import write_paper1_supporting_files
 from cspapergen.render_pdf import render_mark_scheme, render_question_paper
 from cspapergen.syllabus import DEFAULT_SYLLABUS_PATH, load_syllabus
 from cspapergen.validation import validate_blueprint
@@ -17,7 +18,8 @@ def default_output_dir() -> Path:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Generate an unofficial AQA A-Level Computer Science Paper 2 practice paper.")
+    parser = argparse.ArgumentParser(description="Generate an unofficial AQA A-Level Computer Science practice paper.")
+    parser.add_argument("--paper", choices=["1", "2"], default="2")
     parser.add_argument("--out", default=str(default_output_dir()))
     parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--model", default="qwen2.5:14b")
@@ -29,6 +31,7 @@ def main(argv: list[str] | None = None) -> int:
 
     paths = generate_package(
         output_dir=Path(args.out),
+        paper=args.paper,
         seed=args.seed,
         model=args.model,
         ollama_url=args.ollama_url,
@@ -37,14 +40,15 @@ def main(argv: list[str] | None = None) -> int:
         notes_source=Path(args.notes),
         progress=print,
     )
-    print(paths["question_paper"])
-    print(paths["mark_scheme"])
+    for path in paths.values():
+        print(path)
     return 0
 
 
 def generate_package(
     *,
     output_dir: Path,
+    paper: str = "2",
     seed: int | None,
     dry_run: bool,
     model: str = "qwen2.5:14b",
@@ -60,8 +64,15 @@ def generate_package(
     emit("Loading syllabus")
     syllabus = load_syllabus(syllabus_path)
     emit(f"Using seed {seed if seed is not None else 'random'}")
-    emit("Building Paper 2 blueprint")
-    blueprint = build_paper2_blueprint(syllabus, seed=seed)
+    if paper == "1":
+        emit("Building Paper 1 blueprint and supporting materials")
+        blueprint, paper1_context = build_paper1_blueprint(syllabus, seed=seed)
+    elif paper == "2":
+        emit("Building Paper 2 blueprint")
+        blueprint = build_paper2_blueprint(syllabus, seed=seed)
+        paper1_context = None
+    else:
+        raise ValueError(f"Unsupported Computer Science paper: {paper}")
     emit(f"Using seed {blueprint.seed}")
 
     if dry_run:
@@ -74,11 +85,16 @@ def generate_package(
     emit("Validating paper")
     validate_blueprint(blueprint, syllabus)
 
-    question_paper = output_dir / "cs-paper-2-question-paper.pdf"
-    mark_scheme = output_dir / "cs-paper-2-mark-scheme.pdf"
+    question_paper = output_dir / f"cs-paper-{paper}-question-paper.pdf"
+    mark_scheme = output_dir / f"cs-paper-{paper}-mark-scheme.pdf"
     emit("Rendering question paper")
     render_question_paper(blueprint, question_paper)
     emit("Rendering mark scheme")
     render_mark_scheme(blueprint, mark_scheme)
+    paths = {"question_paper": question_paper}
+    if paper1_context is not None:
+        emit("Rendering Paper 1 supporting materials")
+        paths.update(write_paper1_supporting_files(blueprint, paper1_context, output_dir))
+    paths["mark_scheme"] = mark_scheme
     emit("Done")
-    return {"question_paper": question_paper, "mark_scheme": mark_scheme}
+    return paths

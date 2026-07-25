@@ -7,7 +7,12 @@ from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 
 from Backend.Core.fonts import register_fonts as _rf
-from cspapergen.exam_dates import formatted_paper2_exam_date, paper2_exam_date
+from cspapergen.exam_dates import (
+    formatted_paper1_exam_date,
+    formatted_paper2_exam_date,
+    paper1_exam_date,
+    paper2_exam_date,
+)
 from cspapergen.models import PaperBlueprint, Question, QuestionPart, Stimulus
 
 FONT = "AQAArial"
@@ -30,18 +35,24 @@ def render_question_paper(blueprint: PaperBlueprint, output_path: Path) -> None:
     pdf = canvas.Canvas(str(output_path), pagesize=AQA_A4, pageCompression=0)
     _cover_page(pdf, blueprint)
     pdf.showPage()
-    state = _QuestionRenderState(page=2, y=724)
-    _draw_question_page_header(pdf, state.page)
+    state = _QuestionRenderState(page=2, y=724, blueprint=blueprint)
+    _draw_question_page_header(pdf, state.page, blueprint)
     for index, question in enumerate(blueprint.questions):
         if index:
             state = _new_question_page(pdf, state)
-        state = _render_question(pdf, question, state)
+        state = _render_question(
+            pdf,
+            question,
+            state,
+            show_answer_space=blueprint.delivery_mode == "written",
+        )
     state = _ensure_space(pdf, state, 90)
     pdf.setFont(FONT_BOLD, 10)
     pdf.drawCentredString(282, state.y - 20, "END OF QUESTIONS")
     state.y -= 80
-    for _index in range(EXTRA_ANSWER_PAGES):
-        _draw_extra_answer_page(pdf, state.page + 1)
+    extra_pages = EXTRA_ANSWER_PAGES if blueprint.delivery_mode == "written" else 0
+    for _index in range(extra_pages):
+        _draw_extra_answer_page(pdf, state.page + 1, blueprint)
         state.page += 1
     pdf.save()
 
@@ -49,42 +60,50 @@ def render_question_paper(blueprint: PaperBlueprint, output_path: Path) -> None:
 def render_mark_scheme(blueprint: PaperBlueprint, output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     pdf = canvas.Canvas(str(output_path), pagesize=AQA_A4, pageCompression=0)
-    _mark_scheme_cover(pdf)
+    _mark_scheme_cover(pdf, blueprint)
     pdf.showPage()
-    _mark_scheme_intro(pdf, 2)
+    _mark_scheme_intro(pdf, 2, blueprint)
     pdf.showPage()
-    _mark_scheme_levels(pdf, 3)
+    _mark_scheme_levels(pdf, 3, blueprint)
     pdf.showPage()
-    _mark_scheme_annotations(pdf, 4)
+    _mark_scheme_annotations(pdf, 4, blueprint)
     pdf.showPage()
-    _mark_scheme_examiner_notes(pdf, 5)
+    _mark_scheme_examiner_notes(pdf, 5, blueprint)
     pdf.showPage()
     page = 6
-    y = _mark_scheme_table_header(pdf, page)
+    y = _mark_scheme_table_header(pdf, page, blueprint)
     for question_index, question in enumerate(blueprint.questions):
         if question_index:
             pdf.showPage()
             page += 1
-            y = _mark_scheme_table_header(pdf, page)
+            y = _mark_scheme_table_header(pdf, page, blueprint)
         for part in question.parts:
             needed = 56 + 15 * (len(part.marking.points) + len(part.marking.accept) + len(part.marking.reject) + len(part.marking.levels))
             if y - needed < 70:
                 pdf.showPage()
                 page += 1
-                y = _mark_scheme_table_header(pdf, page)
+                y = _mark_scheme_table_header(pdf, page, blueprint)
             y = _render_mark_scheme_part(pdf, question, part, y)
     pdf.save()
 
 
 class _QuestionRenderState:
-    def __init__(self, page: int, y: float) -> None:
+    def __init__(self, page: int, y: float, blueprint: PaperBlueprint) -> None:
         self.page = page
         self.y = y
+        self.blueprint = blueprint
 
 
 def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
+    pdf.setFont(FONT_BOLD, 8)
+    pdf.drawCentredString(297, 820, "UNOFFICIAL PRACTICE PAPER")
     pdf.setFont(FONT, 11)
-    pdf.drawString(55, 790, "Please write clearly in block capitals.")
+    candidate_instruction = (
+        "Complete the candidate details and save all electronic work clearly."
+        if blueprint.delivery_mode == "on-screen"
+        else "Please write clearly in block capitals."
+    )
+    pdf.drawString(55, 790, candidate_instruction)
     _candidate_fields(pdf)
 
     pdf.setFont(FONT_BOLD, 18)
@@ -92,15 +111,26 @@ def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.setFont(FONT_BOLD, 22)
     pdf.drawString(55, 508, "COMPUTER SCIENCE")
     pdf.setFont(FONT_BOLD, 16)
-    pdf.drawString(55, 483, "Paper 2")
+    pdf.drawString(55, 483, f"Paper {blueprint.paper_number}")
     pdf.setFont(FONT, 10.5)
-    pdf.drawString(55, 458, formatted_paper2_exam_date())
-    pdf.drawString(225, 458, "Morning")
+    pdf.drawString(55, 458, _formatted_exam_date(blueprint))
+    pdf.drawString(225, 458, blueprint.session)
     pdf.setFont(FONT, 9.5)
     pdf.drawString(302, 458, "Time allowed: 2 hours 30 minutes")
 
     y = 430
-    y = _cover_section(pdf, y, "Materials", ["For this paper you must have:", "\u2022 a calculator."])
+    material_lines = ["For this paper you must have:"] + [f"\u2022 {item}." for item in blueprint.materials]
+    y = _cover_section(pdf, y, "Materials", material_lines)
+    response_instruction = (
+        "\u2022 Enter written answers in the supplied Electronic Answer Document and complete programming tasks in your development environment."
+        if blueprint.delivery_mode == "on-screen"
+        else "\u2022 You must answer the questions in the spaces provided. Do not write outside the box around each page or on blank pages."
+    )
+    extra_space_instruction = (
+        "\u2022 Save your work frequently and use the question number in every response."
+        if blueprint.delivery_mode == "on-screen"
+        else "\u2022 If you need extra space for your answer(s), use the lined pages at the end of this book. Write the question number against your answer(s)."
+    )
     y = _cover_section(
         pdf,
         y - 8,
@@ -109,28 +139,32 @@ def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
             "\u2022 Use black ink or black ball-point pen.",
             "\u2022 Fill in the boxes at the top of this page.",
             "\u2022 Answer all questions.",
-            "\u2022 You must answer the questions in the spaces provided. Do not write outside the box around each page or on blank pages.",
-            "\u2022 If you need extra space for your answer(s), use the lined pages at the end of this book. Write the question number against your answer(s).",
+            response_instruction,
+            extra_space_instruction,
             "\u2022 Do all rough work in this book. Cross through any work you do not want to be marked.",
         ],
     )
     y = _cover_section(pdf, y - 8, "Information", ["\u2022 The marks for questions are shown in brackets.", f"\u2022 The maximum mark for this paper is {blueprint.total_marks}."])
-    _cover_section(
-        pdf,
-        y - 8,
-        "Advice",
+    advice = (
         [
+            "\u2022 Run and test programming answers in Python 3.",
+            "\u2022 Keep an unchanged copy of the supplied Skeleton Program.",
+            "\u2022 Include concise test evidence where a programming question asks for it.",
+        ]
+        if blueprint.delivery_mode == "on-screen"
+        else [
             "\u2022 In some questions you are required to indicate your answer by completely shading a lozenge alongside the appropriate answer.",
             "\u2022 If you want to change your answer you must cross out your original answer.",
             "\u2022 If you wish to return to an answer previously crossed out, ring the answer you now wish to select.",
-        ],
+        ]
     )
+    _cover_section(pdf, y - 8, "Advice", advice)
 
     _examiner_table(pdf, len(blueprint.questions), y_top=420)
     pdf.setFont(FONT_BOLD, 9)
-    pdf.drawString(55, 35, "*JUN267517201*")
+    pdf.drawString(55, 35, f"*PRACTICE{blueprint.paper_code.replace('/', '')}01*")
     pdf.setFont(FONT, 9)
-    pdf.drawRightString(535, 35, "7517/2")
+    pdf.drawRightString(535, 35, blueprint.paper_code)
 
 
 def _candidate_fields(pdf: canvas.Canvas) -> None:
@@ -184,7 +218,9 @@ def _examiner_table(pdf: canvas.Canvas, count: int, y_top: float = 470) -> None:
     pdf.drawString(x + 8, y - 14 * (count + 2) + 4, "TOTAL")
 
 
-def _draw_question_page_header(pdf: canvas.Canvas, page: int) -> None:
+def _draw_question_page_header(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
+    pdf.setFont(FONT_BOLD, 7)
+    pdf.drawCentredString(297, 824, "UNOFFICIAL PRACTICE PAPER")
     pdf.setFont(FONT, 10)
     pdf.drawCentredString(297, 805, str(page))
     pdf.setFont(FONT, 8)
@@ -196,13 +232,24 @@ def _draw_question_page_header(pdf: canvas.Canvas, page: int) -> None:
     pdf.line(39, 751, 539, 751)
     if page == 2:
         pdf.setFont(FONT, 11)
-        pdf.drawCentredString(289, 768, "Answer all questions.")
+        instruction = (
+            "Use the Electronic Answer Document and development environment."
+            if blueprint.delivery_mode == "on-screen"
+            else "Answer all questions."
+        )
+        pdf.drawCentredString(289, 768, instruction)
     pdf.setFont(FONT, 8)
     _draw_footer_barcode(pdf, 52, 2, page)
-    pdf.drawRightString(539, 28, "IB/G/Jun26/7517/2")
+    pdf.drawRightString(539, 28, f"PRACTICE/{blueprint.paper_code}")
 
 
-def _render_question(pdf: canvas.Canvas, question: Question, state: _QuestionRenderState) -> _QuestionRenderState:
+def _render_question(
+    pdf: canvas.Canvas,
+    question: Question,
+    state: _QuestionRenderState,
+    *,
+    show_answer_space: bool,
+) -> _QuestionRenderState:
     if state.y < 520:
         state = _new_question_page(pdf, state)
     state = _ensure_space(pdf, state, 80)
@@ -217,7 +264,14 @@ def _render_question(pdf: canvas.Canvas, question: Question, state: _QuestionRen
         state.y -= 8
     single_part = len(question.parts) == 1
     for part in question.parts:
-        state = _render_part(pdf, question, part, state, draw_reference=not single_part)
+        state = _render_part(
+            pdf,
+            question,
+            part,
+            state,
+            draw_reference=not single_part,
+            show_answer_space=show_answer_space,
+        )
     state = _ensure_space(pdf, state, 34)
     _mark_total_box(pdf, question.total_marks, state.y)
     state.y -= 42
@@ -231,6 +285,7 @@ def _render_part(
     state: _QuestionRenderState,
     *,
     draw_reference: bool = True,
+    show_answer_space: bool = True,
 ) -> _QuestionRenderState:
     line_count = _answer_line_count(part)
     state = _ensure_space(pdf, state, 92)
@@ -253,6 +308,10 @@ def _render_part(
             pdf.setFont(FONT, 10)
             pdf.drawString(160, state.y, option.text)
             state.y -= 20
+    elif not show_answer_space:
+        pdf.setFont(FONT, 8.5)
+        pdf.drawString(118, state.y, "Respond in the supplied Electronic Answer Document or development environment.")
+        state.y -= 22
     elif part.answer_unit:
         state = _answer_lines_paginated(pdf, state, line_count)
         pdf.setFont(FONT, 10)
@@ -412,7 +471,7 @@ def _ensure_space(pdf: canvas.Canvas, state: _QuestionRenderState, height: float
     pdf.showPage()
     state.page += 1
     state.y = 724
-    _draw_question_page_header(pdf, state.page)
+    _draw_question_page_header(pdf, state.page, state.blueprint)
     return state
 
 
@@ -422,7 +481,7 @@ def _new_question_page(pdf: canvas.Canvas, state: _QuestionRenderState) -> _Ques
     pdf.showPage()
     state.page += 1
     state.y = 724
-    _draw_question_page_header(pdf, state.page)
+    _draw_question_page_header(pdf, state.page, state.blueprint)
     return state
 
 
@@ -505,9 +564,9 @@ def _mark_total_box(pdf: canvas.Canvas, marks: int, y: float) -> None:
     pdf.drawCentredString(563, y - 32, str(marks))
 
 
-def _draw_extra_answer_page(pdf: canvas.Canvas, page: int) -> None:
+def _draw_extra_answer_page(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
     pdf.showPage()
-    _draw_question_page_header(pdf, page)
+    _draw_question_page_header(pdf, page, blueprint)
     pdf.setFont(FONT_BOLD, 11)
     pdf.drawCentredString(282, 725, "Additional answer space")
     y = 680
@@ -527,29 +586,31 @@ def _draw_footer_barcode(pdf: canvas.Canvas, x: float, y: float, page: int) -> N
     pdf.setFillColor(colors.black)
 
 
-def _mark_scheme_cover(pdf: canvas.Canvas) -> None:
+def _mark_scheme_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
+    pdf.setFont(FONT_BOLD, 9)
+    pdf.drawString(55, 780, "UNOFFICIAL PRACTICE MARK SCHEME")
     pdf.setFont(FONT_BOLD, 18)
     pdf.drawString(55, 720, "A-level")
     pdf.setFont(FONT_BOLD, 22)
     pdf.drawString(55, 690, "COMPUTER SCIENCE")
     pdf.setFont(FONT_BOLD, 15)
-    pdf.drawString(55, 665, "7517/2")
-    pdf.drawString(55, 640, "Paper 2")
+    pdf.drawString(55, 665, blueprint.paper_code)
+    pdf.drawString(55, 640, f"Paper {blueprint.paper_number}")
     pdf.setFont(FONT_BOLD, 20)
     pdf.drawString(55, 585, "Mark scheme")
     pdf.setFont(FONT, 13)
-    pdf.drawString(55, 555, f"June {paper2_exam_date().year}")
+    pdf.drawString(55, 555, f"June {_exam_date(blueprint).year}")
     pdf.drawString(55, 530, "Version: 1.0 Practice")
     pdf.setFont(FONT_BOLD, 10)
-    pdf.drawString(55, 40, f"*{paper2_exam_date():%y}6A7517/2/MS*")
+    pdf.drawString(55, 40, f"*PRACTICE{blueprint.paper_code}/MS*")
 
 
-def _mark_scheme_intro(pdf: canvas.Canvas, page: int) -> None:
-    _ms_header(pdf, page)
+def _mark_scheme_intro(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
+    _ms_header(pdf, page, blueprint)
     y = 705
     pdf.setFont(FONT, 10)
     paragraphs = [
-        "Mark schemes are prepared to support consistent marking. This unofficial practice mark scheme follows the structure of AQA A-level Computer Science Paper 2.",
+        f"Mark schemes are prepared to support consistent marking. This unofficial practice mark scheme supports the A-level Computer Science Paper {blueprint.paper_number} assessment structure.",
         "The standardisation process ensures that responses are judged in the same way by different examiners. Alternative answers not listed in the mark scheme should be credited where they are technically correct and answer the question set.",
         "It must be stressed that a mark scheme is a working document. Details vary with the content of a particular question paper, while the assessment principles remain consistent.",
         "No student should be disadvantaged by the way they refer to themselves or others in written responses. Credit relevant technical content wherever it is communicated clearly.",
@@ -561,8 +622,8 @@ def _mark_scheme_intro(pdf: canvas.Canvas, page: int) -> None:
         y -= 10
 
 
-def _mark_scheme_levels(pdf: canvas.Canvas, page: int) -> None:
-    _ms_header(pdf, page)
+def _mark_scheme_levels(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
+    _ms_header(pdf, page, blueprint)
     y = 705
     pdf.setFont(FONT_BOLD, 13)
     pdf.drawString(55, y, "Level of response marking instructions")
@@ -582,8 +643,8 @@ def _mark_scheme_levels(pdf: canvas.Canvas, page: int) -> None:
         y -= 10
 
 
-def _mark_scheme_annotations(pdf: canvas.Canvas, page: int) -> None:
-    _ms_header(pdf, page)
+def _mark_scheme_annotations(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
+    _ms_header(pdf, page, blueprint)
     y = 705
     pdf.setFont(FONT_BOLD, 13)
     pdf.drawString(55, y, "Annotation used in the mark scheme")
@@ -605,8 +666,8 @@ def _mark_scheme_annotations(pdf: canvas.Canvas, page: int) -> None:
         y -= 22
 
 
-def _mark_scheme_examiner_notes(pdf: canvas.Canvas, page: int) -> None:
-    _ms_header(pdf, page)
+def _mark_scheme_examiner_notes(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
+    _ms_header(pdf, page, blueprint)
     y = 705
     pdf.setFont(FONT_BOLD, 12)
     pdf.drawString(55, y, "To Examiners:")
@@ -625,8 +686,8 @@ def _mark_scheme_examiner_notes(pdf: canvas.Canvas, page: int) -> None:
         y -= 8
 
 
-def _mark_scheme_table_header(pdf: canvas.Canvas, page: int) -> float:
-    _ms_header(pdf, page)
+def _mark_scheme_table_header(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> float:
+    _ms_header(pdf, page, blueprint)
     y = 710
     pdf.setFont(FONT_BOLD, 9)
     pdf.rect(45, y - 24, 505, 24, stroke=1, fill=0)
@@ -674,11 +735,23 @@ def _render_mark_scheme_part(pdf: canvas.Canvas, question: Question, part: Quest
     return min(start_y - 34, y - 18)
 
 
-def _ms_header(pdf: canvas.Canvas, page: int) -> None:
+def _ms_header(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
     pdf.setFont(FONT_BOLD, 9)
-    pdf.drawCentredString(297, 800, "MARK SCHEME - A-LEVEL COMPUTER SCIENCE - 7517/2 - PRACTICE")
+    pdf.drawCentredString(
+        297,
+        800,
+        f"MARK SCHEME - A-LEVEL COMPUTER SCIENCE - {blueprint.paper_code} - PRACTICE",
+    )
     pdf.setFont(FONT, 9)
     pdf.drawCentredString(297, 32, str(page))
+
+
+def _exam_date(blueprint: PaperBlueprint) -> date:
+    return paper1_exam_date() if blueprint.paper_number == "1" else paper2_exam_date()
+
+
+def _formatted_exam_date(blueprint: PaperBlueprint) -> str:
+    return formatted_paper1_exam_date() if blueprint.paper_number == "1" else formatted_paper2_exam_date()
 
 
 def _wrap(text: str, width: int) -> list[str]:

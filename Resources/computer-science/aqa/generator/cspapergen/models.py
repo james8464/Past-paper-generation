@@ -76,7 +76,21 @@ class Question(BaseModel):
 class PaperBlueprint(BaseModel):
     paper_code: str = "7517/2"
     title: str = "A-level COMPUTER SCIENCE Paper 2"
+    paper_number: str = "2"
+    delivery_mode: str = "written"
+    session: str = "Morning"
+    materials: list[str] = Field(default_factory=lambda: ["a calculator"])
     duration_minutes: int = 150
     total_marks: int = 100
     seed: int
     questions: list[Question]
+
+
+class Paper1Context(BaseModel):
+    scenario_title: str
+    scenario_summary: str
+    record_name: str
+    category_names: list[str]
+    command_names: list[str]
+    skeleton_program: str
+    data_file: str
