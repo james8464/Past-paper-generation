@@ -16,3 +16,5 @@ macOS/DerivedData/
 *.xcresult
 example papers/
 Resources/**/*.pdf
+Reference Corpus/
+tmp/

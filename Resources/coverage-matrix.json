@@ -1,0 +1,3412 @@
+{
+  "schema_version": 1,
+  "qualification": "a-level",
+  "derived_reference_data_only": true,
+  "readiness_gates": [
+    "blueprint",
+    "syllabus",
+    "question_types",
+    "mark_distribution",
+    "difficulty",
+    "unique_content",
+    "renderer",
+    "mark_scheme",
+    "runtime",
+    "visual",
+    "release"
+  ],
+  "summary": {
+    "families": 105,
+    "boards": 3,
+    "advertised_families": 7,
+    "reference-profiled": 98,
+    "partial": 0,
+    "implemented": 7,
+    "verified": 0
+  },
+  "families": [
+    {
+      "id": "aqa/accounting",
+      "board": "aqa",
+      "subject": "accounting",
+      "status": "implemented",
+      "reference": {
+        "question_papers_profiled": 14,
+        "page_count": {
+          "minimum": 32,
+          "median": 36.0,
+          "maximum": 40
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 50.52,
+          "top": 27.55,
+          "right": 9.34,
+          "bottom": 17.1
+        }
+      },
+      "declared_papers": [
+        "1",
+        "2"
+      ],
+      "supported_papers": [
+        "1",
+        "2"
+      ],
+      "verified_papers": [],
+      "papers": [
+        {
+          "id": "1",
+          "title": "Paper 1",
+          "detail": "Financial Accounting",
+          "status": "implemented",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "2",
+          "title": "Paper 2",
+          "detail": "Accounting for Analysis and Decision-making",
+          "status": "implemented",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        }
+      ],
+      "implementation": {
+        "app_subject": "accounting",
+        "app_board": "aqa",
+        "backend_subject": "accounting_aqa",
+        "resource_path": "accounting/aqa",
+        "advertised": true
+      }
+    },
+    {
+      "id": "aqa/art-and-design",
+      "board": "aqa",
+      "subject": "art-and-design",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 6,
+        "page_count": {
+          "minimum": 4,
+          "median": 4.0,
+          "maximum": 4
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 45.36,
+          "top": 27.58,
+          "right": 53.11,
+          "bottom": 12.54
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/bengali",
+      "board": "aqa",
+      "subject": "bengali",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 18,
+        "page_count": {
+          "minimum": 4,
+          "median": 20.0,
+          "maximum": 36
+        },
+        "primary_page_size": {
+          "width": 595.22,
+          "height": 842.0
+        },
+        "median_text_margins": {
+          "left": 45.35,
+          "top": 29.23,
+          "right": 9.09,
+          "bottom": 16.21
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/biology",
+      "board": "aqa",
+      "subject": "biology",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 26,
+        "page_count": {
+          "minimum": 18,
+          "median": 32.0,
+          "maximum": 40
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 45.12,
+          "top": 27.58,
+          "right": 9.27,
+          "bottom": 17.1
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/business",
+      "board": "aqa",
+      "subject": "business",
+      "status": "implemented",
+      "reference": {
+        "question_papers_profiled": 24,
+        "page_count": {
+          "minimum": 18,
+          "median": 27.5,
+          "maximum": 32
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 50.52,
+          "top": 27.52,
+          "right": 11.7,
+          "bottom": 17.06
+        }
+      },
+      "declared_papers": [
+        "1",
+        "2",
+        "3"
+      ],
+      "supported_papers": [
+        "1",
+        "2",
+        "3"
+      ],
+      "verified_papers": [],
+      "papers": [
+        {
+          "id": "1",
+          "title": "Paper 1",
+          "detail": "Business 1",
+          "status": "implemented",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "2",
+          "title": "Paper 2",
+          "detail": "Business 2",
+          "status": "implemented",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "3",
+          "title": "Paper 3",
+          "detail": "Business 3",
+          "status": "implemented",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        }
+      ],
+      "implementation": {
+        "app_subject": "business",
+        "app_board": "aqa",
+        "backend_subject": "business_aqa",
+        "resource_path": "business/aqa",
+        "advertised": true
+      }
+    },
+    {
+      "id": "aqa/chemistry",
+      "board": "aqa",
+      "subject": "chemistry",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 30,
+        "page_count": {
+          "minimum": 24,
+          "median": 32.0,
+          "maximum": 40
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 45.12,
+          "top": 27.58,
+          "right": 9.27,
+          "bottom": 17.1
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/computer-science",
+      "board": "aqa",
+      "subject": "computer-science",
+      "status": "implemented",
+      "reference": {
+        "question_papers_profiled": 14,
+        "page_count": {
+          "minimum": 20,
+          "median": 25.5,
+          "maximum": 40
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 45.36,
+          "top": 27.58,
+          "right": 47.75,
+          "bottom": 17.06
+        }
+      },
+      "declared_papers": [
+        "1",
+        "2"
+      ],
+      "supported_papers": [
+        "1",
+        "2"
+      ],
+      "verified_papers": [],
+      "papers": [
+        {
+          "id": "1",
+          "title": "Paper 1",
+          "detail": "On-screen programming assessment (Python 3)",
+          "status": "implemented",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "2",
+          "title": "Paper 2",
+          "detail": "A-level Computer Science Paper 2",
+          "status": "implemented",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": false,
+            "release": true
+          }
+        }
+      ],
+      "implementation": {
+        "app_subject": "computer-science",
+        "app_board": "aqa",
+        "backend_subject": "computer_science",
+        "resource_path": "computer-science/aqa",
+        "advertised": true
+      }
+    },
+    {
+      "id": "aqa/dance",
+      "board": "aqa",
+      "subject": "dance",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 8,
+        "page_count": {
+          "minimum": 3,
+          "median": 4.0,
+          "maximum": 4
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 45.24,
+          "top": 27.34,
+          "right": 52.14,
+          "bottom": 12.26
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/design-and-technology",
+      "board": "aqa",
+      "subject": "design-and-technology",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 28,
+        "page_count": {
+          "minimum": 20,
+          "median": 25.0,
+          "maximum": 32
+        },
+        "primary_page_size": {
+          "width": 595.22,
+          "height": 842.0
+        },
+        "median_text_margins": {
+          "left": 45.35,
+          "top": 29.23,
+          "right": 9.09,
+          "bottom": 16.21
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/drama",
+      "board": "aqa",
+      "subject": "drama",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 7,
+        "page_count": {
+          "minimum": 16,
+          "median": 16,
+          "maximum": 16
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 45.36,
+          "top": 27.58,
+          "right": 54.34,
+          "bottom": 12.18
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/economics",
+      "board": "aqa",
+      "subject": "economics",
+      "status": "implemented",
+      "reference": {
+        "question_papers_profiled": 21,
+        "page_count": {
+          "minimum": 8,
+          "median": 8,
+          "maximum": 44
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 45.36,
+          "top": 27.52,
+          "right": 48.02,
+          "bottom": 15.06
+        }
+      },
+      "declared_papers": [
+        "1",
+        "2",
+        "3"
+      ],
+      "supported_papers": [
+        "1",
+        "2",
+        "3"
+      ],
+      "verified_papers": [],
+      "papers": [
+        {
+          "id": "1",
+          "title": "Paper 1",
+          "detail": "Markets and market failure",
+          "status": "implemented",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "2",
+          "title": "Paper 2",
+          "detail": "National and international economy",
+          "status": "implemented",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "3",
+          "title": "Paper 3",
+          "detail": "Economic principles and issues",
+          "status": "implemented",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        }
+      ],
+      "implementation": {
+        "app_subject": "economics",
+        "app_board": "aqa",
+        "backend_subject": "economics_aqa",
+        "resource_path": "economics/aqa",
+        "advertised": true
+      }
+    },
+    {
+      "id": "aqa/english",
+      "board": "aqa",
+      "subject": "english",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 77,
+        "page_count": {
+          "minimum": 4,
+          "median": 8,
+          "maximum": 16
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 45.36,
+          "top": 27.52,
+          "right": 53.65,
+          "bottom": 12.26
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/environmental-science",
+      "board": "aqa",
+      "subject": "environmental-science",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 14,
+        "page_count": {
+          "minimum": 32,
+          "median": 38.0,
+          "maximum": 44
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 50.52,
+          "top": 27.58,
+          "right": 9.34,
+          "bottom": 17.1
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/french",
+      "board": "aqa",
+      "subject": "french",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 15,
+        "page_count": {
+          "minimum": 12,
+          "median": 16,
+          "maximum": 24
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 45.36,
+          "top": 27.58,
+          "right": 53.41,
+          "bottom": 17.06
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/geography",
+      "board": "aqa",
+      "subject": "geography",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 14,
+        "page_count": {
+          "minimum": 40,
+          "median": 44.0,
+          "maximum": 48
+        },
+        "primary_page_size": {
+          "width": 595.22,
+          "height": 842.0
+        },
+        "median_text_margins": {
+          "left": 45.35,
+          "top": 29.23,
+          "right": 9.09,
+          "bottom": 16.21
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/german",
+      "board": "aqa",
+      "subject": "german",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 15,
+        "page_count": {
+          "minimum": 12,
+          "median": 16,
+          "maximum": 32
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 45.36,
+          "top": 27.58,
+          "right": 53.09,
+          "bottom": 17.06
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/hebrew-(biblical)",
+      "board": "aqa",
+      "subject": "hebrew-(biblical)",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 15,
+        "page_count": {
+          "minimum": 12,
+          "median": 16,
+          "maximum": 20
+        },
+        "primary_page_size": {
+          "width": 595.22,
+          "height": 842.0
+        },
+        "median_text_margins": {
+          "left": 45.35,
+          "top": 29.23,
+          "right": 9.09,
+          "bottom": 16.21
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/hebrew-modern",
+      "board": "aqa",
+      "subject": "hebrew-modern",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 18,
+        "page_count": {
+          "minimum": 4,
+          "median": 16.0,
+          "maximum": 32
+        },
+        "primary_page_size": {
+          "width": 595.22,
+          "height": 842.0
+        },
+        "median_text_margins": {
+          "left": 45.35,
+          "top": 29.23,
+          "right": 9.15,
+          "bottom": 16.21
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/history",
+      "board": "aqa",
+      "subject": "history",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 231,
+        "page_count": {
+          "minimum": 4,
+          "median": 4,
+          "maximum": 10
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 56.7,
+          "top": 34.42,
+          "right": 51.66,
+          "bottom": 26.18
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/law",
+      "board": "aqa",
+      "subject": "law",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 28,
+        "page_count": {
+          "minimum": 14,
+          "median": 24.0,
+          "maximum": 24
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 50.52,
+          "top": 27.58,
+          "right": 9.35,
+          "bottom": 17.1
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/mathematics",
+      "board": "aqa",
+      "subject": "mathematics",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 67,
+        "page_count": {
+          "minimum": 13,
+          "median": 28,
+          "maximum": 44
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 46.77,
+          "top": 44.99,
+          "right": 12.27,
+          "bottom": 15.99
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/media-studies",
+      "board": "aqa",
+      "subject": "media-studies",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 16,
+        "page_count": {
+          "minimum": 14,
+          "median": 16.0,
+          "maximum": 17
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 45.12,
+          "top": 27.58,
+          "right": 9.3,
+          "bottom": 17.1
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/music",
+      "board": "aqa",
+      "subject": "music",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 7,
+        "page_count": {
+          "minimum": 6,
+          "median": 48,
+          "maximum": 52
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 50.52,
+          "top": 27.52,
+          "right": 9.35,
+          "bottom": 17.06
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/panjabi",
+      "board": "aqa",
+      "subject": "panjabi",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 20,
+        "page_count": {
+          "minimum": 4,
+          "median": 20.0,
+          "maximum": 36
+        },
+        "primary_page_size": {
+          "width": 595.22,
+          "height": 842.0
+        },
+        "median_text_margins": {
+          "left": 45.35,
+          "top": 29.06,
+          "right": 9.15,
+          "bottom": 16.21
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/philosophy",
+      "board": "aqa",
+      "subject": "philosophy",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 14,
+        "page_count": {
+          "minimum": 30,
+          "median": 32.0,
+          "maximum": 32
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 45.12,
+          "top": 27.34,
+          "right": 11.76,
+          "bottom": 17.1
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/physical-education",
+      "board": "aqa",
+      "subject": "physical-education",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 14,
+        "page_count": {
+          "minimum": 20,
+          "median": 36.0,
+          "maximum": 40
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 45.12,
+          "top": 27.58,
+          "right": 9.27,
+          "bottom": 17.1
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/physics",
+      "board": "aqa",
+      "subject": "physics",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 80,
+        "page_count": {
+          "minimum": 8,
+          "median": 20.0,
+          "maximum": 48
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 45.12,
+          "top": 27.58,
+          "right": 9.27,
+          "bottom": 17.1
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/polish",
+      "board": "aqa",
+      "subject": "polish",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 21,
+        "page_count": {
+          "minimum": 4,
+          "median": 20,
+          "maximum": 32
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 45.35,
+          "top": 27.75,
+          "right": 9.15,
+          "bottom": 15.42
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/politics",
+      "board": "aqa",
+      "subject": "politics",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 20,
+        "page_count": {
+          "minimum": 4,
+          "median": 4.0,
+          "maximum": 5
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 48.06,
+          "top": 27.58,
+          "right": 51.19,
+          "bottom": 12.25
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/psychology",
+      "board": "aqa",
+      "subject": "psychology",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 23,
+        "page_count": {
+          "minimum": 12,
+          "median": 20,
+          "maximum": 28
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 50.52,
+          "top": 27.58,
+          "right": 47.02,
+          "bottom": 17.1
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/religious-studies",
+      "board": "aqa",
+      "subject": "religious-studies",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 42,
+        "page_count": {
+          "minimum": 4,
+          "median": 4.0,
+          "maximum": 4
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 45.36,
+          "top": 27.58,
+          "right": 53.93,
+          "bottom": 12.18
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/sociology",
+      "board": "aqa",
+      "subject": "sociology",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 21,
+        "page_count": {
+          "minimum": 9,
+          "median": 16,
+          "maximum": 20
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 45.36,
+          "top": 27.34,
+          "right": 11.63,
+          "bottom": 17.06
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "aqa/spanish",
+      "board": "aqa",
+      "subject": "spanish",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 15,
+        "page_count": {
+          "minimum": 12,
+          "median": 16,
+          "maximum": 28
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": {
+          "left": 45.36,
+          "top": 27.58,
+          "right": 54.13,
+          "bottom": 17.06
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/ancient-history",
+      "board": "ocr",
+      "subject": "ancient-history",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 24,
+        "page_count": {
+          "minimum": 4,
+          "median": 4.0,
+          "maximum": 4
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 35.66,
+          "right": 49.59,
+          "bottom": 34.9
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/art-and-design",
+      "board": "ocr",
+      "subject": "art-and-design",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 20,
+          "median": 20,
+          "maximum": 20
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.6,
+          "top": 35.66,
+          "right": 46.56,
+          "bottom": 34.9
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/biology-a",
+      "board": "ocr",
+      "subject": "biology-a",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 26,
+        "page_count": {
+          "minimum": 1,
+          "median": 32.0,
+          "maximum": 40
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 42.75,
+          "right": 46.58,
+          "bottom": 54.74
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/biology-b-advancing-biology",
+      "board": "ocr",
+      "subject": "biology-b-advancing-biology",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 24,
+        "page_count": {
+          "minimum": 16,
+          "median": 26.0,
+          "maximum": 40
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 60.94,
+          "top": 42.75,
+          "right": 46.58,
+          "bottom": 54.74
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/business",
+      "board": "ocr",
+      "subject": "business",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 12,
+        "page_count": {
+          "minimum": 16,
+          "median": 16.0,
+          "maximum": 20
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 42.75,
+          "right": 49.75,
+          "bottom": 54.74
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/chemistry-a",
+      "board": "ocr",
+      "subject": "chemistry-a",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 25,
+        "page_count": {
+          "minimum": 1,
+          "median": 28,
+          "maximum": 32
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 42.75,
+          "right": 49.61,
+          "bottom": 54.74
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/chemistry-b-salters",
+      "board": "ocr",
+      "subject": "chemistry-b-salters",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 25,
+        "page_count": {
+          "minimum": 1,
+          "median": 20,
+          "maximum": 36
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 55.27,
+          "top": 42.75,
+          "right": 46.59,
+          "bottom": 54.74
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/classical-civilisation",
+      "board": "ocr",
+      "subject": "classical-civilisation",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 36,
+        "page_count": {
+          "minimum": 4,
+          "median": 4.0,
+          "maximum": 8
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 35.66,
+          "right": 49.58,
+          "bottom": 34.9
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/classical-greek",
+      "board": "ocr",
+      "subject": "classical-greek",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 16,
+        "page_count": {
+          "minimum": 4,
+          "median": 10.0,
+          "maximum": 12
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 35.66,
+          "right": 49.61,
+          "bottom": 34.9
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/computer-science",
+      "board": "ocr",
+      "subject": "computer-science",
+      "status": "implemented",
+      "reference": {
+        "question_papers_profiled": 8,
+        "page_count": {
+          "minimum": 24,
+          "median": 30.0,
+          "maximum": 36
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 60.94,
+          "top": 42.75,
+          "right": 49.61,
+          "bottom": 54.74
+        }
+      },
+      "declared_papers": [
+        "1",
+        "2"
+      ],
+      "supported_papers": [
+        "1",
+        "2"
+      ],
+      "verified_papers": [],
+      "papers": [
+        {
+          "id": "1",
+          "title": "Paper 1",
+          "detail": "Computer systems",
+          "status": "implemented",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "2",
+          "title": "Paper 2",
+          "detail": "Algorithms and programming",
+          "status": "implemented",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        }
+      ],
+      "implementation": {
+        "app_subject": "computer-science",
+        "app_board": "ocr",
+        "backend_subject": "computer_science_ocr",
+        "resource_path": "computer-science/ocr",
+        "advertised": true
+      }
+    },
+    {
+      "id": "ocr/design-and-technology",
+      "board": "ocr",
+      "subject": "design-and-technology",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 24,
+        "page_count": {
+          "minimum": 16,
+          "median": 16.0,
+          "maximum": 24
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 58.26,
+          "top": 42.75,
+          "right": 49.75,
+          "bottom": 54.74
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/drama-and-theatre",
+      "board": "ocr",
+      "subject": "drama-and-theatre",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 22,
+        "page_count": {
+          "minimum": 4,
+          "median": 16.0,
+          "maximum": 20
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 42.75,
+          "right": 50.44,
+          "bottom": 54.74
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/economics",
+      "board": "ocr",
+      "subject": "economics",
+      "status": "implemented",
+      "reference": {
+        "question_papers_profiled": 14,
+        "page_count": {
+          "minimum": 1,
+          "median": 20.0,
+          "maximum": 28
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 52.44,
+          "top": 42.75,
+          "right": 49.9,
+          "bottom": 54.74
+        }
+      },
+      "declared_papers": [
+        "1",
+        "2",
+        "3"
+      ],
+      "supported_papers": [
+        "1",
+        "2",
+        "3"
+      ],
+      "verified_papers": [],
+      "papers": [
+        {
+          "id": "1",
+          "title": "Paper 1",
+          "detail": "Microeconomics",
+          "status": "implemented",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "2",
+          "title": "Paper 2",
+          "detail": "Macroeconomics",
+          "status": "implemented",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "3",
+          "title": "Paper 3",
+          "detail": "Themes in economics",
+          "status": "implemented",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        }
+      ],
+      "implementation": {
+        "app_subject": "economics",
+        "app_board": "ocr",
+        "backend_subject": "economics_ocr",
+        "resource_path": "economics/ocr",
+        "advertised": true
+      }
+    },
+    {
+      "id": "ocr/english-language",
+      "board": "ocr",
+      "subject": "english-language",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 8,
+        "page_count": {
+          "minimum": 4,
+          "median": 4.0,
+          "maximum": 4
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.59,
+          "top": 35.66,
+          "right": 51.31,
+          "bottom": 34.9
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/english-language-and-literature-emc",
+      "board": "ocr",
+      "subject": "english-language-and-literature-emc",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 12,
+        "page_count": {
+          "minimum": 8,
+          "median": 8.0,
+          "maximum": 24
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 35.66,
+          "right": 53.43,
+          "bottom": 34.9
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/english-literature",
+      "board": "ocr",
+      "subject": "english-literature",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 8,
+        "page_count": {
+          "minimum": 16,
+          "median": 18.0,
+          "maximum": 20
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 35.66,
+          "right": 49.61,
+          "bottom": 34.9
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/film-studies",
+      "board": "ocr",
+      "subject": "film-studies",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 8,
+        "page_count": {
+          "minimum": 4,
+          "median": 6.0,
+          "maximum": 8
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.59,
+          "top": 35.66,
+          "right": 48.83,
+          "bottom": 34.9
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/further-mathematics-a",
+      "board": "ocr",
+      "subject": "further-mathematics-a",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 89,
+        "page_count": {
+          "minimum": 1,
+          "median": 8,
+          "maximum": 20
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 35.43,
+          "right": 49.61,
+          "bottom": 35.5
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/further-mathematics-b-mei",
+      "board": "ocr",
+      "subject": "further-mathematics-b-mei",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 220,
+        "page_count": {
+          "minimum": 4,
+          "median": 12.0,
+          "maximum": 28
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 35.43,
+          "right": 51.59,
+          "bottom": 35.5
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/geography",
+      "board": "ocr",
+      "subject": "geography",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 14,
+        "page_count": {
+          "minimum": 1,
+          "median": 8.0,
+          "maximum": 8
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 35.66,
+          "right": 49.3,
+          "bottom": 34.9
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/geology",
+      "board": "ocr",
+      "subject": "geology",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 31,
+        "page_count": {
+          "minimum": 1,
+          "median": 20,
+          "maximum": 36
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 43.25,
+          "right": 46.55,
+          "bottom": 54.74
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/history-a",
+      "board": "ocr",
+      "subject": "history-a",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 228,
+        "page_count": {
+          "minimum": 2,
+          "median": 4.0,
+          "maximum": 4
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.6,
+          "top": 36.17,
+          "right": 49.38,
+          "bottom": 34.9
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/latin",
+      "board": "ocr",
+      "subject": "latin",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 16,
+        "page_count": {
+          "minimum": 4,
+          "median": 6.0,
+          "maximum": 12
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 35.66,
+          "right": 49.59,
+          "bottom": 34.9
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/law",
+      "board": "ocr",
+      "subject": "law",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 12,
+        "page_count": {
+          "minimum": 4,
+          "median": 4.0,
+          "maximum": 4
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 35.66,
+          "right": 48.78,
+          "bottom": 34.9
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/mathematics-a",
+      "board": "ocr",
+      "subject": "mathematics-a",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 143,
+        "page_count": {
+          "minimum": 4,
+          "median": 12,
+          "maximum": 20
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 35.43,
+          "right": 49.59,
+          "bottom": 35.5
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/mathematics-b-mei",
+      "board": "ocr",
+      "subject": "mathematics-b-mei",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 115,
+        "page_count": {
+          "minimum": 1,
+          "median": 12,
+          "maximum": 20
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 35.43,
+          "right": 51.57,
+          "bottom": 36.76
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/media-studies",
+      "board": "ocr",
+      "subject": "media-studies",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 4,
+        "page_count": {
+          "minimum": 4,
+          "median": 4.0,
+          "maximum": 8
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 35.66,
+          "right": 49.59,
+          "bottom": 34.9
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/music",
+      "board": "ocr",
+      "subject": "music",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 5,
+        "page_count": {
+          "minimum": 2,
+          "median": 20,
+          "maximum": 20
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 42.75,
+          "right": 49.76,
+          "bottom": 54.74
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/physical-education",
+      "board": "ocr",
+      "subject": "physical-education",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 12,
+        "page_count": {
+          "minimum": 12,
+          "median": 16.0,
+          "maximum": 20
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 42.75,
+          "right": 49.61,
+          "bottom": 54.74
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/physics-a",
+      "board": "ocr",
+      "subject": "physics-a",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 33,
+        "page_count": {
+          "minimum": 1,
+          "median": 28,
+          "maximum": 36
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 42.75,
+          "right": 46.56,
+          "bottom": 54.74
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/physics-b-advancing-physics",
+      "board": "ocr",
+      "subject": "physics-b-advancing-physics",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 31,
+        "page_count": {
+          "minimum": 16,
+          "median": 28,
+          "maximum": 52
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 42.75,
+          "right": 46.56,
+          "bottom": 54.74
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/psychology",
+      "board": "ocr",
+      "subject": "psychology",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 13,
+        "page_count": {
+          "minimum": 1,
+          "median": 16,
+          "maximum": 20
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 42.75,
+          "right": 49.61,
+          "bottom": 54.74
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/religious-studies",
+      "board": "ocr",
+      "subject": "religious-studies",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 27,
+        "page_count": {
+          "minimum": 2,
+          "median": 2,
+          "maximum": 4
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 33.66,
+          "top": 61.0,
+          "right": 53.04,
+          "bottom": 35.41
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "ocr/sociology",
+      "board": "ocr",
+      "subject": "sociology",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 12,
+        "page_count": {
+          "minimum": 4,
+          "median": 4.0,
+          "maximum": 4
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 49.61,
+          "top": 35.66,
+          "right": 48.78,
+          "bottom": 34.9
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/arabic-2018",
+      "board": "pearson-edexcel",
+      "subject": "arabic-2018",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 15,
+        "page_count": {
+          "minimum": 16,
+          "median": 20,
+          "maximum": 20
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.42,
+          "top": 62.36,
+          "right": 33.17,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/art-and-design-2015",
+      "board": "pearson-edexcel",
+      "subject": "art-and-design-2015",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 10,
+        "page_count": {
+          "minimum": 27,
+          "median": 28.0,
+          "maximum": 28
+        },
+        "primary_page_size": {
+          "width": 651.97,
+          "height": 898.58
+        },
+        "median_text_margins": {
+          "left": 68.03,
+          "top": 76.5,
+          "right": 65.2,
+          "bottom": 50.36
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/biology-a-2015",
+      "board": "pearson-edexcel",
+      "subject": "biology-a-2015",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 43,
+        "page_count": {
+          "minimum": 24,
+          "median": 32,
+          "maximum": 44
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 39.36,
+          "top": 59.94,
+          "right": 26.2,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/biology-b-2015",
+      "board": "pearson-edexcel",
+      "subject": "biology-b-2015",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 42,
+        "page_count": {
+          "minimum": 24,
+          "median": 32.0,
+          "maximum": 44
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 39.36,
+          "top": 59.94,
+          "right": 21.73,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/business-2015",
+      "board": "pearson-edexcel",
+      "subject": "business-2015",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 40,
+        "page_count": {
+          "minimum": 16,
+          "median": 24.0,
+          "maximum": 32
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.52,
+          "top": 60.79,
+          "right": 43.04,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/chemistry-2015",
+      "board": "pearson-edexcel",
+      "subject": "chemistry-2015",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 42,
+        "page_count": {
+          "minimum": 20,
+          "median": 28.0,
+          "maximum": 36
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 39.36,
+          "top": 59.94,
+          "right": 21.73,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/chinese-2017",
+      "board": "pearson-edexcel",
+      "subject": "chinese-2017",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 26,
+        "page_count": {
+          "minimum": 8,
+          "median": 30.0,
+          "maximum": 56
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 39.68,
+          "top": 59.49,
+          "right": 36.0,
+          "bottom": 16.0
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/design-technology-product-design-2017",
+      "board": "pearson-edexcel",
+      "subject": "design-technology-product-design-2017",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 8,
+        "page_count": {
+          "minimum": 24,
+          "median": 28.0,
+          "maximum": 32
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.52,
+          "top": 59.94,
+          "right": 42.49,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/drama-and-theatre-2016",
+      "board": "pearson-edexcel",
+      "subject": "drama-and-theatre-2016",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 11,
+        "page_count": {
+          "minimum": 32,
+          "median": 56,
+          "maximum": 60
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.52,
+          "top": 62.01,
+          "right": 36.85,
+          "bottom": 9.87
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/economics-a-2015",
+      "board": "pearson-edexcel",
+      "subject": "economics-a-2015",
+      "status": "implemented",
+      "reference": {
+        "question_papers_profiled": 13,
+        "page_count": {
+          "minimum": 24,
+          "median": 28,
+          "maximum": 36
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.39,
+          "top": 60.7,
+          "right": 41.1,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [
+        "1",
+        "2",
+        "3"
+      ],
+      "supported_papers": [
+        "1",
+        "2",
+        "3"
+      ],
+      "verified_papers": [],
+      "papers": [
+        {
+          "id": "1",
+          "title": "Paper 1",
+          "detail": "Markets and business behaviour",
+          "status": "implemented",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": false,
+            "release": true
+          }
+        },
+        {
+          "id": "2",
+          "title": "Paper 2",
+          "detail": "The national and global economy",
+          "status": "implemented",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": false,
+            "release": true
+          }
+        },
+        {
+          "id": "3",
+          "title": "Paper 3",
+          "detail": "Microeconomics and macroeconomics",
+          "status": "implemented",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": false,
+            "release": true
+          }
+        }
+      ],
+      "implementation": {
+        "app_subject": "economics",
+        "app_board": "edexcel-a",
+        "backend_subject": "economics",
+        "resource_path": "economics/edexcel-a",
+        "advertised": true
+      }
+    },
+    {
+      "id": "pearson-edexcel/economics-b-2015",
+      "board": "pearson-edexcel",
+      "subject": "economics-b-2015",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 5,
+        "page_count": {
+          "minimum": 20,
+          "median": 20,
+          "maximum": 24
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.52,
+          "top": 61.72,
+          "right": 44.82,
+          "bottom": 6.96
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/english-language-2015",
+      "board": "pearson-edexcel",
+      "subject": "english-language-2015",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 5,
+        "page_count": {
+          "minimum": 28,
+          "median": 28,
+          "maximum": 28
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.52,
+          "top": 61.58,
+          "right": 37.95,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/english-language-and-literature-2015",
+      "board": "pearson-edexcel",
+      "subject": "english-language-and-literature-2015",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 5,
+        "page_count": {
+          "minimum": 24,
+          "median": 28,
+          "maximum": 28
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.52,
+          "top": 61.58,
+          "right": 37.9,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/english-literature-2015",
+      "board": "pearson-edexcel",
+      "subject": "english-literature-2015",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 5,
+        "page_count": {
+          "minimum": 20,
+          "median": 28,
+          "maximum": 32
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.52,
+          "top": 62.01,
+          "right": 41.25,
+          "bottom": 6.96
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/french-2016",
+      "board": "pearson-edexcel",
+      "subject": "french-2016",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 5,
+        "page_count": {
+          "minimum": 16,
+          "median": 20,
+          "maximum": 20
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.51,
+          "top": 60.6,
+          "right": 44.94,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/geography-2016",
+      "board": "pearson-edexcel",
+      "subject": "geography-2016",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 4,
+        "page_count": {
+          "minimum": 36,
+          "median": 46.0,
+          "maximum": 48
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.52,
+          "top": 60.79,
+          "right": 36.85,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/german-2016",
+      "board": "pearson-edexcel",
+      "subject": "german-2016",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 5,
+        "page_count": {
+          "minimum": 16,
+          "median": 20,
+          "maximum": 20
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.52,
+          "top": 61.68,
+          "right": 44.97,
+          "bottom": 6.96
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/greek-2018",
+      "board": "pearson-edexcel",
+      "subject": "greek-2018",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 16,
+          "median": 16,
+          "maximum": 16
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.52,
+          "top": 67.32,
+          "right": 41.69,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/gujarati-2018",
+      "board": "pearson-edexcel",
+      "subject": "gujarati-2018",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 16,
+          "median": 16,
+          "maximum": 16
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.41,
+          "top": 60.43,
+          "right": 33.17,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/history-2015",
+      "board": "pearson-edexcel",
+      "subject": "history-2015",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 30,
+          "median": 30,
+          "maximum": 30
+        },
+        "primary_page_size": {
+          "width": 595.0,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.39,
+          "top": 61.75,
+          "right": 40.14,
+          "bottom": 6.96
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/history-of-art-2017",
+      "board": "pearson-edexcel",
+      "subject": "history-of-art-2017",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 8,
+          "median": 8,
+          "maximum": 8
+        },
+        "primary_page_size": {
+          "width": 651.97,
+          "height": 898.58
+        },
+        "median_text_margins": {
+          "left": 68.03,
+          "top": 76.5,
+          "right": 65.2,
+          "bottom": 50.36
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/italian-2017",
+      "board": "pearson-edexcel",
+      "subject": "italian-2017",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 24,
+          "median": 24,
+          "maximum": 24
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.52,
+          "top": 60.6,
+          "right": 44.97,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/japanese-2018",
+      "board": "pearson-edexcel",
+      "subject": "japanese-2018",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 24,
+          "median": 24,
+          "maximum": 24
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.52,
+          "top": 59.49,
+          "right": 50.91,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/mathematics-2017",
+      "board": "pearson-edexcel",
+      "subject": "mathematics-2017",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 32,
+          "median": 32,
+          "maximum": 32
+        },
+        "primary_page_size": {
+          "width": 595.32,
+          "height": 841.92
+        },
+        "median_text_margins": null
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/music-2016",
+      "board": "pearson-edexcel",
+      "subject": "music-2016",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 3,
+          "median": 3,
+          "maximum": 3
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 36.85,
+          "top": 47.68,
+          "right": 36.85,
+          "bottom": 22.02
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/music-technology-2017",
+      "board": "pearson-edexcel",
+      "subject": "music-technology-2017",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 12,
+          "median": 12,
+          "maximum": 12
+        },
+        "primary_page_size": {
+          "width": 651.97,
+          "height": 898.58
+        },
+        "median_text_margins": {
+          "left": 70.87,
+          "top": 88.94,
+          "right": 73.31,
+          "bottom": 34.49
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/persian-2018",
+      "board": "pearson-edexcel",
+      "subject": "persian-2018",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 20,
+          "median": 20,
+          "maximum": 20
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.52,
+          "top": 59.49,
+          "right": 42.52,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/physical-education-2016",
+      "board": "pearson-edexcel",
+      "subject": "physical-education-2016",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 16,
+          "median": 16,
+          "maximum": 16
+        },
+        "primary_page_size": {
+          "width": 651.97,
+          "height": 898.58
+        },
+        "median_text_margins": {
+          "left": 70.87,
+          "top": 87.84,
+          "right": 73.31,
+          "bottom": 34.49
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/physics-2015",
+      "board": "pearson-edexcel",
+      "subject": "physics-2015",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 28,
+          "median": 28,
+          "maximum": 28
+        },
+        "primary_page_size": {
+          "width": 651.97,
+          "height": 898.58
+        },
+        "median_text_margins": {
+          "left": 67.6,
+          "top": 86.72,
+          "right": 48.59,
+          "bottom": 34.49
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/politics-2017",
+      "board": "pearson-edexcel",
+      "subject": "politics-2017",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 20,
+          "median": 20,
+          "maximum": 20
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.52,
+          "top": 61.58,
+          "right": 44.97,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/portuguese-2018",
+      "board": "pearson-edexcel",
+      "subject": "portuguese-2018",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 16,
+          "median": 16,
+          "maximum": 16
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.52,
+          "top": 59.49,
+          "right": 40.83,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/psychology-2015",
+      "board": "pearson-edexcel",
+      "subject": "psychology-2015",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 24,
+          "median": 24,
+          "maximum": 24
+        },
+        "primary_page_size": {
+          "width": 651.97,
+          "height": 898.58
+        },
+        "median_text_margins": {
+          "left": 70.87,
+          "top": 87.84,
+          "right": 68.64,
+          "bottom": 34.49
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/religious-studies-2016",
+      "board": "pearson-edexcel",
+      "subject": "religious-studies-2016",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 16,
+          "median": 16,
+          "maximum": 16
+        },
+        "primary_page_size": {
+          "width": 595.0,
+          "height": 842.0
+        },
+        "median_text_margins": {
+          "left": 42.39,
+          "top": 62.07,
+          "right": 44.8,
+          "bottom": 7.02
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/russian-2017",
+      "board": "pearson-edexcel",
+      "subject": "russian-2017",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 24,
+          "median": 24,
+          "maximum": 24
+        },
+        "primary_page_size": {
+          "width": 651.97,
+          "height": 898.58
+        },
+        "median_text_margins": {
+          "left": 70.87,
+          "top": 87.84,
+          "right": 73.31,
+          "bottom": 34.49
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/spanish-2016",
+      "board": "pearson-edexcel",
+      "subject": "spanish-2016",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 16,
+          "median": 16,
+          "maximum": 16
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.62,
+          "top": 59.49,
+          "right": 40.15,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/statistics-2017",
+      "board": "pearson-edexcel",
+      "subject": "statistics-2017",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 24,
+          "median": 24,
+          "maximum": 24
+        },
+        "primary_page_size": {
+          "width": 595.0,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 39.12,
+          "top": 59.98,
+          "right": 21.22,
+          "bottom": 6.96
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/turkish-2018",
+      "board": "pearson-edexcel",
+      "subject": "turkish-2018",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 16,
+          "median": 16,
+          "maximum": 16
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.52,
+          "top": 59.49,
+          "right": 41.25,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    },
+    {
+      "id": "pearson-edexcel/urdu-2018",
+      "board": "pearson-edexcel",
+      "subject": "urdu-2018",
+      "status": "reference-profiled",
+      "reference": {
+        "question_papers_profiled": 1,
+        "page_count": {
+          "minimum": 20,
+          "median": 20,
+          "maximum": 20
+        },
+        "primary_page_size": {
+          "width": 595.28,
+          "height": 841.89
+        },
+        "median_text_margins": {
+          "left": 42.52,
+          "top": 59.49,
+          "right": 41.82,
+          "bottom": 6.15
+        }
+      },
+      "declared_papers": [],
+      "supported_papers": [],
+      "verified_papers": [],
+      "papers": []
+    }
+  ]
+}

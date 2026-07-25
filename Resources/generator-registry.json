@@ -1,0 +1,439 @@
+{
+  "schema_version": 1,
+  "qualification": "a-level",
+  "readiness_gates": [
+    "blueprint",
+    "syllabus",
+    "question_types",
+    "mark_distribution",
+    "difficulty",
+    "unique_content",
+    "renderer",
+    "mark_scheme",
+    "runtime",
+    "visual",
+    "release"
+  ],
+  "families": [
+    {
+      "id": "aqa/accounting",
+      "board": "aqa",
+      "subject": "accounting",
+      "app_subject": "accounting",
+      "app_board": "aqa",
+      "backend_subject": "accounting_aqa",
+      "resource_path": "accounting/aqa",
+      "calibration_path": "accounting/aqa/generator/data/difficulty-calibration.json",
+      "advertised": true,
+      "declared_papers": ["1", "2"],
+      "papers": [
+        {
+          "id": "1",
+          "title": "Paper 1",
+          "detail": "Financial Accounting",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "2",
+          "title": "Paper 2",
+          "detail": "Accounting for Analysis and Decision-making",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "aqa/economics",
+      "board": "aqa",
+      "subject": "economics",
+      "app_subject": "economics",
+      "app_board": "aqa",
+      "backend_subject": "economics_aqa",
+      "resource_path": "economics/aqa",
+      "calibration_path": "economics/aqa/generator/data/difficulty-calibration.json",
+      "advertised": true,
+      "declared_papers": ["1", "2", "3"],
+      "papers": [
+        {
+          "id": "1",
+          "title": "Paper 1",
+          "detail": "Markets and market failure",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "2",
+          "title": "Paper 2",
+          "detail": "National and international economy",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "3",
+          "title": "Paper 3",
+          "detail": "Economic principles and issues",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "aqa/business",
+      "board": "aqa",
+      "subject": "business",
+      "app_subject": "business",
+      "app_board": "aqa",
+      "backend_subject": "business_aqa",
+      "resource_path": "business/aqa",
+      "calibration_path": "business/aqa/generator/data/difficulty-calibration.json",
+      "advertised": true,
+      "declared_papers": ["1", "2", "3"],
+      "papers": [
+        {
+          "id": "1",
+          "title": "Paper 1",
+          "detail": "Business 1",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "2",
+          "title": "Paper 2",
+          "detail": "Business 2",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "3",
+          "title": "Paper 3",
+          "detail": "Business 3",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "aqa/computer-science",
+      "board": "aqa",
+      "subject": "computer-science",
+      "app_subject": "computer-science",
+      "app_board": "aqa",
+      "backend_subject": "computer_science",
+      "resource_path": "computer-science/aqa",
+      "advertised": true,
+      "declared_papers": ["1", "2"],
+      "papers": [
+        {
+          "id": "1",
+          "title": "Paper 1",
+          "detail": "On-screen programming assessment (Python 3)",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "2",
+          "title": "Paper 2",
+          "detail": "A-level Computer Science Paper 2",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": false,
+            "release": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "ocr/computer-science",
+      "board": "ocr",
+      "subject": "computer-science",
+      "app_subject": "computer-science",
+      "app_board": "ocr",
+      "backend_subject": "computer_science_ocr",
+      "resource_path": "computer-science/ocr",
+      "calibration_path": "computer-science/ocr/generator/data/difficulty-calibration.json",
+      "advertised": true,
+      "declared_papers": ["1", "2"],
+      "papers": [
+        {
+          "id": "1",
+          "title": "Paper 1",
+          "detail": "Computer systems",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "2",
+          "title": "Paper 2",
+          "detail": "Algorithms and programming",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "ocr/economics",
+      "board": "ocr",
+      "subject": "economics",
+      "app_subject": "economics",
+      "app_board": "ocr",
+      "backend_subject": "economics_ocr",
+      "resource_path": "economics/ocr",
+      "calibration_path": "economics/ocr/generator/data/difficulty-calibration.json",
+      "advertised": true,
+      "declared_papers": ["1", "2", "3"],
+      "papers": [
+        {
+          "id": "1",
+          "title": "Paper 1",
+          "detail": "Microeconomics",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "2",
+          "title": "Paper 2",
+          "detail": "Macroeconomics",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "3",
+          "title": "Paper 3",
+          "detail": "Themes in economics",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": true,
+            "release": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "pearson-edexcel/economics-a-2015",
+      "board": "pearson-edexcel",
+      "subject": "economics-a-2015",
+      "app_subject": "economics",
+      "app_board": "edexcel-a",
+      "backend_subject": "economics",
+      "resource_path": "economics/edexcel-a",
+      "advertised": true,
+      "declared_papers": ["1", "2", "3"],
+      "papers": [
+        {
+          "id": "1",
+          "title": "Paper 1",
+          "detail": "Markets and business behaviour",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": false,
+            "release": true
+          }
+        },
+        {
+          "id": "2",
+          "title": "Paper 2",
+          "detail": "The national and global economy",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": false,
+            "release": true
+          }
+        },
+        {
+          "id": "3",
+          "title": "Paper 3",
+          "detail": "Microeconomics and macroeconomics",
+          "gates": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": false,
+            "release": true
+          }
+        }
+      ]
+    }
+  ]
+}
