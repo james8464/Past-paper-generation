@@ -85,6 +85,26 @@ final class PaperCreatorTests: XCTestCase {
         XCTAssertFalse(path.contains("/Data/Downloads"))
     }
 
+    @MainActor
+    func testPreviewModePreferencePersists() {
+        let defaults = UserDefaults.standard
+        let previous = defaults.object(forKey: AppStorageKey.dryRun)
+        defer {
+            if let previous {
+                defaults.set(previous, forKey: AppStorageKey.dryRun)
+            } else {
+                defaults.removeObject(forKey: AppStorageKey.dryRun)
+            }
+        }
+
+        defaults.set(true, forKey: AppStorageKey.dryRun)
+        let appModel = AppViewModel()
+        XCTAssertTrue(appModel.dryRun)
+
+        appModel.setDryRun(false)
+        XCTAssertFalse(defaults.bool(forKey: AppStorageKey.dryRun))
+    }
+
     func testHostedProvidersAreMarkedOffDevice() {
         XCTAssertFalse(AIProvider.ollama.sendsPromptsOffDevice)
         XCTAssertTrue(AIProvider.openAI.sendsPromptsOffDevice)

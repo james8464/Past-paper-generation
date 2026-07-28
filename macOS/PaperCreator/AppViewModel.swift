@@ -121,6 +121,7 @@ final class AppViewModel: ObservableObject {
         openAIModel = defaults.string(forKey: AppStorageKey.openAIModel) ?? AppDefaults.openAIModel
         anthropicModel = defaults.string(forKey: AppStorageKey.anthropicModel) ?? AppDefaults.anthropicModel
         appleModel = defaults.string(forKey: AppStorageKey.appleModel) ?? AppDefaults.appleModel
+        dryRun = defaults.bool(forKey: AppStorageKey.dryRun)
         openAIAPIKey = SecretStore.read(SecretAccount.openAIAPIKey)
         anthropicAPIKey = SecretStore.read(SecretAccount.anthropicAPIKey)
         notificationCenter.delegate = NotificationPresenter.shared
@@ -466,6 +467,11 @@ final class AppViewModel: ObservableObject {
         }
     }
 
+    func setDryRun(_ enabled: Bool) {
+        dryRun = enabled
+        defaults.set(enabled, forKey: AppStorageKey.dryRun)
+    }
+
     func startBenchmark() {
         guard !isRunning, !isBenchmarkRunning else { return }
         benchmarkSamples.removeAll()
@@ -507,6 +513,7 @@ final class AppViewModel: ObservableObject {
         defaults.set(openAIModel, forKey: AppStorageKey.openAIModel)
         defaults.set(anthropicModel, forKey: AppStorageKey.anthropicModel)
         defaults.set(appleModel, forKey: AppStorageKey.appleModel)
+        defaults.set(dryRun, forKey: AppStorageKey.dryRun)
         defaults.set(outputFolder.path, forKey: AppStorageKey.outputFolderPath)
         SecretStore.save(openAIAPIKey, account: SecretAccount.openAIAPIKey)
         SecretStore.save(anthropicAPIKey, account: SecretAccount.anthropicAPIKey)

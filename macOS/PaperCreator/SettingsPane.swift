@@ -147,7 +147,13 @@ private struct OutputSettingsTab: View {
             }
 
             Section("Preview Mode") {
-                Toggle("Use built-in drafts", isOn: $appModel.dryRun)
+                Toggle(
+                    "Use built-in drafts",
+                    isOn: Binding(
+                        get: { appModel.dryRun },
+                        set: { appModel.setDryRun($0) }
+                    )
+                )
                 Text("Creates sample PDFs without contacting an AI provider.")
                     .foregroundStyle(.secondary)
             }

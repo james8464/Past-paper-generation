@@ -55,6 +55,7 @@ enum AppStorageKey {
     static let openAIModel = "openAIModel"
     static let anthropicModel = "anthropicModel"
     static let appleModel = "appleModel"
+    static let dryRun = "dryRun"
     static let notificationsEnabled = "notificationsEnabled"
     static let hasSeenWelcome = "hasSeenWelcome"
     static let outputFolderPath = "outputFolderPath"
