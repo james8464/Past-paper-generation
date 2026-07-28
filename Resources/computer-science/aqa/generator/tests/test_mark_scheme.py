@@ -107,3 +107,21 @@ def test_paper_1_mark_scheme_includes_measured_question_and_solution_pages(tmp_p
         assert "Question 12" in document[40].get_text()
     finally:
         document.close()
+
+
+def test_paper_1_mark_scheme_renders_question_specific_answer_artifacts(tmp_path):
+    import fitz
+
+    blueprint, _context = build_paper1_blueprint(load_syllabus(), seed=42)
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, output)
+
+    document = fitz.open(output)
+    try:
+        assert "Alternative valid matrix" in document[7].get_text()
+        assert "Call" in document[8].get_text()
+        assert "Mark range" in document[9].get_text()
+        assert "Example evidence" in document[11].get_text()
+    finally:
+        document.close()

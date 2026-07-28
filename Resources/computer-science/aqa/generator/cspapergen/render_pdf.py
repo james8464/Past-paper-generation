@@ -1610,6 +1610,7 @@ def _render_mark_scheme_part(
         for line in _wrap(item, 62):
             pdf.drawString(125, y, line)
             y -= 15
+    y = _draw_mark_scheme_answer_artifact(pdf, question, part, y)
     bottom = y - 5
     top = start_y + 10
     pdf.rect(45, bottom, 505, top - bottom, stroke=1, fill=0)
@@ -1617,6 +1618,220 @@ def _render_mark_scheme_part(
     pdf.line(106, bottom, 106, top)
     pdf.line(500, bottom, 500, top)
     return min(start_y - 34, y - 18)
+
+
+def _draw_mark_scheme_answer_artifact(
+    pdf: canvas.Canvas,
+    question: Question,
+    part: QuestionPart,
+    y: float,
+) -> float:
+    if question.style_id == "recursive_graph_traversal" and part.label == "3":
+        return _draw_adjacency_matrix_answers(pdf, y - 5)
+    if question.style_id == "recursive_graph_traversal" and part.label == "5":
+        return _draw_recursive_trace_answer(pdf, y - 5)
+    if question.style_id == "finite_state_machine" and part.label == "1":
+        return _draw_transition_table_answer(pdf, y - 5)
+    if part.marking.ao == "AO3" and part.marks >= 7:
+        return _draw_programming_mark_grid(pdf, part.marks, y - 6)
+    if part.marking.ao == "AO3" and part.marks <= 2:
+        return _draw_test_evidence_box(pdf, question, y - 5)
+    return y
+
+
+def _draw_adjacency_matrix_answers(pdf: canvas.Canvas, y: float) -> float:
+    edges = {
+        (1, 2), (1, 4), (2, 3), (2, 5), (3, 6), (4, 5), (5, 6)
+    }
+    cell = 16
+    size = cell * 7
+    matrices = [
+        ("Completed adjacency matrix", False),
+        ("Alternative valid matrix", False),
+        ("Alternative lower-triangle representation", True),
+    ]
+    x = 245
+    cursor = y
+    for matrix_index, (title, lower_triangle_only) in enumerate(matrices):
+        pdf.setFont(FONT, 9)
+        pdf.drawString(145, cursor, title)
+        top = cursor - 9
+        for row in range(7):
+            for column in range(7):
+                x0 = x + column * cell
+                y0 = top - (row + 1) * cell
+                pdf.setFillColor(
+                    colors.HexColor("#d9d9d9")
+                    if row == 0 or column == 0
+                    else colors.white
+                )
+                pdf.rect(x0, y0, cell, cell, stroke=1, fill=1)
+                pdf.setFillColor(colors.black)
+                value = ""
+                if row == 0 and column > 0:
+                    value = str(column)
+                elif column == 0 and row > 0:
+                    value = str(row)
+                elif row > 0 and column > 0:
+                    edge = (min(row, column), max(row, column))
+                    if not lower_triangle_only or row >= column:
+                        is_edge = edge in edges
+                        if matrix_index == 1:
+                            is_edge = (
+                                min(7 - row, 7 - column),
+                                max(7 - row, 7 - column),
+                            ) in edges
+                        value = "1" if is_edge else "0"
+                pdf.setFont(FONT, 8)
+                pdf.drawCentredString(x0 + cell / 2, y0 + 5, value)
+        cursor -= size + 24
+    pdf.setFont(FONT, 8)
+    pdf.drawString(
+        145,
+        cursor + 8,
+        "Award 1 mark for symmetry and 1 mark for every edge represented once.",
+    )
+    return cursor - 4
+
+
+def _draw_recursive_trace_answer(pdf: canvas.Canvas, y: float) -> float:
+    rows = [
+        ("reachable(3, 6)", "3", "{3}", ""),
+        ("reachable(2, 6)", "2", "{2, 3}", ""),
+        ("reachable(1, 6)", "1", "{1, 2, 3}", ""),
+        ("reachable(4, 6)", "4", "{1, 2, 3, 4}", ""),
+        ("reachable(5, 6)", "5", "{1, 2, 3, 4, 5}", ""),
+        ("reachable(6, 6)", "6", "{1, 2, 3, 4, 5}", "True"),
+    ]
+    widths = [130, 45, 145, 55]
+    headers = ["Call", "Current", "visited", "Result"]
+    row_height = 24
+    x = 125
+    pdf.setFont(FONT_BOLD, 9)
+    for column, header in enumerate(headers):
+        x0 = x + sum(widths[:column])
+        pdf.setFillColor(colors.HexColor("#d9d9d9"))
+        pdf.rect(x0, y - row_height, widths[column], row_height, stroke=1, fill=1)
+        pdf.setFillColor(colors.black)
+        pdf.drawString(x0 + 4, y - 16, header)
+    pdf.setFont(FONT_MONO, 8)
+    for row_index, row in enumerate(rows, start=1):
+        for column, value in enumerate(row):
+            x0 = x + sum(widths[:column])
+            y0 = y - (row_index + 1) * row_height
+            pdf.rect(x0, y0, widths[column], row_height, stroke=1, fill=0)
+            pdf.drawString(x0 + 4, y0 + 8, value)
+    return y - row_height * (len(rows) + 1) - 12
+
+
+def _draw_transition_table_answer(pdf: canvas.Canvas, y: float) -> float:
+    rows = [
+        ("S0 (start)", "reject", "S1"),
+        ("S1 (accept)", "S2", "S1"),
+        ("S2", "S1", "S2"),
+    ]
+    widths = [132, 105, 105]
+    headers = ["Current state", "Input 0", "Input 1"]
+    row_height = 25
+    x = 125
+    for row_index, row in enumerate([headers, *rows]):
+        for column, value in enumerate(row):
+            x0 = x + sum(widths[:column])
+            y0 = y - (row_index + 1) * row_height
+            pdf.setFillColor(
+                colors.HexColor("#d9d9d9") if row_index == 0 else colors.white
+            )
+            pdf.rect(x0, y0, widths[column], row_height, stroke=1, fill=1)
+            pdf.setFillColor(colors.black)
+            pdf.setFont(FONT_BOLD if row_index == 0 else FONT, 8.5)
+            pdf.drawString(x0 + 4, y0 + 8, value)
+    return y - row_height * 4 - 12
+
+
+def _draw_programming_mark_grid(
+    pdf: canvas.Canvas,
+    marks: int,
+    y: float,
+) -> float:
+    bands = 4 if marks >= 12 else 3
+    descriptors = [
+        "Complete, logically structured solution; all required behaviour is correct and robust.",
+        "Substantial working solution; most requirements and important design decisions are correct.",
+        "Partial solution with some appropriate constructs; important omissions or errors remain.",
+        "Limited relevant attempt showing isolated programming or design features.",
+    ][:bands]
+    base = marks // bands
+    remainder = marks % bands
+    ranges: list[tuple[int, int]] = []
+    lower = 1
+    for index in range(bands):
+        width = base + (1 if index >= bands - remainder else 0)
+        upper = lower + width - 1
+        ranges.append((lower, upper))
+        lower = upper + 1
+    ranges.reverse()
+    row_height = 49 if bands == 4 else 55
+    widths = [40, 275, 60]
+    x = 120
+    headers = ["Level", "Description", "Mark range"]
+    for column, value in enumerate(headers):
+        x0 = x + sum(widths[:column])
+        pdf.setFillColor(colors.HexColor("#d9d9d9"))
+        pdf.rect(x0, y - 23, widths[column], 23, stroke=1, fill=1)
+        pdf.setFillColor(colors.black)
+        pdf.setFont(FONT_BOLD, 8.5)
+        pdf.drawCentredString(x0 + widths[column] / 2, y - 15, value)
+    cursor = y - 23
+    for index, descriptor in enumerate(descriptors):
+        for column, width in enumerate(widths):
+            x0 = x + sum(widths[:column])
+            pdf.rect(
+                x0,
+                cursor - row_height,
+                width,
+                row_height,
+                stroke=1,
+                fill=0,
+            )
+        pdf.setFont(FONT, 8.5)
+        pdf.drawCentredString(x + widths[0] / 2, cursor - 18, str(bands - index))
+        text_y = cursor - 14
+        for line in _wrap(descriptor, 58):
+            pdf.drawString(x + widths[0] + 5, text_y, line)
+            text_y -= 11
+        low, high = ranges[index]
+        pdf.drawCentredString(
+            x + widths[0] + widths[1] + widths[2] / 2,
+            cursor - 18,
+            f"{low}\u2013{high}",
+        )
+        cursor -= row_height
+    return cursor - 10
+
+
+def _draw_test_evidence_box(
+    pdf: canvas.Canvas,
+    question: Question,
+    y: float,
+) -> float:
+    width = 372
+    height = 76
+    pdf.setFillColor(colors.HexColor("#1c1c1c"))
+    pdf.rect(125, y - height, width, height, stroke=1, fill=1)
+    pdf.setFillColor(colors.white)
+    pdf.setFont(FONT_MONO, 8.5)
+    evidence = [
+        "Example evidence",
+        f"> Run question {question.number:02d} test",
+        "> Expected: requirement satisfied",
+        "> Actual:   requirement satisfied",
+    ]
+    cursor = y - 17
+    for line in evidence:
+        pdf.drawString(133, cursor, line)
+        cursor -= 16
+    pdf.setFillColor(colors.black)
+    return y - height - 10
 
 
 def _ms_header(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
