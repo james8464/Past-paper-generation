@@ -94,3 +94,11 @@ def test_each_package_renders_readable_pdfs(tmp_path: Path) -> None:
             ]
             assert len({question.prompt for question in mcqs}) == 30
             assert all("Practice scenario" not in question.prompt for question in mcqs)
+        else:
+            question_pages = PdfReader(paths["question_paper"]).pages
+            assert "Highest recorded index" in (question_pages[1].extract_text() or "")
+            assert "Extract C" in (question_pages[2].extract_text() or "")
+            assert "source insert" not in (question_pages[2].extract_text() or "")
+            assert "DO NOT WRITE ON THIS PAGE" in (
+                question_pages[7].extract_text() or ""
+            )

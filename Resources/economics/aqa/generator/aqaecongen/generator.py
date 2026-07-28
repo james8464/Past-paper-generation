@@ -272,13 +272,18 @@ def _written_question(
     point = rng.choice(topic.points)
     change = ((values[-1] - values[0]) / values[0]) * 100
     context = (
-        f"the evidence in the source insert about {context_name}"
+        (
+            f"the evidence in the source insert about {context_name}"
+            if paper_id == "paper_3"
+            else f"the extracts about {context_name}"
+        )
         if is_data
         else "relevant economic theory"
     )
     if rule.kind == "calculation":
         prompt = (
-            f"Using the index data for {context_name} in the source insert, calculate "
+            f"Using the index data for {context_name} in the "
+            f"{'source insert' if paper_id == 'paper_3' else 'extracts'}, calculate "
             "the percentage change from "
             "2024 to 2028. "
             "Give your answer to one decimal place."
@@ -506,6 +511,33 @@ def _stimulus(
         if expanded
         else [""] * 4
     )
+    compact_c = ""
+    compact_d = ""
+    if not expanded:
+        sample_size = rng.randrange(900, 4200, 50)
+        support = rng.randint(38, 76)
+        expected_cost = rng.randint(2, 9)
+        adjustment_years = rng.randint(2, 7)
+        compact_c = (
+            f" A survey of {sample_size:,} households and firms found that {support}% "
+            f"supported the proposal, although respondents expected compliance costs to "
+            f"rise by {expected_cost}%. A pilot scheme reported higher participation and "
+            "investment, but the participating area was not randomly selected. One forecast "
+            f"assumed that behaviour would adjust over {adjustment_years} years; another "
+            "assumed an immediate response and estimated a much larger effect. The measure "
+            "would also require public spending that could otherwise support infrastructure, "
+            "healthcare or education."
+        )
+        compact_d = (
+            " The headline index is a base-year measure rather than an absolute value and "
+            "does not distinguish nominal from real changes. The sample excludes informal "
+            "activity and may under-represent low-income households and small firms. "
+            "Correlation between the policy and the outcome does not establish causation: "
+            "exchange rates, energy prices and conditions in trading partners also changed. "
+            "Some benefits may arise only in the long run, while adjustment costs are "
+            "concentrated in the short run. Economists therefore disagree about the size, "
+            "distribution and durability of the predicted effects."
+        )
     return [
         (
             f"Extract A: Activity in {context_name} changed "
@@ -534,6 +566,7 @@ def _stimulus(
             "productive capacity. Critics argue that resources could be diverted from more effective "
             "uses and that firms or consumers may alter their behaviour in ways that reduce the "
             "policy's impact. Distributional effects may differ from the effect on total output. "
+            + compact_c
             + depth[2]
         ),
         (
@@ -543,6 +576,7 @@ def _stimulus(
             "conditions rather than domestic policy. A judgement should therefore compare realistic "
             "alternatives, consider opportunity cost, distinguish short-run adjustment from long-run "
             "effects and explain who gains and who bears the cost. "
+            + compact_d
             + depth[3]
         ),
     ]

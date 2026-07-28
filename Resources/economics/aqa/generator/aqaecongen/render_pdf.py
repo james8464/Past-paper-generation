@@ -51,12 +51,11 @@ def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
             for index, option in enumerate(section.options):
                 if index:
                     story.extend([PageBreak(), *_section_intro(section.id, section.title, section.instructions)])
-                story.extend(_stimulus_page(option))
+                story.extend(_context_first_page(option))
                 story.extend(
                     [
                         PageBreak(),
-                        _section_banner(f"Section {section.id}: Questions on {option.title}"),
-                        Spacer(1, 5 * mm),
+                        *_context_second_page(option),
                         *_option_questions(option),
                     ]
                 )
@@ -74,10 +73,7 @@ def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
                     ),
                     *_written_option(third),
                     PageBreak(),
-                    Paragraph(
-                        "There are no questions printed on this page.",
-                        STYLES["centred_note"],
-                    ),
+                    *_no_questions_page(),
                 ]
             )
         elif section.id == "A":
@@ -718,6 +714,113 @@ def _stimulus_page(option: GeneratedOption) -> list[Flowable]:
     if option.chart_values:
         flowables.append(_line_chart(option.chart_title, option.chart_labels, option.chart_values))
     return flowables
+
+
+def _context_first_page(option: GeneratedOption) -> list[Flowable]:
+    flowables: list[Flowable] = [
+        Paragraph(option.title, STYLES["option_title"]),
+        Spacer(1, 2 * mm),
+    ]
+    for paragraph in option.stimulus[:2]:
+        flowables.extend(
+            [Paragraph(paragraph, STYLES["extract"]), Spacer(1, 2 * mm)]
+        )
+    if option.chart_values:
+        flowables.extend(
+            [
+                _context_data_table(option),
+                Spacer(1, 4 * mm),
+                _line_chart(
+                    option.chart_title,
+                    option.chart_labels,
+                    option.chart_values,
+                ),
+            ]
+        )
+    return flowables
+
+
+def _context_second_page(option: GeneratedOption) -> list[Flowable]:
+    flowables: list[Flowable] = []
+    for paragraph in option.stimulus[2:]:
+        flowables.extend(
+            [Paragraph(paragraph, STYLES["extract"]), Spacer(1, 3 * mm)]
+        )
+    return flowables
+
+
+def _context_data_table(option: GeneratedOption) -> Table:
+    values = option.chart_values
+    rows = [
+        ["Indicator", option.chart_labels[0], option.chart_labels[-1]],
+        ["Activity index", f"{values[0]:.1f}", f"{values[-1]:.1f}"],
+        ["Highest recorded index", "–", f"{max(values):.1f}"],
+        ["Lowest recorded index", "–", f"{min(values):.1f}"],
+    ]
+    table = Table(
+        rows,
+        colWidths=[75 * mm, 38 * mm, 38 * mm],
+        rowHeights=[8 * mm] * 4,
+    )
+    table.setStyle(
+        TableStyle(
+            [
+                ("GRID", (0, 0), (-1, -1), 0.45, BLACK),
+                ("BACKGROUND", (0, 0), (-1, 0), GREY),
+                ("FONTNAME", (0, 0), (-1, 0), FONT_BOLD),
+                ("FONTNAME", (0, 1), (-1, -1), FONT),
+                ("FONTSIZE", (0, 0), (-1, -1), 9),
+                ("ALIGN", (1, 1), (-1, -1), "CENTER"),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("PADDING", (0, 0), (-1, -1), 4),
+            ]
+        )
+    )
+    table.hAlign = "CENTER"
+    return table
+
+
+def _no_questions_page() -> list[Flowable]:
+    height = 204 * mm
+    drawing = Drawing(165 * mm, height)
+    drawing.add(
+        Line(
+            0,
+            0,
+            165 * mm,
+            height,
+            strokeColor=BLACK,
+            strokeWidth=0.7,
+        )
+    )
+    drawing.add(
+        String(
+            82.5 * mm,
+            height / 2,
+            "DO NOT WRITE ON THIS PAGE",
+            fontName=FONT_BOLD,
+            fontSize=10,
+            textAnchor="middle",
+        )
+    )
+    drawing.add(
+        String(
+            82.5 * mm,
+            height / 2 - 6 * mm,
+            "ANSWER IN THE SPACES PROVIDED",
+            fontName=FONT_BOLD,
+            fontSize=10,
+            textAnchor="middle",
+        )
+    )
+    return [
+        Paragraph(
+            "There are no questions printed on this page.",
+            STYLES["centred_note"],
+        ),
+        Spacer(1, 4 * mm),
+        drawing,
+    ]
 
 
 def _option_questions(
