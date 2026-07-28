@@ -30,4 +30,4 @@ def test_question_paper_uses_realistic_aqa_page_count(tmp_path):
 
     assert "Pages:" in output
     pages = int(next(line.split()[1] for line in output.splitlines() if line.startswith("Pages:")))
-    assert pages >= 28
+    assert pages == 40

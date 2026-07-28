@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
@@ -16,20 +17,35 @@ class OllamaClient:
     base_url: str
     model: str
 
-    def generate_json(self, prompt: str) -> dict[str, object]:
-        payload = json.dumps({"model": self.model, "prompt": prompt, "stream": False, "format": "json"}).encode("utf-8")
-        request = urllib.request.Request(
-            f"{self.base_url.rstrip('/')}/api/generate",
-            data=payload,
-            headers={"Content-Type": "application/json"},
-            method="POST",
-        )
-        try:
-            with urllib.request.urlopen(request, timeout=160) as response:
-                raw = json.loads(response.read().decode("utf-8"))
-        except urllib.error.URLError as error:
-            raise RuntimeError(f"Could not reach Ollama at {self.base_url}") from error
-        return json.loads(str(raw.get("response", "{}")))
+    def generate_json(self, prompt: str, retries: int = 2) -> dict[str, object]:
+        last_error: Exception | None = None
+        for attempt in range(retries):
+            payload = json.dumps(
+                {"model": self.model, "prompt": prompt, "stream": False, "format": "json"}
+            ).encode("utf-8")
+            request = urllib.request.Request(
+                f"{self.base_url.rstrip('/')}/api/generate",
+                data=payload,
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            try:
+                with urllib.request.urlopen(request, timeout=160) as response:
+                    raw = json.loads(response.read().decode("utf-8"))
+                parsed = json.loads(str(raw.get("response", "{}")))
+                if not isinstance(parsed, dict):
+                    raise ValueError("Ollama returned JSON, but not an object")
+                return parsed
+            except (
+                urllib.error.URLError,
+                TimeoutError,
+                json.JSONDecodeError,
+                ValueError,
+            ) as error:
+                last_error = error
+                if attempt < retries - 1:
+                    time.sleep(3)
+        raise RuntimeError(f"Ollama generation failed after {retries} attempts") from last_error
 
 
 def improve_questions_with_ollama(
@@ -44,16 +60,23 @@ def improve_questions_with_ollama(
     for index, question in enumerate(blueprint.questions, start=1):
         topic = syllabus.get_topic(question.topic_id)
         emit(f"Generating question {index}/{total}: 0 {question.number:02d} ({topic.title})")
-        payload = client.generate_json(
-            _prompt(
-                question,
-                topic.title,
-                note_context_for_topic(topic.id, topic.title),
-                blueprint,
+        try:
+            payload = client.generate_json(
+                _prompt(
+                    question,
+                    topic.title,
+                    note_context_for_topic(topic.id, topic.title),
+                    blueprint,
+                )
             )
-        )
-        improved.append(_merge_question(question, payload))
-        emit(f"Generated question {index}/{total}: 0 {question.number:02d}")
+            improved.append(_merge_question(question, payload))
+            emit(f"Generated question {index}/{total}: 0 {question.number:02d}")
+        except (RuntimeError, json.JSONDecodeError, ValueError, KeyError) as error:
+            improved.append(question)
+            emit(
+                f"Question {index}/{total}: 0 {question.number:02d} "
+                f"(using validated draft after model error: {error})"
+            )
     return blueprint.model_copy(update={"questions": improved})
 
 
@@ -121,4 +144,7 @@ def _text_list(raw: object, fallback: list[str]) -> list[str]:
 def _clean(text: str) -> str:
     text = re.sub(r"\[\s*\d+\s*marks?\s*\]", "", text, flags=re.IGNORECASE)
     text = re.sub(r"\(\s*\d+\s*marks?\s*\)", "", text, flags=re.IGNORECASE)
+    text = text.replace("$", "")
+    text = re.sub(r"\\(?:texttt|mathrm|mathbf)\{([^{}]+)\}", r"\1", text)
+    text = text.replace(r"\(", "").replace(r"\)", "")
     return " ".join(text.split())

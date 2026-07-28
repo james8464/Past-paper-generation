@@ -1,6 +1,10 @@
 import random
 
-from cspapergen.generator import build_paper2_blueprint
+from cspapergen.generator import (
+    PAPER2_QUESTION_PLAN,
+    QUESTION_TOTALS,
+    build_paper2_blueprint,
+)
 from cspapergen.question_bank import QUESTION_STYLES, STYLE_IDS, build_question
 from cspapergen.syllabus import load_syllabus
 
@@ -20,6 +24,8 @@ def test_blueprint_totals_100_marks_and_uses_paper2_topics_only():
 
     assert blueprint.total_marks == 100
     assert sum(part.marks for question in blueprint.questions for part in question.parts) == 100
+    assert [question.total_marks for question in blueprint.questions] == QUESTION_TOTALS
+    assert len(blueprint.questions) == 14
     assert {question.topic_id for question in blueprint.questions} <= syllabus.topic_ids
     assert all(question.topic_id.startswith(("4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12")) for question in blueprint.questions)
 
@@ -33,13 +39,26 @@ def test_blueprint_varies_between_unseeded_runs():
     assert first.model_dump() != second.model_dump()
 
 
-def test_seeded_runs_randomise_first_and_final_question_styles():
+def test_seeded_runs_keep_reference_question_styles_and_vary_content():
     syllabus = load_syllabus()
 
     blueprints = [build_paper2_blueprint(syllabus, seed=seed) for seed in range(40)]
 
-    assert len({paper.questions[0].style_id for paper in blueprints}) > 1
-    assert len({paper.questions[-1].style_id for paper in blueprints}) > 1
+    expected_styles = [style_id for style_id, _marks in PAPER2_QUESTION_PLAN]
+    assert all(
+        [question.style_id for question in paper.questions] == expected_styles
+        for paper in blueprints
+    )
+    assert len({paper.model_dump_json() for paper in blueprints}) > 1
+
+
+def test_paper_2_uses_reference_part_mark_pattern():
+    blueprint = build_paper2_blueprint(load_syllabus(), seed=7)
+
+    assert [
+        tuple(part.marks for part in question.parts)
+        for question in blueprint.questions
+    ] == [marks for _style_id, marks in PAPER2_QUESTION_PLAN]
 
 
 def test_all_question_styles_are_specific_to_paper2_spec_topics():

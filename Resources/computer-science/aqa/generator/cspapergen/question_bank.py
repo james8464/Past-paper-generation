@@ -15,7 +15,18 @@ class QuestionStyle:
 
 
 QUESTION_STYLES = [
+    QuestionStyle("software_classification", "4.6", (8,), "software_classification"),
+    QuestionStyle("optical_storage", "4.5", (8,), "optical_storage"),
+    QuestionStyle("legal_issues_short", "4.8", (3,), "legal_issues_short"),
+    QuestionStyle("client_server_short", "4.9", (3,), "client_server_short"),
+    QuestionStyle("ipv4_extended", "4.9", (12,), "ipv4_extended"),
+    QuestionStyle("compression_short", "4.5", (4,), "compression_short"),
+    QuestionStyle("fibonacci_recursion", "4.12", (6,), "fibonacci_recursion"),
+    QuestionStyle("boolean_simplification", "4.6", (4,), "boolean_simplification"),
+    QuestionStyle("assembly_program", "4.7", (6,), "assembly_program"),
     QuestionStyle("short_security", "4.6", (4,), "short_security"),
+    QuestionStyle("software_roles_short", "4.6", (3,), "software_roles_three"),
+    QuestionStyle("network_service_short", "4.9", (3,), "network_service_three"),
     QuestionStyle("binary_arithmetic_short", "4.5", (4,), "binary_short"),
     QuestionStyle("unicode_ascii_short", "4.5", (4,), "unicode_short"),
     QuestionStyle("fde_register_short", "4.7", (4,), "fde_short"),
@@ -23,7 +34,7 @@ QUESTION_STYLES = [
     QuestionStyle("database_key_short", "4.10", (4,), "database_key_short"),
     QuestionStyle("big_data_short", "4.11", (4,), "big_data_short"),
     QuestionStyle("bitmap_size", "4.5", (7, 8, 10, 14), "bitmap"),
-    QuestionStyle("sound_sampling", "4.5", (7, 8, 10, 14), "sound"),
+    QuestionStyle("sound_sampling", "4.5", (6, 7, 8, 10, 14), "sound"),
     QuestionStyle("rle_compression", "4.5", (7, 8, 9, 10, 14), "rle"),
     QuestionStyle("floating_point", "4.5", (8, 9, 10), "float"),
     QuestionStyle("logic_truth_table", "4.6", (8, 9, 14), "logic"),
@@ -34,7 +45,7 @@ QUESTION_STYLES = [
     QuestionStyle("processor_buses", "4.7", (8, 10), "processor"),
     QuestionStyle("stored_program", "4.7", (8, 10), "stored"),
     QuestionStyle("packet_switching", "4.9", (7, 8, 9, 10, 14), "packet"),
-    QuestionStyle("network_topology", "4.9", (7, 8, 10), "network_topology"),
+    QuestionStyle("network_topology", "4.9", (6, 7, 8, 10), "network_topology"),
     QuestionStyle("tcpip_dns", "4.9", (8, 9, 10), "tcpip"),
     QuestionStyle("sql_normalisation", "4.10", (8, 10, 14), "sql"),
     QuestionStyle("erd_keys", "4.10", (8, 9, 10), "erd"),
@@ -58,8 +69,19 @@ def styles_for_total(total: int) -> list[QuestionStyle]:
 
 def build_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
     builders = {
+        "software_classification": _software_classification_question,
+        "optical_storage": _optical_storage_question,
+        "legal_issues_short": _legal_issues_short_question,
+        "client_server_short": _client_server_short_question,
+        "ipv4_extended": _ipv4_extended_question,
+        "compression_short": _compression_short_question,
+        "fibonacci_recursion": _fibonacci_recursion_question,
+        "boolean_simplification": _boolean_simplification_question,
+        "assembly_program": _assembly_program_question,
         "bitmap": _bitmap_question,
         "short_security": _short_security_question,
+        "software_roles_three": _software_roles_three_question,
+        "network_service_three": _network_service_three_question,
         "binary_short": _binary_short_question,
         "unicode_short": _unicode_short_question,
         "fde_short": _fde_short_question,
@@ -134,6 +156,407 @@ def _fit_parts(parts: list[QuestionPart], total: int) -> list[QuestionPart]:
     return parts
 
 
+def _software_classification_question(
+    style: QuestionStyle,
+    number: int,
+    total: int,
+    rng: random.Random,
+) -> Question:
+    examples = rng.choice(
+        [
+            "Spreadsheet|Image editor|Backup utility|Compiler",
+            "Word processor|Video editor|Encryption utility|Assembler",
+            "Presentation software|Audio editor|Compression utility|Interpreter",
+        ]
+    )
+    stimulus = Stimulus(
+        kind="classification",
+        title="Figure 1",
+        diagram=examples,
+    )
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "Complete Figure 1 by naming the two missing categories of software.",
+                [
+                    "Application software identified for the user-task examples;",
+                    "Utility software identified for the maintenance examples;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "2",
+                2,
+                "Explain one difference between utility software and application software.",
+                [
+                    "Utility software maintains, protects or configures the computer system;",
+                    "Application software helps a user perform a specific task;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "3",
+                4,
+                "Compare developing a program in a low-level language with developing it in a high-level language.",
+                [
+                    "Low-level code offers direct hardware/register control;",
+                    "Low-level code is processor-specific and harder to maintain;",
+                    "High-level code provides abstraction and is easier to read or develop;",
+                    "High-level code usually requires translation and may provide less direct control;",
+                ],
+                "",
+                9,
+            ),
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Types of software and programming languages",
+        "Figure 1 classifies software and gives examples used by an organisation.",
+        stimulus,
+        parts,
+    )
+
+
+def _optical_storage_question(
+    style: QuestionStyle,
+    number: int,
+    total: int,
+    rng: random.Random,
+) -> Question:
+    medium = rng.choice(["archival photographs", "audio recordings", "installation media"])
+    stimulus = Stimulus(kind="optical", title="Figure 1", diagram=medium)
+    parts = _parts(
+        [
+            (
+                "1",
+                6,
+                "Describe how data is read from an optical disc.",
+                [
+                    "The disc surface contains pits and lands arranged on a spiral track;",
+                    "A laser is focused on the rotating disc;",
+                    "Pits and lands reflect different amounts or phases of light;",
+                    "A light sensor detects the reflected light;",
+                    "The changes are converted into an electrical/digital signal;",
+                    "The pattern is decoded as binary data;",
+                ],
+                "",
+                14,
+            ),
+            (
+                "2",
+                2,
+                f"State two reasons why optical storage may be unsuitable for {medium}.",
+                [
+                    "Capacity may be too low compared with solid-state or magnetic storage;",
+                    "Access and transfer speeds may be too slow;",
+                    "The surface can be scratched or damaged;",
+                    "A compatible drive may not be available;",
+                ],
+                "",
+                5,
+            ),
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Optical storage",
+        f"An organisation is considering optical discs for {medium}.",
+        stimulus,
+        parts,
+    )
+
+
+def _legal_issues_short_question(
+    style: QuestionStyle,
+    number: int,
+    total: int,
+    rng: random.Random,
+) -> Question:
+    system = rng.choice(
+        [
+            "facial-recognition services",
+            "generative artificial intelligence",
+            "automated recruitment systems",
+        ]
+    )
+    parts = _parts(
+        [
+            (
+                "1",
+                3,
+                f"Explain why laws governing {system} can be difficult to write and enforce.",
+                [
+                    "Technology and its uses change faster than legislation;",
+                    "Services and data cross national jurisdictions with different laws;",
+                    "Technical behaviour, responsibility or harm can be difficult to prove;",
+                ],
+                "",
+                9,
+            )
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Legal issues",
+        f"Lawmakers are reviewing the use of {system}.",
+        None,
+        parts,
+    )
+
+
+def _client_server_short_question(
+    style: QuestionStyle,
+    number: int,
+    total: int,
+    rng: random.Random,
+) -> Question:
+    organisation = rng.choice(["a college", "a design studio", "a medical practice"])
+    parts = _parts(
+        [
+            (
+                "1",
+                3,
+                "Explain why a client-server network would be more suitable than a peer-to-peer network.",
+                [
+                    "Accounts, permissions and security can be managed centrally;",
+                    "Files and backups can be maintained centrally and consistently;",
+                    "Dedicated servers can provide reliable shared services to many clients;",
+                ],
+                "",
+                9,
+            )
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Client-server networking",
+        f"{organisation.title()} needs centrally managed accounts, files and backups.",
+        None,
+        parts,
+    )
+
+
+def _ipv4_extended_question(
+    style: QuestionStyle,
+    number: int,
+    total: int,
+    rng: random.Random,
+) -> Question:
+    organisation = rng.choice(["a regional university", "a logistics company", "a hospital group"])
+    return _question(
+        style,
+        number,
+        "IPv4 address exhaustion",
+        f"{organisation.title()} is expanding a large network while public IPv4 addresses remain scarce.",
+        None,
+        _extended_part(
+            "Discuss technical approaches that can allow the organisation to connect more devices securely and reliably.",
+            [
+                "Network address translation lets many private addresses share fewer public IPv4 addresses;",
+                "Private IPv4 address ranges can be reused inside separate networks;",
+                "DHCP can allocate addresses efficiently for limited lease periods;",
+                "IPv6 provides a much larger address space and supports long-term growth;",
+                "Dual-stack operation can preserve compatibility during migration;",
+                "NAT can complicate inbound connections, peer-to-peer services and troubleshooting;",
+                "Firewalls, routing policy and address management remain necessary for security;",
+                "A justified conclusion balances compatibility, cost, timescale and future capacity;",
+            ],
+        ),
+    )
+
+
+def _compression_short_question(
+    style: QuestionStyle,
+    number: int,
+    total: int,
+    rng: random.Random,
+) -> Question:
+    data = rng.choice(["medical images", "software backups", "streamed audio"])
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "State two reasons why data is compressed.",
+                [
+                    "Less secondary-storage capacity is required;",
+                    "Less data must be transmitted, reducing transfer time or bandwidth use;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "2",
+                2,
+                f"Explain why lossless compression may be required for {data}.",
+                [
+                    "The original data can be reconstructed exactly;",
+                    "No information is permanently removed, preserving correctness or quality;",
+                ],
+                "",
+                5,
+            ),
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Data compression",
+        f"An organisation stores and transmits {data}.",
+        None,
+        parts,
+    )
+
+
+def _fibonacci_recursion_question(
+    style: QuestionStyle,
+    number: int,
+    total: int,
+    rng: random.Random,
+) -> Question:
+    function_name = rng.choice(["fib", "term", "sequenceValue"])
+    code = (
+        f"{function_name}(n):\n"
+        "    if n <= 1:\n"
+        "        return n\n"
+        f"    return {function_name}(n - 1) + {function_name}(n - 2)"
+    )
+    stimulus = Stimulus(kind="code", title="Program 1", code=code)
+    parts = _parts(
+        [
+            ("1", 1, "State the base case in Program 1.", ["The function returns n when n is 0 or 1;"], "", 2),
+            ("2", 1, f"State the value returned by {function_name}(6).", ["8;"], "", 2),
+            (
+                "3",
+                2,
+                "Explain why a recursive call must move towards a base case.",
+                [
+                    "Otherwise calls continue without termination;",
+                    "This can exhaust the call stack or cause a runtime error;",
+                ],
+                "",
+                5,
+            ),
+            (
+                "4",
+                2,
+                "Explain why this recursive method performs repeated work.",
+                [
+                    "The same earlier Fibonacci terms are calculated by several branches;",
+                    "Memoisation or iteration can avoid repeated calculations;",
+                ],
+                "",
+                5,
+            ),
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Recursive Fibonacci sequence",
+        "Program 1 calculates a term in the Fibonacci sequence.",
+        stimulus,
+        parts,
+    )
+
+
+def _boolean_simplification_question(
+    style: QuestionStyle,
+    number: int,
+    total: int,
+    rng: random.Random,
+) -> Question:
+    expression, answer = rng.choice(
+        [
+            ("A + A.B", "A"),
+            ("A.B + A.NOT(B)", "A"),
+            ("(A + B).(A + NOT(B))", "A"),
+        ]
+    )
+    stimulus = Stimulus(kind="code", title="Expression", code=expression)
+    parts = _parts(
+        [
+            (
+                "1",
+                4,
+                "Using the rules of Boolean algebra, simplify the expression as far as possible. Show each step.",
+                [
+                    "A valid Boolean identity is selected;",
+                    "The identity is applied correctly;",
+                    "Intermediate working is logically equivalent to the original expression;",
+                    f"Final answer is {answer};",
+                ],
+                "",
+                10,
+            )
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Boolean algebra",
+        "A hardware designer wants to simplify a Boolean expression.",
+        stimulus,
+        parts,
+    )
+
+
+def _assembly_program_question(
+    style: QuestionStyle,
+    number: int,
+    total: int,
+    rng: random.Random,
+) -> Question:
+    value = rng.choice([11, 13, 19, 23])
+    code = (
+        "      MOV R0, #0\n"
+        f"      MOV R1, #{value}\n"
+        "loop: CMP R1, #0\n"
+        "      BEQ end\n"
+        "      ADD R0, R0, #1\n"
+        "      LSR R1, R1, #1\n"
+        "      B loop\n"
+        "end:  STR R0, 100"
+    )
+    stimulus = Stimulus(kind="code", title="Program 1", code=code)
+    parts = _parts(
+        [
+            (
+                "1",
+                6,
+                "Explain the purpose of the assembly language program and how the instructions implement it.",
+                [
+                    "R0 is initialised as a counter;",
+                    f"R1 is initialised with the value {value};",
+                    "CMP and BEQ terminate the loop when R1 becomes zero;",
+                    "R0 is incremented once for each loop iteration;",
+                    "LSR divides the unsigned value in R1 by two;",
+                    "The number of shifts required to reach zero is stored at address 100;",
+                ],
+                "",
+                15,
+            )
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Assembly language program",
+        "Program 1 executes on a processor with general-purpose registers.",
+        stimulus,
+        parts,
+    )
+
+
 def _bitmap_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
     width = rng.choice([1280, 1920, 2048, 3840, 4000])
     height = rng.choice([720, 1080, 1536, 2160, 3000])
@@ -172,6 +595,70 @@ def _short_security_question(style: QuestionStyle, number: int, total: int, rng:
         )
     ]
     return _question(style, number, "Malware protection", "Anti-virus software and user training are measures that can be used to reduce the threat posed by malware.", None, parts)
+
+
+def _software_roles_three_question(
+    style: QuestionStyle,
+    number: int,
+    total: int,
+    rng: random.Random,
+) -> Question:
+    context = rng.choice(
+        [
+            "A school installs a new operating system on its desktop computers.",
+            "A design studio replaces the system software on its workstations.",
+        ]
+    )
+    parts = _parts(
+        [
+            (
+                "1",
+                3,
+                "Explain three functions performed by an operating system.",
+                [
+                    "Memory management allocates and releases memory for processes;",
+                    "Processor scheduling shares processor time between processes;",
+                    "Peripheral management controls access to input/output devices;",
+                    "File management organises persistent data and access rights;",
+                ],
+                "",
+                10,
+            )
+        ]
+    )
+    return _question(style, number, "Operating-system services", context, None, parts)
+
+
+def _network_service_three_question(
+    style: QuestionStyle,
+    number: int,
+    total: int,
+    rng: random.Random,
+) -> Question:
+    service = rng.choice(["DNS", "DHCP"])
+    if service == "DNS":
+        prompt = "Explain how DNS helps a client connect to a named Internet service."
+        points = [
+            "A resolver receives the domain name requested by the client;",
+            "DNS servers are queried until the relevant record is located;",
+            "The associated IP address is returned so the client can address packets;",
+        ]
+    else:
+        prompt = "Explain how DHCP configures a client when it joins a network."
+        points = [
+            "The client broadcasts a request for network configuration;",
+            "A DHCP server offers an available IP address and other settings;",
+            "The lease is acknowledged and used for a limited period;",
+        ]
+    parts = _parts([("1", 3, prompt, points, "", 10)])
+    return _question(
+        style,
+        number,
+        f"{service} network service",
+        "A portable computer has just joined a managed network.",
+        None,
+        parts,
+    )
 
 
 def _binary_short_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
@@ -479,9 +966,11 @@ def _extended_part(prompt: str, points: list[str]) -> list[QuestionPart]:
                 ao="AO1/AO2 extended response",
                 points=points,
                 levels=[
-                    "9-12 marks: coherent, balanced answer with well-developed technical points and a justified conclusion.",
-                    "5-8 marks: relevant explanation with some development and some balance.",
-                    "1-4 marks: limited knowledge or isolated points with little development.",
+                    "Level 4, 10-12 marks: detailed and accurate technical knowledge is applied directly to the scenario. Analysis is sustained, competing considerations are weighed and the conclusion is fully justified.",
+                    "Level 3, 7-9 marks: generally accurate knowledge is applied to the scenario. Several points are developed and both sides are considered, leading to a reasoned conclusion.",
+                    "Level 2, 4-6 marks: some relevant knowledge is shown, but application or development is uneven. The response may consider more than one view, although its conclusion is only partly supported.",
+                    "Level 1, 1-3 marks: limited relevant knowledge is presented as isolated or weakly developed points. Application is generic and any conclusion is asserted rather than justified.",
+                    "0 marks: nothing creditworthy.",
                 ],
             ),
         )

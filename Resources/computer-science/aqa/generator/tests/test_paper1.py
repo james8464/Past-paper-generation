@@ -100,9 +100,15 @@ def test_electronic_answer_document_has_one_fillable_field_per_part(tmp_path) ->
     paths = generate_package(output_dir=tmp_path, paper="1", seed=42, dry_run=True)
     reader = PdfReader(paths["electronic_answer_document"])
     fields = reader.get_fields()
+    blueprint, _context = build_paper1_blueprint(load_syllabus(), seed=42)
+    expected_fields = {
+        f"question_{question.number}_{part.label}"
+        for question in blueprint.questions
+        for part in question.parts
+    }
 
     assert fields is not None
-    assert set(fields) == {f"question_{number}_1" for number in range(1, 13)}
+    assert set(fields) == expected_fields
     assert all(field.get("/FT") == "/Tx" for field in fields.values())
     assert all(int(field.get("/Ff", 0)) & 4096 for field in fields.values())
 
