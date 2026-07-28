@@ -27,6 +27,7 @@ from Backend.Core.exam_blueprints import (
     GeneratedQuestion,
 )
 from Backend.Core.fonts import register_fonts
+from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.mark_scheme_front_matter import aqa_front_matter_pages
 
 
@@ -63,6 +64,7 @@ def render_source_booklet(paper: GeneratedPaper, path: Path) -> None:
         Paragraph("A-level Business", STYLES["kicker"]),
         Paragraph("Independent practice source booklet", STYLES["title"]),
         Paragraph(f"{paper.paper_code} · {paper.title}", STYLES["subtitle"]),
+        Paragraph(formatted_generation_date(), STYLES["subtitle"]),
         Spacer(1, 8 * mm),
         _box(
             "Use these independently written fictional sources for all questions. "
@@ -106,6 +108,7 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
         Paragraph("A-level Business", STYLES["kicker"]),
         Paragraph("Independent practice mark scheme", STYLES["title"]),
         Paragraph(f"{paper.paper_code} · {paper.title}", STYLES["subtitle"]),
+        Paragraph(formatted_generation_date(), STYLES["subtitle"]),
         Spacer(1, 8 * mm),
         _box(
             "Reward valid alternative business reasoning. Apply level descriptors "
@@ -585,6 +588,7 @@ def _cover(paper: GeneratedPaper) -> list[Flowable]:
         Paragraph("A-level Business", STYLES["kicker"]),
         Paragraph("Independent practice paper", STYLES["title"]),
         Paragraph(f"{paper.paper_code} · {paper.title}", STYLES["subtitle"]),
+        Paragraph(formatted_generation_date(), STYLES["subtitle"]),
         Spacer(1, 8 * mm),
         Table(
             [

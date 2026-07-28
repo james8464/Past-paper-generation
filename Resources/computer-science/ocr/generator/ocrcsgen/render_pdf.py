@@ -29,6 +29,7 @@ from Backend.Core.exam_blueprints import (
     GeneratedQuestion,
 )
 from Backend.Core.fonts import register_fonts
+from Backend.Core.generation_date import formatted_generation_date
 
 
 PAGE_WIDTH, PAGE_HEIGHT = A4
@@ -189,6 +190,7 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
         Paragraph("A-level Computer Science", STYLES["kicker"]),
         Paragraph("Independent practice mark scheme", STYLES["title"]),
         Paragraph(f"{paper.paper_code} · {paper.title}", STYLES["subtitle"]),
+        Paragraph(formatted_generation_date(), STYLES["subtitle"]),
         Spacer(1, 8 * mm),
         _box(
             "Award valid technical alternatives. Apply level descriptors "
@@ -601,6 +603,7 @@ def _cover(paper: GeneratedPaper) -> list[Flowable]:
         Paragraph("A-level Computer Science", STYLES["kicker"]),
         Paragraph("Independent practice paper", STYLES["title"]),
         Paragraph(f"{paper.paper_code} · {paper.title}", STYLES["subtitle"]),
+        Paragraph(formatted_generation_date(), STYLES["subtitle"]),
         Spacer(1, 8 * mm),
         Table(
             [

@@ -3,11 +3,6 @@ import SwiftUI
 struct SettingsPane: View {
     var body: some View {
         TabView {
-            PaperSettingsTab()
-                .tabItem {
-                    Label("Paper", systemImage: "doc.text")
-                }
-
             AISettingsTab()
                 .tabItem {
                     Label("AI", systemImage: "sparkles")
@@ -26,40 +21,6 @@ struct SettingsPane: View {
         .scenePadding()
         .frame(minWidth: 620, minHeight: 500)
         .navigationTitle("Settings")
-    }
-}
-
-private struct PaperSettingsTab: View {
-    @EnvironmentObject private var appModel: AppViewModel
-
-    var body: some View {
-        Form {
-            Section("Subject") {
-                LabeledContent("Subject", value: appModel.selectedBoard.subjectTitle)
-                LabeledContent("Exam board", value: appModel.selectedBoard.title)
-                Text("Choose a different subject or exam board from the sidebar.")
-                    .foregroundStyle(.secondary)
-            }
-
-            Section("Paper") {
-                Picker(
-                    "Paper",
-                    selection: Binding(
-                        get: { appModel.selectedPaperID },
-                        set: { appModel.selectPaperID($0) }
-                    )
-                ) {
-                    ForEach(appModel.selectedBoard.papers) { paper in
-                        Text(paper.title).tag(paper.id)
-                    }
-                }
-                .pickerStyle(.segmented)
-
-                Text(appModel.selectedPaperDetail)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .formStyle(.grouped)
     }
 }
 

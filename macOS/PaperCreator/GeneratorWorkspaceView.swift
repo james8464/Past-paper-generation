@@ -60,7 +60,7 @@ private struct HeaderPanel: View {
     }
 
     private var titleBlock: some View {
-        HStack(spacing: 14) {
+        HStack(alignment: .top, spacing: 14) {
             Image(systemName: board.systemImage)
                 .font(.system(size: 24, weight: .semibold))
                 .symbolRenderingMode(.hierarchical)
@@ -70,9 +70,32 @@ private struct HeaderPanel: View {
             VStack(alignment: .leading, spacing: 5) {
                 Text(board.subjectTitle)
                     .font(.title.weight(.semibold))
-                Text("\(board.title)  ·  \(appModel.selectedPaperTitle)")
+                Text(board.title)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
+
+                if board.isReady {
+                    Picker(
+                        "Paper",
+                        selection: Binding(
+                            get: { appModel.selectedPaperID },
+                            set: { appModel.selectPaperID($0) }
+                        )
+                    ) {
+                        ForEach(board.papers) { paper in
+                            Text(paper.title).tag(paper.id)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .labelsHidden()
+                    .frame(maxWidth: 440)
+                    .padding(.top, 8)
+
+                    Text(appModel.selectedPaperDetail)
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
             }
         }
     }

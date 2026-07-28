@@ -17,6 +17,7 @@ if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
 from Backend.Core.fonts import register_fonts as _rf
+from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.overlay.graphs import (
     ad_as_diagram,
     consumer_producer_surplus,
@@ -35,7 +36,7 @@ from Backend.Core.overlay.graphs import (
     trade_cycle_diagram,
 )
 from Backend.Core.overlay.layouts import EDEXCEL_ECONOMICS as L
-from pastpapergen.exam_dates import economics_exam_schedule, formatted_economics_exam_date
+from pastpapergen.exam_dates import economics_exam_schedule
 from pastpapergen.models import GraphParams, PaperBlueprint, Syllabus
 from pastpapergen.notes import note_points_for_topic
 from pastpapergen.source_cases import GENERIC_SOURCE_ATTRIBUTION
@@ -301,7 +302,7 @@ def _draw_turn_over(pdf: canvas.Canvas, right_x: float, y: float) -> None:
 
 
 def _exam_date_line(paper_id: str) -> str:
-    return formatted_economics_exam_date(paper_id)
+    return formatted_generation_date()
 
 
 def _exam_session(paper_id: str) -> str:
@@ -2438,9 +2439,8 @@ def render_mark_scheme(
     pdf.setFillColor(title_blue)
     pdf.setFont("Times-Roman", 31)
     pdf.drawString(margin, height - 324, "Mark Scheme (Results)")
-    series_year = economics_exam_schedule(blueprint.paper_id).date.year
     pdf.setFont("Times-Roman", 31)
-    pdf.drawString(margin, height - 415, f"Summer {series_year}")
+    pdf.drawString(margin, height - 415, formatted_generation_date())
     pdf.setFont(MS_FONT, 23)
     pdf.setFillColor(accent)
     pdf.drawString(margin, height - 500, "Unofficial GCE A Level Practice")

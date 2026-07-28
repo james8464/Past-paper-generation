@@ -1,7 +1,7 @@
 from pathlib import Path
 import re
 
-from pastpapergen.exam_dates import formatted_economics_exam_date
+from Backend.Core.generation_date import formatted_generation_date
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.render_pdf import (
@@ -85,7 +85,7 @@ def test_cover_includes_exam_date(tmp_path):
     render_question_paper(blueprint, output)
     first_page = _pdf_text(output).split("\f")[0]
 
-    assert formatted_economics_exam_date("paper_1") in first_page
+    assert formatted_generation_date() in first_page
     assert "Morning (Time: 2 hours)" in first_page
 
 
@@ -98,7 +98,7 @@ def test_paper_2_cover_uses_official_afternoon_session(tmp_path):
     render_question_paper(blueprint, output)
     first_page = _pdf_text(output).split("\f")[0]
 
-    assert formatted_economics_exam_date("paper_2") in first_page
+    assert formatted_generation_date() in first_page
     assert "Afternoon (Time: 2 hours)" in first_page
 
 

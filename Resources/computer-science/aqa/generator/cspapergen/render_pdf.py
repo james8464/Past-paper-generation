@@ -7,12 +7,7 @@ from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 
 from Backend.Core.fonts import register_fonts as _rf
-from cspapergen.exam_dates import (
-    formatted_paper1_exam_date,
-    formatted_paper2_exam_date,
-    paper1_exam_date,
-    paper2_exam_date,
-)
+from Backend.Core.generation_date import formatted_generation_date, generation_date
 from cspapergen.models import PaperBlueprint, Question, QuestionPart, Stimulus
 
 FONT = "AQAArial"
@@ -1439,7 +1434,7 @@ def _mark_scheme_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.setFont(FONT_BOLD, 20)
     pdf.drawString(55, 585, "Mark scheme")
     pdf.setFont(FONT, 13)
-    pdf.drawString(55, 555, f"June {_exam_date(blueprint).year}")
+    pdf.drawString(55, 555, formatted_generation_date())
     pdf.drawString(55, 530, "Version: 1.0")
     pdf.setFont(FONT_BOLD, 10)
     pdf.drawString(55, 40, f"PC{blueprint.paper_code}/MS")
@@ -1637,11 +1632,11 @@ def _ms_header(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None
 
 
 def _exam_date(blueprint: PaperBlueprint) -> date:
-    return paper1_exam_date() if blueprint.paper_number == "1" else paper2_exam_date()
+    return generation_date()
 
 
 def _formatted_exam_date(blueprint: PaperBlueprint) -> str:
-    return formatted_paper1_exam_date() if blueprint.paper_number == "1" else formatted_paper2_exam_date()
+    return formatted_generation_date()
 
 
 def _wrap(text: str, width: int) -> list[str]:

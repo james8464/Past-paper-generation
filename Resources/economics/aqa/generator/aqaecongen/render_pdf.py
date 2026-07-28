@@ -25,6 +25,7 @@ from reportlab.platypus import (
 
 from Backend.Core.exam_blueprints import GeneratedOption, GeneratedPaper, GeneratedQuestion
 from Backend.Core.fonts import register_fonts
+from Backend.Core.generation_date import formatted_generation_date
 
 BLACK = colors.HexColor("#171717")
 GREY = colors.HexColor("#ececec")
@@ -112,6 +113,7 @@ def render_source_booklet(paper: GeneratedPaper, path: Path) -> None:
         Paragraph("Paper 3 source insert", STYLES["cover_title"]),
         Spacer(1, 5 * mm),
         Paragraph(option.title, STYLES["cover_subtitle"]),
+        Paragraph(formatted_generation_date(), STYLES["cover_subtitle"]),
         Spacer(1, 10 * mm),
         _info_box(
             "Questions 31 to 33 refer to the independently created extracts in this insert. "
@@ -171,6 +173,7 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
         Paragraph("Practice mark scheme", STYLES["cover_title"]),
         Spacer(1, 6 * mm),
         Paragraph(f"{paper.paper_code} · {paper.title}", STYLES["cover_subtitle"]),
+        Paragraph(formatted_generation_date(), STYLES["cover_subtitle"]),
         Spacer(1, 10 * mm),
         _info_box(
             "This is an independently created practice mark scheme. Reward valid alternative "
@@ -531,6 +534,7 @@ def _cover(paper: GeneratedPaper) -> list[Flowable]:
         Paragraph("Independent practice paper", STYLES["cover_title"]),
         Spacer(1, 5 * mm),
         Paragraph(f"Paper {paper.paper_id[-1]}: {paper.title}", STYLES["cover_subtitle"]),
+        Paragraph(formatted_generation_date(), STYLES["cover_subtitle"]),
         Spacer(1, 4 * mm),
         Table(
             [

@@ -24,6 +24,7 @@ from reportlab.platypus import (
 
 from Backend.Core.exam_blueprints import GeneratedOption, GeneratedPaper, GeneratedQuestion
 from Backend.Core.fonts import register_fonts
+from Backend.Core.generation_date import formatted_generation_date
 
 PAGE_WIDTH, PAGE_HEIGHT = A4
 OCR_MARK_SCHEME_FRONT_SIZE = (594.96, 842.04)
@@ -52,6 +53,7 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
         Paragraph("A-level Economics", STYLES["kicker"]),
         Paragraph("Independent practice mark scheme", STYLES["title"]),
         Paragraph(f"{paper.paper_code} · {paper.title}", STYLES["subtitle"]),
+        Paragraph(formatted_generation_date(), STYLES["subtitle"]),
         Spacer(1, 8 * mm),
         _box("Reward valid alternative reasoning. Apply the level descriptors holistically for extended responses."),
         PageBreak(),
@@ -538,6 +540,7 @@ def _cover(paper: GeneratedPaper) -> list[Flowable]:
         Paragraph("A-level Economics", STYLES["kicker"]),
         Paragraph("Independent practice paper", STYLES["title"]),
         Paragraph(f"{paper.paper_code} · {paper.title}", STYLES["subtitle"]),
+        Paragraph(formatted_generation_date(), STYLES["subtitle"]),
         Paragraph("Practice session · 2 hours", STYLES["body"]),
         Spacer(1, 8 * mm),
         Table(

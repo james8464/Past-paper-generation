@@ -285,14 +285,16 @@ final class AppViewModel: ObservableObject {
             ollamaURL,
         ]
 
-        let backendEnvironment: [String: String]
+        var backendEnvironment = [
+            "PAPER_CREATOR_GENERATED_ON": Self.generationDateFormatter.string(from: Date())
+        ]
         switch aiProvider {
         case .ollama, .apple:
-            backendEnvironment = [:]
+            break
         case .openAI:
-            backendEnvironment = ["PAPER_CREATOR_API_KEY": openAIAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)]
+            backendEnvironment["PAPER_CREATOR_API_KEY"] = openAIAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)
         case .anthropic:
-            backendEnvironment = ["PAPER_CREATOR_API_KEY": anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)]
+            backendEnvironment["PAPER_CREATOR_API_KEY"] = anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)
         }
 
         if dryRun {
@@ -509,6 +511,15 @@ final class AppViewModel: ObservableObject {
         SecretStore.save(openAIAPIKey, account: SecretAccount.openAIAPIKey)
         SecretStore.save(anthropicAPIKey, account: SecretAccount.anthropicAPIKey)
     }
+
+    private static let generationDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = .current
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
 
     private func setOutputFolder(_ url: URL) {
         securityScopedOutputFolder?.stopAccessingSecurityScopedResource()
