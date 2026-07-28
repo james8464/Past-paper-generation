@@ -3,10 +3,12 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+import tempfile
 import traceback
 from pathlib import Path
 
 from Backend.Core.events import emit, emit_progress, progress_emitter
+from Backend.Core.layout_conformance import conform_generated_documents
 from Backend.Core.paths import (
     ACCOUNTING_ROOT,
     AQA_ECONOMICS_ROOT,
@@ -24,6 +26,8 @@ def handle_generate(args: argparse.Namespace) -> int:
     try:
         output_dir = expand_path(args.output)
         output_dir.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryFile(dir=output_dir):
+            pass
     except OSError as error:
         emit("error", message=f"Could not use output folder: {error}")
         return 2
@@ -83,6 +87,7 @@ def generate_economics(args: argparse.Namespace, output_dir: Path) -> int:
             api_key=args.api_key,
         ),
     )
+    conform_generated_documents(args.subject, args.paper, paths)
     emit_generated_files(paths)
     return 0
 
@@ -112,6 +117,7 @@ def generate_computer_science(args: argparse.Namespace, output_dir: Path) -> int
             api_key=args.api_key,
         ),
     )
+    conform_generated_documents(args.subject, args.paper, paths)
     emit_generated_files(paths)
     return 0
 
@@ -129,6 +135,7 @@ def generate_aqa_economics(args: argparse.Namespace, output_dir: Path) -> int:
         seed=args.seed,
         progress=progress_emitter(),
     )
+    conform_generated_documents(args.subject, args.paper, paths)
     emit_generated_files(paths)
     return 0
 
@@ -146,6 +153,7 @@ def generate_ocr_economics(args: argparse.Namespace, output_dir: Path) -> int:
         seed=args.seed,
         progress=progress_emitter(),
     )
+    conform_generated_documents(args.subject, args.paper, paths)
     emit_generated_files(paths)
     return 0
 
@@ -169,6 +177,7 @@ def generate_ocr_computer_science(
         seed=args.seed,
         progress=progress_emitter(),
     )
+    conform_generated_documents(args.subject, args.paper, paths)
     emit_generated_files(paths)
     return 0
 
@@ -190,6 +199,7 @@ def generate_aqa_business(args: argparse.Namespace, output_dir: Path) -> int:
         seed=args.seed,
         progress=progress_emitter(),
     )
+    conform_generated_documents(args.subject, args.paper, paths)
     emit_generated_files(paths)
     return 0
 
@@ -211,6 +221,7 @@ def generate_aqa_accounting(args: argparse.Namespace, output_dir: Path) -> int:
         seed=args.seed,
         progress=progress_emitter(),
     )
+    conform_generated_documents(args.subject, args.paper, paths)
     emit_generated_files(paths)
     return 0
 
