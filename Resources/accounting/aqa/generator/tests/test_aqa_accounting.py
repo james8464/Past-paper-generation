@@ -107,6 +107,36 @@ def test_paper_one_section_a_matches_measured_case_and_account_pages(tmp_path: P
     assert "Independent practice material" in (pages[35].extract_text() or "")
 
 
+def test_paper_one_mark_scheme_matches_reference_question_sequence(tmp_path: Path) -> None:
+    paths = generate_package(
+        paper="1",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=123,
+    )
+
+    pages = PdfReader(paths["mark_scheme"]).pages
+    expected = {
+        7: "Objective test answers",
+        8: "trade discount",
+        9: "non-current assets section",
+        10: "sales ledger control account",
+        11: "sales account",
+        12: "Prepare the income statement",
+        15: "usefulness of the income statement",
+        17: "partners' capital accounts",
+        18: "profit and loss appropriation account",
+        19: "formal partnership agreement",
+        20: "Advise the owner",
+        22: "Question 16 continued",
+        23: "Advise the investor",
+        25: "Question 17 continued",
+    }
+    assert len(pages) == 26
+    for page_index, label in expected.items():
+        assert label in (pages[page_index].extract_text() or "")
+
+
 def test_invalid_paper_is_rejected(tmp_path: Path) -> None:
     try:
         generate_package(

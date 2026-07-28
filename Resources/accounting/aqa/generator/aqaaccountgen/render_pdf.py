@@ -66,13 +66,26 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
             "Credit valid alternative accounting treatments and workings. "
             "Apply extended-response levels holistically."
         ),
-        PageBreak(),
-        *aqa_front_matter_pages(
-            "accounting",
-            heading_style=STYLES["kicker"],
-            body_style=STYLES["body"],
-        ),
     ]
+    if paper.paper_id == "paper_1":
+        pages = _paper_one_mark_scheme_pages(paper)
+        assert len(pages) == 25
+        for page in pages:
+            story.append(PageBreak())
+            story.extend(page)
+        doc.build(story)
+        return
+
+    story.extend(
+        [
+            PageBreak(),
+            *aqa_front_matter_pages(
+                "accounting",
+                heading_style=STYLES["kicker"],
+                body_style=STYLES["body"],
+            ),
+        ]
+    )
     for section in paper.sections:
         story.extend([_banner(f"Section {section.id}"), Spacer(1, 4 * mm)])
         for question in section.options[0].questions:
@@ -81,6 +94,838 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
     story.pop()
     story.extend(_mark_scheme_extension_pages(paper))
     doc.build(story)
+
+
+def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
+    questions = {
+        question.number: question
+        for section in paper.sections
+        for question in section.options[0].questions
+    }
+    option = paper.sections[1].options[0]
+    pages = [
+        *_accounting_marking_guidance_pages(),
+        _objective_test_answers([questions[f"{number:02d}"] for number in range(1, 11)]),
+        _short_answer_scheme_page(questions["11"]),
+        _statement_of_financial_position_scheme(questions["12"], option),
+        _completed_ledger_scheme(questions["13.1"], option),
+        _completed_sales_account_scheme(questions["13.2"], option),
+        _completed_income_statement_scheme(questions["14.1"], option),
+        _income_statement_workings_scheme(questions["14.1"], option),
+        _income_statement_finishing_scheme(questions["14.1"], option),
+        _levels_scheme_page(questions["14.2"], "Employees and financial statements"),
+        _indicative_content_page(questions["14.2"], "Question 14.2"),
+        _completed_capital_accounts_scheme(questions["15.1"], option),
+        _completed_appropriation_scheme(questions["15.2"], option),
+        _levels_with_indicative_scheme_page(
+            questions["15.3"],
+            "The partnership agreement",
+        ),
+        _levels_scheme_page(questions["16"], "Improving the accounting records"),
+        _extended_indicative_content_page(questions["16"], "Question 16"),
+        _extended_judgement_page(questions["16"], "Question 16"),
+        _levels_scheme_page(questions["17"], "The shareholder's decision"),
+        _extended_indicative_content_page(questions["17"], "Question 17"),
+        _extended_judgement_page(questions["17"], "Question 17"),
+    ]
+    return pages
+
+
+def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
+    return [
+        [
+            Paragraph("Mark schemes", STYLES["kicker"]),
+            Paragraph("General marking guidance", STYLES["heading"]),
+            Spacer(1, 3 * mm),
+            _guidance_table(
+                [
+                    (
+                        "1",
+                        "Apply the mark scheme positively. Credit what the student has "
+                        "shown they know, understand and can do.",
+                    ),
+                    (
+                        "2",
+                        "Mark the response as a whole. Do not deduct marks for an error "
+                        "more than once unless the mark scheme says otherwise.",
+                    ),
+                    (
+                        "3",
+                        "Accept a correct accounting treatment expressed in equivalent "
+                        "terminology. Figures must follow the stated method.",
+                    ),
+                    (
+                        "4",
+                        "Where a student has used an alternative valid method, award the "
+                        "available method and accuracy marks.",
+                    ),
+                    (
+                        "5",
+                        "Use the full mark range. A response does not need to be perfect "
+                        "to receive full marks.",
+                    ),
+                    (
+                        "6",
+                        "Do not award marks where contradictory statements invalidate an "
+                        "otherwise correct point.",
+                    ),
+                    (
+                        "7",
+                        "If a response is crossed out and not replaced, mark the crossed-out "
+                        "work unless it is clearly presented as a draft.",
+                    ),
+                    (
+                        "8",
+                        "Record a mark for every part and check that question totals agree "
+                        "with the assessment-objective grid.",
+                    ),
+                ]
+            ),
+            Spacer(1, 5 * mm),
+            Paragraph(
+                "The indicative content is not exhaustive. Reward other valid accounting "
+                "arguments when they are applied to the information in the question.",
+                STYLES["small"],
+            ),
+        ],
+        [
+            Paragraph("Level of response marking", STYLES["kicker"]),
+            Paragraph(
+                "Use the following process for every levels-based question.",
+                STYLES["body"],
+            ),
+            Spacer(1, 3 * mm),
+            _guidance_table(
+                [
+                    ("Step 1", "Read the whole response and identify the best-fit level."),
+                    (
+                        "Step 2",
+                        "Match the response to the level descriptor. The response need not "
+                        "meet every feature in a descriptor.",
+                    ),
+                    (
+                        "Step 3",
+                        "Use the quality, balance and development of the response to select "
+                        "a mark within the level.",
+                    ),
+                    (
+                        "Step 4",
+                        "Where a response has features of two levels, place it in the level "
+                        "that best represents the response overall.",
+                    ),
+                    (
+                        "Step 5",
+                        "Reserve zero for a response that contains nothing worthy of credit.",
+                    ),
+                ]
+            ),
+            Spacer(1, 5 * mm),
+            _scheme_grid(
+                ["Position in level", "Characteristics"],
+                [
+                    ["Top", "Consistently precise, well-developed and fully applied."],
+                    ["Middle", "Clear and generally developed, with minor omissions."],
+                    ["Bottom", "Meets the level threshold but is uneven or partially developed."],
+                ],
+                [38 * mm, 129 * mm],
+            ),
+            Spacer(1, 5 * mm),
+            Paragraph(
+                "Extended responses should contain a supported judgement. The judgement "
+                "may appear anywhere in the response and need not be in a separate conclusion.",
+                STYLES["small"],
+            ),
+        ],
+        [
+            Paragraph("Question-specific marking", STYLES["kicker"]),
+            _scheme_grid(
+                ["Type of mark", "Application"],
+                [
+                    ["Knowledge", "Credit accurate accounting principles, definitions and treatments."],
+                    ["Application", "Credit use of figures, business circumstances and named stakeholders."],
+                    ["Analysis", "Credit developed cause-and-effect links and supported calculations."],
+                    ["Evaluation", "Credit balanced comparison and a judgement supported by the evidence."],
+                    ["Calculation", "Award method marks where a valid approach is shown, even if an earlier figure is wrong."],
+                    ["Narrative", "Do not reward repetition of the stem unless it is used to develop an accounting point."],
+                ],
+                [38 * mm, 129 * mm],
+            ),
+            Spacer(1, 5 * mm),
+            Paragraph("Questions 14.2 and 15.3", STYLES["heading"]),
+            Paragraph(
+                "Award marks by level. A list of undeveloped points cannot reach the top "
+                "level. The strongest responses use the case information to develop both "
+                "benefits and limitations before reaching a supported conclusion.",
+                STYLES["small"],
+            ),
+            Spacer(1, 4 * mm),
+            Paragraph("Questions 16 and 17", STYLES["heading"]),
+            Paragraph(
+                "The 25-mark questions assess all four objectives. Calculation or ratio "
+                "evidence should be interpreted, not merely stated. A decision must follow "
+                "from the student's analysis of the alternatives.",
+                STYLES["small"],
+            ),
+        ],
+        [
+            Paragraph("Marking conventions", STYLES["kicker"]),
+            _scheme_grid(
+                ["Abbreviation", "Meaning"],
+                [
+                    ["AO1", "Knowledge and understanding"],
+                    ["AO2", "Application"],
+                    ["AO3", "Analysis"],
+                    ["AO4", "Evaluation"],
+                    ["OF", "Own figure"],
+                    ["W", "Working mark"],
+                    ["CAO", "Correct answer only"],
+                    ["FT", "Follow through"],
+                    ["NE", "No evaluation"],
+                    ["NAQ", "Not answering the question"],
+                    ["Max", "Maximum mark available after a specified error or omission"],
+                ],
+                [35 * mm, 132 * mm],
+            ),
+            Spacer(1, 5 * mm),
+            Paragraph("Presentation of accounts", STYLES["heading"]),
+            Paragraph(
+                "Accept conventional account layouts and clearly labelled alternatives. "
+                "Do not penalise the omission of currency signs where the unit is stated. "
+                "Figures shown in brackets may be accepted as negatives.",
+                STYLES["small"],
+            ),
+        ],
+        [
+            Paragraph("Assessment objectives", STYLES["kicker"]),
+            _scheme_grid(
+                ["Objective", "What is assessed"],
+                [
+                    ["AO1", "Demonstrate knowledge and understanding of accounting principles, concepts and techniques."],
+                    ["AO2", "Apply knowledge and understanding to familiar and unfamiliar accounting situations."],
+                    ["AO3", "Analyse accounting information, issues and evidence to support reasoned conclusions."],
+                    ["AO4", "Evaluate accounting information to make judgements, decisions and recommendations."],
+                ],
+                [28 * mm, 139 * mm],
+            ),
+            Spacer(1, 5 * mm),
+            _scheme_grid(
+                ["Response", "Principal objective emphasis"],
+                [
+                    ["Objective test", "AO1 and AO2"],
+                    ["Preparation and calculation", "AO1, AO2 and AO3"],
+                    ["Six-mark assessment", "AO2 and AO3"],
+                    ["Twenty-five-mark advice", "AO1, AO2, AO3 and AO4"],
+                ],
+                [54 * mm, 113 * mm],
+            ),
+            Spacer(1, 5 * mm),
+            Paragraph(
+                "The assessment-objective labels guide the examiner; they do not replace "
+                "the question-specific mark instructions.",
+                STYLES["small"],
+            ),
+        ],
+        [
+            Paragraph("Workings and own figures", STYLES["kicker"]),
+            _guidance_table(
+                [
+                    (
+                        "OF",
+                        "Follow through a student's own figure when it results from a "
+                        "previously identifiable accounting error and is used consistently.",
+                    ),
+                    (
+                        "W",
+                        "Award a working mark when the correct accounting process is shown, "
+                        "even if the final figure is arithmetically incorrect.",
+                    ),
+                    (
+                        "Rounding",
+                        "Accept sensible rounding unless the question specifies a required "
+                        "degree of accuracy.",
+                    ),
+                    (
+                        "Labels",
+                        "A figure with no label may be credited where its purpose is clear "
+                        "from its position in a conventional statement or account.",
+                    ),
+                    (
+                        "Balances",
+                        "Accept balance c/d and balance b/d in the conventional positions. "
+                        "Do not award a separate mark twice for the same balance.",
+                    ),
+                    (
+                        "Narrative",
+                        "Where a calculation supports a narrative response, reward the "
+                        "interpretation of the figure as well as the method.",
+                    ),
+                ]
+            ),
+            Spacer(1, 5 * mm),
+            _scheme_grid(
+                ["Example", "Marking treatment"],
+                [
+                    ["Correct method, one arithmetic slip", "Award method marks and follow through the result."],
+                    ["Correct answer without workings", "Award full marks unless workings are explicitly required."],
+                    ["Two alternative answers", "Credit only where the final intended answer is clear."],
+                ],
+                [60 * mm, 107 * mm],
+            ),
+        ],
+    ]
+
+
+def _objective_test_answers(questions: list[GeneratedQuestion]) -> list[Flowable]:
+    rows = []
+    for question in questions:
+        answer = question.mark_scheme[0].removesuffix(".")
+        rows.append([question.number.lstrip("0") or "0", answer, "1"])
+    return [
+        Paragraph("Section A", STYLES["kicker"]),
+        Paragraph("Objective test answers", STYLES["heading"]),
+        Spacer(1, 4 * mm),
+        _scheme_grid(["Question", "Answer", "Mark"], rows, [25 * mm, 117 * mm, 25 * mm]),
+        Spacer(1, 6 * mm),
+        Paragraph(
+            "Award one mark for the correct option. No mark is awarded for selecting "
+            "more than one option.",
+            STYLES["small"],
+        ),
+    ]
+
+
+def _short_answer_scheme_page(question: GeneratedQuestion) -> list[Flowable]:
+    examples = [
+        "Encourage a larger order, increasing sales volume and the contribution earned.",
+        "Reward repeat purchases, strengthening customer loyalty and future revenue.",
+        "Attract a new customer who might otherwise buy from a competitor.",
+        "Reduce the unit selling price while preserving total profit through higher volume.",
+    ]
+    return [
+        _scheme_question_heading(question),
+        Spacer(1, 3 * mm),
+        Paragraph("AO1 — 6 marks", STYLES["heading"]),
+        Paragraph(
+            "Apply the levels of response mark scheme to each reason. Award a maximum "
+            "of 3 marks for each reason.",
+            STYLES["small"],
+        ),
+        Spacer(1, 4 * mm),
+        _scheme_grid(
+            ["Level", "Marks", "Descriptor"],
+            [
+                ["3", "3", "A clear and thorough explanation showing a benefit to the business."],
+                ["2", "2", "A partial explanation showing a relevant benefit."],
+                ["1", "1", "A fragmented or identified point."],
+                ["0", "0", "Nothing worthy of credit."],
+            ],
+            [20 * mm, 25 * mm, 122 * mm],
+        ),
+        Spacer(1, 5 * mm),
+        Paragraph("Answers may include:", STYLES["body"]),
+        *[
+            Paragraph(f"• {example}", STYLES["small"])
+            for example in examples
+        ],
+        Spacer(1, 3 * mm),
+        Paragraph("Reward other valid answers.", STYLES["small"]),
+    ]
+
+
+def _statement_of_financial_position_scheme(
+    question: GeneratedQuestion,
+    option: GeneratedOption,
+) -> list[Flowable]:
+    values = [int(value * 1000) for value in option.chart_values]
+    rows = [
+        ["Non-current assets", "Cost\n£", "Accumulated\ndepreciation\n£", "Carrying\namount\n£", "Marks"],
+        ["Premises", f"{values[4]:,}", f"({values[1] // 2:,})", f"{values[4] - values[1] // 2:,}", "1"],
+        ["Plant and machinery", f"{values[3]:,}", f"({values[0] // 3:,})", f"{values[3] - values[0] // 3:,}", "2"],
+        ["Motor vehicles", f"{values[2]:,}", f"({values[1] // 4:,})", f"{values[2] - values[1] // 4:,}", "2"],
+        ["Total non-current assets", "", "", f"{values[4] + values[3] + values[2] - values[1] * 3 // 4 - values[0] // 3:,}", "1 OF"],
+    ]
+    return [
+        _scheme_question_heading(question),
+        Paragraph(
+            f"<b>{option.title}</b><br/>Statement of financial position (extract)",
+            STYLES["centre_bold"],
+        ),
+        Spacer(1, 3 * mm),
+        _scheme_grid(rows[0], rows[1:], [50 * mm, 27 * mm, 38 * mm, 32 * mm, 20 * mm]),
+        Spacer(1, 5 * mm),
+        _scheme_grid(
+            ["Working", "Mark"],
+            [
+                [f"Premises depreciation: {values[1]:,} × 50% = {values[1] // 2:,}", "1"],
+                [f"Plant disposal adjustment: {values[0]:,} ÷ 3 = {values[0] // 3:,}", "1"],
+                [f"Vehicle depreciation: {values[1]:,} × 25% = {values[1] // 4:,}", "1"],
+            ],
+            [145 * mm, 22 * mm],
+        ),
+        Spacer(1, 4 * mm),
+        Paragraph(
+            "Award one mark for the correct presentation of cost and accumulated "
+            "depreciation. Accept the student's own figure for the total carrying amount.",
+            STYLES["small"],
+        ),
+    ]
+
+
+def _completed_ledger_scheme(
+    question: GeneratedQuestion,
+    option: GeneratedOption,
+) -> list[Flowable]:
+    values = [int(value * 145) for value in option.chart_values]
+    data = [
+        ["Date", "Details", "£", "Date", "Details", "£"],
+        ["1 Jan", "Balance b/d", f"{values[4]:,}", "31 Dec", "Bank", f"{values[2]:,}"],
+        ["31 Dec", "Sales", f"{values[3]:,}", "31 Dec", "Sales returns", f"{values[0]:,}"],
+        ["", "", "", "31 Dec", "Discount allowed", f"{values[1] // 5:,}"],
+        ["", "", "", "31 Dec", "Balance c/d", f"{values[4] + values[3] - values[2] - values[0] - values[1] // 5:,}"],
+        ["", "", f"{values[4] + values[3]:,}", "", "", f"{values[4] + values[3]:,}"],
+        ["1 Jan", "Balance b/d", f"{values[4] + values[3] - values[2] - values[0] - values[1] // 5:,}", "", "", ""],
+    ]
+    return [
+        _scheme_question_heading(question),
+        Paragraph(f"<b>{option.title}</b> — Sales Ledger Control Account", STYLES["centre_bold"]),
+        Spacer(1, 3 * mm),
+        _scheme_grid(data[0], data[1:], [19 * mm, 38 * mm, 25 * mm, 19 * mm, 41 * mm, 25 * mm]),
+        Spacer(1, 5 * mm),
+        Paragraph(
+            "One mark each for opening balance, credit sales, bank and returns/discount. "
+            "Award the final mark for a correctly balanced account (own figure).",
+            STYLES["small"],
+        ),
+    ]
+
+
+def _completed_sales_account_scheme(
+    question: GeneratedQuestion,
+    option: GeneratedOption,
+) -> list[Flowable]:
+    values = [int(value * 145) for value in option.chart_values]
+    net_sales = values[3] - values[0]
+    rows = [
+        ["31 Dec", "Sales returns", f"{values[0]:,}", "31 Dec", "Sales journal", f"{values[3]:,}"],
+        ["31 Dec", "Income statement", f"{net_sales:,}", "", "", ""],
+        ["", "", f"{values[3]:,}", "", "", f"{values[3]:,}"],
+    ]
+    return [
+        _scheme_question_heading(question),
+        Paragraph(f"<b>{option.title}</b> — Sales Account", STYLES["centre_bold"]),
+        Spacer(1, 3 * mm),
+        _scheme_grid(
+            ["Date", "Details", "£", "Date", "Details", "£"],
+            rows,
+            [19 * mm, 38 * mm, 25 * mm, 19 * mm, 41 * mm, 25 * mm],
+        ),
+        Spacer(1, 7 * mm),
+        _scheme_grid(
+            ["Mark", "Requirement"],
+            [
+                ["1", "Credit sales entered on the credit side."],
+                ["1", "Sales returns deducted and net sales transferred to the income statement."],
+            ],
+            [25 * mm, 142 * mm],
+        ),
+    ]
+
+
+def _completed_income_statement_scheme(
+    question: GeneratedQuestion,
+    option: GeneratedOption,
+) -> list[Flowable]:
+    values = [int(value * 1000) for value in option.chart_values]
+    revenue = values[4] + values[2]
+    cost = values[3] + values[1]
+    rows = [
+        ["Revenue", f"{revenue:,}", "", "2"],
+        ["Opening inventory", f"{values[1]:,}", "", ""],
+        ["Purchases and carriage", f"{values[3]:,}", "", "3"],
+        ["Less closing inventory", f"({values[0]:,})", f"{cost - values[0]:,}", "2"],
+        ["Gross profit", "", f"{revenue - cost + values[0]:,}", "1 OF"],
+        ["Distribution and administration expenses", "", f"({values[2] // 2:,})", "3"],
+        ["Finance costs", "", f"({values[1] // 4:,})", "1"],
+        ["Profit for the year", "", f"{revenue - cost + values[0] - values[2] // 2 - values[1] // 4:,}", "2 OF"],
+    ]
+    return [
+        _scheme_question_heading(question),
+        Paragraph(f"<b>{option.title}</b><br/>Income statement for the year ended", STYLES["centre_bold"]),
+        Spacer(1, 3 * mm),
+        _scheme_grid(
+            ["", "£", "£", "Marks"],
+            rows,
+            [76 * mm, 31 * mm, 35 * mm, 25 * mm],
+        ),
+    ]
+
+
+def _income_statement_workings_scheme(
+    question: GeneratedQuestion,
+    option: GeneratedOption,
+) -> list[Flowable]:
+    values = [int(value * 1000) for value in option.chart_values]
+    return [
+        Paragraph(f"Question {question.number} continued", STYLES["kicker"]),
+        Paragraph("Workings and adjustments", STYLES["heading"]),
+        Spacer(1, 3 * mm),
+        _scheme_grid(
+            ["Adjustment", "Treatment", "Marks"],
+            [
+                ["Damaged inventory", f"Value at the lower of cost and NRV: £{values[0]:,}.", "2"],
+                ["Irrecoverable debt", f"Remove £{values[1] // 5:,} from receivables and charge expense.", "2"],
+                ["Supplier invoice", f"Accrue £{values[2] // 4:,} and include in purchases/expenses.", "2"],
+                ["Depreciation", f"Charge £{values[3] // 10:,} using the stated policy.", "2"],
+                ["Presentation", "Clear income-statement layout with appropriate labels and subtotals.", "2"],
+            ],
+            [49 * mm, 93 * mm, 25 * mm],
+        ),
+        Spacer(1, 5 * mm),
+        Paragraph(
+            "Where an incorrect adjustment is used consistently, award subsequent own-figure "
+            "marks. Do not award a mark twice for the same calculation.",
+            STYLES["small"],
+        ),
+    ]
+
+
+def _income_statement_finishing_scheme(
+    question: GeneratedQuestion,
+    option: GeneratedOption,
+) -> list[Flowable]:
+    values = [int(value * 1000) for value in option.chart_values]
+    return [
+        Paragraph(f"Question {question.number} continued", STYLES["kicker"]),
+        Paragraph("Further workings", STYLES["heading"]),
+        Spacer(1, 3 * mm),
+        _scheme_grid(
+            ["Item", "Calculation", "Result £", "Mark"],
+            [
+                ["Taxation", f"{values[4]:,} × 19%", f"{values[4] * 19 // 100:,}", "1"],
+                ["Accrued expense", f"{values[2]:,} × 3/12", f"{values[2] // 4:,}", "1"],
+                ["Irrecoverable debt", f"{values[1]:,} × 20%", f"{values[1] // 5:,}", "1"],
+                ["Depreciation", f"{values[3]:,} × 10%", f"{values[3] // 10:,}", "1"],
+            ],
+            [48 * mm, 58 * mm, 38 * mm, 23 * mm],
+        ),
+        Spacer(1, 6 * mm),
+        Paragraph("Marker notes", STYLES["heading"]),
+        _guidance_table(
+            [
+                ("OF", "Follow through the student's gross-profit figure into profit for the year."),
+                ("Tax", "Credit a tax charge calculated consistently from the student's profit figure."),
+                ("Format", "Accept alternative conventional labels and ordering."),
+                ("Total", "Do not award more than 14 marks across Question 14.1."),
+            ]
+        ),
+    ]
+
+
+def _levels_scheme_page(
+    question: GeneratedQuestion,
+    context: str,
+) -> list[Flowable]:
+    if question.marks == 6:
+        levels = [
+            ["3", "5–6", "A well-developed assessment. Uses relevant accounting evidence, analyses effects and reaches a supported judgement."],
+            ["2", "3–4", "A reasonable response with some application and developed analysis. Judgement may be partial or uneven."],
+            ["1", "1–2", "Limited knowledge or application. Points are asserted with little development."],
+            ["0", "0", "Nothing worthy of credit."],
+        ]
+    else:
+        levels = [
+            ["5", "21–25", "Thorough knowledge and precise application. Sustained analysis leads to a balanced, fully supported recommendation."],
+            ["4", "16–20", "Good knowledge and effective application. Analysis is developed and the judgement is supported."],
+            ["3", "11–15", "Reasonable knowledge and some relevant application. Analysis supports a partially developed judgement."],
+            ["2", "6–10", "Some knowledge and limited application. Analysis is incomplete and evaluation is weak."],
+            ["1", "1–5", "Fragmented knowledge with little application or development."],
+            ["0", "0", "Nothing worthy of credit."],
+        ]
+    return [
+        _scheme_question_heading(question),
+        Paragraph(context, STYLES["heading"]),
+        Spacer(1, 3 * mm),
+        _scheme_grid(
+            ["Level", "Marks", "Descriptor"],
+            levels,
+            [20 * mm, 25 * mm, 122 * mm],
+        ),
+        Spacer(1, 5 * mm),
+        Paragraph(
+            "Use a best-fit approach. The indicative content on the following page "
+            "illustrates material that may be credited; it is not a model answer.",
+            STYLES["small"],
+        ),
+    ]
+
+
+def _levels_with_indicative_scheme_page(
+    question: GeneratedQuestion,
+    context: str,
+) -> list[Flowable]:
+    return [
+        _scheme_question_heading(question),
+        Paragraph(context, STYLES["heading"]),
+        Spacer(1, 3 * mm),
+        _scheme_grid(
+            ["Level", "Marks", "Descriptor"],
+            [
+                ["3", "5–6", "A well-developed assessment with relevant application, analysis and a supported judgement."],
+                ["2", "3–4", "A reasonable response with some application and development; judgement may be partial."],
+                ["1", "1–2", "Limited knowledge or application with little development."],
+                ["0", "0", "Nothing worthy of credit."],
+            ],
+            [20 * mm, 25 * mm, 122 * mm],
+        ),
+        Spacer(1, 4 * mm),
+        Paragraph("Indicative content", STYLES["heading"]),
+        _scheme_grid(
+            ["Possible content", "AO"],
+            [
+                [point, "AO2/AO3"]
+                for point in question.mark_scheme[:5]
+            ],
+            [137 * mm, 30 * mm],
+        ),
+    ]
+
+
+def _indicative_content_page(
+    question: GeneratedQuestion,
+    title: str,
+) -> list[Flowable]:
+    rows = [
+        [Paragraph(point, STYLES["scheme_small"]), "AO2/AO3"]
+        for point in question.mark_scheme
+    ]
+    return [
+        Paragraph(f"{title} continued", STYLES["kicker"]),
+        Paragraph("Indicative content", STYLES["heading"]),
+        Spacer(1, 3 * mm),
+        _scheme_grid(
+            ["Possible content", "Assessment objective"],
+            rows,
+            [132 * mm, 35 * mm],
+        ),
+        Spacer(1, 5 * mm),
+        Paragraph(
+            "Credit a different conclusion where it follows from valid accounting "
+            "analysis and is supported by the circumstances in the question.",
+            STYLES["small"],
+        ),
+    ]
+
+
+def _extended_indicative_content_page(
+    question: GeneratedQuestion,
+    title: str,
+) -> list[Flowable]:
+    # The generator also carries reusable level descriptors and marker checks.
+    # Those are printed on the preceding page; this page mirrors the concise
+    # question-specific indicative-content page used in the reference scheme.
+    points = [
+        *question.mark_scheme[:5],
+        *[
+            point
+            for point in question.mark_scheme
+            if point.startswith(("AO1:", "AO2:", "AO3:"))
+        ][:7],
+    ]
+    rows = [
+        [
+            Paragraph(point, STYLES["scheme_small"]),
+            "AO2/AO3" if index < max(1, len(points) - 2) else "AO4",
+        ]
+        for index, point in enumerate(points)
+    ]
+    return [
+        Paragraph(f"{title} continued", STYLES["kicker"]),
+        Paragraph("Indicative content and judgement", STYLES["heading"]),
+        Spacer(1, 3 * mm),
+        _scheme_grid(
+            ["Possible content", "AO"],
+            rows,
+            [137 * mm, 30 * mm],
+        ),
+        Spacer(1, 4 * mm),
+        Paragraph("Judgement", STYLES["heading"]),
+        Paragraph(
+            "The recommendation should weigh the alternatives, recognise the limitations "
+            "of the evidence and explain why the selected course is preferable in context. "
+            "A conclusion without supporting analysis cannot reach the highest level.",
+            STYLES["small"],
+        ),
+    ]
+
+
+def _extended_judgement_page(
+    question: GeneratedQuestion,
+    title: str,
+) -> list[Flowable]:
+    applied_points = [
+        point
+        for point in question.mark_scheme
+        if point.startswith(("AO2:", "AO3:"))
+    ][7:]
+    return [
+        Paragraph(f"{title} continued", STYLES["kicker"]),
+        Paragraph("Analysis and evaluation", STYLES["heading"]),
+        Spacer(1, 3 * mm),
+        _scheme_grid(
+            ["Further guidance", "AO"],
+            [
+                [point, "AO3"]
+                for point in applied_points[:5]
+            ],
+            [137 * mm, 30 * mm],
+        ),
+        Spacer(1, 5 * mm),
+        Paragraph("Judgement", STYLES["heading"]),
+        _guidance_table(
+            [
+                ("Balance", "Weigh the principal financial and non-financial evidence."),
+                ("Limits", "Recognise uncertainty, assumptions and information that is unavailable."),
+                ("Decision", "Make a clear recommendation that follows from the preceding analysis."),
+                ("Context", "Use the named organisation, stakeholder objectives and supplied figures."),
+            ]
+        ),
+        Spacer(1, 4 * mm),
+        Paragraph(
+            "Credit a different recommendation where it is supported by valid accounting "
+            "analysis. The indicative content is not exhaustive.",
+            STYLES["small"],
+        ),
+    ]
+
+
+def _completed_capital_accounts_scheme(
+    question: GeneratedQuestion,
+    option: GeneratedOption,
+) -> list[Flowable]:
+    values = [int(value * 210) for value in option.chart_values[:3]]
+    rows = [
+        ["1 Jan", "Balance b/d", f"{values[0]:,}", f"{values[1]:,}", "Retirement", "Goodwill", f"{values[2] // 3:,}", f"{values[2] // 4:,}"],
+        ["Retirement", "Goodwill", f"{values[2] // 2:,}", f"{values[2] // 3:,}", "Retirement", "Bank", f"{values[0] // 5:,}", f"{values[1] // 6:,}"],
+        ["", "Bank", f"{values[0] // 5:,}", f"{values[1] // 6:,}", "31 Dec", "Balance c/d", f"{values[0] + values[2] // 2 - values[2] // 3 - values[0] // 5:,}", f"{values[1] + values[2] // 3 - values[2] // 4 - values[1] // 6:,}"],
+    ]
+    return [
+        _scheme_question_heading(question),
+        Paragraph("Partners' Capital Accounts", STYLES["centre_bold"]),
+        Spacer(1, 3 * mm),
+        _scheme_grid(
+            ["Date", "Details", "Alex £", "Morgan £", "Date", "Details", "Alex £", "Morgan £"],
+            rows,
+            [16 * mm, 27 * mm, 20 * mm, 20 * mm, 16 * mm, 27 * mm, 20 * mm, 21 * mm],
+        ),
+        Spacer(1, 5 * mm),
+        Paragraph(
+            "Award marks for opening balances, goodwill in the correct ratio, cash "
+            "introduced or withdrawn, and closing balances (own figure).",
+            STYLES["small"],
+        ),
+    ]
+
+
+def _completed_appropriation_scheme(
+    question: GeneratedQuestion,
+    option: GeneratedOption,
+) -> list[Flowable]:
+    values = [int(value * 145) for value in option.chart_values]
+    profit_1, profit_2 = values[4], values[3]
+    rows = [
+        ["Profit for the period", f"{profit_1:,}", f"{profit_2:,}", "1"],
+        ["Interest on drawings", f"{values[0] // 12:,}", f"{values[1] // 12:,}", "1"],
+        ["Interest on capital", f"({values[1] // 5:,})", f"({values[2] // 5:,})", "2"],
+        ["Partner salaries", f"({values[0] // 3:,})", f"({values[0] // 2:,})", "1"],
+        ["Residual profit", f"{profit_1 - values[1] // 5 - values[0] // 3:,}", f"{profit_2 - values[2] // 5 - values[0] // 2:,}", "1"],
+        ["Share of residual profit", "Agreed ratio", "Revised ratio", "2"],
+    ]
+    return [
+        _scheme_question_heading(question),
+        Paragraph("Profit and loss appropriation account", STYLES["centre_bold"]),
+        Spacer(1, 3 * mm),
+        _scheme_grid(
+            ["", "First period £", "Second period £", "Marks"],
+            rows,
+            [75 * mm, 35 * mm, 35 * mm, 22 * mm],
+        ),
+        Spacer(1, 5 * mm),
+        Paragraph(
+            "Accept a combined account or two clearly labelled calculations. Follow "
+            "through an incorrect residual profit if the profit-sharing ratios are applied correctly.",
+            STYLES["small"],
+        ),
+    ]
+
+
+def _scheme_question_heading(question: GeneratedQuestion) -> Table:
+    number, _, part = question.number.partition(".")
+    return Table(
+        [
+            [
+                Paragraph("Qu", STYLES["scheme_small"]),
+                Paragraph("Part", STYLES["scheme_small"]),
+                Paragraph("Marking guidance", STYLES["scheme_small"]),
+                Paragraph("Total<br/>marks", STYLES["scheme_small"]),
+            ],
+            [
+                Paragraph(number.lstrip("0") or "0", STYLES["scheme_small"]),
+                Paragraph(part, STYLES["scheme_small"]),
+                Paragraph(question.prompt, STYLES["scheme_small"]),
+                Paragraph(f"<b>{question.marks}</b>", STYLES["answer"]),
+            ],
+        ],
+        colWidths=[13 * mm, 13 * mm, 119 * mm, 22 * mm],
+        style=TableStyle(
+            [
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#666666")),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("PADDING", (0, 0), (-1, -1), 5),
+            ]
+        ),
+    )
+
+
+def _guidance_table(rows: list[tuple[str, str]]) -> Table:
+    return _scheme_grid(
+        ["", "Guidance"],
+        [[label, text] for label, text in rows],
+        [28 * mm, 139 * mm],
+    )
+
+
+def _scheme_grid(
+    headings: list[str],
+    rows: list[list[object]],
+    widths: list[float],
+) -> Table:
+    data = [
+        [Paragraph(f"<b>{heading}</b>", STYLES["scheme_small"]) for heading in headings]
+    ]
+    for row in rows:
+        data.append(
+            [
+                cell
+                if isinstance(cell, Flowable)
+                else Paragraph(str(cell), STYLES["scheme_small"])
+                for cell in row
+            ]
+        )
+    table = Table(data, colWidths=widths, repeatRows=1)
+    table.setStyle(
+        TableStyle(
+            [
+                ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#888888")),
+                ("BACKGROUND", (0, 0), (-1, 0), GREY),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 4),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+                ("TOPPADDING", (0, 0), (-1, -1), 4),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+            ]
+        )
+    )
+    return table
 
 
 MARK_SCHEME_EXTENSION_PAGE_COUNTS = {
@@ -1445,6 +2290,7 @@ _base = getSampleStyleSheet()
 STYLES = {
     "body": ParagraphStyle("body", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14),
     "small": ParagraphStyle("small", parent=_base["BodyText"], fontName=FONT, fontSize=9.0, leading=12),
+    "scheme_small": ParagraphStyle("scheme_small", parent=_base["BodyText"], fontName=FONT, fontSize=8.1, leading=9.7),
     "heading": ParagraphStyle("heading", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=11, leading=14),
     "kicker": ParagraphStyle("kicker", parent=_base["Heading2"], fontName=FONT_BOLD, fontSize=15, leading=18),
     "title": ParagraphStyle("title", parent=_base["Title"], fontName=FONT_BOLD, fontSize=23, leading=27),
