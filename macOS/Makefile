@@ -1,13 +1,13 @@
-APP_NAME := PastPaperCreator
-APP_PROJECT := PastPaperCreator.xcodeproj
-APP_WORKSPACE := PastPaperCreator.xcworkspace
-APP_SCHEME ?= PastPaperCreator
+APP_NAME := PaperCreator
+APP_PROJECT := PaperCreator.xcodeproj
+APP_WORKSPACE := PaperCreator.xcworkspace
+APP_SCHEME ?= PaperCreator
 APP_PLATFORM := macos
 APP_GENERATOR := xcodegen
 CONFIGURATION ?= Debug
 DISTRIBUTION_MODE ?= direct
 APP_SANDBOX_ENABLED ?= NO
-CODE_SIGN_ENTITLEMENTS_FILE ?= PastPaperCreator/PastPaperCreatorDirect.entitlements
+CODE_SIGN_ENTITLEMENTS_FILE ?= PaperCreator/PaperCreatorDirect.entitlements
 CODE_SIGN_INJECT_BASE_ENTITLEMENTS ?= YES
 SIM_NAME ?=
 TARGET_PREFIX :=
@@ -38,8 +38,8 @@ endif
 DERIVED_BASE := build/DerivedData
 DERIVED := $(DERIVED_BASE)/$(AGENT_NAME)
 LOG_DIR := build/logs/$(AGENT_NAME)
-CACHE_ROOT := /tmp/pastpapercreator-build/$(AGENT_NAME)/cache
-TMPDIR_PATH := /tmp/pastpapercreator-build/$(AGENT_NAME)/tmp
+CACHE_ROOT := /tmp/papercreator-build/$(AGENT_NAME)/cache
+TMPDIR_PATH := /tmp/papercreator-build/$(AGENT_NAME)/tmp
 
 ifeq ($(APP_PLATFORM),ios)
 PLATFORM_SUFFIX := -iphonesimulator
@@ -188,10 +188,10 @@ else
 endif
 
 $(TARGET_PREFIX)build-app-store:
-	@$(MAKE) --no-print-directory $(TARGET_PREFIX)build CONFIGURATION=Release DISTRIBUTION_MODE=app-store APP_SANDBOX_ENABLED=YES CODE_SIGN_ENTITLEMENTS_FILE=PastPaperCreator/PastPaperCreator.entitlements CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO
+	@$(MAKE) --no-print-directory $(TARGET_PREFIX)build CONFIGURATION=Release DISTRIBUTION_MODE=app-store APP_SANDBOX_ENABLED=YES CODE_SIGN_ENTITLEMENTS_FILE=PaperCreator/PaperCreator.entitlements CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO
 
 $(TARGET_PREFIX)preflight-app-store:
-	@plutil -lint PastPaperCreator/Info.plist PastPaperCreator/PrivacyInfo.xcprivacy PastPaperCreator/PastPaperCreator.entitlements
+	@plutil -lint PaperCreator/Info.plist PaperCreator/PrivacyInfo.xcprivacy PaperCreator/PaperCreator.entitlements
 	@$(MAKE) --no-print-directory $(TARGET_PREFIX)build-app-store
 
 $(TARGET_PREFIX)backend-env:

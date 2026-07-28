@@ -1,4 +1,4 @@
-# ExamForge
+# Paper creator
 
 Native macOS app and Python backend for generating unofficial A-level practice papers.
 
@@ -37,10 +37,22 @@ python3 tools/reference_corpus.py discover-pearson
 python3 tools/reference_corpus.py download --workers 6
 python3 tools/reference_corpus.py profile --kind question-papers --workers 8
 python3 tools/reference_corpus.py summarize
+python3 -m tools.build_supported_layout_masters
 ```
 
 Only public, official URLs are downloaded. Secure, gated, non-PDF, and disallowed
 resources are skipped and listed in `Reference Corpus/download-errors*.json`.
+The generated runtime registry contains page boxes and numeric coordinates only.
+Full development masters remain ignored with the reference corpus.
+
+To compare generated papers with all supported references:
+
+```bash
+python3 -m tools.paper_fidelity_audit \
+  --generated-root output/pdf/perfection-audit-2026-07-27 \
+  --json output/pdf/perfection-audit-2026-07-27/fidelity-report.json \
+  --markdown output/pdf/perfection-audit-2026-07-27/fidelity-report.md
+```
 
 ## CLI
 

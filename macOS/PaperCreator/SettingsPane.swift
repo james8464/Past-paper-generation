@@ -1,0 +1,232 @@
+import SwiftUI
+
+struct SettingsPane: View {
+    var body: some View {
+        TabView {
+            PaperSettingsTab()
+                .tabItem {
+                    Label("Paper", systemImage: "doc.text")
+                }
+
+            AISettingsTab()
+                .tabItem {
+                    Label("AI", systemImage: "sparkles")
+                }
+
+            OutputSettingsTab()
+                .tabItem {
+                    Label("Output", systemImage: "folder")
+                }
+
+            PrivacySettingsTab()
+                .tabItem {
+                    Label("Privacy", systemImage: "hand.raised")
+                }
+        }
+        .scenePadding()
+        .frame(minWidth: 620, minHeight: 500)
+        .navigationTitle("Settings")
+    }
+}
+
+private struct PaperSettingsTab: View {
+    @EnvironmentObject private var appModel: AppViewModel
+
+    var body: some View {
+        Form {
+            Section("Subject") {
+                LabeledContent("Subject", value: appModel.selectedBoard.subjectTitle)
+                LabeledContent("Exam board", value: appModel.selectedBoard.title)
+                Text("Choose a different subject or exam board from the sidebar.")
+                    .foregroundStyle(.secondary)
+            }
+
+            Section("Paper") {
+                Picker(
+                    "Paper",
+                    selection: Binding(
+                        get: { appModel.selectedPaperID },
+                        set: { appModel.selectPaperID($0) }
+                    )
+                ) {
+                    ForEach(appModel.selectedBoard.papers) { paper in
+                        Text(paper.title).tag(paper.id)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                Text(appModel.selectedPaperDetail)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .formStyle(.grouped)
+    }
+}
+
+private struct AISettingsTab: View {
+    @EnvironmentObject private var appModel: AppViewModel
+
+    var body: some View {
+        Form {
+            Section("Provider") {
+                Picker("Provider", selection: Binding(
+                    get: { appModel.aiProvider },
+                    set: { appModel.selectAIProvider($0) }
+                )) {
+                    ForEach(AIProvider.allCases) { provider in
+                        Text(provider.title).tag(provider)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                Text(appModel.aiProvider.subtitle)
+                    .foregroundStyle(.secondary)
+
+                if appModel.aiProvider.sendsPromptsOffDevice {
+                    Label(
+                        "Prompts and subject context may be sent to the selected provider.",
+                        systemImage: "network"
+                    )
+                    .foregroundStyle(.secondary)
+                }
+            }
+
+            providerSettings
+
+            Section {
+                HStack {
+                    Spacer()
+                    Button("Save", action: appModel.saveAISettings)
+                        .keyboardShortcut(.defaultAction)
+                        .buttonStyle(.borderedProminent)
+                }
+            }
+        }
+        .formStyle(.grouped)
+    }
+
+    @ViewBuilder
+    private var providerSettings: some View {
+        switch appModel.aiProvider {
+        case .ollama:
+            Section("Local model") {
+                Picker("Model", selection: $appModel.selectedModel) {
+                    if appModel.availableModels.isEmpty {
+                        Text(appModel.selectedModel).tag(appModel.selectedModel)
+                    } else {
+                        ForEach(appModel.availableModels, id: \.self) { model in
+                            Text(model).tag(model)
+                        }
+                    }
+                }
+
+                HStack {
+                    Button("Check Again", action: appModel.refreshOllama)
+                    Spacer()
+                    Text(appModel.ollamaState.message)
+                        .foregroundStyle(.secondary)
+                }
+
+                if appModel.distributionMode.canManageOllama {
+                    LabeledContent("Download model") {
+                        HStack {
+                            TextField("Model name", text: $appModel.modelToPull)
+                                .frame(minWidth: 190)
+                            Button("Download", action: appModel.requestPullModel)
+                                .disabled(appModel.modelToPull.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || appModel.isRunning)
+                        }
+                    }
+                } else {
+                    Text("Models are managed in Ollama. Once a model is installed, choose Check Again.")
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+        case .openAI:
+            Section("OpenAI") {
+                TextField("Model", text: $appModel.openAIModel)
+                SecureField("API key", text: $appModel.openAIAPIKey)
+                Text("Your key is stored in Keychain.")
+                    .foregroundStyle(.secondary)
+            }
+
+        case .anthropic:
+            Section("Anthropic") {
+                TextField("Model", text: $appModel.anthropicModel)
+                SecureField("API key", text: $appModel.anthropicAPIKey)
+                Text("Your key is stored in Keychain.")
+                    .foregroundStyle(.secondary)
+            }
+
+        case .apple:
+            Section("Apple MLX") {
+                TextField("Model ID or path", text: $appModel.appleModel)
+                Text("Use a Hugging Face model ID or the path to a model already on this Mac.")
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+private struct OutputSettingsTab: View {
+    @EnvironmentObject private var appModel: AppViewModel
+
+    var body: some View {
+        Form {
+            Section("Folder") {
+                LabeledContent("Output") {
+                    HStack {
+                        Text(appModel.outputFolder.path)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                        Button("Choose...", action: appModel.chooseOutputFolder)
+                    }
+                }
+            }
+
+            Section("Preview Mode") {
+                Toggle("Use built-in drafts", isOn: $appModel.dryRun)
+                Text("Creates sample PDFs without contacting an AI provider.")
+                    .foregroundStyle(.secondary)
+            }
+
+            Section("Notifications") {
+                Toggle(
+                    "Notify when generation starts and finishes",
+                    isOn: Binding(
+                        get: { appModel.notificationsEnabled },
+                        set: { appModel.setNotificationsEnabled($0) }
+                    )
+                )
+                Text("Paper creator only sends notifications about work you start.")
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .formStyle(.grouped)
+    }
+}
+
+private struct PrivacySettingsTab: View {
+    @EnvironmentObject private var appModel: AppViewModel
+
+    var body: some View {
+        Form {
+            Section("Privacy") {
+                LabeledContent("Distribution", value: appModel.distributionMode.title)
+                LabeledContent("Accounts", value: "Not required")
+                LabeledContent("API keys", value: "Keychain")
+                LabeledContent("Hosted AI consent", value: appModel.hasHostedAIConsent ? "Accepted" : "Not accepted")
+                Link("Privacy Policy", destination: AppLinks.privacyPolicy)
+                Text("Ollama generation is local. Hosted providers send prompts to the provider you select.")
+                    .foregroundStyle(.secondary)
+            }
+
+            Section {
+                Text("Unofficial practice material. Not affiliated with Pearson, Edexcel, AQA, or any exam board.")
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .formStyle(.grouped)
+    }
+}

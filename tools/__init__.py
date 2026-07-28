@@ -1,1 +1,1 @@
-"""Development tooling for ExamForge."""
+"""Development tooling for Paper creator."""

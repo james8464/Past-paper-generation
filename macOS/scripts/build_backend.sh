@@ -4,9 +4,9 @@ set -euo pipefail
 ROOT_DIR="$(cd "$SRCROOT/.." && pwd)"
 PYTHON="$ROOT_DIR/.venv/bin/python"
 HELPER_DIR="$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
-WORK_DIR="$DERIVED_FILE_DIR/ExamForgeBackend"
+WORK_DIR="$DERIVED_FILE_DIR/PaperCreatorBackend"
 DIST_DIR="$WORK_DIR/dist"
-BACKEND_DIR="$HELPER_DIR/ExamForgeBackend"
+BACKEND_DIR="$HELPER_DIR/PaperCreatorBackend"
 
 if [[ ! -x "$PYTHON" ]]; then
   echo "error: Missing $PYTHON. Create the project virtual environment first." >&2
@@ -25,7 +25,7 @@ mkdir -p "$DIST_DIR" "$HELPER_DIR"
   --noconfirm \
   --clean \
   --onedir \
-  --name ExamForgeBackend \
+  --name PaperCreatorBackend \
   --distpath "$DIST_DIR" \
   --workpath "$WORK_DIR/work" \
   --specpath "$WORK_DIR" \
@@ -44,6 +44,8 @@ mkdir -p "$DIST_DIR" "$HELPER_DIR"
   --collect-submodules ocrcsgen \
   --collect-submodules aqabizgen \
   --collect-submodules aqaaccountgen \
+  --hidden-import fitz \
+  --add-data "$ROOT_DIR/Resources/layout-master-runtime.json:Resources" \
   --add-data "$ROOT_DIR/Resources/economics/edexcel-a/generator/data/syllabus_seed.json:Resources/economics/edexcel-a/generator/data" \
   --add-data "$ROOT_DIR/Resources/economics/aqa/generator/data/syllabus.json:Resources/economics/aqa/generator/data" \
   --add-data "$ROOT_DIR/Resources/economics/ocr/generator/data/syllabus.json:Resources/economics/ocr/generator/data" \
@@ -53,7 +55,7 @@ mkdir -p "$DIST_DIR" "$HELPER_DIR"
   --add-data "$ROOT_DIR/Resources/accounting/aqa/generator/data/syllabus.json:Resources/accounting/aqa/generator/data" \
   "$ROOT_DIR/bridge.py"
 
-ditto "$DIST_DIR/ExamForgeBackend" "$BACKEND_DIR"
+ditto "$DIST_DIR/PaperCreatorBackend" "$BACKEND_DIR"
 
 find "$BACKEND_DIR/_internal/Resources" -type f -exec chmod 0644 {} +
 xattr -cr "$BACKEND_DIR"

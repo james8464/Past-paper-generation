@@ -5,6 +5,7 @@ __pycache__/
 *.pyc
 out/
 out-*/
+output/
 debug_images/
 analysis/
 graphify-out/cache/

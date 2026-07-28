@@ -1,4 +1,4 @@
-name: PastPaperCreator
+name: PaperCreator
 options:
   deploymentTarget:
     macOS: "15.0"
@@ -51,17 +51,17 @@ settings:
     SDKROOT: macosx
 
 schemes:
-  PastPaperCreator:
+  PaperCreator:
     shared: true
     build:
       targets:
-        PastPaperCreator: all
+        PaperCreator: all
     run:
       config: Debug
     test:
       config: Debug
       targets:
-        - PastPaperCreatorTests
+        - PaperCreatorTests
     profile:
       config: Release
     analyze:
@@ -70,16 +70,16 @@ schemes:
       config: Release
 
 targets:
-  PastPaperCreator:
+  PaperCreator:
     type: application
     platform: macOS
-    bundleId: com.jamesdurup.PastPaperCreator
+    bundleId: com.jamesdurup.PaperCreator
     sources:
-      - path: PastPaperCreator
+      - path: PaperCreator
         type: syncedFolder
         excludes:
           - Info.plist
-          - PastPaperCreator.entitlements
+          - PaperCreator.entitlements
       - path: ../Resources/catalog.json
         buildPhase: resources
       - path: ../Resources/generator-registry.json
@@ -101,7 +101,7 @@ targets:
           - "$(SRCROOT)/../Resources/business/aqa/generator/pyproject.toml"
           - "$(SRCROOT)/../Resources/accounting/aqa/generator/pyproject.toml"
         outputFiles:
-          - "$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/ExamForgeBackend/.built"
+          - "$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/PaperCreatorBackend/.built"
         basedOnDependencyAnalysis: false
     settings:
       base:
@@ -109,7 +109,7 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         APP_SANDBOX_ENABLED: NO
         CODE_SIGN_ENTITLEMENTS: "$(CODE_SIGN_ENTITLEMENTS_FILE)"
-        CODE_SIGN_ENTITLEMENTS_FILE: PastPaperCreator/PastPaperCreatorDirect.entitlements
+        CODE_SIGN_ENTITLEMENTS_FILE: PaperCreator/PaperCreatorDirect.entitlements
         CODE_SIGN_STYLE: Automatic
         COMBINE_HIDPI_IMAGES: YES
         CURRENT_PROJECT_VERSION: 1
@@ -121,12 +121,12 @@ targets:
         ENABLE_OUTGOING_NETWORK_CONNECTIONS: YES
         ENABLE_USER_SELECTED_FILES: readwrite
         GENERATE_INFOPLIST_FILE: NO
-        INFOPLIST_FILE: PastPaperCreator/Info.plist
+        INFOPLIST_FILE: PaperCreator/Info.plist
         LD_RUNPATH_SEARCH_PATHS:
           - "$(inherited)"
           - "@executable_path/../Frameworks"
         MARKETING_VERSION: 1.0
-        PRODUCT_BUNDLE_IDENTIFIER: com.jamesdurup.PastPaperCreator
+        PRODUCT_BUNDLE_IDENTIFIER: com.jamesdurup.PaperCreator
         PRODUCT_NAME: "$(TARGET_NAME)"
         REGISTER_APP_GROUPS: YES
         STRING_CATALOG_GENERATE_SYMBOLS: YES
@@ -135,16 +135,16 @@ targets:
         SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY: YES
         SWIFT_VERSION: 5.0
 
-  PastPaperCreatorTests:
+  PaperCreatorTests:
     type: bundle.unit-test
     platform: macOS
-    bundleId: com.jamesdurup.PastPaperCreator.Tests
+    bundleId: com.jamesdurup.PaperCreator.Tests
     sources:
       - path: Tests
         type: syncedFolder
     settings:
       base:
         INFOPLIST_FILE: Tests/Info.plist
-        PRODUCT_BUNDLE_IDENTIFIER: com.jamesdurup.PastPaperCreator.Tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.jamesdurup.PaperCreator.Tests
     dependencies:
-      - target: PastPaperCreator
+      - target: PaperCreator

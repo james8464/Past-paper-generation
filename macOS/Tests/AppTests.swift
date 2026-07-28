@@ -1,7 +1,7 @@
 import XCTest
-@testable import PastPaperCreator
+@testable import PaperCreator
 
-final class PastPaperCreatorTests: XCTestCase {
+final class PaperCreatorTests: XCTestCase {
     func testBackendProgressEventDecodes() throws {
         let event = try BackendEvent(jsonLine: #"{"type":"progress","stage":"render","message":"Rendering question paper","progress":0.88}"#)
         XCTAssertEqual(event, .progress(stage: "render", message: "Rendering question paper", progress: 0.88))
@@ -24,7 +24,7 @@ final class PastPaperCreatorTests: XCTestCase {
 
     func testBuiltAppContainsStandaloneBackend() throws {
         let executable = Bundle(for: AppViewModel.self).bundleURL
-            .appendingPathComponent("Contents/Resources/ExamForgeBackend/ExamForgeBackend")
+            .appendingPathComponent("Contents/Resources/PaperCreatorBackend/PaperCreatorBackend")
         XCTAssertTrue(FileManager.default.isExecutableFile(atPath: executable.path))
     }
 
