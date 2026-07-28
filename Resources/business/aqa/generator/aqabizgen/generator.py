@@ -12,6 +12,7 @@ from Backend.Core.exam_blueprints import (
     QuestionRule,
     validate_generated_paper,
 )
+from Backend.Core.mark_scheme_enrichment import enrich_paper
 
 from aqabizgen.syllabus import Syllabus, Topic
 
@@ -88,7 +89,7 @@ def build_paper(
                 GeneratedOption(
                     id=f"{section_rule.id}{option_index + 1}",
                     title=(
-                        f"Case {case_id}: {business}"
+                        business
                         if stimulus_count
                         else f"Question {_number(rule.id, section_rule.id, option_index, 0)}"
                     ),
@@ -126,6 +127,7 @@ def build_paper(
         seed=run_seed,
         sections=sections,
     )
+    paper = enrich_paper(paper, syllabus.topics, subject="business")
     validate_generated_paper(paper, rule, syllabus.topic_ids)
     return paper
 
@@ -178,7 +180,7 @@ def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedQuestion:
         while len(choices) < 4:
             choices.append(f"£{revenue + len(choices)}m")
         prompt = (
-            f"A fictional business has revenue of £{revenue}m and cost of sales of "
+            f"{business} has revenue of £{revenue}m and cost of sales of "
             f"£{cost}m. What is its gross profit?"
         )
     else:
@@ -216,12 +218,12 @@ def _written_question(
     rng: random.Random,
 ) -> GeneratedQuestion:
     point = rng.choice(topic.points)
-    context = f"Case {case_id} about {business}"
+    context = f"the extracts about {business}"
     change = (values[-1] - values[0]) / values[0] * 100
     if rule.kind == "calculation":
         prompt = (
             f"Using the performance data for {business}, calculate the percentage "
-            f"change in the index for Case {case_id}. Give your answer to one decimal place."
+            "change in the index. Give your answer to one decimal place."
         )
         scheme = [
             f"Method: ({values[-1]} − {values[0]}) ÷ {values[0]} × 100.",
@@ -235,7 +237,7 @@ def _written_question(
         )
         scheme = [
             f"Accurate knowledge of {topic.title}.",
-            f"Application to the figures and circumstances of case {case_id}.",
+            f"Application to the figures and circumstances of {business}.",
             f"Developed cause-and-effect reasoning involving {point}.",
             "Credit a relevant calculation, model or counter-effect.",
         ]
@@ -294,7 +296,7 @@ def _levels(marks: int, topic: Topic, point: str, case_id: int) -> list[str]:
         ],
     }
     return [
-        f"Indicative content: {topic.title}; {point}; application to case {case_id}.",
+        f"Indicative content: {topic.title}; {point}; application to the business.",
         "Consider objectives, stakeholder effects, quantitative evidence, risk, time and alternatives.",
         *bands[marks],
         "Level 0 (0): no creditworthy material.",

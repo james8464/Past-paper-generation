@@ -60,6 +60,7 @@ def test_multi_seed_determinism_uniqueness_and_scope() -> None:
 
 
 def test_both_packages_render_36_page_question_papers(tmp_path: Path) -> None:
+    mark_scheme_pages = {"1": 26, "2": 28}
     for paper in ("1", "2"):
         paths = generate_package(
             paper=paper,
@@ -69,6 +70,7 @@ def test_both_packages_render_36_page_question_papers(tmp_path: Path) -> None:
         )
         assert set(paths) == {"question_paper", "mark_scheme"}
         assert page_count(paths["question_paper"]) == 36
+        assert page_count(paths["mark_scheme"]) == mark_scheme_pages[paper]
         assert all(path.stat().st_size > 2000 for path in paths.values())
 
 

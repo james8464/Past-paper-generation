@@ -50,6 +50,7 @@ def test_mcq_choices_are_distinct() -> None:
 
 
 def test_packages_render_current_page_geometry(tmp_path: Path) -> None:
+    mark_scheme_pages = {"1": 23, "2": 20, "3": 14}
     for paper, expected_pages in (("1", 32), ("2", 24), ("3", 28)):
         paths = generate_package(
             paper=paper,
@@ -64,5 +65,6 @@ def test_packages_render_current_page_geometry(tmp_path: Path) -> None:
         )
         assert paths.keys() == expected_roles
         assert len(PdfReader(paths["question_paper"]).pages) == expected_pages
+        assert len(PdfReader(paths["mark_scheme"]).pages) == mark_scheme_pages[paper]
         if paper == "3":
             assert len(PdfReader(paths["source_booklet"]).pages) == 8

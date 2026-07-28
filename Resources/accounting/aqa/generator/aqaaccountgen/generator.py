@@ -12,6 +12,7 @@ from Backend.Core.exam_blueprints import (
     QuestionRule,
     validate_generated_paper,
 )
+from Backend.Core.mark_scheme_enrichment import enrich_paper
 
 from aqaaccountgen.syllabus import Syllabus, Topic
 
@@ -91,7 +92,7 @@ def build_paper(
             questions.append(question)
         option = GeneratedOption(
             id=f"{section_rule.id}1",
-            title=f"Case {case_id}: {business}",
+            title=business,
             stimulus=[
                 _extract(section_rule.id, business, case_id, rng, 1),
                 _extract(section_rule.id, business, case_id, rng, 2),
@@ -118,6 +119,7 @@ def build_paper(
         seed=run_seed,
         sections=sections,
     )
+    paper = enrich_paper(paper, syllabus.topics, subject="accounting")
     validate_generated_paper(paper, rule, syllabus.topic_ids)
     return paper
 
@@ -207,16 +209,16 @@ def _written(
             f"Contribution indicator: £{values[4]:.1f}000 − £{values[2]:.1f}000 = £{contribution:.1f}000.",
             f"Profit indicator: £{contribution:.1f}000 − £{values[1]:.1f}000 = £{contribution - values[1]:.1f}000.",
             "Award method marks for valid ledger, statement or costing workings.",
-            f"Credit a correctly labelled answer applied to case {case_id}.",
+            f"Credit a correctly labelled answer applied to {business}.",
         ]
     elif rule.kind == "analysis":
         prompt = (
             f"{rule.command_word} how {point} should be treated or interpreted by "
-            f"{business}. Use the evidence in Case {case_id}."
+            f"{business}. Use the evidence in the extracts."
         )
         scheme = [
             f"Accurate knowledge of {topic.title}.",
-            f"Application to {business} and Case {case_id}.",
+            f"Application to {business} and the supplied figures.",
             f"Developed accounting reasoning about {point}.",
             "Credit relevant limitations or alternative treatments.",
         ]
@@ -224,7 +226,7 @@ def _written(
         decision = rng.choice(DECISIONS)
         prompt = (
             f"{rule.command_word} the directors of {business} whether it should {decision}. "
-            f"Use quantitative and qualitative evidence from Case {case_id}, including "
+            f"Use quantitative and qualitative evidence from the extracts, including "
             f"{point}, and reach a justified conclusion."
         )
         scheme = _levels(topic, point, case_id)
@@ -242,7 +244,7 @@ def _written(
 
 def _levels(topic: Topic, point: str, case_id: int) -> list[str]:
     return [
-        f"Indicative content: {topic.title}; {point}; Case {case_id}.",
+        f"Indicative content: {topic.title}; {point}; application to the business.",
         "Use accurate calculations, accounting principles and relevant non-financial evidence.",
         "Level 5 (21–25): fully integrated analysis, balanced evaluation and a justified recommendation.",
         "Level 4 (16–20): developed analysis and relevant evaluation with a supported recommendation.",
@@ -266,14 +268,14 @@ def _extract(
     current_liabilities = rng.randrange(60, 430, 10)
     if index == 1:
         return (
-            f"Data set {case_id}. {business} reported revenue of £{revenue}000 and profit "
+            f"Extract 1. {business} reported revenue of £{revenue}000 and profit "
             f"for the year of £{profit}000. Current assets were £{current_assets}000 and "
             f"current liabilities were £{current_liabilities}000. Management expects sales "
             f"volume to change by {rng.randint(-8, 18)}% next year. The figures are provisional "
             "and include estimates for inventory and doubtful debts."
         )
     return (
-        f"Further evidence for Case {case_id}. The directors are considering investment of "
+        f"Extract 2. The directors are considering investment of "
         f"£{rng.randrange(100, 700, 25)}000, financed over {rng.randint(3, 8)} years. Staff "
         f"turnover is {rng.randint(5, 24)}% and a customer survey response rate was "
         f"{rng.randint(8, 36)}%. The accountant has warned that forecasts depend on demand, "

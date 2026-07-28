@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from reportlab.graphics.shapes import Drawing, Line, PolyLine, Rect, String
+from reportlab.graphics.shapes import Drawing, Ellipse, Line, PolyLine, Rect, String
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT
 from reportlab.lib.pagesizes import A4
@@ -26,11 +26,17 @@ from Backend.Core.exam_blueprints import (
     GeneratedPaper,
     GeneratedQuestion,
 )
+from Backend.Core.fonts import register_fonts
+from Backend.Core.mark_scheme_front_matter import aqa_front_matter_pages
 
 
-PAGE_WIDTH, PAGE_HEIGHT = A4
+AQA_A4 = (595.32, 841.92)
+PAGE_WIDTH, PAGE_HEIGHT = AQA_A4
 INK = colors.HexColor("#161616")
 GREY = colors.HexColor("#eeeeee")
+FONT = "AQAArial"
+FONT_BOLD = "AQAArial-Bold"
+register_fonts(FONT, FONT_BOLD)
 
 
 def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
@@ -106,6 +112,11 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
             "holistically and credit supported judgements."
         ),
         PageBreak(),
+        *aqa_front_matter_pages(
+            "business",
+            heading_style=STYLES["kicker"],
+            body_style=STYLES["body"],
+        ),
     ]
     for section in paper.sections:
         story.extend([_banner(f"Section {section.id}"), Spacer(1, 4 * mm)])
@@ -114,7 +125,125 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
                 story.extend(_scheme_block(question))
         story.append(PageBreak())
     story.pop()
+    story.extend(_mark_scheme_extension_pages(paper))
     doc.build(story)
+
+
+MARK_SCHEME_EXTENSION_PAGE_COUNTS = {
+    "paper_1": 7,
+    "paper_2": 5,
+    "paper_3": 3,
+}
+
+
+def _mark_scheme_extension_pages(paper: GeneratedPaper) -> list[Flowable]:
+    count = MARK_SCHEME_EXTENSION_PAGE_COUNTS[paper.paper_id]
+    questions = [
+        question
+        for section in paper.sections
+        for option in section.options
+        for question in option.questions
+    ]
+    extended = [question for question in questions if question.marks >= 9]
+    pages: list[Flowable] = []
+    for index in range(count):
+        pages.append(PageBreak())
+        if index == count - 2:
+            pages.extend(_assessment_objectives_page(paper, questions))
+        elif index == count - 1:
+            pages.extend(_independent_practice_page())
+        else:
+            question = extended[index % len(extended)]
+            pages.extend(_continued_marking_guidance(question, index))
+    return pages
+
+
+def _continued_marking_guidance(
+    question: GeneratedQuestion,
+    page_index: int,
+) -> list[Flowable]:
+    points = question.mark_scheme
+    chunk_size = 9
+    start = (page_index * chunk_size) % max(len(points), 1)
+    chunk = (points + points)[start : start + chunk_size]
+    rows = [["Indicative content and level guidance", ""]]
+    rows.extend(
+        [[Paragraph(f"• {point}", STYLES["small"]), ""] for point in chunk]
+    )
+    table = Table(rows, colWidths=[155 * mm, 12 * mm])
+    table.setStyle(
+        TableStyle(
+            [
+                ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
+                ("BACKGROUND", (0, 0), (-1, 0), GREY),
+                ("FONTNAME", (0, 0), (-1, 0), FONT_BOLD),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("PADDING", (0, 0), (-1, -1), 5),
+            ]
+        )
+    )
+    return [
+        Paragraph(f"Question {question.number} guidance continued", STYLES["heading"]),
+        Spacer(1, 3 * mm),
+        Paragraph(question.prompt, STYLES["body"]),
+        Spacer(1, 4 * mm),
+        table,
+        Spacer(1, 5 * mm),
+        Paragraph(
+            "Credit a different but valid business argument when it is developed, "
+            "applied to the case and supports the judgement reached.",
+            STYLES["body"],
+        ),
+    ]
+
+
+def _assessment_objectives_page(
+    paper: GeneratedPaper,
+    questions: list[GeneratedQuestion],
+) -> list[Flowable]:
+    rows = [["Question", "Marks", "Assessment focus"]]
+    for question in questions:
+        focus = (
+            "AO1, AO2, AO3 and AO4"
+            if question.marks >= 9
+            else "AO1 and AO2"
+        )
+        rows.append([question.number, str(question.marks), focus])
+    table = Table(rows, colWidths=[38 * mm, 25 * mm, 104 * mm], repeatRows=1)
+    table.setStyle(
+        TableStyle(
+            [
+                ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
+                ("BACKGROUND", (0, 0), (-1, 0), GREY),
+                ("FONTNAME", (0, 0), (-1, 0), FONT_BOLD),
+                ("PADDING", (0, 0), (-1, -1), 5),
+            ]
+        )
+    )
+    return [
+        Paragraph("Assessment objectives grid", STYLES["heading"]),
+        Spacer(1, 4 * mm),
+        table,
+        Spacer(1, 5 * mm),
+        Paragraph(
+            f"The candidate paper maximum is {paper.total_marks}. Verify the question "
+            "subtotals and the selected level before recording the final mark.",
+            STYLES["body"],
+        ),
+    ]
+
+
+def _independent_practice_page() -> list[Flowable]:
+    return [
+        Spacer(1, 205 * mm),
+        Paragraph("Independent practice material", STYLES["heading"]),
+        Spacer(1, 3 * mm),
+        Paragraph(
+            "Created by Paper Creator for private revision. This mark scheme is not "
+            "produced, endorsed or approved by AQA or any examination board.",
+            STYLES["small"],
+        ),
+    ]
 
 
 def _paper_one_pages(paper: GeneratedPaper) -> list[Flowable]:
@@ -287,16 +416,30 @@ def _choice_prompts(section) -> list[Flowable]:
 
 
 def _mcq_block(question: GeneratedQuestion) -> list[Flowable]:
-    choices = "<br/>".join(
-        f"<b>{'ABCD'[index]}</b> {text}"
-        for index, text in enumerate(question.choices)
+    choices = Table(
+        [
+            [
+                Paragraph(f"<b>{'ABCD'[index]}</b>", STYLES["choices"]),
+                Paragraph(text, STYLES["choices"]),
+                _lozenge(),
+            ]
+            for index, text in enumerate(question.choices)
+        ],
+        colWidths=[9 * mm, 119 * mm, 12 * mm],
+        style=TableStyle([
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("LEFTPADDING", (0, 0), (-1, -1), 0),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+            ("TOPPADDING", (0, 0), (-1, -1), 2),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+        ]),
     )
     return [
         KeepTogether(
             [
                 _question_table(question),
-                Paragraph(choices, STYLES["choices"]),
-                Paragraph("Answer: [ ] A  [ ] B  [ ] C  [ ] D", STYLES["answer"]),
+                Spacer(1, 2 * mm),
+                choices,
                 Spacer(1, 5 * mm),
             ]
         )
@@ -312,11 +455,12 @@ def _question_table(question: GeneratedQuestion) -> Table:
     return Table(
         [
             [
-                Paragraph(f"<b>{question.number}</b> {question.prompt}", STYLES["body"]),
+                _question_reference(question.number),
+                Paragraph(question.prompt, STYLES["body"]),
                 Paragraph(f"[{question.marks} {mark_label}]", STYLES["marks"]),
             ]
         ],
-        colWidths=[148 * mm, 19 * mm],
+        colWidths=[14 * mm, 134 * mm, 19 * mm],
         style=TableStyle(
             [
                 ("VALIGN", (0, 0), (-1, -1), "TOP"),
@@ -325,6 +469,30 @@ def _question_table(question: GeneratedQuestion) -> Table:
             ]
         ),
     )
+
+
+def _question_reference(number: str) -> Table:
+    compact = "".join(character for character in number if character.isdigit())
+    cells = list(compact.zfill(2)) if len(compact) <= 2 else [number]
+    return Table(
+        [cells],
+        colWidths=[5.5 * mm] * len(cells),
+        rowHeights=[5.5 * mm],
+        style=TableStyle([
+            ("GRID", (0, 0), (-1, -1), 0.55, INK),
+            ("FONT", (0, 0), (-1, -1), FONT_BOLD, 9),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("PADDING", (0, 0), (-1, -1), 0),
+        ]),
+    )
+
+
+def _lozenge() -> Drawing:
+    drawing = Drawing(25, 15)
+    drawing.add(Rect(1, 1, 22, 13, strokeColor=INK, fillColor=None, strokeWidth=0.7))
+    drawing.add(Ellipse(12, 7.5, 4, 2.2, strokeColor=INK, fillColor=None, strokeWidth=0.6))
+    return drawing
 
 
 def _scheme_block(question: GeneratedQuestion) -> list[Flowable]:
@@ -370,7 +538,7 @@ def _source_table(option: GeneratedOption, index: int) -> Table:
             [
                 ("GRID", (0, 0), (-1, -1), 0.5, INK),
                 ("BACKGROUND", (0, 0), (-1, 0), GREY),
-                ("FONT", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("FONT", (0, 0), (-1, 0), FONT_BOLD),
                 ("ALIGN", (1, 1), (-1, -1), "CENTER"),
                 ("PADDING", (0, 0), (-1, -1), 6),
             ]
@@ -383,7 +551,7 @@ def _chart(option: GeneratedOption, offset: int = 0) -> Drawing:
     drawing = Drawing(165 * mm, 45 * mm)
     x0, y0, width, height = 30, 22, 420, 78
     drawing.add(
-        String(30, 116, option.chart_title, fontName="Helvetica-Bold", fontSize=9)
+        String(30, 116, option.chart_title, fontName=FONT_BOLD, fontSize=9)
     )
     drawing.add(Line(x0, y0, x0, y0 + height))
     drawing.add(Line(x0, y0, x0 + width, y0))
@@ -429,7 +597,7 @@ def _cover(paper: GeneratedPaper) -> list[Flowable]:
                 [
                     ("GRID", (0, 0), (-1, -1), 0.6, INK),
                     ("BACKGROUND", (0, 0), (0, -1), GREY),
-                    ("FONT", (0, 0), (0, -1), "Helvetica-Bold"),
+                    ("FONT", (0, 0), (0, -1), FONT_BOLD),
                     ("PADDING", (0, 0), (-1, -1), 7),
                 ]
             ),
@@ -449,21 +617,19 @@ def _cover(paper: GeneratedPaper) -> list[Flowable]:
             "endorsed by AQA.",
             STYLES["body"],
         ),
-        Spacer(1, 8 * mm),
-        _box(f"Generation seed: {paper.seed}"),
     ]
 
 
 def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
     doc = BaseDocTemplate(
         str(path),
-        pagesize=A4,
+        pagesize=AQA_A4,
         leftMargin=18 * mm,
         rightMargin=17 * mm,
         topMargin=19 * mm,
         bottomMargin=18 * mm,
         title=f"{paper.paper_code} {paper.title} — {kind}",
-        author="ExamForge",
+        author="Paper creator",
     )
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="body")
     doc.addPageTemplates(
@@ -480,11 +646,28 @@ def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
 
 def _chrome(canvas, doc, code: str, kind: str) -> None:
     canvas.saveState()
+    if kind == "Question paper" and doc.page > 1:
+        canvas.setStrokeColor(colors.HexColor("#666666"))
+        canvas.setLineWidth(0.45)
+        canvas.rect(14 * mm, 15 * mm, 184 * mm, 267 * mm, stroke=1, fill=0)
+        canvas.setFillColor(INK)
+        canvas.setFont(FONT, 9)
+        canvas.drawCentredString(PAGE_WIDTH / 2, PAGE_HEIGHT - 10 * mm, str(doc.page))
+        canvas.setFont(FONT, 5.8)
+        canvas.drawString(198.5 * mm, PAGE_HEIGHT - 19 * mm, "Do not write")
+        canvas.drawString(198.5 * mm, PAGE_HEIGHT - 22 * mm, "outside the")
+        canvas.drawString(198.5 * mm, PAGE_HEIGHT - 25 * mm, "box")
+        canvas.setFont(FONT_BOLD, 9)
+        canvas.drawRightString(PAGE_WIDTH - 13 * mm, 11 * mm, "Turn over >")
+        canvas.setFont(FONT, 6.5)
+        canvas.drawString(14 * mm, 9 * mm, f"PRACTICE/{code}")
+        canvas.restoreState()
+        return
     canvas.setStrokeColor(colors.HexColor("#aaaaaa"))
     canvas.line(
         18 * mm, PAGE_HEIGHT - 13 * mm, PAGE_WIDTH - 17 * mm, PAGE_HEIGHT - 13 * mm
     )
-    canvas.setFont("Helvetica", 7.5)
+    canvas.setFont(FONT, 7.5)
     canvas.setFillColor(colors.HexColor("#666666"))
     canvas.drawString(18 * mm, PAGE_HEIGHT - 10 * mm, f"{code} · {kind}")
     canvas.drawRightString(PAGE_WIDTH - 17 * mm, 9 * mm, f"Page {doc.page}")
@@ -532,18 +715,18 @@ class AnswerLines(Flowable):
 
 _base = getSampleStyleSheet()
 STYLES = {
-    "body": ParagraphStyle("body", parent=_base["BodyText"], fontName="Helvetica", fontSize=10.5, leading=14),
-    "small": ParagraphStyle("small", parent=_base["BodyText"], fontName="Helvetica", fontSize=9.2, leading=12),
-    "heading": ParagraphStyle("heading", parent=_base["Heading3"], fontName="Helvetica-Bold", fontSize=11, leading=14),
-    "kicker": ParagraphStyle("kicker", parent=_base["Heading2"], fontName="Helvetica-Bold", fontSize=15, leading=18),
-    "title": ParagraphStyle("title", parent=_base["Title"], fontName="Helvetica-Bold", fontSize=23, leading=27),
-    "subtitle": ParagraphStyle("subtitle", parent=_base["Heading2"], fontName="Helvetica", fontSize=14, leading=18),
-    "banner": ParagraphStyle("banner", parent=_base["Heading2"], fontName="Helvetica-Bold", fontSize=12, leading=15, textColor=colors.white),
-    "instruction": ParagraphStyle("instruction", parent=_base["BodyText"], fontName="Helvetica-Bold", fontSize=10.5, leading=14),
-    "option": ParagraphStyle("option", parent=_base["Heading3"], fontName="Helvetica-Bold", fontSize=11.5, leading=15),
-    "extract": ParagraphStyle("extract", parent=_base["BodyText"], fontName="Helvetica", fontSize=9.3, leading=12, borderWidth=0.4, borderColor=colors.grey, borderPadding=5),
-    "marks": ParagraphStyle("marks", parent=_base["BodyText"], fontName="Helvetica-Bold", fontSize=9.5, leading=13, alignment=TA_RIGHT),
-    "choices": ParagraphStyle("choices", parent=_base["BodyText"], fontName="Helvetica", fontSize=9.8, leading=13, leftIndent=22),
-    "answer": ParagraphStyle("answer", parent=_base["BodyText"], fontName="Helvetica-Bold", fontSize=9.5, leading=12, alignment=TA_RIGHT),
-    "centre_bold": ParagraphStyle("centre", parent=_base["Heading3"], fontName="Helvetica-Bold", fontSize=10.5, leading=14, alignment=TA_CENTER),
+    "body": ParagraphStyle("body", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14),
+    "small": ParagraphStyle("small", parent=_base["BodyText"], fontName=FONT, fontSize=9.2, leading=12),
+    "heading": ParagraphStyle("heading", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=11, leading=14),
+    "kicker": ParagraphStyle("kicker", parent=_base["Heading2"], fontName=FONT_BOLD, fontSize=15, leading=18),
+    "title": ParagraphStyle("title", parent=_base["Title"], fontName=FONT_BOLD, fontSize=23, leading=27),
+    "subtitle": ParagraphStyle("subtitle", parent=_base["Heading2"], fontName=FONT, fontSize=14, leading=18),
+    "banner": ParagraphStyle("banner", parent=_base["Heading2"], fontName=FONT_BOLD, fontSize=12, leading=15, textColor=colors.white),
+    "instruction": ParagraphStyle("instruction", parent=_base["BodyText"], fontName=FONT_BOLD, fontSize=11, leading=14),
+    "option": ParagraphStyle("option", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=11.5, leading=15),
+    "extract": ParagraphStyle("extract", parent=_base["BodyText"], fontName=FONT, fontSize=9.3, leading=12, borderWidth=0.4, borderColor=colors.grey, borderPadding=5),
+    "marks": ParagraphStyle("marks", parent=_base["BodyText"], fontName=FONT_BOLD, fontSize=9.5, leading=13, alignment=TA_RIGHT),
+    "choices": ParagraphStyle("choices", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=17, leftIndent=22),
+    "answer": ParagraphStyle("answer", parent=_base["BodyText"], fontName=FONT_BOLD, fontSize=9.5, leading=12, alignment=TA_RIGHT),
+    "centre_bold": ParagraphStyle("centre", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=10.5, leading=14, alignment=TA_CENTER),
 }
