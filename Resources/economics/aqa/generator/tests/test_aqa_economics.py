@@ -76,7 +76,10 @@ def test_each_package_renders_readable_pdfs(tmp_path: Path) -> None:
             reader = PdfReader(path)
             assert len(reader.pages) >= 2
             assert "A-level Economics" in (reader.pages[0].extract_text() or "")
-        assert len(PdfReader(paths["question_paper"]).pages) == (40 if paper == "3" else 8)
+        assert len(PdfReader(paths["question_paper"]).pages) == (44 if paper == "3" else 8)
+        assert len(PdfReader(paths["mark_scheme"]).pages) == (
+            11 if paper == "3" else 21
+        )
         if paper == "3":
             assert len(PdfReader(paths["source_booklet"]).pages) == 8
             blueprint = build_paper(RULES["paper_3"], SYLLABUS, seed=123)
@@ -85,3 +88,9 @@ def test_each_package_renders_readable_pdfs(tmp_path: Path) -> None:
                 "32",
                 "33",
             ]
+            mcqs = [
+                option.questions[0]
+                for option in blueprint.sections[0].options
+            ]
+            assert len({question.prompt for question in mcqs}) == 30
+            assert all("Practice scenario" not in question.prompt for question in mcqs)
