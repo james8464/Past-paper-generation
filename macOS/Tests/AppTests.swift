@@ -78,6 +78,13 @@ final class PaperCreatorTests: XCTestCase {
         XCTAssertTrue(DistributionMode.direct.canManageOllama)
     }
 
+    func testAppStoreWorkspaceIsPrivateAndNotDownloads() {
+        let path = AppDefaults.appStoreWorkingFolder().path
+        XCTAssertTrue(path.contains("/Library/Containers/"))
+        XCTAssertTrue(path.hasSuffix("/Data/Library/Application Support/Paper creator/Generated papers"))
+        XCTAssertFalse(path.contains("/Data/Downloads"))
+    }
+
     func testHostedProvidersAreMarkedOffDevice() {
         XCTAssertFalse(AIProvider.ollama.sendsPromptsOffDevice)
         XCTAssertTrue(AIProvider.openAI.sendsPromptsOffDevice)

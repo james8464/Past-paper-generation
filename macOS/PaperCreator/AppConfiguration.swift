@@ -31,13 +31,16 @@ enum AppDefaults {
         let fileManager = FileManager.default
         let home = fileManager.homeDirectoryForCurrentUser
         if home.path.contains("/Library/Containers/"), home.path.hasSuffix("/Data") {
-            return home.appendingPathComponent("Downloads", isDirectory: true)
+            return home
+                .appendingPathComponent("Library/Application Support", isDirectory: true)
+                .appendingPathComponent("Paper creator/Generated papers", isDirectory: true)
         }
         let bundleID = Bundle.main.bundleIdentifier ?? "com.jamesdurup.PaperCreator"
         return home
             .appendingPathComponent("Library/Containers", isDirectory: true)
             .appendingPathComponent(bundleID, isDirectory: true)
-            .appendingPathComponent("Data/Downloads", isDirectory: true)
+            .appendingPathComponent("Data/Library/Application Support", isDirectory: true)
+            .appendingPathComponent("Paper creator/Generated papers", isDirectory: true)
     }
 
     static func isSandboxDownloadsPath(_ path: String) -> Bool {
