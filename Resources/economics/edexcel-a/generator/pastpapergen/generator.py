@@ -25,6 +25,11 @@ def build_paper_blueprint(
         raise ValueError("No syllabus topics available for this paper.")
     essay_topic_ids = essay_capable_topic_ids({topic.id for topic in topics})
     theme_plan = _theme_plan(config, rng)
+    paper_3_contexts = _paper_3_context_plan(config.id, rng)
+    paper_3_source_variants = {
+        section: rng.randrange(10_000, 1_000_000)
+        for section in paper_3_contexts
+    }
 
     questions: list[QuestionBlueprint] = []
     absolute_question_number = 1
@@ -35,6 +40,7 @@ def build_paper_blueprint(
         section_stimulus_kinds: set[str] = set()
         section_templates = _section_templates(section, rng)
         section_theme_targets = theme_plan.get(section.name, [])
+        case_title = paper_3_contexts.get(section.name, "")
         source_context_topic = (
             _choose_topic(
                 rng,
@@ -57,6 +63,11 @@ def build_paper_blueprint(
             available_topics = _topic_pool_for_question(topics, essay_topic_ids, marks, section.name)
             if index < len(section_theme_targets):
                 available_topics = _topics_for_theme(available_topics, section_theme_targets[index])
+            if case_title:
+                planned_topic_id = _PAPER_3_TOPIC_PLANS[case_title][index]
+                planned_topics = [topic for topic in topics if topic.id == planned_topic_id]
+                if planned_topics:
+                    available_topics = planned_topics
             stimulus_kind = _compatible_stimulus_kind(
                 section.stimulus_kinds,
                 part_commands,
@@ -92,13 +103,24 @@ def build_paper_blueprint(
                         parts,
                         stimulus_kind,
                         source_reference,
+                        case_title,
                     ),
                     parts=parts,
                     stimulus_kind=stimulus_kind,
                     choice_group=_choice_group_name(config.id, section.name, group_index),
                     source_reference=source_reference,
-                    source_title=_source_title(topic.title, section.name),
-                    source_text=_source_text(topic.id, topic.title, topic.points, section.name, index, stimulus_kind),
+                    source_title=case_title or _source_title(topic.title, section.name),
+                    source_text=_source_text(
+                        topic.id,
+                        topic.title,
+                        topic.points,
+                        section.name,
+                        index,
+                        stimulus_kind,
+                        paper_id=config.id,
+                        case_title=case_title,
+                        source_variant=paper_3_source_variants.get(section.name, 0),
+                    ),
                     mark_breakdown=_mark_breakdown(marks, parts),
                     mark_scheme=_mark_scheme(command_word, marks, topic.title),
                     indicative_content=_indicative_content(topic.id, topic.title, topic.points),
@@ -133,6 +155,13 @@ def _choose_topic(rng: random.Random, topics, excluded_ids: set[str]):
 
 
 def _theme_plan(config: PaperConfig, rng: random.Random) -> dict[str, list[int]]:
+    if config.id == "paper_3":
+        plan: dict[str, list[int]] = {}
+        for section in ("A", "B"):
+            themes = [1, 2, 3, 4]
+            rng.shuffle(themes)
+            plan[section] = [*themes, rng.choice(themes)]
+        return plan
     if config.id not in {"paper_1", "paper_2"}:
         return {}
     themes = sorted(config.allowed_themes)
@@ -148,6 +177,36 @@ def _theme_plan(config: PaperConfig, rng: random.Random) -> dict[str, list[int]]
         "B": [data_response_theme] * 5,
         "C": [essay_theme] * 2,
     }
+
+
+_PAPER_3_CONTEXTS = (
+    "The energy and utilities market",
+    "Housing and construction",
+    "Food production and retail",
+    "Digital platforms and communications",
+    "Transport and aviation",
+    "Healthcare and pharmaceuticals",
+    "Electric vehicles and battery production",
+    "Tourism and hospitality",
+)
+
+_PAPER_3_TOPIC_PLANS = {
+    "The energy and utilities market": ("1.2.3", "3.1", "1.3", "2.3", "4.5"),
+    "Housing and construction": ("1.2.3", "3.3", "1.4", "2.2", "4.2"),
+    "Food production and retail": ("1.2.2", "3.4", "1.4", "2.1", "4.1"),
+    "Digital platforms and communications": ("1.2.2", "3.4", "1.3", "2.5", "4.4"),
+    "Transport and aviation": ("1.2.2", "3.3", "1.3", "2.3", "4.1"),
+    "Healthcare and pharmaceuticals": ("1.3", "3.5", "1.4", "2.3", "4.5"),
+    "Electric vehicles and battery production": ("1.2.3", "3.1", "1.3", "2.5", "4.1"),
+    "Tourism and hospitality": ("1.2.2", "3.5", "1.4", "2.2", "4.1"),
+}
+
+
+def _paper_3_context_plan(paper_id: str, rng: random.Random) -> dict[str, str]:
+    if paper_id != "paper_3":
+        return {}
+    section_a, section_b = rng.sample(_PAPER_3_CONTEXTS, 2)
+    return {"A": section_a, "B": section_b}
 
 
 def _topics_for_theme(topics, theme: int):
@@ -1138,6 +1197,7 @@ def _question_prompt(
     parts: list[QuestionPart],
     stimulus_kind: str,
     source_reference: str,
+    case_title: str = "",
 ) -> str:
     topic = _topic_phrase(topic_title)
     if parts:
@@ -1145,7 +1205,7 @@ def _question_prompt(
             return _section_a_draw_stem(topic_title)
         return _section_a_stem(topic_title, stimulus_kind)
     if section_name in {"A", "B"} and paper_id == "paper_3":
-        return _source_question_prompt(command_word, marks, topic, source_reference)
+        return _paper_3_question_prompt(marks, topic, source_reference, case_title)
     if section_name == "B":
         return _source_question_prompt(command_word, marks, topic, source_reference)
     return _placeholder_prompt(command_word, marks, topic_title)
@@ -1283,13 +1343,98 @@ def _section_b_15_marker_prompt(topic: str) -> str:
     return f"Discuss the likely effects of {topic} on firms and consumers."
 
 
+_PAPER_3_SHORT_FOCI = {
+    "demand": "demand may change",
+    "supply": "supply may be slow to respond",
+    "price determination": "prices may become volatile",
+    "market failure": "private market outcomes may reduce economic welfare",
+    "government intervention": "government intervention may change incentives",
+    "business growth": "business growth may reduce average costs",
+    "business objectives": "firms may pursue objectives other than profit maximisation",
+    "revenues, costs and profits": "higher costs may affect profits",
+    "market structures": "barriers to entry may weaken competition",
+    "labour market": "labour shortages may affect wages and output",
+    "government intervention in markets": "competition policy may affect firms and consumers",
+    "measures of economic performance": "sectoral changes may affect economic performance",
+    "aggregate demand": "changes in the sector may affect aggregate demand",
+    "aggregate supply": "investment may affect productive capacity",
+    "national income": "changes in spending may create a multiplier effect",
+    "economic growth": "investment may affect long-run economic growth",
+    "macroeconomic objectives and policies": "policy makers may face conflicting objectives",
+    "international economics": "trade and exchange rates may affect the sector",
+    "poverty and inequality": "price changes may affect income inequality",
+    "emerging and developing economies": "the sector may influence economic development",
+    "financial sector": "access to credit may affect investment",
+    "role of the state in the macroeconomy": "state intervention may affect economic performance",
+}
+
+_PAPER_3_EXTENDED_FOCI = {
+    "demand": "a sustained increase in demand",
+    "supply": "an increase in market supply",
+    "market failure": "policies intended to correct market failure",
+    "government intervention": "greater government intervention",
+    "business growth": "rapid business growth",
+    "revenues, costs and profits": "a sustained increase in production costs",
+    "market structures": "an increase in market concentration",
+    "labour market": "persistent labour shortages",
+    "government intervention in markets": "stronger competition policy",
+    "measures of economic performance": "changes in inflation and employment",
+    "aggregate demand": "a sustained increase in aggregate demand",
+    "aggregate supply": "an increase in productive capacity",
+    "economic growth": "faster economic growth",
+    "macroeconomic objectives and policies": "tighter macroeconomic policy",
+    "international economics": "increased international specialisation and trade",
+    "poverty and inequality": "policies intended to reduce income inequality",
+    "emerging and developing economies": "greater foreign direct investment",
+    "financial sector": "greater access to credit",
+    "role of the state in the macroeconomy": "greater state intervention",
+}
+
+
+def _paper_3_question_prompt(
+    marks: int,
+    topic: str,
+    source_reference: str,
+    case_title: str,
+) -> str:
+    context = case_title.lower() if case_title else "the case-study context"
+    short_focus = _PAPER_3_SHORT_FOCI.get(topic, f"{topic} may affect economic outcomes")
+    if marks == 5:
+        return f"With reference to {source_reference}, explain one reason why {short_focus} in {context}."
+    if marks == 8:
+        return f"With reference to {source_reference}, examine two factors that may explain why {short_focus} in {context}."
+    if marks == 12:
+        return f"With reference to {source_reference}, discuss whether {short_focus} in {context}."
+    extended_focus = _PAPER_3_EXTENDED_FOCI.get(topic, topic)
+    return (
+        f"Evaluate the microeconomic and macroeconomic effects of {extended_focus} "
+        f"on {context}."
+    )
+
+
 def _source_reference(paper_id: str, section_name: str, index: int) -> str:
     if section_name == "A" and paper_id in {"paper_1", "paper_2"}:
         return "Figure 1"
     if section_name == "B" and paper_id in {"paper_1", "paper_2"}:
         return ["Extract A", "", "", "Extract C", "Extract D"][index % 5]
     if paper_id == "paper_3":
-        return ["Extract A", "Extract B", "Extract C", "Extract D", "Extract E"][index % 5]
+        references = {
+            "A": [
+                "Figure 1 and Extract A",
+                "Figure 2 and Extract A",
+                "Extract B",
+                "Extract C",
+                "Extract C",
+            ],
+            "B": [
+                "Figure 3 and Extract D",
+                "Extract E",
+                "Extract E",
+                "Extract E",
+                "Extract F",
+            ],
+        }
+        return references[section_name][index % 5]
     return ""
 
 
@@ -1304,8 +1449,14 @@ def _source_text(
     section_name: str,
     index: int,
     stimulus_kind: str,
+    *,
+    paper_id: str = "",
+    case_title: str = "",
+    source_variant: int = 0,
 ) -> str:
     focus = ", ".join(points[:3]) if points else _topic_phrase(topic_title)
+    if paper_id == "paper_3":
+        return _paper_3_source_text(case_title, topic_title, points, index, source_variant)
     if section_name == "C":
         return _section_c_extract(topic_id, topic_title, points, index)
     if section_name == "B":
@@ -1322,6 +1473,70 @@ def _source_text(
         f"The evidence on {topic_title.lower()} suggests changes in {focus}. Firms, consumers and policy makers "
         f"may respond differently depending on incentives, market conditions and the time period considered."
     )
+
+
+def _paper_3_source_text(
+    case_title: str,
+    topic_title: str,
+    points: list[str],
+    index: int,
+    variant: int,
+) -> str:
+    context = case_title.lower() if case_title else "the case-study market"
+    first = points[0].rstrip(".") if points else topic_title.lower()
+    second = points[1].rstrip(".") if len(points) > 1 else first
+    price_change = 8 + (variant + index * 7) % 29
+    output_change = 2 + (variant // 7 + index * 5) % 16
+    firm_count = 24 + (variant // 11 + index * 13) % 67
+    investment = 3 + (variant // 17 + index * 3) % 18
+    year = 2022 + (variant + index) % 4
+    templates = (
+        (
+            f"Market data for {context} show that prices changed by {price_change}% in {year}, while "
+            f"output changed by {output_change}%. Analysts linked the adjustment to {first}. There "
+            f"were {firm_count} active suppliers, but their ability to alter output differed because "
+            "capacity, contracts and access to inputs could not be changed immediately. Consumer "
+            "groups said substitution became easier over time, while producers argued that higher "
+            "expected prices were needed before new capacity would be commercially viable."
+        ),
+        (
+            f"Firms in {context} increased capital spending by {investment}% in {year}. Larger "
+            f"businesses said {first} affected their average costs, while smaller firms reported "
+            "more limited access to finance and skilled labour. Managers considered organic growth, "
+            "mergers and long-term supply contracts, but warned that rapid expansion could create "
+            f"diseconomies and coordination problems. Evidence concerning {second} suggested that "
+            "the benefits of scale depended on demand remaining strong enough to use the additional "
+            "capacity."
+        ),
+        (
+            f"Policy makers reviewing {context} focused on {first}. Households faced different effects "
+            f"after prices changed by {price_change}%, because the product represented a larger share "
+            "of expenditure for some income groups. Business representatives supported predictable "
+            "rules but said compliance costs could deter entry. Campaigners argued that private "
+            f"decisions did not fully reflect {second}. The final welfare effect depended on the size "
+            "of any market failure, the responsiveness of consumers and firms, and the risk that "
+            "intervention itself produced unintended consequences."
+        ),
+        (
+            f"Changes in {context} affected the wider economy in {year}. Output in the sector changed "
+            f"by {output_change}% and planned investment by {investment}%, influencing employment, "
+            f"aggregate demand and productive capacity. Economists linked the evidence to {first}. "
+            "Higher costs could raise inflation in the short run, while new capital and infrastructure "
+            "could increase long-run aggregate supply. The scale of the effect depended on spare "
+            "capacity, business confidence, import dependence and whether policy crowded private "
+            "investment in or out."
+        ),
+        (
+            f"The government examined the long-run role of {context} after international prices moved "
+            f"by {price_change}% in {year}. Officials considered {first}, alongside taxation, public "
+            "spending, regulation and trade policy. Supporters of intervention argued that investment "
+            "could improve resilience, productivity and regional employment. Critics emphasised the "
+            f"opportunity cost and the possibility of government failure. Evidence on {second} showed "
+            "that the distribution of gains and losses, effects on imports and exports, and the time "
+            "needed for supply to respond were central to the final judgement."
+        ),
+    )
+    return templates[index % len(templates)]
 
 
 def _data_response_extract(topic_title: str, points: list[str], index: int) -> str:

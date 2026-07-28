@@ -52,3 +52,23 @@ def test_blueprint_contains_structured_mcq_and_mark_scheme_content():
     assert "removes the need" not in mcq_part.options[0].text
     assert mcq_part.mark_scheme
     assert "(4 marks)" not in first.prompt
+
+
+def test_paper_3_uses_coherent_synoptic_case_studies():
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_3")
+
+    for seed in range(20):
+        blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+        for section in ("A", "B"):
+            questions = [question for question in blueprint.questions if question.section == section]
+            themes = {syllabus.get_topic(question.topic_id).theme for question in questions}
+
+            assert len({question.source_title for question in questions}) == 1
+            assert len(themes) == 4
+            assert min(len(question.source_text) for question in questions) >= 360
+            assert all(
+                "microeconomic and macroeconomic" in question.prompt.lower()
+                for question in questions
+                if question.marks == 25
+            )

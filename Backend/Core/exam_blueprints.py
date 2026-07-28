@@ -122,7 +122,7 @@ def validate_generated_paper(
     if len(paper.sections) != len(rule.sections):
         raise ValueError("generated paper has the wrong section count")
 
-    seen_prompts: set[str] = set()
+    seen_prompts: set[tuple[str, str]] = set()
     for generated_section, section_rule in zip(paper.sections, rule.sections, strict=True):
         if generated_section.id != section_rule.id:
             raise ValueError(f"expected section {section_rule.id}, got {generated_section.id}")
@@ -156,9 +156,13 @@ def validate_generated_paper(
                 if question.topic_id not in rule.allowed_topic_ids:
                     raise ValueError(f"question {question.number} uses an out-of-scope topic")
                 prompt_key = " ".join(question.prompt.casefold().split())
-                if not prompt_key or prompt_key in seen_prompts:
+                stimulus_key = " ".join(
+                    " ".join(option.stimulus).casefold().split()
+                )
+                uniqueness_key = (prompt_key, stimulus_key)
+                if not prompt_key or uniqueness_key in seen_prompts:
                     raise ValueError(f"question {question.number} is empty or duplicated")
-                seen_prompts.add(prompt_key)
+                seen_prompts.add(uniqueness_key)
                 if not question.mark_scheme:
                     raise ValueError(f"question {question.number} has no mark scheme")
                 if question.kind == "multiple_choice":

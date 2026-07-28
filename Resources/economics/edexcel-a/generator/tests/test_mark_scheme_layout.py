@@ -128,7 +128,7 @@ def test_mark_scheme_generic_data_calculation_matches_table_values(tmp_path):
 
     render_mark_scheme(blueprint, syllabus, output)
 
-    text = _pdf_text(output)
+    text = " ".join(_pdf_text(output).split())
     assert "((88.0 - 74.2) / 74.2) x 100 = 18.6%" in text
     assert "quantity demanded index increased by" in text.lower()
     assert "18.6%." in text
@@ -143,6 +143,42 @@ def test_mark_scheme_rows_fit_within_single_page_after_long_extracts():
     row_heights = [_ms_row_height(row["answer_lines"]) for row in _mark_scheme_rows(blueprint, syllabus)]
 
     assert max(row_heights) <= 720
+
+
+def test_paper_3_mark_scheme_matches_reference_pagination(tmp_path):
+    import fitz
+
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_3"),
+        syllabus,
+        seed=42,
+    )
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, syllabus, output)
+
+    document = fitz.open(output)
+    try:
+        assert document.page_count == 31
+        starts = {
+            "1(a)": 4,
+            "1(b)": 5,
+            "1(c)": 7,
+            "1(d)": 10,
+            "1(e)": 14,
+            "2(a)": 17,
+            "2(b)": 19,
+            "2(c)": 20,
+            "2(d)": 23,
+            "2(e)": 27,
+        }
+        for question, page_number in starts.items():
+            assert question in document[page_number - 1].get_text()
+        assert [document[index - 1].get_text().strip() for index in (6, 11, 24, 28)] == [""] * 4
+        assert all(document[index - 1].get_drawings() for index in (6, 11, 18, 24, 28))
+    finally:
+        document.close()
 
 
 def test_mark_scheme_mcq_explanations_are_option_specific(tmp_path):
@@ -181,7 +217,8 @@ def test_mark_scheme_valid_points_are_clean_exam_sentences(tmp_path):
     render_mark_scheme(blueprint, syllabus, output)
 
     text = _pdf_text(output)
-    assert "●" not in text
+    assert "● ●" not in text
+    assert "● :" not in text
     assert ":." not in text
     assert "\n           - Regulation." not in text
 

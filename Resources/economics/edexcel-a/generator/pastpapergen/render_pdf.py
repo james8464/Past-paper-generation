@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import hashlib
 import os
 import re
 import sys
@@ -47,7 +48,22 @@ BODY_LEADING_PT = L.body_leading
 FONT_REGULAR = L.font_regular
 FONT_BOLD = L.font_bold
 FONT_ITALIC = "ExamSans-Italic"
-MS_ANSWER_WRAP_CHARS = 58
+MS_FONT = "ExamMarkScheme"
+MS_FONT_BOLD = "ExamMarkScheme-Bold"
+MS_ANSWER_WRAP_CHARS = 54
+MS_PAGE_SIZE = (595.44, 841.68)
+MS_PAGE_SIZES = {
+    "paper_1": (595.44, 841.56),
+    "paper_2": (595.56, 842.04),
+    "paper_3": MS_PAGE_SIZE,
+}
+MS_LEFT = 44
+MS_RIGHT = 530
+MS_NUMBER_W = 73
+MS_MARK_W = 54
+MS_HEADER_H = 38
+MS_CONTENT_TOP = 40
+MS_BODY_LEADING = 14
 EDEXCEL_MEDIA_BOX = L.media_box or (0.0, 0.0, 651.97, 898.58)
 EDEXCEL_CROP_BOX = L.crop_box or (28.35, 28.35, 623.62, 870.24)
 SECTION_A_FOOTER_SAFE_Y = 128
@@ -60,7 +76,7 @@ ANSWER_FRAME_H = 760
 ANSWER_PAGE_START_Y = 772
 RAIL_Y = 50
 RAIL_H = 760
-MARK_SCHEME_MIN_PAGES = {"paper_1": 29, "paper_2": 32, "paper_3": 31}
+MARK_SCHEME_MIN_PAGES = {"paper_1": 29, "paper_2": 36, "paper_3": 31}
 MARK_SCHEME_TITLE_COLOR = "#003A5D"
 MARK_SCHEME_ACCENT_COLOR = "#007FA3"
 CROSS_BOX_TOKEN = "{box}"
@@ -77,6 +93,7 @@ SECTION_A_INSTRUCTION_LINES = [
 
 _rf(FONT_REGULAR, FONT_BOLD, default_fallback="Times-Roman")
 _rf(FONT_ITALIC, default_fallback="Times-Italic")
+_rf(MS_FONT, MS_FONT_BOLD, default_fallback="Times-Roman")
 
 
 _TOTAL_PAPER_PAGES: int = 0
@@ -354,14 +371,18 @@ def _encode_barcode(barcode_text: str) -> list[int]:
 
 def _draw_fake_barcode(pdf: canvas.Canvas, x: float, y: float, caption: str) -> None:
     widths = _encode_barcode(caption)
+    module = 2.7
     cursor = x
     pdf.setFillColor(colors.black)
     for idx, width in enumerate(widths):
         if idx % 2 == 0:
-            pdf.rect(cursor, y + 13, width, 28, stroke=0, fill=1)
-        cursor += width + 1
+            pdf.rect(cursor, y + 13, width * module, 28, stroke=0, fill=1)
+        cursor += (width + 1) * module
+    total_width = cursor - x
     pdf.setFont(FONT_REGULAR, 6.5)
-    pdf.drawCentredString(x + sum(widths) / 2 + len(widths) / 2, y, caption)
+    character_step = total_width / max(1, len(caption))
+    for index, character in enumerate(caption):
+        pdf.drawCentredString(x + character_step * (index + 0.5), y, character)
     pdf.setFillColor(colors.black)
 
 
@@ -378,6 +399,10 @@ def _instruction_line(blueprint: PaperBlueprint) -> str:
 
 
 def _draw_question_pages(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
+    if blueprint.paper_id == "paper_3":
+        _draw_paper_3_pages(pdf, blueprint)
+        return
+
     width, height = A4
     margin = 48
     y = _prepare_answer_page(pdf, blueprint, 2)
@@ -449,12 +474,501 @@ def _draw_question_pages(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
             if next_question is None or next_question.section != question.section:
                 current_section = None
             continue
-        if y < 130:
+        if (
+            y < 130
+            and next_question is not None
+            and next_question.section == current_section
+        ):
             _draw_question_footer(pdf, blueprint, page_number)
             pdf.showPage()
             page_number += 1
             y = _prepare_answer_page(pdf, blueprint, page_number)
     _draw_question_footer(pdf, blueprint, page_number, is_last=True)
+
+
+def _draw_paper_3_pages(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
+    page_number = 2
+    margin = 48
+    sections = ("A", "B")
+
+    for section_index, section in enumerate(sections):
+        questions = [question for question in blueprint.questions if question.section == section]
+
+        for source_page in range(3):
+            y = _prepare_answer_page(pdf, blueprint, page_number)
+            _draw_paper_3_source_page(pdf, questions, section, source_page, y)
+            _draw_question_footer(pdf, blueprint, page_number)
+            pdf.showPage()
+            page_number += 1
+
+        y = _prepare_answer_page(pdf, blueprint, page_number)
+        _draw_paper_3_question_summary(pdf, questions, y)
+        _draw_question_footer(pdf, blueprint, page_number)
+        pdf.showPage()
+        page_number += 1
+
+        for question, allocated_pages in zip(questions[:3], (1, 2, 3), strict=True):
+            for answer_page in range(allocated_pages):
+                y = _prepare_answer_page(pdf, blueprint, page_number)
+                if answer_page == 0:
+                    y = _draw_question(pdf, question, margin, y, fill_answer_page=True)
+                else:
+                    y = _draw_continuation_lines(pdf, margin, y, question.number)
+                _draw_question_footer(pdf, blueprint, page_number)
+                pdf.showPage()
+                page_number += 1
+
+        for answer_page in range(6):
+            y = _prepare_answer_page(pdf, blueprint, page_number)
+            if answer_page == 0:
+                y = _draw_paper_3_choice_header(pdf, questions[3:], y)
+                _draw_answer_lines_until(pdf, margin, y, 520)
+            else:
+                _draw_continuation_lines(pdf, margin, y, questions[3].number)
+
+            last_section_page = answer_page == 5
+            if last_section_page:
+                pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+                question_number = questions[0].number.split("(")[0]
+                pdf.drawRightString(520, 122, f"(Total for Question {question_number} = 50 marks)")
+                pdf.drawRightString(520, 98, f"TOTAL FOR SECTION {section} = 50 MARKS")
+                if section_index == len(sections) - 1:
+                    pdf.drawRightString(520, 74, f"TOTAL FOR PAPER = {blueprint.total_marks} MARKS")
+
+            is_last_answer_page = section_index == len(sections) - 1 and last_section_page
+            _draw_question_footer(pdf, blueprint, page_number, is_last=is_last_answer_page)
+            if not is_last_answer_page:
+                pdf.showPage()
+                page_number += 1
+
+    _draw_trailing_blank_pages(pdf, blueprint, page_number, count=3)
+
+
+def _draw_paper_3_source_page(
+    pdf: canvas.Canvas,
+    questions: list,
+    section: str,
+    source_page: int,
+    y: float,
+) -> None:
+    width, _ = A4
+    margin = 76
+    case_title = questions[0].source_title if questions else "Economic context"
+
+    if source_page == 0:
+        pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+        pdf.drawCentredString(width / 2, y, f"SECTION {section}")
+        y -= 22
+        question_number = "1" if section == "A" else "2"
+        figures = "Figures 1 and 2" if section == "A" else "Figure 3"
+        extracts = "A to C" if section == "A" else "D to F"
+        instructions = [
+            f"Read {figures} and the extracts ({extracts}) before answering Question {question_number}.",
+            (
+                f"Answer ALL Questions {question_number}(a) to {question_number}(c), and EITHER "
+                f"Question {question_number}(d) OR {question_number}(e)."
+            ),
+            "Write your answers in the spaces provided.",
+            "You are advised to spend 1 hour on this section.",
+        ]
+        pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+        for line in instructions:
+            pdf.drawCentredString(width / 2, y, line)
+            y -= 14
+        y -= 10
+        pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+        pdf.drawString(margin, y, f"Question {question_number}")
+        y -= 18
+        pdf.drawString(margin, y, case_title)
+        y -= 25
+
+        if section == "A":
+            _draw_paper_3_line_figure(
+                pdf,
+                margin,
+                y - 210,
+                430,
+                190,
+                1,
+                f"Price index in {case_title.lower()}, 2021–2025",
+                questions[0].source_text,
+            )
+            _draw_paper_3_bar_figure(
+                pdf,
+                margin,
+                y - 455,
+                430,
+                205,
+                2,
+                f"Output and investment in {case_title.lower()}, 2021–2025",
+                questions[1].source_text,
+            )
+            return
+
+        _draw_paper_3_table_figure(
+            pdf,
+            margin,
+            y - 150,
+            430,
+            126,
+            3,
+            f"Selected indicators for {case_title.lower()}",
+            questions[0].source_text,
+        )
+        _draw_paper_3_extract(
+            pdf,
+            margin,
+            y - 185,
+            "Extract D",
+            "Recent changes in the case-study market",
+            questions[0].source_text,
+        )
+        return
+
+    if section == "A" and source_page == 1:
+        y = _draw_paper_3_extract(
+            pdf,
+            margin,
+            y,
+            "Extract A",
+            "Prices, incentives and market adjustment",
+            questions[0].source_text,
+        )
+        _draw_paper_3_extract(
+            pdf,
+            margin,
+            y - 12,
+            "Extract B",
+            "Effects on firms, workers and consumers",
+            questions[2].source_text,
+        )
+        return
+
+    if section == "A":
+        combined = f"{questions[3].source_text} {questions[4].source_text}"
+        _draw_paper_3_extract(
+            pdf,
+            margin,
+            y,
+            "Extract C",
+            "The wider economic debate",
+            combined,
+        )
+        return
+
+    if source_page == 1:
+        combined = f"{questions[1].source_text} {questions[2].source_text}"
+        _draw_paper_3_extract(
+            pdf,
+            margin,
+            y,
+            "Extract E",
+            "Growth, costs and policy constraints",
+            combined,
+        )
+        return
+
+    _draw_paper_3_extract(
+        pdf,
+        margin,
+        y,
+        "Extract F",
+        "Long-run opportunities and risks",
+        questions[4].source_text,
+    )
+
+
+def _draw_paper_3_extract(
+    pdf: canvas.Canvas,
+    x: float,
+    y: float,
+    label: str,
+    heading: str,
+    text: str,
+) -> float:
+    width, _ = A4
+    pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+    pdf.drawString(x, y, label)
+    y -= 15
+    pdf.drawString(x, y, heading)
+    y -= 18
+    pdf.setFont(FONT_REGULAR, 9)
+    for line_number, line in enumerate(_wrap(text, 82), start=1):
+        if y < 92:
+            break
+        pdf.drawString(x, y, line)
+        if line_number % 5 == 0:
+            pdf.setFont(FONT_REGULAR, 7.5)
+            pdf.drawRightString(width - 90, y + 1, str(line_number))
+            pdf.setFont(FONT_REGULAR, 9)
+        y -= 11
+    pdf.setFont(FONT_REGULAR, 7.5)
+    pdf.drawRightString(width - 82, y - 2, GENERIC_SOURCE_ATTRIBUTION)
+    return y - 24
+
+
+def _paper_3_values(text: str, count: int, low: int, high: int) -> list[int]:
+    digest = hashlib.sha256(text.encode("utf-8")).digest()
+    span = high - low + 1
+    return [low + digest[index] % span for index in range(count)]
+
+
+def _draw_paper_3_line_figure(
+    pdf: canvas.Canvas,
+    x: float,
+    y: float,
+    width: float,
+    height: float,
+    number: int,
+    title: str,
+    seed_text: str,
+    *,
+    two_series: bool = False,
+) -> None:
+    pdf.setFont(FONT_BOLD, 9)
+    pdf.drawString(x, y + height + 16, f"Figure {number}: {title}")
+    chart_x = x + 42
+    chart_y = y + 22
+    chart_w = width - 55
+    chart_h = height - 42
+    pdf.setStrokeColor(colors.HexColor("#777777"))
+    pdf.setLineWidth(0.6)
+    pdf.line(chart_x, chart_y, chart_x, chart_y + chart_h)
+    pdf.line(chart_x, chart_y, chart_x + chart_w, chart_y)
+    values = _paper_3_values(seed_text, 13, 24, 92)
+    second = _paper_3_values(seed_text[::-1], 13, 18, 84)
+    labels = ("Jan", "", "Mar", "", "May", "", "Jul", "", "Sep", "", "Nov", "", "Jan")
+    for index, label in enumerate(labels):
+        point_x = chart_x + index * chart_w / (len(labels) - 1)
+        pdf.setFont(FONT_REGULAR, 7.5)
+        if label:
+            pdf.drawCentredString(point_x, chart_y - 13, label)
+    for tick in range(0, 101, 20):
+        tick_y = chart_y + tick / 100 * chart_h
+        pdf.setStrokeColor(colors.HexColor("#dddddd"))
+        pdf.line(chart_x, tick_y, chart_x + chart_w, tick_y)
+        pdf.setFillColor(colors.HexColor("#555555"))
+        pdf.setFont(FONT_REGULAR, 7)
+        pdf.drawRightString(chart_x - 6, tick_y - 2, str(tick))
+    _draw_paper_3_series(pdf, chart_x, chart_y, chart_w, chart_h, values, colors.black)
+    if two_series:
+        _draw_paper_3_series(pdf, chart_x, chart_y, chart_w, chart_h, second, colors.HexColor("#777777"))
+        pdf.setFont(FONT_REGULAR, 7.5)
+        pdf.setFillColor(colors.black)
+        pdf.drawString(chart_x + 8, y + 4, "Output index")
+        pdf.setFillColor(colors.HexColor("#777777"))
+        pdf.drawString(chart_x + 78, y + 4, "Investment index")
+    pdf.setFillColor(colors.black)
+    pdf.setStrokeColor(colors.black)
+    pdf.setLineWidth(1)
+
+
+def _draw_paper_3_bar_figure(
+    pdf: canvas.Canvas,
+    x: float,
+    y: float,
+    width: float,
+    height: float,
+    number: int,
+    title: str,
+    seed_text: str,
+) -> None:
+    pdf.setFont(FONT_BOLD, 9)
+    pdf.drawString(x, y + height + 16, f"Figure {number}: {title}")
+    chart_x = x + 42
+    chart_y = y + 28
+    chart_w = width - 55
+    chart_h = height - 52
+    pdf.setStrokeColor(colors.HexColor("#777777"))
+    pdf.setLineWidth(0.6)
+    pdf.line(chart_x, chart_y, chart_x, chart_y + chart_h)
+    pdf.line(chart_x, chart_y, chart_x + chart_w, chart_y)
+    primary = _paper_3_values(seed_text, 18, 8, 72)
+    secondary = _paper_3_values(seed_text[::-1], 18, 2, 18)
+    bar_w = chart_w / 24
+    for index, (first, second) in enumerate(zip(primary, secondary, strict=True)):
+        bar_x = chart_x + index * chart_w / 18 + 2
+        first_h = first / 100 * chart_h
+        second_h = second / 100 * chart_h
+        pdf.setFillColor(colors.HexColor("#b8b8b8"))
+        pdf.rect(bar_x, chart_y, bar_w, first_h, stroke=0, fill=1)
+        pdf.setFillColor(colors.HexColor("#555555"))
+        pdf.rect(bar_x, chart_y, bar_w, min(second_h, first_h), stroke=0, fill=1)
+        if index % 3 == 0 or index == 17:
+            pdf.setFillColor(colors.black)
+            pdf.setFont(FONT_REGULAR, 7)
+            pdf.drawCentredString(bar_x + bar_w / 2, chart_y - 13, str(2008 + index)[-2:])
+    pdf.setFillColor(colors.HexColor("#b8b8b8"))
+    pdf.rect(chart_x + 80, y + 4, 10, 8, stroke=0, fill=1)
+    pdf.setFillColor(colors.black)
+    pdf.setFont(FONT_REGULAR, 7.5)
+    pdf.drawString(chart_x + 94, y + 4, "Output index")
+    pdf.setFillColor(colors.HexColor("#555555"))
+    pdf.rect(chart_x + 170, y + 4, 10, 8, stroke=0, fill=1)
+    pdf.setFillColor(colors.black)
+    pdf.drawString(chart_x + 184, y + 4, "Investment index")
+    pdf.setStrokeColor(colors.black)
+    pdf.setLineWidth(1)
+
+
+def _draw_paper_3_series(
+    pdf: canvas.Canvas,
+    x: float,
+    y: float,
+    width: float,
+    height: float,
+    values: list[int],
+    colour,
+) -> None:
+    pdf.setStrokeColor(colour)
+    pdf.setFillColor(colour)
+    pdf.setLineWidth(1.3)
+    points = [
+        (x + index * width / (len(values) - 1), y + value / 100 * height)
+        for index, value in enumerate(values)
+    ]
+    for first, second in zip(points, points[1:], strict=False):
+        pdf.line(first[0], first[1], second[0], second[1])
+    for point_x, point_y in points:
+        pdf.circle(point_x, point_y, 2.2, stroke=1, fill=1)
+
+
+def _draw_paper_3_table_figure(
+    pdf: canvas.Canvas,
+    x: float,
+    y: float,
+    width: float,
+    height: float,
+    number: int,
+    title: str,
+    seed_text: str,
+) -> None:
+    values = _paper_3_values(seed_text, 8, 4, 96)
+    rows = (
+        ("Market share (%)", values[0], values[1]),
+        ("Price index", values[2] + 60, values[3] + 60),
+        ("Investment growth (%)", values[4] / 10, values[5] / 10),
+        ("Employment (000s)", values[6] + 40, values[7] + 40),
+    )
+    pdf.setFont(FONT_BOLD, 9)
+    pdf.drawString(x, y + height + 16, f"Figure {number}: {title}")
+    row_h = height / 5
+    columns = (x, x + width * 0.5, x + width * 0.75, x + width)
+    pdf.setFillColor(colors.HexColor("#e5e5e5"))
+    pdf.rect(x, y + height - row_h, width, row_h, stroke=0, fill=1)
+    pdf.setFillColor(colors.black)
+    for row in range(6):
+        line_y = y + row * row_h
+        pdf.line(x, line_y, x + width, line_y)
+    for column in columns:
+        pdf.line(column, y, column, y + height)
+    pdf.setFont(FONT_BOLD, 8)
+    pdf.drawCentredString((columns[1] + columns[2]) / 2, y + height - 16, "2023")
+    pdf.drawCentredString((columns[2] + columns[3]) / 2, y + height - 16, "2025")
+    pdf.setFont(FONT_REGULAR, 8)
+    for index, (label, first, second) in enumerate(rows):
+        baseline = y + height - (index + 2) * row_h + 8
+        pdf.drawString(x + 6, baseline, label)
+        pdf.drawCentredString((columns[1] + columns[2]) / 2, baseline, f"{first:g}")
+        pdf.drawCentredString((columns[2] + columns[3]) / 2, baseline, f"{second:g}")
+
+
+def _draw_paper_3_question_summary(pdf: canvas.Canvas, questions: list, y: float) -> None:
+    width, _ = A4
+    x = 76
+    for index, question in enumerate(questions):
+        if index == 3:
+            pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+            pdf.drawString(x, y, "EITHER")
+            y -= 20
+        elif index == 4:
+            pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+            pdf.drawString(x, y, "OR")
+            y -= 20
+        before = y
+        y = _draw_question_prompt(pdf, question.number, question.prompt, x, y)
+        pdf.setFillColor(colors.HexColor("#999999"))
+        pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+        pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({question.marks})")
+        pdf.setFillColor(colors.black)
+        y -= 22 if question.marks < 25 else 30
+        if before - y < 42:
+            y -= 8
+
+
+def _draw_paper_3_choice_header(pdf: canvas.Canvas, questions: list, y: float) -> float:
+    width, _ = A4
+    x = 76
+    pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+    pdf.drawString(x, y, "EITHER")
+    y -= 20
+    y = _draw_paper_3_choice_prompt(pdf, questions[0], x, y)
+    pdf.setFillColor(colors.HexColor("#999999"))
+    pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+    pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({questions[0].marks})")
+    pdf.setFillColor(colors.black)
+    y -= 20
+    pdf.drawString(x, y, "OR")
+    y -= 20
+    y = _draw_paper_3_choice_prompt(pdf, questions[1], x, y)
+    pdf.setFillColor(colors.HexColor("#999999"))
+    pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+    pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({questions[1].marks})")
+    pdf.setFillColor(colors.black)
+    y -= 24
+    instruction_lines = (
+        f"Indicate which question you are answering by marking a cross in the box {CROSS_BOX_TOKEN}. If you change your",
+        f"mind, put a line through the box {CROSS_BOX_TOKEN} and then indicate your new question with a cross {CROSS_BOX_TOKEN}.",
+    )
+    for line in instruction_lines:
+        _draw_centred_instruction_line(pdf, width / 2, y, line)
+        y -= BODY_LEADING_PT
+    y -= 12
+    pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
+    pdf.drawString(x, y, "Chosen question number:")
+    cursor = x + 190
+    for question in questions:
+        pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+        pdf.drawString(cursor, y, f"Question {question.number}")
+        pdf.rect(cursor + 82, y - 1, 9, 9, stroke=1, fill=0)
+        cursor += 142
+    y -= 26
+    pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
+    pdf.drawString(x, y, "Write your answer here:")
+    return y - 24
+
+
+def _draw_paper_3_choice_prompt(pdf: canvas.Canvas, question, x: float, y: float) -> float:
+    parsed = _split_subquestion_number(question.number)
+    part = parsed[1] if parsed else question.number
+    pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
+    pdf.drawString(x + 24, y, f"({part})")
+    lines = _wrap(question.prompt, 62)
+    for index, line in enumerate(lines):
+        pdf.drawString(x + 48, y - index * BODY_LEADING_PT, line)
+    return y - max(1, len(lines)) * BODY_LEADING_PT
+
+
+def _draw_trailing_blank_pages(
+    pdf: canvas.Canvas,
+    blueprint: PaperBlueprint,
+    page_number: int,
+    *,
+    count: int,
+) -> None:
+    width, height = A4
+    for offset in range(1, count + 1):
+        pdf.showPage()
+        blank_page_number = page_number + offset
+        _prepare_answer_page(pdf, blueprint, blank_page_number)
+        pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+        pdf.drawCentredString(width / 2, height / 2, "BLANK PAGE")
+        _draw_question_footer(
+            pdf,
+            blueprint,
+            blank_page_number,
+            is_last=True,
+        )
 
 
 def _draw_formula_appendix(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
@@ -522,12 +1036,18 @@ def _draw_formula_appendix(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> Non
 
 
 def _force_new_page_after_question(paper_id: str, question) -> bool:
+    if paper_id == "paper_3" and question.number.endswith("(e)"):
+        return False
     if paper_id in {"paper_1", "paper_2"}:
         return question.section in {"A", "B"} or question.marks == 25
     return question.section in {"A", "B"}
 
 
 def _extra_answer_pages(paper_id: str, question) -> int:
+    if paper_id == "paper_3" and question.marks == 25:
+        return 6 if question.number.endswith("(d)") else 5
+    if paper_id == "paper_2" and question.section == "B" and question.marks == 15:
+        return 7
     if question.marks == 25:
         return 4
     if paper_id in {"paper_1", "paper_2"} and question.section == "A":
@@ -727,43 +1247,11 @@ def _draw_continuation_lines(pdf: canvas.Canvas, x: float, y: float, question_nu
 
 
 def _draw_answer_page_header(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_number: int) -> None:
-    width, _ = A4
-    if page_number % 2 == 0:
-        return
-    grey = colors.HexColor("#f2f2f2")
-    pdf.setFillColor(grey)
-    pdf.rect(28, 778, 592, 90, stroke=0, fill=1)
-    pdf.setFillColor(colors.black)
-    pdf.setStrokeColor(colors.HexColor("#999999"))
-    pdf.setLineWidth(0.4)
-    name_box_y = 794
-    pdf.roundRect(48, name_box_y, 280, 26, 5, stroke=1, fill=0)
-    pdf.line(188, name_box_y, 188, name_box_y + 26)
-    pdf.setFont(FONT_REGULAR, 7.5)
-    pdf.drawString(56, name_box_y + 17, "Candidate surname")
-    pdf.drawString(196, name_box_y + 17, "Other names")
-    centre_box_y = name_box_y - 28
-    pdf.setFont(FONT_REGULAR, 8)
-    pdf.drawString(48, centre_box_y + 22, "Centre Number")
-    _draw_boxes(pdf, 48, centre_box_y, 5, size=18)
-    pdf.drawString(160, centre_box_y + 22, "Candidate Number")
-    _draw_boxes(pdf, 160, centre_box_y, 4, size=18)
-    pdf.setStrokeColor(colors.black)
-    pdf.setLineWidth(1)
-    header_info_y = centre_box_y - 4
-    pdf.setFont(FONT_BOLD, 8)
-    pdf.drawRightString(width - 48, header_info_y + 13, "Unofficial Level 3 GCE Practice")
-    pdf.setFont(FONT_REGULAR, 8)
-    pdf.drawRightString(width - 48, header_info_y + 1, f"{blueprint.paper_code}  {_exam_date_line(blueprint.paper_id)}  {_exam_session(blueprint.paper_id)}")
+    return
 
 
 def _draw_watermark(pdf: canvas.Canvas) -> None:
-    width, height = A4
-    pdf.saveState()
-    pdf.setFillColor(colors.HexColor("#777777"))
-    pdf.setFont(FONT_BOLD, 6)
-    pdf.drawCentredString(width / 2, height - 13, "UNOFFICIAL PRACTICE PAPER")
-    pdf.restoreState()
+    return
 
 
 def _prepare_answer_page(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_number: int) -> float:
@@ -832,7 +1320,7 @@ def _draw_hatched_rail(pdf: canvas.Canvas, x: float, y: float, w: float, h: floa
 def _draw_question_footer(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_number: int, is_last: bool = False) -> None:
     width, _ = A4
     total = _TOTAL_PAPER_PAGES
-    page_label = str(page_number) if not total else f"Page {page_number} of {total}"
+    page_label = str(page_number)
     pdf.setFont(FONT_BOLD, 8)
     if page_number % 2 == 1:
         pdf.drawRightString(width - 72, 42, page_label)
@@ -950,7 +1438,9 @@ def _draw_question(
             y -= 8
         return y - 6
 
+    pdf.setFillColor(colors.HexColor("#999999"))
     pdf.drawRightString(width - x, y + 12, f"({question.marks})")
+    pdf.setFillColor(colors.black)
     y -= 6
     if fill_answer_page:
         y = _draw_answer_lines_until(pdf, x, y, width - x)
@@ -1879,9 +2369,10 @@ def render_mark_scheme(
     output_path: Path,
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    pdf = canvas.Canvas(str(output_path), pagesize=A4, pageCompression=0)
-    width, height = A4
-    margin = 57
+    page_size = MS_PAGE_SIZES[blueprint.paper_id]
+    pdf = canvas.Canvas(str(output_path), pagesize=page_size, pageCompression=0)
+    width, height = page_size
+    margin = 49
     accent = colors.HexColor(MARK_SCHEME_ACCENT_COLOR)
     title_blue = colors.HexColor(MARK_SCHEME_TITLE_COLOR)
     pdf.setFillColor(colors.black)
@@ -1893,7 +2384,7 @@ def render_mark_scheme(
     series_year = economics_exam_schedule(blueprint.paper_id).date.year
     pdf.setFont("Times-Roman", 31)
     pdf.drawString(margin, height - 415, f"Summer {series_year}")
-    pdf.setFont(FONT_REGULAR, 23)
+    pdf.setFont(MS_FONT, 23)
     pdf.setFillColor(accent)
     pdf.drawString(margin, height - 500, "Unofficial GCE A Level Practice")
     pdf.drawString(margin, height - 540, f"In Economics A ({blueprint.paper_code.split('/')[0]})")
@@ -1904,9 +2395,9 @@ def render_mark_scheme(
     _draw_mark_scheme_qualification_page(pdf, blueprint, margin, height)
     pdf.showPage()
 
-    pdf.setFont(FONT_BOLD, 14)
+    pdf.setFont(MS_FONT_BOLD, 14)
     pdf.drawString(margin, height - 70, "General Marking Guidance")
-    pdf.setFont(FONT_REGULAR, 10)
+    pdf.setFont(MS_FONT, 11)
     y = height - 105
     guidance = [
         "All candidates must receive the same treatment.",
@@ -1922,14 +2413,25 @@ def render_mark_scheme(
             y -= 15
     pdf.showPage()
 
-    y = height - 58
+    y = height - MS_CONTENT_TOP
     for row in _mark_scheme_rows(blueprint, syllabus):
+        if row.get("blank_page_before"):
+            pdf.showPage()
+            _draw_ms_blank_page(pdf, str(row["blank_page_before"]))
+            pdf.showPage()
+            y = height - MS_CONTENT_TOP
+        elif row.get("force_page_break") and y < height - MS_CONTENT_TOP:
+            pdf.showPage()
+            y = height - MS_CONTENT_TOP
         row_height = _ms_row_height(row["answer_lines"])
         if y - row_height < 54:
             pdf.showPage()
-            y = height - 58
+            y = height - MS_CONTENT_TOP
         y = _draw_ms_row(pdf, y, row["number"], row["answer_lines"], row["mark"])
         y -= 24
+    if blueprint.paper_id == "paper_3":
+        pdf.showPage()
+        _draw_mark_scheme_end_page(pdf)
     _pad_mark_scheme_pages(pdf, MARK_SCHEME_MIN_PAGES.get(blueprint.paper_id, 29))
     pdf.save()
 
@@ -1941,12 +2443,36 @@ def _pad_mark_scheme_pages(pdf: canvas.Canvas, target_pages: int) -> None:
         pdf.showPage()
 
 
+def _draw_mark_scheme_end_page(pdf: canvas.Canvas) -> None:
+    pdf.setFont(MS_FONT, 8)
+    pdf.setFillColor(colors.HexColor("#555555"))
+    pdf.drawString(49, 44, "Paper Creator. Independent practice material.")
+    pdf.drawString(49, 31, "Not produced, endorsed or approved by any examination board.")
+    pdf.setFillColor(colors.black)
+
+
+def _draw_ms_blank_page(pdf: canvas.Canvas, kind: str) -> None:
+    width, height = MS_PAGE_SIZE
+    if kind == "header":
+        _draw_ms_table_header(pdf, height - 67)
+        return
+
+    top = height - 39
+    bottom = height - 762
+    pdf.setStrokeColor(colors.HexColor("#8c8c8c"))
+    pdf.setLineWidth(0.48)
+    pdf.rect(MS_LEFT, bottom, MS_RIGHT - MS_LEFT, top - bottom, stroke=1, fill=0)
+    pdf.line(MS_LEFT + MS_NUMBER_W, bottom, MS_LEFT + MS_NUMBER_W, top)
+    pdf.line(MS_RIGHT - MS_MARK_W, bottom, MS_RIGHT - MS_MARK_W, top)
+    pdf.setStrokeColor(colors.black)
+
+
 def _draw_mark_scheme_qualification_page(pdf: canvas.Canvas, blueprint: PaperBlueprint, margin: float, height: float) -> None:
     y = height - 155
-    pdf.setFont(FONT_BOLD, 14)
+    pdf.setFont(MS_FONT_BOLD, 14)
     pdf.drawString(margin, y, "Unofficial practice qualification material")
     y -= 28
-    pdf.setFont(FONT_REGULAR, 10)
+    pdf.setFont(MS_FONT, 11)
     paragraphs = [
         (
             "This unofficial practice mark scheme is generated for private revision and is "
@@ -1969,10 +2495,10 @@ def _draw_mark_scheme_qualification_page(pdf: canvas.Canvas, blueprint: PaperBlu
         y -= 12
 
     y -= 28
-    pdf.setFont(FONT_BOLD, 12)
+    pdf.setFont(MS_FONT_BOLD, 12)
     pdf.drawString(margin, y, "Independent practice material")
     y -= 24
-    pdf.setFont(FONT_REGULAR, 10)
+    pdf.setFont(MS_FONT, 11)
     for line in _wrap(
         "This generated document follows the style of public mark schemes so that students can practise applying assessment objectives and levels-based descriptors.",
         82,
@@ -1995,7 +2521,7 @@ def _draw_mark_scheme_qualification_page(pdf: canvas.Canvas, blueprint: PaperBlu
 
 
 def _draw_ms_table_header(pdf: canvas.Canvas, y: float) -> None:
-    _draw_ms_header_box(pdf, 54, y - 22, 488, 22)
+    _draw_ms_header_box(pdf, MS_LEFT, y - MS_HEADER_H, MS_RIGHT - MS_LEFT, MS_HEADER_H)
 
 
 def _mark_scheme_rows(blueprint: PaperBlueprint, syllabus: Syllabus) -> list[dict[str, object]]:
@@ -2012,13 +2538,40 @@ def _mark_scheme_rows(blueprint: PaperBlueprint, syllabus: Syllabus) -> list[dic
                     )
                 )
         else:
-            rows.extend(
-                _split_mark_scheme_row(
+            if question.marks == 12:
+                knowledge_rows = _split_mark_scheme_row(
                     question.number,
-                    f"({question.marks})",
-                    _question_mark_scheme_lines(question, topic),
+                    "(8)",
+                    _twelve_mark_knowledge_lines(question, topic),
                 )
+                knowledge_rows[0]["force_page_break"] = False
+                rows.extend(knowledge_rows)
+                rows.extend(
+                    _split_mark_scheme_row(
+                        f"{question.number} continued",
+                        "(4)",
+                        _twelve_mark_evaluation_lines(question, topic),
+                    )
+                )
+                continue
+            question_rows = _split_mark_scheme_row(
+                question.number,
+                f"({question.marks})",
+                _question_mark_scheme_lines(question, topic),
             )
+            if (
+                blueprint.paper_id == "paper_3"
+                and question.marks == 25
+                and question.number in {"1(d)", "2(d)", "2(e)"}
+            ):
+                question_rows[1]["blank_page_before"] = "continuation"
+            if question.section == "B" and question.marks == 5:
+                question_rows[0]["force_page_break"] = False
+            if blueprint.paper_id == "paper_3" and question.number == "2(b)":
+                question_rows[0]["blank_page_before"] = "header"
+            if blueprint.paper_id == "paper_3" and question.number == "1(b)":
+                question_rows[1]["blank_page_before"] = "continuation"
+            rows.extend(question_rows)
     return rows
 
 
@@ -2026,6 +2579,11 @@ def _split_mark_scheme_row(number: str, mark: str, answer_lines: list[str]) -> l
     chunks: list[list[str]] = []
     current: list[str] = []
     for line in answer_lines:
+        if line == "__PAGE_BREAK__":
+            if current:
+                chunks.append(current)
+                current = []
+            continue
         candidate = [*current, line]
         if current and _ms_row_height(candidate) > 720:
             chunks.append(current)
@@ -2040,6 +2598,7 @@ def _split_mark_scheme_row(number: str, mark: str, answer_lines: list[str]) -> l
             "number": number if index == 0 else f"{number} cont.",
             "mark": mark if index == len(chunks) - 1 else "",
             "answer_lines": chunk,
+            "force_page_break": True,
         }
         for index, chunk in enumerate(chunks)
     ]
@@ -2113,20 +2672,37 @@ def _part_mark_scheme_lines(question, part, topic) -> list[str]:
 
 def _question_mark_scheme_lines(question, topic) -> list[str]:
     if question.marks <= 5:
-        return [
-            *_specific_mark_scheme_context(question, question.prompt, topic),
-            question.mark_breakdown or "Knowledge 1, Application 2, Analysis 2",
+        knowledge = [
+            "Knowledge 2, Application 2, Analysis 1",
             "",
-            "Knowledge/Understanding:",
-            f"Credit accurate definitions and concepts for {topic.title.lower()}.",
+            "Knowledge/implicit understanding and analysis: up to 3 marks e.g.",
+            *_one_mark_points(question, topic, limit=5),
             "",
-            "Application:",
-            "Credit relevant use of the source material, data or context.",
-            "",
-            "Analysis:",
-            "Credit clear logical chains of reasoning.",
-            *_scheme_bullets(question.mark_scheme, topic),
         ]
+        application = [
+            "Application: up to 2 marks e.g.",
+            *_source_application_points(question.source_text, limit=5),
+        ]
+        return [*knowledge, *application]
+    if question.marks == 8:
+        return [
+            "Knowledge 2, Application 2, Analysis 2, Evaluation 2",
+            "",
+            "Knowledge/analysis: up to 4 marks e.g.",
+            *_one_mark_points(question, topic, limit=8),
+            "",
+            "__PAGE_BREAK__",
+            "Application: 2 marks for two relevant points e.g.",
+            *_source_application_points(question.source_text, limit=6),
+            "",
+            "Evaluation: 2 marks for one developed point or two points e.g.",
+            "● The effect depends on the magnitude of the change and the evidence available. (1)",
+            "● The short-run effect may differ from the long-run effect. (1)",
+            "● Outcomes depend on elasticities, spare capacity and stakeholder responses. (1)",
+            "● A supported alternative explanation or limitation should be credited. (1)",
+        ]
+    if question.marks == 25:
+        return _twenty_five_mark_scheme_lines(question, topic)
     return [
         *_specific_mark_scheme_context(question, question.prompt, topic, include_points=False),
         "Indicative content",
@@ -2140,6 +2716,181 @@ def _question_mark_scheme_lines(question, topic) -> list[str]:
         "",
         question.mark_breakdown or "Knowledge, Application, Analysis and Evaluation",
         *_scheme_bullets(question.mark_scheme, topic),
+    ]
+
+
+def _one_mark_points(question, topic, *, limit: int) -> list[str]:
+    points = [
+        *_CORE_MARK_SCHEME_POINTS.get(topic.title.lower(), ()),
+        *_specific_answer_points(question, topic),
+    ]
+    points = list(dict.fromkeys(points))
+    if not points:
+        points = [f"Accurate explanation of {topic.title.lower()}."]
+    return [f"● {point.rstrip('.')} (1)" for point in points[:limit]]
+
+
+_CORE_MARK_SCHEME_POINTS = {
+    "demand": (
+        "Demand is the quantity consumers are willing and able to buy at a given price.",
+        "A change in price causes a movement along the demand curve.",
+        "Income, tastes, population and the prices of related goods can shift demand.",
+        "The size of the response depends on price elasticity of demand.",
+        "Substitutes and the proportion of income spent influence price elasticity.",
+    ),
+    "supply": (
+        "Supply is the quantity producers are willing and able to sell at a given price.",
+        "Price elasticity of supply measures responsiveness of quantity supplied to price.",
+        "Limited capacity and stocks make supply less responsive in the short run.",
+        "Production time, input availability and spare capacity affect supply responsiveness.",
+        "Investment can make supply more elastic in the long run.",
+    ),
+    "market failure": (
+        "Market failure occurs when the price mechanism causes a misallocation of resources.",
+        "External costs or benefits affect third parties outside the market transaction.",
+        "Imperfect information can prevent consumers from making welfare-maximising choices.",
+        "The free-market equilibrium may differ from the socially efficient level of output.",
+        "A welfare loss can be shown between marginal social and private curves.",
+    ),
+    "government intervention": (
+        "An indirect tax raises firms' costs and shifts market supply to the left.",
+        "A subsidy lowers production costs and can increase market supply.",
+        "Regulation can change the incentives facing firms and consumers.",
+        "The incidence of a policy depends on the elasticities of demand and supply.",
+        "Intervention can create government failure if information or enforcement is weak.",
+    ),
+    "business growth": (
+        "Organic growth occurs when a firm expands using its own resources.",
+        "External growth occurs through a merger or takeover.",
+        "Greater scale can reduce average cost through purchasing or technical economies.",
+        "Rapid expansion can create communication and coordination diseconomies.",
+        "Access to finance and market demand constrain the rate of growth.",
+    ),
+    "revenues, costs and profits": (
+        "Profit is total revenue minus total cost.",
+        "Fixed costs do not change with output in the short run.",
+        "Higher variable costs increase total and average cost.",
+        "Economies of scale reduce long-run average cost as output expands.",
+        "The effect on profit depends on the response of revenue as well as cost.",
+    ),
+    "market structures": (
+        "Barriers to entry protect incumbent firms from potential competition.",
+        "A high concentration ratio may indicate substantial market power.",
+        "Contestability depends on the height of entry and exit barriers.",
+        "Economies of scale can create a cost disadvantage for new entrants.",
+        "Stronger competition can increase allocative and dynamic efficiency.",
+    ),
+    "labour market": (
+        "The demand for labour is derived from demand for the final product.",
+        "Wages are influenced by labour demand, labour supply and productivity.",
+        "Occupational immobility can create shortages of skilled workers.",
+        "A monopsonist may have wage-setting power in a local labour market.",
+        "Training and migration can increase the effective supply of labour over time.",
+    ),
+}
+
+
+def _source_application_points(text: str, *, limit: int) -> list[str]:
+    sentences = [
+        _sentence(sentence)
+        for sentence in re.split(r"(?<=[.!?])\s+", " ".join(text.split()))
+        if sentence.strip()
+    ]
+    return [f"● {sentence.rstrip('.')} (1)" for sentence in sentences[:limit]]
+
+
+def _twelve_mark_knowledge_lines(question, topic) -> list[str]:
+    return [
+        "Knowledge 2, Application 2, Analysis 4",
+        "Indicative content",
+        *_scheme_bullets(question.indicative_content or topic.points, topic, limit=3),
+    ]
+
+
+def _twelve_mark_evaluation_lines(question, topic) -> list[str]:
+    return [
+        "Knowledge, application and analysis",
+        "Level 0: A completely inaccurate response.",
+        "Level 1 (1–2): Displays isolated or imprecise knowledge and understanding.",
+        "Uses generic information and has no developed chains of reasoning.",
+        "Level 2 (3–5): Applies some economic ideas to the context.",
+        "Develops partial chains of reasoning but may lack balance or focus.",
+        "Level 3 (6–8): Demonstrates accurate knowledge and understanding.",
+        "Selects relevant evidence and develops logical, coherent chains of reasoning.",
+        "",
+        "Application evidence may include:",
+        *_source_application_points(question.source_text, limit=3),
+        "",
+        "Evaluation 4",
+        "Indicative evaluation",
+        "● Prioritisation of the most significant factor or effect.",
+        "● The significance of the evidence may change over time.",
+        "● Short-run and long-run outcomes may differ.",
+        "● Different firms, consumers or regions may experience different effects.",
+        "● The conclusion depends on elasticities, spare capacity and policy effectiveness.",
+        "",
+        "__PAGE_BREAK__",
+        "Further indicative content",
+        *_scheme_bullets(question.indicative_content or topic.points, topic, limit=5),
+        "",
+        "Evaluation",
+        "Level 0: No evaluative comments.",
+        "Level 1 (1–2): Identifies generic evaluative comments without supporting evidence.",
+        "There is little or no logical chain of reasoning.",
+        "Level 2 (3–4): Supports evaluative comments with relevant reasoning and context.",
+        "Recognises different viewpoints and reaches an informed judgement.",
+    ]
+
+
+def _twenty_five_mark_scheme_lines(question, topic) -> list[str]:
+    context = question.source_title.lower() if question.source_title else "the case-study context"
+    return [
+        "Knowledge 4, Application 4, Analysis 8, Evaluation 9",
+        "Indicative content",
+        "Microeconomic analysis may include:",
+        *_scheme_bullets(question.indicative_content or topic.points, topic, limit=8),
+        f"● Effects on prices, output, costs, revenue and profit in {context}.",
+        "● Effects on consumers, workers, competition and economic welfare.",
+        "● A relevant and accurately labelled microeconomic diagram.",
+        "● A developed chain from the initial change to stakeholder outcomes.",
+        "",
+        "__PAGE_BREAK__",
+        "Macroeconomic analysis may include:",
+        "● Effects on aggregate demand, aggregate supply and the price level.",
+        "● Effects on real output, employment, investment and productivity.",
+        "● Effects on tax revenue, government spending and the budget balance.",
+        "● Effects on trade, exchange rates or the current account where relevant.",
+        "● Multiplier, accelerator or supply-side effects where relevant.",
+        *_source_application_points(question.source_text, limit=5),
+        "",
+        "Evaluation: up to 9 marks",
+        "● Prioritise the most significant effect using the evidence.",
+        "● Distinguish short-run adjustment from long-run outcomes.",
+        "● Consider the magnitude, duration and distribution of the change.",
+        "● Consider elasticities, spare capacity and the reliability of the data.",
+        "● Compare impacts on different stakeholders and possible policy responses.",
+        "● Reach a supported judgement that answers the precise question.",
+        "",
+        "__PAGE_BREAK__",
+        "Knowledge, application and analysis",
+        "Level 0: A completely inaccurate response.",
+        "Level 1 (1–4): Identifies a small range of relevant information.",
+        "Shows limited application and narrow or undeveloped analysis.",
+        "Level 2 (5–8): Applies economic ideas to problems in context.",
+        "Develops some analysis but does not cover the broad elements of the question.",
+        "Level 3 (9–12): Analysis is clear and coherent with evidence integrated.",
+        "Applies economic ideas directly to most broad elements of the question.",
+        "Level 4 (13–16): Analysis is relevant, clear and coherent.",
+        "Evidence is fully integrated and both microeconomic and macroeconomic effects are covered.",
+        "",
+        "Evaluation",
+        "Level 0: No evaluative comments.",
+        "Level 1 (1–3): Identifies evaluative comments without explanation.",
+        "Level 2 (4–6): Gives evaluative comments with limited explanation.",
+        "Considers alternatives but may make a generic or unbalanced judgement.",
+        "Level 3 (7–9): Supports evaluation with relevant reasoning and context.",
+        "Recognises different viewpoints, challenges assumptions and reaches an informed judgement.",
+        "For Level 3 evaluation, the final judgement must be sustained and answer the question.",
     ]
 
 
@@ -2305,35 +3056,39 @@ def _draw_ms_row(
     answer_lines: list[str],
     mark: str,
 ) -> float:
-    left = 72
-    number_w = 70
-    mark_w = 64
-    right = 514
+    left = MS_LEFT
+    number_w = MS_NUMBER_W
+    mark_w = MS_MARK_W
+    right = MS_RIGHT
     answer_x = left + number_w + 6
     mark_x = right - mark_w
     row_height = _ms_row_height(answer_lines)
     bottom = y - row_height
-    _draw_ms_header_box(pdf, left, y - 22, right - left, 22)
-    pdf.rect(left, bottom, right - left, row_height - 22, stroke=1, fill=0)
+    _draw_ms_header_box(pdf, left, y - MS_HEADER_H, right - left, MS_HEADER_H)
+    pdf.rect(left, bottom, right - left, row_height - MS_HEADER_H, stroke=1, fill=0)
     pdf.line(left + number_w, bottom, left + number_w, y)
     pdf.line(mark_x, bottom, mark_x, y)
-    pdf.setFont(FONT_BOLD, 10)
-    pdf.drawString(left + 6, y - 38, number)
-    pdf.setFont(FONT_REGULAR, 10)
-    cursor = y - 38
+    pdf.setFont(MS_FONT_BOLD, 11)
+    pdf.drawString(left + 6, y - MS_HEADER_H - 17, number)
+    pdf.setFont(MS_FONT, 11)
+    cursor = y - MS_HEADER_H - 13
     for line in answer_lines:
         if not line:
             cursor -= 10
             continue
-        font = FONT_BOLD if _ms_bold_line(line) else FONT_REGULAR
-        pdf.setFont(font, 10)
-        for wrapped in _wrap(line, MS_ANSWER_WRAP_CHARS):
+        font = MS_FONT_BOLD if _ms_bold_line(line) else MS_FONT
+        pdf.setFont(font, 11)
+        is_bullet = line.startswith("●")
+        line_x = answer_x + (40 if is_bullet else 22)
+        for wrapped in _wrap(line, _ms_wrap_width(line)):
             if _ms_centered_line(wrapped):
                 pdf.drawCentredString((answer_x + mark_x) / 2, cursor, wrapped)
             else:
-                pdf.drawString(answer_x, cursor, wrapped)
-            cursor -= 12
-    pdf.setFont(FONT_BOLD, 10)
+                pdf.drawString(line_x, cursor, wrapped)
+            cursor -= MS_BODY_LEADING
+        if _ms_bold_line(line) and not _ms_centered_line(line):
+            cursor -= 8
+    pdf.setFont(MS_FONT_BOLD, 11)
     pdf.drawString(mark_x + 10, bottom + 24, mark)
     return bottom
 
@@ -2342,20 +3097,29 @@ def _draw_ms_header_box(pdf: canvas.Canvas, x: float, y: float, w: float, h: flo
     pdf.setFillColor(colors.HexColor("#e6e6e6"))
     pdf.rect(x, y, w, h, stroke=1, fill=1)
     pdf.setFillColor(colors.black)
-    pdf.line(x + 70, y, x + 70, y + h)
-    pdf.line(x + w - 64, y, x + w - 64, y + h)
-    pdf.setFont(FONT_REGULAR, 10)
-    pdf.drawString(x + 6, y + 11, "Question")
-    pdf.drawString(x + 6, y + 2, "Number")
-    pdf.drawString(x + 76, y + 7, "Answer")
-    pdf.drawString(x + w - 54, y + 7, "Mark")
+    pdf.line(x + MS_NUMBER_W, y, x + MS_NUMBER_W, y + h)
+    pdf.line(x + w - MS_MARK_W, y, x + w - MS_MARK_W, y + h)
+    pdf.setFont(MS_FONT, 11)
+    pdf.drawString(x + 6, y + h - 14, "Question")
+    pdf.drawString(x + 6, y + h - 27, "Number")
+    pdf.drawString(x + MS_NUMBER_W + 6, y + h / 2 - 4, "Answer")
+    pdf.drawString(x + w - MS_MARK_W + 10, y + h / 2 - 4, "Mark")
 
 
 def _ms_row_height(answer_lines: list[str]) -> int:
-    wrapped_lines = 0
+    content_height = 0
     for line in answer_lines:
-        wrapped_lines += max(1, len(_wrap(line, MS_ANSWER_WRAP_CHARS))) if line else 1
-    return max(112, 36 + wrapped_lines * 12)
+        if not line:
+            content_height += 10
+            continue
+        content_height += max(1, len(_wrap(line, _ms_wrap_width(line)))) * MS_BODY_LEADING
+        if _ms_bold_line(line) and not _ms_centered_line(line):
+            content_height += 8
+    return max(112, int(MS_HEADER_H + 20 + content_height))
+
+
+def _ms_wrap_width(line: str) -> int:
+    return 48 if line.startswith("●") else MS_ANSWER_WRAP_CHARS
 
 
 def _ms_centered_line(line: str) -> bool:

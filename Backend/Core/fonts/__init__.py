@@ -41,6 +41,16 @@ FONT_CANDIDATES: dict[str, list[tuple[str, int]]] = {
         (str(_FONTS_DIR / "AQACourier.ttf"), 0),
         ("/System/Library/Fonts/Supplemental/Courier New.ttf", 0),
     ],
+    "ExamMarkScheme": [
+        (str(_FONTS_DIR / "ExamMarkScheme.ttf"), 0),
+        ("/System/Library/Fonts/Supplemental/Verdana.ttf", 0),
+        ("/System/Library/Fonts/Supplemental/Arial.ttf", 0),
+    ],
+    "ExamMarkScheme-Bold": [
+        (str(_FONTS_DIR / "ExamMarkScheme-Bold.ttf"), 0),
+        ("/System/Library/Fonts/Supplemental/Verdana Bold.ttf", 0),
+        ("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 0),
+    ],
 }
 
 

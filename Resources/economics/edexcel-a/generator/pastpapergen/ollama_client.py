@@ -22,12 +22,12 @@ class OllamaClient:
     base_url: str
     model: str
 
-    def generate_json(self, prompt: str, retries: int = 3) -> dict[str, object]:
+    def generate_json(self, prompt: str, retries: int = 1) -> dict[str, object]:
         last_error: Exception | None = None
         for attempt in range(retries):
             try:
                 return self._call(prompt)
-            except (urllib.error.URLError, json.JSONDecodeError, KeyError) as error:
+            except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, KeyError) as error:
                 last_error = error
                 if attempt < retries - 1:
                     delay = 2 ** attempt * 5
@@ -42,6 +42,11 @@ class OllamaClient:
                 "prompt": prompt,
                 "stream": False,
                 "format": "json",
+                "think": False,
+                "options": {
+                    "temperature": 0.45,
+                    "num_predict": 1600,
+                },
             }
         ).encode("utf-8")
         request = urllib.request.Request(
@@ -50,7 +55,7 @@ class OllamaClient:
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with urllib.request.urlopen(request, timeout=180) as response:
+        with urllib.request.urlopen(request, timeout=240) as response:
             raw = json.loads(response.read().decode("utf-8"))
         raw_dict = raw if isinstance(raw, dict) else {}
         text = str(raw_dict.get("response", "{}"))
@@ -62,7 +67,11 @@ class OllamaClient:
 
 def build_question_prompt(question: QuestionBlueprint, topic: SyllabusTopic) -> str:
     points = "\n".join(f"- {point}" for point in topic.points)
-    note_context = note_context_for_topic(topic.id, title=topic.title, keywords=topic.points)
+    note_context = note_context_for_topic(
+        topic.id,
+        title=topic.title,
+        keywords=topic.points,
+    )[:6000]
     return f"""You are writing an unofficial A-Level Economics practice paper.
 
 Use only this syllabus topic:
@@ -184,9 +193,12 @@ def generate_questions_with_ollama(
     total = len(blueprint.questions)
     results: dict[int, QuestionBlueprint] = {}
     results_lock = Lock()
-    max_workers = min(total, 4)
+    # Ollama serves one generation sequence per loaded local model. Sending several
+    # long exam prompts at once only queues work inside the server and makes the
+    # client-side requests time out. Hosted providers can still run concurrently.
+    max_workers = 1 if isinstance(client, OllamaClient) else min(total, 4)
 
-    def _build_task(question_index: int, question: QuestionBlueprint) -> None:
+    def _build_task(question_index: int, question: QuestionBlueprint) -> str:
         index = question_index + 1
         try:
             topic = syllabus.get_topic(question.topic_id)
@@ -194,8 +206,10 @@ def generate_questions_with_ollama(
             _logger.error("Unknown topic '%s' for question %s, skipping LLM: %s", question.topic_id, question.number, error)
             with results_lock:
                 results[question_index] = question
-            emit(f"Question {index}/{total}: {question.number} (unknown topic, template fallback)")
-            return
+            return (
+                f"Question {index}/{total}: {question.number} "
+                "(unknown topic, template fallback)"
+            )
         emit(
             f"Generating question {index}/{total}: {question.number} "
             f"(Section {question.section}, {question.marks} marks, {topic.title})"
@@ -224,28 +238,39 @@ def generate_questions_with_ollama(
                         "graph_params": graph_params,
                     }
                 )
-            emit(f"Generated question {index}/{total}: {question.number} ({topic.title})")
+            return (
+                f"Generated question {index}/{total}: {question.number} "
+                f"({topic.title})"
+            )
         except (RuntimeError, json.JSONDecodeError, ValueError, KeyError) as error:
             _logger.error("Failed to generate question %s, keeping template: %s", question.number, error)
             with results_lock:
                 results[question_index] = question
-            emit(f"Question {index}/{total}: {question.number} (fallback to template)")
+            return (
+                f"Question {index}/{total}: {question.number} "
+                "(fallback to template)"
+            )
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {executor.submit(_build_task, i, q): i for i, q in enumerate(blueprint.questions)}
+        completed_messages: dict[int, str] = {}
+        next_message = 0
         for future in as_completed(futures):
             question_index = futures[future]
             try:
-                future.result()
+                completed_messages[question_index] = future.result()
             except Exception as error:  # noqa: BLE001 - one bad response must not abort the paper.
                 question = blueprint.questions[question_index]
                 _logger.exception("Unexpected generation failure for question %s", question.number)
                 with results_lock:
                     results[question_index] = question
-                emit(
+                completed_messages[question_index] = (
                     f"Question {question_index + 1}/{total}: {question.number} "
                     f"(unexpected failure, template fallback: {error})"
                 )
+            while next_message in completed_messages:
+                emit(completed_messages.pop(next_message))
+                next_message += 1
     questions = [results[i] for i in range(total)]
     return blueprint.model_copy(update={"questions": questions})
 

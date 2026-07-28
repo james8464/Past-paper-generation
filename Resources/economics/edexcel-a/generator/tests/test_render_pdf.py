@@ -242,6 +242,88 @@ def test_paper_1_render_uses_question_specific_pages(tmp_path):
     assert _pdf_page_count(output) == 32
 
 
+def test_papers_2_and_3_match_current_reference_page_counts(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    for paper_id in ("paper_2", "paper_3"):
+        blueprint = build_paper_blueprint(
+            load_builtin_paper_config(paper_id),
+            syllabus,
+            seed=42,
+        )
+        output = tmp_path / f"{paper_id}.pdf"
+
+        render_question_paper(blueprint, output)
+
+        assert _pdf_page_count(output) == 36
+
+
+def test_paper_3_ends_with_three_labelled_blank_pages(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_3"),
+        syllabus,
+        seed=42,
+    )
+    output = tmp_path / "paper-3.pdf"
+
+    render_question_paper(blueprint, output)
+
+    assert all(
+        "BLANK PAGE" in page
+        for page in _pdf_text(output).split("\f")[33:36]
+    )
+
+
+def test_paper_3_embeds_sources_and_matches_reference_page_sequence(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_3"),
+        syllabus,
+        seed=42,
+    )
+    output = tmp_path / "paper-3.pdf"
+
+    render_question_paper(blueprint, output)
+    pages = _pdf_text(output).split("\f")
+
+    assert "SECTION A" in pages[1]
+    assert "Figure 1" in pages[1]
+    assert "Extract A" in pages[2]
+    assert all(mark in pages[4] for mark in ("(5)", "(8)", "(12)", "(25)"))
+    assert "(a)" in pages[5] and "(5)" in pages[5]
+    assert "(b)" in pages[6] and "(8)" in pages[6]
+    assert "(c)" in pages[8] and "(12)" in pages[8]
+    assert "Chosen question number" in pages[11]
+
+    assert "SECTION B" in pages[17]
+    assert "Figure 3" in pages[17]
+    assert "Extract D" in pages[17]
+    assert all(mark in pages[20] for mark in ("(5)", "(8)", "(12)", "(25)"))
+    assert "(a)" in pages[21] and "(5)" in pages[21]
+    assert "(b)" in pages[22] and "(8)" in pages[22]
+    assert "(c)" in pages[24] and "(12)" in pages[24]
+    assert "Chosen question number" in pages[27]
+    assert sum("Chosen question number" in page for page in pages) == 2
+
+
+def test_paper_3_prints_each_mark_once_on_summary_and_once_on_answer_page(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_3"),
+        syllabus,
+        seed=42,
+    )
+    output = tmp_path / "paper-3.pdf"
+
+    render_question_paper(blueprint, output)
+    text = _pdf_text(output)
+
+    assert text.count("(5)") == 4
+    assert text.count("(8)") == 4
+    assert text.count("(12)") == 4
+    assert text.count("(25)") == 8
+
+
 def test_paper_1_section_b_starts_near_reference_page(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
