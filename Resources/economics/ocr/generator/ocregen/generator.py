@@ -12,6 +12,7 @@ from Backend.Core.exam_blueprints import (
     QuestionRule,
     validate_generated_paper,
 )
+from Backend.Core.mark_scheme_enrichment import enrich_paper
 
 from ocregen.syllabus import Syllabus, Topic
 
@@ -25,6 +26,19 @@ CONTEXTS = [
     "renewable electricity",
     "technical training",
 ]
+CONTEXTS_BY_TOPIC = {
+    "micro-1": ["technical training", "low-carbon construction"],
+    "micro-2": ["regional ferry services", "food-delivery platforms"],
+    "micro-3": ["medical diagnostics", "low-carbon construction"],
+    "micro-4": ["digital banking", "food-delivery platforms"],
+    "micro-5": ["technical training", "medical diagnostics"],
+    "micro-6": ["renewable electricity", "urban rental housing"],
+    "macro-1": ["low-carbon construction", "renewable electricity"],
+    "macro-2": ["urban rental housing", "technical training"],
+    "macro-3": ["renewable electricity", "low-carbon construction"],
+    "macro-4": ["regional ferry services", "renewable electricity"],
+    "macro-5": ["digital banking", "urban rental housing"],
+}
 ECONOMIES = ["Arden", "Bellmare", "Corvia", "Delsin", "Eland", "Faron", "Galen", "Helios"]
 STAKEHOLDERS = [
     "households on low incomes",
@@ -91,6 +105,7 @@ def build_paper(rule: PaperRule, syllabus: Syllabus, seed: int | None = None) ->
         seed=run_seed,
         sections=sections,
     )
+    paper = enrich_paper(paper, syllabus.topics, subject="economics")
     validate_generated_paper(paper, rule, syllabus.topic_ids)
     return paper
 
@@ -104,18 +119,21 @@ def _written_option(
     rng: random.Random,
 ) -> GeneratedOption:
     case_id = rng.randint(1000, 9999)
-    context = rng.choice(CONTEXTS if topic.component == 1 else ECONOMIES)
+    context = rng.choice(CONTEXTS_BY_TOPIC.get(topic.id, CONTEXTS))
     values = [float(rng.randint(70, 135))]
     for _ in range(4):
         values.append(round(values[-1] * (1 + rng.randint(-8, 13) / 100), 1))
     if paper_rule.id == "paper_3":
-        title = f"Synoptic theme {case_id}: {context.title()}"
+        title = f"Synoptic theme: {context.title()}"
         stimulus = [_extract(topic, context, case_id, rng, index) for index in range(1, 4)]
         numbers = [str(31 + index) for index in range(len(rules))]
     elif section_id == "A":
-        title = f"Question 1: {context.title()} ({case_id})"
+        title = f"Question 1: {context.title()}"
         stimulus = [_extract(topic, context, case_id, rng, index) for index in range(1, 4)]
-        numbers = [f"1({chr(97 + index)})" for index in range(len(rules))]
+        if paper_rule.id == "paper_1":
+            numbers = ["1(a)", "1(b)", "1(c)(i)", "1(c)(ii)", "1(d)", "1(e)"]
+        else:
+            numbers = [f"1({chr(97 + index)})" for index in range(len(rules))]
     else:
         base = 2 if section_id == "B" else 4
         number = base + option_index
@@ -147,7 +165,7 @@ def _question(
     rng: random.Random,
 ) -> GeneratedQuestion:
     point = rng.choice(topic.points)
-    evidence = f"practice case {case_id} about {context}"
+    evidence = f"the extracts about {context}"
     change = (values[-1] - values[0]) / values[0] * 100
     if rule.kind == "calculation":
         prompt = f"Using the data in {evidence}, calculate the percentage change in the index. Give your answer to one decimal place."
@@ -291,9 +309,9 @@ def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedOption:
         choices = [correct, *distractors]
         context = rng.choice(CONTEXTS if topic.component == 1 else ECONOMIES)
         prompt = (
-            f"Practice scenario {rng.randint(1000, 9999)} concerns {context}, where decision-makers "
+            f"The following scenario concerns {context}, where decision-makers "
             f"are assessing {rng.choice(topic.points)} after new evidence changed expected costs and "
-            f"benefits. {stem}"
+            f"benefits by an estimated {number + 2}%. {stem}"
         )
     rng.shuffle(choices)
     answer = choices.index(correct)
@@ -323,25 +341,34 @@ def _extract(topic: Topic, context: str, case_id: int, rng: random.Random, index
             "responded differently according to income, information and access to credit",
         ]
     )
+    measure = {
+        "micro-1": "output per unit of scarce land and skilled labour",
+        "micro-2": "the average price and number of transactions",
+        "micro-3": "average cost, revenue and operating profit",
+        "micro-4": "market share and the rate of new entry",
+        "micro-5": "vacancy rates, employment and median hourly pay",
+        "micro-6": "emissions, consumption and third-party costs",
+        "macro-1": "real output, investment and spare capacity",
+        "macro-2": "real income per head, inflation and employment",
+        "macro-3": "government borrowing and productive capacity",
+        "macro-4": "export volumes, import expenditure and the exchange rate",
+        "macro-5": "lending, arrears and the cost of credit",
+    }.get(topic.id, "the main activity index")
     return (
-        f"Extract {index}. Independent case {case_id} examines {context} through {focus}. "
-        f"The main index moved from {start_index} to {end_index}, while the largest participants "
-        f"accounted for {share}% of recorded activity. Researchers reported that households and "
-        f"firms {response}. The change affected {stakeholder} most directly, although "
-        f"{second_stakeholder} faced a different balance of costs and benefits. "
-        f"<br/><br/>The evidence suggested links with {topic.points[index % len(topic.points)]}. "
-        "Some transactions created effects beyond the buyer and seller, and several benefits appeared "
-        "only after a delay. Producers could alter quality, location or employment rather than simply "
-        "changing output. Expectations also mattered: a temporary movement produced a smaller response "
-        f"than a change expected to persist beyond {years} years. However, {limitation}, so the reported "
-        "association did not by itself establish causation. "
-        f"<br/><br/>Officials considered {policy}. Supporters expected clearer incentives and better "
-        "resource allocation. Critics warned about administration costs, imperfect information, "
-        "regulatory avoidance and unequal effects between regions. The final outcome would depend on "
-        "elasticities, the time period, opportunity cost and how other policies changed at the same "
-        "time. A defensible judgement therefore requires comparison with a realistic alternative, "
-        "not just the direction of the headline index. All organisations, places and statistics in "
-        "this independently written practice case are fictional."
+        f"Extract {index}: {context.title()}. The available evidence concerns {focus}. "
+        f"An index of {measure} changed from {start_index} to {end_index}. The four largest "
+        f"participants accounted for {share}% of recorded activity. Over the same period, households "
+        f"and firms {response}. The effect was strongest for {stakeholder}; {second_stakeholder} "
+        "experienced a different balance of costs and benefits. "
+        f"<br/><br/>Researchers linked the movement to {topic.points[index % len(topic.points)]}. "
+        "They reported changes in price, output, quality and investment rather than assuming that "
+        "every participant responded in the same way. Expectations were important: a movement "
+        f"expected to last more than {years} years produced a larger response than a temporary one. "
+        f"However, {limitation}. The figures therefore show an association, not proof of causation. "
+        f"<br/><br/>Policy-makers considered {policy}. Supporters predicted stronger incentives and "
+        "more efficient resource allocation. Critics expected administrative costs, avoidance and "
+        "unequal regional effects. The outcome would depend on elasticities, opportunity cost, the "
+        "time period and the response of affected groups."
     )
 
 

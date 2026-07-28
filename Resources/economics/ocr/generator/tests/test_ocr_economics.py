@@ -30,6 +30,11 @@ def test_paper_one_and_two_current_mark_sequences() -> None:
         assert [(section.option_count, section.answer_options, section.option_marks) for section in rule.sections] == [
             (1, 1, 30), (2, 1, 25), (2, 1, 25)
         ]
+    paper_one = build_paper(RULES["paper_1"], SYLLABUS, 123)
+    assert [
+        question.number
+        for question in paper_one.sections[0].options[0].questions
+    ] == ["1(a)", "1(b)", "1(c)(i)", "1(c)(ii)", "1(d)", "1(e)"]
 
 
 def test_paper_three_exact_structure() -> None:
@@ -63,6 +68,7 @@ def test_written_references_match_rendered_figure() -> None:
 
 
 def test_all_packages_render_reference_page_geometry(tmp_path: Path) -> None:
+    expected_scheme_pages = {"1": 30, "2": 33, "3": 32}
     for paper, expected_pages in (("1", 20), ("2", 20), ("3", 28)):
         paths = generate_package(
             paper=paper,
@@ -73,3 +79,8 @@ def test_all_packages_render_reference_page_geometry(tmp_path: Path) -> None:
         assert paths.keys() == {"question_paper", "mark_scheme"}
         assert len(PdfReader(paths["question_paper"]).pages) == expected_pages
         assert "A-level Economics" in (PdfReader(paths["question_paper"]).pages[0].extract_text() or "")
+        scheme = PdfReader(paths["mark_scheme"])
+        assert len(scheme.pages) == expected_scheme_pages[paper]
+        assert scheme.pages[0].mediabox.height > scheme.pages[0].mediabox.width
+        assert scheme.pages[2].mediabox.width > scheme.pages[2].mediabox.height
+        assert scheme.pages[-1].mediabox.height > scheme.pages[-1].mediabox.width
