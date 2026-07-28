@@ -508,9 +508,84 @@ def _question_block(question: GeneratedQuestion) -> list[Flowable]:
     return [
         _question_table(question),
         Spacer(1, 2 * mm),
-        AnswerLines(line_count),
+        *_response_space(question, line_count),
         Spacer(1, 4 * mm),
     ]
+
+
+def _response_space(
+    question: GeneratedQuestion,
+    line_count: int,
+) -> list[Flowable]:
+    if question.kind == "trace":
+        iterations = 6 if "6 iterations" in question.prompt else 5
+        rows = [["Iteration", "Changed variables", "Output"]]
+        rows.extend([[str(index), "", ""] for index in range(1, iterations + 1)])
+        table = Table(
+            rows,
+            colWidths=[25 * mm, 90 * mm, 50 * mm],
+            rowHeights=[8 * mm, *([7 * mm] * iterations)],
+        )
+        table.setStyle(_response_table_style())
+        return [table]
+    if question.kind == "table":
+        rows = [["Feature", "First technology", "Second technology"]]
+        rows.extend([["", "", ""] for _ in range(4)])
+        table = Table(
+            rows,
+            colWidths=[55 * mm, 55 * mm, 55 * mm],
+            rowHeights=[9 * mm, *([11 * mm] * 4)],
+        )
+        table.setStyle(_response_table_style())
+        return [table]
+    if question.kind == "diagram":
+        table = Table(
+            [[""]],
+            colWidths=[165 * mm],
+            rowHeights=[56 * mm],
+            style=TableStyle(
+                [
+                    ("BOX", (0, 0), (-1, -1), 0.55, INK),
+                ]
+            ),
+        )
+        return [table]
+    if question.kind == "programming":
+        row_count = min(12, max(6, question.marks + 3))
+        rows = [[str(index), ""] for index in range(1, row_count + 1)]
+        table = Table(
+            rows,
+            colWidths=[12 * mm, 153 * mm],
+            rowHeights=[6.5 * mm] * row_count,
+        )
+        style = [
+            ("BOX", (0, 0), (-1, -1), 0.5, INK),
+            ("LINEAFTER", (0, 0), (0, -1), 0.45, INK),
+            ("ALIGN", (0, 0), (0, -1), "RIGHT"),
+            ("FONTNAME", (0, 0), (0, -1), FONT_MONO),
+            ("FONTSIZE", (0, 0), (0, -1), 8),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("PADDING", (0, 0), (-1, -1), 2),
+        ]
+        for row in range(row_count):
+            style.append(("LINEBELOW", (1, row), (1, row), 0.3, colors.grey))
+        table.setStyle(TableStyle(style))
+        return [table]
+    return [AnswerLines(line_count)]
+
+
+def _response_table_style() -> TableStyle:
+    return TableStyle(
+        [
+            ("GRID", (0, 0), (-1, -1), 0.5, INK),
+            ("BACKGROUND", (0, 0), (-1, 0), GREY),
+            ("FONTNAME", (0, 0), (-1, 0), FONT_BOLD),
+            ("FONTSIZE", (0, 0), (-1, -1), 9),
+            ("ALIGN", (0, 1), (0, -1), "CENTER"),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("PADDING", (0, 0), (-1, -1), 3),
+        ]
+    )
 
 
 def _question_table(question: GeneratedQuestion) -> Table:
@@ -594,7 +669,57 @@ def _continued_pages(count: int, title: str) -> list[Flowable]:
 
 
 def _additional_pages(count: int) -> list[Flowable]:
-    return _continued_pages(count, "Additional page, if required")
+    pages: list[Flowable] = []
+    for index in range(count):
+        pages.extend(
+            [
+                PageBreak(),
+                *_additional_answer_page(include_legal_notice=index == count - 1),
+            ]
+        )
+    return pages
+
+
+def _additional_answer_page(
+    *,
+    include_legal_notice: bool,
+) -> list[Flowable]:
+    row_count = 20 if include_legal_notice else 24
+    rows: list[list[object]] = [
+        [
+            Paragraph("Question<br/>number", STYLES["small_bold"]),
+            Paragraph("EXTRA ANSWER SPACE", STYLES["centre_bold"]),
+        ],
+        *[["", ""] for _ in range(row_count)],
+    ]
+    table = Table(
+        rows,
+        colWidths=[18 * mm, 147 * mm],
+        rowHeights=[10 * mm, *([8.3 * mm] * row_count)],
+    )
+    style = [
+        ("BOX", (0, 0), (-1, -1), 0.6, INK),
+        ("LINEAFTER", (0, 0), (0, -1), 0.5, INK),
+        ("LINEBELOW", (0, 0), (-1, 0), 0.5, INK),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("PADDING", (0, 0), (-1, -1), 2),
+    ]
+    for row in range(1, row_count + 1):
+        style.append(("LINEBELOW", (1, row), (1, row), 0.35, colors.grey))
+    table.setStyle(TableStyle(style))
+    content: list[Flowable] = [table]
+    if include_legal_notice:
+        content.extend(
+            [
+                Spacer(1, 6 * mm),
+                Paragraph(
+                    "Independent practice material. Created by Paper Creator for private "
+                    "revision; not produced or endorsed by OCR.",
+                    STYLES["small"],
+                ),
+            ]
+        )
+    return content
 
 
 def _cover(paper: GeneratedPaper) -> list[Flowable]:
@@ -723,7 +848,14 @@ def _chrome(canvas, doc, code: str, kind: str) -> None:
         canvas.drawCentredString(page_width / 2, page_height - 18 * mm, str(doc.page))
         canvas.setFont(FONT, 6)
         canvas.drawString(17.5 * mm, 18 * mm, code)
-        if doc.page % 2 == 1:
+        if code in {"H446/1", "H446/01"} and doc.page == 27:
+            canvas.setFont(FONT_BOLD, 9)
+            canvas.drawCentredString(
+                page_width / 2,
+                18 * mm,
+                "END OF QUESTION PAPER",
+            )
+        elif doc.page % 2 == 1:
             canvas.setFont(FONT_BOLD, 9)
             canvas.drawRightString(page_width - 17.5 * mm, 18 * mm, "Turn over")
         canvas.restoreState()

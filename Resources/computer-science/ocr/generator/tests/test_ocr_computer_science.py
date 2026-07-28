@@ -61,6 +61,10 @@ def test_packages_render_current_page_geometry(tmp_path: Path) -> None:
         reader = PdfReader(paths["question_paper"])
         assert len(reader.pages) == expected_pages
         assert "A-level Computer Science" in (reader.pages[0].extract_text() or "")
+        assert "EXTRA ANSWER SPACE" in (reader.pages[-1].extract_text() or "")
+        if paper == "1":
+            assert "Iteration" in (reader.pages[3].extract_text() or "")
+            assert "First technology" in (reader.pages[9].extract_text() or "")
         scheme = PdfReader(paths["mark_scheme"])
         assert len(scheme.pages) == expected_scheme_pages
         assert float(scheme.pages[0].mediabox.height) > float(scheme.pages[0].mediabox.width)
