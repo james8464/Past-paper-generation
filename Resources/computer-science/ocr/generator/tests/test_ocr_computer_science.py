@@ -8,6 +8,7 @@ from Backend.Core.exam_blueprints import validate_generated_paper, validate_rule
 from ocrcsgen.cli import generate_package
 from ocrcsgen.configs import PAPER_1_MARKS, PAPER_2_MARKS, RULES
 from ocrcsgen.generator import build_paper
+from ocrcsgen.render_pdf import MARK_SCHEME_PAGE_PLANS
 from ocrcsgen.syllabus import load_syllabus
 
 
@@ -46,7 +47,10 @@ def test_multi_seed_validity_scope_and_uniqueness() -> None:
 
 
 def test_packages_render_current_page_geometry(tmp_path: Path) -> None:
-    for paper, expected_pages in (("1", 28), ("2", 32)):
+    for paper, expected_pages, expected_scheme_pages in (
+        ("1", 28, 36),
+        ("2", 32, 27),
+    ):
         paths = generate_package(
             paper=paper,
             syllabus_path=ROOT / "data" / "syllabus.json",
@@ -57,6 +61,30 @@ def test_packages_render_current_page_geometry(tmp_path: Path) -> None:
         reader = PdfReader(paths["question_paper"])
         assert len(reader.pages) == expected_pages
         assert "A-level Computer Science" in (reader.pages[0].extract_text() or "")
+        scheme = PdfReader(paths["mark_scheme"])
+        assert len(scheme.pages) == expected_scheme_pages
+        assert float(scheme.pages[0].mediabox.height) > float(scheme.pages[0].mediabox.width)
+        assert float(scheme.pages[1].mediabox.height) > float(scheme.pages[1].mediabox.width)
+        assert all(
+            float(page.mediabox.width) > float(page.mediabox.height)
+            for page in scheme.pages[2:-1]
+        )
+        assert float(scheme.pages[-1].mediabox.height) > float(scheme.pages[-1].mediabox.width)
+
+
+def test_mark_scheme_page_plans_cover_every_part() -> None:
+    for paper_id, rule in RULES.items():
+        planned = {
+            (section_index, question_index)
+            for page in MARK_SCHEME_PAGE_PLANS[paper_id]
+            for section_index, question_index, _segment, _segment_count in page
+        }
+        expected = {
+            (section_index, question_index)
+            for section_index, section in enumerate(rule.sections)
+            for question_index, _question in enumerate(section.questions)
+        }
+        assert planned == expected
 
 
 def test_every_question_has_board_specific_context_and_marking() -> None:
@@ -68,7 +96,8 @@ def test_every_question_has_board_specific_context_and_marking() -> None:
             for option in section.options
             for question in option.questions
         ]
-        assert all("case " in question.prompt for question in questions)
+        assert all("For part" not in question.prompt for question in questions)
+        assert all("Independent case" not in question.prompt for question in questions)
         assert all(question.mark_scheme for question in questions)
         assert all(
             any("Level " in point for point in question.mark_scheme)

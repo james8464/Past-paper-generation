@@ -12,6 +12,7 @@ from Backend.Core.exam_blueprints import (
     QuestionRule,
     validate_generated_paper,
 )
+from Backend.Core.mark_scheme_enrichment import enrich_paper
 
 from ocrcsgen.configs import SECTION_TOPICS
 from ocrcsgen.syllabus import Syllabus, Topic
@@ -30,6 +31,70 @@ CONTEXTS = [
 NAMES = ["Ari", "Bao", "Cleo", "Dev", "Esi", "Farah", "Gus", "Hana"]
 
 
+def _technical_focus(point: str) -> str:
+    value = point.casefold()
+    if any(term in value for term in ("encryption", "hash", "protocol", "data protection", "computer misuse")):
+        return "security"
+    if any(term in value for term in ("processor performance", "parallel", "compression", "search", "sort", "complexity")):
+        return "performance"
+    if any(term in value for term in ("fetch-decode", "boolean", "logic", "representation", "arithmetic")):
+        return "correctness"
+    if any(term in value for term in ("operating system", "storage", "network", "file handling")):
+        return "reliability"
+    if any(term in value for term in ("software development", "translator", "paradigm", "object-oriented")):
+        return "maintainability"
+    return "fitness for purpose"
+
+
+def _analysis_prompt(point: str, evidence: str, index: int) -> str:
+    value = point.casefold()
+    if "fetch-decode-execute" in value:
+        emphasis = (
+            "Show how the program counter changes.",
+            "Show how an operand is transferred from memory.",
+            "Explain the role of the control unit in decoding the instruction.",
+            "Explain when the current instruction register is updated.",
+        )[(index - 1) % 4]
+        return (
+            "Explain how one machine-code instruction is processed during the "
+            "fetch-decode-execute cycle. Refer to the program counter, memory address "
+            "register, memory data register, current instruction register and control unit. "
+            f"{emphasis}"
+        )
+    if "processor components and buses" in value:
+        return (
+            "Explain how the address, data and control buses are used when an instruction "
+            "and its operand are transferred between memory and the processor."
+        )
+    if "processor performance" in value or "parallel processing" in value:
+        return (
+            f"Explain how cache size, clock speed and the number of processor cores could "
+            f"affect the performance of {evidence}. Include one reason why a higher value "
+            "does not always produce a proportional improvement."
+        )
+    if "input, output and storage" in value:
+        return (
+            f"Explain why the choice of input, output and secondary-storage devices for "
+            f"{evidence} must consider capacity, speed, durability and accessibility."
+        )
+    return f"Explain how {point} affects the technical operation of {evidence}. Use the supplied evidence."
+
+
+def _programming_prompt(point: str, evidence: str) -> str:
+    value = point.casefold()
+    if any(term in value for term in ("processor components", "fetch-decode", "processor performance")):
+        return (
+            "Produce a clearly labelled technical design showing how an input request is "
+            "processed and stored. Include the processor, main memory, relevant registers, "
+            "address/data/control buses, input and output, and the direction of each transfer."
+        )
+    return (
+        f"Develop pseudocode or a clearly labelled technical design that applies {point} "
+        f"to {evidence}. Include validation, exceptional-input handling and explanations "
+        "of the important design decisions."
+    )
+
+
 def build_paper(
     rule: PaperRule, syllabus: Syllabus, seed: int | None = None
 ) -> GeneratedPaper:
@@ -46,7 +111,7 @@ def build_paper(
             id=f"Q{section_rule.id}",
             title=f"Question {section_rule.id}",
             stimulus=_stimulus(topic, context, case_id, rng),
-            chart_title=f"Trace data for case {case_id}",
+            chart_title="Trace data for the supplied scenario",
             chart_labels=[f"N{index}" for index in range(1, 7)],
             chart_values=values,
             questions=[
@@ -81,6 +146,7 @@ def build_paper(
         seed=run_seed,
         sections=sections,
     )
+    paper = enrich_paper(paper, syllabus.topics, subject="computer science")
     validate_generated_paper(paper, rule, syllabus.topic_ids)
     return paper
 
@@ -93,12 +159,9 @@ def _stimulus(
     user = rng.choice(NAMES)
     size = rng.randint(120, 980)
     paragraph = (
-        f"Independent case {case_id}: {user} is developing {context}. The system handles "
-        f"{size} records during its busiest interval and must remain correct if an input is "
-        "missing, duplicated or delayed. The team is comparing alternative designs involving "
-        f"{first} and {second}. Costs, performance, security, maintainability and effects on "
-        "users must all be justified. All names, organisations and data in this practice "
-        "scenario are fictional."
+        f"{user} is developing {context}. During its busiest interval, the system processes "
+        f"{size} records. It must continue to behave predictably when data is missing, duplicated "
+        f"or delayed. The design uses {first}. The team is also considering {second}."
     )
     code = (
         f"01 total = {rng.randint(2, 9)}\n"
@@ -124,28 +187,35 @@ def _question(
     letter = chr(96 + index)
     number = f"{group}({letter})"
     point = topic.points[(index - 1) % len(topic.points)]
-    evidence = f"independent case {case_id} about {context}"
+    evidence = f"the {context.removeprefix('a ').removeprefix('an ')}"
+    focus = _technical_focus(point)
     if rule.kind == "short_answer":
         if rule.marks == 1:
+            aspect = (
+                "advantage",
+                "limitation",
+                "requirement",
+                "test condition",
+                "implementation risk",
+                "precondition",
+                "validation check",
+                "performance concern",
+                "correctness condition",
+            )[(index - 1) % 9]
             prompt = (
-                f"For part {number}, state one fact about {point} that is relevant "
-                f"to {evidence}."
+                f"State one {aspect} associated with {point} when it is used in {evidence}."
             )
         else:
             prompt = (
-                f"For part {number}, describe {rule.marks} distinct features of {point} "
-                f"that the developer should consider in {evidence}."
+                f"Describe {rule.marks} distinct features of {point} that should be "
+                f"considered when developing {evidence}, with particular reference to {focus}."
             )
         scheme = [
             f"One mark for each accurate, distinct point about {point}.",
             f"Accept a technically equivalent answer applied to case {case_id}.",
         ]
     elif rule.kind == "analysis":
-        prompt = (
-            f"For part {number}, explain how {point} could affect the correctness, "
-            f"performance or usability of the system in {evidence}. Refer to the supplied "
-            "trace or pseudocode."
-        )
+        prompt = _analysis_prompt(point, evidence, index)
         scheme = [
             f"Accurate knowledge of {point}.",
             "A linked technical chain from design choice to system behaviour.",
@@ -155,7 +225,7 @@ def _question(
     elif rule.kind == "calculation":
         value = rng.randint(18, 238)
         prompt = (
-            f"For part {number}, convert the denary value {value} used in {evidence} "
+            f"Convert the denary value {value} "
             "to 8-bit unsigned binary and hexadecimal. Show each stage required by "
             "the number of marks available."
         )
@@ -167,8 +237,8 @@ def _question(
     elif rule.kind == "trace":
         iterations = rng.randint(3, 7)
         prompt = (
-            f"For part {number}, trace the supplied pseudocode for the first {iterations} "
-            f"iterations using the data from {evidence}. Record each changed variable and "
+            f"Trace the supplied pseudocode for the first {iterations} iterations. "
+            "Record each changed variable and "
             "the resulting output in order."
         )
         scheme = [
@@ -179,8 +249,9 @@ def _question(
         ]
     elif rule.kind == "diagram":
         prompt = (
-            f"For part {number}, draw a clearly labelled logic or data-structure diagram "
-            f"for {point} in {evidence}. Show inputs, processing relationships and output."
+            f"Draw a clearly labelled logic or data-structure diagram that applies {point} "
+            f"to {evidence}, with particular reference to {focus}. Show inputs, processing "
+            "relationships and output."
         )
         scheme = [
             "Inputs and output are labelled.",
@@ -191,8 +262,9 @@ def _question(
     elif rule.kind == "table":
         comparison = topic.points[index % len(topic.points)]
         prompt = (
-            f"For part {number}, complete a comparison table for {point} and {comparison} "
-            f"in {evidence}. Include operation, one benefit, one limitation and a justified "
+            f"Complete a comparison table for {point} and {comparison} in the context of "
+            f"{evidence}. Include operation, one benefit, one limitation concerning {focus} "
+            "and a justified "
             "choice."
         )
         scheme = [
@@ -203,11 +275,7 @@ def _question(
             "Award one mark per distinct correct table entry up to the maximum.",
         ]
     elif rule.kind == "programming":
-        prompt = (
-            f"For part {number}, develop pseudocode or a clearly labelled technical design "
-            f"that uses {point} to meet the requirements of {evidence}. Include validation "
-            "and explain the important design decisions."
-        )
+        prompt = _programming_prompt(point, evidence)
         scheme = [
             "Inputs, outputs and identifiers are defined consistently.",
             "Sequence, selection and iteration or an equivalent suitable structure are correct.",
@@ -217,7 +285,7 @@ def _question(
         ]
     elif rule.kind == "extended_response":
         prompt = (
-            f"For part {number}, discuss the consequences of using {point} in {evidence}. "
+            f"Discuss the consequences of using {point} in {evidence}, focusing on {focus}. "
             "Consider technical operation, users, risks, alternatives and the evidence "
             "needed before deployment."
         )

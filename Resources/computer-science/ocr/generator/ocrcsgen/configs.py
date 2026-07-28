@@ -12,7 +12,8 @@ PAPER_1_MARKS = [
     [12, 4, 2, 6],
     [9],
     [2, 4, 4],
-    [5, 3, 3],
+    [5],
+    [3, 3],
 ]
 PAPER_2_MARKS = [
     [2, 1, 2, 4],
@@ -34,7 +35,8 @@ PAPER_1_KINDS = [
     ["extended_response", "analysis", "short_answer", "programming"],
     ["extended_response"],
     ["short_answer", "trace", "analysis"],
-    ["programming", "analysis", "analysis"],
+    ["programming"],
+    ["analysis", "analysis"],
 ]
 PAPER_2_KINDS = [
     ["short_answer", "short_answer", "analysis", "programming"],
@@ -50,7 +52,7 @@ PAPER_2_KINDS = [
 SECTION_TOPICS = {
     "paper_1": [
         "systems-1", "systems-1", "systems-2", "systems-4", "systems-5",
-        "systems-3", "systems-6", "systems-4", "systems-3",
+        "systems-3", "systems-6", "systems-4", "systems-3", "systems-6",
     ],
     "paper_2": [
         "algorithms-2", "algorithms-3", "algorithms-4", "algorithms-5",
