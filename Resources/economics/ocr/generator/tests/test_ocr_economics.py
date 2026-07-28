@@ -125,3 +125,17 @@ def test_mark_scheme_uses_dense_ocr_tables_and_guidance_pages(tmp_path: Path) ->
     assert "contestability" in diagram_text
     assert "labour" not in diagram_text
     assert len(rendered[20].get_drawings()) >= 20
+
+
+def test_business_objectives_use_cost_and_revenue_diagrams(tmp_path: Path) -> None:
+    paths = generate_package(
+        paper="1",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=1,
+    )
+
+    diagram_page = PdfReader(paths["mark_scheme"]).pages[20].extract_text() or ""
+    assert "Profit maximisation: MC = MR" in diagram_page
+    assert "Revenue maximisation: MR = 0" in diagram_page
+    assert "Entry increases competitive supply" not in diagram_page

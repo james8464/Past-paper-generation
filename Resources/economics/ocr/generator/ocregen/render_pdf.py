@@ -536,11 +536,37 @@ def _level_descriptor_text(
 
 
 def _question_focus(question: GeneratedQuestion) -> str:
+    topic_focuses = {
+        "micro-1": "resource allocation and opportunity cost",
+        "micro-2": "demand, supply and market equilibrium",
+        "micro-3": "business objectives, costs and revenue",
+        "micro-4": "market structures and contestability",
+        "micro-5": "the labour market",
+        "micro-6": "market failure and government intervention",
+        "macro-1": "aggregate demand and aggregate supply",
+        "macro-2": "macroeconomic performance and policy objectives",
+        "macro-3": "fiscal, monetary and supply-side policy",
+        "macro-4": "international trade and exchange rates",
+        "macro-5": "money, credit and the financial sector",
+    }
+    if question.topic_id in topic_focuses:
+        return topic_focuses[question.topic_id]
+
     prompt = question.prompt.casefold()
     focuses = [
+        ("objectives of firms", "business objectives, costs and revenue"),
+        ("costs, revenues", "business objectives, costs and revenue"),
+        ("opportunity cost", "resource allocation and opportunity cost"),
+        ("production possibility", "resource allocation and opportunity cost"),
         ("contestab", "market structures and contestability"),
         ("concentrat", "market structures and concentration"),
         ("price discrimination", "market structures and price discrimination"),
+        ("externalit", "market failure and government intervention"),
+        ("public goods", "market failure and government intervention"),
+        ("aggregate demand", "aggregate demand and aggregate supply"),
+        ("monetary policy", "fiscal, monetary and supply-side policy"),
+        ("fiscal policy", "fiscal, monetary and supply-side policy"),
+        ("financial", "money, credit and the financial sector"),
         ("labour", "the labour market"),
         ("competition", "market structures and competition"),
         ("monopoly", "market structures and monopoly"),
@@ -688,16 +714,58 @@ def _add_economics_diagram(
     compact: bool,
 ) -> None:
     focus = _question_focus(question)
+    if "business objectives" in focus:
+        _add_firm_objectives_diagram(
+            drawing,
+            x0=x0,
+            y0=y0,
+            width=width,
+            height=height,
+            alternative_objective=shifted,
+            compact=compact,
+        )
+        return
+    if "resource allocation" in focus:
+        _add_ppf_diagram(
+            drawing,
+            x0=x0,
+            y0=y0,
+            width=width,
+            height=height,
+            shifted=shifted,
+            compact=compact,
+        )
+        return
+
     if "labour" in focus:
         y_label, x_label, down_label, up_label = "Wage", "Employment", "DL", "SL"
-    elif "inflation" in focus or "growth" in focus:
+    elif "aggregate" in focus or "macroeconomic" in focus or "policy" in focus:
         y_label, x_label, down_label, up_label = "Price level", "Real output", "AD", "SRAS"
-    elif "exchange" in focus:
+    elif "exchange" in focus or "international" in focus:
         y_label, x_label, down_label, up_label = "Exchange rate", "Currency", "D", "S"
+    elif "financial" in focus or "credit" in focus:
+        y_label, x_label, down_label, up_label = "Interest rate", "Credit", "D", "S"
+    elif "market failure" in focus:
+        y_label, x_label, down_label, up_label = "Price / cost", "Quantity", "MPB", "MPC"
     else:
         y_label, x_label, down_label, up_label = "Price", "Quantity", "D", "S"
 
-    title = focus.capitalize() if not shifted else "Entry increases competitive supply"
+    shift_titles = [
+        ("market structures", "Entry increases competitive supply"),
+        ("labour", "Change in labour supply"),
+        ("market failure", "Social cost changes equilibrium"),
+        ("aggregate", "Aggregate supply shifts"),
+        ("macroeconomic", "Aggregate supply shifts"),
+        ("policy", "Policy changes aggregate supply"),
+        ("financial", "Credit supply changes"),
+        ("international", "Currency supply changes"),
+    ]
+    title = focus.capitalize()
+    if shifted:
+        title = next(
+            (label for token, label in shift_titles if token in focus),
+            "Change in market supply",
+        )
     title_size = 6 if compact else 9
     label_size = 5 if compact else 7
     inset = 10 if compact else 18
@@ -725,11 +793,12 @@ def _add_economics_diagram(
                 y0 + height - inset,
             )
         )
+        shifted_supply_label = "MSC" if up_label == "MPC" else f"{up_label}1"
         drawing.add(
             String(
                 x0 + width - inset + shift,
                 y0 + height - inset - 2,
-                f"{up_label}1",
+                shifted_supply_label,
                 fontName=FONT,
                 fontSize=label_size,
             )
@@ -750,6 +819,120 @@ def _add_economics_diagram(
             fontSize=label_size,
         )
     )
+
+
+def _add_firm_objectives_diagram(
+    drawing: Drawing,
+    *,
+    x0: float,
+    y0: float,
+    width: float,
+    height: float,
+    alternative_objective: bool,
+    compact: bool,
+) -> None:
+    title = (
+        "Revenue maximisation: MR = 0"
+        if alternative_objective
+        else "Profit maximisation: MC = MR"
+    )
+    title_size = 6 if compact else 9
+    label_size = 5 if compact else 7
+    inset = 10 if compact else 18
+    left = x0 + inset
+    right = x0 + width - inset
+    bottom = y0 + inset
+    top = y0 + height - inset
+
+    drawing.add(String(x0, y0 + height + (10 if compact else 28), title, fontName=FONT_BOLD, fontSize=title_size))
+    drawing.add(Line(x0, y0, x0, y0 + height))
+    drawing.add(Line(x0, y0, x0 + width, y0))
+    drawing.add(String(x0 - 3, y0 + height + 3, "Cost / revenue", fontName=FONT, fontSize=label_size))
+    drawing.add(String(x0 + width - 15, y0 - 9, "Output", fontName=FONT, fontSize=label_size))
+
+    drawing.add(Line(left, top, right, bottom))
+    mr_end_x = x0 + width * 0.62
+    drawing.add(Line(left, top, mr_end_x, y0))
+    drawing.add(Line(left, bottom, right, top))
+    drawing.add(String(right + 1, bottom - 2, "AR", fontName=FONT, fontSize=label_size))
+    drawing.add(String(mr_end_x - 18, y0 + 6, "MR", fontName=FONT, fontSize=label_size))
+    drawing.add(String(right + 1, top - 2, "MC", fontName=FONT, fontSize=label_size))
+
+    plot_width = right - left
+    plot_height = top - bottom
+    quantity_fraction = 0.62 if alternative_objective else 0.375
+    quantity_x = left + plot_width * quantity_fraction
+    price_y = top - plot_height * quantity_fraction
+    dash = [2, 2] if compact else [3, 2]
+    drawing.add(Line(quantity_x, y0, quantity_x, price_y, strokeDashArray=dash))
+    drawing.add(Line(x0, price_y, quantity_x, price_y, strokeDashArray=dash))
+    drawing.add(
+        String(
+            quantity_x + 3,
+            y0 + 3,
+            "Qr" if alternative_objective else "Qp",
+            fontName=FONT_BOLD,
+            fontSize=label_size,
+        )
+    )
+    drawing.add(
+        String(
+            x0 + 3,
+            price_y + 3,
+            "Pr" if alternative_objective else "Pp",
+            fontName=FONT_BOLD,
+            fontSize=label_size,
+        )
+    )
+
+
+def _add_ppf_diagram(
+    drawing: Drawing,
+    *,
+    x0: float,
+    y0: float,
+    width: float,
+    height: float,
+    shifted: bool,
+    compact: bool,
+) -> None:
+    title = (
+        "Outward shift in productive capacity"
+        if shifted
+        else "Production possibility frontier"
+    )
+    title_size = 6 if compact else 9
+    label_size = 5 if compact else 7
+    inset = 10 if compact else 18
+    drawing.add(String(x0, y0 + height + (10 if compact else 28), title, fontName=FONT_BOLD, fontSize=title_size))
+    drawing.add(Line(x0, y0, x0, y0 + height))
+    drawing.add(Line(x0, y0, x0 + width, y0))
+    drawing.add(String(x0 - 3, y0 + height + 3, "Good Y", fontName=FONT, fontSize=label_size))
+    drawing.add(String(x0 + width - 15, y0 - 9, "Good X", fontName=FONT, fontSize=label_size))
+
+    def frontier(scale: float) -> list[float]:
+        points: list[float] = []
+        for x_fraction, y_fraction in (
+            (0.06, 0.94),
+            (0.22, 0.89),
+            (0.40, 0.76),
+            (0.58, 0.58),
+            (0.77, 0.34),
+            (0.94, 0.06),
+        ):
+            points.extend(
+                [
+                    x0 + width * min(x_fraction * scale, 0.98),
+                    y0 + height * min(y_fraction * scale, 0.98),
+                ]
+            )
+        return points
+
+    drawing.add(PolyLine(frontier(0.88 if shifted else 1.0)))
+    drawing.add(String(x0 + width * 0.68, y0 + height * 0.42, "PPF", fontName=FONT, fontSize=label_size))
+    if shifted:
+        drawing.add(PolyLine(frontier(1.0)))
+        drawing.add(String(x0 + width * 0.76, y0 + height * 0.52, "PPF1", fontName=FONT, fontSize=label_size))
 
 
 MARK_SCHEME_EXTENSION_PAGE_COUNTS = {
