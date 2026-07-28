@@ -197,7 +197,139 @@ def _written(
     rng: random.Random,
 ) -> GeneratedQuestion:
     point = rng.choice(topic.points)
-    if rule.kind == "calculation":
+    if rule.id == "explain_trade":
+        prompt = (
+            f"Explain two reasons why {business} may offer a customer a trade discount."
+        )
+        scheme = [
+            "Encourages the customer to place a larger order;",
+            "Encourages repeat purchases or customer loyalty;",
+            "May increase sales revenue or market share;",
+            "Reduces the unit selling price and therefore gross profit per unit;",
+            "Award each reason only when it is developed in the business context.",
+        ]
+    elif rule.id == "statement_extract":
+        prompt = (
+            f"Prepare an extract from the statement of financial position for {business}, "
+            "showing the non-current assets section. Show all workings."
+        )
+        scheme = [
+            "Calculate depreciation for each class of non-current asset;",
+            "Account correctly for additions and disposals;",
+            "Show cost, accumulated depreciation and carrying amount;",
+            "Use the correct statement heading and date;",
+            "Award method marks for valid workings carried through consistently.",
+        ]
+    elif rule.id == "ledger_calculation":
+        prompt = (
+            f"Prepare the sales ledger control account for {business}. Balance the "
+            "account and bring the balance down at the start of the next period."
+        )
+        scheme = [
+            "Enter opening trade receivables on the debit side;",
+            "Enter credit sales from the sales journal;",
+            "Enter receipts, sales returns and discount allowed on the credit side;",
+            "Calculate and carry down the closing balance;",
+            "Bring down the balance on the debit side in the next period.",
+        ]
+    elif rule.id == "accounting_concept":
+        prompt = (
+            f"Prepare the sales account for {business}. Show clearly the amount "
+            "transferred to the income statement."
+        )
+        scheme = [
+            "Enter sales returns on the debit side where required;",
+            "Enter gross credit sales on the credit side;",
+            "Transfer net sales to the income statement;",
+        ]
+    elif rule.id == "company_statement":
+        prompt = (
+            f"Prepare the income statement for {business} for the year ended. "
+            "Show all workings."
+        )
+        scheme = [
+            "Calculate adjusted revenue and cost of sales;",
+            "Account correctly for damaged inventory and irrecoverable debts;",
+            "Accrue the outstanding supplier invoice;",
+            "Calculate the debenture finance cost using time apportionment;",
+            "Show profit before tax, tax charge and profit for the year;",
+            "Use a correct income-statement heading and layout.",
+        ]
+    elif rule.id == "company_adjustment":
+        prompt = (
+            f"Assess the usefulness of the income statement to the employees of {business}."
+        )
+        scheme = [
+            "Employees can assess profitability and the ability to sustain wages or employment;",
+            "Trends may help employees judge job security and negotiate remuneration;",
+            "The statement is historical and may not show future cash availability;",
+            "Accounting estimates and policies limit comparability;",
+            "A supported conclusion considers other financial and non-financial information.",
+        ]
+    elif rule.id == "partnership_1":
+        prompt = (
+            "Prepare the partners' capital accounts following the retirement of one "
+            "partner. Balance the accounts and bring down the remaining balances."
+        )
+        scheme = [
+            "Enter opening capital balances;",
+            "Apply the goodwill adjustment in the agreed profit-sharing ratio;",
+            "Record cash introduced or withdrawn;",
+            "Record the retiring partner's settlement;",
+            "Balance the continuing partners' accounts correctly.",
+        ]
+    elif rule.id == "partnership_2":
+        prompt = (
+            "Prepare the partnership profit and loss appropriation account for the "
+            "year, applying the change in partners and time apportionment."
+        )
+        scheme = [
+            "Apportion profit between the two periods;",
+            "Calculate partners' salaries for the relevant period;",
+            "Calculate interest on capital and interest on drawings;",
+            "Share residual profit using the correct ratio in each period;",
+            "Show each partner's total appropriation accurately.",
+        ]
+    elif rule.id == "partnership_3":
+        prompt = (
+            "Assess the view that the formal partnership agreement was unnecessary."
+        )
+        scheme = [
+            "An agreement clarifies capital, drawings, salaries, interest and profit-sharing;",
+            "It provides a process for admission, retirement and dispute resolution;",
+            "Preparation has legal or professional cost and cannot anticipate every event;",
+            "Default partnership law may apply where no agreement exists;",
+            "A supported conclusion weighs certainty and flexibility against cost.",
+        ]
+    elif rule.id == "decision_1":
+        prompt = (
+            f"Advise the owner of {business} which approach should be used to improve "
+            "the accounting records. Use the information in the case and reach a "
+            "justified conclusion."
+        )
+        scheme = [
+            "Compare the annual and initial financial costs of each approach;",
+            "Analyse the likely effect on accuracy, timeliness and credit control;",
+            "Consider the owner's time, staff expertise and quality of management information;",
+            "Evaluate security, reliability and implementation risks;",
+            "Reach a justified recommendation supported by the case evidence.",
+            *_levels(topic, point, case_id),
+        ]
+    elif rule.id == "decision_2":
+        prompt = (
+            f"Advise the investor whether the shares in {business} should be retained "
+            "or sold. Use the financial and non-financial evidence and reach a "
+            "justified conclusion."
+        )
+        scheme = [
+            "Analyse movements in profit, equity, dividends and the market price;",
+            "Use relevant investor ratios and explain what they indicate;",
+            "Assess gearing, interest-rate exposure and future cost pressure;",
+            "Consider dividend policy and relevant non-financial evidence;",
+            "Reach a balanced judgement that recognises the investor's objectives.",
+            *_levels(topic, point, case_id),
+        ]
+    elif rule.kind == "calculation":
         task = CALCULATION_TASKS.get(rule.id, "Calculate the required accounting figure")
         prompt = (
             f"{task} for {business} using the case evidence and accounting-information "

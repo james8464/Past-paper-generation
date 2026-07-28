@@ -5,6 +5,8 @@ import json
 import subprocess
 from pathlib import Path
 
+from pypdf import PdfReader
+
 from aqaaccountgen.cli import generate_package
 from aqaaccountgen.configs import RULES
 from aqaaccountgen.generator import build_paper
@@ -72,6 +74,37 @@ def test_both_packages_render_36_page_question_papers(tmp_path: Path) -> None:
         assert page_count(paths["question_paper"]) == 36
         assert page_count(paths["mark_scheme"]) == mark_scheme_pages[paper]
         assert all(path.stat().st_size > 2000 for path in paths.values())
+
+
+def test_paper_one_section_a_matches_measured_case_and_account_pages(tmp_path: Path) -> None:
+    paths = generate_package(
+        paper="1",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=123,
+    )
+
+    pages = PdfReader(paths["question_paper"]).pages
+    assert "DO NOT WRITE ON THIS PAGE" in (pages[6].extract_text() or "")
+    assert "Additional information" in (pages[7].extract_text() or "")
+    assert "13.1" not in (pages[8].extract_text() or "")
+    assert "Sales journal" in (pages[9].extract_text() or "")
+    assert "Sales Ledger Control Account" in (pages[10].extract_text() or "")
+    assert "not yet been accounted for" in (pages[11].extract_text() or "")
+    assert "Income statement" in (pages[12].extract_text() or "")
+    assert "Capital Accounts" in (pages[15].extract_text() or "")
+    assert "Drawings for the year" in (pages[17].extract_text() or "")
+    assert "Profit and loss appropriation account" in (pages[18].extract_text() or "")
+    assert "employ a bookkeeper" in (pages[21].extract_text() or "")
+    assert "Advise the owner" in (pages[22].extract_text() or "")
+    assert "DO NOT WRITE ON THIS PAGE" in (pages[26].extract_text() or "")
+    assert "Statement of changes in equity" in (pages[27].extract_text() or "")
+    assert "Advise the investor" in (pages[28].extract_text() or "")
+    assert "There are no questions printed on this page" in (
+        pages[32].extract_text() or ""
+    )
+    assert "Additional page, if required" in (pages[33].extract_text() or "")
+    assert "Independent practice material" in (pages[35].extract_text() or "")
 
 
 def test_invalid_paper_is_rejected(tmp_path: Path) -> None:
