@@ -88,7 +88,10 @@ final class PaperCreatorTests: XCTestCase {
         XCTAssertEqual(AppLinks.privacyPolicy.scheme, "https")
         XCTAssertEqual(AppLinks.projectHelp.scheme, "https")
         XCTAssertTrue(AppLinks.privacyPolicy.absoluteString.contains("#privacy"))
-        XCTAssertTrue(AppLinks.projectHelp.absoluteString.contains("#examforge"))
+        XCTAssertEqual(
+            AppLinks.projectHelp.absoluteString,
+            "https://github.com/james8464/Past-paper-generation"
+        )
     }
 
     func testCatalogReadyBoardsUseCorrectResourceFolders() throws {

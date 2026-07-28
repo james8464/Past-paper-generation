@@ -66,7 +66,7 @@ enum SecretAccount {
 }
 
 enum AppLinks {
-    static let projectHelp = webURL("https://github.com/james8464/Past-paper-generation#examforge")
+    static let projectHelp = webURL("https://github.com/james8464/Past-paper-generation")
     static let privacyPolicy = webURL("https://github.com/james8464/Past-paper-generation#privacy")
     static let support = webURL("https://github.com/james8464/Past-paper-generation/issues")
     static let ollamaDownload = webURL("https://ollama.com/download")
