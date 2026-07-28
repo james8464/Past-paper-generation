@@ -6,6 +6,7 @@ from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 
 from Backend.Core.fonts import register_fonts
+from Backend.Core.generation_date import formatted_generation_date
 from cspapergen.models import Paper1Context, PaperBlueprint
 
 
@@ -49,7 +50,9 @@ def render_preliminary_material(
     pdf.drawString(55, 735, "A-level COMPUTER SCIENCE")
     pdf.setFont(FONT_BOLD, 15)
     pdf.drawString(55, 706, f"Paper {blueprint.paper_number}: {context.scenario_title}")
-    y = 655
+    pdf.setFont(FONT, 10)
+    pdf.drawString(55, 680, formatted_generation_date())
+    y = 640
     y = _paragraph(
         pdf,
         y,
@@ -136,13 +139,15 @@ def render_electronic_answer_document(
     pdf.setFont(FONT_BOLD, 15)
     pdf.drawString(55, 704, "Paper 1 response document")
     pdf.setFont(FONT, 10)
-    pdf.drawString(55, 650, "Candidate name")
-    pdf.line(150, 648, 500, 648)
-    pdf.drawString(55, 615, "Candidate number")
-    pdf.line(160, 613, 310, 613)
+    pdf.drawString(55, 678, formatted_generation_date())
+    pdf.setFont(FONT, 10)
+    pdf.drawString(55, 640, "Candidate name")
+    pdf.line(150, 638, 500, 638)
+    pdf.drawString(55, 605, "Candidate number")
+    pdf.line(160, 603, 310, 603)
     _paragraph(
         pdf,
-        560,
+        550,
         "Type or write each response in the matching numbered area. For programming tasks, include your final code and concise test evidence. This is an unofficial practice document.",
     )
     _page_footer(pdf, page, blueprint.paper_code)

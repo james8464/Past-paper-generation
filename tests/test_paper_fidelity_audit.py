@@ -6,10 +6,19 @@ import pytest
 
 from tools.paper_fidelity_audit import (
     KNOWN_REFERENCE_MUPDF_DIAGNOSTICS,
+    _generated_document,
     _geometry_scores,
     _render_page_pixmap,
     profile,
 )
+
+
+def test_generated_document_supports_app_per_paper_directories(tmp_path: Path):
+    nested = tmp_path / "paper-1" / "question.pdf"
+    nested.parent.mkdir()
+    nested.touch()
+
+    assert _generated_document(tmp_path, "question.pdf") == nested
 
 
 def test_render_similarity_is_independent_of_pdf_primitive_type(tmp_path: Path):

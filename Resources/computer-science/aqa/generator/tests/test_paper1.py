@@ -5,6 +5,7 @@ import subprocess
 
 from pypdf import PdfReader
 
+from Backend.Core.generation_date import formatted_generation_date
 from cspapergen.cli import generate_package
 from cspapergen.generator import build_paper1_blueprint
 from cspapergen.syllabus import load_syllabus
@@ -88,12 +89,27 @@ def test_paper1_rendered_documents_use_correct_identity(tmp_path) -> None:
         ["pdftotext", "-layout", str(paths["preliminary_material"]), "-"],
         text=True,
     )
+    answer_document_text = subprocess.check_output(
+        [
+            "pdftotext",
+            "-layout",
+            "-f",
+            "1",
+            "-l",
+            "1",
+            str(paths["electronic_answer_document"]),
+            "-",
+        ],
+        text=True,
+    )
     assert "Paper 1" in question_text
     assert "Electronic Answer Document" in question_text
     assert "7517/1" in question_text
     assert "Paper 1" in mark_text
     assert "7517/1" in mark_text
     assert "Skeleton Program" in preliminary_text
+    assert formatted_generation_date() in preliminary_text
+    assert formatted_generation_date() in answer_document_text
 
     reader = PdfReader(paths["question_paper"])
     assert len(reader.pages) == 24

@@ -449,8 +449,14 @@ def audit(generated_root: Path) -> dict[str, Any]:
     families: dict[str, Any] = {}
     for family, paths in FAMILIES.items():
         generated_dir = generated_root / paths["generated_dir"]
-        generated_question = generated_dir / paths["question"]
-        generated_scheme = generated_dir / paths["scheme"]
+        generated_question = _generated_document(
+            generated_dir,
+            paths["question"],
+        )
+        generated_scheme = _generated_document(
+            generated_dir,
+            paths["scheme"],
+        )
         reference_question = ROOT / paths["reference_question"]
         reference_scheme = ROOT / paths["reference_scheme"]
         required = [generated_question, generated_scheme, reference_question, reference_scheme]
@@ -500,6 +506,16 @@ def audit(generated_root: Path) -> dict[str, Any]:
         "families": families,
         "overall": round(overall, 3),
     }
+
+
+def _generated_document(directory: Path, filename: str) -> Path:
+    direct = directory / filename
+    if direct.exists() or not directory.exists():
+        return direct
+    matches = sorted(directory.rglob(filename))
+    if len(matches) == 1:
+        return matches[0]
+    return direct
 
 
 def markdown(report: dict[str, Any]) -> str:
