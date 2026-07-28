@@ -1,0 +1,262 @@
+{
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/generate_paper.py": {
+    "mtime": 1778772750.4048524,
+    "ast_hash": "567c1cde52ef7c2f7c189a81f4acc11e",
+    "semantic_hash": "567c1cde52ef7c2f7c189a81f4acc11e"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/tests/test_validation.py": {
+    "mtime": 1778772750.413094,
+    "ast_hash": "85dc722016cd591857ef5fce451ac15e",
+    "semantic_hash": "85dc722016cd591857ef5fce451ac15e"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/tests/test_generate_paper_runner.py": {
+    "mtime": 1778772750.4100041,
+    "ast_hash": "223893b5dc8a489a8aaeb7c654853995",
+    "semantic_hash": "223893b5dc8a489a8aaeb7c654853995"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/tests/test_syllabus.py": {
+    "mtime": 1778772750.4128618,
+    "ast_hash": "959b61daeff0035020ed6ddd41070127",
+    "semantic_hash": "959b61daeff0035020ed6ddd41070127"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/tests/test_paper_configs.py": {
+    "mtime": 1778772750.4114373,
+    "ast_hash": "f02c52f3c14df1ebf49e978771ebab74",
+    "semantic_hash": "f02c52f3c14df1ebf49e978771ebab74"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/tests/test_ollama_prompt.py": {
+    "mtime": 1778772750.4113138,
+    "ast_hash": "cbfed163794b60e19e42ecf348be5a29",
+    "semantic_hash": "cbfed163794b60e19e42ecf348be5a29"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/tests/test_mark_scheme_layout.py": {
+    "mtime": 1784989371.8942409,
+    "ast_hash": "83eb164875c758793917ef18976ec2a5",
+    "semantic_hash": "83eb164875c758793917ef18976ec2a5"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/tests/test_exam_dates.py": {
+    "mtime": 1778772750.4098747,
+    "ast_hash": "2128b98b956e44c5eb914cf552c7e5eb",
+    "semantic_hash": "2128b98b956e44c5eb914cf552c7e5eb"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/tests/test_source_booklet.py": {
+    "mtime": 1784988901.7327013,
+    "ast_hash": "69a41a3ffe4b51f0e7f3c53b00d393af",
+    "semantic_hash": "69a41a3ffe4b51f0e7f3c53b00d393af"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/tests/test_cli.py": {
+    "mtime": 1778772750.409601,
+    "ast_hash": "8cc5db4636117128f986b7e2009f3c9d",
+    "semantic_hash": "8cc5db4636117128f986b7e2009f3c9d"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/tests/test_question_styles.py": {
+    "mtime": 1778772750.4118152,
+    "ast_hash": "4a164738228e95c0f66515d3011b0548",
+    "semantic_hash": "4a164738228e95c0f66515d3011b0548"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/tests/test_tui.py": {
+    "mtime": 1778772750.4129767,
+    "ast_hash": "540344c0b076d5899fde0ff5d0e04247",
+    "semantic_hash": "540344c0b076d5899fde0ff5d0e04247"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/tests/test_notes.py": {
+    "mtime": 1778772750.4108992,
+    "ast_hash": "cb13ca76709fde72e62d5699ca7bd746",
+    "semantic_hash": "cb13ca76709fde72e62d5699ca7bd746"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/tests/test_blueprint.py": {
+    "mtime": 1785192112.1015017,
+    "ast_hash": "1e8efa71feffeef527eb7e51aa80172d",
+    "semantic_hash": "1e8efa71feffeef527eb7e51aa80172d"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/tests/test_render_pdf.py": {
+    "mtime": 1785192336.629583,
+    "ast_hash": "a924b47fc6bf8db6769869c5534863cc",
+    "semantic_hash": "a924b47fc6bf8db6769869c5534863cc"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/tests/test_ollama_generation.py": {
+    "mtime": 1778772750.4111862,
+    "ast_hash": "cc0bf7f7dc71b45be12593658ed46db1",
+    "semantic_hash": "cc0bf7f7dc71b45be12593658ed46db1"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/pastpapergen/syllabus.py": {
+    "mtime": 1778772750.4085505,
+    "ast_hash": "8338a277dbd3d0951f1579658595292a",
+    "semantic_hash": "8338a277dbd3d0951f1579658595292a"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/pastpapergen/render_pdf.py": {
+    "mtime": 1785192285.7240708,
+    "ast_hash": "c9a287f48dcbf451b9937a785ab2419c",
+    "semantic_hash": "c9a287f48dcbf451b9937a785ab2419c"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/pastpapergen/ollama_client.py": {
+    "mtime": 1785189134.5950012,
+    "ast_hash": "b0e7ebffbb449a3e24429e377bc3eb6b",
+    "semantic_hash": "b0e7ebffbb449a3e24429e377bc3eb6b"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/pastpapergen/models.py": {
+    "mtime": 1783723232.5601704,
+    "ast_hash": "1a067901552127c0d010769ee79f3eea",
+    "semantic_hash": "1a067901552127c0d010769ee79f3eea"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/pastpapergen/paper_configs.py": {
+    "mtime": 1778772750.4074411,
+    "ast_hash": "c5d73fde27498c28043c58b987d2ff6c",
+    "semantic_hash": "c5d73fde27498c28043c58b987d2ff6c"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/pastpapergen/__init__.py": {
+    "mtime": 1778772750.4050055,
+    "ast_hash": "1b1ac862df3fd4a8cb8195b57266cafa",
+    "semantic_hash": "1b1ac862df3fd4a8cb8195b57266cafa"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/pastpapergen/exam_dates.py": {
+    "mtime": 1783707579.3515549,
+    "ast_hash": "b786174bf49a7c5cfca2b2ae34b7fa4e",
+    "semantic_hash": "b786174bf49a7c5cfca2b2ae34b7fa4e"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/pastpapergen/notes.py": {
+    "mtime": 1784986989.266709,
+    "ast_hash": "f175aa2ab981053e71981baf41ffdb7f",
+    "semantic_hash": "f175aa2ab981053e71981baf41ffdb7f"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/pastpapergen/generator.py": {
+    "mtime": 1785192173.7257698,
+    "ast_hash": "28cdccc5862b25ca0b4f3fbd3187760b",
+    "semantic_hash": "28cdccc5862b25ca0b4f3fbd3187760b"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/pastpapergen/cli.py": {
+    "mtime": 1778772750.4054892,
+    "ast_hash": "bda72a276332d7d278d881ad49a983f2",
+    "semantic_hash": "bda72a276332d7d278d881ad49a983f2"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/pastpapergen/tui.py": {
+    "mtime": 1778772750.40871,
+    "ast_hash": "c3096b490f4ebadccab1f635a14fa5b8",
+    "semantic_hash": "c3096b490f4ebadccab1f635a14fa5b8"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/pastpapergen/source_cases.py": {
+    "mtime": 1778772750.408408,
+    "ast_hash": "75a664a10e03cb4adf7896c7bacad116",
+    "semantic_hash": "75a664a10e03cb4adf7896c7bacad116"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/pastpapergen/__main__.py": {
+    "mtime": 1778772750.4051125,
+    "ast_hash": "b9e6ae432a75667203d8046ab699cba3",
+    "semantic_hash": "b9e6ae432a75667203d8046ab699cba3"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/pastpapergen/validation.py": {
+    "mtime": 1778772750.408829,
+    "ast_hash": "fd063942cfaa71fbad3b2701b586b576",
+    "semantic_hash": "fd063942cfaa71fbad3b2701b586b576"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/syllabus_seed.json": {
+    "mtime": 1778772750.4047463,
+    "ast_hash": "da6bd24987f5230c20e1f0113654fc87",
+    "semantic_hash": "da6bd24987f5230c20e1f0113654fc87"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/2.6. Macroeconomic Objectives and Policies.txt": {
+    "mtime": 1778772750.402301,
+    "ast_hash": "e493398c7058b7c4f8ed09aa347336a3",
+    "semantic_hash": "e493398c7058b7c4f8ed09aa347336a3"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/1.2. How Markets Work.txt": {
+    "mtime": 1778772750.4006987,
+    "ast_hash": "3d655182aee98611a7bac78e4cce72bd",
+    "semantic_hash": "3d655182aee98611a7bac78e4cce72bd"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/3.2. Business Objectives.txt": {
+    "mtime": 1778772750.4026046,
+    "ast_hash": "60185b5bae2184f3bfa32a39c4ec707f",
+    "semantic_hash": "60185b5bae2184f3bfa32a39c4ec707f"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/1.4. Government Intervention.txt": {
+    "mtime": 1778772750.4011173,
+    "ast_hash": "090e6f3ef9f1734cc9a5437db1ef0157",
+    "semantic_hash": "090e6f3ef9f1734cc9a5437db1ef0157"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/3.3. Revenues, Costs and Profits.txt": {
+    "mtime": 1778772750.4028852,
+    "ast_hash": "4132b81009ef8dbfe13ad106bae4941f",
+    "semantic_hash": "4132b81009ef8dbfe13ad106bae4941f"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/3.1. Business Growth.txt": {
+    "mtime": 1778772750.4024491,
+    "ast_hash": "33db4bf1c2f70acf1432d7cbfbab82a5",
+    "semantic_hash": "33db4bf1c2f70acf1432d7cbfbab82a5"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/2.5. Economic Growth.txt": {
+    "mtime": 1778772750.4021056,
+    "ast_hash": "7838c774a64040af7f017364d5520b9a",
+    "semantic_hash": "7838c774a64040af7f017364d5520b9a"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/2.4. National Income.txt": {
+    "mtime": 1778772750.4019482,
+    "ast_hash": "cb70442d86fd42f4fa1550f473d78049",
+    "semantic_hash": "cb70442d86fd42f4fa1550f473d78049"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/3.4. Market Structures.txt": {
+    "mtime": 1778772750.40309,
+    "ast_hash": "994d368e9cde78d8b5b94b30e8c1569b",
+    "semantic_hash": "994d368e9cde78d8b5b94b30e8c1569b"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/2.2. Aggregate Demand.txt": {
+    "mtime": 1778772750.4016347,
+    "ast_hash": "0fd9e52e6169184625e1b37a083f8437",
+    "semantic_hash": "0fd9e52e6169184625e1b37a083f8437"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/3.6. Government Intervention.txt": {
+    "mtime": 1778772750.4033933,
+    "ast_hash": "aa2c0520f2845910f2f9c6cb8abf87c8",
+    "semantic_hash": "aa2c0520f2845910f2f9c6cb8abf87c8"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/3.5. Labour Markets.txt": {
+    "mtime": 1778772750.4032521,
+    "ast_hash": "666c7bce030ef398155797e1240181be",
+    "semantic_hash": "666c7bce030ef398155797e1240181be"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/2.1. Measures of Economic Performance.txt": {
+    "mtime": 1778772750.4014637,
+    "ast_hash": "807b7c2299aa05caaa03cbc4082db5c9",
+    "semantic_hash": "807b7c2299aa05caaa03cbc4082db5c9"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/4.4. The Financial Sector.txt": {
+    "mtime": 1778772750.4043941,
+    "ast_hash": "ec299c8f9e2e2040bc903ae4153d9477",
+    "semantic_hash": "ec299c8f9e2e2040bc903ae4153d9477"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/2.3. Aggregate Supply.txt": {
+    "mtime": 1778772750.4018116,
+    "ast_hash": "d062b96b45864e231f26f545e5ff48c6",
+    "semantic_hash": "d062b96b45864e231f26f545e5ff48c6"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/1.1. Nature of Economics.txt": {
+    "mtime": 1778772750.4003115,
+    "ast_hash": "9e4b3640417ed493eeb33b94c891f798",
+    "semantic_hash": "9e4b3640417ed493eeb33b94c891f798"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/1.3. Market Failure.txt": {
+    "mtime": 1778772750.4009662,
+    "ast_hash": "db90ac51d79b6666f8abc7dfeb604d1e",
+    "semantic_hash": "db90ac51d79b6666f8abc7dfeb604d1e"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/4.5. Role of the State in the Macroeconomy.txt": {
+    "mtime": 1778772750.4045906,
+    "ast_hash": "aedef8fa6c01066e877b57a5d8e0cb6d",
+    "semantic_hash": "aedef8fa6c01066e877b57a5d8e0cb6d"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/4.2. Poverty and Inequality.txt": {
+    "mtime": 1778772750.403875,
+    "ast_hash": "7189dc98e8b591b6a9d77a287845b34e",
+    "semantic_hash": "7189dc98e8b591b6a9d77a287845b34e"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/4.3. Emerging and Developing Economies.txt": {
+    "mtime": 1778772750.4041345,
+    "ast_hash": "4b78e2a72c2a1bbe5c447ee14aac70f3",
+    "semantic_hash": "4b78e2a72c2a1bbe5c447ee14aac70f3"
+  },
+  "/Users/james/Developer/Past Paper Creation/Resources/economics/edexcel-a/generator/data/notes/text/4.1. International Economics.txt": {
+    "mtime": 1778772750.403629,
+    "ast_hash": "2875f5f83c76f188142151f4e7b2f1b2",
+    "semantic_hash": "2875f5f83c76f188142151f4e7b2f1b2"
+  }
+}

@@ -8,8 +8,9 @@ out-*/
 output/
 debug_images/
 analysis/
-graphify-out/cache/
-graphify-out/.graphify_*
+**/.graphify_*
+**/graphify-out/cache/
+**/graphify-out/.graphify_*
 .DS_Store
 .idea/
 macOS/build/
