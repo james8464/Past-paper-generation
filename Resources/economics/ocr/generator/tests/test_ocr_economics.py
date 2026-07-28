@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import fitz
 from pypdf import PdfReader
 
 from Backend.Core.exam_blueprints import validate_generated_paper, validate_rule
@@ -109,5 +110,18 @@ def test_mark_scheme_uses_dense_ocr_tables_and_guidance_pages(tmp_path: Path) ->
     assert "LEVELS OF RESPONSE" in (pages[9].extract_text() or "")
     question_page = pages[10].extract_text() or ""
     assert all(heading in question_page for heading in ("Question", "Answer", "Mark", "Guidance"))
+    assert "Diagram guidance for 1(b)" in question_page
+    data_page = pages[11].extract_text() or ""
+    assert "x 100 =" in data_page
+    assert "index points" in data_page
+    assert "Worked calculation" not in data_page
     objectives_page = pages[-2].extract_text() or ""
     assert all(heading in objectives_page for heading in ("AO1", "AO2", "AO3", "AO4", "TOTAL"))
+
+    rendered = fitz.open(paths["mark_scheme"])
+    assert len(rendered[10].get_drawings()) >= 30
+    diagram_text = rendered[20].get_text().casefold()
+    assert "diagram guidance" in diagram_text
+    assert "contestability" in diagram_text
+    assert "labour" not in diagram_text
+    assert len(rendered[20].get_drawings()) >= 20

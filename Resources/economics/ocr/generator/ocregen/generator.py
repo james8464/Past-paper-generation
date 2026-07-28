@@ -172,6 +172,10 @@ def _question(
         mark_label = "mark" if rule.marks == 1 else "marks"
         scheme = [
             f"Valid method using {values[0]} and {values[-1]}.",
+            (
+                f"Calculation: (({values[-1]} - {values[0]}) / {values[0]}) "
+                f"x 100 = {change:.1f}%."
+            ),
             f"Correct answer: {change:.1f}%.",
             f"Maximum {rule.marks} {mark_label}.",
         ]
@@ -206,7 +210,13 @@ def _question(
         else:
             verb = "compare" if rule.command_word == "Compare" else "explain"
             prompt = f"Using the data in {evidence}, {verb} the observed changes and relate them to {point}."
-        scheme = ["Accurate use of at least two data points.", f"Developed economic reasoning involving {point}.", "Recognition of the limits of the comparison."]
+        direction = "an increase" if values[-1] >= values[0] else "a decrease"
+        scheme = [
+            f"Accurate comparison: the index changes from {values[0]} to {values[-1]}.",
+            f"This is {direction} of {abs(values[-1] - values[0]):.1f} index points.",
+            f"Developed economic reasoning involving {point}.",
+            "Recognition of the limits of the comparison.",
+        ]
     elif rule.kind == "essay":
         prompt = f"Evaluate, using an appropriate diagram where relevant, the impact of {point} on {topic.title.lower()}."
         scheme = _evaluation_scheme(topic, point, rule.marks)

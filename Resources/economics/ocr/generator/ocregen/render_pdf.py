@@ -380,11 +380,14 @@ def _paper_one_two_mark_scheme_content(paper: GeneratedPaper) -> list[Flowable]:
             _banner(f"Section {paper.sections[0].id}: {paper.sections[0].title}"),
             Spacer(1, 3 * mm),
             *_scheme_block(data_questions[0]),
-            *_scheme_block(data_questions[1]),
+            *_scheme_block(
+                data_questions[1],
+                diagram_questions=[data_questions[1], data_questions[1]],
+            ),
         ],
         [
-            *_scheme_block(data_questions[2]),
-            *_scheme_block(data_questions[3]),
+            *_scheme_block(data_questions[2], body_height=62 * mm),
+            *_scheme_block(data_questions[3], body_height=66 * mm),
         ],
         _level_descriptor_page(data_questions[4]),
         _indicative_guidance_page(data_questions[4]),
@@ -535,6 +538,9 @@ def _level_descriptor_text(
 def _question_focus(question: GeneratedQuestion) -> str:
     prompt = question.prompt.casefold()
     focuses = [
+        ("contestab", "market structures and contestability"),
+        ("concentrat", "market structures and concentration"),
+        ("price discrimination", "market structures and price discrimination"),
         ("labour", "the labour market"),
         ("competition", "market structures and competition"),
         ("monopoly", "market structures and monopoly"),
@@ -639,38 +645,111 @@ def _economics_diagram_pair(
 ) -> Drawing:
     drawing = Drawing(245 * mm, 76 * mm)
     for index, question in enumerate(questions[:2]):
-        x0 = 28 + index * 360
-        y0 = 38
-        width = 250
-        height = 145
-        focus = _question_focus(question)
+        _add_economics_diagram(
+            drawing,
+            question,
+            x0=28 + index * 360,
+            y0=38,
+            width=250,
+            height=145,
+            shifted=index == 1,
+            compact=False,
+        )
+    return drawing
+
+
+def _compact_economics_diagram_pair(
+    questions: list[GeneratedQuestion],
+) -> Drawing:
+    drawing = Drawing(98 * mm, 70 * mm)
+    for index, question in enumerate(questions[:2]):
+        _add_economics_diagram(
+            drawing,
+            question,
+            x0=18,
+            y0=107 - index * 89,
+            width=235,
+            height=63,
+            shifted=index == 1,
+            compact=True,
+        )
+    return drawing
+
+
+def _add_economics_diagram(
+    drawing: Drawing,
+    question: GeneratedQuestion,
+    *,
+    x0: float,
+    y0: float,
+    width: float,
+    height: float,
+    shifted: bool,
+    compact: bool,
+) -> None:
+    focus = _question_focus(question)
+    if "labour" in focus:
+        y_label, x_label, down_label, up_label = "Wage", "Employment", "DL", "SL"
+    elif "inflation" in focus or "growth" in focus:
+        y_label, x_label, down_label, up_label = "Price level", "Real output", "AD", "SRAS"
+    elif "exchange" in focus:
+        y_label, x_label, down_label, up_label = "Exchange rate", "Currency", "D", "S"
+    else:
+        y_label, x_label, down_label, up_label = "Price", "Quantity", "D", "S"
+
+    title = focus.capitalize() if not shifted else "Entry increases competitive supply"
+    title_size = 6 if compact else 9
+    label_size = 5 if compact else 7
+    inset = 10 if compact else 18
+    drawing.add(String(x0, y0 + height + (10 if compact else 28), title, fontName=FONT_BOLD, fontSize=title_size))
+    drawing.add(Line(x0, y0, x0, y0 + height))
+    drawing.add(Line(x0, y0, x0 + width, y0))
+    drawing.add(String(x0 - 3, y0 + height + 3, y_label, fontName=FONT, fontSize=label_size))
+    drawing.add(String(x0 + width - 15, y0 - 9, x_label, fontName=FONT, fontSize=label_size))
+
+    drawing.add(Line(x0 + inset, y0 + height - inset, x0 + width - inset, y0 + inset))
+    drawing.add(Line(x0 + inset, y0 + inset, x0 + width - inset, y0 + height - inset))
+    drawing.add(String(x0 + width - inset + 1, y0 + inset - 3, down_label, fontName=FONT, fontSize=label_size))
+    drawing.add(String(x0 + width - inset + 1, y0 + height - inset - 2, up_label, fontName=FONT, fontSize=label_size))
+
+    equilibrium_x = x0 + width / 2
+    equilibrium_y = y0 + height / 2
+    equilibrium_label = "E"
+    if shifted:
+        shift = 14 if compact else 28
         drawing.add(
-            String(
-                x0,
-                y0 + height + 28,
-                focus.capitalize(),
-                fontName=FONT_BOLD,
-                fontSize=9,
+            Line(
+                x0 + inset + shift,
+                y0 + inset,
+                x0 + width - inset + shift,
+                y0 + height - inset,
             )
         )
-        drawing.add(Line(x0, y0, x0, y0 + height))
-        drawing.add(Line(x0, y0, x0 + width, y0))
-        if "labour" in focus:
-            y_label, x_label, down_label, up_label = "Wage", "Employment", "D\u2097", "S\u2097"
-        else:
-            y_label, x_label, down_label, up_label = "Price", "Quantity", "D", "S"
-        drawing.add(String(x0 - 5, y0 + height + 7, y_label, fontName=FONT, fontSize=7))
-        drawing.add(String(x0 + width - 15, y0 - 14, x_label, fontName=FONT, fontSize=7))
-        drawing.add(Line(x0 + 18, y0 + height - 18, x0 + width - 20, y0 + 18))
-        drawing.add(Line(x0 + 18, y0 + 18, x0 + width - 20, y0 + height - 18))
-        drawing.add(String(x0 + width - 18, y0 + 11, down_label, fontName=FONT, fontSize=7))
-        drawing.add(String(x0 + width - 18, y0 + height - 11, up_label, fontName=FONT, fontSize=7))
-        equilibrium_x = x0 + width / 2
-        equilibrium_y = y0 + height / 2
-        drawing.add(Line(equilibrium_x, y0, equilibrium_x, equilibrium_y, strokeDashArray=[3, 2]))
-        drawing.add(Line(x0, equilibrium_y, equilibrium_x, equilibrium_y, strokeDashArray=[3, 2]))
-        drawing.add(String(equilibrium_x + 4, equilibrium_y + 4, "E", fontName=FONT_BOLD, fontSize=7))
-    return drawing
+        drawing.add(
+            String(
+                x0 + width - inset + shift,
+                y0 + height - inset - 2,
+                f"{up_label}1",
+                fontName=FONT,
+                fontSize=label_size,
+            )
+        )
+        equilibrium_x += shift / 2
+        equilibrium_y -= shift * height / (2 * width)
+        equilibrium_label = "E1"
+
+    dash = [2, 2] if compact else [3, 2]
+    drawing.add(Line(equilibrium_x, y0, equilibrium_x, equilibrium_y, strokeDashArray=dash))
+    drawing.add(Line(x0, equilibrium_y, equilibrium_x, equilibrium_y, strokeDashArray=dash))
+    drawing.add(
+        String(
+            equilibrium_x + 3,
+            equilibrium_y + 3,
+            equilibrium_label,
+            fontName=FONT_BOLD,
+            fontSize=label_size,
+        )
+    )
 
 
 MARK_SCHEME_EXTENSION_PAGE_COUNTS = {
@@ -699,7 +778,10 @@ def _mark_scheme_extension_pages(paper: GeneratedPaper) -> list[Flowable]:
             pages.extend(_assessment_objectives_page(paper, questions))
             continue
         question = extended[index % len(extended)]
-        pages.extend(_extended_guidance_page(question, index))
+        if paper.paper_id in {"paper_1", "paper_2"} and index == 1:
+            pages.extend(_extended_diagram_page(question))
+        else:
+            pages.extend(_extended_guidance_page(question, index))
     return pages
 
 
@@ -764,6 +846,20 @@ def _extended_guidance_page(
             "applied to the question and supports the judgement reached.",
             STYLES["body"],
         ),
+    ]
+
+
+def _extended_diagram_page(
+    question: GeneratedQuestion,
+) -> list[Flowable]:
+    return [
+        Paragraph(f"Question {question.number} diagram guidance", STYLES["heading"]),
+        Spacer(1, 3 * mm),
+        Paragraph(question.prompt, STYLES["body"]),
+        Spacer(1, 3 * mm),
+        _economics_diagram_pair([question, question]),
+        Spacer(1, 3 * mm),
+        *_compact_indicative_guidance(question, 6),
     ]
 
 
@@ -1162,12 +1258,25 @@ def _question_table(question: GeneratedQuestion) -> Table:
     )
 
 
-def _scheme_block(question: GeneratedQuestion) -> list[Flowable]:
+def _scheme_block(
+    question: GeneratedQuestion,
+    diagram_questions: list[GeneratedQuestion] | None = None,
+    body_height: float | None = None,
+) -> list[Flowable]:
     answer_points, guidance_points = _split_scheme_points(question)
     answer = (
         f"<b>{escape(question.prompt)}</b><br/><br/>"
         + "<br/>".join(f"• {escape(point)}" for point in answer_points)
     )
+    answer_cell: list[Flowable] = [Paragraph(answer, STYLES["small"])]
+    if diagram_questions:
+        answer_cell.extend(
+            [
+                Spacer(1, 2 * mm),
+                Paragraph(f"<b>Diagram guidance for {escape(question.number)}</b>", STYLES["small"]),
+                _compact_economics_diagram_pair(diagram_questions),
+            ]
+        )
     guidance = "<br/>".join(
         f"• {escape(point)}"
         for point in [*_question_guidance(question), *guidance_points]
@@ -1181,7 +1290,7 @@ def _scheme_block(question: GeneratedQuestion) -> list[Flowable]:
         ],
         [
             Paragraph(escape(question.number), STYLES["small"]),
-            Paragraph(answer, STYLES["small"]),
+            answer_cell,
             Paragraph(str(question.marks), STYLES["centre"]),
             Paragraph(guidance, STYLES["small"]),
         ],
@@ -1189,6 +1298,7 @@ def _scheme_block(question: GeneratedQuestion) -> list[Flowable]:
     table = Table(
         rows,
         colWidths=[25 * mm, 112 * mm, 17 * mm, 106 * mm],
+        rowHeights=[None, body_height] if body_height is not None else None,
         repeatRows=1,
     )
     table.setStyle(
@@ -1234,7 +1344,14 @@ def _split_scheme_points(
             target.append(point)
     answer = answer or question.mark_scheme[:1]
     answer_limit = 8 if question.marks >= 20 else 6
-    guidance_limit = 9 if question.marks >= 8 else 6
+    if question.marks >= 8:
+        guidance_limit = 9
+    elif question.kind == "diagram_analysis":
+        guidance_limit = 4
+    elif question.kind == "short_answer":
+        guidance_limit = 1
+    else:
+        guidance_limit = 2
     return answer[:answer_limit], guidance[:guidance_limit]
 
 
