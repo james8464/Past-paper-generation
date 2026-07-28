@@ -95,6 +95,15 @@ def test_paper1_rendered_documents_use_correct_identity(tmp_path) -> None:
     assert "7517/1" in mark_text
     assert "Skeleton Program" in preliminary_text
 
+    reader = PdfReader(paths["question_paper"])
+    assert len(reader.pages) == 24
+    assert "Section A" in (reader.pages[1].extract_text() or "")
+    assert "trace table" in (reader.pages[6].extract_text() or "").casefold()
+    assert "Section B" in (reader.pages[7].extract_text() or "")
+    assert "Section C" in (reader.pages[10].extract_text() or "")
+    assert "Section D" in (reader.pages[15].extract_text() or "")
+    assert "END OF QUESTIONS" in (reader.pages[19].extract_text() or "")
+
 
 def test_electronic_answer_document_has_one_fillable_field_per_part(tmp_path) -> None:
     paths = generate_package(output_dir=tmp_path, paper="1", seed=42, dry_run=True)

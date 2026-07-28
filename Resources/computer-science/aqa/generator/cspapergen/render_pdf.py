@@ -300,39 +300,257 @@ def _render_paper1_question_pages(
     blueprint: PaperBlueprint,
     state: _QuestionRenderState,
 ) -> _QuestionRenderState:
-    _draw_paper1_section_intro(pdf, state, *PAPER1_SECTIONS[1])
+    if [question.number for question in blueprint.questions] != list(range(1, 13)):
+        raise ValueError("Paper 1 question paper requires Questions 1 to 12")
+    questions = {question.number: question for question in blueprint.questions}
+
+    _draw_paper1_compact_section_heading(pdf, state, *PAPER1_SECTIONS[1])
+    state = _render_question(
+        pdf,
+        questions[1],
+        state,
+        show_answer_space=False,
+        allow_current_page=True,
+    )
+
     state = _new_question_page(pdf, state)
+    state = _render_question(
+        pdf,
+        questions[2],
+        state,
+        show_answer_space=False,
+        allow_current_page=True,
+    )
+    state = _render_paper1_partial_question(
+        pdf,
+        questions[3],
+        questions[3].parts[:2],
+        state,
+        allow_current_page=True,
+    )
 
-    for index, question in enumerate(blueprint.questions):
-        if question.number in PAPER1_SECTIONS and question.number != 1:
-            state = _new_question_page(pdf, state)
-            _draw_paper1_section_intro(pdf, state, *PAPER1_SECTIONS[question.number])
-            state = _new_question_page(pdf, state)
-        elif index and question.number not in PAPER1_SHARE_PAGE_WITH_PREVIOUS:
-            state = _new_question_page(pdf, state)
+    state = _new_question_page(pdf, state)
+    state = _render_paper1_partial_question(
+        pdf,
+        questions[3],
+        questions[3].parts[2:4],
+        state,
+    )
 
+    state = _new_question_page(pdf, state)
+    state = _render_paper1_partial_question(
+        pdf,
+        questions[3],
+        questions[3].parts[4:],
+        state,
+    )
+    _draw_trace_response_grid(pdf, state, rows=8)
+
+    state = _new_question_page(pdf, state)
+    _draw_paper1_support_page(pdf, state, questions[3])
+
+    state = _new_question_page(pdf, state)
+    _draw_paper1_trace_support_page(pdf, state, questions[3])
+
+    state = _new_question_page(pdf, state)
+    _draw_paper1_compact_section_heading(pdf, state, *PAPER1_SECTIONS[4])
+    state = _render_question(
+        pdf,
+        questions[4],
+        state,
+        show_answer_space=False,
+        allow_current_page=True,
+    )
+
+    state = _new_question_page(pdf, state)
+    _draw_complexity_support_page(pdf, state, questions[4])
+
+    state = _new_question_page(pdf, state)
+    _draw_intentionally_blank_page(pdf, state)
+
+    state = _new_question_page(pdf, state)
+    _draw_paper1_compact_section_heading(pdf, state, *PAPER1_SECTIONS[5])
+    state = _render_question(
+        pdf,
+        questions[5],
+        state,
+        show_answer_space=False,
+        allow_current_page=True,
+    )
+
+    state = _new_question_page(pdf, state)
+    state = _render_paper1_partial_question(
+        pdf,
+        questions[6],
+        questions[6].parts[:4],
+        state,
+    )
+
+    state = _new_question_page(pdf, state)
+    state = _render_paper1_partial_question(
+        pdf,
+        questions[6],
+        questions[6].parts[4:],
+        state,
+    )
+
+    state = _new_question_page(pdf, state)
+    _draw_paper1_support_page(pdf, state, questions[6])
+
+    state = _new_question_page(pdf, state)
+    _draw_intentionally_blank_page(pdf, state)
+
+    state = _new_question_page(pdf, state)
+    _draw_paper1_compact_section_heading(pdf, state, *PAPER1_SECTIONS[7])
+    for number in (7, 8, 9):
         state = _render_question(
             pdf,
-            question,
+            questions[number],
             state,
             show_answer_space=False,
-            allow_current_page=question.number in PAPER1_SHARE_PAGE_WITH_PREVIOUS,
+            allow_current_page=True,
         )
-        interstitial = PAPER1_INTERSTITIAL_AFTER.get(question.number)
-        if interstitial:
-            state = _new_question_page(pdf, state)
-            if interstitial == "support":
-                _draw_paper1_support_page(pdf, state, question)
-            else:
-                _draw_intentionally_blank_page(pdf, state)
+
+    state = _new_question_page(pdf, state)
+    _draw_skeleton_program_support_page(pdf, state, questions[9])
+
+    for number in (10, 11, 12):
+        state = _new_question_page(pdf, state)
+        state = _render_question(
+            pdf,
+            questions[number],
+            state,
+            show_answer_space=False,
+            allow_current_page=True,
+        )
 
     state = _ensure_space(pdf, state, 72)
     pdf.setFont(FONT_BOLD, 10)
     pdf.drawCentredString(282, state.y - 18, "END OF QUESTIONS")
-    for _index in range(PAPER1_TRAILING_BLANK_PAGES):
+    for _index in range(4):
         state = _new_question_page(pdf, state)
         _draw_intentionally_blank_page(pdf, state)
     return state
+
+
+def _draw_paper1_compact_section_heading(
+    pdf: canvas.Canvas,
+    state: _QuestionRenderState,
+    title: str,
+    timing: str,
+) -> None:
+    pdf.setFont(FONT_BOLD, 13)
+    pdf.drawCentredString(289, 720, title)
+    pdf.setFont(FONT, 10)
+    pdf.drawCentredString(289, 698, timing)
+    pdf.drawCentredString(
+        289,
+        680,
+        "Enter your answers in the supplied Electronic Answer Document.",
+    )
+    state.y = 650
+
+
+def _render_paper1_partial_question(
+    pdf: canvas.Canvas,
+    question: Question,
+    parts: list[QuestionPart],
+    state: _QuestionRenderState,
+    *,
+    allow_current_page: bool = False,
+) -> _QuestionRenderState:
+    partial = question.model_copy(update={"parts": parts})
+    return _render_question(
+        pdf,
+        partial,
+        state,
+        show_answer_space=False,
+        allow_current_page=allow_current_page,
+    )
+
+
+def _draw_trace_response_grid(
+    pdf: canvas.Canvas,
+    state: _QuestionRenderState,
+    *,
+    rows: int,
+) -> None:
+    state.y -= 10
+    values = [
+        ["Step", "Current vertex", "Visited", "Recursive call / result"],
+        *[[str(index), "", "", ""] for index in range(1, rows + 1)],
+    ]
+    stimulus = Stimulus(
+        kind="table",
+        title="Trace table",
+        headers=values[0],
+        rows=values[1:],
+    )
+    state.y = _draw_table(pdf, stimulus, 92, state.y)
+
+
+def _draw_paper1_trace_support_page(
+    pdf: canvas.Canvas,
+    state: _QuestionRenderState,
+    question: Question,
+) -> None:
+    pdf.setFont(FONT_BOLD, 11)
+    pdf.drawCentredString(289, 710, f"Question {question.number} trace table")
+    state.y = 680
+    if question.stimulus:
+        state = _render_stimulus(pdf, question.stimulus, state)
+    state.y -= 12
+    _draw_trace_response_grid(pdf, state, rows=14)
+
+
+def _draw_complexity_support_page(
+    pdf: canvas.Canvas,
+    state: _QuestionRenderState,
+    question: Question,
+) -> None:
+    pdf.setFont(FONT_BOLD, 11)
+    pdf.drawCentredString(289, 710, f"Information for Question {question.number}")
+    pdf.setFont(FONT, 10)
+    pdf.drawString(82, 676, "Record timing results for both algorithms before reaching a conclusion.")
+    rows = [
+        ["Input size", "Algorithm X time", "Algorithm Y time", "Selected algorithm"],
+        ["100", "", "", ""],
+        ["1 000", "", "", ""],
+        ["10 000", "", "", ""],
+        ["100 000", "", "", ""],
+    ]
+    stimulus = Stimulus(kind="table", title="", headers=rows[0], rows=rows[1:])
+    state.y = _draw_table(pdf, stimulus, 82, 650)
+    pdf.setFont(FONT, 9)
+    pdf.drawString(
+        82,
+        state.y - 12,
+        "Use repeated trials and explain any anomalous result in the Electronic Answer Document.",
+    )
+
+
+def _draw_skeleton_program_support_page(
+    pdf: canvas.Canvas,
+    state: _QuestionRenderState,
+    question: Question,
+) -> None:
+    pdf.setFont(FONT_BOLD, 11)
+    pdf.drawCentredString(289, 710, "Skeleton Program information")
+    pdf.setFont(FONT, 10)
+    y = 678
+    for line in _wrap(question.stem, 82):
+        pdf.drawString(82, y, line)
+        y -= 14
+    rows = [
+        ["Command", "Required validation", "Expected action"],
+        ["ADD", "Unused identifier; valid category; value 0–100", "Append one record"],
+        ["REPORT", "At least one valid record", "Print category totals"],
+        ["QUIT", "No parameters", "End without changing data"],
+    ]
+    stimulus = Stimulus(kind="table", title="", headers=rows[0], rows=rows[1:])
+    state.y = _draw_table(pdf, stimulus, 82, y - 14)
+    pdf.setFont(FONT_MONO, 9)
+    pdf.drawString(82, state.y - 16, "Input format: COMMAND,param1,param2,param3")
 
 
 def _draw_paper1_section_intro(
@@ -1077,9 +1295,13 @@ def _render_part(
     elif response_is_in_stimulus:
         state.y -= 8
     elif not show_answer_space:
-        pdf.setFont(FONT, 8.5)
-        pdf.drawString(118, state.y, "Respond in the supplied Electronic Answer Document or development environment.")
-        state.y -= 22
+        pdf.setFont(FONT, 7.4)
+        pdf.drawString(
+            118,
+            state.y,
+            "Respond in the Electronic Answer Document or development environment.",
+        )
+        state.y -= 12
     elif part.answer_unit:
         state = _answer_lines_paginated(pdf, state, line_count)
         pdf.setFont(FONT, 10)
@@ -1088,7 +1310,7 @@ def _render_part(
         pdf.drawString(460, state.y + LINE_GAP, part.answer_unit)
     else:
         state = _answer_lines_paginated(pdf, state, line_count)
-    state.y -= 14
+    state.y -= 6 if not show_answer_space else 14
     return state
 
 
