@@ -16,6 +16,7 @@ from pathlib import Path
 from statistics import mean
 
 from Backend.Core.events import emit
+from Backend.Core.paths import absolute_user_path
 
 SAMPLE_BYTES = 4 * 1024 * 1024
 CPU_PROBE_SECONDS = 0.18
@@ -60,7 +61,7 @@ Sample = dict[str, float | None]
 
 def handle_benchmark(args: argparse.Namespace) -> int:
     duration = max(1.0, float(args.duration))
-    output_dir = Path(args.output).expanduser().resolve()
+    output_dir = absolute_user_path(args.output)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     emit_static_metrics()

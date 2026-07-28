@@ -18,13 +18,14 @@ from Backend.Core.paths import (
     ECONOMICS_ROOT,
     OCR_ECONOMICS_ROOT,
     OCR_CS_ROOT,
+    absolute_user_path,
 )
 from Backend.Core.providers import hosted_client
 
 
 def handle_generate(args: argparse.Namespace) -> int:
     try:
-        output_dir = expand_path(args.output)
+        output_dir = absolute_user_path(args.output)
         output_dir.mkdir(parents=True, exist_ok=True)
         with tempfile.TemporaryFile(dir=output_dir):
             pass
@@ -231,7 +232,3 @@ def emit_generated_files(paths: dict[str, Path]) -> None:
         emit("file", role=role, path=str(path))
     emit_progress("Generation complete", stage="done", progress=1.0)
     emit("done", message="Generation complete.")
-
-
-def expand_path(value: str | Path) -> Path:
-    return Path(value).expanduser().resolve()

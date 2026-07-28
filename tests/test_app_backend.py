@@ -5,6 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+from Backend.Core.paths import absolute_user_path
 from Backend.Core.providers import parse_json_object
 
 
@@ -56,6 +57,32 @@ def test_relative_output_is_resolved_from_callers_working_directory(tmp_path: Pa
     files = [Path(str(event["path"])) for event in events if event["type"] == "file"]
     assert files
     assert all(path.parent == tmp_path / "generated" for path in files)
+
+
+def test_output_path_preserves_sandbox_style_symlink(tmp_path: Path) -> None:
+    target = tmp_path / "real-downloads"
+    target.mkdir()
+    sandbox_alias = tmp_path / "container-downloads"
+    sandbox_alias.symlink_to(target, target_is_directory=True)
+
+    assert absolute_user_path(sandbox_alias) == sandbox_alias
+
+    events = run_bridge(
+        "generate",
+        "--subject",
+        "economics_aqa",
+        "--paper",
+        "1",
+        "--output",
+        str(sandbox_alias),
+        "--dry-run",
+        "--seed",
+        "123",
+    )
+    files = [Path(str(event["path"])) for event in events if event["type"] == "file"]
+    assert files
+    assert all(path.parent == sandbox_alias for path in files)
+    assert all(path.exists() for path in files)
 
 
 def test_ollama_status_emits_json() -> None:

@@ -3,6 +3,11 @@ from __future__ import annotations
 from pathlib import Path
 
 
+def absolute_user_path(value: str | Path) -> Path:
+    """Expand a user path without resolving sandbox-approved symlinks."""
+    return Path(value).expanduser().absolute()
+
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ECONOMICS_PACK_ROOT = REPO_ROOT / "Resources" / "economics" / "edexcel-a"
 AQA_ECONOMICS_PACK_ROOT = REPO_ROOT / "Resources" / "economics" / "aqa"
