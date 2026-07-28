@@ -69,7 +69,7 @@ def build_paper_blueprint(
                 if planned_topics:
                     available_topics = planned_topics
             stimulus_kind = _compatible_stimulus_kind(
-                section.stimulus_kinds,
+                _stimulus_pool(section, index),
                 part_commands,
                 available_topics,
                 excluded_ids,
@@ -218,20 +218,20 @@ def _section_templates(section, rng: random.Random) -> list[tuple[list[int], lis
     if not section.part_marks:
         return []
     templates = list(zip(section.part_marks, section.part_command_words, strict=True))
-    rng.shuffle(templates)
-    stimulus_kinds = _selected_stimulus_kinds(section.stimulus_kinds, len(templates), rng)
+    stimulus_kinds = [
+        rng.choice(_stimulus_pool(section, index)) if _stimulus_pool(section, index) else ""
+        for index in range(len(templates))
+    ]
     return [
         (list(part_marks), list(part_commands), stimulus_kinds[index])
         for index, (part_marks, part_commands) in enumerate(templates)
     ]
 
 
-def _selected_stimulus_kinds(stimulus_kinds: list[str], count: int, rng: random.Random) -> list[str]:
-    if not stimulus_kinds:
-        return [""] * count
-    if len(stimulus_kinds) >= count:
-        return rng.sample(stimulus_kinds, count)
-    return [rng.choice(stimulus_kinds) for _ in range(count)]
+def _stimulus_pool(section, index: int) -> list[str]:
+    if index < len(section.stimulus_slots) and section.stimulus_slots[index]:
+        return section.stimulus_slots[index]
+    return section.stimulus_kinds
 
 
 def _section_template(section, templates: list[tuple[list[int], list[str], str]], index: int) -> tuple[list[int], list[str], str]:
@@ -300,6 +300,10 @@ def _compatible_stimulus_kind(
         for kind in stimulus_kinds
         if kind not in excluded_kinds
         and _stimulus_matches_commands(kind, part_commands)
+        and (
+            not _STIMULUS_TOPIC_IDS.get(kind)
+            or any(topic.id in _STIMULUS_TOPIC_IDS[kind] for topic in topics)
+        )
     ]
     return rng.choice(command_compatible or [preferred_kind])
 
@@ -434,6 +438,17 @@ _CALCULATION_STIMULI = {
     "income_tax_schedule_table",
     "public_spending_pie_table",
     "labour_inactivity_context",
+    "household_savings_line_chart",
+    "investment_line_chart",
+    "current_account_line_chart",
+    "gdp_growth_bar_chart",
+    "unemployment_rate_bar_chart",
+    "terms_of_trade_index_chart",
+    "exchange_rate_index_chart",
+    "macro_chart",
+    "bar_chart",
+    "line_graph",
+    "index_number_chart",
 }
 
 
@@ -601,13 +616,16 @@ _STIMULUS_PART_PROMPTS = {
         (None, "explain", 4): "With reference to the data provided, explain one limitation of using GDP to compare living standards between countries.",
     },
     "current_account_line_chart": {
+        (None, "calculate", 2): "Calculate the percentage point change in the current account balance over the period shown. You are advised to show your working.",
         (None, "explain", 4): "With reference to the chart above, explain one likely reason for the change in the current account balance.",
     },
     "gdp_growth_bar_chart": {
+        (None, "calculate", 2): "Calculate the percentage point change in GDP growth over the period shown. You are advised to show your working.",
         (1, "explain", 2): "Explain one likely disadvantage of a decline in GDP for workers.",
         (2, "explain", 2): "Explain one likely disadvantage of a decline in GDP for the government.",
     },
     "terms_of_trade_index_chart": {
+        (None, "calculate", 2): "Calculate the percentage change in the terms of trade index over the period shown. You are advised to show your working.",
         (0, "explain", 2): "Explain what is meant by terms of trade.",
         (2, "explain", 2): "Explain the likely impact of the change in the terms of trade on the current account.",
     },
@@ -623,6 +641,7 @@ _STIMULUS_PART_PROMPTS = {
         (None, "explain", 4): "Explain the likely impact of this tariff on the market for the imported good.",
     },
     "exchange_rate_index_chart": {
+        (None, "calculate", 2): "Calculate the percentage change in the exchange rate index over the period shown. You are advised to show your working.",
         (None, "explain", 4): "With reference to the chart above, explain one likely effect of the change in the exchange rate on exporters.",
     },
     "income_tax_schedule_table": {
@@ -634,7 +653,14 @@ _STIMULUS_PART_PROMPTS = {
         (None, "explain", 2): "Explain one likely opportunity cost of increased public spending on health.",
     },
     "unemployment_rate_bar_chart": {
+        (None, "calculate", 2): "Calculate the percentage point change in unemployment over the period shown. You are advised to show your working.",
         (None, "explain", 4): "With reference to the chart above, explain one likely macroeconomic effect of rising unemployment.",
+    },
+    "macro_chart": {
+        (None, "calculate", 2): "Calculate the percentage point change between the first and final observations shown. You are advised to show your working.",
+    },
+    "line_graph": {
+        (None, "calculate", 2): "Calculate the percentage point change between the first and final observations shown. You are advised to show your working.",
     },
 }
 

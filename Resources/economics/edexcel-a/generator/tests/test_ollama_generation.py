@@ -176,10 +176,10 @@ def test_generate_questions_with_ollama_cleans_essay_and_draw_prompt_drift():
     blueprint = build_paper_blueprint(config, syllabus, seed=8464)
 
     enriched = generate_questions_with_ollama(DriftedPartsOllamaClient(), blueprint, syllabus)
-    q5 = next(question for question in enriched.questions if question.number == "5")
+    q3 = next(question for question in enriched.questions if question.number == "3")
     q7 = next(question for question in enriched.questions if question.number == "7")
 
-    assert "explain your answer" not in q5.parts[0].prompt.lower()
+    assert "explain your answer" not in q3.parts[0].prompt.lower()
     assert "positive and negative" not in q7.prompt.lower()
 
 

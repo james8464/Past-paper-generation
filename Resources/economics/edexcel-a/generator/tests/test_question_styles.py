@@ -15,13 +15,14 @@ def test_paper_1_uses_edexcel_command_word_pattern():
 
     section_a = [question for question in blueprint.questions if question.section == "A"]
     assert [question.number for question in section_a] == ["1", "2", "3", "4", "5"]
-    assert sorted([[part.marks for part in question.parts] for question in section_a]) == sorted([
-        [4, 1],
-        [4, 1],
-        [1, 4],
-        [4, 1],
-        [4, 1],
-    ])
+    assert [[part.marks for part in question.parts] for question in section_a] == [[4, 1]] * 5
+    assert [[part.command_word for part in question.parts] for question in section_a] == [
+        ["explain", "mcq"],
+        ["explain", "mcq"],
+        ["draw", "mcq"],
+        ["explain", "mcq"],
+        ["explain", "mcq"],
+    ]
     one_mark_parts = [part for question in section_a for part in question.parts if part.marks == 1]
     assert one_mark_parts
     assert all(part.command_word == "mcq" for part in one_mark_parts)
@@ -32,8 +33,8 @@ def test_paper_1_uses_edexcel_command_word_pattern():
     assert [(q.marks, q.command_word) for q in section_b] == [
         (5, "explain"),
         (8, "examine"),
-        (12, "discuss"),
         (10, "assess"),
+        (12, "discuss"),
         (15, "discuss"),
     ]
     assert [(q.marks, q.command_word) for q in section_c] == [
@@ -83,7 +84,7 @@ def test_section_b_sources_are_article_length_for_source_booklets():
         assert min(len(source) for source in section_b_sources) >= 360
 
 
-def test_section_a_templates_are_not_fixed_to_question_positions():
+def test_section_a_structure_is_fixed_but_stimuli_remain_variable():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
 
@@ -97,7 +98,7 @@ def test_section_a_templates_are_not_fixed_to_question_positions():
     }
 
     assert len(first_stimuli) > 1
-    assert len(q5_part_orders) > 1
+    assert q5_part_orders == {("explain", "mcq")}
 
 
 def test_section_a_stimulus_pool_is_wide_and_random():
@@ -109,7 +110,7 @@ def test_section_a_stimulus_pool_is_wide_and_random():
         blueprint = build_paper_blueprint(config, syllabus, seed=seed)
         seen_stimuli.update(question.stimulus_kind for question in blueprint.questions if question.section == "A")
 
-    assert len(seen_stimuli) >= 32
+    assert len(seen_stimuli) >= 20
     assert {
         "ped_data_table",
         "pes_data_table",
@@ -122,10 +123,10 @@ def test_section_a_stimulus_pool_is_wide_and_random():
         "minimum_wage_context",
         "payoff_matrix",
         "line_graph",
-        "externality_diagram",
-        "monopsony_diagram",
+        "concentration_ratio_table",
+        "contestability_barrier_table",
         "shutdown_cost_table",
-        "tax_incidence_diagram",
+        "context_extract",
     } <= seen_stimuli
 
 
@@ -147,6 +148,17 @@ def test_section_a_calculation_questions_only_use_visible_numeric_stimuli():
         "wage_rate_table",
         "income_tax_schedule_table",
         "public_spending_pie_table",
+        "household_savings_line_chart",
+        "investment_line_chart",
+        "current_account_line_chart",
+        "gdp_growth_bar_chart",
+        "unemployment_rate_bar_chart",
+        "terms_of_trade_index_chart",
+        "exchange_rate_index_chart",
+        "macro_chart",
+        "bar_chart",
+        "line_graph",
+        "index_number_chart",
     }
 
     for paper_id in ("paper_1", "paper_2"):
@@ -179,6 +191,7 @@ def test_section_a_calculation_prompts_are_specific_to_visible_data():
 def test_pes_calculation_prompt_names_the_market_used():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
+    config.sections[0].part_command_words[0] = ["calculate", "mcq"]
 
     for seed in range(1000):
         blueprint = build_paper_blueprint(config, syllabus, seed=seed)
@@ -198,39 +211,43 @@ def test_paper_2_section_a_covers_reference_three_part_styles_and_macro_data():
     config = load_builtin_paper_config("paper_2")
 
     seen_stimuli = set()
-    seen_shapes = set()
+    observed_plans = set()
     for seed in range(160):
         blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+        section_a = [question for question in blueprint.questions if question.section == "A"]
+        observed_plans.add(
+            tuple(tuple((part.command_word, part.marks) for part in question.parts) for question in section_a)
+        )
         for question in blueprint.questions:
             if question.section == "A":
                 seen_stimuli.add(question.stimulus_kind)
-                seen_shapes.add(tuple((part.command_word, part.marks) for part in question.parts))
 
     assert {
         "household_savings_line_chart",
         "investment_line_chart",
         "financial_market_context",
-        "development_data_table",
         "current_account_line_chart",
-        "gdp_growth_bar_chart",
         "terms_of_trade_index_chart",
         "labour_inactivity_context",
         "multiplier_context",
         "tariff_context",
         "exchange_rate_index_chart",
-        "unemployment_rate_bar_chart",
-        "income_tax_schedule_table",
-        "public_spending_pie_table",
     } <= seen_stimuli
-    assert (("mcq", 1), ("calculate", 2), ("explain", 2)) in seen_shapes
-    assert (("explain", 2), ("mcq", 1), ("explain", 2)) in seen_shapes
-    assert (("calculate", 2), ("explain", 2), ("mcq", 1)) in seen_shapes
+    assert observed_plans == {
+        (
+            (("mcq", 1), ("calculate", 2), ("explain", 2)),
+            (("mcq", 1), ("explain", 4)),
+            (("explain", 4), ("mcq", 1)),
+            (("mcq", 1), ("explain", 4)),
+            (("explain", 4), ("mcq", 1)),
+        )
+    }
 
 
 def test_section_a_can_cover_all_allowed_paper_1_topics_across_random_seeds():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
-    expected_topic_ids = syllabus.topic_ids_for_themes(config.allowed_themes)
+    expected_topic_ids = syllabus.topic_ids_for_themes(config.allowed_themes) - {"1.2.1"}
 
     seen_topic_ids = set()
     for seed in range(120):

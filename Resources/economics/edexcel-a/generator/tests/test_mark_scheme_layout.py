@@ -110,6 +110,7 @@ def test_mark_scheme_does_not_print_fake_blank_page_labels(tmp_path):
 def test_mark_scheme_calculation_rows_include_specific_working(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
+    config.sections[0].part_command_words[0] = ["calculate", "mcq"]
     blueprint = _blueprint_with_section_a_calculation(config, syllabus, "elasticity_data_table")
     output = tmp_path / "ms.pdf"
 
@@ -123,6 +124,7 @@ def test_mark_scheme_calculation_rows_include_specific_working(tmp_path):
 def test_mark_scheme_generic_data_calculation_matches_table_values(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
+    config.sections[0].part_command_words[0] = ["calculate", "mcq"]
     blueprint = _blueprint_with_section_a_calculation(config, syllabus, "data_table")
     output = tmp_path / "ms.pdf"
 

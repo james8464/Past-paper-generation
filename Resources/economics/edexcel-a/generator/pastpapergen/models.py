@@ -42,6 +42,7 @@ class SectionConfig(BaseModel):
     part_marks: list[list[int]] = Field(default_factory=list)
     part_command_words: list[list[str]] = Field(default_factory=list)
     stimulus_kinds: list[str] = Field(default_factory=list)
+    stimulus_slots: list[list[str]] = Field(default_factory=list)
     choice_groups: list[list[int]] = Field(default_factory=list)
 
 

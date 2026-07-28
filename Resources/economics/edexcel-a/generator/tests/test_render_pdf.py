@@ -66,7 +66,9 @@ def test_render_question_paper_uses_exam_style_strings(tmp_path):
     render_question_paper(blueprint, output)
     pdf_text = _pdf_text(output)
 
-    assert "Unofficial Level 3 GCE Practice" in pdf_text
+    assert "Level 3 GCE" in pdf_text
+    assert "You do not need any other materials." in pdf_text
+    assert "Total Marks" in pdf_text
     assert "Candidate surname" in pdf_text
     assert "Paper" in pdf_text
     assert "reference" in pdf_text
@@ -169,7 +171,7 @@ def test_question_paper_uses_closer_reference_font_family(tmp_path):
 def test_answer_line_style_matches_reference_dotted_lines():
     from pastpapergen.render_pdf import ANSWER_LINE_COLOR_HEX, ANSWER_LINE_DASH
 
-    assert ANSWER_LINE_COLOR_HEX == "#505050"
+    assert ANSWER_LINE_COLOR_HEX == "#a8a8a8"
     assert ANSWER_LINE_DASH == (0.6, 1.6)
 
 
@@ -332,7 +334,7 @@ def test_paper_1_section_b_starts_near_reference_page(tmp_path):
 
     render_question_paper(blueprint, output)
 
-    assert _first_page_containing(output, "SECTION B") == 12
+    assert _first_page_containing(output, "SECTION B") == 10
 
 
 def test_paper_1_25_mark_questions_get_multiple_answer_pages():
@@ -421,6 +423,7 @@ def test_section_a_question_splits_written_answer_before_mcq(tmp_path):
 def test_section_a_pages_include_graph_labels(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
+    config.sections[0].stimulus_slots[3] = ["cost_revenue_graph"]
     blueprint = next(
         build_paper_blueprint(config, syllabus, seed=seed)
         for seed in range(100)
@@ -464,7 +467,6 @@ def test_section_a_question_3_not_rotated_or_garbled(tmp_path):
     config = load_builtin_paper_config("paper_1")
     blueprint = build_paper_blueprint(config, syllabus, seed=4)
     output = tmp_path / "paper.pdf"
-
     render_question_paper(blueprint, output)
     pages = _pdf_text(output).split("\f")
     page_with_q3_a = next(page for page in pages if re.search(r"\b3\s{2,}", page))
@@ -476,21 +478,23 @@ def test_section_a_question_3_not_rotated_or_garbled(tmp_path):
     assert page_with_q3_a.count("DO NOT WRITE IN THIS AREA") <= 6
 
 
-def test_section_a_draw_question_moves_mcq_to_next_page_when_spacing_is_tight(tmp_path):
+def test_section_a_draw_question_and_mcq_share_reference_page(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
     blueprint = build_paper_blueprint(config, syllabus, seed=4)
     output = tmp_path / "paper.pdf"
+    draw_question = next(
+        question
+        for question in blueprint.questions
+        if any(part.command_word == "draw" for part in question.parts)
+    )
 
     render_question_paper(blueprint, output)
     pages = _pdf_text(output).split("\f")
     draw_page = next(page for page in pages if "draw a" in page.lower())
-    next_page = pages[pages.index(draw_page) + 1]
-
     assert "draw a" in draw_page.lower()
-    assert "which one of the following" not in draw_page.lower()
-    assert "which one of the following" in next_page.lower()
-    assert "Total for Question 1 = 5 marks" in next_page
+    assert "which one of the following" in draw_page.lower()
+    assert f"Total for Question {draw_question.number} = 5 marks" in draw_page
     assert "TOTAL FOR SECTION A = 25 MARKS" in _pdf_text(output)
     assert "Read the following extracts (A to D) before answering Question 6" in _pdf_text(output)
     assert "QUESTION 6 BEGINS ON THE NEXT PAGE" not in _pdf_text(output)
@@ -534,6 +538,7 @@ def test_section_a_blank_draw_axes_match_reference_scale(tmp_path):
 def test_section_a_calculate_question_moves_mcq_to_next_page_when_spacing_is_tight(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
+    config.sections[0].part_command_words[0] = ["calculate", "mcq"]
     blueprint, question = _blueprint_with_section_a_question(
         config,
         syllabus,
@@ -555,6 +560,7 @@ def test_section_a_calculate_question_moves_mcq_to_next_page_when_spacing_is_tig
 def test_section_a_calculate_page_fills_remaining_answer_space(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
+    config.sections[0].part_command_words[0] = ["calculate", "mcq"]
     blueprint, question = _blueprint_with_section_a_question(
         config,
         syllabus,
@@ -601,6 +607,7 @@ def test_section_a_context_uses_specific_source_text(tmp_path):
 def test_section_a_surplus_diagrams_label_shaded_area(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
+    config.sections[0].stimulus_slots[3] = ["consumer_surplus_diagram"]
     blueprint, question = _blueprint_with_section_a_question(config, syllabus, lambda candidate: candidate.stimulus_kind == "consumer_surplus_diagram")
     output = tmp_path / "paper.pdf"
 
