@@ -84,3 +84,20 @@ def test_all_packages_render_reference_page_geometry(tmp_path: Path) -> None:
         assert scheme.pages[0].mediabox.height > scheme.pages[0].mediabox.width
         assert scheme.pages[2].mediabox.width > scheme.pages[2].mediabox.height
         assert scheme.pages[-1].mediabox.height > scheme.pages[-1].mediabox.width
+
+
+def test_mark_scheme_uses_dense_ocr_tables_and_guidance_pages(tmp_path: Path) -> None:
+    paths = generate_package(
+        paper="1",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=123,
+    )
+
+    pages = PdfReader(paths["mark_scheme"]).pages
+    assert "PREPARATION FOR MARKING" in (pages[2].extract_text() or "")
+    assert "LEVELS OF RESPONSE" in (pages[9].extract_text() or "")
+    question_page = pages[10].extract_text() or ""
+    assert all(heading in question_page for heading in ("Question", "Answer", "Mark", "Guidance"))
+    objectives_page = pages[-2].extract_text() or ""
+    assert all(heading in objectives_page for heading in ("AO1", "AO2", "AO3", "AO4", "TOTAL"))
