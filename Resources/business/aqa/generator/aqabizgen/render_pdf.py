@@ -121,6 +121,14 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
             body_style=STYLES["body"],
         ),
     ]
+    if paper.paper_id == "paper_1":
+        pages = _paper_one_mark_scheme_pages(paper)
+        for index, page in enumerate(pages):
+            story.extend(page)
+            if index < len(pages) - 1:
+                story.append(PageBreak())
+        doc.build(story)
+        return
     for section in paper.sections:
         story.extend([_banner(f"Section {section.id}"), Spacer(1, 4 * mm)])
         for option in section.options:
@@ -130,6 +138,327 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
     story.pop()
     story.extend(_mark_scheme_extension_pages(paper))
     doc.build(story)
+
+
+def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
+    multiple_choice, section_b, section_c, section_d = paper.sections
+    mcq_questions = [option.questions[0] for option in multiple_choice.options]
+    question_16, question_17, question_18, question_19, question_20 = (
+        section_b.options[0].questions
+    )
+    question_21, question_22 = [
+        option.questions[0] for option in section_c.options
+    ]
+    question_23, question_24 = [
+        option.questions[0] for option in section_d.options
+    ]
+    return [
+        _objective_test_answers(mcq_questions),
+        [
+            Paragraph("Section B", STYLES["kicker"]),
+            Spacer(1, 4 * mm),
+            _financial_position_extract(section_b.options[0]),
+            Spacer(1, 5 * mm),
+            *_question_block(question_16),
+        ],
+        _calculation_marking_page(
+            question_16,
+            [
+                "Current assets = inventories + receivables + cash.",
+                "Current liabilities = payables.",
+                "Current ratio = current assets ÷ current liabilities.",
+                "Accept a correctly rounded ratio with or without :1.",
+            ],
+        ),
+        _calculation_marking_page(
+            question_17,
+            [
+                "Capital employed = total equity + non-current liabilities.",
+                "ROCE = operating profit ÷ capital employed × 100.",
+                "Operating profit = ROCE × capital employed ÷ 100.",
+                "Credit the correct figure with the £m unit.",
+            ],
+        ),
+        [
+            _restructuring_table(section_b.options[0]),
+            Spacer(1, 5 * mm),
+            *_question_block(question_18),
+            *_nine_mark_levels(),
+        ],
+        _indicative_content_page(question_18, "Question 18 marking guidance"),
+        [
+            *_question_block(question_19),
+            *_nine_mark_levels(),
+        ],
+        _indicative_content_page(question_19, "Question 19 marking guidance"),
+        [
+            *_question_block(question_20),
+            *_nine_mark_levels(),
+            Spacer(1, 5 * mm),
+            *_indicative_points(question_20),
+        ],
+        [
+            Paragraph("Section C", STYLES["kicker"]),
+            Spacer(1, 4 * mm),
+            *_question_block(question_21),
+            *_twenty_five_mark_levels(high_levels=True),
+        ],
+        _twenty_five_mark_continuation(question_21, "Lower-level descriptors"),
+        _indicative_content_page(question_21, "Question 21 indicative content"),
+        [
+            *_question_block(question_22),
+            *_twenty_five_mark_levels(high_levels=True),
+        ],
+        _twenty_five_mark_continuation(question_22, "Question 22 marking guidance"),
+        [
+            Paragraph("Section D", STYLES["kicker"]),
+            Spacer(1, 4 * mm),
+            *_question_block(question_23),
+            *_twenty_five_mark_levels(high_levels=True),
+        ],
+        _twenty_five_mark_continuation(question_23, "Question 23 marking guidance"),
+        [
+            *_question_block(question_24),
+            *_twenty_five_mark_levels(high_levels=True),
+        ],
+        _twenty_five_mark_continuation(question_24, "Lower-level descriptors"),
+        [
+            *_indicative_content_page(question_24, "Evaluation"),
+            Spacer(1, 14 * mm),
+            Paragraph("Independent practice material", STYLES["small"]),
+            Paragraph(
+                "Created by Paper Creator for private revision. This mark scheme is not "
+                "produced, endorsed or approved by AQA or any examination board.",
+                STYLES["small"],
+            ),
+        ],
+    ]
+
+
+def _objective_test_answers(
+    questions: list[GeneratedQuestion],
+) -> list[Flowable]:
+    rows: list[list[object]] = [["Question number", "Answer"]]
+    for question in questions:
+        choice_index = question.correct_choice or 0
+        rows.append(
+            [
+                question.number,
+                f"{'ABCD'[choice_index]}  {question.choices[choice_index]}",
+            ]
+        )
+    table = Table(rows, colWidths=[35 * mm, 132 * mm], repeatRows=1)
+    table.setStyle(
+        TableStyle(
+            [
+                ("GRID", (0, 0), (-1, -1), 0.45, colors.grey),
+                ("BACKGROUND", (0, 0), (-1, 0), GREY),
+                ("FONT", (0, 0), (-1, 0), FONT_BOLD),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("PADDING", (0, 0), (-1, -1), 5),
+            ]
+        )
+    )
+    return [
+        Paragraph("Section A", STYLES["kicker"]),
+        Paragraph("Objective Test Answers", STYLES["heading"]),
+        Spacer(1, 4 * mm),
+        table,
+        Spacer(1, 4 * mm),
+        Paragraph("Total for this section: 15 marks", STYLES["answer"]),
+    ]
+
+
+def _calculation_marking_page(
+    question: GeneratedQuestion,
+    points: list[str],
+) -> list[Flowable]:
+    rows: list[list[object]] = [["Marking guidance", "Marks"]]
+    rows.extend(
+        [
+            [Paragraph(point, STYLES["body"]), "1"]
+            for point in points
+        ]
+    )
+    table = Table(rows, colWidths=[148 * mm, 19 * mm], repeatRows=1)
+    table.setStyle(
+        TableStyle(
+            [
+                ("GRID", (0, 0), (-1, -1), 0.45, colors.grey),
+                ("BACKGROUND", (0, 0), (-1, 0), GREY),
+                ("FONT", (0, 0), (-1, 0), FONT_BOLD),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("ALIGN", (1, 1), (1, -1), "CENTER"),
+                ("PADDING", (0, 0), (-1, -1), 6),
+            ]
+        )
+    )
+    return [
+        *_question_block(question),
+        Paragraph(
+            "Marks for this question: AO1 = 1 and AO2 = 3",
+            STYLES["small"],
+        ),
+        Spacer(1, 5 * mm),
+        table,
+    ]
+
+
+def _nine_mark_levels() -> list[Flowable]:
+    rows = [
+        ["Level", "Descriptor", "Marks"],
+        [
+            "3",
+            Paragraph(
+                "Developed analysis uses accurate knowledge and relevant application "
+                "to form a coherent chain of reasoning.",
+                STYLES["small"],
+            ),
+            "7–9",
+        ],
+        [
+            "2",
+            Paragraph(
+                "Some relevant application and linked analysis, although development "
+                "or focus is uneven.",
+                STYLES["small"],
+            ),
+            "4–6",
+        ],
+        [
+            "1",
+            Paragraph(
+                "Limited knowledge or application with isolated analytical links.",
+                STYLES["small"],
+            ),
+            "1–3",
+        ],
+        ["0", "No creditworthy material.", "0"],
+    ]
+    table = Table(
+        rows,
+        colWidths=[18 * mm, 129 * mm, 20 * mm],
+        rowHeights=[9 * mm, 22 * mm, 22 * mm, 22 * mm, 10 * mm],
+    )
+    table.setStyle(
+        TableStyle(
+            [
+                ("GRID", (0, 0), (-1, -1), 0.45, colors.grey),
+                ("BACKGROUND", (0, 0), (-1, 0), GREY),
+                ("FONT", (0, 0), (-1, 0), FONT_BOLD),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("ALIGN", (0, 1), (0, -1), "CENTER"),
+                ("ALIGN", (2, 1), (2, -1), "CENTER"),
+                ("PADDING", (0, 0), (-1, -1), 5),
+            ]
+        )
+    )
+    return [
+        Paragraph(
+            "Marks for this question: AO1 = 2, AO2 = 3 and AO3 = 4",
+            STYLES["small"],
+        ),
+        Spacer(1, 4 * mm),
+        table,
+    ]
+
+
+def _twenty_five_mark_levels(
+    *,
+    high_levels: bool,
+) -> list[Flowable]:
+    levels = (
+        [
+            ("5", "Excellent analysis and sustained, balanced evaluation with a fully supported judgement.", "21–25"),
+            ("4", "Good developed analysis and relevant evaluation with a supported judgement.", "16–20"),
+            ("3", "Sound analysis and some evaluation, with uneven context or balance.", "11–15"),
+        ]
+        if high_levels
+        else [
+            ("2", "Limited analytical chains and weak or generic evaluation.", "6–10"),
+            ("1", "Isolated relevant points or unsupported assertions.", "1–5"),
+            ("0", "No creditworthy material.", "0"),
+        ]
+    )
+    rows: list[list[object]] = [["Level", "Descriptor", "Marks"]]
+    rows.extend(
+        [
+            [level, Paragraph(descriptor, STYLES["small"]), marks]
+            for level, descriptor, marks in levels
+        ]
+    )
+    descriptor_heights = (
+        [9 * mm, 30 * mm, 30 * mm, 30 * mm]
+        if high_levels
+        else [9 * mm, 30 * mm, 30 * mm, 18 * mm]
+    )
+    table = Table(
+        rows,
+        colWidths=[18 * mm, 129 * mm, 20 * mm],
+        rowHeights=descriptor_heights,
+    )
+    table.setStyle(
+        TableStyle(
+            [
+                ("GRID", (0, 0), (-1, -1), 0.45, colors.grey),
+                ("BACKGROUND", (0, 0), (-1, 0), GREY),
+                ("FONT", (0, 0), (-1, 0), FONT_BOLD),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("ALIGN", (0, 1), (0, -1), "CENTER"),
+                ("ALIGN", (2, 1), (2, -1), "CENTER"),
+                ("PADDING", (0, 0), (-1, -1), 6),
+            ]
+        )
+    )
+    return [
+        Paragraph(
+            "25-mark evaluative question: AO1 = 4, AO2 = 4, AO3 = 9 and AO4 = 8",
+            STYLES["small"],
+        ),
+        Spacer(1, 4 * mm),
+        table,
+    ]
+
+
+def _indicative_points(
+    question: GeneratedQuestion,
+    *,
+    limit: int = 6,
+) -> list[Flowable]:
+    return [
+        Paragraph(f"• {point}", STYLES["body"])
+        for point in question.mark_scheme[:limit]
+    ]
+
+
+def _indicative_content_page(
+    question: GeneratedQuestion,
+    heading: str,
+) -> list[Flowable]:
+    return [
+        Paragraph(heading, STYLES["heading"]),
+        Spacer(1, 4 * mm),
+        Paragraph(
+            "The demands of this question are to apply accurate business knowledge, "
+            "develop connected reasoning and answer the precise issue set.",
+            STYLES["body"],
+        ),
+        Spacer(1, 5 * mm),
+        *_indicative_points(question, limit=10),
+    ]
+
+
+def _twenty_five_mark_continuation(
+    question: GeneratedQuestion,
+    heading: str,
+) -> list[Flowable]:
+    return [
+        Paragraph(heading, STYLES["heading"]),
+        Spacer(1, 4 * mm),
+        *_twenty_five_mark_levels(high_levels=False),
+        Spacer(1, 6 * mm),
+        *_indicative_points(question, limit=8),
+    ]
 
 
 MARK_SCHEME_EXTENSION_PAGE_COUNTS = {

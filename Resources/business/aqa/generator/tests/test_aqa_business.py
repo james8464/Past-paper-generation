@@ -89,3 +89,10 @@ def test_paper_one_uses_measured_question_and_answer_page_plan(tmp_path: Path) -
     )
     assert "Additional page, if required" in (pages[28].extract_text() or "")
     assert "Independent practice material" in (pages[31].extract_text() or "")
+
+    scheme_pages = PdfReader(paths["mark_scheme"]).pages
+    assert "Objective Test Answers" in (scheme_pages[4].extract_text() or "")
+    assert "Current assets" in (scheme_pages[6].extract_text() or "")
+    assert "Section C" in (scheme_pages[13].extract_text() or "")
+    assert "Section D" in (scheme_pages[18].extract_text() or "")
+    assert "Evaluation" in (scheme_pages[22].extract_text() or "")
