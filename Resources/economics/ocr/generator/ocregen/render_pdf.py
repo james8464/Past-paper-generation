@@ -3,7 +3,7 @@ from __future__ import annotations
 from html import escape
 from pathlib import Path
 
-from reportlab.graphics.shapes import Drawing, Line, PolyLine, Rect, String
+from reportlab.graphics.shapes import Drawing, Line, PolyLine, Rect, String, Wedge
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT
 from reportlab.lib.pagesizes import A4
@@ -910,6 +910,8 @@ def _paper_one_two_pages(paper: GeneratedPaper) -> list[Flowable]:
             Paragraph(data.stimulus[1], STYLES["extract"]),
             Spacer(1, 3 * mm),
             Paragraph(data.stimulus[2], STYLES["extract"]),
+            Spacer(1, 4 * mm),
+            _market_share_chart(data),
         ],
         [
             _banner("Question 1"),
@@ -936,6 +938,10 @@ def _paper_one_two_pages(paper: GeneratedPaper) -> list[Flowable]:
             AnswerLines(25),
         ],
         [
+            Paragraph("Question 1 continued", STYLES["centre_bold"]),
+            AnswerLines(34),
+        ],
+        [
             Paragraph("BLANK PAGE", STYLES["centre_bold"]),
             Spacer(1, 8 * mm),
             Paragraph(
@@ -950,34 +956,114 @@ def _paper_one_two_pages(paper: GeneratedPaper) -> list[Flowable]:
         ],
         [*_intro(section_b), *_choice_prompts(section_b)],
     ]
-    pages.extend([[Paragraph("Section B answer continued", STYLES["centre_bold"]), AnswerLines(34)] for _ in range(3)])
+    pages.extend([[AnswerLines(34)] for _ in range(3)])
     pages.append([*_intro(section_c), *_choice_prompts(section_c)])
-    pages.extend([[Paragraph("Section C answer continued", STYLES["centre_bold"]), AnswerLines(34)] for _ in range(3)])
+    pages.extend([[AnswerLines(34)] for _ in range(3)])
     pages.extend(
         [
-            [
-                Paragraph("EXTRA ANSWER SPACE", STYLES["centre_bold"]),
-                Paragraph(
-                    "Write the question number clearly in the margin.",
-                    STYLES["centre"],
-                ),
-                AnswerLines(32),
-            ],
-            [
-                Paragraph("BLANK PAGE", STYLES["centre_bold"]),
-                Spacer(1, 8 * mm),
-                Paragraph("PLEASE DO NOT WRITE ON THIS PAGE", STYLES["centre_bold"]),
-            ],
-            [
-                Paragraph("BLANK PAGE", STYLES["centre_bold"]),
-                Spacer(1, 8 * mm),
-                Paragraph("PLEASE DO NOT WRITE ON THIS PAGE", STYLES["centre_bold"]),
-            ],
+            _extra_answer_page(),
+            _extra_answer_page(continued=True),
             _question_paper_legal_page(),
         ]
     )
     assert len(pages) == 19
     return _page_sequence(pages)
+
+
+def _market_share_chart(option: GeneratedOption) -> Drawing:
+    values = [max(1.0, value) for value in option.chart_values[:5]]
+    total = sum(values)
+    drawing = Drawing(165 * mm, 55 * mm)
+    centre_x, centre_y, radius = 105, 78, 62
+    start = 0.0
+    shades = [
+        colors.HexColor("#333333"),
+        colors.HexColor("#666666"),
+        colors.HexColor("#999999"),
+        colors.HexColor("#bbbbbb"),
+        colors.HexColor("#dddddd"),
+    ]
+    for index, (value, shade) in enumerate(zip(values, shades, strict=True)):
+        angle = value / total * 360
+        drawing.add(
+            Wedge(
+                centre_x,
+                centre_y,
+                radius,
+                start,
+                start + angle,
+                strokeColor=INK,
+                fillColor=shade,
+                strokeWidth=0.5,
+            )
+        )
+        legend_y = 128 - index * 23
+        drawing.add(
+            Rect(
+                220,
+                legend_y,
+                12,
+                12,
+                fillColor=shade,
+                strokeColor=INK,
+                strokeWidth=0.4,
+            )
+        )
+        drawing.add(
+            String(
+                240,
+                legend_y + 2,
+                f"Market group {index + 1}: {value / total * 100:.0f}%",
+                fontName=FONT,
+                fontSize=8,
+            )
+        )
+        start += angle
+    drawing.add(
+        String(
+            20,
+            153,
+            "Figure 2: distribution of measured activity",
+            fontName=FONT_BOLD,
+            fontSize=9,
+        )
+    )
+    return drawing
+
+
+def _extra_answer_page(
+    *,
+    continued: bool = False,
+) -> list[Flowable]:
+    row_count = 25
+    heading = (
+        "EXTRA ANSWER SPACE — continued"
+        if continued
+        else "EXTRA ANSWER SPACE"
+    )
+    rows: list[list[object]] = [
+        [
+            Paragraph("Question<br/>number", STYLES["small"]),
+            Paragraph(heading, STYLES["centre_bold"]),
+        ],
+        *[["", ""] for _ in range(row_count)],
+    ]
+    table = Table(
+        rows,
+        colWidths=[18 * mm, 149 * mm],
+        rowHeights=[10 * mm, *([8.2 * mm] * row_count)],
+    )
+    style = [
+        ("BOX", (0, 0), (-1, -1), 0.55, INK),
+        ("LINEAFTER", (0, 0), (0, -1), 0.45, INK),
+        ("LINEBELOW", (0, 0), (-1, 0), 0.45, INK),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("PADDING", (0, 0), (-1, -1), 2),
+    ]
+    for row in range(1, row_count + 1):
+        style.append(("LINEBELOW", (1, row), (1, row), 0.35, colors.grey))
+    table.setStyle(TableStyle(style))
+    return [table]
 
 
 def _paper_three_pages(paper: GeneratedPaper) -> list[Flowable]:
@@ -1023,7 +1109,9 @@ def _page_sequence(pages: list[list[Flowable]]) -> list[Flowable]:
 
 def _question_paper_legal_page() -> list[Flowable]:
     return [
-        Spacer(1, 205 * mm),
+        Spacer(1, 105 * mm),
+        Paragraph("DO NOT WRITE ON THIS PAGE", STYLES["centre_bold"]),
+        Spacer(1, 92 * mm),
         Paragraph("Independent practice material", STYLES["heading"]),
         Spacer(1, 3 * mm),
         Paragraph(
