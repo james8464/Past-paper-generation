@@ -68,3 +68,24 @@ def test_packages_render_current_page_geometry(tmp_path: Path) -> None:
         assert len(PdfReader(paths["mark_scheme"]).pages) == mark_scheme_pages[paper]
         if paper == "3":
             assert len(PdfReader(paths["source_booklet"]).pages) == 8
+
+
+def test_paper_one_uses_measured_question_and_answer_page_plan(tmp_path: Path) -> None:
+    paths = generate_package(
+        paper="1",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=123,
+    )
+    pages = PdfReader(paths["question_paper"]).pages
+    assert "change in the break-even point" in (pages[3].extract_text() or "")
+    assert "Financial data" in (pages[4].extract_text() or "")
+    assert "Extract from statement of financial position" in (
+        pages[9].extract_text() or ""
+    )
+    assert "Average span of control" in (pages[11].extract_text() or "")
+    assert "There are no questions printed on this page" in (
+        pages[27].extract_text() or ""
+    )
+    assert "Additional page, if required" in (pages[28].extract_text() or "")
+    assert "Independent practice material" in (pages[31].extract_text() or "")

@@ -166,7 +166,53 @@ def _stimulus_count(paper_id: str, section_id: str) -> int:
 
 def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedQuestion:
     business = rng.choice(BUSINESSES)
-    if number % 5 == 0:
+    if number == 6:
+        correct = "A rise in selling price and a fall in variable cost per unit"
+        choices = [
+            correct,
+            "A fall in selling price and a rise in variable cost per unit",
+            "A rise in fixed costs and a fall in output",
+            "A fall in capacity and a rise in fixed costs",
+        ]
+        prompt = (
+            "Figure 1 shows a change in the break-even point of a product from M to N. "
+            "Which combination of changes is most likely to explain the movement?"
+        )
+    elif number == 7:
+        correct = "£3m"
+        choices = [correct, "£7m", "£10m", "£14m"]
+        prompt = (
+            f"The financial data shown apply to {business}. What was its profit for "
+            "the year after taxation?"
+        )
+    elif number == 10:
+        correct = "Factory B"
+        choices = [correct, "Factory A", "Factory C", "Factory D"]
+        prompt = (
+            f"{business} compares four factories. Which factory has the highest labour "
+            "productivity?"
+        )
+    elif number == 12:
+        correct = "Option B"
+        choices = [correct, "Option A", "Option C", "Option D"]
+        prompt = (
+            "Which option in the matrix represents high external change and low "
+            "strategic change?"
+        )
+    elif number == 13:
+        correct = "Statement 1 is true, Statement 2 is false"
+        choices = [
+            correct,
+            "Statement 1 is false, Statement 2 is true",
+            "Both statements are true",
+            "Both statements are false",
+        ]
+        prompt = (
+            f"The performance table for {business} is shown below. Statement 1: labour "
+            "turnover is worse than target. Statement 2: capacity utilisation exceeded "
+            "target. Which option is correct?"
+        )
+    elif number % 5 == 0:
         revenue = rng.randint(14, 48)
         cost = rng.randint(4, revenue - 3)
         correct = f"£{revenue - cost}m"
@@ -220,7 +266,62 @@ def _written_question(
     point = rng.choice(topic.points)
     context = f"the extracts about {business}"
     change = (values[-1] - values[0]) / values[0] * 100
-    if rule.kind == "calculation":
+    if rule.id == "calculation":
+        prompt = (
+            f"Using the extract from the accounts of {business}, calculate the current "
+            "ratio. Show your working."
+        )
+        scheme = [
+            "Current assets = inventories + receivables + cash;",
+            "Current liabilities = payables;",
+            "Current ratio = current assets ÷ current liabilities;",
+            "Award the final mark for a correctly expressed ratio.",
+        ]
+    elif rule.id == "explain" and rule.marks == 4:
+        prompt = (
+            f"{business} achieved a Return on Capital Employed (ROCE) of 12%. "
+            "Calculate its operating profit. Show your working."
+        )
+        scheme = [
+            "Capital employed = total equity + non-current liabilities;",
+            "Substitute the supplied values into ROCE = operating profit ÷ capital employed × 100;",
+            "Rearrange to calculate operating profit;",
+            "Award the final mark for the correct figure and unit.",
+        ]
+    elif rule.id == "analysis_1" and rule.marks == 9:
+        prompt = (
+            f"Analyse how the restructuring shown in the table might affect {business}'s "
+            "speed of response to customer enquiries."
+        )
+        scheme = [
+            "Use the wider span of control and fewer hierarchy levels;",
+            "Analyse faster communication and delegated decision-making;",
+            "Consider workload, control and possible communication problems;",
+            "Develop a contextual chain to speed of customer response.",
+        ]
+    elif rule.id == "analysis_2" and rule.marks == 9:
+        prompt = (
+            "Analyse how a government changing its fiscal policy might affect a "
+            "business which provides healthcare products."
+        )
+        scheme = [
+            "Identify a relevant change in taxation or government expenditure;",
+            "Apply the change to demand, costs, investment or cash flow;",
+            "Develop a linked effect on objectives or performance;",
+            "Credit a relevant counter-effect or dependency.",
+        ]
+    elif rule.id == "analysis_3" and rule.marks == 9:
+        prompt = (
+            "Analyse how adopting an innovation strategy might affect the human "
+            "resources function of a business."
+        )
+        scheme = [
+            "Explain relevant recruitment, training or workforce-planning needs;",
+            "Analyse the effect on skills, motivation, resistance or labour cost;",
+            "Link the HR response to successful implementation;",
+            "Credit a developed counter-effect or dependency.",
+        ]
+    elif rule.kind == "calculation":
         prompt = (
             f"Using the performance data for {business}, calculate the percentage "
             "change in the index. Give your answer to one decimal place."

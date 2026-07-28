@@ -261,40 +261,61 @@ def _paper_one_pages(paper: GeneratedPaper) -> list[Flowable]:
             content.extend(_mcq_block(option.questions[0]))
         pages.append(content)
     case = section_b.options[0]
+    question_16, question_17, question_18, question_19, question_20 = case.questions
     pages.extend(
         [
             [
                 *_intro(section_b),
-                Paragraph(case.title, STYLES["option"]),
-                Paragraph(case.stimulus[0], STYLES["extract"]),
+                _financial_position_extract(case),
                 Spacer(1, 4 * mm),
-                *_question_block(case.questions[0]),
-                AnswerLines(7),
+                *_question_block(question_16),
+                Paragraph("Answer", STYLES["small"]),
+                AnswerLines(2),
+                Paragraph("Working", STYLES["small"]),
+                AnswerLines(5),
             ],
             [
-                Paragraph(case.stimulus[1], STYLES["extract"]),
+                *_question_block(question_17),
                 Spacer(1, 4 * mm),
-                _chart(case),
-                Spacer(1, 4 * mm),
-                *_question_block(case.questions[1]),
+                Paragraph("Answer", STYLES["small"]),
+                AnswerLines(2),
+                Paragraph("Working", STYLES["small"]),
                 AnswerLines(7),
+                Spacer(1, 16 * mm),
+                Paragraph("Turn over for the next question", STYLES["centre_bold"]),
             ],
-            [_banner("Question 18"), *_question_block(case.questions[2]), AnswerLines(25)],
-            [Paragraph("Question 18 continued", STYLES["centre_bold"]), AnswerLines(34)],
-            [_banner("Question 19"), *_question_block(case.questions[3]), AnswerLines(25)],
-            [_banner("Question 20"), *_question_block(case.questions[4]), AnswerLines(25)],
+            [
+                _restructuring_table(case),
+                Spacer(1, 5 * mm),
+                *_question_block(question_18),
+                AnswerLines(23),
+            ],
+            [
+                Paragraph("Extra space", STYLES["small"]),
+                AnswerLines(24),
+                Spacer(1, 8 * mm),
+                Paragraph("Turn over for the next question", STYLES["centre_bold"]),
+            ],
+            [*_question_block(question_19), AnswerLines(29)],
+            [*_question_block(question_20), AnswerLines(29)],
             [*_intro(section_c), *_choice_prompts(section_c)],
         ]
     )
     pages.extend(
-        [[Paragraph("Section C answer continued", STYLES["centre_bold"]), AnswerLines(34)] for _ in range(5)]
+        [[AnswerLines(34)] for _ in range(5)]
     )
     pages.append([*_intro(section_d), *_choice_prompts(section_d)])
     pages.extend(
-        [[Paragraph("Section D answer continued", STYLES["centre_bold"]), AnswerLines(34)] for _ in range(5)]
+        [[AnswerLines(34)] for _ in range(5)]
     )
     pages.extend(
-        [[Paragraph("Additional page, if required", STYLES["centre_bold"]), AnswerLines(34)] for _ in range(5)]
+        [
+            _no_questions_page(),
+            _additional_answer_page(),
+            _additional_answer_page(),
+            _additional_answer_page(),
+            _no_questions_page(include_legal_notice=True),
+        ]
     )
     assert len(pages) == 31
     return _page_sequence(pages)
@@ -400,15 +421,59 @@ def _page_sequence(pages: list[list[Flowable]]) -> list[Flowable]:
 
 def _intro(section) -> list[Flowable]:
     return [
-        _banner(f"Section {section.id}: {section.title}"),
-        Spacer(1, 3 * mm),
-        Paragraph(section.instructions, STYLES["instruction"]),
+        Table(
+            [
+                [Paragraph(f"<b>Section {section.id}</b>", STYLES["centre_bold"])],
+                [Paragraph(section.instructions, STYLES["instruction"])],
+            ],
+            colWidths=[167 * mm],
+            style=TableStyle(
+                [
+                    ("LINEBELOW", (0, -1), (-1, -1), 0.65, INK),
+                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                    ("TOPPADDING", (0, 0), (-1, -1), 3),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+                ]
+            ),
+        ),
         Spacer(1, 4 * mm),
     ]
 
 
 def _choice_prompts(section) -> list[Flowable]:
-    result: list[Flowable] = []
+    option_numbers = [option.questions[0].number for option in section.options]
+    result: list[Flowable] = [
+        Paragraph(
+            "Shade the lozenge below to indicate which optional question you have answered.",
+            STYLES["body"],
+        ),
+        Spacer(1, 3 * mm),
+        Table(
+            [
+                [
+                    Paragraph(
+                        f"<b>Question {option_numbers[0]}</b>",
+                        STYLES["body"],
+                    ),
+                    _lozenge(),
+                    Spacer(1, 10 * mm),
+                    Paragraph(
+                        f"<b>Question {option_numbers[1]}</b>",
+                        STYLES["body"],
+                    ),
+                    _lozenge(),
+                ],
+            ],
+            colWidths=[40 * mm, 18 * mm, 14 * mm, 40 * mm, 18 * mm],
+            style=TableStyle(
+                [
+                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                    ("PADDING", (0, 0), (-1, -1), 2),
+                ]
+            ),
+        ),
+        Spacer(1, 5 * mm),
+    ]
     for index, option in enumerate(section.options):
         if index:
             result.extend(
@@ -416,6 +481,268 @@ def _choice_prompts(section) -> list[Flowable]:
             )
         result.extend(_question_block(option.questions[0]))
     return result
+
+
+def _financial_position_extract(option: GeneratedOption) -> Table:
+    values = [int(round(value)) for value in option.chart_values]
+    inventories = values[0]
+    receivables = int(values[1] * 0.42)
+    cash = int(values[2] * 0.35)
+    payables = int(values[3] * 0.66)
+    rows = [
+        ["Extract from statement of financial position", "£m", "£m"],
+        ["Non-current assets", "", f"{int(values[4] * 3.35)}"],
+        ["Inventories", f"{inventories}", ""],
+        ["Receivables", f"{receivables}", ""],
+        ["Cash", f"{cash}", ""],
+        ["Payables", f"({payables})", ""],
+        [
+            "Net current assets",
+            "",
+            f"{inventories + receivables + cash - payables}",
+        ],
+        ["Non-current liabilities", "", f"{int(values[2] * 2.3)}"],
+        ["Total equity", "", f"{int(values[1] * 1.9)}"],
+    ]
+    table = Table(
+        rows,
+        colWidths=[92 * mm, 25 * mm, 25 * mm],
+        rowHeights=[9 * mm, *([8 * mm] * 8)],
+        style=TableStyle(
+            [
+                ("SPAN", (0, 0), (0, 0)),
+                ("FONT", (0, 0), (-1, 0), FONT_BOLD),
+                ("ALIGN", (1, 0), (-1, -1), "RIGHT"),
+                ("LINEABOVE", (0, 0), (-1, 0), 0.5, INK),
+                ("LINEBELOW", (0, 0), (-1, 0), 0.5, INK),
+                ("LINEBELOW", (1, -1), (-1, -1), 0.5, INK),
+                ("PADDING", (0, 0), (-1, -1), 4),
+            ]
+        ),
+    )
+    table.hAlign = "CENTER"
+    return table
+
+
+def _restructuring_table(option: GeneratedOption) -> Table:
+    values = [int(round(value)) for value in option.chart_values]
+    rows = [
+        ["Feature", "Before restructuring", "After restructuring"],
+        ["Number of staff", str(values[4] * 34), str(values[3] * 31)],
+        ["Average span of control", "5", "15"],
+        ["Levels of hierarchy", "6", "4"],
+    ]
+    table = Table(
+        rows,
+        colWidths=[72 * mm, 40 * mm, 40 * mm],
+        rowHeights=[10 * mm] * 4,
+        style=TableStyle(
+            [
+                ("GRID", (0, 0), (-1, -1), 0.5, INK),
+                ("FONT", (0, 0), (-1, 0), FONT_BOLD),
+                ("ALIGN", (1, 1), (-1, -1), "CENTER"),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("PADDING", (0, 0), (-1, -1), 4),
+            ]
+        ),
+    )
+    table.hAlign = "CENTER"
+    return table
+
+
+def _mcq_context(question: GeneratedQuestion) -> list[Flowable]:
+    number = int("".join(character for character in question.number if character.isdigit()))
+    if number == 6:
+        return [_break_even_diagram(), Spacer(1, 3 * mm)]
+    if number == 7:
+        return [
+            _compact_data_table(
+                [
+                    ["Financial data", "£m"],
+                    ["Sales revenue", "20"],
+                    ["Cost of sales", "6"],
+                    ["Operating expenses", "4"],
+                    ["Taxation", "7"],
+                ],
+                [72 * mm, 28 * mm],
+            ),
+            Spacer(1, 3 * mm),
+        ]
+    if number == 10:
+        return [
+            _compact_data_table(
+                [
+                    ["Factory", "Output", "Employees"],
+                    ["Factory A", "900", "60"],
+                    ["Factory B", "840", "40"],
+                    ["Factory C", "800", "50"],
+                    ["Factory D", "750", "50"],
+                ],
+                [48 * mm, 35 * mm, 35 * mm],
+            ),
+            Spacer(1, 3 * mm),
+        ]
+    if number == 12:
+        return [
+            _compact_data_table(
+                [
+                    ["Option", "External change", "Strategic change"],
+                    ["A", "High", "High"],
+                    ["B", "High", "Low"],
+                    ["C", "Low", "High"],
+                    ["D", "Low", "Low"],
+                ],
+                [30 * mm, 48 * mm, 48 * mm],
+            ),
+            Spacer(1, 3 * mm),
+        ]
+    if number == 13:
+        return [
+            _compact_data_table(
+                [
+                    ["Measure of performance", "Target", "Actual"],
+                    ["Capacity utilisation", "90%", "88%"],
+                    ["Labour turnover", "12%", "17%"],
+                    ["Market share", "13%", "15%"],
+                    ["ROCE", "16%", "12%"],
+                ],
+                [70 * mm, 30 * mm, 30 * mm],
+            ),
+            Spacer(1, 3 * mm),
+        ]
+    return []
+
+
+def _compact_data_table(rows: list[list[str]], widths: list[float]) -> Table:
+    table = Table(rows, colWidths=widths, rowHeights=[7 * mm] * len(rows))
+    table.setStyle(
+        TableStyle(
+            [
+                ("GRID", (0, 0), (-1, -1), 0.45, INK),
+                ("FONT", (0, 0), (-1, 0), FONT_BOLD),
+                ("ALIGN", (1, 1), (-1, -1), "CENTER"),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("PADDING", (0, 0), (-1, -1), 3),
+            ]
+        )
+    )
+    table.hAlign = "CENTER"
+    return table
+
+
+def _break_even_diagram() -> Drawing:
+    drawing = Drawing(155 * mm, 62 * mm)
+    x0, y0, width, height = 75, 25, 330, 120
+    drawing.add(
+        String(
+            x0,
+            y0 + height + 18,
+            "Figure 1: change in the break-even point",
+            fontName=FONT_BOLD,
+            fontSize=9,
+        )
+    )
+    drawing.add(Line(x0, y0, x0, y0 + height, strokeColor=INK))
+    drawing.add(Line(x0, y0, x0 + width, y0, strokeColor=INK))
+    drawing.add(String(x0 - 50, y0 + height - 4, "Costs /", fontName=FONT, fontSize=8))
+    drawing.add(String(x0 - 50, y0 + height - 14, "revenue", fontName=FONT, fontSize=8))
+    drawing.add(String(x0 + width - 30, y0 - 18, "Output", fontName=FONT, fontSize=8))
+    drawing.add(Line(x0, y0 + 35, x0 + width, y0 + 105, strokeColor=INK))
+    drawing.add(Line(x0, y0 + 35, x0 + width, y0 + 82, strokeColor=INK))
+    drawing.add(Line(x0, y0, x0 + width, y0 + 115, strokeColor=INK))
+    drawing.add(Line(x0, y0, x0 + width, y0 + 92, strokeColor=INK))
+    drawing.add(String(x0 + width - 8, y0 + 106, "TR1", fontName=FONT, fontSize=7))
+    drawing.add(String(x0 + width - 8, y0 + 83, "TR2", fontName=FONT, fontSize=7))
+    drawing.add(String(x0 + width - 8, y0 + 116, "TC1", fontName=FONT, fontSize=7))
+    drawing.add(String(x0 + width - 8, y0 + 93, "TC2", fontName=FONT, fontSize=7))
+    drawing.add(String(x0 + 150, y0 + 53, "M", fontName=FONT_BOLD, fontSize=8))
+    drawing.add(String(x0 + 220, y0 + 70, "N", fontName=FONT_BOLD, fontSize=8))
+    return drawing
+
+
+def _do_not_write_drawing(height: float = 226 * mm) -> Drawing:
+    drawing = Drawing(167 * mm, height)
+    drawing.add(Line(0, 0, 167 * mm, height, strokeColor=INK, strokeWidth=0.7))
+    drawing.add(
+        String(
+            83.5 * mm,
+            height / 2,
+            "DO NOT WRITE ON THIS PAGE",
+            fontName=FONT_BOLD,
+            fontSize=10,
+            textAnchor="middle",
+        )
+    )
+    drawing.add(
+        String(
+            83.5 * mm,
+            height / 2 - 6 * mm,
+            "ANSWER IN THE SPACES PROVIDED",
+            fontName=FONT_BOLD,
+            fontSize=10,
+            textAnchor="middle",
+        )
+    )
+    return drawing
+
+
+def _no_questions_page(
+    *,
+    include_legal_notice: bool = False,
+) -> list[Flowable]:
+    height = 178 * mm if include_legal_notice else 226 * mm
+    content: list[Flowable] = [
+        Paragraph(
+            "There are no questions printed on this page",
+            STYLES["centre_bold"],
+        ),
+        Spacer(1, 3 * mm),
+        _do_not_write_drawing(height),
+    ]
+    if include_legal_notice:
+        content.extend(
+            [
+                Spacer(1, 7 * mm),
+                Paragraph("Independent practice material", STYLES["small"]),
+                Paragraph(
+                    "Created by Paper Creator for private revision. This paper is not "
+                    "produced, endorsed or approved by AQA or any examination board.",
+                    STYLES["small"],
+                ),
+            ]
+        )
+    return content
+
+
+def _additional_answer_page() -> list[Flowable]:
+    row_count = 25
+    rows: list[list[object]] = [
+        [
+            Paragraph("Question<br/>number", STYLES["marks"]),
+            Paragraph(
+                "<b>Additional page, if required</b><br/>"
+                "Write the question numbers in the left-hand margin.",
+                STYLES["centre_bold"],
+            ),
+        ],
+        *[["", ""] for _ in range(row_count)],
+    ]
+    table = Table(
+        rows,
+        colWidths=[14 * mm, 153 * mm],
+        rowHeights=[10 * mm, *([8.2 * mm] * row_count)],
+    )
+    style = [
+        ("BOX", (0, 0), (-1, -1), 0.65, INK),
+        ("LINEAFTER", (0, 0), (0, -1), 0.5, INK),
+        ("LINEBELOW", (0, 0), (-1, 0), 0.5, INK),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("PADDING", (0, 0), (-1, -1), 2),
+    ]
+    for row in range(1, row_count + 1):
+        style.append(("LINEBELOW", (1, row), (1, row), 0.35, colors.grey))
+    table.setStyle(TableStyle(style))
+    return [table]
 
 
 def _mcq_block(question: GeneratedQuestion) -> list[Flowable]:
@@ -442,6 +769,7 @@ def _mcq_block(question: GeneratedQuestion) -> list[Flowable]:
             [
                 _question_table(question),
                 Spacer(1, 2 * mm),
+                *_mcq_context(question),
                 choices,
                 Spacer(1, 5 * mm),
             ]
@@ -662,7 +990,10 @@ def _chrome(canvas, doc, code: str, kind: str) -> None:
         canvas.drawString(198.5 * mm, PAGE_HEIGHT - 22 * mm, "outside the")
         canvas.drawString(198.5 * mm, PAGE_HEIGHT - 25 * mm, "box")
         canvas.setFont(FONT_BOLD, 9)
-        canvas.drawRightString(PAGE_WIDTH - 13 * mm, 11 * mm, "Turn over >")
+        if code == "7132/1" and doc.page == 27:
+            canvas.drawCentredString(PAGE_WIDTH / 2, 17 * mm, "END OF QUESTIONS")
+        elif code != "7132/1" or doc.page < 27:
+            canvas.drawRightString(PAGE_WIDTH - 13 * mm, 11 * mm, "Turn over >")
         canvas.setFont(FONT, 6.5)
         canvas.drawString(14 * mm, 9 * mm, f"PRACTICE/{code}")
         canvas.restoreState()
