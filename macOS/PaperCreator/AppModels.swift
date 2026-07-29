@@ -16,6 +16,34 @@ struct PaperOption: Identifiable, Hashable {
     let id: String
     let title: String
     let detail: String
+    let readiness: PaperReadiness
+}
+
+struct PaperReadiness: Hashable {
+    let difficultyVerified: Bool
+    let visuallyCalibrated: Bool
+    let releaseReady: Bool
+}
+
+enum GeneratorContentMode: String, Hashable, Codable {
+    case deterministic
+    case aiAssisted = "ai-assisted"
+
+    var usesAI: Bool { self == .aiAssisted }
+
+    var title: String {
+        switch self {
+        case .deterministic: "Built-in constrained generator"
+        case .aiAssisted: "AI-assisted generator"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .deterministic: "checklist"
+        case .aiAssisted: "sparkles"
+        }
+    }
 }
 
 struct ExamBoardOption: Identifiable, Hashable {
@@ -29,8 +57,15 @@ struct ExamBoardOption: Identifiable, Hashable {
     let backendSubject: String?
     let papers: [PaperOption]
     let resourcePath: String
+    let contentMode: GeneratorContentMode
+    let supportedProviders: [AIProvider]
 
     var isReady: Bool { status == .ready && backendSubject != nil }
+    var usesAI: Bool { contentMode.usesAI }
+
+    func supports(_ provider: AIProvider) -> Bool {
+        supportedProviders.contains(provider)
+    }
 }
 
 struct CatalogSubject: Identifiable, Hashable {
@@ -51,7 +86,8 @@ enum ExamCatalog {
         board(id: "economics-edexcel-a") ?? readyBoards.first ?? ExamBoardOption(
             id: "unknown", subjectID: "unknown", subjectTitle: "Unknown", title: "Unknown",
             shortTitle: "Unknown", systemImage: "doc.text", status: .placeholder,
-            backendSubject: nil, papers: [], resourcePath: ""
+            backendSubject: nil, papers: [], resourcePath: "",
+            contentMode: .deterministic, supportedProviders: []
         )
     }
 
@@ -113,9 +149,25 @@ enum CatalogLoader {
                         status: .ready,
                         backendSubject: implementation.backendSubject,
                         papers: implementation.papers.map {
-                            PaperOption(id: $0.id, title: $0.title, detail: $0.detail)
+                            PaperOption(
+                                id: $0.id,
+                                title: $0.title,
+                                detail: $0.detail,
+                                readiness: PaperReadiness(
+                                    difficultyVerified: $0.gates["difficulty"] ?? false,
+                                    visuallyCalibrated: $0.gates["visual"] ?? false,
+                                    releaseReady: $0.gates["release"] ?? false
+                                )
+                            )
                         },
-                        resourcePath: implementation.resourcePath
+                        resourcePath: implementation.resourcePath,
+                        contentMode: implementation.contentMode,
+                        supportedProviders: try implementation.supportedProviders.map {
+                            guard let provider = AIProvider(backendID: $0) else {
+                                throw CatalogLoadError.unknownProvider($0)
+                            }
+                            return provider
+                        }
                     )
                 }
                 return nil
@@ -167,6 +219,8 @@ private struct GeneratorFamilyDocument: Decodable {
     let appBoard: String
     let backendSubject: String
     let resourcePath: String
+    let contentMode: GeneratorContentMode
+    let supportedProviders: [String]
     let advertised: Bool
     let papers: [GeneratorPaperDocument]
 }
@@ -175,6 +229,7 @@ private struct GeneratorPaperDocument: Decodable {
     let id: String
     let title: String
     let detail: String
+    let gates: [String: Bool]
 }
 
 enum CatalogLoadError: LocalizedError {
@@ -184,6 +239,7 @@ enum CatalogLoadError: LocalizedError {
     case emptyImplementation(String)
     case duplicateBoard(String)
     case implementationMissingFromCatalog(String)
+    case unknownProvider(String)
 
     var errorDescription: String? {
         switch self {
@@ -193,6 +249,7 @@ enum CatalogLoadError: LocalizedError {
         case let .emptyImplementation(id): "Advertised generator has no papers: \(id)"
         case let .duplicateBoard(id): "Duplicate catalog board: \(id)"
         case let .implementationMissingFromCatalog(id): "Generator is missing from the app catalog: \(id)"
+        case let .unknownProvider(id): "Generator registry has an unknown AI provider: \(id)"
         }
     }
 }
@@ -247,6 +304,16 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .openAI: "openai"
         case .anthropic: "anthropic"
         case .apple: "apple"
+        }
+    }
+
+    init?(backendID: String) {
+        switch backendID {
+        case "ollama": self = .ollama
+        case "openai": self = .openAI
+        case "anthropic": self = .anthropic
+        case "apple": self = .apple
+        default: return nil
         }
     }
 }
@@ -370,16 +437,40 @@ struct BenchmarkVerdict: Equatable {
     let detail: String
 }
 
-struct GeneratedFile: Identifiable, Equatable {
-    let id = UUID()
+struct GeneratedFile: Identifiable, Codable, Equatable {
+    let id: UUID
     let role: String
     let url: URL
+    let createdAt: Date
+    let subject: String
+    let paper: String
+
+    init(
+        id: UUID = UUID(),
+        role: String,
+        url: URL,
+        createdAt: Date = Date(),
+        subject: String = "",
+        paper: String = ""
+    ) {
+        self.id = id
+        self.role = role
+        self.url = url
+        self.createdAt = createdAt
+        self.subject = subject
+        self.paper = paper
+    }
+
+    var exists: Bool {
+        FileManager.default.fileExists(atPath: url.path)
+    }
 
     var title: String {
         switch role {
         case "question_paper": "Question Paper"
         case "source_booklet": "Source Booklet"
         case "mark_scheme": "Mark Scheme"
+        case "package_manifest": "Package Manifest"
         case "preliminary_material": "Preliminary Material"
         case "electronic_answer_document": "Electronic Answer Document"
         case "skeleton_program": "Skeleton Program"
@@ -387,9 +478,14 @@ struct GeneratedFile: Identifiable, Equatable {
         default: role.replacingOccurrences(of: "_", with: " ").capitalized
         }
     }
+
+    var paperDescription: String {
+        [subject, paper].filter { !$0.isEmpty }.joined(separator: " · ")
+    }
 }
 
 enum BackendEvent: Equatable {
+    case hello(protocolVersion: Int, backendVersion: String, capabilities: [String])
     case progress(stage: String?, message: String, progress: Double?)
     case file(role: String, path: String)
     case done(message: String)
@@ -405,6 +501,12 @@ enum BackendEvent: Equatable {
         let payload = try JSONDecoder().decode(BackendEventPayload.self, from: data)
 
         switch payload.type {
+        case "hello":
+            self = .hello(
+                protocolVersion: payload.protocolVersion ?? 0,
+                backendVersion: payload.backendVersion ?? "Unknown",
+                capabilities: payload.capabilities ?? []
+            )
         case "progress":
             self = .progress(stage: payload.stage, message: payload.message ?? "", progress: payload.progress)
         case "file":
@@ -467,7 +569,13 @@ enum BackendEvent: Equatable {
 }
 
 private struct BackendEventPayload: Decodable {
+    let protocolVersion: Int?
     let type: String
+    let eventID: Int?
+    let timestamp: String?
+    let jobID: String?
+    let backendVersion: String?
+    let capabilities: [String]?
     let stage: String?
     let message: String?
     let role: String?
@@ -502,7 +610,13 @@ private struct BackendEventPayload: Decodable {
     let verdict: String?
 
     enum CodingKeys: String, CodingKey {
+        case protocolVersion = "protocol"
         case type
+        case eventID = "event_id"
+        case timestamp
+        case jobID = "job_id"
+        case backendVersion = "backend_version"
+        case capabilities
         case stage
         case message
         case role

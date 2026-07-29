@@ -75,7 +75,9 @@ def test_each_package_renders_readable_pdfs(tmp_path: Path) -> None:
         for path in paths.values():
             reader = PdfReader(path)
             assert len(reader.pages) >= 2
-            assert "A-level Economics" in (reader.pages[0].extract_text() or "")
+            cover = reader.pages[0].extract_text() or ""
+            assert "A-level" in cover
+            assert "economics" in cover.casefold()
         assert len(PdfReader(paths["question_paper"]).pages) == (44 if paper == "3" else 8)
         assert len(PdfReader(paths["mark_scheme"]).pages) == (
             11 if paper == "3" else 21

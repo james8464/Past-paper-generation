@@ -110,6 +110,7 @@ def test_box_conformance_preserves_vector_drawings(tmp_path: Path) -> None:
 
     path = tmp_path / "drawing.pdf"
     pdf = canvas.Canvas(str(path), pagesize=(595.28, 841.89))
+    pdf.setTitle("Metadata survives conformance")
     pdf.line(50, 50, 500, 50)
     pdf.save()
 
@@ -127,5 +128,6 @@ def test_box_conformance_preserves_vector_drawings(tmp_path: Path) -> None:
     document = fitz.open(path)
     try:
         assert document[0].get_drawings()
+        assert document.metadata["title"] == "Metadata survives conformance"
     finally:
         document.close()

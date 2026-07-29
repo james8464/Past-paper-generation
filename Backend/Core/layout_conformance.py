@@ -34,5 +34,5 @@ def conform_generated_documents(
             generated_path,
             master.get("page_boxes") or master["boxes"],
             expected_page_count=master["page_count"],
-            strict_page_count=generated_role == "question_paper",
+            strict_page_count=True,
         )

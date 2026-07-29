@@ -2,6 +2,7 @@ from pathlib import Path
 import re
 
 from Backend.Core.generation_date import formatted_generation_date
+from Backend.Core.pdf_text import extract_pdf_text, pdf_font_names
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.render_pdf import (
@@ -154,17 +155,14 @@ def test_question_text_size_matches_reference_body_scale():
 
 
 def test_question_paper_uses_closer_reference_font_family(tmp_path):
-    import subprocess
-
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
     blueprint = build_paper_blueprint(config, syllabus, seed=42)
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
-    fonts = subprocess.run(["pdffonts", str(output)], check=True, capture_output=True, text=True).stdout
-
-    assert "HelveticaNeue" in fonts
+    fonts = pdf_font_names(output)
+    assert any("HelveticaNeue" in font for font in fonts)
     assert "ArialMT" not in fonts
 
 
@@ -469,10 +467,14 @@ def test_section_a_question_3_not_rotated_or_garbled(tmp_path):
     output = tmp_path / "paper.pdf"
     render_question_paper(blueprint, output)
     pages = _pdf_text(output).split("\f")
-    page_with_q3_a = next(page for page in pages if re.search(r"\b3\s{2,}", page))
+    question_three = next(
+        question for question in blueprint.questions if question.number == "3"
+    )
+    prompt_fragment = question_three.parts[0].prompt[:30]
+    page_with_q3_a = next(page for page in pages if prompt_fragment in page)
     page_with_q3_b = next(page for page in pages if "Total for Question 3 = 5 marks" in page)
 
-    assert re.search(r"\b3\s{2,}", page_with_q3_a)
+    assert prompt_fragment in page_with_q3_a
     assert "(a)" in page_with_q3_a or "Calculate" in page_with_q3_a or "Which one" in page_with_q3_a
     assert "(b)" in page_with_q3_b
     assert page_with_q3_a.count("DO NOT WRITE IN THIS AREA") <= 6
@@ -647,14 +649,7 @@ def _pdf_page_count(path: Path) -> int:
 
 
 def _pdf_text(path: Path) -> str:
-    import subprocess
-
-    return subprocess.run(
-        ["pdftotext", "-layout", str(path), "-"],
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout
+    return extract_pdf_text(path)
 
 
 def _first_page_containing(path: Path, text: str) -> int | None:

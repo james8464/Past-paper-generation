@@ -11,6 +11,7 @@ struct GeneratorWorkspace: View {
 
                 if board.isReady {
                     ReadinessBanner()
+                    OutputDestinationPanel()
                     if appModel.isRunning {
                         ActivityPanel()
                     }
@@ -95,9 +96,34 @@ private struct HeaderPanel: View {
                         .font(.callout)
                         .foregroundStyle(.secondary)
                         .lineLimit(2)
+
+                    HStack(spacing: 8) {
+                        Label(board.contentMode.title, systemImage: board.contentMode.systemImage)
+                            .foregroundStyle(.secondary)
+                        evidenceLabel(
+                            appModel.selectedPaper.readiness.visuallyCalibrated
+                                ? "Visual profile reviewed"
+                                : "Visual review pending",
+                            passed: appModel.selectedPaper.readiness.visuallyCalibrated
+                        )
+                        evidenceLabel(
+                            appModel.selectedPaper.readiness.difficultyVerified
+                                ? "Difficulty independently verified"
+                                : "Difficulty not independently verified",
+                            passed: appModel.selectedPaper.readiness.difficultyVerified
+                        )
+                    }
+                    .font(.caption)
+                    .padding(.top, 2)
                 }
             }
         }
+    }
+
+    private func evidenceLabel(_ title: String, passed: Bool) -> some View {
+        Label(title, systemImage: passed ? "checkmark.seal.fill" : "exclamationmark.triangle")
+            .foregroundStyle(passed ? Color.green : Color.orange)
+            .help(title)
     }
 
     @ViewBuilder
@@ -110,10 +136,8 @@ private struct HeaderPanel: View {
                 .padding(.vertical, 8)
                 .background(.thinMaterial, in: Capsule())
         } else if appModel.isRunning {
-            Button(role: .cancel, action: appModel.cancelGeneration) {
-                Label("Cancel", systemImage: "xmark.circle")
-            }
-            .controlSize(.large)
+            Label("Creating Paper", systemImage: "progress.indicator")
+                .foregroundStyle(.secondary)
         } else {
             Button(action: appModel.generate) {
                 Label("Create Paper", systemImage: "doc.badge.plus")
@@ -128,8 +152,7 @@ private struct HeaderPanel: View {
     }
 
     private var generateHelp: String {
-        if !board.isReady { return "This exam board is coming soon." }
-        if appModel.aiProvider == .ollama && !appModel.ollamaState.running { return "Refresh Ollama before generating." }
+        if let blocker = appModel.generationBlocker { return blocker }
         return "Create the question paper and mark scheme"
     }
 }
@@ -176,7 +199,7 @@ private struct ReadinessBanner: View {
 
     private var actions: some View {
         HStack(spacing: 8) {
-            if appModel.aiProvider == .ollama {
+            if appModel.selectedBoard.usesAI && appModel.aiProvider == .ollama {
                 Button("Check Again", action: appModel.refreshOllama)
                 if appModel.distributionMode.canManageOllama {
                     Button("Get Ollama", action: appModel.openOllamaDownload)
@@ -189,7 +212,10 @@ private struct ReadinessBanner: View {
     }
 
     private var helpText: String {
-        switch appModel.aiProvider {
+        guard appModel.selectedBoard.usesAI else {
+            return "This paper uses the built-in constrained generator and does not contact an AI provider."
+        }
+        return switch appModel.aiProvider {
         case .ollama:
             "Use Ollama locally, or switch provider in Settings."
         case .apple:
@@ -240,6 +266,60 @@ private struct DocumentsPanel: View {
                 .frame(minHeight: 110)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct OutputDestinationPanel: View {
+    @EnvironmentObject private var appModel: AppViewModel
+
+    var body: some View {
+        VStack(spacing: 12) {
+            if appModel.selectedBoard.usesAI {
+                HStack(spacing: 12) {
+                    Label("AI provider", systemImage: "sparkles")
+                        .font(.headline)
+                    Picker(
+                        "AI provider",
+                        selection: Binding(
+                            get: { appModel.aiProvider },
+                            set: { appModel.selectAIProvider($0) }
+                        )
+                    ) {
+                        ForEach(
+                            appModel.selectedBoard.supportedProviders
+                        ) { provider in
+                            Text(provider.title).tag(provider)
+                        }
+                    }
+                    .labelsHidden()
+                    .pickerStyle(.menu)
+                    Text(appModel.activeModelName)
+                        .lineLimit(1)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    SettingsLink {
+                        Label("Configure", systemImage: "gear")
+                    }
+                }
+                Divider()
+            }
+
+            HStack(spacing: 12) {
+                Label("Save to", systemImage: "folder")
+                    .font(.headline)
+                Text(appModel.outputFolder.path)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Button("Choose…", action: appModel.chooseOutputFolder)
+            }
+        }
+        .padding(14)
+        .background(
+            Color(nsColor: .controlBackgroundColor),
+            in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+        )
     }
 }
 

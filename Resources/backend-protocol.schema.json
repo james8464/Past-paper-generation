@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://papercreator.local/schemas/backend-protocol-v2.json",
+  "title": "Paper creator backend event",
+  "type": "object",
+  "required": ["protocol", "type", "event_id", "timestamp", "job_id"],
+  "properties": {
+    "protocol": {"const": 2},
+    "type": {
+      "enum": [
+        "hello",
+        "progress",
+        "file",
+        "done",
+        "error",
+        "models",
+        "ollama_status",
+        "benchmark_metric",
+        "benchmark_sample",
+        "benchmark_done"
+      ]
+    },
+    "event_id": {"type": "integer", "minimum": 1},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "job_id": {"type": "string"},
+    "stage": {"type": ["string", "null"]},
+    "message": {"type": "string"},
+    "progress": {"type": "number", "minimum": 0, "maximum": 1},
+    "role": {"type": "string"},
+    "path": {"type": "string"},
+    "code": {"type": "string"},
+    "backend_version": {"type": "string"},
+    "capabilities": {"type": "array", "items": {"type": "string"}}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"type": {"const": "file"}}},
+      "then": {"required": ["role", "path"]}
+    },
+    {
+      "if": {"properties": {"type": {"const": "error"}}},
+      "then": {"required": ["message"]}
+    },
+    {
+      "if": {"properties": {"type": {"const": "hello"}}},
+      "then": {"required": ["backend_version", "capabilities"]}
+    }
+  ],
+  "additionalProperties": true
+}

@@ -6,6 +6,7 @@ import subprocess
 from pypdf import PdfReader
 
 from Backend.Core.generation_date import formatted_generation_date
+from Backend.Core.pdf_text import extract_pdf_text
 from cspapergen.cli import generate_package
 from cspapergen.generator import build_paper1_blueprint
 from cspapergen.syllabus import load_syllabus
@@ -77,30 +78,17 @@ def test_paper1_package_contains_all_on_screen_exam_artifacts(tmp_path) -> None:
 def test_paper1_rendered_documents_use_correct_identity(tmp_path) -> None:
     paths = generate_package(output_dir=tmp_path, paper="1", seed=42, dry_run=True)
 
-    question_text = subprocess.check_output(
-        ["pdftotext", "-layout", str(paths["question_paper"]), "-"],
-        text=True,
+    question_text = extract_pdf_text(paths["question_paper"])
+    mark_text = extract_pdf_text(
+        paths["mark_scheme"],
+        first_page=1,
+        last_page=1,
     )
-    mark_text = subprocess.check_output(
-        ["pdftotext", "-layout", "-f", "1", "-l", "1", str(paths["mark_scheme"]), "-"],
-        text=True,
-    )
-    preliminary_text = subprocess.check_output(
-        ["pdftotext", "-layout", str(paths["preliminary_material"]), "-"],
-        text=True,
-    )
-    answer_document_text = subprocess.check_output(
-        [
-            "pdftotext",
-            "-layout",
-            "-f",
-            "1",
-            "-l",
-            "1",
-            str(paths["electronic_answer_document"]),
-            "-",
-        ],
-        text=True,
+    preliminary_text = extract_pdf_text(paths["preliminary_material"])
+    answer_document_text = extract_pdf_text(
+        paths["electronic_answer_document"],
+        first_page=1,
+        last_page=1,
     )
     assert "Paper 1" in question_text
     assert "Electronic Answer Document" in question_text

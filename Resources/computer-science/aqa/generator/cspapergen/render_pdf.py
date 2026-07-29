@@ -7,7 +7,11 @@ from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 
 from Backend.Core.fonts import register_fonts as _rf
-from Backend.Core.generation_date import formatted_generation_date, generation_date
+from Backend.Core.generation_date import (
+    formatted_generation_date,
+    formatted_generation_series,
+    generation_date,
+)
 from cspapergen.models import PaperBlueprint, Question, QuestionPart, Stimulus
 
 FONT = "AQAArial"
@@ -1143,8 +1147,9 @@ def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     _cover_section(pdf, y - 8, "Advice", advice)
 
     _examiner_table(pdf, len(blueprint.questions), y_top=420)
-    pdf.setFont(FONT_BOLD, 9)
-    pdf.drawString(55, 35, f"*PRACTICE{blueprint.paper_code.replace('/', '')}01*")
+    _draw_footer_barcode(pdf, 52, 14, 1)
+    pdf.setFont(FONT_BOLD, 8)
+    pdf.drawString(130, 35, f"*PRACTICE{blueprint.paper_code.replace('/', '')}01*")
     pdf.setFont(FONT, 9)
     pdf.drawRightString(535, 35, blueprint.paper_code)
 
@@ -1646,6 +1651,10 @@ def _draw_footer_barcode(pdf: canvas.Canvas, x: float, y: float, page: int) -> N
 
 
 def _mark_scheme_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
+    pdf.setFont(FONT_BOLD, 24)
+    pdf.drawString(55, 790, "PAPER CREATOR")
+    pdf.setLineWidth(0.8)
+    pdf.line(55, 774, 535, 774)
     pdf.setFont(FONT_BOLD, 18)
     pdf.drawString(55, 720, "A-level")
     pdf.setFont(FONT_BOLD, 22)
@@ -1656,10 +1665,11 @@ def _mark_scheme_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.setFont(FONT_BOLD, 20)
     pdf.drawString(55, 585, "Mark scheme")
     pdf.setFont(FONT, 13)
-    pdf.drawString(55, 555, formatted_generation_date())
+    pdf.drawString(55, 555, formatted_generation_series())
     pdf.drawString(55, 530, "Version: 1.0")
+    _draw_footer_barcode(pdf, 52, 14, 1)
     pdf.setFont(FONT_BOLD, 10)
-    pdf.drawString(55, 40, f"PC{blueprint.paper_code}/MS")
+    pdf.drawString(130, 40, f"PC{blueprint.paper_code}/MS")
 
 
 def _mark_scheme_intro(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:

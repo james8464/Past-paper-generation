@@ -1,26 +1,68 @@
+import AppKit
 import SwiftUI
 
 struct SettingsPane: View {
+    @AppStorage(AppStorageKey.settingsPane)
+    private var selectedPane = SettingsPaneID.ai
+
     var body: some View {
-        TabView {
+        TabView(selection: $selectedPane) {
             AISettingsTab()
                 .tabItem {
                     Label("AI", systemImage: "sparkles")
                 }
+                .tag(SettingsPaneID.ai)
 
             OutputSettingsTab()
                 .tabItem {
                     Label("Output", systemImage: "folder")
                 }
+                .tag(SettingsPaneID.output)
 
             PrivacySettingsTab()
                 .tabItem {
                     Label("Privacy", systemImage: "hand.raised")
                 }
+                .tag(SettingsPaneID.privacy)
         }
         .scenePadding()
         .frame(minWidth: 620, minHeight: 500)
-        .navigationTitle("Settings")
+        .navigationTitle(selectedPane.title)
+        .background(SettingsWindowConfiguration(title: selectedPane.title))
+    }
+}
+
+private enum SettingsPaneID: String {
+    case ai
+    case output
+    case privacy
+
+    var title: String {
+        switch self {
+        case .ai: "AI Settings"
+        case .output: "Output Settings"
+        case .privacy: "Privacy Settings"
+        }
+    }
+}
+
+private struct SettingsWindowConfiguration: NSViewRepresentable {
+    let title: String
+
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView()
+        DispatchQueue.main.async { configure(view.window) }
+        return view
+    }
+
+    func updateNSView(_ view: NSView, context: Context) {
+        DispatchQueue.main.async { configure(view.window) }
+    }
+
+    private func configure(_ window: NSWindow?) {
+        window?.title = title
+        window?.standardWindowButton(.miniaturizeButton)?.isEnabled = false
+        window?.standardWindowButton(.zoomButton)?.isEnabled = false
     }
 }
 
@@ -43,6 +85,14 @@ private struct AISettingsTab: View {
                 Text(appModel.aiProvider.subtitle)
                     .foregroundStyle(.secondary)
 
+                if !appModel.selectedBoard.usesAI {
+                    Label(
+                        "\(appModel.selectedBoard.subjectTitle) \(appModel.selectedBoard.shortTitle) uses a built-in constrained generator. These settings only affect AI-assisted papers.",
+                        systemImage: "info.circle"
+                    )
+                    .foregroundStyle(.secondary)
+                }
+
                 if appModel.aiProvider.sendsPromptsOffDevice {
                     Label(
                         "Prompts and subject context may be sent to the selected provider.",
@@ -54,16 +104,14 @@ private struct AISettingsTab: View {
 
             providerSettings
 
-            Section {
-                HStack {
-                    Spacer()
-                    Button("Save", action: appModel.saveAISettings)
-                        .keyboardShortcut(.defaultAction)
-                        .buttonStyle(.borderedProminent)
-                }
-            }
         }
         .formStyle(.grouped)
+        .onChange(of: appModel.selectedModel) { _, _ in appModel.saveAISettings() }
+        .onChange(of: appModel.openAIModel) { _, _ in appModel.saveAISettings() }
+        .onChange(of: appModel.anthropicModel) { _, _ in appModel.saveAISettings() }
+        .onChange(of: appModel.appleModel) { _, _ in appModel.saveAISettings() }
+        .onChange(of: appModel.openAIAPIKey) { _, _ in appModel.saveAISettings() }
+        .onChange(of: appModel.anthropicAPIKey) { _, _ in appModel.saveAISettings() }
     }
 
     @ViewBuilder

@@ -87,4 +87,14 @@ def test_generated_paper_rejects_duplicate_prompts() -> None:
 
 
 def test_generated_paper_matches_contract() -> None:
-    validate_generated_paper(paper(), rule(), {"a"})
+    generated = paper()
+    validate_generated_paper(generated, rule(), {"a"})
+    question = generated.sections[0].options[0].questions[0]
+    assert question.syllabus_outcomes == ["a"]
+    assert sum(question.assessment_objectives.values()) == question.marks
+    assert (
+        sum(point.marks for point in question.structured_mark_scheme)
+        == question.marks
+    )
+    assert question.expected_minutes == 60
+    assert question.provenance == "built-in"

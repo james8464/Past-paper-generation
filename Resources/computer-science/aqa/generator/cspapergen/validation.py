@@ -21,6 +21,7 @@ def validate_blueprint(blueprint: PaperBlueprint, syllabus: Syllabus) -> None:
 
     total = 0
     seen_numbers: set[int] = set()
+    seen_prompts: set[str] = set()
     for question in blueprint.questions:
         if question.number in seen_numbers:
             raise ValueError(f"Duplicate question number {question.number}")
@@ -35,11 +36,42 @@ def validate_blueprint(blueprint: PaperBlueprint, syllabus: Syllabus) -> None:
                 raise ValueError(f"Question {question.number}.{part.label} has invalid marks")
             if not part.prompt.strip():
                 raise ValueError(f"Question {question.number}.{part.label} has no prompt")
+            prompt_key = " ".join(part.prompt.casefold().split())
+            if prompt_key in seen_prompts:
+                raise ValueError(
+                    f"Question {question.number}.{part.label} duplicates another prompt"
+                )
+            seen_prompts.add(prompt_key)
             if not part.marking.points:
                 raise ValueError(f"Question {question.number}.{part.label} has no marking guidance")
+            points = [
+                " ".join(point.casefold().split())
+                for point in part.marking.points
+                if point.strip()
+            ]
+            if len(points) != len(set(points)):
+                raise ValueError(
+                    f"Question {question.number}.{part.label} repeats a marking point"
+                )
+            if part.marks <= 5 and len(points) < min(part.marks, 2):
+                raise ValueError(
+                    f"Question {question.number}.{part.label} has insufficient "
+                    "traceable marking points"
+                )
             if not part.marking.ao:
                 raise ValueError(f"Question {question.number}.{part.label} has no AO reference")
             if part.options and len(part.options) != 4:
                 raise ValueError(f"Question {question.number}.{part.label} must have four options")
+            if part.options:
+                labels = {option.label for option in part.options}
+                if labels != {"A", "B", "C", "D"}:
+                    raise ValueError(
+                        f"Question {question.number}.{part.label} options must be A-D"
+                    )
+                if part.correct_option not in labels:
+                    raise ValueError(
+                        f"Question {question.number}.{part.label} has no valid "
+                        "correct option"
+                    )
     if total != blueprint.total_marks:
         raise ValueError(f"Question marks total {total}, expected {blueprint.total_marks}")

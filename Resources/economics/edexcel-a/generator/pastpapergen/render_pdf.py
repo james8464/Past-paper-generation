@@ -105,6 +105,7 @@ def render_question_paper(blueprint: PaperBlueprint, output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     _TOTAL_PAPER_PAGES = _count_pages(blueprint)
     pdf = canvas.Canvas(str(output_path), pagesize=A4, pageCompression=0)
+    _set_pdf_metadata(pdf, blueprint, "Question paper")
     try:
         _draw_cover(pdf, blueprint)
         pdf.showPage()
@@ -118,6 +119,7 @@ def render_question_paper(blueprint: PaperBlueprint, output_path: Path) -> None:
 def _count_pages(blueprint: PaperBlueprint) -> int:
     buf = io.BytesIO()
     pdf = canvas.Canvas(buf, pagesize=A4, pageCompression=0)
+    _set_pdf_metadata(pdf, blueprint, "Question paper")
     global _TOTAL_PAPER_PAGES
     _TOTAL_PAPER_PAGES = 0
     _draw_cover(pdf, blueprint)
@@ -157,6 +159,7 @@ def _apply_edexcel_page_boxes(output_path: Path) -> None:
             page.set_trimbox(crop_rect)
             page.set_artbox(crop_rect)
 
+        rewritten.set_metadata(source.metadata)
         tmp_path = output_path.with_name(f"{output_path.stem}.tmp{output_path.suffix}")
         rewritten.save(tmp_path, garbage=4, deflate=True)
     finally:
@@ -2246,6 +2249,7 @@ def render_source_booklet(
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     pdf = canvas.Canvas(str(output_path), pagesize=A4, pageCompression=0)
+    _set_pdf_metadata(pdf, blueprint, "Source booklet")
     _draw_source_cover(pdf, blueprint)
     pdf.showPage()
     first_content_page = True
@@ -2429,6 +2433,7 @@ def render_mark_scheme(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     page_size = MS_PAGE_SIZES[blueprint.paper_id]
     pdf = canvas.Canvas(str(output_path), pagesize=page_size, pageCompression=0)
+    _set_pdf_metadata(pdf, blueprint, "Mark scheme")
     width, height = page_size
     margin = 49
     accent = colors.HexColor(MARK_SCHEME_ACCENT_COLOR)
@@ -2491,6 +2496,20 @@ def render_mark_scheme(
         _draw_mark_scheme_end_page(pdf)
     _pad_mark_scheme_pages(pdf, MARK_SCHEME_MIN_PAGES.get(blueprint.paper_id, 29))
     pdf.save()
+
+
+def _set_pdf_metadata(
+    pdf: canvas.Canvas,
+    blueprint: PaperBlueprint,
+    document_role: str,
+) -> None:
+    """Attach stable, searchable metadata to every released PDF role."""
+    pdf.setTitle(f"{blueprint.title} — {document_role}")
+    pdf.setAuthor("Paper Creator")
+    pdf.setSubject(
+        f"Unofficial Edexcel A Level Economics A practice {document_role.casefold()}"
+    )
+    pdf.setCreator("Paper Creator")
 
 
 def _pad_mark_scheme_pages(pdf: canvas.Canvas, target_pages: int) -> None:

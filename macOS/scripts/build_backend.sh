@@ -21,39 +21,44 @@ fi
 rm -rf "$WORK_DIR" "$BACKEND_DIR"
 mkdir -p "$DIST_DIR" "$HELPER_DIR"
 
-"$PYTHON" -m PyInstaller \
-  --noconfirm \
-  --clean \
-  --onedir \
-  --name PaperCreatorBackend \
-  --distpath "$DIST_DIR" \
-  --workpath "$WORK_DIR/work" \
-  --specpath "$WORK_DIR" \
-  --paths "$ROOT_DIR" \
-  --paths "$ROOT_DIR/Resources/economics/edexcel-a/generator" \
-  --paths "$ROOT_DIR/Resources/economics/aqa/generator" \
-  --paths "$ROOT_DIR/Resources/economics/ocr/generator" \
-  --paths "$ROOT_DIR/Resources/computer-science/aqa/generator" \
-  --paths "$ROOT_DIR/Resources/computer-science/ocr/generator" \
-  --paths "$ROOT_DIR/Resources/business/aqa/generator" \
-  --paths "$ROOT_DIR/Resources/accounting/aqa/generator" \
-  --collect-submodules pastpapergen \
-  --collect-submodules aqaecongen \
-  --collect-submodules ocregen \
-  --collect-submodules cspapergen \
-  --collect-submodules ocrcsgen \
-  --collect-submodules aqabizgen \
-  --collect-submodules aqaaccountgen \
-  --hidden-import fitz \
-  --add-data "$ROOT_DIR/Resources/layout-master-runtime.json:Resources" \
-  --add-data "$ROOT_DIR/Resources/economics/edexcel-a/generator/data/syllabus_seed.json:Resources/economics/edexcel-a/generator/data" \
-  --add-data "$ROOT_DIR/Resources/economics/aqa/generator/data/syllabus.json:Resources/economics/aqa/generator/data" \
-  --add-data "$ROOT_DIR/Resources/economics/ocr/generator/data/syllabus.json:Resources/economics/ocr/generator/data" \
-  --add-data "$ROOT_DIR/Resources/computer-science/aqa/generator/data/syllabus_seed.json:Resources/computer-science/aqa/generator/data" \
-  --add-data "$ROOT_DIR/Resources/computer-science/ocr/generator/data/syllabus.json:Resources/computer-science/ocr/generator/data" \
-  --add-data "$ROOT_DIR/Resources/business/aqa/generator/data/syllabus.json:Resources/business/aqa/generator/data" \
-  --add-data "$ROOT_DIR/Resources/accounting/aqa/generator/data/syllabus.json:Resources/accounting/aqa/generator/data" \
-  "$ROOT_DIR/bridge.py"
+PYINSTALLER_ARGS=(
+  --noconfirm
+  --clean
+  --onedir
+  --name PaperCreatorBackend
+  --distpath "$DIST_DIR"
+  --workpath "$WORK_DIR/work"
+  --specpath "$WORK_DIR"
+  --paths "$ROOT_DIR"
+  --hidden-import fitz
+  --add-data "$ROOT_DIR/Resources/layout-master-runtime.json:Resources"
+  --add-data "$ROOT_DIR/Resources/generator-registry.json:Resources"
+  --add-data "$ROOT_DIR/Resources/backend-protocol.schema.json:Resources"
+)
+
+while IFS= read -r python_path; do
+  PYINSTALLER_ARGS+=(--paths "$ROOT_DIR/Resources/$python_path")
+done < <(
+  "$PYTHON" -c \
+    'from Backend.Core.generator_registry import generator_capabilities; print(*[item.python_path for item in generator_capabilities().values()], sep="\n")'
+)
+
+while IFS= read -r package; do
+  PYINSTALLER_ARGS+=(--collect-submodules "$package")
+done < <(
+  "$PYTHON" -c \
+    'from Backend.Core.generator_registry import generator_capabilities; print(*[item.package for item in generator_capabilities().values()], sep="\n")'
+)
+
+while IFS= read -r syllabus_path; do
+  destination="Resources/$(dirname "$syllabus_path")"
+  PYINSTALLER_ARGS+=(--add-data "$ROOT_DIR/Resources/$syllabus_path:$destination")
+done < <(
+  "$PYTHON" -c \
+    'from Backend.Core.generator_registry import generator_capabilities; print(*[item.syllabus_path for item in generator_capabilities().values()], sep="\n")'
+)
+
+"$PYTHON" -m PyInstaller "${PYINSTALLER_ARGS[@]}" "$ROOT_DIR/bridge.py"
 
 ditto "$DIST_DIR/PaperCreatorBackend" "$BACKEND_DIR"
 

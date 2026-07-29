@@ -31,7 +31,10 @@ class OllamaClient:
             )
             try:
                 with urllib.request.urlopen(request, timeout=160) as response:
-                    raw = json.loads(response.read().decode("utf-8"))
+                    response_payload = response.read(2_097_153)
+                    if len(response_payload) > 2_097_152:
+                        raise ValueError("Ollama response exceeded the 2 MB limit")
+                    raw = json.loads(response_payload.decode("utf-8"))
                 parsed = json.loads(str(raw.get("response", "{}")))
                 if not isinstance(parsed, dict):
                     raise ValueError("Ollama returned JSON, but not an object")
@@ -44,7 +47,7 @@ class OllamaClient:
             ) as error:
                 last_error = error
                 if attempt < retries - 1:
-                    time.sleep(3)
+                    time.sleep(min(8, 2**attempt))
         raise RuntimeError(f"Ollama generation failed after {retries} attempts") from last_error
 
 

@@ -26,10 +26,46 @@ enum GenerationEstimator {
         benchmark: BenchmarkVerdict?
     ) -> GenerationEstimate {
         let paperFactor = paperComplexity(board: board, paper: paper)
-        let providerFactor = dryRun
-            ? (value: 0.18, factor: EstimateFactor(title: "AI provider", detail: "Built-in draft mode avoids model calls.", impact: 0.18))
-            : providerComplexity(provider)
-        let modelFactor = modelComplexity(model)
+        let providerFactor: (value: Double, factor: EstimateFactor)
+        let modelFactor: (value: Double, factor: EstimateFactor)
+        if !board.usesAI {
+            providerFactor = (
+                0.18,
+                EstimateFactor(
+                    title: "Generation mode",
+                    detail: "Built-in constrained generation does not call an AI model.",
+                    impact: 0.18
+                )
+            )
+            modelFactor = (
+                1.0,
+                EstimateFactor(
+                    title: "Model",
+                    detail: "No model is used for this paper family.",
+                    impact: 1.0
+                )
+            )
+        } else if dryRun {
+            providerFactor = (
+                0.18,
+                EstimateFactor(
+                    title: "Generation mode",
+                    detail: "Built-in draft mode avoids model calls.",
+                    impact: 0.18
+                )
+            )
+            modelFactor = (
+                1.0,
+                EstimateFactor(
+                    title: "Model",
+                    detail: "No model is used in preview mode.",
+                    impact: 1.0
+                )
+            )
+        } else {
+            providerFactor = providerComplexity(provider)
+            modelFactor = modelComplexity(model)
+        }
         let deviceFactor = deviceComplexity()
         let benchmarkFactor = benchmark.map { benchmarkComplexity(score: $0.score) } ?? 1.0
 

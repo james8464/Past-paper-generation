@@ -6,10 +6,12 @@ import pytest
 
 from tools.paper_fidelity_audit import (
     KNOWN_REFERENCE_MUPDF_DIAGNOSTICS,
+    _compact_profile,
     _generated_document,
     _geometry_scores,
     _render_page_pixmap,
     profile,
+    write_contact_sheets,
 )
 
 
@@ -71,3 +73,53 @@ def test_render_diagnostics_are_tolerated_only_for_reference_papers():
 
     assert pixmap.width > 0
     document.close()
+
+
+def test_compact_profile_omits_raster_geometry() -> None:
+    value = {
+        "pages": 2,
+        "word_count": 40,
+        "geometry": [{"render_grid": [0, 255]}],
+    }
+
+    assert _compact_profile(value) == {"pages": 2, "word_count": 40}
+
+
+def test_contact_sheets_make_visual_review_artifacts(tmp_path: Path) -> None:
+    generated_path = tmp_path / "generated.pdf"
+    reference_path = tmp_path / "reference.pdf"
+    for path, x in ((generated_path, 92), (reference_path, 86)):
+        document = fitz.open()
+        page = document.new_page()
+        page.insert_text((x, 130), "Practice question", fontsize=11)
+        document.save(path)
+        document.close()
+
+    outputs = write_contact_sheets(
+        generated_path,
+        reference_path,
+        tmp_path / "comparison",
+        dpi=72,
+    )
+
+    assert len(outputs) == 1
+    assert outputs[0].suffix == ".png"
+    assert outputs[0].stat().st_size > 0
+
+
+def test_generated_document_falls_back_to_nested_transaction_output(
+    tmp_path: Path,
+) -> None:
+    nested = tmp_path / "backend-subject" / "paper-1"
+    nested.mkdir(parents=True)
+    expected = nested / "paper-1-question-paper.pdf"
+    expected.touch()
+
+    assert (
+        _generated_document(
+            tmp_path / "canonical-family",
+            expected.name,
+            search_root=tmp_path,
+        )
+        == expected
+    )

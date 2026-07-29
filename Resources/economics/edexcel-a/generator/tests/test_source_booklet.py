@@ -2,6 +2,7 @@ from pathlib import Path
 import re
 
 from Backend.Core.generation_date import formatted_generation_date
+from Backend.Core.pdf_text import extract_pdf_text
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.render_pdf import render_source_booklet
@@ -82,14 +83,7 @@ def _pdf_page_count(path: Path) -> int:
 
 
 def _pdf_text(path: Path) -> str:
-    import subprocess
-
-    return subprocess.run(
-        ["pdftotext", "-layout", str(path), "-"],
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout
+    return extract_pdf_text(path)
 
 
 def test_source_cover_uses_date_panel_not_mock_examination_label(tmp_path):

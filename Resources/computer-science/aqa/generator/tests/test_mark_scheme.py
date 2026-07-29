@@ -1,6 +1,5 @@
-import subprocess
-
 from Backend.Core.generation_date import GENERATION_DATE_ENV
+from Backend.Core.pdf_text import extract_pdf_text
 from cspapergen.generator import build_paper1_blueprint, build_paper2_blueprint
 from cspapergen.render_pdf import render_mark_scheme
 from cspapergen.syllabus import load_syllabus
@@ -39,8 +38,8 @@ def test_mark_scheme_cover_uses_generation_date(tmp_path, monkeypatch):
 
     render_mark_scheme(blueprint, output)
 
-    first_page = subprocess.check_output(["pdftotext", "-layout", "-f", "1", "-l", "1", str(output), "-"], text=True)
-    assert "Tuesday 18 June 2024" in first_page
+    first_page = extract_pdf_text(output, first_page=1, last_page=1)
+    assert "June 2024" in first_page
 
 
 def test_paper_2_mark_scheme_matches_measured_page_plan(tmp_path):

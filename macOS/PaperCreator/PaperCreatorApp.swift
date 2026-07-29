@@ -9,7 +9,6 @@ struct PaperCreator: App {
             ContentView()
                 .environmentObject(appModel)
         }
-        .restorationBehavior(.disabled)
         .defaultLaunchBehavior(.presented)
         .commands {
             AppCommands(appModel: appModel)

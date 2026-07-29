@@ -22,7 +22,19 @@ struct GeneratedFilesTable: View {
         } else {
             Table(files) {
                 TableColumn("Document") { file in
-                    Text(file.title)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(file.title)
+                        if !file.paperDescription.isEmpty {
+                            Text(file.paperDescription)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .foregroundStyle(file.exists ? .primary : .secondary)
+                }
+                TableColumn("Created") { file in
+                    Text(file.createdAt, format: .dateTime.day().month().hour().minute())
+                        .foregroundStyle(.secondary)
                 }
                 TableColumn("Location") { file in
                     Text(file.url.path)
@@ -47,9 +59,18 @@ struct GeneratedFilesTable: View {
                         }
                         .labelStyle(.iconOnly)
                         .help("Reveal in Finder")
+                        .disabled(!file.exists)
                     }
                 }
                 .width(70)
+            }
+            .contextMenu(forSelectionType: GeneratedFile.ID.self) { selection in
+                if let id = selection.first,
+                   let file = files.first(where: { $0.id == id }) {
+                    Button("Remove from Recents") {
+                        appModel.removeGeneratedFile(file)
+                    }
+                }
             }
         }
     }

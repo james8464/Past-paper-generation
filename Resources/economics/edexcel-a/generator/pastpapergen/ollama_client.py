@@ -22,7 +22,7 @@ class OllamaClient:
     base_url: str
     model: str
 
-    def generate_json(self, prompt: str, retries: int = 1) -> dict[str, object]:
+    def generate_json(self, prompt: str, retries: int = 2) -> dict[str, object]:
         last_error: Exception | None = None
         for attempt in range(retries):
             try:
@@ -56,7 +56,10 @@ class OllamaClient:
             method="POST",
         )
         with urllib.request.urlopen(request, timeout=240) as response:
-            raw = json.loads(response.read().decode("utf-8"))
+            payload = response.read(2_097_153)
+            if len(payload) > 2_097_152:
+                raise ValueError("Ollama response exceeded the 2 MB limit")
+            raw = json.loads(payload.decode("utf-8"))
         raw_dict = raw if isinstance(raw, dict) else {}
         text = str(raw_dict.get("response", "{}"))
         parsed = json.loads(text)

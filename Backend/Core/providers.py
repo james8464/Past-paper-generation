@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 from typing import Any
 
 from Backend.Core.events import emit_progress
@@ -52,7 +53,7 @@ class HostedLLMClient:
             },
         )
         with request as response:
-            raw = json.loads(response.read().decode("utf-8"))
+            raw = _read_json_response(response)
         raw_dict = raw if isinstance(raw, dict) else {}
         text = raw_dict.get("output_text") or _openai_output_text(raw_dict)
         return parse_json_object(str(text))
@@ -80,7 +81,7 @@ class HostedLLMClient:
             },
         )
         with request as response:
-            raw = json.loads(response.read().decode("utf-8"))
+            raw = _read_json_response(response)
         raw_dict = raw if isinstance(raw, dict) else {}
         text = "".join(
             item.get("text", "")
@@ -101,21 +102,60 @@ def provider_title(provider: str) -> str:
     return {"openai": "OpenAI", "anthropic": "Anthropic", "ollama": "Ollama", "apple": "Apple MLX"}.get(provider, provider.title())
 
 
-def urllib_request(url: str, data: bytes, headers: dict[str, str]) -> Any:
+def urllib_request(
+    url: str,
+    data: bytes,
+    headers: dict[str, str],
+    *,
+    attempts: int = 3,
+) -> Any:
     import urllib.error
     import urllib.request
 
     request = urllib.request.Request(url, data=data, headers=headers, method="POST")
-    try:
-        return urllib.request.urlopen(request, timeout=180)
-    except urllib.error.HTTPError as error:
-        detail = error.read().decode("utf-8", errors="ignore")
-        raise RuntimeError(f"Provider request failed: {error.code} {detail}") from error
-    except urllib.error.URLError as error:
-        raise RuntimeError(f"Could not reach provider API: {error}") from error
+    last_error: Exception | None = None
+    for attempt in range(attempts):
+        try:
+            return urllib.request.urlopen(request, timeout=180)
+        except urllib.error.HTTPError as error:
+            last_error = error
+            detail = error.read(2048).decode("utf-8", errors="ignore")
+            retryable = error.code in {408, 409, 429, 500, 502, 503, 504}
+            if not retryable or attempt == attempts - 1:
+                raise RuntimeError(
+                    f"Provider request failed with HTTP {error.code}: "
+                    f"{_safe_provider_detail(detail)}"
+                ) from error
+            retry_after = (
+                error.headers.get("Retry-After")
+                if error.headers is not None
+                else None
+            )
+            delay = _retry_delay(attempt, retry_after)
+            emit_progress(
+                f"Provider is busy; retrying in {delay:g} seconds",
+                stage="provider_retry",
+            )
+            time.sleep(delay)
+        except (urllib.error.URLError, TimeoutError) as error:
+            last_error = error
+            if attempt == attempts - 1:
+                raise RuntimeError(
+                    "Could not reach the provider API after "
+                    f"{attempts} attempts."
+                ) from error
+            delay = _retry_delay(attempt, None)
+            emit_progress(
+                f"Provider connection interrupted; retrying in {delay:g} seconds",
+                stage="provider_retry",
+            )
+            time.sleep(delay)
+    raise RuntimeError("Provider request failed.") from last_error
 
 
 def parse_json_object(text: str) -> dict[str, object]:
+    if len(text.encode("utf-8")) > 1_048_576:
+        raise ValueError("Model response exceeded the 1 MB JSON limit.")
     raw = text.strip()
     if raw.startswith("```"):
         raw = re.sub(r"^```(?:json)?", "", raw, flags=re.IGNORECASE).strip()
@@ -134,6 +174,45 @@ def parse_json_object(text: str) -> dict[str, object]:
     if not isinstance(value, dict):
         raise ValueError("Model returned JSON, but not an object.")
     return value
+
+
+def _read_json_response(response: Any) -> object:
+    payload = response.read(2_097_153)
+    if len(payload) > 2_097_152:
+        raise RuntimeError("Provider response exceeded the 2 MB limit.")
+    try:
+        return json.loads(payload.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise RuntimeError("Provider returned an invalid JSON response envelope.") from error
+
+
+def _retry_delay(attempt: int, retry_after: str | None) -> float:
+    if retry_after:
+        try:
+            return min(10.0, max(0.0, float(retry_after)))
+        except ValueError:
+            pass
+    return min(8.0, float(2**attempt))
+
+
+def _safe_provider_detail(value: str) -> str:
+    compact = " ".join(value.split())
+    compact = re.sub(
+        r"(?i)\bauthorization\s*[:=]\s*(?:bearer\s+)?\S+",
+        "Authorization [redacted]",
+        compact,
+    )
+    compact = re.sub(
+        r"(?i)\bbearer\s+\S+",
+        "Bearer [redacted]",
+        compact,
+    )
+    compact = re.sub(
+        r"(?i)(api[_ -]?key)\s*[:=]\s*\S+",
+        r"\1 [redacted]",
+        compact,
+    )
+    return compact[:500] or "No error detail was returned."
 
 
 def _openai_output_text(raw: dict[str, object]) -> str:

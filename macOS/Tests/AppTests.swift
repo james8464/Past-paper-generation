@@ -2,6 +2,20 @@ import XCTest
 @testable import PaperCreator
 
 final class PaperCreatorTests: XCTestCase {
+    func testBackendHandshakeDecodesProtocolCapabilities() throws {
+        let event = try BackendEvent(
+            jsonLine: #"{"protocol":2,"type":"hello","event_id":1,"timestamp":"2026-07-29T12:00:00Z","job_id":"job","backend_version":"2.0.0","capabilities":["manifest"]}"#
+        )
+        XCTAssertEqual(
+            event,
+            .hello(
+                protocolVersion: 2,
+                backendVersion: "2.0.0",
+                capabilities: ["manifest"]
+            )
+        )
+    }
+
     func testBackendProgressEventDecodes() throws {
         let event = try BackendEvent(jsonLine: #"{"type":"progress","stage":"render","message":"Rendering question paper","progress":0.88}"#)
         XCTAssertEqual(event, .progress(stage: "render", message: "Rendering question paper", progress: 0.88))
@@ -171,5 +185,47 @@ final class PaperCreatorTests: XCTestCase {
         let subjects = try CatalogLoader.load(bundle: .main)
         XCTAssertEqual(subjects.count, 4)
         XCTAssertEqual(subjects.flatMap(\.boards).filter(\.isReady).count, 7)
+    }
+
+    func testCatalogDistinguishesAIAndConstrainedGenerators() throws {
+        let edexcel = try XCTUnwrap(ExamCatalog.board(id: "economics-edexcel-a"))
+        let aqa = try XCTUnwrap(ExamCatalog.board(id: "economics-aqa"))
+
+        XCTAssertTrue(edexcel.usesAI)
+        XCTAssertEqual(Set(edexcel.supportedProviders), Set(AIProvider.allCases))
+        XCTAssertFalse(aqa.usesAI)
+        XCTAssertTrue(aqa.supportedProviders.isEmpty)
+        XCTAssertTrue(aqa.papers.allSatisfy { !$0.readiness.difficultyVerified })
+    }
+
+    @MainActor
+    func testConstrainedGeneratorDoesNotRequireOllama() throws {
+        let defaults = UserDefaults.standard
+        let previousWelcome = defaults.object(forKey: AppStorageKey.hasSeenWelcome)
+        defer {
+            if let previousWelcome {
+                defaults.set(previousWelcome, forKey: AppStorageKey.hasSeenWelcome)
+            } else {
+                defaults.removeObject(forKey: AppStorageKey.hasSeenWelcome)
+            }
+        }
+        defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
+        let appModel = AppViewModel()
+        let board = try XCTUnwrap(ExamCatalog.board(id: "economics-aqa"))
+        appModel.selectBoard(board)
+        appModel.setDryRun(false)
+        XCTAssertNil(appModel.generationBlocker)
+    }
+
+    func testRecentDocumentMetadataRoundTrips() throws {
+        let document = GeneratedFile(
+            role: "question_paper",
+            url: URL(fileURLWithPath: "/tmp/practice.pdf"),
+            subject: "Economics AQA",
+            paper: "Paper 1"
+        )
+        let data = try JSONEncoder().encode([document])
+        let restored = try JSONDecoder().decode([GeneratedFile].self, from: data)
+        XCTAssertEqual(restored, [document])
     }
 }

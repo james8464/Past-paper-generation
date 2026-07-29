@@ -24,8 +24,14 @@ from reportlab.platypus import (
 )
 
 from Backend.Core.exam_blueprints import GeneratedOption, GeneratedPaper, GeneratedQuestion
+from Backend.Core.exam_cover import (
+    CoverProfile,
+    aqa_question_cover,
+    mark_scheme_cover,
+)
 from Backend.Core.fonts import register_fonts
 from Backend.Core.generation_date import formatted_generation_date
+from Backend.Core.reportlab_theme import themed_table_class
 
 BLACK = colors.HexColor("#171717")
 GREY = colors.HexColor("#ececec")
@@ -35,6 +41,7 @@ PAGE_WIDTH, PAGE_HEIGHT = AQA_A4
 FONT = "AQAArial"
 FONT_BOLD = "AQAArial-Bold"
 register_fonts(FONT, FONT_BOLD)
+Table = themed_table_class(Table, FONT)
 
 
 def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
@@ -163,20 +170,11 @@ def render_source_booklet(paper: GeneratedPaper, path: Path) -> None:
 def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     doc = _document(path, paper, "Mark scheme")
-    story: list[Flowable] = [
-        Spacer(1, 14 * mm),
-        Paragraph("A-level Economics", STYLES["cover_kicker"]),
-        Paragraph("Practice mark scheme", STYLES["cover_title"]),
-        Spacer(1, 6 * mm),
-        Paragraph(f"{paper.paper_code} · {paper.title}", STYLES["cover_subtitle"]),
-        Paragraph(formatted_generation_date(), STYLES["cover_subtitle"]),
-        Spacer(1, 10 * mm),
-        _info_box(
-            "This is an independently created practice mark scheme. Reward valid alternative "
-            "economic arguments. For extended responses, assess the quality of knowledge, "
-            "application, analysis and evaluation holistically."
-        ),
-    ]
+    story: list[Flowable] = mark_scheme_cover(
+        _cover_profile(paper),
+        FONT,
+        FONT_BOLD,
+    )
     pages = (
         _paper_three_mark_scheme_pages(paper)
         if paper.paper_id == "paper_3"
@@ -522,56 +520,49 @@ def _document(path: Path, paper: GeneratedPaper, document_type: str) -> BaseDocT
 
 
 def _cover(paper: GeneratedPaper) -> list[Flowable]:
+    return aqa_question_cover(_cover_profile(paper), FONT, FONT_BOLD)
+
+
+def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
     hours, minutes = divmod(paper.duration_minutes, 60)
     duration = f"{hours} hours" if not minutes else f"{hours} hours {minutes} minutes"
-    return [
-        Spacer(1, 10 * mm),
-        Paragraph("A-level Economics", STYLES["cover_kicker"]),
-        Paragraph("Independent practice paper", STYLES["cover_title"]),
-        Spacer(1, 5 * mm),
-        Paragraph(f"Paper {paper.paper_id[-1]}: {paper.title}", STYLES["cover_subtitle"]),
-        Paragraph(formatted_generation_date(), STYLES["cover_subtitle"]),
-        Spacer(1, 4 * mm),
-        Table(
-            [
-                ["Paper reference", paper.paper_code],
-                ["Time allowed", duration],
-                ["Maximum mark", str(paper.total_marks)],
-            ],
-            colWidths=[45 * mm, 90 * mm],
-            style=TableStyle(
-                [
-                    ("FONT", (0, 0), (-1, -1), FONT, 11),
-                    ("FONT", (0, 0), (0, -1), FONT_BOLD, 11),
-                    ("GRID", (0, 0), (-1, -1), 0.7, BLACK),
-                    ("BACKGROUND", (0, 0), (0, -1), GREY),
-                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                    ("TOPPADDING", (0, 0), (-1, -1), 6),
-                    ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
-                ]
-            ),
+    return CoverProfile(
+        board="aqa",
+        subject="Economics",
+        code=paper.paper_code,
+        paper_title=f"Paper {paper.paper_id[-1]}  {paper.title}",
+        duration=duration,
+        total_marks=paper.total_marks,
+        candidate_fields=paper.paper_id == "paper_3",
+        materials=(
+            "You may use a calculator.",
+            "For this paper you must have an answer booklet.",
         ),
-        Spacer(1, 10 * mm),
-        Paragraph("Materials", STYLES["heading"]),
-        Paragraph(
-            "You may use a calculator. Write your answers in a separate answer booklet.",
-            STYLES["body"],
+        instructions=(
+            "Use black ink or black ball-point pen.",
+            "Use pencil only for drawing.",
+            "Answer the questions specified in each section.",
+            "Answer in the spaces provided and do not write outside the box around each page.",
+            "Show all working and use diagrams where appropriate.",
         ),
-        Spacer(1, 5 * mm),
-        Paragraph("Instructions", STYLES["heading"]),
-        Paragraph(
-            "Answer the questions specified in each section. Show calculations and use diagrams "
-            "where appropriate. The marks for questions are shown in brackets.",
-            STYLES["body"],
+        information=(
+            "The marks for questions are shown in brackets.",
         ),
-        Spacer(1, 5 * mm),
-        Paragraph("Information", STYLES["heading"]),
-        Paragraph(
-            f"The maximum mark is {paper.total_marks}. This paper is mapped to AQA 7136 but is "
-            "not produced or endorsed by AQA. Names, figures and cases are fictional.",
-            STYLES["body"],
+        mark_rows=(
+            tuple(
+                (
+                    section.id,
+                    sum(
+                        question.marks
+                        for question in section.options[0].questions
+                    ),
+                )
+                for section in paper.sections
+            )
+            if paper.paper_id == "paper_3"
+            else ()
         ),
-    ]
+    )
 
 
 def _written_option(option: GeneratedOption) -> list[Flowable]:
@@ -1007,9 +998,9 @@ def _line_chart(title: str, labels: list[str], values: list[float]) -> Drawing:
         x = x0 + index * width / max(1, len(values) - 1)
         y = y0 + 8 + (value - low) / span * (height - 16)
         points.extend([x, y])
-        drawing.add(String(x - 10, y0 - 14, labels[index], fontSize=7))
+        drawing.add(String(x - 10, y0 - 14, labels[index], fontName=FONT, fontSize=7))
         drawing.add(Rect(x - 2, y - 2, 4, 4, fillColor=BLACK, strokeColor=BLACK))
-        drawing.add(String(x + 4, y + 3, f"{value:.1f}", fontSize=7))
+        drawing.add(String(x + 4, y + 3, f"{value:.1f}", fontName=FONT, fontSize=7))
     drawing.add(PolyLine(points, strokeColor=BLACK, strokeWidth=1.2))
     return drawing
 

@@ -24,8 +24,14 @@ from reportlab.platypus import (
 )
 
 from Backend.Core.exam_blueprints import GeneratedOption, GeneratedPaper, GeneratedQuestion
+from Backend.Core.exam_cover import (
+    CoverProfile,
+    mark_scheme_cover,
+    ocr_question_cover,
+)
 from Backend.Core.fonts import register_fonts
 from Backend.Core.generation_date import formatted_generation_date
+from Backend.Core.reportlab_theme import themed_table_class
 
 PAGE_WIDTH, PAGE_HEIGHT = A4
 OCR_MARK_SCHEME_FRONT_SIZE = (594.96, 842.04)
@@ -36,6 +42,7 @@ GREY = colors.HexColor("#eeeeee")
 FONT = "AQAArial"
 FONT_BOLD = "AQAArial-Bold"
 register_fonts(FONT, FONT_BOLD)
+Table = themed_table_class(Table, FONT)
 
 
 def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
@@ -50,13 +57,7 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     doc = _document(path, paper, "Mark scheme")
     story: list[Flowable] = [
-        Spacer(1, 12 * mm),
-        Paragraph("A-level Economics", STYLES["kicker"]),
-        Paragraph("Independent practice mark scheme", STYLES["title"]),
-        Paragraph(f"{paper.paper_code} · {paper.title}", STYLES["subtitle"]),
-        Paragraph(formatted_generation_date(), STYLES["subtitle"]),
-        Spacer(1, 8 * mm),
-        _box("Reward valid alternative reasoning. Apply the level descriptors holistically for extended responses."),
+        *mark_scheme_cover(_cover_profile(paper), FONT, FONT_BOLD),
         PageBreak(),
         Paragraph("Marking instructions", STYLES["heading"]),
         Spacer(1, 4 * mm),
@@ -1220,19 +1221,6 @@ def _paper_one_two_pages(paper: GeneratedPaper) -> list[Flowable]:
             Paragraph("Question 1 continued", STYLES["centre_bold"]),
             AnswerLines(34),
         ],
-        [
-            Paragraph("BLANK PAGE", STYLES["centre_bold"]),
-            Spacer(1, 8 * mm),
-            Paragraph(
-                "DO NOT WRITE ON THIS PAGE",
-                STYLES["centre_bold"],
-            ),
-            Spacer(1, 8 * mm),
-            Paragraph(
-                "Section B starts on the next page",
-                STYLES["centre"],
-            ),
-        ],
         [*_intro(section_b), *_choice_prompts(section_b)],
     ]
     pages.extend([[AnswerLines(34)] for _ in range(3)])
@@ -1240,6 +1228,7 @@ def _paper_one_two_pages(paper: GeneratedPaper) -> list[Flowable]:
     pages.extend([[AnswerLines(34)] for _ in range(3)])
     pages.extend(
         [
+            _extra_answer_page(),
             _extra_answer_page(),
             _extra_answer_page(continued=True),
             _question_paper_legal_page(),
@@ -1575,51 +1564,35 @@ def _chart(option: GeneratedOption) -> Drawing:
         y = y0 + 7 + (value - low) / span * (height - 14)
         points.extend([x, y])
         drawing.add(Rect(x - 2, y - 2, 4, 4, fillColor=INK))
-        drawing.add(String(x - 8, y0 - 13, option.chart_labels[index], fontSize=7))
-        drawing.add(String(x + 4, y + 2, f"{value:.1f}", fontSize=7))
+        drawing.add(String(x - 8, y0 - 13, option.chart_labels[index], fontName=FONT, fontSize=7))
+        drawing.add(String(x + 4, y + 2, f"{value:.1f}", fontName=FONT, fontSize=7))
     drawing.add(PolyLine(points, strokeColor=INK, strokeWidth=1.2))
     return drawing
 
 
 def _cover(paper: GeneratedPaper) -> list[Flowable]:
-    return [
-        Spacer(1, 10 * mm),
-        Paragraph("A-level Economics", STYLES["kicker"]),
-        Paragraph("Independent practice paper", STYLES["title"]),
-        Paragraph(f"{paper.paper_code} · {paper.title}", STYLES["subtitle"]),
-        Paragraph(formatted_generation_date(), STYLES["subtitle"]),
-        Paragraph("Practice session · 2 hours", STYLES["body"]),
-        Spacer(1, 8 * mm),
-        Table(
-            [["Time allowed", "2 hours"], ["Maximum mark", "80"], ["Paper reference", paper.paper_code]],
-            colWidths=[45 * mm, 90 * mm],
-            style=TableStyle([("GRID", (0, 0), (-1, -1), 0.6, INK), ("BACKGROUND", (0, 0), (0, -1), GREY), ("FONT", (0, 0), (0, -1), FONT_BOLD), ("PADDING", (0, 0), (-1, -1), 7)]),
+    return ocr_question_cover(_cover_profile(paper), FONT, FONT_BOLD)
+
+
+def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
+    return CoverProfile(
+        board="ocr",
+        subject="Economics",
+        code=paper.paper_code,
+        paper_title=paper.title,
+        duration="2 hours",
+        total_marks=paper.total_marks,
+        materials=("You may use an appropriate calculator.",),
+        instructions=(
+            "Use black ink. You can use an HB pencil for diagrams.",
+            "Answer all questions in Section A and one question in Sections B and C.",
+            "Write your answers in the spaces provided.",
         ),
-        Spacer(1, 6 * mm),
-        Table(
-            [
-                ["Centre number", "", "Candidate number", ""],
-                ["Surname", "", "First name(s)", ""],
-            ],
-            colWidths=[30 * mm, 42 * mm, 36 * mm, 42 * mm],
-            rowHeights=[10 * mm, 10 * mm],
-            style=TableStyle(
-                [
-                    ("GRID", (0, 0), (-1, -1), 0.6, INK),
-                    ("FONTNAME", (0, 0), (-1, -1), FONT),
-                    ("FONTSIZE", (0, 0), (-1, -1), 9),
-                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                    ("LEFTPADDING", (0, 0), (-1, -1), 5),
-                ]
-            ),
+        information=(
+            "The quality of extended responses will be assessed where indicated.",
+            "This is independently authored and is not produced or endorsed by OCR.",
         ),
-        Spacer(1, 9 * mm),
-        Paragraph("Instructions", STYLES["heading"]),
-        Paragraph("Answer the questions specified in each section. Use a calculator where appropriate. Show working and use economic diagrams where instructed.", STYLES["body"]),
-        Spacer(1, 5 * mm),
-        Paragraph("Information", STYLES["heading"]),
-        Paragraph("The maximum mark is 80. Marks are shown in brackets. This independently created practice paper is mapped to OCR H460 but is not produced or endorsed by OCR.", STYLES["body"]),
-    ]
+    )
 
 
 def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:

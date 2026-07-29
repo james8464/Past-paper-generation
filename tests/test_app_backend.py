@@ -5,8 +5,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 from Backend.Core.paths import absolute_user_path
-from Backend.Core.providers import parse_json_object
+from Backend.Core.providers import _safe_provider_detail, parse_json_object
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -106,12 +108,55 @@ def test_economics_dry_run_generates_expected_files(tmp_path: Path) -> None:
         "123",
     )
     files = {event["role"]: Path(str(event["path"])) for event in events if event["type"] == "file"}
-    assert files.keys() == {"question_paper", "source_booklet", "mark_scheme"}
+    assert files.keys() == {
+        "question_paper",
+        "source_booklet",
+        "mark_scheme",
+        "package_manifest",
+    }
     assert all(path.exists() for path in files.values())
     assert not any(event["type"] == "preview_page" for event in events)
     assert all("progress" in event for event in events if event["type"] == "progress")
     assert not (tmp_path / "paper-1-audit.json").exists()
     assert events[-1]["type"] == "done"
+    manifest = json.loads(files["package_manifest"].read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == 1
+    assert manifest["generator"]["content_mode"] == "ai-assisted"
+    assert manifest["request"]["seed"] == 123
+    assert manifest["evidence"]["difficulty_independently_verified"] is False
+    assert set(manifest["outputs"]) == {
+        "question_paper",
+        "source_booklet",
+        "mark_scheme",
+    }
+    assert all(output["sha256"] for output in manifest["outputs"].values())
+
+
+def test_protocol_v2_envelopes_every_backend_event(tmp_path: Path) -> None:
+    events = run_bridge(
+        "generate",
+        "--subject",
+        "economics_aqa",
+        "--paper",
+        "1",
+        "--output",
+        str(tmp_path),
+        "--dry-run",
+        "--seed",
+        "123",
+    )
+    assert events[0]["type"] == "hello"
+    assert events[0]["capabilities"] == [
+        "cancel",
+        "eta",
+        "manifest",
+        "transactional-output",
+    ]
+    assert all(event["protocol"] == 2 for event in events)
+    assert [event["event_id"] for event in events] == list(
+        range(1, len(events) + 1)
+    )
+    assert all(event["timestamp"] for event in events)
 
 
 def test_aqa_economics_all_papers_generate_expected_files(tmp_path: Path) -> None:
@@ -139,6 +184,7 @@ def test_aqa_economics_all_papers_generate_expected_files(tmp_path: Path) -> Non
             if paper == "3"
             else {"question_paper", "mark_scheme"}
         )
+        expected.add("package_manifest")
         assert files.keys() == expected
         assert all(path.exists() for path in files.values())
         assert events[-1]["type"] == "done"
@@ -164,7 +210,11 @@ def test_ocr_economics_all_papers_generate_expected_files(tmp_path: Path) -> Non
             for event in events
             if event["type"] == "file"
         }
-        assert files.keys() == {"question_paper", "mark_scheme"}
+        assert files.keys() == {
+            "question_paper",
+            "mark_scheme",
+            "package_manifest",
+        }
         assert all(path.exists() for path in files.values())
         assert events[-1]["type"] == "done"
 
@@ -191,7 +241,11 @@ def test_ocr_computer_science_all_papers_generate_expected_files(
             for event in events
             if event["type"] == "file"
         }
-        assert files.keys() == {"question_paper", "mark_scheme"}
+        assert files.keys() == {
+            "question_paper",
+            "mark_scheme",
+            "package_manifest",
+        }
         assert all(path.exists() for path in files.values())
         assert events[-1]["type"] == "done"
 
@@ -221,6 +275,7 @@ def test_aqa_business_all_papers_generate_expected_files(tmp_path: Path) -> None
             if paper == "3"
             else {"question_paper", "mark_scheme"}
         )
+        expected.add("package_manifest")
         assert files.keys() == expected
         assert all(path.exists() for path in files.values())
         assert events[-1]["type"] == "done"
@@ -246,7 +301,11 @@ def test_aqa_accounting_all_papers_generate_expected_files(tmp_path: Path) -> No
             for event in events
             if event["type"] == "file"
         }
-        assert files.keys() == {"question_paper", "mark_scheme"}
+        assert files.keys() == {
+            "question_paper",
+            "mark_scheme",
+            "package_manifest",
+        }
         assert all(path.exists() for path in files.values())
         assert events[-1]["type"] == "done"
 
@@ -265,7 +324,11 @@ def test_cs_dry_run_generates_expected_files_without_audit(tmp_path: Path) -> No
         "123",
     )
     files = {event["role"]: Path(str(event["path"])) for event in events if event["type"] == "file"}
-    assert files.keys() == {"question_paper", "mark_scheme"}
+    assert files.keys() == {
+        "question_paper",
+        "mark_scheme",
+        "package_manifest",
+    }
     assert all(path.exists() for path in files.values())
     assert not any(path.name.endswith("audit.json") for path in tmp_path.iterdir())
     assert events[-1]["type"] == "done"
@@ -292,6 +355,7 @@ def test_cs_paper1_dry_run_generates_on_screen_package(tmp_path: Path) -> None:
         "skeleton_program",
         "data_file",
         "mark_scheme",
+        "package_manifest",
     }
     assert all(path.exists() for path in files.values())
     assert events[-1]["type"] == "done"
@@ -315,6 +379,32 @@ def test_missing_hosted_provider_key_returns_json_error(tmp_path: Path) -> None:
     events = [json.loads(line) for line in result.stdout.splitlines() if line.strip()]
     assert events[-1]["type"] == "error"
     assert "API key" in str(events[-1]["message"])
+
+
+def test_deterministic_generator_does_not_require_unused_provider_key(
+    tmp_path: Path,
+) -> None:
+    result = run_bridge_raw(
+        "generate",
+        "--subject",
+        "economics_aqa",
+        "--paper",
+        "1",
+        "--output",
+        str(tmp_path),
+        "--provider",
+        "openai",
+        "--model",
+        "",
+    )
+
+    assert result.returncode == 0
+    events = [json.loads(line) for line in result.stdout.splitlines() if line.strip()]
+    assert any(
+        event.get("stage") == "provider"
+        and "built-in constrained generator" in str(event.get("message"))
+        for event in events
+    )
 
 
 def test_bad_output_path_returns_json_error(tmp_path: Path) -> None:
@@ -355,3 +445,16 @@ def test_benchmark_emits_samples_and_verdict(tmp_path: Path) -> None:
 def test_hosted_json_parser_accepts_markdown_wrapped_json() -> None:
     assert parse_json_object('```json\n{"ok": true}\n```') == {"ok": True}
     assert parse_json_object('Here is the object:\n{"ok": true}\nDone.') == {"ok": True}
+
+
+def test_hosted_json_parser_rejects_oversized_response() -> None:
+    with pytest.raises(ValueError, match="1 MB"):
+        parse_json_object('{"value":"' + ("x" * 1_048_576) + '"}')
+
+
+def test_provider_error_detail_is_bounded_and_redacted() -> None:
+    value = _safe_provider_detail(
+        "Authorization: Bearer secret-token " + ("detail " * 200)
+    )
+    assert "secret-token" not in value
+    assert len(value) <= 500

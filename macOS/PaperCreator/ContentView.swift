@@ -19,7 +19,7 @@ struct ContentView: View {
             }
         }
         .navigationSplitViewStyle(.balanced)
-        .frame(minWidth: 1120, minHeight: 740)
+        .frame(minWidth: 860, minHeight: 620)
         .toolbar {
             ToolbarItem {
                 if appModel.isRunning {
@@ -66,7 +66,9 @@ struct ContentView: View {
             selectBoard(for: newSelection)
         }
         .task {
-            appModel.refreshOllama()
+            if appModel.selectedBoard.usesAI && appModel.aiProvider == .ollama {
+                appModel.refreshOllama()
+            }
         }
     }
 

@@ -1,3 +1,4 @@
+from Backend.Core.pdf_text import extract_pdf_text
 from cspapergen.cli import generate_package
 from cspapergen.generator import build_paper2_blueprint
 from cspapergen.render_pdf import render_question_paper
@@ -49,6 +50,4 @@ def test_question_paper_page_two_has_aqa_answer_all_questions_header(tmp_path):
 
 
 def _pdf_text(path):
-    import subprocess
-
-    return subprocess.run(["pdftotext", "-layout", str(path), "-"], check=True, capture_output=True, text=True).stdout
+    return extract_pdf_text(path)

@@ -15,7 +15,7 @@ struct WelcomeSheet: View {
                 Text("Create a practice paper")
                     .font(.largeTitle.weight(.semibold))
 
-                Text("Choose the subject, paper and model. Paper creator handles the layout, mark scheme and final PDFs.")
+                Text("Choose the subject and paper. AI-assisted families also let you choose a model; constrained families run without one.")
                     .font(.title3)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)

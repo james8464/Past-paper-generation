@@ -79,15 +79,15 @@ def test_all_packages_render_reference_page_geometry(tmp_path: Path) -> None:
         )
         assert paths.keys() == {"question_paper", "mark_scheme"}
         assert len(PdfReader(paths["question_paper"]).pages) == expected_pages
-        assert "A-level Economics" in (PdfReader(paths["question_paper"]).pages[0].extract_text() or "")
+        cover = PdfReader(paths["question_paper"]).pages[0].extract_text() or ""
+        assert "A Level Economics" in cover
         if paper in {"1", "2"}:
             question_pages = PdfReader(paths["question_paper"]).pages
             assert "Figure 2" in (question_pages[2].extract_text() or "")
-            assert "BLANK PAGE" in (question_pages[8].extract_text() or "")
-            assert "Section B" in (question_pages[9].extract_text() or "")
-            assert "Section C" in (question_pages[13].extract_text() or "")
+            assert "Section B" in (question_pages[8].extract_text() or "")
+            assert "Section C" in (question_pages[12].extract_text() or "")
             assert "EXTRA ANSWER SPACE" in (
-                question_pages[17].extract_text() or ""
+                question_pages[16].extract_text() or ""
             )
             assert "continued" in (question_pages[18].extract_text() or "")
         scheme = PdfReader(paths["mark_scheme"])

@@ -3,71 +3,59 @@ import SwiftUI
 struct Sidebar: View {
     @Binding var selection: SidebarItem?
     @EnvironmentObject private var appModel: AppViewModel
+    @AppStorage(AppStorageKey.expandedSubjectIDs)
+    private var expandedSubjectIDs = ""
 
     var body: some View {
-        VStack(spacing: 0) {
-            List(selection: $selection) {
-                Section("A level") {
-                    ForEach(ExamCatalog.subjects) { subject in
-                        DisclosureGroup {
-                            ForEach(subject.boards) { board in
-                                NavigationLink(value: SidebarItem.board(board.id)) {
-                                    BoardRow(board: board)
-                                }
+        List(selection: $selection) {
+            Section("A level") {
+                ForEach(ExamCatalog.subjects) { subject in
+                    DisclosureGroup(isExpanded: expansionBinding(for: subject.id)) {
+                        ForEach(subject.boards) { board in
+                            NavigationLink(value: SidebarItem.board(board.id)) {
+                                BoardRow(board: board)
                             }
-                        } label: {
-                            Label(subject.title, systemImage: subject.systemImage)
                         }
+                    } label: {
+                        Label(subject.title, systemImage: subject.systemImage)
                     }
                 }
-
-            }
-            .navigationTitle("Paper creator")
-
-            if appModel.isRunning || appModel.isBenchmarkRunning || appModel.isRefreshingOllama {
-                Divider()
-                statusBar
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
             }
         }
+        .navigationTitle("Paper creator")
         .frame(minWidth: 220)
+        .onAppear(perform: expandSelectedSubject)
+        .onChange(of: selection) { _, _ in expandSelectedSubject() }
     }
 
-    @ViewBuilder
-    private var statusBar: some View {
-        if appModel.isRunning || appModel.isBenchmarkRunning {
-            HStack(spacing: 8) {
-                ProgressView()
-                    .controlSize(.small)
-
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(appModel.status)
-                        .font(.caption)
-                        .lineLimit(1)
-
-                    if let progress = appModel.generationProgress ?? appModel.benchmarkProgress {
-                        Text(Int(progress * 100).formatted() + "%")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
+    private func expansionBinding(for subjectID: String) -> Binding<Bool> {
+        Binding(
+            get: { expandedSubjects.contains(subjectID) },
+            set: { expanded in
+                var values = expandedSubjects
+                if expanded {
+                    values.insert(subjectID)
+                } else {
+                    values.remove(subjectID)
                 }
-
-                Spacer(minLength: 0)
+                expandedSubjectIDs = values.sorted().joined(separator: ",")
             }
-            .foregroundStyle(.secondary)
-        } else if appModel.isRefreshingOllama {
-            HStack(spacing: 8) {
-                ProgressView()
-                    .controlSize(.small)
+        )
+    }
 
-                Text("Checking Ollama...")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+    private var expandedSubjects: Set<String> {
+        Set(expandedSubjectIDs.split(separator: ",").map(String.init))
+    }
 
-                Spacer(minLength: 0)
-            }
+    private func expandSelectedSubject() {
+        guard case let .board(boardID) = selection,
+              let board = ExamCatalog.board(id: boardID),
+              !expandedSubjects.contains(board.subjectID) else {
+            return
         }
+        var values = expandedSubjects
+        values.insert(board.subjectID)
+        expandedSubjectIDs = values.sorted().joined(separator: ",")
     }
 }
 

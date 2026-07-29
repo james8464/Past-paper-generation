@@ -270,6 +270,7 @@ def conform_pdf_page_boxes(
     rewritten = fitz.open()
     temporary = pdf_path.with_name(f"{pdf_path.stem}.layout-tmp{pdf_path.suffix}")
     try:
+        rewritten.set_metadata(source.metadata)
         for index, source_page in enumerate(source):
             expected = master.pages[min(index, master.page_count - 1)]
             media = fitz.Rect(*_rect_values(expected.media_box))
@@ -366,6 +367,7 @@ def conform_pdf_to_box_template(
                 )
             source.save(temporary, garbage=4, deflate=True)
         else:
+            rewritten.set_metadata(source.metadata)
             for index, source_page in enumerate(source):
                 page_boxes = box_sequence[min(index, len(box_sequence) - 1)]
                 media = fitz.Rect(*page_boxes["media"])

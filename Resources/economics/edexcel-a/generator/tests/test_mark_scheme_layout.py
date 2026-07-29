@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from Backend.Core.generation_date import formatted_generation_date
+from Backend.Core.pdf_text import extract_pdf_text, pdf_font_names
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.render_pdf import MARK_SCHEME_MIN_PAGES, _mark_scheme_rows, _ms_row_height, render_mark_scheme
@@ -70,17 +71,13 @@ def test_mark_scheme_front_matter_matches_reference_structure(tmp_path):
 
 
 def test_mark_scheme_cover_uses_reference_serif_face(tmp_path):
-    import subprocess
-
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
     blueprint = build_paper_blueprint(config, syllabus, seed=42)
     output = tmp_path / "ms.pdf"
 
     render_mark_scheme(blueprint, syllabus, output)
-    fonts = subprocess.run(["pdffonts", str(output)], check=True, capture_output=True, text=True).stdout
-
-    assert "Times-Roman" in fonts
+    assert "Times-Roman" in pdf_font_names(output)
 
 
 def test_mark_scheme_cover_title_uses_reference_scale_and_position(tmp_path):
@@ -238,14 +235,7 @@ def test_mark_scheme_uses_uploaded_note_points_for_extended_questions(tmp_path):
 
 
 def _pdf_text(path: Path) -> str:
-    import subprocess
-
-    return subprocess.run(
-        ["pdftotext", "-layout", str(path), "-"],
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout
+    return extract_pdf_text(path)
 
 
 def _pdf_page_count(path: Path) -> int:

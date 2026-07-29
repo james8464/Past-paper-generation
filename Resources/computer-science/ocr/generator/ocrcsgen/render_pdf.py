@@ -28,8 +28,14 @@ from Backend.Core.exam_blueprints import (
     GeneratedPaper,
     GeneratedQuestion,
 )
+from Backend.Core.exam_cover import (
+    CoverProfile,
+    mark_scheme_cover,
+    ocr_question_cover,
+)
 from Backend.Core.fonts import register_fonts
 from Backend.Core.generation_date import formatted_generation_date
+from Backend.Core.reportlab_theme import themed_table_class
 
 
 PAGE_WIDTH, PAGE_HEIGHT = A4
@@ -42,6 +48,7 @@ FONT = "AQAArial"
 FONT_BOLD = "AQAArial-Bold"
 FONT_MONO = "AQACourier"
 register_fonts(FONT, FONT_BOLD, FONT_MONO)
+Table = themed_table_class(Table, FONT)
 
 QUESTION_PAGE_CHUNKS = {
     "paper_1": {
@@ -186,16 +193,7 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     doc = _document(path, paper, "Mark scheme")
     story: list[Flowable] = [
-        Spacer(1, 12 * mm),
-        Paragraph("A-level Computer Science", STYLES["kicker"]),
-        Paragraph("Independent practice mark scheme", STYLES["title"]),
-        Paragraph(f"{paper.paper_code} · {paper.title}", STYLES["subtitle"]),
-        Paragraph(formatted_generation_date(), STYLES["subtitle"]),
-        Spacer(1, 8 * mm),
-        _box(
-            "Award valid technical alternatives. Apply level descriptors "
-            "holistically to extended responses."
-        ),
+        *mark_scheme_cover(_cover_profile(paper), FONT, FONT_BOLD),
         PageBreak(),
         Paragraph("Marking instructions", STYLES["heading"]),
         Spacer(1, 4 * mm),
@@ -723,46 +721,28 @@ def _additional_answer_page(
 
 
 def _cover(paper: GeneratedPaper) -> list[Flowable]:
-    return [
-        Spacer(1, 10 * mm),
-        Paragraph("A-level Computer Science", STYLES["kicker"]),
-        Paragraph("Independent practice paper", STYLES["title"]),
-        Paragraph(f"{paper.paper_code} · {paper.title}", STYLES["subtitle"]),
-        Paragraph(formatted_generation_date(), STYLES["subtitle"]),
-        Spacer(1, 8 * mm),
-        Table(
-            [
-                ["Time allowed", "2 hours 30 minutes"],
-                ["Maximum mark", "140"],
-                ["Paper reference", paper.paper_code],
-            ],
-            colWidths=[45 * mm, 90 * mm],
-            style=TableStyle(
-                [
-                    ("GRID", (0, 0), (-1, -1), 0.6, INK),
-                    ("BACKGROUND", (0, 0), (0, -1), GREY),
-                    ("FONT", (0, 0), (0, -1), FONT_BOLD),
-                    ("PADDING", (0, 0), (-1, -1), 7),
-                ]
-            ),
+    return ocr_question_cover(_cover_profile(paper), FONT, FONT_BOLD)
+
+
+def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
+    return CoverProfile(
+        board="ocr",
+        subject="Computer Science",
+        code=paper.paper_code,
+        paper_title=paper.title,
+        duration="2 hours 30 minutes",
+        total_marks=paper.total_marks,
+        materials=("No calculators are permitted.",),
+        instructions=(
+            "Use black ink. You can use an HB pencil for graphs and diagrams.",
+            "Answer all questions.",
+            "Write your answers in the spaces provided.",
         ),
-        Spacer(1, 9 * mm),
-        Paragraph("Instructions", STYLES["heading"]),
-        Paragraph(
-            "Answer all questions. Write answers in the spaces provided. "
-            "Do not use a calculator.",
-            STYLES["body"],
+        information=(
+            "The quality of extended responses will be assessed where indicated.",
+            "This is independently authored and is not produced or endorsed by OCR.",
         ),
-        Spacer(1, 5 * mm),
-        Paragraph("Information", STYLES["heading"]),
-        Paragraph(
-            "The maximum mark is 140. Marks are shown in brackets. Quality of "
-            "extended response is assessed where level descriptors are supplied. "
-            "This independently created practice paper is mapped to OCR H446 but "
-            "is not produced or endorsed by OCR.",
-            STYLES["body"],
-        ),
-    ]
+    )
 
 
 def _document(

@@ -5,8 +5,11 @@ struct AppCommands: Commands {
 
     var body: some Commands {
         CommandGroup(replacing: .newItem) {
-            Button("Generate Paper", action: appModel.generate)
-                .keyboardShortcut("g", modifiers: [.command])
+            Button("New Paper", action: appModel.showCreationWorkspace)
+                .keyboardShortcut("n", modifiers: [.command])
+
+            Button("Create Paper", action: appModel.generate)
+                .keyboardShortcut(.return, modifiers: [.command])
                 .disabled(!appModel.canGenerate)
 
             Button("Cancel Generation", action: appModel.cancelGeneration)

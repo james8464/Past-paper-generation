@@ -60,7 +60,18 @@ final class AppViewModel: ObservableObject {
     }
 
     var selectedPaper: PaperOption {
-        selectedBoard.papers.first { $0.id == selectedPaperID } ?? selectedBoard.papers.first ?? PaperOption(id: "unknown", title: "Unknown", detail: "")
+        selectedBoard.papers.first { $0.id == selectedPaperID }
+            ?? selectedBoard.papers.first
+            ?? PaperOption(
+                id: "unknown",
+                title: "Unknown",
+                detail: "",
+                readiness: PaperReadiness(
+                    difficultyVerified: false,
+                    visuallyCalibrated: false,
+                    releaseReady: false
+                )
+            )
     }
 
     var selectedPaperTitle: String {
@@ -78,8 +89,13 @@ final class AppViewModel: ObservableObject {
     var generationBlocker: String? {
         if isRunning { return "Generation is already running." }
         if isBenchmarkRunning { return "Benchmark is running." }
+        if showWelcome { return "Finish the welcome guide before creating a paper." }
         if !selectedBoard.isReady { return "\(selectedBoard.subjectTitle) \(selectedBoard.title) is coming soon." }
         if dryRun { return nil }
+        if !selectedBoard.usesAI { return nil }
+        if !selectedBoard.supports(aiProvider) {
+            return "\(aiProvider.title) is not supported by this generator."
+        }
         if activeModelName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return "Choose a model before generating."
         }
@@ -144,6 +160,7 @@ final class AppViewModel: ObservableObject {
         }
         selectedBoardID = defaults.string(forKey: AppStorageKey.selectedBoardID) ?? ExamCatalog.defaultBoard.id
         selectedPaperID = defaults.string(forKey: AppStorageKey.selectedPaperID) ?? selectedBoard.papers.first?.id ?? "unknown"
+        restoreRecentDocuments()
         sidebarSelection = .board(selectedBoardID)
     }
 
@@ -200,7 +217,6 @@ final class AppViewModel: ObservableObject {
         selectedPaperID = board.papers.first?.id ?? "unknown"
         defaults.set(board.id, forKey: AppStorageKey.selectedBoardID)
         defaults.set(selectedPaperID, forKey: AppStorageKey.selectedPaperID)
-        generatedFiles.removeAll()
         progressEntries.removeAll()
         status = board.isReady ? "Ready" : "Coming Soon"
     }
@@ -244,20 +260,23 @@ final class AppViewModel: ObservableObject {
         sidebarSelection = .benchmark
     }
 
+    func showCreationWorkspace() {
+        sidebarSelection = .board(selectedBoardID)
+    }
+
     func generate() {
         guard canGenerate else { return }
         guard let backendSubject = selectedBoard.backendSubject else {
             setError("This exam board is coming soon.")
             return
         }
-        if aiProvider.sendsPromptsOffDevice && !hasHostedAIConsent {
+        if selectedBoard.usesAI && aiProvider.sendsPromptsOffDevice && !hasHostedAIConsent {
             pendingHostedProvider = aiProvider
             showHostedAIConsent = true
             return
         }
         persistSettings()
 
-        generatedFiles.removeAll()
         progressEntries.removeAll()
         didReceiveBackendError = false
         didCancelRun = false
@@ -287,9 +306,16 @@ final class AppViewModel: ObservableObject {
         ]
 
         var backendEnvironment = [
-            "PAPER_CREATOR_GENERATED_ON": Self.generationDateFormatter.string(from: Date())
+            "PAPER_CREATOR_GENERATED_ON": Self.generationDateFormatter.string(from: Date()),
+            "PAPER_CREATOR_JOB_ID": UUID().uuidString,
+            "PAPER_CREATOR_APP_VERSION": Bundle.main.object(
+                forInfoDictionaryKey: "CFBundleShortVersionString"
+            ) as? String ?? "development",
+            "PAPER_CREATOR_APP_BUILD": Bundle.main.object(
+                forInfoDictionaryKey: "CFBundleVersion"
+            ) as? String ?? "development",
         ]
-        switch aiProvider {
+        switch selectedBoard.usesAI ? aiProvider : .ollama {
         case .ollama, .apple:
             break
         case .openAI:
@@ -416,7 +442,11 @@ final class AppViewModel: ObservableObject {
 
     func saveAISettings() {
         persistSettings()
-        status = "Settings saved"
+    }
+
+    func removeGeneratedFile(_ file: GeneratedFile) {
+        generatedFiles.removeAll { $0.id == file.id }
+        persistRecentDocuments()
     }
 
     func dismissWelcome() {
@@ -437,13 +467,17 @@ final class AppViewModel: ObservableObject {
     }
 
     func copyDiagnosticSummary() {
+        let generationMode = selectedBoard.usesAI
+            ? "\(selectedBoard.contentMode.title), \(aiProvider.title), \(activeModelName)"
+            : selectedBoard.contentMode.title
         let summary = [
             "Paper creator Diagnostics",
             "Distribution: \(distributionMode.title)",
             "Selected board: \(selectedBoard.subjectTitle) \(selectedBoard.title)",
             "Selected paper: \(selectedPaper.title) - \(selectedPaper.detail)",
-            "AI provider: \(aiProvider.title)",
-            "Model: \(activeModelName)",
+            "Generation mode: \(generationMode)",
+            "Visual profile: \(selectedPaper.readiness.visuallyCalibrated ? "Reviewed" : "Not reviewed")",
+            "Difficulty verification: \(selectedPaper.readiness.difficultyVerified ? "Passed" : "Not independently verified")",
             "Hosted AI consent: \(hasHostedAIConsent ? "Accepted" : "Not accepted")",
             "Ollama: \(ollamaState.message)",
             "Output folder: \(outputFolder.path)",
@@ -577,15 +611,25 @@ final class AppViewModel: ObservableObject {
 
     private func apply(_ event: BackendEvent) {
         switch event {
+        case let .hello(protocolVersion, _, _):
+            if protocolVersion != 2 {
+                setError("The generation service uses an unsupported protocol version.")
+            }
         case let .progress(stage, message, progress):
             status = message
             generationProgress = progress ?? generationProgress
             updateGenerationEstimate()
             progressEntries.append(ProgressEntry(stage: stage, message: message))
         case let .file(role, path):
-            let file = GeneratedFile(role: role, url: URL(fileURLWithPath: path))
+            let file = GeneratedFile(
+                role: role,
+                url: URL(fileURLWithPath: path),
+                subject: "\(selectedBoard.subjectTitle) \(selectedBoard.shortTitle)",
+                paper: selectedPaper.title
+            )
             if !generatedFiles.contains(where: { $0.url == file.url }) {
-                generatedFiles.append(file)
+                generatedFiles.insert(file, at: 0)
+                generatedFiles = Array(generatedFiles.prefix(60))
             }
         case let .done(message):
             status = message
@@ -654,6 +698,7 @@ final class AppViewModel: ObservableObject {
                 status = status == "Starting" ? "Done" : status
                 generationProgress = 1.0
                 generationEstimate = nil
+                persistRecentDocuments()
                 notifySuccess(for: operation)
             } else if !didReceiveBackendError {
                 let message = "Generation failed without a backend error message. Refresh Ollama, check the selected model, then try again. Backend exited with code \(code)."
@@ -685,8 +730,31 @@ final class AppViewModel: ObservableObject {
                 try FileManager.default.removeItem(at: destination)
             }
             try FileManager.default.copyItem(at: file.url, to: destination)
-            return GeneratedFile(role: file.role, url: destination)
+            return GeneratedFile(
+                id: file.id,
+                role: file.role,
+                url: destination,
+                createdAt: file.createdAt,
+                subject: file.subject,
+                paper: file.paper
+            )
         }
+    }
+
+    private func restoreRecentDocuments() {
+        guard let data = defaults.data(forKey: AppStorageKey.recentDocuments),
+              let documents = try? JSONDecoder().decode(
+                [GeneratedFile].self,
+                from: data
+              ) else {
+            return
+        }
+        generatedFiles = Array(documents.prefix(60))
+    }
+
+    private func persistRecentDocuments() {
+        guard let data = try? JSONEncoder().encode(generatedFiles) else { return }
+        defaults.set(data, forKey: AppStorageKey.recentDocuments)
     }
 
     private func setError(_ message: String) {

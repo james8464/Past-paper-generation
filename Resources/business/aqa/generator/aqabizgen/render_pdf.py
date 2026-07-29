@@ -26,8 +26,14 @@ from Backend.Core.exam_blueprints import (
     GeneratedPaper,
     GeneratedQuestion,
 )
+from Backend.Core.exam_cover import (
+    CoverProfile,
+    aqa_question_cover,
+    mark_scheme_cover,
+)
 from Backend.Core.fonts import register_fonts
 from Backend.Core.generation_date import formatted_generation_date
+from Backend.Core.reportlab_theme import themed_table_class
 from Backend.Core.mark_scheme_front_matter import aqa_front_matter_pages
 
 
@@ -38,6 +44,7 @@ GREY = colors.HexColor("#eeeeee")
 FONT = "AQAArial"
 FONT_BOLD = "AQAArial-Bold"
 register_fonts(FONT, FONT_BOLD)
+Table = themed_table_class(Table, FONT)
 
 
 def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
@@ -104,16 +111,7 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     doc = _document(path, paper, "Mark scheme")
     story: list[Flowable] = [
-        Spacer(1, 12 * mm),
-        Paragraph("A-level Business", STYLES["kicker"]),
-        Paragraph("Independent practice mark scheme", STYLES["title"]),
-        Paragraph(f"{paper.paper_code} · {paper.title}", STYLES["subtitle"]),
-        Paragraph(formatted_generation_date(), STYLES["subtitle"]),
-        Spacer(1, 8 * mm),
-        _box(
-            "Reward valid alternative business reasoning. Apply level descriptors "
-            "holistically and credit supported judgements."
-        ),
+        *mark_scheme_cover(_cover_profile(paper), FONT, FONT_BOLD),
         PageBreak(),
         *aqa_front_matter_pages(
             "business",
@@ -1228,8 +1226,8 @@ def _chart(option: GeneratedOption, offset: int = 0) -> Drawing:
         y = y0 + 7 + (value - low) / span * (height - 14)
         points.extend([x, y])
         drawing.add(Rect(x - 2, y - 2, 4, 4, fillColor=INK))
-        drawing.add(String(x - 8, y0 - 13, option.chart_labels[index], fontSize=7))
-        drawing.add(String(x + 4, y + 2, f"{value:.1f}", fontSize=7))
+        drawing.add(String(x - 8, y0 - 13, option.chart_labels[index], fontName=FONT, fontSize=7))
+        drawing.add(String(x + 4, y + 2, f"{value:.1f}", fontName=FONT, fontSize=7))
     drawing.add(PolyLine(points, strokeColor=INK, strokeWidth=1.2))
     return drawing
 
@@ -1240,45 +1238,39 @@ def _source_values(option: GeneratedOption, index: int) -> list[float]:
 
 
 def _cover(paper: GeneratedPaper) -> list[Flowable]:
-    return [
-        Spacer(1, 10 * mm),
-        Paragraph("A-level Business", STYLES["kicker"]),
-        Paragraph("Independent practice paper", STYLES["title"]),
-        Paragraph(f"{paper.paper_code} · {paper.title}", STYLES["subtitle"]),
-        Paragraph(formatted_generation_date(), STYLES["subtitle"]),
-        Spacer(1, 8 * mm),
-        Table(
-            [
-                ["Time allowed", "2 hours"],
-                ["Maximum mark", "100"],
-                ["Paper reference", paper.paper_code],
-            ],
-            colWidths=[45 * mm, 90 * mm],
-            style=TableStyle(
-                [
-                    ("GRID", (0, 0), (-1, -1), 0.6, INK),
-                    ("BACKGROUND", (0, 0), (0, -1), GREY),
-                    ("FONT", (0, 0), (0, -1), FONT_BOLD),
-                    ("PADDING", (0, 0), (-1, -1), 7),
-                ]
-            ),
+    return aqa_question_cover(_cover_profile(paper), FONT, FONT_BOLD)
+
+
+def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
+    return CoverProfile(
+        board="aqa",
+        subject="Business",
+        code=paper.paper_code,
+        paper_title=f"Paper {paper.paper_id[-1]}  {paper.title}",
+        duration="2 hours",
+        total_marks=paper.total_marks,
+        materials=(
+            "For this paper you must have a calculator.",
         ),
-        Spacer(1, 9 * mm),
-        Paragraph("Instructions", STYLES["heading"]),
-        Paragraph(
-            "Answer the questions specified in each section. Use a calculator where "
-            "appropriate. Show working and use the evidence supplied.",
-            STYLES["body"],
+        instructions=(
+            "Use black ink or black ball-point pen.",
+            "Fill in the boxes at the top of this page.",
+            "Answer all questions in Sections A and B.",
+            "Answer one question from each optional section where instructed.",
+            "Answer in the spaces provided. Do not write outside the box around each page or on blank pages.",
+            "Cross through any rough work you do not want to be marked.",
         ),
-        Spacer(1, 5 * mm),
-        Paragraph("Information", STYLES["heading"]),
-        Paragraph(
-            "The maximum mark is 100. Marks are shown in brackets. This independently "
-            "created practice paper is mapped to AQA 7132 but is not produced or "
-            "endorsed by AQA.",
-            STYLES["body"],
+        information=(
+            "The marks for questions are shown in brackets.",
         ),
-    ]
+        mark_rows=tuple(
+            (
+                section.id,
+                sum(question.marks for question in section.options[0].questions),
+            )
+            for section in paper.sections
+        ),
+    )
 
 
 def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:

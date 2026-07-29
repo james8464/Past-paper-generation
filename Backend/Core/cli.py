@@ -6,7 +6,9 @@ from pathlib import Path
 from typing import Callable
 
 from Backend.Core.benchmark import handle_benchmark
+from Backend.Core.events import BACKEND_VERSION, emit
 from Backend.Core.generation import handle_generate
+from Backend.Core.generator_registry import generator_subjects
 from Backend.Core.ollama import handle_list_models, handle_ollama_status, handle_pull_model
 
 DEFAULT_OUTPUT_DIR = Path.home() / "Downloads"
@@ -37,15 +39,7 @@ def build_parser() -> argparse.ArgumentParser:
     generate = subparsers.add_parser("generate")
     generate.add_argument(
         "--subject",
-        choices=[
-            "economics",
-            "economics_aqa",
-            "economics_ocr",
-            "computer_science",
-            "computer_science_ocr",
-            "business_aqa",
-            "accounting_aqa",
-        ],
+        choices=generator_subjects(),
         required=True,
     )
     generate.add_argument("--paper", default="1")
@@ -64,6 +58,12 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    emit(
+        "hello",
+        backend_version=BACKEND_VERSION,
+        capabilities=["cancel", "eta", "manifest", "transactional-output"],
+        message="Backend ready",
+    )
     handler: Callable[[argparse.Namespace], int] = args.handler
     return handler(args)
 

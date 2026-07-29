@@ -1,13 +1,29 @@
 from __future__ import annotations
 
 import json
+import itertools
+import os
 import re
 import subprocess
+from datetime import datetime, timezone
 from typing import Any, Callable
 
 
+PROTOCOL_VERSION = 2
+BACKEND_VERSION = "2.0.0"
+_EVENT_IDS = itertools.count(1)
+
+
 def emit(event_type: str, **payload: Any) -> None:
-    print(json.dumps({"type": event_type, **payload}, ensure_ascii=False), flush=True)
+    envelope = {
+        "protocol": PROTOCOL_VERSION,
+        "type": event_type,
+        "event_id": next(_EVENT_IDS),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "job_id": os.environ.get("PAPER_CREATOR_JOB_ID", ""),
+        **payload,
+    }
+    print(json.dumps(envelope, ensure_ascii=False), flush=True)
 
 
 def emit_progress(message: str, *, stage: str | None = None, progress: float | None = None) -> None:

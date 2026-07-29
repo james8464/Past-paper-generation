@@ -5,6 +5,7 @@ import pytest
 from Backend.Core.generation_date import (
     GENERATION_DATE_ENV,
     formatted_generation_date,
+    formatted_generation_series,
     generation_date,
 )
 
@@ -20,6 +21,7 @@ def test_generation_date_accepts_iso_override(monkeypatch):
 
     assert generation_date() == date(2026, 7, 28)
     assert formatted_generation_date() == "Tuesday 28 July 2026"
+    assert formatted_generation_series() == "July 2026"
 
 
 def test_generation_date_rejects_invalid_override(monkeypatch):

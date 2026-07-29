@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import math
 import re
@@ -10,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 import fitz
+from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageOps
 
 from tools.build_supported_layout_masters import REFERENCES
 
@@ -22,10 +24,14 @@ LINE_MARK = re.compile(
 WORD = re.compile(r"[A-Za-z]+(?:[-'][A-Za-z]+)?")
 GRID_COLUMNS = 96
 GRID_ROWS = 136
+CONTACT_PAGE_WIDTH = 240
+CONTACT_PAGES_PER_SHEET = 8
+OVERVIEW_DOCUMENTS_PER_SHEET = 6
 KNOWN_REFERENCE_MUPDF_DIAGNOSTICS = {
     "bogus font ascent/descent values (3117 / -2464)",
     "format error: No common ancestor in structure tree",
     "premature end of data in flate filter",
+    "Repairing missing parent (P) in parent tree nodes",
     "structure tree broken, assume tree is missing",
 }
 
@@ -438,6 +444,51 @@ def compare(generated: dict[str, Any], reference: dict[str, Any]) -> dict[str, A
     }
 
 
+def _compact_profile(value: dict[str, Any]) -> dict[str, Any]:
+    """Keep report JSON useful without serialising page raster grids.
+
+    The former report embedded six grids per page and reached multiple
+    gigabytes for the supported matrix. Geometry remains in memory while
+    comparing, then only compact page scores and document summaries are saved.
+    """
+
+    return {key: item for key, item in value.items() if key != "geometry"}
+
+
+def _page_comparisons(
+    generated: list[dict[str, Any]],
+    reference: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    result: list[dict[str, Any]] = []
+    count = max(len(generated), len(reference))
+    for index in range(count):
+        if index >= len(generated) or index >= len(reference):
+            result.append(
+                {
+                    "page": index + 1,
+                    "missing": "generated" if index >= len(generated) else "reference",
+                    "overall": 0.0,
+                }
+            )
+            continue
+        scores = _geometry_scores([generated[index]], [reference[index]])
+        scored = {
+            "render_placement": scores["render_placement"],
+            "text_placement": scores["text_placement"],
+            "drawing_placement": scores["drawing_placement"],
+            "image_placement": scores["image_placement"],
+            "content_envelope": scores["content_envelope"],
+        }
+        result.append(
+            {
+                "page": index + 1,
+                "overall": round(statistics.mean(scored.values()), 3),
+                "scores": {name: round(value, 3) for name, value in scored.items()},
+            }
+        )
+    return result
+
+
 def _font_family(name: str) -> str:
     value = name.casefold().replace("psmt", "").replace("mt", "")
     for suffix in ("-bolditalic", "-bold", "-italic", "-regular", "-0", "-1"):
@@ -452,10 +503,12 @@ def audit(generated_root: Path) -> dict[str, Any]:
         generated_question = _generated_document(
             generated_dir,
             paths["question"],
+            search_root=generated_root,
         )
         generated_scheme = _generated_document(
             generated_dir,
             paths["scheme"],
+            search_root=generated_root,
         )
         reference_question = ROOT / paths["reference_question"]
         reference_scheme = ROOT / paths["reference_scheme"]
@@ -479,14 +532,16 @@ def audit(generated_root: Path) -> dict[str, Any]:
             ),
         }
         families[family] = {
-            "question_paper": {
-                **question_profiles,
-                "comparison": compare(**question_profiles),
-            },
-            "mark_scheme": {
-                **scheme_profiles,
-                "comparison": compare(**scheme_profiles),
-            },
+            "question_paper": _document_result(
+                generated_question,
+                reference_question,
+                question_profiles,
+            ),
+            "mark_scheme": _document_result(
+                generated_scheme,
+                reference_scheme,
+                scheme_profiles,
+            ),
         }
     comparable = [value for value in families.values() if "missing" not in value]
     overall = (
@@ -501,18 +556,47 @@ def audit(generated_root: Path) -> dict[str, Any]:
         else 0.0
     )
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "generated_root": str(generated_root),
         "families": families,
         "overall": round(overall, 3),
     }
 
 
-def _generated_document(directory: Path, filename: str) -> Path:
+def _document_result(
+    generated_path: Path,
+    reference_path: Path,
+    profiles: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    pages = _page_comparisons(
+        profiles["generated"]["geometry"],
+        profiles["reference"]["geometry"],
+    )
+    return {
+        "generated_path": str(generated_path),
+        "reference_path": str(reference_path),
+        "generated": _compact_profile(profiles["generated"]),
+        "reference": _compact_profile(profiles["reference"]),
+        "comparison": compare(**profiles),
+        "page_comparisons": pages,
+        "worst_pages": sorted(
+            pages,
+            key=lambda item: (item["overall"], item["page"]),
+        )[:5],
+    }
+
+
+def _generated_document(
+    directory: Path,
+    filename: str,
+    *,
+    search_root: Path | None = None,
+) -> Path:
     direct = directory / filename
-    if direct.exists() or not directory.exists():
+    if direct.exists():
         return direct
-    matches = sorted(directory.rglob(filename))
+    root = directory if directory.exists() else search_root
+    matches = sorted(root.rglob(filename)) if root and root.exists() else []
     if len(matches) == 1:
         return matches[0]
     return direct
@@ -522,18 +606,261 @@ def markdown(report: dict[str, Any]) -> str:
     rows = [
         "# Paper fidelity audit",
         "",
-        "| Family | Question paper | Mark scheme |",
-        "|---|---:|---:|",
+        "| Family | Question paper | Mark scheme | Weakest question pages | Weakest scheme pages |",
+        "|---|---:|---:|---|---|",
     ]
     for family, result in report["families"].items():
         if "missing" in result:
-            rows.append(f"| {family} | missing | missing |")
+            rows.append(f"| {family} | missing | missing | - | - |")
         else:
             question = result["question_paper"]["comparison"]["overall"]
             scheme = result["mark_scheme"]["comparison"]["overall"]
-            rows.append(f"| {family} | {question:.1%} | {scheme:.1%} |")
+            question_pages = ", ".join(
+                str(item["page"]) for item in result["question_paper"]["worst_pages"]
+            )
+            scheme_pages = ", ".join(
+                str(item["page"]) for item in result["mark_scheme"]["worst_pages"]
+            )
+            rows.append(
+                f"| {family} | {question:.1%} | {scheme:.1%} | "
+                f"{question_pages} | {scheme_pages} |"
+            )
     rows.extend(["", f"Aggregate structural/visual similarity: **{report['overall']:.1%}**", ""])
     return "\n".join(rows)
+
+
+def _render_page_image(page: fitz.Page, dpi: int) -> Image.Image:
+    pixmap = page.get_pixmap(
+        matrix=fitz.Matrix(dpi / 72, dpi / 72),
+        colorspace=fitz.csRGB,
+        alpha=False,
+        annots=True,
+    )
+    return Image.frombytes("RGB", (pixmap.width, pixmap.height), pixmap.samples)
+
+
+def _fit_page(image: Image.Image, width: int = CONTACT_PAGE_WIDTH) -> Image.Image:
+    height = max(1, round(image.height * width / image.width))
+    return image.resize((width, height), Image.Resampling.LANCZOS)
+
+
+def _difference_panel(reference: Image.Image, generated: Image.Image) -> Image.Image:
+    width = min(reference.width, generated.width)
+    height = min(reference.height, generated.height)
+    reference = reference.resize((width, height), Image.Resampling.LANCZOS)
+    generated = generated.resize((width, height), Image.Resampling.LANCZOS)
+    difference = ImageChops.difference(reference, generated).convert("L")
+    difference = ImageEnhance.Contrast(ImageOps.autocontrast(difference)).enhance(2.2)
+    red = Image.new("RGB", difference.size, (220, 28, 28))
+    background = Image.new("RGB", difference.size, "white")
+    return Image.composite(red, background, difference)
+
+
+def _labelled_panel(image: Image.Image, label: str) -> Image.Image:
+    label_height = 24
+    panel = Image.new("RGB", (image.width, image.height + label_height), "white")
+    panel.paste(image, (0, label_height))
+    ImageDraw.Draw(panel).text((6, 5), label, fill="black")
+    return panel
+
+
+def write_contact_sheets(
+    generated_path: Path,
+    reference_path: Path,
+    output_prefix: Path,
+    *,
+    dpi: int = 96,
+) -> list[Path]:
+    generated = fitz.open(generated_path)
+    reference = fitz.open(reference_path)
+    outputs: list[Path] = []
+    try:
+        count = max(generated.page_count, reference.page_count)
+        for sheet_start in range(0, count, CONTACT_PAGES_PER_SHEET):
+            rows: list[Image.Image] = []
+            for index in range(
+                sheet_start,
+                min(sheet_start + CONTACT_PAGES_PER_SHEET, count),
+            ):
+                reference_image = (
+                    _fit_page(_render_page_image(reference[index], dpi))
+                    if index < reference.page_count
+                    else Image.new("RGB", (CONTACT_PAGE_WIDTH, 340), "white")
+                )
+                generated_image = (
+                    _fit_page(_render_page_image(generated[index], dpi))
+                    if index < generated.page_count
+                    else Image.new("RGB", reference_image.size, "white")
+                )
+                if generated_image.size != reference_image.size:
+                    generated_image = generated_image.resize(
+                        reference_image.size,
+                        Image.Resampling.LANCZOS,
+                    )
+                panels = (
+                    _labelled_panel(reference_image, f"Reference p{index + 1}"),
+                    _labelled_panel(generated_image, f"Generated p{index + 1}"),
+                    _labelled_panel(
+                        _difference_panel(reference_image, generated_image),
+                        f"Difference p{index + 1}",
+                    ),
+                )
+                gap = 8
+                row = Image.new(
+                    "RGB",
+                    (
+                        sum(panel.width for panel in panels) + gap * 2,
+                        max(panel.height for panel in panels),
+                    ),
+                    (235, 235, 235),
+                )
+                x = 0
+                for panel in panels:
+                    row.paste(panel, (x, 0))
+                    x += panel.width + gap
+                rows.append(row)
+            if not rows:
+                continue
+            sheet = Image.new(
+                "RGB",
+                (max(row.width for row in rows), sum(row.height for row in rows)),
+                "white",
+            )
+            y = 0
+            for row in rows:
+                sheet.paste(row, (0, y))
+                y += row.height
+            destination = output_prefix.with_name(
+                f"{output_prefix.name}-{sheet_start + 1:02d}-"
+                f"{min(sheet_start + CONTACT_PAGES_PER_SHEET, count):02d}.png"
+            )
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            sheet.save(destination, optimize=True)
+            outputs.append(destination)
+    finally:
+        generated.close()
+        reference.close()
+    return outputs
+
+
+def write_visual_artifacts(
+    report: dict[str, Any],
+    output_dir: Path,
+    *,
+    dpi: int = 96,
+) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    cards: list[str] = []
+    for family, result in report["families"].items():
+        if "missing" in result:
+            cards.append(
+                f"<section><h2>{html.escape(family)}</h2>"
+                f"<p>Missing: {html.escape(', '.join(result['missing']))}</p></section>"
+            )
+            continue
+        for role in ("question_paper", "mark_scheme"):
+            document = result[role]
+            prefix = output_dir / f"{family}-{role.replace('_', '-')}"
+            sheets = write_contact_sheets(
+                Path(document["generated_path"]),
+                Path(document["reference_path"]),
+                prefix,
+                dpi=dpi,
+            )
+            links = "".join(
+                f'<a href="{html.escape(path.name)}">'
+                f'<img src="{html.escape(path.name)}" loading="lazy"></a>'
+                for path in sheets
+            )
+            cards.append(
+                f"<section><h2>{html.escape(family)} — "
+                f"{html.escape(role.replace('_', ' '))}</h2>"
+                f"<p>Score: {document['comparison']['overall']:.1%}; "
+                f"weakest pages: "
+                f"{', '.join(str(item['page']) for item in document['worst_pages'])}</p>"
+                f'<div class="sheets">{links}</div></section>'
+            )
+    page = """<!doctype html>
+<meta charset="utf-8">
+<title>Paper fidelity visual review</title>
+<style>
+body { font: 14px -apple-system, BlinkMacSystemFont, sans-serif; margin: 24px; }
+section { border-top: 1px solid #ccc; padding: 18px 0; }
+.sheets { display: flex; gap: 12px; overflow-x: auto; align-items: flex-start; }
+img { width: 300px; height: auto; border: 1px solid #aaa; }
+</style>
+<h1>Paper fidelity visual review</h1>
+""" + "\n".join(cards)
+    (output_dir / "index.html").write_text(page, encoding="utf-8")
+
+
+def write_overview_sheets(
+    report: dict[str, Any],
+    output_dir: Path,
+    *,
+    dpi: int = 96,
+) -> list[Path]:
+    """Write compact first-page comparisons spanning the full support matrix."""
+
+    rows: list[Image.Image] = []
+    for family, result in report["families"].items():
+        if "missing" in result:
+            continue
+        for role in ("question_paper", "mark_scheme"):
+            document = result[role]
+            with fitz.open(document["reference_path"]) as reference:
+                reference_image = _fit_page(_render_page_image(reference[0], dpi))
+            with fitz.open(document["generated_path"]) as generated:
+                generated_image = _fit_page(_render_page_image(generated[0], dpi))
+            generated_image = generated_image.resize(
+                reference_image.size,
+                Image.Resampling.LANCZOS,
+            )
+            title = f"{family} — {role.replace('_', ' ')}"
+            panels = (
+                _labelled_panel(reference_image, f"{title}: reference"),
+                _labelled_panel(generated_image, f"{title}: generated"),
+                _labelled_panel(
+                    _difference_panel(reference_image, generated_image),
+                    f"{title}: difference",
+                ),
+            )
+            gap = 8
+            row = Image.new(
+                "RGB",
+                (
+                    sum(panel.width for panel in panels) + gap * 2,
+                    max(panel.height for panel in panels),
+                ),
+                (235, 235, 235),
+            )
+            x = 0
+            for panel in panels:
+                row.paste(panel, (x, 0))
+                x += panel.width + gap
+            rows.append(row)
+
+    outputs: list[Path] = []
+    for start in range(0, len(rows), OVERVIEW_DOCUMENTS_PER_SHEET):
+        selected = rows[start : start + OVERVIEW_DOCUMENTS_PER_SHEET]
+        sheet = Image.new(
+            "RGB",
+            (
+                max(row.width for row in selected),
+                sum(row.height for row in selected),
+            ),
+            "white",
+        )
+        y = 0
+        for row in selected:
+            sheet.paste(row, (0, y))
+            y += row.height
+        destination = output_dir / (
+            f"overview-{start + 1:02d}-{start + len(selected):02d}.png"
+        )
+        sheet.save(destination, optimize=True)
+        outputs.append(destination)
+    return outputs
 
 
 def main() -> int:
@@ -541,6 +868,12 @@ def main() -> int:
     parser.add_argument("--generated-root", type=Path, required=True)
     parser.add_argument("--json", type=Path)
     parser.add_argument("--markdown", type=Path)
+    parser.add_argument(
+        "--artifacts",
+        type=Path,
+        help="Write side-by-side reference/generated/difference contact sheets.",
+    )
+    parser.add_argument("--dpi", type=int, default=96)
     args = parser.parse_args()
     report = audit(args.generated_root.resolve())
     rendered = json.dumps(report, indent=2, ensure_ascii=False) + "\n"
@@ -552,6 +885,10 @@ def main() -> int:
     if args.markdown:
         args.markdown.parent.mkdir(parents=True, exist_ok=True)
         args.markdown.write_text(markdown(report), encoding="utf-8")
+    if args.artifacts:
+        artifact_root = args.artifacts.resolve()
+        write_visual_artifacts(report, artifact_root, dpi=args.dpi)
+        write_overview_sheets(report, artifact_root, dpi=args.dpi)
     return 0
 
 

@@ -21,18 +21,20 @@ The project already has unusually strong foundations for that promise:
 - privacy-conscious provider handling and Keychain storage;
 - backend integration, blueprint, calibration, layout, and corpus tests.
 
-The most important conclusion is that the product promise is currently ahead of
-the evidence:
+The most important conclusion remains that the product promise must not outrun
+the evidence. Since the initial analysis, the engineering gaps in items 2, 4,
+and much of 5 have been addressed:
 
 1. All 18 advertised paper variants have `difficulty: false`.
-2. Five of the seven advertised subject/board families do not currently use the
-   AI provider selected in the app.
+2. Five of the seven advertised subject/board families are now explicitly
+   presented as deterministic and no longer show or require an unused provider.
 3. The coverage matrix reports 105 profiled families, seven implemented, and
    zero verified.
-4. The runtime layout-conformance step uses page boxes but not the richer
-   text/drawing/image coordinates represented by the layout-master model.
-5. Shared mark-scheme enrichment is structurally useful but too generic to be
-   considered examiner-authentic.
+4. Runtime still applies physical page-box masters, but shared AQA/OCR cover
+   composition and a page-level fidelity review now add richer visual control.
+5. Typed mark-scheme points now trace every mark and express alternatives,
+   allow/reject/ignore guidance, dependencies, AO ownership, and level/point
+   modes; external marker agreement remains outstanding.
 6. The fidelity score is helpful for regression detection, but is too coarse to
    establish “looks identical” by itself.
 
@@ -79,7 +81,7 @@ flowchart LR
     B --> C["BackendClient Process"]
     C --> D["bridge.py JSONL CLI"]
     D --> E["Backend.Core.generation.handle_generate()"]
-    E --> F{"Hard-coded subject dispatch"}
+    E --> F{"Registry-declared generator entry point"}
     F --> G["AI-assisted generator"]
     F --> H["Deterministic template generator"]
     G --> I["Board-specific blueprint and validation"]
@@ -112,7 +114,7 @@ When generation starts it:
 - validates a `generationBlocker`;
 - asks for hosted-AI consent when required;
 - persists preferences;
-- clears the in-memory output list and progress log;
+- starts a new progress log while preserving persistent recent-file history;
 - selects the direct output folder or an App Store working folder;
 - constructs a CLI command with subject, paper, provider, model, Ollama URL, and
   optional `--dry-run`;
@@ -142,16 +144,16 @@ The JSONL boundary is a good architectural seam:
 - progress is streamable;
 - the packaged executable and development bridge share the same contract.
 
-Its current weakness is that the protocol is implicit rather than versioned.
-There is no declared protocol version, capability handshake, job identifier, or
-schema file shared by Swift and Python.
+The protocol is now explicit and versioned. Protocol v2 starts with a capability
+handshake and gives every event an event ID, timestamp, job identifier, and
+backend version. A bundled JSON Schema documents the shared envelope.
 
 ### 4. Backend validation and dispatch
 
-`Backend/Core/cli.py` declares seven backend subject identifiers.
-`Backend/Core/generation.py` validates the output directory, model, API key, and
-then selects one of seven generator functions through a hard-coded conditional
-chain.
+`Backend/Core/cli.py` derives its seven backend subject identifiers from the
+validated registry. `Backend/Core/generation.py` validates the output directory,
+capability-specific provider/model requirements, and dynamically imports the
+declared generator entry point.
 
 Each wrapper:
 
@@ -162,15 +164,14 @@ Each wrapper:
 5. runs shared layout conformance;
 6. emits each generated file and a completion event.
 
-The same list of generators is also represented in the registry and the
-PyInstaller build script. This three-way duplication is a maintenance risk:
-adding a generator can update the UI but not the backend, or the backend but not
-the bundle.
+The Swift catalogue, backend CLI, runtime dispatch, and PyInstaller build now
+validate against or derive from the same registry, removing the former
+three-way duplication.
 
 ### 5. Two different generation architectures
 
-The UI presents one global AI-provider choice, but the backend has two materially
-different pipelines:
+The backend has two materially different pipelines, and the UI now presents
+provider controls only for the AI-assisted families:
 
 | Family | Papers | Current content pipeline | Selected provider used? |
 | --- | ---: | --- | --- |
@@ -184,8 +185,8 @@ different pipelines:
 
 The deterministic families are not necessarily inferior: a constrained template
 can be more reliable than an unconstrained LLM. The problem is product truth.
-For five families, changing from Ollama to OpenAI or Anthropic does not change the
-generated question pipeline, although the UI implies that it will.
+For five deterministic families, the UI now says “Built-in constrained
+generator” and does not require Ollama, a hosted key, or an AI model.
 
 The registry should declare generator capabilities such as:
 
@@ -519,15 +520,15 @@ Extraction result:
 
 | Measure | Result |
 | --- | ---: |
-| Source files tracked | 227 |
-| Nodes | 2,199 |
-| Edges | 6,695 |
-| Communities | 116 |
+| Source files tracked | 238 |
+| Nodes | 2,473 |
+| Edges | 6,862 |
+| Communities | 154 |
 | Missing/dangling/self/collapsed/duplicate edges | 0 |
 | Extracted vs inferred edges | 94% / 6% |
-| Estimated corpus tokens | 146,600 |
-| Average graph query tokens | 13,709 |
-| Estimated average reduction | 10.7× |
+| Estimated corpus tokens | 164,800 |
+| Average graph query tokens | 12,901 |
+| Estimated average reduction | 12.8× |
 
 Most connected architectural nodes include `build_paper_blueprint`,
 `load_builtin_paper_config`, `load_syllabus`, `GeneratedQuestion`,
