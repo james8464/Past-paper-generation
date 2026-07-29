@@ -79,6 +79,19 @@ python bridge.py generate --subject accounting_aqa --paper 2 --output ~/Download
 - `Resources/accounting/aqa/`: AQA 7127 Papers 1–2 and aggregate calibration evidence.
 - `tests/`: backend integration tests.
 
+## Architecture and quality analysis
+
+- [`docs/project-analysis/PROJECT_ANALYSIS.md`](docs/project-analysis/PROJECT_ANALYSIS.md):
+  end-to-end architecture, current evidence, fidelity limits, and macOS HIG audit.
+- [`docs/project-analysis/IMPROVEMENT_ROADMAP.md`](docs/project-analysis/IMPROVEMENT_ROADMAP.md):
+  prioritized visual, assessment-quality, difficulty, structure, and native-UI work.
+- [`graphify-out/GRAPH_REPORT.md`](graphify-out/GRAPH_REPORT.md): token-efficient
+  code communities and architectural hubs.
+- [`graphify-out/graph.html`](graphify-out/graph.html): interactive code graph.
+
+Run `graphify query "<question>"` before broad source inspection, and
+`graphify update .` after code changes.
+
 ## Privacy
 
 Ollama generation runs locally. Hosted providers are optional and require explicit consent before prompts leave the Mac. API keys are stored in Keychain. Generated PDFs are written to the selected output folder.

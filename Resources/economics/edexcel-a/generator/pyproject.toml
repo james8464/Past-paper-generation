@@ -18,5 +18,8 @@ dev = [
 [project.scripts]
 pastpapergen = "pastpapergen.cli:main"
 
+[tool.setuptools.packages.find]
+include = ["pastpapergen*"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]

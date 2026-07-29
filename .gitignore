@@ -11,6 +11,7 @@ analysis/
 **/.graphify_*
 **/graphify-out/cache/
 **/graphify-out/.graphify_*
+**/graphify-out/20??-??-??/
 .DS_Store
 .idea/
 macOS/build/
