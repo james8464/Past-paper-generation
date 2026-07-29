@@ -247,6 +247,39 @@ def _clamp_fitz_rect(rect: Any, media: Any) -> Any:
     )
 
 
+def _fitz_rect_close(actual: Any, expected: Any, tolerance: float = 0.1) -> bool:
+    return all(
+        abs(float(left) - float(right)) <= tolerance
+        for left, right in zip(actual, expected, strict=True)
+    )
+
+
+def _page_matches_box_set(
+    page: Any,
+    boxes: dict[str, Iterable[float]],
+) -> bool:
+    import fitz
+
+    media = fitz.Rect(*boxes["media"])
+    expected = {
+        "media": media,
+        "crop": _clamp_fitz_rect(fitz.Rect(*boxes["crop"]), media),
+        "trim": _clamp_fitz_rect(fitz.Rect(*boxes["trim"]), media),
+        "bleed": _clamp_fitz_rect(fitz.Rect(*boxes["bleed"]), media),
+        "art": _clamp_fitz_rect(fitz.Rect(*boxes["art"]), media),
+    }
+    return all(
+        _fitz_rect_close(actual, expected[name])
+        for name, actual in (
+            ("media", page.mediabox),
+            ("crop", page.cropbox),
+            ("trim", page.trimbox),
+            ("bleed", page.bleedbox),
+            ("art", page.artbox),
+        )
+    )
+
+
 def conform_pdf_page_boxes(
     pdf_path: Path,
     master: PaperMaster,
@@ -267,6 +300,25 @@ def conform_pdf_page_boxes(
         raise LayoutConformanceError(
             f"{pdf_path.name} has {actual_page_count} pages; expected {master.page_count}"
         )
+    master_box_sets = [
+        {
+            "media": _rect_values(page.media_box),
+            "crop": _rect_values(page.crop_box),
+            "trim": _rect_values(page.trim_box),
+            "bleed": _rect_values(page.bleed_box),
+            "art": _rect_values(page.art_box),
+        }
+        for page in master.pages
+    ]
+    if all(
+        _page_matches_box_set(
+            page,
+            master_box_sets[min(index, len(master_box_sets) - 1)],
+        )
+        for index, page in enumerate(source)
+    ):
+        source.close()
+        return
     rewritten = fitz.open()
     temporary = pdf_path.with_name(f"{pdf_path.stem}.layout-tmp{pdf_path.suffix}")
     try:
@@ -335,6 +387,15 @@ def conform_pdf_to_box_template(
         raise LayoutConformanceError(
             f"{pdf_path.name} has {actual_page_count} pages; expected {expected_page_count}"
         )
+    if all(
+        _page_matches_box_set(
+            page,
+            box_sequence[min(index, len(box_sequence) - 1)],
+        )
+        for index, page in enumerate(source)
+    ):
+        source.close()
+        return
     rewritten = fitz.open()
     temporary = pdf_path.with_name(f"{pdf_path.stem}.layout-tmp{pdf_path.suffix}")
     try:

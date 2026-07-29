@@ -88,15 +88,9 @@ def _median(values: list[float]) -> float:
     return round(statistics.median(values), 2) if values else 0.0
 
 
-def _font_inventory(document: fitz.Document) -> list[dict[str, Any]]:
-    counts: Counter[tuple[str, float]] = Counter()
-    for page in document:
-        for block in page.get_text("dict").get("blocks", []):
-            for line in block.get("lines", []):
-                for span in line.get("spans", []):
-                    text = span.get("text", "")
-                    if text.strip():
-                        counts[(span.get("font", "unknown"), round(span.get("size", 0), 1))] += len(text)
+def _font_inventory(
+    counts: Counter[tuple[str, float]],
+) -> list[dict[str, Any]]:
     return [
         {"family": family, "size": size, "characters": count}
         for (family, size), count in counts.most_common(8)
@@ -123,6 +117,10 @@ def _mark_grid(
 def _geometry_page(
     page: fitz.Page,
     allowed_diagnostics: frozenset[str],
+    *,
+    text_boxes: list[tuple[float, float, float, float]],
+    page_drawings: list[dict[str, Any]],
+    page_images: list[dict[str, Any]],
 ) -> dict[str, Any]:
     width = page.rect.width
     height = page.rect.height
@@ -130,17 +128,14 @@ def _geometry_page(
     drawing_grid = [0] * (GRID_COLUMNS * GRID_ROWS)
     image_grid = [0] * (GRID_COLUMNS * GRID_ROWS)
     content_boxes: list[tuple[float, float, float, float]] = []
-    for block in page.get_text("blocks"):
-        if not block[4].strip():
-            continue
-        bbox = tuple(float(value) for value in block[:4])
+    for bbox in text_boxes:
         content_boxes.append(bbox)
         _mark_grid(text_grid, bbox, width, height)
-    for drawing in page.get_drawings():
+    for drawing in page_drawings:
         rect = drawing.get("rect")
         if rect:
             _mark_grid(drawing_grid, tuple(rect), width, height)
-    for image in page.get_image_info(hashes=False):
+    for image in page_images:
         _mark_grid(image_grid, tuple(image["bbox"]), width, height)
     ink_grid = [
         int(text or drawing or image)
@@ -233,18 +228,50 @@ def profile(
     drawings: list[int] = []
     images: list[int] = []
     geometry: list[dict[str, Any]] = []
+    font_counts: Counter[tuple[str, float]] = Counter()
     for page in document:
         text = page.get_text("text")
         texts.append(text)
-        blocks = [block for block in page.get_text("blocks") if block[4].strip()]
-        if blocks:
-            left.append(min(block[0] for block in blocks))
-            top.append(min(block[1] for block in blocks))
-            right.append(page.rect.width - max(block[2] for block in blocks))
-            bottom.append(page.rect.height - max(block[3] for block in blocks))
-        drawings.append(len(page.get_drawings()))
+        text_boxes: list[tuple[float, float, float, float]] = []
+        for block in page.get_text("dict").get("blocks", []):
+            has_text = False
+            for line in block.get("lines", []):
+                for span in line.get("spans", []):
+                    span_text = span.get("text", "")
+                    if span_text.strip():
+                        has_text = True
+                        font_counts[
+                            (
+                                span.get("font", "unknown"),
+                                round(span.get("size", 0), 1),
+                            )
+                        ] += len(span_text)
+            if has_text:
+                text_boxes.append(
+                    tuple(float(value) for value in block["bbox"])
+                )
+        if text_boxes:
+            left.append(min(block[0] for block in text_boxes))
+            top.append(min(block[1] for block in text_boxes))
+            right.append(
+                page.rect.width - max(block[2] for block in text_boxes)
+            )
+            bottom.append(
+                page.rect.height - max(block[3] for block in text_boxes)
+            )
+        page_drawings = page.get_drawings()
+        page_images = page.get_image_info(hashes=False)
+        drawings.append(len(page_drawings))
         images.append(len(page.get_images(full=True)))
-        geometry.append(_geometry_page(page, allowed_diagnostics))
+        geometry.append(
+            _geometry_page(
+                page,
+                allowed_diagnostics,
+                text_boxes=text_boxes,
+                page_drawings=page_drawings,
+                page_images=page_images,
+            )
+        )
     full_text = "\n".join(texts)
     result = {
         "pages": len(document),
@@ -268,7 +295,7 @@ def profile(
                 for page in geometry
             ]
         ),
-        "fonts": _font_inventory(document),
+        "fonts": _font_inventory(font_counts),
         "geometry": geometry,
     }
     document.close()

@@ -98,3 +98,46 @@ def test_generated_paper_matches_contract() -> None:
     )
     assert question.expected_minutes == 60
     assert question.provenance == "built-in"
+
+
+def test_rule_metadata_is_authoritative_for_generated_questions() -> None:
+    configured = rule()
+    configured.sections[0].questions[0].assessment_objectives = {
+        "AO1": 2,
+        "AO2": 3,
+        "AO3": 2,
+        "AO4": 3,
+    }
+    configured.sections[0].questions[0].intended_demand = "high"
+    generated = paper()
+
+    validate_generated_paper(generated, configured, {"a"})
+
+    question = generated.sections[0].options[0].questions[0]
+    assert question.assessment_objectives == {
+        "AO1": 2,
+        "AO2": 3,
+        "AO3": 2,
+        "AO4": 3,
+    }
+    assert question.intended_demand == "high"
+
+
+def test_generated_paper_rejects_missing_command_word() -> None:
+    generated = paper()
+    generated.sections[0].options[0].questions[0].prompt = (
+        "Consider option 1."
+    )
+
+    with pytest.raises(ValueError, match="does not use command word"):
+        validate_generated_paper(generated, rule(), {"a"})
+
+
+def test_generated_paper_rejects_out_of_scope_syllabus_outcome() -> None:
+    generated = paper()
+    generated.sections[0].options[0].questions[0].syllabus_outcomes = [
+        "outside-specification"
+    ]
+
+    with pytest.raises(ValueError, match="out-of-scope syllabus outcomes"):
+        validate_generated_paper(generated, rule(), {"a"})

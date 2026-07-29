@@ -5,8 +5,9 @@ import re
 import time
 import urllib.error
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Protocol
 
 from cspapergen.models import MarkingGuidance, PaperBlueprint, Question, QuestionPart, Syllabus
 from cspapergen.notes import note_context_for_topic
@@ -51,18 +52,33 @@ class OllamaClient:
         raise RuntimeError(f"Ollama generation failed after {retries} attempts") from last_error
 
 
+class JSONGenerationClient(Protocol):
+    def generate_json(self, prompt: str) -> dict[str, object]: ...
+
+
 def improve_questions_with_ollama(
-    client: OllamaClient,
+    client: JSONGenerationClient,
     blueprint: PaperBlueprint,
     syllabus: Syllabus,
     progress: Callable[[str], None] | None = None,
 ) -> PaperBlueprint:
     emit = progress or (lambda _message: None)
-    improved: list[Question] = []
     total = len(blueprint.questions)
-    for index, question in enumerate(blueprint.questions, start=1):
+    improved = list(blueprint.questions)
+    supports_parallel = getattr(
+        client,
+        "supports_parallel_generation",
+        not isinstance(client, OllamaClient),
+    )
+    max_workers = max(1, min(total, 4)) if supports_parallel else 1
+
+    def _improve(index: int, question: Question) -> tuple[Question, str]:
         topic = syllabus.get_topic(question.topic_id)
-        emit(f"Generating question {index}/{total}: 0 {question.number:02d} ({topic.title})")
+        display_index = index + 1
+        emit(
+            f"Generating question {display_index}/{total}: "
+            f"0 {question.number:02d} ({topic.title})"
+        )
         try:
             payload = client.generate_json(
                 _prompt(
@@ -72,14 +88,40 @@ def improve_questions_with_ollama(
                     blueprint,
                 )
             )
-            improved.append(_merge_question(question, payload))
-            emit(f"Generated question {index}/{total}: 0 {question.number:02d}")
-        except (RuntimeError, json.JSONDecodeError, ValueError, KeyError) as error:
-            improved.append(question)
-            emit(
-                f"Question {index}/{total}: 0 {question.number:02d} "
-                f"(using validated draft after model error: {error})"
+            return (
+                _merge_question(question, payload),
+                (
+                    f"Generated question {display_index}/{total}: "
+                    f"0 {question.number:02d}"
+                ),
             )
+        except (RuntimeError, json.JSONDecodeError, ValueError, KeyError) as error:
+            return (
+                question,
+                f"Question {display_index}/{total}: 0 {question.number:02d} "
+                f"(using validated draft after model error: {error})",
+            )
+
+    completed_messages: dict[int, str] = {}
+    next_message = 0
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {
+            executor.submit(_improve, index, question): index
+            for index, question in enumerate(blueprint.questions)
+        }
+        for future in as_completed(futures):
+            index = futures[future]
+            try:
+                improved[index], completed_messages[index] = future.result()
+            except Exception as error:  # noqa: BLE001
+                completed_messages[index] = (
+                    f"Question {index + 1}/{total}: "
+                    f"0 {blueprint.questions[index].number:02d} "
+                    f"(using validated draft after unexpected model error: {error})"
+                )
+            while next_message in completed_messages:
+                emit(completed_messages.pop(next_message))
+                next_message += 1
     return blueprint.model_copy(update={"questions": improved})
 
 

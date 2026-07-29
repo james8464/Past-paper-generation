@@ -30,8 +30,8 @@ RULES = {
                     *mcqs(),
                     q("explain_trade", 6, "analysis", "Explain"),
                     q("statement_extract", 7, "calculation", "Prepare"),
-                    q("ledger_calculation", 5, "calculation", "Calculate"),
-                    q("accounting_concept", 2, "analysis", "Explain"),
+                    q("ledger_calculation", 5, "calculation", "Prepare"),
+                    q("accounting_concept", 2, "calculation", "Prepare"),
                 ],
             ),
             SectionRule(
@@ -39,8 +39,8 @@ RULES = {
                 answer_options=1, option_marks=40,
                 questions=[
                     q("company_statement", 14, "calculation", "Prepare"),
-                    q("company_adjustment", 6, "analysis", "Explain"),
-                    q("partnership_1", 6, "calculation", "Calculate"),
+                    q("company_adjustment", 6, "analysis", "Assess"),
+                    q("partnership_1", 6, "calculation", "Prepare"),
                     q("partnership_2", 8, "calculation", "Prepare"),
                     q("partnership_3", 6, "analysis", "Assess"),
                 ],
@@ -92,8 +92,8 @@ RULES = {
                 id="C", title="Strategic decision-making", option_count=1,
                 answer_options=1, option_marks=50,
                 questions=[
-                    q("decision_1", 25, "extended_response", "Evaluate"),
-                    q("decision_2", 25, "extended_response", "Evaluate"),
+                    q("decision_1", 25, "extended_response", "Advise"),
+                    q("decision_2", 25, "extended_response", "Advise"),
                 ],
             ),
         ],

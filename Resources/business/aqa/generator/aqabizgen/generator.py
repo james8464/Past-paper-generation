@@ -8,12 +8,14 @@ from Backend.Core.exam_blueprints import (
     GeneratedPaper,
     GeneratedQuestion,
     GeneratedSection,
+    MarkSchemePoint,
     PaperRule,
     QuestionRule,
     validate_generated_paper,
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
 
+from aqabizgen.financials import FinancialPosition, format_number
 from aqabizgen.syllabus import Syllabus, Topic
 
 
@@ -266,27 +268,75 @@ def _written_question(
     point = rng.choice(topic.points)
     context = f"the extracts about {business}"
     change = (values[-1] - values[0]) / values[0] * 100
-    if rule.id == "calculation":
+    structured_scheme: list[MarkSchemePoint] = []
+    financials = FinancialPosition.from_chart_values(values)
+    if rule.id == "current_ratio":
+        ratio = format_number(financials.current_ratio)
         prompt = (
-            f"Using the extract from the accounts of {business}, calculate the current "
-            "ratio. Show your working."
+            f"Calculate the current ratio for {business} for 2024. "
+            "Show your working."
         )
         scheme = [
-            "Current assets = inventories + receivables + cash;",
-            "Current liabilities = payables;",
-            "Current ratio = current assets ÷ current liabilities;",
-            "Award the final mark for a correctly expressed ratio.",
+            "Current ratio = current assets ÷ current liabilities.",
+            (
+                f"Current assets = {financials.inventories} + "
+                f"{financials.receivables} + {financials.cash} = "
+                f"£{financials.current_assets}m."
+            ),
+            (
+                f"Substitution: {financials.current_assets} ÷ "
+                f"{financials.payables}."
+            ),
+            f"Answer: {ratio}:1 (accept {ratio} without :1).",
         ]
-    elif rule.id == "explain" and rule.marks == 4:
+        structured_scheme = [
+            MarkSchemePoint(
+                text=scheme[0],
+                marks=1,
+                assessment_objective="AO1",
+            ),
+            *[
+                MarkSchemePoint(
+                    text=text,
+                    marks=1,
+                    assessment_objective="AO2",
+                )
+                for text in scheme[1:]
+            ],
+        ]
+    elif rule.id == "roce_calculation":
+        operating_profit = format_number(
+            financials.operating_profit_at_twelve_percent
+        )
         prompt = (
             f"{business} achieved a Return on Capital Employed (ROCE) of 12%. "
-            "Calculate its operating profit. Show your working."
+            "Using the extract from its statement of financial position, calculate "
+            "its operating profit. Show your working."
         )
         scheme = [
-            "Capital employed = total equity + non-current liabilities;",
-            "Substitute the supplied values into ROCE = operating profit ÷ capital employed × 100;",
-            "Rearrange to calculate operating profit;",
-            "Award the final mark for the correct figure and unit.",
+            "ROCE = operating profit ÷ capital employed × 100.",
+            (
+                f"Capital employed = {financials.total_equity} + "
+                f"{financials.non_current_liabilities} = "
+                f"£{financials.capital_employed}m."
+            ),
+            f"Substitution and rearrangement: 12 × {financials.capital_employed} ÷ 100.",
+            f"Operating profit = £{operating_profit}m.",
+        ]
+        structured_scheme = [
+            MarkSchemePoint(
+                text=scheme[0],
+                marks=1,
+                assessment_objective="AO1",
+            ),
+            *[
+                MarkSchemePoint(
+                    text=text,
+                    marks=1,
+                    assessment_objective="AO2",
+                )
+                for text in scheme[1:]
+            ],
         ]
     elif rule.id == "analysis_1" and rule.marks == 9:
         prompt = (
@@ -363,6 +413,7 @@ def _written_question(
         topic_id=topic.id,
         prompt=prompt,
         mark_scheme=scheme,
+        structured_mark_scheme=structured_scheme,
     )
 
 
@@ -495,4 +546,6 @@ def _instructions(paper_id: str, section_id: str) -> str:
         return "Answer all 15 questions. Select one answer for each question."
     if paper_id == "paper_1" and section_id in {"C", "D"}:
         return "Answer one question from this section."
+    if paper_id == "paper_1" and section_id == "B":
+        return "Answer all questions in this section."
     return "Answer all questions in this section using the case evidence."

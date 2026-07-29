@@ -35,6 +35,7 @@ from Backend.Core.fonts import register_fonts
 from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.reportlab_theme import themed_table_class
 from Backend.Core.mark_scheme_front_matter import aqa_front_matter_pages
+from aqabizgen.financials import FinancialPosition
 
 
 AQA_A4 = (595.32, 841.92)
@@ -161,37 +162,27 @@ def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
         ],
         _calculation_marking_page(
             question_16,
-            [
-                "Current assets = inventories + receivables + cash.",
-                "Current liabilities = payables.",
-                "Current ratio = current assets ÷ current liabilities.",
-                "Accept a correctly rounded ratio with or without :1.",
-            ],
+            include_question=False,
         ),
         _calculation_marking_page(
             question_17,
-            [
-                "Capital employed = total equity + non-current liabilities.",
-                "ROCE = operating profit ÷ capital employed × 100.",
-                "Operating profit = ROCE × capital employed ÷ 100.",
-                "Credit the correct figure with the £m unit.",
-            ],
+            include_question=True,
         ),
         [
             _restructuring_table(section_b.options[0]),
             Spacer(1, 5 * mm),
             *_question_block(question_18),
-            *_nine_mark_levels(),
+            *_nine_mark_levels(question_18),
         ],
         _indicative_content_page(question_18, "Question 18 marking guidance"),
         [
             *_question_block(question_19),
-            *_nine_mark_levels(),
+            *_nine_mark_levels(question_19),
         ],
         _indicative_content_page(question_19, "Question 19 marking guidance"),
         [
             *_question_block(question_20),
-            *_nine_mark_levels(),
+            *_nine_mark_levels(question_20),
             Spacer(1, 5 * mm),
             *_indicative_points(question_20),
         ],
@@ -199,25 +190,25 @@ def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
             Paragraph("Section C", STYLES["kicker"]),
             Spacer(1, 4 * mm),
             *_question_block(question_21),
-            *_twenty_five_mark_levels(high_levels=True),
+            *_twenty_five_mark_levels(question_21, high_levels=True),
         ],
         _twenty_five_mark_continuation(question_21, "Lower-level descriptors"),
         _indicative_content_page(question_21, "Question 21 indicative content"),
         [
             *_question_block(question_22),
-            *_twenty_five_mark_levels(high_levels=True),
+            *_twenty_five_mark_levels(question_22, high_levels=True),
         ],
         _twenty_five_mark_continuation(question_22, "Question 22 marking guidance"),
         [
             Paragraph("Section D", STYLES["kicker"]),
             Spacer(1, 4 * mm),
             *_question_block(question_23),
-            *_twenty_five_mark_levels(high_levels=True),
+            *_twenty_five_mark_levels(question_23, high_levels=True),
         ],
         _twenty_five_mark_continuation(question_23, "Question 23 marking guidance"),
         [
             *_question_block(question_24),
-            *_twenty_five_mark_levels(high_levels=True),
+            *_twenty_five_mark_levels(question_24, high_levels=True),
         ],
         _twenty_five_mark_continuation(question_24, "Lower-level descriptors"),
         [
@@ -269,40 +260,74 @@ def _objective_test_answers(
 
 def _calculation_marking_page(
     question: GeneratedQuestion,
-    points: list[str],
+    *,
+    include_question: bool,
 ) -> list[Flowable]:
-    rows: list[list[object]] = [["Marking guidance", "Marks"]]
-    rows.extend(
+    credited_points = [
+        point for point in question.structured_mark_scheme if point.marks
+    ]
+    answer = credited_points[-1].text.replace("Answer:", "Answer =")
+    result: list[Flowable] = []
+    if include_question:
+        result.extend(_question_block(question))
+    result.extend(
         [
-            [Paragraph(point, STYLES["body"]), "1"]
-            for point in points
+            Paragraph(_ao_summary(question), STYLES["small"]),
+            Spacer(1, 5 * mm),
+            Paragraph(
+                f"{answer} ({question.marks} marks)",
+                STYLES["body"],
+            ),
+            Spacer(1, 5 * mm),
+            Paragraph("Broken down as follows:", STYLES["body"]),
+            Spacer(1, 4 * mm),
         ]
     )
-    table = Table(rows, colWidths=[148 * mm, 19 * mm], repeatRows=1)
-    table.setStyle(
-        TableStyle(
+    for point in credited_points[:-1]:
+        mark_label = "mark" if point.marks == 1 else "marks"
+        result.extend(
             [
-                ("GRID", (0, 0), (-1, -1), 0.45, colors.grey),
-                ("BACKGROUND", (0, 0), (-1, 0), GREY),
-                ("FONT", (0, 0), (-1, 0), FONT_BOLD),
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                ("ALIGN", (1, 1), (1, -1), "CENTER"),
-                ("PADDING", (0, 0), (-1, -1), 6),
+                Paragraph(
+                    f"Award {point.marks} {mark_label}: {point.text}",
+                    STYLES["body"],
+                ),
+                Spacer(1, 4 * mm),
             ]
         )
+    result.extend(
+        [
+            Paragraph(
+                "Award the final mark for the correct answer. Accept a "
+                "consistently rounded equivalent with the correct unit or ratio "
+                "notation.",
+                STYLES["body"],
+            ),
+            Spacer(1, 5 * mm),
+            Paragraph(
+                "NB. Own figure rule applies where the method is valid but an "
+                "arithmetic error is carried through. If there is no creditworthy "
+                "calculation, award up to 1 mark for the correct formula.",
+                STYLES["body"],
+            ),
+        ]
     )
-    return [
-        *_question_block(question),
-        Paragraph(
-            "Marks for this question: AO1 = 1 and AO2 = 3",
-            STYLES["small"],
-        ),
-        Spacer(1, 5 * mm),
-        table,
+    return result
+
+
+def _ao_summary(question: GeneratedQuestion) -> str:
+    parts = [
+        f"{objective} = {marks}"
+        for objective, marks in question.assessment_objectives.items()
+        if marks
     ]
+    if len(parts) > 1:
+        allocation = ", ".join(parts[:-1]) + f" and {parts[-1]}"
+    else:
+        allocation = parts[0]
+    return f"Marks for this question: {allocation}"
 
 
-def _nine_mark_levels() -> list[Flowable]:
+def _nine_mark_levels(question: GeneratedQuestion) -> list[Flowable]:
     rows = [
         ["Level", "Descriptor", "Marks"],
         [
@@ -352,16 +377,14 @@ def _nine_mark_levels() -> list[Flowable]:
         )
     )
     return [
-        Paragraph(
-            "Marks for this question: AO1 = 2, AO2 = 3 and AO3 = 4",
-            STYLES["small"],
-        ),
+        Paragraph(_ao_summary(question), STYLES["small"]),
         Spacer(1, 4 * mm),
         table,
     ]
 
 
 def _twenty_five_mark_levels(
+    question: GeneratedQuestion,
     *,
     high_levels: bool,
 ) -> list[Flowable]:
@@ -409,10 +432,7 @@ def _twenty_five_mark_levels(
         )
     )
     return [
-        Paragraph(
-            "25-mark evaluative question: AO1 = 4, AO2 = 4, AO3 = 9 and AO4 = 8",
-            STYLES["small"],
-        ),
+        Paragraph(_ao_summary(question), STYLES["small"]),
         Spacer(1, 4 * mm),
         table,
     ]
@@ -453,7 +473,7 @@ def _twenty_five_mark_continuation(
     return [
         Paragraph(heading, STYLES["heading"]),
         Spacer(1, 4 * mm),
-        *_twenty_five_mark_levels(high_levels=False),
+        *_twenty_five_mark_levels(question, high_levels=False),
         Spacer(1, 6 * mm),
         *_indicative_points(question, limit=8),
     ]
@@ -533,10 +553,10 @@ def _assessment_objectives_page(
 ) -> list[Flowable]:
     rows = [["Question", "Marks", "Assessment focus"]]
     for question in questions:
-        focus = (
-            "AO1, AO2, AO3 and AO4"
-            if question.marks >= 9
-            else "AO1 and AO2"
+        focus = ", ".join(
+            f"{objective}: {marks}"
+            for objective, marks in question.assessment_objectives.items()
+            if marks
         )
         rows.append([question.number, str(question.marks), focus])
     table = Table(rows, colWidths=[38 * mm, 25 * mm, 104 * mm], repeatRows=1)
@@ -593,13 +613,18 @@ def _paper_one_pages(paper: GeneratedPaper) -> list[Flowable]:
         [
             [
                 *_intro(section_b),
+                Paragraph(
+                    "Questions 16 and 17 are based on the data below.",
+                    STYLES["body"],
+                ),
+                Spacer(1, 3 * mm),
                 _financial_position_extract(case),
                 Spacer(1, 4 * mm),
                 *_question_block(question_16),
                 Paragraph("Answer", STYLES["small"]),
-                AnswerLines(2),
+                AnswerLines(1),
                 Paragraph("Working", STYLES["small"]),
-                AnswerLines(5),
+                AnswerLines(7),
             ],
             [
                 *_question_block(question_17),
@@ -811,38 +836,38 @@ def _choice_prompts(section) -> list[Flowable]:
 
 
 def _financial_position_extract(option: GeneratedOption) -> Table:
-    values = [int(round(value)) for value in option.chart_values]
-    inventories = values[0]
-    receivables = int(values[1] * 0.42)
-    cash = int(values[2] * 0.35)
-    payables = int(values[3] * 0.66)
+    financials = FinancialPosition.from_chart_values(option.chart_values)
     rows = [
-        ["Extract from statement of financial position", "£m", "£m"],
-        ["Non-current assets", "", f"{int(values[4] * 3.35)}"],
-        ["Inventories", f"{inventories}", ""],
-        ["Receivables", f"{receivables}", ""],
-        ["Cash", f"{cash}", ""],
-        ["Payables", f"({payables})", ""],
+        [f"Extract from accounts of {option.title}, 2024", "", ""],
+        ["", "£m", "£m"],
+        ["Non-current assets", "", f"{financials.non_current_assets}"],
+        ["", "", ""],
+        ["Inventories", f"{financials.inventories}", ""],
+        ["Receivables", f"{financials.receivables}", ""],
+        ["Cash", f"{financials.cash}", ""],
+        ["", "", ""],
+        ["Payables", f"{financials.payables}", ""],
         [
             "Net current assets",
             "",
-            f"{inventories + receivables + cash - payables}",
+            f"{financials.net_current_assets}",
         ],
-        ["Non-current liabilities", "", f"{int(values[2] * 2.3)}"],
-        ["Total equity", "", f"{int(values[1] * 1.9)}"],
+        ["", "", ""],
+        ["Non-current liabilities", "", f"{financials.non_current_liabilities}"],
+        ["Total equity", "", f"{financials.total_equity}"],
     ]
     table = Table(
         rows,
-        colWidths=[92 * mm, 25 * mm, 25 * mm],
-        rowHeights=[9 * mm, *([8 * mm] * 8)],
+        colWidths=[50 * mm, 21 * mm, 21 * mm],
+        rowHeights=[9 * mm, *([8 * mm] * 12)],
         style=TableStyle(
             [
-                ("SPAN", (0, 0), (0, 0)),
-                ("FONT", (0, 0), (-1, 0), FONT_BOLD),
-                ("ALIGN", (1, 0), (-1, -1), "RIGHT"),
-                ("LINEABOVE", (0, 0), (-1, 0), 0.5, INK),
-                ("LINEBELOW", (0, 0), (-1, 0), 0.5, INK),
-                ("LINEBELOW", (1, -1), (-1, -1), 0.5, INK),
+                ("SPAN", (0, 0), (-1, 0)),
+                ("FONT", (0, 0), (-1, 1), FONT_BOLD),
+                ("ALIGN", (0, 0), (-1, 1), "CENTER"),
+                ("ALIGN", (1, 2), (-1, -1), "RIGHT"),
+                ("BOX", (1, 1), (-1, 1), 0.5, INK),
+                ("GRID", (0, 2), (-1, -1), 0.5, INK),
                 ("PADDING", (0, 0), (-1, -1), 4),
             ]
         ),
@@ -1274,12 +1299,13 @@ def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
 
 
 def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
+    top_margin = 25 * mm if kind == "Mark scheme" else 19 * mm
     doc = BaseDocTemplate(
         str(path),
         pagesize=AQA_A4,
         leftMargin=18 * mm,
         rightMargin=17 * mm,
-        topMargin=19 * mm,
+        topMargin=top_margin,
         bottomMargin=18 * mm,
         title=f"{paper.paper_code} {paper.title} — {kind}",
         author="Paper creator",
@@ -1299,6 +1325,30 @@ def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
 
 def _chrome(canvas, doc, code: str, kind: str) -> None:
     canvas.saveState()
+    if kind == "Mark scheme":
+        if doc.page == 1:
+            canvas.restoreState()
+            return
+        canvas.setStrokeColor(INK)
+        canvas.setLineWidth(0.45)
+        canvas.line(
+            15 * mm,
+            PAGE_HEIGHT - 24 * mm,
+            PAGE_WIDTH - 15 * mm,
+            PAGE_HEIGHT - 24 * mm,
+        )
+        canvas.line(15 * mm, 14 * mm, PAGE_WIDTH - 15 * mm, 14 * mm)
+        canvas.setFillColor(INK)
+        canvas.setFont(FONT, 9.5)
+        canvas.drawCentredString(
+            PAGE_WIDTH / 2,
+            PAGE_HEIGHT - 16 * mm,
+            f"MARK SCHEME - A-LEVEL BUSINESS - {code} - PRACTICE",
+        )
+        canvas.setFont(FONT, 7.5)
+        canvas.drawRightString(PAGE_WIDTH - 17 * mm, 9 * mm, str(doc.page))
+        canvas.restoreState()
+        return
     if kind == "Question paper" and doc.page > 1:
         canvas.setStrokeColor(colors.HexColor("#666666"))
         canvas.setLineWidth(0.45)
@@ -1378,7 +1428,7 @@ STYLES = {
     "title": ParagraphStyle("title", parent=_base["Title"], fontName=FONT_BOLD, fontSize=23, leading=27),
     "subtitle": ParagraphStyle("subtitle", parent=_base["Heading2"], fontName=FONT, fontSize=14, leading=18),
     "banner": ParagraphStyle("banner", parent=_base["Heading2"], fontName=FONT_BOLD, fontSize=12, leading=15, textColor=colors.white),
-    "instruction": ParagraphStyle("instruction", parent=_base["BodyText"], fontName=FONT_BOLD, fontSize=11, leading=14),
+    "instruction": ParagraphStyle("instruction", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14),
     "option": ParagraphStyle("option", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=11.5, leading=15),
     "extract": ParagraphStyle("extract", parent=_base["BodyText"], fontName=FONT, fontSize=9.3, leading=12, borderWidth=0.4, borderColor=colors.grey, borderPadding=5),
     "marks": ParagraphStyle("marks", parent=_base["BodyText"], fontName=FONT_BOLD, fontSize=9.5, leading=13, alignment=TA_RIGHT),

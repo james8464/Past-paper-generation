@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import hashlib
 import json
 from pathlib import Path
 
@@ -131,3 +132,23 @@ def test_box_conformance_preserves_vector_drawings(tmp_path: Path) -> None:
         assert document.metadata["title"] == "Metadata survives conformance"
     finally:
         document.close()
+
+
+def test_box_conformance_is_no_op_when_boxes_already_match(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "already-conformant.pdf"
+    _sample_pdf(path)
+    boxes = {
+        "media": [0, 0, 595.32, 841.92],
+        "crop": [0, 0, 595.32, 841.92],
+        "trim": [0, 0, 595.32, 841.92],
+        "bleed": [0, 0, 595.32, 841.92],
+        "art": [0, 0, 595.32, 841.92],
+    }
+    conform_pdf_to_box_template(path, boxes)
+    first_digest = hashlib.sha256(path.read_bytes()).hexdigest()
+
+    conform_pdf_to_box_template(path, boxes)
+
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == first_digest

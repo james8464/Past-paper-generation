@@ -199,7 +199,12 @@ def generate_questions_with_ollama(
     # Ollama serves one generation sequence per loaded local model. Sending several
     # long exam prompts at once only queues work inside the server and makes the
     # client-side requests time out. Hosted providers can still run concurrently.
-    max_workers = 1 if isinstance(client, OllamaClient) else min(total, 4)
+    supports_parallel = getattr(
+        client,
+        "supports_parallel_generation",
+        not isinstance(client, OllamaClient),
+    )
+    max_workers = max(1, min(total, 4)) if supports_parallel else 1
 
     def _build_task(question_index: int, question: QuestionBlueprint) -> str:
         index = question_index + 1

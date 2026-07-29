@@ -84,7 +84,7 @@ def _programming_prompt(point: str, evidence: str) -> str:
     value = point.casefold()
     if any(term in value for term in ("processor components", "fetch-decode", "processor performance")):
         return (
-            "Produce a clearly labelled technical design showing how an input request is "
+            "Develop a clearly labelled technical design showing how an input request is "
             "processed and stored. Include the processor, main memory, relevant registers, "
             "address/data/control buses, input and output, and the direction of each transfer."
         )
@@ -207,7 +207,8 @@ def _question(
             )
         else:
             prompt = (
-                f"Describe {rule.marks} distinct features of {point} that should be "
+                f"{rule.command_word} {rule.marks} distinct features of {point} "
+                "that should be "
                 f"considered when developing {evidence}, with particular reference to {focus}."
             )
         scheme = [
@@ -225,8 +226,8 @@ def _question(
     elif rule.kind == "calculation":
         value = rng.randint(18, 238)
         prompt = (
-            f"Convert the denary value {value} "
-            "to 8-bit unsigned binary and hexadecimal. Show each stage required by "
+            f"Calculate the 8-bit unsigned binary and hexadecimal representations "
+            f"of the denary value {value}. Show each conversion stage required by "
             "the number of marks available."
         )
         scheme = [

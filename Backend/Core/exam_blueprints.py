@@ -187,8 +187,7 @@ def validate_generated_paper(
             ):
                 _hydrate_assessment_metadata(
                     question,
-                    duration_minutes=paper.duration_minutes,
-                    total_marks=paper.total_marks,
+                    question_rule=question_rule,
                 )
                 expected = (
                     question_rule.id,
@@ -216,6 +215,14 @@ def validate_generated_paper(
                     )
                 if question.topic_id not in rule.allowed_topic_ids:
                     raise ValueError(f"question {question.number} uses an out-of-scope topic")
+                unknown_outcomes = (
+                    set(question.syllabus_outcomes) - rule.allowed_topic_ids
+                )
+                if unknown_outcomes:
+                    raise ValueError(
+                        f"question {question.number} uses out-of-scope syllabus "
+                        f"outcomes: {sorted(unknown_outcomes)}"
+                    )
                 prompt_key = " ".join(question.prompt.casefold().split())
                 stimulus_key = " ".join(
                     " ".join(option.stimulus).casefold().split()
@@ -224,6 +231,17 @@ def validate_generated_paper(
                 if not prompt_key or uniqueness_key in seen_prompts:
                     raise ValueError(f"question {question.number} is empty or duplicated")
                 seen_prompts.add(uniqueness_key)
+                if (
+                    question.kind != "multiple_choice"
+                    and not _prompt_uses_command_word(
+                        question.prompt,
+                        question_rule.command_word,
+                    )
+                ):
+                    raise ValueError(
+                        f"question {question.number} prompt does not use command "
+                        f"word {question_rule.command_word!r}"
+                    )
                 if not question.mark_scheme:
                     raise ValueError(f"question {question.number} has no mark scheme")
                 if sum(question.assessment_objectives.values()) != question.marks:
@@ -263,19 +281,19 @@ def validate_generated_paper(
 def _hydrate_assessment_metadata(
     question: GeneratedQuestion,
     *,
-    duration_minutes: int,
-    total_marks: int,
+    question_rule: QuestionRule,
 ) -> None:
     if not question.syllabus_outcomes:
         question.syllabus_outcomes = [question.topic_id]
     if not question.assessment_objectives:
-        question.assessment_objectives = _assessment_objectives(question)
-    if question.expected_minutes is None:
-        question.expected_minutes = round(
-            duration_minutes * question.marks / total_marks,
-            2,
+        question.assessment_objectives = dict(
+            question_rule.assessment_objectives
         )
-    question.intended_demand = _intended_demand(question)
+    if question.expected_minutes is None:
+        question.expected_minutes = question_rule.expected_minutes
+    question.intended_demand = (
+        question_rule.intended_demand or question.intended_demand
+    )
     if any(
         point.casefold().startswith(("level ", "levels-based"))
         for point in question.mark_scheme
@@ -285,12 +303,17 @@ def _hydrate_assessment_metadata(
         question.structured_mark_scheme = _structured_scheme(question)
 
 
-def _assessment_objectives(question: GeneratedQuestion) -> dict[str, int]:
-    return _objective_allocation(
-        marks=question.marks,
-        kind=question.kind,
-        command_word=question.command_word,
-    )
+def _prompt_uses_command_word(prompt: str, command_word: str) -> bool:
+    aliases = {
+        "analyse": {"analyse", "analyze"},
+        "analyze": {"analyse", "analyze"},
+    }
+    expected = aliases.get(command_word.casefold(), {command_word.casefold()})
+    words = {
+        word.strip(".,:;!?()[]{}'\"").casefold()
+        for word in prompt.split()
+    }
+    return bool(words & expected)
 
 
 def _objective_allocation(
@@ -317,15 +340,6 @@ def _objective_allocation(
         ao1 = (marks + 1) // 2
         return {"AO1": ao1, "AO2": marks - ao1}
     return {"AO1": marks}
-
-
-def _intended_demand(
-    question: GeneratedQuestion,
-) -> Literal["low", "standard", "high"]:
-    return _demand_band(
-        marks=question.marks,
-        command_word=question.command_word,
-    )
 
 
 def _demand_band(

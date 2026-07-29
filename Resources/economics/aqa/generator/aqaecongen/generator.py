@@ -295,8 +295,8 @@ def _written_question(
         ]
     elif rule.kind == "data_interpretation":
         prompt = (
-            f"To what extent do the data in the source insert suggest that outcomes in "
-            f"{context_name} have improved?"
+            "Assess the extent to which the data in the source insert suggest "
+            f"that outcomes in {context_name} have improved."
         )
         scheme = [
             "Accurate comparison of at least two relevant indicators from the source insert.",
@@ -345,8 +345,9 @@ def _written_question(
         ]
     else:
         prompt = (
-            f"Evaluate the view that changes in {point} are the most effective way to improve "
-            f"outcomes in {context_name}. Use {context} and your economic knowledge."
+            f"{rule.command_word} the view that changes in {point} are the most "
+            f"effective way to improve outcomes in {context_name}. Use {context} "
+            "and your economic knowledge."
         )
         scheme = [
             f"Accurate knowledge and application of {topic.title}.",

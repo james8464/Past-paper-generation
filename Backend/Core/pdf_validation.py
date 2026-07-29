@@ -48,22 +48,27 @@ def validate_pdf_for_release(
                 raise ValueError(
                     f"{path.name} page {page_index} contains an annotation"
                 )
-            page_has_content = False
+            page_has_text = False
             for block in page.get_text("dict").get("blocks", []):
                 for line in block.get("lines", []):
                     for span in line.get("spans", []):
                         if span.get("text", "").strip():
-                            page_has_content = True
+                            page_has_text = True
                             fonts.add(str(span.get("font", "")))
-            drawings = page.get_drawings()
-            page_has_content = page_has_content or bool(drawings)
-            for image in page.get_image_info(hashes=False):
+            image_info = page.get_image_info(hashes=False)
+            for image in image_info:
                 bbox = fitz.Rect(image["bbox"])
                 if bbox.width <= 0 or bbox.height <= 0:
                     continue
                 horizontal = image["width"] / (bbox.width / 72)
                 vertical = image["height"] / (bbox.height / 72)
                 image_dpi.append(min(horizontal, vertical))
+            page_has_content = page_has_text or bool(image_info)
+            # Vector drawing extraction is substantially more expensive on dense
+            # papers. It is only needed to distinguish a vector-only page from an
+            # actually empty one.
+            if not page_has_content:
+                page_has_content = bool(page.get_drawings())
             if not page_has_content:
                 raise ValueError(
                     f"{path.name} page {page_index} is unexpectedly empty"

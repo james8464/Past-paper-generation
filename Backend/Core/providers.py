@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import threading
 import time
 from typing import Any
 
@@ -13,6 +14,15 @@ class HostedLLMClient:
         self.provider = provider
         self.model = model
         self.api_key = api_key
+        self._apple_model: Any | None = None
+        self._apple_tokenizer: Any | None = None
+        self._apple_lock = threading.Lock()
+
+    @property
+    def supports_parallel_generation(self) -> bool:
+        """Whether independent prompts may safely share this client."""
+
+        return self.provider in {"openai", "anthropic"}
 
     def generate_json(self, prompt: str) -> dict[str, object]:
         if self.provider == "openai":
@@ -31,8 +41,19 @@ class HostedLLMClient:
                 "Apple MLX provider requires the 'mlx-lm' package.\n"
                 "Install it with: pip install mlx-lm"
             ) from None
-        model, tokenizer = load(self.model)
-        response = generate(model, tokenizer, prompt=prompt, max_tokens=4096, verbose=False)
+        # MLX model loading is expensive and can consume several gigabytes. Keep one
+        # model per generation client, and serialize use because mlx-lm generation
+        # mutates shared inference state.
+        with self._apple_lock:
+            if self._apple_model is None or self._apple_tokenizer is None:
+                self._apple_model, self._apple_tokenizer = load(self.model)
+            response = generate(
+                self._apple_model,
+                self._apple_tokenizer,
+                prompt=prompt,
+                max_tokens=4096,
+                verbose=False,
+            )
         return parse_json_object(response)
 
     def _openai(self, prompt: str) -> dict[str, object]:

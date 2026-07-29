@@ -1,10 +1,13 @@
 import random
+import threading
+import time
 
 from cspapergen.generator import (
     PAPER2_QUESTION_PLAN,
     QUESTION_TOTALS,
     build_paper2_blueprint,
 )
+from cspapergen.ollama_client import improve_questions_with_ollama
 from cspapergen.question_bank import QUESTION_STYLES, STYLE_IDS, build_question
 from cspapergen.syllabus import load_syllabus
 
@@ -119,3 +122,33 @@ def test_new_visual_styles_have_renderable_stimuli():
     assert truth_question.stimulus.headers == ["A", "B", "C", "X"]
     assert network_question.stimulus is not None
     assert network_question.stimulus.kind == "network"
+
+
+def test_hosted_question_generation_runs_independent_prompts_concurrently():
+    class HostedTestClient:
+        supports_parallel_generation = True
+
+        def __init__(self) -> None:
+            self.active = 0
+            self.maximum_active = 0
+            self.lock = threading.Lock()
+
+        def generate_json(self, _prompt: str) -> dict[str, object]:
+            with self.lock:
+                self.active += 1
+                self.maximum_active = max(self.maximum_active, self.active)
+            time.sleep(0.01)
+            with self.lock:
+                self.active -= 1
+            return {}
+
+    syllabus = load_syllabus()
+    blueprint = build_paper2_blueprint(syllabus, seed=7)
+    client = HostedTestClient()
+
+    improved = improve_questions_with_ollama(client, blueprint, syllabus)
+
+    assert client.maximum_active == 4
+    assert [question.number for question in improved.questions] == [
+        question.number for question in blueprint.questions
+    ]
