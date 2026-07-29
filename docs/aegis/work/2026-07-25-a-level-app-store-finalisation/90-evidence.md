@@ -1,5 +1,36 @@
 # Evidence Bundle Draft
 
+## Fixed-layout finalisation pass — 27 July 2026
+
+- Coordinate-preserving layout masters were built for all 18 supported papers
+  and their mark schemes. The shipped registry contains numeric page boxes only;
+  reference text, artwork, logos and PDFs remain excluded.
+- Every supported question paper matches its current reference page count and
+  page-box sequence.
+- OCR mark schemes preserve the two-page portrait introduction followed by
+  landscape tables.
+- OCR H446/01 now has the current ten top-level questions. H446/01 and H446/02
+  match every current top-level question start page; their generated mark
+  schemes match the current 36/27-page counts.
+- Edexcel Papers 2 and 3 render to 36 pages. Paper 3 ends with three labelled
+  blank pages.
+- AQA Accounting, Business and Economics mark-scheme question content starts
+  on the same front-matter page as the current reference families.
+- Full Python suite: 239 passed, 2 skipped.
+- Swift suite: 11 passed.
+- Sandboxed App Store Release preflight passed with warnings-as-errors and
+  strict concurrency.
+- Release bundle: 120 MB; sandbox, user-selected read/write and outbound network
+  entitlements only.
+- The Release bundle contains the 610 KB numeric layout registry and no reference
+  corpus or official paper.
+- The packaged Release backend generated all 18 variants successfully: 18/18
+  completion events and 43 PDFs.
+- The strict 18-paper structural/visual audit is retained under ignored
+  development output. Its aggregate score is 66.1%; exact visual identity is not
+  claimed. Independent subject review, psychometric equivalence and App Store
+  upload review remain outstanding.
+
 ## Retained verified evidence
 
 - Python suite: 206 passed, 2 skipped.
@@ -8,7 +39,7 @@
   `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer make preflight-app-store`
   succeeded.
 - Release app:
-  `macOS/build/DerivedData/CODEX/Build/Products/Release/PastPaperCreator.app`.
+  `macOS/build/DerivedData/CODEX/Build/Products/Release/PaperCreator.app`.
 - Local code-signature verification passed.
 - App and bundled helper are arm64.
 - Bundled helper generated Economics and Computer Science packages in dry-run.

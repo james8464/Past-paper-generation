@@ -71,8 +71,8 @@ Required:
 - `Resources/layout-profiles.json`
 - `Backend/Core/generation.py`
 - `Backend/Core/cli.py`
-- `macOS/PastPaperCreator/AppModels.swift`
-- `macOS/PastPaperCreator/AppViewModel.swift`
+- `macOS/PaperCreator/AppModels.swift`
+- `macOS/PaperCreator/AppViewModel.swift`
 - generator tests under both current resource packs
 - App Store build/preflight scripts and entitlements
 - current Git worktree status
@@ -118,4 +118,3 @@ a public product claim and therefore requires complete evidence.
   unsupported readiness, or weakens an existing verified combination.
 - Completion evidence: every advertised paper has a passing machine-readable
   evidence record plus final release preflight.
-
