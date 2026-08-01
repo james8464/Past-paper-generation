@@ -37,8 +37,8 @@ final class BackendClient: @unchecked Sendable {
     func run(
         arguments: [String],
         environment: [String: String] = [:],
-        onEvent: @escaping @MainActor (BackendEvent) -> Void,
-        onFinish: @escaping @MainActor (Result<Int32, Error>) -> Void
+        onEvent: @escaping @Sendable @MainActor (BackendEvent) -> Void,
+        onFinish: @escaping @Sendable @MainActor (Result<Int32, Error>) -> Void
     ) throws -> Process {
         let launch = try launchConfiguration(arguments: arguments)
         let process = Process()
@@ -153,7 +153,7 @@ final class BackendClient: @unchecked Sendable {
     @MainActor
     private static func emitLine(
         _ line: String,
-        onEvent: @escaping @MainActor (BackendEvent) -> Void
+        onEvent: @escaping @Sendable @MainActor (BackendEvent) -> Void
     ) {
         let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
