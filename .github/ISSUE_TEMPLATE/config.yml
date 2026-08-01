@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Responsible disclosure
+    url: https://github.com/james8464/Past-paper-generation/security/advisories/new
+    about: Report security vulnerabilities privately.

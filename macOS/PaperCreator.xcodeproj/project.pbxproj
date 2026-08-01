@@ -33,6 +33,8 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				PaperCreatorBackend.entitlements,
+				PaperCreatorDirect.entitlements,
 				PaperCreator.entitlements,
 			);
 			target = F83C267BD749B4DE60F9E7E5 /* PaperCreator */;

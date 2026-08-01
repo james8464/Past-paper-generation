@@ -100,9 +100,18 @@ final class BackendClient: @unchecked Sendable {
             process.standardError = errorPipe
 
             try process.run()
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
+
+            // Drain both pipes while the helper is running. Reading them one after
+            // another can deadlock if the helper fills stderr before stdout closes.
+            let outputTask = Task.detached {
+                pipe.fileHandleForReading.readDataToEndOfFile()
+            }
+            let errorTask = Task.detached {
+                errorPipe.fileHandleForReading.readDataToEndOfFile()
+            }
             process.waitUntilExit()
+            let data = await outputTask.value
+            let errorData = await errorTask.value
 
             let output = String(data: data, encoding: .utf8) ?? ""
             let events = output

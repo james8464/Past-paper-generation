@@ -90,10 +90,28 @@ find "$BACKEND_DIR/_internal/Resources" -type f -exec chmod 0644 {} +
 xattr -cr "$BACKEND_DIR"
 
 SIGN_IDENTITY="${EXPANDED_CODE_SIGN_IDENTITY:--}"
+HELPER_EXECUTABLE="$BACKEND_DIR/PaperCreatorBackend"
+HELPER_ENTITLEMENTS="$ROOT_DIR/macOS/PaperCreator/PaperCreatorBackend.entitlements"
 find "$BACKEND_DIR" -type f -print0 |
   while IFS= read -r -d '' file; do
     if /usr/bin/file -b "$file" | grep -q 'Mach-O'; then
-      /usr/bin/codesign --force --sign "$SIGN_IDENTITY" --timestamp=none "$file"
+      codesign_args=(
+        --force
+        --sign "$SIGN_IDENTITY"
+        --timestamp=none
+      )
+      # Harden distribution helpers. Ad-hoc direct builds cannot satisfy
+      # hardened-runtime library validation for PyInstaller's nested dylibs.
+      if [[ "${DISTRIBUTION_MODE:-direct}" == "app-store" || "$SIGN_IDENTITY" != "-" ]]; then
+        codesign_args+=(--options runtime)
+      fi
+      if [[ "${DISTRIBUTION_MODE:-direct}" == "app-store" && "$file" == "$HELPER_EXECUTABLE" ]]; then
+        codesign_args+=(
+          --identifier com.jamesdurup.PaperCreator.PaperCreatorBackend
+          --entitlements "$HELPER_ENTITLEMENTS"
+        )
+      fi
+      /usr/bin/codesign "${codesign_args[@]}" "$file"
     fi
   done
 

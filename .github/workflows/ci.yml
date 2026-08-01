@@ -1,0 +1,65 @@
+name: Quality gates
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest \
+            -e Resources/accounting/aqa/generator \
+            -e Resources/business/aqa/generator \
+            -e Resources/computer-science/aqa/generator \
+            -e Resources/computer-science/ocr/generator \
+            -e Resources/economics/aqa/generator \
+            -e Resources/economics/edexcel-a/generator \
+            -e Resources/economics/ocr/generator
+      - name: Run backend tests
+        run: python -m pytest -q
+
+  macos:
+    name: macOS release and tests
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app
+      - name: Install project tools
+        run: brew install xcodegen
+      - name: Generate the Xcode project
+        run: xcodegen generate --spec macOS/project.yml
+      - name: Bootstrap the packaged backend
+        run: make -C macOS backend-env
+      - name: Run Swift tests
+        run: make -C macOS test AGENT_NAME=ci
+      - name: Verify the App Store build
+        run: make -C macOS preflight-app-store AGENT_NAME=ci
+      - name: Upload diagnostics after failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-build-diagnostics
+          path: macOS/build/logs/ci
+          if-no-files-found: ignore
+          retention-days: 7

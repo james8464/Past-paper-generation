@@ -1,0 +1,48 @@
+name: Bug report
+description: Report a crash, incorrect paper, layout fault, or build problem.
+title: "Bug: "
+labels: [bug]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Paper or mark-scheme content
+        - PDF layout or typography
+        - macOS interface
+        - AI provider
+        - Build, signing, or App Store
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: What happened?
+      description: Include the subject, exam board, paper, provider, and error text where relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should have happened?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      placeholder: "1. Open…\n2. Select…\n3. Generate…"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: App version and macOS version
+      placeholder: "Paper Creator 1.0 (1), macOS 15.6"
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Supporting evidence
+      description: Attach screenshots, generated PDFs, manifests, or a crash report. Remove API keys and personal data.

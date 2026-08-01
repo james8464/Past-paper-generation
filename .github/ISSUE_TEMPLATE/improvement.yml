@@ -1,0 +1,32 @@
+name: Improvement
+description: Propose a fidelity, assessment-quality, UI, performance, or architecture improvement.
+title: "Improvement: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Describe the current limitation and who it affects.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: Explain the measurable visual, academic, usability, or engineering improvement.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Reference evidence
+      description: Link or attach representative examples without uploading copyrighted source papers to the repository.
+  - type: checkboxes
+    id: acceptance
+    attributes:
+      label: Acceptance considerations
+      options:
+        - label: Existing subjects and papers remain compatible
+        - label: Automated tests can cover the change
+        - label: A manual PDF or UI comparison is required

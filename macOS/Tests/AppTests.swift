@@ -187,19 +187,19 @@ final class PaperCreatorTests: XCTestCase {
         XCTAssertEqual(subjects.flatMap(\.boards).filter(\.isReady).count, 7)
     }
 
-    func testCatalogDistinguishesAIAndConstrainedGenerators() throws {
+    func testCatalogExposesAIForEveryGenerator() throws {
         let edexcel = try XCTUnwrap(ExamCatalog.board(id: "economics-edexcel-a"))
         let aqa = try XCTUnwrap(ExamCatalog.board(id: "economics-aqa"))
 
         XCTAssertTrue(edexcel.usesAI)
         XCTAssertEqual(Set(edexcel.supportedProviders), Set(AIProvider.allCases))
-        XCTAssertFalse(aqa.usesAI)
-        XCTAssertTrue(aqa.supportedProviders.isEmpty)
+        XCTAssertTrue(aqa.usesAI)
+        XCTAssertEqual(Set(aqa.supportedProviders), Set(AIProvider.allCases))
         XCTAssertTrue(aqa.papers.allSatisfy { !$0.readiness.difficultyVerified })
     }
 
     @MainActor
-    func testConstrainedGeneratorDoesNotRequireOllama() throws {
+    func testAIGeneratorRequiresOllamaCheck() throws {
         let defaults = UserDefaults.standard
         let previousWelcome = defaults.object(forKey: AppStorageKey.hasSeenWelcome)
         defer {
@@ -214,7 +214,7 @@ final class PaperCreatorTests: XCTestCase {
         let board = try XCTUnwrap(ExamCatalog.board(id: "economics-aqa"))
         appModel.selectBoard(board)
         appModel.setDryRun(false)
-        XCTAssertNil(appModel.generationBlocker)
+        XCTAssertEqual(appModel.generationBlocker, "Check Ollama before generating.")
     }
 
     func testRecentDocumentMetadataRoundTrips() throws {

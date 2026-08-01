@@ -80,6 +80,8 @@ targets:
         excludes:
           - Info.plist
           - PaperCreator.entitlements
+          - PaperCreatorDirect.entitlements
+          - PaperCreatorBackend.entitlements
       - path: ../Resources/catalog.json
         buildPhase: resources
       - path: ../Resources/generator-registry.json

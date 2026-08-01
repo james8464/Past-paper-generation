@@ -675,9 +675,9 @@
     "semantic_hash": "9deb2ada1cc834bbebf8bbad9c8978a1"
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1785338560.9493802,
-    "ast_hash": "52338690a83e519e9e23caea0d7f6fe8",
-    "semantic_hash": "52338690a83e519e9e23caea0d7f6fe8"
+    "mtime": 1785603790.107136,
+    "ast_hash": "c2968ab8d15c7fc2d6b8ff9d53684d02",
+    "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
     "mtime": 1784986017.491804,
@@ -685,8 +685,8 @@
     "semantic_hash": "4fa9dfb92771238f19e9b459a6c38fd1"
   },
   "macOS/scripts/build_backend.sh": {
-    "mtime": 1785602419.0605912,
-    "ast_hash": "927455dc1f990e9eeb625c6f05d2c411",
+    "mtime": 1785603790.1066294,
+    "ast_hash": "cdca77ec6501b7092c179572e21f7bc0",
     "semantic_hash": ""
   },
   "macOS/scripts/clean.sh": {
@@ -990,9 +990,9 @@
     "semantic_hash": "fe85824355013564233b3b55b2c0be48"
   },
   "macOS/project.yml": {
-    "mtime": 1785179814.8196917,
-    "ast_hash": "b5140e64874a638c91b601b2e0ba59d7",
-    "semantic_hash": "b5140e64874a638c91b601b2e0ba59d7"
+    "mtime": 1785603455.0419018,
+    "ast_hash": "47743f35ddd04c7c6def2f341684259d",
+    "semantic_hash": ""
   },
   "requirements-build.txt": {
     "mtime": 1784986017.4913216,
@@ -1220,8 +1220,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Services/BackendClient.swift": {
-    "mtime": 1785364529.568368,
-    "ast_hash": "212c4d044376adcccae7afe92431536b",
+    "mtime": 1785603455.0399091,
+    "ast_hash": "17b844c182de1380336b98dbd09dce05",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Services/SecretStore.swift": {
@@ -1267,6 +1267,46 @@
   "graphify-out/memory/query_20260729_215735_how_can_we_make_even_more_improvements_to_get_the.md": {
     "mtime": 1785362265.8777623,
     "ast_hash": "5bf508f0518fc0b7e3ca7606a5924eca",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/bug.yml": {
+    "mtime": 1785603669.690816,
+    "ast_hash": "c7f87e8a84136575e703dfbe0e07fd19",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/config.yml": {
+    "mtime": 1785603669.6910965,
+    "ast_hash": "34488d2c7505db367e6583063dd25baf",
+    "semantic_hash": ""
+  },
+  ".github/ISSUE_TEMPLATE/improvement.yml": {
+    "mtime": 1785603669.6909688,
+    "ast_hash": "514edf67b812e778560bdc409daefe9d",
+    "semantic_hash": ""
+  },
+  ".github/dependabot.yml": {
+    "mtime": 1785603669.691226,
+    "ast_hash": "b7b6322e93bac2977fd5db7adaaa85e3",
+    "semantic_hash": ""
+  },
+  ".github/pull_request_template.md": {
+    "mtime": 1785603669.6904545,
+    "ast_hash": "03ae04c0cc8dd624c5b3cda7f874c4d2",
+    "semantic_hash": ""
+  },
+  ".github/workflows/ci.yml": {
+    "mtime": 1785603669.6900685,
+    "ast_hash": "aa39d445426a0fa5d2164f39b48a7e02",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260801_164531_how_does_the_generation_quality_pipeline_connect.md": {
+    "mtime": 1785602731.788674,
+    "ast_hash": "f719c20f8c3c4150414d6dbc8aef75a6",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260801_164531_how_is_the_macos_backend_bundle_kept_complete.md": {
+    "mtime": 1785602731.8532028,
+    "ast_hash": "86b470884e92f62726040d9070a86d59",
     "semantic_hash": ""
   }
 }
