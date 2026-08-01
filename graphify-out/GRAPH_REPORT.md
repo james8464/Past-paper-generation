@@ -1,16 +1,15 @@
-# Graph Report - Past Paper Creation  (2026-08-01)
+# Graph Report - .  (2026-08-01)
 
 ## Corpus Check
-- 221 files · ~414,750 words
-- Verdict: corpus is large enough that graph structure adds value.
+- cluster-only mode — file stats not available
 
 ## Summary
-- 2680 nodes · 7830 edges · 144 communities (95 shown, 49 thin omitted)
+- 2680 nodes · 7830 edges · 145 communities (95 shown, 50 thin omitted)
 - Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 509 edges (avg confidence: 0.72)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `558d1dee`
+- Built from commit: `08589b12`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -100,6 +99,7 @@
 - _draw_source_content_page
 - Implementation and fidelity report
 - backend-protocol.schema.json
+- register_fonts
 - required
 - generator_working_directory
 - xcbuild.sh
@@ -189,7 +189,7 @@
 - **Edexcel A Economics Knowledge Corpus** — resources_economics_edexcel_a_generator_data_notes_text_1_1_nature_of_economics_nature_of_economics, resources_economics_edexcel_a_generator_data_notes_text_1_2_how_markets_work_how_markets_work, resources_economics_edexcel_a_generator_data_notes_text_1_3_market_failure_market_failure, resources_economics_edexcel_a_generator_data_notes_text_1_4_government_intervention_government_intervention, resources_economics_edexcel_a_generator_data_notes_text_2_1_measures_of_economic_performance_measures_of_economic_performance, resources_economics_edexcel_a_generator_data_notes_text_2_2_aggregate_demand_aggregate_demand, resources_economics_edexcel_a_generator_data_notes_text_2_3_aggregate_supply_aggregate_supply, resources_economics_edexcel_a_generator_data_notes_text_2_4_national_income_national_income, resources_economics_edexcel_a_generator_data_notes_text_2_5_economic_growth_economic_growth, resources_economics_edexcel_a_generator_data_notes_text_2_6_macroeconomic_objectives_and_policies_macroeconomic_objectives_and_policies, resources_economics_edexcel_a_generator_data_notes_text_3_1_business_growth_business_growth, resources_economics_edexcel_a_generator_data_notes_text_3_2_business_objectives_business_objectives, resources_economics_edexcel_a_generator_data_notes_text_3_3_revenues_costs_and_profits_revenues_costs_and_profits, resources_economics_edexcel_a_generator_data_notes_text_3_4_market_structures_market_structures, resources_economics_edexcel_a_generator_data_notes_text_3_5_labour_markets_labour_markets, resources_economics_edexcel_a_generator_data_notes_text_4_1_international_economics_international_economics, resources_economics_edexcel_a_generator_data_notes_text_4_2_poverty_and_inequality_poverty_and_inequality, resources_economics_edexcel_a_generator_data_notes_text_4_3_emerging_and_developing_economies_emerging_and_developing_economies, resources_economics_edexcel_a_generator_data_notes_text_4_4_the_financial_sector_the_financial_sector, resources_economics_edexcel_a_generator_data_notes_text_4_5_role_of_the_state_in_the_macroeconomy_role_of_the_state_in_the_macroeconomy [EXTRACTED 1.00]
 - **Project Analysis and Improvement Evidence** — docs_project_analysis_project_analysis_document, docs_project_analysis_improvement_roadmap_document, docs_project_analysis_implementation_and_fidelity_report_document, docs_project_analysis_ui_audit_document [EXTRACTED 1.00]
 
-## Communities (144 total, 49 thin omitted)
+## Communities (145 total, 50 thin omitted)
 
 ### Community 0 - "cspapergen/render_pdf.py"
 Cohesion: 0.10
@@ -236,8 +236,8 @@ Cohesion: 0.12
 Nodes (51): build_paper_blueprint(), PaperBlueprint, Syllabus, load_builtin_paper_config(), load_syllabus(), Path, Syllabus, test_blueprint_contains_structured_mcq_and_mark_scheme_content() (+43 more)
 
 ### Community 11 - "ocrcsgen/render_pdf.py"
-Cohesion: 0.11
-Nodes (38): aqa_question_cover(), CoverProfile, mark_scheme_cover(), ocr_question_cover(), Flowable, register_font(), register_fonts(), Return a Table subclass whose raw string cells use the controlled font.… (+30 more)
+Cohesion: 0.12
+Nodes (36): aqa_question_cover(), CoverProfile, mark_scheme_cover(), ocr_question_cover(), Flowable, Return a Table subclass whose raw string cells use the controlled font.…, themed_table_class(), _additional_answer_page() (+28 more)
 
 ### Community 12 - "paper_fidelity_audit.py"
 Cohesion: 0.07
@@ -260,8 +260,8 @@ Cohesion: 0.05
 Nodes (41): CodingKey, CodingKeys, backendVersion, capabilities, command, cpuLoad, cpuMBs, detail (+33 more)
 
 ### Community 17 - "exam_blueprints.py"
-Cohesion: 0.14
-Nodes (29): _demand_band(), _hydrate_assessment_metadata(), _objective_allocation(), PaperRule, _prompt_uses_command_word(), BaseModel, QuestionRule, SectionRule (+21 more)
+Cohesion: 0.13
+Nodes (30): _demand_band(), _hydrate_assessment_metadata(), _objective_allocation(), PaperRule, _prompt_uses_command_word(), BaseModel, QuestionRule, SectionRule (+22 more)
 
 ### Community 18 - "Improvement roadmap"
 Cohesion: 0.06
@@ -293,7 +293,7 @@ Nodes (27): field_validator, generate_package(), Path, load_rule(), build_paper(
 
 ### Community 25 - "aqabizgen/generator.py"
 Cohesion: 0.09
-Nodes (33): generate_package(), Path, load_rule(), q(), FinancialPosition, format_number(), Format an exam answer without meaningless trailing zeroes., The single source of truth for Paper 1 financial-statement figures. (+25 more)
+Nodes (32): generate_package(), Path, load_rule(), FinancialPosition, format_number(), Format an exam answer without meaningless trailing zeroes., The single source of truth for Paper 1 financial-statement figures., build_paper() (+24 more)
 
 ### Community 26 - "SwiftUI"
 Cohesion: 0.09
@@ -566,7 +566,7 @@ Nodes (4): MPLCONFIGDIR, PYINSTALLER_CONFIG_DIR, build_backend.sh script, XDG_CA
 ## Knowledge Gaps
 - **370 isolated node(s):** `BoardLayout`, `examforge-aqa-accounting`, `$schema`, `$id`, `title` (+365 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **49 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **50 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Work-memory lessons
 
