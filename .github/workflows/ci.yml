@@ -23,6 +23,8 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+      - name: Install PDF inspection tools
+        run: sudo apt-get update && sudo apt-get install --yes poppler-utils
       - name: Install test dependencies
         run: |
           python -m pip install --upgrade pip

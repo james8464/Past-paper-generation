@@ -89,4 +89,26 @@ def register_font(font_name: str, fallback: str = "Times-Roman") -> str:
 
 
 def register_fonts(*font_names: str, default_fallback: str = "Times-Roman") -> dict[str, str]:
-    return {name: register_font(name, fallback=default_fallback) for name in font_names}
+    registered = {name: register_font(name, fallback=default_fallback) for name in font_names}
+    families: dict[str, dict[str, str]] = {}
+    for name in registered:
+        if name.endswith("-BoldItalic"):
+            family, role = name.removesuffix("-BoldItalic"), "boldItalic"
+        elif name.endswith("-Bold"):
+            family, role = name.removesuffix("-Bold"), "bold"
+        elif name.endswith("-Italic"):
+            family, role = name.removesuffix("-Italic"), "italic"
+        else:
+            family, role = name, "normal"
+        families.setdefault(family, {})[role] = name
+
+    for family, roles in families.items():
+        normal = roles.get("normal") or next(iter(roles.values()))
+        pdfmetrics.registerFontFamily(
+            family,
+            normal=normal,
+            bold=roles.get("bold", normal),
+            italic=roles.get("italic", normal),
+            boldItalic=roles.get("boldItalic", roles.get("bold", normal)),
+        )
+    return registered
