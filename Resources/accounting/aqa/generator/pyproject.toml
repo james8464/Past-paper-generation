@@ -7,3 +7,7 @@ name = "examforge-aqa-accounting"
 version = "0.2.0"
 requires-python = ">=3.11"
 dependencies = ["pydantic>=2", "reportlab>=4"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["aqaaccountgen*"]
