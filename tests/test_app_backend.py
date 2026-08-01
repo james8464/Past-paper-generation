@@ -15,13 +15,23 @@ ROOT = Path(__file__).resolve().parents[1]
 BRIDGE = ROOT / "bridge.py"
 
 
-def run_bridge(*args: str) -> list[dict[str, object]]:
+def run_bridge(
+    *args: str,
+    cwd: Path | None = None,
+) -> list[dict[str, object]]:
     result = subprocess.run(
         [sys.executable, str(BRIDGE), *args],
-        check=True,
+        check=False,
         capture_output=True,
+        cwd=cwd,
         text=True,
     )
+    if result.returncode != 0:
+        pytest.fail(
+            f"bridge exited with {result.returncode}\n"
+            f"stdout:\n{result.stdout}\n"
+            f"stderr:\n{result.stderr}"
+        )
     return [json.loads(line) for line in result.stdout.splitlines() if line.strip()]
 
 
@@ -35,27 +45,19 @@ def run_bridge_raw(*args: str) -> subprocess.CompletedProcess[str]:
 
 
 def test_relative_output_is_resolved_from_callers_working_directory(tmp_path: Path) -> None:
-    result = subprocess.run(
-        [
-            sys.executable,
-            str(BRIDGE),
-            "generate",
-            "--subject",
-            "economics_aqa",
-            "--paper",
-            "1",
-            "--output",
-            "generated",
-            "--dry-run",
-            "--seed",
-            "123",
-        ],
+    events = run_bridge(
+        "generate",
+        "--subject",
+        "economics_aqa",
+        "--paper",
+        "1",
+        "--output",
+        "generated",
+        "--dry-run",
+        "--seed",
+        "123",
         cwd=tmp_path,
-        check=True,
-        capture_output=True,
-        text=True,
     )
-    events = [json.loads(line) for line in result.stdout.splitlines() if line.strip()]
     files = [Path(str(event["path"])) for event in events if event["type"] == "file"]
     assert files
     assert all(path.parent == tmp_path / "generated" for path in files)

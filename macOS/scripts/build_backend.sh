@@ -13,6 +13,10 @@ if [[ ! -x "$PYTHON" ]]; then
   exit 1
 fi
 
+# Xcode invokes this script from macOS/, so make the repository packages
+# importable for registry discovery as well as for PyInstaller itself.
+export PYTHONPATH="$ROOT_DIR${PYTHONPATH:+:$PYTHONPATH}"
+
 if ! "$PYTHON" -c 'import PyInstaller' 2>/dev/null; then
   echo "error: PyInstaller is required in .venv (pip install \"pyinstaller>=6.17,<7\")." >&2
   exit 1

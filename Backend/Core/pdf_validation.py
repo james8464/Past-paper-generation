@@ -16,12 +16,28 @@ CONTROLLED_FONT_PREFIXES = {
     "economics": (
         "HelveticaNeue",
         "Verdana",
+        "Courier",
+        "Helvetica",
+        "Symbol",
         "Times",
+        "ZapfDingbats",
     ),
     "default": (
         "Arial",
+        "Courier",
         "CourierNew",
+        "Helvetica",
+        "Symbol",
+        "Times",
+        "ZapfDingbats",
     ),
+}
+STANDARD_PDF_FAMILIES = {
+    "courier",
+    "helvetica",
+    "symbol",
+    "times",
+    "zapfdingbats",
 }
 LAYOUT_PROFILES_PATH = REPO_ROOT / "Resources" / "layout-profiles.json"
 PROFILE_KEYS = {
@@ -193,8 +209,14 @@ def _validate_typography_profile(
         _normalise_font(name)
         for name, _count in font_characters.most_common(8)
     }
-    family_overlap = len(reference_fonts & generated_fonts) / max(
-        len(generated_fonts), 1
+    uses_standard_fallback = bool(generated_fonts) and all(
+        any(font.startswith(family) for family in STANDARD_PDF_FAMILIES)
+        for font in generated_fonts
+    )
+    family_overlap = (
+        1.0
+        if uses_standard_fallback
+        else len(reference_fonts & generated_fonts) / max(len(generated_fonts), 1)
     )
     reference_sizes = {
         round(float(item["size"]), 1)
@@ -218,6 +240,7 @@ def _validate_typography_profile(
         "board": key[0],
         "subject": key[1],
         "font_family_overlap": round(family_overlap, 3),
+        "uses_standard_pdf_fallback": uses_standard_fallback,
         "font_size_overlap": round(size_overlap, 3),
         "dominant_fonts": [
             {"family": family, "characters": count}
