@@ -25,9 +25,9 @@
     "semantic_hash": ""
   },
   "Backend/Core/fonts/__init__.py": {
-    "mtime": 1785182546.3055103,
-    "ast_hash": "72a68dc47917702a0437d06ff61301dd",
-    "semantic_hash": "72a68dc47917702a0437d06ff61301dd"
+    "mtime": 1785604857.1159513,
+    "ast_hash": "03ea1d68f489bdb0199d951e2721946a",
+    "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
     "mtime": 1785603986.114761,
@@ -1295,8 +1295,8 @@
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1785604629.7194455,
-    "ast_hash": "babf1cf9fa4b0b38c774bbb51448ae42",
+    "mtime": 1785604857.1162581,
+    "ast_hash": "ac913747053e2cc585f0ea44ec666645",
     "semantic_hash": ""
   },
   "graphify-out/memory/query_20260801_164531_how_does_the_generation_quality_pipeline_connect.md": {
@@ -1307,6 +1307,16 @@
   "graphify-out/memory/query_20260801_164531_how_is_the_macos_backend_bundle_kept_complete.md": {
     "mtime": 1785603986.1519227,
     "ast_hash": "86b470884e92f62726040d9070a86d59",
+    "semantic_hash": ""
+  },
+  "tests/test_fonts.py": {
+    "mtime": 1785604857.116741,
+    "ast_hash": "0addf558a6c710109b6c2a4e705c55c2",
+    "semantic_hash": ""
+  },
+  "requirements-test.txt": {
+    "mtime": 1785604857.1165216,
+    "ast_hash": "d77c1a43f3c6f86b7cc1a14e681b06ca",
     "semantic_hash": ""
   }
 }

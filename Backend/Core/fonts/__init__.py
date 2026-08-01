@@ -54,6 +54,21 @@ FONT_CANDIDATES: dict[str, list[tuple[str, int]]] = {
 }
 
 
+def _standard_fallback(font_name: str, fallback: str) -> str:
+    if "Courier" in font_name or font_name.endswith("Mono"):
+        family = "Courier"
+    elif fallback.startswith("Helvetica"):
+        family = "Helvetica"
+    else:
+        family = "Times"
+
+    if font_name.endswith("Bold"):
+        return f"{family}-Bold"
+    if font_name.endswith("Italic"):
+        return f"{family}-Oblique" if family != "Times" else "Times-Italic"
+    return family if family != "Times" else "Times-Roman"
+
+
 def register_font(font_name: str, fallback: str = "Times-Roman") -> str:
     if font_name in pdfmetrics.getRegisteredFontNames():
         return font_name
@@ -66,7 +81,10 @@ def register_font(font_name: str, fallback: str = "Times-Roman") -> str:
                 return font_name
             except Exception:
                 continue
-    pdfmetrics.registerFont(TTFont(font_name, fallback))
+    # Standard PDF fonts are face names, not TTF file paths. Register an alias
+    # so renderers can keep using their semantic font name on non-macOS hosts.
+    fallback_name = _standard_fallback(font_name, fallback)
+    pdfmetrics.registerFont(pdfmetrics.Font(font_name, fallback_name, "WinAnsiEncoding"))
     return font_name
 
 
