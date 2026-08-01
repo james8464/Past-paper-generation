@@ -114,6 +114,7 @@ def test_packages_render_current_page_geometry(tmp_path: Path) -> None:
             if paper == "3"
             else {"question_paper", "mark_scheme"}
         )
+        expected_roles.add("assessment_package")
         assert paths.keys() == expected_roles
         assert len(PdfReader(paths["question_paper"]).pages) == expected_pages
         assert len(PdfReader(paths["mark_scheme"]).pages) == mark_scheme_pages[paper]

@@ -4,40 +4,50 @@ Date: 29 July 2026
 
 ## Scope
 
-Combined UX and screenshot-level accessibility audit of the built macOS app’s
-main paper-creation flow and its AI-unavailable state. The target is a
+Combined UX, screenshot, and accessibility-tree audit of the rebuilt macOS
+app’s main paper-creation flow and its AI-unavailable state. The target is a
 recognisably native, low-friction macOS workflow aligned with Apple’s current
 guidance for sidebars, settings, toolbars, menus, and progress indicators.
 
-## Step 1 — deterministic paper workspace
+## Step 1 — paper workspace
 
 Health: **Good**
 
-![Deterministic paper workspace](ui-audit/01-main-workspace.png)
+The checked-in image below records the pre-refactor baseline. The final
+1087 × 768 audit capture is stored in the Codex visual audit output as
+`full-implementation-audit/03-final-creation.jpeg`; a baseline/final comparison
+is stored beside it as `00-baseline-vs-final.png`.
+
+![Pre-refactor paper-workspace baseline](ui-audit/01-main-workspace.png)
 
 Confirmed strengths:
 
 - native `NavigationSplitView` hierarchy with disclosure rows for subjects and
   board choices beneath the selected subject;
 - segmented paper picker is close to the object it changes;
-- one clear primary action;
+- one clear primary toolbar action, with cancellation occupying the same task
+  location while generation is running;
 - output location is visible in the task rather than hidden in Settings;
-- the generator mode, visual-review state, and unverified difficulty are
-  expressed in text as well as colour;
+- blueprint, at-creation originality, visual-profile, and
+  unverified-difficulty states are expressed in text as well as colour;
 - the empty recent-papers state explains what will appear;
 - the sidebar does not place critical status at its bottom edge.
 
 Risks and improvements made:
 
-- “Visual calibration passed” overstated the evidence; it is now “Visual profile
-  reviewed.”
+- custom rounded panels and a duplicated in-content title/action row were
+  replaced by native grouped form sections and toolbar actions;
+- “Visual calibration passed” overstated the evidence; it is now “Visual
+  profile reviewed”;
+- originality previously appeared passed before a form existed; it now says “At
+  creation” until a completed assessment package provides evidence;
 - recent files previously disappeared between launches; metadata now persists
   and missing files can be removed from history.
 - the action and status row could become crowded under large accessibility text;
   the window now has a practical minimum size, but enlarged-text and VoiceOver
   testing remain necessary.
 
-## Step 2 — AI-assisted paper blocked on Ollama
+## Step 2 — paper blocked on unavailable AI
 
 Health: **Good**
 
@@ -50,7 +60,7 @@ Confirmed strengths:
 - the warning gives a plain-language recovery path;
 - `Check Again`, `Get Ollama`, and `Settings` are available at the point of
   failure;
-- local-vs-hosted generation is no longer implied for deterministic families;
+- local-vs-hosted generation is explicit for every family;
 - warning meaning is not conveyed by colour alone.
 
 Risks:
@@ -65,19 +75,20 @@ Risks:
 
 Health: **Source- and test-verified; screenshot blocked**
 
-Opening Settings caused the Computer Use accessibility pipe to close before a
-valid screenshot could be saved. This is an audit-tool blocker, not evidence of
-an application crash, so no screenshot claim is made.
+Opening Settings or the separate Benchmark window caused the Computer Use
+accessibility pipe to close before a valid screenshot could be saved. The app
+process remained healthy after both transitions and the source rebuilt
+successfully; this is therefore recorded as an audit-tool limitation, not as a
+claim that those secondary windows were visually verified.
 
 The implementation and native tests confirm:
 
 - `⌘,` opens Settings through the app’s Settings scene;
-- panes have stable sidebar navigation and a pane-specific window title;
+- panes have stable toolbar navigation and a pane-specific window title;
 - changes save immediately, with no redundant Save/Apply button;
 - the last selected pane is restored;
 - minimum/zoom controls are disabled for the fixed settings window;
-- provider controls explain when the current generator is constrained and does
-  not use AI.
+- provider controls explain local versus hosted processing and Keychain storage.
 
 ## Apple HIG alignment
 

@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 from typing import Callable
 
+from Backend.Core.assessment_package import write_assessment_package
 from cspapergen.generator import build_paper1_blueprint, build_paper2_blueprint
 from cspapergen.notes import DEFAULT_NOTES_SOURCE, cache_notes
 from cspapergen.ollama_client import OllamaClient, improve_questions_with_ollama
@@ -75,11 +76,12 @@ def generate_package(
         raise ValueError(f"Unsupported Computer Science paper: {paper}")
     emit(f"Using seed {blueprint.seed}")
 
+    question_client = client
     if dry_run:
         emit("Using built-in draft questions")
     else:
         emit(f"Generating questions with model {model}")
-        question_client = client or OllamaClient(base_url=ollama_url, model=model)
+        question_client = question_client or OllamaClient(base_url=ollama_url, model=model)
         blueprint = improve_questions_with_ollama(question_client, blueprint, syllabus, progress=progress)
 
     emit("Validating paper")
@@ -96,5 +98,16 @@ def generate_package(
         emit("Rendering Paper 1 supporting materials")
         paths.update(write_paper1_supporting_files(blueprint, paper1_context, output_dir))
     paths["mark_scheme"] = mark_scheme
+    assessment = output_dir / f"cs-paper-{paper}-assessment.json"
+    write_assessment_package(
+        blueprint,
+        assessment,
+        subject="computer_science",
+        paper_number=paper,
+        preview=dry_run,
+        provider=getattr(question_client, "provider", "ollama") if not dry_run else None,
+        model=getattr(question_client, "model", model) if not dry_run else None,
+    )
+    paths["assessment_package"] = assessment
     emit("Done")
     return paths

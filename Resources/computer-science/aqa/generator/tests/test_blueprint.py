@@ -2,6 +2,8 @@ import random
 import threading
 import time
 
+import pytest
+
 from cspapergen.generator import (
     PAPER2_QUESTION_PLAN,
     QUESTION_TOTALS,
@@ -146,9 +148,7 @@ def test_hosted_question_generation_runs_independent_prompts_concurrently():
     blueprint = build_paper2_blueprint(syllabus, seed=7)
     client = HostedTestClient()
 
-    improved = improve_questions_with_ollama(client, blueprint, syllabus)
+    with pytest.raises(ValueError, match="only a paraphrase"):
+        improve_questions_with_ollama(client, blueprint, syllabus)
 
     assert client.maximum_active == 4
-    assert [question.number for question in improved.questions] == [
-        question.number for question in blueprint.questions
-    ]

@@ -111,6 +111,7 @@ _rf(FONT, FONT_BOLD, FONT_MONO, default_fallback="Times-Roman")
 def render_question_paper(blueprint: PaperBlueprint, output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     pdf = canvas.Canvas(str(output_path), pagesize=AQA_A4, pageCompression=0)
+    _set_document_metadata(pdf, blueprint, "Question paper")
     _cover_page(pdf, blueprint)
     pdf.showPage()
     state = _QuestionRenderState(page=2, y=724, blueprint=blueprint)
@@ -605,6 +606,7 @@ def _draw_intentionally_blank_page(pdf: canvas.Canvas, state: _QuestionRenderSta
 def render_mark_scheme(blueprint: PaperBlueprint, output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     pdf = canvas.Canvas(str(output_path), pagesize=AQA_A4, pageCompression=0)
+    _set_document_metadata(pdf, blueprint, "Mark scheme")
     _mark_scheme_cover(pdf, blueprint)
     pdf.showPage()
     _mark_scheme_intro(pdf, 2, blueprint)
@@ -638,6 +640,19 @@ def render_mark_scheme(blueprint: PaperBlueprint, output_path: Path) -> None:
                 y = _mark_scheme_table_header(pdf, page, blueprint)
             y = _render_mark_scheme_part(pdf, question, part, y)
     pdf.save()
+
+
+def _set_document_metadata(
+    pdf: canvas.Canvas,
+    blueprint: PaperBlueprint,
+    role: str,
+) -> None:
+    pdf.setTitle(f"{blueprint.paper_code} {blueprint.title} — {role}")
+    pdf.setAuthor("Paper creator")
+    pdf.setCreator("Paper creator")
+    pdf.setSubject(
+        "Independent A-level Computer Science practice material"
+    )
 
 
 def _render_paper1_mark_scheme_pages(

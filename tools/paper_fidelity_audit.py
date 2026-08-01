@@ -11,7 +11,15 @@ from pathlib import Path
 from typing import Any
 
 import fitz
-from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageOps
+from PIL import (
+    Image,
+    ImageChops,
+    ImageDraw,
+    ImageEnhance,
+    ImageFilter,
+    ImageOps,
+    ImageStat,
+)
 
 from tools.build_supported_layout_masters import REFERENCES
 
@@ -516,6 +524,328 @@ def _page_comparisons(
     return result
 
 
+def _normalised_block_text(value: str) -> str:
+    return " ".join(WORD.findall(value.casefold()))
+
+
+def _text_blocks(page: fitz.Page) -> list[dict[str, Any]]:
+    result: list[dict[str, Any]] = []
+    for block in page.get_text("blocks"):
+        text = _normalised_block_text(str(block[4]))
+        if not text:
+            continue
+        result.append(
+            {
+                "bbox": tuple(float(value) for value in block[:4]),
+                "text": text,
+            }
+        )
+    return result
+
+
+def _grayscale_page(page: fitz.Page, dpi: int) -> Image.Image:
+    pixmap = page.get_pixmap(
+        matrix=fitz.Matrix(dpi / 72, dpi / 72),
+        colorspace=fitz.csGRAY,
+        alpha=False,
+        annots=True,
+    )
+    return Image.frombytes("L", (pixmap.width, pixmap.height), pixmap.samples)
+
+
+def _translated(
+    image: Image.Image,
+    *,
+    offset_x: int,
+    offset_y: int,
+    fill: int = 255,
+) -> Image.Image:
+    translated = Image.new(image.mode, image.size, fill)
+    translated.paste(image, (offset_x, offset_y))
+    return translated
+
+
+def _registration_shift(
+    reference: Image.Image,
+    generated: Image.Image,
+    *,
+    dpi: int,
+) -> tuple[int, int]:
+    """Find a small whole-page translation without deforming either page."""
+
+    generated = generated.resize(reference.size, Image.Resampling.LANCZOS)
+    thumbnail_width = min(420, reference.width)
+    scale = thumbnail_width / reference.width
+    thumbnail_size = (
+        thumbnail_width,
+        max(1, round(reference.height * scale)),
+    )
+    reference_edge = (
+        reference.resize(thumbnail_size, Image.Resampling.LANCZOS)
+        .filter(ImageFilter.GaussianBlur(0.6))
+        .filter(ImageFilter.FIND_EDGES)
+    )
+    generated_edge = (
+        generated.resize(thumbnail_size, Image.Resampling.LANCZOS)
+        .filter(ImageFilter.GaussianBlur(0.6))
+        .filter(ImageFilter.FIND_EDGES)
+    )
+    maximum = max(1, round(7 * dpi / 72 * scale))
+    coarse = sorted({-maximum, -maximum // 2, 0, maximum // 2, maximum})
+
+    def error(offset_x: int, offset_y: int) -> float:
+        moved = _translated(
+            generated_edge,
+            offset_x=offset_x,
+            offset_y=offset_y,
+        )
+        border = maximum + 2
+        box = (
+            border,
+            border,
+            reference_edge.width - border,
+            reference_edge.height - border,
+        )
+        difference = ImageChops.difference(
+            reference_edge.crop(box),
+            moved.crop(box),
+        )
+        return ImageStat.Stat(difference).mean[0]
+
+    candidates = [
+        (error(offset_x, offset_y), offset_x, offset_y)
+        for offset_x in coarse
+        for offset_y in coarse
+    ]
+    _score, best_x, best_y = min(candidates)
+    refined = [
+        (error(offset_x, offset_y), offset_x, offset_y)
+        for offset_x in range(max(-maximum, best_x - 1), min(maximum, best_x + 1) + 1)
+        for offset_y in range(max(-maximum, best_y - 1), min(maximum, best_y + 1) + 1)
+    ]
+    _score, best_x, best_y = min(refined)
+    full_scale = 1 / scale
+    return round(best_x * full_scale), round(best_y * full_scale)
+
+
+def _block_mask(
+    size: tuple[int, int],
+    blocks: list[dict[str, Any]],
+    page_rect: fitz.Rect,
+    *,
+    fill: int,
+    background: int,
+    padding: int = 2,
+) -> Image.Image:
+    mask = Image.new("L", size, background)
+    draw = ImageDraw.Draw(mask)
+    scale_x = size[0] / page_rect.width
+    scale_y = size[1] / page_rect.height
+    for block in blocks:
+        x0, y0, x1, y1 = block["bbox"]
+        draw.rectangle(
+            (
+                round(x0 * scale_x) - padding,
+                round(y0 * scale_y) - padding,
+                round(x1 * scale_x) + padding,
+                round(y1 * scale_y) + padding,
+            ),
+            fill=fill,
+        )
+    return mask
+
+
+def _unstable_blocks(
+    first: list[dict[str, Any]],
+    second: list[dict[str, Any]],
+    *,
+    first_rect: fitz.Rect,
+    second_rect: fitz.Rect,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Mask question-specific prose while keeping matching boilerplate visible."""
+
+    def is_stable(
+        block: dict[str, Any],
+        candidates: list[dict[str, Any]],
+        source_rect: fitz.Rect,
+        candidate_rect: fitz.Rect,
+    ) -> bool:
+        text = block["text"]
+        if len(text) < 5:
+            return False
+        x0, y0, x1, y1 = block["bbox"]
+        centre = ((x0 + x1) / 2 / source_rect.width, (y0 + y1) / 2 / source_rect.height)
+        for candidate in candidates:
+            if candidate["text"] != text:
+                continue
+            cx0, cy0, cx1, cy1 = candidate["bbox"]
+            candidate_centre = (
+                (cx0 + cx1) / 2 / candidate_rect.width,
+                (cy0 + cy1) / 2 / candidate_rect.height,
+            )
+            if (
+                abs(centre[0] - candidate_centre[0]) <= 0.04
+                and abs(centre[1] - candidate_centre[1]) <= 0.04
+            ):
+                return True
+        return False
+
+    return (
+        [
+            block
+            for block in first
+            if not is_stable(block, second, first_rect, second_rect)
+        ],
+        [
+            block
+            for block in second
+            if not is_stable(block, first, second_rect, first_rect)
+        ],
+    )
+
+
+def _mask_mean(mask: Image.Image) -> float:
+    return ImageStat.Stat(mask).mean[0] / 255
+
+
+def _dice_masks(first: Image.Image, second: Image.Image) -> float:
+    first_total = sum(index * count for index, count in enumerate(first.histogram()))
+    second_total = sum(index * count for index, count in enumerate(second.histogram()))
+    if first_total == second_total == 0:
+        return 1.0
+    shared = ImageChops.multiply(first, second)
+    shared_total = sum(
+        index * count for index, count in enumerate(shared.histogram())
+    )
+    return 2 * shared_total / max(first_total + second_total, 1)
+
+
+def _registered_page_comparison(
+    reference_page: fitz.Page,
+    generated_page: fitz.Page,
+    *,
+    dpi: int,
+) -> dict[str, Any]:
+    reference = _grayscale_page(reference_page, dpi)
+    generated = _grayscale_page(generated_page, dpi).resize(
+        reference.size,
+        Image.Resampling.LANCZOS,
+    )
+    offset_x, offset_y = _registration_shift(reference, generated, dpi=dpi)
+    registered = _translated(
+        generated,
+        offset_x=offset_x,
+        offset_y=offset_y,
+    )
+    reference_blocks = _text_blocks(reference_page)
+    generated_blocks = _text_blocks(generated_page)
+    unstable_reference, unstable_generated = _unstable_blocks(
+        reference_blocks,
+        generated_blocks,
+        first_rect=reference_page.rect,
+        second_rect=generated_page.rect,
+    )
+    comparison_mask = Image.new("L", reference.size, 255)
+    reference_variable = _block_mask(
+        reference.size,
+        unstable_reference,
+        reference_page.rect,
+        fill=0,
+        background=255,
+        padding=max(2, round(dpi / 36)),
+    )
+    generated_variable = _block_mask(
+        reference.size,
+        unstable_generated,
+        generated_page.rect,
+        fill=0,
+        background=255,
+        padding=max(2, round(dpi / 36)),
+    )
+    generated_variable = _translated(
+        generated_variable,
+        offset_x=offset_x,
+        offset_y=offset_y,
+        fill=0,
+    )
+    comparison_mask = ImageChops.multiply(
+        comparison_mask,
+        ImageChops.multiply(reference_variable, generated_variable),
+    )
+    # Ignore the sliver introduced by registration rather than treating it as
+    # missing design content.
+    valid_area = Image.new("L", reference.size, 255)
+    valid_area = _translated(
+        valid_area,
+        offset_x=offset_x,
+        offset_y=offset_y,
+        fill=0,
+    )
+    comparison_mask = ImageChops.multiply(comparison_mask, valid_area)
+    reference_blurred = reference.filter(ImageFilter.GaussianBlur(dpi / 144))
+    registered_blurred = registered.filter(ImageFilter.GaussianBlur(dpi / 144))
+    difference = ImageChops.difference(reference_blurred, registered_blurred)
+    rms = ImageStat.Stat(difference, mask=comparison_mask).rms[0]
+    render_similarity = max(0.0, 1 - rms / 255)
+
+    reference_layout = _block_mask(
+        reference.size,
+        reference_blocks,
+        reference_page.rect,
+        fill=255,
+        background=0,
+    )
+    generated_layout = _block_mask(
+        reference.size,
+        generated_blocks,
+        generated_page.rect,
+        fill=255,
+        background=0,
+    )
+    generated_layout = _translated(
+        generated_layout,
+        offset_x=offset_x,
+        offset_y=offset_y,
+        fill=0,
+    )
+    return {
+        "registered_masked_render": round(render_similarity, 4),
+        "registered_text_layout": round(
+            _dice_masks(reference_layout, generated_layout),
+            4,
+        ),
+        "stable_area": round(_mask_mean(comparison_mask), 4),
+        "registration_points": [
+            round(offset_x * 72 / dpi, 2),
+            round(offset_y * 72 / dpi, 2),
+        ],
+    }
+
+
+def _perceptual_page_comparisons(
+    generated_path: Path,
+    reference_path: Path,
+    *,
+    dpi: int,
+) -> list[dict[str, Any]]:
+    if dpi <= 0:
+        return []
+    with fitz.open(generated_path) as generated, fitz.open(
+        reference_path
+    ) as reference:
+        return [
+            {
+                "page": index + 1,
+                **_registered_page_comparison(
+                    reference[index],
+                    generated[index],
+                    dpi=dpi,
+                ),
+            }
+            for index in range(min(generated.page_count, reference.page_count))
+        ]
+
+
 def _font_family(name: str) -> str:
     value = name.casefold().replace("psmt", "").replace("mt", "")
     for suffix in ("-bolditalic", "-bold", "-italic", "-regular", "-0", "-1"):
@@ -523,7 +853,11 @@ def _font_family(name: str) -> str:
     return value.replace(" ", "")
 
 
-def audit(generated_root: Path) -> dict[str, Any]:
+def audit(
+    generated_root: Path,
+    *,
+    perceptual_dpi: int = 0,
+) -> dict[str, Any]:
     families: dict[str, Any] = {}
     for family, paths in FAMILIES.items():
         generated_dir = generated_root / paths["generated_dir"]
@@ -563,11 +897,13 @@ def audit(generated_root: Path) -> dict[str, Any]:
                 generated_question,
                 reference_question,
                 question_profiles,
+                perceptual_dpi=perceptual_dpi,
             ),
             "mark_scheme": _document_result(
                 generated_scheme,
                 reference_scheme,
                 scheme_profiles,
+                perceptual_dpi=perceptual_dpi,
             ),
         }
     comparable = [value for value in families.values() if "missing" not in value]
@@ -583,7 +919,8 @@ def audit(generated_root: Path) -> dict[str, Any]:
         else 0.0
     )
     return {
-        "schema_version": 2,
+        "schema_version": 3,
+        "perceptual_dpi": perceptual_dpi,
         "generated_root": str(generated_root),
         "families": families,
         "overall": round(overall, 3),
@@ -594,17 +931,58 @@ def _document_result(
     generated_path: Path,
     reference_path: Path,
     profiles: dict[str, dict[str, Any]],
+    *,
+    perceptual_dpi: int,
 ) -> dict[str, Any]:
     pages = _page_comparisons(
         profiles["generated"]["geometry"],
         profiles["reference"]["geometry"],
     )
+    perceptual = _perceptual_page_comparisons(
+        generated_path,
+        reference_path,
+        dpi=perceptual_dpi,
+    )
+    by_page = {item["page"]: item for item in perceptual}
+    for page in pages:
+        measured = by_page.get(page["page"])
+        if not measured:
+            continue
+        page.update(measured)
+        page["overall"] = round(
+            page["overall"] * 0.72
+            + measured["registered_masked_render"] * 0.18
+            + measured["registered_text_layout"] * 0.10,
+            3,
+        )
+    comparison = compare(**profiles)
+    if perceptual:
+        masked_render = statistics.mean(
+            item["registered_masked_render"] for item in perceptual
+        )
+        text_layout = statistics.mean(
+            item["registered_text_layout"] for item in perceptual
+        )
+        stable_area = statistics.mean(item["stable_area"] for item in perceptual)
+        comparison["scores"].update(
+            {
+                "registered_masked_render": round(masked_render, 3),
+                "registered_text_layout": round(text_layout, 3),
+                "stable_area": round(stable_area, 3),
+            }
+        )
+        comparison["overall"] = round(
+            comparison["overall"] * 0.72
+            + masked_render * 0.18
+            + text_layout * 0.10,
+            3,
+        )
     return {
         "generated_path": str(generated_path),
         "reference_path": str(reference_path),
         "generated": _compact_profile(profiles["generated"]),
         "reference": _compact_profile(profiles["reference"]),
-        "comparison": compare(**profiles),
+        "comparison": comparison,
         "page_comparisons": pages,
         "worst_pages": sorted(
             pages,
@@ -901,8 +1279,20 @@ def main() -> int:
         help="Write side-by-side reference/generated/difference contact sheets.",
     )
     parser.add_argument("--dpi", type=int, default=96)
+    parser.add_argument(
+        "--perceptual-dpi",
+        type=int,
+        default=96,
+        help=(
+            "DPI for registered, variable-content-masked page comparison; "
+            "use 0 to disable."
+        ),
+    )
     args = parser.parse_args()
-    report = audit(args.generated_root.resolve())
+    report = audit(
+        args.generated_root.resolve(),
+        perceptual_dpi=args.perceptual_dpi,
+    )
     rendered = json.dumps(report, indent=2, ensure_ascii=False) + "\n"
     if args.json:
         args.json.parent.mkdir(parents=True, exist_ok=True)

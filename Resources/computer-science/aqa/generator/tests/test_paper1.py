@@ -62,6 +62,7 @@ def test_paper1_package_contains_all_on_screen_exam_artifacts(tmp_path) -> None:
         "skeleton_program",
         "data_file",
         "mark_scheme",
+        "assessment_package",
     ]
     assert all(path.exists() and path.stat().st_size > 0 for path in paths.values())
     assert paths["question_paper"].name == "cs-paper-1-question-paper.pdf"

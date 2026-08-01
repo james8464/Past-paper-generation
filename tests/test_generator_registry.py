@@ -26,19 +26,15 @@ def test_registry_is_the_canonical_backend_subject_list() -> None:
     assert set(generator_capabilities()) == set(advertised)
 
 
-def test_capabilities_distinguish_ai_and_constrained_generators() -> None:
-    edexcel = generator_capability("economics")
-    aqa = generator_capability("economics_aqa")
-
-    assert edexcel.uses_ai
-    assert set(edexcel.supported_providers) == {
-        "ollama",
-        "openai",
-        "anthropic",
-        "apple",
-    }
-    assert not aqa.uses_ai
-    assert aqa.supported_providers == ()
+def test_every_advertised_generator_creates_unique_ai_content() -> None:
+    for capability in generator_capabilities().values():
+        assert capability.uses_ai
+        assert set(capability.supported_providers) == {
+            "ollama",
+            "openai",
+            "anthropic",
+            "apple",
+        }
 
 
 def test_every_paper_declares_complete_output_roles() -> None:
@@ -47,6 +43,7 @@ def test_every_paper_declares_complete_output_roles() -> None:
             roles = capability.outputs_for(paper)
             assert "question_paper" in roles
             assert "mark_scheme" in roles
+            assert "assessment_package" in roles
             assert len(roles) == len(set(roles))
 
 
@@ -68,5 +65,7 @@ def test_every_entry_point_and_declared_resource_is_loadable() -> None:
 def test_backend_bundle_script_is_registry_driven() -> None:
     script = (REPO_ROOT / "macOS" / "scripts" / "build_backend.sh").read_text()
     assert "generator_capabilities" in script
+    assert "--hidden-import" in script
+    assert "bundle-check" in script
     for capability in generator_capabilities().values():
         assert f"--collect-submodules {capability.package}" not in script

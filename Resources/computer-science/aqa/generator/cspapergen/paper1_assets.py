@@ -45,6 +45,7 @@ def render_preliminary_material(
     output_path: Path,
 ) -> None:
     pdf = canvas.Canvas(str(output_path), pagesize=A4, pageCompression=0)
+    _set_metadata(pdf, blueprint, "Preliminary material")
     _practice_header(pdf, "PRELIMINARY MATERIAL", blueprint.paper_code)
     pdf.setFont(FONT_BOLD, 20)
     pdf.drawString(55, 735, "A-level COMPUTER SCIENCE")
@@ -132,6 +133,7 @@ def render_electronic_answer_document(
     output_path: Path,
 ) -> None:
     pdf = canvas.Canvas(str(output_path), pagesize=A4, pageCompression=0)
+    _set_metadata(pdf, blueprint, "Electronic answer document")
     page = 1
     _practice_header(pdf, "ELECTRONIC ANSWER DOCUMENT", blueprint.paper_code)
     pdf.setFont(FONT_BOLD, 20)
@@ -189,6 +191,19 @@ def render_electronic_answer_document(
             _page_footer(pdf, page, blueprint.paper_code)
             pdf.showPage()
     pdf.save()
+
+
+def _set_metadata(
+    pdf: canvas.Canvas,
+    blueprint: PaperBlueprint,
+    role: str,
+) -> None:
+    pdf.setTitle(f"{blueprint.paper_code} {blueprint.title} — {role}")
+    pdf.setAuthor("Paper creator")
+    pdf.setCreator("Paper creator")
+    pdf.setSubject(
+        "Independent A-level Computer Science practice material"
+    )
 
 
 def _practice_header(pdf: canvas.Canvas, document: str, code: str) -> None:

@@ -1,15 +1,18 @@
 from __future__ import annotations
 
 import argparse
+import importlib
 import os
+import sys
 from pathlib import Path
 from typing import Callable
 
 from Backend.Core.benchmark import handle_benchmark
 from Backend.Core.events import BACKEND_VERSION, emit
 from Backend.Core.generation import handle_generate
-from Backend.Core.generator_registry import generator_subjects
+from Backend.Core.generator_registry import generator_capabilities, generator_subjects
 from Backend.Core.ollama import handle_list_models, handle_ollama_status, handle_pull_model
+from Backend.Core.paths import REPO_ROOT
 
 DEFAULT_OUTPUT_DIR = Path.home() / "Downloads"
 DEFAULT_MODEL = os.environ.get("PAPER_CREATOR_DEFAULT_MODEL", "qwen2.5:14b")
@@ -23,6 +26,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     status = subparsers.add_parser("ollama-status")
     status.set_defaults(handler=handle_ollama_status)
+
+    bundle_check = subparsers.add_parser(
+        "bundle-check",
+        help=argparse.SUPPRESS,
+    )
+    bundle_check.set_defaults(handler=handle_bundle_check)
 
     models = subparsers.add_parser("list-models")
     models.set_defaults(handler=handle_list_models)
@@ -53,6 +62,40 @@ def build_parser() -> argparse.ArgumentParser:
     generate.add_argument("--notes", default="")
     generate.set_defaults(handler=handle_generate)
     return parser
+
+
+def handle_bundle_check(_args: argparse.Namespace) -> int:
+    """Fail fast when a packaged backend is missing a dynamic generator."""
+    loaded: list[str] = []
+    errors: list[str] = []
+    for capability in generator_capabilities().values():
+        generator_root = REPO_ROOT / "Resources" / capability.python_path
+        root_text = str(generator_root)
+        if root_text not in sys.path:
+            sys.path.insert(0, root_text)
+        module_name, function_name = capability.entry_point.split(":", maxsplit=1)
+        try:
+            module = importlib.import_module(module_name)
+            if not callable(getattr(module, function_name, None)):
+                raise TypeError(f"missing callable {function_name}")
+            syllabus = REPO_ROOT / "Resources" / capability.syllabus_path
+            if not syllabus.is_file():
+                raise FileNotFoundError(f"missing syllabus {capability.syllabus_path}")
+            loaded.append(capability.backend_subject)
+        except Exception as error:  # noqa: BLE001 - reported as bundle diagnostics.
+            errors.append(f"{capability.backend_subject}: {error}")
+    emit(
+        "bundle_status",
+        healthy=not errors,
+        generators=loaded,
+        errors=errors,
+        message=(
+            f"Loaded {len(loaded)} generator families."
+            if not errors
+            else "Generator bundle validation failed."
+        ),
+    )
+    return 0 if not errors else 1
 
 
 def main(argv: list[str] | None = None) -> int:

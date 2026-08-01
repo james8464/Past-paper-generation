@@ -27,11 +27,11 @@
       "package": "aqaaccountgen",
       "entry_point": "aqaaccountgen.cli:generate_package",
       "syllabus_path": "accounting/aqa/generator/data/syllabus.json",
-      "content_mode": "deterministic",
-      "supported_providers": [],
+      "content_mode": "ai-assisted",
+      "supported_providers": ["ollama", "openai", "anthropic", "apple"],
       "outputs_by_paper": {
-        "1": ["question_paper", "mark_scheme"],
-        "2": ["question_paper", "mark_scheme"]
+        "1": ["question_paper", "mark_scheme", "assessment_package"],
+        "2": ["question_paper", "mark_scheme", "assessment_package"]
       },
       "calibration_path": "accounting/aqa/generator/data/difficulty-calibration.json",
       "advertised": true,
@@ -87,12 +87,12 @@
       "package": "aqaecongen",
       "entry_point": "aqaecongen.cli:generate_package",
       "syllabus_path": "economics/aqa/generator/data/syllabus.json",
-      "content_mode": "deterministic",
-      "supported_providers": [],
+      "content_mode": "ai-assisted",
+      "supported_providers": ["ollama", "openai", "anthropic", "apple"],
       "outputs_by_paper": {
-        "1": ["question_paper", "mark_scheme"],
-        "2": ["question_paper", "mark_scheme"],
-        "3": ["question_paper", "source_booklet", "mark_scheme"]
+        "1": ["question_paper", "mark_scheme", "assessment_package"],
+        "2": ["question_paper", "mark_scheme", "assessment_package"],
+        "3": ["question_paper", "source_booklet", "mark_scheme", "assessment_package"]
       },
       "calibration_path": "economics/aqa/generator/data/difficulty-calibration.json",
       "advertised": true,
@@ -166,12 +166,12 @@
       "package": "aqabizgen",
       "entry_point": "aqabizgen.cli:generate_package",
       "syllabus_path": "business/aqa/generator/data/syllabus.json",
-      "content_mode": "deterministic",
-      "supported_providers": [],
+      "content_mode": "ai-assisted",
+      "supported_providers": ["ollama", "openai", "anthropic", "apple"],
       "outputs_by_paper": {
-        "1": ["question_paper", "mark_scheme"],
-        "2": ["question_paper", "mark_scheme"],
-        "3": ["question_paper", "source_booklet", "mark_scheme"]
+        "1": ["question_paper", "mark_scheme", "assessment_package"],
+        "2": ["question_paper", "mark_scheme", "assessment_package"],
+        "3": ["question_paper", "source_booklet", "mark_scheme", "assessment_package"]
       },
       "calibration_path": "business/aqa/generator/data/difficulty-calibration.json",
       "advertised": true,
@@ -248,8 +248,8 @@
       "content_mode": "ai-assisted",
       "supported_providers": ["ollama", "openai", "anthropic", "apple"],
       "outputs_by_paper": {
-        "1": ["question_paper", "preliminary_material", "electronic_answer_document", "skeleton_program", "data_file", "mark_scheme"],
-        "2": ["question_paper", "mark_scheme"]
+        "1": ["question_paper", "preliminary_material", "electronic_answer_document", "skeleton_program", "data_file", "mark_scheme", "assessment_package"],
+        "2": ["question_paper", "mark_scheme", "assessment_package"]
       },
       "advertised": true,
       "declared_papers": ["1", "2"],
@@ -304,11 +304,11 @@
       "package": "ocrcsgen",
       "entry_point": "ocrcsgen.cli:generate_package",
       "syllabus_path": "computer-science/ocr/generator/data/syllabus.json",
-      "content_mode": "deterministic",
-      "supported_providers": [],
+      "content_mode": "ai-assisted",
+      "supported_providers": ["ollama", "openai", "anthropic", "apple"],
       "outputs_by_paper": {
-        "1": ["question_paper", "mark_scheme"],
-        "2": ["question_paper", "mark_scheme"]
+        "1": ["question_paper", "mark_scheme", "assessment_package"],
+        "2": ["question_paper", "mark_scheme", "assessment_package"]
       },
       "calibration_path": "computer-science/ocr/generator/data/difficulty-calibration.json",
       "advertised": true,
@@ -364,12 +364,12 @@
       "package": "ocregen",
       "entry_point": "ocregen.cli:generate_package",
       "syllabus_path": "economics/ocr/generator/data/syllabus.json",
-      "content_mode": "deterministic",
-      "supported_providers": [],
+      "content_mode": "ai-assisted",
+      "supported_providers": ["ollama", "openai", "anthropic", "apple"],
       "outputs_by_paper": {
-        "1": ["question_paper", "mark_scheme"],
-        "2": ["question_paper", "mark_scheme"],
-        "3": ["question_paper", "mark_scheme"]
+        "1": ["question_paper", "mark_scheme", "assessment_package"],
+        "2": ["question_paper", "mark_scheme", "assessment_package"],
+        "3": ["question_paper", "mark_scheme", "assessment_package"]
       },
       "calibration_path": "economics/ocr/generator/data/difficulty-calibration.json",
       "advertised": true,
@@ -446,9 +446,9 @@
       "content_mode": "ai-assisted",
       "supported_providers": ["ollama", "openai", "anthropic", "apple"],
       "outputs_by_paper": {
-        "1": ["question_paper", "source_booklet", "mark_scheme"],
-        "2": ["question_paper", "source_booklet", "mark_scheme"],
-        "3": ["question_paper", "source_booklet", "mark_scheme"]
+        "1": ["question_paper", "source_booklet", "mark_scheme", "assessment_package"],
+        "2": ["question_paper", "source_booklet", "mark_scheme", "assessment_package"],
+        "3": ["question_paper", "source_booklet", "mark_scheme", "assessment_package"]
       },
       "advertised": true,
       "declared_papers": ["1", "2", "3"],

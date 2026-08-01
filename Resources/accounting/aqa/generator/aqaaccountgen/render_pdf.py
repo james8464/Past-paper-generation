@@ -132,7 +132,7 @@ def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
 
 
 def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
-    return [
+    pages = [
         [
             Paragraph("Mark schemes", STYLES["kicker"]),
             Paragraph("General marking guidance", STYLES["heading"]),
@@ -373,6 +373,40 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
             ),
         ],
     ]
+    narrative = [
+        (
+            "Applying question-specific instructions",
+            "Read the complete response before making a final decision. Credit "
+            "an alternative accounting method when it is valid, applied "
+            "consistently and answers the requirement. Do not infer a method "
+            "from an unsupported answer.",
+        ),
+        (
+            "Accuracy and follow through",
+            "Where the scheme identifies method or follow-through marks, trace "
+            "the student's own figures through later work. Award each distinct "
+            "mark once, observe any stated dependency and check that rounding "
+            "does not create a material contradiction.",
+        ),
+        (
+            "Final standardisation check",
+            "Compare the decision with the printed maximum, the assessment "
+            "objective and the quality required by nearby descriptors. Record "
+            "a mark for every part and reconcile the question and paper totals.",
+        ),
+    ]
+    for page in pages:
+        page.append(Spacer(1, 7 * mm))
+        for heading, text in narrative:
+            page.extend(
+                [
+                    Paragraph(heading, STYLES["heading"]),
+                    Spacer(1, 2 * mm),
+                    Paragraph(text, STYLES["small"]),
+                    Spacer(1, 4 * mm),
+                ]
+            )
+    return pages
 
 
 def _objective_test_answers(questions: list[GeneratedQuestion]) -> list[Flowable]:
@@ -2198,6 +2232,7 @@ def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
         bottomMargin=18 * mm,
         title=f"{paper.paper_code} {paper.title} — {kind}",
         author="Paper creator",
+        subject="Independent A-level Accounting practice material",
     )
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="body")
     doc.addPageTemplates(

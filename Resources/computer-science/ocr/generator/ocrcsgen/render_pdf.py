@@ -767,6 +767,7 @@ def _document(
         bottomMargin=18 * mm,
         title=f"{paper.paper_code} {paper.title} — {kind}",
         author="Paper creator",
+        subject="Independent A-level Computer Science practice material",
     )
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="body")
     templates = [

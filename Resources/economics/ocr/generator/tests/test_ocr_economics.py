@@ -77,7 +77,11 @@ def test_all_packages_render_reference_page_geometry(tmp_path: Path) -> None:
             output_dir=tmp_path / paper,
             seed=123,
         )
-        assert paths.keys() == {"question_paper", "mark_scheme"}
+        assert paths.keys() == {
+            "question_paper",
+            "mark_scheme",
+            "assessment_package",
+        }
         assert len(PdfReader(paths["question_paper"]).pages) == expected_pages
         cover = PdfReader(paths["question_paper"]).pages[0].extract_text() or ""
         assert "A Level Economics" in cover

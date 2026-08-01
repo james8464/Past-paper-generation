@@ -9,6 +9,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from typing import Callable, Protocol
 
+from Backend.Core.model_review import (
+    assert_materially_new,
+    require_independent_review,
+)
 from cspapergen.models import MarkingGuidance, PaperBlueprint, Question, QuestionPart, Syllabus
 from cspapergen.notes import note_context_for_topic
 
@@ -17,6 +21,14 @@ from cspapergen.notes import note_context_for_topic
 class OllamaClient:
     base_url: str
     model: str
+
+    @property
+    def provider(self) -> str:
+        return "ollama"
+
+    @property
+    def supports_parallel_generation(self) -> bool:
+        return False
 
     def generate_json(self, prompt: str, retries: int = 2) -> dict[str, object]:
         last_error: Exception | None = None
@@ -79,28 +91,31 @@ def improve_questions_with_ollama(
             f"Generating question {display_index}/{total}: "
             f"0 {question.number:02d} ({topic.title})"
         )
-        try:
-            payload = client.generate_json(
-                _prompt(
-                    question,
-                    topic.title,
-                    note_context_for_topic(topic.id, topic.title),
-                    blueprint,
-                )
-            )
-            return (
-                _merge_question(question, payload),
-                (
-                    f"Generated question {display_index}/{total}: "
-                    f"0 {question.number:02d}"
-                ),
-            )
-        except (RuntimeError, json.JSONDecodeError, ValueError, KeyError) as error:
-            return (
+        payload = client.generate_json(
+            _prompt(
                 question,
-                f"Question {display_index}/{total}: 0 {question.number:02d} "
-                f"(using validated draft after model error: {error})",
+                topic.title,
+                note_context_for_topic(topic.id, topic.title),
+                blueprint,
             )
+        )
+        candidate = _merge_question(question, payload)
+        _validate_ai_question(question, candidate)
+        require_independent_review(
+            client,
+            item_id=f"question-{question.number}",
+            subject="AQA A-level Computer Science",
+            blueprint=question,
+            candidate=candidate,
+            specification=topic,
+        )
+        return (
+            candidate,
+            (
+                f"Generated and reviewed question {display_index}/{total}: "
+                f"0 {question.number:02d}"
+            ),
+        )
 
     completed_messages: dict[int, str] = {}
     next_message = 0
@@ -111,14 +126,7 @@ def improve_questions_with_ollama(
         }
         for future in as_completed(futures):
             index = futures[future]
-            try:
-                improved[index], completed_messages[index] = future.result()
-            except Exception as error:  # noqa: BLE001
-                completed_messages[index] = (
-                    f"Question {index + 1}/{total}: "
-                    f"0 {blueprint.questions[index].number:02d} "
-                    f"(using validated draft after unexpected model error: {error})"
-                )
+            improved[index], completed_messages[index] = future.result()
             while next_message in completed_messages:
                 emit(completed_messages.pop(next_message))
                 next_message += 1
@@ -132,13 +140,13 @@ def _prompt(
     blueprint: PaperBlueprint,
 ) -> str:
     parts = "\n".join(f"- Part {part.label}: {part.marks} marks, {part.prompt}" for part in question.parts)
-    return f"""You are writing an unofficial A-level Computer Science {blueprint.paper_code} Paper {blueprint.paper_number} practice paper.
+    return f"""You are writing an unofficial A-level Computer Science {blueprint.paper_code} Paper {blueprint.paper_number}.
 
 Use only this syllabus topic: {question.topic_id} {topic_title}
 Revision-note context:
 {notes}
 
-Rewrite this question in concise UK exam style. Preserve marks, part labels, answer units, stimulus meaning, scenario names and correct answers. Do not add exam-board branding or copied past-paper text.
+Create a genuinely new independent question in concise UK exam style. Do not copy, reconstruct or closely paraphrase a live, historic or draft paper question. Preserve the immutable marks, part labels, answer units, stimulus, scenario names, numeric values and correct answers. Do not add exam-board branding.
 
 Question stem: {question.stem}
 Parts:
@@ -177,6 +185,61 @@ def _merge_question(question: Question, payload: dict[str, object]) -> Question:
             merged.append(part.model_copy(update={"prompt": prompt, "marking": marking}))
         parts = merged
     return question.model_copy(update={"stem": stem, "parts": parts})
+
+
+def _validate_ai_question(original: Question, candidate: Question) -> None:
+    original_text = " ".join(
+        [original.stem, *(part.prompt for part in original.parts)]
+    )
+    candidate_text = " ".join(
+        [candidate.stem, *(part.prompt for part in candidate.parts)]
+    )
+    assert_materially_new(
+        original_text,
+        candidate_text,
+        item_id=f"question-{original.number}",
+        similarity_limit=0.9,
+    )
+    if len(candidate.parts) != len(original.parts):
+        raise ValueError(f"question-{original.number} changed its part count")
+    for original_part, candidate_part in zip(
+        original.parts, candidate.parts, strict=True
+    ):
+        immutable = (
+            original_part.label,
+            original_part.marks,
+            original_part.answer_lines,
+            original_part.answer_unit,
+            original_part.options,
+            original_part.correct_option,
+            original_part.marking.ao,
+        )
+        actual = (
+            candidate_part.label,
+            candidate_part.marks,
+            candidate_part.answer_lines,
+            candidate_part.answer_unit,
+            candidate_part.options,
+            candidate_part.correct_option,
+            candidate_part.marking.ao,
+        )
+        if actual != immutable:
+            raise ValueError(
+                f"question-{original.number}-{original_part.label} changed "
+                "an immutable assessment field"
+            )
+        points = [
+            point.strip()
+            for point in candidate_part.marking.points
+            if point.strip()
+        ]
+        if len(set(point.casefold() for point in points)) < min(
+            candidate_part.marks, 3
+        ):
+            raise ValueError(
+                f"question-{original.number}-{original_part.label} has "
+                "insufficient distinct marking points"
+            )
 
 
 def _text_list(raw: object, fallback: list[str]) -> list[str]:

@@ -71,8 +71,9 @@ def test_each_package_renders_readable_pdfs(tmp_path: Path) -> None:
             if paper == "3"
             else {"question_paper", "mark_scheme"}
         )
+        expected.add("assessment_package")
         assert paths.keys() == expected
-        for path in paths.values():
+        for path in (value for value in paths.values() if value.suffix == ".pdf"):
             reader = PdfReader(path)
             assert len(reader.pages) >= 2
             cover = reader.pages[0].extract_text() or ""

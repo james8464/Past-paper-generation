@@ -258,6 +258,24 @@ def validate_generated_paper(
                         f"question {question.number} structured scheme does not "
                         "trace every mark"
                     )
+                awarded_objectives: dict[str, int] = {}
+                for point in question.structured_mark_scheme:
+                    if point.marks and not point.assessment_objective:
+                        raise ValueError(
+                            f"question {question.number} has an awarded mark "
+                            "without an assessment objective"
+                        )
+                    if point.assessment_objective:
+                        awarded_objectives[point.assessment_objective] = (
+                            awarded_objectives.get(point.assessment_objective, 0)
+                            + point.marks
+                        )
+                if awarded_objectives != question.assessment_objectives:
+                    raise ValueError(
+                        f"question {question.number} structured scheme AO "
+                        f"allocation {awarded_objectives} does not match "
+                        f"{question.assessment_objectives}"
+                    )
                 normalised_points = {
                     " ".join(point.text.casefold().split())
                     for point in question.structured_mark_scheme
@@ -387,16 +405,17 @@ def _structured_scheme(question: GeneratedQuestion) -> list[MarkSchemePoint]:
     ]
     if not content_indices:
         content_indices = [0]
-    allocation = {index: 0 for index in range(len(question.mark_scheme))}
-    for mark in range(question.marks):
-        allocation[content_indices[mark % len(content_indices)]] += 1
-
     objectives = [
         objective
         for objective, count in question.assessment_objectives.items()
         for _ in range(count)
     ]
-    objective_cursor = 0
+    allocation: dict[tuple[int, str], int] = {}
+    for mark, objective in enumerate(objectives):
+        index = content_indices[mark % len(content_indices)]
+        key = (index, objective)
+        allocation[key] = allocation.get(key, 0) + 1
+
     result: list[MarkSchemePoint] = []
     for index, text in enumerate(question.mark_scheme):
         lowered = text.casefold()
@@ -406,19 +425,32 @@ def _structured_scheme(question: GeneratedQuestion) -> list[MarkSchemePoint]:
             credit_type = "guidance"
         else:
             credit_type = "point"
-        point_marks = allocation[index]
-        objective = (
-            objectives[objective_cursor]
-            if point_marks and objective_cursor < len(objectives)
-            else None
-        )
-        objective_cursor += point_marks
-        result.append(
-            MarkSchemePoint(
-                text=text,
-                marks=point_marks,
-                credit_type=credit_type,
-                assessment_objective=objective,
+        entries = [
+            (objective, marks)
+            for (allocated_index, objective), marks in allocation.items()
+            if allocated_index == index
+        ]
+        if not entries:
+            result.append(
+                MarkSchemePoint(
+                    text=text,
+                    marks=0,
+                    credit_type=credit_type,
+                    assessment_objective=None,
+                )
             )
-        )
+            continue
+        for entry_index, (objective, marks) in enumerate(entries):
+            result.append(
+                MarkSchemePoint(
+                    text=(
+                        text
+                        if len(entries) == 1
+                        else f"{text} [{objective} credit]"
+                    ),
+                    marks=marks,
+                    credit_type=credit_type,
+                    assessment_objective=objective,
+                )
+            )
     return result

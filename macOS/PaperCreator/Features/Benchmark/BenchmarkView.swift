@@ -7,39 +7,6 @@ struct BenchmarkWorkspace: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                HStack(spacing: 14) {
-                    Image(systemName: "speedometer")
-                        .font(.system(size: 26, weight: .semibold))
-                        .symbolRenderingMode(.hierarchical)
-                        .foregroundStyle(.tint)
-                        .frame(width: 52, height: 52)
-                        .background(.tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text("Benchmark")
-                            .font(.title.weight(.semibold))
-                        Text("Measure generation-critical performance for this Mac.")
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer()
-
-                    if appModel.isBenchmarkRunning {
-                        Button(role: .cancel, action: appModel.cancelBenchmark) {
-                            Label("Cancel", systemImage: "xmark.circle")
-                        }
-                        .controlSize(.large)
-                    } else {
-                        Button(action: appModel.startBenchmark) {
-                            Label("Run \(Int(AppDefaults.benchmarkDurationSeconds)) Second Test", systemImage: "play.fill")
-                        }
-                        .disabled(appModel.isRunning)
-                        .controlSize(.large)
-                        .nativePrimaryActionStyle()
-                    }
-                }
-                .nativePanel()
-
                 BenchmarkOverviewPanel()
                 BenchmarkLiveCharts()
                 BenchmarkMetricGrid()
@@ -51,6 +18,24 @@ struct BenchmarkWorkspace: View {
         }
         .background(.background)
         .navigationTitle("Benchmark")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                if appModel.isBenchmarkRunning {
+                    Button(role: .cancel, action: appModel.cancelBenchmark) {
+                        Label("Cancel", systemImage: "xmark.circle")
+                    }
+                } else {
+                    Button(action: appModel.startBenchmark) {
+                        Label(
+                            "Run \(Int(AppDefaults.benchmarkDurationSeconds)) Second Test",
+                            systemImage: "play.fill"
+                        )
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(appModel.isRunning)
+                }
+            }
+        }
     }
 }
 
@@ -58,9 +43,7 @@ private struct BenchmarkOverviewPanel: View {
     @EnvironmentObject private var appModel: AppViewModel
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            PanelHeader(title: "Diagnostic", systemImage: "gauge.with.dots.needle.67percent")
-
+        GroupBox {
             if appModel.isBenchmarkRunning {
                 ProgressView(value: appModel.benchmarkProgress ?? 0) {
                     Text("Running CPU, memory, storage, PDF, network, power and Ollama checks")
@@ -74,8 +57,9 @@ private struct BenchmarkOverviewPanel: View {
                 Text("Run the benchmark to calibrate ETA and check whether this Mac is ready for local generation.")
                     .foregroundStyle(.secondary)
             }
+        } label: {
+            Label("Diagnostic", systemImage: "gauge.with.dots.needle.67percent")
         }
-        .nativePanel()
     }
 }
 
@@ -199,42 +183,43 @@ private struct BenchmarkChart: View {
     let value: KeyPath<BenchmarkSample, Double>
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text(title)
-                    .font(.headline)
-                Spacer()
-                if let latest = samples.last {
-                    Text(latest[keyPath: value].formatted(.number.precision(.fractionLength(0...1))) + " \(unit)")
-                        .foregroundStyle(.secondary)
-                        .monospacedDigit()
+        GroupBox {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Spacer()
+                    if let latest = samples.last {
+                        Text(latest[keyPath: value].formatted(.number.precision(.fractionLength(0...1))) + " \(unit)")
+                            .foregroundStyle(.secondary)
+                            .monospacedDigit()
+                    }
                 }
-            }
 
-            if samples.isEmpty {
-                PanelEmptyState(title: "No Samples", message: "Start the benchmark to populate this chart.", systemImage: "chart.xyaxis.line")
+                if samples.isEmpty {
+                    PanelEmptyState(title: "No Samples", message: "Start the benchmark to populate this chart.", systemImage: "chart.xyaxis.line")
+                        .frame(height: 150)
+                } else {
+                    Chart(samples) { sample in
+                        LineMark(
+                            x: .value("Seconds", sample.elapsed),
+                            y: .value(unit, sample[keyPath: value])
+                        )
+                        .interpolationMethod(.catmullRom)
+                        .foregroundStyle(.tint)
+                        AreaMark(
+                            x: .value("Seconds", sample.elapsed),
+                            y: .value(unit, sample[keyPath: value])
+                        )
+                        .interpolationMethod(.catmullRom)
+                        .foregroundStyle(.tint.opacity(0.12))
+                    }
+                    .chartXAxisLabel("seconds")
+                    .chartYAxisLabel(unit)
                     .frame(height: 150)
-            } else {
-                Chart(samples) { sample in
-                    LineMark(
-                        x: .value("Seconds", sample.elapsed),
-                        y: .value(unit, sample[keyPath: value])
-                    )
-                    .interpolationMethod(.catmullRom)
-                    .foregroundStyle(.tint)
-                    AreaMark(
-                        x: .value("Seconds", sample.elapsed),
-                        y: .value(unit, sample[keyPath: value])
-                    )
-                    .interpolationMethod(.catmullRom)
-                    .foregroundStyle(.tint.opacity(0.12))
                 }
-                .chartXAxisLabel("seconds")
-                .chartYAxisLabel(unit)
-                .frame(height: 150)
             }
+        } label: {
+            Label(title, systemImage: "chart.xyaxis.line")
         }
-        .nativePanel()
     }
 }
 
@@ -242,49 +227,37 @@ private struct BenchmarkMetricGrid: View {
     @EnvironmentObject private var appModel: AppViewModel
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            PanelHeader(title: "Results", systemImage: "list.bullet.rectangle")
-
+        GroupBox {
             if appModel.benchmarkMetrics.isEmpty {
                 PanelEmptyState(title: "No Results", message: "Metric results appear as the diagnostic runs.", systemImage: "speedometer")
                     .frame(maxWidth: .infinity, minHeight: 130)
             } else {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 230), spacing: 12)], spacing: 12) {
-                    ForEach(appModel.benchmarkMetrics) { metric in
-                        BenchmarkMetricTile(metric: metric)
+                Table(appModel.benchmarkMetrics) {
+                    TableColumn("Metric") { metric in
+                        Text(metric.name)
+                    }
+                    TableColumn("Value") { metric in
+                        Text(metric.displayValue)
+                            .monospacedDigit()
+                    }
+                    TableColumn("Score") { metric in
+                        if let score = metric.score {
+                            Text(score.formatted(.percent.precision(.fractionLength(0))))
+                                .monospacedDigit()
+                        } else {
+                            Text("—")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    TableColumn("Detail") { metric in
+                        Text(metric.detail ?? "")
+                            .foregroundStyle(.secondary)
                     }
                 }
+                .frame(minHeight: 230)
             }
+        } label: {
+            Label("Results", systemImage: "list.bullet.rectangle")
         }
-        .nativePanel()
-    }
-}
-
-private struct BenchmarkMetricTile: View {
-    let metric: BenchmarkMetric
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 7) {
-            HStack {
-                Text(metric.name)
-                    .font(.headline)
-                Spacer()
-                if let score = metric.score {
-                    Text(score.formatted(.percent.precision(.fractionLength(0))))
-                        .font(.caption.monospacedDigit())
-                        .foregroundStyle(score >= 0.7 ? .green : .orange)
-                }
-            }
-            Text(metric.displayValue)
-                .font(.title3.monospacedDigit().weight(.semibold))
-            if let detail = metric.detail, !detail.isEmpty {
-                Text(detail)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-            }
-        }
-        .padding(12)
-        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 }

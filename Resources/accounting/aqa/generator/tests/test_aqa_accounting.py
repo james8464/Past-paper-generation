@@ -70,7 +70,11 @@ def test_both_packages_render_36_page_question_papers(tmp_path: Path) -> None:
             output_dir=tmp_path / paper,
             seed=123,
         )
-        assert set(paths) == {"question_paper", "mark_scheme"}
+        assert set(paths) == {
+            "question_paper",
+            "mark_scheme",
+            "assessment_package",
+        }
         assert page_count(paths["question_paper"]) == 36
         assert page_count(paths["mark_scheme"]) == mark_scheme_pages[paper]
         assert all(path.stat().st_size > 2000 for path in paths.values())

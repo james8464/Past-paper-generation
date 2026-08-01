@@ -481,8 +481,8 @@ def _twenty_five_mark_continuation(
 
 MARK_SCHEME_EXTENSION_PAGE_COUNTS = {
     "paper_1": 7,
-    "paper_2": 5,
-    "paper_3": 3,
+    "paper_2": 7,
+    "paper_3": 4,
 }
 
 
@@ -518,7 +518,10 @@ def _continued_marking_guidance(
     chunk = (points + points)[start : start + chunk_size]
     rows = [["Indicative content and level guidance", ""]]
     rows.extend(
-        [[Paragraph(f"• {point}", STYLES["small"]), ""] for point in chunk]
+        [
+            [Paragraph(f"• {point}", STYLES["scheme_small"]), ""]
+            for point in chunk
+        ]
     )
     table = Table(rows, colWidths=[155 * mm, 12 * mm])
     table.setStyle(
@@ -1181,12 +1184,18 @@ def _lozenge() -> Drawing:
 def _scheme_block(question: GeneratedQuestion) -> list[Flowable]:
     rows = [
         [
-            Paragraph(f"<b>{question.number}</b> {question.prompt}", STYLES["body"]),
+            Paragraph(
+                f"<b>{question.number}</b> {question.prompt}",
+                STYLES["scheme_small"],
+            ),
             str(question.marks),
         ]
     ]
     rows.extend(
-        [[Paragraph(f"• {point}", STYLES["small"]), ""] for point in question.mark_scheme]
+        [
+            [Paragraph(f"• {point}", STYLES["scheme_small"]), ""]
+            for point in question.mark_scheme
+        ]
     )
     table = Table(rows, colWidths=[155 * mm, 12 * mm], repeatRows=1)
     table.setStyle(
@@ -1309,6 +1318,7 @@ def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
         bottomMargin=18 * mm,
         title=f"{paper.paper_code} {paper.title} — {kind}",
         author="Paper creator",
+        subject="Independent A-level Business practice material",
     )
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="body")
     doc.addPageTemplates(
@@ -1423,6 +1433,7 @@ _base = getSampleStyleSheet()
 STYLES = {
     "body": ParagraphStyle("body", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14),
     "small": ParagraphStyle("small", parent=_base["BodyText"], fontName=FONT, fontSize=9.2, leading=12),
+    "scheme_small": ParagraphStyle("scheme_small", parent=_base["BodyText"], fontName=FONT, fontSize=8.1, leading=9.7),
     "heading": ParagraphStyle("heading", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=11, leading=14),
     "kicker": ParagraphStyle("kicker", parent=_base["Heading2"], fontName=FONT_BOLD, fontSize=15, leading=18),
     "title": ParagraphStyle("title", parent=_base["Title"], fontName=FONT_BOLD, fontSize=23, leading=27),

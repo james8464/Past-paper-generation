@@ -1597,7 +1597,7 @@ def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
 
 def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
     page_size = OCR_MARK_SCHEME_FRONT_SIZE if kind == "Mark scheme" else A4
-    doc = BaseDocTemplate(str(path), pagesize=page_size, leftMargin=18 * mm, rightMargin=17 * mm, topMargin=19 * mm, bottomMargin=18 * mm, title=f"{paper.paper_code} {paper.title} — {kind}", author="Paper creator")
+    doc = BaseDocTemplate(str(path), pagesize=page_size, leftMargin=18 * mm, rightMargin=17 * mm, topMargin=19 * mm, bottomMargin=18 * mm, title=f"{paper.paper_code} {paper.title} — {kind}", author="Paper creator", subject="Independent A-level Economics practice material")
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="body")
     templates = [
         PageTemplate(

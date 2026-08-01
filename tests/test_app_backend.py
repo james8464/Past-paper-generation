@@ -94,6 +94,15 @@ def test_ollama_status_emits_json() -> None:
     assert "installed" in events[-1]
 
 
+def test_bundle_check_loads_every_advertised_generator() -> None:
+    events = run_bridge("bundle-check")
+    status = events[-1]
+    assert status["type"] == "bundle_status"
+    assert status["healthy"] is True
+    assert status["errors"] == []
+    assert len(status["generators"]) == 7
+
+
 def test_economics_dry_run_generates_expected_files(tmp_path: Path) -> None:
     events = run_bridge(
         "generate",
@@ -112,6 +121,7 @@ def test_economics_dry_run_generates_expected_files(tmp_path: Path) -> None:
         "question_paper",
         "source_booklet",
         "mark_scheme",
+        "assessment_package",
         "package_manifest",
     }
     assert all(path.exists() for path in files.values())
@@ -120,14 +130,23 @@ def test_economics_dry_run_generates_expected_files(tmp_path: Path) -> None:
     assert not (tmp_path / "paper-1-audit.json").exists()
     assert events[-1]["type"] == "done"
     manifest = json.loads(files["package_manifest"].read_text(encoding="utf-8"))
-    assert manifest["schema_version"] == 1
+    assert manifest["schema_version"] == 2
     assert manifest["generator"]["content_mode"] == "ai-assisted"
     assert manifest["request"]["seed"] == 123
     assert manifest["evidence"]["difficulty_independently_verified"] is False
+    assessment = json.loads(
+        files["assessment_package"].read_text(encoding="utf-8")
+    )
+    assert assessment["form_id"].startswith("economics-1-")
+    assert (
+        manifest["evidence"]["assessment_validation"]["form_id"]
+        == assessment["form_id"]
+    )
     assert set(manifest["outputs"]) == {
         "question_paper",
         "source_booklet",
         "mark_scheme",
+        "assessment_package",
     }
     assert all(output["sha256"] for output in manifest["outputs"].values())
 
@@ -184,6 +203,7 @@ def test_aqa_economics_all_papers_generate_expected_files(tmp_path: Path) -> Non
             if paper == "3"
             else {"question_paper", "mark_scheme"}
         )
+        expected.add("assessment_package")
         expected.add("package_manifest")
         assert files.keys() == expected
         assert all(path.exists() for path in files.values())
@@ -213,6 +233,7 @@ def test_ocr_economics_all_papers_generate_expected_files(tmp_path: Path) -> Non
         assert files.keys() == {
             "question_paper",
             "mark_scheme",
+            "assessment_package",
             "package_manifest",
         }
         assert all(path.exists() for path in files.values())
@@ -244,6 +265,7 @@ def test_ocr_computer_science_all_papers_generate_expected_files(
         assert files.keys() == {
             "question_paper",
             "mark_scheme",
+            "assessment_package",
             "package_manifest",
         }
         assert all(path.exists() for path in files.values())
@@ -275,6 +297,7 @@ def test_aqa_business_all_papers_generate_expected_files(tmp_path: Path) -> None
             if paper == "3"
             else {"question_paper", "mark_scheme"}
         )
+        expected.add("assessment_package")
         expected.add("package_manifest")
         assert files.keys() == expected
         assert all(path.exists() for path in files.values())
@@ -304,6 +327,7 @@ def test_aqa_accounting_all_papers_generate_expected_files(tmp_path: Path) -> No
         assert files.keys() == {
             "question_paper",
             "mark_scheme",
+            "assessment_package",
             "package_manifest",
         }
         assert all(path.exists() for path in files.values())
@@ -327,6 +351,7 @@ def test_cs_dry_run_generates_expected_files_without_audit(tmp_path: Path) -> No
     assert files.keys() == {
         "question_paper",
         "mark_scheme",
+        "assessment_package",
         "package_manifest",
     }
     assert all(path.exists() for path in files.values())
@@ -355,6 +380,7 @@ def test_cs_paper1_dry_run_generates_on_screen_package(tmp_path: Path) -> None:
         "skeleton_program",
         "data_file",
         "mark_scheme",
+        "assessment_package",
         "package_manifest",
     }
     assert all(path.exists() for path in files.values())
@@ -381,7 +407,7 @@ def test_missing_hosted_provider_key_returns_json_error(tmp_path: Path) -> None:
     assert "API key" in str(events[-1]["message"])
 
 
-def test_deterministic_generator_does_not_require_unused_provider_key(
+def test_every_advertised_generator_requires_a_model_outside_preview(
     tmp_path: Path,
 ) -> None:
     result = run_bridge_raw(
@@ -398,13 +424,11 @@ def test_deterministic_generator_does_not_require_unused_provider_key(
         "",
     )
 
-    assert result.returncode == 0
+    assert result.returncode == 2
     events = [json.loads(line) for line in result.stdout.splitlines() if line.strip()]
-    assert any(
-        event.get("stage") == "provider"
-        and "built-in constrained generator" in str(event.get("message"))
-        for event in events
-    )
+    assert events[-1]["type"] == "error"
+    assert events[-1]["code"] == "invalid_request"
+    assert "Choose a model" in str(events[-1]["message"])
 
 
 def test_bad_output_path_returns_json_error(tmp_path: Path) -> None:

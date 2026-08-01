@@ -69,7 +69,7 @@ python bridge.py generate --subject accounting_aqa --paper 2 --output ~/Download
 ## Structure
 
 - `macOS/`: SwiftUI app, Xcode project, tests, and build scripts.
-- `Backend/Core/`: JSONL bridge used by the app and CLI.
+- `Backend/Core/`: shared AI, assessment, validation, JSONL, and publication core.
 - `Resources/economics/edexcel-a/`: Economics generator and local resources.
 - `Resources/economics/aqa/`: AQA 7136 Papers 1–3, source insert, and calibration evidence.
 - `Resources/economics/ocr/`: OCR H460 Papers 1–3 and aggregate calibration evidence.
@@ -85,6 +85,12 @@ python bridge.py generate --subject accounting_aqa --paper 2 --output ~/Download
   end-to-end architecture, current evidence, fidelity limits, and macOS HIG audit.
 - [`docs/project-analysis/IMPROVEMENT_ROADMAP.md`](docs/project-analysis/IMPROVEMENT_ROADMAP.md):
   prioritized visual, assessment-quality, difficulty, structure, and native-UI work.
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md): current runtime and repository
+  boundaries.
+- [`docs/ASSESSMENT_QUALITY.md`](docs/ASSESSMENT_QUALITY.md): AI, mark-scheme,
+  originality, and response-calibration invariants.
+- [`docs/HIG_COMPLIANCE.md`](docs/HIG_COMPLIANCE.md): native macOS interaction,
+  geometry, and accessibility decisions.
 - [`graphify-out/GRAPH_REPORT.md`](graphify-out/GRAPH_REPORT.md): token-efficient
   code communities and architectural hubs.
 - [`graphify-out/graph.html`](graphify-out/graph.html): interactive code graph.

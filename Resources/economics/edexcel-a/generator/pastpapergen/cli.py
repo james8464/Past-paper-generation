@@ -5,6 +5,7 @@ import secrets
 from pathlib import Path
 from typing import Callable
 
+from Backend.Core.assessment_package import write_assessment_package
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.ollama_client import OllamaClient, generate_questions_with_ollama
 from pastpapergen.paper_configs import load_builtin_paper_config
@@ -72,9 +73,10 @@ def generate_package(
     emit("Building paper blueprint")
     blueprint = build_paper_blueprint(config, syllabus, seed=run_seed)
 
+    question_client = client
     if not dry_run:
         emit(f"Generating questions with model {model}")
-        question_client = client or OllamaClient(base_url=ollama_url, model=model)
+        question_client = question_client or OllamaClient(base_url=ollama_url, model=model)
         blueprint = generate_questions_with_ollama(question_client, blueprint, syllabus, progress=progress)
     else:
         emit("Using built-in draft questions")
@@ -93,12 +95,23 @@ def generate_package(
     render_source_booklet(blueprint, syllabus, source_booklet)
     emit("Rendering mark scheme")
     render_mark_scheme(blueprint, syllabus, mark_scheme)
+    assessment = output_dir / f"{stem}-assessment.json"
+    write_assessment_package(
+        blueprint,
+        assessment,
+        subject="economics",
+        paper_number=paper,
+        preview=dry_run,
+        provider=getattr(question_client, "provider", "ollama") if not dry_run else None,
+        model=getattr(question_client, "model", model) if not dry_run else None,
+    )
     emit("Done")
 
     return {
         "question_paper": question_paper,
         "source_booklet": source_booklet,
         "mark_scheme": mark_scheme,
+        "assessment_package": assessment,
     }
 
 

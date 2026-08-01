@@ -24,6 +24,36 @@ SUBJECT_GUIDANCE = {
     ],
 }
 
+COMMON_PAGE_GUIDANCE = [
+    (
+        "Before awarding marks",
+        "Read the complete response and identify the approach the student has "
+        "taken. Apply the question-specific instructions first. Where the "
+        "response uses a valid alternative route, judge it against the same "
+        "knowledge, application, analysis and evaluation requirements.",
+    ),
+    (
+        "Applying the guidance",
+        "Award marks positively for demonstrated attainment. Do not infer an "
+        "answer that is not present, but accept equivalent terminology and a "
+        "different order of working when the meaning is unambiguous. Do not "
+        "reward the same point twice unless it performs a distinct function.",
+    ),
+    (
+        "Consistency",
+        "Use the full range of marks and apply comparable standards to "
+        "comparable responses. If a response sits between two decisions, return "
+        "to the descriptors and identify which features are sustained rather "
+        "than counting isolated words or statements.",
+    ),
+    (
+        "Recording the mark",
+        "Record a mark for every item, observe any dependency or cap, and check "
+        "that the sum does not exceed the printed maximum. Complete a final "
+        "question-total and paper-total check before the script is released.",
+    ),
+]
+
 
 def aqa_front_matter_pages(
     subject: str,
@@ -38,12 +68,23 @@ def aqa_front_matter_pages(
                 Paragraph(title, heading_style),
                 Spacer(1, 6 * mm),
                 Paragraph(guidance, body_style),
-                Spacer(1, 6 * mm),
+                Spacer(1, 5 * mm),
                 Paragraph(
                     "This guidance is written for this independent practice mark scheme "
                     "and should be applied consistently to every candidate response.",
                     body_style,
                 ),
+                Spacer(1, 7 * mm),
+                *[
+                    flowable
+                    for subtitle, text in COMMON_PAGE_GUIDANCE
+                    for flowable in (
+                        Paragraph(subtitle, heading_style),
+                        Spacer(1, 2 * mm),
+                        Paragraph(text, body_style),
+                        Spacer(1, 5 * mm),
+                    )
+                ],
                 PageBreak(),
             ]
         )

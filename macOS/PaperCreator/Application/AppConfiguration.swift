@@ -65,6 +65,7 @@ enum AppStorageKey {
     static let settingsPane = "settingsPane"
     static let selectedBoardID = "selectedBoardID"
     static let selectedPaperID = "selectedPaperID"
+    static let qualityInspectorVisible = "qualityInspectorVisible"
 }
 
 enum SecretAccount {

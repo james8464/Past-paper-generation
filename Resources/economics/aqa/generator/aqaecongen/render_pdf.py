@@ -306,7 +306,7 @@ def _assessment_objectives_table() -> Table:
 
 
 def _levels_page() -> list[Flowable]:
-    rows = [
+    raw_rows = [
         ["Level", "Characteristics of the response"],
         [
             "Highest",
@@ -324,6 +324,13 @@ def _levels_page() -> list[Flowable]:
             "application and little supported evaluation.",
         ],
         ["0", "No creditworthy material."],
+    ]
+    rows = [
+        [
+            Paragraph(str(level), STYLES["scheme"]),
+            Paragraph(str(description), STYLES["scheme"]),
+        ]
+        for level, description in raw_rows
     ]
     table = Table(rows, colWidths=[28 * mm, 137 * mm], repeatRows=1)
     table.setStyle(

@@ -19,17 +19,7 @@ struct ContentView: View {
             }
         }
         .navigationSplitViewStyle(.balanced)
-        .frame(minWidth: 860, minHeight: 620)
-        .toolbar {
-            ToolbarItem {
-                if appModel.isRunning {
-                    Button(role: .cancel, action: appModel.cancelGeneration) {
-                        Label("Cancel", systemImage: "xmark.circle")
-                    }
-                    .help("Cancel paper creation")
-                }
-            }
-        }
+        .frame(minWidth: 920, minHeight: 640)
         .alert("Generation Error", isPresented: $appModel.showError) {
             Button("OK", role: .cancel) { }
         } message: {
@@ -89,7 +79,11 @@ struct ContentView: View {
     }
 }
 
-#Preview {
-    ContentView()
-        .environmentObject(AppViewModel())
+#if DEBUG
+private struct ContentViewPreview: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+            .environmentObject(AppViewModel())
+    }
 }
+#endif

@@ -40,6 +40,7 @@ final class AppViewModel: ObservableObject {
     @Published var benchmarkSamples: [BenchmarkSample] = []
     @Published var benchmarkMetrics: [BenchmarkMetric] = []
     @Published var benchmarkVerdict: BenchmarkVerdict?
+    @Published var lastQualityReport: GenerationQualityReport?
 
     let distributionMode = DistributionMode.current
 
@@ -218,6 +219,7 @@ final class AppViewModel: ObservableObject {
         defaults.set(board.id, forKey: AppStorageKey.selectedBoardID)
         defaults.set(selectedPaperID, forKey: AppStorageKey.selectedPaperID)
         progressEntries.removeAll()
+        lastQualityReport = nil
         status = board.isReady ? "Ready" : "Coming Soon"
     }
 
@@ -278,6 +280,7 @@ final class AppViewModel: ObservableObject {
         persistSettings()
 
         progressEntries.removeAll()
+        lastQualityReport = nil
         didReceiveBackendError = false
         didCancelRun = false
         isRunning = true
@@ -630,6 +633,9 @@ final class AppViewModel: ObservableObject {
             if !generatedFiles.contains(where: { $0.url == file.url }) {
                 generatedFiles.insert(file, at: 0)
                 generatedFiles = Array(generatedFiles.prefix(60))
+            }
+            if role == "package_manifest" {
+                lastQualityReport = GenerationQualityReport.load(from: file.url)
             }
         case let .done(message):
             status = message

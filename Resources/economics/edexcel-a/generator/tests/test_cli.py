@@ -49,7 +49,12 @@ def test_generate_package_without_seed_does_not_write_audit(tmp_path, monkeypatc
         dry_run=True,
     )
 
-    assert set(paths) == {"question_paper", "source_booklet", "mark_scheme"}
+    assert set(paths) == {
+        "question_paper",
+        "source_booklet",
+        "mark_scheme",
+        "assessment_package",
+    }
     assert not (tmp_path / "paper-1-audit.json").exists()
 
 

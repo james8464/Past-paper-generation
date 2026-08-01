@@ -1,16 +1,5 @@
 import SwiftUI
 
-struct PanelHeader: View {
-    let title: String
-    let systemImage: String
-
-    var body: some View {
-        Label(title, systemImage: systemImage)
-            .font(.headline)
-            .symbolRenderingMode(.hierarchical)
-    }
-}
-
 struct GeneratedFilesTable: View {
     @EnvironmentObject private var appModel: AppViewModel
     let files: [GeneratedFile]
@@ -31,6 +20,7 @@ struct GeneratedFilesTable: View {
                         }
                     }
                     .foregroundStyle(file.exists ? .primary : .secondary)
+                    .draggable(file.url)
                 }
                 TableColumn("Created") { file in
                     Text(file.createdAt, format: .dateTime.day().month().hour().minute())

@@ -6,7 +6,11 @@ from functools import lru_cache
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-_BUNDLE_ROOT = Path(getattr(sys, "_MEIPASS", PROJECT_ROOT))
+_BUNDLE_ROOT = (
+    Path(getattr(sys, "_MEIPASS"))
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")
+    else PROJECT_ROOT
+)
 _BUNDLED_NOTES_TEXT_DIR = (
     _BUNDLE_ROOT
     / "Resources"

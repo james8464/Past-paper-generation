@@ -1,6 +1,6 @@
 [project]
 name = "pastpapergen"
-version = "0.1.0"
+version = "0.2.0"
 description = "Unofficial Pearson Edexcel A-Level Economics A practice paper generator."
 requires-python = ">=3.11"
 dependencies = [

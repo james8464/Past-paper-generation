@@ -470,6 +470,7 @@ struct GeneratedFile: Identifiable, Codable, Equatable {
         case "question_paper": "Question Paper"
         case "source_booklet": "Source Booklet"
         case "mark_scheme": "Mark Scheme"
+        case "assessment_package": "Assessment Package"
         case "package_manifest": "Package Manifest"
         case "preliminary_material": "Preliminary Material"
         case "electronic_answer_document": "Electronic Answer Document"
@@ -481,6 +482,36 @@ struct GeneratedFile: Identifiable, Codable, Equatable {
 
     var paperDescription: String {
         [subject, paper].filter { !$0.isEmpty }.joined(separator: " · ")
+    }
+}
+
+struct GenerationQualityReport: Equatable {
+    let itemCount: Int
+    let fingerprintsVerified: Bool
+    let historicComparisons: Int
+    let nearestSimilarity: Double?
+    let pdfCount: Int
+
+    static func load(from url: URL) -> GenerationQualityReport? {
+        guard let data = try? Data(contentsOf: url),
+              let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let evidence = root["evidence"] as? [String: Any],
+              let assessment = evidence["assessment_validation"] as? [String: Any],
+              let novelty = evidence["novelty_validation"] as? [String: Any],
+              let outputs = root["outputs"] as? [String: Any] else {
+            return nil
+        }
+        let nearest = novelty["nearest_match"] as? [String: Any]
+        let pdfCount = outputs.values.compactMap { value -> [String: Any]? in
+            value as? [String: Any]
+        }.filter { $0["pdf_validation"] is [String: Any] }.count
+        return GenerationQualityReport(
+            itemCount: assessment["item_count"] as? Int ?? 0,
+            fingerprintsVerified: assessment["fingerprints_verified"] as? Bool ?? false,
+            historicComparisons: novelty["historic_comparisons"] as? Int ?? 0,
+            nearestSimilarity: nearest?["similarity"] as? Double,
+            pdfCount: pdfCount
+        )
     }
 }
 

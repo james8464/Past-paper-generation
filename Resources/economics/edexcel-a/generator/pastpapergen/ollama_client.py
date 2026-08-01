@@ -11,6 +11,10 @@ from dataclasses import dataclass
 from threading import Lock
 from typing import Callable
 
+from Backend.Core.model_review import (
+    assert_materially_new,
+    require_independent_review,
+)
 from pastpapergen.models import GraphParams, MultipleChoiceOption, PaperBlueprint, QuestionBlueprint, Syllabus, SyllabusTopic
 from pastpapergen.notes import note_context_for_topic
 
@@ -21,6 +25,14 @@ _logger = logging.getLogger(__name__)
 class OllamaClient:
     base_url: str
     model: str
+
+    @property
+    def provider(self) -> str:
+        return "ollama"
+
+    @property
+    def supports_parallel_generation(self) -> bool:
+        return False
 
     def generate_json(self, prompt: str, retries: int = 2) -> dict[str, object]:
         last_error: Exception | None = None
@@ -75,7 +87,7 @@ def build_question_prompt(question: QuestionBlueprint, topic: SyllabusTopic) -> 
         title=topic.title,
         keywords=topic.points,
     )[:6000]
-    return f"""You are writing an unofficial A-Level Economics practice paper.
+    return f"""You are writing an unofficial A-Level Economics paper.
 
 Use only this syllabus topic:
 Topic ID: {topic.id}
@@ -87,7 +99,7 @@ Syllabus points (you must align every mark scheme bullet to these):
 Uploaded revision-note context (use this data for source figures, extraction content and specific examples):
 {note_context}
 
-Write one Edexcel A-style question.
+Write one genuinely new, independent Edexcel A-style question. Do not copy, reconstruct, or closely paraphrase any live, historic, or draft paper question.
 Question number: {question.number}
 Section: {question.section}
 Marks: {question.marks}
@@ -211,53 +223,51 @@ def generate_questions_with_ollama(
         try:
             topic = syllabus.get_topic(question.topic_id)
         except KeyError as error:
-            _logger.error("Unknown topic '%s' for question %s, skipping LLM: %s", question.topic_id, question.number, error)
-            with results_lock:
-                results[question_index] = question
-            return (
-                f"Question {index}/{total}: {question.number} "
-                "(unknown topic, template fallback)"
-            )
+            raise ValueError(
+                f"unknown topic {question.topic_id!r} for question "
+                f"{question.number}"
+            ) from error
         emit(
             f"Generating question {index}/{total}: {question.number} "
             f"(Section {question.section}, {question.marks} marks, {topic.title})"
         )
-        try:
-            payload = client.generate_json(build_question_prompt(question, topic))
-            question_text = _merge_question_text(question, str(payload.get("question_text") or ""))
-            source_text = _merge_source_text(str(payload.get("source_text") or ""), question.source_text, question)
-            source_reference = str(payload.get("source_reference") or question.source_reference)
-            mark_breakdown = str(payload.get("mark_breakdown") or question.mark_breakdown)
-            indicative_content = _merge_text_list(payload.get("indicative_content"), question.indicative_content)
-            mark_scheme = _merge_text_list(payload.get("mark_scheme"), question.mark_scheme)
-            parts = _merge_parts(question, payload.get("parts"))
-            graph_params_raw = payload.get("graph_params")
-            graph_params = GraphParams.from_dict(graph_params_raw) if isinstance(graph_params_raw, dict) else GraphParams()
-            with results_lock:
-                results[question_index] = question.model_copy(
-                    update={
-                        "prompt": question_text,
-                        "source_text": source_text,
-                        "source_reference": source_reference,
-                        "mark_breakdown": mark_breakdown,
-                        "indicative_content": indicative_content,
-                        "mark_scheme": mark_scheme,
-                        "parts": parts,
-                        "graph_params": graph_params,
-                    }
-                )
-            return (
-                f"Generated question {index}/{total}: {question.number} "
-                f"({topic.title})"
-            )
-        except (RuntimeError, json.JSONDecodeError, ValueError, KeyError) as error:
-            _logger.error("Failed to generate question %s, keeping template: %s", question.number, error)
-            with results_lock:
-                results[question_index] = question
-            return (
-                f"Question {index}/{total}: {question.number} "
-                "(fallback to template)"
-            )
+        payload = client.generate_json(build_question_prompt(question, topic))
+        question_text = _merge_question_text(question, str(payload.get("question_text") or ""))
+        source_text = _merge_source_text(str(payload.get("source_text") or ""), question.source_text, question)
+        source_reference = str(payload.get("source_reference") or question.source_reference)
+        mark_breakdown = str(payload.get("mark_breakdown") or question.mark_breakdown)
+        indicative_content = _merge_text_list(payload.get("indicative_content"), question.indicative_content)
+        mark_scheme = _merge_text_list(payload.get("mark_scheme"), question.mark_scheme)
+        parts = _merge_parts(question, payload.get("parts"))
+        graph_params_raw = payload.get("graph_params")
+        graph_params = GraphParams.from_dict(graph_params_raw) if isinstance(graph_params_raw, dict) else GraphParams()
+        candidate = question.model_copy(
+            update={
+                "prompt": question_text,
+                "source_text": source_text,
+                "source_reference": source_reference,
+                "mark_breakdown": mark_breakdown,
+                "indicative_content": indicative_content,
+                "mark_scheme": mark_scheme,
+                "parts": parts,
+                "graph_params": graph_params,
+            }
+        )
+        _validate_ai_question(question, candidate)
+        require_independent_review(
+            client,
+            item_id=f"question-{question.number}",
+            subject="Edexcel A-level Economics A",
+            blueprint=question,
+            candidate=candidate,
+            specification=topic,
+        )
+        with results_lock:
+            results[question_index] = candidate
+        return (
+            f"Generated and reviewed question {index}/{total}: "
+            f"{question.number} ({topic.title})"
+        )
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {executor.submit(_build_task, i, q): i for i, q in enumerate(blueprint.questions)}
@@ -265,17 +275,7 @@ def generate_questions_with_ollama(
         next_message = 0
         for future in as_completed(futures):
             question_index = futures[future]
-            try:
-                completed_messages[question_index] = future.result()
-            except Exception as error:  # noqa: BLE001 - one bad response must not abort the paper.
-                question = blueprint.questions[question_index]
-                _logger.exception("Unexpected generation failure for question %s", question.number)
-                with results_lock:
-                    results[question_index] = question
-                completed_messages[question_index] = (
-                    f"Question {question_index + 1}/{total}: {question.number} "
-                    f"(unexpected failure, template fallback: {error})"
-                )
+            completed_messages[question_index] = future.result()
             while next_message in completed_messages:
                 emit(completed_messages.pop(next_message))
                 next_message += 1
@@ -343,11 +343,9 @@ def _merge_part_prompt(part, raw: dict) -> str:
     if not isinstance(raw, dict):
         return part.prompt
     fallback = _strip_part_label(_clean_prompt(part.prompt), part.label)
-    if part.command_word in {"calculate", "draw"}:
-        return fallback
     candidate = _strip_part_label(_clean_prompt(str(raw.get("prompt") or part.prompt)), part.label)
     lowered = candidate.lower()
-    if part.command_word == "draw" and "explain your answer" in lowered:
+    if part.command_word == "draw" and not _has_word_starts(lowered, "draw"):
         return fallback
     if part.command_word == "calculate" and "calculate" not in lowered:
         return fallback
@@ -356,6 +354,117 @@ def _merge_part_prompt(part, raw: dict) -> str:
     if part.command_word == "mcq" and "which one of the following" not in lowered:
         return fallback
     return candidate
+
+
+def _validate_ai_question(
+    original: QuestionBlueprint,
+    candidate: QuestionBlueprint,
+) -> None:
+    immutable = (
+        original.section,
+        original.number,
+        original.marks,
+        original.command_word,
+        original.topic_id,
+        original.stimulus_kind,
+        original.choice_group,
+    )
+    actual = (
+        candidate.section,
+        candidate.number,
+        candidate.marks,
+        candidate.command_word,
+        candidate.topic_id,
+        candidate.stimulus_kind,
+        candidate.choice_group,
+    )
+    if actual != immutable:
+        raise ValueError(
+            f"question-{original.number} changed an immutable blueprint field"
+        )
+    original_text = " ".join(
+        [original.prompt, *(part.prompt for part in original.parts)]
+    )
+    candidate_text = " ".join(
+        [candidate.prompt, *(part.prompt for part in candidate.parts)]
+    )
+    assert_materially_new(
+        original_text,
+        candidate_text,
+        item_id=f"question-{original.number}",
+        similarity_limit=0.9,
+        preserve_numbers=False,
+    )
+    if len(candidate.parts) != len(original.parts):
+        raise ValueError(f"question-{original.number} changed its part count")
+    for original_part, candidate_part in zip(
+        original.parts, candidate.parts, strict=True
+    ):
+        if (
+            candidate_part.label,
+            candidate_part.marks,
+            candidate_part.command_word,
+        ) != (
+            original_part.label,
+            original_part.marks,
+            original_part.command_word,
+        ):
+            raise ValueError(
+                f"question-{original.number}-{original_part.label} changed "
+                "its blueprint"
+            )
+        _validate_content_lists(
+            candidate_part.marks,
+            candidate_part.mark_scheme,
+            candidate_part.indicative_content,
+            item_id=f"question-{original.number}-{original_part.label}",
+        )
+        if candidate_part.options:
+            labels = [option.label for option in candidate_part.options]
+            answers = [option.text.casefold().strip() for option in candidate_part.options]
+            if (
+                labels != ["A", "B", "C", "D"]
+                or len(set(answers)) != 4
+                or candidate_part.correct_option not in labels
+            ):
+                raise ValueError(
+                    f"question-{original.number}-{original_part.label} "
+                    "has invalid multiple-choice data"
+                )
+    if not candidate.parts:
+        _validate_content_lists(
+            candidate.marks,
+            candidate.mark_scheme,
+            candidate.indicative_content,
+            item_id=f"question-{original.number}",
+        )
+    if candidate.stimulus_kind and candidate.graph_params.kind:
+        if (
+            candidate.graph_params.eq_price is not None
+            and not 20 <= candidate.graph_params.eq_price <= 200
+        ) or (
+            candidate.graph_params.eq_quantity is not None
+            and not 30 <= candidate.graph_params.eq_quantity <= 300
+        ):
+            raise ValueError(
+                f"question-{original.number} has out-of-range graph parameters"
+            )
+
+
+def _validate_content_lists(
+    marks: int,
+    mark_scheme: list[str],
+    indicative_content: list[str],
+    *,
+    item_id: str,
+) -> None:
+    scheme = [item.strip() for item in mark_scheme if item.strip()]
+    indicative = [item.strip() for item in indicative_content if item.strip()]
+    minimum = min(8, max(1, marks))
+    if len(set(item.casefold() for item in scheme)) < minimum:
+        raise ValueError(f"{item_id} has insufficient specific marking guidance")
+    if marks >= 5 and len(set(item.casefold() for item in indicative)) < minimum:
+        raise ValueError(f"{item_id} has insufficient indicative content")
 
 
 def _strip_part_label(prompt: str, label: str) -> str:

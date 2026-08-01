@@ -1,6 +1,6 @@
 [project]
 name = "cspapergen"
-version = "0.1.0"
+version = "0.2.0"
 description = "Unofficial AQA A-Level Computer Science Paper 2 practice paper generator."
 requires-python = ">=3.11"
 dependencies = [

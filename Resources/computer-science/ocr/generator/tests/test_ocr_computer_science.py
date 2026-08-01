@@ -57,7 +57,11 @@ def test_packages_render_current_page_geometry(tmp_path: Path) -> None:
             output_dir=tmp_path / paper,
             seed=123,
         )
-        assert paths.keys() == {"question_paper", "mark_scheme"}
+        assert paths.keys() == {
+            "question_paper",
+            "mark_scheme",
+            "assessment_package",
+        }
         reader = PdfReader(paths["question_paper"])
         assert len(reader.pages) == expected_pages
         assert "A Level Computer Science" in (reader.pages[0].extract_text() or "")

@@ -5,16 +5,19 @@ by risk to assessment validity and product trust, not by implementation size.
 
 ## Implementation status — 29 July 2026
 
-The current engineering pass completed or materially advanced the following
+The current engineering pass completed the software work for the following
 items:
 
 - completed: canonical generator registry, registry-driven dispatch/build,
   truthful provider UI, protocol v2 handshake, transactional publication,
   package manifests, PDF release validation, controlled table fonts, persistent
-  recents, and native Settings/menu behavior;
-- materially advanced: frozen assessment metadata, AO/time/demand checks,
-  mark-scheme DSL, mark traceability, shared AQA/OCR composition primitives,
-  page-role alignment, and the visual audit;
+  recents, native Settings/menu behavior, frozen assessment metadata,
+  AO/time/demand checks, mark-scheme DSL, mark traceability, shared AQA/OCR
+  composition primitives, page-role alignment, registered/masked visual audit,
+  exact-form calibration tooling, and independent AI review;
+- continuously improvable: reference distributions, licensed/metric-compatible
+  font coverage, subject-specific executable answer checking, and richer
+  composition masters as additional official series are measured;
 - externally blocked by evidence rather than code: empirical difficulty,
   equating, DIF analysis, student timing, and marker agreement.
 

@@ -85,14 +85,6 @@ private struct AISettingsTab: View {
                 Text(appModel.aiProvider.subtitle)
                     .foregroundStyle(.secondary)
 
-                if !appModel.selectedBoard.usesAI {
-                    Label(
-                        "\(appModel.selectedBoard.subjectTitle) \(appModel.selectedBoard.shortTitle) uses a built-in constrained generator. These settings only affect AI-assisted papers.",
-                        systemImage: "info.circle"
-                    )
-                    .foregroundStyle(.secondary)
-                }
-
                 if appModel.aiProvider.sendsPromptsOffDevice {
                     Label(
                         "Prompts and subject context may be sent to the selected provider.",
@@ -196,13 +188,16 @@ private struct OutputSettingsTab: View {
 
             Section("Preview Mode") {
                 Toggle(
-                    "Use built-in drafts",
+                    "Create a layout preview",
                     isOn: Binding(
                         get: { appModel.dryRun },
                         set: { appModel.setDryRun($0) }
                     )
                 )
-                Text("Creates sample PDFs without contacting an AI provider.")
+                Text(
+                    "Creates sample PDFs without contacting an AI provider. "
+                    + "Preview questions are placeholders and are not release-ready."
+                )
                     .foregroundStyle(.secondary)
             }
 

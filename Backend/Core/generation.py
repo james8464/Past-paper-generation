@@ -17,6 +17,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+from Backend.Core.assessment_package import validate_assessment_package
+from Backend.Core.assessment_quality import validate_package_novelty
 from Backend.Core.events import BACKEND_VERSION, PROTOCOL_VERSION, emit, emit_progress, progress_emitter
 from Backend.Core.generator_registry import GeneratorCapability, generator_capability
 from Backend.Core.layout_conformance import conform_generated_documents
@@ -138,6 +140,7 @@ def _invoke_plugin(
             dry_run=args.dry_run,
             model=args.model,
             api_key=args.api_key,
+            ollama_url=args.ollama_url,
         )
     keyword_arguments = {
         name: value
@@ -207,9 +210,40 @@ def finalize_generated_documents(
             + ", ".join(outside_staging)
         )
 
+    assessment_path = paths.get("assessment_package")
+    if assessment_path is None:
+        raise RuntimeError("generator did not return an assessment package")
+    assessment_validation = validate_assessment_package(
+        assessment_path,
+        subject=args.subject,
+        paper_number=args.paper,
+        preview=bool(args.dry_run),
+        provider=None if args.dry_run else args.provider,
+        model=None if args.dry_run else args.model,
+    )
+    novelty_validation = (
+        {
+            "algorithm": "weighted-token-shingle-jaccard-v1",
+            "threshold": 0.84,
+            "historic_comparisons": 0,
+            "nearest_match": None,
+            "passed": True,
+            "preview_skipped_history": True,
+        }
+        if args.dry_run
+        else validate_package_novelty(
+            assessment_path,
+            history_root=output_dir,
+        )
+    )
+
     conform_generated_documents(args.subject, args.paper, paths)
     pdf_validation = {
-        role: validate_pdf_for_release(path, subject=args.subject)
+        role: validate_pdf_for_release(
+            path,
+            subject=args.subject,
+            role=role,
+        )
         for role, path in paths.items()
         if path.suffix.casefold() == ".pdf"
     }
@@ -219,6 +253,8 @@ def finalize_generated_documents(
         staging_dir=staging_dir,
         paths=paths,
         pdf_validation=pdf_validation,
+        assessment_validation=assessment_validation,
+        novelty_validation=novelty_validation,
     )
     published = {
         role: _atomic_publish(path, output_dir / path.name)
@@ -238,11 +274,13 @@ def _write_package_manifest(
     staging_dir: Path,
     paths: dict[str, Path],
     pdf_validation: dict[str, dict[str, Any]],
+    assessment_validation: dict[str, Any],
+    novelty_validation: dict[str, Any],
 ) -> Path:
     repository_commit = _repository_commit()
     gate_results = capability.evidence_by_paper[args.paper]
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "job_id": os.environ.get("PAPER_CREATOR_JOB_ID", ""),
         "protocol_version": PROTOCOL_VERSION,
@@ -279,6 +317,8 @@ def _write_package_manifest(
                 "Intended demand and document structure are validated; "
                 "difficulty is not established by student-response calibration."
             ),
+            "assessment_validation": assessment_validation,
+            "novelty_validation": novelty_validation,
         },
         "inputs": {
             "syllabus": capability.syllabus_path,
@@ -291,8 +331,9 @@ def _write_package_manifest(
             "layout_profile_sha256": _sha256(
                 REPO_ROOT / "Resources" / "layout-master-runtime.json"
             ),
-            "assessment_schema": "Backend.Core.exam_blueprints:v2",
-            "validator": "Backend.Core.pdf_validation:v1",
+            "assessment_schema": "Backend.Core.exam_blueprints:v3",
+            "assessment_package_schema": 1,
+            "validator": "Backend.Core.pdf_validation:v2",
         },
         "outputs": {
             role: {
