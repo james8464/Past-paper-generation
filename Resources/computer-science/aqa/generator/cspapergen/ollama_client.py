@@ -9,11 +9,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from typing import Callable, Protocol
 
+from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
 from Backend.Core.model_review import (
     assert_materially_new,
     require_independent_review,
 )
-from cspapergen.models import MarkingGuidance, PaperBlueprint, Question, QuestionPart, Syllabus
+from cspapergen.models import MarkingGuidance, PaperBlueprint, Question, Syllabus
 from cspapergen.notes import note_context_for_topic
 
 
@@ -73,6 +74,7 @@ def improve_questions_with_ollama(
     blueprint: PaperBlueprint,
     syllabus: Syllabus,
     progress: Callable[[str], None] | None = None,
+    checkpoint_store: AssessmentCheckpointStore | None = None,
 ) -> PaperBlueprint:
     emit = progress or (lambda _message: None)
     total = len(blueprint.questions)
@@ -87,6 +89,19 @@ def improve_questions_with_ollama(
     def _improve(index: int, question: Question) -> tuple[Question, str]:
         topic = syllabus.get_topic(question.topic_id)
         display_index = index + 1
+        checkpoint_key = f"question-{question.number}"
+        if checkpoint_store is not None:
+            stored = checkpoint_store.load_payload(checkpoint_key)
+            if stored is not None:
+                candidate = Question.model_validate(stored)
+                _validate_ai_question(question, candidate)
+                return (
+                    candidate,
+                    (
+                        f"Resumed reviewed question {display_index}/{total}: "
+                        f"0 {question.number:02d}"
+                    ),
+                )
         emit(
             f"Generating question {display_index}/{total}: "
             f"0 {question.number:02d} ({topic.title})"
@@ -109,6 +124,11 @@ def improve_questions_with_ollama(
             candidate=candidate,
             specification=topic,
         )
+        if checkpoint_store is not None:
+            checkpoint_store.save_payload(
+                checkpoint_key,
+                candidate.model_dump(mode="json"),
+            )
         return (
             candidate,
             (

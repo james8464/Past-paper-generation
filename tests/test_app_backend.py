@@ -3,12 +3,15 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+from argparse import Namespace
 from pathlib import Path
 
 import pytest
 
 from Backend.Core.paths import absolute_user_path
 from Backend.Core.providers import _safe_provider_detail, parse_json_object
+from Backend.Core.generation import checkpoint_path_for_job
+from Backend.Core.events import GenerationUpdate, progress_emitter
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -61,6 +64,51 @@ def test_relative_output_is_resolved_from_callers_working_directory(tmp_path: Pa
     files = [Path(str(event["path"])) for event in events if event["type"] == "file"]
     assert files
     assert all(path.parent == tmp_path / "generated" for path in files)
+
+
+def test_checkpoint_path_is_stable_and_outside_transaction_staging(
+    tmp_path: Path,
+) -> None:
+    request = Namespace(
+        subject="economics_aqa",
+        paper="2",
+        seed=123,
+        provider="ollama",
+        model="gemma4:12b",
+    )
+
+    first = checkpoint_path_for_job(request, tmp_path)
+    second = checkpoint_path_for_job(request, tmp_path)
+
+    assert first == second
+    assert first.parent == tmp_path / ".papercreator-checkpoints"
+    assert first.suffix == ".json"
+    assert "gemma4" not in first.name
+
+
+def test_structured_item_progress_emits_truthful_units(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    callback = progress_emitter()
+
+    callback(
+        GenerationUpdate(
+            stage="review",
+            message="Reviewing question 3",
+            item_id="0/0/2",
+            completed_units=2,
+            total_units=12,
+            attempt=1,
+        )
+    )
+
+    event = json.loads(capsys.readouterr().out)
+    assert event["stage"] == "review"
+    assert event["item_id"] == "0/0/2"
+    assert event["completed_units"] == 2
+    assert event["total_units"] == 12
+    assert event["attempt"] == 1
+    assert event["progress"] == pytest.approx(0.08 + (2 / 12) * 0.70)
 
 
 def test_output_path_preserves_sandbox_style_symlink(tmp_path: Path) -> None:

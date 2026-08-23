@@ -5,6 +5,10 @@ import secrets
 from pathlib import Path
 from typing import Callable
 
+from Backend.Core.assessment_checkpoints import (
+    AssessmentCheckpointStore,
+    identity_for_blueprint,
+)
 from Backend.Core.assessment_package import write_assessment_package
 from Backend.Core.model_recommendations import default_ollama_model
 from pastpapergen.generator import build_paper_blueprint
@@ -63,6 +67,7 @@ def generate_package(
     dry_run: bool,
     progress: Callable[[str], None] | None = None,
     client: object | None = None,
+    checkpoint_path: Path | None = None,
 ) -> dict[str, Path]:
     emit = progress or (lambda _message: None)
     emit("Loading syllabus")
@@ -78,7 +83,30 @@ def generate_package(
     if not dry_run:
         emit(f"Generating questions with model {model}")
         question_client = question_client or OllamaClient(base_url=ollama_url, model=model)
-        blueprint = generate_questions_with_ollama(question_client, blueprint, syllabus, progress=progress)
+        checkpoint_store = (
+            AssessmentCheckpointStore(
+                checkpoint_path,
+                identity_for_blueprint(
+                    {
+                        "paper_id": blueprint.paper_id,
+                        "seed": run_seed,
+                        "blueprint": blueprint.model_dump(mode="json"),
+                    },
+                    provider=str(getattr(question_client, "provider", "ollama")),
+                    model=str(getattr(question_client, "model", model)),
+                    prompt_version="edexcel-economics-v1",
+                ),
+            )
+            if checkpoint_path is not None
+            else None
+        )
+        blueprint = generate_questions_with_ollama(
+            question_client,
+            blueprint,
+            syllabus,
+            progress=progress,
+            checkpoint_store=checkpoint_store,
+        )
     else:
         emit("Using built-in draft questions")
 

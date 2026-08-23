@@ -10,6 +10,7 @@ from Backend.Core.assessment_checkpoints import (
     AssessmentCheckpointStore,
     CheckpointIdentity,
     CheckpointMismatch,
+    identity_for_blueprint,
 )
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
@@ -20,6 +21,7 @@ from Backend.Core.exam_blueprints import (
     QuestionRule,
     SectionRule,
 )
+from Backend.Core.events import GenerationUpdate
 
 
 def identity(*, model: str = "gemma4:12b") -> CheckpointIdentity:
@@ -76,11 +78,40 @@ def test_checkpoint_write_is_atomic_and_valid_json(tmp_path: Path) -> None:
     assert document["items"]["0/0/0"]["prompt"] == question().prompt
 
 
+def test_checkpoint_round_trips_family_specific_payload(tmp_path: Path) -> None:
+    store = AssessmentCheckpointStore(tmp_path / "job.json", identity())
+    payload = {"number": "1", "prompt": "Explain the relationship."}
+
+    store.save_payload("question-1", payload)
+
+    assert store.load_payload("question-1") == payload
+
+
+def test_blueprint_identity_changes_when_immutable_blueprint_changes() -> None:
+    first = identity_for_blueprint(
+        {"paper_id": "paper-1", "seed": 123, "questions": [1]},
+        provider="ollama",
+        model="gemma4:12b",
+        prompt_version="assessment-v1",
+    )
+    second = identity_for_blueprint(
+        {"paper_id": "paper-1", "seed": 123, "questions": [1, 2]},
+        provider="ollama",
+        model="gemma4:12b",
+        prompt_version="assessment-v1",
+    )
+
+    assert first.paper_id == "paper-1"
+    assert first.seed == 123
+    assert first.blueprint_sha256 != second.blueprint_sha256
+
+
 def test_generate_unique_paper_resumes_without_another_model_call(
     tmp_path: Path,
 ) -> None:
     store = AssessmentCheckpointStore(tmp_path / "job.json", identity())
     paper, rule, topics = paper_fixture()
+    events: list[object] = []
 
     first = generate_unique_paper(
         paper,
@@ -91,6 +122,7 @@ def test_generate_unique_paper_resumes_without_another_model_call(
         subject="Economics",
         policy=GenerationPolicy(attempts=1),
         checkpoint_store=store,
+        progress=events.append,
     )
     resumed = generate_unique_paper(
         paper,
@@ -105,6 +137,13 @@ def test_generate_unique_paper_resumes_without_another_model_call(
 
     assert resumed == first
     assert resumed.sections[0].options[0].questions[0].prompt == question().prompt
+    assert any(
+        isinstance(event, GenerationUpdate)
+        and event.stage == "checkpoint"
+        and event.completed_units == 1
+        and event.total_units == 1
+        for event in events
+    )
 
 
 def paper_fixture() -> tuple[GeneratedPaper, PaperRule, list[object]]:

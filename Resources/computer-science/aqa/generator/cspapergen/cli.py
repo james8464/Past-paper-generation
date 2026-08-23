@@ -4,6 +4,10 @@ import argparse
 from pathlib import Path
 from typing import Callable
 
+from Backend.Core.assessment_checkpoints import (
+    AssessmentCheckpointStore,
+    identity_for_blueprint,
+)
 from Backend.Core.assessment_package import write_assessment_package
 from Backend.Core.model_recommendations import default_ollama_model
 from cspapergen.generator import build_paper1_blueprint, build_paper2_blueprint
@@ -59,6 +63,7 @@ def generate_package(
     notes_source: Path = DEFAULT_NOTES_SOURCE,
     progress: Callable[[str], None] | None = None,
     client: object | None = None,
+    checkpoint_path: Path | None = None,
 ) -> dict[str, Path]:
     emit = progress or (lambda _message: None)
     emit("Caching notes")
@@ -83,7 +88,30 @@ def generate_package(
     else:
         emit(f"Generating questions with model {model}")
         question_client = question_client or OllamaClient(base_url=ollama_url, model=model)
-        blueprint = improve_questions_with_ollama(question_client, blueprint, syllabus, progress=progress)
+        checkpoint_store = (
+            AssessmentCheckpointStore(
+                checkpoint_path,
+                identity_for_blueprint(
+                    {
+                        "paper_id": f"paper-{paper}",
+                        "seed": blueprint.seed,
+                        "blueprint": blueprint.model_dump(mode="json"),
+                    },
+                    provider=str(getattr(question_client, "provider", "ollama")),
+                    model=str(getattr(question_client, "model", model)),
+                    prompt_version="aqa-computer-science-v1",
+                ),
+            )
+            if checkpoint_path is not None
+            else None
+        )
+        blueprint = improve_questions_with_ollama(
+            question_client,
+            blueprint,
+            syllabus,
+            progress=progress,
+            checkpoint_store=checkpoint_store,
+        )
 
     emit("Validating paper")
     validate_blueprint(blueprint, syllabus)

@@ -27,6 +27,7 @@ from Backend.Core.exam_blueprints import (
     PaperRule,
     validate_generated_paper,
 )
+from Backend.Core.events import GenerationUpdate
 from Backend.Core.model_review import ReviewResult
 
 
@@ -73,7 +74,7 @@ def generate_unique_paper(
     syllabus_topic_ids: Iterable[str],
     client: AssessmentLLMClient,
     subject: str,
-    progress: Callable[[str], None] | None = None,
+    progress: Callable[[str | GenerationUpdate], None] | None = None,
     policy: GenerationPolicy = GenerationPolicy(),
     checkpoint_store: AssessmentCheckpointStore | None = None,
 ) -> GeneratedPaper:
@@ -108,11 +109,25 @@ def generate_unique_paper(
                 for batch in batches
             }
             completed = 0
+            completed_items = 0
             for future in as_completed(futures):
-                generated.update(future.result())
+                batch_result = future.result()
+                generated.update(batch_result)
                 completed += 1
+                completed_items += len(batch_result)
+                emit(
+                    GenerationUpdate(
+                        stage="checkpoint",
+                        message=(
+                            f"Accepted {completed_items} of {len(tasks)} AI items"
+                        ),
+                        completed_units=completed_items,
+                        total_units=len(tasks),
+                    )
+                )
                 emit(f"Validated AI item batch {completed} of {len(batches)}")
     else:
+        completed_items = 0
         for index, batch in enumerate(batches, start=1):
             emit(f"Drafting and reviewing AI item batch {index} of {len(batches)}")
             generated.update(
@@ -124,8 +139,11 @@ def generate_unique_paper(
                     policy=policy,
                     progress=emit,
                     checkpoint_store=checkpoint_store,
+                    total_items=len(tasks),
+                    completed_before=completed_items,
                 )
             )
+            completed_items += len(batch)
             emit(f"Validated AI item batch {index} of {len(batches)}")
 
     sections: list[GeneratedSection] = []
@@ -183,8 +201,10 @@ def _generate_batch(
     subject: str,
     seed: int,
     policy: GenerationPolicy,
-    progress: Callable[[str], None] | None,
+    progress: Callable[[str | GenerationUpdate], None] | None,
     checkpoint_store: AssessmentCheckpointStore | None = None,
+    total_items: int | None = None,
+    completed_before: int = 0,
 ) -> dict[tuple[int, int, int], GeneratedQuestion]:
     verified = [
         task
@@ -211,6 +231,17 @@ def _generate_batch(
         {"id": task.id, "prompt": result[task.key].prompt}
         for task in [*verified, *resumed]
     ]
+    if progress is not None:
+        for index, task in enumerate([*verified, *resumed], start=1):
+            progress(
+                GenerationUpdate(
+                    stage="checkpoint",
+                    message=f"Resumed accepted AI item {task.question.number}",
+                    item_id=task.id,
+                    completed_units=completed_before + index,
+                    total_units=total_items or len(tasks),
+                )
+            )
     completed_keys = {task.key for task in [*verified, *resumed]}
     for task in (task for task in tasks if task.key not in completed_keys):
         candidate = _generate_item_transaction(
@@ -226,6 +257,16 @@ def _generate_batch(
             checkpoint_store.save_item(task.id, candidate)
         result[task.key] = candidate
         accepted.append({"id": task.id, "prompt": candidate.prompt})
+        if progress is not None:
+            progress(
+                GenerationUpdate(
+                    stage="checkpoint",
+                    message=f"Accepted AI item {task.question.number}",
+                    item_id=task.id,
+                    completed_units=completed_before + len(result),
+                    total_units=total_items or len(tasks),
+                )
+            )
     return result
 
 
@@ -268,7 +309,7 @@ def _generate_item_transaction(
     subject: str,
     seed: int,
     policy: GenerationPolicy,
-    progress: Callable[[str], None] | None,
+    progress: Callable[[str | GenerationUpdate], None] | None,
     accepted_prompts: list[dict[str, str]],
 ) -> GeneratedQuestion:
     failure = ""

@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import json
 import os
+import hashlib
 from pathlib import Path
 from threading import RLock
-from typing import Literal
+from typing import Any, Literal, Mapping
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
@@ -31,6 +32,43 @@ class CheckpointIdentity(BaseModel):
     prompt_version: str = Field(min_length=1)
 
 
+def identity_for_blueprint(
+    blueprint: Any,
+    *,
+    provider: str,
+    model: str,
+    prompt_version: str,
+) -> CheckpointIdentity:
+    if hasattr(blueprint, "model_dump"):
+        payload = blueprint.model_dump(mode="json")
+    elif isinstance(blueprint, Mapping):
+        payload = dict(blueprint)
+    else:
+        raise TypeError("checkpoint blueprint must be a Pydantic model or mapping")
+    paper_id = str(payload.get("paper_id") or payload.get("id") or "").strip()
+    if not paper_id:
+        raise ValueError("checkpoint blueprint has no paper identity")
+    seed = payload.get("seed")
+    if not isinstance(seed, int):
+        raise ValueError("checkpoint blueprint has no integer seed")
+    digest = hashlib.sha256(
+        json.dumps(
+            payload,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        ).encode("utf-8")
+    ).hexdigest()
+    return CheckpointIdentity(
+        paper_id=paper_id,
+        seed=seed,
+        provider=provider,
+        model=model,
+        blueprint_sha256=digest,
+        prompt_version=prompt_version,
+    )
+
+
 class AssessmentCheckpointStore:
     """Persist independently accepted questions without partial JSON writes."""
 
@@ -42,21 +80,35 @@ class AssessmentCheckpointStore:
             self._read_document()
 
     def load_item(self, key: str) -> GeneratedQuestion | None:
+        raw = self.load_payload(key)
+        if raw is None:
+            return None
+        try:
+            return GeneratedQuestion.model_validate(raw)
+        except ValidationError as error:
+            raise CheckpointCorrupt(
+                f"checkpoint item {key} does not match the question schema"
+            ) from error
+
+    def save_item(self, key: str, question: GeneratedQuestion) -> None:
+        self.save_payload(key, question.model_dump(mode="json"))
+
+    def load_payload(self, key: str) -> dict[str, Any] | None:
         with self._lock:
             raw = self._read_document()["items"].get(key)
             if raw is None:
                 return None
-            try:
-                return GeneratedQuestion.model_validate(raw)
-            except ValidationError as error:
-                raise CheckpointCorrupt(
-                    f"checkpoint item {key} does not match the question schema"
-                ) from error
+            if not isinstance(raw, dict):
+                raise CheckpointCorrupt(f"checkpoint item {key} is not an object")
+            return dict(raw)
 
-    def save_item(self, key: str, question: GeneratedQuestion) -> None:
+    def save_payload(self, key: str, payload: Mapping[str, Any]) -> None:
         with self._lock:
             document = self._read_document()
-            document["items"][key] = question.model_dump(mode="json")
+            items = document["items"]
+            if not isinstance(items, dict):
+                raise CheckpointCorrupt("checkpoint item storage is invalid")
+            items[key] = dict(payload)
             self.path.parent.mkdir(parents=True, exist_ok=True)
             temporary = self.path.with_suffix(self.path.suffix + ".tmp")
             with temporary.open("w", encoding="utf-8") as handle:

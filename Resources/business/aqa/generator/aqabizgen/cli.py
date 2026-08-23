@@ -4,6 +4,10 @@ from collections.abc import Callable
 from pathlib import Path
 
 from Backend.Core.ai_assessment import generate_unique_paper
+from Backend.Core.assessment_checkpoints import (
+    AssessmentCheckpointStore,
+    identity_for_blueprint,
+)
 from Backend.Core.assessment_package import write_assessment_package
 from Backend.Core.model_recommendations import default_ollama_model
 from Backend.Core.providers import HostedLLMClient
@@ -28,6 +32,7 @@ def generate_package(
     dry_run: bool = True,
     progress: Callable[[str], None] | None = None,
     client: object | None = None,
+    checkpoint_path: Path | None = None,
 ) -> dict[str, Path]:
     emit = progress or (lambda _message: None)
     emit("Loading AQA Business specification map")
@@ -44,6 +49,19 @@ def generate_package(
             base_url=ollama_url,
         )
         emit(f"Generating and second-pass reviewing questions with {model}")
+        checkpoint_store = (
+            AssessmentCheckpointStore(
+                checkpoint_path,
+                identity_for_blueprint(
+                    generated,
+                    provider=str(getattr(question_client, "provider", "ollama")),
+                    model=str(getattr(question_client, "model", model)),
+                    prompt_version="ai-assessment-v1",
+                ),
+            )
+            if checkpoint_path is not None
+            else None
+        )
         generated = generate_unique_paper(
             generated,
             rule=rule,
@@ -52,6 +70,7 @@ def generate_package(
             client=question_client,
             subject="AQA A-level Business",
             progress=progress,
+            checkpoint_store=checkpoint_store,
         )
     else:
         emit("Using the deterministic blueprint preview")

@@ -68,7 +68,13 @@ def handle_generate(args: argparse.Namespace) -> int:
                 stage="provider",
                 progress=0.04,
             )
-        generated = _invoke_plugin(capability, args, staging_dir)
+        checkpoint_path = checkpoint_path_for_job(args, output_dir)
+        generated = _invoke_plugin(
+            capability,
+            args,
+            staging_dir,
+            checkpoint_path=checkpoint_path,
+        )
         published = finalize_generated_documents(
             args=args,
             capability=capability,
@@ -77,6 +83,7 @@ def handle_generate(args: argparse.Namespace) -> int:
             paths=generated,
         )
         emit_generated_files(published)
+        checkpoint_path.unlink(missing_ok=True)
         return 0
     except GenerationCancelled:
         emit_progress("Creation cancelled", stage="cancel", progress=0.0)
@@ -116,6 +123,8 @@ def _invoke_plugin(
     capability: GeneratorCapability,
     args: argparse.Namespace,
     output_dir: Path,
+    *,
+    checkpoint_path: Path,
 ) -> dict[str, Path]:
     generator_root = REPO_ROOT / "Resources" / capability.python_path
     if str(generator_root) not in sys.path:
@@ -131,6 +140,7 @@ def _invoke_plugin(
         "ollama_url": args.ollama_url,
         "dry_run": args.dry_run,
         "progress": progress_emitter(),
+        "checkpoint_path": checkpoint_path,
     }
     if args.notes:
         candidate_arguments["notes_source"] = Path(args.notes).expanduser()
@@ -169,6 +179,29 @@ def _invoke_plugin(
     if not isinstance(result, dict):
         raise RuntimeError(f"{capability.id} entry point did not return document paths")
     return {str(role): Path(path) for role, path in result.items()}
+
+
+def checkpoint_path_for_job(
+    args: argparse.Namespace,
+    output_dir: Path,
+) -> Path:
+    identity = {
+        "subject": args.subject,
+        "paper": args.paper,
+        "seed": args.seed,
+        "provider": args.provider,
+        "model": args.model,
+    }
+    digest = hashlib.sha256(
+        json.dumps(identity, sort_keys=True, separators=(",", ":")).encode(
+            "utf-8"
+        )
+    ).hexdigest()[:20]
+    return (
+        output_dir
+        / ".papercreator-checkpoints"
+        / f"{args.subject}-paper-{args.paper}-{digest}.json"
+    )
 
 
 def _load_entry_point(value: str) -> Callable[..., dict[str, Path]]:

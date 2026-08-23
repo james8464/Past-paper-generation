@@ -3,6 +3,10 @@ from pathlib import Path
 
 import pytest
 
+from Backend.Core.assessment_checkpoints import (
+    AssessmentCheckpointStore,
+    identity_for_blueprint,
+)
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.ollama_client import (
     _clean_prompt,
@@ -179,6 +183,42 @@ def test_generation_replaces_every_draft_and_runs_review() -> None:
         assert candidate.topic_id == original.topic_id
     assert events[0].startswith("Generating question 1/12: 1 ")
     assert events[-1].startswith("Generated and reviewed question 12/12: 8 ")
+
+
+def test_generation_resumes_family_questions_from_checkpoint(
+    tmp_path: Path,
+) -> None:
+    syllabus, blueprint = _paper()
+    identity = identity_for_blueprint(
+        {
+            "paper_id": blueprint.paper_id,
+            "seed": 5,
+            "blueprint": blueprint.model_dump(mode="json"),
+        },
+        provider="ollama",
+        model="test",
+        prompt_version="edexcel-economics-v1",
+    )
+    store = AssessmentCheckpointStore(tmp_path / "job.json", identity)
+    generated = generate_questions_with_ollama(
+        BlueprintAwareClient(),
+        blueprint,
+        syllabus,
+        checkpoint_store=store,
+    )
+
+    class NoCallsClient(BlueprintAwareClient):
+        def generate_json(self, _prompt: str) -> dict[str, object]:
+            raise AssertionError("accepted Edexcel questions must resume")
+
+    resumed = generate_questions_with_ollama(
+        NoCallsClient(),
+        blueprint,
+        syllabus,
+        checkpoint_store=store,
+    )
+
+    assert resumed == generated
 
 
 def test_generation_rejects_unchanged_template_fallback() -> None:

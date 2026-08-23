@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from threading import Lock
 from typing import Callable
 
+from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
 from Backend.Core.model_review import (
     assert_materially_new,
     require_independent_review,
@@ -203,6 +204,7 @@ def generate_questions_with_ollama(
     blueprint: PaperBlueprint,
     syllabus: Syllabus,
     progress: Callable[[str], None] | None = None,
+    checkpoint_store: AssessmentCheckpointStore | None = None,
 ) -> PaperBlueprint:
     emit = progress or (lambda _message: None)
     total = len(blueprint.questions)
@@ -220,6 +222,18 @@ def generate_questions_with_ollama(
 
     def _build_task(question_index: int, question: QuestionBlueprint) -> str:
         index = question_index + 1
+        checkpoint_key = f"question-{question.number}"
+        if checkpoint_store is not None:
+            stored = checkpoint_store.load_payload(checkpoint_key)
+            if stored is not None:
+                candidate = QuestionBlueprint.model_validate(stored)
+                _validate_ai_question(question, candidate)
+                with results_lock:
+                    results[question_index] = candidate
+                return (
+                    f"Resumed reviewed question {index}/{total}: "
+                    f"{question.number}"
+                )
         try:
             topic = syllabus.get_topic(question.topic_id)
         except KeyError as error:
@@ -262,6 +276,11 @@ def generate_questions_with_ollama(
             candidate=candidate,
             specification=topic,
         )
+        if checkpoint_store is not None:
+            checkpoint_store.save_payload(
+                checkpoint_key,
+                candidate.model_dump(mode="json"),
+            )
         with results_lock:
             results[question_index] = candidate
         return (

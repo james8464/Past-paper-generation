@@ -5,6 +5,7 @@ import itertools
 import os
 import re
 import subprocess
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Callable
 
@@ -12,6 +13,23 @@ from typing import Any, Callable
 PROTOCOL_VERSION = 2
 BACKEND_VERSION = "2.0.0"
 _EVENT_IDS = itertools.count(1)
+
+
+@dataclass(frozen=True)
+class GenerationUpdate:
+    stage: str
+    message: str
+    item_id: str | None = None
+    completed_units: int = 0
+    total_units: int = 1
+    attempt: int = 1
+
+    @property
+    def progress(self) -> float:
+        return max(
+            0.0,
+            min(1.0, self.completed_units / max(self.total_units, 1)),
+        )
 
 
 def emit(event_type: str, **payload: Any) -> None:
@@ -47,7 +65,7 @@ def run_subprocess_json(command: list[str], *, stage: str) -> int:
     return process.wait()
 
 
-def progress_emitter() -> Callable[[str], None]:
+def progress_emitter() -> Callable[[str | GenerationUpdate], None]:
     last_progress = 0.02
     render_progress = {
         "Loading syllabus": 0.04,
@@ -60,8 +78,22 @@ def progress_emitter() -> Callable[[str], None]:
         "Done": 1.0,
     }
 
-    def callback(message: str) -> None:
+    def callback(message: str | GenerationUpdate) -> None:
         nonlocal last_progress
+        if isinstance(message, GenerationUpdate):
+            progress = 0.08 + message.progress * 0.70
+            last_progress = max(last_progress, progress)
+            emit(
+                "progress",
+                stage=message.stage,
+                message=message.message,
+                item_id=message.item_id,
+                completed_units=message.completed_units,
+                total_units=message.total_units,
+                attempt=message.attempt,
+                progress=last_progress,
+            )
+            return
         progress = render_progress.get(message)
         question_match = re.search(r"Generating question\s+(\d+)/(\d+)", message)
         generated_match = re.search(r"Generated question\s+(\d+)/(\d+)", message)
