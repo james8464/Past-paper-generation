@@ -30,8 +30,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
-    "mtime": 1787491985.8420427,
-    "ast_hash": "54e40f0b2fa8cdc4c36dc7f0e7d7f1f2",
+    "mtime": 1787497347.148192,
+    "ast_hash": "8aaf832e18a8495895c0eb50fac111aa",
     "semantic_hash": ""
   },
   "Backend/Core/generation_date.py": {
@@ -505,8 +505,8 @@
     "semantic_hash": "2128b98b956e44c5eb914cf552c7e5eb"
   },
   "Resources/economics/edexcel-a/generator/tests/test_mark_scheme_layout.py": {
-    "mtime": 1787412597.9871025,
-    "ast_hash": "f069823524c32fe5b2420ad5cdb662fe",
+    "mtime": 1787497318.30152,
+    "ast_hash": "f2ab91d4a05317768cb2a566eb884704",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/tests/test_notes.py": {
@@ -1015,8 +1015,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/pdf_validation.py": {
-    "mtime": 1787494735.3366156,
-    "ast_hash": "55405c28e43e87e13c9cacf8b2dcc7ff",
+    "mtime": 1787497347.1476018,
+    "ast_hash": "b57f9b9d99e553224c2221bc4c292f41",
     "semantic_hash": ""
   },
   "Backend/Core/reportlab_theme.py": {
@@ -1185,13 +1185,13 @@
     "semantic_hash": ""
   },
   "docs/ARCHITECTURE.md": {
-    "mtime": 1787493153.0051668,
-    "ast_hash": "b46aff76bba88233f7484bc98f592243",
+    "mtime": 1787497400.4957447,
+    "ast_hash": "d5b000c3d0c88e991a44465eb172dc55",
     "semantic_hash": ""
   },
   "docs/ASSESSMENT_QUALITY.md": {
-    "mtime": 1787493153.0044854,
-    "ast_hash": "861ee61cc491c0daba658d7e8e3b051b",
+    "mtime": 1787497400.4962797,
+    "ast_hash": "8eec3f79fa041307e4a23c600703bf18",
     "semantic_hash": ""
   },
   "docs/HIG_COMPLIANCE.md": {

@@ -1,7 +1,10 @@
 from pathlib import Path
 
+import pytest
+
 from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.pdf_text import extract_pdf_text, pdf_font_names
+from Backend.Core.pdf_validation import validate_pdf_for_release
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.render_pdf import MARK_SCHEME_MIN_PAGES, _mark_scheme_rows, _ms_row_height, render_mark_scheme
@@ -254,6 +257,21 @@ def test_paper_2_mark_scheme_matches_reference_pagination(tmp_path):
         assert document[35].get_text().strip() == ""
     finally:
         document.close()
+
+    with pytest.raises(ValueError, match="page 36 has too little content"):
+        validate_pdf_for_release(
+            output,
+            subject="economics",
+            role="mark_scheme",
+        )
+
+    validation = validate_pdf_for_release(
+        output,
+        subject="economics",
+        paper_number="2",
+        role="mark_scheme",
+    )
+    assert validation["layout_metrics"]["pages"][35]["intentional_blank"] is True
 
 
 def test_mark_scheme_mcq_explanations_are_option_specific(tmp_path):

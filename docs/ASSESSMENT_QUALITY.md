@@ -84,6 +84,22 @@ guidance, invalid keys, and schemes too sparse for the available marks.
 Question papers and mark schemes are rendered from the same model, preventing
 answer drift.
 
+The release-depth gate also scales with response type and tariff. It requires
+enough substantive credit points for the available marks, AO coverage matching
+the blueprint, explicit method and accuracy guidance for calculations,
+acceptable alternatives and credit limits where examiner judgement is needed,
+question-bound source evidence for data response, and complete level
+descriptors for levels-based extended responses. The assessment package keeps
+the original question kind, AO allocation, evidence identifiers, and structured
+scheme so these checks run before renderer-specific prose can disguise a thin
+answer.
+
+PDF qualification separately rejects clipped or overlapping text and
+unexplained content-free pages. OCR Economics mark-scheme overflow is allocated
+across bounded continuation pages so every marking point remains present even
+under adversarially long content. The deterministic qualification matrix
+renders and validates every declared role for all 18 advertised papers.
+
 Calculation cases are typed shared contracts consumed by the printed source,
 AI authoring pass, verified answers and mark scheme. This prevents an item from
 asking candidates to use a figure that the paper never supplies.

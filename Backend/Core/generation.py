@@ -275,6 +275,7 @@ def finalize_generated_documents(
         role: validate_pdf_for_release(
             path,
             subject=args.subject,
+            paper_number=args.paper,
             role=role,
         )
         for role, path in paths.items()

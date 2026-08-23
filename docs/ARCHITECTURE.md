@@ -35,9 +35,11 @@ Backend/Core/
   assessment_quality.py     fingerprints and duplicate/exposure checks
   exam_blueprints.py        shared immutable assessment schema
   generation.py             transaction, validation, manifest, publication
+  mark_scheme_quality.py    examiner-usable marking-depth contracts
   pdf_validation.py         PDF release and typography checks
   providers.py              hosted/local provider boundary
   psychometrics.py          exact-form response-data calibration
+  render_transaction.py     bounded atomic PDF-role rendering
 
 Resources/
   generator-registry.json   canonical capability and output registry
@@ -104,6 +106,13 @@ AI item work is a nested durable transaction:
 6. assemble the renderer-independent assessment package;
 7. render and qualify the document artifacts.
 
+Each document role is itself a bounded transaction. The family renderer writes
+to a same-directory temporary path under a 30-second deadline. The shared
+boundary verifies that the result exists, is non-empty, and opens as a PDF,
+flushes it to disk, then promotes it with `os.replace`. Timeouts, renderer
+exceptions, and malformed outputs remove the temporary artifact and cannot
+replace a previously valid destination.
+
 The checkpoint lives in `.papercreator-checkpoints` beside the selected output
 folder, outside the disposable staging directory. Its identity includes the
 blueprint hash, seed, provider, model and prompt version. Successful publication
@@ -118,12 +127,18 @@ publication:
 3. every normal-mode question must pass within-paper and output-history
    similarity thresholds;
 4. every PDF must pass metadata, page-box, font, placement, image-resolution,
-   and role-specific typography checks;
+   collision, page-density, and role-specific typography checks;
 5. the package manifest records hashes and evidence.
 
 Only after all checks pass does `os.replace` atomically move every artifact into
 the selected folder. A failure removes staging output and leaves no partial
 paper.
+
+Reference-defined sparse leaves are explicit contracts, not threshold
+exceptions. For example, Edexcel Economics Paper 2 retains its measured blank
+final mark-scheme page; the same blank page fails validation for any other
+subject, paper, or role. Per-page qualification metrics record text occupancy,
+drawings, images, overlap counts, and whether this narrow contract applied.
 
 ## Trust boundaries
 

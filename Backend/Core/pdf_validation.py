@@ -49,12 +49,18 @@ PROFILE_KEYS = {
     "economics_aqa": ("aqa", "economics"),
     "economics_ocr": ("ocr", "economics"),
 }
+INTENTIONAL_BLANK_PAGE_CONTRACTS = {
+    # Pearson's Paper 2 mark scheme ends on a deliberately blank page. Keeping
+    # that final leaf preserves the measured 36-page reference pagination.
+    ("economics", "2", "mark_scheme"): frozenset({36}),
+}
 
 
 def validate_pdf_for_release(
     path: Path,
     *,
     subject: str,
+    paper_number: str | None = None,
     role: str | None = None,
 ) -> dict[str, Any]:
     """Fail closed on malformed, substituted, annotated, or low-resolution PDFs."""
@@ -83,6 +89,10 @@ def validate_pdf_for_release(
         image_dpi: list[float] = []
         page_layout_metrics: list[dict[str, Any]] = []
         total_overlapping_pairs = 0
+        intentional_blank_pages = INTENTIONAL_BLANK_PAGE_CONTRACTS.get(
+            (subject, str(paper_number), role),
+            frozenset(),
+        )
         for page_index, page in enumerate(document, start=1):
             width, height = page.rect.width, page.rect.height
             if not all(
@@ -145,11 +155,17 @@ def validate_pdf_for_release(
                 if operation in {"stroke-path", "fill-path", "fill-stroke-path"}
             )
             page_has_content = page_has_text or bool(image_info) or vector_objects > 0
-            if not page_has_content:
+            intentional_blank = page_index in intentional_blank_pages
+            if not page_has_content and not intentional_blank:
                 raise ValueError(
                     f"{path.name} page {page_index} is unexpectedly empty"
                 )
-            if page_characters < 8 and not image_info and vector_objects < 3:
+            if (
+                page_characters < 8
+                and not image_info
+                and vector_objects < 3
+                and not intentional_blank
+            ):
                 raise ValueError(
                     f"{path.name} page {page_index} has too little content to "
                     "represent a document page"
@@ -171,6 +187,7 @@ def validate_pdf_for_release(
                     ),
                     "vector_objects": vector_objects,
                     "images": len(image_info),
+                    "intentional_blank": intentional_blank,
                     "overlapping_text_pairs": len(overlapping_pairs),
                 }
             )
