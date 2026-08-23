@@ -31,23 +31,23 @@
 - Produces: `role_scores: dict[str, dict[str, float | int]]` in each document result
 - Consumes: existing registered masked-render and text-layout page measurements
 
-- [ ] **Step 1: Write failing classification and aggregation tests**
+- [x] **Step 1: Write failing classification and aggregation tests**
 
 Add table-driven tests covering `cover`, `question_content`, `mark_scheme_content`, `additional_answer`, `ruled_continuation`, `intentional_blank`, and `end_page`. Add a two-role aggregation test proving variable question prose cannot make the answer-page role disappear.
 
-- [ ] **Step 2: Run the focused tests and confirm the new interfaces are absent**
+- [x] **Step 2: Run the focused tests and confirm the new interfaces are absent**
 
 Run: `PYTHONPATH=. .venv/bin/pytest -q tests/test_paper_fidelity_audit.py`
 
-- [ ] **Step 3: Implement classification and role summaries**
+- [x] **Step 3: Implement classification and role summaries**
 
 Classify from normalised extracted text plus document role, keeping the rules board-neutral. Aggregate page count, mean `overall`, `registered_masked_render`, `registered_text_layout`, and `stable_area` by role. Include the role on every page comparison and in JSON/Markdown output.
 
-- [ ] **Step 4: Run focused tests and audit the current 18-paper baseline**
+- [x] **Step 4: Run focused tests and audit the current 18-paper baseline**
 
 Run the focused suite, then run `tools/paper_fidelity_audit.py` against `tmp/pdfs/deterministic-render-qualification-2026-08-23` at 96 DPI. Confirm 36 primary documents are comparable and the aggregate remains within 0.5 points of 67.9%.
 
-- [ ] **Step 5: Refresh Graphify and commit**
+- [x] **Step 5: Refresh Graphify and commit**
 
 Commit message: `Measure fidelity by document page role`
 
@@ -183,4 +183,3 @@ Run Ruff, the full Python suite, `make agent-verify`, and `make preflight-app-st
 - [ ] **Step 6: Refresh Graphify and commit**
 
 Commit message: `Gate releases on measured paper fidelity`
-

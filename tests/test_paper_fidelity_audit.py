@@ -10,11 +10,84 @@ from tools.paper_fidelity_audit import (
     _generated_document,
     _geometry_scores,
     _registered_page_comparison,
+    _role_scores,
     _render_page_pixmap,
+    classify_page_role,
     profile,
     write_contact_sheets,
     write_worst_page_sheets,
 )
+
+
+@pytest.mark.parametrize(
+    ("text", "document_role", "page_number", "expected"),
+    [
+        ("A-level Economics Mark scheme", "mark_scheme", 1, "cover"),
+        ("Explain how a tax affects output.", "question_paper", 4, "question_content"),
+        ("Question Answer Mark", "mark_scheme", 4, "mark_scheme_content"),
+        ("Additional page, if required", "question_paper", 28, "additional_answer"),
+        ("EXTRA ANSWER SPACE", "question_paper", 29, "additional_answer"),
+        ("Question 6 continued", "question_paper", 14, "ruled_continuation"),
+        ("BLANK PAGE DO NOT WRITE ON THIS PAGE", "question_paper", 6, "intentional_blank"),
+        ("END OF QUESTION PAPER", "question_paper", 16, "end_page"),
+    ],
+)
+def test_page_role_classification(
+    text: str,
+    document_role: str,
+    page_number: int,
+    expected: str,
+) -> None:
+    assert (
+        classify_page_role(
+            text,
+            document_role=document_role,
+            page_number=page_number,
+        )
+        == expected
+    )
+
+
+def test_role_scores_aggregate_final_page_measurements() -> None:
+    pages = [
+        {
+            "page": 1,
+            "role": "cover",
+            "overall": 0.8,
+            "registered_masked_render": 0.9,
+            "registered_text_layout": 0.7,
+            "stable_area": 0.95,
+        },
+        {
+            "page": 2,
+            "role": "question_content",
+            "overall": 0.6,
+            "registered_masked_render": 0.92,
+            "registered_text_layout": 0.5,
+            "stable_area": 0.4,
+        },
+        {
+            "page": 3,
+            "role": "question_content",
+            "overall": 0.7,
+            "registered_masked_render": 0.94,
+            "registered_text_layout": 0.6,
+            "stable_area": 0.5,
+        },
+    ]
+
+    scores = _role_scores(pages)
+
+    assert scores["cover"] == {
+        "pages": 1,
+        "overall": 0.8,
+        "registered_masked_render": 0.9,
+        "registered_text_layout": 0.7,
+        "stable_area": 0.95,
+    }
+    assert scores["question_content"]["pages"] == 2
+    assert scores["question_content"]["overall"] == 0.65
+    assert scores["question_content"]["registered_masked_render"] == 0.93
 
 
 def test_generated_document_supports_app_per_paper_directories(tmp_path: Path):

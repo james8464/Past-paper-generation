@@ -524,6 +524,69 @@ def _page_comparisons(
     return result
 
 
+def classify_page_role(
+    text: str,
+    *,
+    document_role: str,
+    page_number: int,
+) -> str:
+    """Classify stable page furniture without retaining source-paper text."""
+
+    if page_number == 1:
+        return "cover"
+    words = " ".join(WORD.findall(text.casefold()))
+    if "end of question paper" in words:
+        return "end_page"
+    if "additional page" in words or "extra answer space" in words:
+        return "additional_answer"
+    if (
+        "blank page" in words
+        or "there are no questions printed on this page" in words
+        or "do not write on this page" in words
+    ):
+        return "intentional_blank"
+    if "continued" in words:
+        return "ruled_continuation"
+    return (
+        "mark_scheme_content"
+        if document_role == "mark_scheme"
+        else "question_content"
+    )
+
+
+def _document_page_roles(path: Path, document_role: str) -> list[str]:
+    with fitz.open(path) as document:
+        return [
+            classify_page_role(
+                page.get_text("text"),
+                document_role=document_role,
+                page_number=index,
+            )
+            for index, page in enumerate(document, start=1)
+        ]
+
+
+def _role_scores(pages: list[dict[str, Any]]) -> dict[str, dict[str, float | int]]:
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for page in pages:
+        grouped.setdefault(str(page["role"]), []).append(page)
+    result: dict[str, dict[str, float | int]] = {}
+    metrics = (
+        "overall",
+        "registered_masked_render",
+        "registered_text_layout",
+        "stable_area",
+    )
+    for role, role_pages in sorted(grouped.items()):
+        summary: dict[str, float | int] = {"pages": len(role_pages)}
+        for metric in metrics:
+            values = [float(page[metric]) for page in role_pages if metric in page]
+            if values:
+                summary[metric] = round(statistics.mean(values), 4)
+        result[role] = summary
+    return result
+
+
 def _normalised_block_text(value: str) -> str:
     return " ".join(WORD.findall(value.casefold()))
 
@@ -934,10 +997,28 @@ def _document_result(
     *,
     perceptual_dpi: int,
 ) -> dict[str, Any]:
+    document_role = (
+        "mark_scheme"
+        if "mark-scheme" in generated_path.name.casefold()
+        else "question_paper"
+    )
     pages = _page_comparisons(
         profiles["generated"]["geometry"],
         profiles["reference"]["geometry"],
     )
+    generated_roles = _document_page_roles(generated_path, document_role)
+    reference_roles = _document_page_roles(reference_path, document_role)
+    for page in pages:
+        index = int(page["page"]) - 1
+        generated_role = (
+            generated_roles[index] if index < len(generated_roles) else None
+        )
+        reference_role = (
+            reference_roles[index] if index < len(reference_roles) else None
+        )
+        page["generated_role"] = generated_role
+        page["reference_role"] = reference_role
+        page["role"] = reference_role or generated_role or document_role
     perceptual = _perceptual_page_comparisons(
         generated_path,
         reference_path,
@@ -984,6 +1065,7 @@ def _document_result(
         "reference": _compact_profile(profiles["reference"]),
         "comparison": comparison,
         "page_comparisons": pages,
+        "role_scores": _role_scores(pages),
         "worst_pages": sorted(
             pages,
             key=lambda item: (item["overall"], item["page"]),
@@ -1011,12 +1093,12 @@ def markdown(report: dict[str, Any]) -> str:
     rows = [
         "# Paper fidelity audit",
         "",
-        "| Family | Question paper | Mark scheme | Weakest question pages | Weakest scheme pages |",
-        "|---|---:|---:|---|---|",
+        "| Family | Question paper | Mark scheme | Weakest question pages | Weakest scheme pages | Weakest question role | Weakest scheme role |",
+        "|---|---:|---:|---|---|---|---|",
     ]
     for family, result in report["families"].items():
         if "missing" in result:
-            rows.append(f"| {family} | missing | missing | - | - |")
+            rows.append(f"| {family} | missing | missing | - | - | - | - |")
         else:
             question = result["question_paper"]["comparison"]["overall"]
             scheme = result["mark_scheme"]["comparison"]["overall"]
@@ -1026,12 +1108,26 @@ def markdown(report: dict[str, Any]) -> str:
             scheme_pages = ", ".join(
                 str(item["page"]) for item in result["mark_scheme"]["worst_pages"]
             )
+            question_role = _weakest_role(result["question_paper"]["role_scores"])
+            scheme_role = _weakest_role(result["mark_scheme"]["role_scores"])
             rows.append(
                 f"| {family} | {question:.1%} | {scheme:.1%} | "
-                f"{question_pages} | {scheme_pages} |"
+                f"{question_pages} | {scheme_pages} | {question_role} | {scheme_role} |"
             )
     rows.extend(["", f"Aggregate structural/visual similarity: **{report['overall']:.1%}**", ""])
     return "\n".join(rows)
+
+
+def _weakest_role(role_scores: dict[str, dict[str, float | int]]) -> str:
+    scored = [
+        (float(summary["overall"]), role)
+        for role, summary in role_scores.items()
+        if "overall" in summary
+    ]
+    if not scored:
+        return "-"
+    score, role = min(scored)
+    return f"{role} {score:.1%}"
 
 
 def _render_page_image(page: fitz.Page, dpi: int) -> Image.Image:

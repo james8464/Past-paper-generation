@@ -750,8 +750,8 @@
     "semantic_hash": "82546fc0792f6ec511f06ccd99cd447c"
   },
   "tests/test_paper_fidelity_audit.py": {
-    "mtime": 1787412598.0023844,
-    "ast_hash": "d55a041ae6b09ba8c44d551fe835521f",
+    "mtime": 1787498065.3295858,
+    "ast_hash": "963dcc93793171720f79e2658ffcd385",
     "semantic_hash": ""
   },
   "tests/test_reference_corpus.py": {
@@ -805,8 +805,8 @@
     "semantic_hash": "e45e04ff582c35b5a4022b8749969c96"
   },
   "tools/paper_fidelity_audit.py": {
-    "mtime": 1787412598.0028727,
-    "ast_hash": "30b74a4506f9fe17c45c7d500c89cf96",
+    "mtime": 1787498109.810098,
+    "ast_hash": "c6c01f6941d3ade49ed6e6506e1ba716",
     "semantic_hash": ""
   },
   "tools/reference_corpus.py": {
@@ -1390,8 +1390,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-23-measured-paper-fidelity.md": {
-    "mtime": 1787497997.7086897,
-    "ast_hash": "a583c62bd2b1870b7899dadfa882b518",
+    "mtime": 1787498259.536634,
+    "ast_hash": "147a10cf4efbb1bf6a75f7b49baa5c7d",
     "semantic_hash": ""
   }
 }
