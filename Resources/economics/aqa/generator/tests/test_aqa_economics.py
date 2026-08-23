@@ -106,6 +106,9 @@ def test_each_package_renders_readable_pdfs(tmp_path: Path) -> None:
         )
         if paper == "3":
             assert len(PdfReader(paths["source_booklet"]).pages) == 8
+            final_page = PdfReader(paths["question_paper"]).pages[-1].extract_text() or ""
+            assert "DO NOT WRITE ON THIS PAGE" in final_page
+            assert "Independent practice material" in final_page
             blueprint = build_paper(RULES["paper_3"], SYLLABUS, seed=123)
             assert [q.number for q in blueprint.sections[1].options[0].questions] == [
                 "31",

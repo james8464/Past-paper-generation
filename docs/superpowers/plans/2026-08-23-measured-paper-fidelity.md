@@ -67,23 +67,23 @@ Commit message: `Measure fidelity by document page role`
 - Produces: `ExamPage(Flowable)` and `draw_exam_page(canvas, profile, *, width, height) -> None`
 - Consumes: family font names and the shared deterministic barcode pattern
 
-- [ ] **Step 1: Add red geometry tests from measured reference boxes**
+- [x] **Step 1: Add red geometry tests from measured reference boxes**
 
 Render synthetic AQA additional, continuation, and blank leaves. Assert the question-number gutter, instruction band, ruled-area bounds, line spacing, footer baseline, barcode bounds, and legal-notice exclusion zone against measurements from the AQA reference corpus.
 
-- [ ] **Step 2: Implement the shared profile and canvas renderer**
+- [x] **Step 2: Implement the shared profile and canvas renderer**
 
-Keep all coordinates in millimetres, save/restore canvas state, draw only board-shaped generic furniture, and expose the same geometry as a full-page Flowable for Platypus families and a canvas function for AQA Computer Science.
+Keep coordinates in the reference PDFs' measured point space, save/restore canvas state, draw only board-shaped generic furniture, and expose the same geometry as a full-page Flowable for Platypus families and a canvas function for AQA Computer Science.
 
-- [ ] **Step 3: Migrate the four AQA renderers one family at a time**
+- [x] **Step 3: Migrate the four AQA renderers one family at a time**
 
 Replace duplicated `_additional_answer_page`, `_draw_extra_answer_page`, and final blank-page shells. Preserve page plans and question content. Run each family suite immediately after its migration.
 
-- [ ] **Step 4: Rerender all AQA papers and inspect role sheets**
+- [x] **Step 4: Rerender all AQA papers and inspect role sheets**
 
 Run the deterministic matrix with `--resume` into a fresh output root, audit it, and inspect every AQA `additional_answer`, `ruled_continuation`, and `intentional_blank` sheet. Require no document regression beyond 0.5 points and improved mean role geometry.
 
-- [ ] **Step 5: Refresh Graphify and commit**
+- [x] **Step 5: Refresh Graphify and commit**
 
 Commit message: `Unify measured AQA answer pages`
 

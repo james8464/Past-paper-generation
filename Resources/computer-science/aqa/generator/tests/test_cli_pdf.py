@@ -1,5 +1,7 @@
 import subprocess
 
+import pymupdf as fitz
+
 from cspapergen.cli import generate_package
 
 
@@ -35,3 +37,23 @@ def test_question_paper_uses_realistic_aqa_page_count(tmp_path):
     assert "Pages:" in output
     pages = int(next(line.split()[1] for line in output.splitlines() if line.startswith("Pages:")))
     assert pages == 40
+
+
+def test_final_additional_answer_page_reserves_independent_notice(tmp_path):
+    paths = generate_package(output_dir=tmp_path, seed=42, dry_run=True)
+
+    document = fitz.open(paths["question_paper"])
+    try:
+        assert "Independent practice material" in document[-1].get_text()
+    finally:
+        document.close()
+
+
+def test_paper_two_transition_leaf_uses_do_not_write_diagonal(tmp_path):
+    paths = generate_package(output_dir=tmp_path, seed=42, dry_run=True)
+
+    document = fitz.open(paths["question_paper"])
+    try:
+        assert "DO NOT WRITE ON THIS PAGE" in document[36].get_text()
+    finally:
+        document.close()

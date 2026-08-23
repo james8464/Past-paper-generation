@@ -30,6 +30,7 @@ from Backend.Core.exam_cover import (
     aqa_question_cover,
     mark_scheme_cover,
 )
+from Backend.Core.exam_pages import ExamPage, ExamPageProfile
 from Backend.Core.fonts import register_fonts
 from Backend.Core.reportlab_theme import themed_table_class
 from Backend.Core.mark_scheme_front_matter import aqa_front_matter_pages
@@ -1200,16 +1201,19 @@ def _paper_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
 
     c_option = section_c.options[0]
     if paper.paper_id == "paper_1":
-        pages.extend(_paper_one_section_c_pages(section_c, c_option))
+        pages.extend(
+            _paper_one_section_c_pages(section_c, c_option, paper.paper_code)
+        )
         return pages
 
-    pages.extend(_paper_two_section_c_pages(section_c, c_option))
+    pages.extend(_paper_two_section_c_pages(section_c, c_option, paper.paper_code))
     return pages
 
 
 def _paper_two_section_c_pages(
     section,
     option: GeneratedOption,
+    paper_code: str,
 ) -> list[list[Flowable]]:
     question_16, question_17 = option.questions
     return [
@@ -1232,10 +1236,10 @@ def _paper_two_section_c_pages(
         [Paragraph("Extra space", STYLES["small"]), AnswerLines(33)],
         [AnswerLines(34)],
         _no_questions_page(),
-        _additional_answer_page(),
-        _additional_answer_page(),
-        _additional_answer_page(),
-        _additional_answer_page(),
+        _additional_answer_page(paper_code),
+        _additional_answer_page(paper_code),
+        _additional_answer_page(paper_code),
+        _additional_answer_page(paper_code),
         _no_questions_page(include_legal_notice=True),
     ]
 
@@ -1243,6 +1247,7 @@ def _paper_two_section_c_pages(
 def _paper_one_section_c_pages(
     section,
     option: GeneratedOption,
+    paper_code: str,
 ) -> list[list[Flowable]]:
     question_16, question_17 = option.questions
     return [
@@ -1272,9 +1277,9 @@ def _paper_one_section_c_pages(
         ],
         [AnswerLines(34)],
         _no_questions_page(),
-        _additional_answer_page(),
-        _additional_answer_page(),
-        _additional_answer_page(include_legal_notice=True),
+        _additional_answer_page(paper_code),
+        _additional_answer_page(paper_code),
+        _additional_answer_page(paper_code, include_legal_notice=True),
     ]
 
 
@@ -1507,50 +1512,23 @@ def _no_questions_page(
 
 
 def _additional_answer_page(
+    paper_code: str,
     *,
     include_legal_notice: bool = False,
 ) -> list[Flowable]:
-    row_count = 18 if include_legal_notice else 25
-    rows: list[list[object]] = [
-        [
-            Paragraph("Question<br/>number", STYLES["marks"]),
-            Paragraph(
-                "<b>Additional page, if required</b><br/>"
-                "Write the question numbers in the left-hand margin.",
-                STYLES["centre_bold"],
+    return [
+        ExamPage(
+            ExamPageProfile(
+                board="aqa",
+                code=paper_code,
+                heading="Additional page, if required",
+                variant="additional",
+                legal_notice=include_legal_notice,
             ),
-        ],
-        *[["", ""] for _ in range(row_count)],
-    ]
-    table = Table(
-        rows,
-        colWidths=[14 * mm, 153 * mm],
-        rowHeights=[10 * mm, *([8.2 * mm] * row_count)],
-    )
-    style = [
-        ("BOX", (0, 0), (-1, -1), 0.65, INK),
-        ("LINEAFTER", (0, 0), (0, -1), 0.5, INK),
-        ("LINEBELOW", (0, 0), (-1, 0), 0.5, INK),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        ("PADDING", (0, 0), (-1, -1), 2),
-    ]
-    for row in range(1, row_count + 1):
-        style.append(("LINEBELOW", (1, row), (1, row), 0.35, colors.grey))
-    table.setStyle(TableStyle(style))
-    content: list[Flowable] = [table]
-    if include_legal_notice:
-        content.extend(
-            [
-                Spacer(1, 8 * mm),
-                Paragraph("Independent practice material", STYLES["small"]),
-                Paragraph(
-                    "Created by Paper Creator for private revision. This paper is not "
-                    "produced, endorsed or approved by AQA or any examination board.",
-                    STYLES["small"],
-                ),
-            ]
+            font=FONT,
+            bold_font=FONT_BOLD,
         )
-    return content
+    ]
 
 
 def _paper_one_section_b_pages(

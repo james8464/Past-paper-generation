@@ -30,6 +30,7 @@ from Backend.Core.exam_cover import (
     aqa_question_cover,
     mark_scheme_cover,
 )
+from Backend.Core.exam_pages import ExamPage, ExamPageProfile
 from Backend.Core.fonts import register_fonts
 from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.reportlab_theme import themed_table_class
@@ -665,9 +666,9 @@ def _paper_one_pages(paper: GeneratedPaper) -> list[Flowable]:
     pages.extend(
         [
             _no_questions_page(),
-            _additional_answer_page(),
-            _additional_answer_page(),
-            _additional_answer_page(),
+            _additional_answer_page(paper.paper_code),
+            _additional_answer_page(paper.paper_code),
+            _additional_answer_page(paper.paper_code),
             _no_questions_page(include_legal_notice=True),
         ]
     )
@@ -730,9 +731,7 @@ def _paper_two_pages(paper: GeneratedPaper) -> list[Flowable]:
                 ],
             ]
         )
-    pages.extend(
-        [[Paragraph("Additional page, if required", STYLES["centre_bold"]), AnswerLines(34)] for _ in range(8)]
-    )
+    pages.extend([_additional_answer_page(paper.paper_code) for _ in range(8)])
     assert len(pages) == 23
     return _page_sequence(pages)
 
@@ -762,9 +761,7 @@ def _paper_three_pages(paper: GeneratedPaper) -> list[Flowable]:
                 for _ in range(allocation - 1)
             ]
         )
-    pages.extend(
-        [[Paragraph("Additional page, if required", STYLES["centre_bold"]), AnswerLines(34)] for _ in range(2)]
-    )
+    pages.extend([_additional_answer_page(paper.paper_code) for _ in range(2)])
     assert len(pages) == 27
     return _page_sequence(pages)
 
@@ -1072,35 +1069,19 @@ def _no_questions_page(
     return content
 
 
-def _additional_answer_page() -> list[Flowable]:
-    row_count = 25
-    rows: list[list[object]] = [
-        [
-            Paragraph("Question<br/>number", STYLES["marks"]),
-            Paragraph(
-                "<b>Additional page, if required</b><br/>"
-                "Write the question numbers in the left-hand margin.",
-                STYLES["centre_bold"],
+def _additional_answer_page(paper_code: str) -> list[Flowable]:
+    return [
+        ExamPage(
+            ExamPageProfile(
+                board="aqa",
+                code=paper_code,
+                heading="Additional page, if required",
+                variant="additional",
             ),
-        ],
-        *[["", ""] for _ in range(row_count)],
+            font=FONT,
+            bold_font=FONT_BOLD,
+        )
     ]
-    table = Table(
-        rows,
-        colWidths=[14 * mm, 153 * mm],
-        rowHeights=[10 * mm, *([8.2 * mm] * row_count)],
-    )
-    style = [
-        ("BOX", (0, 0), (-1, -1), 0.65, INK),
-        ("LINEAFTER", (0, 0), (0, -1), 0.5, INK),
-        ("LINEBELOW", (0, 0), (-1, 0), 0.5, INK),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        ("PADDING", (0, 0), (-1, -1), 2),
-    ]
-    for row in range(1, row_count + 1):
-        style.append(("LINEBELOW", (1, row), (1, row), 0.35, colors.grey))
-    table.setStyle(TableStyle(style))
-    return [table]
 
 
 def _mcq_block(question: GeneratedQuestion) -> list[Flowable]:

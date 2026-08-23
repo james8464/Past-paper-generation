@@ -28,6 +28,7 @@ from Backend.Core.exam_cover import (
     aqa_question_cover,
     mark_scheme_cover,
 )
+from Backend.Core.exam_pages import ExamPage, ExamPageProfile
 from Backend.Core.fonts import register_fonts
 from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.reportlab_theme import themed_table_class
@@ -678,20 +679,32 @@ def _paper_three_pages(paper: GeneratedPaper) -> list[Flowable]:
         flowables.extend(
             [
                 PageBreak(),
-                Paragraph("Additional page, if required", STYLES["continuation"]),
-                Paragraph(
-                    "Write the question number in the margin before continuing your answer.",
-                    STYLES["body"],
+                ExamPage(
+                    ExamPageProfile(
+                        board="aqa",
+                        code=paper.paper_code,
+                        heading="Additional page, if required",
+                        variant="additional",
+                    ),
+                    font=FONT,
+                    bold_font=FONT_BOLD,
                 ),
-                Spacer(1, 3 * mm),
-                AnswerLines(33),
             ]
         )
     flowables.extend(
         [
             PageBreak(),
-            Paragraph(
-                "There are no questions printed on this page.", STYLES["centred_note"]
+            ExamPage(
+                ExamPageProfile(
+                    board="aqa",
+                    code=paper.paper_code,
+                    heading="There are no questions printed on this page",
+                    variant="blank",
+                    legal_notice=True,
+                    do_not_write=True,
+                ),
+                font=FONT,
+                bold_font=FONT_BOLD,
             ),
         ]
     )

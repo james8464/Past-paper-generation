@@ -8,6 +8,7 @@ from pathlib import Path
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 
+from Backend.Core.exam_pages import ExamPageProfile, draw_exam_page
 from Backend.Core.fonts import register_fonts as _rf
 from Backend.Core.generation_date import (
     formatted_generation_date,
@@ -140,8 +141,13 @@ def render_question_paper(blueprint: PaperBlueprint, output_path: Path) -> None:
     pdf.drawCentredString(282, state.y - 20, "END OF QUESTIONS")
     state.y -= 80
     extra_pages = EXTRA_ANSWER_PAGES if blueprint.delivery_mode == "written" else 0
-    for _index in range(extra_pages):
-        _draw_extra_answer_page(pdf, state.page + 1, blueprint)
+    for index in range(extra_pages):
+        _draw_extra_answer_page(
+            pdf,
+            state.page + 1,
+            blueprint,
+            legal_notice=index == extra_pages - 1,
+        )
         state.page += 1
     pdf.save()
 
@@ -188,9 +194,14 @@ def _render_paper2_question_pages(
     pdf.setFont(FONT_BOLD, 10)
     pdf.drawCentredString(282, state.y - 18, "END OF QUESTIONS")
     state = _new_question_page(pdf, state)
-    _draw_intentionally_blank_page(pdf, state)
-    for _index in range(EXTRA_ANSWER_PAGES):
-        _draw_extra_answer_page(pdf, state.page + 1, blueprint)
+    _draw_intentionally_blank_page(pdf, state, do_not_write=True)
+    for index in range(EXTRA_ANSWER_PAGES):
+        _draw_extra_answer_page(
+            pdf,
+            state.page + 1,
+            blueprint,
+            legal_notice=index == EXTRA_ANSWER_PAGES - 1,
+        )
         state.page += 1
     return state
 
@@ -597,11 +608,27 @@ def _draw_paper1_support_page(
     pdf.drawString(82, state.y, "This information is repeated so that it remains visible while you complete the task.")
 
 
-def _draw_intentionally_blank_page(pdf: canvas.Canvas, state: _QuestionRenderState) -> None:
-    pdf.setFont(FONT_BOLD, 10)
-    pdf.drawCentredString(289, 430, "There are no questions printed on this page")
-    pdf.setFont(FONT, 9)
-    pdf.drawCentredString(289, 408, "DO NOT WRITE ON THIS PAGE")
+def _draw_intentionally_blank_page(
+    pdf: canvas.Canvas,
+    state: _QuestionRenderState,
+    *,
+    do_not_write: bool = False,
+) -> None:
+    draw_exam_page(
+        pdf,
+        ExamPageProfile(
+            board="aqa",
+            code=state.blueprint.paper_code,
+            heading="There are no questions printed on this page",
+            variant="blank",
+            do_not_write=do_not_write,
+        ),
+        width=AQA_A4[0],
+        height=AQA_A4[1],
+        font=FONT,
+        bold_font=FONT_BOLD,
+        page_number=0,
+    )
     state.y = 380
 
 
@@ -1841,13 +1868,31 @@ def _mark_total_box(pdf: canvas.Canvas, marks: int, y: float) -> None:
     pdf.drawCentredString(563, y - 32, str(marks))
 
 
-def _draw_extra_answer_page(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
+def _draw_extra_answer_page(
+    pdf: canvas.Canvas,
+    page: int,
+    blueprint: PaperBlueprint,
+    *,
+    legal_notice: bool,
+) -> None:
     pdf.showPage()
     _draw_question_page_header(pdf, page, blueprint)
-    pdf.setFont(FONT_BOLD, 11)
-    pdf.drawCentredString(282, 725, "Additional answer space")
-    y = 680
-    _answer_lines(pdf, y, 25)
+    draw_exam_page(
+        pdf,
+        ExamPageProfile(
+            board="aqa",
+            code=blueprint.paper_code,
+            heading="Additional page, if required",
+            variant="additional",
+            legal_notice=legal_notice,
+        ),
+        width=AQA_A4[0],
+        height=AQA_A4[1],
+        font=FONT,
+        bold_font=FONT_BOLD,
+        page_number=0,
+        include_footer=True,
+    )
 
 
 def _draw_footer_barcode(pdf: canvas.Canvas, x: float, y: float, page: int) -> None:

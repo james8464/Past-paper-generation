@@ -115,8 +115,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/render_pdf.py": {
-    "mtime": 1787493434.6285114,
-    "ast_hash": "b43676ca9e04a81e8fbde69cf2b0ec1a",
+    "mtime": 1787498568.944115,
+    "ast_hash": "139312383c4946214e11127eaf0cbb35",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/syllabus.py": {
@@ -165,8 +165,8 @@
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/render_pdf.py": {
-    "mtime": 1787493434.6266868,
-    "ast_hash": "d3418e719215ea3c0ebca3c14206d1ee",
+    "mtime": 1787498596.5980294,
+    "ast_hash": "2a93c697aa3e9b0b3876e7f1d21234ae",
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/syllabus.py": {
@@ -250,8 +250,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/render_pdf.py": {
-    "mtime": 1787412597.9855945,
-    "ast_hash": "053de5fe90743b804da68696d00eaefb",
+    "mtime": 1787499968.6005933,
+    "ast_hash": "bf618c19f92a5db4e27d7aa12cf174cc",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/syllabus.py": {
@@ -280,8 +280,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_cli_pdf.py": {
-    "mtime": 1785603986.1244557,
-    "ast_hash": "f6ea7e622d8e6a5b18bc5ab701c8f39a",
+    "mtime": 1787499948.6807117,
+    "ast_hash": "5685e7da8eb1172a2d8612ebbfee92b8",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_exam_dates.py": {
@@ -385,8 +385,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/aqaecongen/render_pdf.py": {
-    "mtime": 1787493434.62479,
-    "ast_hash": "4aae51737d141a2398352b376db7287c",
+    "mtime": 1787499713.4087486,
+    "ast_hash": "c4a36501f1a92e82c7fb812ad3159dd9",
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/aqaecongen/syllabus.py": {
@@ -410,8 +410,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/tests/test_aqa_economics.py": {
-    "mtime": 1787412597.9866097,
-    "ast_hash": "d54e9177f9c4b8bf13e114869e433eaa",
+    "mtime": 1787499697.826107,
+    "ast_hash": "1fa830c53d093b1d8f5dda877f7b9932",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/data/syllabus_seed.json": {
@@ -1390,8 +1390,18 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-23-measured-paper-fidelity.md": {
-    "mtime": 1787498259.536634,
-    "ast_hash": "147a10cf4efbb1bf6a75f7b49baa5c7d",
+    "mtime": 1787500075.5788305,
+    "ast_hash": "72f1370bd3a7134b4ceeec826101e959",
+    "semantic_hash": ""
+  },
+  "Backend/Core/exam_pages.py": {
+    "mtime": 1787499787.9864514,
+    "ast_hash": "eb039b1a330bc13681237307b46a10ca",
+    "semantic_hash": ""
+  },
+  "tests/test_exam_pages.py": {
+    "mtime": 1787499773.4804487,
+    "ast_hash": "a1d48159702ee3544b9a37889e9def9e",
     "semantic_hash": ""
   }
 }
