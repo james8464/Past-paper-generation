@@ -6,6 +6,7 @@ import json
 import math
 import re
 import statistics
+import sys
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -1089,6 +1090,83 @@ def _generated_document(
     return direct
 
 
+def validate_thresholds(
+    report: dict[str, Any],
+    thresholds: dict[str, Any],
+) -> list[str]:
+    """Return stable, human-readable release-gate failures."""
+    errors: list[str] = []
+    if thresholds.get("schema_version") != 1:
+        return [
+            "thresholds/schema/document: expected schema version 1; "
+            f"observed {thresholds.get('schema_version', 'missing')}"
+        ]
+    expected_audit_schema = thresholds.get("audit_schema_version")
+    observed_audit_schema = report.get("schema_version")
+    if expected_audit_schema != observed_audit_schema:
+        return [
+            "thresholds/audit/document: "
+            f"expected schema version {expected_audit_schema}; "
+            f"observed {observed_audit_schema}"
+        ]
+
+    report_families = report.get("families", {})
+    threshold_families = thresholds.get("families", {})
+    for family in sorted(report_families.keys() - threshold_families.keys()):
+        errors.append(
+            f"{family}/question_paper/document: "
+            "expected configured minimum; observed unqualified"
+        )
+    for family, documents in threshold_families.items():
+        result = report_families.get(family)
+        if not isinstance(result, dict) or "missing" in result:
+            first_document = next(iter(documents), "question_paper")
+            minimum = float(documents[first_document]["minimum"])
+            errors.append(
+                f"{family}/{first_document}/document: "
+                f"expected >= {minimum:.3f}; observed missing"
+            )
+            continue
+
+        for document, requirement in documents.items():
+            observed_document = result.get(document)
+            minimum = float(requirement["minimum"])
+            if not isinstance(observed_document, dict):
+                errors.append(
+                    f"{family}/{document}/document: "
+                    f"expected >= {minimum:.3f}; observed missing"
+                )
+                continue
+            observed = observed_document.get("comparison", {}).get("overall")
+            if observed is None:
+                errors.append(
+                    f"{family}/{document}/document: "
+                    f"expected >= {minimum:.3f}; observed missing"
+                )
+            elif float(observed) < minimum:
+                errors.append(
+                    f"{family}/{document}/document: "
+                    f"expected >= {minimum:.3f}; observed {float(observed):.3f}"
+                )
+
+            observed_roles = observed_document.get("role_scores", {})
+            for role, role_minimum_value in requirement.get("roles", {}).items():
+                role_minimum = float(role_minimum_value)
+                role_observed = observed_roles.get(role, {}).get("overall")
+                if role_observed is None:
+                    errors.append(
+                        f"{family}/{document}/{role}: "
+                        f"expected >= {role_minimum:.3f}; observed missing"
+                    )
+                elif float(role_observed) < role_minimum:
+                    errors.append(
+                        f"{family}/{document}/{role}: "
+                        f"expected >= {role_minimum:.3f}; "
+                        f"observed {float(role_observed):.3f}"
+                    )
+    return errors
+
+
 def markdown(report: dict[str, Any]) -> str:
     rows = [
         "# Paper fidelity audit",
@@ -1452,6 +1530,11 @@ def main() -> int:
     parser.add_argument("--json", type=Path)
     parser.add_argument("--markdown", type=Path)
     parser.add_argument(
+        "--thresholds",
+        type=Path,
+        help="Fail when a versioned document or page-role minimum is missed.",
+    )
+    parser.add_argument(
         "--artifacts",
         type=Path,
         help="Write side-by-side reference/generated/difference contact sheets.",
@@ -1485,6 +1568,13 @@ def main() -> int:
         write_visual_artifacts(report, artifact_root, dpi=args.dpi)
         write_overview_sheets(report, artifact_root, dpi=args.dpi)
         write_worst_page_sheets(report, artifact_root, dpi=args.dpi)
+    if args.thresholds:
+        thresholds = json.loads(args.thresholds.read_text(encoding="utf-8"))
+        failures = validate_thresholds(report, thresholds)
+        if failures:
+            for failure in failures:
+                print(f"fidelity threshold failed: {failure}", file=sys.stderr)
+            return 1
     return 0
 
 

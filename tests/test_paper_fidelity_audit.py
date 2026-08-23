@@ -14,9 +14,90 @@ from tools.paper_fidelity_audit import (
     _render_page_pixmap,
     classify_page_role,
     profile,
+    validate_thresholds,
     write_contact_sheets,
     write_worst_page_sheets,
 )
+
+
+def _threshold_report(
+    *,
+    overall: float = 0.700,
+    cover: float = 0.600,
+) -> dict:
+    document = {
+        "comparison": {"overall": overall},
+        "role_scores": {"cover": {"overall": cover}},
+    }
+    return {
+        "schema_version": 3,
+        "families": {
+            "example-family": {
+                "question_paper": document,
+                "mark_scheme": document,
+            }
+        },
+    }
+
+
+def _thresholds() -> dict:
+    document = {
+        "minimum": 0.700,
+        "roles": {"cover": 0.600},
+    }
+    return {
+        "schema_version": 1,
+        "audit_schema_version": 3,
+        "families": {
+            "example-family": {
+                "question_paper": document,
+                "mark_scheme": document,
+            }
+        },
+    }
+
+
+def test_threshold_gate_reports_missing_family() -> None:
+    report = _threshold_report()
+    report["families"] = {}
+
+    errors = validate_thresholds(report, _thresholds())
+
+    assert errors == [
+        "example-family/question_paper/document: expected >= 0.700; observed missing"
+    ]
+
+
+def test_threshold_gate_rejects_six_tenths_point_document_regression() -> None:
+    errors = validate_thresholds(_threshold_report(overall=0.694), _thresholds())
+
+    assert errors == [
+        "example-family/question_paper/document: expected >= 0.700; observed 0.694",
+        "example-family/mark_scheme/document: expected >= 0.700; observed 0.694",
+    ]
+
+
+def test_threshold_gate_reports_failed_page_role() -> None:
+    errors = validate_thresholds(_threshold_report(cover=0.599), _thresholds())
+
+    assert errors == [
+        "example-family/question_paper/cover: expected >= 0.600; observed 0.599",
+        "example-family/mark_scheme/cover: expected >= 0.600; observed 0.599",
+    ]
+
+
+def test_threshold_gate_accepts_report_at_minimums() -> None:
+    assert validate_thresholds(_threshold_report(), _thresholds()) == []
+
+
+def test_threshold_gate_rejects_unqualified_report_family() -> None:
+    thresholds = _thresholds()
+    thresholds["families"] = {}
+
+    assert validate_thresholds(_threshold_report(), thresholds) == [
+        "example-family/question_paper/document: "
+        "expected configured minimum; observed unqualified"
+    ]
 
 
 @pytest.mark.parametrize(

@@ -100,6 +100,39 @@ across bounded continuation pages so every marking point remains present even
 under adversarially long content. The deterministic qualification matrix
 renders and validates every declared role for all 18 advertised papers.
 
+### Measured visual qualification
+
+`tools/paper_fidelity_audit.py` compares each generated document with its local
+reference at both document and page-role level. The registered comparison
+separately measures stable furniture, text placement, and geometry so newly
+authored question wording does not dominate the result. The versioned minima in
+`Resources/fidelity-thresholds.json` cover every advertised family, question
+paper, mark scheme, and observed page role. The command exits non-zero when a
+document is absent, a role disappears, the audit schema changes, or a score
+falls more than 0.5 percentage points below its qualified baseline.
+
+The 23 August 2026 qualification generated all 18 preview papers from a clean
+output root and release-validated every declared artifact. Its 36 primary PDFs
+produced 122 role summaries and a 68.5% aggregate registered similarity score.
+All 151 overview, weakest-page, and per-document contact sheets were inspected
+for:
+
+- cover hierarchy, candidate boxes, typography, margins, rules, barcodes, and
+  page folios;
+- question numbering, command words, mark boxes, response allocation, and
+  section transitions;
+- table borders, diagrams, graph axes, legends, data labels, and image clarity;
+- mark-scheme columns, marking-point density, levels, alternatives, and
+  continuation behaviour;
+- intentional blanks, answer rules, legal-notice exclusion zones, clipping,
+  collisions, missing glyphs, and malformed pages.
+
+No rendering defect was found in that matrix. Differences caused by independently
+authored questions remain expected, and the neutral Paper Creator identity is
+deliberately used instead of exam-board logos or copyrighted footer material.
+The score is therefore a regression boundary, not a claim that the documents
+are official or pixel-identical.
+
 Calculation cases are typed shared contracts consumed by the printed source,
 AI authoring pass, verified answers and mark scheme. This prevents an item from
 asking candidates to use a figure that the paper never supplies.

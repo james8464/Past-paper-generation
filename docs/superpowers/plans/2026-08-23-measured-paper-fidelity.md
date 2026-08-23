@@ -160,26 +160,26 @@ Commit message: `Calibrate shared mark scheme covers`
 - Produces: `--thresholds PATH` and non-zero exit on missing documents, excessive per-document regression, or role-score failure
 - Consumes: the post-improvement 18-paper report as the versioned minimum baseline
 
-- [ ] **Step 1: Add failing threshold tests**
+- [x] **Step 1: Add failing threshold tests**
 
 Cover missing families, a 0.6-point document regression, a failed page-role minimum, and a passing report. Error output must name family, document, role, expected score, and observed score.
 
-- [ ] **Step 2: Implement the fail-closed gate and compact threshold schema**
+- [x] **Step 2: Implement the fail-closed gate and compact threshold schema**
 
 Store only family/document/role minimum scores and the audit schema version; never commit generated PDFs, raster pages, or official reference content.
 
-- [ ] **Step 3: Generate a fresh deterministic 18-paper matrix**
+- [x] **Step 3: Generate a fresh deterministic 18-paper matrix**
 
 Run without `--resume`, release-validate all declared roles, run the fidelity gate, and generate all overview, worst-page, and per-document contact sheets.
 
-- [ ] **Step 4: Manually inspect every contact sheet**
+- [x] **Step 4: Manually inspect every contact sheet**
 
 Record a checklist covering covers, candidate boxes, typography, margins, page folios, answer rules, mark boxes, tables, diagrams, graph labels, scheme tables, levels, and intentional blanks. Fix every concrete defect and repeat the affected family plus the full gate.
 
-- [ ] **Step 5: Run repository and distribution verification**
+- [x] **Step 5: Run repository and distribution verification**
 
 Run Ruff, the full Python suite, `make agent-verify`, and `make preflight-app-store`. Update architecture/quality docs with the measured qualification boundary.
 
-- [ ] **Step 6: Refresh Graphify and commit**
+- [x] **Step 6: Refresh Graphify and commit**
 
 Commit message: `Gate releases on measured paper fidelity`

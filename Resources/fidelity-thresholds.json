@@ -1,0 +1,344 @@
+{
+  "schema_version": 1,
+  "audit_schema_version": 3,
+  "families": {
+    "aqa-accounting-paper-1": {
+      "question_paper": {
+        "minimum": 0.699,
+        "roles": {
+          "additional_answer": 0.484,
+          "cover": 0.55,
+          "intentional_blank": 0.654,
+          "question_content": 0.604
+        }
+      },
+      "mark_scheme": {
+        "minimum": 0.624,
+        "roles": {
+          "cover": 0.377,
+          "mark_scheme_content": 0.57
+        }
+      }
+    },
+    "aqa-accounting-paper-2": {
+      "question_paper": {
+        "minimum": 0.69,
+        "roles": {
+          "additional_answer": 0.502,
+          "cover": 0.547,
+          "intentional_blank": 0.648,
+          "question_content": 0.587
+        }
+      },
+      "mark_scheme": {
+        "minimum": 0.671,
+        "roles": {
+          "cover": 0.391,
+          "mark_scheme_content": 0.591
+        }
+      }
+    },
+    "aqa-business-paper-1": {
+      "question_paper": {
+        "minimum": 0.693,
+        "roles": {
+          "additional_answer": 0.503,
+          "cover": 0.53,
+          "intentional_blank": 0.628,
+          "question_content": 0.589
+        }
+      },
+      "mark_scheme": {
+        "minimum": 0.674,
+        "roles": {
+          "cover": 0.375,
+          "mark_scheme_content": 0.626
+        }
+      }
+    },
+    "aqa-business-paper-2": {
+      "question_paper": {
+        "minimum": 0.697,
+        "roles": {
+          "additional_answer": 0.49,
+          "cover": 0.527,
+          "intentional_blank": 0.647,
+          "question_content": 0.567
+        }
+      },
+      "mark_scheme": {
+        "minimum": 0.694,
+        "roles": {
+          "cover": 0.375,
+          "mark_scheme_content": 0.638
+        }
+      }
+    },
+    "aqa-business-paper-3": {
+      "question_paper": {
+        "minimum": 0.69,
+        "roles": {
+          "additional_answer": 0.461,
+          "cover": 0.528,
+          "intentional_blank": 0.616,
+          "question_content": 0.594
+        }
+      },
+      "mark_scheme": {
+        "minimum": 0.697,
+        "roles": {
+          "cover": 0.373,
+          "mark_scheme_content": 0.638
+        }
+      }
+    },
+    "aqa-economics-paper-1": {
+      "question_paper": {
+        "minimum": 0.723,
+        "roles": {
+          "cover": 0.409,
+          "intentional_blank": 0.636,
+          "question_content": 0.584
+        }
+      },
+      "mark_scheme": {
+        "minimum": 0.694,
+        "roles": {
+          "cover": 0.38,
+          "mark_scheme_content": 0.604
+        }
+      }
+    },
+    "aqa-economics-paper-2": {
+      "question_paper": {
+        "minimum": 0.717,
+        "roles": {
+          "cover": 0.414,
+          "intentional_blank": 0.636,
+          "question_content": 0.545,
+          "ruled_continuation": 0.688
+        }
+      },
+      "mark_scheme": {
+        "minimum": 0.687,
+        "roles": {
+          "cover": 0.374,
+          "mark_scheme_content": 0.591,
+          "ruled_continuation": 0.717
+        }
+      }
+    },
+    "aqa-economics-paper-3": {
+      "question_paper": {
+        "minimum": 0.681,
+        "roles": {
+          "additional_answer": 0.481,
+          "cover": 0.563,
+          "intentional_blank": 0.635,
+          "question_content": 0.529
+        }
+      },
+      "mark_scheme": {
+        "minimum": 0.683,
+        "roles": {
+          "cover": 0.352,
+          "mark_scheme_content": 0.616
+        }
+      }
+    },
+    "aqa-computer-science-paper-1": {
+      "question_paper": {
+        "minimum": 0.677,
+        "roles": {
+          "cover": 0.416,
+          "intentional_blank": 0.486,
+          "question_content": 0.518
+        }
+      },
+      "mark_scheme": {
+        "minimum": 0.671,
+        "roles": {
+          "cover": 0.374,
+          "mark_scheme_content": 0.556
+        }
+      }
+    },
+    "aqa-computer-science-paper-2": {
+      "question_paper": {
+        "minimum": 0.66,
+        "roles": {
+          "additional_answer": 0.478,
+          "cover": 0.483,
+          "intentional_blank": 0.676,
+          "question_content": 0.517
+        }
+      },
+      "mark_scheme": {
+        "minimum": 0.679,
+        "roles": {
+          "cover": 0.369,
+          "mark_scheme_content": 0.62
+        }
+      }
+    },
+    "ocr-computer-science-paper-1": {
+      "question_paper": {
+        "minimum": 0.719,
+        "roles": {
+          "additional_answer": 0.511,
+          "cover": 0.491,
+          "end_page": 0.566,
+          "intentional_blank": 0.71,
+          "question_content": 0.551
+        }
+      },
+      "mark_scheme": {
+        "minimum": 0.65,
+        "roles": {
+          "cover": 0.526,
+          "intentional_blank": 0.334,
+          "mark_scheme_content": 0.56,
+          "ruled_continuation": 0.519
+        }
+      }
+    },
+    "ocr-computer-science-paper-2": {
+      "question_paper": {
+        "minimum": 0.703,
+        "roles": {
+          "additional_answer": 0.557,
+          "cover": 0.485,
+          "end_page": 0.482,
+          "intentional_blank": 0.701,
+          "question_content": 0.548
+        }
+      },
+      "mark_scheme": {
+        "minimum": 0.659,
+        "roles": {
+          "cover": 0.532,
+          "intentional_blank": 0.344,
+          "mark_scheme_content": 0.58,
+          "ruled_continuation": 0.509
+        }
+      }
+    },
+    "ocr-economics-paper-1": {
+      "question_paper": {
+        "minimum": 0.705,
+        "roles": {
+          "additional_answer": 0.556,
+          "cover": 0.5,
+          "end_page": 0.475,
+          "intentional_blank": 0.631,
+          "question_content": 0.521,
+          "ruled_continuation": 0.613
+        }
+      },
+      "mark_scheme": {
+        "minimum": 0.623,
+        "roles": {
+          "cover": 0.418,
+          "intentional_blank": 0.441,
+          "mark_scheme_content": 0.574,
+          "ruled_continuation": 0.518
+        }
+      }
+    },
+    "ocr-economics-paper-2": {
+      "question_paper": {
+        "minimum": 0.698,
+        "roles": {
+          "additional_answer": 0.617,
+          "cover": 0.5,
+          "end_page": 0.382,
+          "intentional_blank": 0.636,
+          "question_content": 0.526
+        }
+      },
+      "mark_scheme": {
+        "minimum": 0.608,
+        "roles": {
+          "cover": 0.419,
+          "intentional_blank": 0.436,
+          "mark_scheme_content": 0.568,
+          "ruled_continuation": 0.564
+        }
+      }
+    },
+    "ocr-economics-paper-3": {
+      "question_paper": {
+        "minimum": 0.713,
+        "roles": {
+          "additional_answer": 0.557,
+          "cover": 0.487,
+          "end_page": 0.56,
+          "intentional_blank": 0.561,
+          "question_content": 0.57
+        }
+      },
+      "mark_scheme": {
+        "minimum": 0.64,
+        "roles": {
+          "cover": 0.418,
+          "intentional_blank": 0.439,
+          "mark_scheme_content": 0.58,
+          "ruled_continuation": 0.577
+        }
+      }
+    },
+    "edexcel-economics-paper-1": {
+      "question_paper": {
+        "minimum": 0.671,
+        "roles": {
+          "cover": 0.818,
+          "question_content": 0.542
+        }
+      },
+      "mark_scheme": {
+        "minimum": 0.654,
+        "roles": {
+          "cover": 0.606,
+          "mark_scheme_content": 0.511,
+          "ruled_continuation": 0.598
+        }
+      }
+    },
+    "edexcel-economics-paper-2": {
+      "question_paper": {
+        "minimum": 0.664,
+        "roles": {
+          "cover": 0.812,
+          "question_content": 0.532
+        }
+      },
+      "mark_scheme": {
+        "minimum": 0.694,
+        "roles": {
+          "cover": 0.517,
+          "mark_scheme_content": 0.624,
+          "ruled_continuation": 0.647
+        }
+      }
+    },
+    "edexcel-economics-paper-3": {
+      "question_paper": {
+        "minimum": 0.681,
+        "roles": {
+          "cover": 0.816,
+          "intentional_blank": 0.524,
+          "question_content": 0.544,
+          "ruled_continuation": 0.572
+        }
+      },
+      "mark_scheme": {
+        "minimum": 0.68,
+        "roles": {
+          "cover": 0.41,
+          "mark_scheme_content": 0.61,
+          "ruled_continuation": 0.571
+        }
+      }
+    }
+  }
+}

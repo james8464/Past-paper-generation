@@ -45,6 +45,7 @@ Resources/
   generator-registry.json   canonical capability and output registry
   ollama-model-recommendations.json
                             hardware-aware local-model policy and sources
+  fidelity-thresholds.json measured family/document/page-role release minima
   layout-profiles.json      derived visual tolerances
   <subject>/<board>/
     generator/
@@ -164,3 +165,20 @@ support files, but cannot weaken shared release validation.
 the same registry. A new advertised family therefore enters app navigation,
 backend dispatch, packaging checks, and complete live validation without a
 second subject list.
+
+## Fidelity qualification boundary
+
+The fidelity audit is deliberately outside normal generation: production PDF
+validation proves that one output is internally safe, while the audit proves
+that renderer evolution remains structurally close to the measured reference
+family. It profiles the generated and reference documents, registers comparable
+page images, masks variable question prose, classifies page roles, and emits
+document, role, and weakest-page summaries plus visual contact sheets.
+
+Release qualification supplies `Resources/fidelity-thresholds.json` through the
+audit's `--thresholds` option. The schema stores only the audit schema version
+and minimum family/document/role scores; it contains no official text, images,
+or PDFs. A schema mismatch, missing document or role, or score below its minimum
+fails the command after diagnostic reports and contact sheets have been written.
+This order preserves evidence for investigation without allowing a regression
+to pass the release boundary.
