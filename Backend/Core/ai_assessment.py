@@ -10,6 +10,7 @@ from typing import Any, Protocol
 
 from pydantic import ValidationError
 
+from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
 from Backend.Core.assessment_quality import (
     assert_distinct_items,
     content_similarity,
@@ -74,6 +75,7 @@ def generate_unique_paper(
     subject: str,
     progress: Callable[[str], None] | None = None,
     policy: GenerationPolicy = GenerationPolicy(),
+    checkpoint_store: AssessmentCheckpointStore | None = None,
 ) -> GeneratedPaper:
     """Replace draft items while keeping the authoritative assessment blueprint frozen."""
 
@@ -101,6 +103,7 @@ def generate_unique_paper(
                     seed=paper.seed,
                     policy=policy,
                     progress=None,
+                    checkpoint_store=checkpoint_store,
                 ): batch
                 for batch in batches
             }
@@ -120,6 +123,7 @@ def generate_unique_paper(
                     seed=paper.seed,
                     policy=policy,
                     progress=emit,
+                    checkpoint_store=checkpoint_store,
                 )
             )
             emit(f"Validated AI item batch {index} of {len(batches)}")
@@ -180,6 +184,7 @@ def _generate_batch(
     seed: int,
     policy: GenerationPolicy,
     progress: Callable[[str], None] | None,
+    checkpoint_store: AssessmentCheckpointStore | None = None,
 ) -> dict[tuple[int, int, int], GeneratedQuestion]:
     verified = [
         task
@@ -187,17 +192,27 @@ def _generate_batch(
         if task.question.authoring_context.get("preserve_prompt") is True
         and task.question.authoring_context.get("preserve_mark_scheme") is True
     ]
-    result = {
+    result: dict[tuple[int, int, int], GeneratedQuestion] = {
         task.key: task.question.model_copy(
             update={"provenance": "verified-contract"}
         )
         for task in verified
     }
+    resumed: list[_Task] = []
+    if checkpoint_store is not None:
+        for task in tasks:
+            stored = checkpoint_store.load_item(task.id)
+            if stored is None:
+                continue
+            _validate_checkpoint_item(task, stored)
+            result[task.key] = stored
+            resumed.append(task)
     accepted = [
         {"id": task.id, "prompt": result[task.key].prompt}
-        for task in verified
+        for task in [*verified, *resumed]
     ]
-    for task in (task for task in tasks if task not in verified):
+    completed_keys = {task.key for task in [*verified, *resumed]}
+    for task in (task for task in tasks if task.key not in completed_keys):
         candidate = _generate_item_transaction(
             task,
             client=client,
@@ -207,9 +222,43 @@ def _generate_batch(
             progress=progress,
             accepted_prompts=accepted,
         )
+        if checkpoint_store is not None:
+            checkpoint_store.save_item(task.id, candidate)
         result[task.key] = candidate
         accepted.append({"id": task.id, "prompt": candidate.prompt})
     return result
+
+
+def _validate_checkpoint_item(
+    task: _Task,
+    candidate: GeneratedQuestion,
+) -> None:
+    original = task.question
+    immutable = (
+        "rule_id",
+        "number",
+        "marks",
+        "kind",
+        "command_word",
+        "topic_id",
+        "assessment_objectives",
+        "intended_demand",
+        "expected_minutes",
+        "scheme_mode",
+        "contract",
+    )
+    changed = [
+        name
+        for name in immutable
+        if getattr(candidate, name) != getattr(original, name)
+    ]
+    if changed:
+        raise ValueError(
+            f"checkpoint item {task.id} changed immutable fields: {changed}"
+        )
+    if not candidate.prompt.strip() or not candidate.structured_mark_scheme:
+        raise ValueError(f"checkpoint item {task.id} is incomplete")
+    _validate_mark_points(original, candidate.structured_mark_scheme)
 
 
 def _generate_item_transaction(

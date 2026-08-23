@@ -1,0 +1,115 @@
+from __future__ import annotations
+
+import json
+import os
+from pathlib import Path
+from threading import RLock
+from typing import Literal
+
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
+
+from Backend.Core.exam_blueprints import GeneratedQuestion
+
+
+class CheckpointMismatch(ValueError):
+    pass
+
+
+class CheckpointCorrupt(ValueError):
+    pass
+
+
+class CheckpointIdentity(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    schema_version: Literal[1] = 1
+    paper_id: str = Field(min_length=1)
+    seed: int
+    provider: str = Field(min_length=1)
+    model: str = Field(min_length=1)
+    blueprint_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    prompt_version: str = Field(min_length=1)
+
+
+class AssessmentCheckpointStore:
+    """Persist independently accepted questions without partial JSON writes."""
+
+    def __init__(self, path: Path, identity: CheckpointIdentity) -> None:
+        self.path = path
+        self.identity = identity
+        self._lock = RLock()
+        if self.path.exists():
+            self._read_document()
+
+    def load_item(self, key: str) -> GeneratedQuestion | None:
+        with self._lock:
+            raw = self._read_document()["items"].get(key)
+            if raw is None:
+                return None
+            try:
+                return GeneratedQuestion.model_validate(raw)
+            except ValidationError as error:
+                raise CheckpointCorrupt(
+                    f"checkpoint item {key} does not match the question schema"
+                ) from error
+
+    def save_item(self, key: str, question: GeneratedQuestion) -> None:
+        with self._lock:
+            document = self._read_document()
+            document["items"][key] = question.model_dump(mode="json")
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            temporary = self.path.with_suffix(self.path.suffix + ".tmp")
+            with temporary.open("w", encoding="utf-8") as handle:
+                json.dump(
+                    document,
+                    handle,
+                    indent=2,
+                    sort_keys=True,
+                    ensure_ascii=False,
+                )
+                handle.write("\n")
+                handle.flush()
+                os.fsync(handle.fileno())
+            temporary.replace(self.path)
+            directory = os.open(self.path.parent, os.O_RDONLY)
+            try:
+                os.fsync(directory)
+            finally:
+                os.close(directory)
+
+    def clear(self) -> None:
+        with self._lock:
+            self.path.unlink(missing_ok=True)
+
+    def _read_document(self) -> dict[str, object]:
+        if not self.path.exists():
+            return {
+                "schema_version": 1,
+                "identity": self.identity.model_dump(mode="json"),
+                "items": {},
+            }
+        try:
+            document = json.loads(self.path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            raise CheckpointCorrupt(
+                f"checkpoint is unreadable: {self.path}"
+            ) from error
+        if not isinstance(document, dict) or document.get("schema_version") != 1:
+            raise CheckpointCorrupt("checkpoint has an unsupported schema version")
+        raw_identity = document.get("identity")
+        items = document.get("items")
+        if not isinstance(raw_identity, dict) or not isinstance(items, dict):
+            raise CheckpointCorrupt("checkpoint is missing identity or item data")
+        try:
+            stored_identity = CheckpointIdentity.model_validate(raw_identity)
+        except ValidationError as error:
+            raise CheckpointCorrupt("checkpoint identity is invalid") from error
+        for field_name in CheckpointIdentity.model_fields:
+            if getattr(stored_identity, field_name) != getattr(
+                self.identity,
+                field_name,
+            ):
+                raise CheckpointMismatch(
+                    f"checkpoint {field_name} does not match this generation job"
+                )
+        return document
