@@ -26,6 +26,7 @@ from Backend.Core.exam_blueprints import (
     PaperRule,
     validate_generated_paper,
 )
+from Backend.Core.model_review import ReviewResult
 
 
 LOGGER = logging.getLogger(__name__)
@@ -186,75 +187,109 @@ def _generate_batch(
         if task.question.authoring_context.get("preserve_prompt") is True
         and task.question.authoring_context.get("preserve_mark_scheme") is True
     ]
-    if verified:
-        result = {
-            task.key: task.question.model_copy(
-                update={"provenance": "verified-contract"}
-            )
-            for task in verified
-        }
-        remaining = [task for task in tasks if task not in verified]
-        if remaining:
-            result.update(
-                _generate_batch(
-                    remaining,
-                    client=client,
-                    subject=subject,
-                    seed=seed,
-                    policy=policy,
-                    progress=progress,
-                )
-            )
-        return result
+    result = {
+        task.key: task.question.model_copy(
+            update={"provenance": "verified-contract"}
+        )
+        for task in verified
+    }
+    accepted = [
+        {"id": task.id, "prompt": result[task.key].prompt}
+        for task in verified
+    ]
+    for task in (task for task in tasks if task not in verified):
+        candidate = _generate_item_transaction(
+            task,
+            client=client,
+            subject=subject,
+            seed=seed,
+            policy=policy,
+            progress=progress,
+            accepted_prompts=accepted,
+        )
+        result[task.key] = candidate
+        accepted.append({"id": task.id, "prompt": candidate.prompt})
+    return result
 
+
+def _generate_item_transaction(
+    task: _Task,
+    *,
+    client: AssessmentLLMClient,
+    subject: str,
+    seed: int,
+    policy: GenerationPolicy,
+    progress: Callable[[str], None] | None,
+    accepted_prompts: list[dict[str, str]],
+) -> GeneratedQuestion:
     failure = ""
+    candidate: GeneratedQuestion | None = None
+    review: ReviewResult | None = None
     for attempt in range(1, policy.attempts + 1):
         try:
-            raw = client.generate_json(
+            prompt = (
                 _generation_prompt(
-                    tasks,
+                    [task],
                     subject=subject,
                     seed=seed,
                     attempt=attempt,
                     previous_failure=failure,
                 )
+                if candidate is None or review is None
+                else _repair_prompt(
+                    task,
+                    candidate,
+                    review,
+                    subject=subject,
+                    seed=seed,
+                    attempt=attempt,
+                )
             )
-            candidates = _parse_batch(raw, tasks, client=client, policy=policy)
-            if policy.require_model_review:
-                _review_batch(tasks, candidates, client=client, subject=subject)
-            return {task.key: candidate for task, candidate in zip(tasks, candidates, strict=True)}
+            raw = client.generate_json(prompt)
+            candidate = _parse_batch(
+                raw,
+                [task],
+                client=client,
+                policy=policy,
+            )[0]
+            review = (
+                _review_batch(
+                    [task],
+                    [candidate],
+                    client=client,
+                    subject=subject,
+                )[task.id]
+                if policy.require_model_review
+                else ReviewResult(approved=True)
+            )
+            if review.approved and not review.issues:
+                assert_distinct_items(
+                    [
+                        *accepted_prompts,
+                        {"id": task.id, "prompt": candidate.prompt},
+                    ],
+                    threshold=policy.paper_similarity_limit,
+                    context="accepted AI items",
+                )
+                return candidate
+            failure = "; ".join(review.issues or ["not approved"])
         except (KeyError, TypeError, ValueError, ValidationError) as error:
             failure = str(error)[:800]
             LOGGER.debug(
-                "AI batch attempt %s of %s failed for questions %s: %s",
+                "AI item attempt %s of %s failed for question %s: %s",
                 attempt,
                 policy.attempts,
-                ", ".join(task.question.number for task in tasks),
+                task.question.number,
                 failure,
             )
-            if attempt < policy.attempts and progress is not None:
-                progress("Refining an AI item batch after an automated quality check")
-    if len(tasks) > 1:
-        if progress is not None:
-            progress("Splitting an AI item batch to improve structured-output reliability")
-        midpoint = max(1, len(tasks) // 2)
-        recovered: dict[tuple[int, int, int], GeneratedQuestion] = {}
-        for smaller_batch in (tasks[:midpoint], tasks[midpoint:]):
-            recovered.update(
-                _generate_batch(
-                    smaller_batch,
-                    client=client,
-                    subject=subject,
-                    seed=seed,
-                    policy=policy,
-                    progress=progress,
-                )
+        if attempt < policy.attempts and progress is not None:
+            progress(
+                f"Refining AI item {task.question.number} after an automated "
+                f"quality check: {failure}"
             )
-        return recovered
-    numbers = ", ".join(task.question.number for task in tasks)
     raise RuntimeError(
-        f"AI could not produce a valid, second-pass reviewed batch for "
-        f"questions {numbers}: {failure}"
+        "AI could not produce a valid, second-pass reviewed item for "
+        f"question {task.question.number}: {failure}"
     )
 
 
@@ -676,7 +711,7 @@ def _review_batch(
     *,
     client: AssessmentLLMClient,
     subject: str,
-) -> None:
+) -> dict[str, ReviewResult]:
     raw = client.generate_json(_review_prompt(tasks, candidates, subject=subject))
     reviews = raw.get("reviews")
     if not isinstance(reviews, list):
@@ -688,29 +723,47 @@ def _review_batch(
     }
     if set(by_id) != {task.id for task in tasks}:
         raise ValueError("second-pass review identifiers do not match the batch")
+    results: dict[str, ReviewResult] = {}
     for task in tasks:
         review = by_id[task.id]
-        issues = [
-            str(issue)
-            for key in (
-                "factual_issues",
-                "marking_issues",
-                "source_issues",
-                "difficulty_issues",
-                "ambiguity_issues",
-            )
-            for issue in (
-                review.get(key, [])
-                if isinstance(review.get(key, []), list)
-                else ["invalid review issue list"]
-            )
-            if str(issue).strip()
-        ]
-        if review.get("approved") is not True or issues:
-            raise ValueError(
-                f"question {task.question.number} failed second-pass review: "
-                + "; ".join(issues or ["not approved"])
-            )
+        result = ReviewResult.model_validate(
+            {key: value for key, value in review.items() if key != "id"}
+        )
+        if result.issues and result.approved:
+            result = result.model_copy(update={"approved": False})
+        results[task.id] = result
+    return results
+
+
+def _repair_prompt(
+    task: _Task,
+    candidate: GeneratedQuestion,
+    review: ReviewResult,
+    *,
+    subject: str,
+    seed: int,
+    attempt: int,
+) -> str:
+    failure = "; ".join(review.issues or ["not approved"])
+    base = _generation_prompt(
+        [task],
+        subject=subject,
+        seed=seed,
+        attempt=attempt,
+        previous_failure=failure,
+    )
+    repair = {
+        "id": task.id,
+        "candidate": candidate.model_dump(mode="json"),
+        "review": review.model_dump(mode="json"),
+    }
+    return (
+        base
+        + "\nRepair only the rejected item below. Correct every reported issue "
+        "while preserving its immutable blueprint. Return the same `questions` "
+        "JSON schema required above.\nREPAIR_DATA="
+        + json.dumps(repair, ensure_ascii=False)
+    )
 
 
 def _generation_prompt(

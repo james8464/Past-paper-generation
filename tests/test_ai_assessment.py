@@ -18,6 +18,7 @@ from Backend.Core.ai_assessment import (
     _normalise_multiple_choice_answer,
     _normalise_level_allocations,
     _review_prompt,
+    _repair_prompt,
     _required_awarded_entries,
     _task_source,
     _validate_mark_points,
@@ -27,6 +28,7 @@ from Backend.Core.exam_blueprints import (
     GeneratedQuestion,
     MarkSchemePoint,
 )
+from Backend.Core.model_review import ReviewResult
 
 
 class _Client:
@@ -651,6 +653,172 @@ def test_verified_contract_item_bypasses_model_generation() -> None:
 
     assert result[task.key].prompt == question.prompt
     assert result[task.key].provenance == "verified-contract"
+
+
+def test_rejected_second_item_does_not_regenerate_accepted_first_item() -> None:
+    first = GeneratedQuestion(
+        rule_id="q1",
+        number="1",
+        marks=1,
+        kind="explain",
+        command_word="explain",
+        topic_id="topic",
+        prompt="Explain how a cost change affects profit.",
+        mark_scheme=["Credit a valid relationship."],
+        assessment_objectives={"AO1": 1},
+    )
+    second = first.model_copy(
+        update={
+            "rule_id": "q2",
+            "number": "2",
+            "prompt": "Explain how an exchange-rate change affects imports.",
+        }
+    )
+    option = GeneratedOption(
+        id="option",
+        title="Case study",
+        questions=[first, second],
+    )
+    topic = type(
+        "Topic",
+        (),
+        {"id": "topic", "title": "Applied economics", "points": []},
+    )()
+    tasks = [
+        _Task(key=(0, 0, 0), question=first, option=option, topic=topic),
+        _Task(key=(0, 0, 1), question=second, option=option, topic=topic),
+    ]
+
+    class ScriptedClient:
+        provider = "ollama"
+        model = "test"
+        supports_parallel_generation = False
+
+        def __init__(self) -> None:
+            self.responses = iter(
+                [
+                    _question_response(
+                        "0/0/0",
+                        "Explain why higher costs can reduce a firm's profit.",
+                    ),
+                    _review_response("0/0/0", approved=True),
+                    _question_response(
+                        "0/0/1",
+                        "Explain why appreciation raises the domestic cost of imports.",
+                    ),
+                    _review_response(
+                        "0/0/1",
+                        approved=False,
+                        factual_issues=["The exchange-rate direction is reversed."],
+                    ),
+                    _question_response(
+                        "0/0/1",
+                        "Explain why appreciation can lower the domestic cost of imports.",
+                    ),
+                    _review_response("0/0/1", approved=True),
+                ]
+            )
+
+        def generate_json(self, _prompt: str) -> dict[str, object]:
+            return next(self.responses)
+
+    generated = _generate_batch(
+        tasks,
+        client=ScriptedClient(),
+        subject="Economics",
+        seed=1,
+        policy=GenerationPolicy(attempts=2),
+        progress=None,
+    )
+
+    assert generated[tasks[0].key].prompt == (
+        "Explain why higher costs can reduce a firm's profit."
+    )
+    assert generated[tasks[1].key].prompt == (
+        "Explain why appreciation can lower the domestic cost of imports."
+    )
+
+
+def test_repair_prompt_targets_the_rejected_item_and_issues() -> None:
+    question = GeneratedQuestion(
+        rule_id="q1",
+        number="1",
+        marks=1,
+        kind="explain",
+        command_word="explain",
+        topic_id="topic",
+        prompt="Explain how exchange rates affect imports.",
+        mark_scheme=["Credit a correct relationship."],
+        assessment_objectives={"AO1": 1},
+    )
+    task = _Task(
+        key=(0, 0, 0),
+        question=question,
+        option=GeneratedOption(id="option", title="Option", questions=[question]),
+        topic=type(
+            "Topic",
+            (),
+            {"id": "topic", "title": "Exchange rates", "points": []},
+        )(),
+    )
+    candidate = question.model_copy(
+        update={"prompt": "Explain why appreciation raises import costs."}
+    )
+
+    prompt = _repair_prompt(
+        task,
+        candidate,
+        ReviewResult(
+            approved=False,
+            factual_issues=["The exchange-rate direction is reversed."],
+        ),
+        subject="Economics",
+        seed=1,
+        attempt=2,
+    )
+
+    assert "The exchange-rate direction is reversed." in prompt
+    assert '"id": "0/0/0"' in prompt
+    assert "other paper items" not in prompt.casefold()
+
+
+def _question_response(item_id: str, prompt: str) -> dict[str, object]:
+    return {
+        "questions": [
+            {
+                "id": item_id,
+                "prompt": prompt,
+                "mark_scheme": [
+                    {
+                        "text": "Credit the accurate causal relationship.",
+                        "marks": 1,
+                        "assessment_objective": "AO1",
+                    }
+                ],
+            }
+        ]
+    }
+
+
+def _review_response(
+    item_id: str,
+    *,
+    approved: bool,
+    factual_issues: list[str] | None = None,
+) -> dict[str, object]:
+    return {
+        "reviews": [
+            {
+                "id": item_id,
+                "approved": approved,
+                "factual_issues": factual_issues or [],
+                "marking_issues": [],
+                "source_issues": [],
+                "difficulty_issues": [],
+                "ambiguity_issues": [],
+            }
+        ]
+    }
 
 
 def test_review_prompt_uses_structured_semantics_not_withheld_draft_prose() -> None:
