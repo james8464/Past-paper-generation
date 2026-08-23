@@ -58,6 +58,17 @@ def test_checkpoint_round_trips_an_accepted_question(tmp_path: Path) -> None:
     assert store.load_item("0/0/1") is None
 
 
+def test_checkpoint_can_discard_one_rejected_item(tmp_path: Path) -> None:
+    store = AssessmentCheckpointStore(tmp_path / "job.json", identity())
+    store.save_item("0/0/0", question())
+    store.save_item("0/0/1", question())
+
+    store.discard_item("0/0/0")
+
+    assert store.load_item("0/0/0") is None
+    assert store.load_item("0/0/1") == question()
+
+
 def test_checkpoint_rejects_model_mismatch(tmp_path: Path) -> None:
     path = tmp_path / "job.json"
     AssessmentCheckpointStore(path, identity()).save_item("0/0/0", question())

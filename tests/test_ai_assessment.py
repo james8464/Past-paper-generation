@@ -21,6 +21,7 @@ from Backend.Core.ai_assessment import (
     _repair_prompt,
     _required_awarded_entries,
     _task_source,
+    _validate_checkpoint_item,
     _validate_mark_points,
 )
 from Backend.Core.exam_blueprints import (
@@ -195,6 +196,7 @@ def test_generation_prompt_exposes_semantics_but_withholds_draft_marking_points(
     assert "forbidden planning mark point" not in prompt.casefold()
     assert "draft_to_replace" not in prompt
     assert '"required_exact_tokens": []' in prompt
+    assert '"minimum_substantive_mark_scheme_points": 2' in prompt
     assert "an empty list means the prompt contains no numeric token" in prompt
     assert "source labels such as `Extract 1`" in prompt
     assert "Compose fresh prose around those elements" in prompt
@@ -543,6 +545,116 @@ def test_generated_mark_scheme_rejects_forbidden_semantic_relationship() -> None
             client=type("Client", (), {"provider": "test", "model": "test"})(),
             policy=GenerationPolicy(),
         )
+
+
+def test_generated_extended_mark_scheme_adds_examiner_guidance() -> None:
+    question = GeneratedQuestion(
+        rule_id="evaluation",
+        number="16",
+        marks=12,
+        kind="extended_response",
+        command_word="assess",
+        topic_id="decision-making",
+        prompt="Assess whether the business should make the investment.",
+        mark_scheme=["Credit a supported decision."],
+        assessment_objectives={"AO1": 2, "AO2": 2, "AO3": 4, "AO4": 4},
+        scheme_mode="levels",
+    )
+    task = _Task(
+        key=(0, 0, 0),
+        question=question,
+        option=GeneratedOption(id="case", title="Business case", questions=[question]),
+        topic=object(),
+    )
+    raw = {
+        "prompt": "Assess the case for proceeding with the proposed investment.",
+        "mark_scheme": [
+            {
+                "text": "Define the relevant accounting principle.",
+                "marks": 2,
+                "assessment_objective": "AO1",
+            },
+            {
+                "text": "Apply the source figures to the proposed investment.",
+                "marks": 2,
+                "assessment_objective": "AO2",
+            },
+            {
+                "text": "Develop a causal chain from finance cost to liquidity.",
+                "marks": 4,
+                "assessment_objective": "AO3",
+            },
+            {
+                "text": "Reach a supported judgement using the source evidence.",
+                "marks": 4,
+                "assessment_objective": "AO4",
+            },
+            *[
+                {
+                    "text": f"Level {level}: descriptor for this band.",
+                    "marks": 0,
+                    "credit_type": "level",
+                    "assessment_objective": None,
+                }
+                for level in range(1, 4)
+            ],
+        ],
+    }
+
+    candidate = _candidate_question(
+        task,
+        raw,
+        client=type("Client", (), {"provider": "test", "model": "test"})(),
+        policy=GenerationPolicy(),
+    )
+
+    assert any(point.alternatives for point in candidate.structured_mark_scheme)
+    assert any(point.do_not_accept for point in candidate.structured_mark_scheme)
+
+
+def test_checkpointed_item_must_still_meet_release_quality_gate() -> None:
+    question = GeneratedQuestion(
+        rule_id="evaluation",
+        number="16",
+        marks=12,
+        kind="extended_response",
+        command_word="assess",
+        topic_id="decision-making",
+        prompt="Assess whether the business should make the investment.",
+        mark_scheme=[
+            "AO1: define the principle.",
+            "AO2: apply the source.",
+            "AO3: develop the causal chain.",
+            "AO4: reach a supported judgement.",
+        ],
+        structured_mark_scheme=[
+            MarkSchemePoint(
+                text=f"{objective} allocation within the levels grid.",
+                marks=marks,
+                assessment_objective=objective,
+            )
+            for objective, marks in {"AO1": 2, "AO2": 2, "AO3": 4, "AO4": 4}.items()
+        ]
+        + [
+            MarkSchemePoint(
+                text=f"Level {level}: descriptor for this band.",
+                marks=0,
+                credit_type="level",
+            )
+            for level in range(1, 4)
+        ],
+        assessment_objectives={"AO1": 2, "AO2": 2, "AO3": 4, "AO4": 4},
+        scheme_mode="levels",
+    )
+    task = _Task(
+        key=(0, 0, 0),
+        question=question,
+        option=GeneratedOption(id="case", title="Business case", questions=[question]),
+        topic=object(),
+    )
+
+    with pytest.raises(ValueError, match="alternative-answer guidance"):
+        _validate_checkpoint_item(task, question)
 
 
 def test_source_constrained_calculation_preserves_its_verified_prompt() -> None:
@@ -1185,4 +1297,6 @@ def test_levels_scheme_adds_missing_objective_rubric_row() -> None:
     ]
     assert "allocation within the levels grid" in normalised[2].text
     assert [point.marks for point in normalised[:3]] == [3, 3, 6]
+    assert any(point.alternatives for point in normalised)
+    assert any(point.do_not_accept for point in normalised)
     _validate_mark_points(question, normalised)

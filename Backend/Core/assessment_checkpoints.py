@@ -109,29 +109,41 @@ class AssessmentCheckpointStore:
             if not isinstance(items, dict):
                 raise CheckpointCorrupt("checkpoint item storage is invalid")
             items[key] = dict(payload)
-            self.path.parent.mkdir(parents=True, exist_ok=True)
-            temporary = self.path.with_suffix(self.path.suffix + ".tmp")
-            with temporary.open("w", encoding="utf-8") as handle:
-                json.dump(
-                    document,
-                    handle,
-                    indent=2,
-                    sort_keys=True,
-                    ensure_ascii=False,
-                )
-                handle.write("\n")
-                handle.flush()
-                os.fsync(handle.fileno())
-            temporary.replace(self.path)
-            directory = os.open(self.path.parent, os.O_RDONLY)
-            try:
-                os.fsync(directory)
-            finally:
-                os.close(directory)
+            self._write_document(document)
+
+    def discard_item(self, key: str) -> None:
+        with self._lock:
+            document = self._read_document()
+            items = document["items"]
+            if not isinstance(items, dict):
+                raise CheckpointCorrupt("checkpoint item storage is invalid")
+            if items.pop(key, None) is not None:
+                self._write_document(document)
 
     def clear(self) -> None:
         with self._lock:
             self.path.unlink(missing_ok=True)
+
+    def _write_document(self, document: Mapping[str, object]) -> None:
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = self.path.with_suffix(self.path.suffix + ".tmp")
+        with temporary.open("w", encoding="utf-8") as handle:
+            json.dump(
+                document,
+                handle,
+                indent=2,
+                sort_keys=True,
+                ensure_ascii=False,
+            )
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        temporary.replace(self.path)
+        directory = os.open(self.path.parent, os.O_RDONLY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
 
     def _read_document(self) -> dict[str, object]:
         if not self.path.exists():

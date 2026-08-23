@@ -73,6 +73,44 @@ def test_extended_response_requires_levels_alternatives_and_credit_limits() -> N
     assert report.covered_objectives == ("AO1", "AO2", "AO3", "AO4")
 
 
+def test_depth_includes_distinct_structured_level_descriptors() -> None:
+    item = _item(
+        marks=12,
+        kind="extended_response",
+        command_word="Assess",
+        assessment_objectives={"AO1": 2, "AO2": 2, "AO3": 4, "AO4": 4},
+        mark_scheme=[
+            "AO1: explains the relevant concept accurately.",
+            "AO2: applies the figures in the supplied context.",
+            "AO3: develops a complete causal chain.",
+            "AO4: reaches a supported judgement.",
+        ],
+        structured_mark_scheme=[
+            {
+                "text": f"Level {level}: distinct descriptor for band {level}.",
+                "marks": 0,
+                "credit_type": "level",
+                "alternatives": (
+                    ["Accept an equivalent valid analytical route."]
+                    if level == 3
+                    else []
+                ),
+                "do_not_accept": (
+                    ["Do not award the same developed point twice."]
+                    if level == 1
+                    else []
+                ),
+            }
+            for level in range(1, 4)
+        ],
+    )
+
+    report = validate_mark_scheme_item(item)
+
+    assert report.points == 7
+    assert report.has_levels is True
+
+
 def test_calculation_requires_method_or_working() -> None:
     item = _item(
         marks=4,

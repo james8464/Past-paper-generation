@@ -101,7 +101,8 @@ AI item work is a nested durable transaction:
 
 1. build the immutable blueprint and typed item contract;
 2. draft one item;
-3. validate structure, numeric roles, AO allocation, evidence and subject rules;
+3. validate structure, numeric roles, AO allocation, evidence, subject rules,
+   and release-grade mark-scheme depth;
 4. review adversarially and repair only the rejected item;
 5. atomically checkpoint the accepted item;
 6. assemble the renderer-independent assessment package;
@@ -118,6 +119,8 @@ The checkpoint lives in `.papercreator-checkpoints` beside the selected output
 folder, outside the disposable staging directory. Its identity includes the
 blueprint hash, seed, provider, model and prompt version. Successful publication
 removes it; cancellation or failure leaves it resumable.
+On resume, each item is revalidated against the current release boundary. Only
+an invalid item is atomically discarded and regenerated.
 
 Each generation is written to an output-local hidden staging directory. Before
 publication:

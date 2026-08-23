@@ -29,6 +29,7 @@ from Backend.Core.exam_blueprints import (
     validate_generated_paper,
 )
 from Backend.Core.events import GenerationUpdate
+from Backend.Core.mark_scheme_quality import validate_mark_scheme_item
 from Backend.Core.model_review import ReviewResult
 
 
@@ -213,6 +214,8 @@ def _generate_batch(
         if task.question.authoring_context.get("preserve_prompt") is True
         and task.question.authoring_context.get("preserve_mark_scheme") is True
     ]
+    for task in verified:
+        _validate_release_mark_scheme(task.question)
     result: dict[tuple[int, int, int], GeneratedQuestion] = {
         task.key: task.question.model_copy(
             update={"provenance": "verified-contract"}
@@ -225,7 +228,16 @@ def _generate_batch(
             stored = checkpoint_store.load_item(task.id)
             if stored is None:
                 continue
-            _validate_checkpoint_item(task, stored)
+            try:
+                _validate_checkpoint_item(task, stored)
+            except ValueError as error:
+                LOGGER.info(
+                    "Discarding invalid checkpoint item %s: %s",
+                    task.id,
+                    error,
+                )
+                checkpoint_store.discard_item(task.id)
+                continue
             result[task.key] = stored
             resumed.append(task)
     accepted = [
@@ -301,6 +313,7 @@ def _validate_checkpoint_item(
     if not candidate.prompt.strip() or not candidate.structured_mark_scheme:
         raise ValueError(f"checkpoint item {task.id} is incomplete")
     _validate_mark_points(original, candidate.structured_mark_scheme)
+    _validate_release_mark_scheme(candidate)
 
 
 def _generate_item_transaction(
@@ -633,7 +646,7 @@ def _candidate_question(
             or point.credit_type == "guidance"
         ]
     )
-    return original.model_copy(
+    candidate = original.model_copy(
         update={
             "prompt": prompt,
             "mark_scheme": rendered_scheme,
@@ -642,6 +655,32 @@ def _candidate_question(
             "scheme_mode": original.scheme_mode,
             "structured_mark_scheme": points,
             "provenance": f"ai:{provider}:{model}",
+        }
+    )
+    _validate_release_mark_scheme(candidate)
+    return candidate
+
+
+def _validate_release_mark_scheme(question: GeneratedQuestion) -> None:
+    """Apply the package quality gate before an item can be checkpointed."""
+
+    raw = question.model_dump(mode="json")
+    evidence_ids = list(question.source_references)
+    contract = raw.get("contract")
+    if isinstance(contract, dict):
+        allowed = contract.get("allowed_evidence_ids")
+        if isinstance(allowed, list):
+            evidence_ids.extend(str(value) for value in allowed)
+    validate_mark_scheme_item(
+        {
+            "id": question.number,
+            "marks": question.marks,
+            "kind": question.kind,
+            "command_word": question.command_word,
+            "mark_scheme": question.mark_scheme,
+            "structured_mark_scheme": raw["structured_mark_scheme"],
+            "assessment_objectives": question.assessment_objectives,
+            "evidence_ids": list(dict.fromkeys(evidence_ids)),
         }
     )
 
@@ -785,7 +824,26 @@ def _normalise_level_allocations(
         for point in points
         if point.credit_type != "level"
     ]
-    zero_mark_entries = (level_entries + indicative_entries)[:8]
+    zero_mark_entries = level_entries + indicative_entries
+    guidance_target = len(level_entries) if indicative_entries else 0
+    updates: dict[str, list[str]] = {}
+    if not any(point.alternatives or point.allow for point in zero_mark_entries):
+        updates["alternatives"] = [
+            "Accept any other well-supported route consistent with the source "
+            "and the question."
+        ]
+    if not any(
+        point.do_not_accept or point.ignore for point in zero_mark_entries
+    ):
+        updates["do_not_accept"] = [
+            "Do not award unsupported assertions or duplicate credit for the "
+            "same developed point."
+        ]
+    if updates:
+        zero_mark_entries[guidance_target] = zero_mark_entries[
+            guidance_target
+        ].model_copy(update=updates)
+    zero_mark_entries = zero_mark_entries[:8]
     return awarded + zero_mark_entries
 
 
@@ -873,6 +931,10 @@ def _generation_prompt(
             "command_word": task.question.command_word,
             "marks": task.question.marks,
             "assessment_objectives": task.question.assessment_objectives,
+            "minimum_substantive_mark_scheme_points": max(
+                1,
+                min(6, (task.question.marks + 2) // 3),
+            ),
             "minimum_awarded_entries": (
                 1
                 if task.question.kind == "multiple_choice"
@@ -953,7 +1015,9 @@ def _generation_prompt(
         "must exactly match the blueprint. Zero-mark level descriptors and marker "
         "guidance are allowed. Use exactly the minimum distinct awarded entries "
         "declared by `minimum_awarded_entries`, plus no more than two concise "
-        "guidance entries. For a points-based scheme, create one distinct awarded "
+        "guidance entries. Across awarded entries, level descriptors, and guidance, "
+        "provide at least `minimum_substantive_mark_scheme_points` distinct, "
+        "question-specific criteria. For a points-based scheme, create one distinct awarded "
         "mark-scheme object for every object in `required_awarded_entries`; copy "
         "that object's AO and mark value exactly, keep the entries separate, and "
         "give each genuinely different creditworthy content. Do not merge entries "
@@ -963,7 +1027,10 @@ def _generation_prompt(
         "use its exact AO label and mark value wherever possible, and include at "
         "least three zero-mark `level` descriptors with clear band boundaries. "
         "AO3 content must contain a developed causal chain; AO4 content must "
-        "contain a supported judgement. For multiple choice, supply four plausible "
+        "contain a supported judgement. Every extended levels-based scheme must "
+        "also state acceptable alternative routes and explicit credit limits or "
+        "non-credit guidance in the structured `alternatives`, `allow`, or "
+        "`do_not_accept` fields. For multiple choice, supply four plausible "
         "unique "
         "choices, zero-based `correct_choice`, and name the correct answer in the "
         "mark scheme by repeating the complete selected choice verbatim. The keyed "

@@ -32,10 +32,18 @@ def validate_mark_scheme_item(item: dict[str, Any]) -> MarkSchemeQuality:
         for point in item.get("structured_mark_scheme", [])
         if isinstance(point, dict)
     ]
+    depth_text = [*scheme]
+    depth_text.extend(
+        str(point.get("text", "")).strip()
+        for point in structured
+        if str(point.get("text", "")).strip()
+    )
     substantive = {
-        _normalise(point)
-        for point in scheme
-        if _normalise(point) not in {"indicative content", "answer", "guidance"}
+        normalised
+        for point in depth_text
+        if (normalised := _normalise(point))
+        and normalised not in {"indicative content", "answer", "guidance"}
+        and "allocation within the levels grid" not in normalised
     }
     minimum_points = max(1, min(6, math.ceil(marks / 3)))
     if len(substantive) < minimum_points:

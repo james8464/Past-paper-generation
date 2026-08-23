@@ -1065,8 +1065,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/ai_assessment.py": {
-    "mtime": 1787493001.2806935,
-    "ast_hash": "e082ed2323f89466127ae9a76277413d",
+    "mtime": 1787505706.664745,
+    "ast_hash": "6709443150e9251417864a48a9e84b8f",
     "semantic_hash": ""
   },
   "Backend/Core/assessment_package.py": {
@@ -1170,8 +1170,8 @@
     "semantic_hash": ""
   },
   "tests/test_ai_assessment.py": {
-    "mtime": 1787493079.959894,
-    "ast_hash": "83a0b8bc739e7c6b27239cd8f9c57318",
+    "mtime": 1787505723.4116514,
+    "ast_hash": "3ff15ac21ab46c74063802a1d677907e",
     "semantic_hash": ""
   },
   "tests/test_psychometrics.py": {
@@ -1185,13 +1185,13 @@
     "semantic_hash": ""
   },
   "docs/ARCHITECTURE.md": {
-    "mtime": 1787502795.6590488,
-    "ast_hash": "b92c2c2ef6b8b38a7e29cf063ebeef36",
+    "mtime": 1787505855.8366523,
+    "ast_hash": "e7a3c342c6d0a5281d56fed976dcbb0c",
     "semantic_hash": ""
   },
   "docs/ASSESSMENT_QUALITY.md": {
-    "mtime": 1787502795.6584103,
-    "ast_hash": "6cea8dca75641557aced5487f3a3c464",
+    "mtime": 1787505855.836176,
+    "ast_hash": "8813cef76df09ade9fd80036350da7e7",
     "semantic_hash": ""
   },
   "docs/HIG_COMPLIANCE.md": {
@@ -1350,13 +1350,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/assessment_checkpoints.py": {
-    "mtime": 1787492033.3471618,
-    "ast_hash": "45c2edafe250a98a97dd4d6b0499bc82",
+    "mtime": 1787504896.641927,
+    "ast_hash": "2abe46cd8c0d794493f1cfce2a49c579",
     "semantic_hash": ""
   },
   "tests/test_assessment_checkpoints.py": {
-    "mtime": 1787492367.844524,
-    "ast_hash": "5b9ba0ef13308829a11e05a7d82fd605",
+    "mtime": 1787504877.454057,
+    "ast_hash": "7b830b712e677e03b9b130d902f21942",
     "semantic_hash": ""
   },
   "Backend/Core/render_transaction.py": {
@@ -1380,13 +1380,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/mark_scheme_quality.py": {
-    "mtime": 1787496851.0069904,
-    "ast_hash": "6fa072f5afe5228fff48c36436304679",
+    "mtime": 1787505315.695725,
+    "ast_hash": "9e89c1daeb3f5411fbce2c2101218bc2",
     "semantic_hash": ""
   },
   "tests/test_mark_scheme_quality.py": {
-    "mtime": 1787496747.2087588,
-    "ast_hash": "df09d4b42aea0a4f92d002a00e7bd175",
+    "mtime": 1787505302.6512825,
+    "ast_hash": "dbc6ab98758dcd395ade4abd02915533",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-23-measured-paper-fidelity.md": {
@@ -1417,6 +1417,11 @@
   "graphify-out/memory/query_20260823_163246_how_does_the_paper_fidelity_audit_produce_per_docu.md": {
     "mtime": 1787502766.0399861,
     "ast_hash": "1373b2a45aa028da31a50c9d22dc300a",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260823_164146_which_ollama_model_and_live_validation_path_does_t.md": {
+    "mtime": 1787503306.6686506,
+    "ast_hash": "5df7cf4c8ebb2e043fa3e35782c1eab2",
     "semantic_hash": ""
   }
 }

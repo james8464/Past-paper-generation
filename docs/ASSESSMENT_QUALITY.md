@@ -40,7 +40,8 @@ The parser then verifies:
 5. specific, distinct marking points;
 6. unique and valid MCQ options;
 7. material difference from the planning draft;
-8. low similarity to every previously accepted item.
+8. low similarity to every previously accepted item;
+9. the same examiner-usable mark-scheme depth gate used by package release.
 
 A separate, deterministic-temperature model call receives the frozen blueprint,
 candidate item, and syllabus point. It reviews adversarially and must explicitly
@@ -57,7 +58,9 @@ fields are range-checked. Undeclared or changed quantities still fail closed.
 
 Accepted items are written atomically to an output-local checkpoint identified
 by the paper blueprint hash, seed, provider, model, and prompt version. A restart
-revalidates and resumes them without another model call. Identity drift rejects
+revalidates and resumes them without another model call. An item written by an
+older validation boundary that no longer passes is removed individually and
+regenerated; valid neighbours remain intact. Identity drift rejects
 the checkpoint instead of mixing generations. The checkpoint is deleted only
 after the complete package publishes successfully; cancellation and failure
 retain it.
@@ -93,6 +96,12 @@ descriptors for levels-based extended responses. The assessment package keeps
 the original question kind, AO allocation, evidence identifiers, and structured
 scheme so these checks run before renderer-specific prose can disguise a thin
 answer.
+
+For levels-based schemes, deterministic normalisation supplies the invariant
+examiner boilerplate for accepting another well-supported route and preventing
+duplicate or unsupported credit when the model omits it. The model remains
+responsible for the question-specific indicative content; the invariant marking
+rules do not depend on model compliance.
 
 PDF qualification separately rejects clipped or overlapping text and
 unexplained content-free pages. OCR Economics mark-scheme overflow is allocated
