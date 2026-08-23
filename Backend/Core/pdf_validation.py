@@ -158,9 +158,10 @@ def validate_pdf_for_release(
             if overlapping_pairs:
                 raise ValueError(
                     f"{path.name} contains overlapping text on page {page_index} "
-                    f"({overlapping_pairs} pair(s))"
+                    f"({len(overlapping_pairs)} pair(s)); first pair: "
+                    f"{overlapping_pairs[0]}"
                 )
-            total_overlapping_pairs += overlapping_pairs
+            total_overlapping_pairs += len(overlapping_pairs)
             page_layout_metrics.append(
                 {
                     "page": page_index,
@@ -170,7 +171,7 @@ def validate_pdf_for_release(
                     ),
                     "vector_objects": vector_objects,
                     "images": len(image_info),
-                    "overlapping_text_pairs": overlapping_pairs,
+                    "overlapping_text_pairs": len(overlapping_pairs),
                 }
             )
 
@@ -323,9 +324,9 @@ def _normalise_font(value: str) -> str:
     return name
 
 
-def _overlapping_text_pairs(spans: list[tuple[str, fitz.Rect]]) -> int:
+def _overlapping_text_pairs(spans: list[tuple[str, fitz.Rect]]) -> list[str]:
     ordered = sorted(spans, key=lambda item: (item[1].y0, item[1].x0))
-    pairs = 0
+    pairs: list[str] = []
     for index, (text, bounds) in enumerate(ordered):
         if bounds.is_empty or len(text) < 2:
             continue
@@ -339,7 +340,7 @@ def _overlapping_text_pairs(spans: list[tuple[str, fitz.Rect]]) -> int:
                 continue
             smaller_area = min(bounds.get_area(), other_bounds.get_area())
             if smaller_area and intersection.get_area() / smaller_area >= 0.65:
-                pairs += 1
+                pairs.append(f"{text!r} over {other_text!r}")
     return pairs
 
 

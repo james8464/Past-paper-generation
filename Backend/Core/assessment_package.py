@@ -9,6 +9,7 @@ from Backend.Core.assessment_quality import (
     assert_distinct_items,
     item_fingerprint,
 )
+from Backend.Core.mark_scheme_quality import validate_mark_scheme_item
 
 
 def write_assessment_package(
@@ -87,6 +88,7 @@ def validate_assessment_package(
     items = document.get("items")
     if not isinstance(items, list) or not items:
         raise ValueError("assessment package has no items")
+    mark_scheme_reports = []
     for item in items:
         if not isinstance(item, dict):
             raise ValueError("assessment package contains an invalid item")
@@ -104,6 +106,7 @@ def validate_assessment_package(
             raise ValueError(
                 f"assessment item {item.get('id')} has no usable mark scheme"
             )
+        mark_scheme_reports.append(validate_mark_scheme_item(item))
     if not preview:
         assert_distinct_items(items)
     expected_form_id = _form_id(
@@ -119,6 +122,24 @@ def validate_assessment_package(
         "item_count": len(items),
         "fingerprints_verified": True,
         "mark_schemes_present": True,
+        "mark_scheme_quality": {
+            "items_verified": len(mark_scheme_reports),
+            "items_with_working": sum(
+                report.has_working for report in mark_scheme_reports
+            ),
+            "items_with_alternatives": sum(
+                report.has_alternatives for report in mark_scheme_reports
+            ),
+            "items_with_credit_limits": sum(
+                report.has_credit_limits for report in mark_scheme_reports
+            ),
+            "items_with_levels": sum(
+                report.has_levels for report in mark_scheme_reports
+            ),
+            "evidence_bindings_verified": sum(
+                report.has_evidence_binding for report in mark_scheme_reports
+            ),
+        },
     }
 
 
@@ -177,9 +198,14 @@ def _extract_items(
                 "topic_id": raw.get("topic_id"),
                 "marks": raw["marks"],
                 "command_word": raw.get("command_word"),
+                "kind": raw.get("kind") or raw.get("style_id") or "",
                 "prompt": prompt,
                 "context": stems,
                 "mark_scheme": scheme,
+                "assessment_objectives": raw.get("assessment_objectives") or {},
+                "scheme_mode": raw.get("scheme_mode") or "points",
+                "structured_mark_scheme": _structured_scheme(raw),
+                "evidence_ids": _evidence_ids(raw),
                 "fingerprint": item_fingerprint(prompt),
                 "provenance": raw.get("provenance", "generator-specific"),
             }
@@ -190,15 +216,17 @@ def _extract_items(
 
 
 def _scheme_text(raw: dict[str, Any]) -> list[str]:
+    result: list[str] = []
     for key in ("mark_scheme", "indicative_content"):
         value = raw.get(key)
         if isinstance(value, list):
-            result = [str(item).strip() for item in value if str(item).strip()]
-            if result:
-                return result
+            result.extend(
+                str(item).strip() for item in value if str(item).strip()
+            )
+    if result:
+        return list(dict.fromkeys(result))
     marking = raw.get("marking")
     if isinstance(marking, dict):
-        result: list[str] = []
         for key in ("points", "accept", "reject", "levels"):
             value = marking.get(key)
             if isinstance(value, list):
@@ -207,6 +235,57 @@ def _scheme_text(raw: dict[str, Any]) -> list[str]:
             return result
     breakdown = str(raw.get("mark_breakdown", "")).strip()
     return [breakdown] if breakdown else []
+
+
+def _structured_scheme(raw: dict[str, Any]) -> list[dict[str, Any]]:
+    structured = raw.get("structured_mark_scheme")
+    if isinstance(structured, list):
+        return [point for point in structured if isinstance(point, dict)]
+    marking = raw.get("marking")
+    if not isinstance(marking, dict):
+        return []
+    objective = str(marking.get("ao", "")).upper() or None
+    accepts = [str(value) for value in marking.get("accept", [])]
+    rejects = [str(value) for value in marking.get("reject", [])]
+    levels = [str(value) for value in marking.get("levels", [])]
+    points = [str(value) for value in marking.get("points", [])]
+    result = [
+        {
+            "text": point,
+            "marks": 0,
+            "credit_type": "point",
+            "assessment_objective": objective,
+            "alternatives": accepts,
+            "do_not_accept": rejects,
+        }
+        for point in points
+    ]
+    result.extend(
+        {
+            "text": level,
+            "marks": 0,
+            "credit_type": "level",
+            "assessment_objective": objective,
+        }
+        for level in levels
+    )
+    return result
+
+
+def _evidence_ids(raw: dict[str, Any]) -> list[str]:
+    values: list[str] = []
+    references = raw.get("source_references")
+    if isinstance(references, list):
+        values.extend(str(value).strip() for value in references)
+    reference = str(raw.get("source_reference", "")).strip()
+    if reference:
+        values.append(reference)
+    contract = raw.get("contract")
+    if isinstance(contract, dict):
+        allowed = contract.get("allowed_evidence_ids")
+        if isinstance(allowed, list):
+            values.extend(str(value).strip() for value in allowed)
+    return list(dict.fromkeys(value for value in values if value))
 
 
 def _form_id(

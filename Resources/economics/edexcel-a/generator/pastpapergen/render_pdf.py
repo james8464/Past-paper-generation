@@ -2194,22 +2194,25 @@ def _line_chart_data(kind: str) -> tuple[str, str, list[float]]:
 
 def _draw_payoff_matrix(pdf: canvas.Canvas, x: float, y: float) -> float:
     w = 260
-    h = 105
+    h = 130
     pdf.rect(x, y - h, w, h, stroke=1, fill=0)
     pdf.line(x + 86, y, x + 86, y - h)
     pdf.line(x + 173, y, x + 173, y - h)
-    pdf.line(x, y - 35, x + w, y - 35)
-    pdf.line(x, y - 70, x + w, y - 70)
+    pdf.line(x, y - 26, x + w, y - 26)
+    pdf.line(x, y - 52, x + w, y - 52)
+    pdf.line(x, y - 91, x + w, y - 91)
     pdf.setFont(FONT_REGULAR, 10)
     entries = [
-        ("Firm B", x + 106, y - 15),
-        ("High price", x + 95, y - 52),
-        ("Low price", x + 184, y - 52),
-        ("Firm A", x + 18, y - 52),
-        ("High price", x + 10, y - 87),
-        ("Low price", x + 96, y - 87),
-        ("8, 8", x + 112, y - 87),
-        ("4, 10", x + 196, y - 87),
+        ("Firm B", x + 150, y - 18),
+        ("Firm A", x + 24, y - 44),
+        ("High price", x + 101, y - 44),
+        ("Low price", x + 190, y - 44),
+        ("High price", x + 10, y - 76),
+        ("8, 8", x + 116, y - 76),
+        ("4, 10", x + 202, y - 76),
+        ("Low price", x + 10, y - 115),
+        ("10, 4", x + 113, y - 115),
+        ("6, 6", x + 202, y - 115),
     ]
     for text, tx, ty in entries:
         pdf.drawString(tx, ty, text)

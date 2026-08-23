@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import random
 
 from pastpapergen.models import (
@@ -1815,6 +1816,29 @@ def _mark_scheme(command_word: str, marks: int, topic_title: str) -> list[str]:
                 "Considers counter-arguments, limitations or alternative viewpoints.",
             ])
     bullets.insert(0, "Indicative content should be rewarded where it is relevant and developed, even if not explicitly listed. Credit must be given for accurate and relevant economic understanding demonstrated by the candidate.")
+    if marks >= 8 and cmd in {
+        "analyse",
+        "analyze",
+        "assess",
+        "discuss",
+        "evaluate",
+        "examine",
+        "justify",
+    }:
+        top_floor = max(2, math.ceil(marks * 0.75))
+        middle_floor = max(2, math.ceil(marks * 0.4))
+        bullets.extend(
+            [
+                "",
+                "Levels-based marking: apply best fit across the complete response.",
+                f"Level 3 ({top_floor}–{marks}): precise knowledge, sustained contextual analysis and a conclusion proportionate to the command word.",
+                f"Level 2 ({middle_floor}–{top_floor - 1}): generally accurate knowledge with some developed analysis; judgement or application is uneven.",
+                f"Level 1 (1–{middle_floor - 1}): isolated relevant points with limited development or context.",
+                "Level 0 (0): no creditworthy material.",
+                "Accept an equivalent valid analytical route when it uses the supplied context and reaches a supported outcome.",
+                "Do not award the same developed point twice; cap a response that does not use the required context below the top level.",
+            ]
+        )
     return bullets
 
 
