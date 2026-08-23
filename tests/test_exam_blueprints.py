@@ -38,16 +38,18 @@ def rule() -> PaperRule:
 
 
 def paper() -> GeneratedPaper:
-    question = lambda number: GeneratedQuestion(
-        rule_id="q",
-        number=number,
-        marks=10,
-        kind="essay",
-        command_word="evaluate",
-        topic_id="a",
-        prompt=f"Evaluate option {number}.",
-        mark_scheme=["Accurate analysis.", "Supported evaluation."],
-    )
+    def question(number: int) -> GeneratedQuestion:
+        return GeneratedQuestion(
+            rule_id="q",
+            number=number,
+            marks=10,
+            kind="essay",
+            command_word="evaluate",
+            topic_id="a",
+            prompt=f"Evaluate option {number}.",
+            mark_scheme=["Accurate analysis.", "Supported evaluation."],
+        )
+
     return GeneratedPaper(
         paper_id="paper_1",
         paper_code="TEST/1",

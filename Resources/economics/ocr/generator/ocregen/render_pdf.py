@@ -30,7 +30,6 @@ from Backend.Core.exam_cover import (
     ocr_question_cover,
 )
 from Backend.Core.fonts import register_fonts
-from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.reportlab_theme import themed_table_class
 
 PAGE_WIDTH, PAGE_HEIGHT = A4
@@ -904,7 +903,6 @@ def _add_ppf_diagram(
     )
     title_size = 6 if compact else 9
     label_size = 5 if compact else 7
-    inset = 10 if compact else 18
     drawing.add(String(x0, y0 + height + (10 if compact else 28), title, fontName=FONT_BOLD, fontSize=title_size))
     drawing.add(Line(x0, y0, x0, y0 + height))
     drawing.add(Line(x0, y0, x0 + width, y0))

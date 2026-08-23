@@ -18,14 +18,18 @@ content. It may not change:
 The normal generation path fails closed if it cannot satisfy the contract after
 bounded retries. It never silently substitutes the deterministic planning draft.
 
-## Two-pass generation
+## Item transactions and two-pass generation
 
-The first model call writes a bounded batch of newly authored items. The
+Each question is authored, validated, adversarially reviewed, and checkpointed
+before the next local-model question starts. Hosted providers may execute
+independent item transactions concurrently, but a rejected item is repaired in
+isolation and cannot discard an accepted neighbour.
+
+The first model call writes one newly authored item. The
 prompt includes only the selected syllabus outcome, immutable blueprint,
 per-question draft intent, exact output schema, a per-item numeric-token
-contract, and the failure reason from an earlier attempt. For Ollama, the JSON
-schema fixes each batch array to the exact requested cardinality instead of a
-broad one-to-six range.
+contract, and the failure reason from an earlier attempt. A repair call also
+receives only the rejected candidate and structured review issues.
 
 The parser then verifies:
 
@@ -36,7 +40,7 @@ The parser then verifies:
 5. specific, distinct marking points;
 6. unique and valid MCQ options;
 7. material difference from the planning draft;
-8. low similarity between items in the same batch.
+8. low similarity to every previously accepted item.
 
 A separate, deterministic-temperature model call receives the frozen blueprint,
 candidate item, and syllabus point. It reviews adversarially and must explicitly
@@ -45,6 +49,23 @@ ambiguity, grammatical scope, distractor exclusivity, and answer correctness
 with no issue arrays. A missing, malformed, or negative review rejects the item.
 Because the selected model performs both passes, this is second-pass quality
 control, not an independent examiner review.
+
+Numeric values carry semantic roles. Assessment data is compared as a multiset
+unless order is explicitly meaningful; marks, item IDs, figure/extract labels,
+and pseudocode line labels are excluded from data comparison. Declared generated
+fields are range-checked. Undeclared or changed quantities still fail closed.
+
+Accepted items are written atomically to an output-local checkpoint identified
+by the paper blueprint hash, seed, provider, model, and prompt version. A restart
+revalidates and resumes them without another model call. Identity drift rejects
+the checkpoint instead of mixing generations. The checkpoint is deleted only
+after the complete package publishes successfully; cancellation and failure
+retain it.
+
+High-risk deterministic subject rules run before model review. Current rules
+include complete accounting costing identities and exchange-rate direction
+checks. This prevents a fluent reviewer response from approving a contribution
+calculated from profit or a reversed appreciation/depreciation effect.
 
 ## Mark-scheme quality
 

@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from reportlab.graphics.shapes import Drawing, Ellipse, Line, PolyLine, Rect, String
+from reportlab.graphics.shapes import Drawing, Ellipse, Line, Rect, String
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT
-from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
 from reportlab.platypus import (
@@ -32,7 +31,6 @@ from Backend.Core.exam_cover import (
     mark_scheme_cover,
 )
 from Backend.Core.fonts import register_fonts
-from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.reportlab_theme import themed_table_class
 from Backend.Core.mark_scheme_front_matter import aqa_front_matter_pages
 

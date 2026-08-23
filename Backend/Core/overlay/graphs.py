@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 import tempfile
-from pathlib import Path
 
 import matplotlib
 matplotlib.use("Agg")
@@ -332,11 +331,9 @@ def externality_diagram(
     if kind == "negative":
         msb, msc = mpb.copy(), mpc + 20
         gap_label = "MSC"
-        other_label = "MPC"
     else:
         msb, msc = mpb + 22, mpc.copy()
         gap_label = "MSB"
-        other_label = "MPB"
 
     ax.plot(xs, mpb, "k-", label="MPB")
     ax.plot(xs, mpc, "k--", label="MPC", linewidth=1.2)
@@ -354,9 +351,6 @@ def externality_diagram(
 
     if kind == "negative":
         msc_at_private = msc[eq_private_idx]
-        dwl_vertices = [(q_social, msb[eq_social_idx]),
-                        (q_social, msc[eq_social_idx]),
-                        (q_private, msc_at_private)]
         dwl_x = [q_social, q_social, q_private]
         dwl_y = [msb[eq_social_idx], msc[eq_social_idx], msc_at_private]
         ax.fill(dwl_x, dwl_y, alpha=0.1, color="gray", label="DWL")
@@ -458,8 +452,6 @@ def monopoly_diagram(
     mr_idx = np.argmin(np.abs(mr - mc))
     actual_q = xs[mr_idx]
     actual_p = ar[mr_idx]
-    actual_mc = mc[mr_idx]
-    mc_at_q = actual_mc
 
     try:
         ac_idx = np.argmin(np.abs(xs - actual_q))
@@ -598,8 +590,8 @@ def consumer_producer_surplus(
     ax.fill_between(xs[:q_idx], ps_bottom, price, alpha=0.06, color="gray", label="PS")
     ax.axhline(y=price, xmin=0, xmax=quantity / q_max, linestyle=":", color="gray", linewidth=0.8)
     ax.plot(quantity, price, "ko", markersize=3.5, zorder=5)
-    _label(ax, f"P\u2091", quantity + 7, price - 2, fontsize=8)
-    _label(ax, f"Q\u2091", quantity, -3, fontsize=8)
+    _label(ax, "P\u2091", quantity + 7, price - 2, fontsize=8)
+    _label(ax, "Q\u2091", quantity, -3, fontsize=8)
     ax.set_xlim(0, q_max)
     ax.set_ylim(0, y_max)
     ax.set_xlabel("Quantity")
@@ -642,9 +634,7 @@ def keynesian_ad_as_diagram(
     xs = np.linspace(0, q_max, 400)
 
     flat_end = 40
-    middle_start = 40
     middle_end = 100
-    steep_start = 100
 
     as_y = np.piecewise(xs,
                         [xs < flat_end,

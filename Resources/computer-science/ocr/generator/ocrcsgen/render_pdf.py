@@ -34,7 +34,6 @@ from Backend.Core.exam_cover import (
     ocr_question_cover,
 )
 from Backend.Core.fonts import register_fonts
-from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.reportlab_theme import themed_table_class
 
 

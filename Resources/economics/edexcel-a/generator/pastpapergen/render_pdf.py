@@ -1,3 +1,6 @@
+# The project-root bootstrap must precede imports from the shared backend.
+# ruff: noqa: E402
+
 from __future__ import annotations
 
 import io
@@ -5,7 +8,6 @@ import hashlib
 import os
 import re
 import sys
-import tempfile
 from pathlib import Path
 
 from reportlab.lib import colors
@@ -1322,7 +1324,6 @@ def _draw_hatched_rail(pdf: canvas.Canvas, x: float, y: float, w: float, h: floa
 
 def _draw_question_footer(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_number: int, is_last: bool = False) -> None:
     width, _ = A4
-    total = _TOTAL_PAPER_PAGES
     page_label = str(page_number)
     pdf.setFont(FONT_BOLD, 8)
     if page_number % 2 == 1:
@@ -2589,7 +2590,7 @@ def _draw_mark_scheme_qualification_page(pdf: canvas.Canvas, blueprint: PaperBlu
         f"Summer {economics_exam_schedule(blueprint.paper_id).date.year}",
         f"Question Paper Log Number {paper_code}01",
         f"Publications Code {blueprint.paper_code.replace('/', '_')}_PRACTICE_MS",
-        f"All generated material in this practice publication is for revision use.",
+        "All generated material in this practice publication is for revision use.",
         f"Unofficial independent practice material, {economics_exam_schedule(blueprint.paper_id).date.year}",
     ]
     for item in front_matter:

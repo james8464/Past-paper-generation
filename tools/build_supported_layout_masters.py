@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 from tools.build_layout_masters import ROOT, write_layout_master
 

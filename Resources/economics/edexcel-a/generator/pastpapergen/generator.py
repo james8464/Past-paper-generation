@@ -9,6 +9,7 @@ from pastpapergen.models import (
     QuestionBlueprint,
     QuestionPart,
     Syllabus,
+    SyllabusTopic,
 )
 from pastpapergen.notes import essay_capable_topic_ids, note_points_for_topic
 from pastpapergen.source_cases import data_response_extract, section_c_extract
@@ -1750,7 +1751,7 @@ def _mark_scheme(command_word: str, marks: int, topic_title: str) -> list[str]:
             f"Accurately states the economic relationship or theory from the syllabus: {topic}.",
             "",
             f"AO2 (Application) — up to {max(1, marks // 3)} mark(s):",
-            f"Applies the concept to the specific data, figure or context provided in the question.",
+            "Applies the concept to the specific data, figure or context provided in the question.",
             "Uses relevant numerical values or quotes from the source material.",
             "",
             f"AO3 (Analysis) — up to {max(2, marks - 2 * (marks // 3))} mark(s):",
@@ -1764,7 +1765,7 @@ def _mark_scheme(command_word: str, marks: int, topic_title: str) -> list[str]:
         f"AO1 (Knowledge/Understanding) — syllabus alignment for {topic}:",
         f"Accurately recalls and defines key terminology from the {topic} section of the specification.",
         f"Demonstrates knowledge of economic models, theories or relationships relevant to {topic}.",
-        f"Makes precise use of syllabus concepts such as marginal analysis, elasticity, equilibrium or efficiency.",
+        "Makes precise use of syllabus concepts such as marginal analysis, elasticity, equilibrium or efficiency.",
         "",
         f"AO2 (Application) — use of context and data for {topic}:",
         "Selects and applies relevant data, figures or extract content from the question material.",

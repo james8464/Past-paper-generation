@@ -7,7 +7,6 @@ import sys
 from Backend.Core.generator_registry import (
     REGISTRY_PATH,
     generator_capabilities,
-    generator_capability,
     generator_subjects,
 )
 from Backend.Core.paths import REPO_ROOT

@@ -251,7 +251,7 @@ def _micro_fallback(topic_title: str, points: list[str]) -> list[str]:
     return [
         f"A UK market report by a consumer group and the CMA described changes in {title}. It found that {first} affected prices, output and consumer choices, with some firms responding faster than others.",
         f"Businesses in this market reported different cost pressures during 2023 and 2024. Larger firms were more able to use technology and bulk purchasing, while smaller firms said {second} made adjustment harder.",
-        f"Survey evidence suggested consumers became more price sensitive as real incomes were squeezed. Firms responded with discounts, loyalty schemes and changes in product quality.",
+        "Survey evidence suggested consumers became more price sensitive as real incomes were squeezed. Firms responded with discounts, loyalty schemes and changes in product quality.",
         f"Policy makers considered whether intervention was needed. Supporters argued that action could improve outcomes linked to {third}; critics argued that intervention may create unintended consequences.",
     ]
 
@@ -264,7 +264,7 @@ def _macro_fallback(topic_title: str, points: list[str]) -> list[str]:
     return [
         f"ONS and Bank of England data showed that {title} affected households and firms during 2023 and 2024. The evidence suggested {first} influenced spending, saving and investment decisions.",
         f"Businesses reported that higher borrowing costs and energy prices changed plans for investment and employment. Some exporters benefited from stronger overseas demand, while importers faced cost pressures linked to {second}.",
-        f"Households on lower incomes were more exposed to changes in prices because essentials took a larger share of their budgets. This affected consumption and may have reduced the multiplier effect.",
+        "Households on lower incomes were more exposed to changes in prices because essentials took a larger share of their budgets. This affected consumption and may have reduced the multiplier effect.",
         f"Policy makers considered whether fiscal, monetary or supply-side policies were most appropriate. The final effect depended on confidence, spare capacity and the extent to which {third} changed incentives.",
     ]
 

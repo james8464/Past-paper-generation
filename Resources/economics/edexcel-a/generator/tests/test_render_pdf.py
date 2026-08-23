@@ -439,7 +439,6 @@ def test_section_a_pages_include_graph_labels(tmp_path):
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
-    text = _pdf_text(output)
     import pymupdf as fitz
     doc = fitz.open(output)
     image_count = sum(len(page.get_images()) for page in doc)

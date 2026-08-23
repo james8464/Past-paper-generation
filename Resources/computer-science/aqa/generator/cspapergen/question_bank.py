@@ -3,7 +3,7 @@ from __future__ import annotations
 import random
 from dataclasses import dataclass
 
-from cspapergen.models import MarkingGuidance, MultipleChoiceOption, Question, QuestionPart, Stimulus
+from cspapergen.models import MarkingGuidance, Question, QuestionPart, Stimulus
 
 
 @dataclass(frozen=True)

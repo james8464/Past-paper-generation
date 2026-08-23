@@ -3,7 +3,6 @@ from pathlib import Path
 import pytest
 
 from pastpapergen.generator import build_paper_blueprint
-from pastpapergen.models import QuestionBlueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.syllabus import load_syllabus
 from pastpapergen.validation import validate_blueprint
