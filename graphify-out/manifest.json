@@ -1358,5 +1358,20 @@
     "mtime": 1787492367.844524,
     "ast_hash": "5b9ba0ef13308829a11e05a7d82fd605",
     "semantic_hash": ""
+  },
+  "Backend/Core/render_transaction.py": {
+    "mtime": 1787494084.5938237,
+    "ast_hash": "b8995d5fa2af134560c6e9b5b92f0b84",
+    "semantic_hash": ""
+  },
+  "tests/test_render_transaction.py": {
+    "mtime": 1787494047.7372146,
+    "ast_hash": "e828704834f2d1ac9dfd8ea7bb8ae062",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-08-23-rendering-and-mark-scheme-reliability.md": {
+    "mtime": 1787493988.6650732,
+    "ast_hash": "5cea3914b51dcc08c46dab61dd60304a",
+    "semantic_hash": ""
   }
 }
