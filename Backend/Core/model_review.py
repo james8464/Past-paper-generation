@@ -3,11 +3,37 @@ from __future__ import annotations
 import json
 from typing import Any, Protocol
 
+from pydantic import BaseModel, Field, ValidationError
+
 from Backend.Core.assessment_quality import content_similarity, numeric_tokens
 
 
 class JSONClient(Protocol):
     def generate_json(self, prompt: str) -> dict[str, object]: ...
+
+
+class ReviewResult(BaseModel):
+    approved: bool
+    factual_issues: list[str] = Field(default_factory=list)
+    marking_issues: list[str] = Field(default_factory=list)
+    source_issues: list[str] = Field(default_factory=list)
+    difficulty_issues: list[str] = Field(default_factory=list)
+    ambiguity_issues: list[str] = Field(default_factory=list)
+
+    @property
+    def issues(self) -> list[str]:
+        return [
+            issue.strip()
+            for issues in (
+                self.factual_issues,
+                self.marking_issues,
+                self.source_issues,
+                self.difficulty_issues,
+                self.ambiguity_issues,
+            )
+            for issue in issues
+            if issue.strip()
+        ]
 
 
 def assert_materially_new(
@@ -37,7 +63,32 @@ def require_independent_review(
     blueprint: Any,
     candidate: Any,
     specification: Any,
-) -> None:
+) -> ReviewResult:
+    result = independent_review(
+        client,
+        item_id=item_id,
+        subject=subject,
+        blueprint=blueprint,
+        candidate=candidate,
+        specification=specification,
+    )
+    if not result.approved:
+        raise ValueError(
+            f"{item_id} failed second-pass assessment review: "
+            + "; ".join(result.issues or ["not approved"])
+        )
+    return result
+
+
+def independent_review(
+    client: JSONClient,
+    *,
+    item_id: str,
+    subject: str,
+    blueprint: Any,
+    candidate: Any,
+    specification: Any,
+) -> ReviewResult:
     raw = client.generate_json(
         "Act as a second-pass UK A-level assessment editor. Review the candidate "
         f"{subject} item against its immutable blueprint and specification. Check "
@@ -62,27 +113,13 @@ def require_independent_review(
             ensure_ascii=False,
         )
     )
-    issues = [
-        str(issue).strip()
-        for name in (
-            "factual_issues",
-            "marking_issues",
-            "source_issues",
-            "difficulty_issues",
-            "ambiguity_issues",
-        )
-        for issue in (
-            raw.get(name, [])
-            if isinstance(raw.get(name, []), list)
-            else ["invalid review response"]
-        )
-        if str(issue).strip()
-    ]
-    if raw.get("approved") is not True or issues:
-        raise ValueError(
-            f"{item_id} failed second-pass assessment review: "
-            + "; ".join(issues or ["not approved"])
-        )
+    try:
+        result = ReviewResult.model_validate(raw)
+    except ValidationError as error:
+        raise ValueError(f"{item_id} returned an invalid review response") from error
+    if result.issues and result.approved:
+        result = result.model_copy(update={"approved": False})
+    return result
 
 
 def _serialise(value: Any) -> Any:

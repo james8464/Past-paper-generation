@@ -2,6 +2,10 @@ from __future__ import annotations
 
 import pytest
 
+from Backend.Core.assessment_contracts import (
+    AssessmentContract,
+    NumericValueContract,
+)
 from Backend.Core.ai_assessment import (
     GenerationPolicy,
     _Task,
@@ -305,6 +309,59 @@ def test_generated_question_must_preserve_visual_contract_terms() -> None:
             client=type("Client", (), {"provider": "test", "model": "test"})(),
             policy=GenerationPolicy(),
         )
+
+
+def test_candidate_question_accepts_unordered_contract_values() -> None:
+    question = GeneratedQuestion(
+        rule_id="calculation",
+        number="2",
+        marks=2,
+        kind="calculation",
+        command_word="calculate",
+        topic_id="topic",
+        prompt="Calculate the result using 55 followed by 5%.",
+        mark_scheme=["Credit a valid calculation."],
+        assessment_objectives={"AO2": 2},
+        contract=AssessmentContract(
+            item_id="calculation",
+            marks=2,
+            assessment_objectives={"AO2": 2},
+            numeric_values=[
+                NumericValueContract(text="55"),
+                NumericValueContract(text="5%"),
+            ],
+        ),
+    )
+    task = _Task(
+        key=(0, 0, 0),
+        question=question,
+        option=GeneratedOption(id="option", title="Option", questions=[question]),
+        topic=object(),
+    )
+    raw = {
+        "prompt": "Calculate the outcome after applying 5% to 55.",
+        "mark_scheme": [
+            {
+                "text": "Apply the percentage correctly.",
+                "marks": 1,
+                "assessment_objective": "AO2",
+            },
+            {
+                "text": "State the correct outcome.",
+                "marks": 1,
+                "assessment_objective": "AO2",
+            },
+        ],
+    }
+
+    candidate = _candidate_question(
+        task,
+        raw,
+        client=type("Client", (), {"provider": "test", "model": "test"})(),
+        policy=GenerationPolicy(),
+    )
+
+    assert candidate.prompt == "Calculate the outcome after applying 5% to 55."
 
 
 def test_generated_question_rejects_a_forbidden_semantic_relationship() -> None:

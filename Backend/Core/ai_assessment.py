@@ -14,7 +14,9 @@ from Backend.Core.assessment_quality import (
     assert_distinct_items,
     content_similarity,
     numeric_tokens,
+    validate_candidate_contract,
 )
+from Backend.Core.assessment_contracts import contract_for_question
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -349,13 +351,30 @@ def _candidate_question(
     )
     preserve_prompt = original.authoring_context.get("preserve_prompt") is True
     prompt = original.prompt if preserve_prompt else generated_prompt
-    expected_numbers = numeric_tokens(original.prompt)
-    actual_numbers = numeric_tokens(prompt)
-    if actual_numbers != expected_numbers:
-        raise ValueError(
-            f"question {original.number} changed or introduced a numeric "
-            f"quantity (expected {expected_numbers}, got {actual_numbers})"
+    if original.contract is not None or "assessment_contract" in original.authoring_context:
+        generated_values = raw.get("generated_numeric_values")
+        validate_candidate_contract(
+            original.prompt,
+            prompt,
+            contract_for_question(original),
+            generated_values=(
+                {
+                    str(name): float(value)
+                    for name, value in generated_values.items()
+                    if isinstance(value, (int, float))
+                }
+                if isinstance(generated_values, dict)
+                else None
+            ),
         )
+    else:
+        expected_numbers = numeric_tokens(original.prompt)
+        actual_numbers = numeric_tokens(prompt)
+        if actual_numbers != expected_numbers:
+            raise ValueError(
+                f"question {original.number} changed or introduced a numeric "
+                f"quantity (expected {expected_numbers}, got {actual_numbers})"
+            )
     if original.kind != "multiple_choice" and not _contains_command_word(
         prompt, original.command_word
     ):

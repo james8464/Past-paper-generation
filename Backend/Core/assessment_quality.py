@@ -6,7 +6,10 @@ import re
 import unicodedata
 from collections import Counter
 from pathlib import Path
-from typing import Any, Iterable
+from typing import TYPE_CHECKING, Any, Iterable, Mapping
+
+if TYPE_CHECKING:
+    from Backend.Core.assessment_contracts import AssessmentContract
 
 
 NUMBER_PATTERN = re.compile(
@@ -32,6 +35,99 @@ def numeric_tokens(value: str) -> tuple[str, ...]:
         " ".join(match.group(0).casefold().split())
         for match in NUMBER_PATTERN.finditer(value)
     )
+
+
+def validate_candidate_contract(
+    original: str,
+    candidate: str,
+    contract: AssessmentContract,
+    generated_values: Mapping[str, float] | None = None,
+) -> None:
+    """Validate candidate quantities against their declared semantic roles."""
+
+    expected_values = [
+        value
+        for value in contract.numeric_values
+        if value.role.value == "assessment_data"
+    ]
+    expected = Counter(_normalise_quantity(value.text) for value in expected_values)
+    actual_tokens = list(numeric_tokens(candidate))
+
+    ignored = _ignored_candidate_quantities(candidate)
+    _subtract_tokens(actual_tokens, ignored)
+
+    supplied = generated_values or {}
+    declared_fields = {field.name: field for field in contract.generated_numeric_fields}
+    unknown_fields = set(supplied) - set(declared_fields)
+    if unknown_fields:
+        raise ValueError(
+            f"{contract.item_id} supplied undeclared generated numeric fields: "
+            f"{sorted(unknown_fields)}"
+        )
+    for name, value in supplied.items():
+        declared_fields[name].validate_value(float(value))
+        _subtract_tokens(actual_tokens, _value_tokens(value))
+
+    actual = Counter(_normalise_quantity(token) for token in actual_tokens)
+    if actual != expected:
+        raise ValueError(
+            f"{contract.item_id} changed immutable numeric data: "
+            f"expected {expected}, got {actual}"
+        )
+
+    ordered = [
+        _normalise_quantity(value.text)
+        for value in expected_values
+        if value.ordered
+    ]
+    if ordered and not _is_subsequence(
+        ordered,
+        [_normalise_quantity(token) for token in actual_tokens],
+    ):
+        raise ValueError(
+            f"{contract.item_id} changed ordered immutable numeric data"
+        )
+
+    # The original is retained in the interface so callers can log both sides and
+    # older call sites can migrate without reconstructing their contracts.
+    del original
+
+
+def _normalise_quantity(value: str) -> str:
+    return " ".join(value.casefold().split())
+
+
+def _ignored_candidate_quantities(value: str) -> list[str]:
+    ignored: list[str] = []
+    patterns = (
+        r"(?m)^\s*(\d{1,3})(?=\s+\S)",
+        r"\[\s*(\d+)\s+marks?\s*\]",
+        r"\b(?:question|extract|figure|table)\s+(\d+)\b",
+    )
+    for pattern in patterns:
+        ignored.extend(
+            match.group(1)
+            for match in re.finditer(pattern, value, flags=re.IGNORECASE)
+        )
+    return ignored
+
+
+def _value_tokens(value: float) -> list[str]:
+    return [format(float(value), "g")]
+
+
+def _subtract_tokens(tokens: list[str], values: Iterable[str]) -> None:
+    for value in values:
+        normalised = _normalise_quantity(value)
+        for index, token in enumerate(tokens):
+            if _normalise_quantity(token) == normalised:
+                tokens.pop(index)
+                break
+
+
+def _is_subsequence(expected: list[str], actual: list[str]) -> bool:
+    iterator = iter(actual)
+    return all(any(candidate == value for candidate in iterator) for value in expected)
 
 
 def item_fingerprint(value: str) -> str:
