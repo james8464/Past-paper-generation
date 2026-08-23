@@ -11,6 +11,7 @@ from Backend.Core.assessment_checkpoints import (
 from Backend.Core.assessment_package import write_assessment_package
 from Backend.Core.model_recommendations import default_ollama_model
 from Backend.Core.providers import HostedLLMClient
+from Backend.Core.render_transaction import render_pdf_atomically
 from aqabizgen.configs import load_rule
 from aqabizgen.generator import build_paper
 from aqabizgen.render_pdf import (
@@ -79,14 +80,26 @@ def generate_package(
     question = output_dir / f"aqa-business-{stem}-question-paper.pdf"
     scheme = output_dir / f"aqa-business-{stem}-mark-scheme.pdf"
     emit("Rendering question paper")
-    render_question_paper(generated, question)
+    render_pdf_atomically(
+        question,
+        lambda temporary: render_question_paper(generated, temporary),
+        role="question paper",
+    )
     emit("Rendering mark scheme")
-    render_mark_scheme(generated, scheme)
+    render_pdf_atomically(
+        scheme,
+        lambda temporary: render_mark_scheme(generated, temporary),
+        role="mark scheme",
+    )
     paths = {"question_paper": question, "mark_scheme": scheme}
     if rule.id == "paper_3":
         source = output_dir / f"aqa-business-{stem}-source-booklet.pdf"
         emit("Rendering source booklet")
-        render_source_booklet(generated, source)
+        render_pdf_atomically(
+            source,
+            lambda temporary: render_source_booklet(generated, temporary),
+            role="source booklet",
+        )
         paths = {
             "question_paper": question,
             "source_booklet": source,

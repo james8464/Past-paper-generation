@@ -11,6 +11,7 @@ from Backend.Core.assessment_checkpoints import (
 from Backend.Core.assessment_package import write_assessment_package
 from Backend.Core.model_recommendations import default_ollama_model
 from Backend.Core.providers import HostedLLMClient
+from Backend.Core.render_transaction import render_pdf_atomically
 from aqaaccountgen.configs import load_rule
 from aqaaccountgen.generator import build_paper
 from aqaaccountgen.render_pdf import render_mark_scheme, render_question_paper
@@ -75,9 +76,17 @@ def generate_package(
     question_path = output_dir / f"{stem}-question-paper.pdf"
     scheme_path = output_dir / f"{stem}-mark-scheme.pdf"
     update("Rendering question paper")
-    render_question_paper(generated, question_path)
+    render_pdf_atomically(
+        question_path,
+        lambda temporary: render_question_paper(generated, temporary),
+        role="question paper",
+    )
     update("Rendering mark scheme")
-    render_mark_scheme(generated, scheme_path)
+    render_pdf_atomically(
+        scheme_path,
+        lambda temporary: render_mark_scheme(generated, temporary),
+        role="mark scheme",
+    )
     assessment_path = output_dir / f"{stem}-assessment.json"
     write_assessment_package(
         generated,

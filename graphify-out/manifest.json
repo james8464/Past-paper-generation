@@ -100,8 +100,8 @@
     "semantic_hash": "509e4d1e65ef049a42dcffa1c8314ee2"
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/cli.py": {
-    "mtime": 1787492080.3917572,
-    "ast_hash": "fd5b147760cc7f75cd5f712c9468519b",
+    "mtime": 1787494205.7341404,
+    "ast_hash": "94e15aac8742f5bbb7df4a732ca048c5",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/configs.py": {
@@ -150,8 +150,8 @@
     "semantic_hash": "8fad60317c5790f7b622e24ba14fbcf0"
   },
   "Resources/business/aqa/generator/aqabizgen/cli.py": {
-    "mtime": 1787492080.3919854,
-    "ast_hash": "bb4251952abfee88d651c6f4cf8e2aa9",
+    "mtime": 1787494205.7343934,
+    "ast_hash": "02a5c20d1565382613411d821180a857",
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/configs.py": {
@@ -210,8 +210,8 @@
     "semantic_hash": "1338a6788cf559bb81551beacd59aeb4"
   },
   "Resources/computer-science/aqa/generator/cspapergen/cli.py": {
-    "mtime": 1787492284.1435378,
-    "ast_hash": "f3933697267bd1ecabbf11c42779ab69",
+    "mtime": 1787494205.7346306,
+    "ast_hash": "8e20a7c0cbe50c3413bfafad30bc5024",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/exam_dates.py": {
@@ -325,8 +325,8 @@
     "semantic_hash": "56d870e1030f0dced36c6d3226caa451"
   },
   "Resources/computer-science/ocr/generator/ocrcsgen/cli.py": {
-    "mtime": 1787492080.3933144,
-    "ast_hash": "29209f5daf046adcd4ee81c50b3424ac",
+    "mtime": 1787494205.734865,
+    "ast_hash": "1fae8ce174deb00e1fd293cf5b2d574b",
     "semantic_hash": ""
   },
   "Resources/computer-science/ocr/generator/ocrcsgen/configs.py": {
@@ -370,8 +370,8 @@
     "semantic_hash": "f7a0b3033bf1284f4e52db971d25ff73"
   },
   "Resources/economics/aqa/generator/aqaecongen/cli.py": {
-    "mtime": 1787492080.3923037,
-    "ast_hash": "9c8fe21eba681e2e064747ad091abf42",
+    "mtime": 1787494232.8309186,
+    "ast_hash": "debe2c0ffa81542b8ccb753c48c083fe",
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/aqaecongen/configs.py": {
@@ -430,8 +430,8 @@
     "semantic_hash": "b9e6ae432a75667203d8046ab699cba3"
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/cli.py": {
-    "mtime": 1787492284.143294,
-    "ast_hash": "54d4928f9bfd991eb66a52088373bbce",
+    "mtime": 1787494232.8313262,
+    "ast_hash": "d3ac90a61e08bb417f507db4f90b51c1",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/exam_dates.py": {
@@ -570,8 +570,8 @@
     "semantic_hash": "a8e99e04cbad1d5adeefb31d441959fd"
   },
   "Resources/economics/ocr/generator/ocregen/cli.py": {
-    "mtime": 1787492080.392757,
-    "ast_hash": "4f451c0d1a83951ff7225512dbc1dcbf",
+    "mtime": 1787494232.8317623,
+    "ast_hash": "43a3b72fc9824cbec688df6f0f8d30f1",
     "semantic_hash": ""
   },
   "Resources/economics/ocr/generator/ocregen/configs.py": {
@@ -1372,6 +1372,11 @@
   "docs/superpowers/plans/2026-08-23-rendering-and-mark-scheme-reliability.md": {
     "mtime": 1787493988.6650732,
     "ast_hash": "5cea3914b51dcc08c46dab61dd60304a",
+    "semantic_hash": ""
+  },
+  "tests/test_generator_render_transactions.py": {
+    "mtime": 1787494138.5317216,
+    "ast_hash": "1d68ae4b2f5142381cbdacf1c1b9593e",
     "semantic_hash": ""
   }
 }

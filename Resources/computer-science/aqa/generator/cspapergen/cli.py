@@ -10,6 +10,7 @@ from Backend.Core.assessment_checkpoints import (
 )
 from Backend.Core.assessment_package import write_assessment_package
 from Backend.Core.model_recommendations import default_ollama_model
+from Backend.Core.render_transaction import render_pdf_atomically
 from cspapergen.generator import build_paper1_blueprint, build_paper2_blueprint
 from cspapergen.notes import DEFAULT_NOTES_SOURCE, cache_notes
 from cspapergen.ollama_client import OllamaClient, improve_questions_with_ollama
@@ -119,9 +120,17 @@ def generate_package(
     question_paper = output_dir / f"cs-paper-{paper}-question-paper.pdf"
     mark_scheme = output_dir / f"cs-paper-{paper}-mark-scheme.pdf"
     emit("Rendering question paper")
-    render_question_paper(blueprint, question_paper)
+    render_pdf_atomically(
+        question_paper,
+        lambda temporary: render_question_paper(blueprint, temporary),
+        role="question paper",
+    )
     emit("Rendering mark scheme")
-    render_mark_scheme(blueprint, mark_scheme)
+    render_pdf_atomically(
+        mark_scheme,
+        lambda temporary: render_mark_scheme(blueprint, temporary),
+        role="mark scheme",
+    )
     paths = {"question_paper": question_paper}
     if paper1_context is not None:
         emit("Rendering Paper 1 supporting materials")

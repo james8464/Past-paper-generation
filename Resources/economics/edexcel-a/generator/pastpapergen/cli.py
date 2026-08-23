@@ -11,6 +11,7 @@ from Backend.Core.assessment_checkpoints import (
 )
 from Backend.Core.assessment_package import write_assessment_package
 from Backend.Core.model_recommendations import default_ollama_model
+from Backend.Core.render_transaction import render_pdf_atomically
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.ollama_client import OllamaClient, generate_questions_with_ollama
 from pastpapergen.paper_configs import load_builtin_paper_config
@@ -119,11 +120,23 @@ def generate_package(
     mark_scheme = output_dir / f"{stem}-mark-scheme.pdf"
 
     emit("Rendering question paper")
-    render_question_paper(blueprint, question_paper)
+    render_pdf_atomically(
+        question_paper,
+        lambda temporary: render_question_paper(blueprint, temporary),
+        role="question paper",
+    )
     emit("Rendering source booklet")
-    render_source_booklet(blueprint, syllabus, source_booklet)
+    render_pdf_atomically(
+        source_booklet,
+        lambda temporary: render_source_booklet(blueprint, syllabus, temporary),
+        role="source booklet",
+    )
     emit("Rendering mark scheme")
-    render_mark_scheme(blueprint, syllabus, mark_scheme)
+    render_pdf_atomically(
+        mark_scheme,
+        lambda temporary: render_mark_scheme(blueprint, syllabus, temporary),
+        role="mark scheme",
+    )
     assessment = output_dir / f"{stem}-assessment.json"
     write_assessment_package(
         blueprint,

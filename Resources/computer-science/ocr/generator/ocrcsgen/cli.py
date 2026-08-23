@@ -11,6 +11,7 @@ from Backend.Core.assessment_checkpoints import (
 from Backend.Core.assessment_package import write_assessment_package
 from Backend.Core.model_recommendations import default_ollama_model
 from Backend.Core.providers import HostedLLMClient
+from Backend.Core.render_transaction import render_pdf_atomically
 from ocrcsgen.configs import load_rule
 from ocrcsgen.generator import build_paper
 from ocrcsgen.render_pdf import render_mark_scheme, render_question_paper
@@ -75,9 +76,17 @@ def generate_package(
     question = output_dir / f"ocr-computer-science-{stem}-question-paper.pdf"
     scheme = output_dir / f"ocr-computer-science-{stem}-mark-scheme.pdf"
     emit("Rendering question paper")
-    render_question_paper(generated, question)
+    render_pdf_atomically(
+        question,
+        lambda temporary: render_question_paper(generated, temporary),
+        role="question paper",
+    )
     emit("Rendering mark scheme")
-    render_mark_scheme(generated, scheme)
+    render_pdf_atomically(
+        scheme,
+        lambda temporary: render_mark_scheme(generated, temporary),
+        role="mark scheme",
+    )
     assessment = output_dir / f"ocr-computer-science-{stem}-assessment.json"
     write_assessment_package(
         generated,

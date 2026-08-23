@@ -12,6 +12,7 @@ from Backend.Core.assessment_checkpoints import (
 from Backend.Core.assessment_package import write_assessment_package
 from Backend.Core.model_recommendations import default_ollama_model
 from Backend.Core.providers import HostedLLMClient
+from Backend.Core.render_transaction import render_pdf_atomically
 from aqaecongen.configs import load_rule
 from aqaecongen.generator import build_paper
 from aqaecongen.render_pdf import render_mark_scheme, render_question_paper, render_source_booklet
@@ -76,13 +77,25 @@ def generate_package(
     question_paper = output_dir / f"aqa-economics-{stem}-question-paper.pdf"
     mark_scheme = output_dir / f"aqa-economics-{stem}-mark-scheme.pdf"
     emit("Rendering question paper")
-    render_question_paper(generated, question_paper)
+    render_pdf_atomically(
+        question_paper,
+        lambda temporary: render_question_paper(generated, temporary),
+        role="question paper",
+    )
     source_booklet = output_dir / f"aqa-economics-{stem}-source-insert.pdf"
     if rule.id == "paper_3":
         emit("Rendering source insert")
-        render_source_booklet(generated, source_booklet)
+        render_pdf_atomically(
+            source_booklet,
+            lambda temporary: render_source_booklet(generated, temporary),
+            role="source booklet",
+        )
     emit("Rendering mark scheme")
-    render_mark_scheme(generated, mark_scheme)
+    render_pdf_atomically(
+        mark_scheme,
+        lambda temporary: render_mark_scheme(generated, temporary),
+        role="mark scheme",
+    )
     emit("Done")
     paths = {"question_paper": question_paper}
     if rule.id == "paper_3":
