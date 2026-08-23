@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import math
+import statistics
 from collections import Counter
 from functools import lru_cache
 from pathlib import Path
@@ -80,6 +81,8 @@ def validate_pdf_for_release(
         font_characters: Counter[str] = Counter()
         font_sizes: Counter[float] = Counter()
         image_dpi: list[float] = []
+        page_layout_metrics: list[dict[str, Any]] = []
+        total_overlapping_pairs = 0
         for page_index, page in enumerate(document, start=1):
             width, height = page.rect.width, page.rect.height
             if not all(
@@ -92,12 +95,15 @@ def validate_pdf_for_release(
                     f"{path.name} page {page_index} contains an annotation"
                 )
             page_has_text = False
+            page_characters = 0
+            text_spans: list[tuple[str, fitz.Rect]] = []
             for block in page.get_text("dict").get("blocks", []):
                 for line in block.get("lines", []):
                     for span in line.get("spans", []):
                         text = str(span.get("text", ""))
                         if text.strip():
                             page_has_text = True
+                            page_characters += len(text.strip())
                             if "\ufffd" in text:
                                 raise ValueError(
                                     f"{path.name} page {page_index} contains "
@@ -114,6 +120,7 @@ def validate_pdf_for_release(
                                     f"illegibly small {size:g} pt text"
                                 )
                             bbox = fitz.Rect(span.get("bbox", (0, 0, 0, 0)))
+                            text_spans.append((text.strip(), bbox))
                             if (
                                 bbox.x0 < page.rect.x0 - 2
                                 or bbox.y0 < page.rect.y0 - 2
@@ -132,16 +139,40 @@ def validate_pdf_for_release(
                 horizontal = image["width"] / (bbox.width / 72)
                 vertical = image["height"] / (bbox.height / 72)
                 image_dpi.append(min(horizontal, vertical))
-            page_has_content = page_has_text or bool(image_info)
-            # Vector drawing extraction is substantially more expensive on dense
-            # papers. It is only needed to distinguish a vector-only page from an
-            # actually empty one.
-            if not page_has_content:
-                page_has_content = bool(page.get_drawings())
+            vector_objects = sum(
+                1
+                for operation, _bounds in page.get_bboxlog()
+                if operation in {"stroke-path", "fill-path", "fill-stroke-path"}
+            )
+            page_has_content = page_has_text or bool(image_info) or vector_objects > 0
             if not page_has_content:
                 raise ValueError(
                     f"{path.name} page {page_index} is unexpectedly empty"
                 )
+            if page_characters < 8 and not image_info and vector_objects < 3:
+                raise ValueError(
+                    f"{path.name} page {page_index} has too little content to "
+                    "represent a document page"
+                )
+            overlapping_pairs = _overlapping_text_pairs(text_spans)
+            if overlapping_pairs:
+                raise ValueError(
+                    f"{path.name} contains overlapping text on page {page_index} "
+                    f"({overlapping_pairs} pair(s))"
+                )
+            total_overlapping_pairs += overlapping_pairs
+            page_layout_metrics.append(
+                {
+                    "page": page_index,
+                    "characters": page_characters,
+                    "text_occupancy": round(
+                        _text_occupancy(text_spans, page.rect), 4
+                    ),
+                    "vector_objects": vector_objects,
+                    "images": len(image_info),
+                    "overlapping_text_pairs": overlapping_pairs,
+                }
+            )
 
         allowed = CONTROLLED_FONT_PREFIXES[
             "economics" if subject == "economics" else "default"
@@ -180,6 +211,16 @@ def validate_pdf_for_release(
             "metadata_author": metadata.get("author"),
             "metadata_subject": metadata.get("subject"),
             "typography_profile": typography,
+            "layout_metrics": {
+                "pages": page_layout_metrics,
+                "median_text_occupancy": round(
+                    statistics.median(
+                        page["text_occupancy"] for page in page_layout_metrics
+                    ),
+                    4,
+                ),
+                "overlapping_text_pairs": total_overlapping_pairs,
+            },
         }
     finally:
         document.close()
@@ -280,3 +321,37 @@ def _normalise_font(value: str) -> str:
     ):
         name = name.replace(token, "")
     return name
+
+
+def _overlapping_text_pairs(spans: list[tuple[str, fitz.Rect]]) -> int:
+    ordered = sorted(spans, key=lambda item: (item[1].y0, item[1].x0))
+    pairs = 0
+    for index, (text, bounds) in enumerate(ordered):
+        if bounds.is_empty or len(text) < 2:
+            continue
+        for other_text, other_bounds in ordered[index + 1 :]:
+            if other_bounds.y0 >= bounds.y1 - 0.5:
+                break
+            if other_bounds.is_empty or len(other_text) < 2:
+                continue
+            intersection = bounds & other_bounds
+            if intersection.is_empty:
+                continue
+            smaller_area = min(bounds.get_area(), other_bounds.get_area())
+            if smaller_area and intersection.get_area() / smaller_area >= 0.65:
+                pairs += 1
+    return pairs
+
+
+def _text_occupancy(
+    spans: list[tuple[str, fitz.Rect]],
+    page_bounds: fitz.Rect,
+) -> float:
+    if page_bounds.is_empty:
+        return 0.0
+    occupied = sum(
+        (bounds & page_bounds).get_area()
+        for _text, bounds in spans
+        if not bounds.is_empty
+    )
+    return min(occupied / page_bounds.get_area(), 1.0)
