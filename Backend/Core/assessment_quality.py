@@ -93,6 +93,21 @@ def validate_candidate_contract(
     del original
 
 
+def validate_economics_causal_direction(value: str) -> None:
+    """Reject common exchange-rate reversals before model review."""
+
+    text = " ".join(value.casefold().split())
+    import_cost = r"(?:import (?:costs?|prices?)|(?:costs?|prices?) of imports)"
+    higher = r"(?:raises?|increases?|higher|more expensive)"
+    lower = r"(?:lowers?|reduces?|decreases?|lower|cheaper)"
+    reversed_relationships = (
+        rf"\bappreciat\w*\b.{{0,100}}{higher}.{{0,50}}{import_cost}",
+        rf"\bdepreciat\w*\b.{{0,100}}{lower}.{{0,50}}{import_cost}",
+    )
+    if any(re.search(pattern, text) for pattern in reversed_relationships):
+        raise ValueError("economics item has a reversed exchange-rate direction")
+
+
 def _normalise_quantity(value: str) -> str:
     return " ".join(value.casefold().split())
 
@@ -103,6 +118,7 @@ def _ignored_candidate_quantities(value: str) -> list[str]:
         r"(?m)^\s*(\d{1,3})(?=\s+\S)",
         r"\[\s*(\d+)\s+marks?\s*\]",
         r"\b(?:question|extract|figure|table)\s+(\d+)\b",
+        r"\bline\s+(\d+)\b",
     )
     for pattern in patterns:
         ignored.extend(

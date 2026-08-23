@@ -8,6 +8,49 @@ def _nearest_hundred(value: float) -> int:
 
 
 @dataclass(frozen=True)
+class CostingCase:
+    revenue: int
+    variable_cost: int
+    fixed_cost: int
+
+    @classmethod
+    def from_chart_values(cls, values: list[float]) -> CostingCase:
+        if len(values) != 5:
+            raise ValueError("costing case requires five chart values")
+        return cls(
+            revenue=int(values[4] * 10_000),
+            variable_cost=int(values[2] * 6_000),
+            fixed_cost=int(values[1] * 2_000),
+        )
+
+    @property
+    def contribution(self) -> int:
+        return self.revenue - self.variable_cost
+
+    @property
+    def profit(self) -> int:
+        return self.contribution - self.fixed_cost
+
+    def authoring_context(self) -> dict[str, object]:
+        return {
+            "required_prompt_terms": [
+                "revenue",
+                "variable cost",
+                "fixed cost",
+            ],
+            "source_data": {
+                "revenue": self.revenue,
+                "variable_cost": self.variable_cost,
+                "fixed_cost": self.fixed_cost,
+            },
+            "verified_answers": {
+                "contribution": self.contribution,
+                "profit": self.profit,
+            },
+        }
+
+
+@dataclass(frozen=True)
 class IncomeStatementCase:
     """Complete, internally consistent source for the Paper 1 company statement."""
 

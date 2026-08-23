@@ -12,6 +12,7 @@ from threading import Lock
 from typing import Callable
 
 from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
+from Backend.Core.assessment_quality import validate_economics_causal_direction
 from Backend.Core.model_review import (
     assert_materially_new,
     require_independent_review,
@@ -406,6 +407,20 @@ def _validate_ai_question(
     )
     candidate_text = " ".join(
         [candidate.prompt, *(part.prompt for part in candidate.parts)]
+    )
+    validate_economics_causal_direction(
+        " ".join(
+            [
+                candidate_text,
+                *candidate.mark_scheme,
+                *candidate.indicative_content,
+                *(
+                    point
+                    for part in candidate.parts
+                    for point in [*part.mark_scheme, *part.indicative_content]
+                ),
+            ]
+        )
     )
     assert_materially_new(
         original_text,

@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from enum import StrEnum
+import re
 from typing import Any, Iterable
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from Backend.Core.assessment_quality import numeric_tokens
+from Backend.Core.assessment_quality import NUMBER_PATTERN
 
 
 class NumericRole(StrEnum):
@@ -139,9 +140,29 @@ def contract_for_question(question: Any) -> AssessmentContract:
         assessment_objectives=dict(
             getattr(question, "assessment_objectives", {})
         ),
-        numeric_values=[
-            NumericValueContract(text=token)
-            for token in numeric_tokens(prompt)
-        ],
+        numeric_values=_numeric_contracts(prompt),
         allowed_evidence_ids=references,
     )
+
+
+def _numeric_contracts(prompt: str) -> list[NumericValueContract]:
+    contracts: list[NumericValueContract] = []
+    for match in NUMBER_PATTERN.finditer(prompt):
+        prefix = prompt[max(0, match.start() - 24) : match.start()]
+        suffix = prompt[match.end() : match.end() + 16]
+        if re.search(r"\bline\s*$", prefix, flags=re.IGNORECASE):
+            role = NumericRole.CODE_LINE_LABEL
+        elif re.search(
+            r"\b(?:question|extract|figure|table)\s*$",
+            prefix,
+            flags=re.IGNORECASE,
+        ):
+            role = NumericRole.DISPLAY_LABEL
+        elif re.match(r"\s*marks?\s*\]", suffix, flags=re.IGNORECASE):
+            role = NumericRole.MARK
+        else:
+            role = NumericRole.ASSESSMENT_DATA
+        contracts.append(
+            NumericValueContract(text=match.group(0), role=role)
+        )
+    return contracts

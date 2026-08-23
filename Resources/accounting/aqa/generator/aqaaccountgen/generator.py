@@ -15,6 +15,7 @@ from Backend.Core.exam_blueprints import (
 from Backend.Core.mark_scheme_enrichment import enrich_paper
 
 from aqaaccountgen.case_data import (
+    CostingCase,
     IncomeStatementCase,
     NonCurrentAssetCase,
     PartnershipCase,
@@ -407,6 +408,26 @@ def _written(
             "Reach a balanced judgement that recognises the investor's objectives.",
             *_levels(topic, point, case_id),
         ]
+    elif rule.id == "contribution":
+        case = CostingCase.from_chart_values(values)
+        prompt = (
+            f"Calculate the contribution and profit for {business}. Revenue is "
+            f"£{case.revenue:,}, variable cost is £{case.variable_cost:,}, and "
+            f"fixed cost is £{case.fixed_cost:,}. Show all workings."
+        )
+        scheme = [
+            (
+                f"Contribution: £{case.revenue:,} − £{case.variable_cost:,} "
+                f"= £{case.contribution:,}."
+            ),
+            (
+                f"Profit: £{case.contribution:,} − £{case.fixed_cost:,} "
+                f"= £{case.profit:,}."
+            ),
+            "Award method marks for revenue less variable cost.",
+            "Award method marks for contribution less fixed cost.",
+        ]
+        authoring_context = case.authoring_context()
     elif rule.kind == "calculation":
         task = CALCULATION_TASKS.get(rule.id, "Calculate the required accounting figure")
         prompt = (

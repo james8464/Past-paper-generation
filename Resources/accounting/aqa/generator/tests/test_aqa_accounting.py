@@ -8,7 +8,7 @@ from pathlib import Path
 import pymupdf as fitz
 from pypdf import PdfReader
 
-from aqaaccountgen.case_data import NonCurrentAssetCase, SalesLedgerCase
+from aqaaccountgen.case_data import CostingCase, NonCurrentAssetCase, SalesLedgerCase
 from aqaaccountgen.cli import generate_package
 from aqaaccountgen.configs import RULES
 from aqaaccountgen.generator import build_paper
@@ -114,6 +114,31 @@ def test_income_statement_question_has_a_complete_task_specific_source_contract(
     } <= context["source_data"].keys()
     assert context["adjustments"]["current_tax_charge"] > 0
     assert context["verified_answers"]["profit_for_year"] > 0
+
+
+def test_contribution_question_uses_a_complete_costing_identity() -> None:
+    generated = build_paper(RULES["paper_2"], SYLLABUS, 26080100)
+    option = generated.sections[0].options[0]
+    question = next(
+        item
+        for section in generated.sections
+        for item in section.options[0].questions
+        if item.rule_id == "contribution"
+    )
+    case = CostingCase.from_chart_values(option.chart_values)
+
+    assert question.authoring_context["source_data"] == {
+        "revenue": case.revenue,
+        "variable_cost": case.variable_cost,
+        "fixed_cost": case.fixed_cost,
+    }
+    assert question.authoring_context["verified_answers"] == {
+        "contribution": case.contribution,
+        "profit": case.profit,
+    }
+    assert case.contribution == case.revenue - case.variable_cost
+    assert case.profit == case.contribution - case.fixed_cost
+    assert case.contribution != case.revenue - case.profit
 
 
 def test_partnership_calculations_have_complete_shared_source_contracts() -> None:

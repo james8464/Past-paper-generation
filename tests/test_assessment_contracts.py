@@ -12,7 +12,10 @@ from Backend.Core.assessment_contracts import (
     NumericValueContract,
     contract_for_question,
 )
-from Backend.Core.assessment_quality import validate_candidate_contract
+from Backend.Core.assessment_quality import (
+    validate_candidate_contract,
+    validate_economics_causal_direction,
+)
 from Backend.Core.exam_blueprints import GeneratedQuestion
 
 
@@ -195,3 +198,23 @@ def test_undeclared_generated_quantity_is_rejected() -> None:
 
     with pytest.raises(ValueError, match="immutable numeric"):
         validate_candidate_contract("Plot the result", "Plot the result for 2027", contract)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "An appreciation raises the domestic-currency cost of imports.",
+        "A depreciation lowers import prices in domestic currency.",
+    ],
+)
+def test_economics_direction_validator_rejects_reversed_import_effects(
+    text: str,
+) -> None:
+    with pytest.raises(ValueError, match="exchange-rate direction"):
+        validate_economics_causal_direction(text)
+
+
+def test_economics_direction_validator_accepts_correct_import_effect() -> None:
+    validate_economics_causal_direction(
+        "An appreciation lowers import prices in domestic currency, all else equal."
+    )

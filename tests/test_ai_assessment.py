@@ -366,6 +366,49 @@ def test_candidate_question_accepts_unordered_contract_values() -> None:
     assert candidate.prompt == "Calculate the outcome after applying 5% to 55."
 
 
+def test_legacy_candidate_question_treats_values_as_an_unordered_contract() -> None:
+    question = GeneratedQuestion(
+        rule_id="calculation",
+        number="2",
+        marks=2,
+        kind="calculation",
+        command_word="calculate",
+        topic_id="topic",
+        prompt="Calculate the result using 55 followed by 5%.",
+        mark_scheme=["Credit a valid calculation."],
+        assessment_objectives={"AO2": 2},
+    )
+    task = _Task(
+        key=(0, 0, 0),
+        question=question,
+        option=GeneratedOption(id="option", title="Option", questions=[question]),
+        topic=object(),
+    )
+
+    candidate = _candidate_question(
+        task,
+        {
+            "prompt": "Calculate the outcome after applying 5% to 55.",
+            "mark_scheme": [
+                {
+                    "text": "Apply the percentage correctly.",
+                    "marks": 1,
+                    "assessment_objective": "AO2",
+                },
+                {
+                    "text": "State the correct outcome.",
+                    "marks": 1,
+                    "assessment_objective": "AO2",
+                },
+            ],
+        },
+        client=type("Client", (), {"provider": "test", "model": "test"})(),
+        policy=GenerationPolicy(),
+    )
+
+    assert candidate.prompt == "Calculate the outcome after applying 5% to 55."
+
+
 def test_generated_question_rejects_a_forbidden_semantic_relationship() -> None:
     question = GeneratedQuestion(
         rule_id="partnership",
@@ -704,7 +747,7 @@ def test_rejected_second_item_does_not_regenerate_accepted_first_item() -> None:
                     _review_response("0/0/0", approved=True),
                     _question_response(
                         "0/0/1",
-                        "Explain why appreciation raises the domestic cost of imports.",
+                        "Explain why a tariff always lowers import prices.",
                     ),
                     _review_response(
                         "0/0/1",
@@ -713,7 +756,7 @@ def test_rejected_second_item_does_not_regenerate_accepted_first_item() -> None:
                     ),
                     _question_response(
                         "0/0/1",
-                        "Explain why appreciation can lower the domestic cost of imports.",
+                        "Explain why a tariff can raise import prices.",
                     ),
                     _review_response("0/0/1", approved=True),
                 ]
@@ -735,7 +778,7 @@ def test_rejected_second_item_does_not_regenerate_accepted_first_item() -> None:
         "Explain why higher costs can reduce a firm's profit."
     )
     assert generated[tasks[1].key].prompt == (
-        "Explain why appreciation can lower the domestic cost of imports."
+        "Explain why a tariff can raise import prices."
     )
 
 
