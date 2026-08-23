@@ -23,6 +23,7 @@ class ExamPageProfile:
     variant: PageVariant
     legal_notice: bool = False
     do_not_write: bool = False
+    message: str = ""
 
 
 class ExamPage(Flowable):
@@ -111,6 +112,7 @@ def draw_exam_page(
             font=font,
             bold_font=bold_font,
             page_number=page_number,
+            include_footer=include_footer,
         )
     pdf.restoreState()
 
@@ -260,25 +262,96 @@ def _draw_ocr_page(
     font: str,
     bold_font: str,
     page_number: int,
+    include_footer: bool,
 ) -> None:
-    del width
     pdf.setFont(font, 8)
     if page_number:
-        pdf.drawCentredString(A4[0] / 2, height - 38, str(page_number))
+        pdf.drawCentredString(width / 2, height - 38, str(page_number))
     pdf.setFont(bold_font, 9)
-    pdf.drawCentredString(A4[0] / 2, height - 64, profile.heading)
-    if profile.variant != "blank":
-        _draw_rules(
+    if profile.variant == "blank":
+        pdf.drawCentredString(width / 2, height - 71.6, profile.heading)
+        if profile.do_not_write:
+            instruction = (
+                "DO NOT WRITE ON THIS PAGE"
+                if profile.message
+                else "PLEASE DO NOT WRITE ON THIS PAGE"
+            )
+            instruction_baseline = 406.6 if profile.message else 425.6
+            pdf.drawCentredString(
+                width / 2,
+                height - instruction_baseline,
+                instruction,
+            )
+        if profile.message:
+            pdf.drawCentredString(width / 2, height - 445.7, profile.message)
+    elif profile.variant == "continuation":
+        line_count = 22 if profile.legal_notice else 27
+        first_rule = 85.7
+        _draw_ocr_rules(
             pdf,
-            left=52,
-            right=543,
-            top=92,
-            bottom=718,
-            spacing=22.7,
-            page_height=height,
+            height=height,
+            first_rule=first_rule,
+            line_count=line_count,
+            guide_bottom=632.1 if profile.legal_notice else 762.1,
         )
+    else:
+        pdf.drawCentredString(width / 2, height - 72.5, profile.heading)
+        pdf.setFont(font, 8.5)
+        pdf.drawString(
+            49.6,
+            height - 99,
+            "If you need extra space use this lined page. You must write the question numbers clearly in the",
+        )
+        pdf.drawString(49.6, height - 114, "margin.")
+
+        _draw_ocr_rules(
+            pdf,
+            height=height,
+            first_rule=137.1,
+            line_count=20 if profile.legal_notice else 25,
+            guide_bottom=632.1 if profile.legal_notice else 762.5,
+        )
+
+    if not include_footer or not profile.legal_notice:
+        return
+    pdf.setLineWidth(1.0)
+    pdf.line(49.6, height - 657.85, 545.7, height - 657.85)
+    _draw_ocr_notice(pdf, font=font, bold_font=bold_font, height=height)
+
+
+def _draw_ocr_rules(
+    pdf: Canvas,
+    *,
+    height: float,
+    first_rule: float,
+    line_count: int,
+    guide_bottom: float,
+) -> None:
+    pdf.setLineWidth(0.45)
+    pdf.setDash(0.7, 1.5)
+    for index in range(line_count):
+        y = first_rule + index * 26.0
+        pdf.line(49.6, height - y, 545.0, height - y)
+    pdf.setDash()
+    pdf.setLineWidth(0.5)
+    pdf.line(106.3, height - first_rule, 106.3, height - guide_bottom)
+
+
+def _draw_ocr_notice(
+    pdf: Canvas,
+    *,
+    font: str,
+    bold_font: str,
+    height: float,
+) -> None:
+    pdf.setFont(bold_font, 7.5)
+    pdf.drawString(49.6, height - 700, "Independent practice material")
     pdf.setFont(font, 6.5)
-    pdf.drawString(52, 18, f"{profile.code} • UNOFFICIAL PRACTICE")
+    pdf.drawString(
+        49.6,
+        height - 714,
+        "Created independently by Paper Creator for private revision; not produced or endorsed by OCR.",
+    )
 
 
 def _draw_rules(

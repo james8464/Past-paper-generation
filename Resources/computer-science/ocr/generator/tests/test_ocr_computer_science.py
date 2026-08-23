@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pymupdf as fitz
+import pytest
 from pypdf import PdfReader
 
 from Backend.Core.exam_blueprints import validate_generated_paper, validate_rule
@@ -65,7 +67,12 @@ def test_packages_render_current_page_geometry(tmp_path: Path) -> None:
         reader = PdfReader(paths["question_paper"])
         assert len(reader.pages) == expected_pages
         assert "A Level Computer Science" in (reader.pages[0].extract_text() or "")
-        assert "EXTRA ANSWER SPACE" in (reader.pages[-1].extract_text() or "")
+        answer_page = reader.pages[-1] if paper == "1" else reader.pages[-3]
+        assert "EXTRA ANSWER SPACE" in (answer_page.extract_text() or "")
+        if paper == "2":
+            assert "EXTRA ANSWER SPACE" not in (
+                reader.pages[-1].extract_text() or ""
+            )
         if paper == "1":
             assert "Iteration" in (reader.pages[3].extract_text() or "")
             assert "First technology" in (reader.pages[9].extract_text() or "")
@@ -78,6 +85,86 @@ def test_packages_render_current_page_geometry(tmp_path: Path) -> None:
             for page in scheme.pages[2:-1]
         )
         assert float(scheme.pages[-1].mediabox.height) > float(scheme.pages[-1].mediabox.width)
+
+
+def test_extra_answer_page_uses_open_ocr_rule_grammar(tmp_path: Path) -> None:
+    paths = generate_package(
+        paper="1",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=123,
+    )
+
+    document = fitz.open(paths["question_paper"])
+    try:
+        page = document[-1]
+        rules = [
+            drawing["rect"]
+            for drawing in page.get_drawings()
+            if drawing["rect"].height <= 1
+            and drawing["rect"].width > 490
+            and 120 < drawing["rect"].y0 < 650
+        ]
+        assert len(rules) == 20
+        assert any(
+            drawing["rect"].width <= 1 and drawing["rect"].height > 490
+            for drawing in page.get_drawings()
+        )
+        assert "write the question numbers clearly" in page.get_text().replace(
+            "\n", " "
+        )
+    finally:
+        document.close()
+
+
+def test_blank_leaf_matches_ocr_heading_and_message_baselines(tmp_path: Path) -> None:
+    paths = generate_package(
+        paper="1",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=123,
+    )
+
+    document = fitz.open(paths["question_paper"])
+    try:
+        page = document[1]
+        assert page.search_for("BLANK PAGE")[0].y0 == pytest.approx(62, abs=3)
+        assert page.search_for("PLEASE DO NOT WRITE ON THIS PAGE")[0].y0 == (
+            pytest.approx(416, abs=3)
+        )
+    finally:
+        document.close()
+
+
+def test_paper_two_extra_leaves_use_headed_and_continuation_counts(
+    tmp_path: Path,
+) -> None:
+    paths = generate_package(
+        paper="2",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=123,
+    )
+
+    document = fitz.open(paths["question_paper"])
+    try:
+        counts = []
+        for page_index in range(len(document) - 3, len(document)):
+            page = document[page_index]
+            counts.append(
+                len(
+                    [
+                        drawing
+                        for drawing in page.get_drawings()
+                        if drawing["rect"].height <= 1
+                        and drawing["rect"].width > 490
+                        and drawing["dashes"] != "[] 0"
+                    ]
+                )
+            )
+        assert counts == [25, 27, 22]
+    finally:
+        document.close()
 
 
 def test_mark_scheme_page_plans_cover_every_part() -> None:

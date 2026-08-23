@@ -207,3 +207,123 @@ def test_aqa_do_not_write_blank_matches_measured_diagonal_shell(
         assert tuple(diagonal) == pytest.approx((114, 54, 538.6, 662.1), abs=3)
     finally:
         document.close()
+
+
+def test_ocr_additional_page_matches_open_dotted_rule_geometry(
+    tmp_path: Path,
+) -> None:
+    document = _render(
+        tmp_path,
+        ExamPageProfile(
+            board="ocr",
+            code="H446/01",
+            heading="EXTRA ANSWER SPACE",
+            variant="additional",
+            legal_notice=True,
+        ),
+    )
+    try:
+        page = document[0]
+        drawings = page.get_drawings()
+        rules = sorted(
+            (
+                drawing["rect"]
+                for drawing in drawings
+                if drawing["rect"].height <= 1
+                and drawing["rect"].width == pytest.approx(495.4, abs=2)
+                and 120 < drawing["rect"].y0 < 650
+            ),
+            key=lambda rect: rect.y0,
+        )
+        assert len(rules) == 20
+        assert rules[0].y0 == pytest.approx(137.1, abs=1)
+        assert rules[-1].y0 == pytest.approx(631.2, abs=1)
+        guide = next(
+            drawing["rect"]
+            for drawing in drawings
+            if drawing["rect"].width <= 1 and drawing["rect"].height > 490
+        )
+        assert tuple(guide) == pytest.approx((106.3, 137.1, 106.3, 632.1), abs=1)
+
+        text = page.get_text()
+        assert "EXTRA ANSWER SPACE" in text
+        assert "write the question numbers clearly in the margin" in text.replace(
+            "\n", " "
+        )
+        assert "Independent practice material" in text
+    finally:
+        document.close()
+
+
+@pytest.mark.parametrize(
+    ("legal_notice", "expected_lines", "expected_last_y"),
+    [(False, 27, 761.7), (True, 22, 631.7)],
+)
+def test_ocr_continuation_page_uses_full_open_rule_field(
+    tmp_path: Path,
+    legal_notice: bool,
+    expected_lines: int,
+    expected_last_y: float,
+) -> None:
+    document = _render(
+        tmp_path,
+        ExamPageProfile(
+            board="ocr",
+            code="H446/02",
+            heading="",
+            variant="continuation",
+            legal_notice=legal_notice,
+        ),
+    )
+    try:
+        page = document[0]
+        rules = sorted(
+            (
+                drawing["rect"]
+                for drawing in page.get_drawings()
+                if drawing["rect"].height <= 1
+                and drawing["rect"].width == pytest.approx(495.4, abs=2)
+                and drawing["dashes"] != "[] 0"
+                and 70 < drawing["rect"].y0 < 780
+            ),
+            key=lambda rect: rect.y0,
+        )
+        assert len(rules) == expected_lines
+        assert rules[0].y0 == pytest.approx(85.7, abs=1)
+        assert rules[-1].y0 == pytest.approx(expected_last_y, abs=1)
+        assert "write the question numbers clearly" not in page.get_text()
+    finally:
+        document.close()
+
+
+def test_ocr_blank_page_has_only_declared_messages_and_no_answer_table(
+    tmp_path: Path,
+) -> None:
+    document = _render(
+        tmp_path,
+        ExamPageProfile(
+            board="ocr",
+            code="H460/02",
+            heading="BLANK PAGE",
+            variant="blank",
+            do_not_write=True,
+        ),
+    )
+    try:
+        page = document[0]
+        text = page.get_text()
+        assert "BLANK PAGE" in text
+        assert "PLEASE DO NOT WRITE ON THIS PAGE" in text
+        assert page.search_for("BLANK PAGE")[0].y0 == pytest.approx(62, abs=3)
+        assert page.search_for("PLEASE DO NOT WRITE ON THIS PAGE")[0].y0 == (
+            pytest.approx(416, abs=3)
+        )
+        assert not [
+            drawing
+            for drawing in page.get_drawings()
+            if drawing["type"] != "f"
+            and drawing["rect"].width > 450
+            and drawing["rect"].height > 500
+        ]
+    finally:
+        document.close()

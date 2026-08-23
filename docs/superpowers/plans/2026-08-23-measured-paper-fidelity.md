@@ -100,23 +100,23 @@ Commit message: `Unify measured AQA answer pages`
 - Consumes: `ExamPageProfile` and `ExamPage`
 - Produces: OCR open ruled response leaves with OCR-specific heading/footer placement and no AQA-style enclosing answer box
 
-- [ ] **Step 1: Add failing OCR geometry tests**
+- [x] **Step 1: Add failing OCR geometry tests**
 
 Assert reference-matched open rule width, 8 mm line rhythm, left question-number guide, heading baseline, page folio, and restrained footer. Assert blank transition leaves contain only their declared messages and no enclosing answer table.
 
-- [ ] **Step 2: Implement OCR variants in the shared primitive**
+- [x] **Step 2: Implement OCR variants in the shared primitive**
 
 Use the same profile interface but distinct OCR drawing functions; do not share AQA coordinates. Keep legal copy outside the response region.
 
-- [ ] **Step 3: Migrate OCR Computer Science and OCR Economics**
+- [x] **Step 3: Migrate OCR Computer Science and OCR Economics**
 
 Replace both table-based `_additional_answer_page` implementations and their blank/transition shells. Preserve current bounded page counts and the OCR Economics overflow fix.
 
-- [ ] **Step 4: Run OCR suites, rerender six OCR papers, and inspect all response roles**
+- [x] **Step 4: Run OCR suites, rerender five OCR papers, and inspect all response roles**
 
 Require release-PDF validation, unchanged page counts, retained question marks, and improved OCR answer/blank role scores.
 
-- [ ] **Step 5: Refresh Graphify and commit**
+- [x] **Step 5: Refresh Graphify and commit**
 
 Commit message: `Match OCR response page geometry`
 

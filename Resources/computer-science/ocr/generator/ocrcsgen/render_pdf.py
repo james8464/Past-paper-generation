@@ -33,6 +33,7 @@ from Backend.Core.exam_cover import (
     mark_scheme_cover,
     ocr_question_cover,
 )
+from Backend.Core.exam_pages import ExamPage, ExamPageProfile
 from Backend.Core.fonts import register_fonts
 from Backend.Core.reportlab_theme import themed_table_class
 
@@ -146,10 +147,17 @@ def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
         story.extend(
             [
                 PageBreak(),
-                Spacer(1, 55 * mm),
-                Paragraph("BLANK PAGE", STYLES["centre_bold"]),
-                Spacer(1, 18 * mm),
-                Paragraph("Please do not write on this page.", STYLES["centre"]),
+                ExamPage(
+                    ExamPageProfile(
+                        board="ocr",
+                        code=paper.paper_code,
+                        heading="BLANK PAGE",
+                        variant="blank",
+                        do_not_write=True,
+                    ),
+                    font=FONT,
+                    bold_font=FONT_BOLD,
+                ),
             ]
         )
     for section_index, section in enumerate(paper.sections):
@@ -175,6 +183,7 @@ def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
         story.extend(
             _question_group_pages(
                 paper.paper_id,
+                paper.paper_code,
                 section.options[0],
                 include_section_page=not (
                     paper.paper_id == "paper_2" and section_index == 8
@@ -182,9 +191,9 @@ def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
             )
         )
     if paper.paper_id == "paper_1":
-        story.extend(_additional_pages(1))
+        story.extend(_additional_pages(1, paper.paper_code))
     else:
-        story.extend(_additional_pages(3))
+        story.extend(_additional_pages(3, paper.paper_code))
     doc.build(story)
 
 
@@ -419,6 +428,7 @@ def _supplementary_marking_pages(count: int) -> list[Flowable]:
 
 def _question_group_pages(
     paper_id: str,
+    paper_code: str,
     option: GeneratedOption,
     *,
     include_section_page: bool,
@@ -440,12 +450,16 @@ def _question_group_pages(
             if (paper_id, option.id.removeprefix("Q")) in BLANK_QUESTION_PAGES:
                 result.extend(
                     [
-                        Spacer(1, 55 * mm),
-                        Paragraph("BLANK PAGE", STYLES["centre_bold"]),
-                        Spacer(1, 18 * mm),
-                        Paragraph(
-                            "PLEASE DO NOT WRITE ON THIS PAGE",
-                            STYLES["centre"],
+                        ExamPage(
+                            ExamPageProfile(
+                                board="ocr",
+                                code=paper_code,
+                                heading="BLANK PAGE",
+                                variant="blank",
+                                do_not_write=True,
+                            ),
+                            font=FONT,
+                            bold_font=FONT_BOLD,
                         ),
                     ]
                 )
@@ -665,58 +679,41 @@ def _continued_pages(count: int, title: str) -> list[Flowable]:
     return result
 
 
-def _additional_pages(count: int) -> list[Flowable]:
+def _additional_pages(count: int, paper_code: str) -> list[Flowable]:
     pages: list[Flowable] = []
     for index in range(count):
         pages.extend(
             [
                 PageBreak(),
-                *_additional_answer_page(include_legal_notice=index == count - 1),
+                *_additional_answer_page(
+                    paper_code,
+                    continuation=index > 0,
+                    include_legal_notice=index == count - 1,
+                ),
             ]
         )
     return pages
 
 
 def _additional_answer_page(
+    paper_code: str,
     *,
+    continuation: bool,
     include_legal_notice: bool,
 ) -> list[Flowable]:
-    row_count = 20 if include_legal_notice else 24
-    rows: list[list[object]] = [
-        [
-            Paragraph("Question<br/>number", STYLES["small_bold"]),
-            Paragraph("EXTRA ANSWER SPACE", STYLES["centre_bold"]),
-        ],
-        *[["", ""] for _ in range(row_count)],
-    ]
-    table = Table(
-        rows,
-        colWidths=[18 * mm, 147 * mm],
-        rowHeights=[10 * mm, *([8.3 * mm] * row_count)],
-    )
-    style = [
-        ("BOX", (0, 0), (-1, -1), 0.6, INK),
-        ("LINEAFTER", (0, 0), (0, -1), 0.5, INK),
-        ("LINEBELOW", (0, 0), (-1, 0), 0.5, INK),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        ("PADDING", (0, 0), (-1, -1), 2),
-    ]
-    for row in range(1, row_count + 1):
-        style.append(("LINEBELOW", (1, row), (1, row), 0.35, colors.grey))
-    table.setStyle(TableStyle(style))
-    content: list[Flowable] = [table]
-    if include_legal_notice:
-        content.extend(
-            [
-                Spacer(1, 6 * mm),
-                Paragraph(
-                    "Independent practice material. Created by Paper Creator for private "
-                    "revision; not produced or endorsed by OCR.",
-                    STYLES["small"],
-                ),
-            ]
+    return [
+        ExamPage(
+            ExamPageProfile(
+                board="ocr",
+                code=paper_code,
+                heading="" if continuation else "EXTRA ANSWER SPACE",
+                variant="continuation" if continuation else "additional",
+                legal_notice=include_legal_notice,
+            ),
+            font=FONT,
+            bold_font=FONT_BOLD,
         )
-    return content
+    ]
 
 
 def _cover(paper: GeneratedPaper) -> list[Flowable]:

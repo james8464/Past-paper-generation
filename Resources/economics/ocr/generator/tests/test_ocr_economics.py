@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pymupdf as fitz
+import pytest
 from pypdf import PdfReader
 
 from Backend.Core.exam_blueprints import validate_generated_paper, validate_rule
@@ -169,6 +170,81 @@ def test_paper_three_finishes_on_the_reference_page_roles(tmp_path: Path) -> Non
         len(rendered[page_index].get_drawings()) >= 12
         for page_index in (15, 19, 23)
     )
+
+
+def test_extra_answer_page_uses_open_ocr_rule_grammar(tmp_path: Path) -> None:
+    paths = generate_package(
+        paper="1",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=123,
+    )
+
+    document = fitz.open(paths["question_paper"])
+    try:
+        page = document[17]
+        rules = [
+            drawing["rect"]
+            for drawing in page.get_drawings()
+            if drawing["rect"].height <= 1
+            and drawing["rect"].width > 490
+            and 120 < drawing["rect"].y0 < 650
+        ]
+        assert len(rules) == 20
+        assert any(
+            drawing["rect"].width <= 1 and drawing["rect"].height > 490
+            for drawing in page.get_drawings()
+        )
+    finally:
+        document.close()
+
+
+def test_section_transition_blank_matches_ocr_message_baselines(
+    tmp_path: Path,
+) -> None:
+    paths = generate_package(
+        paper="1",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=123,
+    )
+
+    document = fitz.open(paths["question_paper"])
+    try:
+        page = document[8]
+        assert page.search_for("BLANK PAGE")[0].y0 == pytest.approx(62, abs=3)
+        assert page.search_for("DO NOT WRITE ON THIS PAGE")[0].y0 == (
+            pytest.approx(397, abs=3)
+        )
+        assert page.search_for("Section B starts on the next page")[0].y0 == (
+            pytest.approx(436, abs=3)
+        )
+    finally:
+        document.close()
+
+
+def test_unheaded_extra_leaf_uses_continuation_rule_count(tmp_path: Path) -> None:
+    paths = generate_package(
+        paper="1",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=123,
+    )
+
+    document = fitz.open(paths["question_paper"])
+    try:
+        page = document[18]
+        rules = [
+            drawing
+            for drawing in page.get_drawings()
+            if drawing["rect"].height <= 1
+            and drawing["rect"].width > 490
+            and drawing["dashes"] != "[] 0"
+        ]
+        assert len(rules) == 27
+        assert "write the question numbers clearly" not in page.get_text()
+    finally:
+        document.close()
 
 
 def test_paper_three_questions_share_bound_extract_and_figure_data() -> None:

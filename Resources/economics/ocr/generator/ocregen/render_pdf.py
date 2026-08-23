@@ -30,6 +30,7 @@ from Backend.Core.exam_cover import (
     mark_scheme_cover,
     ocr_question_cover,
 )
+from Backend.Core.exam_pages import ExamPage, ExamPageProfile
 from Backend.Core.fonts import register_fonts
 from Backend.Core.reportlab_theme import themed_table_class
 
@@ -1299,17 +1300,17 @@ def _paper_one_two_pages(paper: GeneratedPaper) -> list[Flowable]:
     if paper.paper_id == "paper_1":
         pages.extend(
             [
-                _section_transition_page("Section B", blank=True),
+                _section_transition_page(paper.paper_code, "Section B", blank=True),
                 [*_intro(section_b), *_choice_prompts(section_b)],
                 [AnswerLines(34)],
                 [AnswerLines(34)],
-                _section_transition_page("Section C"),
+                _section_transition_page(paper.paper_code, "Section C"),
                 [*_intro(section_c), *_choice_prompts(section_c)],
                 [AnswerLines(34)],
                 [AnswerLines(34)],
                 _end_of_paper_page(line_count=10, spacer=70 * mm),
-                _extra_answer_page(),
-                _extra_answer_page(show_heading=False),
+                _extra_answer_page(paper.paper_code),
+                _extra_answer_page(paper.paper_code, show_heading=False),
                 _question_paper_legal_page(),
             ]
         )
@@ -1319,14 +1320,14 @@ def _paper_one_two_pages(paper: GeneratedPaper) -> list[Flowable]:
                 [*_intro(section_b), *_choice_prompts(section_b)],
                 [AnswerLines(34)],
                 [AnswerLines(34)],
-                _section_transition_page("Section C"),
+                _section_transition_page(paper.paper_code, "Section C"),
                 [*_intro(section_c), *_choice_prompts(section_c)],
                 [AnswerLines(34)],
                 [AnswerLines(34)],
                 _end_of_paper_page(line_count=6, spacer=95 * mm),
-                _extra_answer_page(),
-                _blank_question_page(),
-                _blank_question_page(),
+                _extra_answer_page(paper.paper_code),
+                _blank_question_page(paper.paper_code),
+                _blank_question_page(paper.paper_code),
                 _question_paper_legal_page(),
             ]
         )
@@ -1395,47 +1396,45 @@ def _market_share_chart(option: GeneratedOption) -> Drawing:
     return drawing
 
 
-def _extra_answer_page(*, show_heading: bool = True) -> list[Flowable]:
-    row_count = 25
-    heading = "EXTRA ANSWER SPACE" if show_heading else ""
-    rows: list[list[object]] = [
-        [
-            Paragraph("Question<br/>number", STYLES["small"]),
-            Paragraph(heading, STYLES["centre_bold"]),
-        ],
-        *[["", ""] for _ in range(row_count)],
+def _extra_answer_page(
+    paper_code: str,
+    *,
+    show_heading: bool = True,
+) -> list[Flowable]:
+    return [
+        ExamPage(
+            ExamPageProfile(
+                board="ocr",
+                code=paper_code,
+                heading="EXTRA ANSWER SPACE" if show_heading else "",
+                variant="additional" if show_heading else "continuation",
+            ),
+            font=FONT,
+            bold_font=FONT_BOLD,
+        )
     ]
-    table = Table(
-        rows,
-        colWidths=[18 * mm, 149 * mm],
-        rowHeights=[10 * mm, *([8.2 * mm] * row_count)],
-    )
-    style = [
-        ("BOX", (0, 0), (-1, -1), 0.55, INK),
-        ("LINEAFTER", (0, 0), (0, -1), 0.45, INK),
-        ("LINEBELOW", (0, 0), (-1, 0), 0.45, INK),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        ("PADDING", (0, 0), (-1, -1), 2),
-    ]
-    for row in range(1, row_count + 1):
-        style.append(("LINEBELOW", (1, row), (1, row), 0.35, colors.grey))
-    table.setStyle(TableStyle(style))
-    return [table]
 
 
 def _section_transition_page(
+    paper_code: str,
     section: str,
     *,
     blank: bool = False,
 ) -> list[Flowable]:
     if blank:
         return [
-            Spacer(1, 38 * mm),
-            Paragraph("BLANK PAGE", STYLES["centre_bold"]),
-            Spacer(1, 60 * mm),
-            Paragraph("DO NOT WRITE ON THIS PAGE", STYLES["centre_bold"]),
-            Spacer(1, 6 * mm),
-            Paragraph(f"{section} starts on the next page", STYLES["centre_bold"]),
+            ExamPage(
+                ExamPageProfile(
+                    board="ocr",
+                    code=paper_code,
+                    heading="BLANK PAGE",
+                    variant="blank",
+                    do_not_write=True,
+                    message=f"{section} starts on the next page",
+                ),
+                font=FONT,
+                bold_font=FONT_BOLD,
+            )
         ]
     return [
         AnswerLines(6),
@@ -1452,12 +1451,19 @@ def _end_of_paper_page(*, line_count: int, spacer: float) -> list[Flowable]:
     ]
 
 
-def _blank_question_page() -> list[Flowable]:
+def _blank_question_page(paper_code: str) -> list[Flowable]:
     return [
-        Spacer(1, 45 * mm),
-        Paragraph("BLANK PAGE", STYLES["centre_bold"]),
-        Spacer(1, 75 * mm),
-        Paragraph("PLEASE DO NOT WRITE ON THIS PAGE", STYLES["centre_bold"]),
+        ExamPage(
+            ExamPageProfile(
+                board="ocr",
+                code=paper_code,
+                heading="BLANK PAGE",
+                variant="blank",
+                do_not_write=True,
+            ),
+            font=FONT,
+            bold_font=FONT_BOLD,
+        )
     ]
 
 
@@ -1540,8 +1546,8 @@ def _paper_three_pages(paper: GeneratedPaper) -> list[Flowable]:
                 _answer_mark(data.questions[7]),
                 Paragraph("END OF QUESTION PAPER", STYLES["centre_bold"]),
             ],
-            _extra_answer_page(),
-            _extra_answer_page(show_heading=False),
+            _extra_answer_page(paper.paper_code),
+            _extra_answer_page(paper.paper_code, show_heading=False),
             _question_paper_legal_page(),
         ]
     )

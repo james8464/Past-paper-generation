@@ -340,8 +340,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/ocr/generator/ocrcsgen/render_pdf.py": {
-    "mtime": 1787493434.6260595,
-    "ast_hash": "074822d338395e58061590e7accfaf36",
+    "mtime": 1787500899.5101118,
+    "ast_hash": "a7e9531dc6163ee8d334d525df56a4ae",
     "semantic_hash": ""
   },
   "Resources/computer-science/ocr/generator/ocrcsgen/syllabus.py": {
@@ -355,8 +355,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/ocr/generator/tests/test_ocr_computer_science.py": {
-    "mtime": 1785603986.1262205,
-    "ast_hash": "34ab46e8adcf49eeb68dc49e03addf83",
+    "mtime": 1787500941.2355506,
+    "ast_hash": "803a399286b144908ae7d97f4c7d900c",
     "semantic_hash": ""
   },
   "Resources/coverage-matrix.json": {
@@ -585,8 +585,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/ocr/generator/ocregen/render_pdf.py": {
-    "mtime": 1787497074.2683318,
-    "ast_hash": "5dae04fe00a600d8a962281c06cdef25",
+    "mtime": 1787500905.2443268,
+    "ast_hash": "bf465ad131d4d1a2be215b63f771aafa",
     "semantic_hash": ""
   },
   "Resources/economics/ocr/generator/ocregen/syllabus.py": {
@@ -600,8 +600,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/ocr/generator/tests/test_ocr_economics.py": {
-    "mtime": 1787497008.1251056,
-    "ast_hash": "2bdc4b08b0f7f78cb19d21a11d84e35a",
+    "mtime": 1787500883.265368,
+    "ast_hash": "9215661b4f3d326c66cc115cc8102f97",
     "semantic_hash": ""
   },
   "Resources/generator-registry.json": {
@@ -1390,18 +1390,18 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-23-measured-paper-fidelity.md": {
-    "mtime": 1787500075.5788305,
-    "ast_hash": "72f1370bd3a7134b4ceeec826101e959",
+    "mtime": 1787501051.4821656,
+    "ast_hash": "721aa06de0597bd7b8296a11292f4cbe",
     "semantic_hash": ""
   },
   "Backend/Core/exam_pages.py": {
-    "mtime": 1787499787.9864514,
-    "ast_hash": "eb039b1a330bc13681237307b46a10ca",
+    "mtime": 1787500820.6719377,
+    "ast_hash": "4408bb4117ce87dcdf73e3929736b1ab",
     "semantic_hash": ""
   },
   "tests/test_exam_pages.py": {
-    "mtime": 1787499773.4804487,
-    "ast_hash": "a1d48159702ee3544b9a37889e9def9e",
+    "mtime": 1787500836.9746387,
+    "ast_hash": "ec23c0b25a65c7fbede50bdeb5436673",
     "semantic_hash": ""
   }
 }
