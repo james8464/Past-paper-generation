@@ -585,8 +585,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/ocr/generator/ocregen/render_pdf.py": {
-    "mtime": 1787493479.2771466,
-    "ast_hash": "4bef723db1f94836c5779f7a509bcf62",
+    "mtime": 1787497074.2683318,
+    "ast_hash": "5dae04fe00a600d8a962281c06cdef25",
     "semantic_hash": ""
   },
   "Resources/economics/ocr/generator/ocregen/syllabus.py": {
@@ -600,8 +600,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/ocr/generator/tests/test_ocr_economics.py": {
-    "mtime": 1787412597.9880764,
-    "ast_hash": "981acaa50fb56dcdca3ec290902c91fb",
+    "mtime": 1787497008.1251056,
+    "ast_hash": "2bdc4b08b0f7f78cb19d21a11d84e35a",
     "semantic_hash": ""
   },
   "Resources/generator-registry.json": {

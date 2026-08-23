@@ -6,9 +6,11 @@ import pymupdf as fitz
 from pypdf import PdfReader
 
 from Backend.Core.exam_blueprints import validate_generated_paper, validate_rule
+from Backend.Core.render_transaction import render_pdf_atomically
 from ocregen.cli import generate_package
 from ocregen.configs import RULES
 from ocregen.generator import build_paper
+from ocregen.render_pdf import render_mark_scheme
 from ocregen.syllabus import load_syllabus
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -229,3 +231,36 @@ def test_business_objectives_use_cost_and_revenue_diagrams(tmp_path: Path) -> No
     assert "Profit maximisation: MC = MR" in diagram_page
     assert "Revenue maximisation: MR = 0" in diagram_page
     assert "Entry increases competitive supply" not in diagram_page
+
+
+def test_long_short_answer_scheme_terminates_without_losing_points(
+    tmp_path: Path,
+) -> None:
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 123)
+    section = paper.sections[0]
+    option = section.options[0]
+    questions = list(option.questions)
+    target = questions[2]
+    marking_points = [
+        f"Overflow evidence point {index:02d}: credit this distinct valid reason."
+        for index in range(1, 19)
+    ]
+    questions[2] = target.model_copy(update={"mark_scheme": marking_points})
+    option = option.model_copy(update={"questions": questions})
+    section = section.model_copy(update={"options": [option]})
+    paper = paper.model_copy(
+        update={"sections": [section, *paper.sections[1:]]}
+    )
+    output = tmp_path / "long-mark-scheme.pdf"
+
+    result = render_pdf_atomically(
+        output,
+        lambda temporary: render_mark_scheme(paper, temporary),
+        role="mark scheme",
+        timeout_seconds=5,
+    )
+
+    text = "\n".join(page.extract_text() or "" for page in PdfReader(output).pages)
+    assert result.elapsed_seconds < 5
+    assert result.pages == 30
+    assert all(point in text for point in marking_points)

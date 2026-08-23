@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from html import escape
+import math
 from pathlib import Path
 
 from reportlab.graphics.shapes import Drawing, Line, PolyLine, Rect, String, Wedge
@@ -950,6 +951,15 @@ def _mark_scheme_extension_pages(paper: GeneratedPaper) -> list[Flowable]:
         for question in option.questions
     ]
     extended = [question for question in questions if question.marks >= 8]
+    reserved_indexes = {count - 1}
+    if paper.paper_id == "paper_3":
+        reserved_indexes.update({0, 1, 2})
+    elif count > 1:
+        reserved_indexes.add(1)
+    overflow_indexes = [
+        index for index in range(count) if index not in reserved_indexes
+    ]
+    overflow_pages = _overflow_guidance_pages(questions, overflow_indexes)
     pages: list[Flowable] = []
     for index in range(count):
         pages.append(PageBreak())
@@ -959,12 +969,78 @@ def _mark_scheme_extension_pages(paper: GeneratedPaper) -> list[Flowable]:
         if index == count - 1:
             pages.extend(_assessment_objectives_page(paper, questions))
             continue
+        if index in overflow_pages:
+            pages.extend(overflow_pages[index])
+            continue
         question = extended[index % len(extended)]
         if paper.paper_id in {"paper_1", "paper_2"} and index == 1:
             pages.extend(_extended_diagram_page(question))
         else:
             pages.extend(_extended_guidance_page(question, index))
     return pages
+
+
+def _overflow_guidance_pages(
+    questions: list[GeneratedQuestion],
+    page_indexes: list[int],
+) -> dict[int, list[Flowable]]:
+    entries = [
+        (question.number, point)
+        for question in questions
+        for point in _scheme_overflow_points(question)
+    ]
+    if not entries or not page_indexes:
+        return {}
+    chunk_size = max(1, math.ceil(len(entries) / len(page_indexes)))
+    chunks = [
+        entries[start : start + chunk_size]
+        for start in range(0, len(entries), chunk_size)
+    ]
+    if len(chunks) > len(page_indexes):
+        raise ValueError(
+            "OCR mark-scheme overflow exceeds the measured continuation-page budget"
+        )
+    return {
+        page_index: _overflow_guidance_page(chunk)
+        for page_index, chunk in zip(page_indexes, chunks, strict=False)
+    }
+
+
+def _overflow_guidance_page(
+    entries: list[tuple[str, str]],
+) -> list[Flowable]:
+    rows: list[list[object]] = [
+        [
+            Paragraph("<b>Question</b>", STYLES["small"]),
+            Paragraph("<b>Additional indicative content and guidance</b>", STYLES["small"]),
+        ]
+    ]
+    rows.extend(
+        [
+            Paragraph(escape(number), STYLES["small"]),
+            Paragraph(f"• {escape(point)}", STYLES["small"]),
+        ]
+        for number, point in entries
+    )
+    table = Table(rows, colWidths=[25 * mm, 235 * mm], repeatRows=1)
+    table.setStyle(
+        TableStyle(
+            [
+                ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
+                ("BACKGROUND", (0, 0), (-1, 0), GREY),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 4),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+                ("TOPPADDING", (0, 0), (-1, -1), 3),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+            ]
+        )
+    )
+    return [
+        Paragraph("Additional question-specific guidance", STYLES["heading"]),
+        Spacer(1, 3 * mm),
+        table,
+    ]
 
 
 def _mcq_rationale_page(questions: list[GeneratedQuestion]) -> list[Flowable]:
@@ -1771,6 +1847,20 @@ def _scheme_block(
 def _split_scheme_points(
     question: GeneratedQuestion,
 ) -> tuple[list[str], list[str]]:
+    answer, guidance = _partition_scheme_points(question)
+    answer_limit, guidance_limit = _scheme_point_limits(question)
+    return answer[:answer_limit], guidance[:guidance_limit]
+
+
+def _scheme_overflow_points(question: GeneratedQuestion) -> list[str]:
+    answer, guidance = _partition_scheme_points(question)
+    answer_limit, guidance_limit = _scheme_point_limits(question)
+    return [*answer[answer_limit:], *guidance[guidance_limit:]]
+
+
+def _partition_scheme_points(
+    question: GeneratedQuestion,
+) -> tuple[list[str], list[str]]:
     guidance_prefixes = (
         "ao1",
         "ao2",
@@ -1792,7 +1882,10 @@ def _split_scheme_points(
         )
         if point.casefold() != "indicative content":
             target.append(point)
-    answer = answer or question.mark_scheme[:1]
+    return answer or question.mark_scheme[:1], guidance
+
+
+def _scheme_point_limits(question: GeneratedQuestion) -> tuple[int, int]:
     answer_limit = 8 if question.marks >= 20 else 6
     if question.marks >= 8:
         guidance_limit = 9
@@ -1802,7 +1895,7 @@ def _split_scheme_points(
         guidance_limit = 1
     else:
         guidance_limit = 2
-    return answer[:answer_limit], guidance[:guidance_limit]
+    return answer_limit, guidance_limit
 
 
 def _question_guidance(question: GeneratedQuestion) -> list[str]:
