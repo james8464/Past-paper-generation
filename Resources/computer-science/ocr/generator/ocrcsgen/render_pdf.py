@@ -819,6 +819,9 @@ def _document(
 def _chrome(canvas, doc, code: str, kind: str) -> None:
     canvas.saveState()
     page_width, page_height = canvas._pagesize
+    if kind == "Mark scheme" and doc.page == 1:
+        canvas.restoreState()
+        return
     if kind == "Question paper" and doc.page > 1:
         canvas.setFillColor(INK)
         canvas.setFont(FONT, 9)

@@ -131,19 +131,19 @@ Commit message: `Match OCR response page geometry`
 - Consumes: existing `CoverProfile` and `MarkSchemeCover`
 - Produces: one neutral two-line Paper Creator wordmark with board-specific title baselines, rules, barcode, folio, and footer
 
-- [ ] **Step 1: Add failing cover bbox tests for AQA and OCR**
+- [x] **Step 1: Add failing cover bbox tests for AQA and OCR**
 
 Measure the shared wordmark envelope, horizontal-rule baseline, qualification/code/title baselines, barcode box, folio, and footer against the local references. Test generic geometry only; do not assert board logo pixels.
 
-- [ ] **Step 2: Calibrate `MarkSchemeCover` and remove the AQA Computer Science duplicate**
+- [x] **Step 2: Calibrate `MarkSchemeCover` and remove the AQA Computer Science duplicate**
 
 Route AQA Computer Science through the shared cover. Retain generated date, unofficial status, metadata, and controlled fonts.
 
-- [ ] **Step 3: Render one scheme per family and inspect cover contact sheets**
+- [x] **Step 3: Render one scheme per family and inspect cover contact sheets**
 
 Require improved `cover` role geometry for all shared-cover users and no decrease beyond 0.5 points for Edexcel's separate reference-specific cover.
 
-- [ ] **Step 4: Refresh Graphify and commit**
+- [x] **Step 4: Refresh Graphify and commit**
 
 Commit message: `Calibrate shared mark scheme covers`
 

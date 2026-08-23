@@ -250,8 +250,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/render_pdf.py": {
-    "mtime": 1787499968.6005933,
-    "ast_hash": "bf618c19f92a5db4e27d7aa12cf174cc",
+    "mtime": 1787501576.0997949,
+    "ast_hash": "ae0d51092054fa1c0e788c2aa85a44e1",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/syllabus.py": {
@@ -290,8 +290,8 @@
     "semantic_hash": "b4d4b9bbf9a5e2a6be23e27386e2db55"
   },
   "Resources/computer-science/aqa/generator/tests/test_mark_scheme.py": {
-    "mtime": 1787412597.9857407,
-    "ast_hash": "826a888995eb921143f2134c78a28381",
+    "mtime": 1787501724.0739584,
+    "ast_hash": "f411dd42246d62cfe475dfc6dfc4ea61",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_notes.py": {
@@ -340,8 +340,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/ocr/generator/ocrcsgen/render_pdf.py": {
-    "mtime": 1787500899.5101118,
-    "ast_hash": "a7e9531dc6163ee8d334d525df56a4ae",
+    "mtime": 1787501750.0174522,
+    "ast_hash": "3f8a8297c9d9455076386ab9e3b2d5d5",
     "semantic_hash": ""
   },
   "Resources/computer-science/ocr/generator/ocrcsgen/syllabus.py": {
@@ -355,8 +355,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/ocr/generator/tests/test_ocr_computer_science.py": {
-    "mtime": 1787500941.2355506,
-    "ast_hash": "803a399286b144908ae7d97f4c7d900c",
+    "mtime": 1787501736.6936936,
+    "ast_hash": "183b4b455a17af9ec0d0a1d2c25c651a",
     "semantic_hash": ""
   },
   "Resources/coverage-matrix.json": {
@@ -1000,9 +1000,9 @@
     "semantic_hash": "331e4af106ba3176ae3a0476086b48ad"
   },
   "Backend/Core/exam_cover.py": {
-    "mtime": 1785603986.1144278,
-    "ast_hash": "81e3352c981856f3f4a3be16e955932e",
-    "semantic_hash": "81e3352c981856f3f4a3be16e955932e"
+    "mtime": 1787501646.1080868,
+    "ast_hash": "b391fe84f842a7377e60c2ca0b54bd85",
+    "semantic_hash": ""
   },
   "Backend/Core/generator_registry.py": {
     "mtime": 1785603986.115232,
@@ -1390,8 +1390,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-23-measured-paper-fidelity.md": {
-    "mtime": 1787501051.4821656,
-    "ast_hash": "721aa06de0597bd7b8296a11292f4cbe",
+    "mtime": 1787501922.7448454,
+    "ast_hash": "8b561a4e410d0966299be7c5ae341b2e",
     "semantic_hash": ""
   },
   "Backend/Core/exam_pages.py": {
@@ -1402,6 +1402,11 @@
   "tests/test_exam_pages.py": {
     "mtime": 1787500836.9746387,
     "ast_hash": "ec23c0b25a65c7fbede50bdeb5436673",
+    "semantic_hash": ""
+  },
+  "tests/test_exam_cover.py": {
+    "mtime": 1787501598.7891042,
+    "ast_hash": "98c9b3a0887f3d9727c86b6dad49e44f",
     "semantic_hash": ""
   }
 }

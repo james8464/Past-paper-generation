@@ -8,11 +8,11 @@ from pathlib import Path
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 
+from Backend.Core.exam_cover import CoverProfile, draw_mark_scheme_cover
 from Backend.Core.exam_pages import ExamPageProfile, draw_exam_page
 from Backend.Core.fonts import register_fonts as _rf
 from Backend.Core.generation_date import (
     formatted_generation_date,
-    formatted_generation_series,
     generation_date,
 )
 from cspapergen.models import PaperBlueprint, Question, QuestionPart, Stimulus
@@ -1909,25 +1909,24 @@ def _draw_footer_barcode(pdf: canvas.Canvas, x: float, y: float, page: int) -> N
 
 
 def _mark_scheme_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
-    pdf.setFont(FONT_BOLD, 24)
-    pdf.drawString(55, 790, "PAPER CREATOR")
-    pdf.setLineWidth(0.8)
-    pdf.line(55, 774, 535, 774)
-    pdf.setFont(FONT_BOLD, 18)
-    pdf.drawString(55, 720, "A-level")
-    pdf.setFont(FONT_BOLD, 22)
-    pdf.drawString(55, 690, "COMPUTER SCIENCE")
-    pdf.setFont(FONT_BOLD, 15)
-    pdf.drawString(55, 665, blueprint.paper_code)
-    pdf.drawString(55, 640, f"Paper {blueprint.paper_number}")
-    pdf.setFont(FONT_BOLD, 20)
-    pdf.drawString(55, 585, "Mark scheme")
-    pdf.setFont(FONT, 13)
-    pdf.drawString(55, 555, formatted_generation_series())
-    pdf.drawString(55, 530, "Version: 1.0")
-    _draw_footer_barcode(pdf, 52, 14, 1)
-    pdf.setFont(FONT_BOLD, 10)
-    pdf.drawString(130, 40, f"PC{blueprint.paper_code}/MS")
+    draw_mark_scheme_cover(
+        pdf,
+        CoverProfile(
+            board="aqa",
+            subject="Computer Science",
+            code=blueprint.paper_code,
+            paper_title=f"Paper {blueprint.paper_number}",
+            duration=(
+                f"{blueprint.duration_minutes // 60} hours "
+                f"{blueprint.duration_minutes % 60} minutes"
+            ),
+            total_marks=blueprint.total_marks,
+        ),
+        width=AQA_A4[0],
+        height=AQA_A4[1],
+        font=FONT,
+        bold_font=FONT_BOLD,
+    )
 
 
 def _mark_scheme_intro(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:

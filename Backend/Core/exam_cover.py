@@ -244,72 +244,167 @@ class MarkSchemeCover(Flowable):
         self.width = 167 * mm
         self.height = 235 * mm
 
-    def draw(self) -> None:
-        pdf = self.canv
-        top = self.height
-        pdf.saveState()
-        pdf.setFillColor(
-            colors.HexColor("#1f315f")
-            if self.profile.board == "ocr"
-            else colors.HexColor("#141414")
-        )
-        pdf.setFont(self.bold_font, 24)
-        pdf.drawString(0, top - 20 * mm, "PAPER CREATOR")
-        pdf.setLineWidth(0.8)
-        pdf.line(0, top - 25 * mm, self.width, top - 25 * mm)
-        pdf.setFillColor(colors.HexColor("#141414"))
-        if self.profile.board == "ocr":
-            self._draw_ocr_details(pdf, top)
-        else:
-            self._draw_aqa_details(pdf, top)
-        pdf.restoreState()
-
-    def _draw_aqa_details(self, pdf: object, top: float) -> None:
-        y = top - 44 * mm
-        for text, size, step in (
-            ("A-level", 28, 13),
-            (self.profile.subject.upper(), 28, 13),
-            (self.profile.code, 28, 14),
-            (self.profile.paper_title, 16, 11),
-            ("Mark scheme", 14, 9),
-            (formatted_generation_series(), 14, 11),
-            ("Version 1.0 • Unofficial independent practice", 11, 0),
-        ):
-            pdf.setFont(
-                self.bold_font
-                if text
-                in {
-                    "A-level",
-                    self.profile.subject.upper(),
-                    self.profile.code,
-                }
-                else self.font,
-                size,
-            )
-            pdf.drawString(0, y, text)
-            y -= step * mm
-        barcode_cover = QuestionPaperCover(
+    def drawOn(  # noqa: N802 - ReportLab API name
+        self,
+        canv: object,
+        x: float,
+        y: float,
+        _sW: float = 0,
+    ) -> None:
+        del x, y, _sW
+        width, height = canv._pagesize
+        draw_mark_scheme_cover(
+            canv,
             self.profile,
+            width=width,
+            height=height,
             font=self.font,
             bold_font=self.bold_font,
         )
-        barcode_cover.canv = pdf
-        barcode_cover._barcode(5 * mm)
 
-    def _draw_ocr_details(self, pdf: object, top: float) -> None:
-        y = top - 40 * mm
-        for text, size, step in (
-            ("GCE", 18, 19),
-            (self.profile.subject.title(), 18, 15),
-            (f"{self.profile.code}: {self.profile.paper_title}", 16, 18),
-            ("A Level", 14, 19),
-            (f"Mark Scheme for {formatted_generation_series()}", 18, 0),
-        ):
-            pdf.setFont(self.bold_font, size)
-            pdf.drawString(0, y, text)
-            y -= step * mm
-        pdf.setFont(self.font, 7)
-        pdf.drawString(0, 4 * mm, "Paper Creator • Unofficial independent practice")
+    def draw(self) -> None:
+        # ``drawOn`` deliberately works in page coordinates.
+        return None
+
+
+def draw_mark_scheme_cover(
+    pdf: object,
+    profile: CoverProfile,
+    *,
+    width: float,
+    height: float,
+    font: str,
+    bold_font: str,
+) -> None:
+    pdf.saveState()
+    pdf.setFillColor(colors.white)
+    pdf.rect(0, 0, width, height, stroke=0, fill=1)
+    pdf.setFillColor(colors.HexColor("#141414"))
+    if profile.board == "ocr":
+        _draw_ocr_mark_scheme_cover(
+            pdf,
+            profile,
+            height=height,
+            font=font,
+            bold_font=bold_font,
+        )
+    else:
+        _draw_aqa_mark_scheme_cover(
+            pdf,
+            profile,
+            height=height,
+            font=font,
+            bold_font=bold_font,
+        )
+    pdf.restoreState()
+
+
+def _draw_aqa_mark_scheme_cover(
+    pdf: object,
+    profile: CoverProfile,
+    *,
+    height: float,
+    font: str,
+    bold_font: str,
+) -> None:
+    left = 46.8
+    pdf.setFont(bold_font, 28)
+    pdf.drawString(left, height - 109.1, "PAPER")
+    pdf.setFont(bold_font, 11)
+    pdf.drawString(left, height - 131.5, "CREATOR")
+    pdf.setLineWidth(0.5)
+    pdf.line(41.9, height - 147.6, 552.9, height - 147.6)
+
+    rows = (
+        ("A-level", bold_font, 28, 182.0),
+        (profile.subject.upper(), bold_font, 28, 219.6),
+        (profile.code, bold_font, 28, 257.7),
+        (profile.paper_title, font, 16, 289.8),
+        ("Mark scheme", bold_font, 14, 319.6),
+        (formatted_generation_series(), font, 14, 345.8),
+        ("Version: 1.0 • Unofficial independent practice", font, 11, 375.7),
+    )
+    for text, face, size, baseline in rows:
+        pdf.setFont(face, size)
+        pdf.drawString(left, height - baseline, text)
+
+    _draw_cover_barcode(
+        pdf,
+        profile.code,
+        x=47.9,
+        y=height - 782.3,
+        target_width=176.7,
+        bar_height=34.0,
+    )
+
+
+def _draw_ocr_mark_scheme_cover(
+    pdf: object,
+    profile: CoverProfile,
+    *,
+    height: float,
+    font: str,
+    bold_font: str,
+) -> None:
+    left = 59.5
+    pdf.setFillColor(colors.HexColor("#1f315f"))
+    pdf.setFont(bold_font, 28)
+    pdf.drawString(left, height - 58.1, "PAPER")
+    pdf.setFont(bold_font, 11)
+    pdf.drawString(left, height - 79.2, "CREATOR")
+    pdf.setFillColor(colors.HexColor("#141414"))
+
+    rows = (
+        ("GCE", 18, 160.7),
+        (profile.subject.title(), 18, 214.1),
+        (f"{profile.code}: {profile.paper_title}", 16, 255.5),
+        ("A Level", 14, 304.6),
+        (f"Mark Scheme for {formatted_generation_series()}", 18, 360.9),
+    )
+    for text, size, baseline in rows:
+        pdf.setFont(bold_font, size)
+        pdf.drawString(left, height - baseline, text)
+
+    pdf.setFont(font, 8)
+    pdf.drawString(
+        left,
+        height - 824.5,
+        "Paper Creator • Independent unofficial practice",
+    )
+
+
+def _draw_cover_barcode(
+    pdf: object,
+    value: str,
+    *,
+    x: float,
+    y: float,
+    target_width: float,
+    bar_height: float,
+) -> None:
+    bits = "".join(
+        f"{byte:08b}"
+        for byte in hashlib.sha256(value.encode("utf-8")).digest()[:10]
+    )
+    modules = [1.0 if index % 3 else 1.6 for index in range(len(bits))]
+    gap = 0.8
+    scale = target_width / (sum(modules) + gap * (len(bits) - 1))
+    cursor = x
+    guard_width = 1.2 * scale
+    pdf.rect(x, y, guard_width, bar_height, stroke=0, fill=1)
+    for bit, module in zip(bits, modules, strict=True):
+        bar_width = module * scale
+        if bit == "1":
+            pdf.rect(cursor, y, bar_width, bar_height, stroke=0, fill=1)
+        cursor += bar_width + gap * scale
+    pdf.rect(
+        x + target_width - guard_width,
+        y,
+        guard_width,
+        bar_height,
+        stroke=0,
+        fill=1,
+    )
 
 
 def _wrap(text: str, font: str, size: float, width: float) -> list[str]:

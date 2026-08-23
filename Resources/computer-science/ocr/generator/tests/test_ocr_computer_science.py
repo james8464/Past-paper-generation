@@ -167,6 +167,23 @@ def test_paper_two_extra_leaves_use_headed_and_continuation_counts(
         document.close()
 
 
+def test_mark_scheme_cover_does_not_inherit_page_chrome(tmp_path: Path) -> None:
+    paths = generate_package(
+        paper="2",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=123,
+    )
+
+    document = fitz.open(paths["mark_scheme"])
+    try:
+        text = document[0].get_text()
+        assert "H446/02 · Mark scheme" not in text
+        assert "Page 1" not in text
+    finally:
+        document.close()
+
+
 def test_mark_scheme_page_plans_cover_every_part() -> None:
     for paper_id, rule in RULES.items():
         planned = {

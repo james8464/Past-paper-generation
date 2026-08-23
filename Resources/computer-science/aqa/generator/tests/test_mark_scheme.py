@@ -42,6 +42,25 @@ def test_mark_scheme_cover_uses_generation_date(tmp_path, monkeypatch):
     assert "June 2024" in first_page
 
 
+def test_mark_scheme_cover_uses_shared_measured_title_grid(tmp_path):
+    import pymupdf as fitz
+    import pytest
+
+    blueprint = build_paper2_blueprint(load_syllabus(), seed=99)
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, output)
+
+    document = fitz.open(output)
+    try:
+        page = document[0]
+        assert page.search_for("PAPER")[0].x0 == pytest.approx(46.8, abs=2)
+        assert page.search_for("A-level")[0].y0 == pytest.approx(160.3, abs=3)
+        assert page.search_for("Mark scheme")[0].y0 == pytest.approx(308.7, abs=3)
+    finally:
+        document.close()
+
+
 def test_paper_2_mark_scheme_matches_measured_page_plan(tmp_path):
     import pymupdf as fitz
 
