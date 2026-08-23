@@ -1325,8 +1325,13 @@
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-23-contract-first-paper-generation-design.md": {
-    "mtime": 1787489562.665614,
-    "ast_hash": "63995d0a2dd2a61535d82bc4006bf1ae",
+    "mtime": 1787490337.55299,
+    "ast_hash": "f5e67de6780cb3686f2bb76db216dede",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-08-23-assessment-reliability-core.md": {
+    "mtime": 1787490337.5537496,
+    "ast_hash": "df9e9acde319df7e79d9063bb671df7d",
     "semantic_hash": ""
   }
 }
