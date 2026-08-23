@@ -20,8 +20,8 @@
     "semantic_hash": "48232e1a1f72f9a0a54bef093b4d0ba7"
   },
   "Backend/Core/exam_blueprints.py": {
-    "mtime": 1787412597.982334,
-    "ast_hash": "1eaadb85e4ba7c803c464d7d60d8da64",
+    "mtime": 1787490467.6851418,
+    "ast_hash": "c0d517d39d2d9846ac4487806a851499",
     "semantic_hash": ""
   },
   "Backend/Core/fonts/__init__.py": {
@@ -725,8 +725,8 @@
     "semantic_hash": "975b40436f1d38a2a051dae733013f02"
   },
   "tests/test_exam_blueprints.py": {
-    "mtime": 1785603986.1607962,
-    "ast_hash": "f85bf841b67d6ee8ed646183f1b1f8de",
+    "mtime": 1787490412.2261536,
+    "ast_hash": "11bc61dbcf3d2d0094e3eaa9ce5bc893",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {
@@ -1332,6 +1332,16 @@
   "docs/superpowers/plans/2026-08-23-assessment-reliability-core.md": {
     "mtime": 1787490337.5537496,
     "ast_hash": "df9e9acde319df7e79d9063bb671df7d",
+    "semantic_hash": ""
+  },
+  "Backend/Core/assessment_contracts.py": {
+    "mtime": 1787490467.684512,
+    "ast_hash": "ccf60989949978ab8081b213f60c191d",
+    "semantic_hash": ""
+  },
+  "tests/test_assessment_contracts.py": {
+    "mtime": 1787490412.2256796,
+    "ast_hash": "f6fe705b8cee0d2b6536c1260bd91da6",
     "semantic_hash": ""
   }
 }

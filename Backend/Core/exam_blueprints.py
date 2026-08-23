@@ -5,6 +5,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
+from Backend.Core.assessment_contracts import AssessmentContract
+
 
 class QuestionRule(BaseModel):
     id: str
@@ -70,6 +72,7 @@ class GeneratedQuestion(BaseModel):
     structured_mark_scheme: list[MarkSchemePoint] = Field(default_factory=list)
     source_references: list[str] = Field(default_factory=list)
     authoring_context: dict[str, Any] = Field(default_factory=dict)
+    contract: AssessmentContract | None = None
     provenance: str = "built-in"
 
 
@@ -204,6 +207,20 @@ def validate_generated_paper(
                 )
                 if actual != expected:
                     raise ValueError(f"question {question.number} does not match rule {question_rule.id}")
+                if question.contract is not None and (
+                    question.contract.item_id != question_rule.id
+                    or question.contract.marks != question_rule.marks
+                    or question.contract.assessment_objectives
+                    != question_rule.assessment_objectives
+                ):
+                    raise ValueError(
+                        f"question {question.number} assessment contract does "
+                        f"not match rule {question_rule.id}"
+                    )
+                if question.contract is not None:
+                    question.contract.validate_evidence_ids(
+                        question.source_references
+                    )
                 if (
                     question.assessment_objectives
                     != question_rule.assessment_objectives

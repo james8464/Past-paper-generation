@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+from Backend.Core.assessment_contracts import AssessmentContract
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -140,4 +141,16 @@ def test_generated_paper_rejects_out_of_scope_syllabus_outcome() -> None:
     ]
 
     with pytest.raises(ValueError, match="out-of-scope syllabus outcomes"):
+        validate_generated_paper(generated, rule(), {"a"})
+
+
+def test_generated_paper_rejects_contract_that_drifts_from_blueprint() -> None:
+    generated = paper()
+    generated.sections[0].options[0].questions[0].contract = AssessmentContract(
+        item_id="q",
+        marks=9,
+        assessment_objectives={"AO1": 9},
+    )
+
+    with pytest.raises(ValueError, match="assessment contract"):
         validate_generated_paper(generated, rule(), {"a"})
