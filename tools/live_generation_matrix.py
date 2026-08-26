@@ -1,16 +1,26 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import subprocess
 import sys
 import time
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from Backend.Core.events import BACKEND_VERSION
 from Backend.Core.model_recommendations import default_ollama_model
-
+from Backend.Core.qualification.manifest import (
+    ArtifactEvidence,
+    EvidenceRecord,
+    GateState,
+    ModelIdentity,
+    QualificationManifest,
+    VersionIdentity,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY_PATH = ROOT / "Resources" / "generator-registry.json"
@@ -90,6 +100,20 @@ def run_matrix(
         if resume:
             previous = _resumable_result(result_path)
             if previous is not None:
+                qualification_path = previous.get("qualification_manifest")
+                if not qualification_path or not Path(str(qualification_path)).is_file():
+                    qualification_path = _write_qualification_manifest(
+                        job=job,
+                        result=previous,
+                        result_path=result_path,
+                        run_dir=run_dir,
+                        output_root=output_root,
+                    )
+                    previous["qualification_manifest"] = str(qualification_path)
+                    result_path.write_text(
+                        json.dumps(previous, indent=2, ensure_ascii=False) + "\n",
+                        encoding="utf-8",
+                    )
                 print(f"[{index + 1}/{len(jobs)}] {job.id}: already passed", flush=True)
                 results.append(previous)
                 continue
@@ -186,6 +210,18 @@ def run_matrix(
             json.dumps(result, indent=2, ensure_ascii=False) + "\n",
             encoding="utf-8",
         )
+        qualification_path = _write_qualification_manifest(
+            job=job,
+            result=result,
+            result_path=result_path,
+            run_dir=run_dir,
+            output_root=output_root,
+        )
+        result["qualification_manifest"] = str(qualification_path)
+        result_path.write_text(
+            json.dumps(result, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
         results.append(result)
         verdict = "passed" if passed else "failed"
         print(f"[{index + 1}/{len(jobs)}] {job.id}: {verdict} in {duration:.0f}s", flush=True)
@@ -212,6 +248,13 @@ def run_matrix(
     (output_root / "matrix-report.md").write_text(
         matrix_markdown(report),
         encoding="utf-8",
+    )
+    _write_run_qualification_manifest(
+        output_root=output_root,
+        report=report,
+        model=None if dry_run else model,
+        provider=None if dry_run else provider,
+        base_seed=base_seed,
     )
     return report
 
@@ -274,6 +317,133 @@ def _timeout_text(value: str | bytes | None) -> str:
     if value is None:
         return ""
     return value.decode(errors="replace") if isinstance(value, bytes) else value
+
+
+def _write_qualification_manifest(
+    *,
+    job: MatrixJob,
+    result: dict[str, Any],
+    result_path: Path,
+    run_dir: Path,
+    output_root: Path,
+) -> Path:
+    package = _read_package_manifest(result.get("files", {}).get("package_manifest"))
+    inputs = package.get("inputs", {})
+    generator = package.get("generator", {})
+    backend = package.get("backend", {})
+    passed = bool(result["passed"])
+    artifacts = [
+        ArtifactEvidence.from_path(role, Path(path))
+        for role, path in result.get("files", {}).items()
+        if Path(path).is_file()
+    ]
+    events_path = run_dir / "events.jsonl"
+    evidence = [
+        EvidenceRecord(
+            gate="generation",
+            path=str(events_path.relative_to(output_root)),
+            sha256=_sha256(events_path),
+            reviewer_identity_class="automation",
+        )
+    ]
+    unavailable = "not-recorded"
+    manifest = QualificationManifest(
+        generator_id=job.family_id,
+        paper_id=job.paper,
+        seed=int(result["seed"]),
+        model=ModelIdentity(
+            provider=result.get("provider"),
+            name=result.get("model"),
+            digest=package.get("request", {}).get("model_digest"),
+        ),
+        versions=VersionIdentity(
+            contract=str(inputs.get("assessment_schema", unavailable)),
+            blueprint=str(
+                inputs.get(
+                    "blueprint_version",
+                    f"{job.family_id}:paper-{job.paper}:{generator.get('version') or unavailable}",
+                )
+            ),
+            prompt=str(inputs.get("prompt_version", unavailable)),
+            syllabus=str(inputs.get("syllabus_sha256", unavailable)),
+            renderer=str(inputs.get("layout_profile_sha256", unavailable)),
+        ),
+        artifacts=artifacts,
+        gate_results={
+            "generation": GateState.PASSED if passed else GateState.FAILED,
+            "pdf": GateState.PASSED if passed else GateState.FAILED,
+            "visual": GateState.NOT_RUN,
+            "expert_review": GateState.NOT_RUN,
+            "student_calibration": GateState.NOT_RUN,
+        },
+        evidence=evidence,
+        reviewer_identity_class="automation",
+        tool_versions={
+            "live-generation-matrix": "2",
+            "paper-creator-backend": str(backend.get("version", BACKEND_VERSION)),
+        },
+        created_at=datetime.now(timezone.utc),
+    )
+    path = result_path.with_name("qualification-manifest.json")
+    manifest.save(path)
+    return path
+
+
+def _write_run_qualification_manifest(
+    *,
+    output_root: Path,
+    report: dict[str, Any],
+    model: str | None,
+    provider: str | None,
+    base_seed: int,
+) -> Path:
+    paper_manifests = []
+    for result in report["results"]:
+        value = result.get("qualification_manifest")
+        if not value:
+            continue
+        path = Path(str(value))
+        if path.is_file():
+            paper_manifests.append(
+                {
+                    "id": result["id"],
+                    "path": str(path.relative_to(output_root)),
+                    "sha256": _sha256(path),
+                }
+            )
+    payload = {
+        "schema_version": 1,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "base_seed": base_seed,
+        "model": model,
+        "provider": provider,
+        "summary": report["summary"],
+        "paper_manifests": paper_manifests,
+    }
+    path = output_root / "qualification-run-manifest.json"
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return path
+
+
+def _read_package_manifest(value: Any) -> dict[str, Any]:
+    if not value:
+        return {}
+    try:
+        payload = json.loads(Path(str(value)).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
 
 
 def main(argv: list[str] | None = None) -> int:

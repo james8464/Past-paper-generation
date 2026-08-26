@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://papercreator.local/schemas/qualification-manifest-v1.json",
+  "title": "Paper Creator Qualification Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generator_id",
+    "paper_id",
+    "seed",
+    "model",
+    "versions",
+    "artifacts",
+    "gate_results",
+    "evidence",
+    "created_at",
+    "reviewer_identity_class",
+    "tool_versions"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "generator_id": {"type": "string", "minLength": 1},
+    "paper_id": {"type": "string", "minLength": 1},
+    "seed": {"type": "integer"},
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "name", "digest"],
+      "properties": {
+        "provider": {"type": ["string", "null"]},
+        "name": {"type": ["string", "null"]},
+        "digest": {"type": ["string", "null"]}
+      }
+    },
+    "versions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "blueprint", "prompt", "syllabus", "renderer"],
+      "properties": {
+        "contract": {"type": "string", "minLength": 1},
+        "blueprint": {"type": "string", "minLength": 1},
+        "prompt": {"type": "string", "minLength": 1},
+        "syllabus": {"type": "string", "minLength": 1},
+        "renderer": {"type": "string", "minLength": 1}
+      }
+    },
+    "artifacts": {"type": "array"},
+    "gate_results": {
+      "type": "object",
+      "additionalProperties": {
+        "enum": ["not_run", "passed", "failed", "not_applicable"]
+      }
+    },
+    "evidence": {"type": "array"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "reviewer_identity_class": {
+      "enum": [
+        "automation",
+        "internal_reviewer",
+        "subject_specialist",
+        "examiner",
+        "psychometrician"
+      ]
+    },
+    "tool_versions": {
+      "type": "object",
+      "additionalProperties": {"type": "string"}
+    }
+  }
+}

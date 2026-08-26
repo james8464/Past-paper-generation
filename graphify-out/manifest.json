@@ -1190,8 +1190,8 @@
     "semantic_hash": ""
   },
   "docs/ASSESSMENT_QUALITY.md": {
-    "mtime": 1787711456.347675,
-    "ast_hash": "53f51e760578b119ccd629d88866c8be",
+    "mtime": 1787741803.7804165,
+    "ast_hash": "19fac3c00b50275cac094898d8763816",
     "semantic_hash": ""
   },
   "docs/HIG_COMPLIANCE.md": {
@@ -1285,8 +1285,8 @@
     "semantic_hash": ""
   },
   "tests/test_live_generation_matrix.py": {
-    "mtime": 1787412598.002137,
-    "ast_hash": "081b118ab0e465a8d29f241d76c0d592",
+    "mtime": 1787741759.5940046,
+    "ast_hash": "0ceedd79cca7a28e6747d411cec87f7d",
     "semantic_hash": ""
   },
   "tests/test_model_recommendations.py": {
@@ -1295,8 +1295,8 @@
     "semantic_hash": ""
   },
   "tools/live_generation_matrix.py": {
-    "mtime": 1787412598.0027187,
-    "ast_hash": "a3118665ac31f0920d262c1010e7f4f0",
+    "mtime": 1787741775.380535,
+    "ast_hash": "f3ce1ffc67939e7c8cdc80bf5fa99c7d",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Assets.xcassets/TutorialModelSettings.imageset/TutorialModelSettings.png": {
@@ -1447,6 +1447,31 @@
   "docs/superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md": {
     "mtime": 1787741067.1073103,
     "ast_hash": "48e9d7549940fbeecc096b0f7bd7b19b",
+    "semantic_hash": ""
+  },
+  "Backend/Core/qualification/__init__.py": {
+    "mtime": 1787741611.3020601,
+    "ast_hash": "0813675bf938c8d8617a3887ea008769",
+    "semantic_hash": ""
+  },
+  "Backend/Core/qualification/manifest.py": {
+    "mtime": 1787741726.7637146,
+    "ast_hash": "9e9fc3a5388077f9ce1f1d82e8a9a3d8",
+    "semantic_hash": ""
+  },
+  "Resources/qualification-policy.json": {
+    "mtime": 1787741611.3028514,
+    "ast_hash": "6a672cfbcf653e45beb1486382964908",
+    "semantic_hash": ""
+  },
+  "Resources/qualification-schema.json": {
+    "mtime": 1787741611.3031447,
+    "ast_hash": "1d84eace24f950baadeaaabf0863df68",
+    "semantic_hash": ""
+  },
+  "tests/test_qualification_manifest.py": {
+    "mtime": 1787741726.7635963,
+    "ast_hash": "89b39dbf0ceee77778a1277908a0127d",
     "semantic_hash": ""
   }
 }

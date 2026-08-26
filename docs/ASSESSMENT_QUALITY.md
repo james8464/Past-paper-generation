@@ -15,6 +15,24 @@ content. It may not change:
 - required source references and numeric invariants;
 - multiple-choice option count and answer-key validity.
 
+## Qualification evidence baseline
+
+Qualification is reported as three independent levels: engineering validated,
+visually calibrated, and empirically calibrated. The canonical evidence model is
+defined by `Resources/qualification-schema.json`; the gates required for each
+level are defined by `Resources/qualification-policy.json`. A live matrix run
+writes one immutable manifest per paper and an aggregate manifest containing
+only relative evidence references and hashes.
+
+The current live baseline contains seven advertised generator families and 18
+papers. The latest complete `gemma4:12b` Ollama run passed generation and release
+validation for all 18 and has been backfilled into the qualification ledger.
+That baseline is engineering evidence, not a new visual or empirical claim.
+AQA Computer Science Paper 2 and Pearson Edexcel Economics A Papers 1–3 retain
+their uncalibrated visual state. Every current paper retains an uncalibrated
+empirical state because no qualifying external learner/marker dataset is linked
+to the generated form.
+
 The normal generation path fails closed if it cannot satisfy the contract after
 bounded retries. It never silently substitutes the deterministic planning draft.
 

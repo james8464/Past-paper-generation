@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "levels": {
+    "engineering": [
+      "generation",
+      "pdf"
+    ],
+    "visual": [
+      "generation",
+      "pdf",
+      "visual"
+    ],
+    "empirical": [
+      "generation",
+      "pdf",
+      "visual",
+      "expert_review",
+      "student_calibration"
+    ]
+  }
+}
