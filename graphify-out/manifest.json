@@ -700,8 +700,8 @@
     "semantic_hash": "7206a074745730fe031e639b97fc47b2"
   },
   "tests/test_app_backend.py": {
-    "mtime": 1787742116.74582,
-    "ast_hash": "ac2f645487409eea4a2bb9a5cd52ae5e",
+    "mtime": 1787752119.3928924,
+    "ast_hash": "c4b6e466fadba2a8fdacd3f6cd176e20",
     "semantic_hash": ""
   },
   "tests/test_aqa_accounting_calibration.py": {
@@ -1055,8 +1055,8 @@
     "semantic_hash": ""
   },
   "tests/test_providers.py": {
-    "mtime": 1787739095.1150594,
-    "ast_hash": "4072bfbec39e5c9695ec6e72fe688ae0",
+    "mtime": 1787752119.3925345,
+    "ast_hash": "14a4c7c12eb43b917a0828aeaa6d1ad8",
     "semantic_hash": ""
   },
   "graphify-out/memory/query_20260729_191654_where_should_performance_and_generated_paper_accur.md": {
@@ -1180,8 +1180,8 @@
     "semantic_hash": ""
   },
   "docs/ARCHITECTURE.md": {
-    "mtime": 1787748201.8015587,
-    "ast_hash": "ead5e8611ac4d3ff8ab66e55059a631a",
+    "mtime": 1787752164.4965918,
+    "ast_hash": "8c1add34abd6b34016011975e9b4637c",
     "semantic_hash": ""
   },
   "docs/ASSESSMENT_QUALITY.md": {
@@ -1350,8 +1350,8 @@
     "semantic_hash": ""
   },
   "tests/test_assessment_checkpoints.py": {
-    "mtime": 1787561802.9480152,
-    "ast_hash": "5eb1e0034e28eabcff78b70c828742f6",
+    "mtime": 1787752323.9431484,
+    "ast_hash": "e99dc6d74e3255912475d2a48dc9ee86",
     "semantic_hash": ""
   },
   "Backend/Core/render_transaction.py": {
@@ -1435,8 +1435,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-26-paper-creator-excellence-programme.md": {
-    "mtime": 1787751951.8405268,
-    "ast_hash": "3721180139e507ffdf3aa74915c2c004",
+    "mtime": 1787752151.213366,
+    "ast_hash": "cfa6bcaf642d6a361fe03a87d04285ff",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md": {
@@ -1710,8 +1710,8 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1787751946.0070062,
-    "ast_hash": "508f40e3c48da0a0616319cbb95bd22f",
+    "mtime": 1787752007.6154606,
+    "ast_hash": "768d81aa9b96dd0c362b2918368738aa",
     "semantic_hash": ""
   },
   "tests/test_repository_hygiene.py": {

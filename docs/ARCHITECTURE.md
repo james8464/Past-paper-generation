@@ -202,3 +202,14 @@ or PDFs. A schema mismatch, missing document or role, or score below its minimum
 fails the command after diagnostic reports and contact sheets have been written.
 This order preserves evidence for investigation without allowing a regression
 to pass the release boundary.
+
+## Failure containment
+
+Automated failure scenarios cover unavailable providers, missing local models,
+low model-storage capacity, unusable output folders, corrupt checkpoints and
+history, invalid or interrupted structured responses, backend exceptions,
+renderer deadlines, process relaunch, schema migration, declined or failed MLX
+setup, and unsupported future packages. Provider retries are bounded; renderer
+and generation staging is removed on failure; accepted checkpoints remain
+revalidatable; and every user-facing backend failure is emitted as a structured
+event rather than raw package-manager or traceback output.

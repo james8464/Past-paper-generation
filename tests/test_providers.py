@@ -3,6 +3,7 @@ from __future__ import annotations
 import builtins
 import json
 import sys
+import urllib.error
 from types import ModuleType
 
 import pytest
@@ -12,6 +13,7 @@ from Backend.Core.providers import (
     _ollama_json_schema,
     _ollama_output_budget,
     _ollama_temperature,
+    urllib_request,
 )
 
 
@@ -273,3 +275,22 @@ def test_second_pass_review_is_deterministic() -> None:
     assert _ollama_temperature(
         "Act as a second-pass UK A-level assessment editor."
     ) == 0
+
+
+def test_offline_provider_retries_then_reports_plain_connection_error(
+    monkeypatch,
+) -> None:
+    attempts = 0
+
+    def offline(*_args, **_kwargs):
+        nonlocal attempts
+        attempts += 1
+        raise urllib.error.URLError("offline")
+
+    monkeypatch.setattr("urllib.request.urlopen", offline)
+    monkeypatch.setattr("Backend.Core.providers.time.sleep", lambda _delay: None)
+
+    with pytest.raises(RuntimeError, match="Could not reach the provider API after 2 attempts"):
+        urllib_request("https://example.invalid", b"{}", {}, attempts=2)
+
+    assert attempts == 2

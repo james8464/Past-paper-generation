@@ -531,6 +531,33 @@ def test_generation_reports_a_structured_mlx_setup_request(
     assert events[-1]["code"] == "mlx_setup_required"
 
 
+def test_backend_crash_is_structured_and_removes_staging_output(
+    tmp_path: Path,
+    monkeypatch,
+    capsys,
+) -> None:
+    def crash(*_args, **_kwargs):
+        raise RuntimeError("renderer process stopped unexpectedly")
+
+    monkeypatch.setattr("Backend.Core.generation._invoke_plugin", crash)
+    request = Namespace(
+        output=str(tmp_path),
+        api_key="",
+        model="gemma4:12b",
+        subject="economics",
+        paper="1",
+        provider="ollama",
+        dry_run=False,
+        seed=123,
+    )
+
+    assert handle_generate(request) == 1
+    events = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
+    assert events[-1]["code"] == "generation_failed"
+    assert "renderer process stopped unexpectedly" in events[-1]["message"]
+    assert not list(tmp_path.glob(".papercreator-*"))
+
+
 def test_benchmark_emits_samples_and_verdict(tmp_path: Path) -> None:
     events = run_bridge("benchmark", "--duration", "1", "--output", str(tmp_path))
     assert any(event["type"] == "benchmark_metric" for event in events)

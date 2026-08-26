@@ -8,10 +8,12 @@ import pytest
 from Backend.Core.ai_assessment import GenerationPolicy, generate_unique_paper
 from Backend.Core.assessment_checkpoints import (
     AssessmentCheckpointStore,
+    CheckpointCorrupt,
     CheckpointIdentity,
     CheckpointMismatch,
     identity_for_blueprint,
 )
+from Backend.Core.events import GenerationUpdate
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -21,7 +23,6 @@ from Backend.Core.exam_blueprints import (
     QuestionRule,
     SectionRule,
 )
-from Backend.Core.events import GenerationUpdate
 
 
 def identity(*, model: str = "gemma4:12b") -> CheckpointIdentity:
@@ -100,6 +101,14 @@ def test_checkpoint_write_is_atomic_and_valid_json(tmp_path: Path) -> None:
     document = json.loads(path.read_text(encoding="utf-8"))
     assert document["schema_version"] == 1
     assert document["items"]["0/0/0"]["prompt"] == question().prompt
+
+
+def test_corrupt_checkpoint_fails_closed_with_actionable_identity(tmp_path: Path) -> None:
+    path = tmp_path / "job.json"
+    path.write_text('{"schema_version": 1, "items": ', encoding="utf-8")
+
+    with pytest.raises(CheckpointCorrupt, match="checkpoint is unreadable.*job.json"):
+        AssessmentCheckpointStore(path, identity())
 
 
 def test_checkpoint_round_trips_family_specific_payload(tmp_path: Path) -> None:
