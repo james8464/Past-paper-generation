@@ -1630,8 +1630,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/subject_plugins.py": {
-    "mtime": 1787773137.5976987,
-    "ast_hash": "a48a2e72483deb1365af9fa0377354ce",
+    "mtime": 1787773356.344755,
+    "ast_hash": "c630500e2728e9de0ba81a290ee4612e",
     "semantic_hash": ""
   },
   "Resources/board-profiles/aqa.json": {
@@ -1700,8 +1700,8 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1787773278.134757,
-    "ast_hash": "e0360e0c2b768684e72473704101e24a",
+    "mtime": 1787773432.9279532,
+    "ast_hash": "b0338d3d94e37c23b742d4508b2fa5fc",
     "semantic_hash": ""
   },
   "tests/test_repository_hygiene.py": {
@@ -1755,8 +1755,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/subjects/mathematics.py": {
-    "mtime": 1787772924.1068115,
-    "ast_hash": "e76f452c1726263262ba0db5181440f0",
+    "mtime": 1787773356.3438568,
+    "ast_hash": "0a0989181e2fbdc4ba772e1ad1ee66a0",
     "semantic_hash": ""
   },
   "tests/test_mathematics_subject.py": {
@@ -1792,6 +1792,26 @@
   "tests/test_science_subjects.py": {
     "mtime": 1787773147.6627984,
     "ast_hash": "eb07f67fea1826e9830cc755a903fd66",
+    "semantic_hash": ""
+  },
+  "Backend/Core/overlay/humanities.py": {
+    "mtime": 1787773420.0178797,
+    "ast_hash": "1dbbda959390d0fe3dd4cf24d1475f25",
+    "semantic_hash": ""
+  },
+  "Backend/Core/subjects/essay.py": {
+    "mtime": 1787773370.2502842,
+    "ast_hash": "0c96758e091ba11fafa9dce7aa34009d",
+    "semantic_hash": ""
+  },
+  "tests/test_essay_subjects.py": {
+    "mtime": 1787773317.0137517,
+    "ast_hash": "1e383b611abc59bcfc4dcb32904ac555",
+    "semantic_hash": ""
+  },
+  "tests/test_humanities_overlay.py": {
+    "mtime": 1787773385.2515228,
+    "ast_hash": "bed39076ad2ae6262a8115fc50bc49cb",
     "semantic_hash": ""
   }
 }

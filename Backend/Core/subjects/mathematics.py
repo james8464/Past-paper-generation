@@ -190,6 +190,10 @@ class MathematicsPlugin:
         }
 
 
+class FurtherMathematicsPlugin(MathematicsPlugin):
+    id = "further-mathematics"
+
+
 def _parse(expression: str, variables: tuple[str, ...] = ()) -> sympy.Expr:
     normalized = expression.replace("^", "**").strip()
     if not normalized or not _SAFE_EXPRESSION.fullmatch(normalized):

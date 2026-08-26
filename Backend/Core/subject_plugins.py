@@ -113,10 +113,23 @@ def _normalise_identifier(identifier: str) -> str:
 # SubjectValidation without a module-initialisation cycle.
 from Backend.Core.subjects.biology import BiologyPlugin  # noqa: E402
 from Backend.Core.subjects.chemistry import ChemistryPlugin  # noqa: E402
-from Backend.Core.subjects.mathematics import MathematicsPlugin  # noqa: E402
+from Backend.Core.subjects.essay import EssaySubjectPlugin  # noqa: E402
+from Backend.Core.subjects.mathematics import (  # noqa: E402
+    FurtherMathematicsPlugin,
+    MathematicsPlugin,
+)
 from Backend.Core.subjects.physics import PhysicsPlugin  # noqa: E402
 
 _PLUGINS[MathematicsPlugin.id] = MathematicsPlugin()
 _PLUGINS[BiologyPlugin.id] = BiologyPlugin()
 _PLUGINS[ChemistryPlugin.id] = ChemistryPlugin()
 _PLUGINS[PhysicsPlugin.id] = PhysicsPlugin()
+_PLUGINS[FurtherMathematicsPlugin.id] = FurtherMathematicsPlugin()
+for _essay_subject in (
+    "english-literature",
+    "geography",
+    "history",
+    "psychology",
+    "sociology",
+):
+    _PLUGINS[_essay_subject] = EssaySubjectPlugin(_essay_subject)
