@@ -53,6 +53,13 @@ private struct BenchmarkOverviewPanel: View {
                 } currentValueLabel: {
                     Text((benchmark.progress ?? 0).formatted(.percent.precision(.fractionLength(0))))
                 }
+                .accessibilityLabel("Benchmark progress")
+                .accessibilityValue(
+                    (benchmark.progress ?? 0).formatted(
+                        .percent.precision(.fractionLength(0))
+                    )
+                )
+                .accessibilityAddTraits(.updatesFrequently)
                 .progressViewStyle(.linear)
             } else if let verdict = benchmark.verdict {
                 BenchmarkVerdictSummary(verdict: verdict)

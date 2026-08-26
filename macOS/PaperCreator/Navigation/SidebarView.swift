@@ -147,10 +147,9 @@ private struct BoardRow: View {
             .labelStyle(.iconOnly)
             .foregroundStyle(isFavourite ? .primary : .tertiary)
             if board.status == .placeholder {
-                Image(systemName: "clock")
+                Label("Coming soon", systemImage: "clock")
                     .font(.caption)
                     .foregroundStyle(.tertiary)
-                    .help("Coming soon")
             }
         }
     }

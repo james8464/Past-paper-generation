@@ -27,7 +27,9 @@ custom cards or web-style navigation.
 
 Progress is determinate whenever the backend provides a fraction, includes a
 time estimate when available, and can be cancelled. A spinner is used only when
-progress is genuinely indeterminate.
+progress is genuinely indeterminate. VoiceOver receives one concise, frequently
+updated progress element containing the stage, percentage, and remaining-time
+estimate instead of reading the visual row piecemeal.
 
 Apple MLX setup always starts from an explicit confirmation. Before downloading,
 the backend checks Apple-silicon compatibility, its managed Python version, and
@@ -46,6 +48,8 @@ and a later retry starts from clean recovery state.
 - The sidebar defaults to 220 points and remains user-adjustable.
 - The inspector is constrained to a readable 250–360-point range.
 - Status never relies on colour alone; each state includes a symbol and text.
+- Unavailable catalogue choices show the visible “Coming soon” status in
+  addition to the clock symbol.
 - Controls use native macOS hit regions, meeting the platform's recommended
   target sizes without invisible custom overlays.
 

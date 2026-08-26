@@ -214,7 +214,21 @@ private struct GenerationProgress: View {
                 ProgressView(application.status)
             }
         }
-        .accessibilityElement(children: .contain)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Paper creation progress")
+        .accessibilityValue(accessibilityValue)
+        .accessibilityAddTraits(.updatesFrequently)
+    }
+
+    private var accessibilityValue: String {
+        var parts = [application.status]
+        if let progress = application.generationProgress {
+            parts.append(progress.formatted(.percent.precision(.fractionLength(0))))
+        }
+        if let estimate = application.generationEstimate {
+            parts.append(estimate.remainingText)
+        }
+        return parts.joined(separator: ", ")
     }
 }
 
