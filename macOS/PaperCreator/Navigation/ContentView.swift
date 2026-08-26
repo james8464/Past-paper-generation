@@ -2,14 +2,16 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var appModel: AppViewModel
+    @Environment(CatalogStore.self) private var catalog
     @AppStorage(AppStorageKey.navigationColumnVisibility)
     private var navigationColumnVisibility = "all"
 
     var body: some View {
+        @Bindable var catalog = catalog
         NavigationSplitView(columnVisibility: columnVisibility) {
-            Sidebar(selection: $appModel.sidebarSelection)
+            Sidebar(selection: $catalog.sidebarSelection)
         } detail: {
-            switch appModel.sidebarSelection ?? .board(appModel.selectedBoardID) {
+            switch catalog.sidebarSelection ?? .board(catalog.selectedBoardID) {
             case let .board(id):
                 if let board = ExamCatalog.board(id: id) {
                     GeneratorWorkspace(board: board)
@@ -71,7 +73,7 @@ struct ContentView: View {
                 .environmentObject(appModel)
         }
         .onAppear(perform: ensureSidebarSelection)
-        .onChange(of: appModel.sidebarSelection) { _, newSelection in
+        .onChange(of: catalog.sidebarSelection) { _, newSelection in
             selectBoard(for: newSelection)
         }
         .task {
@@ -101,9 +103,9 @@ struct ContentView: View {
     }
 
     private func ensureSidebarSelection() {
-        guard appModel.sidebarSelection == nil else { return }
+        guard catalog.sidebarSelection == nil else { return }
         Task { @MainActor in
-            appModel.sidebarSelection = .board(appModel.selectedBoardID)
+            catalog.sidebarSelection = .board(catalog.selectedBoardID)
         }
     }
 
@@ -120,8 +122,12 @@ struct ContentView: View {
 #if DEBUG
 private struct ContentViewPreview: PreviewProvider {
     static var previews: some View {
+        let model = AppViewModel()
         ContentView()
-            .environmentObject(AppViewModel())
+            .environmentObject(model)
+            .environment(model.catalogStore)
+            .environment(model.benchmarkCoordinator)
+            .environment(model.generationCoordinator)
     }
 }
 #endif

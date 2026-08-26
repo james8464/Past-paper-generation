@@ -12,8 +12,6 @@ final class AppViewModel: ObservableObject {
     let recentDocumentStore: RecentDocumentStore
     let generationCoordinator: GenerationCoordinator
 
-    @Published var selectedBoardID = ExamCatalog.defaultBoard.id
-    @Published var selectedPaperID = ExamCatalog.defaultBoard.papers.first?.id ?? "unknown"
     @Published var selectedModel = AppDefaults.ollamaModel
     @Published var aiProvider: AIProvider = .ollama
     @Published var ollamaURL = AppDefaults.ollamaURL
@@ -43,7 +41,6 @@ final class AppViewModel: ObservableObject {
     @Published var showHelp = false
     @Published var helpTopic = HelpTopic.gettingStarted
     @Published var notificationsEnabled = true
-    @Published var sidebarSelection: SidebarItem?
     @Published var generationEstimate: GenerationEstimate?
     @Published var lastQualityReport: GenerationQualityReport?
     @Published private(set) var previewedFileID: UUID?
@@ -66,7 +63,7 @@ final class AppViewModel: ObservableObject {
     private var securityScopedOutputFolder: URL?
 
     var selectedBoard: ExamBoardOption {
-        ExamCatalog.board(id: selectedBoardID) ?? ExamCatalog.defaultBoard
+        catalogStore.selectedBoard
     }
 
     // Temporary command compatibility while every view migrates to focused coordinators.
@@ -77,18 +74,14 @@ final class AppViewModel: ObservableObject {
     var benchmarkVerdict: BenchmarkVerdict? { benchmarkCoordinator.verdict }
 
     var selectedPaper: PaperOption {
-        selectedBoard.papers.first { $0.id == selectedPaperID }
-            ?? selectedBoard.papers.first
-            ?? PaperOption(
-                id: "unknown",
-                title: "Unknown",
-                detail: "",
-                readiness: QualificationReadiness(
-                    engineeringValidated: false,
-                    visuallyCalibrated: false,
-                    empiricallyCalibrated: false
-                )
-            )
+        catalogStore.selectedPaper
+    }
+
+    var selectedBoardID: String { catalogStore.selectedBoardID }
+    var selectedPaperID: String { catalogStore.selectedPaperID }
+    var sidebarSelection: SidebarItem? {
+        get { catalogStore.sidebarSelection }
+        set { catalogStore.sidebarSelection = newValue }
     }
 
     var selectedPaperTitle: String {
@@ -225,10 +218,7 @@ final class AppViewModel: ObservableObject {
         } else {
             defaults.set(outputFolder.path, forKey: AppStorageKey.outputFolderPath)
         }
-        selectedBoardID = defaults.string(forKey: AppStorageKey.selectedBoardID) ?? ExamCatalog.defaultBoard.id
-        selectedPaperID = defaults.string(forKey: AppStorageKey.selectedPaperID) ?? selectedBoard.papers.first?.id ?? "unknown"
         restoreRecentDocuments()
-        sidebarSelection = .board(selectedBoardID)
         benchmarkCoordinator.outputFolder = outputFolder
     }
 
@@ -279,27 +269,14 @@ final class AppViewModel: ObservableObject {
     }
 
     func selectBoard(_ board: ExamBoardOption) {
-        guard !isRunning else { return }
-        guard selectedBoardID != board.id || !board.papers.contains(where: { $0.id == selectedPaperID }) else {
-            return
-        }
-        selectedBoardID = board.id
-        selectedPaperID = board.papers.first?.id ?? "unknown"
-        defaults.set(board.id, forKey: AppStorageKey.selectedBoardID)
-        defaults.set(selectedPaperID, forKey: AppStorageKey.selectedPaperID)
+        guard catalogStore.selectBoard(board, isLocked: isRunning) else { return }
         progressEntries.removeAll()
         lastQualityReport = nil
         status = board.isReady ? "Ready" : "Coming Soon"
     }
 
     func selectPaperID(_ paperID: String) {
-        guard !isRunning else { return }
-        guard selectedPaperID != paperID else {
-            defaults.set(paperID, forKey: AppStorageKey.selectedPaperID)
-            return
-        }
-        selectedPaperID = paperID
-        defaults.set(paperID, forKey: AppStorageKey.selectedPaperID)
+        _ = catalogStore.selectPaperID(paperID, isLocked: isRunning)
     }
 
     func selectAIProvider(_ provider: AIProvider) {
@@ -331,24 +308,24 @@ final class AppViewModel: ObservableObject {
     }
 
     func showBenchmarkPage() {
-        sidebarSelection = .benchmark
+        catalogStore.show(.benchmark)
     }
 
     func showCreationWorkspace() {
-        sidebarSelection = .board(selectedBoardID)
+        catalogStore.show(.board(selectedBoardID))
     }
 
     func showDocuments() {
-        sidebarSelection = .documents
+        catalogStore.show(.documents)
     }
 
     func showHistory() {
-        sidebarSelection = .history
+        catalogStore.show(.history)
     }
 
     func previewGeneratedFile(_ file: GeneratedFile) {
         previewedFileID = file.id
-        sidebarSelection = .documents
+        catalogStore.show(.documents)
     }
 
     func previewGeneratedFile(role: String) {

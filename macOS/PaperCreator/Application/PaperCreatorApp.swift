@@ -13,6 +13,7 @@ struct PaperCreator: App {
         WindowGroup("Paper creator", id: "main") {
             ContentView()
                 .environmentObject(appModel)
+                .environment(appModel.catalogStore)
                 .environment(appModel.benchmarkCoordinator)
                 .environment(appModel.generationCoordinator)
         }
@@ -24,6 +25,7 @@ struct PaperCreator: App {
         Settings {
             SettingsPane()
                 .environmentObject(appModel)
+                .environment(appModel.catalogStore)
                 .environment(appModel.benchmarkCoordinator)
                 .environment(appModel.generationCoordinator)
         }

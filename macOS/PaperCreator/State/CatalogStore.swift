@@ -5,6 +5,9 @@ import Observation
 @Observable
 final class CatalogStore {
     var searchText = ""
+    var selectedBoardID: String
+    var selectedPaperID: String
+    var sidebarSelection: SidebarItem?
     private(set) var favoriteIDs: Set<String>
     private(set) var recentConfigurationIDs: [String]
     let subjects: [CatalogSubject]
@@ -24,6 +27,14 @@ final class CatalogStore {
         recentConfigurationIDs = defaults.stringArray(
             forKey: AppStorageKey.recentConfigurationIDs
         ) ?? []
+        let requestedBoardID = defaults.string(forKey: AppStorageKey.selectedBoardID)
+        let board = requestedBoardID.flatMap(ExamCatalog.board(id:)) ?? ExamCatalog.defaultBoard
+        let requestedPaperID = defaults.string(forKey: AppStorageKey.selectedPaperID)
+        selectedBoardID = board.id
+        selectedPaperID = board.papers.contains { $0.id == requestedPaperID }
+            ? requestedPaperID ?? board.papers.first?.id ?? "unknown"
+            : board.papers.first?.id ?? "unknown"
+        sidebarSelection = .board(board.id)
     }
 
     var filteredSubjects: [CatalogSubject] {
@@ -45,6 +56,60 @@ final class CatalogStore {
                 boards: boards
             )
         }
+    }
+
+    var selectedBoard: ExamBoardOption {
+        ExamCatalog.board(id: selectedBoardID) ?? ExamCatalog.defaultBoard
+    }
+
+    var selectedPaper: PaperOption {
+        selectedBoard.papers.first { $0.id == selectedPaperID }
+            ?? selectedBoard.papers.first
+            ?? PaperOption(
+                id: "unknown",
+                title: "Unknown",
+                detail: "",
+                readiness: QualificationReadiness(
+                    engineeringValidated: false,
+                    visuallyCalibrated: false,
+                    empiricallyCalibrated: false
+                )
+            )
+    }
+
+    @discardableResult
+    func selectBoard(_ board: ExamBoardOption, isLocked: Bool) -> Bool {
+        guard !isLocked else { return false }
+        let currentPaperIsValid = board.papers.contains { $0.id == selectedPaperID }
+        guard selectedBoardID != board.id || !currentPaperIsValid else { return false }
+        selectedBoardID = board.id
+        selectedPaperID = board.papers.first?.id ?? "unknown"
+        sidebarSelection = .board(board.id)
+        persistSelection()
+        return true
+    }
+
+    @discardableResult
+    func selectPaperID(_ paperID: String, isLocked: Bool) -> Bool {
+        guard !isLocked, selectedBoard.papers.contains(where: { $0.id == paperID }) else {
+            return false
+        }
+        guard selectedPaperID != paperID else {
+            defaults.set(paperID, forKey: AppStorageKey.selectedPaperID)
+            return false
+        }
+        selectedPaperID = paperID
+        defaults.set(paperID, forKey: AppStorageKey.selectedPaperID)
+        return true
+    }
+
+    func show(_ item: SidebarItem) {
+        sidebarSelection = item
+    }
+
+    private func persistSelection() {
+        defaults.set(selectedBoardID, forKey: AppStorageKey.selectedBoardID)
+        defaults.set(selectedPaperID, forKey: AppStorageKey.selectedPaperID)
     }
 
     func toggleFavourite(_ boardID: String) {

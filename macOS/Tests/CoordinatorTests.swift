@@ -170,6 +170,25 @@ final class CoordinatorTests: XCTestCase {
     }
 
     @MainActor
+    func testCatalogStoreOwnsAndRestoresValidSelection() throws {
+        let suite = "PaperCreatorCatalogSelectionTests-\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let board = try XCTUnwrap(ExamCatalog.readyBoards.last)
+        let paper = try XCTUnwrap(board.papers.last)
+
+        let store = CatalogStore(subjects: ExamCatalog.subjects, defaults: defaults)
+        XCTAssertTrue(store.selectBoard(board, isLocked: false))
+        XCTAssertTrue(store.selectPaperID(paper.id, isLocked: false))
+
+        let restored = CatalogStore(subjects: ExamCatalog.subjects, defaults: defaults)
+        XCTAssertEqual(restored.selectedBoardID, board.id)
+        XCTAssertEqual(restored.selectedPaperID, paper.id)
+        XCTAssertEqual(restored.sidebarSelection, .board(board.id))
+        XCTAssertFalse(restored.selectPaperID("not-a-paper", isLocked: false))
+    }
+
+    @MainActor
     func testSettingsStorePersistsPreferencesAndDelegatesSecrets() throws {
         let suite = "PaperCreatorSettingsTests-\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
