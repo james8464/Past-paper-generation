@@ -2,17 +2,17 @@ import SwiftUI
 
 struct Sidebar: View {
     @Binding var selection: SidebarItem?
-    @EnvironmentObject private var appModel: AppViewModel
+    @EnvironmentObject private var application: ApplicationCoordinator
     @AppStorage(AppStorageKey.expandedSubjectIDs)
     private var expandedSubjectIDs = ""
 
     var body: some View {
         CatalogSidebarSections(
             selection: $selection,
-            store: appModel.catalogStore,
+            store: application.catalogStore,
             expandedSubjectIDs: $expandedSubjectIDs
         )
-        .disabled(appModel.isRunning)
+        .disabled(application.isRunning)
         .navigationTitle("Paper creator")
         .frame(minWidth: 220)
         .onAppear(perform: expandSelectedSubject)

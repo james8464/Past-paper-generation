@@ -3,7 +3,7 @@ import TipKit
 
 @main
 struct PaperCreator: App {
-    @StateObject private var appModel = AppViewModel()
+    @StateObject private var application = ApplicationCoordinator()
 
     init() {
         try? Tips.configure()
@@ -12,22 +12,22 @@ struct PaperCreator: App {
     var body: some Scene {
         WindowGroup("Paper creator", id: "main") {
             ContentView()
-                .environmentObject(appModel)
-                .environment(appModel.catalogStore)
-                .environment(appModel.benchmarkCoordinator)
-                .environment(appModel.generationCoordinator)
+                .environmentObject(application)
+                .environment(application.catalogStore)
+                .environment(application.benchmarkCoordinator)
+                .environment(application.generationCoordinator)
         }
         .defaultLaunchBehavior(.presented)
         .commands {
-            AppCommands(appModel: appModel)
+            AppCommands(application: application)
         }
 
         Settings {
             SettingsPane()
-                .environmentObject(appModel)
-                .environment(appModel.catalogStore)
-                .environment(appModel.benchmarkCoordinator)
-                .environment(appModel.generationCoordinator)
+                .environmentObject(application)
+                .environment(application.catalogStore)
+                .environment(application.benchmarkCoordinator)
+                .environment(application.generationCoordinator)
         }
     }
 }

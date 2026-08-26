@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct GeneratedFilesTable: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @EnvironmentObject private var application: ApplicationCoordinator
     let files: [GeneratedFile]
 
     var body: some View {
@@ -35,7 +35,7 @@ struct GeneratedFilesTable: View {
                 TableColumn("") { file in
                     HStack {
                         Button {
-                            appModel.previewGeneratedFile(file)
+                            application.previewGeneratedFile(file)
                         } label: {
                             Label("Preview", systemImage: "eye")
                         }
@@ -43,7 +43,7 @@ struct GeneratedFilesTable: View {
                         .help("Preview")
 
                         Button {
-                            appModel.revealGeneratedFile(file)
+                            application.revealGeneratedFile(file)
                         } label: {
                             Label("Reveal", systemImage: "folder")
                         }
@@ -58,7 +58,7 @@ struct GeneratedFilesTable: View {
                 if let id = selection.first,
                    let file = files.first(where: { $0.id == id }) {
                     Button("Remove from Recents") {
-                        appModel.removeGeneratedFile(file)
+                        application.removeGeneratedFile(file)
                     }
                 }
             }

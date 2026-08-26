@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @EnvironmentObject private var application: ApplicationCoordinator
     @Environment(CatalogStore.self) private var catalog
     @AppStorage(AppStorageKey.navigationColumnVisibility)
     private var navigationColumnVisibility = "all"
@@ -22,63 +22,63 @@ struct ContentView: View {
                 BenchmarkWorkspace()
             case .documents:
                 DocumentPreviewView(
-                    files: appModel.generatedFiles,
-                    selectedID: appModel.previewedFileID
+                    files: application.generatedFiles,
+                    selectedID: application.previewedFileID
                 )
             case .history:
-                JobHistoryView(store: appModel.recentDocumentStore)
+                JobHistoryView(store: application.recentDocumentStore)
             }
         }
         .navigationSplitViewStyle(.balanced)
         .frame(minWidth: 720, minHeight: 560)
-        .alert("Generation Error", isPresented: $appModel.showError) {
+        .alert("Generation Error", isPresented: $application.showError) {
             Button("OK", role: .cancel) { }
         } message: {
-            Text(appModel.errorMessage)
+            Text(application.errorMessage)
         }
-        .alert("Hosted AI Disclosure", isPresented: $appModel.showHostedAIConsent) {
-            Button("Use Hosted AI", action: appModel.acceptHostedAIConsent)
-            Button("Cancel", role: .cancel, action: appModel.cancelHostedAIConsent)
+        .alert("Hosted AI Disclosure", isPresented: $application.showHostedAIConsent) {
+            Button("Use Hosted AI", action: application.acceptHostedAIConsent)
+            Button("Cancel", role: .cancel, action: application.cancelHostedAIConsent)
         } message: {
             Text("OpenAI and Anthropic generation sends prompts, selected syllabus context, and draft question content to the provider you choose. API keys stay in Keychain. Ollama keeps generation local.")
         }
         .confirmationDialog(
             "Set Up Apple MLX?",
-            isPresented: $appModel.showMLXSetupConfirmation,
+            isPresented: $application.showMLXSetupConfirmation,
             titleVisibility: .visible
         ) {
-            Button("Set Up and Continue", action: appModel.confirmMLXSetup)
-            Button("Cancel", role: .cancel, action: appModel.cancelMLXSetup)
+            Button("Set Up and Continue", action: application.confirmMLXSetup)
+            Button("Cancel", role: .cancel, action: application.cancelMLXSetup)
         } message: {
-            Text(appModel.mlxSetupExplanation)
+            Text(application.mlxSetupExplanation)
         }
         .confirmationDialog(
-            "Pull \(appModel.modelToPull)?",
-            isPresented: $appModel.showPullConfirmation,
+            "Pull \(application.modelToPull)?",
+            isPresented: $application.showPullConfirmation,
             titleVisibility: .visible
         ) {
             Button("Pull Model") {
-                appModel.confirmPullModel()
+                application.confirmPullModel()
             }
             Button("Cancel", role: .cancel) { }
         } message: {
             Text("Ollama will download this model and make it available locally.")
         }
-        .sheet(isPresented: $appModel.showWelcome) {
+        .sheet(isPresented: $application.showWelcome) {
             WelcomeSheet()
-                .environmentObject(appModel)
+                .environmentObject(application)
         }
-        .sheet(isPresented: $appModel.showHelp) {
+        .sheet(isPresented: $application.showHelp) {
             HelpSheet()
-                .environmentObject(appModel)
+                .environmentObject(application)
         }
         .onAppear(perform: ensureSidebarSelection)
         .onChange(of: catalog.sidebarSelection) { _, newSelection in
             selectBoard(for: newSelection)
         }
         .task {
-            if appModel.selectedBoard.usesAI && appModel.aiProvider == .ollama {
-                appModel.refreshOllama()
+            if application.selectedBoard.usesAI && application.aiProvider == .ollama {
+                application.refreshOllama()
             }
         }
     }
@@ -114,7 +114,7 @@ struct ContentView: View {
             return
         }
         Task { @MainActor in
-            appModel.selectBoard(board)
+            application.selectBoard(board)
         }
     }
 }
@@ -122,7 +122,7 @@ struct ContentView: View {
 #if DEBUG
 private struct ContentViewPreview: PreviewProvider {
     static var previews: some View {
-        let model = AppViewModel()
+        let model = ApplicationCoordinator()
         ContentView()
             .environmentObject(model)
             .environment(model.catalogStore)

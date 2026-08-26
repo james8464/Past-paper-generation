@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct JobHistoryView: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @EnvironmentObject private var application: ApplicationCoordinator
     @Bindable var store: RecentDocumentStore
     @State private var selection: GenerationJobRecord.ID?
 
@@ -38,10 +38,10 @@ struct JobHistoryView: View {
                 .contextMenu(forSelectionType: GenerationJobRecord.ID.self) { selected in
                     if let record = selectedRecord(from: selected) {
                         Button("Duplicate Configuration") {
-                            appModel.duplicateConfiguration(record)
+                            application.duplicateConfiguration(record)
                         }
                         Button("Create Again with New Questions") {
-                            appModel.createAgainWithNewSeed(record)
+                            application.createAgainWithNewSeed(record)
                         }
                         Divider()
                         Button("Remove from History", role: .destructive) {
@@ -56,14 +56,14 @@ struct JobHistoryView: View {
             ToolbarItemGroup {
                 Button("Duplicate Configuration", systemImage: "doc.on.doc") {
                     if let record = selectedRecord {
-                        appModel.duplicateConfiguration(record)
+                        application.duplicateConfiguration(record)
                     }
                 }
                 .disabled(selectedRecord == nil)
 
                 Button("Create Again with New Questions", systemImage: "arrow.clockwise") {
                     if let record = selectedRecord {
-                        appModel.createAgainWithNewSeed(record)
+                        application.createAgainWithNewSeed(record)
                     }
                 }
                 .disabled(selectedRecord == nil)

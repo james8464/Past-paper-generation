@@ -6,7 +6,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct DocumentPreviewView: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @EnvironmentObject private var application: ApplicationCoordinator
     let files: [GeneratedFile]
     @State private var selection: GeneratedFile.ID?
     @State private var exportError: String?
@@ -69,7 +69,7 @@ struct DocumentPreviewView: View {
                     .disabled(provenanceRecord == nil)
 
                 Button("Reveal in Finder", systemImage: "folder") {
-                    if let file = selectedFile { appModel.revealGeneratedFile(file) }
+                    if let file = selectedFile { application.revealGeneratedFile(file) }
                 }
                 .disabled(selectedFile?.exists != true)
             }
@@ -94,7 +94,7 @@ struct DocumentPreviewView: View {
 
     private var provenanceRecord: GenerationJobRecord? {
         guard let file = selectedFile else { return nil }
-        return appModel.recentDocumentStore.records.first { record in
+        return application.recentDocumentStore.records.first { record in
             record.artifacts.contains { $0.id == file.id || $0.url == file.url }
         }
     }

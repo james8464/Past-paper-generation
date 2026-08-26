@@ -209,8 +209,8 @@ final class CoordinatorTests: XCTestCase {
     }
 
     @MainActor
-    func testAppViewModelOwnsFocusedCoordinatorsDuringCompatibilityMigration() {
-        let model = AppViewModel()
+    func testApplicationCoordinatorOwnsFocusedCoordinators() {
+        let model = ApplicationCoordinator()
 
         XCTAssertEqual(model.settingsStore.provider, model.aiProvider)
         XCTAssertEqual(model.catalogStore.subjects, ExamCatalog.subjects)
@@ -222,7 +222,7 @@ final class CoordinatorTests: XCTestCase {
 
     @MainActor
     func testDuplicateConfigurationRestoresSelectionsAndSeed() throws {
-        let model = AppViewModel()
+        let model = ApplicationCoordinator()
         let record = GenerationJobRecord.fixture(state: .completed)
 
         model.duplicateConfiguration(record)
@@ -236,7 +236,7 @@ final class CoordinatorTests: XCTestCase {
 
     @MainActor
     func testCreateAgainUsesDifferentSeedAndPreviewOpensDocuments() throws {
-        let model = AppViewModel()
+        let model = ApplicationCoordinator()
         let record = GenerationJobRecord.fixture(state: .completed)
         let file = GeneratedFile(
             role: "question_paper",

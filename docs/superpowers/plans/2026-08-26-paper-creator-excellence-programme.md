@@ -246,10 +246,10 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - [x] Implement coordinators one responsibility at a time with dependency-injected protocols and no singleton/global mutable state.
 - [x] Move persisted preferences to `SettingsStore`; move Keychain interaction behind the existing `SecretStore` protocol.
 - [x] Add atomic JSON job-history storage with schema migration, corrupt-record quarantine, missing-file handling, and bounded retention configurable in Settings.
-- [ ] Keep `AppViewModel` below 200 lines after compatibility forwarding is removed; views observe only the coordinator they need.
+- [x] Keep `AppViewModel` below 200 lines after compatibility forwarding is removed; views observe only the coordinator they need.
 - [x] Add tests for process relaunch, cancelled jobs, interrupted jobs, corrupt history, missing artifacts, duplicate configurations, and stale model lists.
-- [ ] Run `make -C macOS test`, strict `make -C macOS build`, and update Graphify.
-- [ ] Commit in coordinator-sized changes, ending with `Decompose application state coordinators`.
+- [x] Run `make -C macOS test`, strict `make -C macOS build`, and update Graphify.
+- [x] Commit in coordinator-sized changes, ending with `Decompose application state coordinators`.
 
 ### Task 6: Deliver the Native macOS Workflow and Accessibility Pass
 

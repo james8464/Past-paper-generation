@@ -1,88 +1,88 @@
 import SwiftUI
 
 struct AppCommands: Commands {
-    @ObservedObject var appModel: AppViewModel
+    @ObservedObject var application: ApplicationCoordinator
 
     var body: some Commands {
         CommandGroup(replacing: .newItem) {
-            Button("New Paper", action: appModel.showCreationWorkspace)
+            Button("New Paper", action: application.showCreationWorkspace)
                 .keyboardShortcut("n", modifiers: [.command])
 
-            Button("Create Paper", action: appModel.generate)
+            Button("Create Paper", action: application.generate)
                 .keyboardShortcut(.return, modifiers: [.command])
-                .disabled(!appModel.canGenerate)
+                .disabled(!application.canGenerate)
 
-            Button("Cancel Generation", action: appModel.cancelGeneration)
+            Button("Cancel Generation", action: application.cancelGeneration)
                 .keyboardShortcut(".", modifiers: [.command])
-                .disabled(!appModel.isRunning)
+                .disabled(!application.isRunning)
 
             Divider()
         }
 
         CommandGroup(after: .saveItem) {
-            Button("Open Output Folder", action: appModel.openOutputFolder)
+            Button("Open Output Folder", action: application.openOutputFolder)
                 .keyboardShortcut("o", modifiers: [.command, .option])
 
             Divider()
 
             Button("Open Latest Question Paper") {
-                appModel.previewGeneratedFile(role: "question_paper")
+                application.previewGeneratedFile(role: "question_paper")
             }
-            .disabled(!appModel.hasGeneratedFile(role: "question_paper"))
+            .disabled(!application.hasGeneratedFile(role: "question_paper"))
 
             Button("Open Latest Mark Scheme") {
-                appModel.previewGeneratedFile(role: "mark_scheme")
+                application.previewGeneratedFile(role: "mark_scheme")
             }
-            .disabled(!appModel.hasGeneratedFile(role: "mark_scheme"))
+            .disabled(!application.hasGeneratedFile(role: "mark_scheme"))
 
             Button("Reveal Latest Question Paper in Finder") {
-                appModel.revealGeneratedFile(role: "question_paper")
+                application.revealGeneratedFile(role: "question_paper")
             }
-            .disabled(!appModel.hasGeneratedFile(role: "question_paper"))
+            .disabled(!application.hasGeneratedFile(role: "question_paper"))
         }
 
         CommandMenu("Tools") {
-            Button("Show Documents", action: appModel.showDocuments)
+            Button("Show Documents", action: application.showDocuments)
                 .keyboardShortcut("d", modifiers: [.command, .shift])
 
-            Button("Show History", action: appModel.showHistory)
+            Button("Show History", action: application.showHistory)
                 .keyboardShortcut("y", modifiers: [.command, .shift])
 
             Button("Show Benchmark") {
-                appModel.showBenchmarkPage()
+                application.showBenchmarkPage()
             }
             .keyboardShortcut("b", modifiers: [.command, .shift])
 
             Divider()
 
-            Button("Run Benchmark", action: appModel.startBenchmark)
-                .disabled(appModel.isRunning || appModel.isBenchmarkRunning)
+            Button("Run Benchmark", action: application.startBenchmark)
+                .disabled(application.isRunning || application.benchmarkCoordinator.isRunning)
 
-            Button("Cancel Benchmark", action: appModel.cancelBenchmark)
-                .disabled(!appModel.isBenchmarkRunning)
+            Button("Cancel Benchmark", action: application.cancelBenchmark)
+                .disabled(!application.benchmarkCoordinator.isRunning)
 
             Divider()
 
-            Button("Copy Diagnostic Summary", action: appModel.copyDiagnosticSummary)
+            Button("Copy Diagnostic Summary", action: application.copyDiagnosticSummary)
         }
 
         CommandGroup(replacing: .help) {
             Button("Paper creator Help") {
-                appModel.showHelpGuide()
+                application.showHelpGuide()
             }
             .keyboardShortcut("h", modifiers: [.command, .shift])
 
-            Button("Show Welcome Guide", action: appModel.showWelcomeGuide)
+            Button("Show Welcome Guide", action: application.showWelcomeGuide)
 
             Divider()
 
-            Button("Open User Guide", action: appModel.openProjectHelp)
-            Button("Privacy Policy", action: appModel.openPrivacyPolicy)
-            Button("Report an Issue", action: appModel.openSupportPage)
+            Button("Open User Guide", action: application.openProjectHelp)
+            Button("Privacy Policy", action: application.openPrivacyPolicy)
+            Button("Report an Issue", action: application.openSupportPage)
 
             Divider()
 
-            Button("Copy Diagnostic Summary", action: appModel.copyDiagnosticSummary)
+            Button("Copy Diagnostic Summary", action: application.copyDiagnosticSummary)
         }
     }
 

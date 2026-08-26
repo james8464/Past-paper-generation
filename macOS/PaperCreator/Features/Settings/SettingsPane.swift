@@ -67,14 +67,14 @@ private struct SettingsWindowConfiguration: NSViewRepresentable {
 }
 
 private struct AISettingsTab: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @EnvironmentObject private var application: ApplicationCoordinator
 
     var body: some View {
         Form {
             Section("Provider") {
                 Picker("Provider", selection: Binding(
-                    get: { appModel.aiProvider },
-                    set: { appModel.selectAIProvider($0) }
+                    get: { application.aiProvider },
+                    set: { application.selectAIProvider($0) }
                 )) {
                     ForEach(AIProvider.allCases) { provider in
                         Text(provider.title).tag(provider)
@@ -82,10 +82,10 @@ private struct AISettingsTab: View {
                 }
                 .pickerStyle(.segmented)
 
-                Text(appModel.aiProvider.subtitle)
+                Text(application.aiProvider.subtitle)
                     .foregroundStyle(.secondary)
 
-                if appModel.aiProvider.sendsPromptsOffDevice {
+                if application.aiProvider.sendsPromptsOffDevice {
                     Label(
                         "Prompts and subject context may be sent to the selected provider.",
                         systemImage: "network"
@@ -98,53 +98,53 @@ private struct AISettingsTab: View {
 
         }
         .formStyle(.grouped)
-        .disabled(appModel.isRunning)
-        .onChange(of: appModel.selectedModel) { _, _ in appModel.saveAISettings() }
-        .onChange(of: appModel.openAIModel) { _, _ in appModel.saveAISettings() }
-        .onChange(of: appModel.anthropicModel) { _, _ in appModel.saveAISettings() }
-        .onChange(of: appModel.appleModel) { _, _ in appModel.saveAISettings() }
-        .onChange(of: appModel.openAIAPIKey) { _, _ in appModel.saveAISettings() }
-        .onChange(of: appModel.anthropicAPIKey) { _, _ in appModel.saveAISettings() }
+        .disabled(application.isRunning)
+        .onChange(of: application.selectedModel) { _, _ in application.saveAISettings() }
+        .onChange(of: application.openAIModel) { _, _ in application.saveAISettings() }
+        .onChange(of: application.anthropicModel) { _, _ in application.saveAISettings() }
+        .onChange(of: application.appleModel) { _, _ in application.saveAISettings() }
+        .onChange(of: application.openAIAPIKey) { _, _ in application.saveAISettings() }
+        .onChange(of: application.anthropicAPIKey) { _, _ in application.saveAISettings() }
     }
 
     @ViewBuilder
     private var providerSettings: some View {
-        switch appModel.aiProvider {
+        switch application.aiProvider {
         case .ollama:
             Section("Local model") {
                 LabeledContent("Recommended") {
                     VStack(alignment: .trailing, spacing: 2) {
-                        Text(appModel.ollamaRecommendation.model)
-                        Text(appModel.ollamaRecommendation.downloadDescription)
+                        Text(application.ollamaRecommendation.model)
+                        Text(application.ollamaRecommendation.downloadDescription)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                 }
 
-                Text(appModel.ollamaRecommendation.detail)
+                Text(application.ollamaRecommendation.detail)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
 
                 HStack {
-                    if appModel.recommendedModelIsInstalled {
-                        Button("Use Recommended Model", action: appModel.useRecommendedOllamaModel)
-                            .disabled(appModel.selectedModelIsRecommended)
-                    } else if appModel.distributionMode.canManageOllama {
-                        Button("Download Recommended Model…", action: appModel.requestRecommendedOllamaModel)
-                            .disabled(appModel.isRunning)
+                    if application.recommendedModelIsInstalled {
+                        Button("Use Recommended Model", action: application.useRecommendedOllamaModel)
+                            .disabled(application.selectedModelIsRecommended)
+                    } else if application.distributionMode.canManageOllama {
+                        Button("Download Recommended Model…", action: application.requestRecommendedOllamaModel)
+                            .disabled(application.isRunning)
                     }
 
                     Button("Open Model Guide") {
-                        appModel.showHelpGuide(topic: .choosingAModel)
+                        application.showHelpGuide(topic: .choosingAModel)
                     }
                 }
 
                 Divider()
 
-                Picker("Model", selection: $appModel.selectedModel) {
-                    ForEach(appModel.ollamaModelOptions, id: \.self) { model in
+                Picker("Model", selection: $application.selectedModel) {
+                    ForEach(application.ollamaModelOptions, id: \.self) { model in
                         Text(
-                            model == appModel.ollamaRecommendation.model
+                            model == application.ollamaRecommendation.model
                                 ? "\(model) — Recommended"
                                 : model
                         )
@@ -152,7 +152,7 @@ private struct AISettingsTab: View {
                     }
                 }
 
-                if appModel.selectedModelIsRecommended {
+                if application.selectedModelIsRecommended {
                     Label("Recommended model selected", systemImage: "checkmark.seal.fill")
                         .foregroundStyle(.green)
                 } else {
@@ -165,20 +165,20 @@ private struct AISettingsTab: View {
                 }
 
                 HStack {
-                    Button("Check Again", action: appModel.refreshOllama)
-                        .disabled(appModel.isRefreshingOllama)
+                    Button("Check Again", action: application.refreshOllama)
+                        .disabled(application.isRefreshingOllama)
                     Spacer()
-                    Text(appModel.ollamaState.message)
+                    Text(application.ollamaState.message)
                         .foregroundStyle(.secondary)
                 }
 
-                if appModel.distributionMode.canManageOllama {
+                if application.distributionMode.canManageOllama {
                     LabeledContent("Download model") {
                         HStack {
-                            TextField("Model name", text: $appModel.modelToPull)
+                            TextField("Model name", text: $application.modelToPull)
                                 .frame(minWidth: 190)
-                            Button("Download", action: appModel.requestPullModel)
-                                .disabled(appModel.modelToPull.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || appModel.isRunning)
+                            Button("Download", action: application.requestPullModel)
+                                .disabled(application.modelToPull.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || application.isRunning)
                         }
                     }
                 } else {
@@ -189,23 +189,23 @@ private struct AISettingsTab: View {
 
         case .openAI:
             Section("OpenAI") {
-                TextField("Model", text: $appModel.openAIModel)
-                SecureField("API key", text: $appModel.openAIAPIKey)
+                TextField("Model", text: $application.openAIModel)
+                SecureField("API key", text: $application.openAIAPIKey)
                 Text("Your key is stored in Keychain.")
                     .foregroundStyle(.secondary)
             }
 
         case .anthropic:
             Section("Anthropic") {
-                TextField("Model", text: $appModel.anthropicModel)
-                SecureField("API key", text: $appModel.anthropicAPIKey)
+                TextField("Model", text: $application.anthropicModel)
+                SecureField("API key", text: $application.anthropicAPIKey)
                 Text("Your key is stored in Keychain.")
                     .foregroundStyle(.secondary)
             }
 
         case .apple:
             Section("Apple MLX") {
-                TextField("Model ID or path", text: $appModel.appleModel)
+                TextField("Model ID or path", text: $application.appleModel)
                 Text("Use a Hugging Face model ID or the path to a model already on this Mac. Paper Creator offers guided setup before the first live generation with each model.")
                     .foregroundStyle(.secondary)
             }
@@ -214,18 +214,18 @@ private struct AISettingsTab: View {
 }
 
 private struct OutputSettingsTab: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @EnvironmentObject private var application: ApplicationCoordinator
 
     var body: some View {
         Form {
             Section("Folder") {
                 LabeledContent("Output") {
                     HStack {
-                        Text(appModel.outputFolderDisplayPath)
+                        Text(application.outputFolderDisplayPath)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                             .truncationMode(.middle)
-                        Button("Choose...", action: appModel.chooseOutputFolder)
+                        Button("Choose...", action: application.chooseOutputFolder)
                     }
                 }
             }
@@ -234,8 +234,8 @@ private struct OutputSettingsTab: View {
                 Toggle(
                     "Create a layout preview",
                     isOn: Binding(
-                        get: { appModel.dryRun },
-                        set: { appModel.setDryRun($0) }
+                        get: { application.dryRun },
+                        set: { application.setDryRun($0) }
                     )
                 )
                 Text(
@@ -249,8 +249,8 @@ private struct OutputSettingsTab: View {
                 Toggle(
                     "Notify when generation starts and finishes",
                     isOn: Binding(
-                        get: { appModel.notificationsEnabled },
-                        set: { appModel.setNotificationsEnabled($0) }
+                        get: { application.notificationsEnabled },
+                        set: { application.setNotificationsEnabled($0) }
                     )
                 )
                 Text("Paper creator only sends notifications about work you start.")
@@ -259,13 +259,13 @@ private struct OutputSettingsTab: View {
 
             Section("History") {
                 Stepper(
-                    "Keep \(appModel.settingsStore.historyRetentionLimit) jobs",
+                    "Keep \(application.settingsStore.historyRetentionLimit) jobs",
                     value: Binding(
-                        get: { appModel.settingsStore.historyRetentionLimit },
+                        get: { application.settingsStore.historyRetentionLimit },
                         set: { value in
-                            appModel.settingsStore.historyRetentionLimit = value
-                            appModel.settingsStore.save()
-                            appModel.recentDocumentStore.retentionLimit = value
+                            application.settingsStore.historyRetentionLimit = value
+                            application.settingsStore.save()
+                            application.recentDocumentStore.retentionLimit = value
                         }
                     ),
                     in: 10 ... 500,
@@ -276,20 +276,20 @@ private struct OutputSettingsTab: View {
             }
         }
         .formStyle(.grouped)
-        .disabled(appModel.isRunning)
+        .disabled(application.isRunning)
     }
 }
 
 private struct PrivacySettingsTab: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @EnvironmentObject private var application: ApplicationCoordinator
 
     var body: some View {
         Form {
             Section("Privacy") {
-                LabeledContent("Distribution", value: appModel.distributionMode.title)
+                LabeledContent("Distribution", value: application.distributionMode.title)
                 LabeledContent("Accounts", value: "Not required")
                 LabeledContent("API keys", value: "Keychain")
-                LabeledContent("Hosted AI consent", value: appModel.hasHostedAIConsent ? "Accepted" : "Not accepted")
+                LabeledContent("Hosted AI consent", value: application.hasHostedAIConsent ? "Accepted" : "Not accepted")
                 Link("Privacy Policy", destination: AppLinks.privacyPolicy)
                 Text("Ollama generation is local. Hosted providers send prompts to the provider you select.")
                     .foregroundStyle(.secondary)

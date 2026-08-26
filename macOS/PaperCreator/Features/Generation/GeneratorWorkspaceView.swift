@@ -2,7 +2,7 @@ import SwiftUI
 import TipKit
 
 struct GeneratorWorkspace: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @EnvironmentObject private var application: ApplicationCoordinator
     @AppStorage(AppStorageKey.qualityInspectorVisible)
     private var showsQualityInspector = true
     let board: ExamBoardOption
@@ -32,17 +32,17 @@ struct GeneratorWorkspace: View {
                 }
                 .help(showsQualityInspector ? "Hide Quality Inspector" : "Show Quality Inspector")
 
-                if appModel.isRunning {
-                    Button(role: .cancel, action: appModel.cancelGeneration) {
+                if application.isRunning {
+                    Button(role: .cancel, action: application.cancelGeneration) {
                         Label("Cancel", systemImage: "xmark.circle")
                     }
                     .help("Cancel paper creation")
                 } else {
-                    Button(action: appModel.generate) {
+                    Button(action: application.generate) {
                         Label("Create Paper", systemImage: "doc.badge.plus")
                     }
                     .buttonStyle(.borderedProminent)
-                    .disabled(!appModel.canGenerate)
+                    .disabled(!application.canGenerate)
                     .help(generateHelp)
                     .accessibilityHint(generateHelp)
                 }
@@ -67,21 +67,21 @@ struct GeneratorWorkspace: View {
     }
 
     private var generateHelp: String {
-        appModel.generationBlocker ?? "Create a new question paper, mark scheme, and validation package."
+        application.generationBlocker ?? "Create a new question paper, mark scheme, and validation package."
     }
 }
 
 private struct PaperConfiguration: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @EnvironmentObject private var application: ApplicationCoordinator
     let board: ExamBoardOption
 
     var body: some View {
         Form {
             if board.usesAI,
-               appModel.aiProvider == .ollama,
-               !appModel.selectedModelIsRecommended {
+               application.aiProvider == .ollama,
+               !application.selectedModelIsRecommended {
                 TipView(PaperCreationTips.modelRecommendation)
-            } else if appModel.generatedFiles.isEmpty {
+            } else if application.generatedFiles.isEmpty {
                 TipView(PaperCreationTips.preview)
             }
 
@@ -89,8 +89,8 @@ private struct PaperConfiguration: View {
                 Picker(
                     "Paper",
                     selection: Binding(
-                        get: { appModel.selectedPaperID },
-                        set: { appModel.selectPaperID($0) }
+                        get: { application.selectedPaperID },
+                        set: { application.selectPaperID($0) }
                     )
                 ) {
                     ForEach(board.papers) { paper in
@@ -100,7 +100,7 @@ private struct PaperConfiguration: View {
                 .pickerStyle(.segmented)
 
                 LabeledContent("Assessment") {
-                    Text(appModel.selectedPaperDetail)
+                    Text(application.selectedPaperDetail)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.trailing)
                 }
@@ -110,8 +110,8 @@ private struct PaperConfiguration: View {
                 Picker(
                     "AI provider",
                     selection: Binding(
-                        get: { appModel.aiProvider },
-                        set: { appModel.selectAIProvider($0) }
+                        get: { application.aiProvider },
+                        set: { application.selectAIProvider($0) }
                     )
                 ) {
                     ForEach(board.supportedProviders) { provider in
@@ -123,12 +123,12 @@ private struct PaperConfiguration: View {
 
                 LabeledContent("Model") {
                     HStack(spacing: 8) {
-                        Text(appModel.activeModelName)
+                        Text(application.activeModelName)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                             .truncationMode(.middle)
-                            .help(appModel.activeModelName)
-                        if appModel.aiProvider == .ollama && appModel.selectedModelIsRecommended {
+                            .help(application.activeModelName)
+                        if application.aiProvider == .ollama && application.selectedModelIsRecommended {
                             Text("Recommended")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
@@ -136,7 +136,7 @@ private struct PaperConfiguration: View {
                     }
                 }
 
-                if appModel.aiProvider == .ollama && !appModel.selectedModelIsRecommended {
+                if application.aiProvider == .ollama && !application.selectedModelIsRecommended {
                     Label(
                         "Results may vary with other Ollama models. Use the recommendation in Settings for the checked workflow.",
                         systemImage: "exclamationmark.triangle.fill"
@@ -148,30 +148,30 @@ private struct PaperConfiguration: View {
 
                 LabeledContent("Save to") {
                     HStack(spacing: 8) {
-                        Text(appModel.outputFolderDisplayPath)
+                        Text(application.outputFolderDisplayPath)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                             .truncationMode(.middle)
-                            .help(appModel.outputFolderDisplayPath)
-                        Button("Choose…", action: appModel.chooseOutputFolder)
+                            .help(application.outputFolderDisplayPath)
+                        Button("Choose…", action: application.chooseOutputFolder)
                     }
                 }
 
                 Toggle(
                     "Create a layout preview",
                     isOn: Binding(
-                        get: { appModel.dryRun },
-                        set: { appModel.setDryRun($0) }
+                        get: { application.dryRun },
+                        set: { application.setDryRun($0) }
                     )
                 )
                 .help("Preview layout without contacting an AI provider. Preview questions are not release output.")
             }
 
-            if appModel.isRunning {
+            if application.isRunning {
                 Section("Progress") {
                     GenerationProgress()
                 }
-            } else if let blocker = appModel.generationBlocker {
+            } else if let blocker = application.generationBlocker {
                 Section("Action required") {
                     HStack(alignment: .firstTextBaseline, spacing: 10) {
                         Image(systemName: "exclamationmark.triangle.fill")
@@ -188,21 +188,21 @@ private struct PaperConfiguration: View {
             }
         }
         .formStyle(.grouped)
-        .disabled(appModel.isRunning)
+        .disabled(application.isRunning)
     }
 }
 
 private struct GenerationProgress: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @EnvironmentObject private var application: ApplicationCoordinator
 
     var body: some View {
         VStack(alignment: .leading, spacing: 7) {
-            if let progress = appModel.generationProgress {
+            if let progress = application.generationProgress {
                 ProgressView(value: progress) {
                     HStack {
-                        Text(appModel.status)
+                        Text(application.status)
                         Spacer()
-                        if let estimate = appModel.generationEstimate {
+                        if let estimate = application.generationEstimate {
                             Text(estimate.remainingText)
                                 .foregroundStyle(.secondary)
                         }
@@ -211,7 +211,7 @@ private struct GenerationProgress: View {
                     Text(progress.formatted(.percent.precision(.fractionLength(0))))
                 }
             } else {
-                ProgressView(appModel.status)
+                ProgressView(application.status)
             }
         }
         .accessibilityElement(children: .contain)
@@ -219,30 +219,30 @@ private struct GenerationProgress: View {
 }
 
 private struct RecentDocuments: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @EnvironmentObject private var application: ApplicationCoordinator
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text("Recent Documents")
                     .font(.headline)
-                if !appModel.generatedFiles.isEmpty {
-                    Text(appModel.generatedFiles.count, format: .number)
+                if !application.generatedFiles.isEmpty {
+                    Text(application.generatedFiles.count, format: .number)
                         .foregroundStyle(.secondary)
-                        .accessibilityLabel("\(appModel.generatedFiles.count) documents")
+                        .accessibilityLabel("\(application.generatedFiles.count) documents")
                 }
                 Spacer()
-                Button("Open Output Folder", action: appModel.openOutputFolder)
+                Button("Open Output Folder", action: application.openOutputFolder)
             }
             .padding(.horizontal, 20)
             .padding(.top, 14)
 
-            if !appModel.generatedFiles.isEmpty {
+            if !application.generatedFiles.isEmpty {
                 TipView(PaperCreationTips.quality)
                     .padding(.horizontal, 20)
             }
 
-            GeneratedFilesTable(files: appModel.generatedFiles)
+            GeneratedFilesTable(files: application.generatedFiles)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .padding(.bottom, 12)
@@ -250,17 +250,17 @@ private struct RecentDocuments: View {
 }
 
 private struct QualityInspector: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @EnvironmentObject private var application: ApplicationCoordinator
 
     var body: some View {
         Form {
             Section("Qualification") {
                 qualityRow(
                     "Engineering",
-                    detail: appModel.selectedPaper.readiness.engineeringValidated
+                    detail: application.selectedPaper.readiness.engineeringValidated
                         ? "Generation, validation, rendering, and packaging checks pass."
                         : "Engineering validation is incomplete for this paper.",
-                    state: appModel.selectedPaper.readiness.engineeringValidated ? .passed : .pending
+                    state: application.selectedPaper.readiness.engineeringValidated ? .passed : .pending
                 )
                 qualityRow(
                     "Originality",
@@ -269,21 +269,21 @@ private struct QualityInspector: View {
                 )
                 qualityRow(
                     "Visual profile",
-                    detail: appModel.selectedPaper.readiness.visuallyCalibrated
+                    detail: application.selectedPaper.readiness.visuallyCalibrated
                         ? "Reference geometry has been reviewed."
                         : "This paper still needs a completed visual calibration.",
-                    state: appModel.selectedPaper.readiness.visuallyCalibrated ? .passed : .pending
+                    state: application.selectedPaper.readiness.visuallyCalibrated ? .passed : .pending
                 )
                 qualityRow(
                     "Empirical demand",
-                    detail: appModel.selectedPaper.readiness.empiricallyCalibrated
+                    detail: application.selectedPaper.readiness.empiricallyCalibrated
                         ? "Independent student and marker calibration is complete."
                         : "The paper targets the board demand profile; equivalent difficulty is not claimed.",
-                    state: appModel.selectedPaper.readiness.empiricallyCalibrated ? .passed : .pending
+                    state: application.selectedPaper.readiness.empiricallyCalibrated ? .passed : .pending
                 )
             }
 
-            if let report = appModel.lastQualityReport {
+            if let report = application.lastQualityReport {
                 Section("Latest package") {
                     LabeledContent("Items", value: "\(report.itemCount)")
                     LabeledContent(
@@ -304,9 +304,9 @@ private struct QualityInspector: View {
                 }
             }
 
-            if appModel.isRunning || !appModel.progressEntries.isEmpty {
+            if application.isRunning || !application.progressEntries.isEmpty {
                 Section("Activity") {
-                    ForEach(appModel.progressEntries.suffix(6)) { entry in
+                    ForEach(application.progressEntries.suffix(6)) { entry in
                         Text(entry.message)
                             .lineLimit(3)
                     }
@@ -350,17 +350,17 @@ private struct QualityInspector: View {
     }
 
     private var originalityState: QualityState {
-        if appModel.dryRun {
+        if application.dryRun {
             return .preview
         }
-        return appModel.lastQualityReport == nil ? .atCreation : .passed
+        return application.lastQualityReport == nil ? .atCreation : .passed
     }
 
     private var originalityDetail: String {
-        if appModel.dryRun {
+        if application.dryRun {
             return "History comparison is skipped for preview drafts."
         }
-        if appModel.lastQualityReport == nil {
+        if application.lastQualityReport == nil {
             return "Draft and history similarity are checked before files are published."
         }
         return "Draft and historic-item similarity passed the release threshold."

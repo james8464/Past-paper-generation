@@ -31,17 +31,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		012379F16A7FA1D220AD61BE /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		012379F16A7FA1D220AD61BE /* Exceptions for "PaperCreator" folder in "PaperCreator" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
-				PaperCreator.entitlements,
-				PaperCreatorBackend.entitlements,
-				PaperCreatorDirect.entitlements,
 			);
 			target = F83C267BD749B4DE60F9E7E5 /* PaperCreator */;
 		};
-		7E93D3B8B72790A53880DE0C /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		7E93D3B8B72790A53880DE0C /* Exceptions for "Tests" folder in "PaperCreatorTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -54,11 +51,7 @@
 		09D71200BDC591CFAD261152 /* PaperCreator */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				012379F16A7FA1D220AD61BE /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
+				012379F16A7FA1D220AD61BE /* Exceptions for "PaperCreator" folder in "PaperCreator" target */,
 			);
 			path = PaperCreator;
 			sourceTree = "<group>";
@@ -66,11 +59,7 @@
 		178798ACBEF73A9554415E41 /* Tests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				7E93D3B8B72790A53880DE0C /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
+				7E93D3B8B72790A53880DE0C /* Exceptions for "Tests" folder in "PaperCreatorTests" target */,
 			);
 			path = Tests;
 			sourceTree = "<group>";

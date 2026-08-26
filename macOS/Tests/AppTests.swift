@@ -77,7 +77,7 @@ final class PaperCreatorTests: XCTestCase {
     }
 
     func testBuiltAppContainsStandaloneBackend() throws {
-        let bundle = Bundle(for: AppViewModel.self).bundleURL
+        let bundle = Bundle(for: ApplicationCoordinator.self).bundleURL
         let executable = bundle
             .appendingPathComponent("Contents/Resources/PaperCreatorBackend/PaperCreatorBackend")
         XCTAssertTrue(FileManager.default.isExecutableFile(atPath: executable.path))
@@ -192,10 +192,10 @@ final class PaperCreatorTests: XCTestCase {
         }
 
         defaults.set(true, forKey: AppStorageKey.dryRun)
-        let appModel = AppViewModel()
-        XCTAssertTrue(appModel.dryRun)
+        let application = ApplicationCoordinator()
+        XCTAssertTrue(application.dryRun)
 
-        appModel.setDryRun(false)
+        application.setDryRun(false)
         XCTAssertFalse(defaults.bool(forKey: AppStorageKey.dryRun))
     }
 
@@ -342,14 +342,14 @@ final class PaperCreatorTests: XCTestCase {
             }
         }
         defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
-        let appModel = AppViewModel()
+        let application = ApplicationCoordinator()
         let board = try XCTUnwrap(ExamCatalog.board(id: "economics-aqa"))
-        appModel.selectBoard(board)
-        appModel.aiProvider = .ollama
-        appModel.selectedModel = AppDefaults.ollamaModel
-        appModel.ollamaState = OllamaState()
-        appModel.setDryRun(false)
-        XCTAssertEqual(appModel.generationBlocker, "Check Ollama before generating.")
+        application.selectBoard(board)
+        application.aiProvider = .ollama
+        application.selectedModel = AppDefaults.ollamaModel
+        application.ollamaState = OllamaState()
+        application.setDryRun(false)
+        XCTAssertEqual(application.generationBlocker, "Check Ollama before generating.")
     }
 
     func testRecentDocumentMetadataRoundTrips() throws {

@@ -3,7 +3,7 @@ import Foundation
 import SwiftUI
 
 struct WelcomeSheet: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @EnvironmentObject private var application: ApplicationCoordinator
 
     var body: some View {
         VStack(alignment: .leading, spacing: 28) {
@@ -24,7 +24,7 @@ struct WelcomeSheet: View {
 
             VStack(alignment: .leading, spacing: 18) {
                 WelcomeRow(systemImage: "text.book.closed", title: "Choose a subject", message: "Each paper follows its exam board’s specification and structure.")
-                WelcomeRow(systemImage: "cpu", title: "Use the recommended model", message: "Paper creator recommends \(appModel.ollamaRecommendation.model) for this Mac; other models can produce different results.")
+                WelcomeRow(systemImage: "cpu", title: "Use the recommended model", message: "Paper creator recommends \(application.ollamaRecommendation.model) for this Mac; other models can produce different results.")
                 WelcomeRow(systemImage: "doc.badge.arrow.up", title: "Create both documents", message: "The question paper and mark scheme are saved together.")
                 WelcomeRow(systemImage: "doc.richtext", title: "Preview and review", message: "Inspect every generated PDF in Documents and return to any configuration from History.")
             }
@@ -39,7 +39,7 @@ struct WelcomeSheet: View {
                 }
                 Spacer()
                 Button("Continue") {
-                    appModel.dismissWelcome()
+                    application.dismissWelcome()
                 }
                 .keyboardShortcut(.defaultAction)
                 .controlSize(.large)
@@ -75,12 +75,12 @@ private struct WelcomeRow: View {
 }
 
 struct HelpSheet: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @EnvironmentObject private var application: ApplicationCoordinator
 
     var body: some View {
         VStack(spacing: 0) {
             NavigationSplitView {
-                List(HelpTopic.allCases, selection: $appModel.helpTopic) { topic in
+                List(HelpTopic.allCases, selection: $application.helpTopic) { topic in
                     Label(topic.title, systemImage: topic.systemImage)
                         .tag(topic)
                 }
@@ -88,17 +88,17 @@ struct HelpSheet: View {
                 .navigationTitle("Help")
                 .navigationSplitViewColumnWidth(min: 190, ideal: 220, max: 260)
             } detail: {
-                HelpTopicPage(topic: appModel.helpTopic)
+                HelpTopicPage(topic: application.helpTopic)
             }
             .navigationSplitViewStyle(.balanced)
 
             Divider()
 
             HStack {
-                Button("Copy Diagnostics", action: appModel.copyDiagnosticSummary)
-                Button("Report Issue", action: appModel.openSupportPage)
+                Button("Copy Diagnostics", action: application.copyDiagnosticSummary)
+                Button("Report Issue", action: application.openSupportPage)
                 Spacer()
-                Button("Done", action: appModel.dismissHelpGuide)
+                Button("Done", action: application.dismissHelpGuide)
                     .keyboardShortcut(.defaultAction)
                     .nativePrimaryActionStyle()
             }
@@ -110,7 +110,7 @@ struct HelpSheet: View {
 }
 
 private struct HelpTopicPage: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @EnvironmentObject private var application: ApplicationCoordinator
     let topic: HelpTopic
 
     var body: some View {
@@ -171,14 +171,14 @@ private struct HelpTopicPage: View {
 
             GroupBox("Recommended for this Mac") {
                 VStack(alignment: .leading, spacing: 10) {
-                    LabeledContent("Model", value: appModel.ollamaRecommendation.model)
-                    LabeledContent("Download", value: appModel.ollamaRecommendation.downloadDescription)
+                    LabeledContent("Model", value: application.ollamaRecommendation.model)
+                    LabeledContent("Download", value: application.ollamaRecommendation.downloadDescription)
                     LabeledContent("Unified memory", value: currentMemoryDescription)
-                    LabeledContent("Model maximum context", value: appModel.ollamaRecommendation.contextWindow)
-                    LabeledContent("Paper creator context", value: appModel.ollamaRecommendation.appContextWindow)
-                    Text(appModel.ollamaRecommendation.detail)
+                    LabeledContent("Model maximum context", value: application.ollamaRecommendation.contextWindow)
+                    LabeledContent("Paper creator context", value: application.ollamaRecommendation.appContextWindow)
+                    Text(application.ollamaRecommendation.detail)
                         .foregroundStyle(.secondary)
-                    Text(appModel.ollamaRecommendation.qualityNote)
+                    Text(application.ollamaRecommendation.qualityNote)
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 }

@@ -4,7 +4,7 @@ import Foundation
 @preconcurrency import UserNotifications
 
 @MainActor
-final class AppViewModel: ObservableObject {
+final class ApplicationCoordinator: ObservableObject {
     let settingsStore: SettingsStore
     let catalogStore: CatalogStore
     let modelCoordinator: ModelCoordinator
@@ -66,13 +66,6 @@ final class AppViewModel: ObservableObject {
         catalogStore.selectedBoard
     }
 
-    // Temporary command compatibility while every view migrates to focused coordinators.
-    var isBenchmarkRunning: Bool { benchmarkCoordinator.isRunning }
-    var benchmarkProgress: Double? { benchmarkCoordinator.progress }
-    var benchmarkSamples: [BenchmarkSample] { benchmarkCoordinator.samples }
-    var benchmarkMetrics: [BenchmarkMetric] { benchmarkCoordinator.metrics }
-    var benchmarkVerdict: BenchmarkVerdict? { benchmarkCoordinator.verdict }
-
     var selectedPaper: PaperOption {
         catalogStore.selectedPaper
     }
@@ -98,7 +91,7 @@ final class AppViewModel: ObservableObject {
 
     var generationBlocker: String? {
         if isRunning { return "Generation is already running." }
-        if isBenchmarkRunning { return "Benchmark is running." }
+        if benchmarkCoordinator.isRunning { return "Benchmark is running." }
         if showWelcome { return "Finish the welcome guide before creating a paper." }
         if !selectedBoard.isReady { return "\(selectedBoard.subjectTitle) \(selectedBoard.title) is coming soon." }
         if dryRun { return nil }
@@ -223,7 +216,7 @@ final class AppViewModel: ObservableObject {
     }
 
     func refreshOllama() {
-        guard !isRunning, !isBenchmarkRunning, !isRefreshingOllama else { return }
+        guard !isRunning, !benchmarkCoordinator.isRunning, !isRefreshingOllama else { return }
         isRefreshingOllama = true
         status = "Checking Ollama"
         Task {
@@ -700,7 +693,7 @@ final class AppViewModel: ObservableObject {
             "Output folder: \(outputFolder.path)",
             "Status: \(status)",
             "Latest ETA: \(generationEstimate?.remainingText ?? "None")",
-            "Benchmark: \(benchmarkVerdict.map { "\($0.verdict) (\(Int($0.score * 100))%)" } ?? "Not run")",
+            "Benchmark: \(benchmarkCoordinator.verdict.map { "\($0.verdict) (\(Int($0.score * 100))%)" } ?? "Not run")",
             "Generated files: \(generatedFiles.map { $0.url.lastPathComponent }.joined(separator: ", "))",
         ].joined(separator: "\n")
 
@@ -1036,7 +1029,7 @@ final class AppViewModel: ObservableObject {
             provider: aiProvider,
             model: activeModelName,
             dryRun: dryRun,
-            benchmark: benchmarkVerdict
+            benchmark: benchmarkCoordinator.verdict
         )
         etaTimer?.cancel()
         etaTimer = Timer.publish(every: 1, on: .main, in: .common)
