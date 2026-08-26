@@ -679,16 +679,6 @@
     "ast_hash": "3e97eeb23d9ef5fb9cadde030e50231f",
     "semantic_hash": "3e97eeb23d9ef5fb9cadde030e50231f"
   },
-  "macOS/scripts/resolve_sim_destination.sh": {
-    "mtime": 1778772750.438941,
-    "ast_hash": "4b9191c113c1b348a3b4b21f8831008d",
-    "semantic_hash": "4b9191c113c1b348a3b4b21f8831008d"
-  },
-  "macOS/scripts/run_app_ios_sim.sh": {
-    "mtime": 1778772750.4391637,
-    "ast_hash": "cf7eff66171452cff47af53d5b386eb0",
-    "semantic_hash": "cf7eff66171452cff47af53d5b386eb0"
-  },
   "macOS/scripts/run_app_macos.sh": {
     "mtime": 1778772750.4394393,
     "ast_hash": "2e686de7969302ab207e50d1fed9b593",
@@ -1710,13 +1700,13 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1787755530.103198,
-    "ast_hash": "76fbeb1ce90dd2be745c9aa901ed179b",
+    "mtime": 1787772427.3915098,
+    "ast_hash": "7dff34e57437d5f691abbd5f1a100238",
     "semantic_hash": ""
   },
   "tests/test_repository_hygiene.py": {
-    "mtime": 1787755518.499889,
-    "ast_hash": "a5c48bc4f4447de2273b979b5ba9bd98",
+    "mtime": 1787772326.0154867,
+    "ast_hash": "07d2bd797184f0300f06125415f8c4ae",
     "semantic_hash": ""
   },
   "tools/repository_hygiene.py": {

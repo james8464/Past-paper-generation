@@ -32,3 +32,13 @@ def test_maintained_visual_assets_are_classified_without_allowing_arbitrary_pngs
 
 def test_root_lint_configuration_is_release_configuration() -> None:
     assert classify_path("ruff.toml").category == "build-release-configuration"
+
+
+def test_macos_build_tools_do_not_carry_an_unused_ios_simulator_path() -> None:
+    makefile = (ROOT / "macOS" / "Makefile").read_text(encoding="utf-8")
+
+    assert "APP_PLATFORM := macos" not in makefile
+    assert "APP_PLATFORM),ios" not in makefile
+    assert "SIM_NAME" not in makefile
+    assert not (ROOT / "macOS" / "scripts" / "resolve_sim_destination.sh").exists()
+    assert not (ROOT / "macOS" / "scripts" / "run_app_ios_sim.sh").exists()
