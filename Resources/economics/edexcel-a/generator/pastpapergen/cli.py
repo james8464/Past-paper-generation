@@ -2,16 +2,16 @@ from __future__ import annotations
 
 import argparse
 import secrets
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
-from Backend.Core.assessment_checkpoints import (
-    AssessmentCheckpointStore,
-    identity_for_blueprint,
+from Backend.Core.family_adapter import (
+    ArtifactSpec,
+    BuildResult,
+    FamilyAdapter,
+    run_family_adapter,
 )
-from Backend.Core.assessment_package import write_assessment_package
 from Backend.Core.model_recommendations import default_ollama_model
-from Backend.Core.render_transaction import render_pdf_atomically
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.ollama_client import OllamaClient, generate_questions_with_ollama
 from pastpapergen.paper_configs import load_builtin_paper_config
@@ -22,6 +22,108 @@ from pastpapergen.render_pdf import (
 )
 from pastpapergen.syllabus import load_syllabus
 from pastpapergen.validation import validate_blueprint
+
+
+def _load_rule(paper: str):
+    return load_builtin_paper_config(_normalise_paper_id(paper))
+
+
+def _build(config, syllabus, seed: int | None) -> BuildResult:
+    return BuildResult(
+        build_paper_blueprint(config, syllabus, seed=seed),
+        {"seed": seed},
+    )
+
+
+def _improve(blueprint, syllabus, _config, client, progress, checkpoint_store):
+    return generate_questions_with_ollama(
+        client,
+        blueprint,
+        syllabus,
+        progress=progress,
+        checkpoint_store=checkpoint_store,
+    )
+
+
+def _artifacts(blueprint, _context, syllabus, _paper: str) -> tuple[ArtifactSpec, ...]:
+    stem = blueprint.paper_id.replace("_", "-")
+    return (
+        ArtifactSpec(
+            "question_paper",
+            f"{stem}-question-paper.pdf",
+            lambda path: render_question_paper(blueprint, path),
+            "Rendering question paper",
+        ),
+        ArtifactSpec(
+            "source_booklet",
+            f"{stem}-source-booklet.pdf",
+            lambda path: render_source_booklet(blueprint, syllabus, path),
+            "Rendering source booklet",
+        ),
+        ArtifactSpec(
+            "mark_scheme",
+            f"{stem}-mark-scheme.pdf",
+            lambda path: render_mark_scheme(blueprint, syllabus, path),
+            "Rendering mark scheme",
+        ),
+    )
+
+
+ADAPTER = FamilyAdapter(
+    id="pearson-edexcel/economics-a-2015",
+    subject_label="Pearson Edexcel A-level Economics A",
+    backend_subject="economics",
+    load_message="Loading syllabus",
+    build_message="Building paper blueprint",
+    prompt_version="edexcel-economics-v1",
+    load_syllabus=load_syllabus,
+    load_rule=_load_rule,
+    build=_build,
+    artifacts=_artifacts,
+    stem=lambda config, _paper: config.id.replace("_", "-"),
+    preview_message="Using built-in draft questions",
+    validation_message="Validating paper",
+    resolve_seed=lambda seed: seed if seed is not None else secrets.randbits(64),
+    seed_message=lambda seed: f"Using seed {seed}",
+    validate=lambda blueprint, config, syllabus: validate_blueprint(
+        blueprint, config, syllabus
+    ),
+    improve=_improve,
+    client_factory=lambda model, url: OllamaClient(base_url=url, model=model),
+    checkpoint_identity=lambda blueprint, _config, _paper: {
+        "paper_id": blueprint.paper_id,
+        "seed": blueprint.seed,
+        "blueprint": blueprint.model_dump(mode="json"),
+    },
+)
+
+
+def generate_package(
+    *,
+    paper: str,
+    syllabus_path: Path,
+    output_dir: Path,
+    seed: int | None,
+    model: str,
+    ollama_url: str,
+    dry_run: bool,
+    progress: Callable[[str], None] | None = None,
+    client: object | None = None,
+    checkpoint_path: Path | None = None,
+) -> dict[str, Path]:
+    return run_family_adapter(
+        ADAPTER,
+        paper=paper,
+        syllabus_path=syllabus_path,
+        output_dir=output_dir,
+        seed=seed,
+        model=model,
+        ollama_url=ollama_url,
+        dry_run=dry_run,
+        progress=progress,
+        client=client,
+        checkpoint_path=checkpoint_path,
+    )
 
 
 def default_output_dir() -> Path:
@@ -40,7 +142,6 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--ollama-url", default="http://localhost:11434")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
-
     paths = generate_package(
         paper=args.paper,
         syllabus_path=Path(args.syllabus),
@@ -50,111 +151,10 @@ def main(argv: list[str] | None = None) -> int:
         ollama_url=args.ollama_url,
         dry_run=args.dry_run,
     )
-
     print(paths["question_paper"])
     print(paths["source_booklet"])
     print(paths["mark_scheme"])
     return 0
-
-
-def generate_package(
-    *,
-    paper: str,
-    syllabus_path: Path,
-    output_dir: Path,
-    seed: int | None,
-    model: str,
-    ollama_url: str,
-    dry_run: bool,
-    progress: Callable[[str], None] | None = None,
-    client: object | None = None,
-    checkpoint_path: Path | None = None,
-) -> dict[str, Path]:
-    emit = progress or (lambda _message: None)
-    emit("Loading syllabus")
-    syllabus = load_syllabus(syllabus_path)
-    paper_id = _normalise_paper_id(paper)
-    config = load_builtin_paper_config(paper_id)
-    run_seed = seed if seed is not None else secrets.randbits(64)
-    emit(f"Using seed {run_seed}")
-    emit("Building paper blueprint")
-    blueprint = build_paper_blueprint(config, syllabus, seed=run_seed)
-
-    question_client = client
-    if not dry_run:
-        emit(f"Generating questions with model {model}")
-        question_client = question_client or OllamaClient(base_url=ollama_url, model=model)
-        checkpoint_store = (
-            AssessmentCheckpointStore(
-                checkpoint_path,
-                identity_for_blueprint(
-                    {
-                        "paper_id": blueprint.paper_id,
-                        "seed": run_seed,
-                        "blueprint": blueprint.model_dump(mode="json"),
-                    },
-                    provider=str(getattr(question_client, "provider", "ollama")),
-                    model=str(getattr(question_client, "model", model)),
-                    prompt_version="edexcel-economics-v1",
-                ),
-            )
-            if checkpoint_path is not None
-            else None
-        )
-        blueprint = generate_questions_with_ollama(
-            question_client,
-            blueprint,
-            syllabus,
-            progress=progress,
-            checkpoint_store=checkpoint_store,
-        )
-    else:
-        emit("Using built-in draft questions")
-
-    emit("Validating paper")
-    validate_blueprint(blueprint, config, syllabus)
-
-    stem = paper_id.replace("_", "-")
-    question_paper = output_dir / f"{stem}-question-paper.pdf"
-    source_booklet = output_dir / f"{stem}-source-booklet.pdf"
-    mark_scheme = output_dir / f"{stem}-mark-scheme.pdf"
-
-    emit("Rendering question paper")
-    render_pdf_atomically(
-        question_paper,
-        lambda temporary: render_question_paper(blueprint, temporary),
-        role="question paper",
-    )
-    emit("Rendering source booklet")
-    render_pdf_atomically(
-        source_booklet,
-        lambda temporary: render_source_booklet(blueprint, syllabus, temporary),
-        role="source booklet",
-    )
-    emit("Rendering mark scheme")
-    render_pdf_atomically(
-        mark_scheme,
-        lambda temporary: render_mark_scheme(blueprint, syllabus, temporary),
-        role="mark scheme",
-    )
-    assessment = output_dir / f"{stem}-assessment.json"
-    write_assessment_package(
-        blueprint,
-        assessment,
-        subject="economics",
-        paper_number=paper,
-        preview=dry_run,
-        provider=getattr(question_client, "provider", "ollama") if not dry_run else None,
-        model=getattr(question_client, "model", model) if not dry_run else None,
-    )
-    emit("Done")
-
-    return {
-        "question_paper": question_paper,
-        "source_booklet": source_booklet,
-        "mark_scheme": mark_scheme,
-        "assessment_package": assessment,
-    }
 
 
 def _normalise_paper_id(value: str) -> str:
@@ -173,4 +173,10 @@ def _normalise_paper_id(value: str) -> str:
     try:
         return mapping[key]
     except KeyError as error:
-        raise SystemExit("--paper must be one of: 1, 2, 3, paper_1, paper_2, paper_3") from error
+        raise SystemExit(
+            "--paper must be one of: 1, 2, 3, paper_1, paper_2, paper_3"
+        ) from error
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

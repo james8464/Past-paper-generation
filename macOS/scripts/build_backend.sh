@@ -43,10 +43,14 @@ build_fingerprint() {
       "$ROOT_DIR/macOS/PaperCreator/PaperCreatorBackend.entitlements" \
       "$ROOT_DIR/macOS/scripts/build_backend.sh" \
       "$ROOT_DIR/Resources/backend-protocol.schema.json" \
+      "$ROOT_DIR/Resources/generator-capability.schema.json" \
       "$ROOT_DIR/Resources/generator-registry.json" \
       "$ROOT_DIR/Resources/layout-master-runtime.json" \
       "$ROOT_DIR/Resources/layout-profiles.json" \
       "$ROOT_DIR/Resources/ollama-model-recommendations.json"
+    find "$ROOT_DIR/Resources/board-profiles" -type f -name '*.json' -print0 \
+      | sort -z \
+      | xargs -0 shasum
     find "$ROOT_DIR/Backend" -type f -name '*.py' -print0 \
       | sort -z \
       | xargs -0 shasum
@@ -100,6 +104,8 @@ PYINSTALLER_ARGS=(
   --add-data "$ROOT_DIR/Resources/generator-registry.json:Resources"
   --add-data "$ROOT_DIR/Resources/ollama-model-recommendations.json:Resources"
   --add-data "$ROOT_DIR/Resources/backend-protocol.schema.json:Resources"
+  --add-data "$ROOT_DIR/Resources/generator-capability.schema.json:Resources"
+  --add-data "$ROOT_DIR/Resources/board-profiles:Resources/board-profiles"
 )
 
 while IFS= read -r python_path; do

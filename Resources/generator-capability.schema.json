@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://papercreator.local/schemas/generator-capability-v1.json",
+  "title": "Paper Creator generator family capability",
+  "type": "object",
+  "required": [
+    "manifest_version", "id", "board", "subject", "app_subject", "app_board",
+    "backend_subject", "resource_path", "python_path", "package", "entry_point",
+    "syllabus_path", "subject_plugin", "board_profile", "specification_version",
+    "blueprint_version", "content_mode", "supported_providers", "outputs_by_paper",
+    "advertised", "declared_papers", "papers"
+  ],
+  "properties": {
+    "manifest_version": {"const": 1},
+    "id": {"type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"},
+    "board": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+    "subject": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+    "app_subject": {"type": "string", "minLength": 1},
+    "app_board": {"type": "string", "minLength": 1},
+    "backend_subject": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+    "resource_path": {"$ref": "#/$defs/safePath"},
+    "python_path": {"$ref": "#/$defs/safePath"},
+    "package": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "entry_point": {"type": "string", "pattern": "^[a-z][a-z0-9_.]*:[a-z][a-z0-9_]*$"},
+    "syllabus_path": {"$ref": "#/$defs/safePath"},
+    "subject_plugin": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+    "board_profile": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+    "specification_version": {"type": "string", "minLength": 1},
+    "blueprint_version": {"type": "string", "minLength": 1},
+    "content_mode": {"enum": ["deterministic", "ai-assisted"]},
+    "supported_providers": {"type": "array", "uniqueItems": true, "items": {"enum": ["ollama", "openai", "anthropic", "apple"]}},
+    "outputs_by_paper": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "array", "minItems": 3, "uniqueItems": true, "items": {"type": "string"}}},
+    "advertised": {"type": "boolean"},
+    "declared_papers": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Za-z0-9.-]+$"}},
+    "papers": {"type": "array", "items": {"type": "object", "required": ["id", "title", "detail", "qualification", "checks"]}}
+  },
+  "$defs": {
+    "safePath": {"type": "string", "minLength": 1, "not": {"pattern": "(^/|(^|/)\\.\\.(/|$))"}}
+  },
+  "additionalProperties": true
+}

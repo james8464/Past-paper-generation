@@ -45,6 +45,29 @@ final class CoordinatorTests: XCTestCase {
     }
 
     @MainActor
+    func testSchemaZeroHistoryMigratesWithoutLosingConfiguration() throws {
+        let record = GenerationJobRecord.fixture(state: .completed)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(record)
+        var payload = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: data) as? [String: Any]
+        )
+        payload.removeValue(forKey: "schemaVersion")
+        let legacyData = try JSONSerialization.data(withJSONObject: payload)
+        try legacyData.write(
+            to: temporaryDirectory.appendingPathComponent("\(record.id.uuidString).json")
+        )
+
+        let store = RecentDocumentStore(directory: temporaryDirectory, retentionLimit: 10)
+        try store.load()
+
+        XCTAssertEqual(store.records.first?.schemaVersion, 1)
+        XCTAssertEqual(store.records.first?.configuration, record.configuration)
+        XCTAssertEqual(store.quarantinedRecordCount, 0)
+    }
+
+    @MainActor
     func testCancelledJobRemainsCancelledAfterRelaunch() throws {
         let original = RecentDocumentStore(directory: temporaryDirectory, retentionLimit: 10)
         try original.save(.fixture(state: .cancelled))

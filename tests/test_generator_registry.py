@@ -6,6 +6,7 @@ import sys
 
 from Backend.Core.generator_registry import (
     REGISTRY_PATH,
+    _capability,
     _paper_qualification,
     generator_capabilities,
     generator_subjects,
@@ -21,7 +22,7 @@ def test_registry_is_the_canonical_backend_subject_list() -> None:
         if family["advertised"]
     ]
 
-    assert payload["schema_version"] == 3
+    assert payload["schema_version"] == 4
     assert generator_subjects() == tuple(advertised)
     assert set(generator_capabilities()) == set(advertised)
 
@@ -40,6 +41,27 @@ def test_registry_migrates_legacy_gates_without_false_empirical_readiness() -> N
     assert readiness.engineering_validated is True
     assert readiness.visually_calibrated is True
     assert readiness.empirically_calibrated is False
+
+
+def test_schema_v3_family_metadata_migrates_deterministically() -> None:
+    payload = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    legacy = dict(payload["families"][0])
+    for field in (
+        "manifest_version",
+        "subject_plugin",
+        "board_profile",
+        "specification_version",
+        "blueprint_version",
+    ):
+        legacy.pop(field)
+
+    capability = _capability(legacy)
+
+    assert capability.manifest_version == 1
+    assert capability.subject_plugin == "accounting"
+    assert capability.board_profile == "aqa"
+    assert capability.specification_version == "legacy-registry-v3"
+    assert capability.blueprint_version == "legacy-registry-v3"
 
 
 def test_every_current_paper_has_truthful_qualification_levels() -> None:
@@ -105,3 +127,10 @@ def test_backend_bundle_script_is_registry_driven() -> None:
     assert "bundle-check" in script
     for capability in generator_capabilities().values():
         assert f"--collect-submodules {capability.package}" not in script
+
+
+def test_backend_bundle_includes_declarative_profile_resources() -> None:
+    script = (REPO_ROOT / "macOS" / "scripts" / "build_backend.sh").read_text()
+
+    assert "generator-capability.schema.json" in script
+    assert "Resources/board-profiles:Resources/board-profiles" in script

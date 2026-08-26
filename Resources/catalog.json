@@ -9,7 +9,7 @@
   },
   "generator_registry": {
     "path": "generator-registry.json",
-    "schema_version": 3
+    "schema_version": 4
   },
   "resource_pack_shape": [
     "syllabus",

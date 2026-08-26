@@ -338,14 +338,14 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - CLI: `tools/scaffold_generator_family.py --subject ID --board ID --papers 1,2,3`
 - CLI: `tools/validate_generator_migration.py Resources/<subject>/<board>`
 
-- [ ] Add a failing fixture family and prove validation catches missing catalogue exposure, registry entry, package import, paper mapping, syllabus, blueprint, subject validator, output role, layout profile, thresholds, matrix case, packaging resource, and Swift decoding.
-- [ ] Implement capability manifest schema and subject/board plugin discovery without executing arbitrary paths outside bundled resources.
-- [ ] Create a scaffold that emits the exact package/data/test structure and fails if the target already exists.
-- [ ] Make the migration validator exercise registry loading, UI catalogue visibility, backend dispatch, deterministic preview, live-matrix discovery, fidelity registration, package inclusion, and qualification states.
-- [ ] Move shared orchestration out of all seven family CLIs and prove each is only an adapter over contracts, plugins, and the rendering DSL.
-- [ ] Add schema migration tests so old assessment packages and job records either upgrade deterministically or produce an actionable incompatibility error.
-- [ ] Run the migration validator against all seven current families, all registry/coverage tests, macOS decoding tests, and Graphify update.
-- [ ] Commit as `Add declarative generator onboarding`.
+- [x] Add a failing fixture family and prove validation catches missing catalogue exposure, registry entry, package import, paper mapping, syllabus, blueprint, subject validator, output role, layout profile, thresholds, matrix case, packaging resource, and Swift decoding.
+- [x] Implement capability manifest schema and subject/board plugin discovery without executing arbitrary paths outside bundled resources.
+- [x] Create a scaffold that emits the exact package/data/test structure and fails if the target already exists.
+- [x] Make the migration validator exercise registry loading, UI catalogue visibility, backend dispatch, deterministic preview, live-matrix discovery, fidelity registration, package inclusion, and qualification states.
+- [x] Move shared orchestration out of all seven family CLIs and prove each is only an adapter over contracts, plugins, and the rendering DSL.
+- [x] Add schema migration tests so old assessment packages and job records either upgrade deterministically or produce an actionable incompatibility error.
+- [x] Run the migration validator against all seven current families, all registry/coverage tests, macOS decoding tests, and Graphify update.
+- [x] Commit as `Add declarative generator onboarding`.
 
 ### Task 9: Add Cambridge Economics and Computer Science
 

@@ -6,7 +6,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-import fitz
+import pymupdf as fitz
 from reportlab.lib import colors
 from reportlab.pdfgen.canvas import Canvas
 

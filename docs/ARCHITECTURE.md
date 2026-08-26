@@ -34,15 +34,21 @@ Backend/Core/
   assessment_package.py     renderer-independent assessment artifact
   assessment_quality.py     fingerprints and duplicate/exposure checks
   exam_blueprints.py        shared immutable assessment schema
+  family_adapter.py         shared family generation/checkpoint/render adapter
   generation.py             transaction, validation, manifest, publication
   mark_scheme_quality.py    examiner-usable marking-depth contracts
   pdf_validation.py         PDF release and typography checks
   providers.py              hosted/local provider boundary
   psychometrics.py          exact-form response-data calibration
   render_transaction.py     bounded atomic PDF-role rendering
+  subject_plugins.py        allow-listed subject validation protocol
+  board_profiles.py         safe versioned board-profile discovery
 
 Resources/
+  generator-capability.schema.json
+                            family manifest contract
   generator-registry.json   canonical capability and output registry
+  board-profiles/           page, type, component, scheme, and role policy
   ollama-model-recommendations.json
                             hardware-aware local-model policy and sources
   fidelity-thresholds.json measured family/document/page-role release minima
@@ -81,7 +87,8 @@ owns:
 
 - app and backend subject IDs;
 - Python package and entry point;
-- syllabus path;
+- syllabus path and specification/blueprint versions;
+- allow-listed subject plugin and board profile;
 - supported papers and providers;
 - required output roles;
 - evidence gates.
@@ -89,6 +96,16 @@ owns:
 The backend dispatcher, macOS capability model, bundle script, and tests all
 consume this record. Adding a family requires a registry entry and conforming
 entry point, not another hard-coded dispatch branch.
+
+All seven current entry points are small adapters over
+`Backend.Core.family_adapter`. That boundary owns provider creation, durable
+checkpoints, independent item review, atomic role rendering, and assessment
+package writing. A family supplies only typed blueprint, validation, visual,
+and rendering callbacks. `tools/scaffold_generator_family.py` creates a
+fail-closed, unadvertised family, while `tools/validate_generator_migration.py`
+checks every integration surface and executes a fixed-seed preview before a
+family can be advertised. Plugin identifiers are resolved through allow-lists;
+manifest strings can never import an arbitrary file or module path.
 
 The bundle script expands every registry package into explicit PyInstaller
 hidden imports. Its internal `bundle-check` command then imports all declared

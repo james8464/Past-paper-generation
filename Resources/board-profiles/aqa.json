@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "aqa",
+  "page_size": "A4",
+  "page_width_mm": 210,
+  "page_height_mm": 297,
+  "margins_mm": {"top": 18, "right": 17, "bottom": 18, "left": 18},
+  "typography": {"body": "Times-Roman", "bold": "Times-Bold", "body_pt": 10, "leading_pt": 12.4},
+  "components": {"answer_line_mm": 9, "hairline_pt": 0.35, "standard_rule_pt": 0.7},
+  "scheme_policy": "aqa",
+  "output_roles": ["question_paper", "source_booklet", "mark_scheme", "assessment_package", "preliminary_material", "electronic_answer_document", "skeleton_program", "data_file"]
+}

@@ -12,9 +12,10 @@ import subprocess
 import sys
 import tempfile
 import traceback
+from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import tomllib
 
@@ -188,7 +189,7 @@ def _invoke_plugin(
     )
     result = entry_point(**keyword_arguments)
     if not isinstance(result, dict):
-        raise RuntimeError(f"{capability.id} entry point did not return document paths")
+        raise TypeError(f"{capability.id} entry point did not return document paths")
     return {str(role): Path(path) for role, path in result.items()}
 
 
@@ -219,7 +220,7 @@ def _load_entry_point(value: str) -> Callable[..., dict[str, Path]]:
     module_name, function_name = value.split(":", maxsplit=1)
     function = getattr(importlib.import_module(module_name), function_name, None)
     if not callable(function):
-        raise RuntimeError(f"generator entry point is not callable: {value}")
+        raise TypeError(f"generator entry point is not callable: {value}")
     return function
 
 
@@ -340,8 +341,13 @@ def _write_package_manifest(
         },
         "generator": {
             "id": capability.id,
+            "manifest_version": capability.manifest_version,
             "entry_point": capability.entry_point,
             "content_mode": capability.content_mode,
+            "subject_plugin": capability.subject_plugin,
+            "board_profile": capability.board_profile,
+            "specification_version": capability.specification_version,
+            "blueprint_version": capability.blueprint_version,
             "version": _generator_version(capability),
             "repository_commit": repository_commit,
         },
@@ -384,7 +390,7 @@ def _write_package_manifest(
             ),
             "assessment_schema": "Backend.Core.exam_blueprints:v3",
             "assessment_package_schema": 1,
-            "blueprint_version": f"{capability.id}:paper-{args.paper}:v1",
+            "blueprint_version": capability.blueprint_version,
             "prompt_version": "Backend.Core.ai_assessment:v4",
             "validator": "Backend.Core.pdf_validation:v2",
         },

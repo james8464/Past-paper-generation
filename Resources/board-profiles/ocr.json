@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "ocr",
+  "page_size": "A4",
+  "page_width_mm": 210,
+  "page_height_mm": 297,
+  "margins_mm": {"top": 18, "right": 17, "bottom": 18, "left": 18},
+  "typography": {"body": "Helvetica", "bold": "Helvetica-Bold", "body_pt": 10, "leading_pt": 12.4},
+  "components": {"answer_line_mm": 8.5, "hairline_pt": 0.35, "standard_rule_pt": 0.7},
+  "scheme_policy": "ocr",
+  "output_roles": ["question_paper", "source_booklet", "mark_scheme", "assessment_package"]
+}

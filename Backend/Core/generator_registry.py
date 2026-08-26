@@ -6,7 +6,9 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
+from Backend.Core.board_profiles import board_profile as load_board_profile
 from Backend.Core.paths import REPO_ROOT
+from Backend.Core.subject_plugins import discover_subject_plugin
 
 REGISTRY_PATH = REPO_ROOT / "Resources" / "generator-registry.json"
 KNOWN_PROVIDERS = frozenset({"ollama", "openai", "anthropic", "apple"})
@@ -26,6 +28,7 @@ class PaperQualification:
 
 @dataclass(frozen=True)
 class GeneratorCapability:
+    manifest_version: int
     id: str
     backend_subject: str
     resource_path: str
@@ -33,6 +36,10 @@ class GeneratorCapability:
     package: str
     entry_point: str
     syllabus_path: str
+    subject_plugin: str
+    board_profile: str
+    specification_version: str
+    blueprint_version: str
     content_mode: str
     supported_providers: tuple[str, ...]
     papers: tuple[str, ...]
@@ -56,7 +63,7 @@ class GeneratorCapability:
 @lru_cache(maxsize=1)
 def generator_capabilities() -> dict[str, GeneratorCapability]:
     payload = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
-    if payload.get("schema_version") not in {2, 3}:
+    if payload.get("schema_version") not in {2, 3, 4}:
         raise ValueError(
             f"unsupported generator registry schema: {payload.get('schema_version')}"
         )
@@ -133,7 +140,28 @@ def _capability(raw: dict[str, Any]) -> GeneratorCapability:
     resource_path = _relative_path(raw, "resource_path")
     python_path = _relative_path(raw, "python_path")
     syllabus_path = _relative_path(raw, "syllabus_path")
+    manifest_version = int(raw.get("manifest_version", 1))
+    if manifest_version != 1:
+        raise ValueError(f"{raw['id']} has an unsupported manifest version")
+    legacy_subject = {
+        "economics-a-2015": "economics",
+    }.get(str(raw.get("subject", "")), str(raw.get("subject", "")))
+    subject_plugin = str(raw.get("subject_plugin", legacy_subject)).strip()
+    board_profile = str(raw.get("board_profile", raw.get("board", ""))).strip()
+    specification_version = str(
+        raw.get("specification_version", "legacy-registry-v3")
+    ).strip()
+    blueprint_version = str(
+        raw.get("blueprint_version", "legacy-registry-v3")
+    ).strip()
+    if not all(
+        (subject_plugin, board_profile, specification_version, blueprint_version)
+    ):
+        raise ValueError(f"{raw['id']} has incomplete declarative capability metadata")
+    discover_subject_plugin(subject_plugin)
+    load_board_profile(board_profile)
     return GeneratorCapability(
+        manifest_version=manifest_version,
         id=str(raw["id"]),
         backend_subject=str(raw["backend_subject"]),
         resource_path=resource_path,
@@ -141,6 +169,10 @@ def _capability(raw: dict[str, Any]) -> GeneratorCapability:
         package=package,
         entry_point=entry_point,
         syllabus_path=syllabus_path,
+        subject_plugin=subject_plugin,
+        board_profile=board_profile,
+        specification_version=specification_version,
+        blueprint_version=blueprint_version,
         content_mode=mode,
         supported_providers=providers,
         papers=papers,
@@ -172,7 +204,7 @@ def _paper_qualification(raw: dict[str, Any]) -> PaperQualification:
     def level(name: str) -> tuple[bool, tuple[str, ...]]:
         value = payload[name]
         if not isinstance(value, dict):
-            raise ValueError(f"paper qualification {name} must be an object")
+            raise TypeError(f"paper qualification {name} must be an object")
         state = str(value.get("state", ""))
         if state not in KNOWN_QUALIFICATION_STATES:
             raise ValueError(f"paper qualification {name} has invalid state: {state}")

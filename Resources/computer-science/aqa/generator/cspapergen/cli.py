@@ -1,16 +1,16 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
-from Backend.Core.assessment_checkpoints import (
-    AssessmentCheckpointStore,
-    identity_for_blueprint,
+from Backend.Core.family_adapter import (
+    ArtifactSpec,
+    BuildResult,
+    FamilyAdapter,
+    run_family_adapter,
 )
-from Backend.Core.assessment_package import write_assessment_package
 from Backend.Core.model_recommendations import default_ollama_model
-from Backend.Core.render_transaction import render_pdf_atomically
 from cspapergen.generator import build_paper1_blueprint, build_paper2_blueprint
 from cspapergen.notes import DEFAULT_NOTES_SOURCE, cache_notes
 from cspapergen.ollama_client import OllamaClient, improve_questions_with_ollama
@@ -20,36 +20,86 @@ from cspapergen.syllabus import DEFAULT_SYLLABUS_PATH, load_syllabus
 from cspapergen.validation import validate_blueprint
 
 
-def default_output_dir() -> Path:
-    return Path.home() / "Downloads"
+def _load_rule(paper: str) -> str:
+    if paper not in {"1", "2"}:
+        raise ValueError(f"Unsupported Computer Science paper: {paper}")
+    return paper
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Generate an unofficial AQA A-Level Computer Science practice paper.")
-    parser.add_argument("--paper", choices=["1", "2"], default="2")
-    parser.add_argument("--out", default=str(default_output_dir()))
-    parser.add_argument("--seed", type=int, default=None)
-    parser.add_argument("--model", default=default_ollama_model())
-    parser.add_argument("--ollama-url", default="http://localhost:11434")
-    parser.add_argument("--dry-run", action="store_true")
-    parser.add_argument("--syllabus", default=str(DEFAULT_SYLLABUS_PATH))
-    parser.add_argument("--notes", default=str(DEFAULT_NOTES_SOURCE))
-    args = parser.parse_args(argv)
+def _build(paper: str, syllabus, seed: int | None) -> BuildResult:
+    if paper == "1":
+        blueprint, context = build_paper1_blueprint(syllabus, seed=seed)
+        return BuildResult(blueprint, context)
+    return BuildResult(build_paper2_blueprint(syllabus, seed=seed))
 
-    paths = generate_package(
-        output_dir=Path(args.out),
-        paper=args.paper,
-        seed=args.seed,
-        model=args.model,
-        ollama_url=args.ollama_url,
-        dry_run=args.dry_run,
-        syllabus_path=Path(args.syllabus),
-        notes_source=Path(args.notes),
-        progress=print,
+
+def _improve(blueprint, syllabus, _paper, client, progress, checkpoint_store):
+    return improve_questions_with_ollama(
+        client,
+        blueprint,
+        syllabus,
+        progress=progress,
+        checkpoint_store=checkpoint_store,
     )
-    for path in paths.values():
-        print(path)
-    return 0
+
+
+def _artifacts(blueprint, _context, _syllabus, paper: str) -> tuple[ArtifactSpec, ...]:
+    stem = f"cs-paper-{paper}"
+    return (
+        ArtifactSpec(
+            "question_paper",
+            f"{stem}-question-paper.pdf",
+            lambda path: render_question_paper(blueprint, path),
+            "Rendering question paper",
+        ),
+        ArtifactSpec(
+            "mark_scheme",
+            f"{stem}-mark-scheme.pdf",
+            lambda path: render_mark_scheme(blueprint, path),
+            "Rendering mark scheme",
+        ),
+    )
+
+
+def _supporting(blueprint, context, _syllabus, paper, output, emit):
+    if paper != "1" or context is None:
+        return {}
+    emit("Rendering Paper 1 supporting materials")
+    return write_paper1_supporting_files(blueprint, context, output)
+
+
+ADAPTER = FamilyAdapter(
+    id="aqa/computer-science",
+    subject_label="AQA A-level Computer Science",
+    backend_subject="computer_science",
+    load_message="Loading AQA Computer Science specification map",
+    build_message="Building AQA 7517 paper blueprint",
+    prompt_version="aqa-computer-science-v1",
+    load_syllabus=load_syllabus,
+    load_rule=_load_rule,
+    build=_build,
+    artifacts=_artifacts,
+    stem=lambda _paper_rule, paper: f"cs-paper-{paper}",
+    validate=lambda blueprint, _paper, syllabus: validate_blueprint(
+        blueprint, syllabus
+    ),
+    improve=_improve,
+    client_factory=lambda model, url: OllamaClient(base_url=url, model=model),
+    checkpoint_identity=lambda blueprint, _paper_rule, paper: {
+        "paper_id": f"paper-{paper}",
+        "seed": blueprint.seed,
+        "blueprint": blueprint.model_dump(mode="json"),
+    },
+    supporting_artifacts=_supporting,
+    output_order=(
+        "question_paper",
+        "preliminary_material",
+        "electronic_answer_document",
+        "skeleton_program",
+        "data_file",
+        "mark_scheme",
+    ),
+)
 
 
 def generate_package(
@@ -66,86 +116,56 @@ def generate_package(
     client: object | None = None,
     checkpoint_path: Path | None = None,
 ) -> dict[str, Path]:
-    emit = progress or (lambda _message: None)
-    emit("Caching notes")
+    if progress is not None:
+        progress("Caching notes")
     cache_notes(notes_source)
-    emit("Loading syllabus")
-    syllabus = load_syllabus(syllabus_path)
-    emit(f"Using seed {seed if seed is not None else 'random'}")
-    if paper == "1":
-        emit("Building Paper 1 blueprint and supporting materials")
-        blueprint, paper1_context = build_paper1_blueprint(syllabus, seed=seed)
-    elif paper == "2":
-        emit("Building Paper 2 blueprint")
-        blueprint = build_paper2_blueprint(syllabus, seed=seed)
-        paper1_context = None
-    else:
-        raise ValueError(f"Unsupported Computer Science paper: {paper}")
-    emit(f"Using seed {blueprint.seed}")
-
-    question_client = client
-    if dry_run:
-        emit("Using built-in draft questions")
-    else:
-        emit(f"Generating questions with model {model}")
-        question_client = question_client or OllamaClient(base_url=ollama_url, model=model)
-        checkpoint_store = (
-            AssessmentCheckpointStore(
-                checkpoint_path,
-                identity_for_blueprint(
-                    {
-                        "paper_id": f"paper-{paper}",
-                        "seed": blueprint.seed,
-                        "blueprint": blueprint.model_dump(mode="json"),
-                    },
-                    provider=str(getattr(question_client, "provider", "ollama")),
-                    model=str(getattr(question_client, "model", model)),
-                    prompt_version="aqa-computer-science-v1",
-                ),
-            )
-            if checkpoint_path is not None
-            else None
-        )
-        blueprint = improve_questions_with_ollama(
-            question_client,
-            blueprint,
-            syllabus,
-            progress=progress,
-            checkpoint_store=checkpoint_store,
-        )
-
-    emit("Validating paper")
-    validate_blueprint(blueprint, syllabus)
-
-    question_paper = output_dir / f"cs-paper-{paper}-question-paper.pdf"
-    mark_scheme = output_dir / f"cs-paper-{paper}-mark-scheme.pdf"
-    emit("Rendering question paper")
-    render_pdf_atomically(
-        question_paper,
-        lambda temporary: render_question_paper(blueprint, temporary),
-        role="question paper",
+    return run_family_adapter(
+        ADAPTER,
+        paper=paper,
+        syllabus_path=syllabus_path,
+        output_dir=output_dir,
+        seed=seed,
+        model=model,
+        ollama_url=ollama_url,
+        dry_run=dry_run,
+        progress=progress,
+        client=client,
+        checkpoint_path=checkpoint_path,
     )
-    emit("Rendering mark scheme")
-    render_pdf_atomically(
-        mark_scheme,
-        lambda temporary: render_mark_scheme(blueprint, temporary),
-        role="mark scheme",
+
+
+def default_output_dir() -> Path:
+    return Path.home() / "Downloads"
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Generate an unofficial AQA A-Level Computer Science practice paper."
     )
-    paths = {"question_paper": question_paper}
-    if paper1_context is not None:
-        emit("Rendering Paper 1 supporting materials")
-        paths.update(write_paper1_supporting_files(blueprint, paper1_context, output_dir))
-    paths["mark_scheme"] = mark_scheme
-    assessment = output_dir / f"cs-paper-{paper}-assessment.json"
-    write_assessment_package(
-        blueprint,
-        assessment,
-        subject="computer_science",
-        paper_number=paper,
-        preview=dry_run,
-        provider=getattr(question_client, "provider", "ollama") if not dry_run else None,
-        model=getattr(question_client, "model", model) if not dry_run else None,
+    parser.add_argument("--paper", choices=["1", "2"], default="2")
+    parser.add_argument("--out", default=str(default_output_dir()))
+    parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument("--model", default=default_ollama_model())
+    parser.add_argument("--ollama-url", default="http://localhost:11434")
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--syllabus", default=str(DEFAULT_SYLLABUS_PATH))
+    parser.add_argument("--notes", default=str(DEFAULT_NOTES_SOURCE))
+    args = parser.parse_args(argv)
+    paths = generate_package(
+        output_dir=Path(args.out),
+        paper=args.paper,
+        seed=args.seed,
+        model=args.model,
+        ollama_url=args.ollama_url,
+        dry_run=args.dry_run,
+        syllabus_path=Path(args.syllabus),
+        notes_source=Path(args.notes),
+        progress=print,
     )
-    paths["assessment_package"] = assessment
-    emit("Done")
-    return paths
+    for path in paths.values():
+        print(path)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

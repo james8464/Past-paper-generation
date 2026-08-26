@@ -67,6 +67,31 @@ struct GenerationJobRecord: Codable, Equatable, Identifiable {
         self.updatedAt = updatedAt
     }
 
+    private enum CodingKeys: String, CodingKey {
+        case schemaVersion
+        case id
+        case configuration
+        case provenance
+        case state
+        case artifacts
+        case qualification
+        case createdAt
+        case updatedAt
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        schemaVersion = try values.decodeIfPresent(Int.self, forKey: .schemaVersion) ?? 0
+        id = try values.decode(UUID.self, forKey: .id)
+        configuration = try values.decode(GenerationConfiguration.self, forKey: .configuration)
+        provenance = try values.decode(GenerationProvenance.self, forKey: .provenance)
+        state = try values.decode(GenerationJobState.self, forKey: .state)
+        artifacts = try values.decode([GeneratedFile].self, forKey: .artifacts)
+        qualification = try values.decode(QualificationSnapshot.self, forKey: .qualification)
+        createdAt = try values.decode(Date.self, forKey: .createdAt)
+        updatedAt = try values.decode(Date.self, forKey: .updatedAt)
+    }
+
     var missingArtifactCount: Int {
         artifacts.lazy.filter { !$0.exists }.count
     }
@@ -136,7 +161,19 @@ final class RecentDocumentStore {
                     GenerationJobRecord.self,
                     from: Data(contentsOf: url)
                 )
-                guard record.schemaVersion == GenerationJobRecord.currentSchemaVersion else {
+                if record.schemaVersion == 0 {
+                    record = GenerationJobRecord(
+                        id: record.id,
+                        configuration: record.configuration,
+                        provenance: record.provenance,
+                        state: record.state,
+                        artifacts: record.artifacts,
+                        qualification: record.qualification,
+                        createdAt: record.createdAt,
+                        updatedAt: record.updatedAt
+                    )
+                    try write(record)
+                } else if record.schemaVersion != GenerationJobRecord.currentSchemaVersion {
                     throw RecentDocumentStoreError.unsupportedSchema(record.schemaVersion)
                 }
                 if record.state == .running {

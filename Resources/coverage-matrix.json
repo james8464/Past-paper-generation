@@ -33,8 +33,11 @@
       "reference": {
         "question_papers_profiled": 14,
         "page_count": {
+          "policy": "range",
           "minimum": 32,
+          "p05": 32.0,
           "median": 36.0,
+          "p95": 37.4,
           "maximum": 40
         },
         "primary_page_size": {
@@ -149,8 +152,11 @@
       "reference": {
         "question_papers_profiled": 6,
         "page_count": {
+          "policy": "exact",
           "minimum": 4,
+          "p05": 4.0,
           "median": 4.0,
+          "p95": 4.0,
           "maximum": 4
         },
         "primary_page_size": {
@@ -177,8 +183,11 @@
       "reference": {
         "question_papers_profiled": 18,
         "page_count": {
+          "policy": "range",
           "minimum": 4,
+          "p05": 4.0,
           "median": 20.0,
+          "p95": 36.0,
           "maximum": 36
         },
         "primary_page_size": {
@@ -205,8 +214,11 @@
       "reference": {
         "question_papers_profiled": 26,
         "page_count": {
+          "policy": "range",
           "minimum": 18,
+          "p05": 24.5,
           "median": 32.0,
+          "p95": 40.0,
           "maximum": 40
         },
         "primary_page_size": {
@@ -233,8 +245,11 @@
       "reference": {
         "question_papers_profiled": 24,
         "page_count": {
+          "policy": "range",
           "minimum": 18,
+          "p05": 18.0,
           "median": 27.5,
+          "p95": 32.0,
           "maximum": 32
         },
         "primary_page_size": {
@@ -388,8 +403,11 @@
       "reference": {
         "question_papers_profiled": 30,
         "page_count": {
+          "policy": "range",
           "minimum": 24,
+          "p05": 28.0,
           "median": 32.0,
+          "p95": 40.0,
           "maximum": 40
         },
         "primary_page_size": {
@@ -416,8 +434,11 @@
       "reference": {
         "question_papers_profiled": 14,
         "page_count": {
+          "policy": "range",
           "minimum": 20,
+          "p05": 20.0,
           "median": 25.5,
+          "p95": 40.0,
           "maximum": 40
         },
         "primary_page_size": {
@@ -530,8 +551,11 @@
       "reference": {
         "question_papers_profiled": 8,
         "page_count": {
+          "policy": "range",
           "minimum": 3,
+          "p05": 3.35,
           "median": 4.0,
+          "p95": 4.0,
           "maximum": 4
         },
         "primary_page_size": {
@@ -558,8 +582,11 @@
       "reference": {
         "question_papers_profiled": 28,
         "page_count": {
+          "policy": "range",
           "minimum": 20,
+          "p05": 20.0,
           "median": 25.0,
+          "p95": 32.0,
           "maximum": 32
         },
         "primary_page_size": {
@@ -586,8 +613,11 @@
       "reference": {
         "question_papers_profiled": 7,
         "page_count": {
+          "policy": "exact",
           "minimum": 16,
+          "p05": 16.0,
           "median": 16,
+          "p95": 16.0,
           "maximum": 16
         },
         "primary_page_size": {
@@ -614,8 +644,11 @@
       "reference": {
         "question_papers_profiled": 21,
         "page_count": {
+          "policy": "range",
           "minimum": 8,
+          "p05": 8.0,
           "median": 8,
+          "p95": 40.0,
           "maximum": 44
         },
         "primary_page_size": {
@@ -769,8 +802,11 @@
       "reference": {
         "question_papers_profiled": 77,
         "page_count": {
+          "policy": "range",
           "minimum": 4,
+          "p05": 4.0,
           "median": 8,
+          "p95": 16.0,
           "maximum": 16
         },
         "primary_page_size": {
@@ -797,8 +833,11 @@
       "reference": {
         "question_papers_profiled": 14,
         "page_count": {
+          "policy": "range",
           "minimum": 32,
+          "p05": 32.0,
           "median": 38.0,
+          "p95": 44.0,
           "maximum": 44
         },
         "primary_page_size": {
@@ -825,8 +864,11 @@
       "reference": {
         "question_papers_profiled": 15,
         "page_count": {
+          "policy": "range",
           "minimum": 12,
+          "p05": 12.0,
           "median": 16,
+          "p95": 24.0,
           "maximum": 24
         },
         "primary_page_size": {
@@ -853,8 +895,11 @@
       "reference": {
         "question_papers_profiled": 14,
         "page_count": {
+          "policy": "range",
           "minimum": 40,
+          "p05": 40.0,
           "median": 44.0,
+          "p95": 48.0,
           "maximum": 48
         },
         "primary_page_size": {
@@ -881,8 +926,11 @@
       "reference": {
         "question_papers_profiled": 15,
         "page_count": {
+          "policy": "range",
           "minimum": 12,
+          "p05": 12.0,
           "median": 16,
+          "p95": 29.2,
           "maximum": 32
         },
         "primary_page_size": {
@@ -909,8 +957,11 @@
       "reference": {
         "question_papers_profiled": 15,
         "page_count": {
+          "policy": "range",
           "minimum": 12,
+          "p05": 12.7,
           "median": 16,
+          "p95": 20.0,
           "maximum": 20
         },
         "primary_page_size": {
@@ -937,8 +988,11 @@
       "reference": {
         "question_papers_profiled": 18,
         "page_count": {
+          "policy": "range",
           "minimum": 4,
+          "p05": 4.0,
           "median": 16.0,
+          "p95": 32.0,
           "maximum": 32
         },
         "primary_page_size": {
@@ -965,8 +1019,11 @@
       "reference": {
         "question_papers_profiled": 231,
         "page_count": {
+          "policy": "range",
           "minimum": 4,
+          "p05": 4.0,
           "median": 4,
+          "p95": 4.0,
           "maximum": 10
         },
         "primary_page_size": {
@@ -993,8 +1050,11 @@
       "reference": {
         "question_papers_profiled": 28,
         "page_count": {
+          "policy": "range",
           "minimum": 14,
+          "p05": 15.0,
           "median": 24.0,
+          "p95": 24.0,
           "maximum": 24
         },
         "primary_page_size": {
@@ -1021,8 +1081,11 @@
       "reference": {
         "question_papers_profiled": 67,
         "page_count": {
+          "policy": "range",
           "minimum": 13,
+          "p05": 16.0,
           "median": 28,
+          "p95": 38.8,
           "maximum": 44
         },
         "primary_page_size": {
@@ -1049,8 +1112,11 @@
       "reference": {
         "question_papers_profiled": 16,
         "page_count": {
+          "policy": "range",
           "minimum": 14,
+          "p05": 14.75,
           "median": 16.0,
+          "p95": 16.25,
           "maximum": 17
         },
         "primary_page_size": {
@@ -1077,8 +1143,11 @@
       "reference": {
         "question_papers_profiled": 7,
         "page_count": {
+          "policy": "range",
           "minimum": 6,
+          "p05": 15.9,
           "median": 48,
+          "p95": 52.0,
           "maximum": 52
         },
         "primary_page_size": {
@@ -1105,8 +1174,11 @@
       "reference": {
         "question_papers_profiled": 20,
         "page_count": {
+          "policy": "range",
           "minimum": 4,
+          "p05": 4.0,
           "median": 20.0,
+          "p95": 36.0,
           "maximum": 36
         },
         "primary_page_size": {
@@ -1133,8 +1205,11 @@
       "reference": {
         "question_papers_profiled": 14,
         "page_count": {
+          "policy": "range",
           "minimum": 30,
+          "p05": 30.0,
           "median": 32.0,
+          "p95": 32.0,
           "maximum": 32
         },
         "primary_page_size": {
@@ -1161,8 +1236,11 @@
       "reference": {
         "question_papers_profiled": 14,
         "page_count": {
+          "policy": "range",
           "minimum": 20,
+          "p05": 20.65,
           "median": 36.0,
+          "p95": 40.0,
           "maximum": 40
         },
         "primary_page_size": {
@@ -1189,8 +1267,11 @@
       "reference": {
         "question_papers_profiled": 80,
         "page_count": {
+          "policy": "range",
           "minimum": 8,
+          "p05": 12.0,
           "median": 20.0,
+          "p95": 44.0,
           "maximum": 48
         },
         "primary_page_size": {
@@ -1217,8 +1298,11 @@
       "reference": {
         "question_papers_profiled": 21,
         "page_count": {
+          "policy": "range",
           "minimum": 4,
+          "p05": 4.0,
           "median": 20,
+          "p95": 32.0,
           "maximum": 32
         },
         "primary_page_size": {
@@ -1245,8 +1329,11 @@
       "reference": {
         "question_papers_profiled": 20,
         "page_count": {
+          "policy": "range",
           "minimum": 4,
+          "p05": 4.0,
           "median": 4.0,
+          "p95": 4.05,
           "maximum": 5
         },
         "primary_page_size": {
@@ -1273,8 +1360,11 @@
       "reference": {
         "question_papers_profiled": 23,
         "page_count": {
+          "policy": "range",
           "minimum": 12,
+          "p05": 12.0,
           "median": 20,
+          "p95": 28.0,
           "maximum": 28
         },
         "primary_page_size": {
@@ -1301,8 +1391,11 @@
       "reference": {
         "question_papers_profiled": 42,
         "page_count": {
+          "policy": "exact",
           "minimum": 4,
+          "p05": 4.0,
           "median": 4.0,
+          "p95": 4.0,
           "maximum": 4
         },
         "primary_page_size": {
@@ -1329,8 +1422,11 @@
       "reference": {
         "question_papers_profiled": 21,
         "page_count": {
+          "policy": "range",
           "minimum": 9,
+          "p05": 12.0,
           "median": 16,
+          "p95": 20.0,
           "maximum": 20
         },
         "primary_page_size": {
@@ -1357,8 +1453,11 @@
       "reference": {
         "question_papers_profiled": 15,
         "page_count": {
+          "policy": "range",
           "minimum": 12,
+          "p05": 12.0,
           "median": 16,
+          "p95": 28.0,
           "maximum": 28
         },
         "primary_page_size": {
@@ -1385,8 +1484,11 @@
       "reference": {
         "question_papers_profiled": 24,
         "page_count": {
+          "policy": "exact",
           "minimum": 4,
+          "p05": 4.0,
           "median": 4.0,
+          "p95": 4.0,
           "maximum": 4
         },
         "primary_page_size": {
@@ -1413,8 +1515,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 20,
+          "p05": 20.0,
           "median": 20,
+          "p95": 20.0,
           "maximum": 20
         },
         "primary_page_size": {
@@ -1441,8 +1546,11 @@
       "reference": {
         "question_papers_profiled": 26,
         "page_count": {
+          "policy": "range",
           "minimum": 1,
+          "p05": 5.75,
           "median": 32.0,
+          "p95": 36.0,
           "maximum": 40
         },
         "primary_page_size": {
@@ -1469,8 +1577,11 @@
       "reference": {
         "question_papers_profiled": 24,
         "page_count": {
+          "policy": "range",
           "minimum": 16,
+          "p05": 16.0,
           "median": 26.0,
+          "p95": 40.0,
           "maximum": 40
         },
         "primary_page_size": {
@@ -1497,8 +1608,11 @@
       "reference": {
         "question_papers_profiled": 12,
         "page_count": {
+          "policy": "range",
           "minimum": 16,
+          "p05": 16.0,
           "median": 16.0,
+          "p95": 20.0,
           "maximum": 20
         },
         "primary_page_size": {
@@ -1525,8 +1639,11 @@
       "reference": {
         "question_papers_profiled": 25,
         "page_count": {
+          "policy": "range",
           "minimum": 1,
+          "p05": 16.8,
           "median": 28,
+          "p95": 32.0,
           "maximum": 32
         },
         "primary_page_size": {
@@ -1553,8 +1670,11 @@
       "reference": {
         "question_papers_profiled": 25,
         "page_count": {
+          "policy": "range",
           "minimum": 1,
+          "p05": 16.0,
           "median": 20,
+          "p95": 36.0,
           "maximum": 36
         },
         "primary_page_size": {
@@ -1581,8 +1701,11 @@
       "reference": {
         "question_papers_profiled": 36,
         "page_count": {
+          "policy": "range",
           "minimum": 4,
+          "p05": 4.0,
           "median": 4.0,
+          "p95": 8.0,
           "maximum": 8
         },
         "primary_page_size": {
@@ -1609,8 +1732,11 @@
       "reference": {
         "question_papers_profiled": 16,
         "page_count": {
+          "policy": "range",
           "minimum": 4,
+          "p05": 4.0,
           "median": 10.0,
+          "p95": 12.0,
           "maximum": 12
         },
         "primary_page_size": {
@@ -1637,8 +1763,11 @@
       "reference": {
         "question_papers_profiled": 8,
         "page_count": {
+          "policy": "range",
           "minimum": 24,
+          "p05": 25.4,
           "median": 30.0,
+          "p95": 34.6,
           "maximum": 36
         },
         "primary_page_size": {
@@ -1753,8 +1882,11 @@
       "reference": {
         "question_papers_profiled": 24,
         "page_count": {
+          "policy": "range",
           "minimum": 16,
+          "p05": 16.0,
           "median": 16.0,
+          "p95": 20.0,
           "maximum": 24
         },
         "primary_page_size": {
@@ -1781,8 +1913,11 @@
       "reference": {
         "question_papers_profiled": 22,
         "page_count": {
+          "policy": "range",
           "minimum": 4,
+          "p05": 4.2,
           "median": 16.0,
+          "p95": 20.0,
           "maximum": 20
         },
         "primary_page_size": {
@@ -1809,8 +1944,11 @@
       "reference": {
         "question_papers_profiled": 14,
         "page_count": {
+          "policy": "range",
           "minimum": 1,
+          "p05": 1.0,
           "median": 20.0,
+          "p95": 28.0,
           "maximum": 28
         },
         "primary_page_size": {
@@ -1964,8 +2102,11 @@
       "reference": {
         "question_papers_profiled": 8,
         "page_count": {
+          "policy": "exact",
           "minimum": 4,
+          "p05": 4.0,
           "median": 4.0,
+          "p95": 4.0,
           "maximum": 4
         },
         "primary_page_size": {
@@ -1992,8 +2133,11 @@
       "reference": {
         "question_papers_profiled": 12,
         "page_count": {
+          "policy": "range",
           "minimum": 8,
+          "p05": 8.0,
           "median": 8.0,
+          "p95": 24.0,
           "maximum": 24
         },
         "primary_page_size": {
@@ -2020,8 +2164,11 @@
       "reference": {
         "question_papers_profiled": 8,
         "page_count": {
+          "policy": "range",
           "minimum": 16,
+          "p05": 16.0,
           "median": 18.0,
+          "p95": 20.0,
           "maximum": 20
         },
         "primary_page_size": {
@@ -2048,8 +2195,11 @@
       "reference": {
         "question_papers_profiled": 8,
         "page_count": {
+          "policy": "range",
           "minimum": 4,
+          "p05": 4.0,
           "median": 6.0,
+          "p95": 8.0,
           "maximum": 8
         },
         "primary_page_size": {
@@ -2076,8 +2226,11 @@
       "reference": {
         "question_papers_profiled": 89,
         "page_count": {
+          "policy": "range",
           "minimum": 1,
+          "p05": 4.0,
           "median": 8,
+          "p95": 16.0,
           "maximum": 20
         },
         "primary_page_size": {
@@ -2104,8 +2257,11 @@
       "reference": {
         "question_papers_profiled": 220,
         "page_count": {
+          "policy": "range",
           "minimum": 4,
+          "p05": 4.0,
           "median": 12.0,
+          "p95": 24.0,
           "maximum": 28
         },
         "primary_page_size": {
@@ -2132,8 +2288,11 @@
       "reference": {
         "question_papers_profiled": 14,
         "page_count": {
+          "policy": "range",
           "minimum": 1,
+          "p05": 1.0,
           "median": 8.0,
+          "p95": 8.0,
           "maximum": 8
         },
         "primary_page_size": {
@@ -2160,8 +2319,11 @@
       "reference": {
         "question_papers_profiled": 31,
         "page_count": {
+          "policy": "range",
           "minimum": 1,
+          "p05": 14.0,
           "median": 20,
+          "p95": 32.0,
           "maximum": 36
         },
         "primary_page_size": {
@@ -2188,8 +2350,11 @@
       "reference": {
         "question_papers_profiled": 228,
         "page_count": {
+          "policy": "range",
           "minimum": 2,
+          "p05": 2.0,
           "median": 4.0,
+          "p95": 4.0,
           "maximum": 4
         },
         "primary_page_size": {
@@ -2216,8 +2381,11 @@
       "reference": {
         "question_papers_profiled": 16,
         "page_count": {
+          "policy": "range",
           "minimum": 4,
+          "p05": 4.0,
           "median": 6.0,
+          "p95": 12.0,
           "maximum": 12
         },
         "primary_page_size": {
@@ -2244,8 +2412,11 @@
       "reference": {
         "question_papers_profiled": 12,
         "page_count": {
+          "policy": "exact",
           "minimum": 4,
+          "p05": 4.0,
           "median": 4.0,
+          "p95": 4.0,
           "maximum": 4
         },
         "primary_page_size": {
@@ -2272,8 +2443,11 @@
       "reference": {
         "question_papers_profiled": 143,
         "page_count": {
+          "policy": "range",
           "minimum": 4,
+          "p05": 4.0,
           "median": 12,
+          "p95": 16.0,
           "maximum": 20
         },
         "primary_page_size": {
@@ -2300,8 +2474,11 @@
       "reference": {
         "question_papers_profiled": 115,
         "page_count": {
+          "policy": "range",
           "minimum": 1,
+          "p05": 4.0,
           "median": 12,
+          "p95": 20.0,
           "maximum": 20
         },
         "primary_page_size": {
@@ -2328,8 +2505,11 @@
       "reference": {
         "question_papers_profiled": 4,
         "page_count": {
+          "policy": "range",
           "minimum": 4,
+          "p05": 4.0,
           "median": 4.0,
+          "p95": 7.4,
           "maximum": 8
         },
         "primary_page_size": {
@@ -2356,8 +2536,11 @@
       "reference": {
         "question_papers_profiled": 5,
         "page_count": {
+          "policy": "range",
           "minimum": 2,
+          "p05": 5.6,
           "median": 20,
+          "p95": 20.0,
           "maximum": 20
         },
         "primary_page_size": {
@@ -2384,8 +2567,11 @@
       "reference": {
         "question_papers_profiled": 12,
         "page_count": {
+          "policy": "range",
           "minimum": 12,
+          "p05": 12.0,
           "median": 16.0,
+          "p95": 20.0,
           "maximum": 20
         },
         "primary_page_size": {
@@ -2412,8 +2598,11 @@
       "reference": {
         "question_papers_profiled": 33,
         "page_count": {
+          "policy": "range",
           "minimum": 1,
+          "p05": 20.0,
           "median": 28,
+          "p95": 33.6,
           "maximum": 36
         },
         "primary_page_size": {
@@ -2440,8 +2629,11 @@
       "reference": {
         "question_papers_profiled": 31,
         "page_count": {
+          "policy": "range",
           "minimum": 16,
+          "p05": 16.0,
           "median": 28,
+          "p95": 50.0,
           "maximum": 52
         },
         "primary_page_size": {
@@ -2468,8 +2660,11 @@
       "reference": {
         "question_papers_profiled": 13,
         "page_count": {
+          "policy": "range",
           "minimum": 1,
+          "p05": 2.8,
           "median": 16,
+          "p95": 20.0,
           "maximum": 20
         },
         "primary_page_size": {
@@ -2496,8 +2691,11 @@
       "reference": {
         "question_papers_profiled": 27,
         "page_count": {
+          "policy": "range",
           "minimum": 2,
+          "p05": 2.0,
           "median": 2,
+          "p95": 4.0,
           "maximum": 4
         },
         "primary_page_size": {
@@ -2524,8 +2722,11 @@
       "reference": {
         "question_papers_profiled": 12,
         "page_count": {
+          "policy": "exact",
           "minimum": 4,
+          "p05": 4.0,
           "median": 4.0,
+          "p95": 4.0,
           "maximum": 4
         },
         "primary_page_size": {
@@ -2552,8 +2753,11 @@
       "reference": {
         "question_papers_profiled": 15,
         "page_count": {
+          "policy": "range",
           "minimum": 16,
+          "p05": 16.0,
           "median": 20,
+          "p95": 20.0,
           "maximum": 20
         },
         "primary_page_size": {
@@ -2580,8 +2784,11 @@
       "reference": {
         "question_papers_profiled": 10,
         "page_count": {
+          "policy": "range",
           "minimum": 27,
+          "p05": 27.45,
           "median": 28.0,
+          "p95": 28.0,
           "maximum": 28
         },
         "primary_page_size": {
@@ -2608,8 +2815,11 @@
       "reference": {
         "question_papers_profiled": 43,
         "page_count": {
+          "policy": "range",
           "minimum": 24,
+          "p05": 24.0,
           "median": 32,
+          "p95": 39.8,
           "maximum": 44
         },
         "primary_page_size": {
@@ -2636,8 +2846,11 @@
       "reference": {
         "question_papers_profiled": 42,
         "page_count": {
+          "policy": "range",
           "minimum": 24,
+          "p05": 24.2,
           "median": 32.0,
+          "p95": 40.0,
           "maximum": 44
         },
         "primary_page_size": {
@@ -2664,8 +2877,11 @@
       "reference": {
         "question_papers_profiled": 40,
         "page_count": {
+          "policy": "range",
           "minimum": 16,
+          "p05": 19.8,
           "median": 24.0,
+          "p95": 32.0,
           "maximum": 32
         },
         "primary_page_size": {
@@ -2692,8 +2908,11 @@
       "reference": {
         "question_papers_profiled": 42,
         "page_count": {
+          "policy": "range",
           "minimum": 20,
+          "p05": 24.0,
           "median": 28.0,
+          "p95": 35.8,
           "maximum": 36
         },
         "primary_page_size": {
@@ -2720,8 +2939,11 @@
       "reference": {
         "question_papers_profiled": 26,
         "page_count": {
+          "policy": "range",
           "minimum": 8,
+          "p05": 13.0,
           "median": 30.0,
+          "p95": 54.0,
           "maximum": 56
         },
         "primary_page_size": {
@@ -2748,8 +2970,11 @@
       "reference": {
         "question_papers_profiled": 8,
         "page_count": {
+          "policy": "range",
           "minimum": 24,
+          "p05": 24.0,
           "median": 28.0,
+          "p95": 30.6,
           "maximum": 32
         },
         "primary_page_size": {
@@ -2776,8 +3001,11 @@
       "reference": {
         "question_papers_profiled": 11,
         "page_count": {
+          "policy": "range",
           "minimum": 32,
+          "p05": 40.0,
           "median": 56,
+          "p95": 60.0,
           "maximum": 60
         },
         "primary_page_size": {
@@ -2804,8 +3032,11 @@
       "reference": {
         "question_papers_profiled": 13,
         "page_count": {
+          "policy": "range",
           "minimum": 24,
+          "p05": 24.0,
           "median": 28,
+          "p95": 33.6,
           "maximum": 36
         },
         "primary_page_size": {
@@ -2953,8 +3184,11 @@
       "reference": {
         "question_papers_profiled": 5,
         "page_count": {
+          "policy": "range",
           "minimum": 20,
+          "p05": 20.0,
           "median": 20,
+          "p95": 23.2,
           "maximum": 24
         },
         "primary_page_size": {
@@ -2981,8 +3215,11 @@
       "reference": {
         "question_papers_profiled": 5,
         "page_count": {
+          "policy": "exact",
           "minimum": 28,
+          "p05": 28.0,
           "median": 28,
+          "p95": 28.0,
           "maximum": 28
         },
         "primary_page_size": {
@@ -3009,8 +3246,11 @@
       "reference": {
         "question_papers_profiled": 5,
         "page_count": {
+          "policy": "range",
           "minimum": 24,
+          "p05": 24.8,
           "median": 28,
+          "p95": 28.0,
           "maximum": 28
         },
         "primary_page_size": {
@@ -3037,8 +3277,11 @@
       "reference": {
         "question_papers_profiled": 5,
         "page_count": {
+          "policy": "range",
           "minimum": 20,
+          "p05": 21.6,
           "median": 28,
+          "p95": 31.2,
           "maximum": 32
         },
         "primary_page_size": {
@@ -3065,8 +3308,11 @@
       "reference": {
         "question_papers_profiled": 5,
         "page_count": {
+          "policy": "range",
           "minimum": 16,
+          "p05": 16.8,
           "median": 20,
+          "p95": 20.0,
           "maximum": 20
         },
         "primary_page_size": {
@@ -3093,8 +3339,11 @@
       "reference": {
         "question_papers_profiled": 4,
         "page_count": {
+          "policy": "range",
           "minimum": 36,
+          "p05": 37.2,
           "median": 46.0,
+          "p95": 48.0,
           "maximum": 48
         },
         "primary_page_size": {
@@ -3121,8 +3370,11 @@
       "reference": {
         "question_papers_profiled": 5,
         "page_count": {
+          "policy": "range",
           "minimum": 16,
+          "p05": 16.8,
           "median": 20,
+          "p95": 20.0,
           "maximum": 20
         },
         "primary_page_size": {
@@ -3149,8 +3401,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 16,
+          "p05": 16.0,
           "median": 16,
+          "p95": 16.0,
           "maximum": 16
         },
         "primary_page_size": {
@@ -3177,8 +3432,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 16,
+          "p05": 16.0,
           "median": 16,
+          "p95": 16.0,
           "maximum": 16
         },
         "primary_page_size": {
@@ -3205,8 +3463,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 30,
+          "p05": 30.0,
           "median": 30,
+          "p95": 30.0,
           "maximum": 30
         },
         "primary_page_size": {
@@ -3233,8 +3494,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 8,
+          "p05": 8.0,
           "median": 8,
+          "p95": 8.0,
           "maximum": 8
         },
         "primary_page_size": {
@@ -3261,8 +3525,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 24,
+          "p05": 24.0,
           "median": 24,
+          "p95": 24.0,
           "maximum": 24
         },
         "primary_page_size": {
@@ -3289,8 +3556,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 24,
+          "p05": 24.0,
           "median": 24,
+          "p95": 24.0,
           "maximum": 24
         },
         "primary_page_size": {
@@ -3317,8 +3587,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 32,
+          "p05": 32.0,
           "median": 32,
+          "p95": 32.0,
           "maximum": 32
         },
         "primary_page_size": {
@@ -3340,8 +3613,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 3,
+          "p05": 3.0,
           "median": 3,
+          "p95": 3.0,
           "maximum": 3
         },
         "primary_page_size": {
@@ -3368,8 +3644,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 12,
+          "p05": 12.0,
           "median": 12,
+          "p95": 12.0,
           "maximum": 12
         },
         "primary_page_size": {
@@ -3396,8 +3675,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 20,
+          "p05": 20.0,
           "median": 20,
+          "p95": 20.0,
           "maximum": 20
         },
         "primary_page_size": {
@@ -3424,8 +3706,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 16,
+          "p05": 16.0,
           "median": 16,
+          "p95": 16.0,
           "maximum": 16
         },
         "primary_page_size": {
@@ -3452,8 +3737,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 28,
+          "p05": 28.0,
           "median": 28,
+          "p95": 28.0,
           "maximum": 28
         },
         "primary_page_size": {
@@ -3480,8 +3768,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 20,
+          "p05": 20.0,
           "median": 20,
+          "p95": 20.0,
           "maximum": 20
         },
         "primary_page_size": {
@@ -3508,8 +3799,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 16,
+          "p05": 16.0,
           "median": 16,
+          "p95": 16.0,
           "maximum": 16
         },
         "primary_page_size": {
@@ -3536,8 +3830,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 24,
+          "p05": 24.0,
           "median": 24,
+          "p95": 24.0,
           "maximum": 24
         },
         "primary_page_size": {
@@ -3564,8 +3861,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 16,
+          "p05": 16.0,
           "median": 16,
+          "p95": 16.0,
           "maximum": 16
         },
         "primary_page_size": {
@@ -3592,8 +3892,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 24,
+          "p05": 24.0,
           "median": 24,
+          "p95": 24.0,
           "maximum": 24
         },
         "primary_page_size": {
@@ -3620,8 +3923,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 16,
+          "p05": 16.0,
           "median": 16,
+          "p95": 16.0,
           "maximum": 16
         },
         "primary_page_size": {
@@ -3648,8 +3954,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 24,
+          "p05": 24.0,
           "median": 24,
+          "p95": 24.0,
           "maximum": 24
         },
         "primary_page_size": {
@@ -3676,8 +3985,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 16,
+          "p05": 16.0,
           "median": 16,
+          "p95": 16.0,
           "maximum": 16
         },
         "primary_page_size": {
@@ -3704,8 +4016,11 @@
       "reference": {
         "question_papers_profiled": 1,
         "page_count": {
+          "policy": "exact",
           "minimum": 20,
+          "p05": 20.0,
           "median": 20,
+          "p95": 20.0,
           "maximum": 20
         },
         "primary_page_size": {

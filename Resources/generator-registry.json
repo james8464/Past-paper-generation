@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "qualification": "a-level",
   "readiness_gates": [
     "blueprint",
@@ -16,6 +16,7 @@
   ],
   "families": [
     {
+      "manifest_version": 1,
       "id": "aqa/accounting",
       "board": "aqa",
       "subject": "accounting",
@@ -27,6 +28,10 @@
       "package": "aqaaccountgen",
       "entry_point": "aqaaccountgen.cli:generate_package",
       "syllabus_path": "accounting/aqa/generator/data/syllabus.json",
+      "subject_plugin": "accounting",
+      "board_profile": "aqa",
+      "specification_version": "bundled-2026-08",
+      "blueprint_version": "contract-v1",
       "content_mode": "ai-assisted",
       "supported_providers": [
         "ollama",
@@ -128,6 +133,7 @@
       ]
     },
     {
+      "manifest_version": 1,
       "id": "aqa/economics",
       "board": "aqa",
       "subject": "economics",
@@ -139,6 +145,10 @@
       "package": "aqaecongen",
       "entry_point": "aqaecongen.cli:generate_package",
       "syllabus_path": "economics/aqa/generator/data/syllabus.json",
+      "subject_plugin": "economics",
+      "board_profile": "aqa",
+      "specification_version": "bundled-2026-08",
+      "blueprint_version": "contract-v1",
       "content_mode": "ai-assisted",
       "supported_providers": [
         "ollama",
@@ -283,6 +293,7 @@
       ]
     },
     {
+      "manifest_version": 1,
       "id": "aqa/business",
       "board": "aqa",
       "subject": "business",
@@ -294,6 +305,10 @@
       "package": "aqabizgen",
       "entry_point": "aqabizgen.cli:generate_package",
       "syllabus_path": "business/aqa/generator/data/syllabus.json",
+      "subject_plugin": "business",
+      "board_profile": "aqa",
+      "specification_version": "bundled-2026-08",
+      "blueprint_version": "contract-v1",
       "content_mode": "ai-assisted",
       "supported_providers": [
         "ollama",
@@ -438,6 +453,7 @@
       ]
     },
     {
+      "manifest_version": 1,
       "id": "aqa/computer-science",
       "board": "aqa",
       "subject": "computer-science",
@@ -449,6 +465,10 @@
       "package": "cspapergen",
       "entry_point": "cspapergen.cli:generate_package",
       "syllabus_path": "computer-science/aqa/generator/data/syllabus_seed.json",
+      "subject_plugin": "computer-science",
+      "board_profile": "aqa",
+      "specification_version": "bundled-2026-08",
+      "blueprint_version": "contract-v1",
       "content_mode": "ai-assisted",
       "supported_providers": [
         "ollama",
@@ -551,6 +571,7 @@
       ]
     },
     {
+      "manifest_version": 1,
       "id": "ocr/computer-science",
       "board": "ocr",
       "subject": "computer-science",
@@ -562,6 +583,10 @@
       "package": "ocrcsgen",
       "entry_point": "ocrcsgen.cli:generate_package",
       "syllabus_path": "computer-science/ocr/generator/data/syllabus.json",
+      "subject_plugin": "computer-science",
+      "board_profile": "ocr",
+      "specification_version": "bundled-2026-08",
+      "blueprint_version": "contract-v1",
       "content_mode": "ai-assisted",
       "supported_providers": [
         "ollama",
@@ -663,6 +688,7 @@
       ]
     },
     {
+      "manifest_version": 1,
       "id": "ocr/economics",
       "board": "ocr",
       "subject": "economics",
@@ -674,6 +700,10 @@
       "package": "ocregen",
       "entry_point": "ocregen.cli:generate_package",
       "syllabus_path": "economics/ocr/generator/data/syllabus.json",
+      "subject_plugin": "economics",
+      "board_profile": "ocr",
+      "specification_version": "bundled-2026-08",
+      "blueprint_version": "contract-v1",
       "content_mode": "ai-assisted",
       "supported_providers": [
         "ollama",
@@ -817,6 +847,7 @@
       ]
     },
     {
+      "manifest_version": 1,
       "id": "pearson-edexcel/economics-a-2015",
       "board": "pearson-edexcel",
       "subject": "economics-a-2015",
@@ -828,6 +859,10 @@
       "package": "pastpapergen",
       "entry_point": "pastpapergen.cli:generate_package",
       "syllabus_path": "economics/edexcel-a/generator/data/syllabus_seed.json",
+      "subject_plugin": "economics",
+      "board_profile": "pearson-edexcel",
+      "specification_version": "bundled-2026-08",
+      "blueprint_version": "contract-v1",
       "content_mode": "ai-assisted",
       "supported_providers": [
         "ollama",

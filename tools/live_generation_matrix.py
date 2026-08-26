@@ -42,7 +42,7 @@ class MatrixJob:
 
 
 def matrix_jobs(payload: dict[str, Any]) -> list[MatrixJob]:
-    if payload.get("schema_version") not in {2, 3}:
+    if payload.get("schema_version") not in {2, 3, 4}:
         raise ValueError("unsupported generator registry schema")
     jobs: list[MatrixJob] = []
     seen: set[str] = set()

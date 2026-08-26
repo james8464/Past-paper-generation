@@ -24,6 +24,66 @@ from Backend.Core.paths import REPO_ROOT
 from Backend.Core.response_simulation import ResponseSimulator
 
 
+class AssessmentPackageCompatibilityError(ValueError):
+    """The package cannot be upgraded safely by this application version."""
+
+
+def load_assessment_package(path: Path) -> dict[str, Any]:
+    document = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(document, dict):
+        raise AssessmentPackageCompatibilityError(
+            "Assessment package must contain a JSON object."
+        )
+    version = document.get("schema_version", 0)
+    if version == 1:
+        return document
+    if version == 0:
+        return _migrate_schema_zero(document)
+    raise AssessmentPackageCompatibilityError(
+        f"Assessment package schema version {version} is not supported; "
+        "update Paper Creator and try again."
+    )
+
+
+def _migrate_schema_zero(document: dict[str, Any]) -> dict[str, Any]:
+    required = {"subject", "paper", "preview", "items", "blueprint"}
+    if required - set(document):
+        raise AssessmentPackageCompatibilityError(
+            "Legacy assessment package is incomplete and cannot be upgraded."
+        )
+    raw_items = document.get("items")
+    if not isinstance(raw_items, list) or not raw_items:
+        raise AssessmentPackageCompatibilityError(
+            "Legacy assessment package has no items to upgrade."
+        )
+    items: list[dict[str, Any]] = []
+    for raw in raw_items:
+        if not isinstance(raw, dict) or not str(raw.get("prompt", "")).strip():
+            raise AssessmentPackageCompatibilityError(
+                "Legacy assessment package contains an invalid item."
+            )
+        item = dict(raw)
+        item["fingerprint"] = item_fingerprint(str(item["prompt"]).strip())
+        items.append(item)
+    subject = str(document["subject"])
+    paper = str(document["paper"])
+    migrated = dict(document)
+    migrated.update(
+        {
+            "schema_version": 1,
+            "subject": subject,
+            "paper": paper,
+            "items": items,
+            "form_id": _form_id(
+                subject=subject,
+                paper_number=paper,
+                items=items,
+            ),
+        }
+    )
+    return migrated
+
+
 def write_assessment_package(
     paper: Any,
     path: Path,
@@ -78,9 +138,7 @@ def validate_assessment_package(
     provider: str | None,
     model: str | None,
 ) -> dict[str, Any]:
-    document = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(document, dict) or document.get("schema_version") != 1:
-        raise ValueError("generator returned an unsupported assessment package")
+    document = load_assessment_package(path)
     expected = (subject, paper_number, preview)
     actual = (
         document.get("subject"),
@@ -104,7 +162,7 @@ def validate_assessment_package(
     response_simulation_reports = []
     for item in items:
         if not isinstance(item, dict):
-            raise ValueError("assessment package contains an invalid item")
+            raise TypeError("assessment package contains an invalid item")
         prompt = str(item.get("prompt", "")).strip()
         if not prompt or item.get("fingerprint") != item_fingerprint(prompt):
             raise ValueError(
