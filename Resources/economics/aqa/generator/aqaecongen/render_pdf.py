@@ -22,7 +22,16 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-from Backend.Core.exam_blueprints import GeneratedOption, GeneratedPaper, GeneratedQuestion
+from aqaecongen.configs import (
+    PAPER3_MCQ_PAGE_COUNTS,
+    PAPER3_VISUAL_QUESTION_NUMBERS,
+)
+from Backend.Core.document_dsl import DocumentRole, renderer_contract
+from Backend.Core.exam_blueprints import (
+    GeneratedOption,
+    GeneratedPaper,
+    GeneratedQuestion,
+)
 from Backend.Core.exam_cover import (
     CoverProfile,
     aqa_question_cover,
@@ -31,11 +40,7 @@ from Backend.Core.exam_cover import (
 from Backend.Core.exam_pages import ExamPage, ExamPageProfile
 from Backend.Core.fonts import register_fonts
 from Backend.Core.generation_date import formatted_generation_date
-from Backend.Core.reportlab_theme import themed_table_class
-from aqaecongen.configs import (
-    PAPER3_MCQ_PAGE_COUNTS,
-    PAPER3_VISUAL_QUESTION_NUMBERS,
-)
+from Backend.Core.reportlab_theme import AnswerLineFlowable, themed_table_class
 
 BLACK = colors.HexColor("#171717")
 GREY = colors.HexColor("#ececec")
@@ -46,6 +51,15 @@ FONT = "AQAArial"
 FONT_BOLD = "AQAArial-Bold"
 register_fonts(FONT, FONT_BOLD)
 Table = themed_table_class(Table, FONT)
+RENDERER_CONTRACT = renderer_contract(
+    "aqa",
+    roles=(
+        DocumentRole.QUESTION_PAPER,
+        DocumentRole.MARK_SCHEME,
+        DocumentRole.SOURCE_BOOKLET,
+    ),
+    vector_components=("economic-curve", "statistical-chart"),
+)
 
 
 def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
@@ -1208,21 +1222,14 @@ def _page_chrome(canvas, doc, paper_code: str, document_type: str) -> None:
     canvas.restoreState()
 
 
-class AnswerLines(Flowable):
+class AnswerLines(AnswerLineFlowable):
     def __init__(self, line_count: int) -> None:
-        self.line_count = line_count
-        super().__init__()
-        self.width = 165 * mm
-        self.height = line_count * 6.2 * mm
-
-    def draw(self) -> None:
-        self.canv.setStrokeColor(colors.HexColor("#666666"))
-        self.canv.setLineWidth(0.5)
-        self.canv.setDash(1, 1.7)
-        for index in range(self.line_count):
-            y = self.height - ((index + 1) * 6.2 * mm)
-            self.canv.line(0, y, self.width, y)
-        self.canv.setDash()
+        super().__init__(
+            line_count,
+            width_mm=165,
+            spacing_mm=6.2,
+            colour="#666666",
+        )
 
 
 _sample = getSampleStyleSheet()

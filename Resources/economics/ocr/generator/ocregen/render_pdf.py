@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from html import escape
 import math
+from html import escape
 from pathlib import Path
 
 import pymupdf as fitz
-
 from reportlab.graphics.shapes import Drawing, Line, PolyLine, Rect, String, Wedge
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT
@@ -16,8 +15,8 @@ from reportlab.platypus import (
     BaseDocTemplate,
     Flowable,
     Frame,
-    NextPageTemplate,
     KeepTogether,
+    NextPageTemplate,
     PageBreak,
     PageTemplate,
     Paragraph,
@@ -26,7 +25,12 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-from Backend.Core.exam_blueprints import GeneratedOption, GeneratedPaper, GeneratedQuestion
+from Backend.Core.document_dsl import DocumentRole, renderer_contract
+from Backend.Core.exam_blueprints import (
+    GeneratedOption,
+    GeneratedPaper,
+    GeneratedQuestion,
+)
 from Backend.Core.exam_cover import (
     CoverProfile,
     mark_scheme_cover,
@@ -34,7 +38,7 @@ from Backend.Core.exam_cover import (
 )
 from Backend.Core.exam_pages import ExamPage, ExamPageProfile
 from Backend.Core.fonts import register_fonts
-from Backend.Core.reportlab_theme import themed_table_class
+from Backend.Core.reportlab_theme import AnswerLineFlowable, themed_table_class
 
 PAGE_WIDTH, PAGE_HEIGHT = A4
 OCR_MARK_SCHEME_FRONT_SIZE = (594.96, 842.04)
@@ -46,6 +50,11 @@ FONT = "AQAArial"
 FONT_BOLD = "AQAArial-Bold"
 register_fonts(FONT, FONT_BOLD)
 Table = themed_table_class(Table, FONT)
+RENDERER_CONTRACT = renderer_contract(
+    "ocr",
+    roles=(DocumentRole.QUESTION_PAPER, DocumentRole.MARK_SCHEME),
+    vector_components=("economic-curve", "statistical-chart"),
+)
 
 
 def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
@@ -421,7 +430,7 @@ def _paper_one_two_mark_scheme_content(paper: GeneratedPaper) -> list[Flowable]:
         _indicative_guidance_page(data_questions[4]),
         _level_descriptor_page(data_questions[5]),
         _indicative_guidance_page(data_questions[5]),
-        _choice_level_descriptor_page(choice_questions, range(0, 3)),
+        _choice_level_descriptor_page(choice_questions, range(3)),
         [
             *_choice_level_descriptor_page(choice_questions, range(3, 5)),
             Spacer(1, 4 * mm),
@@ -1172,9 +1181,7 @@ def _assessment_objectives_page(
         if question.marks >= 20:
             quantitative = 8 if extended_group_index == 0 else 0
             extended_group_index += 1
-        elif question.kind == "calculation":
-            quantitative = question.marks
-        elif "compare" in question.command_word.casefold():
+        elif question.kind == "calculation" or "compare" in question.command_word.casefold():
             quantitative = question.marks
         elif "diagram" in question.prompt.casefold():
             quantitative = min(question.marks, 4)
@@ -2095,22 +2102,9 @@ def _box(text: str) -> Table:
     return Table([[Paragraph(text, STYLES["body"])]], colWidths=[150 * mm], style=TableStyle([("BOX", (0, 0), (-1, -1), 0.6, INK), ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f7f7f7")), ("PADDING", (0, 0), (-1, -1), 8)]))
 
 
-class AnswerLines(Flowable):
+class AnswerLines(AnswerLineFlowable):
     def __init__(self, count: int, *, spacing_mm: float = 6.0) -> None:
-        super().__init__()
-        self.width = 167 * mm
-        self.height = count * spacing_mm * mm
-        self.count = count
-        self.spacing = spacing_mm * mm
-
-    def draw(self) -> None:
-        self.canv.setStrokeColor(colors.HexColor("#777777"))
-        self.canv.setLineWidth(0.5)
-        self.canv.setDash(1, 1.7)
-        for index in range(self.count):
-            y = self.height - (index + 1) * self.spacing
-            self.canv.line(0, y, self.width, y)
-        self.canv.setDash()
+        super().__init__(count, spacing_mm=spacing_mm)
 
 
 _base = getSampleStyleSheet()

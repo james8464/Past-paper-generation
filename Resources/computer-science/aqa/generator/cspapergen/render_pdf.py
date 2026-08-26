@@ -8,6 +8,7 @@ from pathlib import Path
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 
+from Backend.Core.document_dsl import DocumentRole, renderer_contract
 from Backend.Core.exam_cover import CoverProfile, draw_mark_scheme_cover
 from Backend.Core.exam_pages import ExamPageProfile, draw_exam_page
 from Backend.Core.fonts import register_fonts as _rf
@@ -20,6 +21,11 @@ from cspapergen.models import PaperBlueprint, Question, QuestionPart, Stimulus
 FONT = "AQAArial"
 FONT_BOLD = "AQAArial-Bold"
 FONT_MONO = "AQACourier"
+RENDERER_CONTRACT = renderer_contract(
+    "aqa",
+    roles=(DocumentRole.QUESTION_PAPER, DocumentRole.MARK_SCHEME),
+    vector_components=("program-trace", "logic-circuit", "statistical-chart"),
+)
 LEFT = 54
 RIGHT = 534
 TOP = 770

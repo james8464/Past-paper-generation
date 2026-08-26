@@ -10,6 +10,7 @@ from reportlab.lib.units import mm
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.platypus import Flowable
 
+from Backend.Core.document_dsl import BlankPage, ContinuationPage, RuleSet
 
 Board = Literal["aqa", "ocr"]
 PageVariant = Literal["additional", "continuation", "blank"]
@@ -47,7 +48,16 @@ class ExamPage(Flowable):
         self.width = 167 * mm
         self.height = 226 * mm
 
-    def drawOn(  # noqa: N802 - ReportLab API name
+    @property
+    def component(self) -> BlankPage | ContinuationPage | RuleSet:
+        """Expose identical page intent to the renderer-neutral DSL."""
+        if self.profile.variant == "blank":
+            return BlankPage(message=self.profile.message or self.profile.heading)
+        if self.profile.variant == "continuation":
+            return ContinuationPage(heading=self.profile.heading)
+        return RuleSet(lines=25)
+
+    def drawOn(
         self,
         canv: Canvas,
         x: float,

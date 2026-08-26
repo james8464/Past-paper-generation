@@ -1,10 +1,9 @@
 # The project-root bootstrap must precede imports from the shared backend.
-# ruff: noqa: E402
 
 from __future__ import annotations
 
-import io
 import hashlib
+import io
 import os
 import re
 import sys
@@ -18,6 +17,7 @@ _PROJECT_ROOT = str(Path(__file__).resolve().parents[5])
 if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
+from Backend.Core.document_dsl import DocumentRole, renderer_contract
 from Backend.Core.fonts import register_fonts as _rf
 from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.overlay.graphs import (
@@ -48,6 +48,15 @@ ANSWER_LINE_GAP_PT = L.answer_line_gap
 ANSWER_LINE_COLOR_HEX = L.answer_line_color
 ANSWER_LINE_DASH = L.answer_line_dash
 ANSWER_LINE_WIDTH_PT = 0.5
+RENDERER_CONTRACT = renderer_contract(
+    "pearson-edexcel",
+    roles=(
+        DocumentRole.QUESTION_PAPER,
+        DocumentRole.MARK_SCHEME,
+        DocumentRole.SOURCE_BOOKLET,
+    ),
+    vector_components=("economic-curve", "statistical-chart"),
+)
 BODY_FONT_SIZE_PT = L.body_font_size
 BODY_LEADING_PT = L.body_leading
 FONT_REGULAR = L.font_regular

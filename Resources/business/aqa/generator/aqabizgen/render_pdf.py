@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import pymupdf as fitz
-
 from reportlab.graphics.shapes import Drawing, Ellipse, Line, PolyLine, Rect, String
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT
@@ -22,6 +21,8 @@ from reportlab.platypus import (
     TableStyle,
 )
 
+from aqabizgen.financials import FinancialPosition
+from Backend.Core.document_dsl import DocumentRole, renderer_contract
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -35,10 +36,8 @@ from Backend.Core.exam_cover import (
 from Backend.Core.exam_pages import ExamPage, ExamPageProfile
 from Backend.Core.fonts import register_fonts
 from Backend.Core.generation_date import formatted_generation_date
-from Backend.Core.reportlab_theme import themed_table_class
 from Backend.Core.mark_scheme_front_matter import aqa_front_matter_pages
-from aqabizgen.financials import FinancialPosition
-
+from Backend.Core.reportlab_theme import AnswerLineFlowable, themed_table_class
 
 AQA_A4 = (595.32, 841.92)
 PAGE_WIDTH, PAGE_HEIGHT = AQA_A4
@@ -48,6 +47,15 @@ FONT = "AQAArial"
 FONT_BOLD = "AQAArial-Bold"
 register_fonts(FONT, FONT_BOLD)
 Table = themed_table_class(Table, FONT)
+RENDERER_CONTRACT = renderer_contract(
+    "aqa",
+    roles=(
+        DocumentRole.QUESTION_PAPER,
+        DocumentRole.MARK_SCHEME,
+        DocumentRole.SOURCE_BOOKLET,
+    ),
+    vector_components=("accounting-table", "economic-curve", "statistical-chart"),
+)
 
 
 def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
@@ -1504,19 +1512,15 @@ def _box(text: str) -> Table:
     )
 
 
-class AnswerLines(Flowable):
+class AnswerLines(AnswerLineFlowable):
     def __init__(self, count: int) -> None:
-        super().__init__()
-        self.width = 167 * mm
-        self.height = count * 6.0 * mm
-        self.count = count
-
-    def draw(self) -> None:
-        self.canv.setStrokeColor(colors.HexColor("#b5b5b5"))
-        self.canv.setLineWidth(0.35)
-        for index in range(self.count):
-            y = self.height - (index + 1) * 6.0 * mm
-            self.canv.line(0, y, self.width, y)
+        super().__init__(
+            count,
+            spacing_mm=6,
+            colour="#b5b5b5",
+            line_width=0.35,
+            dashed=False,
+        )
 
 
 _base = getSampleStyleSheet()

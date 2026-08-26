@@ -8,6 +8,7 @@ from reportlab.lib.units import mm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.platypus import Flowable
 
+from Backend.Core.document_dsl import Cover
 from Backend.Core.generation_date import (
     formatted_generation_date,
     formatted_generation_series,
@@ -45,6 +46,15 @@ class QuestionPaperCover(Flowable):
         self.bold_font = bold_font
         self.width = 167 * mm
         self.height = 235 * mm
+
+    @property
+    def component(self) -> Cover:
+        """Return the renderer-neutral representation used for qualification."""
+        return Cover(
+            title=self.profile.subject,
+            subtitle=self.profile.paper_title,
+            code=self.profile.code,
+        )
 
     def draw(self) -> None:
         if self.profile.board == "ocr":
@@ -244,7 +254,7 @@ class MarkSchemeCover(Flowable):
         self.width = 167 * mm
         self.height = 235 * mm
 
-    def drawOn(  # noqa: N802 - ReportLab API name
+    def drawOn(
         self,
         canv: object,
         x: float,

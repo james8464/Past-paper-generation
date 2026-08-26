@@ -23,6 +23,7 @@ from reportlab.platypus import (
     TableStyle,
 )
 
+from Backend.Core.document_dsl import DocumentRole, renderer_contract
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -35,8 +36,7 @@ from Backend.Core.exam_cover import (
 )
 from Backend.Core.exam_pages import ExamPage, ExamPageProfile
 from Backend.Core.fonts import register_fonts
-from Backend.Core.reportlab_theme import themed_table_class
-
+from Backend.Core.reportlab_theme import AnswerLineFlowable, themed_table_class
 
 PAGE_WIDTH, PAGE_HEIGHT = A4
 OCR_MARK_SCHEME_FRONT_SIZE = (594.96, 842.04)
@@ -48,6 +48,11 @@ FONT = "AQAArial"
 FONT_BOLD = "AQAArial-Bold"
 FONT_MONO = "AQACourier"
 register_fonts(FONT, FONT_BOLD, FONT_MONO)
+RENDERER_CONTRACT = renderer_contract(
+    "ocr",
+    roles=(DocumentRole.QUESTION_PAPER, DocumentRole.MARK_SCHEME),
+    vector_components=("program-trace", "logic-circuit", "statistical-chart"),
+)
 Table = themed_table_class(Table, FONT)
 
 QUESTION_PAGE_CHUNKS = {
@@ -878,21 +883,14 @@ def _box(text: str) -> Table:
     )
 
 
-class AnswerLines(Flowable):
+class AnswerLines(AnswerLineFlowable):
     def __init__(self, count: int) -> None:
-        super().__init__()
-        self.width = 165 * mm
-        self.height = count * 4.7 * mm
-        self.count = count
-
-    def draw(self) -> None:
-        self.canv.setStrokeColor(colors.HexColor("#666666"))
-        self.canv.setLineWidth(0.5)
-        self.canv.setDash(1, 1.7)
-        for index in range(self.count):
-            y = self.height - (index + 1) * 4.7 * mm
-            self.canv.line(0, y, self.width, y)
-        self.canv.setDash()
+        super().__init__(
+            count,
+            width_mm=165,
+            spacing_mm=4.7,
+            colour="#666666",
+        )
 
 
 _base = getSampleStyleSheet()
