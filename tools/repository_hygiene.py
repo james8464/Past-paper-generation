@@ -38,6 +38,7 @@ ROOT_FILES = {
     "pytest.ini": "test-configuration",
     "requirements-build.txt": "build-release-configuration",
     "requirements-test.txt": "test-configuration",
+    "ruff.toml": "build-release-configuration",
 }
 
 

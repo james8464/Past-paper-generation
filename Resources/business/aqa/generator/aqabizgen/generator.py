@@ -3,6 +3,8 @@ from __future__ import annotations
 import random
 import secrets
 
+from aqabizgen.financials import FinancialPosition, format_number
+from aqabizgen.syllabus import Syllabus, Topic
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -14,10 +16,6 @@ from Backend.Core.exam_blueprints import (
     validate_generated_paper,
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
-
-from aqabizgen.financials import FinancialPosition, format_number
-from aqabizgen.syllabus import Syllabus, Topic
-
 
 BUSINESSES = [
     "Aster Cycles",

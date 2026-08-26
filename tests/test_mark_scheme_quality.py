@@ -27,7 +27,7 @@ def test_concise_low_mark_scheme_is_valid() -> None:
 
 
 def test_extended_response_rejects_generic_shallow_guidance() -> None:
-    with pytest.raises(ValueError, match="item 1.*too shallow"):
+    with pytest.raises(ValueError, match=r"item 1.*too shallow"):
         validate_mark_scheme_item(
             _item(
                 marks=20,

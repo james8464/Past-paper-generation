@@ -12,7 +12,6 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-
 ROOT = Path(__file__).resolve().parents[1]
 CORPUS_ROOT = (
     ROOT / "Reference Corpus" / "a-level" / "aqa" / "accounting" / "accounting-7127"

@@ -1,9 +1,10 @@
-from Backend.Core.generation_date import GENERATION_DATE_ENV
-from Backend.Core.pdf_text import extract_pdf_text
 from cspapergen.generator import build_paper1_blueprint, build_paper2_blueprint
 from cspapergen.render_pdf import render_mark_scheme
 from cspapergen.syllabus import load_syllabus
 from cspapergen.validation import validate_blueprint
+
+from Backend.Core.generation_date import GENERATION_DATE_ENV
+from Backend.Core.pdf_text import extract_pdf_text
 
 
 def test_every_part_has_specific_marking_guidance():

@@ -2,11 +2,6 @@ import re
 from pathlib import Path
 
 import pytest
-
-from Backend.Core.assessment_checkpoints import (
-    AssessmentCheckpointStore,
-    identity_for_blueprint,
-)
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.ollama_client import (
     _clean_prompt,
@@ -18,6 +13,10 @@ from pastpapergen.ollama_client import (
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.syllabus import load_syllabus
 
+from Backend.Core.assessment_checkpoints import (
+    AssessmentCheckpointStore,
+    identity_for_blueprint,
+)
 
 GUIDANCE = [
     "AO1: Defines the exact syllabus concept used in the question.",

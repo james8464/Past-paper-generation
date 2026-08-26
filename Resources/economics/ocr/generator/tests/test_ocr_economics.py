@@ -4,17 +4,15 @@ from pathlib import Path
 
 import pymupdf as fitz
 import pytest
+from ocregen.cli import generate_package
+from ocregen.configs import RULES
+from ocregen.generator import build_paper
+from ocregen.render_pdf import STYLES, _compact_indicative_guidance, render_mark_scheme
+from ocregen.syllabus import load_syllabus
 from pypdf import PdfReader
 
 from Backend.Core.exam_blueprints import validate_generated_paper, validate_rule
 from Backend.Core.render_transaction import render_pdf_atomically
-from ocregen.cli import generate_package
-from ocregen.configs import RULES
-from ocregen.generator import build_paper
-from ocregen.render_pdf import render_mark_scheme
-from ocregen.render_pdf import STYLES
-from ocregen.render_pdf import _compact_indicative_guidance
-from ocregen.syllabus import load_syllabus
 
 ROOT = Path(__file__).resolve().parents[1]
 SYLLABUS = load_syllabus(ROOT / "data" / "syllabus.json")

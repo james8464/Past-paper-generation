@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import json
 
-from tools.difficulty_calibration import OUTPUT
 from tools.coverage_matrix import GENERATOR_REGISTRY
+from tools.difficulty_calibration import OUTPUT
 
 
 def report() -> dict[str, object]:

@@ -78,11 +78,12 @@ def generate_unique_paper(
     client: AssessmentLLMClient,
     subject: str,
     progress: Callable[[str | GenerationUpdate], None] | None = None,
-    policy: GenerationPolicy = GenerationPolicy(),
+    policy: GenerationPolicy | None = None,
     checkpoint_store: AssessmentCheckpointStore | None = None,
 ) -> GeneratedPaper:
     """Replace draft items while keeping the authoritative assessment blueprint frozen."""
 
+    policy = policy or GenerationPolicy()
     emit = progress or (lambda _message: None)
     topics = {str(topic.id): topic for topic in syllabus_topics}
     tasks = _tasks(paper, topics)
@@ -111,12 +112,10 @@ def generate_unique_paper(
                 ): batch
                 for batch in batches
             }
-            completed = 0
             completed_items = 0
-            for future in as_completed(futures):
+            for completed, future in enumerate(as_completed(futures), start=1):
                 batch_result = future.result()
                 generated.update(batch_result)
-                completed += 1
                 completed_items += len(batch_result)
                 emit(
                     GenerationUpdate(

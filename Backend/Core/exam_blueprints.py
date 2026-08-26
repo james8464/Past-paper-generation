@@ -458,7 +458,7 @@ def _structured_scheme(question: GeneratedQuestion) -> list[MarkSchemePoint]:
                 )
             )
             continue
-        for entry_index, (objective, marks) in enumerate(entries):
+        for objective, marks in entries:
             result.append(
                 MarkSchemePoint(
                     text=(

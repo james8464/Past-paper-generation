@@ -1,5 +1,5 @@
-from reportlab.pdfbase import pdfmetrics
 from reportlab.lib.styles import ParagraphStyle
+from reportlab.pdfbase import pdfmetrics
 from reportlab.platypus import Paragraph
 
 from Backend.Core.fonts import register_font, register_fonts

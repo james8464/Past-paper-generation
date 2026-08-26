@@ -57,6 +57,6 @@ def test_future_assessment_package_version_has_actionable_error(tmp_path: Path) 
 
     with pytest.raises(
         AssessmentPackageCompatibilityError,
-        match="schema version 99.*update Paper Creator",
+        match=r"schema version 99.*update Paper Creator",
     ):
         load_assessment_package(path)

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from Backend.Core.exam_blueprints import PaperRule, QuestionRule, SectionRule
 
-
 PAPER_1_TOPICS = {
     "accounting-3",
     "accounting-4",

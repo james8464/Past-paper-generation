@@ -1,6 +1,10 @@
 from pathlib import Path
 
-from pastpapergen.notes import note_context_for_topic, note_file_for_topic, note_points_for_topic
+from pastpapergen.notes import (
+    note_context_for_topic,
+    note_file_for_topic,
+    note_points_for_topic,
+)
 
 
 def test_notes_are_included_in_project_and_mapped_to_subtopics():

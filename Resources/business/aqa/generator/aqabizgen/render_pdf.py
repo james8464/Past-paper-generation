@@ -921,7 +921,7 @@ def _financial_position_extract(option: GeneratedOption) -> Table:
 
 
 def _restructuring_table(option: GeneratedOption) -> Table:
-    values = [int(round(value)) for value in option.chart_values]
+    values = [round(value) for value in option.chart_values]
     rows = [
         ["Feature", "Before restructuring", "After restructuring"],
         ["Number of staff", str(values[4] * 34), str(values[3] * 31)],

@@ -1082,7 +1082,7 @@ def _render_paper2_mark_scheme_pages(
 
     page = 6
     y = _mark_scheme_table_header(pdf, page, blueprint)
-    for question_index, question in enumerate(blueprint.questions):
+    for question in blueprint.questions:
         start_page, end_page = PAPER2_MARK_SCHEME_PAGE_RANGES[question.number]
         while page < start_page:
             pdf.showPage()
@@ -1706,7 +1706,7 @@ def _draw_classification_diagram(
     x: float,
     y: float,
 ) -> float:
-    application_one, application_two, utility, translator = diagram.split("|")
+    application_one, application_two, _utility, _translator = diagram.split("|")
     boxes = {
         "Software": (x, y - 104, 76, 34),
         "Application software": (x + 110, y - 55, 112, 34),

@@ -3,7 +3,6 @@ from __future__ import annotations
 from reportlab.lib.units import mm
 from reportlab.platypus import Flowable, PageBreak, Paragraph, Spacer
 
-
 SUBJECT_GUIDANCE = {
     "accounting": [
         ("Applying the mark scheme", "Read the complete response before awarding marks. Credit a valid accounting treatment when it is applied consistently and answers the requirement."),

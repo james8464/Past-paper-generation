@@ -107,7 +107,7 @@ def test_corrupt_checkpoint_fails_closed_with_actionable_identity(tmp_path: Path
     path = tmp_path / "job.json"
     path.write_text('{"schema_version": 1, "items": ', encoding="utf-8")
 
-    with pytest.raises(CheckpointCorrupt, match="checkpoint is unreadable.*job.json"):
+    with pytest.raises(CheckpointCorrupt, match=r"checkpoint is unreadable.*job.json"):
         AssessmentCheckpointStore(path, identity())
 
 

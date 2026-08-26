@@ -1,8 +1,6 @@
-from pathlib import Path
 import re
+from pathlib import Path
 
-from Backend.Core.generation_date import formatted_generation_date
-from Backend.Core.pdf_text import extract_pdf_text, pdf_font_names
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.render_pdf import (
@@ -18,14 +16,17 @@ from pastpapergen.render_pdf import (
     EDEXCEL_MEDIA_BOX,
     RAIL_H,
     RAIL_Y,
-    SECTION_A_INSTRUCTION_LINES,
     SECTION_A_FOOTER_SAFE_Y,
+    SECTION_A_INSTRUCTION_LINES,
     _draw_answer_lines,
     _extra_answer_pages,
     _table_rows,
     render_question_paper,
 )
 from pastpapergen.syllabus import load_syllabus
+
+from Backend.Core.generation_date import formatted_generation_date
+from Backend.Core.pdf_text import extract_pdf_text, pdf_font_names
 
 
 def _blueprint_with_section_a_question(config, syllabus, predicate):

@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import re
 import sys
-from functools import lru_cache
+from functools import cache, lru_cache
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 _BUNDLE_ROOT = (
-    Path(getattr(sys, "_MEIPASS"))
+    Path(sys._MEIPASS)
     if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")
     else PROJECT_ROOT
 )
@@ -77,7 +77,7 @@ def _note_prefix(topic_id: str) -> str:
     return f"{topic_id}."
 
 
-@lru_cache(maxsize=None)
+@cache
 def _note_text(topic_id: str) -> str:
     try:
         text = note_file_for_topic(topic_id).read_text(encoding="utf-8", errors="ignore")

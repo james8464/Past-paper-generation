@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 LINE_CHART_SERIES: dict[str, tuple[str, str, tuple[float, ...]]] = {
     "household_savings_line_chart": (
         "%",

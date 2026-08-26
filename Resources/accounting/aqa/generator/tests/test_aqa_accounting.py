@@ -6,14 +6,12 @@ import subprocess
 from pathlib import Path
 
 import pymupdf as fitz
-from pypdf import PdfReader
-
 from aqaaccountgen.case_data import CostingCase, NonCurrentAssetCase, SalesLedgerCase
 from aqaaccountgen.cli import generate_package
 from aqaaccountgen.configs import RULES
 from aqaaccountgen.generator import build_paper
 from aqaaccountgen.syllabus import load_syllabus
-
+from pypdf import PdfReader
 
 ROOT = Path(__file__).resolve().parents[1]
 SYLLABUS = load_syllabus(ROOT / "data" / "syllabus.json")

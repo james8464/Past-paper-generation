@@ -3,10 +3,10 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from functools import lru_cache
+from itertools import pairwise
 from typing import Any
 
 from Backend.Core.paths import REPO_ROOT
-
 
 MODEL_RECOMMENDATIONS_PATH = (
     REPO_ROOT / "Resources" / "ollama-model-recommendations.json"
@@ -73,7 +73,7 @@ def parse_model_recommendations(
     tiers.sort(key=lambda tier: tier.minimum_memory_gb)
     if tiers[0].minimum_memory_gb != 0:
         raise ValueError("Ollama model tiers must begin at zero GB")
-    for left, right in zip(tiers, tiers[1:], strict=False):
+    for left, right in pairwise(tiers):
         if left.maximum_memory_gb != right.minimum_memory_gb:
             raise ValueError("Ollama model tiers must be contiguous and non-overlapping")
     if tiers[-1].maximum_memory_gb is not None:

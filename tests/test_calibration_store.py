@@ -75,7 +75,7 @@ def test_import_rejects_direct_identifiers_and_missing_consent(tmp_path: Path) -
         "p-1,Alice,q1,1,1,aqa-7136-v1.2\n",
         encoding="utf-8",
     )
-    with pytest.raises(ValueError, match="direct identifier|unsupported column"):
+    with pytest.raises(ValueError, match=r"direct identifier|unsupported column"):
         store.import_csv(direct, metadata=_metadata(), consents=_consents(1))
 
     with pytest.raises(ValueError, match="consent"):
@@ -127,7 +127,7 @@ def test_import_rejects_mixed_versions_duplicates_and_impossible_values(
         ),
         encoding="utf-8",
     )
-    with pytest.raises(ValueError, match="score range|timing"):
+    with pytest.raises(ValueError, match=r"score range|timing"):
         store.import_csv(impossible, metadata=_metadata(), consents=_consents(4))
 
 

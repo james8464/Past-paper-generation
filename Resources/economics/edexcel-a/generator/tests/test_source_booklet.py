@@ -1,12 +1,13 @@
-from pathlib import Path
 import re
+from pathlib import Path
 
-from Backend.Core.generation_date import formatted_generation_date
-from Backend.Core.pdf_text import extract_pdf_text
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.render_pdf import render_source_booklet
 from pastpapergen.syllabus import load_syllabus
+
+from Backend.Core.generation_date import formatted_generation_date
+from Backend.Core.pdf_text import extract_pdf_text
 
 
 def test_source_booklet_for_paper_1_only_uses_section_b(tmp_path):

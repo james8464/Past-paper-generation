@@ -275,7 +275,7 @@ class MigrationValidator:
                     return "deterministic preview output roles disagree with the manifest"
                 if any(not Path(path).is_file() for path in result.values()):
                     return "deterministic preview reported a missing artifact"
-        except Exception as error:  # noqa: BLE001 - reported as a migration issue.
+        except Exception as error:
             return f"deterministic preview failed: {error}"
         return None
 

@@ -10,7 +10,6 @@ from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.render_transaction import render_pdf_atomically
 from cspapergen.models import Paper1Context, PaperBlueprint
 
-
 A4 = (595.32, 841.92)
 FONT = "AQAArial"
 FONT_BOLD = "AQAArial-Bold"

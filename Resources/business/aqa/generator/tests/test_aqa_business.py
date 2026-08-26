@@ -2,15 +2,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from pypdf import PdfReader
-
 from aqabizgen.cli import generate_package
 from aqabizgen.configs import RULES
 from aqabizgen.financials import FinancialPosition, format_number
 from aqabizgen.generator import build_paper
 from aqabizgen.syllabus import load_syllabus
-from Backend.Core.exam_blueprints import validate_generated_paper, validate_rule
+from pypdf import PdfReader
 
+from Backend.Core.exam_blueprints import validate_generated_paper, validate_rule
 
 ROOT = Path(__file__).resolve().parents[1]
 SYLLABUS = load_syllabus(ROOT / "data" / "syllabus.json")

@@ -8,7 +8,6 @@ from reportlab.platypus import SimpleDocTemplate
 from Backend.Core.exam_cover import CoverProfile, MarkSchemeCover
 from Backend.Core.fonts import register_fonts
 
-
 FONT = "AQAArial"
 FONT_BOLD = "AQAArial-Bold"
 register_fonts(FONT, FONT_BOLD)

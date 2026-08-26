@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
-import hashlib
+from collections.abc import Mapping
 from pathlib import Path
 from threading import RLock
-from typing import Any, Literal, Mapping
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 

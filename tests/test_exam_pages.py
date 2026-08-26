@@ -1,3 +1,4 @@
+import itertools
 from pathlib import Path
 
 import pymupdf as fitz
@@ -56,7 +57,10 @@ def test_aqa_additional_page_matches_measured_response_grid(tmp_path: Path) -> N
 
         lines = sorted(_horizontal_lines(page), key=lambda rect: rect.y0)
         ruled = [line for line in lines if 95 < line.y0 < 749]
-        gaps = [right.y0 - left.y0 for left, right in zip(ruled, ruled[1:])]
+        gaps = [
+            right.y0 - left.y0
+            for left, right in itertools.pairwise(ruled)
+        ]
         assert len(ruled) >= 25
         assert 24.5 <= sorted(gaps)[len(gaps) // 2] <= 26.5
 

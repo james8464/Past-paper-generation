@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 from datetime import date
 
-
 GENERATION_DATE_ENV = "PAPER_CREATOR_GENERATED_ON"
 
 

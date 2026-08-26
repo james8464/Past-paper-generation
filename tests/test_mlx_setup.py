@@ -241,7 +241,7 @@ def test_runtime_installer_terminates_its_child_when_setup_is_cancelled() -> Non
 
 
 def test_mlx_setup_rejects_unsupported_python_with_plain_diagnostic() -> None:
-    with pytest.raises(MLXSetupError, match="Python 3.10 through 3.13"):
+    with pytest.raises(MLXSetupError, match=r"Python 3.10 through 3.13"):
         validate_mlx_setup_environment(
             python_version=(3, 14),
             machine="arm64",

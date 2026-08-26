@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from Backend.Core.exam_blueprints import PaperRule, QuestionRule, SectionRule
 
-
 PAPER_1_MARKS = [
     [4, 1, 3, 3, 4, 3, 2, 3],
     [2, 4, 3, 2, 4, 5, 9],

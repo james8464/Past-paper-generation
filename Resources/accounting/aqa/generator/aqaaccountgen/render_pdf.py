@@ -1320,7 +1320,7 @@ def _paper_one_section_c_pages(
 
 
 def _accounting_system_case(option: GeneratedOption) -> Table:
-    values = [int(round(value * 1000)) for value in option.chart_values]
+    values = [round(value * 1000) for value in option.chart_values]
     annual_salary = int(values[0] * 0.32)
     software_cost = int(values[1] * 0.24)
     training_cost = int(values[2] * 0.09)
@@ -1402,7 +1402,7 @@ def _accounting_system_case(option: GeneratedOption) -> Table:
 
 
 def _shareholder_case(option: GeneratedOption) -> Table:
-    values = [int(round(value * 1000)) for value in option.chart_values]
+    values = [round(value * 1000) for value in option.chart_values]
     ordinary_opening = int(values[4] * 1.0)
     premium_opening = int(values[1] * 0.22)
     retained_opening = int(values[3] * 0.45)

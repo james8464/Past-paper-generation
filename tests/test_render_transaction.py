@@ -86,7 +86,7 @@ def test_render_timeout_is_typed_and_removes_partial_output(tmp_path: Path) -> N
         temporary.write_bytes(b"partial")
         time.sleep(1)
 
-    with pytest.raises(RenderTimeout, match="mark scheme.*0.05 seconds"):
+    with pytest.raises(RenderTimeout, match=r"mark scheme.*0.05 seconds"):
         render_pdf_atomically(
             output,
             stall,

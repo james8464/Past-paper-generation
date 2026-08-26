@@ -6,10 +6,10 @@ import re
 import time
 import urllib.error
 import urllib.request
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from threading import Lock
-from typing import Callable
 
 from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
 from Backend.Core.assessment_quality import (
@@ -19,9 +19,19 @@ from Backend.Core.model_review import (
     assert_materially_new,
     require_independent_review,
 )
-from pastpapergen.models import MultipleChoiceOption, PaperBlueprint, QuestionBlueprint, Syllabus, SyllabusTopic
+from pastpapergen.models import (
+    MultipleChoiceOption,
+    PaperBlueprint,
+    QuestionBlueprint,
+    Syllabus,
+    SyllabusTopic,
+)
 from pastpapergen.notes import note_context_for_topic
-from pastpapergen.stimulus_data import line_chart_data, line_chart_values, review_table_rows
+from pastpapergen.stimulus_data import (
+    line_chart_data,
+    line_chart_values,
+    review_table_rows,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -598,17 +608,23 @@ def _validate_ai_question(
             candidate.indicative_content,
             item_id=f"question-{original.number}",
         )
-    if candidate.stimulus_kind and candidate.graph_params.kind:
-        if (
-            candidate.graph_params.eq_price is not None
-            and not 20 <= candidate.graph_params.eq_price <= 200
-        ) or (
-            candidate.graph_params.eq_quantity is not None
-            and not 30 <= candidate.graph_params.eq_quantity <= 300
-        ):
-            raise ValueError(
-                f"question-{original.number} has out-of-range graph parameters"
+    if (
+        candidate.stimulus_kind
+        and candidate.graph_params.kind
+        and (
+            (
+                candidate.graph_params.eq_price is not None
+                and not 20 <= candidate.graph_params.eq_price <= 200
             )
+            or (
+                candidate.graph_params.eq_quantity is not None
+                and not 30 <= candidate.graph_params.eq_quantity <= 300
+            )
+        )
+    ):
+        raise ValueError(
+            f"question-{original.number} has out-of-range graph parameters"
+        )
 
 
 def _validate_content_lists(

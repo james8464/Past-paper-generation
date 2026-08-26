@@ -1,15 +1,19 @@
 from pathlib import Path
 
 import pytest
-
+from pastpapergen.generator import build_paper_blueprint
+from pastpapergen.paper_configs import load_builtin_paper_config
+from pastpapergen.render_pdf import (
+    MARK_SCHEME_MIN_PAGES,
+    _mark_scheme_rows,
+    _ms_row_height,
+    render_mark_scheme,
+)
+from pastpapergen.syllabus import load_syllabus
 
 from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.pdf_text import extract_pdf_text, pdf_font_names
 from Backend.Core.pdf_validation import validate_pdf_for_release
-from pastpapergen.generator import build_paper_blueprint
-from pastpapergen.paper_configs import load_builtin_paper_config
-from pastpapergen.render_pdf import MARK_SCHEME_MIN_PAGES, _mark_scheme_rows, _ms_row_height, render_mark_scheme
-from pastpapergen.syllabus import load_syllabus
 
 
 def test_mark_scheme_uses_reference_style_sections(tmp_path):
@@ -91,7 +95,7 @@ def test_mark_scheme_cover_title_uses_reference_scale_and_position(tmp_path):
     output = tmp_path / "ms.pdf"
 
     render_mark_scheme(blueprint, syllabus, output)
-    x0, y0, _x1, y1 = _text_block_bbox(output, "Mark Scheme (Results)")
+    _x0, y0, _x1, y1 = _text_block_bbox(output, "Mark Scheme (Results)")
 
     assert 285 <= y0 <= 325
     assert y1 - y0 >= 30

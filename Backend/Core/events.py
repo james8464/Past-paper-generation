@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-import json
 import itertools
+import json
 import os
 import re
 import subprocess
+from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime, timezone
-from typing import Any, Callable
-
+from datetime import UTC, datetime
+from typing import Any
 
 PROTOCOL_VERSION = 2
 BACKEND_VERSION = "2.0.0"
@@ -37,7 +37,7 @@ def emit(event_type: str, **payload: Any) -> None:
         "protocol": PROTOCOL_VERSION,
         "type": event_type,
         "event_id": next(_EVENT_IDS),
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "job_id": os.environ.get("PAPER_CREATOR_JOB_ID", ""),
         **payload,
     }

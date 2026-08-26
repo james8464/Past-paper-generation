@@ -1,0 +1,17 @@
+target-version = "py312"
+line-length = 88
+extend-exclude = [
+  "Reference Corpus",
+  "graphify-out",
+  "macOS/build",
+  "tmp",
+]
+
+[lint]
+select = ["E4", "E7", "E9", "F", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["RUF001"] # Publication copy intentionally uses typographic and maths glyphs.
+
+[lint.per-file-ignores]
+"tests/**" = ["B018"]
+"Resources/**/tests/**" = ["B018"]
+"Resources/economics/edexcel-a/generator/pastpapergen/render_pdf.py" = ["E402"]

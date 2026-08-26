@@ -8,7 +8,7 @@ import subprocess
 import sys
 import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -405,7 +405,7 @@ def _write_qualification_manifest(
             "live-generation-matrix": "2",
             "paper-creator-backend": str(backend.get("version", BACKEND_VERSION)),
         },
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
     )
     path = result_path.with_name("qualification-manifest.json")
     manifest.save(path)
@@ -436,7 +436,7 @@ def _write_run_qualification_manifest(
             )
     payload = {
         "schema_version": 1,
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(UTC).isoformat(),
         "base_seed": base_seed,
         "model": model,
         "provider": provider,

@@ -51,7 +51,7 @@ class QuestionPart(BaseModel):
     marks: int
     command_word: str
     prompt: str
-    options: list["MultipleChoiceOption"] = Field(default_factory=list)
+    options: list[MultipleChoiceOption] = Field(default_factory=list)
     correct_option: str = ""
     mark_breakdown: str = ""
     mark_scheme: list[str] = Field(default_factory=list)
@@ -69,7 +69,7 @@ class GraphParams(BaseModel):
     kind: str = ""
 
     @classmethod
-    def from_dict(cls, raw: dict[str, object]) -> "GraphParams":
+    def from_dict(cls, raw: dict[str, object]) -> GraphParams:
         if raw:
             try:
                 return cls.model_validate(raw)

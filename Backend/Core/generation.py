@@ -11,13 +11,12 @@ import signal
 import subprocess
 import sys
 import tempfile
+import tomllib
 import traceback
 from collections.abc import Callable
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-
-import tomllib
 
 from Backend.Core.assessment_package import validate_assessment_package
 from Backend.Core.assessment_quality import validate_package_novelty
@@ -100,7 +99,7 @@ def handle_generate(args: argparse.Namespace) -> int:
     except MLXModelSetupRequired as error:
         emit("error", message=str(error), code="mlx_setup_required")
         return 1
-    except Exception as error:  # noqa: BLE001 - surfaced as actionable JSON.
+    except Exception as error:
         if os.environ.get("PAPER_CREATOR_DEBUG") == "1":
             emit("error", message=f"{error}\n{traceback.format_exc()}", code="generation_failed")
         else:
@@ -328,7 +327,7 @@ def _write_package_manifest(
     qualification = capability.qualification_by_paper[args.paper]
     manifest = {
         "schema_version": 2,
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(UTC).isoformat(),
         "job_id": os.environ.get("PAPER_CREATOR_JOB_ID", ""),
         "protocol_version": PROTOCOL_VERSION,
         "app": {

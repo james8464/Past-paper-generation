@@ -1,7 +1,6 @@
 import subprocess
 
 import pymupdf as fitz
-
 from cspapergen.cli import generate_package
 
 

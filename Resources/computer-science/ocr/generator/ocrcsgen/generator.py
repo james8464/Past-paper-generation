@@ -13,10 +13,8 @@ from Backend.Core.exam_blueprints import (
     validate_generated_paper,
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
-
 from ocrcsgen.configs import SECTION_TOPICS
 from ocrcsgen.syllabus import Syllabus, Topic
-
 
 CONTEXTS = [
     "a community transport service",

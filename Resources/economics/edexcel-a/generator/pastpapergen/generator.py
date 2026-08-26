@@ -1384,13 +1384,16 @@ def _part_guidance(
             "AO3 (1 mark): Develops the chain to a likely improvement in material living standards; accept a reasoned limitation that the Gini coefficient does not show absolute income, so living standards need not rise if all incomes fall.",
         ]
         return points, points
-    if stimulus_kind == "inequality_line_chart" and command == "calculate":
-        if marks == 2:
-            points = [
-                "1 mark for method: 0.42 − 0.33.",
-                "1 mark for a fall of 0.09 in the Gini coefficient.",
-            ]
-            return points, points
+    if (
+        stimulus_kind == "inequality_line_chart"
+        and command == "calculate"
+        and marks == 2
+    ):
+        points = [
+            "1 mark for method: 0.42 − 0.33.",
+            "1 mark for a fall of 0.09 in the Gini coefficient.",
+        ]
+        return points, points
     if stimulus_kind == "state_policy_context" and command == "explain" and marks == 4:
         points = [
             "AO1 (1 mark): Defines productive capacity as the maximum sustainable output the economy can produce with its available resources and technology.",

@@ -3,6 +3,14 @@ from __future__ import annotations
 import random
 import secrets
 
+from aqaaccountgen.case_data import (
+    CostingCase,
+    IncomeStatementCase,
+    NonCurrentAssetCase,
+    PartnershipCase,
+    SalesLedgerCase,
+)
+from aqaaccountgen.syllabus import Syllabus, Topic
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -13,16 +21,6 @@ from Backend.Core.exam_blueprints import (
     validate_generated_paper,
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
-
-from aqaaccountgen.case_data import (
-    CostingCase,
-    IncomeStatementCase,
-    NonCurrentAssetCase,
-    PartnershipCase,
-    SalesLedgerCase,
-)
-from aqaaccountgen.syllabus import Syllabus, Topic
-
 
 BUSINESSES = [
     "Alder Manufacturing",
@@ -473,7 +471,7 @@ def _management_calculation(
 ) -> tuple[str, list[str], dict[str, object]]:
     """Build a complete, internally solved data contract for each numeric task."""
 
-    seeds = [max(2, int(round(value))) for value in values]
+    seeds = [max(2, round(value)) for value in values]
     if rule_id == "budget":
         sales = seeds[4] * 1_000
         variable_cost = seeds[2] * 1_000

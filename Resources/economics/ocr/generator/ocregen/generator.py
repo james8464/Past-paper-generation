@@ -13,7 +13,6 @@ from Backend.Core.exam_blueprints import (
     validate_generated_paper,
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
-
 from ocregen.syllabus import Syllabus, Topic
 
 CONTEXTS = [

@@ -274,7 +274,7 @@ def parse_json_object(text: str) -> dict[str, object]:
         start = raw.find("{")
         end = raw.rfind("}")
         if start == -1 or end == -1 or end <= start:
-            raise ValueError("Model returned response with no JSON object.")
+            raise ValueError("Model returned response with no JSON object.") from None
         try:
             value = json.loads(raw[start : end + 1])
         except json.JSONDecodeError:

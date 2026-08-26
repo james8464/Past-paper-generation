@@ -4,7 +4,6 @@ from copy import deepcopy
 
 from pastpapergen.models import PaperConfig, SectionConfig
 
-
 _BUILTIN_CONFIGS: dict[str, PaperConfig] = {
     "paper_1": PaperConfig(
         id="paper_1",

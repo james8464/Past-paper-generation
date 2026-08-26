@@ -1,6 +1,9 @@
 from datetime import date
 
-from pastpapergen.exam_dates import economics_exam_schedule, formatted_economics_exam_date
+from pastpapergen.exam_dates import (
+    economics_exam_schedule,
+    formatted_economics_exam_date,
+)
 
 
 def test_edexcel_9ec0_2026_timetable_dates():

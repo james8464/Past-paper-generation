@@ -7,6 +7,8 @@ import io
 import os
 import re
 import sys
+from contextlib import suppress
+from itertools import pairwise
 from pathlib import Path
 
 from reportlab.lib import colors
@@ -186,7 +188,7 @@ def _apply_edexcel_page_boxes(output_path: Path) -> None:
 
 
 def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
-    width, height = A4
+    width, _height = A4
     _draw_crop_marks(pdf)
 
     panel_x = 96
@@ -423,7 +425,7 @@ def _draw_question_pages(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
         _draw_paper_3_pages(pdf, blueprint)
         return
 
-    width, height = A4
+    _width, _height = A4
     margin = 76
     y = _prepare_answer_page(pdf, blueprint, 2)
     current_section = None
@@ -844,7 +846,7 @@ def _draw_paper_3_series(
         (x + index * width / (len(values) - 1), y + value / 100 * height)
         for index, value in enumerate(values)
     ]
-    for first, second in zip(points, points[1:], strict=False):
+    for first, second in pairwise(points):
         pdf.line(first[0], first[1], second[0], second[1])
     for point_x, point_y in points:
         pdf.circle(point_x, point_y, 2.2, stroke=1, fill=1)
@@ -1274,7 +1276,7 @@ def _draw_watermark(pdf: canvas.Canvas) -> None:
 
 
 def _prepare_answer_page(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_number: int) -> float:
-    width, height = A4
+    _width, _height = A4
     _draw_crop_marks(pdf)
     _draw_watermark(pdf)
     _draw_answer_page_header(pdf, blueprint, page_number)
@@ -1288,7 +1290,7 @@ def _prepare_answer_page(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_num
 
 
 def _draw_do_not_write_rail(pdf: canvas.Canvas, page_number: int) -> None:
-    width, height = A4
+    width, _height = A4
     rail_positions = (
         (6, 30)
         if page_number % 2 == 1
@@ -1910,10 +1912,8 @@ _GRAPH_IMG_CACHE: list[str] = []
 
 def _cleanup_graph_cache() -> None:
     for path in _GRAPH_IMG_CACHE:
-        try:
+        with suppress(OSError):
             os.unlink(path)
-        except OSError:
-            pass
     _GRAPH_IMG_CACHE.clear()
 
 
@@ -2149,7 +2149,7 @@ def _draw_line_graph(pdf: canvas.Canvas, x: float, y: float, kind: str = "line_g
         (x + 24 + i * step, bottom + 18 + (value - minimum) * (chart_height - 36) / span)
         for i, value in enumerate(values)
     ]
-    for start, end in zip(points, points[1:]):
+    for start, end in pairwise(points):
         pdf.line(*start, *end)
     for px, py in points:
         pdf.circle(px, py, 2.2, stroke=1, fill=1)
@@ -2319,7 +2319,7 @@ def _draw_source_content_page(
 
 
 def _draw_source_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
-    width, height = A4
+    width, _height = A4
     _draw_crop_marks(pdf)
     panel_x = 96
     panel_y = 523
@@ -2508,7 +2508,7 @@ def _draw_mark_scheme_end_page(pdf: canvas.Canvas) -> None:
 
 
 def _draw_ms_blank_page(pdf: canvas.Canvas, kind: str) -> None:
-    width, height = MS_PAGE_SIZE
+    _width, height = MS_PAGE_SIZE
     if kind == "header":
         _draw_ms_table_header(pdf, height - 67)
         return

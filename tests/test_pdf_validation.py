@@ -65,7 +65,7 @@ def test_duplicate_text_at_the_same_position_is_rejected(tmp_path: Path) -> None
     pdf.drawString(40, 150, "Question 1")
     pdf.save()
 
-    with pytest.raises(ValueError, match="overlapping text.*page 1"):
+    with pytest.raises(ValueError, match=r"overlapping text.*page 1"):
         validate_pdf_for_release(path, subject="business", role="mark_scheme")
 
 

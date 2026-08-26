@@ -8,7 +8,7 @@ import statistics
 from collections import defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from itertools import combinations
 from pathlib import Path
 from typing import Any
@@ -137,7 +137,7 @@ def calibrate_responses(
     verified = all(checks.values())
     payload = {
         "schema_version": 1,
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(UTC).isoformat(),
         "family": family,
         "paper": paper,
         "form_id": form_id,

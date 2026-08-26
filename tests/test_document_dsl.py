@@ -43,9 +43,9 @@ from Backend.Core.document_dsl import (
 from Backend.Core.exam_cover import CoverProfile, QuestionPaperCover
 from Backend.Core.exam_pages import ExamPage, ExamPageProfile
 from Backend.Core.reportlab_theme import (
+    AnswerLineFlowable,
     AQAAnswerLines,
     AQACompactAnswerLines,
-    AnswerLineFlowable,
     OCRAnswerLines,
     OCRComputerScienceAnswerLines,
 )

@@ -28,3 +28,7 @@ def test_maintained_visual_assets_are_classified_without_allowing_arbitrary_pngs
         "macOS/PaperCreator/Assets.xcassets/AppIcon.appiconset/icon.png"
     ).category == "runtime-resource"
     assert classify_path("screenshots/random.png").error == "unapproved binary artifact"
+
+
+def test_root_lint_configuration_is_release_configuration() -> None:
+    assert classify_path("ruff.toml").category == "build-release-configuration"

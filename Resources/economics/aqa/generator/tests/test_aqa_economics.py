@@ -2,14 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from pypdf import PdfReader
-
-from Backend.Core.exam_blueprints import validate_generated_paper, validate_rule
 from aqaecongen.cli import generate_package
 from aqaecongen.configs import PAPER3_VISUAL_QUESTION_NUMBERS, RULES
 from aqaecongen.generator import build_paper
 from aqaecongen.syllabus import load_syllabus
+from pypdf import PdfReader
 
+from Backend.Core.exam_blueprints import validate_generated_paper, validate_rule
 
 ROOT = Path(__file__).resolve().parents[1]
 SYLLABUS = load_syllabus(ROOT / "data" / "syllabus.json")

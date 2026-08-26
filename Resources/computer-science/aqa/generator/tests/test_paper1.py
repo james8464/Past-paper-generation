@@ -3,14 +3,14 @@ from __future__ import annotations
 import hashlib
 import subprocess
 
-from pypdf import PdfReader
-
-from Backend.Core.generation_date import formatted_generation_date
-from Backend.Core.pdf_text import extract_pdf_text
 from cspapergen.cli import generate_package
 from cspapergen.generator import build_paper1_blueprint
 from cspapergen.syllabus import load_syllabus
 from cspapergen.validation import validate_blueprint
+from pypdf import PdfReader
+
+from Backend.Core.generation_date import formatted_generation_date
+from Backend.Core.pdf_text import extract_pdf_text
 
 
 def test_paper1_blueprint_is_deterministic_and_totals_100() -> None:

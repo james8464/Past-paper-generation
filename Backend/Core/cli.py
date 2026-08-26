@@ -95,7 +95,7 @@ def handle_bundle_check(_args: argparse.Namespace) -> int:
             if not syllabus.is_file():
                 raise FileNotFoundError(f"missing syllabus {capability.syllabus_path}")
             loaded.append(capability.backend_subject)
-        except Exception as error:  # noqa: BLE001 - reported as bundle diagnostics.
+        except Exception as error:
             errors.append(f"{capability.backend_subject}: {error}")
     emit(
         "bundle_status",

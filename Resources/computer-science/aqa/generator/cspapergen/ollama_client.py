@@ -5,9 +5,10 @@ import re
 import time
 import urllib.error
 import urllib.request
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
-from typing import Callable, Protocol
+from typing import Protocol
 
 from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
 from Backend.Core.assessment_quality import NUMBER_PATTERN, numeric_tokens

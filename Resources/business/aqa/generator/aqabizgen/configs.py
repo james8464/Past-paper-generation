@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from Backend.Core.exam_blueprints import PaperRule, QuestionRule, SectionRule
 
-
 ALL_TOPICS = {f"business-{index}" for index in range(1, 11)}
 
 

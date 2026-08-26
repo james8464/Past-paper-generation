@@ -5,8 +5,9 @@ import json
 import re
 import unicodedata
 from collections import Counter
+from collections.abc import Iterable, Mapping
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Iterable, Mapping
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from Backend.Core.assessment_contracts import AssessmentContract

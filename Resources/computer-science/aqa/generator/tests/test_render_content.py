@@ -1,8 +1,9 @@
-from Backend.Core.pdf_text import extract_pdf_text
 from cspapergen.cli import generate_package
 from cspapergen.generator import build_paper2_blueprint
 from cspapergen.render_pdf import render_question_paper
 from cspapergen.syllabus import load_syllabus
+
+from Backend.Core.pdf_text import extract_pdf_text
 
 
 def test_question_paper_contains_aqa_style_cover_and_rail(tmp_path):

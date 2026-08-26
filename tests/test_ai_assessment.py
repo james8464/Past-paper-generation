@@ -2,13 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from Backend.Core.assessment_contracts import (
-    AssessmentContract,
-    NumericValueContract,
-)
 from Backend.Core.ai_assessment import (
     GenerationPolicy,
-    _Task,
     _batches_for_client,
     _candidate_question,
     _clean_generated_prompt,
@@ -18,17 +13,22 @@ from Backend.Core.ai_assessment import (
     _generation_prompt,
     _normalise_calculation_guidance,
     _normalise_command_word,
-    _normalise_multiple_choice_answer,
     _normalise_level_allocations,
-    _review_prompt,
+    _normalise_multiple_choice_answer,
     _repair_prompt,
     _required_awarded_entries,
+    _review_prompt,
     _seeded_fallback_allowed,
+    _Task,
     _task_source,
     _upgrade_checkpoint_metadata,
     _validate_checkpoint_item,
     _validate_mark_points,
     _validate_prompt_length,
+)
+from Backend.Core.assessment_contracts import (
+    AssessmentContract,
+    NumericValueContract,
 )
 from Backend.Core.exam_blueprints import (
     GeneratedOption,

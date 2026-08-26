@@ -4,15 +4,14 @@ from pathlib import Path
 
 import pymupdf as fitz
 import pytest
-from pypdf import PdfReader
-
-from Backend.Core.exam_blueprints import validate_generated_paper, validate_rule
 from ocrcsgen.cli import generate_package
 from ocrcsgen.configs import PAPER_1_MARKS, PAPER_2_MARKS, RULES
 from ocrcsgen.generator import build_paper
 from ocrcsgen.render_pdf import MARK_SCHEME_PAGE_PLANS, STYLES, render_question_paper
 from ocrcsgen.syllabus import load_syllabus
+from pypdf import PdfReader
 
+from Backend.Core.exam_blueprints import validate_generated_paper, validate_rule
 
 ROOT = Path(__file__).resolve().parents[1]
 SYLLABUS = load_syllabus(ROOT / "data" / "syllabus.json")
@@ -371,12 +370,7 @@ def test_maximum_length_programming_prompt_preserves_paper_two_page_count(
 ) -> None:
     paper = build_paper(RULES["paper_2"], SYLLABUS, 26080118)
     question = paper.sections[5].options[0].questions[2]
-    words = (
-        "Develop pseudocode that finds one appointment by its identifier, validates every "
-        "input, handles a missing record safely, and labels all variables consistently. "
-        "Include selection, iteration, a suitable data structure, and brief comments that "
-        "explain the important design decisions for the medical appointment service when implemented."
-    ).split()
+    words = ["Develop", "pseudocode", "that", "finds", "one", "appointment", "by", "its", "identifier,", "validates", "every", "input,", "handles", "a", "missing", "record", "safely,", "and", "labels", "all", "variables", "consistently.", "Include", "selection,", "iteration,", "a", "suitable", "data", "structure,", "and", "brief", "comments", "that", "explain", "the", "important", "design", "decisions", "for", "the", "medical", "appointment", "service", "when", "implemented."]
     assert len(words) == 45
     paper.sections[5].options[0].questions[2] = question.model_copy(
         update={"prompt": " ".join(words)}

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import json
 import shutil
 import subprocess
-import json
 import urllib.error
 import urllib.request
 from pathlib import Path

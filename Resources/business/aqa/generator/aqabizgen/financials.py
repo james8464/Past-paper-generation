@@ -19,7 +19,7 @@ class FinancialPosition:
     def from_chart_values(cls, chart_values: list[float]) -> FinancialPosition:
         if len(chart_values) < 5:
             raise ValueError("financial-position data requires five chart values")
-        values = [int(round(value)) for value in chart_values]
+        values = [round(value) for value in chart_values]
         return cls(
             inventories=values[0],
             receivables=int(values[1] * 0.42),

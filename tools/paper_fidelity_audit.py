@@ -637,7 +637,7 @@ def _geometry_scores(
     generated: list[dict[str, Any]],
     reference: list[dict[str, Any]],
 ) -> dict[str, float]:
-    pairs = list(zip(generated, reference))
+    pairs = list(zip(generated, reference, strict=False))
     if not pairs:
         return {
             "page_boxes": 0.0,

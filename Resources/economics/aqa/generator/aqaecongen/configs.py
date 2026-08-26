@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from Backend.Core.exam_blueprints import PaperRule, QuestionRule, SectionRule
 
-
 MICRO_TOPICS = {f"4.1.{index}" for index in range(1, 9)}
 MACRO_TOPICS = {f"4.2.{index}" for index in range(1, 7)}
 PAPER3_MCQ_PAGE_COUNTS = (

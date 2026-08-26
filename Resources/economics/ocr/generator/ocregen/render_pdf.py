@@ -1312,7 +1312,11 @@ def _paper_one_two_pages(paper: GeneratedPaper) -> list[Flowable]:
         [
             _banner("Question 1"),
             Spacer(1, 3 * mm),
-            *sum((_question_block(question) for question in data.questions[:3]), []),
+            *[
+                flowable
+                for question in data.questions[:3]
+                for flowable in _question_block(question)
+            ],
             AnswerLines(10),
         ],
         [

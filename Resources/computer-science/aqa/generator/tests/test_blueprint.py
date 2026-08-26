@@ -3,12 +3,11 @@ import threading
 import time
 
 import pytest
-
 from cspapergen.generator import (
     PAPER2_QUESTION_PLAN,
     QUESTION_TOTALS,
-    build_paper2_blueprint,
     build_paper1_blueprint,
+    build_paper2_blueprint,
 )
 from cspapergen.ollama_client import (
     _merge_question,

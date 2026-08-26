@@ -1,9 +1,7 @@
 from pathlib import Path
 
 import pytest
-
 from cspapergen.notes import cache_notes, discover_note_pdfs
-
 
 LOCAL_NOTES = Path(__file__).resolve().parents[2] / "notes"
 

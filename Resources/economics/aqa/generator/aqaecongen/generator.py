@@ -3,6 +3,8 @@ from __future__ import annotations
 import random
 import secrets
 
+from aqaecongen.configs import PAPER3_VISUAL_QUESTION_NUMBERS
+from aqaecongen.syllabus import Syllabus, Topic
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -13,10 +15,6 @@ from Backend.Core.exam_blueprints import (
     validate_generated_paper,
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
-
-from aqaecongen.configs import PAPER3_VISUAL_QUESTION_NUMBERS
-from aqaecongen.syllabus import Syllabus, Topic
-
 
 INDUSTRIES = [
     "urban bus services",

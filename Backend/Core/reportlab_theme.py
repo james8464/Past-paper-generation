@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from typing import Any, TypeVar
+from typing import Any
 
 from reportlab.lib import colors
 from reportlab.lib.units import mm
 from reportlab.platypus import Flowable, TableStyle
 
-TableType = TypeVar("TableType")
 
-
-def themed_table_class(base: type[TableType], font_name: str) -> type[TableType]:
+def themed_table_class[TableType](
+    base: type[TableType], font_name: str
+) -> type[TableType]:
     """Return a Table subclass whose raw string cells use the controlled font.
 
     ReportLab otherwise silently draws raw table values in built-in Helvetica,
