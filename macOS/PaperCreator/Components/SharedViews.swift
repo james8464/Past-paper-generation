@@ -35,12 +35,12 @@ struct GeneratedFilesTable: View {
                 TableColumn("") { file in
                     HStack {
                         Button {
-                            appModel.openGeneratedFile(file)
+                            appModel.previewGeneratedFile(file)
                         } label: {
-                            Label("Open", systemImage: "doc")
+                            Label("Preview", systemImage: "eye")
                         }
                         .labelStyle(.iconOnly)
-                        .help("Open")
+                        .help("Preview")
 
                         Button {
                             appModel.revealGeneratedFile(file)

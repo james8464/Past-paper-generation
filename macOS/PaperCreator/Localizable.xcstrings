@@ -1,0 +1,542 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    "%@ for %@ is not available yet." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ for %2$@ is not available yet."
+          }
+        }
+      }
+    },
+    "%@ — %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ — %2$@"
+          }
+        }
+      }
+    },
+    "%lld documents" : {
+
+    },
+    "A generated PDF can look convincing and still contain a weak or ambiguous question. Review content and presentation separately." : {
+
+    },
+    "AI" : {
+
+    },
+    "AI provider" : {
+
+    },
+    "API key" : {
+
+    },
+    "API keys" : {
+
+    },
+    "Accounts" : {
+
+    },
+    "Action required" : {
+
+    },
+    "Activity" : {
+
+    },
+    "Add to Favourites" : {
+
+    },
+    "Anthropic" : {
+
+    },
+    "Apple MLX" : {
+
+    },
+    "Assessment" : {
+
+    },
+    "Benchmark" : {
+
+    },
+    "Benchmark score" : {
+
+    },
+    "Cancel" : {
+
+    },
+    "Cancel Benchmark" : {
+
+    },
+    "Cancel Generation" : {
+
+    },
+    "Cancel paper creation" : {
+
+    },
+    "Check Again" : {
+
+    },
+    "Choose the subject and paper. AI-assisted families also let you choose a model; constrained families run without one." : {
+
+    },
+    "Choose..." : {
+
+    },
+    "Choose…" : {
+
+    },
+    "Coming soon" : {
+
+    },
+    "Completed, cancelled, and interrupted jobs will appear here." : {
+
+    },
+    "Continue" : {
+
+    },
+    "Copy Diagnostic Summary" : {
+
+    },
+    "Copy Diagnostics" : {
+
+    },
+    "Copy Provenance" : {
+
+    },
+    "Create Again with New Questions" : {
+
+    },
+    "Create Paper" : {
+
+    },
+    "Create a layout preview" : {
+
+    },
+    "Create a paper or choose an existing PDF from History." : {
+
+    },
+    "Create a practice paper" : {
+
+    },
+    "Created" : {
+
+    },
+    "Detail" : {
+
+    },
+    "Diagnostic" : {
+
+    },
+    "Distribution" : {
+
+    },
+    "Document" : {
+
+    },
+    "Documents" : {
+
+    },
+    "Done" : {
+
+    },
+    "Download" : {
+
+    },
+    "Download Recommended Model…" : {
+
+    },
+    "Download model" : {
+
+    },
+    "Duplicate Configuration" : {
+
+    },
+    "Exam board not found" : {
+
+    },
+    "Export…" : {
+
+    },
+    "Favourites" : {
+
+    },
+    "Fingerprints" : {
+
+    },
+    "Folder" : {
+
+    },
+    "Generation" : {
+
+    },
+    "Generation Error" : {
+
+    },
+    "Help" : {
+
+    },
+    "Hide Quality Inspector" : {
+
+    },
+    "History" : {
+
+    },
+    "History checks" : {
+
+    },
+    "History stores configuration and provenance. Generated PDFs remain in the folder you chose." : {
+
+    },
+    "Hosted AI Disclosure" : {
+
+    },
+    "Hosted AI consent" : {
+
+    },
+    "Items" : {
+
+    },
+    "Keep %lld jobs" : {
+
+    },
+    "Latest package" : {
+
+    },
+    "Layout preview checks pagination without using AI. Its placeholder questions are not finished papers." : {
+
+    },
+    "Library" : {
+
+    },
+    "Local model" : {
+
+    },
+    "Location" : {
+
+    },
+    "Mac Benchmark" : {
+
+    },
+    "Metric" : {
+
+    },
+    "Model" : {
+
+    },
+    "Model ID or path" : {
+
+    },
+    "Model maximum context" : {
+
+    },
+    "Model name" : {
+
+    },
+    "Models are managed in Ollama. Once a model is installed, choose Check Again." : {
+
+    },
+    "Nearest match" : {
+
+    },
+    "New Paper" : {
+
+    },
+    "No PDFs to preview" : {
+
+    },
+    "No generation history" : {
+
+    },
+    "Notifications" : {
+
+    },
+    "Notify when generation starts and finishes" : {
+
+    },
+    "OK" : {
+
+    },
+    "Ollama generation is local. Hosted providers send prompts to the provider you select." : {
+
+    },
+    "Ollama model details" : {
+
+    },
+    "Ollama will download this model and make it available locally." : {
+
+    },
+    "Open Latest Mark Scheme" : {
+
+    },
+    "Open Latest Question Paper" : {
+
+    },
+    "Open Model Guide" : {
+
+    },
+    "Open Output Folder" : {
+
+    },
+    "Open Settings…" : {
+
+    },
+    "Open User Guide" : {
+
+    },
+    "Open the question paper and mark scheme in Documents, then check the Quality inspector." : {
+
+    },
+    "OpenAI" : {
+
+    },
+    "OpenAI and Anthropic generation sends prompts, selected syllabus context, and draft question content to the provider you choose. API keys stay in Keychain. Ollama keeps generation local." : {
+
+    },
+    "Other Ollama models and quantisations can change question and mark-scheme quality." : {
+
+    },
+    "Output" : {
+
+    },
+    "PDF not found" : {
+
+    },
+    "Paper" : {
+
+    },
+    "Paper %@" : {
+
+    },
+    "Paper creator" : {
+
+    },
+    "Paper creator Help" : {
+
+    },
+    "Paper creator builds a new unofficial question paper and mark scheme from a board-specific blueprint. Normal generation asks your selected AI model to write original questions; preview mode checks layout without calling AI." : {
+
+    },
+    "Paper creator context" : {
+
+    },
+    "Paper creator makes unofficial practice material and is not affiliated with any exam board." : {
+
+    },
+    "Paper creator only sends notifications about work you start." : {
+
+    },
+    "Preview" : {
+
+    },
+    "Preview Mode" : {
+
+    },
+    "Preview before a live generation" : {
+
+    },
+    "Preview layout without contacting an AI provider. Preview questions are not release output." : {
+
+    },
+    "Preview of %@" : {
+
+    },
+    "Print" : {
+
+    },
+    "Privacy" : {
+
+    },
+    "Privacy Policy" : {
+
+    },
+    "Progress" : {
+
+    },
+    "Prompts and subject context may be sent to the selected provider." : {
+
+    },
+    "Provider" : {
+
+    },
+    "Pull %@?" : {
+
+    },
+    "Pull Model" : {
+
+    },
+    "Qualification" : {
+
+    },
+    "Quality" : {
+
+    },
+    "Quick Look" : {
+
+    },
+    "Read the Privacy Policy" : {
+
+    },
+    "Recent Configurations" : {
+
+    },
+    "Recent Documents" : {
+
+    },
+    "Recommended" : {
+
+    },
+    "Recommended for this Mac" : {
+
+    },
+    "Recommended model selected" : {
+
+    },
+    "Remove from Favourites" : {
+
+    },
+    "Remove from History" : {
+
+    },
+    "Remove from Recents" : {
+
+    },
+    "Report Issue" : {
+
+    },
+    "Report an Issue" : {
+
+    },
+    "Results" : {
+
+    },
+    "Results may vary with other Ollama models. Use the recommendation in Settings for the checked workflow." : {
+
+    },
+    "Reveal" : {
+
+    },
+    "Reveal Latest Question Paper in Finder" : {
+
+    },
+    "Reveal in Finder" : {
+
+    },
+    "Reveal the job in History or create the paper again." : {
+
+    },
+    "Review both documents" : {
+
+    },
+    "Run %lld Second Test" : {
+
+    },
+    "Run Benchmark" : {
+
+    },
+    "Run the benchmark to calibrate ETA and check whether this Mac is ready for local generation." : {
+
+    },
+    "Running CPU, memory, storage, PDF, network, power and Ollama checks" : {
+
+    },
+    "Save to" : {
+
+    },
+    "Score" : {
+
+    },
+    "Seconds" : {
+
+    },
+    "Set Up Apple MLX?" : {
+
+    },
+    "Set Up and Continue" : {
+
+    },
+    "Settings…" : {
+
+    },
+    "Show Benchmark" : {
+
+    },
+    "Show Documents" : {
+
+    },
+    "Show History" : {
+
+    },
+    "Show Quality Inspector" : {
+
+    },
+    "Show Welcome Guide" : {
+
+    },
+    "State" : {
+
+    },
+    "Structured-output guide" : {
+
+    },
+    "Subjects" : {
+
+    },
+    "Subjects and boards" : {
+
+    },
+    "The PDF could not be exported" : {
+
+    },
+    "The recommendation is selected from this Mac’s unified-memory capacity and this project’s paper-generation workload, not from a generic chatbot ranking." : {
+
+    },
+    "Tools" : {
+
+    },
+    "Unified memory" : {
+
+    },
+    "Unofficial practice material. Not affiliated with Pearson, Edexcel, AQA, or any exam board." : {
+
+    },
+    "Unofficial practice material. The app reproduces measured document conventions, not copyrighted paper content." : {
+
+    },
+    "Use Hosted AI" : {
+
+    },
+    "Use Recommended Model" : {
+
+    },
+    "Use a Hugging Face model ID or the path to a model already on this Mac. Paper Creator offers guided setup before the first live generation with each model." : {
+
+    },
+    "Use the recommended local model" : {
+
+    },
+    "Validated PDFs" : {
+
+    },
+    "Value" : {
+
+    },
+    "Your key is stored in Keychain." : {
+
+    },
+    "seconds" : {
+
+    },
+    "—" : {
+
+    }
+  },
+  "version" : "1.0"
+}

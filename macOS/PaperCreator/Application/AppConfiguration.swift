@@ -104,6 +104,7 @@ enum AppStorageKey {
     static let favoriteBoardIDs = "favoriteBoardIDs"
     static let recentConfigurationIDs = "recentConfigurationIDs"
     static let historyRetentionLimit = "historyRetentionLimit"
+    static let navigationColumnVisibility = "navigationColumnVisibility"
 }
 
 enum SecretAccount {

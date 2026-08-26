@@ -212,12 +212,12 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - `Paginator.layout(spec: DocumentSpec) -> LayoutPlan`
 - `ReportLabBackend.render(plan: LayoutPlan, destination: Path) -> RenderEvidence`
 
-- [ ] Add geometry/golden tests for every component and every existing board profile before moving production renderers.
-- [ ] Implement measured units, typed constraints, page-role frames, font tokens, rule tokens, widow/orphan controls, deterministic split points, and a progress watchdog.
-- [ ] Adapt existing `exam_cover`, `exam_pages`, and theme code behind the DSL so their current tests continue to pass.
-- [ ] Migrate one low-risk family, prove byte-stable output for a fixed package where feasible and metric-stable output otherwise, then migrate the remaining six.
+- [x] Add geometry/golden tests for every component and every existing board profile before moving production renderers.
+- [x] Implement measured units, typed constraints, page-role frames, font tokens, rule tokens, widow/orphan controls, deterministic split points, and a progress watchdog.
+- [x] Adapt existing `exam_cover`, `exam_pages`, and theme code behind the DSL so their current tests continue to pass.
+- [x] Migrate one low-risk family, prove byte-stable output for a fixed package where feasible and metric-stable output otherwise, then migrate the remaining six.
 - [ ] Remove repeated page furniture, theme, pagination, barcode, answer-line, table, graph, and mark-scheme-grid code only after `rg` and import tests show every family uses the shared path.
-- [ ] Add vector renderers for economic curves, accounting tables, program trace tables, logic/circuit diagrams, scientific apparatus, molecules, mathematical plots, and statistical charts from typed contracts.
+- [x] Add vector renderers for economic curves, accounting tables, program trace tables, logic/circuit diagrams, scientific apparatus, molecules, mathematical plots, and statistical charts from typed contracts.
 - [ ] Verify embedded fonts, PDF text selection, tags/reading order, 100%-scale print margins, bounded render time, and atomic publication.
 - [ ] Run all renderer tests, all 18 deterministic renders, the 300-DPI regression audit, the 600-DPI phase audit, and manual role review.
 - [ ] Update Graphify and commit per migrated family, finishing with `Complete shared board rendering DSL`.
@@ -274,20 +274,20 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - `DocumentPreviewView` wraps `PDFView`; Quick Look uses `QLPreviewPanel` through a representable/coordinator.
 - App intents/commands: New Paper, Generate, Cancel, Duplicate Configuration, Create Again with New Seed, Show Question Paper, Show Mark Scheme, Show History.
 
-- [ ] Add Swift tests for sidebar filtering, favourites, recent combinations, restoration, duplicate configuration, and new-seed generation.
-- [ ] Add native sidebar search and sections for Favourites, Subjects, Boards, and Recent Configurations with stable selection and keyboard navigation.
-- [ ] Implement a first-paper flow that checks provider availability, recommends the memory-appropriate Ollama model, warns that other models/quantisations may vary, explains readiness levels, and lands in preview after generation.
+- [x] Add Swift tests for sidebar filtering, favourites, recent combinations, restoration, duplicate configuration, and new-seed generation.
+- [x] Add native sidebar search and sections for Favourites, Subjects, Boards, and Recent Configurations with stable selection and keyboard navigation.
+- [x] Implement a first-paper flow that checks provider availability, recommends the memory-appropriate Ollama model, warns that other models/quantisations may vary, explains readiness levels, and lands in preview after generation.
 - [ ] Preserve the consented MLX installer; add tests for accept/decline, install progress, cancellation, offline failure, insufficient storage, Python mismatch, successful retry, and human-readable diagnostics.
-- [ ] Add TipKit tips and a searchable tutorial using maintained screenshots for model setup, workspace configuration, qualification evidence, preview, export, and troubleshooting.
-- [ ] Add PDFKit tabs and Quick Look for all output roles; expose Reveal in Finder, Print, Export, and copy provenance without blocking generation.
-- [ ] Add persistent job history and completion actions “Create another with new questions” and “Duplicate configuration”.
+- [x] Add TipKit tips and a searchable tutorial using maintained screenshots for model setup, workspace configuration, qualification evidence, preview, export, and troubleshooting.
+- [x] Add PDFKit tabs and Quick Look for all output roles; expose Reveal in Finder, Print, Export, and copy provenance without blocking generation.
+- [x] Add persistent job history and completion actions “Create another with new questions” and “Duplicate configuration”.
 - [ ] Restore unfinished configuration, selected navigation item, window geometry, column visibility, and safe resumable jobs.
-- [ ] Replace decorative custom controls with native Button, Toggle, Picker, Form, Table, NavigationSplitView, Toolbar, Menu, Sheet, Alert, ProgressView, and standard materials; remove fake glass layers and hard-coded decorative corner radii.
-- [ ] Collapse/hide sidebar and inspector at compact widths while preserving one clear primary action and no clipped text.
+- [x] Replace decorative custom controls with native Button, Toggle, Picker, Form, Table, NavigationSplitView, Toolbar, Menu, Sheet, Alert, ProgressView, and standard materials; remove fake glass layers and hard-coded decorative corner radii.
+- [x] Collapse/hide sidebar and inspector at compact widths while preserving one clear primary action and no clipped text.
 - [ ] Label every control and progress state for VoiceOver; establish logical focus order, Full Keyboard Access, command shortcuts, visible focus rings, Increase Contrast, Reduce Transparency, reduced motion, and text-size resilience.
-- [ ] Move all user-facing strings to the string catalog; test long pseudo-localisation and right-to-left layout without translating board-owned codes.
+- [x] Move all user-facing strings to the string catalog; test long pseudo-localisation and right-to-left layout without translating board-owned codes.
 - [ ] Capture current screenshots at standard/compact widths and light/dark, then manually audit against Apple HIG sections for macOS, navigation, toolbars, menus, settings, onboarding, progress, accessibility, and writing.
-- [ ] Run Swift unit/accessibility tests, strict build, `make -C macOS preflight-app-store`, update `docs/HIG_COMPLIANCE.md`, and refresh Graphify.
+- [x] Run Swift unit/accessibility tests, strict build, `make -C macOS preflight-app-store`, update `docs/HIG_COMPLIANCE.md`, and refresh Graphify.
 - [ ] Commit per coherent surface, ending with `Complete native macOS product experience`.
 
 ### Task 7: Close Every Current 18-Paper Quality Gap

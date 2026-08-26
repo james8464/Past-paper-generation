@@ -2,6 +2,8 @@
 
 Date: 22 August 2026
 
+Implementation re-audit: 26 August 2026
+
 ## Scope and method
 
 The current Debug app was built with strict concurrency and warnings-as-errors,
@@ -58,3 +60,24 @@ control structure, but the release owner must still exercise VoiceOver, Full
 Keyboard Access, Increase Contrast, Reduce Transparency, light/dark appearance,
 large text, long localisation, minimum/large window sizes, and generation error
 and cancellation states on the distribution build.
+
+## 26 August native-workflow delta
+
+Source, localisation extraction, strict XCTest, and App Store-mode build checks
+cover the following additions after the screenshots above were captured:
+
+- searchable Favourites, Subjects, Boards, Recent Configurations, Documents,
+  History, and Benchmark destinations in the native sidebar;
+- PDFKit role tabs with selectable text and native zoom, Quick Look, Print,
+  Export, and Reveal actions;
+- versioned persistent job history with missing/interrupted states, bounded
+  retention, Duplicate Configuration, and Create Again with New Questions;
+- TipKit guidance for model choice, layout preview, and package review;
+- persisted split-view visibility and a 720 × 560 compact-window floor; and
+- a generated string catalogue plus automated non-colour, spoken-label,
+  long-copy, and right-to-left assertions.
+
+The fresh sighted screenshot pass could not run on 26 August because the test
+Mac was locked. The earlier images therefore remain historical evidence, not a
+claim that the new Documents and History surfaces were visually approved.
+Those surfaces remain subject to the hands-on release checks above.

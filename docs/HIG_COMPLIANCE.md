@@ -35,7 +35,8 @@ progress is genuinely indeterminate.
   native focus/hover states are preserved.
 - Content uses standard form insets and table geometry rather than arbitrary
   radii or branded cards.
-- The window has a practical 920 × 640 minimum and remains resizable.
+- The window has a practical 720 × 560 minimum and remains resizable; the
+  system split view collapses navigation before document content is clipped.
 - The sidebar defaults to 220 points and remains user-adjustable.
 - The inspector is constrained to a readable 250–360-point range.
 - Status never relies on colour alone; each state includes a symbol and text.
@@ -72,6 +73,12 @@ demand from psychometrically established difficulty.
 Generated artifacts appear in a native table with document title, timestamp,
 and path. They can be opened, revealed in Finder, removed from Recents, or
 dragged to Finder. The selected output folder remains visible in the task.
+
+The Documents destination uses PDFKit with selectable text and native zoom,
+plus Quick Look, Print, Export, and Reveal actions. History is stored as
+versioned atomic JSON records and distinguishes completed, failed, cancelled,
+interrupted, and missing-file jobs. Duplicate Configuration preserves a seed;
+Create Again with New Questions deliberately chooses a different seed.
 
 ## Accessibility verification
 

@@ -1040,8 +1040,8 @@
     "semantic_hash": ""
   },
   "docs/project-analysis/UI_AUDIT.md": {
-    "mtime": 1787412597.9893003,
-    "ast_hash": "9b0e116b5608f4afc7e458370159a92f",
+    "mtime": 1787746800.8512037,
+    "ast_hash": "99023fe7a956fe37679226f8bfc5b030",
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/financials.py": {
@@ -1090,18 +1090,18 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Application/AppCommands.swift": {
-    "mtime": 1787412597.9991994,
-    "ast_hash": "5719596a3a4c7f424aee11a77402a3be",
+    "mtime": 1787746369.9290452,
+    "ast_hash": "7050aefb964ba52dd420fbcbddc81f67",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Application/AppConfiguration.swift": {
-    "mtime": 1787746083.4135408,
-    "ast_hash": "dae34f44f6c47b8b19cd39067a2c7194",
+    "mtime": 1787746550.7331767,
+    "ast_hash": "982cee3303fde1b4ea25970c97f8b255",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Application/PaperCreatorApp.swift": {
-    "mtime": 1785603986.1548126,
-    "ast_hash": "f69368413c0a8ab297ba716467f8b42d",
+    "mtime": 1787746494.687369,
+    "ast_hash": "baa9647fa33b266c25348ee29407bad9",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Components/NativeVisualStyle.swift": {
@@ -1110,13 +1110,13 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Components/SharedViews.swift": {
-    "mtime": 1785603986.1553106,
-    "ast_hash": "1a5e912ea6635207e5f04aad3697a718",
+    "mtime": 1787746369.928868,
+    "ast_hash": "650468b86d8cebeac1b346b0117c486e",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Domain/AppModels.swift": {
-    "mtime": 1787742096.079031,
-    "ast_hash": "f196790dd777c5ffd5e158eb392d3d0d",
+    "mtime": 1787746286.4390807,
+    "ast_hash": "18c21376f3247b80f8bdcd4ef18ef11b",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Domain/GenerationEstimator.swift": {
@@ -1130,28 +1130,28 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Generation/GeneratorWorkspaceView.swift": {
-    "mtime": 1787742096.0805955,
-    "ast_hash": "c1b87c882bbfa115bc621066211bcb34",
+    "mtime": 1787746661.0749362,
+    "ast_hash": "206221c73ae0a064a0ca80a7ea553c02",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Onboarding/WelcomeHelpViews.swift": {
-    "mtime": 1787412598.000869,
-    "ast_hash": "3bc16753f1603858c15797a520f0f5d9",
+    "mtime": 1787746494.688487,
+    "ast_hash": "367ebc5ed7daaec569d0c74205a12d60",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Settings/SettingsPane.swift": {
-    "mtime": 1787739624.5605059,
-    "ast_hash": "7921dc85a867b775f0ddad54dbded87b",
+    "mtime": 1787746494.6881335,
+    "ast_hash": "a66a24dc056ebe78387e1b140c79d404",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Navigation/ContentView.swift": {
-    "mtime": 1787738052.6644697,
-    "ast_hash": "5e580aae83976239a78e9ba8414bec22",
+    "mtime": 1787746550.7335455,
+    "ast_hash": "d83fb007ece361b78424d7d2c21bfbe0",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Navigation/SidebarView.swift": {
-    "mtime": 1787739624.5612266,
-    "ast_hash": "d3a8d2b91052f3aca6b6cf8afc1a2698",
+    "mtime": 1787746369.9286284,
+    "ast_hash": "e48a2676daf72f2b07259fbb9262a560",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Services/BackendClient.swift": {
@@ -1165,8 +1165,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/State/AppViewModel.swift": {
-    "mtime": 1787746103.3261156,
-    "ast_hash": "47d3c9c372669d506d533159736359e2",
+    "mtime": 1787746389.2658134,
+    "ast_hash": "dbdd5ff381f5ef3077a7d5e732ac041a",
     "semantic_hash": ""
   },
   "tests/test_ai_assessment.py": {
@@ -1195,8 +1195,8 @@
     "semantic_hash": ""
   },
   "docs/HIG_COMPLIANCE.md": {
-    "mtime": 1787412597.9888692,
-    "ast_hash": "cabe6b20739854a5e6f53197f786935d",
+    "mtime": 1787746550.733719,
+    "ast_hash": "ac5be6285afe8b015a86fdd5858609d8",
     "semantic_hash": ""
   },
   "graphify-out/memory/query_20260729_215735_how_can_we_make_even_more_improvements_to_get_the.md": {
@@ -1440,8 +1440,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-26-paper-creator-excellence-programme.md": {
-    "mtime": 1787746185.9626646,
-    "ast_hash": "76f524406c029d9f127c04450832fea3",
+    "mtime": 1787746825.5544648,
+    "ast_hash": "4dbf775e8603477d51283c4f6395e6b9",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md": {
@@ -1600,8 +1600,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/State/RecentDocumentStore.swift": {
-    "mtime": 1787745971.4664667,
-    "ast_hash": "105f0937097bdc9eb14f5ea2606b8d7e",
+    "mtime": 1787746941.4073963,
+    "ast_hash": "41c832f211a3a3787da0e1251bd104bb",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/State/SettingsStore.swift": {
@@ -1610,8 +1610,28 @@
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
-    "mtime": 1787746098.1583025,
-    "ast_hash": "78663002260f044efeeac94f19e25301",
+    "mtime": 1787746892.454329,
+    "ast_hash": "eb3024461148fb318348af3d5a15ea6b",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/Features/Documents/DocumentPreviewView.swift": {
+    "mtime": 1787746941.4078467,
+    "ast_hash": "5bfce6e8536ebd99e8c48453eb571a28",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/Features/Documents/JobHistoryView.swift": {
+    "mtime": 1787746369.9281416,
+    "ast_hash": "89d22f33c902b3a55dc133880102097a",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/Features/Onboarding/PaperCreationTips.swift": {
+    "mtime": 1787746494.6868603,
+    "ast_hash": "95c722407933250af708b5536b953714",
+    "semantic_hash": ""
+  },
+  "macOS/Tests/AccessibilityTests.swift": {
+    "mtime": 1787746494.6889126,
+    "ast_hash": "c7443b191c5e3d552b2da93f144c8849",
     "semantic_hash": ""
   }
 }

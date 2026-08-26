@@ -26,12 +26,12 @@ struct AppCommands: Commands {
             Divider()
 
             Button("Open Latest Question Paper") {
-                appModel.openGeneratedFile(role: "question_paper")
+                appModel.previewGeneratedFile(role: "question_paper")
             }
             .disabled(!appModel.hasGeneratedFile(role: "question_paper"))
 
             Button("Open Latest Mark Scheme") {
-                appModel.openGeneratedFile(role: "mark_scheme")
+                appModel.previewGeneratedFile(role: "mark_scheme")
             }
             .disabled(!appModel.hasGeneratedFile(role: "mark_scheme"))
 
@@ -42,6 +42,12 @@ struct AppCommands: Commands {
         }
 
         CommandMenu("Tools") {
+            Button("Show Documents", action: appModel.showDocuments)
+                .keyboardShortcut("d", modifiers: [.command, .shift])
+
+            Button("Show History", action: appModel.showHistory)
+                .keyboardShortcut("y", modifiers: [.command, .shift])
+
             Button("Show Benchmark") {
                 appModel.showBenchmarkPage()
             }

@@ -2,9 +2,11 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var appModel: AppViewModel
+    @AppStorage(AppStorageKey.navigationColumnVisibility)
+    private var navigationColumnVisibility = "all"
 
     var body: some View {
-        NavigationSplitView {
+        NavigationSplitView(columnVisibility: columnVisibility) {
             Sidebar(selection: $appModel.sidebarSelection)
         } detail: {
             switch appModel.sidebarSelection ?? .board(appModel.selectedBoardID) {
@@ -16,10 +18,17 @@ struct ContentView: View {
                 }
             case .benchmark:
                 BenchmarkWorkspace()
+            case .documents:
+                DocumentPreviewView(
+                    files: appModel.generatedFiles,
+                    selectedID: appModel.previewedFileID
+                )
+            case .history:
+                JobHistoryView(store: appModel.recentDocumentStore)
             }
         }
         .navigationSplitViewStyle(.balanced)
-        .frame(minWidth: 920, minHeight: 640)
+        .frame(minWidth: 720, minHeight: 560)
         .alert("Generation Error", isPresented: $appModel.showError) {
             Button("OK", role: .cancel) { }
         } message: {
@@ -70,6 +79,25 @@ struct ContentView: View {
                 appModel.refreshOllama()
             }
         }
+    }
+
+    private var columnVisibility: Binding<NavigationSplitViewVisibility> {
+        Binding(
+            get: {
+                switch navigationColumnVisibility {
+                case "detail": .detailOnly
+                case "double": .doubleColumn
+                default: .all
+                }
+            },
+            set: { value in
+                switch value {
+                case .detailOnly: navigationColumnVisibility = "detail"
+                case .doubleColumn: navigationColumnVisibility = "double"
+                default: navigationColumnVisibility = "all"
+                }
+            }
+        )
     }
 
     private func ensureSidebarSelection() {

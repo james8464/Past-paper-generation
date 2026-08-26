@@ -51,6 +51,9 @@ final class AppViewModel: ObservableObject {
     @Published var benchmarkMetrics: [BenchmarkMetric] = []
     @Published var benchmarkVerdict: BenchmarkVerdict?
     @Published var lastQualityReport: GenerationQualityReport?
+    @Published private(set) var previewedFileID: UUID?
+
+    private(set) var pendingGenerationSeed: Int?
 
     let distributionMode = DistributionMode.current
 
@@ -333,6 +336,60 @@ final class AppViewModel: ObservableObject {
         sidebarSelection = .board(selectedBoardID)
     }
 
+    func showDocuments() {
+        sidebarSelection = .documents
+    }
+
+    func showHistory() {
+        sidebarSelection = .history
+    }
+
+    func previewGeneratedFile(_ file: GeneratedFile) {
+        previewedFileID = file.id
+        sidebarSelection = .documents
+    }
+
+    func previewGeneratedFile(role: String) {
+        guard let file = generatedFile(role: role) else { return }
+        previewGeneratedFile(file)
+    }
+
+    func duplicateConfiguration(_ record: GenerationJobRecord) {
+        applyConfiguration(record, seed: record.configuration.seed)
+    }
+
+    func createAgainWithNewSeed(_ record: GenerationJobRecord) {
+        var seed = Int.random(in: 1 ... Int(Int32.max))
+        if seed == record.configuration.seed {
+            seed = seed == Int(Int32.max) ? 1 : seed + 1
+        }
+        applyConfiguration(record, seed: seed)
+    }
+
+    private func applyConfiguration(_ record: GenerationJobRecord, seed: Int?) {
+        guard !isRunning,
+              let board = ExamCatalog.board(id: record.configuration.boardID),
+              let provider = AIProvider(backendID: record.configuration.provider)
+        else { return }
+        selectBoard(board)
+        selectPaperID(record.configuration.paperID)
+        aiProvider = provider
+        switch provider {
+        case .ollama:
+            selectedModel = record.configuration.model
+        case .openAI:
+            openAIModel = record.configuration.model
+        case .anthropic:
+            anthropicModel = record.configuration.model
+        case .apple:
+            appleModel = record.configuration.model
+        }
+        dryRun = record.configuration.dryRun
+        pendingGenerationSeed = seed
+        sidebarSelection = .board(board.id)
+        persistSettings()
+    }
+
     func generate() {
         guard canGenerate else { return }
         guard let backendSubject = selectedBoard.backendSubject else {
@@ -367,6 +424,13 @@ final class AppViewModel: ObservableObject {
         generationProgress = 0.02
         activeOperation = .generation
         beginGenerationEstimate()
+        let generationSeed = pendingGenerationSeed
+            ?? Int.random(in: 1 ... Int(Int32.max))
+        pendingGenerationSeed = generationSeed
+        catalogStore.recordRecentConfiguration(
+            boardID: selectedBoard.id,
+            paperID: selectedPaper.id
+        )
         let readiness = selectedPaper.readiness
         let record = GenerationJobRecord(
             configuration: GenerationConfiguration(
@@ -374,7 +438,7 @@ final class AppViewModel: ObservableObject {
                 paperID: selectedPaper.id,
                 provider: aiProvider.backendID,
                 model: activeModelName,
-                seed: nil,
+                seed: generationSeed,
                 dryRun: dryRun
             ),
             provenance: GenerationProvenance(
@@ -411,6 +475,8 @@ final class AppViewModel: ObservableObject {
             activeModelName,
             "--ollama-url",
             ollamaURL,
+            "--seed",
+            String(generationSeed),
         ]
 
         var backendEnvironment = [
@@ -895,17 +961,24 @@ final class AppViewModel: ObservableObject {
                 generationEstimate = nil
                 persistRecentDocuments()
                 try? generationCoordinator.complete()
+                if let questionPaper = generatedFile(role: "question_paper") {
+                    previewedFileID = questionPaper.id
+                    sidebarSelection = .documents
+                }
+                pendingGenerationSeed = nil
                 notifySuccess(for: operation)
             } else if !didReceiveBackendError {
                 let message = "Generation failed without a backend error message. Refresh Ollama, check the selected model, then try again. Backend exited with code \(code)."
                 setError(message)
                 notifyFailure(for: operation, message: message)
                 try? generationCoordinator.fail(message: message)
+                pendingGenerationSeed = nil
             }
         case let .failure(error):
             setError(error.localizedDescription)
             notifyFailure(for: operation, message: error.localizedDescription)
             try? generationCoordinator.fail(message: error.localizedDescription)
+            pendingGenerationSeed = nil
         }
     }
 

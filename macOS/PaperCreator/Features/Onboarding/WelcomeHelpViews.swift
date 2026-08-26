@@ -26,6 +26,7 @@ struct WelcomeSheet: View {
                 WelcomeRow(systemImage: "text.book.closed", title: "Choose a subject", message: "Each paper follows its exam board’s specification and structure.")
                 WelcomeRow(systemImage: "cpu", title: "Use the recommended model", message: "Paper creator recommends \(appModel.ollamaRecommendation.model) for this Mac; other models can produce different results.")
                 WelcomeRow(systemImage: "doc.badge.arrow.up", title: "Create both documents", message: "The question paper and mark scheme are saved together.")
+                WelcomeRow(systemImage: "doc.richtext", title: "Preview and review", message: "Inspect every generated PDF in Documents and return to any configuration from History.")
             }
 
             Text("Paper creator makes unofficial practice material and is not affiliated with any exam board.")
@@ -63,7 +64,6 @@ private struct WelcomeRow: View {
                 .symbolRenderingMode(.hierarchical)
                 .foregroundStyle(.primary)
                 .frame(width: 30, height: 30)
-                .background(.quaternary, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.headline)
@@ -237,6 +237,7 @@ private struct HelpTopicPage: View {
                     ("Check the provider", "Ollama must be running and the selected model must be installed. Hosted providers require a key and explicit consent."),
                     ("Choose a folder", "The question paper, mark scheme, assessment evidence, and package manifest are published together only after validation passes."),
                     ("Create Paper", "Generation can take several minutes. Progress and the estimated time remain visible, and Command-Period cancels safely."),
+                    ("Preview and reuse", "Documents opens every generated PDF in the app. History can duplicate a setup or create a new form with a new seed."),
                 ]
             )
 
@@ -323,6 +324,8 @@ private struct HelpTopicPage: View {
                 "Command-Period — Cancel Generation",
                 "Option-Command-O — Open Output Folder",
                 "Shift-Command-B — Show Benchmark",
+                "Shift-Command-D — Show Documents",
+                "Shift-Command-Y — Show History",
                 "Shift-Command-H — Paper creator Help",
                 "Command-Comma — Settings",
             ]

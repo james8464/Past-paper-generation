@@ -177,6 +177,49 @@ final class CoordinatorTests: XCTestCase {
         XCTAssertGreaterThan(model.recentDocumentStore.retentionLimit, 0)
         XCTAssertNil(model.generationCoordinator.activeJob)
     }
+
+    @MainActor
+    func testDuplicateConfigurationRestoresSelectionsAndSeed() throws {
+        let model = AppViewModel()
+        let record = GenerationJobRecord.fixture(state: .completed)
+
+        model.duplicateConfiguration(record)
+
+        XCTAssertEqual(model.selectedBoardID, record.configuration.boardID)
+        XCTAssertEqual(model.selectedPaperID, record.configuration.paperID)
+        XCTAssertEqual(model.aiProvider.backendID, record.configuration.provider)
+        XCTAssertEqual(model.pendingGenerationSeed, record.configuration.seed)
+        XCTAssertEqual(model.sidebarSelection, .board(record.configuration.boardID))
+    }
+
+    @MainActor
+    func testCreateAgainUsesDifferentSeedAndPreviewOpensDocuments() throws {
+        let model = AppViewModel()
+        let record = GenerationJobRecord.fixture(state: .completed)
+        let file = GeneratedFile(
+            role: "question_paper",
+            url: temporaryDirectory.appendingPathComponent("paper.pdf")
+        )
+
+        model.createAgainWithNewSeed(record)
+        model.previewGeneratedFile(file)
+
+        XCTAssertNotEqual(model.pendingGenerationSeed, record.configuration.seed)
+        XCTAssertEqual(model.previewedFileID, file.id)
+        XCTAssertEqual(model.sidebarSelection, .documents)
+    }
+
+    func testCopiedProvenanceIdentifiesConfigurationAndQualification() {
+        let record = GenerationJobRecord.fixture(state: .completed)
+
+        let summary = record.provenanceSummary
+
+        XCTAssertTrue(summary.contains("economics-aqa · Paper 1"))
+        XCTAssertTrue(summary.contains("Ollama · gemma4:12b · Seed 42"))
+        XCTAssertTrue(summary.contains("Engineering: passed"))
+        XCTAssertTrue(summary.contains("Visual: pending"))
+        XCTAssertTrue(summary.contains("Empirical: pending"))
+    }
 }
 
 private extension GenerationJobRecord {

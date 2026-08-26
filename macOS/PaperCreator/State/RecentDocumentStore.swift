@@ -70,6 +70,20 @@ struct GenerationJobRecord: Codable, Equatable, Identifiable {
     var missingArtifactCount: Int {
         artifacts.lazy.filter { !$0.exists }.count
     }
+
+    var provenanceSummary: String {
+        let provider = AIProvider(backendID: configuration.provider)?.title
+            ?? configuration.provider
+        let seed = configuration.seed.map(String.init) ?? "Not recorded"
+        return [
+            "\(configuration.boardID) · Paper \(configuration.paperID)",
+            "\(provider) · \(configuration.model) · Seed \(seed)",
+            "App version: \(provenance.appVersion)",
+            "Engineering: \(qualification.engineeringValidated ? "passed" : "pending")",
+            "Visual: \(qualification.visuallyCalibrated ? "passed" : "pending")",
+            "Empirical: \(qualification.empiricallyCalibrated ? "passed" : "pending")",
+        ].joined(separator: "\n")
+    }
 }
 
 enum RecentDocumentStoreError: LocalizedError {

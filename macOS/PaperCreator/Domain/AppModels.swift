@@ -317,6 +317,8 @@ enum CatalogLoadError: LocalizedError {
 enum SidebarItem: Hashable {
     case board(String)
     case benchmark
+    case documents
+    case history
 }
 
 enum HelpTopic: String, CaseIterable, Identifiable {

@@ -256,6 +256,24 @@ private struct OutputSettingsTab: View {
                 Text("Paper creator only sends notifications about work you start.")
                     .foregroundStyle(.secondary)
             }
+
+            Section("History") {
+                Stepper(
+                    "Keep \(appModel.settingsStore.historyRetentionLimit) jobs",
+                    value: Binding(
+                        get: { appModel.settingsStore.historyRetentionLimit },
+                        set: { value in
+                            appModel.settingsStore.historyRetentionLimit = value
+                            appModel.settingsStore.save()
+                            appModel.recentDocumentStore.retentionLimit = value
+                        }
+                    ),
+                    in: 10 ... 500,
+                    step: 10
+                )
+                Text("History stores configuration and provenance. Generated PDFs remain in the folder you chose.")
+                    .foregroundStyle(.secondary)
+            }
         }
         .formStyle(.grouped)
         .disabled(appModel.isRunning)

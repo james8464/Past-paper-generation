@@ -1,4 +1,5 @@
 import SwiftUI
+import TipKit
 
 struct GeneratorWorkspace: View {
     @EnvironmentObject private var appModel: AppViewModel
@@ -76,6 +77,14 @@ private struct PaperConfiguration: View {
 
     var body: some View {
         Form {
+            if board.usesAI,
+               appModel.aiProvider == .ollama,
+               !appModel.selectedModelIsRecommended {
+                TipView(PaperCreationTips.modelRecommendation)
+            } else if appModel.generatedFiles.isEmpty {
+                TipView(PaperCreationTips.preview)
+            }
+
             Section("Paper") {
                 Picker(
                     "Paper",
@@ -227,6 +236,11 @@ private struct RecentDocuments: View {
             }
             .padding(.horizontal, 20)
             .padding(.top, 14)
+
+            if !appModel.generatedFiles.isEmpty {
+                TipView(PaperCreationTips.quality)
+                    .padding(.horizontal, 20)
+            }
 
             GeneratedFilesTable(files: appModel.generatedFiles)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
