@@ -27,11 +27,11 @@ only relative evidence references and hashes.
 The current live baseline contains seven advertised generator families and 18
 papers. The latest complete `gemma4:12b` Ollama run passed generation and release
 validation for all 18 and has been backfilled into the qualification ledger.
-That baseline is engineering evidence, not a new visual or empirical claim.
-AQA Computer Science Paper 2 and Pearson Edexcel Economics A Papers 1–3 retain
-their uncalibrated visual state. Every current paper retains an uncalibrated
-empirical state because no qualifying external learner/marker dataset is linked
-to the generated form.
+That baseline is engineering evidence. A subsequent fixed-seed, print-resolution
+qualification calibrated all 18 papers visually against the local multi-year
+reference corpus. Every current paper retains an uncalibrated empirical state
+because no qualifying external learner/marker dataset is linked to the generated
+form.
 
 The normal generation path fails closed if it cannot satisfy the contract after
 bounded retries. It never silently substitutes the deterministic planning draft.
@@ -138,12 +138,15 @@ paper, mark scheme, and observed page role. The command exits non-zero when a
 document is absent, a role disappears, the audit schema changes, or a score
 falls more than 0.5 percentage points below its qualified baseline.
 
-The final 26 August 2026 qualification generated all 18 papers with the
-recommended live `gemma4:12b` Ollama model and release-validated every declared
+The 26 August 2026 live-model qualification generated all 18 papers with the
+recommended `gemma4:12b` Ollama model and release-validated every declared
 artifact. Its 36 primary PDFs produced a 68.9% aggregate registered similarity
-score, and every calibrated document and page-role floor passed.
-All 151 overview, weakest-page, and per-document contact sheets were inspected
-for:
+score. The later fixed-seed print-resolution matrix, after renderer repairs,
+produced a 70.8% aggregate score at both 300 and 600 DPI. Every versioned
+document and page-role floor passed, every PDF passed the qualification print
+profile, and 152 contact-sheet artifacts were generated at each resolution.
+The six worst-page overview sheets, covering every primary document, were
+inspected for:
 
 - cover hierarchy, candidate boxes, typography, margins, rules, barcodes, and
   page folios;
@@ -154,6 +157,10 @@ for:
   continuation behaviour;
 - intentional blanks, answer rules, legal-notice exclusion zones, clipping,
   collisions, missing glyphs, and malformed pages.
+
+The per-paper scores, review scope, outcomes, intentional neutral-branding
+differences, and local artifact locations are recorded in
+`docs/qualification/2026-08-current-family-review.md`.
 
 No rendering defect was found in that matrix. Differences caused by independently
 authored questions remain expected, and the neutral Paper Creator identity is
@@ -171,15 +178,14 @@ mark-position geometry, tables, reading order, PDF tags, safe-print bounds, and
 monochrome contrast. CI uses 300 DPI; final qualification uses 600 DPI at 100%
 scale.
 
-A deterministic 18-family structural run over the existing live matrix found
-no audit crash, but it did find genuine qualification gaps. The generated PDFs
-are not yet tagged; some documents retain an unembedded standard-font fallback;
-and recurring footer furniture crosses the conservative 4.2–5 mm safe-print
-box on many pages. Manual 300-DPI cover and weakest-page inspection also found
-that OCR cover furniture remains less faithful than AQA and Pearson, while
-role-aware matching prevented ruled answer pages from being compared with
-graph/data pages. These are explicit print failures to be resolved by the
-shared rendering work, not reasons to lower thresholds.
+The completed 18-paper run records a PDF structure tree and embedded fonts for
+every primary document. It has no safe-print, monochrome-contrast, minimum-rule,
+or reading-order failure at either the 4.2 mm CI boundary or the 5 mm
+qualification boundary. Role-aware matching prevents ruled answer pages from
+being compared with graph/data pages. Neutral Paper Creator covers and end-page
+notices remain visibly distinct from protected exam-board branding, so their
+lower calibrated role scores are expected and are not represented as official
+or pixel-identical output.
 
 Calculation cases are typed shared contracts consumed by the printed source,
 AI authoring pass, verified answers and mark scheme. This prevents an item from

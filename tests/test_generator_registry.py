@@ -74,14 +74,7 @@ def test_every_current_paper_has_truthful_qualification_levels() -> None:
     assert len(readiness) == 18
     assert all(value.engineering_validated for value in readiness.values())
     assert all(not value.empirically_calibrated for value in readiness.values())
-    assert {
-        key for key, value in readiness.items() if not value.visually_calibrated
-    } == {
-        ("aqa/computer-science", "2"),
-        ("pearson-edexcel/economics-a-2015", "1"),
-        ("pearson-edexcel/economics-a-2015", "2"),
-        ("pearson-edexcel/economics-a-2015", "3"),
-    }
+    assert all(value.visually_calibrated for value in readiness.values())
 
 
 def test_every_advertised_generator_creates_unique_ai_content() -> None:

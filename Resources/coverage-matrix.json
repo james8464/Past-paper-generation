@@ -503,7 +503,7 @@
           "id": "2",
           "title": "Paper 2",
           "detail": "A-level Computer Science Paper 2",
-          "status": "engineering-validated",
+          "status": "visually-calibrated",
           "checks": {
             "blueprint": true,
             "syllabus": true,
@@ -514,7 +514,7 @@
             "renderer": true,
             "mark_scheme": true,
             "runtime": true,
-            "visual": false,
+            "visual": true,
             "release": true
           },
           "qualification": {
@@ -525,8 +525,11 @@
               ]
             },
             "visual": {
-              "state": "not_run",
-              "evidence": []
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json",
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
             },
             "empirical": {
               "state": "not_run",
@@ -3066,7 +3069,7 @@
           "id": "1",
           "title": "Paper 1",
           "detail": "Markets and business behaviour",
-          "status": "engineering-validated",
+          "status": "visually-calibrated",
           "checks": {
             "blueprint": true,
             "syllabus": true,
@@ -3077,7 +3080,7 @@
             "renderer": true,
             "mark_scheme": true,
             "runtime": true,
-            "visual": false,
+            "visual": true,
             "release": true
           },
           "qualification": {
@@ -3088,8 +3091,11 @@
               ]
             },
             "visual": {
-              "state": "not_run",
-              "evidence": []
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json",
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
             },
             "empirical": {
               "state": "not_run",
@@ -3101,7 +3107,7 @@
           "id": "2",
           "title": "Paper 2",
           "detail": "The national and global economy",
-          "status": "engineering-validated",
+          "status": "visually-calibrated",
           "checks": {
             "blueprint": true,
             "syllabus": true,
@@ -3112,7 +3118,7 @@
             "renderer": true,
             "mark_scheme": true,
             "runtime": true,
-            "visual": false,
+            "visual": true,
             "release": true
           },
           "qualification": {
@@ -3123,8 +3129,11 @@
               ]
             },
             "visual": {
-              "state": "not_run",
-              "evidence": []
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json",
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
             },
             "empirical": {
               "state": "not_run",
@@ -3136,7 +3145,7 @@
           "id": "3",
           "title": "Paper 3",
           "detail": "Microeconomics and macroeconomics",
-          "status": "engineering-validated",
+          "status": "visually-calibrated",
           "checks": {
             "blueprint": true,
             "syllabus": true,
@@ -3147,7 +3156,7 @@
             "renderer": true,
             "mark_scheme": true,
             "runtime": true,
-            "visual": false,
+            "visual": true,
             "release": true
           },
           "qualification": {
@@ -3158,8 +3167,11 @@
               ]
             },
             "visual": {
-              "state": "not_run",
-              "evidence": []
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json",
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
             },
             "empirical": {
               "state": "not_run",

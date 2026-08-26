@@ -360,8 +360,8 @@
     "semantic_hash": ""
   },
   "Resources/coverage-matrix.json": {
-    "mtime": 1787747473.9996533,
-    "ast_hash": "13ce401e3ae1e510eba5a44c49cc90cc",
+    "mtime": 1787771995.47246,
+    "ast_hash": "d74a6784ef059505ca22ccbefc1cad65",
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/aqaecongen/__init__.py": {
@@ -605,8 +605,8 @@
     "semantic_hash": ""
   },
   "Resources/generator-registry.json": {
-    "mtime": 1787747371.089319,
-    "ast_hash": "5f4ce628377d9437e2832cc562aba0b3",
+    "mtime": 1787771910.0837414,
+    "ast_hash": "909dfadc89917bcd5fb1e73e3568b1b1",
     "semantic_hash": ""
   },
   "Resources/layout-master-runtime.json": {
@@ -700,8 +700,8 @@
     "semantic_hash": "7206a074745730fe031e639b97fc47b2"
   },
   "tests/test_app_backend.py": {
-    "mtime": 1787752119.3928924,
-    "ast_hash": "c4b6e466fadba2a8fdacd3f6cd176e20",
+    "mtime": 1787772013.5714507,
+    "ast_hash": "343710527da420e181e1fe417a0d7159",
     "semantic_hash": ""
   },
   "tests/test_aqa_accounting_calibration.py": {
@@ -1030,8 +1030,8 @@
     "semantic_hash": ""
   },
   "tests/test_generator_registry.py": {
-    "mtime": 1787748135.6040473,
-    "ast_hash": "57a6965d40a60d917f26adcc319ce4d6",
+    "mtime": 1787771889.1669073,
+    "ast_hash": "8d635938564c49328c1ccea11cf1d204",
     "semantic_hash": ""
   },
   "docs/project-analysis/IMPLEMENTATION_AND_FIDELITY_REPORT.md": {
@@ -1185,8 +1185,8 @@
     "semantic_hash": ""
   },
   "docs/ASSESSMENT_QUALITY.md": {
-    "mtime": 1787750235.04844,
-    "ast_hash": "e45c0a7ad53eb547b1d9816a3433eea3",
+    "mtime": 1787772143.2940547,
+    "ast_hash": "4e2188179f012875c0fb965a287baf7a",
     "semantic_hash": ""
   },
   "docs/HIG_COMPLIANCE.md": {
@@ -1742,6 +1742,11 @@
   "Backend/Core/fonts/tinos/OFL.txt": {
     "mtime": 1787753809.3110745,
     "ast_hash": "3e2490bd7e7d154925ab6e8f79c4f998",
+    "semantic_hash": ""
+  },
+  "docs/qualification/2026-08-current-family-review.md": {
+    "mtime": 1787772115.956776,
+    "ast_hash": "02471504ccbab0cea55f0589de29204f",
     "semantic_hash": ""
   }
 }

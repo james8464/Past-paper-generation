@@ -186,7 +186,7 @@ def test_economics_dry_run_generates_expected_files(tmp_path: Path) -> None:
     assert manifest["evidence"]["difficulty_independently_verified"] is False
     assert manifest["evidence"]["qualification_levels"] == {
         "engineering_validated": True,
-        "visually_calibrated": False,
+        "visually_calibrated": True,
         "empirically_calibrated": False,
     }
     assessment = json.loads(

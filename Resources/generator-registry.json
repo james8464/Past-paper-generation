@@ -546,8 +546,11 @@
               ]
             },
             "visual": {
-              "state": "not_run",
-              "evidence": []
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json",
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
             },
             "empirical": {
               "state": "not_run",
@@ -564,7 +567,7 @@
             "renderer": true,
             "mark_scheme": true,
             "runtime": true,
-            "visual": false,
+            "visual": true,
             "release": true
           }
         }
@@ -909,8 +912,11 @@
               ]
             },
             "visual": {
-              "state": "not_run",
-              "evidence": []
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json",
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
             },
             "empirical": {
               "state": "not_run",
@@ -927,7 +933,7 @@
             "renderer": true,
             "mark_scheme": true,
             "runtime": true,
-            "visual": false,
+            "visual": true,
             "release": true
           }
         },
@@ -943,8 +949,11 @@
               ]
             },
             "visual": {
-              "state": "not_run",
-              "evidence": []
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json",
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
             },
             "empirical": {
               "state": "not_run",
@@ -961,7 +970,7 @@
             "renderer": true,
             "mark_scheme": true,
             "runtime": true,
-            "visual": false,
+            "visual": true,
             "release": true
           }
         },
@@ -977,8 +986,11 @@
               ]
             },
             "visual": {
-              "state": "not_run",
-              "evidence": []
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json",
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
             },
             "empirical": {
               "state": "not_run",
@@ -995,7 +1007,7 @@
             "renderer": true,
             "mark_scheme": true,
             "runtime": true,
-            "visual": false,
+            "visual": true,
             "release": true
           }
         }
