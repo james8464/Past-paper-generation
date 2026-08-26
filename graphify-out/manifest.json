@@ -645,8 +645,8 @@
     "semantic_hash": "9deb2ada1cc834bbebf8bbad9c8978a1"
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1787742276.9254413,
-    "ast_hash": "1d45143d511ed49cdefafe58b882bd62",
+    "mtime": 1787750331.2445958,
+    "ast_hash": "9cbc9075ed9c083da41c478a3768c361",
     "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
@@ -655,8 +655,8 @@
     "semantic_hash": "4fa9dfb92771238f19e9b459a6c38fd1"
   },
   "macOS/scripts/build_backend.sh": {
-    "mtime": 1787748152.4845989,
-    "ast_hash": "6836e516904f93780711853dd4975e03",
+    "mtime": 1787750085.3769538,
+    "ast_hash": "5715ef052581b0471ff9094fc17bcc41",
     "semantic_hash": ""
   },
   "macOS/scripts/clean.sh": {
@@ -940,8 +940,8 @@
     "semantic_hash": ""
   },
   "requirements-build.txt": {
-    "mtime": 1787738246.2024736,
-    "ast_hash": "d59b7466e1179276162a703a21480bab",
+    "mtime": 1787749923.2580783,
+    "ast_hash": "24eb8d246efcc5f614bb2d3c1c17b037",
     "semantic_hash": ""
   },
   "Design/AppIcon/PaperCreator-AppIcon-Master.png": {
@@ -1085,8 +1085,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/psychometrics.py": {
-    "mtime": 1785603986.1171622,
-    "ast_hash": "144ccbefd6e350f8a751f4740b9572d3",
+    "mtime": 1787750172.35182,
+    "ast_hash": "bdbd897f10187d6080a85329c41cd1c4",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Application/AppCommands.swift": {
@@ -1180,8 +1180,8 @@
     "semantic_hash": ""
   },
   "tools/calibrate_student_responses.py": {
-    "mtime": 1785603986.1636758,
-    "ast_hash": "22f3e770e4b6c3d37d86556ca7f4f7f5",
+    "mtime": 1787750212.8190162,
+    "ast_hash": "586c0bf8e965fab0da55fb59e8ae0a78",
     "semantic_hash": ""
   },
   "docs/ARCHITECTURE.md": {
@@ -1190,8 +1190,8 @@
     "semantic_hash": ""
   },
   "docs/ASSESSMENT_QUALITY.md": {
-    "mtime": 1787744928.9343467,
-    "ast_hash": "b70555e8cd0e848ce8d599e4ac6d7483",
+    "mtime": 1787750235.04844,
+    "ast_hash": "e45c0a7ad53eb547b1d9816a3433eea3",
     "semantic_hash": ""
   },
   "docs/HIG_COMPLIANCE.md": {
@@ -1440,8 +1440,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-26-paper-creator-excellence-programme.md": {
-    "mtime": 1787748996.2640128,
-    "ast_hash": "ea05de7ffcb73e5a7f0b6aaa78112648",
+    "mtime": 1787750711.8480775,
+    "ast_hash": "03cf72db8d4deca1d6e089b365db2548",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md": {
@@ -1692,6 +1692,21 @@
   "tools/validate_generator_migration.py": {
     "mtime": 1787748048.1884935,
     "ast_hash": "08b58bb11e7fb304fddc7a6ec2a38c0d",
+    "semantic_hash": ""
+  },
+  "Backend/Core/calibration_store.py": {
+    "mtime": 1787750172.3515515,
+    "ast_hash": "d6ef78d17f6a105a84e24a3eb0795df2",
+    "semantic_hash": ""
+  },
+  "Resources/empirical-calibration.schema.json": {
+    "mtime": 1787750085.3761995,
+    "ast_hash": "1c4c697ca83719ddb4a10a52336a9c30",
+    "semantic_hash": ""
+  },
+  "tests/test_calibration_store.py": {
+    "mtime": 1787750304.7542396,
+    "ast_hash": "647bb5e5c8204893ad0c3eb1a563871f",
     "semantic_hash": ""
   }
 }

@@ -453,8 +453,8 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - Anonymised records: item response, raw/partial marks, elapsed time, candidate cohort band, marker ID pseudonym, mark decision, consent/provenance.
 - Metrics: facility, point-biserial/discrimination, distractor frequency, completion-time distribution, inter-rater agreement, reliability, information/ability coverage, and DIF with uncertainty.
 
-- [ ] Add privacy/schema tests rejecting direct identifiers, missing consent/provenance, impossible marks/times, mixed specification versions, duplicate candidates, and undersized cohorts.
-- [ ] Implement encrypted-at-rest local calibration import/export, aggregation, deletion, and a report that never exposes row-level identities.
+- [x] Add privacy/schema tests rejecting direct identifiers, missing consent/provenance, impossible marks/times, mixed specification versions, duplicate candidates, and undersized cohorts.
+- [x] Implement encrypted-at-rest local calibration import/export, aggregation, deletion, and a report that never exposes row-level identities.
 - [ ] Define versioned minimum evidence thresholds with an assessment specialist; software must report insufficient evidence rather than lower thresholds.
 - [ ] Recruit qualified teachers/examiners for blind item and scheme review; record content validity, ambiguity, syllabus fit, demand, and marking completeness.
 - [ ] Pilot with consented students across ability bands; collect completion time, item responses, confidence, and structured feedback using counterbalanced paper order.
@@ -462,7 +462,7 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - [ ] Calculate facility, discrimination, distractor behavior, reliability, ability-range coverage, timing, and DIF; flag uncertainty and cohort limitations.
 - [ ] Revise failed items/blueprints/schemes, generate a new version, and repeat evidence collection rather than editing historical results.
 - [ ] Set an empirical gate true only when the versioned paper family meets every threshold and the manifest links the approved external report.
-- [ ] Run tests, privacy review, data deletion/export exercises, update Graphify, and commit software/schema changes without private study data.
+- [x] Run tests, privacy review, data deletion/export exercises, update Graphify, and commit software/schema changes without private study data.
 
 ### Task 15: Repository Cleanup, Failure Testing, and Final Release Qualification
 

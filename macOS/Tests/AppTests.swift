@@ -77,9 +77,14 @@ final class PaperCreatorTests: XCTestCase {
     }
 
     func testBuiltAppContainsStandaloneBackend() throws {
-        let executable = Bundle(for: AppViewModel.self).bundleURL
+        let bundle = Bundle(for: AppViewModel.self).bundleURL
+        let executable = bundle
             .appendingPathComponent("Contents/Resources/PaperCreatorBackend/PaperCreatorBackend")
         XCTAssertTrue(FileManager.default.isExecutableFile(atPath: executable.path))
+        let calibrationSchema = bundle.appendingPathComponent(
+            "Contents/Resources/PaperCreatorBackend/_internal/Resources/empirical-calibration.schema.json"
+        )
+        XCTAssertTrue(FileManager.default.fileExists(atPath: calibrationSchema.path))
     }
 
     func testBenchmarkSampleEventDecodes() throws {

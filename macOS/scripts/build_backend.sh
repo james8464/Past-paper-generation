@@ -44,6 +44,7 @@ build_fingerprint() {
       "$ROOT_DIR/macOS/scripts/build_backend.sh" \
       "$ROOT_DIR/Resources/backend-protocol.schema.json" \
       "$ROOT_DIR/Resources/generator-capability.schema.json" \
+      "$ROOT_DIR/Resources/empirical-calibration.schema.json" \
       "$ROOT_DIR/Resources/generator-registry.json" \
       "$ROOT_DIR/Resources/layout-master-runtime.json" \
       "$ROOT_DIR/Resources/layout-profiles.json" \
@@ -105,6 +106,7 @@ PYINSTALLER_ARGS=(
   --add-data "$ROOT_DIR/Resources/ollama-model-recommendations.json:Resources"
   --add-data "$ROOT_DIR/Resources/backend-protocol.schema.json:Resources"
   --add-data "$ROOT_DIR/Resources/generator-capability.schema.json:Resources"
+  --add-data "$ROOT_DIR/Resources/empirical-calibration.schema.json:Resources"
   --add-data "$ROOT_DIR/Resources/board-profiles:Resources/board-profiles"
 )
 

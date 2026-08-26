@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://papercreator.local/schemas/empirical-calibration-v1.json",
+  "title": "Paper Creator aggregate empirical calibration evidence",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "family",
+    "paper",
+    "form_id",
+    "sample",
+    "items",
+    "checks",
+    "thresholds",
+    "provenance",
+    "difficulty_independently_verified",
+    "evidence_fingerprint"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "family": { "type": "string", "minLength": 1 },
+    "paper": { "type": "string", "minLength": 1 },
+    "form_id": { "type": "string", "minLength": 1 },
+    "sample": {
+      "type": "object",
+      "required": ["candidates", "items", "response_rows", "groups"],
+      "properties": {
+        "candidates": { "type": "integer", "minimum": 1 },
+        "items": { "type": "integer", "minimum": 1 },
+        "response_rows": { "type": "integer", "minimum": 1 },
+        "groups": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "item_id",
+          "responses",
+          "facility",
+          "discrimination",
+          "median_time_seconds",
+          "differential_item_functioning"
+        ]
+      }
+    },
+    "checks": {
+      "type": "object",
+      "required": [
+        "candidate_sample",
+        "item_coverage",
+        "facility_range",
+        "internal_consistency",
+        "marker_standardisation",
+        "group_fairness_screen",
+        "independent_manual_review"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "candidate_sample": { "type": "boolean" },
+        "item_coverage": { "type": "boolean" },
+        "facility_range": { "type": "boolean" },
+        "internal_consistency": { "type": "boolean" },
+        "marker_standardisation": { "type": "boolean" },
+        "group_fairness_screen": { "type": "boolean" },
+        "independent_manual_review": { "type": "boolean" }
+      }
+    },
+    "thresholds": { "type": "object" },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "source",
+        "collector_role",
+        "collected_at",
+        "consent_basis",
+        "specification_version",
+        "dataset_id",
+        "row_level_data"
+      ],
+      "properties": {
+        "source": { "type": "string", "minLength": 1 },
+        "collector_role": { "type": "string", "minLength": 1 },
+        "collected_at": { "type": "string", "minLength": 1 },
+        "consent_basis": { "type": "string", "minLength": 1 },
+        "specification_version": { "type": "string", "minLength": 1 },
+        "dataset_id": { "type": "string", "format": "uuid" },
+        "row_level_data": { "const": "encrypted-local-only" }
+      },
+      "additionalProperties": false
+    },
+    "difficulty_independently_verified": { "type": "boolean" },
+    "evidence_fingerprint": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "not": {
+    "anyOf": [
+      { "required": ["candidate_id"] },
+      { "required": ["marker_id"] },
+      { "required": ["responses"] }
+    ]
+  }
+}

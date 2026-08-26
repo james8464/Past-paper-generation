@@ -6,12 +6,12 @@ import json
 import math
 import statistics
 from collections import defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from itertools import combinations
 from pathlib import Path
-from typing import Any, Iterable
-
+from typing import Any
 
 MIN_CANDIDATES = 100
 MIN_ITEM_RESPONSES = 80
@@ -180,7 +180,7 @@ def calibrate_responses(
         "checks": checks,
         "difficulty_independently_verified": verified,
     }
-    payload["evidence_fingerprint"] = _fingerprint(payload)
+    payload["evidence_fingerprint"] = evidence_fingerprint(payload)
     return payload
 
 
@@ -212,7 +212,7 @@ def validate_calibration(
     supplied = payload.get("evidence_fingerprint")
     comparable = dict(payload)
     comparable.pop("evidence_fingerprint", None)
-    if supplied != _fingerprint(comparable):
+    if supplied != evidence_fingerprint(comparable):
         raise ValueError("response-calibration evidence fingerprint is invalid")
     checks = payload.get("checks")
     if not isinstance(checks, dict) or set(checks) != {
@@ -461,7 +461,7 @@ def _rounded(value: float | None) -> float | None:
     return round(value, 4) if value is not None and math.isfinite(value) else None
 
 
-def _fingerprint(payload: dict[str, Any]) -> str:
+def evidence_fingerprint(payload: dict[str, Any]) -> str:
     encoded = json.dumps(
         payload,
         sort_keys=True,

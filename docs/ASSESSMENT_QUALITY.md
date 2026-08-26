@@ -251,6 +251,24 @@ Evidence is tied to one `form_id` and is not transferable to future AI-created
 questions. The group comparison is a screening flag, not a substitute for
 matched DIF/IRT analysis.
 
+Row-level calibration data can be imported through the same tool with
+`--secure-store`, `--metadata`, and `--consents`. The store uses authenticated
+Fernet encryption, creates owner-only files, writes atomically, rejects direct
+identifier columns, unconsented pseudonyms, mixed specification versions,
+duplicate candidate/item/marker rows, and impossible marks or timings. The
+encryption key is supplied by Keychain-facing code or
+`PAPER_CREATOR_CALIBRATION_KEY`; it is never written into the store. Encrypted
+datasets can be exported or deleted by dataset UUID. Aggregate reports conform
+to `Resources/empirical-calibration.schema.json` and never contain candidate or
+marker identifiers.
+
+Small pilots remain useful for workflow testing, but the tool reports
+insufficient evidence and cannot promote an empirical gate. Thresholds are
+versioned in the evidence output and are never lowered to make a cohort pass.
+Recruitment, consent, blind expert review, student piloting, double marking,
+and interpretation of DIF or reliability remain human study activities; the
+software must not manufacture those records.
+
 ## Human release review
 
 ## Independent solution and response-band qualification
