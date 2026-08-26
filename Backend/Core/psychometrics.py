@@ -13,16 +13,108 @@ from itertools import combinations
 from pathlib import Path
 from typing import Any
 
-MIN_CANDIDATES = 100
-MIN_ITEM_RESPONSES = 80
-MIN_DOUBLE_MARKED_PAIRS = 30
-MIN_GROUP_RESPONSES = 30
-MIN_RELIABILITY = 0.70
-MIN_DISCRIMINATION = 0.15
-MIN_MARKER_AGREEMENT = 0.80
-MIN_ACCEPTABLE_FACILITY = 0.20
-MAX_ACCEPTABLE_FACILITY = 0.85
-MAX_DIF_GAP = 0.15
+from Backend.Core.paths import REPO_ROOT
+
+DEFAULT_POLICY_PATH = (
+    REPO_ROOT / "Resources" / "empirical-calibration-policy.json"
+)
+
+
+@dataclass(frozen=True)
+class CalibrationPolicy:
+    policy_id: str
+    status: str
+    approved_by_identity_class: str | None
+    approval_evidence: str | None
+    thresholds: dict[str, int | float]
+
+    @property
+    def approved(self) -> bool:
+        return (
+            self.status == "approved"
+            and self.approved_by_identity_class == "assessment-specialist"
+            and bool(self.approval_evidence)
+        )
+
+    def summary(self) -> dict[str, Any]:
+        return {
+            "policy_id": self.policy_id,
+            "status": self.status,
+            "approved_by_identity_class": self.approved_by_identity_class,
+            "approval_evidence": self.approval_evidence,
+        }
+
+
+def load_calibration_policy(path: Path | None = None) -> CalibrationPolicy:
+    source = path or DEFAULT_POLICY_PATH
+    payload = json.loads(source.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict) or payload.get("schema_version") != 1:
+        raise ValueError("unsupported empirical calibration policy")
+    status = str(payload.get("status", ""))
+    if status not in {"draft", "approved", "retired"}:
+        raise ValueError("calibration policy status is invalid")
+    raw_thresholds = payload.get("thresholds")
+    required = {
+        "minimum_candidates",
+        "minimum_item_responses",
+        "minimum_double_marked_pairs",
+        "minimum_group_responses",
+        "minimum_reliability",
+        "minimum_discrimination",
+        "minimum_marker_agreement",
+        "minimum_acceptable_facility",
+        "maximum_acceptable_facility",
+        "minimum_facility_coverage",
+        "maximum_dif_gap",
+    }
+    if not isinstance(raw_thresholds, dict) or set(raw_thresholds) != required:
+        raise ValueError("calibration policy thresholds are incomplete")
+    thresholds = {
+        key: _finite_positive_number(value, name=key)
+        for key, value in raw_thresholds.items()
+    }
+    for key in (
+        "minimum_candidates",
+        "minimum_item_responses",
+        "minimum_double_marked_pairs",
+        "minimum_group_responses",
+    ):
+        if not isinstance(raw_thresholds[key], int) or isinstance(
+            raw_thresholds[key], bool
+        ):
+            raise ValueError(f"calibration threshold {key} must be an integer")
+        thresholds[key] = int(raw_thresholds[key])
+    bounded = (
+        "minimum_reliability",
+        "minimum_discrimination",
+        "minimum_marker_agreement",
+        "minimum_acceptable_facility",
+        "maximum_acceptable_facility",
+        "minimum_facility_coverage",
+        "maximum_dif_gap",
+    )
+    if any(not 0 < float(thresholds[key]) <= 1 for key in bounded):
+        raise ValueError("calibration proportion thresholds must be in (0, 1]")
+    if thresholds["minimum_acceptable_facility"] >= thresholds[
+        "maximum_acceptable_facility"
+    ]:
+        raise ValueError("calibration facility bounds are invalid")
+    identity = payload.get("approved_by_identity_class")
+    evidence = payload.get("approval_evidence")
+    policy = CalibrationPolicy(
+        policy_id=str(payload.get("policy_id", "")).strip(),
+        status=status,
+        approved_by_identity_class=(str(identity).strip() if identity else None),
+        approval_evidence=(str(evidence).strip() if evidence else None),
+        thresholds=thresholds,
+    )
+    if not policy.policy_id:
+        raise ValueError("calibration policy id is required")
+    if status == "approved" and not policy.approved:
+        raise ValueError(
+            "approved calibration policy requires assessment-specialist evidence"
+        )
+    return policy
 
 
 @dataclass(frozen=True)
@@ -64,6 +156,7 @@ def calibrate_responses(
     paper: str,
     form_id: str,
     review: dict[str, Any] | None = None,
+    policy_path: Path | None = None,
 ) -> dict[str, Any]:
     """Produce conservative, auditable item and form evidence.
 
@@ -71,6 +164,8 @@ def calibrate_responses(
     statistics and retained separately for inter-rater agreement.
     """
 
+    policy = load_calibration_policy(policy_path)
+    thresholds = policy.thresholds
     materialised = list(responses)
     _validate_identity(materialised)
     candidate_items = _candidate_item_means(materialised)
@@ -90,6 +185,7 @@ def calibrate_responses(
             candidate_items=candidate_items,
             candidate_totals=candidate_totals,
             raw=materialised,
+            thresholds=thresholds,
         )
         for item_id in item_ids
     ]
@@ -100,16 +196,16 @@ def calibrate_responses(
     adequate_items = [
         item
         for item in items
-        if item["responses"] >= MIN_ITEM_RESPONSES
+        if item["responses"] >= thresholds["minimum_item_responses"]
         and item["discrimination"] is not None
-        and item["discrimination"] >= MIN_DISCRIMINATION
+        and item["discrimination"] >= thresholds["minimum_discrimination"]
     ]
     facility_items = [
         item
         for item in items
-        if MIN_ACCEPTABLE_FACILITY
+        if thresholds["minimum_acceptable_facility"]
         <= item["facility"]
-        <= MAX_ACCEPTABLE_FACILITY
+        <= thresholds["maximum_acceptable_facility"]
     ]
     dif_flags = [
         flag
@@ -118,18 +214,22 @@ def calibrate_responses(
         if flag["flagged"]
     ]
     checks = {
-        "candidate_sample": len(candidates) >= MIN_CANDIDATES,
+        "policy_approved": policy.approved,
+        "candidate_sample": len(candidates) >= thresholds["minimum_candidates"],
         "item_coverage": len(adequate_items) == len(items),
         "facility_range": (
-            bool(items) and len(facility_items) / len(items) >= 0.90
+            bool(items)
+            and len(facility_items) / len(items)
+            >= thresholds["minimum_facility_coverage"]
         ),
         "internal_consistency": (
-            reliability is not None and reliability >= MIN_RELIABILITY
+            reliability is not None
+            and reliability >= thresholds["minimum_reliability"]
         ),
         "marker_standardisation": (
-            marker["pair_count"] >= MIN_DOUBLE_MARKED_PAIRS
+            marker["pair_count"] >= thresholds["minimum_double_marked_pairs"]
             and marker["agreement"] is not None
-            and marker["agreement"] >= MIN_MARKER_AGREEMENT
+            and marker["agreement"] >= thresholds["minimum_marker_agreement"]
         ),
         "group_fairness_screen": not dif_flags,
         "independent_manual_review": bool(manual_review["approved"]),
@@ -163,20 +263,8 @@ def calibrate_responses(
         },
         "items": items,
         "manual_review": manual_review,
-        "thresholds": {
-            "minimum_candidates": MIN_CANDIDATES,
-            "minimum_item_responses": MIN_ITEM_RESPONSES,
-            "minimum_discrimination": MIN_DISCRIMINATION,
-            "acceptable_facility": [
-                MIN_ACCEPTABLE_FACILITY,
-                MAX_ACCEPTABLE_FACILITY,
-            ],
-            "minimum_reliability": MIN_RELIABILITY,
-            "minimum_double_marked_pairs": MIN_DOUBLE_MARKED_PAIRS,
-            "minimum_marker_agreement": MIN_MARKER_AGREEMENT,
-            "minimum_group_responses": MIN_GROUP_RESPONSES,
-            "maximum_dif_gap": MAX_DIF_GAP,
-        },
+        "policy": policy.summary(),
+        "thresholds": thresholds,
         "checks": checks,
         "difficulty_independently_verified": verified,
     }
@@ -199,6 +287,7 @@ def validate_calibration(
     family: str,
     paper: str,
     form_id: str,
+    policy_path: Path | None = None,
 ) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict) or payload.get("schema_version") != 1:
@@ -214,8 +303,14 @@ def validate_calibration(
     comparable.pop("evidence_fingerprint", None)
     if supplied != evidence_fingerprint(comparable):
         raise ValueError("response-calibration evidence fingerprint is invalid")
+    policy = load_calibration_policy(policy_path)
+    if payload.get("policy") != policy.summary():
+        raise ValueError("response calibration uses a different threshold policy")
+    if payload.get("thresholds") != policy.thresholds:
+        raise ValueError("response calibration thresholds contradict its policy")
     checks = payload.get("checks")
     if not isinstance(checks, dict) or set(checks) != {
+        "policy_approved",
         "candidate_sample",
         "item_coverage",
         "facility_range",
@@ -310,6 +405,7 @@ def _item_statistics(
     candidate_items: dict[tuple[str, str], float],
     candidate_totals: dict[str, float],
     raw: list[Response],
+    thresholds: dict[str, int | float],
 ) -> dict[str, Any]:
     observations = [
         (candidate, proportion)
@@ -336,6 +432,8 @@ def _item_statistics(
             item_id,
             candidate_items=candidate_items,
             raw=raw,
+            minimum_group_responses=int(thresholds["minimum_group_responses"]),
+            maximum_gap=float(thresholds["maximum_dif_gap"]),
         ),
     }
 
@@ -345,6 +443,8 @@ def _dif(
     *,
     candidate_items: dict[tuple[str, str], float],
     raw: list[Response],
+    minimum_group_responses: int,
+    maximum_gap: float,
 ) -> list[dict[str, Any]]:
     candidate_groups = {
         response.candidate_id: response.group
@@ -360,7 +460,7 @@ def _dif(
     for left, right in combinations(sorted(by_group), 2):
         left_values = by_group[left]
         right_values = by_group[right]
-        if min(len(left_values), len(right_values)) < MIN_GROUP_RESPONSES:
+        if min(len(left_values), len(right_values)) < minimum_group_responses:
             continue
         gap = abs(statistics.fmean(left_values) - statistics.fmean(right_values))
         result.append(
@@ -368,7 +468,7 @@ def _dif(
                 "groups": [left, right],
                 "sample": [len(left_values), len(right_values)],
                 "facility_gap": _rounded(gap),
-                "flagged": gap > MAX_DIF_GAP,
+                "flagged": gap > maximum_gap,
                 "screen_only": True,
             }
         )
@@ -469,3 +569,11 @@ def evidence_fingerprint(payload: dict[str, Any]) -> str:
         ensure_ascii=True,
     ).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
+
+
+def _finite_positive_number(value: Any, *, name: str) -> int | float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"calibration threshold {name} must be numeric")
+    if not math.isfinite(float(value)) or value <= 0:
+        raise ValueError(f"calibration threshold {name} must be positive")
+    return value

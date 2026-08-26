@@ -189,6 +189,7 @@ def test_aggregate_schema_requires_privacy_and_evidence_fields() -> None:
         "thresholds",
         "provenance",
         "evidence_fingerprint",
+        "policy",
     } <= required
     encoded = json.dumps(schema)
     assert "encrypted-local-only" in encoded

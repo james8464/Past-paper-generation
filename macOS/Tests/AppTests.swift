@@ -85,6 +85,10 @@ final class PaperCreatorTests: XCTestCase {
             "Contents/Resources/PaperCreatorBackend/_internal/Resources/empirical-calibration.schema.json"
         )
         XCTAssertTrue(FileManager.default.fileExists(atPath: calibrationSchema.path))
+        let calibrationPolicy = bundle.appendingPathComponent(
+            "Contents/Resources/PaperCreatorBackend/_internal/Resources/empirical-calibration-policy.json"
+        )
+        XCTAssertTrue(FileManager.default.fileExists(atPath: calibrationPolicy.path))
     }
 
     func testBenchmarkSampleEventDecodes() throws {

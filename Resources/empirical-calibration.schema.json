@@ -13,6 +13,7 @@
     "items",
     "checks",
     "thresholds",
+    "policy",
     "provenance",
     "difficulty_independently_verified",
     "evidence_fingerprint"
@@ -51,6 +52,7 @@
     "checks": {
       "type": "object",
       "required": [
+        "policy_approved",
         "candidate_sample",
         "item_coverage",
         "facility_range",
@@ -61,6 +63,7 @@
       ],
       "additionalProperties": false,
       "properties": {
+        "policy_approved": { "type": "boolean" },
         "candidate_sample": { "type": "boolean" },
         "item_coverage": { "type": "boolean" },
         "facility_range": { "type": "boolean" },
@@ -70,7 +73,41 @@
         "independent_manual_review": { "type": "boolean" }
       }
     },
-    "thresholds": { "type": "object" },
+    "policy": {
+      "type": "object",
+      "required": [
+        "policy_id",
+        "status",
+        "approved_by_identity_class",
+        "approval_evidence"
+      ],
+      "properties": {
+        "policy_id": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["draft", "approved", "retired"] },
+        "approved_by_identity_class": {
+          "type": ["string", "null"]
+        },
+        "approval_evidence": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "thresholds": {
+      "type": "object",
+      "required": [
+        "minimum_candidates",
+        "minimum_item_responses",
+        "minimum_double_marked_pairs",
+        "minimum_group_responses",
+        "minimum_reliability",
+        "minimum_discrimination",
+        "minimum_marker_agreement",
+        "minimum_acceptable_facility",
+        "maximum_acceptable_facility",
+        "minimum_facility_coverage",
+        "maximum_dif_gap"
+      ],
+      "additionalProperties": false
+    },
     "provenance": {
       "type": "object",
       "required": [

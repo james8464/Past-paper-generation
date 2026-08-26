@@ -645,8 +645,8 @@
     "semantic_hash": "9deb2ada1cc834bbebf8bbad9c8978a1"
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1787750799.7425234,
-    "ast_hash": "584f39ab33de60b3eca20ca7a052a8d1",
+    "mtime": 1787774128.8471534,
+    "ast_hash": "c3a2a741c8d10591ec2488b3c8ea89ed",
     "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
@@ -655,8 +655,8 @@
     "semantic_hash": "4fa9dfb92771238f19e9b459a6c38fd1"
   },
   "macOS/scripts/build_backend.sh": {
-    "mtime": 1787752960.8681858,
-    "ast_hash": "9383733bb83729f7ad51a9f8f1851adc",
+    "mtime": 1787774128.8463023,
+    "ast_hash": "f80fb77c62f0d734ad0e66e288bd2cc7",
     "semantic_hash": ""
   },
   "macOS/scripts/clean.sh": {
@@ -1020,8 +1020,8 @@
     "semantic_hash": ""
   },
   "tests/test_generator_registry.py": {
-    "mtime": 1787771889.1669073,
-    "ast_hash": "8d635938564c49328c1ccea11cf1d204",
+    "mtime": 1787774128.8466613,
+    "ast_hash": "51ef9532a85404aa066dda9296ffcc57",
     "semantic_hash": ""
   },
   "docs/project-analysis/IMPLEMENTATION_AND_FIDELITY_REPORT.md": {
@@ -1075,8 +1075,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/psychometrics.py": {
-    "mtime": 1787755258.1917753,
-    "ast_hash": "0f71c9a9eff278c34ace08c9c1dcde88",
+    "mtime": 1787774075.73549,
+    "ast_hash": "11a8de831f664fb0b10d6be2cd0db3f5",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Application/AppCommands.swift": {
@@ -1160,13 +1160,13 @@
     "semantic_hash": ""
   },
   "tests/test_psychometrics.py": {
-    "mtime": 1785603986.1635222,
-    "ast_hash": "ceda408a7d877ccb0df2801c24d97e3e",
+    "mtime": 1787774075.7363403,
+    "ast_hash": "6d920fb657f4c733513dc7640deb958a",
     "semantic_hash": ""
   },
   "tools/calibrate_student_responses.py": {
-    "mtime": 1787750212.8190162,
-    "ast_hash": "586c0bf8e965fab0da55fb59e8ae0a78",
+    "mtime": 1787774128.8458996,
+    "ast_hash": "518624414319b09c6bcb25493fe1e39e",
     "semantic_hash": ""
   },
   "docs/ARCHITECTURE.md": {
@@ -1175,8 +1175,8 @@
     "semantic_hash": ""
   },
   "docs/ASSESSMENT_QUALITY.md": {
-    "mtime": 1787772143.2940547,
-    "ast_hash": "4e2188179f012875c0fb965a287baf7a",
+    "mtime": 1787774154.3794603,
+    "ast_hash": "53ca9d406381fc3e47094ac5953f6d52",
     "semantic_hash": ""
   },
   "docs/HIG_COMPLIANCE.md": {
@@ -1680,18 +1680,18 @@
     "semantic_hash": ""
   },
   "Backend/Core/calibration_store.py": {
-    "mtime": 1787750172.3515515,
-    "ast_hash": "d6ef78d17f6a105a84e24a3eb0795df2",
+    "mtime": 1787774128.845199,
+    "ast_hash": "3eb33dfcd8b773c6d2e1686030092f9f",
     "semantic_hash": ""
   },
   "Resources/empirical-calibration.schema.json": {
-    "mtime": 1787750085.3761995,
-    "ast_hash": "1c4c697ca83719ddb4a10a52336a9c30",
+    "mtime": 1787774128.8475747,
+    "ast_hash": "756f70df2d8411162f5f54c9c943feaa",
     "semantic_hash": ""
   },
   "tests/test_calibration_store.py": {
-    "mtime": 1787755464.868996,
-    "ast_hash": "795dcdef20368b11bbec641120ab39d2",
+    "mtime": 1787774007.9800816,
+    "ast_hash": "24b48db789862ad38795e59c1b17bc8d",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/State/ApplicationCoordinator.swift": {
@@ -1827,6 +1827,11 @@
   "tests/test_computer_science_subject.py": {
     "mtime": 1787773539.5011654,
     "ast_hash": "5c41cbbce2863789c13f465f54d0e722",
+    "semantic_hash": ""
+  },
+  "Resources/empirical-calibration-policy.json": {
+    "mtime": 1787774075.7348325,
+    "ast_hash": "b59e58e85d425cfa957f066bd9ba8d6d",
     "semantic_hash": ""
   }
 }

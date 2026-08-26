@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "policy_id": "paper-creator-empirical-v1-draft",
+  "status": "draft",
+  "approved_by_identity_class": null,
+  "approval_evidence": null,
+  "rationale": "Conservative provisional thresholds awaiting independent approval by an assessment specialist. Draft policies can calculate diagnostics but can never promote empirical readiness.",
+  "thresholds": {
+    "minimum_candidates": 100,
+    "minimum_item_responses": 80,
+    "minimum_double_marked_pairs": 30,
+    "minimum_group_responses": 30,
+    "minimum_reliability": 0.7,
+    "minimum_discrimination": 0.15,
+    "minimum_marker_agreement": 0.8,
+    "minimum_acceptable_facility": 0.2,
+    "maximum_acceptable_facility": 0.85,
+    "minimum_facility_coverage": 0.9,
+    "maximum_dif_gap": 0.15
+  }
+}

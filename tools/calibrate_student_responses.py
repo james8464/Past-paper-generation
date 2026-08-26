@@ -30,6 +30,14 @@ def main() -> int:
     parser.add_argument("--paper")
     parser.add_argument("--form-id")
     parser.add_argument("--review", type=Path)
+    parser.add_argument(
+        "--policy",
+        type=Path,
+        help=(
+            "Versioned assessment-specialist threshold policy. The bundled "
+            "draft policy reports diagnostics but cannot promote readiness."
+        ),
+    )
     parser.add_argument("--output", type=Path)
     parser.add_argument(
         "--secure-store",
@@ -71,6 +79,7 @@ def main() -> int:
         paper=args.paper,
         form_id=args.form_id,
         review=review,
+        policy_path=args.policy,
     )
     write_calibration(payload, args.output)
     print(
@@ -125,7 +134,11 @@ def _run_secure(
             consents=[ConsentRecord(**value) for value in raw_consents],
         )
 
-    payload = store.aggregate(dataset_id, review=review)
+    payload = store.aggregate(
+        dataset_id,
+        review=review,
+        policy_path=args.policy,
+    )
     if args.output:
         write_calibration(payload, args.output)
     print(

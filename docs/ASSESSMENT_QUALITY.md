@@ -245,6 +245,8 @@ item-total discrimination, median time, Cronbach's alpha, pairwise normalised
 marker agreement, and a group facility-gap screen. A verified result requires
 all of the following:
 
+- a versioned threshold policy approved by an independent assessment specialist
+  with linked approval evidence;
 - at least 100 candidates;
 - at least 80 responses and discrimination of 0.15 per item;
 - at least 90% of facilities between 0.20 and 0.85;
@@ -269,8 +271,11 @@ to `Resources/empirical-calibration.schema.json` and never contain candidate or
 marker identifiers.
 
 Small pilots remain useful for workflow testing, but the tool reports
-insufficient evidence and cannot promote an empirical gate. Thresholds are
-versioned in the evidence output and are never lowered to make a cohort pass.
+insufficient evidence and cannot promote an empirical gate. The bundled
+`Resources/empirical-calibration-policy.json` is deliberately `draft`: it can
+calculate conservative diagnostics but cannot promote readiness. Thresholds
+are versioned in the evidence output, must match the approved policy exactly,
+and are never lowered to make a cohort pass.
 Recruitment, consent, blind expert review, student piloting, double marking,
 and interpretation of DIF or reliability remain human study activities; the
 software must not manufacture those records.

@@ -126,4 +126,5 @@ def test_backend_bundle_includes_declarative_profile_resources() -> None:
     script = (REPO_ROOT / "macOS" / "scripts" / "build_backend.sh").read_text()
 
     assert "generator-capability.schema.json" in script
+    assert "empirical-calibration-policy.json" in script
     assert "Resources/board-profiles:Resources/board-profiles" in script

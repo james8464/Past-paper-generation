@@ -140,6 +140,7 @@ class CalibrationStore:
         dataset_id: str,
         *,
         review: dict[str, Any] | None = None,
+        policy_path: Path | None = None,
     ) -> dict[str, Any]:
         document = self._load(dataset_id)
         metadata = CalibrationMetadata(**document["metadata"])
@@ -150,6 +151,7 @@ class CalibrationStore:
             paper=metadata.paper,
             form_id=metadata.form_id,
             review=review,
+            policy_path=policy_path,
         )
         report["provenance"] = {
             "source": metadata.source,
@@ -169,8 +171,13 @@ class CalibrationStore:
         dataset_id: str,
         *,
         review: dict[str, Any] | None = None,
+        policy_path: Path | None = None,
     ) -> dict[str, Any]:
-        report = self.aggregate(dataset_id, review=review)
+        report = self.aggregate(
+            dataset_id,
+            review=review,
+            policy_path=policy_path,
+        )
         if report["difficulty_independently_verified"] is not True:
             failed = [name for name, passed in report["checks"].items() if not passed]
             raise ValueError(

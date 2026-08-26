@@ -9,10 +9,24 @@ import pytest
 from Backend.Core.psychometrics import (
     Response,
     calibrate_responses,
+    load_calibration_policy,
     load_responses,
     validate_calibration,
     write_calibration,
 )
+
+
+def _approved_policy(path: Path) -> Path:
+    payload = json.loads(
+        Path("Resources/empirical-calibration-policy.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    payload["status"] = "approved"
+    payload["approved_by_identity_class"] = "assessment-specialist"
+    payload["approval_evidence"] = "independent-policy-review-2026-08"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return path
 
 
 def _responses(*, candidates: int = 120) -> list[Response]:
@@ -63,6 +77,7 @@ def test_calibration_can_validate_a_well_evidenced_exact_form(tmp_path: Path) ->
             "role": "Assessment specialist",
             "date": "2026-07-29",
         },
+        policy_path=_approved_policy(tmp_path / "approved-policy.json"),
     )
     path = write_calibration(payload, tmp_path / "calibration.json")
 
@@ -72,9 +87,32 @@ def test_calibration_can_validate_a_well_evidenced_exact_form(tmp_path: Path) ->
         family="aqa/economics",
         paper="1",
         form_id="form-a",
+        policy_path=tmp_path / "approved-policy.json",
     )
     assert summary["difficulty_independently_verified"] is True
     assert summary["candidates"] == 120
+
+
+def test_draft_threshold_policy_cannot_promote_empirical_readiness() -> None:
+    policy = load_calibration_policy()
+    assert policy.status == "draft"
+
+    payload = calibrate_responses(
+        _responses(),
+        family="aqa/economics",
+        paper="1",
+        form_id="form-a",
+        review={
+            "approved": True,
+            "reviewer": "Independent assessor",
+            "role": "Assessment specialist",
+            "date": "2026-07-29",
+        },
+    )
+
+    assert payload["checks"]["policy_approved"] is False
+    assert payload["difficulty_independently_verified"] is False
+    assert payload["policy"]["status"] == "draft"
 
 
 def test_calibration_fingerprint_detects_tampering(tmp_path: Path) -> None:

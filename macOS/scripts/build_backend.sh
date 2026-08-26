@@ -45,6 +45,7 @@ build_fingerprint() {
       "$ROOT_DIR/Resources/backend-protocol.schema.json" \
       "$ROOT_DIR/Resources/generator-capability.schema.json" \
       "$ROOT_DIR/Resources/empirical-calibration.schema.json" \
+      "$ROOT_DIR/Resources/empirical-calibration-policy.json" \
       "$ROOT_DIR/Resources/generator-registry.json" \
       "$ROOT_DIR/Resources/layout-master-runtime.json" \
       "$ROOT_DIR/Resources/layout-profiles.json" \
@@ -107,6 +108,7 @@ PYINSTALLER_ARGS=(
   --add-data "$ROOT_DIR/Resources/backend-protocol.schema.json:Resources"
   --add-data "$ROOT_DIR/Resources/generator-capability.schema.json:Resources"
   --add-data "$ROOT_DIR/Resources/empirical-calibration.schema.json:Resources"
+  --add-data "$ROOT_DIR/Resources/empirical-calibration-policy.json:Resources"
   --add-data "$ROOT_DIR/Resources/board-profiles:Resources/board-profiles"
   --add-data "$ROOT_DIR/Backend/Core/fonts:Backend/Core/fonts"
 )
