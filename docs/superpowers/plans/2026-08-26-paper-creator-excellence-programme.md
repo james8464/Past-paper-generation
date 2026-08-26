@@ -242,12 +242,12 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - `AppViewModel` owns coordinator instances and compatibility forwarding properties only during migration.
 - `GenerationJobRecord` is `Codable`, versioned, and stores configuration, provenance, state, artifacts, and qualification summary.
 
-- [ ] Add characterization tests for current selection, provider/model setup, generation, cancellation, benchmark, settings, recents, and command handling.
-- [ ] Implement coordinators one responsibility at a time with dependency-injected protocols and no singleton/global mutable state.
-- [ ] Move persisted preferences to `SettingsStore`; move Keychain interaction behind the existing `SecretStore` protocol.
-- [ ] Add atomic JSON job-history storage with schema migration, corrupt-record quarantine, missing-file handling, and bounded retention configurable in Settings.
+- [x] Add characterization tests for current selection, provider/model setup, generation, cancellation, benchmark, settings, recents, and command handling.
+- [x] Implement coordinators one responsibility at a time with dependency-injected protocols and no singleton/global mutable state.
+- [x] Move persisted preferences to `SettingsStore`; move Keychain interaction behind the existing `SecretStore` protocol.
+- [x] Add atomic JSON job-history storage with schema migration, corrupt-record quarantine, missing-file handling, and bounded retention configurable in Settings.
 - [ ] Keep `AppViewModel` below 200 lines after compatibility forwarding is removed; views observe only the coordinator they need.
-- [ ] Add tests for process relaunch, cancelled jobs, interrupted jobs, corrupt history, missing artifacts, duplicate configurations, and stale model lists.
+- [x] Add tests for process relaunch, cancelled jobs, interrupted jobs, corrupt history, missing artifacts, duplicate configurations, and stale model lists.
 - [ ] Run `make -C macOS test`, strict `make -C macOS build`, and update Graphify.
 - [ ] Commit in coordinator-sized changes, ending with `Decompose application state coordinators`.
 

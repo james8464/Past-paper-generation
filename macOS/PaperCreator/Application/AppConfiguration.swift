@@ -54,6 +54,17 @@ enum AppDefaults {
             .appendingPathComponent("MLX Models", isDirectory: true)
     }
 
+    static func jobHistoryFolder() -> URL {
+        let fileManager = FileManager.default
+        let applicationSupport = fileManager.urls(
+            for: .applicationSupportDirectory,
+            in: .userDomainMask
+        ).first ?? fileManager.homeDirectoryForCurrentUser
+        return applicationSupport
+            .appendingPathComponent("Paper creator", isDirectory: true)
+            .appendingPathComponent("Job History", isDirectory: true)
+    }
+
     static func isSandboxDownloadsPath(_ path: String) -> Bool {
         path.contains("/Library/Containers/") && path.contains("/Data/Downloads")
     }
@@ -90,6 +101,9 @@ enum AppStorageKey {
     static let selectedBoardID = "selectedBoardID"
     static let selectedPaperID = "selectedPaperID"
     static let qualityInspectorVisible = "qualityInspectorVisible"
+    static let favoriteBoardIDs = "favoriteBoardIDs"
+    static let recentConfigurationIDs = "recentConfigurationIDs"
+    static let historyRetentionLimit = "historyRetentionLimit"
 }
 
 enum SecretAccount {

@@ -1095,8 +1095,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Application/AppConfiguration.swift": {
-    "mtime": 1787739131.6226807,
-    "ast_hash": "07da01cf616c6862fae1ea2e2febe974",
+    "mtime": 1787746083.4135408,
+    "ast_hash": "dae34f44f6c47b8b19cd39067a2c7194",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Application/PaperCreatorApp.swift": {
@@ -1165,8 +1165,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/State/AppViewModel.swift": {
-    "mtime": 1787742096.0800824,
-    "ast_hash": "f11a48f2d092e23f448ebc5d04624366",
+    "mtime": 1787746103.3261156,
+    "ast_hash": "47d3c9c372669d506d533159736359e2",
     "semantic_hash": ""
   },
   "tests/test_ai_assessment.py": {
@@ -1440,8 +1440,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-26-paper-creator-excellence-programme.md": {
-    "mtime": 1787744969.6910381,
-    "ast_hash": "177566ed3ee020dbc591373d890ea4b6",
+    "mtime": 1787746185.9626646,
+    "ast_hash": "76f524406c029d9f127c04450832fea3",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md": {
@@ -1572,6 +1572,46 @@
   "tests/test_renderer_contracts.py": {
     "mtime": 1787745633.1274807,
     "ast_hash": "5eb102470f649fb6e47dd17ae29c0d25",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/State/BenchmarkCoordinator.swift": {
+    "mtime": 1787745971.4673364,
+    "ast_hash": "31b346e8d69df52e5f6cafa235061cda",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/State/CatalogStore.swift": {
+    "mtime": 1787745971.4668877,
+    "ast_hash": "4fb720b660e33c08db15f8810cf7441b",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/State/CoordinatorDependencies.swift": {
+    "mtime": 1787745971.466161,
+    "ast_hash": "2e4c820130cd66d3bb487e2cdc05b15a",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/State/GenerationCoordinator.swift": {
+    "mtime": 1787746083.4140382,
+    "ast_hash": "ad8361bd80c5429d286c317c6fa81bc3",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/State/ModelCoordinator.swift": {
+    "mtime": 1787745971.4666991,
+    "ast_hash": "9076f4d594a301d27d779477beafb3b6",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/State/RecentDocumentStore.swift": {
+    "mtime": 1787745971.4664667,
+    "ast_hash": "105f0937097bdc9eb14f5ea2606b8d7e",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/State/SettingsStore.swift": {
+    "mtime": 1787745971.4671454,
+    "ast_hash": "5bf232a55ba6ea284e0c08a72096456f",
+    "semantic_hash": ""
+  },
+  "macOS/Tests/CoordinatorTests.swift": {
+    "mtime": 1787746098.1583025,
+    "ast_hash": "78663002260f044efeeac94f19e25301",
     "semantic_hash": ""
   }
 }

@@ -5,6 +5,13 @@ import Foundation
 
 @MainActor
 final class AppViewModel: ObservableObject {
+    let settingsStore: SettingsStore
+    let catalogStore: CatalogStore
+    let modelCoordinator: ModelCoordinator
+    let benchmarkCoordinator: BenchmarkCoordinator
+    let recentDocumentStore: RecentDocumentStore
+    let generationCoordinator: GenerationCoordinator
+
     @Published var selectedBoardID = ExamCatalog.defaultBoard.id
     @Published var selectedPaperID = ExamCatalog.defaultBoard.papers.first?.id ?? "unknown"
     @Published var selectedModel = AppDefaults.ollamaModel
@@ -171,23 +178,35 @@ final class AppViewModel: ObservableObject {
     }
 
     init() {
-        let ollamaModel = defaults.string(forKey: AppStorageKey.ollamaModel) ?? AppDefaults.ollamaModel
-        aiProvider = AIProvider(rawValue: defaults.string(forKey: AppStorageKey.aiProvider) ?? "") ?? .ollama
+        let settings = SettingsStore()
+        let recents = RecentDocumentStore(
+            directory: AppDefaults.jobHistoryFolder(),
+            retentionLimit: settings.historyRetentionLimit
+        )
+        settingsStore = settings
+        catalogStore = CatalogStore(subjects: ExamCatalog.subjects)
+        modelCoordinator = ModelCoordinator()
+        benchmarkCoordinator = BenchmarkCoordinator()
+        recentDocumentStore = recents
+        generationCoordinator = GenerationCoordinator(history: recents)
+
+        let ollamaModel = settings.ollamaModel
+        aiProvider = settings.provider
         selectedModel = ollamaModel
+        modelCoordinator.provider = settings.provider
+        modelCoordinator.selectedModel = ollamaModel
         modelToPull = ollamaModel
-        openAIModel = defaults.string(forKey: AppStorageKey.openAIModel) ?? AppDefaults.openAIModel
-        anthropicModel = defaults.string(forKey: AppStorageKey.anthropicModel) ?? AppDefaults.anthropicModel
-        appleModel = defaults.string(forKey: AppStorageKey.appleModel) ?? AppDefaults.appleModel
+        openAIModel = settings.openAIModel
+        anthropicModel = settings.anthropicModel
+        appleModel = settings.appleModel
         preparedMLXModels = Set(
             defaults.stringArray(forKey: AppStorageKey.preparedMLXModels) ?? []
         )
-        dryRun = defaults.bool(forKey: AppStorageKey.dryRun)
-        openAIAPIKey = SecretStore.read(SecretAccount.openAIAPIKey)
-        anthropicAPIKey = SecretStore.read(SecretAccount.anthropicAPIKey)
+        dryRun = settings.dryRun
+        openAIAPIKey = settings.openAIAPIKey
+        anthropicAPIKey = settings.anthropicAPIKey
         notificationCenter.delegate = NotificationPresenter.shared
-        if defaults.object(forKey: AppStorageKey.notificationsEnabled) != nil {
-            notificationsEnabled = defaults.bool(forKey: AppStorageKey.notificationsEnabled)
-        }
+        notificationsEnabled = settings.notificationsEnabled
         showWelcome = !defaults.bool(forKey: AppStorageKey.hasSeenWelcome)
         if let bookmark = defaults.data(forKey: AppStorageKey.outputFolderBookmark) {
             restoreOutputFolder(from: bookmark)
@@ -287,6 +306,7 @@ final class AppViewModel: ObservableObject {
             return
         }
         aiProvider = provider
+        modelCoordinator.provider = provider
         persistSettings()
     }
 
@@ -347,6 +367,32 @@ final class AppViewModel: ObservableObject {
         generationProgress = 0.02
         activeOperation = .generation
         beginGenerationEstimate()
+        let readiness = selectedPaper.readiness
+        let record = GenerationJobRecord(
+            configuration: GenerationConfiguration(
+                boardID: selectedBoard.id,
+                paperID: selectedPaper.id,
+                provider: aiProvider.backendID,
+                model: activeModelName,
+                seed: nil,
+                dryRun: dryRun
+            ),
+            provenance: GenerationProvenance(
+                appVersion: Bundle.main.object(
+                    forInfoDictionaryKey: "CFBundleShortVersionString"
+                ) as? String ?? "development",
+                provider: aiProvider.backendID,
+                model: activeModelName
+            ),
+            state: .pending,
+            artifacts: [],
+            qualification: QualificationSnapshot(
+                engineeringValidated: readiness.engineeringValidated,
+                visuallyCalibrated: readiness.visuallyCalibrated,
+                empiricallyCalibrated: readiness.empiricallyCalibrated
+            )
+        )
+        try? generationCoordinator.begin(record)
         let processOutputFolder = distributionMode == .appStore
             ? AppDefaults.appStoreWorkingFolder()
             : outputFolder
@@ -447,6 +493,7 @@ final class AppViewModel: ObservableObject {
 
     func cancelGeneration() {
         didCancelRun = true
+        try? generationCoordinator.cancel()
         mlxRecoveryState.cancel()
         runningProcess?.terminate()
         if activeOperation == .mlxSetup {
@@ -620,7 +667,8 @@ final class AppViewModel: ObservableObject {
 
     func setNotificationsEnabled(_ enabled: Bool) {
         notificationsEnabled = enabled
-        defaults.set(enabled, forKey: AppStorageKey.notificationsEnabled)
+        settingsStore.notificationsEnabled = enabled
+        settingsStore.save()
         if enabled {
             requestNotificationAuthorization()
         }
@@ -629,7 +677,8 @@ final class AppViewModel: ObservableObject {
     func setDryRun(_ enabled: Bool) {
         guard !isRunning else { return }
         dryRun = enabled
-        defaults.set(enabled, forKey: AppStorageKey.dryRun)
+        settingsStore.dryRun = enabled
+        settingsStore.save()
     }
 
     func startBenchmark() {
@@ -638,6 +687,7 @@ final class AppViewModel: ObservableObject {
         benchmarkMetrics.removeAll()
         benchmarkVerdict = nil
         benchmarkProgress = 0
+        benchmarkCoordinator.begin()
         isBenchmarkRunning = true
         status = "Benchmarking"
         sidebarSelection = .benchmark
@@ -665,18 +715,21 @@ final class AppViewModel: ObservableObject {
         isBenchmarkRunning = false
         benchmarkProgress = nil
         status = "Benchmark cancelled"
+        benchmarkCoordinator.cancel()
     }
 
     private func persistSettings() {
-        defaults.set(aiProvider.rawValue, forKey: AppStorageKey.aiProvider)
-        defaults.set(selectedModel, forKey: AppStorageKey.ollamaModel)
-        defaults.set(openAIModel, forKey: AppStorageKey.openAIModel)
-        defaults.set(anthropicModel, forKey: AppStorageKey.anthropicModel)
-        defaults.set(appleModel, forKey: AppStorageKey.appleModel)
-        defaults.set(dryRun, forKey: AppStorageKey.dryRun)
+        settingsStore.provider = aiProvider
+        settingsStore.ollamaModel = selectedModel
+        settingsStore.openAIModel = openAIModel
+        settingsStore.anthropicModel = anthropicModel
+        settingsStore.appleModel = appleModel
+        settingsStore.dryRun = dryRun
+        settingsStore.notificationsEnabled = notificationsEnabled
+        settingsStore.openAIAPIKey = openAIAPIKey
+        settingsStore.anthropicAPIKey = anthropicAPIKey
+        settingsStore.save()
         defaults.set(outputFolder.path, forKey: AppStorageKey.outputFolderPath)
-        SecretStore.save(openAIAPIKey, account: SecretAccount.openAIAPIKey)
-        SecretStore.save(anthropicAPIKey, account: SecretAccount.anthropicAPIKey)
     }
 
     private static let generationDateFormatter: DateFormatter = {
@@ -736,6 +789,8 @@ final class AppViewModel: ObservableObject {
     }
 
     private func apply(_ event: BackendEvent) {
+        generationCoordinator.receive(event)
+        benchmarkCoordinator.receive(event)
         switch event {
         case let .hello(protocolVersion, _, _):
             if protocolVersion != 2 {
@@ -780,12 +835,14 @@ final class AppViewModel: ObservableObject {
             notifyFailure(for: activeOperation, message: message)
         case let .models(models, message):
             availableModels = models
+            modelCoordinator.receiveModels(models)
             hasLoadedOllamaModels = true
             if let message {
                 status = message
             }
         case let .ollamaStatus(installed, running, command, message):
             ollamaState = OllamaState(installed: installed, running: running, command: command, message: message ?? "")
+            modelCoordinator.receiveOllamaState(ollamaState)
             status = message ?? status
         case let .benchmarkMetric(metric):
             benchmarkMetrics.append(metric)
@@ -837,15 +894,18 @@ final class AppViewModel: ObservableObject {
                 generationProgress = 1.0
                 generationEstimate = nil
                 persistRecentDocuments()
+                try? generationCoordinator.complete()
                 notifySuccess(for: operation)
             } else if !didReceiveBackendError {
                 let message = "Generation failed without a backend error message. Refresh Ollama, check the selected model, then try again. Backend exited with code \(code)."
                 setError(message)
                 notifyFailure(for: operation, message: message)
+                try? generationCoordinator.fail(message: message)
             }
         case let .failure(error):
             setError(error.localizedDescription)
             notifyFailure(for: operation, message: error.localizedDescription)
+            try? generationCoordinator.fail(message: error.localizedDescription)
         }
     }
 
@@ -914,6 +974,12 @@ final class AppViewModel: ObservableObject {
     }
 
     private func restoreRecentDocuments() {
+        try? recentDocumentStore.load()
+        let jobArtifacts = recentDocumentStore.records.flatMap(\.artifacts)
+        if !jobArtifacts.isEmpty {
+            generatedFiles = Array(jobArtifacts.prefix(60))
+            return
+        }
         guard let data = defaults.data(forKey: AppStorageKey.recentDocuments),
               let documents = try? JSONDecoder().decode(
                 [GeneratedFile].self,
