@@ -4,6 +4,8 @@ import argparse
 import importlib
 import importlib.metadata
 import os
+import platform
+import shutil
 import signal
 import subprocess
 import sys
@@ -19,6 +21,9 @@ MLX_PACKAGE_SPECS = (
     "mlx==0.29.3",
     "mlx-metal==0.29.3",
 )
+MINIMUM_MLX_FREE_BYTES = 8 * 1024**3
+SUPPORTED_PYTHON_MIN = (3, 10)
+SUPPORTED_PYTHON_MAX = (3, 13)
 
 
 class MLXSetupError(RuntimeError):
@@ -37,6 +42,43 @@ class MLXModelSetupRequired(MLXSetupError):
 class MLXSetupResult:
     installed_runtime: bool
     model_ready: bool
+
+
+def validate_mlx_setup_environment(
+    *,
+    python_version: tuple[int, int] | None = None,
+    machine: str | None = None,
+    free_bytes: int | None = None,
+) -> None:
+    """Fail before download when the local MLX environment cannot succeed."""
+
+    version = python_version or (sys.version_info.major, sys.version_info.minor)
+    architecture = (machine or platform.machine()).lower()
+    if architecture not in {"arm64", "aarch64"}:
+        raise MLXSetupError(
+            "Apple MLX requires a Mac with Apple silicon. Choose Ollama or a "
+            "hosted provider on this Mac."
+        )
+    if not SUPPORTED_PYTHON_MIN <= version <= SUPPORTED_PYTHON_MAX:
+        raise MLXSetupError(
+            "Apple MLX setup requires Python 3.10 through 3.13 in Paper "
+            "Creator’s managed environment. Reinstall or update the app, then try again."
+        )
+    available = free_bytes if free_bytes is not None else _available_cache_bytes()
+    if available < MINIMUM_MLX_FREE_BYTES:
+        available_gb = max(0, int(available / 1024**3))
+        raise MLXSetupError(
+            "Apple MLX setup needs at least 8 GB of free storage. "
+            f"This Mac currently has about {available_gb} GB available in the model location."
+        )
+
+
+def _available_cache_bytes() -> int:
+    cache = Path(os.environ.get("HF_HOME", "~/.cache/huggingface")).expanduser()
+    probe = cache
+    while not probe.exists() and probe != probe.parent:
+        probe = probe.parent
+    return shutil.disk_usage(probe).free
 
 
 def mlx_runtime_available() -> bool:
@@ -222,6 +264,7 @@ def ensure_mlx_ready(
 def handle_setup_mlx(args: argparse.Namespace) -> int:
     emit_progress("Checking Apple MLX support…", stage="mlx-check", progress=0.05)
     try:
+        validate_mlx_setup_environment()
         ensure_mlx_ready(
             args.model,
             runtime_available=mlx_runtime_available,

@@ -189,6 +189,19 @@ final class CoordinatorTests: XCTestCase {
     }
 
     @MainActor
+    func testCatalogStoreRestoresNonBoardNavigationDestination() throws {
+        let suite = "PaperCreatorCatalogNavigationTests-\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+
+        let store = CatalogStore(subjects: ExamCatalog.subjects, defaults: defaults)
+        store.show(.history)
+
+        let restored = CatalogStore(subjects: ExamCatalog.subjects, defaults: defaults)
+        XCTAssertEqual(restored.sidebarSelection, .history)
+    }
+
+    @MainActor
     func testSettingsStorePersistsPreferencesAndDelegatesSecrets() throws {
         let suite = "PaperCreatorSettingsTests-\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))

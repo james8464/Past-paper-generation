@@ -18,6 +18,7 @@ from Backend.Core.mlx_setup import (
     handle_setup_mlx,
     install_mlx_runtime,
     resolve_local_mlx_model,
+    validate_mlx_setup_environment,
 )
 
 
@@ -237,3 +238,30 @@ def test_runtime_installer_terminates_its_child_when_setup_is_cancelled() -> Non
 
     assert process.terminated is True
     assert signal.getsignal(signal.SIGTERM) == previous_handler
+
+
+def test_mlx_setup_rejects_unsupported_python_with_plain_diagnostic() -> None:
+    with pytest.raises(MLXSetupError, match="Python 3.10 through 3.13"):
+        validate_mlx_setup_environment(
+            python_version=(3, 14),
+            machine="arm64",
+            free_bytes=20 * 1024**3,
+        )
+
+
+def test_mlx_setup_rejects_insufficient_storage_before_installing() -> None:
+    with pytest.raises(MLXSetupError, match="at least 8 GB"):
+        validate_mlx_setup_environment(
+            python_version=(3, 12),
+            machine="arm64",
+            free_bytes=2 * 1024**3,
+        )
+
+
+def test_mlx_setup_rejects_non_apple_silicon_without_package_manager_copy() -> None:
+    with pytest.raises(MLXSetupError, match="Apple silicon"):
+        validate_mlx_setup_environment(
+            python_version=(3, 12),
+            machine="x86_64",
+            free_bytes=20 * 1024**3,
+        )

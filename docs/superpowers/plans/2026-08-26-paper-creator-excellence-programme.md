@@ -277,11 +277,11 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - [x] Add Swift tests for sidebar filtering, favourites, recent combinations, restoration, duplicate configuration, and new-seed generation.
 - [x] Add native sidebar search and sections for Favourites, Subjects, Boards, and Recent Configurations with stable selection and keyboard navigation.
 - [x] Implement a first-paper flow that checks provider availability, recommends the memory-appropriate Ollama model, warns that other models/quantisations may vary, explains readiness levels, and lands in preview after generation.
-- [ ] Preserve the consented MLX installer; add tests for accept/decline, install progress, cancellation, offline failure, insufficient storage, Python mismatch, successful retry, and human-readable diagnostics.
+- [x] Preserve the consented MLX installer; add tests for accept/decline, install progress, cancellation, offline failure, insufficient storage, Python mismatch, successful retry, and human-readable diagnostics.
 - [x] Add TipKit tips and a searchable tutorial using maintained screenshots for model setup, workspace configuration, qualification evidence, preview, export, and troubleshooting.
 - [x] Add PDFKit tabs and Quick Look for all output roles; expose Reveal in Finder, Print, Export, and copy provenance without blocking generation.
 - [x] Add persistent job history and completion actions “Create another with new questions” and “Duplicate configuration”.
-- [ ] Restore unfinished configuration, selected navigation item, window geometry, column visibility, and safe resumable jobs.
+- [x] Restore unfinished configuration, selected navigation item, window geometry, column visibility, and safe resumable jobs.
 - [x] Replace decorative custom controls with native Button, Toggle, Picker, Form, Table, NavigationSplitView, Toolbar, Menu, Sheet, Alert, ProgressView, and standard materials; remove fake glass layers and hard-coded decorative corner radii.
 - [x] Collapse/hide sidebar and inspector at compact widths while preserving one clear primary action and no clipped text.
 - [ ] Label every control and progress state for VoiceOver; establish logical focus order, Full Keyboard Access, command shortcuts, visible focus rings, Increase Contrast, Reduce Transparency, reduced motion, and text-size resilience.

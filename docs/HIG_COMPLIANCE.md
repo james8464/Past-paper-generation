@@ -29,6 +29,12 @@ Progress is determinate whenever the backend provides a fraction, includes a
 time estimate when available, and can be cancelled. A spinner is used only when
 progress is genuinely indeterminate.
 
+Apple MLX setup always starts from an explicit confirmation. Before downloading,
+the backend checks Apple-silicon compatibility, its managed Python version, and
+at least 8 GB of free model storage; failures use recovery copy rather than
+package-manager instructions. Cancelling terminates the installer process group,
+and a later retry starts from clean recovery state.
+
 ## Geometry and visual language
 
 - System typography, semantic colours, SF Symbols, materials, separators, and
@@ -79,6 +85,12 @@ plus Quick Look, Print, Export, and Reveal actions. History is stored as
 versioned atomic JSON records and distinguishes completed, failed, cancelled,
 interrupted, and missing-file jobs. Duplicate Configuration preserves a seed;
 Create Again with New Questions deliberately chooses a different seed.
+
+The selected board, paper, library destination, provider/model configuration,
+output bookmark, split-view visibility, settings pane, and inspector visibility
+survive relaunch. macOS owns window-frame restoration; interrupted jobs are made
+explicit in History and can be safely recreated without silently resuming a
+partially consumed model stream.
 
 ## Accessibility verification
 

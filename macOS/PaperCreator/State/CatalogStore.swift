@@ -7,7 +7,9 @@ final class CatalogStore {
     var searchText = ""
     var selectedBoardID: String
     var selectedPaperID: String
-    var sidebarSelection: SidebarItem?
+    var sidebarSelection: SidebarItem? {
+        didSet { persistNavigation() }
+    }
     private(set) var favoriteIDs: Set<String>
     private(set) var recentConfigurationIDs: [String]
     let subjects: [CatalogSubject]
@@ -34,7 +36,10 @@ final class CatalogStore {
         selectedPaperID = board.papers.contains { $0.id == requestedPaperID }
             ? requestedPaperID ?? board.papers.first?.id ?? "unknown"
             : board.papers.first?.id ?? "unknown"
-        sidebarSelection = .board(board.id)
+        sidebarSelection = Self.restoredNavigation(
+            defaults.string(forKey: AppStorageKey.sidebarSelection),
+            fallbackBoardID: board.id
+        )
     }
 
     var filteredSubjects: [CatalogSubject] {
@@ -105,6 +110,35 @@ final class CatalogStore {
 
     func show(_ item: SidebarItem) {
         sidebarSelection = item
+    }
+
+    private func persistNavigation() {
+        let value: String
+        switch sidebarSelection {
+        case let .board(id): value = "board:\(id)"
+        case .benchmark: value = "benchmark"
+        case .documents: value = "documents"
+        case .history: value = "history"
+        case nil: value = ""
+        }
+        defaults.set(value, forKey: AppStorageKey.sidebarSelection)
+    }
+
+    private static func restoredNavigation(
+        _ value: String?,
+        fallbackBoardID: String
+    ) -> SidebarItem {
+        switch value {
+        case "benchmark": return .benchmark
+        case "documents": return .documents
+        case "history": return .history
+        case let value? where value.hasPrefix("board:"):
+            let id = String(value.dropFirst("board:".count))
+            return ExamCatalog.board(id: id).map { .board($0.id) }
+                ?? .board(fallbackBoardID)
+        default:
+            return .board(fallbackBoardID)
+        }
     }
 
     private func persistSelection() {
