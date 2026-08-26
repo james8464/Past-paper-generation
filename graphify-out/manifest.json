@@ -750,8 +750,8 @@
     "semantic_hash": ""
   },
   "tests/test_paper_fidelity_audit.py": {
-    "mtime": 1787743651.6504858,
-    "ast_hash": "7ad5c05007ea82ac29946eefe2045df7",
+    "mtime": 1787754529.5711758,
+    "ast_hash": "1092c2d542bee0310a65e56caba719df",
     "semantic_hash": ""
   },
   "tests/test_reference_corpus.py": {
@@ -805,8 +805,8 @@
     "semantic_hash": "e45e04ff582c35b5a4022b8749969c96"
   },
   "tools/paper_fidelity_audit.py": {
-    "mtime": 1787744886.1845286,
-    "ast_hash": "587692ff94ff4090823377c5a1962d83",
+    "mtime": 1787754542.2758577,
+    "ast_hash": "ab01f54a29afc5ea4e34092b26c8387d",
     "semantic_hash": ""
   },
   "tools/reference_corpus.py": {

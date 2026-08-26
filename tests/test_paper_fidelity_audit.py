@@ -11,6 +11,7 @@ from tools.paper_fidelity_audit import (
     PageRoleMatcher,
     _compact_profile,
     _document_page_roles,
+    _font_family,
     _generated_document,
     _geometry_scores,
     _grid_dimensions,
@@ -25,6 +26,11 @@ from tools.paper_fidelity_audit import (
     write_contact_sheets,
     write_worst_page_sheets,
 )
+
+
+def test_open_metric_compatible_fonts_match_reference_families() -> None:
+    assert _font_family("Arimo-Bold") == _font_family("Arial-BoldMT")
+    assert _font_family("Tinos-Italic") == _font_family("TimesNewRomanPS-ItalicMT")
 
 
 def _threshold_report(

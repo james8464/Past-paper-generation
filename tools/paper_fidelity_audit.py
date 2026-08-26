@@ -1264,7 +1264,12 @@ def _font_family(name: str) -> str:
     value = name.casefold().replace("psmt", "").replace("mt", "")
     for suffix in ("-bolditalic", "-bold", "-italic", "-regular", "-0", "-1"):
         value = value.replace(suffix, "")
-    return value.replace(" ", "")
+    value = value.replace(" ", "")
+    return {
+        "arimo": "arial",
+        "tinos": "timesnewroman",
+        "timesnewromanps": "timesnewroman",
+    }.get(value, value)
 
 
 def audit(
