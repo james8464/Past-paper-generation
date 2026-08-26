@@ -11,6 +11,7 @@ from aqaecongen.syllabus import load_syllabus
 from pypdf import PdfReader
 
 from Backend.Core.exam_blueprints import validate_generated_paper, validate_rule
+from Backend.Core.pdf_validation import extract_pdf_evidence
 
 ROOT = Path(__file__).resolve().parents[1]
 SYLLABUS = load_syllabus(ROOT / "data" / "syllabus.json")
@@ -130,6 +131,11 @@ def test_each_package_renders_readable_pdfs(tmp_path: Path) -> None:
             assert "A-level" in cover
             assert "economics" in cover.casefold()
         assert len(PdfReader(paths["question_paper"]).pages) == (44 if paper == "3" else 8)
+        print_evidence = extract_pdf_evidence(
+            paths["question_paper"],
+            non_printable_margin_mm=5.0,
+        )
+        assert all(page["safe_print"] for page in print_evidence["pages"])
         assert len(PdfReader(paths["mark_scheme"]).pages) == (
             11 if paper == "3" else 21
         )

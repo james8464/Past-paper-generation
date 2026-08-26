@@ -1348,7 +1348,7 @@ def _page_chrome(canvas, doc, paper_code: str, document_type: str) -> None:
                         "Turn over >",
                     )
         canvas.setFont(FONT, 6.5)
-        canvas.drawString(14 * mm, 5 * mm, f"PRACTICE/{paper_code}")
+        canvas.drawString(14 * mm, 7 * mm, f"PRACTICE/{paper_code}")
         canvas.restoreState()
         return
     canvas.setStrokeColor(colors.HexColor("#aaaaaa"))
