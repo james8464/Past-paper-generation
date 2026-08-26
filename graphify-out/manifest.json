@@ -1438,5 +1438,15 @@
     "mtime": 1787739308.9563198,
     "ast_hash": "7fc72f80381bef205ae9969777dd5226",
     "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-08-26-paper-creator-excellence-programme.md": {
+    "mtime": 1787741291.296659,
+    "ast_hash": "fa7f5f1572999655bd8f9ba9f4b89cb3",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md": {
+    "mtime": 1787741067.1073103,
+    "ast_hash": "48e9d7549940fbeecc096b0f7bd7b19b",
+    "semantic_hash": ""
   }
 }
