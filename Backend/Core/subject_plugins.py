@@ -111,6 +111,12 @@ def _normalise_identifier(identifier: str) -> str:
 
 # Imported after the protocol and registry exist so subject engines can reuse
 # SubjectValidation without a module-initialisation cycle.
+from Backend.Core.subjects.biology import BiologyPlugin  # noqa: E402
+from Backend.Core.subjects.chemistry import ChemistryPlugin  # noqa: E402
 from Backend.Core.subjects.mathematics import MathematicsPlugin  # noqa: E402
+from Backend.Core.subjects.physics import PhysicsPlugin  # noqa: E402
 
 _PLUGINS[MathematicsPlugin.id] = MathematicsPlugin()
+_PLUGINS[BiologyPlugin.id] = BiologyPlugin()
+_PLUGINS[ChemistryPlugin.id] = ChemistryPlugin()
+_PLUGINS[PhysicsPlugin.id] = PhysicsPlugin()

@@ -1630,8 +1630,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/subject_plugins.py": {
-    "mtime": 1787772957.9037788,
-    "ast_hash": "deb2db0f24094e5d349c40e7bfa9d108",
+    "mtime": 1787773137.5976987,
+    "ast_hash": "a48a2e72483deb1365af9fa0377354ce",
     "semantic_hash": ""
   },
   "Resources/board-profiles/aqa.json": {
@@ -1700,8 +1700,8 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1787772991.8282082,
-    "ast_hash": "9b54d65073203eb90843decf7b80b56c",
+    "mtime": 1787773278.134757,
+    "ast_hash": "e0360e0c2b768684e72473704101e24a",
     "semantic_hash": ""
   },
   "tests/test_repository_hygiene.py": {
@@ -1762,6 +1762,36 @@
   "tests/test_mathematics_subject.py": {
     "mtime": 1787772933.3205597,
     "ast_hash": "1dc09c9f72cda55d551edc260c6d7e0c",
+    "semantic_hash": ""
+  },
+  "Backend/Core/overlay/science.py": {
+    "mtime": 1787773242.3961174,
+    "ast_hash": "9cad17db0beb4948da7b0c7c05b99f01",
+    "semantic_hash": ""
+  },
+  "Backend/Core/subjects/biology.py": {
+    "mtime": 1787773116.86818,
+    "ast_hash": "e9952b74a3ee564229e7eda207e6211b",
+    "semantic_hash": ""
+  },
+  "Backend/Core/subjects/chemistry.py": {
+    "mtime": 1787773160.7451236,
+    "ast_hash": "b5c4eecb31c925a25e74c3b8342b5921",
+    "semantic_hash": ""
+  },
+  "Backend/Core/subjects/physics.py": {
+    "mtime": 1787773137.598234,
+    "ast_hash": "fd282ca62cad6139ef9cc1167d126ad8",
+    "semantic_hash": ""
+  },
+  "tests/test_science_overlay.py": {
+    "mtime": 1787773264.8524604,
+    "ast_hash": "1e14d95cda336814ccaa6090f445ee17",
+    "semantic_hash": ""
+  },
+  "tests/test_science_subjects.py": {
+    "mtime": 1787773147.6627984,
+    "ast_hash": "eb07f67fea1826e9830cc755a903fd66",
     "semantic_hash": ""
   }
 }
