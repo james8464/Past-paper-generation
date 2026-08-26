@@ -78,6 +78,7 @@ class IndependentSolver:
                 "structured_mark_scheme",
                 "marking",
                 "indicative_content",
+                "correct_choice",
             }
         }
         result: dict[str, Any] = {}
@@ -86,7 +87,10 @@ class IndependentSolver:
                 self.client.generate_json(
                     "Independently solve this UK A-level assessment item. Do not "
                     "infer or reproduce a draft mark scheme. Recompute every numeric "
-                    "result and cite only the supplied evidence IDs. Return JSON with "
+                    "result and cite only the supplied evidence IDs; when sources is "
+                    "empty, evidence_ids must be an empty array. For multiple choice, "
+                    "return the complete option text rather than its number or letter. "
+                    "Return JSON with "
                     "answer, steps, mark_points, evidence_ids, alternatives, "
                     "partial_credit_boundaries and follow_through_rules.\n"
                     + json.dumps(
@@ -107,7 +111,11 @@ class IndependentSolver:
             numeric_results["result"] = numeric
             result["answer"] = _format_number(numeric)
 
-        evidence_ids = _string_list(result.get("evidence_ids"))
+        evidence_ids = [
+            evidence_id
+            for evidence_id in _string_list(result.get("evidence_ids"))
+            if evidence_id != item_id
+        ]
         unavailable = set(evidence_ids) - allowed_source_ids
         if unavailable:
             raise ValueError(
@@ -116,8 +124,10 @@ class IndependentSolver:
             )
 
         answer = str(result.get("answer", "")).strip()
-        if not answer:
-            choices = raw_item.get("choices")
+        choices = raw_item.get("choices")
+        if raw_item.get("kind") == "multiple_choice" and isinstance(choices, list):
+            answer = _normalise_choice_answer(answer, choices)
+        if not answer and self.client is None:
             correct = raw_item.get("correct_choice")
             if (
                 isinstance(choices, list)
@@ -422,3 +432,30 @@ def _normalise(value: str) -> str:
 
 def _format_number(value: float) -> str:
     return str(int(value)) if value.is_integer() else f"{value:.12g}"
+
+
+def _normalise_choice_answer(answer: str, choices: list[Any]) -> str:
+    options = [str(choice).strip() for choice in choices]
+    if not answer or not options or any(not option for option in options):
+        return answer
+    normalised_answer = _normalise(answer)
+    exact = [option for option in options if _normalise(option) == normalised_answer]
+    if len(exact) == 1:
+        return exact[0]
+    contained = [
+        option
+        for option in options
+        if _normalise(option) and _normalise(option) in normalised_answer
+    ]
+    if len(contained) == 1:
+        return contained[0]
+    label = re.fullmatch(r"(?:option\s*)?([a-d])", normalised_answer)
+    if label:
+        index = ord(label.group(1)) - ord("a")
+        if index < len(options):
+            return options[index]
+    if normalised_answer.isdigit():
+        index = int(normalised_answer) - 1
+        if 0 <= index < len(options):
+            return options[index]
+    return answer

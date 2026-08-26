@@ -220,3 +220,39 @@ def test_one_mark_multiple_choice_ignores_uncredited_solver_explanation() -> Non
 
     assert solution.mark_points == ["Purchases journal"]
     assert result.passed, result.issues
+
+
+def test_multiple_choice_solver_hides_key_and_normalises_option_number() -> None:
+    class Client:
+        prompt = ""
+
+        def generate_json(self, prompt: str) -> dict[str, object]:
+            self.prompt = prompt
+            return {
+                "answer": "1",
+                "mark_points": ["Use the first option"],
+                "evidence_ids": ["q-mcq"],
+            }
+
+    client = Client()
+    item = {
+        "id": "q-mcq",
+        "marks": 1,
+        "kind": "multiple_choice",
+        "prompt": "Which journal records credit purchases?",
+        "choices": [
+            "Purchases journal",
+            "Sales journal",
+            "Cash book",
+            "General journal",
+        ],
+        "correct_choice": 0,
+        "assessment_objectives": {"AO1": 1},
+    }
+
+    solution = IndependentSolver(client).solve(item, [])
+
+    assert '"correct_choice"' not in client.prompt
+    assert solution.answer == "Purchases journal"
+    assert solution.mark_points == ["Purchases journal"]
+    assert solution.evidence_ids == []
