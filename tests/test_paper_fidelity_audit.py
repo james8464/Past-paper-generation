@@ -232,6 +232,23 @@ def test_role_matching_produces_unique_reference_pairs() -> None:
     ]
 
 
+def test_role_matching_reserves_exact_roles_before_fallback_matching() -> None:
+    generated = [
+        PageEvidence(0, "ruled_continuation", (0.1, 0.1, 0.9, 0.9)),
+        PageEvidence(1, "additional_answer", (0.1, 0.1, 0.9, 0.9)),
+    ]
+    references = [
+        PageEvidence(0, "additional_answer", (0.1, 0.1, 0.9, 0.9)),
+        PageEvidence(1, "question_content", (0.1, 0.1, 0.9, 0.9)),
+    ]
+
+    matches = _role_matches(generated, references)
+    by_generated = {match.generated_index: match for match in matches}
+
+    assert by_generated[1].reference_index == 0
+    assert by_generated[0].reference_index == 1
+
+
 def test_reference_peers_select_same_paper_across_at_least_three_years(
     tmp_path: Path,
 ) -> None:

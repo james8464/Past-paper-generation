@@ -305,18 +305,33 @@ def _role_matches(
 ) -> list[RoleMatch]:
     available = list(references)
     matches: list[RoleMatch] = []
-    for page in generated:
-        if not available:
-            break
+    matched_generated: set[int] = set()
+
+    def assign(page: PageEvidence) -> None:
+        nonlocal available
         match = PageRoleMatcher.match(page, available)
         matches.append(match)
+        matched_generated.add(page.index)
         available = [
             item
             for item in available
             if (item.source, item.index)
             != (match.reference_source, match.reference_index)
         ]
-    return matches
+
+    # Reserve scarce semantic roles before pages without a same-role reference
+    # are allowed to use geometry-only fallback matches.
+    for page in generated:
+        if not available:
+            break
+        if any(reference.role == page.role for reference in available):
+            assign(page)
+    for page in generated:
+        if not available:
+            break
+        if page.index not in matched_generated:
+            assign(page)
+    return sorted(matches, key=lambda item: item.generated_index)
 
 
 def _content_box_similarity(
