@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "policies": [
+    {
+      "id": "aqa-standard-4-level",
+      "board": "aqa",
+      "maximum_mark": 20,
+      "best_fit": true,
+      "levels": [
+        {"level": 0, "minimum_mark": 0, "maximum_mark": 0, "minimum_coverage": 0.0, "descriptor": "No creditworthy material."},
+        {"level": 1, "minimum_mark": 1, "maximum_mark": 5, "minimum_coverage": 0.01, "descriptor": "Limited, fragmented knowledge or application."},
+        {"level": 2, "minimum_mark": 6, "maximum_mark": 10, "minimum_coverage": 0.35, "descriptor": "Reasonable knowledge with some developed analysis."},
+        {"level": 3, "minimum_mark": 11, "maximum_mark": 15, "minimum_coverage": 0.6, "descriptor": "Clear, developed and mostly supported analysis."},
+        {"level": 4, "minimum_mark": 16, "maximum_mark": 20, "minimum_coverage": 0.85, "descriptor": "Sustained analysis and a fully supported judgement."}
+      ],
+      "misconception_cap_level": 1
+    },
+    {
+      "id": "ocr-standard-4-level",
+      "board": "ocr",
+      "maximum_mark": 20,
+      "best_fit": true,
+      "levels": [
+        {"level": 0, "minimum_mark": 0, "maximum_mark": 0, "minimum_coverage": 0.0, "descriptor": "No response worthy of credit."},
+        {"level": 1, "minimum_mark": 1, "maximum_mark": 5, "minimum_coverage": 0.01, "descriptor": "Limited and largely undeveloped response."},
+        {"level": 2, "minimum_mark": 6, "maximum_mark": 10, "minimum_coverage": 0.35, "descriptor": "Some developed explanation and application."},
+        {"level": 3, "minimum_mark": 11, "maximum_mark": 15, "minimum_coverage": 0.6, "descriptor": "Good analysis with a supported line of reasoning."},
+        {"level": 4, "minimum_mark": 16, "maximum_mark": 20, "minimum_coverage": 0.85, "descriptor": "Comprehensive, coherent and evaluative response."}
+      ],
+      "misconception_cap_level": 1
+    },
+    {
+      "id": "pearson-edexcel-standard-4-level",
+      "board": "pearson-edexcel",
+      "maximum_mark": 20,
+      "best_fit": true,
+      "levels": [
+        {"level": 0, "minimum_mark": 0, "maximum_mark": 0, "minimum_coverage": 0.0, "descriptor": "No rewardable material."},
+        {"level": 1, "minimum_mark": 1, "maximum_mark": 5, "minimum_coverage": 0.01, "descriptor": "Isolated elements of knowledge and understanding."},
+        {"level": 2, "minimum_mark": 6, "maximum_mark": 10, "minimum_coverage": 0.35, "descriptor": "Partial application with some chains of reasoning."},
+        {"level": 3, "minimum_mark": 11, "maximum_mark": 15, "minimum_coverage": 0.6, "descriptor": "Developed analysis and an attempted judgement."},
+        {"level": 4, "minimum_mark": 16, "maximum_mark": 20, "minimum_coverage": 0.85, "descriptor": "Balanced evaluation and a substantiated judgement."}
+      ],
+      "misconception_cap_level": 1
+    },
+    {
+      "id": "cambridge-standard-4-level",
+      "board": "cambridge-international",
+      "maximum_mark": 20,
+      "best_fit": true,
+      "levels": [
+        {"level": 0, "minimum_mark": 0, "maximum_mark": 0, "minimum_coverage": 0.0, "descriptor": "No creditable response."},
+        {"level": 1, "minimum_mark": 1, "maximum_mark": 5, "minimum_coverage": 0.01, "descriptor": "Basic knowledge with little development."},
+        {"level": 2, "minimum_mark": 6, "maximum_mark": 10, "minimum_coverage": 0.35, "descriptor": "Sound knowledge and partially developed reasoning."},
+        {"level": 3, "minimum_mark": 11, "maximum_mark": 15, "minimum_coverage": 0.6, "descriptor": "Detailed analysis with relevant evaluation."},
+        {"level": 4, "minimum_mark": 16, "maximum_mark": 20, "minimum_coverage": 0.85, "descriptor": "Coherent, perceptive analysis and justified evaluation."}
+      ],
+      "misconception_cap_level": 1
+    }
+  ]
+}

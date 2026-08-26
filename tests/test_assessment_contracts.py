@@ -31,8 +31,7 @@ def test_legacy_question_hydrates_a_contract_without_mutation() -> None:
         command_word="calculate",
         topic_id="accounting",
         prompt=(
-            "Calculate contribution when revenue is £225 and variable cost "
-            "is £169."
+            "Calculate contribution when revenue is £225 and variable cost is £169."
         ),
         mark_scheme=["£56"],
         assessment_objectives={"AO2": 4},
@@ -44,8 +43,7 @@ def test_legacy_question_hydrates_a_contract_without_mutation() -> None:
     assert contract.marks == 4
     assert [value.text for value in contract.numeric_values] == ["£225", "£169"]
     assert all(
-        value.role is NumericRole.ASSESSMENT_DATA
-        for value in contract.numeric_values
+        value.role is NumericRole.ASSESSMENT_DATA for value in contract.numeric_values
     )
     assert question.contract is None
 
@@ -85,6 +83,31 @@ def test_contract_rejects_ao_marks_that_do_not_match_item_marks() -> None:
             marks=4,
             assessment_objectives={"AO1": 1, "AO2": 2},
         )
+
+
+def test_contract_captures_answering_and_partial_credit_requirements() -> None:
+    contract = AssessmentContract(
+        item_id="q1",
+        marks=6,
+        assessment_objectives={"AO2": 3, "AO3": 3},
+        expected_answer_form="calculation_with_reasoning",
+        completion_time_minutes=8,
+        prerequisite_knowledge=["contribution", "break-even"],
+        misconception_targets=["treating fixed cost as variable"],
+        observable_mark_points=["correct formula", "valid conclusion"],
+        valid_alternatives=["equivalent algebraic method"],
+        partial_credit_boundaries=["method mark before arithmetic accuracy"],
+        common_errors=["reverses subtraction"],
+        follow_through_rules=["carry forward the candidate's contribution"],
+        level_policy_id="aqa-standard-3-band",
+    )
+
+    assert contract.completion_time_minutes == 8
+    assert contract.observable_mark_points == [
+        "correct formula",
+        "valid conclusion",
+    ]
+    assert contract.level_policy_id == "aqa-standard-3-band"
 
 
 def test_graph_contract_requires_matching_labels_and_values() -> None:
@@ -279,7 +302,9 @@ def test_undeclared_generated_quantity_is_rejected() -> None:
     )
 
     with pytest.raises(ValueError, match="immutable numeric"):
-        validate_candidate_contract("Plot the result", "Plot the result for 2027", contract)
+        validate_candidate_contract(
+            "Plot the result", "Plot the result for 2027", contract
+        )
 
 
 @pytest.mark.parametrize(

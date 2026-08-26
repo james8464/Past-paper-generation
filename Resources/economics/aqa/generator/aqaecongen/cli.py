@@ -4,7 +4,15 @@ import argparse
 from collections.abc import Callable
 from pathlib import Path
 
-from Backend.Core.ai_assessment import generate_unique_paper
+from aqaecongen.configs import load_rule
+from aqaecongen.generator import build_paper
+from aqaecongen.render_pdf import (
+    render_mark_scheme,
+    render_question_paper,
+    render_source_booklet,
+)
+from aqaecongen.syllabus import load_syllabus
+from Backend.Core.ai_assessment import GenerationPolicy, generate_unique_paper
 from Backend.Core.assessment_checkpoints import (
     AssessmentCheckpointStore,
     identity_for_blueprint,
@@ -13,10 +21,6 @@ from Backend.Core.assessment_package import write_assessment_package
 from Backend.Core.model_recommendations import default_ollama_model
 from Backend.Core.providers import HostedLLMClient
 from Backend.Core.render_transaction import render_pdf_atomically
-from aqaecongen.configs import load_rule
-from aqaecongen.generator import build_paper
-from aqaecongen.render_pdf import render_mark_scheme, render_question_paper, render_source_booklet
-from aqaecongen.syllabus import load_syllabus
 
 
 def generate_package(
@@ -69,6 +73,7 @@ def generate_package(
             subject="AQA A-level Economics",
             progress=progress,
             checkpoint_store=checkpoint_store,
+            policy=GenerationPolicy(require_independent_solution=True),
         )
     else:
         emit("Using the deterministic blueprint preview")
@@ -116,7 +121,9 @@ def generate_package(
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Generate an independent AQA 7136 practice paper.")
+    parser = argparse.ArgumentParser(
+        description="Generate an independent AQA 7136 practice paper."
+    )
     parser.add_argument("--paper", required=True)
     parser.add_argument("--syllabus", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)

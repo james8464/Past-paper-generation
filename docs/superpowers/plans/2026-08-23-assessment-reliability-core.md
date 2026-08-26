@@ -47,7 +47,7 @@
 - Consumes: existing `GeneratedQuestion.authoring_context`, marks, AO allocation, prompt, and `source_references`.
 - Produces: `NumericRole`, `NumericValueContract`, `GeneratedNumericField`, `EvidenceRecord`, `GraphContract`, `AssessmentContract`, and `contract_for_question(question: GeneratedQuestion) -> AssessmentContract`.
 
-- [ ] **Step 1: Write failing compatibility and validation tests**
+- [x] **Step 1: Write failing compatibility and validation tests**
 
 ```python
 from Backend.Core.assessment_contracts import (
@@ -92,13 +92,13 @@ def test_contract_rejects_unknown_evidence_reference() -> None:
         contract.validate_evidence_ids(["extract-b"])
 ```
 
-- [ ] **Step 2: Run the focused tests and confirm missing-module failures**
+- [x] **Step 2: Run the focused tests and confirm missing-module failures**
 
 Run: `.venv/bin/pytest tests/test_assessment_contracts.py tests/test_exam_blueprints.py -q`
 
 Expected: collection fails because `Backend.Core.assessment_contracts` does not exist.
 
-- [ ] **Step 3: Implement immutable Pydantic contracts and legacy hydration**
+- [x] **Step 3: Implement immutable Pydantic contracts and legacy hydration**
 
 ```python
 class NumericRole(StrEnum):
@@ -148,13 +148,13 @@ class AssessmentContract(BaseModel):
 
 Add `contract: AssessmentContract | None = None` to `GeneratedQuestion`, with a forward-safe import from `assessment_contracts`. `contract_for_question` returns the explicit contract when present and otherwise hydrates assessment-data values from the existing prompt and evidence IDs from `source_references`.
 
-- [ ] **Step 4: Run focused tests**
+- [x] **Step 4: Run focused tests**
 
 Run: `.venv/bin/pytest tests/test_assessment_contracts.py tests/test_exam_blueprints.py -q`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit the typed contract foundation**
+- [x] **Step 5: Commit the typed contract foundation**
 
 ```bash
 git add Backend/Core/assessment_contracts.py Backend/Core/exam_blueprints.py tests/test_assessment_contracts.py tests/test_exam_blueprints.py
@@ -173,7 +173,7 @@ git commit -m "Add typed assessment item contracts"
 - Consumes: `AssessmentContract`, original prompt, candidate prompt, candidate evidence IDs.
 - Produces: `validate_candidate_contract(original: str, candidate: str, contract: AssessmentContract, generated_values: Mapping[str, float] | None = None) -> None` and `ReviewResult`.
 
-- [ ] **Step 1: Add regressions for the four numeric failure modes**
+- [x] **Step 1: Add regressions for the four numeric failure modes**
 
 ```python
 def test_unordered_assessment_values_compare_as_a_multiset() -> None:
@@ -199,13 +199,13 @@ def test_declared_generated_graph_value_is_range_checked() -> None:
         validate_candidate_contract("Plot the result", "Plot the result for 2038", contract, {"year": 2038})
 ```
 
-- [ ] **Step 2: Run the new tests and verify position-sensitive behavior fails**
+- [x] **Step 2: Run the new tests and verify position-sensitive behavior fails**
 
 Run: `.venv/bin/pytest tests/test_assessment_contracts.py tests/test_ai_assessment.py -q`
 
 Expected: reordered values and line-label cases fail under the current tuple comparison.
 
-- [ ] **Step 3: Implement role-aware comparison**
+- [x] **Step 3: Implement role-aware comparison**
 
 ```python
 def validate_candidate_contract(
@@ -235,7 +235,7 @@ def validate_candidate_contract(
 
 Classification removes explicit item numbers, bracketed mark labels, source labels, and leading two-digit pseudocode line labels before comparison. Do not discard quantities merely because they resemble years; dates are excluded only when their role is declared.
 
-- [ ] **Step 4: Return structured review diagnostics**
+- [x] **Step 4: Return structured review diagnostics**
 
 ```python
 class ReviewResult(BaseModel):
@@ -253,13 +253,13 @@ class ReviewResult(BaseModel):
 
 Change `require_independent_review` to return `ReviewResult`; it still raises when the response schema is invalid, but a valid rejection becomes structured repair input.
 
-- [ ] **Step 5: Run focused and core suites**
+- [x] **Step 5: Run focused and core suites**
 
 Run: `.venv/bin/pytest tests/test_assessment_contracts.py tests/test_ai_assessment.py tests/test_exam_blueprints.py -q`
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit role-aware validation**
+- [x] **Step 6: Commit role-aware validation**
 
 ```bash
 git add Backend/Core/assessment_quality.py Backend/Core/model_review.py tests/test_assessment_contracts.py tests/test_ai_assessment.py
@@ -276,7 +276,7 @@ git commit -m "Validate generated items with numeric roles"
 - Consumes: `AssessmentLLMClient`, `_Task`, `AssessmentContract`, `GenerationPolicy`.
 - Produces: `_generate_item_transaction(task, *, client, subject, seed, policy, progress, accepted_prompts) -> GeneratedQuestion` and `_repair_prompt(...) -> str`.
 
-- [ ] **Step 1: Write a test proving one bad item does not regenerate accepted items**
+- [x] **Step 1: Write a test proving one bad item does not regenerate accepted items**
 
 ```python
 def test_failed_second_item_does_not_regenerate_first_item() -> None:
@@ -293,7 +293,7 @@ def test_failed_second_item_does_not_regenerate_first_item() -> None:
     assert client.generation_ids == ["0/0/0", "0/0/1", "0/0/1"]
 ```
 
-- [ ] **Step 2: Write a test proving repair prompts contain only structured diagnostics**
+- [x] **Step 2: Write a test proving repair prompts contain only structured diagnostics**
 
 ```python
 def test_repair_prompt_targets_rejected_fields() -> None:
@@ -303,13 +303,13 @@ def test_repair_prompt_targets_rejected_fields() -> None:
     assert "other paper items" not in prompt.casefold()
 ```
 
-- [ ] **Step 3: Run the tests and confirm batch orchestration regenerates work**
+- [x] **Step 3: Run the tests and confirm batch orchestration regenerates work**
 
 Run: `.venv/bin/pytest tests/test_ai_assessment.py -q`
 
 Expected: new item-transaction tests fail because `_generate_item_transaction` and `_repair_prompt` do not exist.
 
-- [ ] **Step 4: Implement the item transaction loop**
+- [x] **Step 4: Implement the item transaction loop**
 
 ```python
 def _generate_item_transaction(...):
@@ -333,17 +333,17 @@ def _generate_item_transaction(...):
 
 Keep remote concurrency by running independent item transactions in the existing executor. Local Ollama runs serially, minimizing context and making retry cost proportional to one item.
 
-- [ ] **Step 5: Add independent-review identity protection**
+- [x] **Step 5: Add independent-review identity protection**
 
 Hash the canonical candidate and review payload. Reject a review that echoes candidate fields instead of returning the review schema, and require the review prompt to omit withheld draft prose. Preserve the existing similarity guard for replacement text.
 
-- [ ] **Step 6: Run AI and family unit tests**
+- [x] **Step 6: Run AI and family unit tests**
 
 Run: `.venv/bin/pytest tests/test_ai_assessment.py Resources/economics/edexcel-a/generator/tests/test_ollama_generation.py Resources/computer-science/aqa/generator/tests/test_paper1.py -q`
 
 Expected: PASS.
 
-- [ ] **Step 7: Commit item-scoped repair**
+- [x] **Step 7: Commit item-scoped repair**
 
 ```bash
 git add Backend/Core/ai_assessment.py tests/test_ai_assessment.py
@@ -362,7 +362,7 @@ git commit -m "Review and repair AI questions individually"
 - Consumes: paper identity, seed, provider, model, prompt version, task key, and accepted `GeneratedQuestion`.
 - Produces: `CheckpointIdentity`, `AssessmentCheckpointStore.load_item(key)`, `.save_item(key, question)`, `.clear()`, and `generate_unique_paper(..., checkpoint_store: AssessmentCheckpointStore | None = None)`.
 
-- [ ] **Step 1: Write atomicity and identity tests**
+- [x] **Step 1: Write atomicity and identity tests**
 
 ```python
 def test_checkpoint_round_trips_an_accepted_question(tmp_path: Path) -> None:
@@ -384,13 +384,13 @@ def test_checkpoint_write_is_atomic(tmp_path: Path, monkeypatch: pytest.MonkeyPa
     json.loads((tmp_path / "job.json").read_text())
 ```
 
-- [ ] **Step 2: Run checkpoint tests and verify missing-module failure**
+- [x] **Step 2: Run checkpoint tests and verify missing-module failure**
 
 Run: `.venv/bin/pytest tests/test_assessment_checkpoints.py -q`
 
 Expected: collection fails because `assessment_checkpoints` does not exist.
 
-- [ ] **Step 3: Implement the versioned atomic store**
+- [x] **Step 3: Implement the versioned atomic store**
 
 ```python
 class CheckpointIdentity(BaseModel):
@@ -418,17 +418,17 @@ class AssessmentCheckpointStore:
 
 Validate identity field by field and report the mismatched name. Use `os.fsync` before replacement so an accepted item survives abrupt termination.
 
-- [ ] **Step 4: Resume accepted items before model calls**
+- [x] **Step 4: Resume accepted items before model calls**
 
 In `generate_unique_paper`, load each task key. Revalidate the stored item against its current rule and contract; use it only if valid. Save immediately after independent review and before the next item begins.
 
-- [ ] **Step 5: Test resume without repeated calls**
+- [x] **Step 5: Test resume without repeated calls**
 
 Run: `.venv/bin/pytest tests/test_assessment_checkpoints.py tests/test_ai_assessment.py -q`
 
 Expected: PASS, including a test where a second `generate_unique_paper` call makes zero model requests for already accepted items.
 
-- [ ] **Step 6: Commit checkpoint support**
+- [x] **Step 6: Commit checkpoint support**
 
 ```bash
 git add Backend/Core/assessment_checkpoints.py Backend/Core/ai_assessment.py tests/test_assessment_checkpoints.py tests/test_ai_assessment.py
@@ -453,7 +453,7 @@ git commit -m "Checkpoint accepted assessment items"
 - Consumes: optional `checkpoint_store`, item-stage updates, existing JSON event protocol v2.
 - Produces: `GenerationUpdate(stage, message, item_id, completed_units, total_units, attempt)` and progress event fields `item_id`, `attempt`, `completed_units`, `total_units`, and monotonic `progress`.
 
-- [ ] **Step 1: Add protocol tests for item progress and persistent checkpoint location**
+- [x] **Step 1: Add protocol tests for item progress and persistent checkpoint location**
 
 ```python
 def test_progress_event_contains_stable_item_units() -> None:
@@ -469,13 +469,13 @@ def test_generation_passes_checkpoint_outside_transaction_staging(tmp_path: Path
     assert captured["checkpoint_path"].parent == tmp_path / ".papercreator-checkpoints"
 ```
 
-- [ ] **Step 2: Run backend tests and confirm missing structured-update behavior**
+- [x] **Step 2: Run backend tests and confirm missing structured-update behavior**
 
 Run: `.venv/bin/pytest tests/test_app_backend.py -q`
 
 Expected: new assertions fail because progress is currently inferred from message regexes.
 
-- [ ] **Step 3: Implement structured progress conversion**
+- [x] **Step 3: Implement structured progress conversion**
 
 ```python
 @dataclass(frozen=True)
@@ -494,21 +494,21 @@ class GenerationUpdate:
 
 Keep the string callback adapter for legacy generators, but all migrated AI paths emit `GenerationUpdate` directly.
 
-- [ ] **Step 4: Create and pass a stable checkpoint path**
+- [x] **Step 4: Create and pass a stable checkpoint path**
 
 Derive the filename from subject, paper, seed, provider, and model using a SHA-256 suffix. Store it under `<output>/.papercreator-checkpoints/`. Add `checkpoint_path` to `_invoke_plugin` candidate arguments and to each generator entry-point signature. Each family constructs `AssessmentCheckpointStore` using its fully built blueprint hash, then passes it to `generate_unique_paper`.
 
-- [ ] **Step 5: Preserve successful checkpoints on cancellation and remove them after publication**
+- [x] **Step 5: Preserve successful checkpoints on cancellation and remove them after publication**
 
 `handle_generate` deletes a checkpoint only after `finalize_generated_documents` and `emit_generated_files` succeed. Cancellation and generation failure leave it available for resume. Add a `resumed` progress event when at least one item loads.
 
-- [ ] **Step 6: Run backend and all family dry-run tests**
+- [x] **Step 6: Run backend and all family dry-run tests**
 
 Run: `.venv/bin/pytest tests/test_app_backend.py Resources/*/*/generator/tests -q`
 
 Expected: PASS.
 
-- [ ] **Step 7: Commit job integration**
+- [x] **Step 7: Commit job integration**
 
 ```bash
 git add Backend/Core/events.py Backend/Core/generation.py tests/test_app_backend.py Resources/*/*/generator/*/cli.py
@@ -530,7 +530,7 @@ git commit -m "Resume generation with truthful item progress"
 - Consumes: typed contracts from Tasks 1-2.
 - Produces: explicit immutable/generated numeric roles and evidence IDs for every previously failing item family.
 
-- [ ] **Step 1: Encode the accounting identity regression**
+- [x] **Step 1: Encode the accounting identity regression**
 
 ```python
 def test_contribution_is_revenue_minus_variable_cost_not_profit() -> None:
@@ -539,25 +539,25 @@ def test_contribution_is_revenue_minus_variable_cost_not_profit() -> None:
     assert case.profit == case.contribution - case.fixed_cost
 ```
 
-- [ ] **Step 2: Encode OCR and AQA numeric-role regressions**
+- [x] **Step 2: Encode OCR and AQA numeric-role regressions**
 
 Add family-level tests proving that reordered percentages remain valid, OCR pseudocode labels 01-07 are `code_line_label`, immutable 225 cannot become 169, and AQA Business graph years are declared generated fields rather than prompt invariants.
 
-- [ ] **Step 3: Encode review and evidence regressions**
+- [x] **Step 3: Encode review and evidence regressions**
 
 Add fixtures for the AQA Computer Science assembler ambiguity, identical-draft review, Edexcel unsupported disposable-income/rail/hotel claims, and the exchange-rate appreciation direction. Each fixture must fail contract/review validation before the later items in its paper are generated.
 
-- [ ] **Step 4: Implement the minimal family metadata and formula corrections**
+- [x] **Step 4: Implement the minimal family metadata and formula corrections**
 
 Populate each affected question's explicit `AssessmentContract`. Replace the accounting calculation branch with named values derived from the canonical case-data model. Bind Edexcel source claims to normalized extract IDs. Add deterministic economics causal rules for appreciation/depreciation and import/export price directions.
 
-- [ ] **Step 5: Run affected family suites**
+- [x] **Step 5: Run affected family suites**
 
 Run: `.venv/bin/pytest Resources/accounting/aqa/generator/tests Resources/economics/aqa/generator/tests Resources/economics/ocr/generator/tests Resources/computer-science/aqa/generator/tests Resources/computer-science/ocr/generator/tests Resources/economics/edexcel-a/generator/tests -q`
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit subject regressions**
+- [x] **Step 6: Commit subject regressions**
 
 ```bash
 git add Resources/accounting Resources/business Resources/computer-science Resources/economics
@@ -575,35 +575,35 @@ git commit -m "Encode subject-specific assessment invariants"
 - Consumes: the complete reliability-core implementation.
 - Produces: a documented package/checkpoint lifecycle, updated graph, clean committed worktree, and regression evidence.
 
-- [ ] **Step 1: Run formatting and static repository checks**
+- [x] **Step 1: Run formatting and static repository checks**
 
 Run: `.venv/bin/ruff check Backend Resources tests tools`
 
 Expected: no diagnostics.
 
-- [ ] **Step 2: Run the complete Python test suite**
+- [x] **Step 2: Run the complete Python test suite**
 
 Run: `.venv/bin/pytest -q`
 
 Expected: all tests pass with no unexpected skip or warning increase.
 
-- [ ] **Step 3: Run macOS backend and release smoke checks**
+- [x] **Step 3: Run macOS backend and release smoke checks**
 
 Run: `make bundle-check && make test-swift && make build-macos-release`
 
 Expected: bundle health is true, Swift tests pass, and the release build succeeds.
 
-- [ ] **Step 4: Document the lifecycle**
+- [x] **Step 4: Document the lifecycle**
 
 Update `docs/ASSESSMENT_QUALITY.md` with numeric roles, evidence binding, review/repair, and checkpoint invalidation. Update `docs/ARCHITECTURE.md` with the transaction sequence: blueprint → contract → item draft → validate → review/repair → checkpoint → package → render.
 
-- [ ] **Step 5: Update Graphify**
+- [x] **Step 5: Update Graphify**
 
 Run: `graphify update .`
 
 Expected: AST extraction completes and the graph artifacts reflect new contract and checkpoint nodes.
 
-- [ ] **Step 6: Inspect and commit all phase artifacts**
+- [x] **Step 6: Inspect and commit all phase artifacts**
 
 Run: `git diff --check && git status --short`
 
@@ -614,7 +614,7 @@ git add docs/ASSESSMENT_QUALITY.md docs/ARCHITECTURE.md graphify-out
 git commit -m "Document assessment reliability architecture"
 ```
 
-- [ ] **Step 7: Verify the handoff is clean**
+- [x] **Step 7: Verify the handoff is clean**
 
 Run: `git status --short --branch`
 

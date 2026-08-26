@@ -253,6 +253,27 @@ matched DIF/IRT analysis.
 
 ## Human release review
 
+## Independent solution and response-band qualification
+
+AI-authored items now carry explicit answer-form, timing, prerequisite,
+misconception, observable-mark-point, alternative-answer, partial-credit,
+common-error, follow-through, and level-policy contracts. Production generation
+through the shared AQA/OCR pipelines performs an additional solver call in a
+context that excludes the drafted mark scheme, deterministically recomputes any
+declared calculation expression, binds citations to supplied evidence, and
+reconciles the resulting answer, marks, AOs, alternatives and credit boundaries
+before the existing adversarial model review.
+
+Levels-based items use versioned best-fit policies for AQA, OCR, Pearson Edexcel
+and Cambridge International. Synthetic weak, average and excellent responses
+must receive strictly increasing marks, with a written reason for every awarded
+and withheld mark. Assessment packages also record cross-paper topic, AO,
+command-word, mark and demand distributions and fail closed on duplicate
+prompt/context pairs, answer leakage, ambiguous opening pronouns and non-finite
+data. The AQA Computer Science and Pearson pipelines retain their existing
+immutable-answer and independent-review paths pending migration to the shared
+document/assessment DSL.
+
 Automation still cannot prove that a new item is pedagogically excellent. A
 production release process should retain:
 

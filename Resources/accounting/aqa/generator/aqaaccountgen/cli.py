@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
-from Backend.Core.ai_assessment import generate_unique_paper
+from aqaaccountgen.configs import load_rule
+from aqaaccountgen.generator import build_paper
+from aqaaccountgen.render_pdf import render_mark_scheme, render_question_paper
+from aqaaccountgen.syllabus import load_syllabus
+from Backend.Core.ai_assessment import GenerationPolicy, generate_unique_paper
 from Backend.Core.assessment_checkpoints import (
     AssessmentCheckpointStore,
     identity_for_blueprint,
@@ -12,10 +16,6 @@ from Backend.Core.assessment_package import write_assessment_package
 from Backend.Core.model_recommendations import default_ollama_model
 from Backend.Core.providers import HostedLLMClient
 from Backend.Core.render_transaction import render_pdf_atomically
-from aqaaccountgen.configs import load_rule
-from aqaaccountgen.generator import build_paper
-from aqaaccountgen.render_pdf import render_mark_scheme, render_question_paper
-from aqaaccountgen.syllabus import load_syllabus
 
 
 def generate_package(
@@ -68,6 +68,7 @@ def generate_package(
             subject="AQA A-level Accounting",
             progress=progress,
             checkpoint_store=checkpoint_store,
+            policy=GenerationPolicy(require_independent_solution=True),
         )
     else:
         update("Using the deterministic blueprint preview")

@@ -23,6 +23,11 @@ def enrich_paper(
     compact_ocr_programming = (
         subject == "computer science" and paper.paper_code == "H446/02"
     )
+    policy_id = (
+        "ocr-standard-4-level"
+        if paper.paper_code.startswith("H")
+        else "aqa-standard-4-level"
+    )
     sections: list[GeneratedSection] = []
     for section in paper.sections:
         options: list[GeneratedOption] = []
@@ -33,6 +38,7 @@ def enrich_paper(
                     topic_by_id[question.topic_id],
                     subject,
                     compact=compact_ocr_programming,
+                    level_policy_id=policy_id,
                 )
                 for question in option.questions
             ]
@@ -55,6 +61,7 @@ def _enrich_question(
     subject: str,
     *,
     compact: bool = False,
+    level_policy_id: str = "aqa-standard-4-level",
 ) -> GeneratedQuestion:
     if question.kind == "multiple_choice":
         return question.model_copy(update={"prompt": _clean_text(question.prompt)})
@@ -67,12 +74,38 @@ def _enrich_question(
             12,
             len(re.findall(r"\b[\w'-]+\b", prompt)) + 2,
         ),
+        "expected_answer_form": _answer_form(question),
+        "completion_time_minutes": question.expected_minutes,
+        "prerequisite_knowledge": [str(topic.title)],
+        "misconception_targets": [
+            f"confusing {topic.title} with a superficially related concept"
+        ],
+        "observable_mark_points": [
+            point.text for point in question.structured_mark_scheme if point.marks
+        ],
+        "valid_alternatives": [
+            "Marker check: reward a valid alternative route where it demonstrates the same assessed knowledge or skill."
+        ],
+        "common_errors": ["repeating an undeveloped point for double credit"],
+        "level_policy_id": level_policy_id if _uses_levels(question) else None,
     }
+    if question.marks >= 4:
+        authoring_context["partial_credit_boundaries"] = [
+            "Do not award the same developed point twice."
+        ]
+        authoring_context["follow_through_rules"] = [
+            "Where an early numerical error is carried through consistently, award the later method marks."
+        ]
     points = [str(point).strip() for point in topic.points if str(point).strip()]
     selected = (points * 3)[:6]
     scheme = list(question.mark_scheme)
     if compact:
         scheme.extend(_compact_technical_guidance(question, topic.title, selected))
+        authoring_context["valid_alternatives"] = [
+            "Accept equivalent pseudocode, terminology or a technically valid alternative method."
+        ]
+        authoring_context.pop("partial_credit_boundaries", None)
+        authoring_context.pop("follow_through_rules", None)
         return question.model_copy(
             update={
                 "prompt": prompt,
@@ -207,26 +240,88 @@ def _objective_guidance(
 def _level_guidance(marks: int, subject: str) -> list[str]:
     if marks >= 20:
         bands = [
-            (5, marks - 4, marks, "sustained, well-focused analysis; effective evaluation; and a fully supported conclusion"),
-            (4, marks - 9, marks - 5, "developed analysis and relevant evaluation with a supported conclusion"),
-            (3, marks - 14, marks - 10, "sound knowledge and some developed analysis; evaluation is partial"),
-            (2, max(4, marks - 19), marks - 15, "limited application with short or incomplete analytical chains"),
-            (1, 1, max(3, marks - 20), "isolated relevant points with little development"),
+            (
+                5,
+                marks - 4,
+                marks,
+                "sustained, well-focused analysis; effective evaluation; and a fully supported conclusion",
+            ),
+            (
+                4,
+                marks - 9,
+                marks - 5,
+                "developed analysis and relevant evaluation with a supported conclusion",
+            ),
+            (
+                3,
+                marks - 14,
+                marks - 10,
+                "sound knowledge and some developed analysis; evaluation is partial",
+            ),
+            (
+                2,
+                max(4, marks - 19),
+                marks - 15,
+                "limited application with short or incomplete analytical chains",
+            ),
+            (
+                1,
+                1,
+                max(3, marks - 20),
+                "isolated relevant points with little development",
+            ),
         ]
     elif marks >= 12:
         bands = [
-            (4, marks - 2, marks, "accurate contextual knowledge, developed analysis, balanced evaluation and a supported judgement"),
-            (3, marks - 5, marks - 3, "good knowledge and linked analysis; evaluation is relevant but uneven"),
-            (2, max(3, marks - 8), marks - 6, "some accurate knowledge and analysis; evaluation is limited"),
-            (1, 1, max(2, marks - 9), "fragmentary knowledge or unsupported assertions"),
+            (
+                4,
+                marks - 2,
+                marks,
+                "accurate contextual knowledge, developed analysis, balanced evaluation and a supported judgement",
+            ),
+            (
+                3,
+                marks - 5,
+                marks - 3,
+                "good knowledge and linked analysis; evaluation is relevant but uneven",
+            ),
+            (
+                2,
+                max(3, marks - 8),
+                marks - 6,
+                "some accurate knowledge and analysis; evaluation is limited",
+            ),
+            (
+                1,
+                1,
+                max(2, marks - 9),
+                "fragmentary knowledge or unsupported assertions",
+            ),
         ]
     else:
         bands = [
-            (3, marks - 1, marks, "clear application and a developed, logically ordered response"),
-            (2, max(2, marks - 3), marks - 2, "some application and a partly developed explanation"),
-            (1, 1, max(1, marks - 4), "a limited response containing one or more relevant points"),
+            (
+                3,
+                marks - 1,
+                marks,
+                "clear application and a developed, logically ordered response",
+            ),
+            (
+                2,
+                max(2, marks - 3),
+                marks - 2,
+                "some application and a partly developed explanation",
+            ),
+            (
+                1,
+                1,
+                max(1, marks - 4),
+                "a limited response containing one or more relevant points",
+            ),
         ]
-    label = "technical accuracy" if subject == "computer science" else "subject knowledge"
+    label = (
+        "technical accuracy" if subject == "computer science" else "subject knowledge"
+    )
     result = ["Levels-based marking"]
     result.extend(
         f"Level {level} ({low}–{high}): {description}; {label} is secure at the top of the band."
@@ -239,6 +334,16 @@ def _level_guidance(marks: int, subject: str) -> list[str]:
 
 def _application_label(subject: str) -> str:
     return "AO2"
+
+
+def _answer_form(question: GeneratedQuestion) -> str:
+    if question.kind == "calculation":
+        return "calculation_with_working"
+    if question.scheme_mode == "levels" or _uses_levels(question):
+        return "extended_response"
+    if question.kind in {"programming", "trace"}:
+        return "code_or_trace"
+    return "constructed_response"
 
 
 def _clean_text(value: str) -> str:

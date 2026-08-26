@@ -3,15 +3,6 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
-from Backend.Core.ai_assessment import generate_unique_paper
-from Backend.Core.assessment_checkpoints import (
-    AssessmentCheckpointStore,
-    identity_for_blueprint,
-)
-from Backend.Core.assessment_package import write_assessment_package
-from Backend.Core.model_recommendations import default_ollama_model
-from Backend.Core.providers import HostedLLMClient
-from Backend.Core.render_transaction import render_pdf_atomically
 from aqabizgen.configs import load_rule
 from aqabizgen.generator import build_paper
 from aqabizgen.render_pdf import (
@@ -20,6 +11,15 @@ from aqabizgen.render_pdf import (
     render_source_booklet,
 )
 from aqabizgen.syllabus import load_syllabus
+from Backend.Core.ai_assessment import GenerationPolicy, generate_unique_paper
+from Backend.Core.assessment_checkpoints import (
+    AssessmentCheckpointStore,
+    identity_for_blueprint,
+)
+from Backend.Core.assessment_package import write_assessment_package
+from Backend.Core.model_recommendations import default_ollama_model
+from Backend.Core.providers import HostedLLMClient
+from Backend.Core.render_transaction import render_pdf_atomically
 
 
 def generate_package(
@@ -72,6 +72,7 @@ def generate_package(
             subject="AQA A-level Business",
             progress=progress,
             checkpoint_store=checkpoint_store,
+            policy=GenerationPolicy(require_independent_solution=True),
         )
     else:
         emit("Using the deterministic blueprint preview")

@@ -237,3 +237,33 @@ def test_structured_computer_science_guidance_covers_equivalent_pseudocode() -> 
 
     assert report.has_alternatives is True
     assert report.has_credit_limits is True
+
+
+def test_contract_alternatives_boundaries_and_follow_through_are_mandatory() -> None:
+    item = _item(
+        marks=4,
+        kind="calculation",
+        command_word="Calculate",
+        assessment_objectives={"AO2": 4},
+        mark_scheme=[
+            "AO2: method: subtract variable cost from revenue.",
+            "AO2: working gives the correct final answer.",
+        ],
+        assessment_contract={
+            "valid_alternatives": ["accept equivalent graphical method"],
+            "partial_credit_boundaries": ["method only: maximum 2 marks"],
+            "follow_through_rules": ["allow a consistent own-figure answer"],
+        },
+    )
+
+    with pytest.raises(ValueError, match="contract guidance"):
+        validate_mark_scheme_item(item)
+
+    item["mark_scheme"].extend(
+        [
+            "Accept equivalent graphical method.",
+            "Method only: maximum 2 marks.",
+            "Allow a consistent own-figure answer.",
+        ]
+    )
+    assert validate_mark_scheme_item(item).has_alternatives is True

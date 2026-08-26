@@ -2,6 +2,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
+import re
+from collections import Counter
+from functools import lru_cache
+from itertools import pairwise
 from pathlib import Path
 from typing import Any
 
@@ -9,7 +14,14 @@ from Backend.Core.assessment_quality import (
     assert_distinct_items,
     item_fingerprint,
 )
+from Backend.Core.level_of_response import (
+    LevelOfResponseEngine,
+    load_level_policies,
+    scale_level_policy,
+)
 from Backend.Core.mark_scheme_quality import validate_mark_scheme_item
+from Backend.Core.paths import REPO_ROOT
+from Backend.Core.response_simulation import ResponseSimulator
 
 
 def write_assessment_package(
@@ -89,6 +101,7 @@ def validate_assessment_package(
     if not isinstance(items, list) or not items:
         raise ValueError("assessment package has no items")
     mark_scheme_reports = []
+    response_simulation_reports = []
     for item in items:
         if not isinstance(item, dict):
             raise ValueError("assessment package contains an invalid item")
@@ -98,15 +111,19 @@ def validate_assessment_package(
                 f"assessment item {item.get('id')} has an invalid fingerprint"
             )
         if not isinstance(item.get("marks"), int) or int(item["marks"]) <= 0:
-            raise ValueError(
-                f"assessment item {item.get('id')} has invalid marks"
-            )
+            raise ValueError(f"assessment item {item.get('id')} has invalid marks")
         scheme = item.get("mark_scheme")
-        if not isinstance(scheme, list) or not any(str(point).strip() for point in scheme):
+        if not isinstance(scheme, list) or not any(
+            str(point).strip() for point in scheme
+        ):
             raise ValueError(
                 f"assessment item {item.get('id')} has no usable mark scheme"
             )
         mark_scheme_reports.append(validate_mark_scheme_item(item))
+        simulation = _validate_response_bands(item)
+        if simulation:
+            response_simulation_reports.append(simulation)
+    cross_paper_quality = validate_cross_paper_quality(items)
     if not preview:
         assert_distinct_items(items)
     expected_form_id = _form_id(
@@ -140,6 +157,11 @@ def validate_assessment_package(
                 report.has_evidence_binding for report in mark_scheme_reports
             ),
         },
+        "cross_paper_quality": cross_paper_quality,
+        "response_simulation": {
+            "items_verified": len(response_simulation_reports),
+            "results": response_simulation_reports,
+        },
     }
 
 
@@ -169,6 +191,13 @@ def _extract_items(
             stem = value.get("stem")
             if isinstance(stem, str) and stem.strip():
                 stems = [*inherited_stems, stem.strip()]
+            stimulus = value.get("stimulus")
+            if isinstance(stimulus, list):
+                stimulus_text = " ".join(
+                    str(item).strip() for item in stimulus if str(item).strip()
+                )
+                if stimulus_text:
+                    stems = [*stems, stimulus_text]
             prompt = value.get("prompt")
             marks = value.get("marks")
             if isinstance(prompt, str) and prompt.strip() and isinstance(marks, int):
@@ -198,6 +227,7 @@ def _extract_items(
                 "topic_id": raw.get("topic_id"),
                 "marks": raw["marks"],
                 "command_word": raw.get("command_word"),
+                "intended_demand": raw.get("intended_demand"),
                 "kind": raw.get("kind") or raw.get("style_id") or "",
                 "prompt": prompt,
                 "context": stems,
@@ -206,8 +236,12 @@ def _extract_items(
                 "scheme_mode": raw.get("scheme_mode") or "points",
                 "structured_mark_scheme": _structured_scheme(raw),
                 "evidence_ids": _evidence_ids(raw),
+                "assessment_contract": _assessment_contract(raw),
                 "fingerprint": item_fingerprint(prompt),
                 "provenance": raw.get("provenance", "generator-specific"),
+                "choices": raw.get("choices") or [],
+                "correct_choice": raw.get("correct_choice"),
+                "chart_values": raw.get("chart_values") or [],
             }
         )
     if not items:
@@ -220,9 +254,7 @@ def _scheme_text(raw: dict[str, Any]) -> list[str]:
     for key in ("mark_scheme", "indicative_content"):
         value = raw.get(key)
         if isinstance(value, list):
-            result.extend(
-                str(item).strip() for item in value if str(item).strip()
-            )
+            result.extend(str(item).strip() for item in value if str(item).strip())
     if result:
         return list(dict.fromkeys(result))
     marking = raw.get("marking")
@@ -286,6 +318,177 @@ def _evidence_ids(raw: dict[str, Any]) -> list[str]:
         if isinstance(allowed, list):
             values.extend(str(value).strip() for value in allowed)
     return list(dict.fromkeys(value for value in values if value))
+
+
+def _assessment_contract(raw: dict[str, Any]) -> dict[str, Any]:
+    contract = raw.get("contract")
+    if isinstance(contract, dict):
+        return contract
+    context = raw.get("authoring_context")
+    if not isinstance(context, dict):
+        return {}
+    fields = (
+        "expected_answer_form",
+        "completion_time_minutes",
+        "prerequisite_knowledge",
+        "misconception_targets",
+        "observable_mark_points",
+        "valid_alternatives",
+        "partial_credit_boundaries",
+        "common_errors",
+        "follow_through_rules",
+        "level_policy_id",
+    )
+    return {field: context[field] for field in fields if field in context}
+
+
+@lru_cache(maxsize=1)
+def _level_policies() -> dict[str, Any]:
+    return load_level_policies(
+        REPO_ROOT / "Resources" / "level-of-response-policies.json"
+    )
+
+
+def _validate_response_bands(item: dict[str, Any]) -> dict[str, Any] | None:
+    if item.get("scheme_mode") != "levels":
+        return None
+    contract = item.get("assessment_contract")
+    if not isinstance(contract, dict):
+        return None
+    policy_id = contract.get("level_policy_id")
+    if not isinstance(policy_id, str) or not policy_id:
+        return None
+    try:
+        policy = _level_policies()[policy_id]
+    except KeyError as error:
+        raise ValueError(
+            f"assessment item {item.get('id')} uses unknown level policy {policy_id}"
+        ) from error
+    points = contract.get("observable_mark_points")
+    if not isinstance(points, list) or not points:
+        points = [
+            str(point.get("text", "")).strip()
+            for point in item.get("structured_mark_scheme", [])
+            if isinstance(point, dict)
+            and int(point.get("marks", 0) or 0) > 0
+            and str(point.get("text", "")).strip()
+        ]
+    if not points:
+        raise ValueError(
+            f"assessment item {item.get('id')} cannot simulate level responses "
+            "without observable mark points"
+        )
+    simulated_item = {
+        "id": item.get("id"),
+        "prompt": item.get("prompt"),
+        "authoring_context": {
+            "observable_mark_points": points,
+            "misconception_targets": contract.get("misconception_targets", []),
+        },
+    }
+    responses = ResponseSimulator().responses(simulated_item)
+    scaled = scale_level_policy(policy, int(item["marks"]))
+    decisions = [
+        LevelOfResponseEngine().mark(response, scaled) for response in responses
+    ]
+    marks = [decision.mark for decision in decisions]
+    if any(left >= right for left, right in pairwise(marks)):
+        raise ValueError(
+            f"assessment item {item.get('id')} level scheme cannot distinguish "
+            f"weak, average and excellent responses: {marks}"
+        )
+    if any(
+        len(decision.annotations) != scaled.maximum_mark
+        or any(not annotation.reason for annotation in decision.annotations)
+        for decision in decisions
+    ):
+        raise ValueError(
+            f"assessment item {item.get('id')} has incomplete mark annotations"
+        )
+    return {
+        "item_id": item.get("id"),
+        "policy_id": policy_id,
+        "bands": [response.band for response in responses],
+        "marks": marks,
+        "monotonic": True,
+        "annotations_complete": True,
+    }
+
+
+def validate_cross_paper_quality(items: list[dict[str, Any]]) -> dict[str, Any]:
+    """Validate cross-item clues and return the paper's assessment balance."""
+
+    topics: Counter[str] = Counter()
+    objectives: Counter[str] = Counter()
+    commands: Counter[str] = Counter()
+    demand: Counter[str] = Counter()
+    fingerprints: set[tuple[str, str]] = set()
+    total_marks = 0
+    for item in items:
+        item_id = str(item.get("id", "unknown"))
+        prompt = str(item.get("prompt", "")).strip()
+        normalised = " ".join(prompt.casefold().split())
+        context = item.get("context")
+        context_key = (
+            " ".join(" ".join(str(value).casefold().split()) for value in context)
+            if isinstance(context, list)
+            else ""
+        )
+        fingerprint = (normalised, context_key)
+        if fingerprint in fingerprints:
+            raise ValueError(f"cross-paper duplication at item {item_id}")
+        fingerprints.add(fingerprint)
+        if re.search(
+            r"\b(?:the\s+)?correct answer\s+is\b|\banswer\s*:", prompt, re.IGNORECASE
+        ):
+            raise ValueError(f"assessment item {item_id} contains answer leakage")
+        if re.match(
+            r"^(?:it|they|this|these|those)\s+"
+            r"(?:is|are|was|were|causes?|means?|shows?|suggests?)\b",
+            prompt,
+            re.IGNORECASE,
+        ) and not (
+            isinstance(context, list) and any(str(value).strip() for value in context)
+        ):
+            raise ValueError(
+                f"assessment item {item_id} has an ambiguous opening pronoun"
+            )
+        if _contains_non_finite(item):
+            raise ValueError(f"assessment item {item_id} contains non-finite data")
+        marks = int(item.get("marks", 0) or 0)
+        total_marks += marks
+        topic = str(item.get("topic_id", "") or "unclassified")
+        command = str(item.get("command_word", "") or "unclassified")
+        band = str(item.get("intended_demand", "") or "unclassified")
+        topics[topic] += marks
+        commands[command] += 1
+        demand[band] += 1
+        for objective, allocated in dict(
+            item.get("assessment_objectives") or {}
+        ).items():
+            objectives[str(objective)] += int(allocated)
+    return {
+        "items": len(items),
+        "total_marks": total_marks,
+        "topics_by_mark": dict(sorted(topics.items())),
+        "assessment_objectives": dict(sorted(objectives.items())),
+        "command_words": dict(sorted(commands.items())),
+        "demand": dict(sorted(demand.items())),
+        "duplicates": 0,
+        "answer_leakage": 0,
+        "ambiguous_opening_pronouns": 0,
+        "non_finite_data": 0,
+    }
+
+
+def _contains_non_finite(value: Any) -> bool:
+    if isinstance(value, float):
+        return not math.isfinite(value)
+    if isinstance(value, dict):
+        return any(_contains_non_finite(item) for item in value.values())
+    if isinstance(value, (list, tuple)):
+        return any(_contains_non_finite(item) for item in value)
+    return False
 
 
 def _form_id(

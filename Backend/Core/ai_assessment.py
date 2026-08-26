@@ -11,6 +11,7 @@ from typing import Any, Protocol
 from pydantic import ValidationError
 
 from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
+from Backend.Core.assessment_contracts import EvidenceRecord, contract_for_question
 from Backend.Core.assessment_quality import (
     assert_distinct_items,
     content_similarity,
@@ -18,7 +19,7 @@ from Backend.Core.assessment_quality import (
     validate_candidate_contract,
     validate_economics_causal_direction,
 )
-from Backend.Core.assessment_contracts import contract_for_question
+from Backend.Core.events import GenerationUpdate
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -28,10 +29,9 @@ from Backend.Core.exam_blueprints import (
     PaperRule,
     validate_generated_paper,
 )
-from Backend.Core.events import GenerationUpdate
+from Backend.Core.independent_solver import IndependentSolver, reconcile_solution
 from Backend.Core.mark_scheme_quality import validate_mark_scheme_item
 from Backend.Core.model_review import ReviewResult
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -54,6 +54,7 @@ class GenerationPolicy:
     draft_similarity_limit: float = 0.82
     paper_similarity_limit: float = 0.84
     require_model_review: bool = True
+    require_independent_solution: bool = False
 
 
 @dataclass(frozen=True)
@@ -217,9 +218,7 @@ def _generate_batch(
     for task in verified:
         _validate_release_mark_scheme(task.question)
     result: dict[tuple[int, int, int], GeneratedQuestion] = {
-        task.key: task.question.model_copy(
-            update={"provenance": "verified-contract"}
-        )
+        task.key: task.question.model_copy(update={"provenance": "verified-contract"})
         for task in verified
     }
     resumed: list[_Task] = []
@@ -322,9 +321,7 @@ def _validate_checkpoint_item(
         candidate.mark_scheme != original.mark_scheme
         or candidate.structured_mark_scheme != original.structured_mark_scheme
     ):
-        raise ValueError(
-            f"checkpoint item {task.id} changed verified marking guidance"
-        )
+        raise ValueError(f"checkpoint item {task.id} changed verified marking guidance")
     if not candidate.prompt.strip() or not candidate.structured_mark_scheme:
         raise ValueError(f"checkpoint item {task.id} is incomplete")
     _validate_prompt_length(original, candidate.prompt)
@@ -388,6 +385,12 @@ def _generate_item_transaction(
                 client=client,
                 policy=policy,
             )[0]
+            if policy.require_independent_solution:
+                _independently_validate_candidate(
+                    task,
+                    candidate,
+                    client=client,
+                )
             if "economics" in subject.casefold():
                 validate_economics_causal_direction(
                     " ".join(
@@ -465,6 +468,38 @@ def _generate_item_transaction(
     )
 
 
+def _independently_validate_candidate(
+    task: _Task,
+    candidate: GeneratedQuestion,
+    *,
+    client: AssessmentLLMClient,
+) -> None:
+    contract = contract_for_question(candidate)
+    sources = list(contract.evidence)
+    known_ids = {source.id for source in sources}
+    for index, text in enumerate(task.option.stimulus, start=1):
+        if not text.strip():
+            continue
+        source_id = (
+            candidate.source_references[index - 1]
+            if index <= len(candidate.source_references)
+            else f"stimulus-{index}"
+        )
+        if source_id not in known_ids:
+            sources.append(EvidenceRecord(id=source_id, text=text))
+            known_ids.add(source_id)
+    solution = IndependentSolver(client).solve(candidate, sources)
+    result = reconcile_solution(solution, candidate)
+    if not result.passed:
+        diagnostics = [
+            {"field": issue.field, "message": issue.message} for issue in result.issues
+        ]
+        raise ValueError(
+            f"question {candidate.number} failed independent solution "
+            f"reconciliation: {json.dumps(diagnostics, ensure_ascii=False)}"
+        )
+
+
 def _seeded_fallback_allowed(*, provider: str, failure: str) -> bool:
     """Permit a reviewed local blueprint stem only for formatting-only drift."""
 
@@ -531,12 +566,10 @@ def _parse_batch(
 ) -> list[GeneratedQuestion]:
     values = raw.get("questions")
     if not isinstance(values, list) or len(values) != len(tasks):
-        raise ValueError("response must contain exactly one result per requested question")
-    by_id = {
-        str(value.get("id")): value
-        for value in values
-        if isinstance(value, dict)
-    }
+        raise ValueError(
+            "response must contain exactly one result per requested question"
+        )
+    by_id = {str(value.get("id")): value for value in values if isinstance(value, dict)}
     if set(by_id) != {task.id for task in tasks}:
         raise ValueError("response question identifiers do not match the blueprint")
     candidates = [
@@ -597,8 +630,7 @@ def _candidate_question(
         prompt, original.command_word
     ):
         raise ValueError(
-            f"question {original.number} omitted command word "
-            f"{original.command_word!r}"
+            f"question {original.number} omitted command word {original.command_word!r}"
         )
     if not preserve_prompt:
         similarity = content_similarity(prompt, original.prompt)
@@ -670,9 +702,7 @@ def _candidate_question(
             for term in required_mark_scheme_terms
         )
     ):
-        raise ValueError(
-            f"question {original.number} omitted required marking content"
-        )
+        raise ValueError(f"question {original.number} omitted required marking content")
     forbidden_mark_scheme_terms = original.authoring_context.get(
         "forbidden_mark_scheme_terms",
         [],
@@ -722,8 +752,7 @@ def _candidate_question(
         else [
             point.text
             for point in points
-            if original.scheme_mode != "levels"
-            or point.credit_type == "guidance"
+            if original.scheme_mode != "levels" or point.credit_type == "guidance"
         ]
     )
     candidate = original.model_copy(
@@ -745,11 +774,15 @@ def _normalise_calculation_guidance(
     question: GeneratedQuestion,
     points: list[MarkSchemePoint],
 ) -> list[MarkSchemePoint]:
-    calculation = question.kind == "calculation" or question.command_word.casefold() in {
-        "calculate",
-        "complete",
-        "prepare",
-    }
+    calculation = (
+        question.kind == "calculation"
+        or question.command_word.casefold()
+        in {
+            "calculate",
+            "complete",
+            "prepare",
+        }
+    )
     if not calculation or question.marks < 3:
         return points
     guidance_text = " ".join(point.text for point in points).casefold()
@@ -791,6 +824,19 @@ def _validate_release_mark_scheme(question: GeneratedQuestion) -> None:
             "structured_mark_scheme": raw["structured_mark_scheme"],
             "assessment_objectives": question.assessment_objectives,
             "evidence_ids": list(dict.fromkeys(evidence_ids)),
+            "assessment_contract": (
+                contract
+                if isinstance(contract, dict)
+                else {
+                    field: question.authoring_context[field]
+                    for field in (
+                        "valid_alternatives",
+                        "partial_credit_boundaries",
+                        "follow_through_rules",
+                    )
+                    if field in question.authoring_context
+                }
+            ),
         }
     )
 
@@ -824,18 +870,14 @@ def _validate_mark_points(
             f"maximum {maximum_points}"
         )
     if any(len(point.text) > 400 for point in points):
-        raise ValueError(
-            f"question {question.number} has an overlong marking entry"
-        )
+        raise ValueError(f"question {question.number} has an overlong marking entry")
     awarded = [point for point in points if point.marks]
     is_levels = question.scheme_mode == "levels"
     minimum_awarded = (
         1
         if question.kind == "multiple_choice"
         else (
-            len(question.assessment_objectives)
-            if is_levels
-            else min(question.marks, 8)
+            len(question.assessment_objectives) if is_levels else min(question.marks, 8)
         )
     )
     if len(awarded) < minimum_awarded:
@@ -844,13 +886,9 @@ def _validate_mark_points(
             f"{minimum_awarded} distinct awarded marking points"
         )
     if len(points) - len(awarded) > 8:
-        raise ValueError(
-            f"question {question.number} has excessive zero-mark guidance"
-        )
+        raise ValueError(f"question {question.number} has excessive zero-mark guidance")
     level_descriptors = [
-        point
-        for point in points
-        if point.credit_type == "level" and point.marks == 0
+        point for point in points if point.credit_type == "level" and point.marks == 0
     ]
     if is_levels and len(level_descriptors) < 3:
         raise ValueError(
@@ -917,9 +955,7 @@ def _normalise_level_allocations(
         for objective in objectives
     ]
     level_entries = [
-        point.model_copy(
-            update={"marks": 0, "assessment_objective": None}
-        )
+        point.model_copy(update={"marks": 0, "assessment_objective": None})
         for point in points
         if point.credit_type == "level"
     ]
@@ -942,9 +978,7 @@ def _normalise_level_allocations(
             "Accept any other well-supported route consistent with the source "
             "and the question."
         ]
-    if not any(
-        point.do_not_accept or point.ignore for point in zero_mark_entries
-    ):
+    if not any(point.do_not_accept or point.ignore for point in zero_mark_entries):
         updates["do_not_accept"] = [
             "Do not award unsupported assertions or duplicate credit for the "
             "same developed point."
@@ -976,9 +1010,7 @@ def _review_batch(
     if not isinstance(reviews, list):
         raise ValueError("second-pass review response has no reviews")
     by_id = {
-        str(review.get("id")): review
-        for review in reviews
-        if isinstance(review, dict)
+        str(review.get("id")): review for review in reviews if isinstance(review, dict)
     }
     if set(by_id) != {task.id for task in tasks}:
         raise ValueError("second-pass review identifiers do not match the batch")
@@ -1017,8 +1049,7 @@ def _repair_prompt(
         "review": review.model_dump(mode="json"),
     }
     return (
-        base
-        + "\nRepair only the rejected item below. Correct every reported issue "
+        base + "\nRepair only the rejected item below. Correct every reported issue "
         "while preserving its immutable blueprint. Return the same `questions` "
         "JSON schema required above.\nREPAIR_DATA="
         + json.dumps(repair, ensure_ascii=False)
@@ -1085,9 +1116,7 @@ def _generation_prompt(
             "immutable_source": _task_source(task),
             "protected_numeric_tokens": list(numeric_tokens(task.question.prompt)),
             "prompt_numeric_contract": {
-                "required_exact_tokens": list(
-                    numeric_tokens(task.question.prompt)
-                ),
+                "required_exact_tokens": list(numeric_tokens(task.question.prompt)),
                 "rule": (
                     "The prompt must contain exactly this numeric-token list, "
                     "including order and repetition. If the list is empty, the "
@@ -1213,9 +1242,7 @@ def _required_awarded_entries(question: GeneratedQuestion) -> list[dict[str, obj
     marks_by_objective = dict(objectives)
     while sum(slots.values()) < target:
         eligible = [
-            objective
-            for objective, marks in objectives
-            if slots[objective] < marks
+            objective for objective, marks in objectives if slots[objective] < marks
         ]
         if not eligible:
             break
@@ -1347,9 +1374,7 @@ def _review_prompt(
                 "assessment_objectives": task.question.assessment_objectives,
                 "intended_demand": task.question.intended_demand,
                 "scheme_mode": task.question.scheme_mode,
-                "protected_numeric_tokens": list(
-                    numeric_tokens(task.question.prompt)
-                ),
+                "protected_numeric_tokens": list(numeric_tokens(task.question.prompt)),
             },
             "topic": {
                 "title": str(task.topic.title),
@@ -1383,8 +1408,7 @@ def _review_prompt(
         'with {"id":"...","approved":true|false,"factual_issues":[],'
         '"marking_issues":[],"source_issues":[],"difficulty_issues":[],'
         '"ambiguity_issues":[]}. Approval must be false if any '
-        "issue exists.\nREVIEW_DATA="
-        + json.dumps(data, ensure_ascii=False)
+        "issue exists.\nREVIEW_DATA=" + json.dumps(data, ensure_ascii=False)
     )
 
 
@@ -1463,8 +1487,7 @@ def _clean_generated_prompt(
         question.number.lstrip("0") or "0",
     }
     label_pattern = "|".join(
-        re.escape(label)
-        for label in sorted(labels, key=len, reverse=True)
+        re.escape(label) for label in sorted(labels, key=len, reverse=True)
     )
     value = re.sub(
         rf"^(?:question\s+)?(?:{label_pattern})(?:\s*[:.)-]\s*|\s+)",
@@ -1551,9 +1574,7 @@ def _validate_prompt_length(question: GeneratedQuestion, prompt: str) -> None:
     if raw_limit is None:
         return
     if not isinstance(raw_limit, int) or raw_limit < 8:
-        raise ValueError(
-            f"question {question.number} has an invalid prompt word limit"
-        )
+        raise ValueError(f"question {question.number} has an invalid prompt word limit")
     word_count = len(re.findall(r"\b[\w'-]+\b", prompt))
     if word_count > raw_limit:
         raise ValueError(

@@ -144,16 +144,16 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - `PrintProfile(dpi, non_printable_margin_mm, monochrome, minimum_rule_pt)`
 - CLI: `tools/paper_fidelity_audit.py --dpi 300|600 --role-match --thresholds PATH --print-profile PATH`
 
-- [ ] Add red tests proving sequence-only matching pairs the wrong page while role/content matching selects the correct reference.
-- [ ] Add synthetic PDF tests for font substitution, missing embedding, baseline shift, glyph-box drift, altered leading, line-width drift, 0.1 pt rule loss, answer-line spacing, mark-box displacement, invalid reading order, missing tags, clipping at printer margins, and monochrome contrast.
-- [ ] Replace the fixed 96×136 comparison grid with DPI-derived raster dimensions; use 300 DPI in CI and 600 DPI in final qualification.
-- [ ] Extract spans, glyph boxes, baselines, font file/embedding identity, drawings, images, rules, table geometry, semantic role, and safe-print bounds from each page.
-- [ ] Match each generated page against same-role references across at least three years; compare against a measured acceptable range rather than one chosen page.
-- [ ] Add role-specific weights and thresholds for stable furniture, text layout, drawings, images, ink density, reading order, tags, and print survival.
-- [ ] Make page-count policy exact for declared fixed roles and range-based only where the profile records genuine multi-year variation.
+- [x] Add red tests proving sequence-only matching pairs the wrong page while role/content matching selects the correct reference.
+- [x] Add synthetic PDF tests for font substitution, missing embedding, baseline shift, glyph-box drift, altered leading, line-width drift, 0.1 pt rule loss, answer-line spacing, mark-box displacement, invalid reading order, missing tags, clipping at printer margins, and monochrome contrast.
+- [x] Replace the fixed 96×136 comparison grid with DPI-derived raster dimensions; use 300 DPI in CI and 600 DPI in final qualification.
+- [x] Extract spans, glyph boxes, baselines, font file/embedding identity, drawings, images, rules, table geometry, semantic role, and safe-print bounds from each page.
+- [x] Match each generated page against same-role references across at least three years; compare against a measured acceptable range rather than one chosen page.
+- [x] Add role-specific weights and thresholds for stable furniture, text layout, drawings, images, ink density, reading order, tags, and print survival.
+- [x] Make page-count policy exact for declared fixed roles and range-based only where the profile records genuine multi-year variation.
 - [ ] Generate compact 300-DPI CI evidence and 600-DPI qualification contact sheets with reference, generated, overlay, difference, and annotated metric callouts.
 - [ ] Run focused tests and a deterministic all-family audit; manually inspect the worst page and every page role before changing thresholds.
-- [ ] Update Graphify and commit as `Qualify paper fidelity at print resolution`.
+- [x] Update Graphify and commit as `Qualify paper fidelity at print resolution`.
 
 ### Task 3: Complete Question and Mark-Scheme Validity
 
@@ -179,14 +179,14 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - `ResponseSimulator.responses(item, bands=("weak", "average", "excellent")) -> list[CandidateResponse]`
 - `LevelOfResponseEngine.mark(response, policy: BoardLevelPolicy) -> MarkDecision`
 
-- [ ] Retain and finish every unchecked item in `2026-08-23-assessment-reliability-core.md` and `2026-08-23-rendering-and-mark-scheme-reliability.md`; do not reimplement checked work.
-- [ ] Add contract fields for expected answer form, completion time, prerequisite knowledge, misconception targets, observable mark points, alternatives, partial-credit boundaries, common errors, follow-through, and level-policy ID.
-- [ ] Add red tests where the drafted scheme shares the same wrong arithmetic as the question author, omits a valid alternative, overcredits a boundary answer, misallocates AO marks, cites unavailable evidence, or cannot distinguish weak/average/excellent responses.
-- [ ] Generate the canonical solution in an independent model context without the draft scheme; recompute numeric/symbolic results deterministically and bind every factual claim to allowed syllabus/source evidence.
-- [ ] Reconcile every subpart, mark, AO, alternative, and follow-through rule. Fail closed with field-addressed repair diagnostics.
-- [ ] Implement AQA, OCR, Pearson Edexcel, and Cambridge level-of-response policies as data-backed engines with best-fit rules, caps, indicative content, and annotation output.
-- [ ] Simulate weak, average, and excellent responses; require monotonic marks and a written reason for every awarded/withheld mark.
-- [ ] Add cross-paper checks for topic/AO/command-word/mark/demand balance, duplication, answer leakage, ambiguous pronouns, impossible data, and unintended clues.
+- [x] Retain and finish every unchecked item in `2026-08-23-assessment-reliability-core.md` and `2026-08-23-rendering-and-mark-scheme-reliability.md`; do not reimplement checked work.
+- [x] Add contract fields for expected answer form, completion time, prerequisite knowledge, misconception targets, observable mark points, alternatives, partial-credit boundaries, common errors, follow-through, and level-policy ID.
+- [x] Add red tests where the drafted scheme shares the same wrong arithmetic as the question author, omits a valid alternative, overcredits a boundary answer, misallocates AO marks, cites unavailable evidence, or cannot distinguish weak/average/excellent responses.
+- [x] Generate the canonical solution in an independent model context without the draft scheme; recompute numeric/symbolic results deterministically and bind every factual claim to allowed syllabus/source evidence.
+- [x] Reconcile every subpart, mark, AO, alternative, and follow-through rule. Fail closed with field-addressed repair diagnostics.
+- [x] Implement AQA, OCR, Pearson Edexcel, and Cambridge level-of-response policies as data-backed engines with best-fit rules, caps, indicative content, and annotation output.
+- [x] Simulate weak, average, and excellent responses; require monotonic marks and a written reason for every awarded/withheld mark.
+- [x] Add cross-paper checks for topic/AO/command-word/mark/demand balance, duplication, answer leakage, ambiguous pronouns, impossible data, and unintended clues.
 - [ ] Run core tests plus all seven family suites, Ruff, deterministic solution recomputation for all generated items, and update Graphify.
 - [ ] Commit as `Independently validate questions and schemes`.
 

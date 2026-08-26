@@ -82,10 +82,7 @@ def validate_mark_scheme_item(item: dict[str, Any]) -> MarkSchemeQuality:
     has_alternatives = _contains_any(
         combined,
         ("accept", "alternative", "equivalent", "valid route", "allow "),
-    ) or any(
-        point.get("alternatives") or point.get("allow")
-        for point in structured
-    )
+    ) or any(point.get("alternatives") or point.get("allow") for point in structured)
     has_credit_limits = _contains_any(
         combined,
         (
@@ -98,10 +95,7 @@ def validate_mark_scheme_item(item: dict[str, Any]) -> MarkSchemeQuality:
             "only award",
             "limit credit",
         ),
-    ) or any(
-        point.get("do_not_accept") or point.get("ignore")
-        for point in structured
-    )
+    ) or any(point.get("do_not_accept") or point.get("ignore") for point in structured)
     has_levels = _contains_any(
         combined,
         ("levels-based", "level 1", "level 2", "best fit"),
@@ -111,17 +105,39 @@ def validate_mark_scheme_item(item: dict[str, Any]) -> MarkSchemeQuality:
         for identifier in item.get("evidence_ids", [])
         if str(identifier).strip()
     ]
-    has_evidence_binding = kind == "multiple_choice" or not evidence_ids or any(
-        identifier.casefold() in combined for identifier in evidence_ids
-    ) or _contains_any(
-        combined,
-        ("evidence", "source", "extract", "figure", "data", "table", "context"),
+    has_evidence_binding = (
+        kind == "multiple_choice"
+        or not evidence_ids
+        or any(identifier.casefold() in combined for identifier in evidence_ids)
+        or _contains_any(
+            combined,
+            ("evidence", "source", "extract", "figure", "data", "table", "context"),
+        )
     )
     if evidence_ids and not has_evidence_binding:
         raise ValueError(
             f"mark scheme for item {item_id} does not bind its required evidence: "
             + ", ".join(evidence_ids)
         )
+
+    contract = item.get("assessment_contract")
+    if isinstance(contract, dict):
+        missing_contract_guidance = [
+            f"{field}: {requirement}"
+            for field in (
+                "valid_alternatives",
+                "partial_credit_boundaries",
+                "follow_through_rules",
+            )
+            for requirement in contract.get(field, [])
+            if isinstance(requirement, str)
+            and _normalise(requirement) not in _normalise(combined)
+        ]
+        if missing_contract_guidance:
+            raise ValueError(
+                f"mark scheme for item {item_id} omits contract guidance: "
+                + "; ".join(missing_contract_guidance)
+            )
 
     calculation = kind == "calculation" or command in {
         "calculate",
@@ -130,7 +146,8 @@ def validate_mark_scheme_item(item: dict[str, Any]) -> MarkSchemeQuality:
     }
     extended = marks >= 8 and (
         kind in {"extended_response", "essay", "analysis", "evaluation"}
-        or command in {
+        or command
+        in {
             "analyse",
             "analyze",
             "assess",
@@ -145,9 +162,7 @@ def validate_mark_scheme_item(item: dict[str, Any]) -> MarkSchemeQuality:
             f"mark scheme for item {item_id} has no working or method guidance"
         )
     if extended and not has_levels:
-        raise ValueError(
-            f"mark scheme for item {item_id} has no levels descriptors"
-        )
+        raise ValueError(f"mark scheme for item {item_id} has no levels descriptors")
     if extended and not has_alternatives:
         raise ValueError(
             f"mark scheme for item {item_id} has no alternative-answer guidance"

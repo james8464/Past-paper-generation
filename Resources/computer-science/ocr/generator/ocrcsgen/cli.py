@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
-from Backend.Core.ai_assessment import generate_unique_paper
+from Backend.Core.ai_assessment import GenerationPolicy, generate_unique_paper
 from Backend.Core.assessment_checkpoints import (
     AssessmentCheckpointStore,
     identity_for_blueprint,
@@ -68,6 +68,7 @@ def generate_package(
             subject="OCR A-level Computer Science",
             progress=progress,
             checkpoint_store=checkpoint_store,
+            policy=GenerationPolicy(require_independent_solution=True),
         )
     else:
         emit("Using the deterministic blueprint preview")
