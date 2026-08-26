@@ -22,6 +22,16 @@ final class PaperCreatorTests: XCTestCase {
         XCTAssertEqual(event, .progress(stage: "render", message: "Rendering question paper", progress: 0.88))
     }
 
+    func testBackendMLXCacheMissPreservesRecoveryCode() throws {
+        let event = try BackendEvent(
+            jsonLine: #"{"type":"error","message":"Approve setup again.","code":"mlx_setup_required"}"#
+        )
+        XCTAssertEqual(
+            event,
+            .error(message: "Approve setup again.", code: "mlx_setup_required")
+        )
+    }
+
     func testBackendFileEventDecodes() throws {
         let event = try BackendEvent(jsonLine: #"{"type":"file","role":"mark_scheme","path":"/tmp/ms.pdf"}"#)
         XCTAssertEqual(event, .file(role: "mark_scheme", path: "/tmp/ms.pdf"))
@@ -159,6 +169,58 @@ final class PaperCreatorTests: XCTestCase {
         XCTAssertFalse(AIProvider.ollama.sendsPromptsOffDevice)
         XCTAssertTrue(AIProvider.openAI.sendsPromptsOffDevice)
         XCTAssertTrue(AIProvider.anthropic.sendsPromptsOffDevice)
+    }
+
+    func testAppleMLXSetupPolicyRequestsConsentOnlyForUnpreparedLiveModels() {
+        let model = "mlx-community/test-model"
+
+        XCTAssertTrue(
+            MLXSetupPolicy.requiresSetup(
+                provider: .apple,
+                model: model,
+                preparedModels: [],
+                usesAI: true,
+                dryRun: false
+            )
+        )
+        XCTAssertFalse(
+            MLXSetupPolicy.requiresSetup(
+                provider: .apple,
+                model: model,
+                preparedModels: [model],
+                usesAI: true,
+                dryRun: false
+            )
+        )
+        XCTAssertFalse(
+            MLXSetupPolicy.requiresSetup(
+                provider: .apple,
+                model: model,
+                preparedModels: [],
+                usesAI: true,
+                dryRun: true
+            )
+        )
+        XCTAssertFalse(
+            MLXSetupPolicy.requiresSetup(
+                provider: .ollama,
+                model: model,
+                preparedModels: [],
+                usesAI: true,
+                dryRun: false
+            )
+        )
+    }
+
+    func testCancelledMLXCacheRecoveryDoesNotLeakIntoSuccessfulRetry() {
+        var recovery = MLXRecoveryState()
+
+        recovery.beginGeneration()
+        recovery.requestSetup()
+        recovery.cancel()
+        recovery.beginGeneration()
+
+        XCTAssertFalse(recovery.consumeSetupRequest())
     }
 
     func testReviewLinksAreValidHTTPSURLs() {

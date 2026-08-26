@@ -32,6 +32,16 @@ struct ContentView: View {
             Text("OpenAI and Anthropic generation sends prompts, selected syllabus context, and draft question content to the provider you choose. API keys stay in Keychain. Ollama keeps generation local.")
         }
         .confirmationDialog(
+            "Set Up Apple MLX?",
+            isPresented: $appModel.showMLXSetupConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Set Up and Continue", action: appModel.confirmMLXSetup)
+            Button("Cancel", role: .cancel, action: appModel.cancelMLXSetup)
+        } message: {
+            Text(appModel.mlxSetupExplanation)
+        }
+        .confirmationDialog(
             "Pull \(appModel.modelToPull)?",
             isPresented: $appModel.showPullConfirmation,
             titleVisibility: .visible

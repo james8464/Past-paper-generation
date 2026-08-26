@@ -179,6 +179,7 @@ private struct PaperConfiguration: View {
             }
         }
         .formStyle(.grouped)
+        .disabled(appModel.isRunning)
     }
 }
 

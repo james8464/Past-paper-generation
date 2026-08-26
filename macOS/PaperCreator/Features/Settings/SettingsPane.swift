@@ -98,6 +98,7 @@ private struct AISettingsTab: View {
 
         }
         .formStyle(.grouped)
+        .disabled(appModel.isRunning)
         .onChange(of: appModel.selectedModel) { _, _ in appModel.saveAISettings() }
         .onChange(of: appModel.openAIModel) { _, _ in appModel.saveAISettings() }
         .onChange(of: appModel.anthropicModel) { _, _ in appModel.saveAISettings() }
@@ -205,7 +206,7 @@ private struct AISettingsTab: View {
         case .apple:
             Section("Apple MLX") {
                 TextField("Model ID or path", text: $appModel.appleModel)
-                Text("Use a Hugging Face model ID or the path to a model already on this Mac.")
+                Text("Use a Hugging Face model ID or the path to a model already on this Mac. Paper Creator offers guided setup before the first live generation with each model.")
                     .foregroundStyle(.secondary)
             }
         }
@@ -257,6 +258,7 @@ private struct OutputSettingsTab: View {
             }
         }
         .formStyle(.grouped)
+        .disabled(appModel.isRunning)
     }
 }
 

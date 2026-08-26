@@ -8,11 +8,11 @@ from pathlib import Path
 
 import pytest
 
+from Backend.Core.events import GenerationUpdate, progress_emitter
+from Backend.Core.generation import checkpoint_path_for_job, handle_generate
+from Backend.Core.mlx_setup import MLXModelSetupRequired
 from Backend.Core.paths import absolute_user_path
 from Backend.Core.providers import _safe_provider_detail, parse_json_object
-from Backend.Core.generation import checkpoint_path_for_job
-from Backend.Core.events import GenerationUpdate, progress_emitter
-
 
 ROOT = Path(__file__).resolve().parents[1]
 BRIDGE = ROOT / "bridge.py"
@@ -498,6 +498,32 @@ def test_bad_output_path_returns_json_error(tmp_path: Path) -> None:
     events = [json.loads(line) for line in result.stdout.splitlines() if line.strip()]
     assert events[-1]["type"] == "error"
     assert "output folder" in str(events[-1]["message"])
+
+
+def test_generation_reports_a_structured_mlx_setup_request(
+    tmp_path: Path,
+    monkeypatch,
+    capsys,
+) -> None:
+    def missing_model(*_args, **_kwargs):
+        raise MLXModelSetupRequired("Approve setup again to restore it.")
+
+    monkeypatch.setattr("Backend.Core.generation._invoke_plugin", missing_model)
+    request = Namespace(
+        output=str(tmp_path),
+        api_key="",
+        model="mlx-community/test-model",
+        subject="economics",
+        paper="1",
+        provider="apple",
+        dry_run=False,
+        seed=123,
+    )
+
+    assert handle_generate(request) == 1
+    events = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
+    assert events[-1]["type"] == "error"
+    assert events[-1]["code"] == "mlx_setup_required"
 
 
 def test_benchmark_emits_samples_and_verdict(tmp_path: Path) -> None:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import builtins
 import json
 import sys
 from types import ModuleType
@@ -20,7 +21,7 @@ def test_apple_provider_loads_model_once(monkeypatch) -> None:
 
     def load(model_name: str) -> tuple[object, object]:
         calls["load"] += 1
-        assert model_name == "test-model"
+        assert model_name == "/local/test-model"
         return object(), object()
 
     def generate(
@@ -39,6 +40,10 @@ def test_apple_provider_loads_model_once(monkeypatch) -> None:
     module.load = load
     module.generate = generate
     monkeypatch.setitem(sys.modules, "mlx_lm", module)
+    monkeypatch.setattr(
+        "Backend.Core.providers.resolve_local_mlx_model",
+        lambda model: f"/local/{model}",
+    )
     client = HostedLLMClient(
         provider="apple",
         model="test-model",
@@ -49,6 +54,27 @@ def test_apple_provider_loads_model_once(monkeypatch) -> None:
     assert client.generate_json("second") == {"prompt": "second"}
     assert calls == {"load": 1, "generate": 2}
     assert client.supports_parallel_generation is False
+
+
+def test_apple_provider_missing_runtime_uses_human_recovery_message(
+    monkeypatch,
+) -> None:
+    real_import = builtins.__import__
+
+    def import_without_mlx(name, *args, **kwargs):
+        if name == "mlx_lm":
+            raise ImportError("simulated missing runtime")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", import_without_mlx)
+    client = HostedLLMClient(provider="apple", model="test-model", api_key="")
+
+    with pytest.raises(RuntimeError) as error:
+        client.generate_json("question")
+
+    message = str(error.value)
+    assert "Settings" in message
+    assert "pip" not in message.lower()
 
 
 def test_remote_hosted_providers_allow_parallel_generation() -> None:

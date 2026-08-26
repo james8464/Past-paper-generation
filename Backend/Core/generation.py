@@ -6,22 +6,30 @@ import importlib
 import inspect
 import json
 import os
-import signal
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
-import tomllib
 import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+import tomllib
+
 from Backend.Core.assessment_package import validate_assessment_package
 from Backend.Core.assessment_quality import validate_package_novelty
-from Backend.Core.events import BACKEND_VERSION, PROTOCOL_VERSION, emit, emit_progress, progress_emitter
+from Backend.Core.events import (
+    BACKEND_VERSION,
+    PROTOCOL_VERSION,
+    emit,
+    emit_progress,
+    progress_emitter,
+)
 from Backend.Core.generator_registry import GeneratorCapability, generator_capability
 from Backend.Core.layout_conformance import conform_generated_documents
+from Backend.Core.mlx_setup import MLXModelSetupRequired
 from Backend.Core.paths import REPO_ROOT, absolute_user_path
 from Backend.Core.pdf_validation import validate_pdf_for_release
 from Backend.Core.providers import hosted_client
@@ -88,6 +96,9 @@ def handle_generate(args: argparse.Namespace) -> int:
     except GenerationCancelled:
         emit_progress("Creation cancelled", stage="cancel", progress=0.0)
         return 130
+    except MLXModelSetupRequired as error:
+        emit("error", message=str(error), code="mlx_setup_required")
+        return 1
     except Exception as error:  # noqa: BLE001 - surfaced as actionable JSON.
         if os.environ.get("PAPER_CREATOR_DEBUG") == "1":
             emit("error", message=f"{error}\n{traceback.format_exc()}", code="generation_failed")

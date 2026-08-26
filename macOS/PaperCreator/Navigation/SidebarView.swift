@@ -22,6 +22,7 @@ struct Sidebar: View {
                 }
             }
         }
+        .disabled(appModel.isRunning)
         .navigationTitle("Paper creator")
         .frame(minWidth: 220)
         .onAppear(perform: expandSelectedSubject)

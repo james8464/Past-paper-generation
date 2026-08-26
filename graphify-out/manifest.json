@@ -10,8 +10,8 @@
     "semantic_hash": "fc33a74bf0728cbd3d897b9cddfe467c"
   },
   "Backend/Core/cli.py": {
-    "mtime": 1787412597.982181,
-    "ast_hash": "15069ebfd3280e470b3b65319f292beb",
+    "mtime": 1787738401.0915158,
+    "ast_hash": "c8ff59e5d23d7db096ee2fda3bb0b8b0",
     "semantic_hash": ""
   },
   "Backend/Core/events.py": {
@@ -30,8 +30,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
-    "mtime": 1787497347.148192,
-    "ast_hash": "8aaf832e18a8495895c0eb50fac111aa",
+    "mtime": 1787739308.944117,
+    "ast_hash": "6ba018bc0968528bedc9f0da02e74066",
     "semantic_hash": ""
   },
   "Backend/Core/generation_date.py": {
@@ -85,8 +85,8 @@
     "semantic_hash": "66f690e58a1faefd69367566e525dd8e"
   },
   "Backend/Core/providers.py": {
-    "mtime": 1787695797.3627985,
-    "ast_hash": "ae4af45278c3cc647ec9aaa8ce700ddc",
+    "mtime": 1787739045.4503732,
+    "ast_hash": "b9087f7bf0b7bab04de85ac1e2a937fc",
     "semantic_hash": ""
   },
   "Backend/__init__.py": {
@@ -645,8 +645,8 @@
     "semantic_hash": "9deb2ada1cc834bbebf8bbad9c8978a1"
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1787412598.0013316,
-    "ast_hash": "cffadbfcc957bab1c87d19b990e99a1c",
+    "mtime": 1787739776.6750371,
+    "ast_hash": "eafe4791184039cd9ce8ccb85b288f0c",
     "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
@@ -655,8 +655,8 @@
     "semantic_hash": "4fa9dfb92771238f19e9b459a6c38fd1"
   },
   "macOS/scripts/build_backend.sh": {
-    "mtime": 1787412598.0015638,
-    "ast_hash": "8212ff1432b20937257a0d1e2874eccc",
+    "mtime": 1787739776.675362,
+    "ast_hash": "9f8b0b25ed2f5275ebf854ddd18152d7",
     "semantic_hash": ""
   },
   "macOS/scripts/clean.sh": {
@@ -700,8 +700,8 @@
     "semantic_hash": "7206a074745730fe031e639b97fc47b2"
   },
   "tests/test_app_backend.py": {
-    "mtime": 1787492332.7574456,
-    "ast_hash": "7af071ef96a45e3fd3fbbc30b5a0eaee",
+    "mtime": 1787739308.9441097,
+    "ast_hash": "d8f9ece022654478cc929a88b9f84992",
     "semantic_hash": ""
   },
   "tests/test_aqa_accounting_calibration.py": {
@@ -935,14 +935,14 @@
     "semantic_hash": ""
   },
   "macOS/project.yml": {
-    "mtime": 1787412598.0014422,
-    "ast_hash": "d61535cb07ddf9e2d05af702b6d052cc",
+    "mtime": 1787738127.5721397,
+    "ast_hash": "778bbeb87717fb6d487ef316fd724bc3",
     "semantic_hash": ""
   },
   "requirements-build.txt": {
-    "mtime": 1784986017.4913216,
-    "ast_hash": "cc922ecbb3833cf3f4fd6e629f8016ca",
-    "semantic_hash": "cc922ecbb3833cf3f4fd6e629f8016ca"
+    "mtime": 1787738246.2024736,
+    "ast_hash": "d59b7466e1179276162a703a21480bab",
+    "semantic_hash": ""
   },
   "Design/AppIcon/PaperCreator-AppIcon-Master.png": {
     "mtime": 1785179949.2153118,
@@ -1055,8 +1055,8 @@
     "semantic_hash": ""
   },
   "tests/test_providers.py": {
-    "mtime": 1787695782.0213122,
-    "ast_hash": "15eb2f69681b165c6a83755d762a9ad2",
+    "mtime": 1787739095.1150594,
+    "ast_hash": "4072bfbec39e5c9695ec6e72fe688ae0",
     "semantic_hash": ""
   },
   "graphify-out/memory/query_20260729_191654_where_should_performance_and_generated_paper_accur.md": {
@@ -1095,8 +1095,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Application/AppConfiguration.swift": {
-    "mtime": 1787412597.9993284,
-    "ast_hash": "16351669cd6d6c8cedffdce4745efa6a",
+    "mtime": 1787739131.6226807,
+    "ast_hash": "07da01cf616c6862fae1ea2e2febe974",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Application/PaperCreatorApp.swift": {
@@ -1115,8 +1115,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Domain/AppModels.swift": {
-    "mtime": 1787412598.000529,
-    "ast_hash": "316e3f108b15cb7d3fe43ce28c2cebf7",
+    "mtime": 1787739776.6738153,
+    "ast_hash": "ea9a33b529a268e89e2b6db4a8c80d9a",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Domain/GenerationEstimator.swift": {
@@ -1130,8 +1130,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Generation/GeneratorWorkspaceView.swift": {
-    "mtime": 1787412598.0007517,
-    "ast_hash": "0e972769a061226997418622ec5603f8",
+    "mtime": 1787739624.5609407,
+    "ast_hash": "7810e9ce2f9b61e61239df5437ec0c93",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Onboarding/WelcomeHelpViews.swift": {
@@ -1140,22 +1140,22 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Settings/SettingsPane.swift": {
-    "mtime": 1787412598.0010107,
-    "ast_hash": "96f4a49225690d8c3a0a05035f8bc2a9",
+    "mtime": 1787739624.5605059,
+    "ast_hash": "7921dc85a867b775f0ddad54dbded87b",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Navigation/ContentView.swift": {
-    "mtime": 1785603986.15772,
-    "ast_hash": "2bf0f5cf92b4b386a0c496427ecad7b2",
+    "mtime": 1787738052.6644697,
+    "ast_hash": "5e580aae83976239a78e9ba8414bec22",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Navigation/SidebarView.swift": {
-    "mtime": 1785603986.1579137,
-    "ast_hash": "fd09108ac2d67261e54dc494b965ea70",
+    "mtime": 1787739624.5612266,
+    "ast_hash": "d3a8d2b91052f3aca6b6cf8afc1a2698",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Services/BackendClient.swift": {
-    "mtime": 1785606281.6277075,
+    "mtime": 1787739131.622245,
     "ast_hash": "cc8e7ac8018b57b8f243b6c3c3be863a",
     "semantic_hash": ""
   },
@@ -1165,8 +1165,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/State/AppViewModel.swift": {
-    "mtime": 1787412598.0011704,
-    "ast_hash": "82daa6fbb6e9103ea2bcdf8588611967",
+    "mtime": 1787739776.6745465,
+    "ast_hash": "8e541ccd3ef7ecea05e1c30174d46f56",
     "semantic_hash": ""
   },
   "tests/test_ai_assessment.py": {
@@ -1427,6 +1427,16 @@
   "Resources/economics/edexcel-a/generator/pastpapergen/stimulus_data.py": {
     "mtime": 1787606878.3351188,
     "ast_hash": "2fd9a9fa7797365cc59fdb28e69feba2",
+    "semantic_hash": ""
+  },
+  "Backend/Core/mlx_setup.py": {
+    "mtime": 1787739308.9563088,
+    "ast_hash": "4068060d072780ddd4c6000dcd90ec5b",
+    "semantic_hash": ""
+  },
+  "tests/test_mlx_setup.py": {
+    "mtime": 1787739308.9563198,
+    "ast_hash": "7fc72f80381bef205ae9969777dd5226",
     "semantic_hash": ""
   }
 }

@@ -23,6 +23,11 @@ if ! "$PYTHON" -c 'import PyInstaller' 2>/dev/null; then
   exit 1
 fi
 
+if ! "$PYTHON" -c 'import mlx_lm' 2>/dev/null; then
+  echo "error: Apple MLX support is missing from .venv. Run 'make backend-env' before building." >&2
+  exit 1
+fi
+
 build_fingerprint() {
   {
     printf '%s\n' \
@@ -34,6 +39,7 @@ build_fingerprint() {
     "$PYTHON" -c 'import PyInstaller; print(PyInstaller.__version__)'
     shasum \
       "$ROOT_DIR/bridge.py" \
+      "$ROOT_DIR/requirements-build.txt" \
       "$ROOT_DIR/macOS/PaperCreator/PaperCreatorBackend.entitlements" \
       "$ROOT_DIR/macOS/scripts/build_backend.sh" \
       "$ROOT_DIR/Resources/backend-protocol.schema.json" \
@@ -87,6 +93,8 @@ PYINSTALLER_ARGS=(
   --specpath "$WORK_DIR"
   --paths "$ROOT_DIR"
   --hidden-import fitz
+  --collect-all mlx
+  --collect-all mlx_lm
   --add-data "$ROOT_DIR/Resources/layout-master-runtime.json:Resources"
   --add-data "$ROOT_DIR/Resources/layout-profiles.json:Resources"
   --add-data "$ROOT_DIR/Resources/generator-registry.json:Resources"
@@ -130,6 +138,12 @@ if ! "$DIST_DIR/PaperCreatorBackend/PaperCreatorBackend" bundle-check \
   > "$WORK_DIR/bundle-check.jsonl"; then
   cat "$WORK_DIR/bundle-check.jsonl" >&2
   echo "error: Packaged backend failed its generator health check." >&2
+  exit 1
+fi
+if ! "$DIST_DIR/PaperCreatorBackend/PaperCreatorBackend" mlx-status \
+  > "$WORK_DIR/mlx-status.jsonl"; then
+  cat "$WORK_DIR/mlx-status.jsonl" >&2
+  echo "error: Packaged backend is missing Apple MLX support." >&2
   exit 1
 fi
 

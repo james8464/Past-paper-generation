@@ -1,2 +1,4 @@
 pyinstaller>=6.17,<7
-
+mlx-lm==0.30.2; platform_system == "Darwin" and platform_machine == "arm64"
+mlx==0.29.3; platform_system == "Darwin" and platform_machine == "arm64"
+mlx-metal==0.29.3; platform_system == "Darwin" and platform_machine == "arm64"

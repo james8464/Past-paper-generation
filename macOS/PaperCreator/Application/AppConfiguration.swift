@@ -43,6 +43,17 @@ enum AppDefaults {
             .appendingPathComponent("Paper creator/Generated papers", isDirectory: true)
     }
 
+    static func mlxCacheFolder() -> URL {
+        let fileManager = FileManager.default
+        let applicationSupport = fileManager.urls(
+            for: .applicationSupportDirectory,
+            in: .userDomainMask
+        ).first ?? fileManager.homeDirectoryForCurrentUser
+        return applicationSupport
+            .appendingPathComponent("Paper creator", isDirectory: true)
+            .appendingPathComponent("MLX Models", isDirectory: true)
+    }
+
     static func isSandboxDownloadsPath(_ path: String) -> Bool {
         path.contains("/Library/Containers/") && path.contains("/Data/Downloads")
     }
@@ -67,6 +78,7 @@ enum AppStorageKey {
     static let openAIModel = "openAIModel"
     static let anthropicModel = "anthropicModel"
     static let appleModel = "appleModel"
+    static let preparedMLXModels = "preparedMLXModels"
     static let dryRun = "dryRun"
     static let notificationsEnabled = "notificationsEnabled"
     static let hasSeenWelcome = "hasSeenWelcome"

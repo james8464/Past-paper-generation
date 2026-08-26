@@ -98,6 +98,8 @@ targets:
           - "$(SRCROOT)/../Backend/Core/generation.py"
           - "$(SRCROOT)/../Backend/Core/providers.py"
           - "$(SRCROOT)/../Backend/Core/model_recommendations.py"
+          - "$(SRCROOT)/../Backend/Core/mlx_setup.py"
+          - "$(SRCROOT)/../requirements-build.txt"
           - "$(SRCROOT)/../Resources/ollama-model-recommendations.json"
           - "$(SRCROOT)/../Resources/economics/edexcel-a/generator/pyproject.toml"
           - "$(SRCROOT)/../Resources/economics/aqa/generator/pyproject.toml"

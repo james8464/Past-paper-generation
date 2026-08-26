@@ -8,6 +8,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from Backend.Core.events import emit_progress
+from Backend.Core.mlx_setup import resolve_local_mlx_model
 
 
 class HostedLLMClient:
@@ -108,18 +109,19 @@ class HostedLLMClient:
 
     def _apple(self, prompt: str) -> dict[str, object]:
         try:
-            from mlx_lm import load, generate
+            from mlx_lm import generate, load
         except ImportError:
             raise RuntimeError(
-                "Apple MLX provider requires the 'mlx-lm' package.\n"
-                "Install it with: pip install mlx-lm"
+                "Apple MLX support is not ready. Open Settings, choose Apple "
+                "MLX, then run the guided setup and try again."
             ) from None
         # MLX model loading is expensive and can consume several gigabytes. Keep one
         # model per generation client, and serialize use because mlx-lm generation
         # mutates shared inference state.
         with self._apple_lock:
             if self._apple_model is None or self._apple_tokenizer is None:
-                self._apple_model, self._apple_tokenizer = load(self.model)
+                local_model = resolve_local_mlx_model(self.model)
+                self._apple_model, self._apple_tokenizer = load(local_model)
             response = generate(
                 self._apple_model,
                 self._apple_tokenizer,

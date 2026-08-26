@@ -556,7 +556,7 @@ enum BackendEvent: Equatable {
     case progress(stage: String?, message: String, progress: Double?)
     case file(role: String, path: String)
     case done(message: String)
-    case error(message: String)
+    case error(message: String, code: String? = nil)
     case models([String], message: String?)
     case ollamaStatus(installed: Bool, running: Bool, command: String?, message: String?)
     case benchmarkMetric(BenchmarkMetric)
@@ -581,7 +581,10 @@ enum BackendEvent: Equatable {
         case "done":
             self = .done(message: payload.message ?? "Done")
         case "error":
-            self = .error(message: payload.message ?? "Unknown backend error")
+            self = .error(
+                message: payload.message ?? "Unknown backend error",
+                code: payload.code
+            )
         case "models":
             self = .models(payload.models ?? [], message: payload.message)
         case "ollama_status":
@@ -635,6 +638,41 @@ enum BackendEvent: Equatable {
     }
 }
 
+enum MLXSetupPolicy {
+    static func requiresSetup(
+        provider: AIProvider,
+        model: String,
+        preparedModels: Set<String>,
+        usesAI: Bool,
+        dryRun: Bool
+    ) -> Bool {
+        guard provider == .apple, usesAI, !dryRun else { return false }
+        let model = model.trimmingCharacters(in: .whitespacesAndNewlines)
+        return !model.isEmpty && !preparedModels.contains(model)
+    }
+}
+
+struct MLXRecoveryState {
+    private(set) var needsSetupAfterGeneration = false
+
+    mutating func beginGeneration() {
+        needsSetupAfterGeneration = false
+    }
+
+    mutating func requestSetup() {
+        needsSetupAfterGeneration = true
+    }
+
+    mutating func cancel() {
+        needsSetupAfterGeneration = false
+    }
+
+    mutating func consumeSetupRequest() -> Bool {
+        defer { needsSetupAfterGeneration = false }
+        return needsSetupAfterGeneration
+    }
+}
+
 private struct BackendEventPayload: Decodable {
     let protocolVersion: Int?
     let type: String
@@ -645,6 +683,7 @@ private struct BackendEventPayload: Decodable {
     let capabilities: [String]?
     let stage: String?
     let message: String?
+    let code: String?
     let role: String?
     let path: String?
     let page: Int?
@@ -686,6 +725,7 @@ private struct BackendEventPayload: Decodable {
         case capabilities
         case stage
         case message
+        case code
         case role
         case path
         case page

@@ -4,15 +4,20 @@ import argparse
 import importlib
 import os
 import sys
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 from Backend.Core.benchmark import handle_benchmark
 from Backend.Core.events import BACKEND_VERSION, emit
 from Backend.Core.generation import handle_generate
 from Backend.Core.generator_registry import generator_capabilities, generator_subjects
+from Backend.Core.mlx_setup import handle_mlx_status, handle_setup_mlx
 from Backend.Core.model_recommendations import default_ollama_model
-from Backend.Core.ollama import handle_list_models, handle_ollama_status, handle_pull_model
+from Backend.Core.ollama import (
+    handle_list_models,
+    handle_ollama_status,
+    handle_pull_model,
+)
 from Backend.Core.paths import REPO_ROOT
 
 DEFAULT_OUTPUT_DIR = Path.home() / "Downloads"
@@ -40,6 +45,13 @@ def build_parser() -> argparse.ArgumentParser:
     pull = subparsers.add_parser("pull-model")
     pull.add_argument("--model", required=True)
     pull.set_defaults(handler=handle_pull_model)
+
+    mlx_setup = subparsers.add_parser("setup-mlx")
+    mlx_setup.add_argument("--model", required=True)
+    mlx_setup.set_defaults(handler=handle_setup_mlx)
+
+    mlx_status = subparsers.add_parser("mlx-status")
+    mlx_status.set_defaults(handler=handle_mlx_status)
 
     benchmark = subparsers.add_parser("benchmark")
     benchmark.add_argument("--duration", type=float, default=DEFAULT_BENCHMARK_DURATION_SECONDS)

@@ -29,6 +29,7 @@ final class AppViewModel: ObservableObject {
     @Published var anthropicAPIKey = ""
     @Published var showPullConfirmation = false
     @Published var showHostedAIConsent = false
+    @Published var showMLXSetupConfirmation = false
     @Published var showError = false
     @Published var errorMessage = ""
     @Published var showWelcome = false
@@ -56,6 +57,8 @@ final class AppViewModel: ObservableObject {
     private var activeOperation = RunningOperation.none
     private var etaTimer: AnyCancellable?
     private var pendingHostedProvider: AIProvider?
+    private var preparedMLXModels: Set<String> = []
+    private var mlxRecoveryState = MLXRecoveryState()
     private var securityScopedOutputFolder: URL?
 
     var selectedBoard: ExamBoardOption {
@@ -157,6 +160,16 @@ final class AppViewModel: ObservableObject {
         AppDefaults.displayPath(outputFolder)
     }
 
+    var mlxSetupExplanation: String {
+        let model = appleModel.trimmingCharacters(in: .whitespacesAndNewlines)
+        let runtimeDetail = distributionMode == .appStore
+            ? "Apple MLX support is included with Paper Creator."
+            : "Paper Creator will install Apple MLX into its managed environment if needed."
+        return "\(runtimeDetail) It will then download and prepare \(model). "
+            + "Models can use several gigabytes of storage. Generation remains on this Mac, "
+            + "and setup does not require Terminal or an administrator password."
+    }
+
     init() {
         let ollamaModel = defaults.string(forKey: AppStorageKey.ollamaModel) ?? AppDefaults.ollamaModel
         aiProvider = AIProvider(rawValue: defaults.string(forKey: AppStorageKey.aiProvider) ?? "") ?? .ollama
@@ -165,6 +178,9 @@ final class AppViewModel: ObservableObject {
         openAIModel = defaults.string(forKey: AppStorageKey.openAIModel) ?? AppDefaults.openAIModel
         anthropicModel = defaults.string(forKey: AppStorageKey.anthropicModel) ?? AppDefaults.anthropicModel
         appleModel = defaults.string(forKey: AppStorageKey.appleModel) ?? AppDefaults.appleModel
+        preparedMLXModels = Set(
+            defaults.stringArray(forKey: AppStorageKey.preparedMLXModels) ?? []
+        )
         dryRun = defaults.bool(forKey: AppStorageKey.dryRun)
         openAIAPIKey = SecretStore.read(SecretAccount.openAIAPIKey)
         anthropicAPIKey = SecretStore.read(SecretAccount.anthropicAPIKey)
@@ -210,6 +226,7 @@ final class AppViewModel: ObservableObject {
     }
 
     func chooseOutputFolder() {
+        guard !isRunning else { return }
         let panel = NSOpenPanel()
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
@@ -238,6 +255,7 @@ final class AppViewModel: ObservableObject {
     }
 
     func selectBoard(_ board: ExamBoardOption) {
+        guard !isRunning else { return }
         guard selectedBoardID != board.id || !board.papers.contains(where: { $0.id == selectedPaperID }) else {
             return
         }
@@ -251,6 +269,7 @@ final class AppViewModel: ObservableObject {
     }
 
     func selectPaperID(_ paperID: String) {
+        guard !isRunning else { return }
         guard selectedPaperID != paperID else {
             defaults.set(paperID, forKey: AppStorageKey.selectedPaperID)
             return
@@ -260,6 +279,7 @@ final class AppViewModel: ObservableObject {
     }
 
     func selectAIProvider(_ provider: AIProvider) {
+        guard !isRunning else { return }
         guard provider != aiProvider else { return }
         if provider.sendsPromptsOffDevice && !hasHostedAIConsent {
             pendingHostedProvider = provider
@@ -304,12 +324,24 @@ final class AppViewModel: ObservableObject {
             showHostedAIConsent = true
             return
         }
+        if MLXSetupPolicy.requiresSetup(
+            provider: aiProvider,
+            model: activeModelName,
+            preparedModels: preparedMLXModels,
+            usesAI: selectedBoard.usesAI,
+            dryRun: dryRun
+        ) {
+            showMLXSetupConfirmation = true
+            status = "Apple MLX setup required"
+            return
+        }
         persistSettings()
 
         progressEntries.removeAll()
         lastQualityReport = nil
         didReceiveBackendError = false
         didCancelRun = false
+        mlxRecoveryState.beginGeneration()
         isRunning = true
         status = "Starting"
         generationProgress = 0.02
@@ -345,6 +377,9 @@ final class AppViewModel: ObservableObject {
                 forInfoDictionaryKey: "CFBundleVersion"
             ) as? String ?? "development",
         ]
+        if aiProvider == .apple {
+            backendEnvironment["HF_HOME"] = AppDefaults.mlxCacheFolder().path
+        }
         switch selectedBoard.usesAI ? aiProvider : .ollama {
         case .ollama, .apple:
             break
@@ -370,9 +405,57 @@ final class AppViewModel: ObservableObject {
         }
     }
 
+    func confirmMLXSetup() {
+        let model = appleModel.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !model.isEmpty else {
+            showMLXSetupConfirmation = false
+            setError("Choose an Apple MLX model in Settings, then try again.")
+            return
+        }
+
+        showMLXSetupConfirmation = false
+        isRunning = true
+        status = "Setting up Apple MLX"
+        generationProgress = 0.05
+        progressEntries.removeAll()
+        didReceiveBackendError = false
+        didCancelRun = false
+        activeOperation = .mlxSetup
+        generationEstimate = nil
+        etaTimer?.cancel()
+        etaTimer = nil
+
+        do {
+            runningProcess = try backend.run(
+                arguments: ["setup-mlx", "--model", model],
+                environment: ["HF_HOME": AppDefaults.mlxCacheFolder().path]
+            ) { [weak self] event in
+                self?.apply(event)
+            } onFinish: { [weak self] result in
+                self?.finishMLXSetup(result, model: model)
+            }
+            notifyStarted(for: .mlxSetup)
+        } catch {
+            finishMLXSetup(.failure(error), model: model)
+        }
+    }
+
+    func cancelMLXSetup() {
+        showMLXSetupConfirmation = false
+        status = "Ready"
+    }
+
     func cancelGeneration() {
         didCancelRun = true
+        mlxRecoveryState.cancel()
         runningProcess?.terminate()
+        if activeOperation == .mlxSetup {
+            status = "Cancelling Apple MLX setup"
+            progressEntries.append(
+                ProgressEntry(stage: "cancel", message: "Cancelling Apple MLX setup…")
+            )
+            return
+        }
         runningProcess = nil
         isRunning = false
         status = "Cancelled"
@@ -544,6 +627,7 @@ final class AppViewModel: ObservableObject {
     }
 
     func setDryRun(_ enabled: Bool) {
+        guard !isRunning else { return }
         dryRun = enabled
         defaults.set(enabled, forKey: AppStorageKey.dryRun)
     }
@@ -681,9 +765,17 @@ final class AppViewModel: ObservableObject {
             generationProgress = 1.0
             updateGenerationEstimate()
             progressEntries.append(ProgressEntry(stage: "done", message: message))
-        case let .error(message):
+        case let .error(message, code):
             guard !didCancelRun else { return }
             didReceiveBackendError = true
+            if code == "mlx_setup_required", activeOperation == .generation {
+                let model = appleModel.trimmingCharacters(in: .whitespacesAndNewlines)
+                preparedMLXModels.remove(model)
+                defaults.set(preparedMLXModels.sorted(), forKey: AppStorageKey.preparedMLXModels)
+                mlxRecoveryState.requestSetup()
+                status = "Apple MLX setup required"
+                return
+            }
             setError(message)
             notifyFailure(for: activeOperation, message: message)
         case let .models(models, message):
@@ -716,9 +808,17 @@ final class AppViewModel: ObservableObject {
         etaTimer = nil
         if didCancelRun {
             didCancelRun = false
+            mlxRecoveryState.cancel()
             status = "Cancelled"
             generationProgress = nil
             generationEstimate = nil
+            return
+        }
+        if mlxRecoveryState.consumeSetupRequest() {
+            generationProgress = nil
+            generationEstimate = nil
+            status = "Apple MLX setup required"
+            showMLXSetupConfirmation = true
             return
         }
 
@@ -746,6 +846,40 @@ final class AppViewModel: ObservableObject {
         case let .failure(error):
             setError(error.localizedDescription)
             notifyFailure(for: operation, message: error.localizedDescription)
+        }
+    }
+
+    private func finishMLXSetup(_ result: Result<Int32, Error>, model: String) {
+        runningProcess = nil
+        isRunning = false
+        activeOperation = .none
+        generationProgress = nil
+
+        if didCancelRun {
+            didCancelRun = false
+            status = "Cancelled"
+            progressEntries.append(
+                ProgressEntry(stage: "cancel", message: "Apple MLX setup cancelled.")
+            )
+            return
+        }
+
+        switch result {
+        case let .success(code) where code == 0 && !didReceiveBackendError:
+            preparedMLXModels.insert(model)
+            defaults.set(preparedMLXModels.sorted(), forKey: AppStorageKey.preparedMLXModels)
+            status = "Apple MLX is ready"
+            notifySuccess(for: .mlxSetup)
+            generate()
+        case let .success(code):
+            if !didReceiveBackendError {
+                let message = "Apple MLX setup could not finish (code \(code)). Check your connection and storage, then try Setup Again."
+                setError(message)
+                notifyFailure(for: .mlxSetup, message: message)
+            }
+        case let .failure(error):
+            setError(error.localizedDescription)
+            notifyFailure(for: .mlxSetup, message: error.localizedDescription)
         }
     }
 
@@ -855,6 +989,8 @@ final class AppViewModel: ObservableObject {
             sendNotification(title: "Your paper is ready", body: "The paper and mark scheme are in \(outputFolder.lastPathComponent).")
         case .modelPull:
             sendNotification(title: "Model ready", body: "\(selectedModel) is available in Ollama.")
+        case .mlxSetup:
+            sendNotification(title: "Apple MLX ready", body: "The selected model is ready for local generation.")
         case .none:
             break
         }
@@ -869,6 +1005,8 @@ final class AppViewModel: ObservableObject {
             )
         case .modelPull:
             sendNotification(title: "Downloading model", body: "Ollama is downloading \(modelToPull).")
+        case .mlxSetup:
+            sendNotification(title: "Setting up Apple MLX", body: "Paper Creator is preparing the selected local model.")
         case .none:
             break
         }
@@ -880,6 +1018,8 @@ final class AppViewModel: ObservableObject {
             sendNotification(title: "Couldn’t create the paper", body: message)
         case .modelPull:
             sendNotification(title: "Couldn’t download the model", body: message)
+        case .mlxSetup:
+            sendNotification(title: "Apple MLX setup needs attention", body: message)
         case .none:
             break
         }
@@ -936,4 +1076,5 @@ private enum RunningOperation {
     case none
     case generation
     case modelPull
+    case mlxSetup
 }
