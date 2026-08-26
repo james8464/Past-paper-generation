@@ -47,4 +47,4 @@ def test_registry_links_calibration_without_false_difficulty_claim() -> None:
     assert family["calibration_path"] == (
         "computer-science/ocr/generator/data/difficulty-calibration.json"
     )
-    assert all(paper["gates"]["difficulty"] is False for paper in family["papers"])
+    assert all(paper["checks"]["difficulty"] is False for paper in family["papers"])

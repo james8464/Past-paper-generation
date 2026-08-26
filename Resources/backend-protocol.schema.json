@@ -30,7 +30,21 @@
     "path": {"type": "string"},
     "code": {"type": "string"},
     "backend_version": {"type": "string"},
-    "capabilities": {"type": "array", "items": {"type": "string"}}
+    "capabilities": {"type": "array", "items": {"type": "string"}},
+    "qualification_levels": {
+      "type": "object",
+      "required": [
+        "engineering_validated",
+        "visually_calibrated",
+        "empirically_calibrated"
+      ],
+      "properties": {
+        "engineering_validated": {"type": "boolean"},
+        "visually_calibrated": {"type": "boolean"},
+        "empirically_calibrated": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    }
   },
   "allOf": [
     {

@@ -6,6 +6,7 @@ import sys
 
 from Backend.Core.generator_registry import (
     REGISTRY_PATH,
+    _paper_qualification,
     generator_capabilities,
     generator_subjects,
 )
@@ -20,9 +21,45 @@ def test_registry_is_the_canonical_backend_subject_list() -> None:
         if family["advertised"]
     ]
 
-    assert payload["schema_version"] == 2
+    assert payload["schema_version"] == 3
     assert generator_subjects() == tuple(advertised)
     assert set(generator_capabilities()) == set(advertised)
+
+
+def test_registry_migrates_legacy_gates_without_false_empirical_readiness() -> None:
+    readiness = _paper_qualification(
+        {
+            "gates": {
+                "release": True,
+                "visual": True,
+                "difficulty": False,
+            }
+        }
+    )
+
+    assert readiness.engineering_validated is True
+    assert readiness.visually_calibrated is True
+    assert readiness.empirically_calibrated is False
+
+
+def test_every_current_paper_has_truthful_qualification_levels() -> None:
+    readiness = {
+        (capability.id, paper): capability.qualification_by_paper[paper]
+        for capability in generator_capabilities().values()
+        for paper in capability.papers
+    }
+
+    assert len(readiness) == 18
+    assert all(value.engineering_validated for value in readiness.values())
+    assert all(not value.empirically_calibrated for value in readiness.values())
+    assert {
+        key for key, value in readiness.items() if not value.visually_calibrated
+    } == {
+        ("aqa/computer-science", "2"),
+        ("pearson-edexcel/economics-a-2015", "1"),
+        ("pearson-edexcel/economics-a-2015", "2"),
+        ("pearson-edexcel/economics-a-2015", "3"),
+    }
 
 
 def test_every_advertised_generator_creates_unique_ai_content() -> None:

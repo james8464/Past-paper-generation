@@ -16,13 +16,26 @@ struct PaperOption: Identifiable, Hashable {
     let id: String
     let title: String
     let detail: String
-    let readiness: PaperReadiness
+    let readiness: QualificationReadiness
 }
 
-struct PaperReadiness: Hashable {
-    let difficultyVerified: Bool
+struct QualificationReadiness: Hashable {
+    let engineeringValidated: Bool
     let visuallyCalibrated: Bool
-    let releaseReady: Bool
+    let empiricallyCalibrated: Bool
+
+    var highestLevelTitle: String {
+        if empiricallyCalibrated {
+            return "Empirically calibrated"
+        }
+        if visuallyCalibrated {
+            return "Visually calibrated"
+        }
+        if engineeringValidated {
+            return "Engineering validated"
+        }
+        return "Not validated"
+    }
 }
 
 enum GeneratorContentMode: String, Hashable, Codable {
@@ -153,11 +166,7 @@ enum CatalogLoader {
                                 id: $0.id,
                                 title: $0.title,
                                 detail: $0.detail,
-                                readiness: PaperReadiness(
-                                    difficultyVerified: $0.gates["difficulty"] ?? false,
-                                    visuallyCalibrated: $0.gates["visual"] ?? false,
-                                    releaseReady: $0.gates["release"] ?? false
-                                )
+                                readiness: $0.readiness
                             )
                         },
                         resourcePath: implementation.resourcePath,
@@ -229,7 +238,58 @@ private struct GeneratorPaperDocument: Decodable {
     let id: String
     let title: String
     let detail: String
-    let gates: [String: Bool]
+    let checks: [String: Bool]
+    let qualification: [String: QualificationLevelDocument]?
+    let legacyGates: [String: Bool]
+
+    var readiness: QualificationReadiness {
+        if let qualification {
+            return QualificationReadiness(
+                engineeringValidated: qualification["engineering"]?.isPassed ?? false,
+                visuallyCalibrated: qualification["visual"]?.isPassed ?? false,
+                empiricallyCalibrated: qualification["empirical"]?.isPassed ?? false
+            )
+        }
+        return QualificationReadiness(
+            engineeringValidated: legacyGates["release"] ?? false,
+            visuallyCalibrated: legacyGates["visual"] ?? false,
+            empiricallyCalibrated: legacyGates["difficulty"] ?? false
+        )
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case title
+        case detail
+        case checks
+        case qualification
+        case gates
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        id = try values.decode(String.self, forKey: .id)
+        title = try values.decode(String.self, forKey: .title)
+        detail = try values.decode(String.self, forKey: .detail)
+        checks = try values.decodeIfPresent([String: Bool].self, forKey: .checks) ?? [:]
+        qualification = try values.decodeIfPresent(
+            [String: QualificationLevelDocument].self,
+            forKey: .qualification
+        )
+        legacyGates = try values.decodeIfPresent(
+            [String: Bool].self,
+            forKey: .gates
+        ) ?? [:]
+    }
+}
+
+private struct QualificationLevelDocument: Decodable {
+    let state: String
+    let evidence: [String]
+
+    var isPassed: Bool {
+        state == "passed" || state == "not_applicable"
+    }
 }
 
 enum CatalogLoadError: LocalizedError {

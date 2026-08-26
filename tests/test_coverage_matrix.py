@@ -74,8 +74,15 @@ def test_registry_rejects_unknown_layout_family() -> None:
 
 def test_registry_rejects_missing_gate() -> None:
     registry = copy.deepcopy(load_json(GENERATOR_REGISTRY))
-    del registry["families"][0]["papers"][0]["gates"]["difficulty"]
-    with pytest.raises(ValueError, match="gates do not match registry"):
+    del registry["families"][0]["papers"][0]["checks"]["difficulty"]
+    with pytest.raises(ValueError, match="checks do not match registry"):
+        build_matrix(load_json(LAYOUT_PROFILES), registry)
+
+
+def test_registry_rejects_missing_qualification_level() -> None:
+    registry = copy.deepcopy(load_json(GENERATOR_REGISTRY))
+    del registry["families"][0]["papers"][0]["qualification"]["empirical"]
+    with pytest.raises(ValueError, match="qualification levels"):
         build_matrix(load_json(LAYOUT_PROFILES), registry)
 
 
@@ -88,7 +95,9 @@ def test_registry_rejects_missing_resource_pack(tmp_path: Path) -> None:
 def test_no_verified_paper_has_a_failed_gate() -> None:
     for item in matrix()["families"]:
         for paper in item["papers"]:
-            assert (paper["status"] == "verified") is all(paper["gates"].values())
+            assert (paper["status"] == "empirically-calibrated") is (
+                paper["qualification"]["empirical"]["state"] == "passed"
+            )
 
 
 def test_reference_corpus_is_not_a_shipped_resource_path() -> None:

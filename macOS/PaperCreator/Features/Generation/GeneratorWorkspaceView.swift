@@ -240,11 +240,13 @@ private struct QualityInspector: View {
 
     var body: some View {
         Form {
-            Section("Release gates") {
+            Section("Qualification") {
                 qualityRow(
-                    "Blueprint",
-                    detail: "Structure, marks, AO allocation, and command words are locked.",
-                    state: .passed
+                    "Engineering",
+                    detail: appModel.selectedPaper.readiness.engineeringValidated
+                        ? "Generation, validation, rendering, and packaging checks pass."
+                        : "Engineering validation is incomplete for this paper.",
+                    state: appModel.selectedPaper.readiness.engineeringValidated ? .passed : .pending
                 )
                 qualityRow(
                     "Originality",
@@ -259,11 +261,11 @@ private struct QualityInspector: View {
                     state: appModel.selectedPaper.readiness.visuallyCalibrated ? .passed : .pending
                 )
                 qualityRow(
-                    "Difficulty",
-                    detail: appModel.selectedPaper.readiness.difficultyVerified
-                        ? "Independent response-data calibration is complete."
-                        : "Intended demand is checked; psychometric equivalence is not claimed.",
-                    state: appModel.selectedPaper.readiness.difficultyVerified ? .passed : .pending
+                    "Empirical demand",
+                    detail: appModel.selectedPaper.readiness.empiricallyCalibrated
+                        ? "Independent student and marker calibration is complete."
+                        : "The paper targets the board demand profile; equivalent difficulty is not claimed.",
+                    state: appModel.selectedPaper.readiness.empiricallyCalibrated ? .passed : .pending
                 )
             }
 

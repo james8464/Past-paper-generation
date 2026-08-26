@@ -8,10 +8,20 @@ from typing import Any
 
 from Backend.Core.paths import REPO_ROOT
 
-
 REGISTRY_PATH = REPO_ROOT / "Resources" / "generator-registry.json"
 KNOWN_PROVIDERS = frozenset({"ollama", "openai", "anthropic", "apple"})
 KNOWN_CONTENT_MODES = frozenset({"deterministic", "ai-assisted"})
+KNOWN_QUALIFICATION_STATES = frozenset(
+    {"not_run", "passed", "failed", "not_applicable"}
+)
+
+
+@dataclass(frozen=True)
+class PaperQualification:
+    engineering_validated: bool
+    visually_calibrated: bool
+    empirically_calibrated: bool
+    evidence_by_level: dict[str, tuple[str, ...]]
 
 
 @dataclass(frozen=True)
@@ -28,6 +38,7 @@ class GeneratorCapability:
     papers: tuple[str, ...]
     outputs_by_paper: dict[str, tuple[str, ...]]
     evidence_by_paper: dict[str, dict[str, bool]]
+    qualification_by_paper: dict[str, PaperQualification]
 
     @property
     def uses_ai(self) -> bool:
@@ -45,7 +56,7 @@ class GeneratorCapability:
 @lru_cache(maxsize=1)
 def generator_capabilities() -> dict[str, GeneratorCapability]:
     payload = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
-    if payload.get("schema_version") != 2:
+    if payload.get("schema_version") not in {2, 3}:
         raise ValueError(
             f"unsupported generator registry schema: {payload.get('schema_version')}"
         )
@@ -105,12 +116,16 @@ def _capability(raw: dict[str, Any]) -> GeneratorCapability:
     evidence = {
         str(item["id"]): {
             str(gate): bool(passed)
-            for gate, passed in item.get("gates", {}).items()
+            for gate, passed in item.get("checks", item.get("gates", {})).items()
         }
         for item in raw.get("papers", [])
     }
     if set(evidence) != set(papers):
         raise ValueError(f"{raw['id']} is missing per-paper evidence")
+    qualification = {
+        str(item["id"]): _paper_qualification(item)
+        for item in raw.get("papers", [])
+    }
     entry_point = str(raw.get("entry_point", ""))
     package = str(raw.get("package", ""))
     if not entry_point.startswith(f"{package}.") or ":" not in entry_point:
@@ -131,6 +146,55 @@ def _capability(raw: dict[str, Any]) -> GeneratorCapability:
         papers=papers,
         outputs_by_paper=outputs,
         evidence_by_paper=evidence,
+        qualification_by_paper=qualification,
+    )
+
+
+def _paper_qualification(raw: dict[str, Any]) -> PaperQualification:
+    payload = raw.get("qualification")
+    if payload is None:
+        gates = raw.get("gates", {})
+        if not isinstance(gates, dict):
+            raise ValueError("legacy paper gates must be an object")
+        return PaperQualification(
+            engineering_validated=bool(gates.get("release", False)),
+            visually_calibrated=bool(gates.get("visual", False)),
+            empirically_calibrated=bool(gates.get("difficulty", False)),
+            evidence_by_level={},
+        )
+    if not isinstance(payload, dict) or set(payload) != {
+        "engineering",
+        "visual",
+        "empirical",
+    }:
+        raise ValueError("paper qualification levels must be engineering, visual, empirical")
+
+    def level(name: str) -> tuple[bool, tuple[str, ...]]:
+        value = payload[name]
+        if not isinstance(value, dict):
+            raise ValueError(f"paper qualification {name} must be an object")
+        state = str(value.get("state", ""))
+        if state not in KNOWN_QUALIFICATION_STATES:
+            raise ValueError(f"paper qualification {name} has invalid state: {state}")
+        evidence = value.get("evidence", [])
+        if not isinstance(evidence, list) or not all(
+            isinstance(path, str) and path for path in evidence
+        ):
+            raise ValueError(f"paper qualification {name} evidence must be paths")
+        return state in {"passed", "not_applicable"}, tuple(evidence)
+
+    engineering, engineering_evidence = level("engineering")
+    visual, visual_evidence = level("visual")
+    empirical, empirical_evidence = level("empirical")
+    return PaperQualification(
+        engineering_validated=engineering,
+        visually_calibrated=visual,
+        empirically_calibrated=empirical,
+        evidence_by_level={
+            "engineering": engineering_evidence,
+            "visual": visual_evidence,
+            "empirical": empirical_evidence,
+        },
     )
 
 

@@ -72,10 +72,10 @@ final class AppViewModel: ObservableObject {
                 id: "unknown",
                 title: "Unknown",
                 detail: "",
-                readiness: PaperReadiness(
-                    difficultyVerified: false,
+                readiness: QualificationReadiness(
+                    engineeringValidated: false,
                     visuallyCalibrated: false,
-                    releaseReady: false
+                    empiricallyCalibrated: false
                 )
             )
     }
@@ -602,7 +602,7 @@ final class AppViewModel: ObservableObject {
             "Selected paper: \(selectedPaper.title) - \(selectedPaper.detail)",
             "Generation mode: \(generationMode)",
             "Visual profile: \(selectedPaper.readiness.visuallyCalibrated ? "Reviewed" : "Not reviewed")",
-            "Difficulty verification: \(selectedPaper.readiness.difficultyVerified ? "Passed" : "Not independently verified")",
+            "Empirical calibration: \(selectedPaper.readiness.empiricallyCalibrated ? "Passed" : "Not independently verified")",
             "Hosted AI consent: \(hasHostedAIConsent ? "Accepted" : "Not accepted")",
             "Ollama: \(ollamaState.message)",
             "Output folder: \(outputFolder.path)",

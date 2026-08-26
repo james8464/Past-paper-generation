@@ -62,8 +62,8 @@
           "id": "1",
           "title": "Paper 1",
           "detail": "Financial Accounting",
-          "status": "implemented",
-          "gates": {
+          "status": "visually-calibrated",
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -75,14 +75,32 @@
             "runtime": true,
             "visual": true,
             "release": true
+          },
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
           }
         },
         {
           "id": "2",
           "title": "Paper 2",
           "detail": "Accounting for Analysis and Decision-making",
-          "status": "implemented",
-          "gates": {
+          "status": "visually-calibrated",
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -94,6 +112,24 @@
             "runtime": true,
             "visual": true,
             "release": true
+          },
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
           }
         }
       ],
@@ -228,8 +264,8 @@
           "id": "1",
           "title": "Paper 1",
           "detail": "Business 1",
-          "status": "implemented",
-          "gates": {
+          "status": "visually-calibrated",
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -241,14 +277,32 @@
             "runtime": true,
             "visual": true,
             "release": true
+          },
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
           }
         },
         {
           "id": "2",
           "title": "Paper 2",
           "detail": "Business 2",
-          "status": "implemented",
-          "gates": {
+          "status": "visually-calibrated",
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -260,14 +314,32 @@
             "runtime": true,
             "visual": true,
             "release": true
+          },
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
           }
         },
         {
           "id": "3",
           "title": "Paper 3",
           "detail": "Business 3",
-          "status": "implemented",
-          "gates": {
+          "status": "visually-calibrated",
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -279,6 +351,24 @@
             "runtime": true,
             "visual": true,
             "release": true
+          },
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
           }
         }
       ],
@@ -355,8 +445,8 @@
           "id": "1",
           "title": "Paper 1",
           "detail": "On-screen programming assessment (Python 3)",
-          "status": "implemented",
-          "gates": {
+          "status": "visually-calibrated",
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -368,14 +458,32 @@
             "runtime": true,
             "visual": true,
             "release": true
+          },
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
           }
         },
         {
           "id": "2",
           "title": "Paper 2",
           "detail": "A-level Computer Science Paper 2",
-          "status": "implemented",
-          "gates": {
+          "status": "engineering-validated",
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -387,6 +495,22 @@
             "runtime": true,
             "visual": false,
             "release": true
+          },
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
           }
         }
       ],
@@ -521,8 +645,8 @@
           "id": "1",
           "title": "Paper 1",
           "detail": "Markets and market failure",
-          "status": "implemented",
-          "gates": {
+          "status": "visually-calibrated",
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -534,14 +658,32 @@
             "runtime": true,
             "visual": true,
             "release": true
+          },
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
           }
         },
         {
           "id": "2",
           "title": "Paper 2",
           "detail": "National and international economy",
-          "status": "implemented",
-          "gates": {
+          "status": "visually-calibrated",
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -553,14 +695,32 @@
             "runtime": true,
             "visual": true,
             "release": true
+          },
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
           }
         },
         {
           "id": "3",
           "title": "Paper 3",
           "detail": "Economic principles and issues",
-          "status": "implemented",
-          "gates": {
+          "status": "visually-calibrated",
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -572,6 +732,24 @@
             "runtime": true,
             "visual": true,
             "release": true
+          },
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
           }
         }
       ],
@@ -1488,8 +1666,8 @@
           "id": "1",
           "title": "Paper 1",
           "detail": "Computer systems",
-          "status": "implemented",
-          "gates": {
+          "status": "visually-calibrated",
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -1501,14 +1679,32 @@
             "runtime": true,
             "visual": true,
             "release": true
+          },
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
           }
         },
         {
           "id": "2",
           "title": "Paper 2",
           "detail": "Algorithms and programming",
-          "status": "implemented",
-          "gates": {
+          "status": "visually-calibrated",
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -1520,6 +1716,24 @@
             "runtime": true,
             "visual": true,
             "release": true
+          },
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
           }
         }
       ],
@@ -1626,8 +1840,8 @@
           "id": "1",
           "title": "Paper 1",
           "detail": "Microeconomics",
-          "status": "implemented",
-          "gates": {
+          "status": "visually-calibrated",
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -1639,14 +1853,32 @@
             "runtime": true,
             "visual": true,
             "release": true
+          },
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
           }
         },
         {
           "id": "2",
           "title": "Paper 2",
           "detail": "Macroeconomics",
-          "status": "implemented",
-          "gates": {
+          "status": "visually-calibrated",
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -1658,14 +1890,32 @@
             "runtime": true,
             "visual": true,
             "release": true
+          },
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
           }
         },
         {
           "id": "3",
           "title": "Paper 3",
           "detail": "Themes in economics",
-          "status": "implemented",
-          "gates": {
+          "status": "visually-calibrated",
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -1677,6 +1927,24 @@
             "runtime": true,
             "visual": true,
             "release": true
+          },
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
           }
         }
       ],
@@ -2567,8 +2835,8 @@
           "id": "1",
           "title": "Paper 1",
           "detail": "Markets and business behaviour",
-          "status": "implemented",
-          "gates": {
+          "status": "engineering-validated",
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -2580,14 +2848,30 @@
             "runtime": true,
             "visual": false,
             "release": true
+          },
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
           }
         },
         {
           "id": "2",
           "title": "Paper 2",
           "detail": "The national and global economy",
-          "status": "implemented",
-          "gates": {
+          "status": "engineering-validated",
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -2599,14 +2883,30 @@
             "runtime": true,
             "visual": false,
             "release": true
+          },
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
           }
         },
         {
           "id": "3",
           "title": "Paper 3",
           "detail": "Microeconomics and macroeconomics",
-          "status": "implemented",
-          "gates": {
+          "status": "engineering-validated",
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -2618,6 +2918,22 @@
             "runtime": true,
             "visual": false,
             "release": true
+          },
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
           }
         }
       ],

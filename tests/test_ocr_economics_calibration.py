@@ -45,4 +45,4 @@ def test_registry_links_ocr_calibration_without_false_promotion() -> None:
     assert family["calibration_path"] == (
         "economics/ocr/generator/data/difficulty-calibration.json"
     )
-    assert all(paper["gates"]["difficulty"] is False for paper in family["papers"])
+    assert all(paper["checks"]["difficulty"] is False for paper in family["papers"])

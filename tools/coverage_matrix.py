@@ -5,7 +5,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-
 ROOT = Path(__file__).resolve().parents[1]
 RESOURCES = ROOT / "Resources"
 LAYOUT_PROFILES = RESOURCES / "layout-profiles.json"
@@ -64,7 +63,11 @@ def build_matrix(
         papers = _paper_rows(implementation, gates) if implementation else []
         declared_papers = list(implementation["declared_papers"]) if implementation else []
         supported_papers = [paper["id"] for paper in papers]
-        verified_papers = [paper["id"] for paper in papers if paper["status"] == "verified"]
+        verified_papers = [
+            paper["id"]
+            for paper in papers
+            if paper["status"] == "empirically-calibrated"
+        ]
         if not implementation:
             status = "reference-profiled"
         elif set(supported_papers) != set(declared_papers):
@@ -175,13 +178,32 @@ def _validate_implementation(
         if paper_id in paper_ids:
             raise ValueError(f"{expected_id} has duplicate paper implementation: {paper_id}")
         paper_ids.add(paper_id)
-        paper_gates = paper.get("gates")
-        if not isinstance(paper_gates, dict):
-            raise ValueError(f"{expected_id} paper {paper_id} has no gate object")
-        if set(paper_gates) != set(readiness_gates):
-            raise ValueError(f"{expected_id} paper {paper_id} gates do not match registry")
-        if not all(isinstance(value, bool) for value in paper_gates.values()):
-            raise ValueError(f"{expected_id} paper {paper_id} gates must be booleans")
+        paper_checks = paper.get("checks", paper.get("gates"))
+        if not isinstance(paper_checks, dict):
+            raise ValueError(f"{expected_id} paper {paper_id} has no checks object")
+        if set(paper_checks) != set(readiness_gates):
+            raise ValueError(f"{expected_id} paper {paper_id} checks do not match registry")
+        if not all(isinstance(value, bool) for value in paper_checks.values()):
+            raise ValueError(f"{expected_id} paper {paper_id} checks must be booleans")
+        qualification = paper.get("qualification")
+        if not isinstance(qualification, dict) or set(qualification) != {
+            "engineering",
+            "visual",
+            "empirical",
+        }:
+            raise ValueError(
+                f"{expected_id} paper {paper_id} qualification levels are incomplete"
+            )
+        for level, value in qualification.items():
+            if not isinstance(value, dict) or value.get("state") not in {
+                "not_run",
+                "passed",
+                "failed",
+                "not_applicable",
+            }:
+                raise ValueError(
+                    f"{expected_id} paper {paper_id} qualification {level} is invalid"
+                )
 
 
 def _paper_rows(
@@ -190,14 +212,34 @@ def _paper_rows(
 ) -> list[dict[str, Any]]:
     rows = []
     for paper in implementation["papers"]:
-        gate_values = {gate: paper["gates"][gate] for gate in readiness_gates}
+        checks = paper.get("checks", paper.get("gates", {}))
+        check_values = {gate: checks[gate] for gate in readiness_gates}
+        qualification = paper["qualification"]
+        empirical = qualification["empirical"]["state"] in {
+            "passed",
+            "not_applicable",
+        }
+        visual = qualification["visual"]["state"] in {"passed", "not_applicable"}
+        engineering = qualification["engineering"]["state"] in {
+            "passed",
+            "not_applicable",
+        }
+        if empirical:
+            status = "empirically-calibrated"
+        elif visual:
+            status = "visually-calibrated"
+        elif engineering:
+            status = "engineering-validated"
+        else:
+            status = "implemented"
         rows.append(
             {
                 "id": str(paper["id"]),
                 "title": str(paper["title"]),
                 "detail": str(paper["detail"]),
-                "status": "verified" if all(gate_values.values()) else "implemented",
-                "gates": gate_values,
+                "status": status,
+                "checks": check_values,
+                "qualification": qualification,
             }
         )
     return rows

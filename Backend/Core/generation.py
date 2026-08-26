@@ -324,6 +324,7 @@ def _write_package_manifest(
 ) -> Path:
     repository_commit = _repository_commit()
     gate_results = capability.evidence_by_paper[args.paper]
+    qualification = capability.qualification_by_paper[args.paper]
     manifest = {
         "schema_version": 2,
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -354,6 +355,11 @@ def _write_package_manifest(
         },
         "evidence": {
             "gates": gate_results,
+            "qualification_levels": {
+                "engineering_validated": qualification.engineering_validated,
+                "visually_calibrated": qualification.visually_calibrated,
+                "empirically_calibrated": qualification.empirically_calibrated,
+            },
             "visual_calibration": gate_results.get("visual", False),
             "difficulty_independently_verified": gate_results.get(
                 "difficulty", False
@@ -378,6 +384,8 @@ def _write_package_manifest(
             ),
             "assessment_schema": "Backend.Core.exam_blueprints:v3",
             "assessment_package_schema": 1,
+            "blueprint_version": f"{capability.id}:paper-{args.paper}:v1",
+            "prompt_version": "Backend.Core.ai_assessment:v4",
             "validator": "Backend.Core.pdf_validation:v2",
         },
         "outputs": {

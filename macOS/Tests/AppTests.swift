@@ -3,6 +3,35 @@ import XCTest
 @testable import PaperCreator
 
 final class PaperCreatorTests: XCTestCase {
+    func testQualificationReadinessKeepsThreeEvidenceLevelsIndependent() {
+        let readiness = QualificationReadiness(
+            engineeringValidated: true,
+            visuallyCalibrated: true,
+            empiricallyCalibrated: false
+        )
+
+        XCTAssertTrue(readiness.engineeringValidated)
+        XCTAssertTrue(readiness.visuallyCalibrated)
+        XCTAssertFalse(readiness.empiricallyCalibrated)
+        XCTAssertEqual(readiness.highestLevelTitle, "Visually calibrated")
+    }
+
+    func testLegacyRegistryGatesMigrateWithoutFalseEmpiricalCalibration() throws {
+        let catalog = Data(
+            #"{"qualification":"A-Level","subjects":[{"id":"economics","title":"Economics","system_image":"chart.line.uptrend.xyaxis","boards":[{"id":"aqa","title":"AQA"}]}]}"#.utf8
+        )
+        let registry = Data(
+            #"{"schema_version":2,"qualification":"a-level","families":[{"app_subject":"economics","app_board":"aqa","backend_subject":"economics_aqa","resource_path":"economics/aqa","content_mode":"ai-assisted","supported_providers":["ollama"],"advertised":true,"papers":[{"id":"1","title":"Paper 1","detail":"Markets","gates":{"release":true,"visual":true,"difficulty":false}}]}]}"#.utf8
+        )
+
+        let subjects = try CatalogLoader.load(catalogData: catalog, registryData: registry)
+        let readiness = try XCTUnwrap(subjects.first?.boards.first?.papers.first?.readiness)
+
+        XCTAssertTrue(readiness.engineeringValidated)
+        XCTAssertTrue(readiness.visuallyCalibrated)
+        XCTAssertFalse(readiness.empiricallyCalibrated)
+    }
+
     func testBackendHandshakeDecodesProtocolCapabilities() throws {
         let event = try BackendEvent(
             jsonLine: #"{"protocol":2,"type":"hello","event_id":1,"timestamp":"2026-07-29T12:00:00Z","job_id":"job","backend_version":"2.0.0","capabilities":["manifest"]}"#
@@ -293,7 +322,7 @@ final class PaperCreatorTests: XCTestCase {
         XCTAssertEqual(Set(edexcel.supportedProviders), Set(AIProvider.allCases))
         XCTAssertTrue(aqa.usesAI)
         XCTAssertEqual(Set(aqa.supportedProviders), Set(AIProvider.allCases))
-        XCTAssertTrue(aqa.papers.allSatisfy { !$0.readiness.difficultyVerified })
+        XCTAssertTrue(aqa.papers.allSatisfy { !$0.readiness.empiricallyCalibrated })
     }
 
     @MainActor

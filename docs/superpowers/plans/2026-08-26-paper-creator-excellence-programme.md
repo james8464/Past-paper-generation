@@ -84,14 +84,14 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - `QualificationManifest.record_evidence(gate: str, evidence: EvidenceRecord) -> None`
 - `QualificationManifest.is_qualified(level: QualificationLevel) -> bool`
 
-- [ ] Add schema tests requiring generator ID, paper ID, seed, provider/model, model digest when available, contract/blueprint/prompt/syllabus/renderer versions, artifact hashes, gate results, evidence paths, timestamps, reviewer identity class, and tool versions.
-- [ ] Run `PYTHONPATH=. .venv/bin/pytest -q tests/test_qualification_manifest.py` and confirm the module/schema absence fails.
-- [ ] Implement immutable Pydantic manifest models, canonical JSON serialization, SHA-256 artifact hashing, and explicit `not_run`, `passed`, `failed`, and `not_applicable` states.
-- [ ] Extend the live matrix to emit one manifest per paper plus an aggregate run manifest without embedding PDFs or private review data.
+- [x] Add schema tests requiring generator ID, paper ID, seed, provider/model, model digest when available, contract/blueprint/prompt/syllabus/renderer versions, artifact hashes, gate results, evidence paths, timestamps, reviewer identity class, and tool versions.
+- [x] Run `PYTHONPATH=. .venv/bin/pytest -q tests/test_qualification_manifest.py` and confirm the module/schema absence fails.
+- [x] Implement immutable Pydantic manifest models, canonical JSON serialization, SHA-256 artifact hashing, and explicit `not_run`, `passed`, `failed`, and `not_applicable` states.
+- [x] Extend the live matrix to emit one manifest per paper plus an aggregate run manifest without embedding PDFs or private review data.
 - [ ] Capture a fresh baseline for all 18 papers using a fixed seed set, recording failures rather than silently resuming old artifacts.
-- [ ] Add the baseline counts and known false gates to `docs/ASSESSMENT_QUALITY.md`.
-- [ ] Run the focused tests, `PYTHONPATH=. .venv/bin/pytest -q tests/test_live_generation_matrix.py`, Ruff on changed Python, and `graphify update .`.
-- [ ] Commit as `Establish qualification evidence manifests`.
+- [x] Add the baseline counts and known false gates to `docs/ASSESSMENT_QUALITY.md`.
+- [x] Run the focused tests, `PYTHONPATH=. .venv/bin/pytest -q tests/test_live_generation_matrix.py`, Ruff on changed Python, and `graphify update .`.
+- [x] Commit as `Establish qualification evidence manifests`.
 
 ### Task 1: Replace Boolean Readiness with Three Truthful Levels
 
@@ -113,14 +113,14 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - Backend paper field: `qualificationLevels: { engineeringValidated: Bool, visuallyCalibrated: Bool, empiricallyCalibrated: Bool }`
 - Swift: `struct QualificationReadiness: Codable, Equatable`
 
-- [ ] Add migration tests that hydrate the current gate booleans but never infer empirical readiness from model review or deterministic calibration files.
-- [ ] Run the registry, coverage, backend, and Swift model tests and verify the new fields are absent.
-- [ ] Add registry schema version 3 with three levels and evidence-manifest references; preserve detailed component gates under `checks`.
-- [ ] Derive “Engineering validated”, “Visually calibrated”, and “Empirically calibrated” labels from the new structure in backend responses and Swift models.
-- [ ] Replace “difficulty match/equivalence” copy with “target demand profile” and show exact missing evidence in the Quality inspector.
-- [ ] Keep all 18 empirical states false; keep visual false for AQA Computer Science Paper 2 and Edexcel Economics A Papers 1–3 until Task 7 passes.
-- [ ] Regenerate `Resources/coverage-matrix.json`, run all focused tests, `make -C macOS test`, and update Graphify.
-- [ ] Commit as `Model qualification readiness truthfully`.
+- [x] Add migration tests that hydrate the current gate booleans but never infer empirical readiness from model review or deterministic calibration files.
+- [x] Run the registry, coverage, backend, and Swift model tests and verify the new fields are absent.
+- [x] Add registry schema version 3 with three levels and evidence-manifest references; preserve detailed component gates under `checks`.
+- [x] Derive “Engineering validated”, “Visually calibrated”, and “Empirically calibrated” labels from the new structure in backend responses and Swift models.
+- [x] Replace “difficulty match/equivalence” copy with “target demand profile” and show exact missing evidence in the Quality inspector.
+- [x] Keep all 18 empirical states false; keep visual false for AQA Computer Science Paper 2 and Edexcel Economics A Papers 1–3 until Task 7 passes.
+- [x] Regenerate `Resources/coverage-matrix.json`, run all focused tests, `make -C macOS test`, and update Graphify.
+- [x] Commit as `Model qualification readiness truthfully`.
 
 ### Task 2: Upgrade Fidelity Auditing to Print-Resolution, Role-Matched Evidence
 

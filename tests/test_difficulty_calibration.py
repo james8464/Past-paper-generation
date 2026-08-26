@@ -44,4 +44,4 @@ def test_registry_links_calibration_without_false_difficulty_promotion() -> None
     assert family["calibration_path"] == (
         "economics/aqa/generator/data/difficulty-calibration.json"
     )
-    assert all(paper["gates"]["difficulty"] is False for paper in family["papers"])
+    assert all(paper["checks"]["difficulty"] is False for paper in family["papers"])

@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "qualification": "a-level",
   "readiness_gates": [
     "blueprint",
@@ -28,20 +28,54 @@
       "entry_point": "aqaaccountgen.cli:generate_package",
       "syllabus_path": "accounting/aqa/generator/data/syllabus.json",
       "content_mode": "ai-assisted",
-      "supported_providers": ["ollama", "openai", "anthropic", "apple"],
+      "supported_providers": [
+        "ollama",
+        "openai",
+        "anthropic",
+        "apple"
+      ],
       "outputs_by_paper": {
-        "1": ["question_paper", "mark_scheme", "assessment_package"],
-        "2": ["question_paper", "mark_scheme", "assessment_package"]
+        "1": [
+          "question_paper",
+          "mark_scheme",
+          "assessment_package"
+        ],
+        "2": [
+          "question_paper",
+          "mark_scheme",
+          "assessment_package"
+        ]
       },
       "calibration_path": "accounting/aqa/generator/data/difficulty-calibration.json",
       "advertised": true,
-      "declared_papers": ["1", "2"],
+      "declared_papers": [
+        "1",
+        "2"
+      ],
       "papers": [
         {
           "id": "1",
           "title": "Paper 1",
           "detail": "Financial Accounting",
-          "gates": {
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          },
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -59,7 +93,25 @@
           "id": "2",
           "title": "Paper 2",
           "detail": "Accounting for Analysis and Decision-making",
-          "gates": {
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          },
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -88,21 +140,61 @@
       "entry_point": "aqaecongen.cli:generate_package",
       "syllabus_path": "economics/aqa/generator/data/syllabus.json",
       "content_mode": "ai-assisted",
-      "supported_providers": ["ollama", "openai", "anthropic", "apple"],
+      "supported_providers": [
+        "ollama",
+        "openai",
+        "anthropic",
+        "apple"
+      ],
       "outputs_by_paper": {
-        "1": ["question_paper", "mark_scheme", "assessment_package"],
-        "2": ["question_paper", "mark_scheme", "assessment_package"],
-        "3": ["question_paper", "source_booklet", "mark_scheme", "assessment_package"]
+        "1": [
+          "question_paper",
+          "mark_scheme",
+          "assessment_package"
+        ],
+        "2": [
+          "question_paper",
+          "mark_scheme",
+          "assessment_package"
+        ],
+        "3": [
+          "question_paper",
+          "source_booklet",
+          "mark_scheme",
+          "assessment_package"
+        ]
       },
       "calibration_path": "economics/aqa/generator/data/difficulty-calibration.json",
       "advertised": true,
-      "declared_papers": ["1", "2", "3"],
+      "declared_papers": [
+        "1",
+        "2",
+        "3"
+      ],
       "papers": [
         {
           "id": "1",
           "title": "Paper 1",
           "detail": "Markets and market failure",
-          "gates": {
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          },
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -120,7 +212,25 @@
           "id": "2",
           "title": "Paper 2",
           "detail": "National and international economy",
-          "gates": {
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          },
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -138,7 +248,25 @@
           "id": "3",
           "title": "Paper 3",
           "detail": "Economic principles and issues",
-          "gates": {
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          },
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -167,21 +295,61 @@
       "entry_point": "aqabizgen.cli:generate_package",
       "syllabus_path": "business/aqa/generator/data/syllabus.json",
       "content_mode": "ai-assisted",
-      "supported_providers": ["ollama", "openai", "anthropic", "apple"],
+      "supported_providers": [
+        "ollama",
+        "openai",
+        "anthropic",
+        "apple"
+      ],
       "outputs_by_paper": {
-        "1": ["question_paper", "mark_scheme", "assessment_package"],
-        "2": ["question_paper", "mark_scheme", "assessment_package"],
-        "3": ["question_paper", "source_booklet", "mark_scheme", "assessment_package"]
+        "1": [
+          "question_paper",
+          "mark_scheme",
+          "assessment_package"
+        ],
+        "2": [
+          "question_paper",
+          "mark_scheme",
+          "assessment_package"
+        ],
+        "3": [
+          "question_paper",
+          "source_booklet",
+          "mark_scheme",
+          "assessment_package"
+        ]
       },
       "calibration_path": "business/aqa/generator/data/difficulty-calibration.json",
       "advertised": true,
-      "declared_papers": ["1", "2", "3"],
+      "declared_papers": [
+        "1",
+        "2",
+        "3"
+      ],
       "papers": [
         {
           "id": "1",
           "title": "Paper 1",
           "detail": "Business 1",
-          "gates": {
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          },
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -199,7 +367,25 @@
           "id": "2",
           "title": "Paper 2",
           "detail": "Business 2",
-          "gates": {
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          },
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -217,7 +403,25 @@
           "id": "3",
           "title": "Paper 3",
           "detail": "Business 3",
-          "gates": {
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          },
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -246,19 +450,57 @@
       "entry_point": "cspapergen.cli:generate_package",
       "syllabus_path": "computer-science/aqa/generator/data/syllabus_seed.json",
       "content_mode": "ai-assisted",
-      "supported_providers": ["ollama", "openai", "anthropic", "apple"],
+      "supported_providers": [
+        "ollama",
+        "openai",
+        "anthropic",
+        "apple"
+      ],
       "outputs_by_paper": {
-        "1": ["question_paper", "preliminary_material", "electronic_answer_document", "skeleton_program", "data_file", "mark_scheme", "assessment_package"],
-        "2": ["question_paper", "mark_scheme", "assessment_package"]
+        "1": [
+          "question_paper",
+          "preliminary_material",
+          "electronic_answer_document",
+          "skeleton_program",
+          "data_file",
+          "mark_scheme",
+          "assessment_package"
+        ],
+        "2": [
+          "question_paper",
+          "mark_scheme",
+          "assessment_package"
+        ]
       },
       "advertised": true,
-      "declared_papers": ["1", "2"],
+      "declared_papers": [
+        "1",
+        "2"
+      ],
       "papers": [
         {
           "id": "1",
           "title": "Paper 1",
           "detail": "On-screen programming assessment (Python 3)",
-          "gates": {
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          },
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -276,7 +518,23 @@
           "id": "2",
           "title": "Paper 2",
           "detail": "A-level Computer Science Paper 2",
-          "gates": {
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          },
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -305,20 +563,54 @@
       "entry_point": "ocrcsgen.cli:generate_package",
       "syllabus_path": "computer-science/ocr/generator/data/syllabus.json",
       "content_mode": "ai-assisted",
-      "supported_providers": ["ollama", "openai", "anthropic", "apple"],
+      "supported_providers": [
+        "ollama",
+        "openai",
+        "anthropic",
+        "apple"
+      ],
       "outputs_by_paper": {
-        "1": ["question_paper", "mark_scheme", "assessment_package"],
-        "2": ["question_paper", "mark_scheme", "assessment_package"]
+        "1": [
+          "question_paper",
+          "mark_scheme",
+          "assessment_package"
+        ],
+        "2": [
+          "question_paper",
+          "mark_scheme",
+          "assessment_package"
+        ]
       },
       "calibration_path": "computer-science/ocr/generator/data/difficulty-calibration.json",
       "advertised": true,
-      "declared_papers": ["1", "2"],
+      "declared_papers": [
+        "1",
+        "2"
+      ],
       "papers": [
         {
           "id": "1",
           "title": "Paper 1",
           "detail": "Computer systems",
-          "gates": {
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          },
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -336,7 +628,25 @@
           "id": "2",
           "title": "Paper 2",
           "detail": "Algorithms and programming",
-          "gates": {
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          },
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -365,21 +675,60 @@
       "entry_point": "ocregen.cli:generate_package",
       "syllabus_path": "economics/ocr/generator/data/syllabus.json",
       "content_mode": "ai-assisted",
-      "supported_providers": ["ollama", "openai", "anthropic", "apple"],
+      "supported_providers": [
+        "ollama",
+        "openai",
+        "anthropic",
+        "apple"
+      ],
       "outputs_by_paper": {
-        "1": ["question_paper", "mark_scheme", "assessment_package"],
-        "2": ["question_paper", "mark_scheme", "assessment_package"],
-        "3": ["question_paper", "mark_scheme", "assessment_package"]
+        "1": [
+          "question_paper",
+          "mark_scheme",
+          "assessment_package"
+        ],
+        "2": [
+          "question_paper",
+          "mark_scheme",
+          "assessment_package"
+        ],
+        "3": [
+          "question_paper",
+          "mark_scheme",
+          "assessment_package"
+        ]
       },
       "calibration_path": "economics/ocr/generator/data/difficulty-calibration.json",
       "advertised": true,
-      "declared_papers": ["1", "2", "3"],
+      "declared_papers": [
+        "1",
+        "2",
+        "3"
+      ],
       "papers": [
         {
           "id": "1",
           "title": "Paper 1",
           "detail": "Microeconomics",
-          "gates": {
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          },
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -397,7 +746,25 @@
           "id": "2",
           "title": "Paper 2",
           "detail": "Macroeconomics",
-          "gates": {
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          },
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -415,7 +782,25 @@
           "id": "3",
           "title": "Paper 3",
           "detail": "Themes in economics",
-          "gates": {
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "passed",
+              "evidence": [
+                "Resources/fidelity-thresholds.json"
+              ]
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          },
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -444,20 +829,60 @@
       "entry_point": "pastpapergen.cli:generate_package",
       "syllabus_path": "economics/edexcel-a/generator/data/syllabus_seed.json",
       "content_mode": "ai-assisted",
-      "supported_providers": ["ollama", "openai", "anthropic", "apple"],
+      "supported_providers": [
+        "ollama",
+        "openai",
+        "anthropic",
+        "apple"
+      ],
       "outputs_by_paper": {
-        "1": ["question_paper", "source_booklet", "mark_scheme", "assessment_package"],
-        "2": ["question_paper", "source_booklet", "mark_scheme", "assessment_package"],
-        "3": ["question_paper", "source_booklet", "mark_scheme", "assessment_package"]
+        "1": [
+          "question_paper",
+          "source_booklet",
+          "mark_scheme",
+          "assessment_package"
+        ],
+        "2": [
+          "question_paper",
+          "source_booklet",
+          "mark_scheme",
+          "assessment_package"
+        ],
+        "3": [
+          "question_paper",
+          "source_booklet",
+          "mark_scheme",
+          "assessment_package"
+        ]
       },
       "advertised": true,
-      "declared_papers": ["1", "2", "3"],
+      "declared_papers": [
+        "1",
+        "2",
+        "3"
+      ],
       "papers": [
         {
           "id": "1",
           "title": "Paper 1",
           "detail": "Markets and business behaviour",
-          "gates": {
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          },
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -475,7 +900,23 @@
           "id": "2",
           "title": "Paper 2",
           "detail": "The national and global economy",
-          "gates": {
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          },
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
@@ -493,7 +934,23 @@
           "id": "3",
           "title": "Paper 3",
           "detail": "Microeconomics and macroeconomics",
-          "gates": {
+          "qualification": {
+            "engineering": {
+              "state": "passed",
+              "evidence": [
+                "docs/ASSESSMENT_QUALITY.md"
+              ]
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          },
+          "checks": {
             "blueprint": true,
             "syllabus": true,
             "question_types": true,
