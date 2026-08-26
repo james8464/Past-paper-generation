@@ -420,6 +420,19 @@ def _supplementary_marking_pages(count: int) -> list[Flowable]:
     for index, (title, first, second) in enumerate(topics[:count]):
         if index:
             pages.append(PageBreak())
+        if index == 3:
+            pages.extend(_annotation_conventions_page())
+            continue
+        if index == 1:
+            pages.extend(
+                [
+                    Paragraph(
+                        "MARKING INSTRUCTIONS CONTINUED",
+                        STYLES["centre_bold"],
+                    ),
+                    Spacer(1, 4 * mm),
+                ]
+            )
         pages.extend(
             [
                 Paragraph(title, STYLES["heading"]),
@@ -430,6 +443,55 @@ def _supplementary_marking_pages(count: int) -> list[Flowable]:
             ]
         )
     return pages
+
+
+def _annotation_conventions_page() -> list[Flowable]:
+    entries = [
+        ("✓", "Correct response", "A distinct technically correct point."),
+        ("×", "Incorrect response", "A response that cannot be credited."),
+        ("BOD", "Benefit of doubt", "Meaning is clear despite minor imprecision."),
+        ("NBOD", "No benefit of doubt", "The response remains ambiguous."),
+        ("ECF", "Error carried forward", "Later working follows an earlier error consistently."),
+        ("REP", "Repeated point", "Do not award the same idea twice."),
+        ("CON", "Contradiction", "Withhold credit where a valid point is reversed."),
+        ("L1", "Level 1", "Limited technical knowledge or development."),
+        ("L2", "Level 2", "Sound knowledge with some developed reasoning."),
+        ("L3", "Level 3", "Detailed, accurate and well-supported reasoning."),
+    ]
+    rows: list[list[object]] = [
+        [
+            Paragraph("Annotation", STYLES["scheme_header"]),
+            Paragraph("Meaning", STYLES["scheme_header"]),
+            Paragraph("Use", STYLES["scheme_header"]),
+        ],
+        *[
+            [
+                Paragraph(code, STYLES["scheme_small_centre"]),
+                Paragraph(meaning, STYLES["scheme_small"]),
+                Paragraph(use, STYLES["scheme_small"]),
+            ]
+            for code, meaning, use in entries
+        ],
+    ]
+    table = Table(rows, colWidths=[28 * mm, 68 * mm, 164 * mm], repeatRows=1)
+    table.setStyle(
+        TableStyle(
+            [
+                ("GRID", (0, 0), (-1, -1), 0.45, colors.HexColor("#777777")),
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e7e7e7")),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 4),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+                ("TOPPADDING", (0, 0), (-1, -1), 4),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+            ]
+        )
+    )
+    return [
+        Paragraph("11. ANNOTATIONS", STYLES["heading"]),
+        Spacer(1, 4 * mm),
+        table,
+    ]
 
 
 def _question_group_pages(
@@ -470,6 +532,11 @@ def _question_group_pages(
                     ]
                 )
             else:
+                is_final_paper_two_page = (
+                    paper_id == "paper_2"
+                    and option.id == "Q9"
+                    and chunk_index == len(chunks) - 1
+                )
                 result.extend(
                     [
                         Paragraph(
@@ -477,9 +544,19 @@ def _question_group_pages(
                             STYLES["centre_bold"],
                         ),
                         Spacer(1, 4 * mm),
-                        AnswerLines(34),
+                        AnswerLines(29 if is_final_paper_two_page else 34),
                     ]
                 )
+                if is_final_paper_two_page:
+                    result.extend(
+                        [
+                            Spacer(1, 5 * mm),
+                            Paragraph(
+                                "END OF QUESTION PAPER",
+                                STYLES["centre_bold"],
+                            ),
+                        ]
+                    )
             continue
         if chunk_index == 0:
             result.extend([_banner(option.title), Spacer(1, 3 * mm)])
@@ -707,14 +784,24 @@ def _additional_answer_page(
     continuation: bool,
     include_legal_notice: bool,
 ) -> list[Flowable]:
+    final_blank = continuation and include_legal_notice
     return [
         ExamPage(
             ExamPageProfile(
                 board="ocr",
                 code=paper_code,
-                heading="" if continuation else "EXTRA ANSWER SPACE",
-                variant="continuation" if continuation else "additional",
+                heading=(
+                    "BLANK PAGE"
+                    if final_blank
+                    else "" if continuation else "EXTRA ANSWER SPACE"
+                ),
+                variant=(
+                    "blank"
+                    if final_blank
+                    else "continuation" if continuation else "additional"
+                ),
                 legal_notice=include_legal_notice,
+                do_not_write=final_blank,
             ),
             font=FONT,
             bold_font=FONT_BOLD,
@@ -772,13 +859,20 @@ def _document(
         subject="Independent A-level Computer Science practice material",
     )
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="body")
+
+    def draw_chrome(canvas, value) -> None:
+        _chrome(canvas, value, paper.paper_code, kind)
+
+    chrome_callbacks = (
+        {"onPageEnd": draw_chrome}
+        if kind == "Question paper"
+        else {"onPage": draw_chrome}
+    )
     templates = [
         PageTemplate(
             id="ocr-cs-practice",
             frames=[frame],
-            onPage=lambda canvas, value: _chrome(
-                canvas, value, paper.paper_code, kind
-            ),
+            **chrome_callbacks,
         )
     ]
     if kind == "Mark scheme":
@@ -830,10 +924,10 @@ def _chrome(canvas, doc, code: str, kind: str) -> None:
         return
     if kind == "Question paper" and doc.page > 1:
         canvas.setFillColor(INK)
-        canvas.setFont(FONT, 9)
-        canvas.drawCentredString(page_width / 2, page_height - 18 * mm, str(doc.page))
+        canvas.setFont(FONT, 11)
+        canvas.drawCentredString(page_width / 2, page_height - 18.8 * mm, str(doc.page))
         canvas.setFont(FONT, 6)
-        canvas.drawString(17.5 * mm, 18 * mm, code)
+        canvas.drawString(21.5 * mm, 20.2 * mm, code)
         if code in {"H446/1", "H446/01"} and doc.page == 27:
             canvas.setFont(FONT_BOLD, 9)
             canvas.drawCentredString(
@@ -842,8 +936,8 @@ def _chrome(canvas, doc, code: str, kind: str) -> None:
                 "END OF QUESTION PAPER",
             )
         elif doc.page % 2 == 1:
-            canvas.setFont(FONT_BOLD, 9)
-            canvas.drawRightString(page_width - 17.5 * mm, 18 * mm, "Turn over")
+            canvas.setFont(FONT_BOLD, 10)
+            canvas.drawRightString(page_width - 23 * mm, 21.2 * mm, "Turn over")
         canvas.restoreState()
         return
     canvas.setStrokeColor(colors.HexColor("#aaaaaa"))

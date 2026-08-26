@@ -124,16 +124,14 @@
         "roles": {
           "cover": 0.414,
           "intentional_blank": 0.636,
-          "question_content": 0.545,
-          "ruled_continuation": 0.688
+          "question_content": 0.545
         }
       },
       "mark_scheme": {
         "minimum": 0.687,
         "roles": {
           "cover": 0.374,
-          "mark_scheme_content": 0.591,
-          "ruled_continuation": 0.717
+          "mark_scheme_content": 0.591
         }
       }
     },
@@ -205,9 +203,7 @@
         "minimum": 0.65,
         "roles": {
           "cover": 0.526,
-          "intentional_blank": 0.334,
-          "mark_scheme_content": 0.56,
-          "ruled_continuation": 0.519
+          "mark_scheme_content": 0.56
         }
       }
     },
@@ -226,9 +222,7 @@
         "minimum": 0.659,
         "roles": {
           "cover": 0.532,
-          "intentional_blank": 0.344,
-          "mark_scheme_content": 0.58,
-          "ruled_continuation": 0.509
+          "mark_scheme_content": 0.58
         }
       }
     },
@@ -248,9 +242,7 @@
         "minimum": 0.623,
         "roles": {
           "cover": 0.418,
-          "intentional_blank": 0.441,
-          "mark_scheme_content": 0.574,
-          "ruled_continuation": 0.518
+          "mark_scheme_content": 0.574
         }
       }
     },
@@ -269,9 +261,7 @@
         "minimum": 0.608,
         "roles": {
           "cover": 0.419,
-          "intentional_blank": 0.436,
-          "mark_scheme_content": 0.568,
-          "ruled_continuation": 0.564
+          "mark_scheme_content": 0.568
         }
       }
     },
@@ -290,9 +280,7 @@
         "minimum": 0.64,
         "roles": {
           "cover": 0.418,
-          "intentional_blank": 0.439,
-          "mark_scheme_content": 0.58,
-          "ruled_continuation": 0.577
+          "mark_scheme_content": 0.58
         }
       }
     },
@@ -308,8 +296,7 @@
         "minimum": 0.654,
         "roles": {
           "cover": 0.606,
-          "mark_scheme_content": 0.511,
-          "ruled_continuation": 0.597
+          "mark_scheme_content": 0.511
         }
       }
     },
@@ -325,8 +312,7 @@
         "minimum": 0.694,
         "roles": {
           "cover": 0.517,
-          "mark_scheme_content": 0.624,
-          "ruled_continuation": 0.647
+          "mark_scheme_content": 0.624
         }
       }
     },
@@ -344,8 +330,7 @@
         "minimum": 0.68,
         "roles": {
           "cover": 0.41,
-          "mark_scheme_content": 0.61,
-          "ruled_continuation": 0.571
+          "mark_scheme_content": 0.61
         }
       }
     }

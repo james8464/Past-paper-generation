@@ -45,7 +45,9 @@ def question() -> GeneratedQuestion:
         command_word="explain",
         topic_id="topic",
         prompt="Explain why higher costs reduce profit.",
-        mark_scheme=["Credit a correct causal relationship."],
+        mark_scheme=[
+            "Higher costs reduce profit because profit is total revenue minus total cost."
+        ],
         assessment_objectives={"AO1": 1},
     )
 

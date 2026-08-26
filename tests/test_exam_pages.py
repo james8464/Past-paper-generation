@@ -243,19 +243,20 @@ def test_ocr_additional_page_matches_open_dotted_rule_geometry(
     try:
         page = document[0]
         drawings = page.get_drawings()
-        rules = sorted(
-            (
-                drawing["rect"]
-                for drawing in drawings
-                if drawing["rect"].height <= 1
-                and drawing["rect"].width == pytest.approx(495.4, abs=2)
-                and 120 < drawing["rect"].y0 < 650
-            ),
-            key=lambda rect: rect.y0,
-        )
+        rules = [
+            span
+            for block in page.get_text("dict")["blocks"]
+            for line in block.get("lines", [])
+            for span in line.get("spans", [])
+            if span.get("text", "").strip().startswith("...")
+        ]
         assert len(rules) == 20
-        assert rules[0].y0 == pytest.approx(137.1, abs=1)
-        assert rules[-1].y0 == pytest.approx(631.2, abs=1)
+        assert len(rules[0]["text"].strip()) == 162
+        assert rules[0]["size"] == pytest.approx(11, abs=0.1)
+        assert rules[0]["bbox"][0] == pytest.approx(49.6, abs=1)
+        assert rules[0]["bbox"][2] == pytest.approx(545.0, abs=1)
+        assert rules[0]["bbox"][1] == pytest.approx(126.8, abs=1)
+        assert rules[-1]["bbox"][1] == pytest.approx(620.8, abs=1)
         guide = next(
             drawing["rect"]
             for drawing in drawings
@@ -295,20 +296,25 @@ def test_ocr_continuation_page_uses_full_open_rule_field(
     )
     try:
         page = document[0]
-        rules = sorted(
-            (
-                drawing["rect"]
-                for drawing in page.get_drawings()
-                if drawing["rect"].height <= 1
-                and drawing["rect"].width == pytest.approx(495.4, abs=2)
-                and drawing["dashes"] != "[] 0"
-                and 70 < drawing["rect"].y0 < 780
-            ),
-            key=lambda rect: rect.y0,
-        )
+        rules = [
+            span
+            for block in page.get_text("dict")["blocks"]
+            for line in block.get("lines", [])
+            for span in line.get("spans", [])
+            if span.get("text", "").strip().startswith("...")
+        ]
         assert len(rules) == expected_lines
-        assert rules[0].y0 == pytest.approx(85.7, abs=1)
-        assert rules[-1].y0 == pytest.approx(expected_last_y, abs=1)
+        assert len(rules[0]["text"]) == 155
+        assert rules[0]["size"] == pytest.approx(11, abs=0.1)
+        assert rules[0]["bbox"][0] == pytest.approx(72.3, abs=1)
+        assert rules[0]["bbox"][2] == pytest.approx(544.8, abs=1)
+        assert rules[0]["bbox"][1] == pytest.approx(80.8, abs=1)
+        assert rules[-1]["bbox"][1] == pytest.approx(expected_last_y - 4.9, abs=1)
+        assert not [
+            drawing
+            for drawing in page.get_drawings()
+            if drawing["rect"].width <= 1 and drawing["rect"].height > 490
+        ]
         assert "write the question numbers clearly" not in page.get_text()
     finally:
         document.close()
@@ -332,6 +338,16 @@ def test_ocr_blank_page_has_only_declared_messages_and_no_answer_table(
         text = page.get_text()
         assert "BLANK PAGE" in text
         assert "PLEASE DO NOT WRITE ON THIS PAGE" in text
+        visible_sizes = {
+            span["text"].strip(): span["size"]
+            for block in page.get_text("dict")["blocks"]
+            for line in block.get("lines", [])
+            for span in line.get("spans", [])
+        }
+        assert visible_sizes["BLANK PAGE"] == pytest.approx(11, abs=0.1)
+        assert visible_sizes["PLEASE DO NOT WRITE ON THIS PAGE"] == pytest.approx(
+            11, abs=0.1
+        )
         assert page.search_for("BLANK PAGE")[0].y0 == pytest.approx(62, abs=3)
         assert page.search_for("PLEASE DO NOT WRITE ON THIS PAGE")[0].y0 == (
             pytest.approx(416, abs=3)

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
+import pymupdf as fitz
 from aqaecongen.cli import generate_package
 from aqaecongen.configs import PAPER3_VISUAL_QUESTION_NUMBERS, RULES
 from aqaecongen.generator import build_paper
@@ -149,11 +151,40 @@ def test_each_package_renders_readable_pdfs(tmp_path: Path) -> None:
             assert len({question.prompt for question in mcqs}) == 30
             assert all("Practice scenario" not in question.prompt for question in mcqs)
         else:
+            blueprint = build_paper(RULES[f"paper_{paper}"], SYLLABUS, seed=123)
             question_pages = PdfReader(paths["question_paper"]).pages
             assert "Highest recorded index" in (question_pages[1].extract_text() or "")
             assert "Extract C" in (question_pages[2].extract_text() or "")
+            assert "continued" in (question_pages[2].extract_text() or "").casefold()
             assert "source insert" not in (question_pages[2].extract_text() or "")
             final_page = question_pages[7].extract_text() or ""
             assert "There are no questions printed on this page" in final_page
             assert "Independent practice information" in final_page
             assert "DO NOT WRITE ON THIS PAGE" not in final_page
+            scheme_pages = PdfReader(paths["mark_scheme"]).pages
+            scheme_text = "\n".join(page.extract_text() or "" for page in scheme_pages)
+            printed_marks = [
+                int(value)
+                for value in re.findall(r"\((\d{1,2})\)\s*$", scheme_text, re.MULTILINE)
+            ]
+            expected_marks = [
+                question.marks
+                for section in blueprint.sections
+                for option in section.options
+                for question in option.questions
+            ]
+            assert printed_marks == expected_marks
+            scheme_page = scheme_pages[4].extract_text() or ""
+            assert all(label in scheme_page for label in ("Question", "Answer", "Mark"))
+            with fitz.open(paths["mark_scheme"]) as scheme_document:
+                body_sizes = [
+                    round(float(span["size"]), 1)
+                    for block in scheme_document[4].get_text("dict")["blocks"]
+                    for line in block.get("lines", [])
+                    for span in line.get("spans", [])
+                    if len(str(span.get("text", "")).strip()) >= 4
+                ]
+            assert max(set(body_sizes), key=body_sizes.count) >= 11
+            levels_page = scheme_pages[3].extract_text() or ""
+            assert "Levels of response" in levels_page
+            assert "Highest" in levels_page

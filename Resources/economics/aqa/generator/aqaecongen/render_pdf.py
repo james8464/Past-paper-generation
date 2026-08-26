@@ -222,13 +222,41 @@ def _paper_one_two_mark_scheme_pages(
         questions = option.questions
         pages.extend(
             [
+                [
+                    *_scheme_question_page(
+                        questions[0], heading=option.title, total_marks=40
+                    ),
+                    Spacer(1, 5 * mm),
+                    *_scheme_question_page(questions[1]),
+                ],
                 _scheme_question_page(
-                    questions[0], heading=option.title, total_marks=40
+                    questions[2],
+                    segment=1,
+                    segment_count=2,
+                    include_level_table=False,
+                    compact_content=True,
                 ),
-                _scheme_question_page(questions[1]),
-                _scheme_question_page(questions[2], segment=1, segment_count=2),
-                _scheme_question_page(questions[2], segment=2, segment_count=2),
-                _scheme_question_page(questions[3]),
+                _scheme_question_page(
+                    questions[2],
+                    segment=2,
+                    segment_count=2,
+                    include_level_table=False,
+                    compact_content=True,
+                ),
+                _scheme_question_page(
+                    questions[3],
+                    segment=1,
+                    segment_count=2,
+                    include_level_table=False,
+                    compact_content=True,
+                ),
+                _scheme_question_page(
+                    questions[3],
+                    segment=2,
+                    segment_count=2,
+                    include_level_table=False,
+                    compact_content=True,
+                ),
             ]
         )
     pages.append(
@@ -245,6 +273,7 @@ def _paper_one_two_mark_scheme_pages(
                     question,
                     heading=option.title if question_index == 0 else None,
                     total_marks=40 if question_index == 0 else None,
+                    include_level_table=False,
                 )
             )
     return pages
@@ -273,6 +302,7 @@ def _paper_three_mark_scheme_pages(
                         else None
                     ),
                     total_marks=50 if question.number == "31" and segment == 1 else None,
+                    compact_content=question.number in {"32", "33"},
                 )
             )
     return pages
@@ -438,6 +468,8 @@ def _scheme_question_page(
     segment_count: int = 1,
     heading: str | None = None,
     total_marks: int | None = None,
+    include_level_table: bool = True,
+    compact_content: bool = False,
 ) -> list[Flowable]:
     chunk_size = max(1, math.ceil(len(question.mark_scheme) / segment_count))
     start = (segment - 1) * chunk_size
@@ -448,48 +480,151 @@ def _scheme_question_page(
         else heading
     )
     flowables: list[Flowable] = []
+    content_style = (
+        STYLES["scheme_table_compact"]
+        if compact_content
+        else STYLES["scheme_table"]
+    )
+    cell_style = STYLES["scheme_table_compact"]
     if title:
         flowables.extend([Paragraph(title, STYLES["option_title"]), Spacer(1, 4 * mm)])
-    flowables.extend(
-        [
-            _mark_scheme_question_header(
-                question,
-                continued=segment > 1,
-            ),
-            Spacer(1, 4 * mm),
-        ]
-    )
-    if question.kind == "diagram_analysis" and segment == 2:
-        flowables.extend(
+    answer: list[Flowable] = []
+    if segment == 1:
+        answer.extend(
             [
-                Paragraph("Expected diagram", STYLES["heading"]),
+                Paragraph(question.prompt, content_style),
                 Spacer(1, 2 * mm),
-                _economic_diagram(question.topic_id, question.number),
-                Spacer(1, 3 * mm),
             ]
         )
-    flowables.extend(
-        [
-            Paragraph("Indicative content", STYLES["heading"]),
-            Spacer(1, 2 * mm),
-            *[
-                Paragraph(f"• {point}", STYLES["scheme_compact"])
-                for point in points
-            ],
-        ]
+    if question.kind == "diagram_analysis" and segment == 2:
+        diagram = _economic_diagram(question.topic_id, question.number)
+        diagram.scale(0.68, 0.68)
+        diagram.width *= 0.68
+        diagram.height *= 0.68
+        answer.extend(
+            [
+                Paragraph("<b>Expected diagram</b>", content_style),
+                diagram,
+                Spacer(1, 2 * mm),
+            ]
+        )
+    level_points = [point for point in points if _is_level_descriptor(point)]
+    content_points = [
+        point
+        for point in points
+        if point not in level_points
+        and point.casefold() not in {"indicative content", "levels-based marking"}
+    ]
+    answer.extend(
+        [Paragraph(f"• {point}", content_style) for point in content_points]
     )
-    if segment_count > 1:
-        flowables.extend(
+    if level_points and include_level_table:
+        answer.extend(
             [
                 Spacer(1, 3 * mm),
+                Paragraph("<b>Level of response</b>", content_style),
+                _question_level_table(level_points, style=content_style),
+            ]
+        )
+    if segment_count > 1:
+        answer.extend(
+            [
+                Spacer(1, 2 * mm),
                 Paragraph(
-                    f"Question {question.number}: guidance page {segment} of "
-                    f"{segment_count}.",
+                    f"Guidance page {segment} of {segment_count}.",
                     STYLES["scheme_note"],
                 ),
             ]
         )
+    rows: list[list[object]] = [
+        [
+            Paragraph("<b>Question</b>", cell_style),
+            Paragraph("<b>Answer</b>", cell_style),
+            Paragraph("<b>Mark</b>", cell_style),
+        ],
+        [
+            Paragraph(
+                f"<b>{question.number}</b>"
+                + ("<br/>continued" if segment > 1 else ""),
+                cell_style,
+            ),
+            answer,
+            Paragraph(
+                f"({question.marks})" if segment == 1 else "",
+                cell_style,
+            ),
+        ],
+    ]
+    table = Table(
+        rows,
+        colWidths=[20 * mm, 142 * mm, 15 * mm],
+        repeatRows=1,
+    )
+    table.setStyle(
+        TableStyle(
+            [
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#777777")),
+                ("BACKGROUND", (0, 0), (-1, 0), GREY),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("ALIGN", (0, 0), (0, -1), "CENTER"),
+                ("ALIGN", (2, 0), (2, -1), "CENTER"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 5),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 5),
+                ("TOPPADDING", (0, 0), (-1, -1), 2),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+            ]
+        )
+    )
+    flowables.append(table)
     return flowables
+
+
+def _is_level_descriptor(text: str) -> bool:
+    return bool(re.match(r"^Level (?:\d+|0) \([^)]+\):", text))
+
+
+def _question_level_table(
+    level_points: list[str],
+    *,
+    style: ParagraphStyle | None = None,
+) -> Table:
+    cell_style = style or STYLES["scheme_table"]
+    rows: list[list[object]] = [
+        [
+            Paragraph("<b>Level</b>", cell_style),
+            Paragraph("<b>Descriptor</b>", cell_style),
+            Paragraph("<b>Marks</b>", cell_style),
+        ]
+    ]
+    for point in level_points:
+        match = re.match(r"^(Level (?:\d+|0)) \(([^)]+)\):\s*(.*)", point)
+        if match is None:
+            continue
+        level, marks, descriptor = match.groups()
+        rows.append(
+            [
+                Paragraph(level, cell_style),
+                Paragraph(descriptor, cell_style),
+                Paragraph(marks, cell_style),
+            ]
+        )
+    table = Table(rows, colWidths=[17 * mm, 95 * mm, 18 * mm], repeatRows=1)
+    table.setStyle(
+        TableStyle(
+            [
+                ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#777777")),
+                ("BACKGROUND", (0, 0), (-1, 0), GREY),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("ALIGN", (0, 0), (0, -1), "CENTER"),
+                ("ALIGN", (2, 0), (2, -1), "CENTER"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 3),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 3),
+                ("TOPPADDING", (0, 0), (-1, -1), 3),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+            ]
+        )
+    )
+    return table
 
 
 def _mark_scheme_question_header(
@@ -772,7 +907,10 @@ def _context_first_page(option: GeneratedOption) -> list[Flowable]:
 
 
 def _context_second_page(option: GeneratedOption) -> list[Flowable]:
-    flowables: list[Flowable] = []
+    flowables: list[Flowable] = [
+        Paragraph(f"{option.title} continued", STYLES["continuation"]),
+        Spacer(1, 3 * mm),
+    ]
     for paragraph in option.stimulus[2:]:
         flowables.extend(
             [Paragraph(paragraph, STYLES["extract"]), Spacer(1, 3 * mm)]
@@ -1331,7 +1469,7 @@ STYLES = {
         parent=_sample["BodyText"],
         fontName=FONT,
         fontSize=9.5,
-        leading=12,
+        leading=11.8,
     ),
     "scheme_compact": ParagraphStyle(
         "SchemeCompact",
@@ -1340,6 +1478,22 @@ STYLES = {
         fontSize=9.5,
         leading=11.2,
         spaceAfter=0.8,
+    ),
+    "scheme_table": ParagraphStyle(
+        "SchemeTable",
+        parent=_sample["BodyText"],
+        fontName=FONT,
+        fontSize=11,
+        leading=12,
+        spaceAfter=0.5,
+    ),
+    "scheme_table_compact": ParagraphStyle(
+        "SchemeTableCompact",
+        parent=_sample["BodyText"],
+        fontName=FONT,
+        fontSize=10,
+        leading=11,
+        spaceAfter=0.5,
     ),
     "scheme_note": ParagraphStyle(
         "SchemeNote",

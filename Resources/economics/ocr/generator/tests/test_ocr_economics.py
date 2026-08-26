@@ -22,6 +22,19 @@ def test_mark_scheme_body_scale_matches_reference() -> None:
     assert STYLES["small"].fontSize == 10
 
 
+def test_mark_scheme_explains_question_specific_credit_checks(tmp_path: Path) -> None:
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 123)
+    output = tmp_path / "mark-scheme.pdf"
+
+    render_mark_scheme(paper, output)
+
+    extracted = " ".join(page.extract_text() or "" for page in PdfReader(output).pages)
+    text = " ".join(extracted.split())
+    assert "command word and required context" in text
+    assert "valid method and units" in text
+    assert "best-fit level" in text
+
+
 def test_all_rules_have_exact_candidate_marks() -> None:
     for rule in RULES.values():
         validate_rule(rule, SYLLABUS.topic_ids)
@@ -195,6 +208,10 @@ def test_all_packages_render_reference_page_geometry(tmp_path: Path) -> None:
         assert scheme.pages[0].mediabox.height > scheme.pages[0].mediabox.width
         assert scheme.pages[2].mediabox.width > scheme.pages[2].mediabox.height
         assert scheme.pages[-1].mediabox.height > scheme.pages[-1].mediabox.width
+        assert "continued" in (scheme.pages[3].extract_text() or "").casefold()
+        page_six = scheme.pages[5].extract_text() or ""
+        assert "ANNOTATION CONVENTIONS" in page_six
+        assert "BLANK PAGE" not in page_six
 
 
 def test_paper_three_finishes_on_the_reference_page_roles(tmp_path: Path) -> None:
@@ -247,13 +264,13 @@ def test_extra_answer_page_uses_open_ocr_rule_grammar(tmp_path: Path) -> None:
     try:
         page = document[17]
         rules = [
-            drawing["rect"]
-            for drawing in page.get_drawings()
-            if drawing["rect"].height <= 1
-            and drawing["rect"].width > 490
-            and 120 < drawing["rect"].y0 < 650
+            span
+            for block in page.get_text("dict")["blocks"]
+            for line in block.get("lines", [])
+            for span in line.get("spans", [])
+            if span.get("text", "").strip().startswith("...")
         ]
-        assert len(rules) == 20
+        assert len(rules) == 25
         assert any(
             drawing["rect"].width <= 1 and drawing["rect"].height > 490
             for drawing in page.get_drawings()
@@ -282,6 +299,15 @@ def test_section_transition_blank_matches_ocr_message_baselines(
         assert page.search_for("Section B starts on the next page")[0].y0 == (
             pytest.approx(436, abs=3)
         )
+        for text in ("9", "Turn over"):
+            box = page.search_for(text)[0] + (-2, -2, 2, 2)
+            pixels = page.get_pixmap(
+                matrix=fitz.Matrix(2, 2),
+                colorspace=fitz.csGRAY,
+                clip=box,
+                alpha=False,
+            )
+            assert min(pixels.samples) < 100
     finally:
         document.close()
 
@@ -298,16 +324,38 @@ def test_unheaded_extra_leaf_uses_continuation_rule_count(tmp_path: Path) -> Non
     try:
         page = document[18]
         rules = [
-            drawing
-            for drawing in page.get_drawings()
-            if drawing["rect"].height <= 1
-            and drawing["rect"].width > 490
-            and drawing["dashes"] != "[] 0"
+            span
+            for block in page.get_text("dict")["blocks"]
+            for line in block.get("lines", [])
+            for span in line.get("spans", [])
+            if span.get("text", "").strip().startswith("...")
         ]
         assert len(rules) == 27
         assert "write the question numbers clearly" not in page.get_text()
     finally:
         document.close()
+
+
+def test_full_response_leaves_use_reference_dot_text_grammar(tmp_path: Path) -> None:
+    paths = generate_package(
+        paper="1",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=123,
+    )
+
+    with fitz.open(paths["question_paper"]) as document:
+        for page_index in (10, 11, 14, 15):
+            page = document[page_index]
+            rules = [
+                span
+                for block in page.get_text("dict")["blocks"]
+                for line in block.get("lines", [])
+                for span in line.get("spans", [])
+                if span.get("text", "").strip().startswith("...")
+            ]
+            assert len(rules) == 27
+            assert all(len(rule["text"]) == 155 for rule in rules)
 
 
 def test_paper_three_questions_share_bound_extract_and_figure_data() -> None:

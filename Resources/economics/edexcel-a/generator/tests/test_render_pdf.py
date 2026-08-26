@@ -1,6 +1,7 @@
 import re
 from pathlib import Path
 
+import pytest
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.render_pdf import (
@@ -16,9 +17,7 @@ from pastpapergen.render_pdf import (
     EDEXCEL_MEDIA_BOX,
     RAIL_H,
     RAIL_Y,
-    SECTION_A_FOOTER_SAFE_Y,
     SECTION_A_INSTRUCTION_LINES,
-    _draw_answer_lines,
     _extra_answer_pages,
     _table_rows,
     render_question_paper,
@@ -116,7 +115,48 @@ def test_cover_uses_date_panel_not_mock_examination_label(tmp_path):
     assert "Mock Examination" not in first_page
 
 
-def test_even_answer_pages_have_two_right_do_not_write_rails(tmp_path):
+def test_cover_matches_measured_typographic_hierarchy(tmp_path):
+    import pymupdf as fitz
+
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_1"),
+        syllabus,
+        seed=42,
+    )
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+
+    with fitz.open(output) as document:
+        page = document[0]
+
+        def measured(text: str):
+            return next(
+                span
+                for block in page.get_text("dict")["blocks"]
+                for line in block.get("lines", [])
+                for span in line.get("spans", [])
+                if span.get("text", "").strip() == text
+            )
+
+        expected = {
+            "Economics A": (24, 228.4),
+            "Instructions": (14, 397.5),
+            "Information": (14, 553.1),
+            "Advice": (14, 633.8),
+            "Turn over": (12, 730.0),
+        }
+        for text, (size, y0) in expected.items():
+            span = measured(text)
+            assert span["size"] == pytest.approx(size, abs=0.1)
+            assert span["bbox"][1] == pytest.approx(y0, abs=2)
+
+        turn_over = measured("Turn over")
+        assert turn_over["bbox"][2] == pytest.approx(556.2, abs=2)
+
+
+def test_even_answer_pages_match_single_official_right_do_not_write_rail(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
     blueprint = build_paper_blueprint(config, syllabus, seed=42)
@@ -124,8 +164,20 @@ def test_even_answer_pages_have_two_right_do_not_write_rails(tmp_path):
 
     render_question_paper(blueprint, output)
 
-    assert _dark_pixels(output, page_index=1, rect=(543, 180, 557, 700)) > 100
-    assert _dark_pixels(output, page_index=1, rect=(567, 180, 590, 700)) > 100
+    import pymupdf as fitz
+
+    with fitz.open(output) as document:
+        spans = [
+            span
+            for block in document[1].get_text("dict")["blocks"]
+            for line in block.get("lines", [])
+            for span in line.get("spans", [])
+            if "DO NOT WRITE IN THIS AREA" in span.get("text", "")
+        ]
+
+    assert len(spans) == 3
+    assert all(span["size"] == pytest.approx(12, abs=0.1) for span in spans)
+    assert all(span["bbox"][0] == pytest.approx(570.8, abs=1) for span in spans)
 
 
 def test_cover_inner_boxes_stay_inside_outer_panel(tmp_path):
@@ -148,7 +200,7 @@ def test_cover_inner_boxes_stay_inside_outer_panel(tmp_path):
 
 
 def test_answer_line_spacing_matches_measured_reference():
-    assert ANSWER_LINE_GAP_PT == 28
+    assert pytest.approx(28.2, abs=0.01) == ANSWER_LINE_GAP_PT
 
 
 def test_question_text_size_matches_reference_body_scale():
@@ -167,16 +219,35 @@ def test_question_paper_uses_closer_reference_font_family(tmp_path):
     assert "ArialMT" not in fonts
 
 
-def test_answer_line_style_matches_reference_solid_grey_rules():
-    from pastpapergen.render_pdf import (
-        ANSWER_LINE_COLOR_HEX,
-        ANSWER_LINE_DASH,
-        ANSWER_LINE_WIDTH_PT,
-    )
+def test_answer_line_style_matches_reference_dot_text_grammar(tmp_path):
+    import pymupdf as fitz
 
-    assert ANSWER_LINE_COLOR_HEX == "#9d9d9d"
-    assert ANSWER_LINE_DASH is None
-    assert ANSWER_LINE_WIDTH_PT == 0.5
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_3"),
+        syllabus,
+        seed=42,
+    )
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+
+    with fitz.open(output) as document:
+        page = document[31]
+        rules = [
+            span
+            for block in page.get_text("dict")["blocks"]
+            for line in block.get("lines", [])
+            for span in line.get("spans", [])
+            if span.get("text", "").startswith("...")
+        ]
+
+    assert len(rules) == 26
+    assert all(len(rule["text"]) == 276 for rule in rules)
+    assert all(rule["size"] == pytest.approx(6, abs=0.1) for rule in rules)
+    assert all(rule["color"] == 0x767676 for rule in rules)
+    assert rules[0]["bbox"][:3] == pytest.approx((42.5, 61.2, 550.3), abs=1)
+    assert rules[-1]["bbox"][1] == pytest.approx(765.6, abs=1)
 
 
 def test_question_paper_uses_reference_bleed_and_crop_boxes(tmp_path):
@@ -202,35 +273,10 @@ def test_question_paper_uses_reference_bleed_and_crop_boxes(tmp_path):
 def test_answer_frame_geometry_matches_reference_page():
     assert ANSWER_FRAME_Y == 48
     assert ANSWER_FRAME_Y + ANSWER_FRAME_H == 808
-    assert ANSWER_PAGE_START_Y == 772
+    assert pytest.approx(803.3, abs=0.01) == ANSWER_PAGE_START_Y
     assert RAIL_Y == 50
     assert RAIL_H == 760
     assert any(CROSS_BOX_TOKEN in line for line in SECTION_A_INSTRUCTION_LINES)
-
-
-def test_answer_lines_honor_footer_safe_area():
-    class Recorder:
-        def __init__(self):
-            self.lines = []
-
-        def setStrokeColor(self, _color):
-            pass
-
-        def setLineWidth(self, _width):
-            pass
-
-        def setDash(self, *_dash):
-            pass
-
-        def line(self, x1, y1, x2, y2):
-            self.lines.append((x1, y1, x2, y2))
-
-    pdf = Recorder()
-
-    _draw_answer_lines(pdf, 70, SECTION_A_FOOTER_SAFE_Y + 18, 520, 4, bottom_y=SECTION_A_FOOTER_SAFE_Y)
-
-    assert pdf.lines
-    assert all(line[1] >= SECTION_A_FOOTER_SAFE_Y for line in pdf.lines)
 
 
 def test_section_a_instruction_lines_fit_question_frame():
@@ -278,6 +324,14 @@ def test_paper_3_ends_with_three_labelled_blank_pages(tmp_path):
         "BLANK PAGE" in page
         for page in _pdf_text(output).split("\f")[33:36]
     )
+    import pymupdf as fitz
+
+    with fitz.open(output) as document:
+        blank = document[35]
+        assert blank.search_for("BLANK PAGE")[0].y0 == pytest.approx(416.5, abs=1)
+        folio = blank.search_for("36")[0]
+        assert folio.x0 == pytest.approx(49.3, abs=1)
+        assert folio.y0 == pytest.approx(798.4, abs=1)
 
 
 def test_paper_3_embeds_sources_and_matches_reference_page_sequence(tmp_path):
@@ -580,7 +634,7 @@ def test_section_a_calculate_page_fills_remaining_answer_space(tmp_path):
     prompt_text = _normalised(question.parts[0].prompt)
     page_number = next(index + 1 for index, page in enumerate(pages) if prompt_text in _normalised(page))
 
-    assert _long_horizontal_line_count(output, page_number) >= 12
+    assert _answer_rule_count(output, page_number) >= 12
 
 
 def test_section_a_generic_data_table_uses_economic_labels(tmp_path):
@@ -664,13 +718,21 @@ def _first_page_containing(path: Path, text: str) -> int | None:
     return None
 
 
-def _long_horizontal_line_count(path: Path, page_number: int) -> int:
+def _answer_rule_count(path: Path, page_number: int) -> int:
     import pymupdf as fitz
 
     doc = fitz.open(path)
     try:
         page = doc[page_number - 1]
-        count = 0
+        count = len(
+            [
+                span
+                for block in page.get_text("dict")["blocks"]
+                for line in block.get("lines", [])
+                for span in line.get("spans", [])
+                if span.get("text", "").startswith("...")
+            ]
+        )
         for drawing in page.get_drawings():
             for item in drawing["items"]:
                 if item[0] != "l":

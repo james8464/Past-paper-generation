@@ -161,6 +161,45 @@ def test_packages_render_current_page_geometry(tmp_path: Path) -> None:
             assert len(PdfReader(paths["source_booklet"]).pages) == 8
 
 
+def test_paper_three_reserves_blank_leaf_and_three_additional_pages(
+    tmp_path: Path,
+) -> None:
+    paths = generate_package(
+        paper="3",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=123,
+    )
+
+    pages = PdfReader(paths["question_paper"]).pages
+    assert "There are no questions printed on this page" in (
+        pages[24].extract_text() or ""
+    )
+    assert all(
+        "Additional page, if required" in (pages[index].extract_text() or "")
+        for index in (25, 26, 27)
+    )
+
+
+def test_paper_two_matches_section_transitions_and_final_answer_leaves(
+    tmp_path: Path,
+) -> None:
+    paths = generate_package(
+        paper="2",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=123,
+    )
+
+    pages = PdfReader(paths["question_paper"]).pages
+    for index in (8, 14, 21):
+        assert "DO NOT WRITE ON THIS PAGE" in (pages[index].extract_text() or "")
+    assert all(
+        "Additional page, if required" in (pages[index].extract_text() or "")
+        for index in (22, 23)
+    )
+
+
 def test_paper_one_uses_measured_question_and_answer_page_plan(tmp_path: Path) -> None:
     paths = generate_package(
         paper="1",

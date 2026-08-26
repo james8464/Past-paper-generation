@@ -88,17 +88,42 @@ def test_mark_scheme_cover_uses_reference_serif_face(tmp_path):
     assert any("Tinos" in name for name in pdf_font_names(output))
 
 
-def test_mark_scheme_cover_title_uses_reference_scale_and_position(tmp_path):
+def test_mark_scheme_uses_reference_italic_face_for_mcq_distractors(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
     blueprint = build_paper_blueprint(config, syllabus, seed=42)
     output = tmp_path / "ms.pdf"
 
     render_mark_scheme(blueprint, syllabus, output)
+
+    assert any("Verdana-Italic" in name for name in pdf_font_names(output))
+
+
+@pytest.mark.parametrize(
+    ("paper_id", "expected_x", "expected_y"),
+    [
+        ("paper_1", 56.7, 304.0),
+        ("paper_2", 37.0, 264.4),
+        ("paper_3", 42.5, 297.8),
+    ],
+)
+def test_mark_scheme_cover_title_uses_paper_specific_reference_position(
+    tmp_path,
+    paper_id,
+    expected_x,
+    expected_y,
+):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config(paper_id)
+    blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, syllabus, output)
     _x0, y0, _x1, y1 = _text_block_bbox(output, "Mark Scheme (Results)")
 
-    assert 285 <= y0 <= 325
-    assert y1 - y0 >= 30
+    assert _x0 == pytest.approx(expected_x, abs=1)
+    assert y0 == pytest.approx(expected_y, abs=1)
+    assert y1 - y0 >= 27.5
 
 
 def test_mark_scheme_does_not_print_fake_blank_page_labels(tmp_path):

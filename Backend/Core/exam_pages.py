@@ -274,10 +274,10 @@ def _draw_ocr_page(
     page_number: int,
     include_footer: bool,
 ) -> None:
-    pdf.setFont(font, 8)
+    pdf.setFont(font, 10)
     if page_number:
-        pdf.drawCentredString(width / 2, height - 38, str(page_number))
-    pdf.setFont(bold_font, 9)
+        pdf.drawCentredString(width / 2, height - 40, str(page_number))
+    pdf.setFont(bold_font, 11 if profile.variant == "blank" else 9)
     if profile.variant == "blank":
         pdf.drawCentredString(width / 2, height - 71.6, profile.heading)
         if profile.do_not_write:
@@ -296,13 +296,17 @@ def _draw_ocr_page(
             pdf.drawCentredString(width / 2, height - 445.7, profile.message)
     elif profile.variant == "continuation":
         line_count = 22 if profile.legal_notice else 27
-        first_rule = 85.7
         _draw_ocr_rules(
             pdf,
             height=height,
-            first_rule=first_rule,
+            font=font,
+            font_size=10.965,
+            left=72.3,
+            dots=" " + "." * 154,
+            first_baseline=92.6,
             line_count=line_count,
             guide_bottom=632.1 if profile.legal_notice else 762.1,
+            guide=False,
         )
     else:
         pdf.drawCentredString(width / 2, height - 72.5, profile.heading)
@@ -317,9 +321,14 @@ def _draw_ocr_page(
         _draw_ocr_rules(
             pdf,
             height=height,
-            first_rule=137.1,
+            font=font,
+            font_size=11,
+            left=49.6,
+            dots="." * 162,
+            first_baseline=138.6,
             line_count=20 if profile.legal_notice else 25,
             guide_bottom=632.1 if profile.legal_notice else 762.5,
+            guide=True,
         )
 
     if not include_footer or not profile.legal_notice:
@@ -333,18 +342,24 @@ def _draw_ocr_rules(
     pdf: Canvas,
     *,
     height: float,
-    first_rule: float,
+    font: str,
+    font_size: float,
+    left: float,
+    dots: str,
+    first_baseline: float,
     line_count: int,
     guide_bottom: float,
+    guide: bool,
 ) -> None:
-    pdf.setLineWidth(0.45)
-    pdf.setDash(0.7, 1.5)
+    pdf.setFillColor(colors.black)
+    pdf.setFont(font, font_size)
     for index in range(line_count):
-        y = first_rule + index * 26.0
-        pdf.line(49.6, height - y, 545.0, height - y)
-    pdf.setDash()
+        baseline = first_baseline + index * 26.0
+        pdf.drawString(left, height - baseline, dots)
+    if not guide:
+        return
     pdf.setLineWidth(0.5)
-    pdf.line(106.3, height - first_rule, 106.3, height - guide_bottom)
+    pdf.line(106.3, height - 137.1, 106.3, height - guide_bottom)
 
 
 def _draw_ocr_notice(

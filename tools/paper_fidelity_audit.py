@@ -32,6 +32,10 @@ LINE_MARK = re.compile(
     re.IGNORECASE | re.MULTILINE,
 )
 WORD = re.compile(r"[A-Za-z]+(?:[-'][A-Za-z]+)?")
+QUESTION_MARK = re.compile(
+    r"(?:\[\s*\d{1,2}(?:\s+marks?)?\s*\]|\(\s*\d{1,2}\s*\))",
+    re.IGNORECASE,
+)
 STRUCTURAL_GRID_DPI = 12
 CONTACT_PAGE_WIDTH = 240
 CONTACT_PAGES_PER_SHEET = 8
@@ -847,18 +851,23 @@ def classify_page_role(
 
     if page_number == 1:
         return "cover"
-    words = " ".join(WORD.findall(text.casefold()))
+    word_tokens = WORD.findall(text.casefold())
+    words = " ".join(word_tokens)
     if "end of question paper" in words:
         return "end_page"
     if "additional page" in words or "extra answer space" in words:
         return "additional_answer"
     if (
-        "blank page" in words
-        or "there are no questions printed on this page" in words
+        "there are no questions printed on this page" in words
         or "do not write on this page" in words
+        or (len(word_tokens) <= 60 and "blank page" in words)
     ):
         return "intentional_blank"
-    if "continued" in words:
+    if (
+        document_role == "question_paper"
+        and "continued" in words
+        and len(word_tokens) <= 20
+    ):
         return "ruled_continuation"
     return (
         "mark_scheme_content" if document_role == "mark_scheme" else "question_content"
@@ -880,8 +889,12 @@ def _document_page_roles(path: Path, document_role: str) -> list[str]:
                 index > 1
                 and document_role == "question_paper"
                 and role == "question_content"
-                and len(words) < 100
-                and _full_width_horizontal_rules(page) >= 10
+                and len(words) < 160
+                and QUESTION_MARK.search(text) is None
+                and (
+                    _full_width_horizontal_rules(page) >= 10
+                    or _text_answer_lines(text) >= 10
+                )
             ):
                 role = "ruled_continuation"
             if role == "mark_scheme_content" and any(
@@ -901,14 +914,31 @@ def _full_width_horizontal_rules(page: fitz.Page) -> int:
     count = 0
     for drawing in page.get_drawings():
         for item in drawing.get("items", []):
-            if item[0] != "l":
-                continue
-            start, end = item[1], item[2]
-            if (
-                abs(start.y - end.y) < 0.5
-                and abs(start.x - end.x) >= page.rect.width * 0.65
-            ):
+            if item[0] == "l":
+                start, end = item[1], item[2]
+                is_wide_rule = (
+                    abs(start.y - end.y) < 0.5
+                    and abs(start.x - end.x) >= page.rect.width * 0.65
+                )
+            elif item[0] == "re":
+                rectangle = item[1]
+                is_wide_rule = (
+                    rectangle.width >= page.rect.width * 0.65
+                    and rectangle.height <= 1.0
+                )
+            else:
+                is_wide_rule = False
+            if is_wide_rule:
                 count += 1
+    return count
+
+
+def _text_answer_lines(text: str) -> int:
+    count = 0
+    for line in text.splitlines():
+        compact = "".join(line.split())
+        if len(compact) >= 30 and set(compact) <= {".", "…", "_"}:
+            count += 1
     return count
 
 
@@ -1813,11 +1843,34 @@ def _overlay_panel(reference: Image.Image, generated: Image.Image) -> Image.Imag
     return Image.blend(red, cyan, 0.5)
 
 
-def _labelled_panel(image: Image.Image, label: str) -> Image.Image:
-    label_height = 24
+def _metric_callout(measured: dict[str, Any]) -> str:
+    print_scores = measured.get("print_scores") or {}
+    values = (
+        ("Structure", measured.get("structural_overall", 0.0)),
+        ("Perceptual", measured.get("perceptual_overall", 0.0)),
+        ("Print", measured.get("print_overall", 0.0)),
+        ("Baseline", print_scores.get("baseline", 0.0)),
+        ("Glyphs", print_scores.get("glyph_bbox", 0.0)),
+        ("Rules", print_scores.get("rule_count", 0.0)),
+    )
+    return " • ".join(f"{name} {float(value):.1%}" for name, value in values)
+
+
+def _labelled_panel(
+    image: Image.Image,
+    label: str,
+    *,
+    callout: str = "",
+) -> Image.Image:
+    label_height = 58
     panel = Image.new("RGB", (image.width, image.height + label_height), "white")
     panel.paste(image, (0, label_height))
-    ImageDraw.Draw(panel).text((6, 5), label, fill="black")
+    drawing = ImageDraw.Draw(panel)
+    drawing.text((6, 4), label, fill="black")
+    if callout:
+        parts = callout.split(" • ")
+        drawing.text((6, 21), " • ".join(parts[:3]), fill=(45, 45, 45))
+        drawing.text((6, 38), " • ".join(parts[3:]), fill=(45, 45, 45))
     return panel
 
 
@@ -1875,6 +1928,7 @@ def write_contact_sheets(
                         _overlay_panel(reference_image, generated_image),
                         f"Overlay • {measured.get('role', 'unclassified')} • "
                         f"{float(measured.get('qualified_overall', measured.get('overall', 0))):.1%}",
+                        callout=_metric_callout(measured),
                     ),
                     _labelled_panel(
                         _difference_panel(reference_image, generated_image),

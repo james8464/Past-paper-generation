@@ -50,6 +50,11 @@ FONT_CANDIDATES: dict[str, list[tuple[str, int]]] = {
         ("/System/Library/Fonts/Supplemental/Verdana Bold.ttf", 0),
         ("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 0),
     ],
+    "ExamMarkScheme-Italic": [
+        ("/System/Library/Fonts/Supplemental/Verdana Italic.ttf", 0),
+        (str(_FONTS_DIR / "arimo" / "Arimo-Italic.ttf"), 0),
+        ("/System/Library/Fonts/Supplemental/Arial Italic.ttf", 0),
+    ],
     "ExamSerif": [
         (str(_FONTS_DIR / "tinos" / "Tinos-Regular.ttf"), 0),
     ],

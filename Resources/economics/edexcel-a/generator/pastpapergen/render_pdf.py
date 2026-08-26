@@ -66,6 +66,7 @@ FONT_BOLD = L.font_bold
 FONT_ITALIC = "ExamSans-Italic"
 MS_FONT = "ExamMarkScheme"
 MS_FONT_BOLD = "ExamMarkScheme-Bold"
+MS_FONT_ITALIC = "ExamMarkScheme-Italic"
 SERIF_FONT = "ExamSerif"
 SERIF_BOLD_ITALIC = "ExamSerif-BoldItalic"
 MS_ANSWER_WRAP_CHARS = 54
@@ -91,12 +92,32 @@ ANSWER_FRAME_X = 34
 ANSWER_FRAME_Y = 48
 ANSWER_FRAME_W = 500
 ANSWER_FRAME_H = 760
-ANSWER_PAGE_START_Y = 772
+ANSWER_PAGE_START_Y = 803.3
 RAIL_Y = 50
 RAIL_H = 760
 MARK_SCHEME_MIN_PAGES = {"paper_1": 29, "paper_2": 36, "paper_3": 31}
 MARK_SCHEME_TITLE_COLOR = "#003A5D"
 MARK_SCHEME_ACCENT_COLOR = "#007FA3"
+MARK_SCHEME_COVER_LAYOUTS = {
+    "paper_1": {
+        "margin": 56.7,
+        "title_offset": 325.3,
+        "date_offset": 416.3,
+        "information_offsets": (495.4, 535.7, 576.2),
+    },
+    "paper_2": {
+        "margin": 37.0,
+        "title_offset": 285.7,
+        "date_offset": 388.4,
+        "information_offsets": (485.2, 515.1, 545.1),
+    },
+    "paper_3": {
+        "margin": 42.5,
+        "title_offset": 319.1,
+        "date_offset": 453.7,
+        "information_offsets": (574.7, 615.0, 655.4),
+    },
+}
 CROSS_BOX_TOKEN = "{box}"
 SECTION_A_INSTRUCTION_LINES = [
     "Answer ALL questions. Write your answers in the spaces provided.",
@@ -112,6 +133,7 @@ SECTION_A_INSTRUCTION_LINES = [
 _rf(FONT_REGULAR, FONT_BOLD, default_fallback="Times-Roman")
 _rf(FONT_ITALIC, default_fallback="Times-Italic")
 _rf(MS_FONT, MS_FONT_BOLD, default_fallback="Times-Roman")
+_rf(MS_FONT_ITALIC, default_fallback="Times-Italic")
 _rf(SERIF_FONT, SERIF_BOLD_ITALIC, default_fallback="Times-Roman")
 
 
@@ -201,14 +223,14 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.setLineWidth(1.8)
     pdf.roundRect(panel_x, panel_y, panel_w, panel_h, 9, stroke=1, fill=0)
 
-    pdf.setFont(FONT_BOLD, 8)
-    pdf.drawCentredString(panel_x + panel_w / 2, panel_y + panel_h - 14, "Please check the examination details below before entering your candidate information")
+    pdf.setFont(FONT_BOLD, 9)
+    pdf.drawCentredString(panel_x + panel_w / 2, panel_y + panel_h - 10, "Please check the examination details below before entering your candidate information")
 
     name_y = panel_y + panel_h - 45
     pdf.roundRect(panel_x + 14, name_y, panel_w - 28, 30, 8, stroke=1, fill=0)
     pdf.line(panel_x + panel_w / 2, name_y, panel_x + panel_w / 2, name_y + 30)
-    pdf.setFont(FONT_REGULAR, 8)
-    pdf.drawString(panel_x + 22, name_y + 18, "Candidate surname")
+    pdf.setFont(FONT_REGULAR, 9)
+    pdf.drawString(panel_x + 24, name_y + 18, "Candidate surname")
     pdf.drawString(panel_x + panel_w / 2 + 8, name_y + 18, "Other names")
 
     box_y = name_y - 42
@@ -219,8 +241,8 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     _draw_boxes(pdf, panel_x + 140, box_y, 4, size=22)
 
     y = box_y - 22
-    pdf.setFont(FONT_BOLD, 17)
-    pdf.drawString(panel_x + 14, y, "Level 3 GCE")
+    pdf.setFont(FONT_BOLD, 20)
+    pdf.drawString(panel_x + 14, y, "Level 3 GCE · Independent practice")
     y -= 50
     pdf.roundRect(panel_x + 14, y, panel_w - 28, 28, 7, stroke=1, fill=0)
     pdf.setFont(FONT_BOLD, 18)
@@ -241,14 +263,14 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.setFillColor(colors.black)
 
     y -= 90
-    pdf.roundRect(panel_x + 14, y, panel_w - 28, 88, 7, stroke=1, fill=0)
-    pdf.setFont(FONT_BOLD, 20)
-    pdf.drawString(panel_x + 22, y + 63, "Economics A")
+    pdf.roundRect(panel_x + 14, y, panel_w - 28, 96, 7, stroke=1, fill=0)
+    pdf.setFont(FONT_BOLD, 24)
+    pdf.drawString(panel_x + 22, y + 71.5, "Economics A")
     pdf.setFont(FONT_BOLD, 14)
     pdf.drawString(panel_x + 22, y + 43, "Advanced")
     paper_number = blueprint.paper_id[-1]
     pdf.drawString(panel_x + 22, y + 26, f"PAPER {paper_number}: {blueprint.title}")
-    square_y = y + 73
+    square_y = y + 81
     for offset, shade in enumerate(("#b0b0b0", "#777777", "#4d494b")):
         pdf.setFillColor(colors.HexColor(shade))
         pdf.rect(panel_x + panel_w - 52 + offset * 14, square_y, 12, 12, stroke=0, fill=1)
@@ -264,7 +286,7 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.drawCentredString(panel_x + panel_w - 42, y + 25, "Total Marks")
 
     text_x = 96
-    y = 430
+    y = 432
     _draw_front_section(
         pdf,
         text_x,
@@ -278,7 +300,7 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
             "Calculators may be used.",
         ],
     )
-    y -= 142
+    y -= 155.8
     _draw_front_section(
         pdf,
         text_x,
@@ -289,7 +311,7 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
             "The marks for each question are shown in brackets - use this as a guide as to how much time to spend on each question.",
         ],
     )
-    y -= 92
+    y -= 80.7
     _draw_front_section(
         pdf,
         text_x,
@@ -301,7 +323,7 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
             "Check your answers if you have time at the end.",
         ],
     )
-    _draw_turn_over(pdf, width - 64, 75)
+    _draw_turn_over(pdf, width - 25, 102.8)
     paper_code = blueprint.paper_code.partition("/")[0]
     barcode_text = f"{paper_code}01"
     pdf.setFont(FONT_REGULAR, 15)
@@ -312,7 +334,7 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
 
 
 def _draw_turn_over(pdf: canvas.Canvas, right_x: float, y: float) -> None:
-    pdf.setFont(SERIF_BOLD_ITALIC, 9)
+    pdf.setFont(SERIF_BOLD_ITALIC, 12)
     pdf.drawRightString(right_x - 14, y, "Turn over")
     pdf.setFillColor(colors.HexColor("#b0b0b0"))
     pdf.setStrokeColor(colors.HexColor("#b0b0b0"))
@@ -342,9 +364,9 @@ def _draw_front_section(
     heading: str,
     lines: list[str],
 ) -> None:
-    pdf.setFont(FONT_BOLD, 11.5)
+    pdf.setFont(FONT_BOLD, 14)
     pdf.drawString(x, y, heading)
-    pdf.setFont(FONT_REGULAR, 10.5)
+    pdf.setFont(FONT_REGULAR, 11)
     y -= 18
     for line in lines:
         wrapped = _wrap(line, 74)
@@ -981,7 +1003,7 @@ def _draw_trailing_blank_pages(
         blank_page_number = page_number + offset
         _prepare_answer_page(pdf, blueprint, blank_page_number)
         pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
-        pdf.drawCentredString(width / 2, height / 2, "BLANK PAGE")
+        pdf.drawCentredString(width / 2, height / 2 - 6.4, "BLANK PAGE")
         _draw_question_footer(
             pdf,
             blueprint,
@@ -1291,23 +1313,24 @@ def _prepare_answer_page(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_num
 
 def _draw_do_not_write_rail(pdf: canvas.Canvas, page_number: int) -> None:
     width, _height = A4
-    rail_positions = (
-        (6, 30)
-        if page_number % 2 == 1
-        else (width - 54, width - 28)
+    is_left = page_number % 2 == 1
+    rail_x = -2.7 if is_left else width - 36.8
+    label_positions = (
+        (182.5, 426.3, 673.0)
+        if is_left
+        else (178.9, 425.6, 669.4)
     )
-    for rail_x in rail_positions:
-        pdf.setFillColor(colors.HexColor("#f0f0f0"))
-        pdf.rect(rail_x, RAIL_Y, 21, RAIL_H, stroke=0, fill=1)
-        _draw_hatched_rail(pdf, rail_x, RAIL_Y, 21, RAIL_H)
-        pdf.setFillColor(colors.HexColor("#666666"))
-        pdf.setFont(FONT_BOLD, 8)
-        for y in (145, 360, 575):
-            pdf.saveState()
-            pdf.translate(rail_x + 14, y)
-            pdf.rotate(270)
-            pdf.drawCentredString(0, 0, "DO NOT WRITE IN THIS AREA")
-            pdf.restoreState()
+    pdf.setFillColor(colors.HexColor("#f0f0f0"))
+    pdf.rect(rail_x, RAIL_Y, 21, RAIL_H, stroke=0, fill=1)
+    _draw_hatched_rail(pdf, rail_x, RAIL_Y, 21, RAIL_H)
+    pdf.setFillColor(colors.HexColor("#666666"))
+    pdf.setFont(FONT_BOLD, 12)
+    for y in label_positions:
+        pdf.saveState()
+        pdf.translate(rail_x + 14, y)
+        pdf.rotate(270)
+        pdf.drawCentredString(0, 0, "DO NOT WRITE IN THIS AREA")
+        pdf.restoreState()
     _draw_staple_marks(pdf, page_number)
     pdf.setFillColor(colors.black)
 
@@ -1341,12 +1364,12 @@ def _draw_hatched_rail(pdf: canvas.Canvas, x: float, y: float, w: float, h: floa
 def _draw_question_footer(pdf: canvas.Canvas, blueprint: PaperBlueprint, page_number: int, is_last: bool = False) -> None:
     width, _ = A4
     page_label = str(page_number)
-    pdf.setFont(FONT_BOLD, 8)
+    pdf.setFont(FONT_BOLD, 10)
     if page_number % 2 == 1:
-        pdf.drawRightString(width - 72, 42, page_label)
+        pdf.drawRightString(width - 49.3, 34.4, page_label)
         block_x = 72
     else:
-        pdf.drawString(72, 42, page_label)
+        pdf.drawString(49.3, 34.4, page_label)
         block_x = width - 98
     if not is_last:
         pdf.setFont(FONT_REGULAR, 9)
@@ -1855,13 +1878,11 @@ def _draw_answer_lines(
     line_count: int,
     bottom_y: float = 90,
 ) -> float:
-    _set_answer_line_style(pdf)
     for _ in range(line_count):
         if y < bottom_y:
             break
-        pdf.line(x, y, right_x, y)
+        _draw_dotted_answer_rule(pdf, y)
         y -= ANSWER_LINE_GAP_PT
-    _reset_line_style(pdf)
     return y
 
 
@@ -1870,29 +1891,22 @@ def _draw_answer_lines_until(
     x: float,
     y: float,
     right_x: float,
-    bottom_y: float = 90,
+    bottom_y: float = 70,
 ) -> float:
-    _set_answer_line_style(pdf)
     while y >= bottom_y:
-        pdf.line(x, y, right_x, y)
+        _draw_dotted_answer_rule(pdf, y)
         y -= ANSWER_LINE_GAP_PT
-    _reset_line_style(pdf)
     return y
 
 
-def _set_answer_line_style(pdf: canvas.Canvas) -> None:
-    pdf.setStrokeColor(colors.HexColor(ANSWER_LINE_COLOR_HEX))
-    pdf.setLineWidth(ANSWER_LINE_WIDTH_PT)
-    if ANSWER_LINE_DASH:
-        pdf.setDash(*ANSWER_LINE_DASH)
-    else:
-        pdf.setDash()
-
-
-def _reset_line_style(pdf: canvas.Canvas) -> None:
-    pdf.setStrokeColor(colors.black)
-    pdf.setLineWidth(1)
-    pdf.setDash()
+def _draw_dotted_answer_rule(pdf: canvas.Canvas, y: float) -> None:
+    text = pdf.beginText()
+    text.setTextOrigin(42.5, y)
+    text.setFont(FONT_REGULAR, 6)
+    text.setCharSpace(0.174)
+    text.setFillColor(colors.HexColor(ANSWER_LINE_COLOR_HEX))
+    text.textOut("." * 276)
+    pdf.drawText(text)
 
 
 def _answer_line_count(marks: int) -> int:
@@ -2408,28 +2422,46 @@ def render_mark_scheme(
     _set_pdf_metadata(pdf, blueprint, "Mark scheme")
     width, height = page_size
     margin = 49
+    cover_layout = MARK_SCHEME_COVER_LAYOUTS[blueprint.paper_id]
+    cover_margin = cover_layout["margin"]
     accent = colors.HexColor(MARK_SCHEME_ACCENT_COLOR)
     title_blue = colors.HexColor(MARK_SCHEME_TITLE_COLOR)
     pdf.setFillColor(colors.black)
     pdf.setFont(SERIF_FONT, 30)
-    pdf.drawString(margin, height - 200, "Unofficial Practice")
+    pdf.drawString(cover_margin, height - 200, "Unofficial Practice")
     pdf.setFillColor(title_blue)
-    pdf.setFont(SERIF_FONT, 31)
-    pdf.drawString(margin, height - 324, "Mark Scheme (Results)")
-    pdf.setFont(SERIF_FONT, 31)
-    pdf.drawString(margin, height - 415, formatted_generation_date())
-    pdf.setFont(MS_FONT, 23)
+    pdf.setFont(SERIF_FONT, 28)
+    pdf.drawString(
+        cover_margin,
+        height - cover_layout["title_offset"],
+        "Mark Scheme (Results)",
+    )
+    pdf.drawString(
+        cover_margin,
+        height - cover_layout["date_offset"],
+        formatted_generation_date(),
+    )
+    pdf.setFont(MS_FONT, 22)
     pdf.setFillColor(accent)
-    pdf.drawString(margin, height - 500, "Unofficial GCE A Level Practice")
-    pdf.drawString(margin, height - 540, f"In Economics A ({blueprint.paper_code.split('/')[0]})")
+    information_offsets = cover_layout["information_offsets"]
+    pdf.drawString(
+        cover_margin,
+        height - information_offsets[0],
+        "Unofficial GCE A Level Practice",
+    )
+    pdf.drawString(
+        cover_margin,
+        height - information_offsets[1],
+        f"In Economics A ({blueprint.paper_code.split('/')[0]})",
+    )
     paper_title = f"Paper {blueprint.paper_id[-1].zfill(2)} {blueprint.title}"
-    title_size = 23.0
+    title_size = 22.0
     title_width = pdf.stringWidth(paper_title, MS_FONT, title_size)
-    available_width = width - margin * 2
+    available_width = width - cover_margin * 2
     if title_width > available_width:
         title_size *= available_width / title_width
         pdf.setFont(MS_FONT, title_size)
-    pdf.drawString(margin, height - 580, paper_title)
+    pdf.drawString(cover_margin, height - information_offsets[2], paper_title)
     pdf.setFillColor(colors.black)
     pdf.showPage()
 
@@ -3377,7 +3409,12 @@ def _draw_ms_row(
                 diagram,
             )
             continue
-        font = MS_FONT_BOLD if _ms_bold_line(line) else MS_FONT
+        if _ms_bold_line(line):
+            font = MS_FONT_BOLD
+        elif _ms_italic_line(line):
+            font = MS_FONT_ITALIC
+        else:
+            font = MS_FONT
         pdf.setFont(font, 11)
         is_bullet = line.startswith("●")
         line_x = answer_x + (40 if is_bullet else 22)
@@ -3428,6 +3465,10 @@ def _ms_wrap_width(line: str) -> int:
 
 def _ms_centered_line(line: str) -> bool:
     return bool(re.match(r"^Knowledge \d, Application \d", line))
+
+
+def _ms_italic_line(line: str) -> bool:
+    return " is not correct as " in line.casefold()
 
 
 def _ms_bold_line(line: str) -> bool:

@@ -751,6 +751,7 @@ def _paper_two_pages(paper: GeneratedPaper) -> list[Flowable]:
         )
         analysis_index = 2 if len(questions) == 4 else 1
         evaluation_index = 3 if len(questions) == 4 else 2
+        continuation_pages = (3, 1, 2)[section_index]
         pages.extend(
             [
                 [
@@ -763,23 +764,29 @@ def _paper_two_pages(paper: GeneratedPaper) -> list[Flowable]:
                     *_question_block(questions[evaluation_index]),
                     AnswerLines(25),
                 ],
-                [
-                    Paragraph(
-                        f"Question {questions[evaluation_index].number} continued",
-                        STYLES["centre_bold"],
-                    ),
-                    AnswerLines(34),
+                *[
+                    [
+                        Paragraph(
+                            f"Question {questions[evaluation_index].number} continued",
+                            STYLES["centre_bold"],
+                        ),
+                        AnswerLines(34),
+                    ]
+                    for _ in range(continuation_pages)
                 ],
             ]
         )
-    pages.extend([_additional_answer_page(paper.paper_code) for _ in range(8)])
+        if section_index < 2:
+            pages.append(_no_questions_page())
+    pages.append(_no_questions_page())
+    pages.extend([_additional_answer_page(paper.paper_code) for _ in range(2)])
     assert len(pages) == 23
     return _page_sequence(pages)
 
 
 def _paper_three_pages(paper: GeneratedPaper) -> list[Flowable]:
     option = paper.sections[0].options[0]
-    allocations = [3, 3, 4, 4, 5, 6]
+    allocations = [3, 3, 4, 4, 4, 5]
     pages: list[list[Flowable]] = []
     for question, allocation in zip(option.questions, allocations, strict=True):
         pages.append(
@@ -802,7 +809,8 @@ def _paper_three_pages(paper: GeneratedPaper) -> list[Flowable]:
                 for _ in range(allocation - 1)
             ]
         )
-    pages.extend([_additional_answer_page(paper.paper_code) for _ in range(2)])
+    pages.append(_no_questions_page())
+    pages.extend([_additional_answer_page(paper.paper_code) for _ in range(3)])
     assert len(pages) == 27
     return _page_sequence(pages)
 

@@ -90,6 +90,26 @@ def render_mark_scheme(
             "Indicative content is not exhaustive. Award equivalent valid reasoning "
             "when it answers the question set."
         ),
+        Spacer(1, 6 * mm),
+        Paragraph("Question-specific checks", STYLES["heading"]),
+        Spacer(1, 2 * mm),
+        Paragraph(
+            "Before awarding credit, identify the command word and required context, "
+            "then check that each marking point answers the precise task. Credit a "
+            "calculation only when the response shows a valid method and units where "
+            "they are required. A diagram must use appropriate axes, curves, labels "
+            "and equilibrium points; written analysis must explain the economic "
+            "mechanism rather than merely naming it.",
+            STYLES["body"],
+        ),
+        Spacer(1, 3 * mm),
+        Paragraph(
+            "For extended responses, use the response as a whole to select the "
+            "best-fit level. Place it higher within that level only when accuracy, "
+            "application, analysis and evaluation are sustained. Do not reward a "
+            "memorised conclusion that is unsupported by the reasoning presented.",
+            STYLES["body"],
+        ),
         NextPageTemplate("ocr-mark-scheme-landscape"),
         PageBreak(),
         *_supplementary_marking_pages(),
@@ -149,8 +169,8 @@ def _supplementary_marking_pages() -> list[Flowable]:
         _preparation_for_marking_page,
         _assessment_objectives_guidance_page,
         _levels_application_page,
-        _diagrams_and_calculations_page,
         _annotation_conventions_page,
+        _diagrams_and_calculations_page,
         _short_answer_guidance_page,
         _strong_levels_descriptor_page,
         _limited_levels_descriptor_page,
@@ -197,6 +217,8 @@ def _assessment_objectives_guidance_page() -> list[Flowable]:
         ("Supported", "The final judgement follows from the analysis and evaluation presented."),
     ]
     return [
+        Paragraph("MARKING INSTRUCTIONS CONTINUED", STYLES["centre_bold"]),
+        Spacer(1, 3 * mm),
         Paragraph("USING THE ASSESSMENT OBJECTIVES", STYLES["centre_bold"]),
         Spacer(1, 4 * mm),
         _guidance_table(
@@ -302,6 +324,13 @@ def _short_answer_guidance_page() -> list[Flowable]:
         _guidance_table(["Command", "Marking approach"], rows, [45 * mm, 215 * mm]),
         Spacer(1, 6 * mm),
         _guidance_table(["Response", "Treatment"], examples, [190 * mm, 70 * mm]),
+        Spacer(1, 5 * mm),
+        Paragraph(
+            "For diagrams and calculations, require the relevant axes, curves, labels, "
+            "method, units and requested accuracy. Credit a coherent error-carried-forward "
+            "method where the question-specific guidance permits it.",
+            STYLES["small"],
+        ),
     ]
 
 
@@ -1337,22 +1366,19 @@ def _paper_one_two_pages(paper: GeneratedPaper) -> list[Flowable]:
             *_question_block(data.questions[5]),
             AnswerLines(25),
         ],
-        [
-            Paragraph("Question 1 continued", STYLES["centre_bold"]),
-            AnswerLines(34),
-        ],
+        _continuation_page(paper.paper_code, "Question 1 continued"),
     ]
     if paper.paper_id == "paper_1":
         pages.extend(
             [
                 _section_transition_page(paper.paper_code, "Section B", blank=True),
                 [*_intro(section_b), *_choice_prompts(section_b)],
-                [AnswerLines(34)],
-                [AnswerLines(34)],
+                _continuation_page(paper.paper_code),
+                _continuation_page(paper.paper_code),
                 _section_transition_page(paper.paper_code, "Section C"),
                 [*_intro(section_c), *_choice_prompts(section_c)],
-                [AnswerLines(34)],
-                [AnswerLines(34)],
+                _continuation_page(paper.paper_code),
+                _continuation_page(paper.paper_code),
                 _end_of_paper_page(line_count=10, spacer=70 * mm),
                 _extra_answer_page(paper.paper_code),
                 _extra_answer_page(paper.paper_code, show_heading=False),
@@ -1363,12 +1389,12 @@ def _paper_one_two_pages(paper: GeneratedPaper) -> list[Flowable]:
         pages.extend(
             [
                 [*_intro(section_b), *_choice_prompts(section_b)],
-                [AnswerLines(34)],
-                [AnswerLines(34)],
+                _continuation_page(paper.paper_code),
+                _continuation_page(paper.paper_code),
                 _section_transition_page(paper.paper_code, "Section C"),
                 [*_intro(section_c), *_choice_prompts(section_c)],
-                [AnswerLines(34)],
-                [AnswerLines(34)],
+                _continuation_page(paper.paper_code),
+                _continuation_page(paper.paper_code),
                 _end_of_paper_page(line_count=6, spacer=95 * mm),
                 _extra_answer_page(paper.paper_code),
                 _blank_question_page(paper.paper_code),
@@ -1505,6 +1531,24 @@ def _blank_question_page(paper_code: str) -> list[Flowable]:
                 heading="BLANK PAGE",
                 variant="blank",
                 do_not_write=True,
+            ),
+            font=FONT,
+            bold_font=FONT_BOLD,
+        )
+    ]
+
+
+def _continuation_page(
+    paper_code: str,
+    heading: str = "",
+) -> list[Flowable]:
+    return [
+        ExamPage(
+            ExamPageProfile(
+                board="ocr",
+                code=paper_code,
+                heading=heading,
+                variant="continuation",
             ),
             font=FONT,
             bold_font=FONT_BOLD,
@@ -2021,13 +2065,20 @@ def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
     page_size = OCR_MARK_SCHEME_FRONT_SIZE if kind == "Mark scheme" else A4
     doc = BaseDocTemplate(str(path), pagesize=page_size, leftMargin=18 * mm, rightMargin=17 * mm, topMargin=19 * mm, bottomMargin=18 * mm, title=f"{paper.paper_code} {paper.title} — {kind}", author="Paper creator", subject="Independent A-level Economics practice material")
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="body")
+
+    def draw_chrome(canvas, value) -> None:
+        _chrome(canvas, value, paper.paper_code, kind)
+
+    chrome_callbacks = (
+        {"onPageEnd": draw_chrome}
+        if kind == "Question paper"
+        else {"onPage": draw_chrome}
+    )
     templates = [
         PageTemplate(
             id="ocr-practice",
             frames=[frame],
-            onPage=lambda canvas, value: _chrome(
-                canvas, value, paper.paper_code, kind
-            ),
+            **chrome_callbacks,
         )
     ]
     if kind == "Mark scheme":
@@ -2076,13 +2127,13 @@ def _chrome(canvas, doc, code: str, kind: str) -> None:
     page_width, page_height = canvas._pagesize
     if kind == "Question paper" and doc.page > 1:
         canvas.setFillColor(INK)
-        canvas.setFont(FONT, 9)
-        canvas.drawCentredString(page_width / 2, page_height - 18 * mm, str(doc.page))
+        canvas.setFont(FONT, 11)
+        canvas.drawCentredString(page_width / 2, page_height - 18.8 * mm, str(doc.page))
         canvas.setFont(FONT, 6)
-        canvas.drawString(17.5 * mm, 18 * mm, code)
+        canvas.drawString(21.5 * mm, 20.2 * mm, code)
         if doc.page % 2 == 1:
-            canvas.setFont(FONT_BOLD, 9)
-            canvas.drawRightString(page_width - 18 * mm, 18 * mm, "Turn over")
+            canvas.setFont(FONT_BOLD, 10)
+            canvas.drawRightString(page_width - 23 * mm, 21.2 * mm, "Turn over")
         canvas.restoreState()
         return
     canvas.setStrokeColor(colors.HexColor("#aaaaaa"))

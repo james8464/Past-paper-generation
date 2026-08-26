@@ -1271,28 +1271,34 @@ class _QuestionRenderState:
 
 
 def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
+    pdf.setFont(FONT_BOLD, 27)
+    pdf.drawString(40, 768, "PAPER")
+    pdf.setFont(FONT_BOLD, 10)
+    pdf.drawString(40, 752, "CREATOR")
     pdf.setFont(FONT, 11)
     candidate_instruction = (
         "Complete the candidate details and save all electronic work clearly."
         if blueprint.delivery_mode == "on-screen"
         else "Please write clearly in block capitals."
     )
-    pdf.drawString(55, 790, candidate_instruction)
+    pdf.rect(40, 564, 504, 166, stroke=1, fill=0)
+    pdf.drawString(55, 708, candidate_instruction)
     _candidate_fields(pdf)
 
     pdf.setFont(FONT_BOLD, 18)
-    pdf.drawString(55, 535, "A-level")
+    pdf.drawString(40, 535, "A-level")
     pdf.setFont(FONT_BOLD, 22)
-    pdf.drawString(55, 508, "COMPUTER SCIENCE")
+    pdf.drawString(40, 501, "COMPUTER SCIENCE")
     pdf.setFont(FONT_BOLD, 16)
-    pdf.drawString(55, 483, f"Paper {blueprint.paper_number}")
+    pdf.drawString(40, 476, f"Paper {blueprint.paper_number}")
+    pdf.setLineWidth(2)
+    pdf.line(40, 455, 545, 455)
     pdf.setFont(FONT, 11)
-    pdf.drawString(55, 458, _formatted_exam_date(blueprint))
-    pdf.drawString(225, 458, blueprint.session)
-    pdf.setFont(FONT, 9.5)
-    pdf.drawString(302, 458, "Time allowed: 2 hours 30 minutes")
+    pdf.drawString(40, 438, _formatted_exam_date(blueprint))
+    pdf.drawString(231, 438, blueprint.session)
+    pdf.drawString(306, 438, "Time allowed: 2 hours 30 minutes")
 
-    y = 430
+    y = 410
     material_lines = ["For this paper you must have:"] + [f"\u2022 {item}." for item in blueprint.materials]
     y = _cover_section(pdf, y, "Materials", material_lines)
     response_instruction = (
@@ -1334,8 +1340,8 @@ def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     )
     _cover_section(pdf, y - 8, "Advice", advice)
 
-    _examiner_table(pdf, len(blueprint.questions), y_top=420)
-    _draw_footer_barcode(pdf, 52, 14, 1)
+    _examiner_table(pdf, len(blueprint.questions), y_top=390)
+    _draw_footer_barcode(pdf, 52, 17, 1)
     pdf.setFont(FONT_BOLD, 8)
     pdf.drawString(130, 35, f"*PRACTICE{blueprint.paper_code.replace('/', '')}01*")
     pdf.setFont(FONT, 9)
@@ -1343,54 +1349,63 @@ def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
 
 
 def _candidate_fields(pdf: canvas.Canvas) -> None:
-    y = 744
     pdf.setFont(FONT, 10)
-    pdf.drawString(55, y, "Centre number")
-    pdf.drawString(255, y, "Candidate number")
-    _small_boxes(pdf, 55, y - 28, 5)
-    _small_boxes(pdf, 255, y - 28, 4)
-    for label in ["Surname", "Forename(s)", "Candidate signature"]:
-        y -= 48
+    pdf.drawString(55, 680, "Centre number")
+    pdf.drawString(312, 680, "Candidate number")
+    _small_boxes(pdf, 139, 650, 5)
+    _small_boxes(pdf, 414, 650, 4)
+    for label, y in (
+        ("Surname", 638),
+        ("Forename(s)", 612),
+        ("Candidate signature", 586),
+    ):
         pdf.drawString(55, y, label)
-        pdf.line(170, y - 2, 500, y - 2)
+        pdf.line(166, y - 2, 528, y - 2)
     pdf.setFont(FONT, 8.5)
-    pdf.drawString(255, y - 21, "I declare this is my own work.")
+    pdf.drawString(166, 568, "I declare this is my own work.")
 
 
 def _small_boxes(pdf: canvas.Canvas, x: float, y: float, count: int) -> None:
     for index in range(count):
-        pdf.rect(x + index * 18, y, 16, 18, stroke=1, fill=0)
+        pdf.rect(x + index * 28.5, y, 28.5, 28, stroke=1, fill=0)
 
 
 def _cover_section(pdf: canvas.Canvas, y: float, heading: str, lines: list[str]) -> float:
-    pdf.setFont(FONT_BOLD, 10)
-    pdf.drawString(55, y, heading)
+    pdf.setFont(FONT_BOLD, 11)
+    pdf.drawString(40, y, heading)
     y -= 16
-    pdf.setFont(FONT, 9)
+    pdf.setFont(FONT, 10)
     for line in lines:
-        for wrapped in _wrap(line, 76):
-            pdf.drawString(55, y, wrapped)
-            y -= 12
+        for wrapped in _wrap(line, 82):
+            pdf.drawString(40, y, wrapped)
+            y -= 14
     return y
 
 
 def _examiner_table(pdf: canvas.Canvas, count: int, y_top: float = 470) -> None:
-    x = 420
+    x = 450
     y = y_top
+    row_height = 18
+    header_height = 22
+    bottom = y - row_height * (count + 2)
+    pdf.setFillColor(colors.HexColor("#dddddd"))
+    pdf.rect(x, y, 100, header_height, stroke=1, fill=1)
+    pdf.rect(x + 50, bottom, 50, y - bottom, stroke=0, fill=1)
+    pdf.setFillColor(colors.black)
+    pdf.rect(x, bottom, 100, y - bottom, stroke=1, fill=0)
+    pdf.line(x + 50, bottom, x + 50, y)
     pdf.setFont(FONT_BOLD, 9)
-    pdf.drawString(x, y + 24, "For Examiner's Use")
-    pdf.rect(x, y - 14 * (count + 2), 108, 14 * (count + 2), stroke=1, fill=0)
-    pdf.line(x + 62, y - 14 * (count + 2), x + 62, y)
-    pdf.line(x, y - 14, x + 108, y - 14)
-    pdf.drawString(x + 8, y - 10, "Question")
-    pdf.drawString(x + 72, y - 10, "Mark")
+    pdf.drawCentredString(x + 50, y + 7, "For Examiner's Use")
+    pdf.line(x, y - row_height, x + 100, y - row_height)
+    pdf.drawString(x + 7, y - 13, "Question")
+    pdf.drawString(x + 59, y - 13, "Mark")
     pdf.setFont(FONT, 9)
     for index in range(1, count + 1):
-        row_y = y - 14 * (index + 1)
-        pdf.line(x, row_y, x + 108, row_y)
-        pdf.drawCentredString(x + 31, row_y + 4, str(index))
+        row_y = y - row_height * (index + 1)
+        pdf.line(x, row_y, x + 100, row_y)
+        pdf.drawCentredString(x + 25, row_y + 5, str(index))
     pdf.setFont(FONT_BOLD, 9)
-    pdf.drawString(x + 8, y - 14 * (count + 2) + 4, "TOTAL")
+    pdf.drawString(x + 8, bottom + 5, "TOTAL")
 
 
 def _draw_question_page_header(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
@@ -1412,7 +1427,7 @@ def _draw_question_page_header(pdf: canvas.Canvas, page: int, blueprint: PaperBl
         )
         pdf.drawCentredString(289, 768, instruction)
     pdf.setFont(FONT, 8)
-    _draw_footer_barcode(pdf, 52, 14, page)
+    _draw_footer_barcode(pdf, 52, 17, page)
     pdf.drawRightString(539, 28, f"Paper Creator / {blueprint.paper_code}")
 
 

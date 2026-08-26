@@ -104,11 +104,11 @@ def test_extra_answer_page_uses_open_ocr_rule_grammar(tmp_path: Path) -> None:
     try:
         page = document[-1]
         rules = [
-            drawing["rect"]
-            for drawing in page.get_drawings()
-            if drawing["rect"].height <= 1
-            and drawing["rect"].width > 490
-            and 120 < drawing["rect"].y0 < 650
+            span
+            for block in page.get_text("dict")["blocks"]
+            for line in block.get("lines", [])
+            for span in line.get("spans", [])
+            if span.get("text", "").strip().startswith("...")
         ]
         assert len(rules) == 20
         assert any(
@@ -141,7 +141,7 @@ def test_blank_leaf_matches_ocr_heading_and_message_baselines(tmp_path: Path) ->
         document.close()
 
 
-def test_paper_two_extra_leaves_use_headed_and_continuation_counts(
+def test_paper_two_extra_leaves_use_headed_continuation_and_blank_roles(
     tmp_path: Path,
 ) -> None:
     paths = generate_package(
@@ -153,21 +153,42 @@ def test_paper_two_extra_leaves_use_headed_and_continuation_counts(
 
     document = fitz.open(paths["question_paper"])
     try:
+        blank = document[10]
+        spans = {
+            span["text"].strip(): span
+            for block in blank.get_text("dict")["blocks"]
+            for line in block.get("lines", [])
+            for span in line.get("spans", [])
+        }
+        assert spans["11"]["size"] == pytest.approx(11, abs=0.1)
+        assert spans["11"]["bbox"][1] == pytest.approx(43.3, abs=1)
+        assert spans["Turn over"]["size"] == pytest.approx(10, abs=0.1)
+        assert spans["Turn over"]["bbox"][1] == pytest.approx(773.7, abs=1)
+        assert spans["Turn over"]["bbox"][2] == pytest.approx(530.1, abs=1)
+        for text in ("11", "Turn over"):
+            box = blank.search_for(text)[0] + (-2, -2, 2, 2)
+            pixels = blank.get_pixmap(
+                matrix=fitz.Matrix(2, 2),
+                colorspace=fitz.csGRAY,
+                clip=box,
+                alpha=False,
+            )
+            assert min(pixels.samples) < 100
         counts = []
         for page_index in range(len(document) - 3, len(document)):
             page = document[page_index]
             counts.append(
                 len(
                     [
-                        drawing
-                        for drawing in page.get_drawings()
-                        if drawing["rect"].height <= 1
-                        and drawing["rect"].width > 490
-                        and drawing["dashes"] != "[] 0"
+                        span
+                        for block in page.get_text("dict")["blocks"]
+                        for line in block.get("lines", [])
+                        for span in line.get("spans", [])
+                        if span.get("text", "").strip().startswith("...")
                     ]
                 )
             )
-        assert counts == [25, 27, 22]
+        assert counts == [25, 27, 0]
     finally:
         document.close()
 
@@ -187,6 +208,41 @@ def test_mark_scheme_cover_does_not_inherit_page_chrome(tmp_path: Path) -> None:
         assert "Page 1" not in text
     finally:
         document.close()
+
+
+def test_mark_scheme_preserves_measured_guidance_and_annotation_roles(
+    tmp_path: Path,
+) -> None:
+    paths = generate_package(
+        paper="2",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=123,
+    )
+    pages = PdfReader(paths["mark_scheme"]).pages
+
+    assert "continued" in (pages[3].extract_text() or "").casefold()
+    page_six = pages[5].extract_text() or ""
+    assert "ANNOTATIONS" in page_six
+    assert "Correct response" in page_six
+    assert "BLANK PAGE" not in page_six
+
+
+def test_paper_two_ends_before_extra_space_and_has_a_blank_legal_leaf(
+    tmp_path: Path,
+) -> None:
+    paths = generate_package(
+        paper="2",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=123,
+    )
+    pages = PdfReader(paths["question_paper"]).pages
+
+    assert "END OF QUESTION PAPER" in (pages[28].extract_text() or "")
+    assert "EXTRA ANSWER SPACE" in (pages[29].extract_text() or "")
+    assert "BLANK PAGE" in (pages[31].extract_text() or "")
+    assert "Independent practice material" in (pages[31].extract_text() or "")
 
 
 def test_mark_scheme_page_plans_cover_every_part() -> None:

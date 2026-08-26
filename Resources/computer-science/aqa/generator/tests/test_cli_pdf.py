@@ -48,6 +48,49 @@ def test_final_additional_answer_page_reserves_independent_notice(tmp_path):
         document.close()
 
 
+def test_question_cover_includes_the_independent_wordmark(tmp_path):
+    paths = generate_package(output_dir=tmp_path, seed=42, dry_run=True)
+
+    document = fitz.open(paths["question_paper"])
+    try:
+        page = document[0]
+        cover = page.get_text()
+        assert "PAPER" in cover
+        assert "CREATOR" in cover
+        assert abs(page.search_for("A-level")[0].x0 - 40) < 1
+        candidate_frames = [
+            item[1]
+            for drawing in page.get_drawings()
+            for item in drawing["items"]
+            if item[0] == "re"
+            and abs(item[1].x0 - 40) < 1
+            and abs(item[1].width - 504) < 2
+        ]
+        assert any(
+            abs(frame.y0 - 112) < 3 and abs(frame.height - 166) < 3
+            for frame in candidate_frames
+        )
+        time_box = page.search_for("Time allowed")[0]
+        examiner_box = page.search_for("For Examiner's Use")[0]
+        assert examiner_box.y0 > time_box.y1 + 5
+        final_advice = page.search_for("now wish to select")[0]
+        assert 730 < final_advice.y1 < 765
+        content_top = min(
+            block[1]
+            for block in page.get_text("blocks")
+            if str(block[4]).strip()
+        )
+        content_bottom = max(
+            block[3]
+            for block in page.get_text("blocks")
+            if str(block[4]).strip()
+        )
+        assert content_top >= 12
+        assert content_bottom <= page.rect.height - 14.2
+    finally:
+        document.close()
+
+
 def test_paper_two_transition_leaf_uses_do_not_write_diagonal(tmp_path):
     paths = generate_package(output_dir=tmp_path, seed=42, dry_run=True)
 

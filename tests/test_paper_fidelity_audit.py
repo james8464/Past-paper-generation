@@ -15,6 +15,7 @@ from tools.paper_fidelity_audit import (
     _generated_document,
     _geometry_scores,
     _grid_dimensions,
+    _metric_callout,
     _reference_peers,
     _registered_page_comparison,
     _render_page_pixmap,
@@ -122,6 +123,29 @@ def test_threshold_gate_rejects_unqualified_report_family() -> None:
         ("Additional page, if required", "question_paper", 28, "additional_answer"),
         ("EXTRA ANSWER SPACE", "question_paper", 29, "additional_answer"),
         ("Question 6 continued", "question_paper", 14, "ruled_continuation"),
+        (
+            "Extract F continued " + "economic evidence and analysis " * 30,
+            "question_paper",
+            4,
+            "question_content",
+        ),
+        (
+            "MARKING INSTRUCTIONS CONTINUED",
+            "mark_scheme",
+            4,
+            "mark_scheme_content",
+        ),
+        (
+            (
+                "Annotation conventions. Blank page means the annotation used when "
+                "there is no candidate response. Correct response, omission mark, "
+                "benefit of doubt, error carried forward, repeat, too vague. "
+            )
+            * 3,
+            "mark_scheme",
+            6,
+            "mark_scheme_content",
+        ),
         (
             "BLANK PAGE DO NOT WRITE ON THIS PAGE",
             "question_paper",
@@ -299,6 +323,57 @@ def test_pdf_role_classifier_recognises_ruled_answer_pages(tmp_path: Path) -> No
     assert _document_page_roles(path, "question_paper")[1] == "ruled_continuation"
 
 
+def test_pdf_role_classifier_counts_thin_answer_rectangles(tmp_path: Path) -> None:
+    path = tmp_path / "boxed-answer-lines.pdf"
+    document = fitz.open()
+    document.new_page(width=595, height=842).insert_text((50, 50), "Question paper")
+    answer = document.new_page(width=595, height=842)
+    answer.insert_text((50, 50), "Question 6 Explain your answer using the context.")
+    for y in range(100, 760, 28):
+        answer.draw_rect(fitz.Rect(50, y, 545, y + 0.2), width=0.2)
+    document.save(path)
+    document.close()
+
+    assert _document_page_roles(path, "question_paper")[1] == "ruled_continuation"
+
+
+def test_pdf_role_classifier_counts_extracted_dotted_answer_lines(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "dotted-answer-lines.pdf"
+    document = fitz.open()
+    document.new_page(width=595, height=842).insert_text((50, 50), "Question paper")
+    answer = document.new_page(width=595, height=842)
+    answer.insert_textbox(
+        fitz.Rect(50, 50, 545, 780),
+        "Turn over\n" + ("." * 100 + "\n") * 24,
+        fontsize=8,
+    )
+    document.save(path)
+    document.close()
+
+    assert _document_page_roles(path, "question_paper")[1] == "ruled_continuation"
+
+
+def test_pdf_role_classifier_keeps_marked_question_pages_as_content(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "marked-question-with-answer-lines.pdf"
+    document = fitz.open()
+    document.new_page(width=595, height=842).insert_text((50, 50), "Question paper")
+    answer = document.new_page(width=595, height=842)
+    answer.insert_text(
+        (50, 50),
+        "1 (b) Examine one likely externality using a diagram. (8)",
+    )
+    for y in range(100, 760, 28):
+        answer.draw_rect(fitz.Rect(50, y, 545, y + 0.2), width=0.2)
+    document.save(path)
+    document.close()
+
+    assert _document_page_roles(path, "question_paper")[1] == "question_content"
+
+
 def test_generated_document_supports_app_per_paper_directories(tmp_path: Path):
     nested = tmp_path / "paper-1" / "question.pdf"
     nested.parent.mkdir()
@@ -369,6 +444,26 @@ def test_compact_profile_omits_raster_geometry() -> None:
     }
 
     assert _compact_profile(value) == {"pages": 2, "word_count": 40}
+
+
+def test_metric_callout_names_print_resolution_comparison_dimensions() -> None:
+    label = _metric_callout(
+        {
+            "structural_overall": 0.61,
+            "perceptual_overall": 0.72,
+            "print_overall": 0.83,
+            "print_scores": {
+                "baseline": 0.74,
+                "glyph_bbox": 0.69,
+                "rule_count": 0.91,
+            },
+        }
+    )
+
+    assert label == (
+        "Structure 61.0% • Perceptual 72.0% • Print 83.0% • "
+        "Baseline 74.0% • Glyphs 69.0% • Rules 91.0%"
+    )
 
 
 def test_contact_sheets_make_visual_review_artifacts(tmp_path: Path) -> None:
