@@ -910,7 +910,7 @@ def test_checkpoint_cannot_replace_a_locked_verified_mark_scheme() -> None:
 
 def test_checkpoint_can_adopt_a_new_prompt_budget_without_content_changes() -> None:
     point = MarkSchemePoint(
-        text="Credit the verified relationship.",
+        text="A change in the independent variable changes the outcome.",
         marks=1,
         assessment_objective="AO1",
     )
@@ -1113,7 +1113,7 @@ def test_rejected_second_item_does_not_regenerate_accepted_first_item() -> None:
         command_word="explain",
         topic_id="topic",
         prompt="Explain how a cost change affects profit.",
-        mark_scheme=["Credit a valid relationship."],
+        mark_scheme=["Higher costs reduce profit, other things being equal."],
         assessment_objectives={"AO1": 1},
     )
     second = first.model_copy(
@@ -1239,7 +1239,10 @@ def _question_response(item_id: str, prompt: str) -> dict[str, object]:
                 "prompt": prompt,
                 "mark_scheme": [
                     {
-                        "text": "Credit the accurate causal relationship.",
+                        "text": (
+                            "The stated change affects the outcome through a "
+                            "relevant causal relationship."
+                        ),
                         "marks": 1,
                         "assessment_objective": "AO1",
                     }
@@ -1426,6 +1429,40 @@ def test_levels_scheme_requires_explicit_descriptors() -> None:
 
     with pytest.raises(ValueError, match="level descriptors"):
         _validate_mark_points(question, points)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Indicative content",
+        "Award each reason only when it is developed in the business context.",
+        "Examiner guidance: accept any other reasonable response.",
+    ],
+)
+def test_awarded_mark_points_reject_examiner_meta_guidance(text: str) -> None:
+    question = GeneratedQuestion(
+        rule_id="q1",
+        number="1",
+        marks=1,
+        kind="short_answer",
+        command_word="state",
+        topic_id="topic",
+        prompt="State one valid reason.",
+        mark_scheme=["One valid reason."],
+        assessment_objectives={"AO1": 1},
+    )
+
+    with pytest.raises(ValueError, match="candidate answer content"):
+        _validate_mark_points(
+            question,
+            [
+                MarkSchemePoint(
+                    text=text,
+                    marks=1,
+                    assessment_objective="AO1",
+                )
+            ],
+        )
 
 
 def test_levels_scheme_normalises_model_arithmetic_to_blueprint() -> None:

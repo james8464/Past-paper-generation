@@ -26,6 +26,7 @@ class CanonicalSolution(BaseModel):
     answer: str
     steps: list[str] = Field(default_factory=list)
     mark_points: list[str] = Field(default_factory=list)
+    mark_points_exhaustive: bool = True
     assessment_objectives: dict[str, int] = Field(default_factory=dict)
     alternatives: list[str] = Field(default_factory=list)
     partial_credit_boundaries: list[str] = Field(default_factory=list)
@@ -143,18 +144,25 @@ class IndependentSolver:
             and raw_item.get("marks") == 1
             and isinstance(raw_item.get("choices"), list)
         )
+        declared_observable = _string_list(context.get("observable_mark_points"))
         observable = (
             [answer]
             if is_single_mark_choice
-            else _string_list(
-                context.get("observable_mark_points") or result.get("mark_points")
-            )
+            else declared_observable or _string_list(result.get("mark_points"))
+        )
+        answer_form = str(
+            context.get("expected_answer_form", "constructed_response")
+        ).casefold()
+        fixed_answer = is_single_mark_choice or bool(numeric_results) or any(
+            token in answer_form
+            for token in ("calculation", "numeric", "exact", "choice", "closed")
         )
         return CanonicalSolution(
             item_id=item_id,
             answer=answer,
             steps=_string_list(result.get("steps")),
             mark_points=observable,
+            mark_points_exhaustive=bool(declared_observable) or fixed_answer,
             assessment_objectives={
                 str(key): int(value)
                 for key, value in dict(
@@ -207,7 +215,7 @@ def reconcile_solution(
 
     expected_numbers = _numbers(solution.answer)
     scheme_numbers = _numbers(text)
-    if expected_numbers:
+    if expected_numbers and solution.mark_points_exhaustive:
         if not all(
             any(
                 math.isclose(expected, actual, rel_tol=1e-7, abs_tol=1e-7)
@@ -221,7 +229,11 @@ def reconcile_solution(
                     message=f"scheme does not contain canonical answer {solution.answer}",
                 )
             )
-    elif solution.answer and content_similarity(solution.answer, text) < 0.2:
+    elif (
+        solution.answer
+        and not solution.mark_points
+        and content_similarity(solution.answer, text) < 0.2
+    ):
         issues.append(
             ReconciliationIssue(
                 field="answer",
@@ -287,12 +299,13 @@ def reconcile_solution(
                 message=f"scheme awards {total_marks} marks, expected {declared_marks}",
             )
         )
-    for mark_point in solution.mark_points:
+    for mark_point in solution.mark_points if solution.mark_points_exhaustive else ():
         if not _requirement_present(
             mark_point,
             normalised_text=normalised_text,
             semantic_parts=semantic_parts,
             threshold=0.42,
+            allow_concept_coverage=True,
         ):
             issues.append(
                 ReconciliationIssue(
@@ -403,6 +416,7 @@ def _requirement_present(
     normalised_text: str,
     semantic_parts: list[str],
     threshold: float,
+    allow_concept_coverage: bool = False,
 ) -> bool:
     normalised_requirement = _normalise(requirement)
     if normalised_requirement and normalised_requirement in normalised_text:
@@ -413,10 +427,82 @@ def _requirement_present(
         for segment in part.splitlines()
         if segment.strip()
     ]
-    return any(
+    if any(
         content_similarity(requirement, segment, width=1) >= threshold
         for segment in segments
+    ):
+        return True
+    return allow_concept_coverage and any(
+        _concept_coverage(requirement, segment) >= 0.4
+        for segment in segments
     )
+
+
+_CONCEPT_STOP_WORDS = {
+    "a",
+    "an",
+    "and",
+    "can",
+    "for",
+    "from",
+    "help",
+    "in",
+    "its",
+    "may",
+    "of",
+    "or",
+    "other",
+    "per",
+    "potentially",
+    "the",
+    "this",
+    "to",
+    "with",
+}
+_CONCEPT_ALIASES = {
+    "bought": "purchase",
+    "buy": "purchase",
+    "buying": "purchase",
+    "competed": "compete",
+    "competes": "compete",
+    "competition": "compete",
+    "competitive": "compete",
+    "customers": "customer",
+    "economies": "economy",
+    "encourages": "encourage",
+    "improves": "improve",
+    "increases": "increase",
+    "orders": "order",
+    "prices": "price",
+    "purchased": "purchase",
+    "purchases": "purchase",
+    "purchasing": "purchase",
+    "retains": "retain",
+    "sales": "sale",
+    "sold": "sale",
+    "suppliers": "supplier",
+}
+
+
+def _concept_coverage(requirement: str, candidate: str) -> float:
+    expected = _concept_tokens(requirement)
+    actual = _concept_tokens(candidate)
+    if not expected or not actual:
+        return 0.0
+    overlap = len(expected & actual)
+    minimum_overlap = 1 if len(expected) == 1 else 2
+    return overlap / len(expected) if overlap >= minimum_overlap else 0.0
+
+
+def _concept_tokens(value: str) -> set[str]:
+    value = re.sub(
+        r"^\s*(?:reason|explanation|point|step)\s*\d*\s*:\s*",
+        "",
+        value,
+        flags=re.IGNORECASE,
+    )
+    tokens = set(re.findall(r"[a-z]+", value.casefold())) - _CONCEPT_STOP_WORDS
+    return {_CONCEPT_ALIASES.get(token, token) for token in tokens}
 
 
 def _numbers(value: str) -> list[float]:

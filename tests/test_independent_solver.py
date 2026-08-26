@@ -256,3 +256,124 @@ def test_multiple_choice_solver_hides_key_and_normalises_option_number() -> None
     assert solution.answer == "Purchases journal"
     assert solution.mark_points == ["Purchases journal"]
     assert solution.evidence_ids == []
+
+
+def test_reconciliation_accepts_concise_scheme_for_elaborated_solver_points() -> None:
+    solution = CanonicalSolution(
+        item_id="q-discount",
+        answer=(
+            "A supplier may encourage large orders and defend its market share; "
+            "larger orders can raise sales volume and generate economies of scale."
+        ),
+        mark_points=[
+            "Reason 1: To encourage bulk purchasing or large orders.",
+            "Explanation 1: This increases the quantity sold per order and may improve economies of scale.",
+            "Reason 2: To compete with other suppliers in the market.",
+            "Explanation 2: Lower trade prices can help retain customers and market share.",
+        ],
+        assessment_objectives={"AO1": 2, "AO2": 2},
+    )
+    scheme = {
+        "marks": 4,
+        "points": [
+            {
+                "text": "Encourages customers to purchase in bulk and place larger orders.",
+                "marks": 1,
+                "assessment_objective": "AO1",
+            },
+            {
+                "text": "Higher sales volume may produce economies of scale.",
+                "marks": 1,
+                "assessment_objective": "AO2",
+            },
+            {
+                "text": "Allows the supplier to compete with rival suppliers.",
+                "marks": 1,
+                "assessment_objective": "AO1",
+            },
+            {
+                "text": "May retain trade customers and protect market share.",
+                "marks": 1,
+                "assessment_objective": "AO2",
+            },
+        ],
+    }
+
+    result = reconcile_solution(solution, scheme)
+
+    assert result.passed, result.issues
+
+
+def test_reconciliation_still_rejects_unrelated_scheme_for_elaborated_answer() -> None:
+    solution = CanonicalSolution(
+        item_id="q-discount",
+        answer="Encourage large orders and defend market share.",
+        mark_points=[
+            "Encourage customers to purchase in bulk.",
+            "Protect market share against competing suppliers.",
+        ],
+        assessment_objectives={"AO1": 2},
+    )
+
+    result = reconcile_solution(
+        solution,
+        {
+            "marks": 2,
+            "points": [
+                {
+                    "text": "Reduces the paperwork used to process invoices.",
+                    "marks": 2,
+                    "assessment_objective": "AO1",
+                }
+            ],
+        },
+    )
+
+    assert not result.passed
+    assert any(issue.field == "mark_points" for issue in result.issues)
+
+
+def test_open_response_solver_examples_are_not_treated_as_exhaustive() -> None:
+    class Client:
+        def generate_json(self, _prompt: str) -> dict[str, object]:
+            return {
+                "answer": (
+                    "Encourage bulk orders after sales fell by 7% and remain "
+                    "competitive despite liabilities of £340,000."
+                ),
+                "mark_points": [
+                    "Encourage bulk buying or larger orders.",
+                    "Build customer loyalty or maintain competitiveness.",
+                ],
+            }
+
+    item = {
+        "id": "q-discount",
+        "marks": 2,
+        "prompt": "State two reasons why a supplier may offer a trade discount.",
+        "assessment_objectives": {"AO1": 2},
+        "authoring_context": {"expected_answer_form": "constructed_response"},
+    }
+    solution = IndependentSolver(Client()).solve(item, [])
+
+    result = reconcile_solution(
+        solution,
+        {
+            "marks": 2,
+            "points": [
+                {
+                    "text": "Reward prompt payment from regular trade customers.",
+                    "marks": 1,
+                    "assessment_objective": "AO1",
+                },
+                {
+                    "text": "Reduce selling and administration costs per unit.",
+                    "marks": 1,
+                    "assessment_objective": "AO1",
+                },
+            ],
+        },
+    )
+
+    assert not solution.mark_points_exhaustive
+    assert result.passed, result.issues

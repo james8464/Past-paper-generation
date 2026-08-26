@@ -872,6 +872,18 @@ def _validate_mark_points(
         raise ValueError(f"question {question.number} has an overlong marking entry")
     awarded = [point for point in points if point.marks]
     is_levels = question.scheme_mode == "levels"
+    if not is_levels:
+        meta_awards = [
+            point.text
+            for point in awarded
+            if _is_examiner_meta_guidance(point.text)
+        ]
+        if meta_awards:
+            raise ValueError(
+                f"question {question.number} awarded marking points must state "
+                "candidate answer content, not examiner guidance: "
+                + "; ".join(meta_awards)
+            )
     minimum_awarded = (
         1
         if question.kind == "multiple_choice"
@@ -917,6 +929,19 @@ def _validate_mark_points(
             f"question {question.number} AO allocation {allocation} does not "
             f"match {question.assessment_objectives}"
         )
+
+
+def _is_examiner_meta_guidance(text: str) -> bool:
+    normalised = " ".join(text.casefold().split())
+    if normalised in {"answer", "guidance", "indicative content", "mark scheme"}:
+        return True
+    return bool(
+        re.match(
+            r"^(?:award|credit|accept|allow|ignore|do not accept|examiner|marker|"
+            r"indicative content|guidance|maximum)\b",
+            normalised,
+        )
+    )
 
 
 def _normalise_level_allocations(
@@ -1179,7 +1204,10 @@ def _generation_prompt(
         "question-specific criteria. For a points-based scheme, create one distinct awarded "
         "mark-scheme object for every object in `required_awarded_entries`; copy "
         "that object's AO and mark value exactly, keep the entries separate, and "
-        "give each genuinely different creditworthy content. Do not merge entries "
+        "give each genuinely different creditworthy candidate answer content. Never "
+        "award a mark to headings or examiner instructions such as 'indicative "
+        "content', 'award', 'credit', 'accept', 'allow', or 'examiner guidance'; "
+        "put such instructions in zero-mark guidance or structured fields. Do not merge entries "
         "or award several required marks through one generic sentence. When "
         "`scheme_mode` is `levels`, provide substantive "
         "indicative content covering every object in `required_awarded_entries`, "
