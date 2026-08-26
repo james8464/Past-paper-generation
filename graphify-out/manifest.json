@@ -1225,8 +1225,8 @@
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1785605819.7202547,
-    "ast_hash": "635372c87b297cc2922a22982d0b8320",
+    "mtime": 1787751812.6411772,
+    "ast_hash": "ff500d36c144b9be2bc20cdbedaca6e3",
     "semantic_hash": ""
   },
   "graphify-out/memory/query_20260801_164531_how_does_the_generation_quality_pipeline_connect.md": {
@@ -1435,8 +1435,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-26-paper-creator-excellence-programme.md": {
-    "mtime": 1787751141.4247465,
-    "ast_hash": "f36f4f50a03da040e607da6f858548a5",
+    "mtime": 1787751951.8405268,
+    "ast_hash": "3721180139e507ffdf3aa74915c2c004",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md": {
@@ -1707,6 +1707,21 @@
   "macOS/PaperCreator/State/ApplicationCoordinator.swift": {
     "mtime": 1787750861.985185,
     "ast_hash": "96975445d0a668eba0fb2d3f207fc550",
+    "semantic_hash": ""
+  },
+  "Resources/repository-inventory.json": {
+    "mtime": 1787751946.0070062,
+    "ast_hash": "508f40e3c48da0a0616319cbb95bd22f",
+    "semantic_hash": ""
+  },
+  "tests/test_repository_hygiene.py": {
+    "mtime": 1787751793.8253558,
+    "ast_hash": "24d297b7379a615e5e0f91ffe25eccca",
+    "semantic_hash": ""
+  },
+  "tools/repository_hygiene.py": {
+    "mtime": 1787751793.8255067,
+    "ast_hash": "6d4d9489035f9b2d5a430371da70a1be",
     "semantic_hash": ""
   }
 }

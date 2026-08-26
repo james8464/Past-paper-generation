@@ -479,7 +479,7 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - Modify: `docs/ASSESSMENT_QUALITY.md`
 - Modify: `README.md`
 
-- [ ] Inventory every tracked file and classify it as runtime source, resource, test, fixture, documentation, build/release configuration, durable derived metadata, or removable; fail CI on unclassified generated/binary additions.
+- [x] Inventory every tracked file and classify it as runtime source, resource, test, fixture, documentation, build/release configuration, durable derived metadata, or removable; fail CI on unclassified generated/binary additions.
 - [ ] Use `rg`, import graphs, Xcode bundle manifests, test discovery, and Graphify paths to prove candidates unused before deleting them.
 - [ ] Remove obsolete generated PDFs, caches, old matrix outputs, duplicate scripts, dead renderers, superseded package copies, unused assets/tutorial screenshots, editor/system files, and stale empty directories; do not delete current reference-derived metadata or active historical migrations.
 - [ ] Consolidate duplicated documentation and archive superseded plans only when their completed decisions are represented in current architecture/quality docs.
