@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import re
 import ssl
 import statistics
@@ -12,10 +13,10 @@ import time
 import urllib.parse
 import urllib.request
 from collections import Counter
+from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Any, Iterable
-
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CORPUS = ROOT / "Reference Corpus"
@@ -80,11 +81,17 @@ def _certificate_bundle() -> str | None:
     return certifi.where()
 
 
-def post_json(url: str, payload: dict[str, Any], headers: dict[str, str]) -> dict[str, Any]:
+def post_json(
+    url: str, payload: dict[str, Any], headers: dict[str, str]
+) -> dict[str, Any]:
     request = urllib.request.Request(
         url,
         data=json.dumps(payload).encode("utf-8"),
-        headers={**headers, "Content-Type": "application/json", "User-Agent": USER_AGENT},
+        headers={
+            **headers,
+            "Content-Type": "application/json",
+            "User-Agent": USER_AGENT,
+        },
         method="POST",
     )
     context = ssl.create_default_context(cafile=_certificate_bundle())
@@ -93,7 +100,9 @@ def post_json(url: str, payload: dict[str, Any], headers: dict[str, str]) -> dic
 
 
 def discover_aqa(*, include_accessible: bool = False) -> list[dict[str, Any]]:
-    sitemap = fetch("https://www.aqa.org.uk/sitemap.xml").decode("utf-8", errors="replace")
+    sitemap = fetch("https://www.aqa.org.uk/sitemap.xml").decode(
+        "utf-8", errors="replace"
+    )
     pages = sorted(set(AQA_ASSESSMENT_URL_PATTERN.findall(sitemap)))
     documents: list[dict[str, Any]] = []
     for page_url, subject, qualification_slug in pages:
@@ -269,7 +278,8 @@ def parse_ocr_resources(
         if kind is None or "erratum" in lowered:
             continue
         if kind == "question-papers" and any(
-            marker in lowered for marker in ("insert", "advance notice", "resource booklet")
+            marker in lowered
+            for marker in ("insert", "advance notice", "resource booklet")
         ):
             kind = "inserts"
         url = urllib.parse.urljoin("https://www.ocr.org.uk", match.group("url"))
@@ -439,8 +449,7 @@ def download_manifest(
     failures: list[dict[str, str]] = []
     with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
         futures = {
-            pool.submit(_download_one, item, corpus_root): item
-            for item in selected
+            pool.submit(_download_one, item, corpus_root): item for item in selected
         }
         for future in as_completed(futures):
             item = futures[future]
@@ -547,7 +556,9 @@ def profile_pdf(path: Path) -> dict[str, Any]:
     try:
         import pymupdf as fitz
     except ImportError as error:
-        raise SystemExit("PyMuPDF is required: python3 -m pip install pymupdf") from error
+        raise SystemExit(
+            "PyMuPDF is required: python3 -m pip install pymupdf"
+        ) from error
 
     document = fitz.open(path)
     sizes: Counter[tuple[float, float]] = Counter()
@@ -575,7 +586,12 @@ def profile_pdf(path: Path) -> dict[str, Any]:
                         continue
                     box = tuple(float(value) for value in span["bbox"])
                     boxes.append(box)
-                    fonts[(span.get("font", "unknown"), round(float(span.get("size", 0)), 1))] += len(value)
+                    fonts[
+                        (
+                            span.get("font", "unknown"),
+                            round(float(span.get("size", 0)), 1),
+                        )
+                    ] += len(value)
         for drawing in page.get_drawings():
             drawing_count += 1
             stroke_widths[round(float(drawing.get("width") or 0), 2)] += 1
@@ -657,8 +673,13 @@ def summarize_profiles(
                 "subject": subject,
                 "question_papers_profiled": len(items),
                 "page_count": {
+                    "policy": (
+                        "exact" if min(page_counts) == max(page_counts) else "range"
+                    ),
                     "minimum": min(page_counts),
+                    "p05": _percentile(page_counts, 0.05),
                     "median": statistics.median(page_counts),
+                    "p95": _percentile(page_counts, 0.95),
                     "maximum": max(page_counts),
                 },
                 "primary_page_size": {
@@ -688,6 +709,19 @@ def summarize_profiles(
     return len(profiles)
 
 
+def _percentile(values: list[int], quantile: float) -> float:
+    ordered = sorted(values)
+    if not ordered:
+        raise ValueError("cannot calculate a percentile of no values")
+    position = (len(ordered) - 1) * quantile
+    lower = math.floor(position)
+    upper = math.ceil(position)
+    if lower == upper:
+        return float(ordered[lower])
+    fraction = position - lower
+    return round(ordered[lower] * (1 - fraction) + ordered[upper] * fraction, 2)
+
+
 def document_path(item: dict[str, Any], corpus_root: Path) -> Path:
     return (
         corpus_root
@@ -703,7 +737,10 @@ def document_path(item: dict[str, Any], corpus_root: Path) -> Path:
 def _download_one(item: dict[str, Any], corpus_root: Path) -> bool:
     url = item["url"]
     host = (urllib.parse.urlparse(url).hostname or "").lower()
-    if urllib.parse.urlparse(url).scheme != "https" or host not in ALLOWED_DOWNLOAD_HOSTS:
+    if (
+        urllib.parse.urlparse(url).scheme != "https"
+        or host not in ALLOWED_DOWNLOAD_HOSTS
+    ):
         raise ValueError(f"Refusing non-official download host: {url}")
     target = document_path(item, corpus_root)
     if target.exists():
@@ -789,7 +826,9 @@ def _median_margins(margins: list[dict[str, float]]) -> dict[str, float] | None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Manage development-only exam references.")
+    parser = argparse.ArgumentParser(
+        description="Manage development-only exam references."
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     discover = subparsers.add_parser("discover-aqa")
@@ -800,7 +839,9 @@ def build_parser() -> argparse.ArgumentParser:
     discover_ocr_parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
 
     discover_pearson_parser = subparsers.add_parser("discover-pearson")
-    discover_pearson_parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
+    discover_pearson_parser.add_argument(
+        "--manifest", type=Path, default=DEFAULT_MANIFEST
+    )
 
     download = subparsers.add_parser("download")
     download.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)

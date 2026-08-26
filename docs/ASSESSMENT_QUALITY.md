@@ -161,6 +161,26 @@ deliberately used instead of exam-board logos or copyrighted footer material.
 The score is therefore a regression boundary, not a claim that the documents
 are official or pixel-identical.
 
+### Print-resolution qualification boundary
+
+The excellence audit added a stricter evidence layer after the earlier visual
+review. It matches semantic page roles across up to three same-paper sessions,
+derives its structural grid from physical page size, and records glyph
+baselines and boxes, font embedding, leading, rules, answer-line spacing,
+mark-position geometry, tables, reading order, PDF tags, safe-print bounds, and
+monochrome contrast. CI uses 300 DPI; final qualification uses 600 DPI at 100%
+scale.
+
+A deterministic 18-family structural run over the existing live matrix found
+no audit crash, but it did find genuine qualification gaps. The generated PDFs
+are not yet tagged; some documents retain an unembedded standard-font fallback;
+and recurring footer furniture crosses the conservative 4.2–5 mm safe-print
+box on many pages. Manual 300-DPI cover and weakest-page inspection also found
+that OCR cover furniture remains less faithful than AQA and Pearson, while
+role-aware matching prevented ruled answer pages from being compared with
+graph/data pages. These are explicit print failures to be resolved by the
+shared rendering work, not reasons to lower thresholds.
+
 Calculation cases are typed shared contracts consumed by the printed source,
 AI authoring pass, verified answers and mark scheme. This prevents an item from
 asking candidates to use a figure that the paper never supplies.

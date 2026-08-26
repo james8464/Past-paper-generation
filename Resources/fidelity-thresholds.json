@@ -1,6 +1,15 @@
 {
   "schema_version": 1,
   "audit_schema_version": 3,
+  "role_weights": {
+    "cover": {"structural": 0.5, "perceptual": 0.3, "print": 0.2},
+    "question_content": {"structural": 0.4, "perceptual": 0.3, "print": 0.3},
+    "mark_scheme_content": {"structural": 0.4, "perceptual": 0.3, "print": 0.3},
+    "additional_answer": {"structural": 0.45, "perceptual": 0.3, "print": 0.25},
+    "ruled_continuation": {"structural": 0.45, "perceptual": 0.3, "print": 0.25},
+    "intentional_blank": {"structural": 0.7, "perceptual": 0.2, "print": 0.1},
+    "end_page": {"structural": 0.55, "perceptual": 0.3, "print": 0.15}
+  },
   "families": {
     "aqa-accounting-paper-1": {
       "question_paper": {

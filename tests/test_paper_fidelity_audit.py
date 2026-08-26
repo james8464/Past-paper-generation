@@ -6,12 +6,19 @@ import pytest
 
 from tools.paper_fidelity_audit import (
     KNOWN_REFERENCE_MUPDF_DIAGNOSTICS,
+    ROLE_WEIGHTS,
+    PageEvidence,
+    PageRoleMatcher,
     _compact_profile,
+    _document_page_roles,
     _generated_document,
     _geometry_scores,
+    _grid_dimensions,
+    _reference_peers,
     _registered_page_comparison,
-    _role_scores,
     _render_page_pixmap,
+    _role_matches,
+    _role_scores,
     classify_page_role,
     profile,
     validate_thresholds,
@@ -109,7 +116,12 @@ def test_threshold_gate_rejects_unqualified_report_family() -> None:
         ("Additional page, if required", "question_paper", 28, "additional_answer"),
         ("EXTRA ANSWER SPACE", "question_paper", 29, "additional_answer"),
         ("Question 6 continued", "question_paper", 14, "ruled_continuation"),
-        ("BLANK PAGE DO NOT WRITE ON THIS PAGE", "question_paper", 6, "intentional_blank"),
+        (
+            "BLANK PAGE DO NOT WRITE ON THIS PAGE",
+            "question_paper",
+            6,
+            "intentional_blank",
+        ),
         ("END OF QUESTION PAPER", "question_paper", 16, "end_page"),
     ],
 )
@@ -171,6 +183,99 @@ def test_role_scores_aggregate_final_page_measurements() -> None:
     assert scores["question_content"]["registered_masked_render"] == 0.93
 
 
+def test_page_role_matcher_uses_role_before_page_sequence() -> None:
+    references = [
+        PageEvidence(index=0, role="cover", content_box=(0.1, 0.1, 0.9, 0.9)),
+        PageEvidence(
+            index=1, role="additional_answer", content_box=(0.1, 0.2, 0.9, 0.8)
+        ),
+        PageEvidence(
+            index=2, role="question_content", content_box=(0.1, 0.15, 0.9, 0.85)
+        ),
+    ]
+    generated = PageEvidence(
+        index=1,
+        role="question_content",
+        content_box=(0.11, 0.15, 0.89, 0.85),
+    )
+
+    match = PageRoleMatcher.match(generated, references)
+
+    assert match.reference_index == 2
+    assert match.role == "question_content"
+
+
+def test_role_matching_produces_unique_reference_pairs() -> None:
+    generated = [
+        PageEvidence(0, "cover", (0.1, 0.1, 0.9, 0.9)),
+        PageEvidence(1, "question_content", (0.1, 0.15, 0.9, 0.85)),
+        PageEvidence(2, "additional_answer", (0.1, 0.2, 0.9, 0.8)),
+    ]
+    references = [
+        PageEvidence(0, "cover", (0.1, 0.1, 0.9, 0.9)),
+        PageEvidence(1, "additional_answer", (0.1, 0.2, 0.9, 0.8)),
+        PageEvidence(2, "question_content", (0.1, 0.15, 0.9, 0.85)),
+    ]
+
+    matches = _role_matches(generated, references)
+
+    assert [(item.generated_index, item.reference_index) for item in matches] == [
+        (0, 0),
+        (1, 2),
+        (2, 1),
+    ]
+
+
+def test_reference_peers_select_same_paper_across_at_least_three_years(
+    tmp_path: Path,
+) -> None:
+    paths = [tmp_path / f"AQA-71271-QP-JUN{year}.PDF" for year in (22, 23, 24, 25)]
+    for path in paths:
+        path.touch()
+    (tmp_path / "AQA-71272-QP-JUN25.PDF").touch()
+    (tmp_path / "AQA-71271-MS-JUN25.PDF").touch()
+
+    peers = _reference_peers(paths[-1], maximum=3)
+
+    assert paths[-1] in peers
+    assert len(peers) == 3
+    assert all("71271-QP" in path.name for path in peers)
+
+
+def test_structural_grid_dimensions_are_derived_from_page_size_and_dpi() -> None:
+    assert _grid_dimensions(width=612, height=792, dpi=12) == (102, 132)
+
+
+def test_versioned_role_weights_cover_every_semantic_page_role() -> None:
+    assert set(ROLE_WEIGHTS) >= {
+        "cover",
+        "question_content",
+        "mark_scheme_content",
+        "additional_answer",
+        "ruled_continuation",
+        "intentional_blank",
+        "end_page",
+    }
+    assert all(
+        sum(weights.values()) == pytest.approx(1) for weights in ROLE_WEIGHTS.values()
+    )
+
+
+def test_pdf_role_classifier_recognises_ruled_answer_pages(tmp_path: Path) -> None:
+    path = tmp_path / "answer.pdf"
+    document = fitz.open()
+    cover = document.new_page(width=595, height=842)
+    cover.insert_text((50, 50), "Question paper")
+    answer = document.new_page(width=595, height=842)
+    answer.insert_text((50, 50), "Write your answer below")
+    for y in range(100, 760, 28):
+        answer.draw_line((50, y), (545, y), width=0.35)
+    document.save(path)
+    document.close()
+
+    assert _document_page_roles(path, "question_paper")[1] == "ruled_continuation"
+
+
 def test_generated_document_supports_app_per_paper_directories(tmp_path: Path):
     nested = tmp_path / "paper-1" / "question.pdf"
     nested.parent.mkdir()
@@ -186,7 +291,9 @@ def test_render_similarity_is_independent_of_pdf_primitive_type(tmp_path: Path):
     vector = fitz.open()
     page = vector.new_page()
     page.draw_rect(fitz.Rect(60, 80, 535, 760), width=0.7)
-    page.insert_text((90, 130), "Question 1  Explain the effect of a change in demand.", fontsize=11)
+    page.insert_text(
+        (90, 130), "Question 1  Explain the effect of a change in demand.", fontsize=11
+    )
     page.draw_line((90, 190), (500, 190), width=0.7)
     pixmap = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)
     vector.save(vector_path)

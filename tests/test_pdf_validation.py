@@ -3,14 +3,18 @@ from __future__ import annotations
 from collections import Counter
 from pathlib import Path
 
-from PIL import Image
 import pytest
+from PIL import Image
 from reportlab.pdfgen import canvas
 
 from Backend.Core.pdf_validation import (
+    GlyphMetric,
     _validate_typography_profile,
+    compare_page_evidence,
+    extract_pdf_evidence,
     validate_pdf_for_release,
 )
+
 
 def test_image_only_page_is_not_reported_as_empty(tmp_path: Path) -> None:
     path = tmp_path / "image-only.pdf"
@@ -100,3 +104,114 @@ def test_layout_metrics_record_each_page(tmp_path: Path) -> None:
     assert len(metrics["pages"]) == 2
     assert metrics["median_text_occupancy"] > 0
     assert metrics["overlapping_text_pairs"] == 0
+
+
+def test_pdf_evidence_records_unembedded_standard_font_and_glyph_metrics(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "font-evidence.pdf"
+    pdf = _release_canvas(path)
+    pdf.setFont("Helvetica", 11)
+    pdf.drawString(20, 170, "A complete examination question")
+    pdf.save()
+
+    evidence = extract_pdf_evidence(path)
+
+    assert evidence["fonts"][0]["embedded_name"] == "Helvetica"
+    assert evidence["fonts"][0]["embedded"] is False
+    glyph = evidence["pages"][0]["glyphs"][0]
+    assert glyph["baseline"] == pytest.approx(30.0)
+    assert glyph["advance"] > 0
+    assert len(glyph["bbox"]) == 4
+
+
+def test_print_evidence_detects_rule_loss_spacing_and_mark_displacement(
+    tmp_path: Path,
+) -> None:
+    reference_path = tmp_path / "reference.pdf"
+    generated_path = tmp_path / "generated.pdf"
+    reference = _release_canvas(reference_path)
+    reference.drawString(20, 170, "Question 1")
+    reference.drawString(170, 170, "[4]")
+    for y in (130, 110, 90):
+        reference.setLineWidth(0.35)
+        reference.line(20, y, 180, y)
+    reference.save()
+    generated = _release_canvas(generated_path)
+    generated.drawString(20, 170, "Question 1")
+    generated.drawString(150, 160, "[4]")
+    for y in (130, 100):
+        generated.setLineWidth(0.1)
+        generated.line(20, y, 180, y)
+    generated.save()
+
+    comparison = compare_page_evidence(
+        extract_pdf_evidence(generated_path)["pages"][0],
+        extract_pdf_evidence(reference_path)["pages"][0],
+    )
+
+    assert comparison["minimum_rule_width"] < 0.5
+    assert comparison["rule_count"] < 1
+    assert comparison["answer_line_spacing"] < 1
+    assert comparison["mark_box_placement"] < 1
+
+
+def test_print_evidence_detects_baseline_glyph_and_leading_drift(
+    tmp_path: Path,
+) -> None:
+    reference_path = tmp_path / "reference.pdf"
+    generated_path = tmp_path / "generated.pdf"
+    reference = _release_canvas(reference_path)
+    reference.setFont("Helvetica", 11)
+    reference.drawString(20, 170, "First line")
+    reference.drawString(20, 155, "Second line")
+    reference.save()
+    generated = _release_canvas(generated_path)
+    generated.setFont("Helvetica", 14)
+    generated.drawString(24, 165, "First line")
+    generated.drawString(24, 140, "Second line")
+    generated.save()
+
+    comparison = compare_page_evidence(
+        extract_pdf_evidence(generated_path)["pages"][0],
+        extract_pdf_evidence(reference_path)["pages"][0],
+    )
+
+    assert comparison["baseline"] < 1
+    assert comparison["glyph_bbox"] < 1
+    assert comparison["leading"] < 1
+
+
+def test_print_evidence_reports_reading_order_tags_margin_and_monochrome(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "print-policy.pdf"
+    pdf = _release_canvas(path)
+    pdf.setFillColorRGB(0.85, 0.85, 0.85)
+    pdf.drawString(1, 1, "Content clipped by an ordinary printer margin")
+    pdf.setFillColorRGB(0, 0, 0)
+    pdf.drawString(20, 100, "Earlier logical block")
+    pdf.drawString(20, 170, "Later logical block")
+    pdf.save()
+
+    evidence = extract_pdf_evidence(path, non_printable_margin_mm=5.0)
+    page = evidence["pages"][0]
+
+    assert evidence["tagged"] is False
+    assert page["safe_print"] is False
+    assert page["reading_order_score"] < 1
+    assert page["monochrome_minimum_contrast"] < 4.5
+
+
+def test_glyph_metric_contract_is_immutable() -> None:
+    metric = GlyphMetric(
+        font_file=None,
+        embedded_name="Helvetica",
+        baseline=42.0,
+        bbox=(1.0, 2.0, 3.0, 4.0),
+        advance=2.0,
+        line_height=12.0,
+    )
+
+    with pytest.raises(AttributeError):
+        metric.baseline = 1.0  # type: ignore[misc]

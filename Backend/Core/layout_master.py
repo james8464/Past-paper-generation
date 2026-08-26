@@ -3,13 +3,39 @@ from __future__ import annotations
 import json
 import math
 import os
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 
 class LayoutConformanceError(ValueError):
     pass
+
+
+@dataclass(frozen=True)
+class PageCountPolicy:
+    minimum: int
+    maximum: int
+
+    def __post_init__(self) -> None:
+        if self.minimum < 1 or self.maximum < self.minimum:
+            raise ValueError("invalid page-count policy")
+
+    @classmethod
+    def exact(cls, count: int) -> PageCountPolicy:
+        return cls(count, count)
+
+    @classmethod
+    def range(cls, minimum: int, maximum: int) -> PageCountPolicy:
+        return cls(minimum, maximum)
+
+    @property
+    def kind(self) -> str:
+        return "exact" if self.minimum == self.maximum else "range"
+
+    def accepts(self, count: int) -> bool:
+        return self.minimum <= count <= self.maximum
 
 
 @dataclass(frozen=True)
@@ -20,7 +46,7 @@ class Rect:
     y1: float
 
     @classmethod
-    def from_value(cls, value: Iterable[float]) -> "Rect":
+    def from_value(cls, value: Iterable[float]) -> Rect:
         values = tuple(float(item) for item in value)
         if len(values) != 4:
             raise ValueError("a rectangle requires four coordinates")
@@ -37,7 +63,7 @@ class Rect:
     def height(self) -> float:
         return self.y1 - self.y0
 
-    def close_to(self, other: "Rect", tolerance: float = 0.1) -> bool:
+    def close_to(self, other: Rect, tolerance: float = 0.1) -> bool:
         return all(
             math.isclose(left, right, abs_tol=tolerance)
             for left, right in zip(
@@ -96,7 +122,9 @@ class PaperMaster:
 def load_layout_master(path: Path) -> PaperMaster:
     payload = json.loads(path.read_text(encoding="utf-8"))
     if payload.get("schema_version") != 2:
-        raise ValueError(f"unsupported layout-master schema: {payload.get('schema_version')}")
+        raise ValueError(
+            f"unsupported layout-master schema: {payload.get('schema_version')}"
+        )
     pages = tuple(_page_from_payload(item) for item in payload["pages"])
     if tuple(page.number for page in pages) != tuple(range(1, len(pages) + 1)):
         raise ValueError("layout-master pages must be sequential")
@@ -145,7 +173,9 @@ def wrap_text(text: str, font_name: str, font_size: float, width: float) -> list
                 current = candidate
             else:
                 if pdfmetrics.stringWidth(word, font_name, font_size) > width:
-                    raise LayoutConformanceError(f"word does not fit fixed slot: {word!r}")
+                    raise LayoutConformanceError(
+                        f"word does not fit fixed slot: {word!r}"
+                    )
                 lines.append(current)
                 current = word
         lines.append(current)
@@ -400,12 +430,20 @@ def conform_pdf_to_box_template(
     temporary = pdf_path.with_name(f"{pdf_path.stem}.layout-tmp{pdf_path.suffix}")
     try:
         direct_update = all(
-            abs(source_page.rect.width - fitz.Rect(
-                *box_sequence[min(index, len(box_sequence) - 1)]["media"]
-            ).width) <= 1
-            and abs(source_page.rect.height - fitz.Rect(
-                *box_sequence[min(index, len(box_sequence) - 1)]["media"]
-            ).height) <= 1
+            abs(
+                source_page.rect.width
+                - fitz.Rect(
+                    *box_sequence[min(index, len(box_sequence) - 1)]["media"]
+                ).width
+            )
+            <= 1
+            and abs(
+                source_page.rect.height
+                - fitz.Rect(
+                    *box_sequence[min(index, len(box_sequence) - 1)]["media"]
+                ).height
+            )
+            <= 1
             for index, source_page in enumerate(source)
         )
         if direct_update:

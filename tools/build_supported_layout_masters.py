@@ -4,7 +4,6 @@ import json
 
 from tools.build_layout_masters import ROOT, write_layout_master
 
-
 OUTPUT = ROOT / "Reference Corpus" / "derived" / "layout-masters"
 RUNTIME_OUTPUT = ROOT / "Resources" / "layout-master-runtime.json"
 CORPUS = ROOT / "Reference Corpus" / "a-level"
@@ -136,15 +135,21 @@ def main() -> int:
             "family": family,
             "question-paper": {
                 "page_count": len(question_payload["pages"]),
-                "page_boxes": [
-                    page["boxes"] for page in question_payload["pages"]
-                ],
+                "page_count_policy": {
+                    "kind": "exact",
+                    "minimum": len(question_payload["pages"]),
+                    "maximum": len(question_payload["pages"]),
+                },
+                "page_boxes": [page["boxes"] for page in question_payload["pages"]],
             },
             "mark-scheme": {
                 "page_count": len(scheme_payload["pages"]),
-                "page_boxes": [
-                    page["boxes"] for page in scheme_payload["pages"]
-                ],
+                "page_count_policy": {
+                    "kind": "exact",
+                    "minimum": len(scheme_payload["pages"]),
+                    "maximum": len(scheme_payload["pages"]),
+                },
+                "page_boxes": [page["boxes"] for page in scheme_payload["pages"]],
             },
         }
     OUTPUT.mkdir(parents=True, exist_ok=True)

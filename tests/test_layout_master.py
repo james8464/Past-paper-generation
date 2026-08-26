@@ -1,22 +1,23 @@
 from __future__ import annotations
 
-import io
 import hashlib
+import io
 import json
 from pathlib import Path
 
 import pytest
 from reportlab.pdfgen import canvas
 
+from Backend.Core.layout_conformance import REGISTRY_PATH
 from Backend.Core.layout_master import (
     LayoutConformanceError,
+    PageCountPolicy,
     Rect,
     TextSlot,
     conform_pdf_to_box_template,
     draw_text_slot,
     load_layout_master,
 )
-from Backend.Core.layout_conformance import REGISTRY_PATH
 from tools.build_layout_masters import write_layout_master
 
 
@@ -69,6 +70,17 @@ def test_fixed_text_slot_rejects_overflow() -> None:
         draw_text_slot(pdf, 200, slot, "This text cannot fit")
 
 
+def test_page_count_policy_is_exact_unless_a_measured_range_is_declared() -> None:
+    exact = PageCountPolicy.exact(24)
+    variable = PageCountPolicy.range(20, 28)
+
+    assert exact.accepts(24)
+    assert not exact.accepts(23)
+    assert variable.accepts(20)
+    assert variable.accepts(26)
+    assert not variable.accepts(29)
+
+
 def test_runtime_registry_covers_every_supported_paper() -> None:
     registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
     expected = {
@@ -96,6 +108,7 @@ def test_runtime_registry_covers_every_supported_paper() -> None:
     assert registry["copyrighted_text_included"] is False
     assert all(
         record["question-paper"]["page_count"] > 0
+        and record["question-paper"]["page_count_policy"]["kind"] == "exact"
         and len(record["question-paper"]["page_boxes"])
         == record["question-paper"]["page_count"]
         and all(

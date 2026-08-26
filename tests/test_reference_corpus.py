@@ -4,8 +4,8 @@ from pathlib import Path
 import pytest
 
 from tools.reference_corpus import (
-    download_manifest,
     document_path,
+    download_manifest,
     parse_aqa_resources,
     parse_ocr_resources,
     parse_ocr_specifications,
@@ -15,10 +15,10 @@ from tools.reference_corpus import (
 
 
 def test_parse_aqa_resources_filters_modified_papers() -> None:
-    page = r'''
+    page = r"""
     \"originalFilename\":\"AQA-71271-QP-JUN25.PDF\",\"sha1hash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"size\":12,\"url\":\"https://cdn.sanity.io/files/p28bar15/green/a.pdf\"}},\"title\":\"Question paper: Paper 1 - June 2025\"
     \"originalFilename\":\"AQA-71271-QP-JUN25-MQP36.PDF\",\"sha1hash\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"size\":13,\"url\":\"https://cdn.sanity.io/files/p28bar15/green/b.pdf\"}},\"title\":\"Question paper (Modified A4 36pt): Paper 1 - June 2025\"
-    '''
+    """
 
     resources = parse_aqa_resources(
         page,
@@ -63,7 +63,7 @@ def test_document_path_requires_filename() -> None:
 
 
 def test_parse_ocr_resources_uses_a_level_tab_only() -> None:
-    page = '''
+    page = """
     <div id="specification-tab-1">
       <a href="/Images/726711-question-paper-fundamentals.pdf">Question paper - Fundamentals</a>
       <a href="/Images/726832-mark-scheme-fundamentals.pdf">Mark scheme - Fundamentals</a>
@@ -72,7 +72,7 @@ def test_parse_ocr_resources_uses_a_level_tab_only() -> None:
     <div id="specification-tab-2">
       <a href="/Images/111111-question-paper-as.pdf">Question paper - AS paper</a>
     </div>
-    '''
+    """
 
     resources = parse_ocr_resources(
         page,
@@ -221,3 +221,6 @@ def test_summarize_profiles_writes_derived_layout_only(tmp_path: Path) -> None:
     payload = json.loads(output.read_text(encoding="utf-8"))
     assert payload["derived_data_only"] is True
     assert payload["profiles"][0]["page_count"]["median"] == 24
+    assert payload["profiles"][0]["page_count"]["policy"] == "exact"
+    assert payload["profiles"][0]["page_count"]["p05"] == 24
+    assert payload["profiles"][0]["page_count"]["p95"] == 24

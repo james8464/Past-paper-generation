@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "profiles": {
+    "ci": {
+      "dpi": 300,
+      "scale_percent": 100,
+      "non_printable_margin_mm": 4.2,
+      "monochrome": true,
+      "minimum_rule_pt": 0.35,
+      "minimum_contrast_ratio": 4.5,
+      "minimum_reading_order_score": 0.9,
+      "require_embedded_fonts": true,
+      "require_tags": true
+    },
+    "qualification": {
+      "dpi": 600,
+      "scale_percent": 100,
+      "non_printable_margin_mm": 5.0,
+      "monochrome": true,
+      "minimum_rule_pt": 0.35,
+      "minimum_contrast_ratio": 4.5,
+      "minimum_reading_order_score": 0.95,
+      "require_embedded_fonts": true,
+      "require_tags": true
+    }
+  }
+}
