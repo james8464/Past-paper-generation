@@ -1,6 +1,5 @@
 from pathlib import Path
 import re
-import sys
 
 from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.pdf_text import extract_pdf_text, pdf_font_names
@@ -163,10 +162,7 @@ def test_question_paper_uses_closer_reference_font_family(tmp_path):
 
     render_question_paper(blueprint, output)
     fonts = pdf_font_names(output)
-    if sys.platform == "darwin":
-        assert any("HelveticaNeue" in font for font in fonts)
-    else:
-        assert any("Times" in font for font in fonts)
+    assert any("Arimo" in font for font in fonts)
     assert "ArialMT" not in fonts
 
 

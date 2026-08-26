@@ -213,3 +213,19 @@ setup, and unsupported future packages. Provider retries are bounded; renderer
 and generation staging is removed on failure; accepted checkpoints remain
 revalidatable; and every user-facing backend failure is emitted as a structured
 event rather than raw package-manager or traceback output.
+
+## PDF portability and accessibility
+
+Every PDF role is rendered inside `render_pdf_atomically`. Before promotion,
+the transaction embeds a page-level PDF structure tree, marks each page's
+ordered content with an MCID, declares `en-GB`, and preserves the renderer's
+content-stream order for assistive technology. Supporting Computer Science
+documents use the same transaction, so preliminary material and electronic
+answer documents cannot bypass accessibility or atomic-publication checks.
+
+Typography uses bundled OFL-licensed Arimo and Tinos files behind semantic font
+tokens. This removes host-font substitution while retaining the Arial and Times
+New Roman metrics measured from official papers. Release evidence ignores
+unused PDF resource entries and decorative bleed, but still fails genuine
+unembedded text, clipped answerable content, weak text contrast, rules below
+the print minimum, or missing marked-content structure.

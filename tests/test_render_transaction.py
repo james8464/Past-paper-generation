@@ -6,6 +6,7 @@ from pathlib import Path
 import pymupdf as fitz
 import pytest
 
+from Backend.Core.pdf_validation import extract_pdf_evidence
 from Backend.Core.render_transaction import (
     InvalidRenderOutput,
     RenderTimeout,
@@ -40,6 +41,13 @@ def test_render_pdf_atomically_promotes_a_readable_document(tmp_path: Path) -> N
     assert result.pages == 1
     assert result.elapsed_seconds >= 0
     assert "New paper" in _text(output)
+    evidence = extract_pdf_evidence(output)
+    assert evidence["tagged"] is True
+    assert evidence["pages"][0]["reading_order_score"] == 1.0
+    with fitz.open(output) as document:
+        catalog = document.pdf_catalog()
+        assert document.xref_get_key(catalog, "MarkInfo")[1] == "<</Marked true>>"
+        assert b"/MCID 0" in document[0].read_contents()
     assert list(tmp_path.glob(".paper.pdf.*.tmp")) == []
 
 

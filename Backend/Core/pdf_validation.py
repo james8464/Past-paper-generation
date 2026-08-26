@@ -14,24 +14,29 @@ from typing import Any
 import pymupdf as fitz
 
 from Backend.Core.paths import REPO_ROOT
+from Backend.Core.pdf_accessibility import has_logical_page_order
 
 CONTROLLED_FONT_PREFIXES = {
     "economics": (
+        "Arimo",
         "HelveticaNeue",
         "Verdana",
         "Courier",
         "Helvetica",
         "Symbol",
         "Times",
+        "Tinos",
         "ZapfDingbats",
     ),
     "default": (
+        "Arimo",
         "Arial",
         "Courier",
         "CourierNew",
         "Helvetica",
         "Symbol",
         "Times",
+        "Tinos",
         "ZapfDingbats",
     ),
 }
@@ -52,6 +57,10 @@ PROFILE_KEYS = {
     "economics_ocr": ("ocr", "economics"),
 }
 LINE_MARK = re.compile(r"(?:\[|\()(\d{1,2})(?:\s+marks?)?(?:\]|\))\s*$", re.IGNORECASE)
+MARGIN_FURNITURE = re.compile(
+    r"(?:do\s+not\s+write|outside\s+the|in\s+this\s+area)",
+    re.IGNORECASE,
+)
 INTENTIONAL_BLANK_PAGE_CONTRACTS = {
     # Pearson's Paper 2 mark scheme ends on a deliberately blank page. Keeping
     # that final leaf preserves the measured 36-page reference pagination.
@@ -101,6 +110,7 @@ def extract_pdf_evidence(
                 font_files=font_files,
                 margin_points=margin_points,
                 maximum_glyphs=maximum_glyphs_per_page,
+                logical_order=has_logical_page_order(document, page),
             )
             for page in document
         ]
@@ -173,8 +183,18 @@ def compare_page_evidence(
 def _font_evidence(document: fitz.Document) -> list[dict[str, Any]]:
     records: dict[tuple[int, str], dict[str, Any]] = {}
     for page in document:
+        used_fonts = {
+            _normalise_font(str(span.get("font", "")))
+            for block in page.get_text("dict").get("blocks", [])
+            if block.get("type") == 0
+            for line in block.get("lines", [])
+            for span in line.get("spans", [])
+            if str(span.get("text", "")).strip()
+        }
         for font in page.get_fonts(full=True):
             xref, extension, font_type, base_name, resource_name, encoding, *_ = font
+            if _normalise_font(str(base_name)) not in used_fonts:
+                continue
             embedded, font_file = _font_embedding(document, int(xref), str(extension))
             key = (int(xref), str(base_name))
             records[key] = {
@@ -216,21 +236,25 @@ def _page_print_evidence(
     font_files: dict[str, str | None],
     margin_points: float,
     maximum_glyphs: int,
+    logical_order: bool,
 ) -> dict[str, Any]:
     raw = page.get_text("rawdict")
+    drawings = page.get_drawings()
     glyphs: list[GlyphMetric] = []
     baselines: list[float] = []
     glyph_heights: list[float] = []
     font_names: set[str] = set()
     line_origins: list[float] = []
     content_rects: list[fitz.Rect] = []
-    contrasts: list[float] = []
+    contrasts = _page_text_contrasts(page, drawings)
     mark_positions: list[tuple[float, float]] = []
     glyph_count = 0
     for block in raw.get("blocks", []):
         if block.get("type") != 0:
             if "bbox" in block:
-                content_rects.append(fitz.Rect(block["bbox"]))
+                bounds = fitz.Rect(block["bbox"])
+                if not _is_decorative_bleed(bounds, page.rect):
+                    content_rects.append(bounds)
             continue
         for line in block.get("lines", []):
             spans = line.get("spans", [])
@@ -242,10 +266,10 @@ def _page_print_evidence(
                 baseline = float(span.get("origin", (0, 0))[1])
                 baselines.append(round(baseline, 3))
                 span_bbox = fitz.Rect(span.get("bbox", (0, 0, 0, 0)))
-                content_rects.append(span_bbox)
-                contrasts.append(_contrast_against_white(int(span.get("color", 0))))
                 chars = span.get("chars", [])
                 span_text = "".join(str(char.get("c", "")) for char in chars)
+                if not _is_margin_furniture(span_text, span_bbox, page.rect):
+                    content_rects.append(span_bbox)
                 if LINE_MARK.search(span_text.strip()):
                     mark_positions.append(
                         (
@@ -276,26 +300,16 @@ def _page_print_evidence(
                         )
                     )
 
-    drawings = page.get_drawings()
     rules: list[dict[str, Any]] = []
     for drawing in drawings:
-        rect = fitz.Rect(drawing.get("rect", (0, 0, 0, 0)))
-        if not rect.is_empty:
-            content_rects.append(rect)
         width = float(drawing.get("width") or 0)
+        if drawing.get("color") is None or width <= 0:
+            continue
         for item in drawing.get("items", []):
             if item[0] != "l":
                 continue
             start, end = item[1], item[2]
             length = math.hypot(end.x - start.x, end.y - start.y)
-            content_rects.append(
-                fitz.Rect(
-                    min(start.x, end.x),
-                    min(start.y, end.y),
-                    max(start.x, end.x) + 0.01,
-                    max(start.y, end.y) + 0.01,
-                )
-            )
             rules.append(
                 {
                     "width": round(width, 3),
@@ -351,7 +365,7 @@ def _page_print_evidence(
         "minimum_rule_width": min((item["width"] for item in rules), default=None),
         "answer_line_spacing": answer_spacing,
         "mark_positions": mark_positions,
-        "reading_order_score": _reading_order_score(page),
+        "reading_order_score": 1.0 if logical_order else _reading_order_score(page),
         "safe_print": content_rect is None or safe_box.contains(content_rect),
         "safe_print_box": tuple(round(float(value), 3) for value in safe_box),
         "monochrome_minimum_contrast": round(min(contrasts), 3) if contrasts else 21.0,
@@ -366,6 +380,32 @@ def _union_rects(rects: list[fitz.Rect]) -> fitz.Rect | None:
     for rect in valid[1:]:
         result.include_rect(rect)
     return result
+
+
+def _is_decorative_bleed(bounds: fitz.Rect, page_bounds: fitz.Rect) -> bool:
+    """Return whether an image is a full-bleed background rather than content."""
+    if bounds.is_empty or page_bounds.is_empty:
+        return False
+    coverage = bounds.get_area() / page_bounds.get_area()
+    touches_edge = (
+        bounds.x0 <= page_bounds.x0 + 1
+        and bounds.y0 <= page_bounds.y0 + 1
+        and bounds.x1 >= page_bounds.x1 - 1
+        and bounds.y1 >= page_bounds.y1 - 1
+    )
+    return touches_edge and coverage >= 0.9
+
+
+def _is_margin_furniture(
+    text: str,
+    bounds: fitz.Rect,
+    page_bounds: fitz.Rect,
+) -> bool:
+    """Exclude repeated non-answerable printer furniture from the safety box."""
+    near_vertical_edge = (
+        bounds.x0 <= page_bounds.x0 + 18 or bounds.x1 >= page_bounds.x1 - 18
+    )
+    return near_vertical_edge and MARGIN_FURNITURE.search(text) is not None
 
 
 def _table_geometry(rules: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -416,17 +456,74 @@ def _reading_order_score(page: fitz.Page) -> float:
 
 def _contrast_against_white(rgb_value: int) -> float:
     channels = ((rgb_value >> 16) & 255, (rgb_value >> 8) & 255, rgb_value & 255)
+    return _contrast_ratio(channels, (255, 255, 255))
+
+
+def _page_text_contrasts(
+    page: fitz.Page,
+    drawings: list[dict[str, Any]],
+) -> list[float]:
+    contrasts: list[float] = []
+    for trace in page.get_texttrace():
+        if trace.get("type") != 0:
+            continue
+        bounds = fitz.Rect(trace.get("bbox", (0, 0, 0, 0)))
+        text = "".join(chr(int(char[0])) for char in trace.get("chars", []))
+        if not text.strip() or _is_margin_furniture(text, bounds, page.rect):
+            continue
+        sequence = int(trace.get("seqno", -1))
+        if any(
+            int(drawing.get("seqno", -1)) > sequence
+            and float(drawing.get("fill_opacity") or 0) >= 0.99
+            and drawing.get("fill") is not None
+            and fitz.Rect(drawing.get("rect", (0, 0, 0, 0))).contains(bounds)
+            for drawing in drawings
+        ):
+            continue
+        centre = fitz.Point(
+            (bounds.x0 + bounds.x1) / 2,
+            (bounds.y0 + bounds.y1) / 2,
+        )
+        covering_fills = [
+            drawing
+            for drawing in drawings
+            if drawing.get("fill") is not None
+            and int(drawing.get("seqno", -1)) < sequence
+            and fitz.Rect(drawing.get("rect", (0, 0, 0, 0))).contains(centre)
+        ]
+        background = (255, 255, 255)
+        if covering_fills:
+            nearest = max(
+                covering_fills,
+                key=lambda drawing: int(drawing.get("seqno", -1)),
+            )
+            background = tuple(
+                round(float(channel) * 255) for channel in nearest["fill"][:3]
+            )
+        color = trace.get("color", (0.0, 0.0, 0.0))
+        foreground = tuple(round(float(channel) * 255) for channel in color[:3])
+        contrasts.append(_contrast_ratio(foreground, background))
+    return contrasts
+
+
+def _contrast_ratio(
+    foreground: tuple[int, int, int],
+    background: tuple[int, int, int],
+) -> float:
 
     def linear(channel: int) -> float:
         value = channel / 255
         return value / 12.92 if value <= 0.04045 else ((value + 0.055) / 1.055) ** 2.4
 
-    luminance = (
-        0.2126 * linear(channels[0])
-        + 0.7152 * linear(channels[1])
-        + 0.0722 * linear(channels[2])
-    )
-    return (1.0 + 0.05) / (luminance + 0.05)
+    def luminance(channels: tuple[int, int, int]) -> float:
+        return (
+            0.2126 * linear(channels[0])
+            + 0.7152 * linear(channels[1])
+            + 0.0722 * linear(channels[2])
+        )
+
+    lighter, darker = sorted((luminance(foreground), luminance(background)), reverse=True)
+    return (lighter + 0.05) / (darker + 0.05)
 
 
 def _representative_values(values: list[float], limit: int = 256) -> list[float]:
@@ -745,11 +842,12 @@ def _layout_profiles() -> dict[tuple[str, str], dict[str, Any]]:
 
 
 def _normalise_font(value: str) -> str:
-    name = value.casefold()
+    name = value.rsplit("+", 1)[-1].casefold()
     for token in (
         "bold",
         "italic",
         "regular",
+        "ps",
         "psmt",
         "mt",
         ",",
@@ -758,6 +856,10 @@ def _normalise_font(value: str) -> str:
         " ",
     ):
         name = name.replace(token, "")
+    if name == "arimo":
+        return "arial"
+    if name == "tinos":
+        return "timesnewroman"
     return name
 
 

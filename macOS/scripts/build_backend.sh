@@ -108,6 +108,7 @@ PYINSTALLER_ARGS=(
   --add-data "$ROOT_DIR/Resources/generator-capability.schema.json:Resources"
   --add-data "$ROOT_DIR/Resources/empirical-calibration.schema.json:Resources"
   --add-data "$ROOT_DIR/Resources/board-profiles:Resources/board-profiles"
+  --add-data "$ROOT_DIR/Backend/Core/fonts:Backend/Core/fonts"
 )
 
 while IFS= read -r python_path; do

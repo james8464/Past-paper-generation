@@ -81,7 +81,7 @@ def test_mark_scheme_cover_uses_reference_serif_face(tmp_path):
     output = tmp_path / "ms.pdf"
 
     render_mark_scheme(blueprint, syllabus, output)
-    assert "Times-Roman" in pdf_font_names(output)
+    assert any("Tinos" in name for name in pdf_font_names(output))
 
 
 def test_mark_scheme_cover_title_uses_reference_scale_and_position(tmp_path):

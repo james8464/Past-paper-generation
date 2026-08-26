@@ -13,6 +13,7 @@ def test_blueprint_is_deterministic_for_seed():
     second = build_paper_blueprint(config, syllabus, seed=123)
 
     assert first.model_dump() == second.model_dump()
+    assert first.seed == 123
 
 
 def test_blueprint_uses_only_allowed_theme_topics():

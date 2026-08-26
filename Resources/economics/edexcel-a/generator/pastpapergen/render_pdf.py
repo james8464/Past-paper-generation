@@ -64,6 +64,8 @@ FONT_BOLD = L.font_bold
 FONT_ITALIC = "ExamSans-Italic"
 MS_FONT = "ExamMarkScheme"
 MS_FONT_BOLD = "ExamMarkScheme-Bold"
+SERIF_FONT = "ExamSerif"
+SERIF_BOLD_ITALIC = "ExamSerif-BoldItalic"
 MS_ANSWER_WRAP_CHARS = 54
 MS_PAGE_SIZE = (595.44, 841.68)
 MS_PAGE_SIZES = {
@@ -108,6 +110,7 @@ SECTION_A_INSTRUCTION_LINES = [
 _rf(FONT_REGULAR, FONT_BOLD, default_fallback="Times-Roman")
 _rf(FONT_ITALIC, default_fallback="Times-Italic")
 _rf(MS_FONT, MS_FONT_BOLD, default_fallback="Times-Roman")
+_rf(SERIF_FONT, SERIF_BOLD_ITALIC, default_fallback="Times-Roman")
 
 
 _TOTAL_PAPER_PAGES: int = 0
@@ -307,7 +310,7 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
 
 
 def _draw_turn_over(pdf: canvas.Canvas, right_x: float, y: float) -> None:
-    pdf.setFont("Times-BoldItalic", 9)
+    pdf.setFont(SERIF_BOLD_ITALIC, 9)
     pdf.drawRightString(right_x - 14, y, "Turn over")
     pdf.setFillColor(colors.HexColor("#b0b0b0"))
     pdf.setStrokeColor(colors.HexColor("#b0b0b0"))
@@ -770,7 +773,7 @@ def _draw_paper_3_line_figure(
         pdf.setFont(FONT_REGULAR, 7.5)
         pdf.setFillColor(colors.black)
         pdf.drawString(chart_x + 8, y + 4, "Output index")
-        pdf.setFillColor(colors.HexColor("#777777"))
+        pdf.setFillColor(colors.HexColor("#666666"))
         pdf.drawString(chart_x + 78, y + 4, "Investment index")
     pdf.setFillColor(colors.black)
     pdf.setStrokeColor(colors.black)
@@ -901,7 +904,7 @@ def _draw_paper_3_question_summary(pdf: canvas.Canvas, questions: list, y: float
             y -= 20
         before = y
         y = _draw_question_prompt(pdf, question.number, question.prompt, x, y)
-        pdf.setFillColor(colors.HexColor("#999999"))
+        pdf.setFillColor(colors.HexColor("#666666"))
         pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
         pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({question.marks})")
         pdf.setFillColor(colors.black)
@@ -917,7 +920,7 @@ def _draw_paper_3_choice_header(pdf: canvas.Canvas, questions: list, y: float) -
     pdf.drawString(x, y, "EITHER")
     y -= 20
     y = _draw_paper_3_choice_prompt(pdf, questions[0], x, y)
-    pdf.setFillColor(colors.HexColor("#999999"))
+    pdf.setFillColor(colors.HexColor("#666666"))
     pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
     pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({questions[0].marks})")
     pdf.setFillColor(colors.black)
@@ -925,7 +928,7 @@ def _draw_paper_3_choice_header(pdf: canvas.Canvas, questions: list, y: float) -
     pdf.drawString(x, y, "OR")
     y -= 20
     y = _draw_paper_3_choice_prompt(pdf, questions[1], x, y)
-    pdf.setFillColor(colors.HexColor("#999999"))
+    pdf.setFillColor(colors.HexColor("#666666"))
     pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
     pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({questions[1].marks})")
     pdf.setFillColor(colors.black)
@@ -1090,7 +1093,7 @@ def _draw_section_b_prompt_page(pdf: canvas.Canvas, questions: list, y: float) -
             text_x = 92
         for index, line in enumerate(prompt_lines):
             pdf.drawString(text_x, y - index * BODY_LEADING_PT, line)
-        pdf.setFillColor(colors.HexColor("#999999"))
+        pdf.setFillColor(colors.HexColor("#666666"))
         pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
         pdf.drawRightString(width - 76, y - (len(prompt_lines) - 1) * BODY_LEADING_PT - 2, f"({question.marks})")
         pdf.setFillColor(colors.black)
@@ -1249,12 +1252,12 @@ def _draw_section_c_answer_pages(
 def _draw_continuation_lines(pdf: canvas.Canvas, x: float, y: float, question_number: str = "") -> float:
     if question_number:
         pdf.setFont(FONT_ITALIC, 8)
-        pdf.setFillColor(colors.HexColor("#777777"))
+        pdf.setFillColor(colors.HexColor("#666666"))
         pdf.drawString(x, y + 6, f"Question {question_number} continued ...")
         pdf.setFillColor(colors.black)
         y -= 16
         pdf.setStrokeColor(colors.HexColor("#cccccc"))
-        pdf.setLineWidth(0.3)
+        pdf.setLineWidth(0.35)
         pdf.line(x, y, 520, y)
         pdf.setStrokeColor(colors.black)
         pdf.setLineWidth(1)
@@ -1295,7 +1298,7 @@ def _draw_do_not_write_rail(pdf: canvas.Canvas, page_number: int) -> None:
         pdf.setFillColor(colors.HexColor("#f0f0f0"))
         pdf.rect(rail_x, RAIL_Y, 21, RAIL_H, stroke=0, fill=1)
         _draw_hatched_rail(pdf, rail_x, RAIL_Y, 21, RAIL_H)
-        pdf.setFillColor(colors.HexColor("#777777"))
+        pdf.setFillColor(colors.HexColor("#666666"))
         pdf.setFont(FONT_BOLD, 8)
         for y in (145, 360, 575):
             pdf.saveState()
@@ -1310,7 +1313,7 @@ def _draw_do_not_write_rail(pdf: canvas.Canvas, page_number: int) -> None:
 def _draw_staple_marks(pdf: canvas.Canvas, page_number: int) -> None:
     width, height = A4
     x = 12 if page_number % 2 == 1 else width - 15
-    pdf.setFillColor(colors.HexColor("#999999"))
+    pdf.setFillColor(colors.HexColor("#666666"))
     pdf.setStrokeColor(colors.HexColor("#999999"))
     pdf.setLineWidth(0.5)
     for y in (height - 28, 270, 570):
@@ -1321,7 +1324,7 @@ def _draw_staple_marks(pdf: canvas.Canvas, page_number: int) -> None:
 
 def _draw_hatched_rail(pdf: canvas.Canvas, x: float, y: float, w: float, h: float) -> None:
     pdf.setStrokeColor(colors.HexColor("#d2d2d2"))
-    pdf.setLineWidth(0.25)
+    pdf.setLineWidth(0.35)
     step = 5
     top = y + h
     for yy in range(int(y), int(top), step):
@@ -1453,7 +1456,7 @@ def _draw_question(
             y -= 8
         return y - 6
 
-    pdf.setFillColor(colors.HexColor("#999999"))
+    pdf.setFillColor(colors.HexColor("#666666"))
     pdf.drawRightString(width - x, y + 12, f"({question.marks})")
     pdf.setFillColor(colors.black)
     y -= 6
@@ -1639,7 +1642,7 @@ def _draw_written_part_with_lines(pdf: canvas.Canvas, part, x: float, y: float, 
     width, _ = A4
     y = _draw_part_prompt(pdf, part, x, y)
     pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
-    pdf.setFillColor(colors.HexColor("#999999"))
+    pdf.setFillColor(colors.HexColor("#666666"))
     pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({part.marks})")
     pdf.setFillColor(colors.black)
     y -= 28
@@ -1650,7 +1653,7 @@ def _draw_written_part_with_line_count(pdf: canvas.Canvas, part, x: float, y: fl
     width, _ = A4
     y = _draw_part_prompt(pdf, part, x, y)
     pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
-    pdf.setFillColor(colors.HexColor("#999999"))
+    pdf.setFillColor(colors.HexColor("#666666"))
     pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({part.marks})")
     pdf.setFillColor(colors.black)
     y -= 24
@@ -1668,7 +1671,7 @@ def _draw_draw_part_with_axes(
     width, _ = A4
     y = _draw_part_prompt(pdf, part, x, y)
     pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
-    pdf.setFillColor(colors.HexColor("#999999"))
+    pdf.setFillColor(colors.HexColor("#666666"))
     pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({part.marks})")
     pdf.setFillColor(colors.black)
     y -= 18
@@ -1683,7 +1686,7 @@ def _draw_calculate_part_with_working_lines(pdf: canvas.Canvas, part, x: float, 
     width, _ = A4
     y = _draw_part_prompt(pdf, part, x, y)
     pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
-    pdf.setFillColor(colors.HexColor("#999999"))
+    pdf.setFillColor(colors.HexColor("#666666"))
     pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({part.marks})")
     pdf.setFillColor(colors.black)
     y -= 20
@@ -1697,7 +1700,7 @@ def _draw_compact_part(pdf: canvas.Canvas, part, x: float, y: float) -> float:
         return _draw_mcq_part(pdf, part, x, y)
     y = _draw_part_prompt(pdf, part, x, y)
     pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
-    pdf.setFillColor(colors.HexColor("#999999"))
+    pdf.setFillColor(colors.HexColor("#666666"))
     pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({part.marks})")
     pdf.setFillColor(colors.black)
     y -= 18
@@ -1766,7 +1769,7 @@ def _draw_mcq_part(pdf: canvas.Canvas, part, x: float, y: float) -> float:
         pdf.drawString(x + 18, y, line)
         y -= BODY_LEADING_PT
     pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
-    pdf.setFillColor(colors.HexColor("#999999"))
+    pdf.setFillColor(colors.HexColor("#666666"))
     pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({part.marks})")
     pdf.setFillColor(colors.black)
     y -= 24
@@ -2408,18 +2411,25 @@ def render_mark_scheme(
     accent = colors.HexColor(MARK_SCHEME_ACCENT_COLOR)
     title_blue = colors.HexColor(MARK_SCHEME_TITLE_COLOR)
     pdf.setFillColor(colors.black)
-    pdf.setFont("Times-Roman", 30)
+    pdf.setFont(SERIF_FONT, 30)
     pdf.drawString(margin, height - 200, "Unofficial Practice")
     pdf.setFillColor(title_blue)
-    pdf.setFont("Times-Roman", 31)
+    pdf.setFont(SERIF_FONT, 31)
     pdf.drawString(margin, height - 324, "Mark Scheme (Results)")
-    pdf.setFont("Times-Roman", 31)
+    pdf.setFont(SERIF_FONT, 31)
     pdf.drawString(margin, height - 415, formatted_generation_date())
     pdf.setFont(MS_FONT, 23)
     pdf.setFillColor(accent)
     pdf.drawString(margin, height - 500, "Unofficial GCE A Level Practice")
     pdf.drawString(margin, height - 540, f"In Economics A ({blueprint.paper_code.split('/')[0]})")
-    pdf.drawString(margin, height - 580, f"Paper {blueprint.paper_id[-1].zfill(2)} {blueprint.title}")
+    paper_title = f"Paper {blueprint.paper_id[-1].zfill(2)} {blueprint.title}"
+    title_size = 23.0
+    title_width = pdf.stringWidth(paper_title, MS_FONT, title_size)
+    available_width = width - margin * 2
+    if title_width > available_width:
+        title_size *= available_width / title_width
+        pdf.setFont(MS_FONT, title_size)
+    pdf.drawString(margin, height - 580, paper_title)
     pdf.setFillColor(colors.black)
     pdf.showPage()
 

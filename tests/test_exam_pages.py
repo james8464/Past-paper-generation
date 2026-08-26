@@ -205,6 +205,20 @@ def test_aqa_do_not_write_blank_matches_measured_diagonal_shell(
             and 600 < drawing["rect"].height < 620
         )
         assert tuple(diagonal) == pytest.approx((114, 54, 538.6, 662.1), abs=3)
+        footer = next(
+            fitz.Rect(span["bbox"])
+            for block in page.get_text("dict")["blocks"]
+            for line in block.get("lines", [])
+            for span in line.get("spans", [])
+            if "UNOFFICIAL PRACTICE" in span.get("text", "")
+        )
+        barcode_bars = [
+            drawing["rect"]
+            for drawing in page.get_drawings()
+            if drawing.get("fill") == (0.0, 0.0, 0.0)
+            and drawing["rect"].height > 20
+        ]
+        assert not any(footer.intersects(bar) for bar in barcode_bars)
     finally:
         document.close()
 

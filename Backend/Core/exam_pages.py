@@ -239,8 +239,8 @@ def _draw_aqa_footer(
     if profile.legal_notice:
         _draw_barcode(pdf, width - 145, 17, f"{profile.code}:legal")
     pdf.setFont(font, 6.5)
-    pdf.drawRightString(
-        width - 52,
+    pdf.drawCentredString(
+        width / 2,
         18,
         f"{profile.code} • {page_number or 1} • UNOFFICIAL PRACTICE",
     )

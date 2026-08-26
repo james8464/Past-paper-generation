@@ -11,6 +11,8 @@ from pathlib import Path
 
 import pymupdf as fitz
 
+from Backend.Core.pdf_accessibility import add_page_structure_tree
+
 
 class RenderTransactionError(RuntimeError):
     """A document role could not be rendered safely."""
@@ -62,6 +64,8 @@ def render_pdf_atomically(
     try:
         with _render_deadline(role, timeout_seconds):
             renderer(temporary)
+            _readable_page_count(temporary, role)
+            add_page_structure_tree(temporary)
         pages = _readable_page_count(temporary, role)
         _sync_file(temporary)
         os.replace(temporary, destination)

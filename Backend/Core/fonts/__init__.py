@@ -9,31 +9,30 @@ _FONTS_DIR = Path(__file__).resolve().parent
 
 FONT_CANDIDATES: dict[str, list[tuple[str, int]]] = {
     "ExamSans": [
-        (str(_FONTS_DIR / "ExamSans.ttf"), 0),
-        (str(_FONTS_DIR / "ExamSans-Regular.ttf"), 0),
+        (str(_FONTS_DIR / "arimo" / "Arimo-Regular.ttf"), 0),
         ("/System/Library/Fonts/HelveticaNeue.ttc", 0),
         ("/System/Library/Fonts/Supplemental/Arial.ttf", 0),
         ("/System/Library/Fonts/Helvetica.ttc", 0),
     ],
     "ExamSans-Bold": [
-        (str(_FONTS_DIR / "ExamSans-Bold.ttf"), 0),
+        (str(_FONTS_DIR / "arimo" / "Arimo-Bold.ttf"), 0),
         ("/System/Library/Fonts/HelveticaNeue.ttc", 1),
         ("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 0),
         ("/System/Library/Fonts/Helvetica.ttc", 1),
     ],
     "ExamSans-Italic": [
-        (str(_FONTS_DIR / "ExamSans-Italic.ttf"), 0),
+        (str(_FONTS_DIR / "arimo" / "Arimo-Italic.ttf"), 0),
         ("/System/Library/Fonts/HelveticaNeue.ttc", 2),
         ("/System/Library/Fonts/Supplemental/Arial Italic.ttf", 0),
         ("/System/Library/Fonts/Helvetica.ttc", 2),
     ],
     "AQAArial": [
-        (str(_FONTS_DIR / "AQAArial.ttf"), 0),
+        (str(_FONTS_DIR / "arimo" / "Arimo-Regular.ttf"), 0),
         ("/System/Library/Fonts/Supplemental/Arial.ttf", 0),
         ("/System/Library/Fonts/Helvetica.ttc", 0),
     ],
     "AQAArial-Bold": [
-        (str(_FONTS_DIR / "AQAArial-Bold.ttf"), 0),
+        (str(_FONTS_DIR / "arimo" / "Arimo-Bold.ttf"), 0),
         ("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 0),
         ("/System/Library/Fonts/Helvetica.ttc", 1),
     ],
@@ -50,6 +49,18 @@ FONT_CANDIDATES: dict[str, list[tuple[str, int]]] = {
         (str(_FONTS_DIR / "ExamMarkScheme-Bold.ttf"), 0),
         ("/System/Library/Fonts/Supplemental/Verdana Bold.ttf", 0),
         ("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 0),
+    ],
+    "ExamSerif": [
+        (str(_FONTS_DIR / "tinos" / "Tinos-Regular.ttf"), 0),
+    ],
+    "ExamSerif-Italic": [
+        (str(_FONTS_DIR / "tinos" / "Tinos-Italic.ttf"), 0),
+    ],
+    "ExamSerif-Bold": [
+        (str(_FONTS_DIR / "tinos" / "Tinos-Bold.ttf"), 0),
+    ],
+    "ExamSerif-BoldItalic": [
+        (str(_FONTS_DIR / "tinos" / "Tinos-BoldItalic.ttf"), 0),
     ],
 }
 

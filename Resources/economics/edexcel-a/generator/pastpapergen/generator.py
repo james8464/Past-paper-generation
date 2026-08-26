@@ -174,6 +174,7 @@ def build_paper_blueprint(
         absolute_question_number += _section_question_increment(config.id, section.name)
 
     return PaperBlueprint(
+        seed=seed,
         paper_id=config.id,
         paper_code=config.code,
         title=config.title,

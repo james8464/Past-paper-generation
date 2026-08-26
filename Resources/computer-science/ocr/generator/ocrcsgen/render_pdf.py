@@ -584,7 +584,7 @@ def _response_space(
             ("PADDING", (0, 0), (-1, -1), 2),
         ]
         for row in range(row_count):
-            style.append(("LINEBELOW", (1, row), (1, row), 0.3, colors.grey))
+            style.append(("LINEBELOW", (1, row), (1, row), 0.35, colors.grey))
         table.setStyle(TableStyle(style))
         return [table]
     return [AnswerLines(line_count)]

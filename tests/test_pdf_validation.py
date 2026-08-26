@@ -9,11 +9,17 @@ from reportlab.pdfgen import canvas
 
 from Backend.Core.pdf_validation import (
     GlyphMetric,
+    _normalise_font,
     _validate_typography_profile,
     compare_page_evidence,
     extract_pdf_evidence,
     validate_pdf_for_release,
 )
+
+
+def test_metric_compatible_open_fonts_share_reference_family_identity() -> None:
+    assert _normalise_font("Arimo-Bold") == _normalise_font("Arial-BoldMT")
+    assert _normalise_font("Tinos-Italic") == _normalise_font("TimesNewRomanPS-ItalicMT")
 
 
 def test_image_only_page_is_not_reported_as_empty(tmp_path: Path) -> None:
@@ -123,6 +129,56 @@ def test_pdf_evidence_records_unembedded_standard_font_and_glyph_metrics(
     assert glyph["baseline"] == pytest.approx(30.0)
     assert glyph["advance"] > 0
     assert len(glyph["bbox"]) == 4
+
+
+def test_pdf_evidence_ignores_font_resources_that_never_print_text(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "unused-font-resource.pdf"
+    pdf = _release_canvas(path)
+    pdf.setFont("Times-Roman", 11)
+    pdf.drawString(20, 170, "Only the selected serif face is printed")
+    pdf.save()
+
+    evidence = extract_pdf_evidence(path)
+
+    assert [item["embedded_name"] for item in evidence["fonts"]] == ["Times-Roman"]
+
+
+def test_print_evidence_ignores_decorative_bleed_and_fill_only_edges(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "decorative-bleed.pdf"
+    pdf = _release_canvas(path)
+    pdf.setFillColorRGB(0.08, 0.08, 0.08)
+    pdf.rect(0, 0, 200, 200, fill=1, stroke=0)
+    pdf.setFillColorRGB(1, 1, 1)
+    pdf.drawString(20, 170, "High contrast")
+    pdf.save()
+
+    page = extract_pdf_evidence(path, non_printable_margin_mm=5.0)["pages"][0]
+
+    assert page["safe_print"] is True
+    assert page["minimum_rule_width"] is None
+    assert page["monochrome_minimum_contrast"] >= 4.5
+
+
+def test_print_evidence_ignores_text_fully_occluded_by_later_artwork(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "occluded-text.pdf"
+    pdf = _release_canvas(path)
+    pdf.setFillColorRGB(0.8, 0.8, 0.8)
+    pdf.drawString(20, 170, "Superseded template label")
+    pdf.setFillColorRGB(1, 1, 1)
+    pdf.rect(15, 160, 170, 25, fill=1, stroke=0)
+    pdf.setFillColorRGB(0, 0, 0)
+    pdf.drawString(20, 140, "Visible release content")
+    pdf.save()
+
+    page = extract_pdf_evidence(path)["pages"][0]
+
+    assert page["monochrome_minimum_contrast"] >= 4.5
 
 
 def test_print_evidence_detects_rule_loss_spacing_and_mark_displacement(

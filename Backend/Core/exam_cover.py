@@ -326,7 +326,7 @@ def _draw_aqa_mark_scheme_cover(
     pdf.line(41.9, height - 147.6, 552.9, height - 147.6)
 
     rows = (
-        ("A-level", bold_font, 28, 182.0),
+        ("A-level", bold_font, 28, 183.0),
         (profile.subject.upper(), bold_font, 28, 219.6),
         (profile.code, bold_font, 28, 257.7),
         (profile.paper_title, font, 16, 289.8),

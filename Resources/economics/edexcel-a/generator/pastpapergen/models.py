@@ -115,6 +115,7 @@ class QuestionBlueprint(BaseModel):
 
 
 class PaperBlueprint(BaseModel):
+    seed: int
     paper_id: str
     paper_code: str
     title: str

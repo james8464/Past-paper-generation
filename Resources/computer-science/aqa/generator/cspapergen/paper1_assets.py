@@ -7,6 +7,7 @@ from reportlab.pdfgen import canvas
 
 from Backend.Core.fonts import register_fonts
 from Backend.Core.generation_date import formatted_generation_date
+from Backend.Core.render_transaction import render_pdf_atomically
 from cspapergen.models import Paper1Context, PaperBlueprint
 
 
@@ -27,8 +28,16 @@ def write_paper1_supporting_files(
     electronic_answer = output_dir / "cs-paper-1-electronic-answer-document.pdf"
     skeleton = output_dir / "cs-paper-1-skeleton-program.py"
     data_file = output_dir / "cs-paper-1-practice-data.txt"
-    render_preliminary_material(blueprint, context, preliminary)
-    render_electronic_answer_document(blueprint, electronic_answer)
+    render_pdf_atomically(
+        preliminary,
+        lambda path: render_preliminary_material(blueprint, context, path),
+        role="preliminary material",
+    )
+    render_pdf_atomically(
+        electronic_answer,
+        lambda path: render_electronic_answer_document(blueprint, path),
+        role="electronic answer document",
+    )
     skeleton.write_text(context.skeleton_program, encoding="utf-8")
     data_file.write_text(context.data_file, encoding="utf-8")
     return {
