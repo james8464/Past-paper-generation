@@ -1015,8 +1015,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/pdf_validation.py": {
-    "mtime": 1787753316.29266,
-    "ast_hash": "fe4a750db3d686eadbb9ae979cab0ab2",
+    "mtime": 1787755671.4898307,
+    "ast_hash": "ba017162034879e40e3279481955a750",
     "semantic_hash": ""
   },
   "Backend/Core/reportlab_theme.py": {
@@ -1050,8 +1050,8 @@
     "semantic_hash": ""
   },
   "tests/test_pdf_validation.py": {
-    "mtime": 1787755464.8712592,
-    "ast_hash": "111eb8f06e072480bc0d5fea6f820491",
+    "mtime": 1787755660.1965115,
+    "ast_hash": "bda70057020730a98e4f213d3e79845a",
     "semantic_hash": ""
   },
   "tests/test_providers.py": {

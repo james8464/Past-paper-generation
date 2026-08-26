@@ -131,8 +131,8 @@ def compare_page_evidence(
 
     return {
         "font_identity": _set_score(
-            set(generated.get("font_names", [])),
-            set(reference.get("font_names", [])),
+            {_normalise_font(name) for name in generated.get("font_names", [])},
+            {_normalise_font(name) for name in reference.get("font_names", [])},
         ),
         "baseline": _sequence_closeness(
             generated.get("baselines", []),

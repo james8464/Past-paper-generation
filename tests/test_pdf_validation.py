@@ -22,6 +22,15 @@ def test_metric_compatible_open_fonts_share_reference_family_identity() -> None:
     assert _normalise_font("Tinos-Italic") == _normalise_font("TimesNewRomanPS-ItalicMT")
 
 
+def test_print_evidence_compares_metric_compatible_font_names() -> None:
+    scores = compare_page_evidence(
+        {"font_names": ["Arimo-Regular", "Arimo-Bold"]},
+        {"font_names": ["ArialMT", "Arial-BoldMT"]},
+    )
+
+    assert scores["font_identity"] == 1.0
+
+
 def test_image_only_page_is_not_reported_as_empty(tmp_path: Path) -> None:
     path = tmp_path / "image-only.pdf"
     pdf = canvas.Canvas(str(path), pagesize=(200, 200))
