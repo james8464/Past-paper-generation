@@ -172,10 +172,17 @@ def reconcile_solution(
             {"text": str(text), "marks": 0, "assessment_objective": None}
             for text in raw["mark_scheme"]
         ]
-    text = "\n".join(
-        str(point.get("text", "")) if isinstance(point, dict) else str(point)
-        for point in points
-    )
+    semantic_parts = [
+        part
+        for part in (
+            *(_semantic_text(point) for point in points),
+            _semantic_text(raw.get("alternatives")),
+            _semantic_text(raw.get("partial_credit_boundaries")),
+            _semantic_text(raw.get("follow_through_rules")),
+        )
+        if part
+    ]
+    text = "\n".join(semantic_parts)
     normalised_text = _normalise(text)
     issues: list[ReconciliationIssue] = []
 
@@ -211,8 +218,12 @@ def reconcile_solution(
         missing = [
             requirement
             for requirement in requirements
-            if _normalise(requirement) not in normalised_text
-            and content_similarity(requirement, text) < 0.25
+            if not _requirement_present(
+                requirement,
+                normalised_text=normalised_text,
+                semantic_parts=semantic_parts,
+                threshold=0.5,
+            )
         ]
         if missing:
             issues.append(
@@ -258,9 +269,11 @@ def reconcile_solution(
             )
         )
     for mark_point in solution.mark_points:
-        if (
-            _normalise(mark_point) not in normalised_text
-            and content_similarity(mark_point, text) < 0.2
+        if not _requirement_present(
+            mark_point,
+            normalised_text=normalised_text,
+            semantic_parts=semantic_parts,
+            threshold=0.42,
         ):
             issues.append(
                 ReconciliationIssue(
@@ -325,7 +338,66 @@ def _as_mapping(value: Any) -> dict[str, Any]:
 def _string_list(value: Any) -> list[str]:
     if not isinstance(value, (list, tuple, set)):
         return []
-    return [str(item).strip() for item in value if str(item).strip()]
+    return [text for item in value if (text := _rubric_text(item))]
+
+
+def _rubric_text(value: Any) -> str:
+    if isinstance(value, str):
+        return value.strip()
+    if isinstance(value, dict):
+        for key in ("point", "text", "condition", "rule", "description", "answer"):
+            text = value.get(key)
+            if isinstance(text, str) and text.strip():
+                return text.strip()
+    return ""
+
+
+def _semantic_text(value: Any) -> str:
+    if isinstance(value, str):
+        return value.strip()
+    if isinstance(value, (list, tuple, set)):
+        return "\n".join(filter(None, (_semantic_text(item) for item in value)))
+    if not isinstance(value, dict):
+        return ""
+    fields = (
+        "text",
+        "answer",
+        "point",
+        "condition",
+        "rule",
+        "alternatives",
+        "allow",
+        "notes",
+        "partial_credit_boundaries",
+        "follow_through_rules",
+    )
+    return "\n".join(
+        text
+        for key in fields
+        if (text := _semantic_text(value.get(key)))
+    )
+
+
+def _requirement_present(
+    requirement: str,
+    *,
+    normalised_text: str,
+    semantic_parts: list[str],
+    threshold: float,
+) -> bool:
+    normalised_requirement = _normalise(requirement)
+    if normalised_requirement and normalised_requirement in normalised_text:
+        return True
+    segments = [
+        segment.strip()
+        for part in semantic_parts
+        for segment in part.splitlines()
+        if segment.strip()
+    ]
+    return any(
+        content_similarity(requirement, segment, width=1) >= threshold
+        for segment in segments
+    )
 
 
 def _numbers(value: str) -> list[float]:

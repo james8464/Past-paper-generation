@@ -108,6 +108,59 @@ def test_reconciliation_rejects_ao_misallocation() -> None:
     assert any(issue.field == "assessment_objectives" for issue in result.issues)
 
 
+def test_solver_and_reconciliation_accept_structured_rubric_metadata() -> None:
+    class Client:
+        def generate_json(self, _prompt: str) -> dict[str, object]:
+            return {"answer": "19.6%", "steps": ["Calculate the percentage change"]}
+
+    item = {
+        "id": "q-structured",
+        "marks": 2,
+        "prompt": "Calculate the percentage change from 78.0 to 93.3.",
+        "assessment_objectives": {"AO2": 2},
+        "authoring_context": {
+            "observable_mark_points": [
+                {"point": "Correct identification of values 78.0 and 93.3", "marks": 1},
+                {"point": "Correct percentage change of 19.6%", "marks": 1},
+            ],
+            "partial_credit_boundaries": [
+                {"condition": "Correct values but arithmetic error", "score": 1}
+            ],
+            "follow_through_rules": [
+                {"rule": "Allow a correct calculation from the candidate's values"}
+            ],
+        },
+    }
+    solution = IndependentSolver(Client()).solve(item, [])
+
+    assert solution.mark_points == [
+        "Correct identification of values 78.0 and 93.3",
+        "Correct percentage change of 19.6%",
+    ]
+    result = reconcile_solution(
+        solution,
+        {
+            "marks": 2,
+            "follow_through_rules": [
+                "Allow a correct calculation from the candidate's values"
+            ],
+            "points": [
+                {
+                    "text": "Identifies 78.0 and 93.3; correct values but arithmetic error",
+                    "marks": 1,
+                    "assessment_objective": "AO2",
+                },
+                {
+                    "text": "Correct percentage change: 19.6%",
+                    "marks": 1,
+                    "assessment_objective": "AO2",
+                },
+            ],
+        },
+    )
+    assert result.passed, result.issues
+
+
 def test_solver_rejects_citation_to_unavailable_evidence() -> None:
     class Client:
         def generate_json(self, _prompt: str) -> dict[str, object]:
