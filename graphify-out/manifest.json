@@ -930,8 +930,8 @@
     "semantic_hash": ""
   },
   "requirements-build.txt": {
-    "mtime": 1787749923.2580783,
-    "ast_hash": "24eb8d246efcc5f614bb2d3c1c17b037",
+    "mtime": 1787772882.9700744,
+    "ast_hash": "337226a34d62bac730764b5ecd92ee38",
     "semantic_hash": ""
   },
   "Design/AppIcon/PaperCreator-AppIcon-Master.png": {
@@ -1235,8 +1235,8 @@
     "semantic_hash": ""
   },
   "requirements-test.txt": {
-    "mtime": 1787755518.5006452,
-    "ast_hash": "e0ff6a8da12540927e3ea12424ff850e",
+    "mtime": 1787772882.9705346,
+    "ast_hash": "d17b31360067ff6717124c38c1fccf14",
     "semantic_hash": ""
   },
   "Backend/Core/model_recommendations.py": {
@@ -1630,8 +1630,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/subject_plugins.py": {
-    "mtime": 1787747234.6442068,
-    "ast_hash": "0756351a5af3dd7190f7859860b050a7",
+    "mtime": 1787772957.9037788,
+    "ast_hash": "deb2db0f24094e5d349c40e7bfa9d108",
     "semantic_hash": ""
   },
   "Resources/board-profiles/aqa.json": {
@@ -1665,8 +1665,8 @@
     "semantic_hash": ""
   },
   "tests/test_subject_plugins.py": {
-    "mtime": 1787747141.53345,
-    "ast_hash": "0dc289a64310479aac83f3f5c02b9d33",
+    "mtime": 1787772945.0702276,
+    "ast_hash": "d98020e392e6c8d51f73cc1ccd017f31",
     "semantic_hash": ""
   },
   "tools/scaffold_generator_family.py": {
@@ -1700,8 +1700,8 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1787772745.498896,
-    "ast_hash": "18ce3deb869b40be5ad513489f4c6543",
+    "mtime": 1787772991.8282082,
+    "ast_hash": "9b54d65073203eb90843decf7b80b56c",
     "semantic_hash": ""
   },
   "tests/test_repository_hygiene.py": {
@@ -1740,13 +1740,28 @@
     "semantic_hash": ""
   },
   "tests/test_release_compliance.py": {
-    "mtime": 1787772712.7170167,
-    "ast_hash": "f9a8b9097bb5ef69269dd7235704a2d9",
+    "mtime": 1787772972.9588175,
+    "ast_hash": "72bc7204446de675a4e711b287e5cd6e",
     "semantic_hash": ""
   },
   "tools/release_compliance.py": {
     "mtime": 1787772712.7175243,
     "ast_hash": "34a883bf1e597c1286ef307bbf64c89f",
+    "semantic_hash": ""
+  },
+  "Backend/Core/subjects/__init__.py": {
+    "mtime": 1787772882.971897,
+    "ast_hash": "ce47b0825284857a564ee3ba87e37b97",
+    "semantic_hash": ""
+  },
+  "Backend/Core/subjects/mathematics.py": {
+    "mtime": 1787772924.1068115,
+    "ast_hash": "e76f452c1726263262ba0db5181440f0",
+    "semantic_hash": ""
+  },
+  "tests/test_mathematics_subject.py": {
+    "mtime": 1787772933.3205597,
+    "ast_hash": "1dc09c9f72cda55d551edc260c6d7e0c",
     "semantic_hash": ""
   }
 }

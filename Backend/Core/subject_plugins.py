@@ -107,3 +107,10 @@ def _normalise_identifier(identifier: str) -> str:
     ):
         raise ValueError(f"unknown subject plugin: {identifier}")
     return normalized
+
+
+# Imported after the protocol and registry exist so subject engines can reuse
+# SubjectValidation without a module-initialisation cycle.
+from Backend.Core.subjects.mathematics import MathematicsPlugin  # noqa: E402
+
+_PLUGINS[MathematicsPlugin.id] = MathematicsPlugin()

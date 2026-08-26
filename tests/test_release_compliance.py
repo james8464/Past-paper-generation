@@ -24,7 +24,7 @@ def test_release_compliance_passes_for_the_repository() -> None:
 def test_release_compliance_detects_a_tracked_secret_signature(tmp_path: Path) -> None:
     report = inspect_release_compliance(
         ROOT,
-        additional_text={"example.txt": "token = ghp_abcdefghijklmnopqrstuvwxyz1234567890"},
+        additional_text={"example.txt": "token = " + "ghp_" + ("a" * 36)},
     )
 
     assert report["passed"] is False

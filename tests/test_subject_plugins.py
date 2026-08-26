@@ -13,7 +13,7 @@ from Backend.Core.subject_plugins import (
 
 
 def test_current_subject_and_board_plugins_are_discoverable() -> None:
-    assert {"accounting", "business", "computer-science", "economics"} <= set(
+    assert {"accounting", "business", "computer-science", "economics", "mathematics"} <= set(
         subject_plugin_ids()
     )
     assert {"aqa", "ocr", "pearson-edexcel"} <= set(board_profile_ids())
