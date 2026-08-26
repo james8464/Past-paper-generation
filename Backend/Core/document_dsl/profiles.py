@@ -74,6 +74,15 @@ def board_profile(profile_id: str) -> BoardProfile:
             bold_font="Helvetica-Bold",
             answer_line_mm=8.5,
         )
+    if normalized == "cambridge-international":
+        return _profile(
+            "cambridge-international",
+            left_mm=18,
+            right_mm=17,
+            body_font="Helvetica",
+            bold_font="Helvetica-Bold",
+            answer_line_mm=8.5,
+        )
     if normalized == "pearson-edexcel":
         return _profile(
             "pearson-edexcel",

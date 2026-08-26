@@ -51,7 +51,9 @@ from Backend.Core.reportlab_theme import (
 )
 
 
-@pytest.mark.parametrize("profile_id", ["aqa", "ocr", "pearson-edexcel"])
+@pytest.mark.parametrize(
+    "profile_id", ["aqa", "cambridge-international", "ocr", "pearson-edexcel"]
+)
 def test_every_existing_board_profile_has_print_safe_geometry(profile_id: str) -> None:
     profile = board_profile(profile_id)
 

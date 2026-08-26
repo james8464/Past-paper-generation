@@ -16,7 +16,9 @@ def test_current_subject_and_board_plugins_are_discoverable() -> None:
     assert {"accounting", "business", "computer-science", "economics", "mathematics"} <= set(
         subject_plugin_ids()
     )
-    assert {"aqa", "ocr", "pearson-edexcel"} <= set(board_profile_ids())
+    assert {"aqa", "cambridge-international", "ocr", "pearson-edexcel"} <= set(
+        board_profile_ids()
+    )
 
     plugin = discover_subject_plugin("economics")
     result = plugin.validate_item(

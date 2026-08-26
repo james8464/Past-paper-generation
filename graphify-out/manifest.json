@@ -1530,8 +1530,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/document_dsl/profiles.py": {
-    "mtime": 1787745534.0953524,
-    "ast_hash": "2184f972c2896adc83e37fd487c4d98d",
+    "mtime": 1787773626.382138,
+    "ast_hash": "afbc4b63efabf048141aa7cf9f31ecad",
     "semantic_hash": ""
   },
   "Backend/Core/document_dsl/reportlab_backend.py": {
@@ -1545,8 +1545,8 @@
     "semantic_hash": ""
   },
   "tests/test_document_dsl.py": {
-    "mtime": 1787755258.188846,
-    "ast_hash": "8d8bde85035e1a587081e062591bc90e",
+    "mtime": 1787773606.7293243,
+    "ast_hash": "afcb90f270ed4544d0257193dc166e26",
     "semantic_hash": ""
   },
   "tests/test_document_paginator.py": {
@@ -1630,8 +1630,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/subject_plugins.py": {
-    "mtime": 1787773356.344755,
-    "ast_hash": "c630500e2728e9de0ba81a290ee4612e",
+    "mtime": 1787773587.051281,
+    "ast_hash": "e17d27f34d51ff9aa72dc10085dc92af",
     "semantic_hash": ""
   },
   "Resources/board-profiles/aqa.json": {
@@ -1665,8 +1665,8 @@
     "semantic_hash": ""
   },
   "tests/test_subject_plugins.py": {
-    "mtime": 1787772945.0702276,
-    "ast_hash": "d98020e392e6c8d51f73cc1ccd017f31",
+    "mtime": 1787773606.7283268,
+    "ast_hash": "584f3bb1a5cd5f707efba3a8e0633864",
     "semantic_hash": ""
   },
   "tools/scaffold_generator_family.py": {
@@ -1700,8 +1700,8 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1787773432.9279532,
-    "ast_hash": "b0338d3d94e37c23b742d4508b2fa5fc",
+    "mtime": 1787773642.8645515,
+    "ast_hash": "97eed2e9fffb3fe0c0e6c42778f719f4",
     "semantic_hash": ""
   },
   "tests/test_repository_hygiene.py": {
@@ -1812,6 +1812,21 @@
   "tests/test_humanities_overlay.py": {
     "mtime": 1787773385.2515228,
     "ast_hash": "bed39076ad2ae6262a8115fc50bc49cb",
+    "semantic_hash": ""
+  },
+  "Backend/Core/subjects/computer_science.py": {
+    "mtime": 1787773587.0507689,
+    "ast_hash": "e9af4142b094c100324e7ba465688de9",
+    "semantic_hash": ""
+  },
+  "Resources/board-profiles/cambridge-international.json": {
+    "mtime": 1787773626.3816972,
+    "ast_hash": "347e0ae88c2a73398d5a2e11be6ec711",
+    "semantic_hash": ""
+  },
+  "tests/test_computer_science_subject.py": {
+    "mtime": 1787773539.5011654,
+    "ast_hash": "5c41cbbce2863789c13f465f54d0e722",
     "semantic_hash": ""
   }
 }
