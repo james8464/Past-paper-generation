@@ -37,7 +37,8 @@ from Backend.Core.exam_pages import ExamPage, ExamPageProfile
 from Backend.Core.fonts import register_fonts
 from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.mark_scheme_front_matter import aqa_front_matter_pages
-from Backend.Core.reportlab_theme import AnswerLineFlowable, themed_table_class
+from Backend.Core.reportlab_theme import AQAAnswerLines as AnswerLines
+from Backend.Core.reportlab_theme import themed_table_class
 
 AQA_A4 = (595.32, 841.92)
 PAGE_WIDTH, PAGE_HEIGHT = AQA_A4
@@ -1510,17 +1511,6 @@ def _box(text: str) -> Table:
             ]
         ),
     )
-
-
-class AnswerLines(AnswerLineFlowable):
-    def __init__(self, count: int) -> None:
-        super().__init__(
-            count,
-            spacing_mm=6,
-            colour="#b5b5b5",
-            line_width=0.35,
-            dashed=False,
-        )
 
 
 _base = getSampleStyleSheet()

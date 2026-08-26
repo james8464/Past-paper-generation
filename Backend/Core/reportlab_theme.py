@@ -62,3 +62,29 @@ class AnswerLineFlowable(Flowable):
             self.canv.line(0, y, self.width, y)
         if self.dashed:
             self.canv.setDash()
+
+
+class AQAAnswerLines(AnswerLineFlowable):
+    def __init__(self, count: int) -> None:
+        super().__init__(
+            count,
+            spacing_mm=6,
+            colour="#b5b5b5",
+            line_width=0.35,
+            dashed=False,
+        )
+
+
+class AQACompactAnswerLines(AnswerLineFlowable):
+    def __init__(self, count: int) -> None:
+        super().__init__(count, width_mm=165, spacing_mm=6.2, colour="#666666")
+
+
+class OCRAnswerLines(AnswerLineFlowable):
+    def __init__(self, count: int, *, spacing_mm: float = 6.0) -> None:
+        super().__init__(count, spacing_mm=spacing_mm)
+
+
+class OCRComputerScienceAnswerLines(AnswerLineFlowable):
+    def __init__(self, count: int) -> None:
+        super().__init__(count, width_mm=165, spacing_mm=4.7, colour="#666666")

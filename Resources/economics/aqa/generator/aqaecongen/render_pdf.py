@@ -40,7 +40,8 @@ from Backend.Core.exam_cover import (
 from Backend.Core.exam_pages import ExamPage, ExamPageProfile
 from Backend.Core.fonts import register_fonts
 from Backend.Core.generation_date import formatted_generation_date
-from Backend.Core.reportlab_theme import AnswerLineFlowable, themed_table_class
+from Backend.Core.reportlab_theme import AQACompactAnswerLines as AnswerLines
+from Backend.Core.reportlab_theme import themed_table_class
 
 BLACK = colors.HexColor("#171717")
 GREY = colors.HexColor("#ececec")
@@ -1220,16 +1221,6 @@ def _page_chrome(canvas, doc, paper_code: str, document_type: str) -> None:
     canvas.drawString(16 * mm, PAGE_HEIGHT - 9 * mm, f"{paper_code} · {document_type}")
     canvas.drawRightString(PAGE_WIDTH - 17 * mm, 8 * mm, f"Page {doc.page}")
     canvas.restoreState()
-
-
-class AnswerLines(AnswerLineFlowable):
-    def __init__(self, line_count: int) -> None:
-        super().__init__(
-            line_count,
-            width_mm=165,
-            spacing_mm=6.2,
-            colour="#666666",
-        )
 
 
 _sample = getSampleStyleSheet()

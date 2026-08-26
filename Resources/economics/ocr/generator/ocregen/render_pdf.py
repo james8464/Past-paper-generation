@@ -38,7 +38,8 @@ from Backend.Core.exam_cover import (
 )
 from Backend.Core.exam_pages import ExamPage, ExamPageProfile
 from Backend.Core.fonts import register_fonts
-from Backend.Core.reportlab_theme import AnswerLineFlowable, themed_table_class
+from Backend.Core.reportlab_theme import OCRAnswerLines as AnswerLines
+from Backend.Core.reportlab_theme import themed_table_class
 
 PAGE_WIDTH, PAGE_HEIGHT = A4
 OCR_MARK_SCHEME_FRONT_SIZE = (594.96, 842.04)
@@ -2100,11 +2101,6 @@ def _banner(text: str) -> Table:
 
 def _box(text: str) -> Table:
     return Table([[Paragraph(text, STYLES["body"])]], colWidths=[150 * mm], style=TableStyle([("BOX", (0, 0), (-1, -1), 0.6, INK), ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f7f7f7")), ("PADDING", (0, 0), (-1, -1), 8)]))
-
-
-class AnswerLines(AnswerLineFlowable):
-    def __init__(self, count: int, *, spacing_mm: float = 6.0) -> None:
-        super().__init__(count, spacing_mm=spacing_mm)
 
 
 _base = getSampleStyleSheet()
