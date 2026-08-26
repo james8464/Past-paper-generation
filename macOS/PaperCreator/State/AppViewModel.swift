@@ -45,11 +45,6 @@ final class AppViewModel: ObservableObject {
     @Published var notificationsEnabled = true
     @Published var sidebarSelection: SidebarItem?
     @Published var generationEstimate: GenerationEstimate?
-    @Published var isBenchmarkRunning = false
-    @Published var benchmarkProgress: Double?
-    @Published var benchmarkSamples: [BenchmarkSample] = []
-    @Published var benchmarkMetrics: [BenchmarkMetric] = []
-    @Published var benchmarkVerdict: BenchmarkVerdict?
     @Published var lastQualityReport: GenerationQualityReport?
     @Published private(set) var previewedFileID: UUID?
 
@@ -61,7 +56,6 @@ final class AppViewModel: ObservableObject {
     private let defaults = UserDefaults.standard
     private let notificationCenter = UNUserNotificationCenter.current()
     private var runningProcess: Process?
-    private var benchmarkProcess: Process?
     private var didReceiveBackendError = false
     private var didCancelRun = false
     private var activeOperation = RunningOperation.none
@@ -74,6 +68,13 @@ final class AppViewModel: ObservableObject {
     var selectedBoard: ExamBoardOption {
         ExamCatalog.board(id: selectedBoardID) ?? ExamCatalog.defaultBoard
     }
+
+    // Temporary command compatibility while every view migrates to focused coordinators.
+    var isBenchmarkRunning: Bool { benchmarkCoordinator.isRunning }
+    var benchmarkProgress: Double? { benchmarkCoordinator.progress }
+    var benchmarkSamples: [BenchmarkSample] { benchmarkCoordinator.samples }
+    var benchmarkMetrics: [BenchmarkMetric] { benchmarkCoordinator.metrics }
+    var benchmarkVerdict: BenchmarkVerdict? { benchmarkCoordinator.verdict }
 
     var selectedPaper: PaperOption {
         selectedBoard.papers.first { $0.id == selectedPaperID }
@@ -228,6 +229,7 @@ final class AppViewModel: ObservableObject {
         selectedPaperID = defaults.string(forKey: AppStorageKey.selectedPaperID) ?? selectedBoard.papers.first?.id ?? "unknown"
         restoreRecentDocuments()
         sidebarSelection = .board(selectedBoardID)
+        benchmarkCoordinator.outputFolder = outputFolder
     }
 
     func refreshOllama() {
@@ -748,38 +750,13 @@ final class AppViewModel: ObservableObject {
     }
 
     func startBenchmark() {
-        guard !isRunning, !isBenchmarkRunning else { return }
-        benchmarkSamples.removeAll()
-        benchmarkMetrics.removeAll()
-        benchmarkVerdict = nil
-        benchmarkProgress = 0
-        benchmarkCoordinator.begin()
-        isBenchmarkRunning = true
+        guard !isRunning, !benchmarkCoordinator.isRunning else { return }
+        benchmarkCoordinator.start(generationIsRunning: isRunning)
         status = "Benchmarking"
         sidebarSelection = .benchmark
-
-        do {
-            benchmarkProcess = try backend.run(arguments: [
-                "benchmark",
-                "--duration",
-                String(Int(AppDefaults.benchmarkDurationSeconds)),
-                "--output",
-                outputFolder.path,
-            ]) { [weak self] event in
-                self?.apply(event)
-            } onFinish: { [weak self] result in
-                self?.finishBenchmark(result)
-            }
-        } catch {
-            finishBenchmark(.failure(error))
-        }
     }
 
     func cancelBenchmark() {
-        benchmarkProcess?.terminate()
-        benchmarkProcess = nil
-        isBenchmarkRunning = false
-        benchmarkProgress = nil
         status = "Benchmark cancelled"
         benchmarkCoordinator.cancel()
     }
@@ -808,6 +785,7 @@ final class AppViewModel: ObservableObject {
     }()
 
     private func setOutputFolder(_ url: URL) {
+        benchmarkCoordinator.outputFolder = url
         securityScopedOutputFolder?.stopAccessingSecurityScopedResource()
         securityScopedOutputFolder = url.startAccessingSecurityScopedResource() ? url : nil
         outputFolder = url
@@ -910,15 +888,8 @@ final class AppViewModel: ObservableObject {
             ollamaState = OllamaState(installed: installed, running: running, command: command, message: message ?? "")
             modelCoordinator.receiveOllamaState(ollamaState)
             status = message ?? status
-        case let .benchmarkMetric(metric):
-            benchmarkMetrics.append(metric)
-        case let .benchmarkSample(sample):
-            benchmarkSamples.append(sample)
-            benchmarkProgress = min(1.0, sample.elapsed / AppDefaults.benchmarkDurationSeconds)
-        case let .benchmarkDone(verdict):
-            benchmarkVerdict = verdict
-            benchmarkProgress = 1.0
-            status = verdict.verdict
+        case .benchmarkMetric, .benchmarkSample, .benchmarkDone:
+            break
         }
     }
 
@@ -1101,25 +1072,6 @@ final class AppViewModel: ObservableObject {
     private func updateGenerationEstimate() {
         guard let estimate = generationEstimate else { return }
         generationEstimate = GenerationEstimator.update(estimate: estimate, progress: generationProgress)
-    }
-
-    private func finishBenchmark(_ result: Result<Int32, Error>) {
-        benchmarkProcess = nil
-        isBenchmarkRunning = false
-        if benchmarkVerdict != nil {
-            benchmarkProgress = 1.0
-        } else {
-            benchmarkProgress = nil
-        }
-
-        switch result {
-        case let .success(code):
-            if code != 0 {
-                setError("Benchmark exited with code \(code).")
-            }
-        case let .failure(error):
-            setError(error.localizedDescription)
-        }
     }
 
     private func notifySuccess(for operation: RunningOperation) {

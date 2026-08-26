@@ -2,7 +2,8 @@ import Charts
 import SwiftUI
 
 struct BenchmarkWorkspace: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @Environment(BenchmarkCoordinator.self) private var benchmark
+    @Environment(GenerationCoordinator.self) private var generation
 
     var body: some View {
         ScrollView {
@@ -20,19 +21,21 @@ struct BenchmarkWorkspace: View {
         .navigationTitle("Benchmark")
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                if appModel.isBenchmarkRunning {
-                    Button(role: .cancel, action: appModel.cancelBenchmark) {
+                if benchmark.isRunning {
+                    Button(role: .cancel, action: benchmark.cancel) {
                         Label("Cancel", systemImage: "xmark.circle")
                     }
                 } else {
-                    Button(action: appModel.startBenchmark) {
+                    Button {
+                        benchmark.start(generationIsRunning: generation.activeJob != nil)
+                    } label: {
                         Label(
                             "Run \(Int(AppDefaults.benchmarkDurationSeconds)) Second Test",
                             systemImage: "play.fill"
                         )
                     }
                     .buttonStyle(.borderedProminent)
-                    .disabled(appModel.isRunning)
+                    .disabled(generation.activeJob != nil)
                 }
             }
         }
@@ -40,18 +43,18 @@ struct BenchmarkWorkspace: View {
 }
 
 private struct BenchmarkOverviewPanel: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @Environment(BenchmarkCoordinator.self) private var benchmark
 
     var body: some View {
         GroupBox {
-            if appModel.isBenchmarkRunning {
-                ProgressView(value: appModel.benchmarkProgress ?? 0) {
+            if benchmark.isRunning {
+                ProgressView(value: benchmark.progress ?? 0) {
                     Text("Running CPU, memory, storage, PDF, network, power and Ollama checks")
                 } currentValueLabel: {
-                    Text((appModel.benchmarkProgress ?? 0).formatted(.percent.precision(.fractionLength(0))))
+                    Text((benchmark.progress ?? 0).formatted(.percent.precision(.fractionLength(0))))
                 }
                 .progressViewStyle(.linear)
-            } else if let verdict = appModel.benchmarkVerdict {
+            } else if let verdict = benchmark.verdict {
                 BenchmarkVerdictSummary(verdict: verdict)
             } else {
                 Text("Run the benchmark to calibrate ETA and check whether this Mac is ready for local generation.")
@@ -107,7 +110,7 @@ private struct BenchmarkVerdictSummary: View {
 }
 
 private struct BenchmarkLiveCharts: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @Environment(BenchmarkCoordinator.self) private var benchmark
 
     var body: some View {
         ViewThatFits(in: .horizontal) {
@@ -144,35 +147,35 @@ private struct BenchmarkLiveCharts: View {
     }
 
     private var cpuChart: some View {
-        BenchmarkChart(title: "CPU Load", unit: "%", samples: appModel.benchmarkSamples, value: \.cpuLoad)
+        BenchmarkChart(title: "CPU Load", unit: "%", samples: benchmark.samples, value: \.cpuLoad)
     }
 
     private var cpuThroughputChart: some View {
-        BenchmarkChart(title: "CPU Throughput", unit: "MB/s", samples: appModel.benchmarkSamples, value: \.cpuThroughputMBs)
+        BenchmarkChart(title: "CPU Throughput", unit: "MB/s", samples: benchmark.samples, value: \.cpuThroughputMBs)
     }
 
     private var memoryChart: some View {
-        BenchmarkChart(title: "Free Memory", unit: "GB", samples: appModel.benchmarkSamples, value: \.memoryAvailableGB)
+        BenchmarkChart(title: "Free Memory", unit: "GB", samples: benchmark.samples, value: \.memoryAvailableGB)
     }
 
     private var memoryPressureChart: some View {
-        BenchmarkChart(title: "Memory Pressure", unit: "%", samples: appModel.benchmarkSamples, value: \.memoryPressurePercent)
+        BenchmarkChart(title: "Memory Pressure", unit: "%", samples: benchmark.samples, value: \.memoryPressurePercent)
     }
 
     private var diskWriteChart: some View {
-        BenchmarkChart(title: "Disk Write", unit: "MB/s", samples: appModel.benchmarkSamples, value: \.diskWriteMBs)
+        BenchmarkChart(title: "Disk Write", unit: "MB/s", samples: benchmark.samples, value: \.diskWriteMBs)
     }
 
     private var networkLatencyChart: some View {
-        BenchmarkChart(title: "Network Latency", unit: "ms", samples: appModel.benchmarkSamples, value: \.networkLatencyDisplayMS)
+        BenchmarkChart(title: "Network Latency", unit: "ms", samples: benchmark.samples, value: \.networkLatencyDisplayMS)
     }
 
     private var pdfRenderChart: some View {
-        BenchmarkChart(title: "PDF Render", unit: "pages/s", samples: appModel.benchmarkSamples, value: \.pdfPagesPerSecond)
+        BenchmarkChart(title: "PDF Render", unit: "pages/s", samples: benchmark.samples, value: \.pdfPagesPerSecond)
     }
 
     private var thermalChart: some View {
-        BenchmarkChart(title: "Thermal Limit", unit: "%", samples: appModel.benchmarkSamples, value: \.thermalSpeedLimitDisplayPercent)
+        BenchmarkChart(title: "Thermal Limit", unit: "%", samples: benchmark.samples, value: \.thermalSpeedLimitDisplayPercent)
     }
 }
 
@@ -224,15 +227,15 @@ private struct BenchmarkChart: View {
 }
 
 private struct BenchmarkMetricGrid: View {
-    @EnvironmentObject private var appModel: AppViewModel
+    @Environment(BenchmarkCoordinator.self) private var benchmark
 
     var body: some View {
         GroupBox {
-            if appModel.benchmarkMetrics.isEmpty {
+            if benchmark.metrics.isEmpty {
                 PanelEmptyState(title: "No Results", message: "Metric results appear as the diagnostic runs.", systemImage: "speedometer")
                     .frame(maxWidth: .infinity, minHeight: 130)
             } else {
-                Table(appModel.benchmarkMetrics) {
+                Table(benchmark.metrics) {
                     TableColumn("Metric") { metric in
                         Text(metric.name)
                     }

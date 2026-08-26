@@ -13,6 +13,8 @@ struct PaperCreator: App {
         WindowGroup("Paper creator", id: "main") {
             ContentView()
                 .environmentObject(appModel)
+                .environment(appModel.benchmarkCoordinator)
+                .environment(appModel.generationCoordinator)
         }
         .defaultLaunchBehavior(.presented)
         .commands {
@@ -22,6 +24,8 @@ struct PaperCreator: App {
         Settings {
             SettingsPane()
                 .environmentObject(appModel)
+                .environment(appModel.benchmarkCoordinator)
+                .environment(appModel.generationCoordinator)
         }
     }
 }
