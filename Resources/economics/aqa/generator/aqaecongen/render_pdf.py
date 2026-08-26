@@ -627,33 +627,6 @@ def _question_level_table(
     return table
 
 
-def _mark_scheme_question_header(
-    question: GeneratedQuestion,
-    *,
-    continued: bool,
-) -> Table:
-    prompt = (
-        f"<b>{question.number} continued</b>"
-        if continued
-        else f"<b>{question.number}</b> {question.prompt}"
-    )
-    table = Table(
-        [[Paragraph(prompt, STYLES["question"]), Paragraph(str(question.marks), STYLES["marks"])]],
-        colWidths=[153 * mm, 12 * mm],
-    )
-    table.setStyle(
-        TableStyle(
-            [
-                ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#777777")),
-                ("BACKGROUND", (0, 0), (-1, -1), GREY),
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                ("PADDING", (0, 0), (-1, -1), 6),
-            ]
-        )
-    )
-    return table
-
-
 def _document(path: Path, paper: GeneratedPaper, document_type: str) -> BaseDocTemplate:
     is_answer_booklet = document_type == "Question paper" and paper.paper_id == "paper_3"
     doc = BaseDocTemplate(
@@ -1115,36 +1088,6 @@ def _question_reference(number: str) -> Table:
             ]
         ),
     )
-
-
-def _mark_scheme_question(question: GeneratedQuestion) -> list[Flowable]:
-    rows = [
-        [
-            Paragraph(f"<b>{question.number}</b> {question.prompt}", STYLES["question"]),
-            Paragraph(str(question.marks), STYLES["marks"]),
-        ]
-    ]
-    rows.extend(
-        [
-            [Paragraph(f"• {point}", STYLES["scheme"]), ""]
-            for point in question.mark_scheme
-        ]
-    )
-    table = Table(rows, colWidths=[157 * mm, 12 * mm], repeatRows=1)
-    table.setStyle(
-        TableStyle(
-            [
-                ("GRID", (0, 0), (-1, -1), 0.45, colors.HexColor("#777777")),
-                ("BACKGROUND", (0, 0), (-1, 0), GREY),
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                ("LEFTPADDING", (0, 0), (-1, -1), 5),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 5),
-                ("TOPPADDING", (0, 0), (-1, -1), 5),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
-            ]
-        )
-    )
-    return [table, Spacer(1, 4 * mm)]
 
 
 def _line_chart(title: str, labels: list[str], values: list[float]) -> Drawing:

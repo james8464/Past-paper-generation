@@ -577,23 +577,6 @@ def _draw_skeleton_program_support_page(
     pdf.drawString(82, state.y - 16, "Input format: COMMAND,param1,param2,param3")
 
 
-def _draw_paper1_section_intro(
-    pdf: canvas.Canvas,
-    state: _QuestionRenderState,
-    title: str,
-    timing: str,
-) -> None:
-    pdf.setFont(FONT_BOLD, 13)
-    pdf.drawCentredString(289, 700, title)
-    pdf.setFont(FONT, 11)
-    pdf.drawCentredString(289, 670, "Answer all questions in this section.")
-    pdf.drawCentredString(289, 647, timing)
-    pdf.setFont(FONT, 9.5)
-    pdf.drawCentredString(289, 605, "Enter your answers in the supplied Electronic Answer Document")
-    pdf.drawCentredString(289, 590, "or complete the programming task in your development environment.")
-    state.y = 548
-
-
 def _draw_paper1_support_page(
     pdf: canvas.Canvas,
     state: _QuestionRenderState,
@@ -1808,12 +1791,6 @@ def _new_question_page(pdf: canvas.Canvas, state: _QuestionRenderState) -> _Ques
     state.y = 724
     _draw_question_page_header(pdf, state.page, state.blueprint)
     return state
-
-
-def _format_question_number(number: int) -> str:
-    if number < 10:
-        return f"0 {number}"
-    return f"{number // 10} {number % 10}"
 
 
 def _draw_question_ref(pdf: canvas.Canvas, x: float, y: float, number: int, part_label: str | None = None) -> None:

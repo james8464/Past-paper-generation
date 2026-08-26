@@ -723,45 +723,6 @@ def _trace_table(option: GeneratedOption) -> Table:
     return table
 
 
-def _scheme_block(
-    question: GeneratedQuestion,
-    *,
-    cell_padding: float = 5,
-) -> list[Flowable]:
-    rows = [
-        [
-            Paragraph(
-                f"<b>{question.number}</b> {question.prompt}", STYLES["body"]
-            ),
-            str(question.marks),
-        ]
-    ]
-    rows.extend(
-        [[Paragraph(f"• {point}", STYLES["small"]), ""] for point in question.mark_scheme]
-    )
-    table = Table(rows, colWidths=[245 * mm, 15 * mm], repeatRows=1)
-    table.setStyle(
-        TableStyle(
-            [
-                ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
-                ("BACKGROUND", (0, 0), (-1, 0), GREY),
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                ("PADDING", (0, 0), (-1, -1), cell_padding),
-            ]
-        )
-    )
-    return [table, Spacer(1, 4 * mm)]
-
-
-def _continued_pages(count: int, title: str) -> list[Flowable]:
-    result: list[Flowable] = []
-    for _ in range(count):
-        result.extend(
-            [PageBreak(), Paragraph(title, STYLES["centre_bold"]), AnswerLines(34)]
-        )
-    return result
-
-
 def _additional_pages(count: int, paper_code: str) -> list[Flowable]:
     pages: list[Flowable] = []
     for index in range(count):

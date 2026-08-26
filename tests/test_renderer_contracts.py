@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import importlib
 import sys
 from pathlib import Path
@@ -43,3 +44,26 @@ def test_every_family_declares_shared_renderer_contract(
     assert DocumentRole.QUESTION_PAPER in contract.document_roles
     assert DocumentRole.MARK_SCHEME in contract.document_roles
     assert contract.vector_components
+
+
+def test_renderers_do_not_retain_unreferenced_private_helpers() -> None:
+    dead: dict[str, list[str]] = {}
+    for relative_root, module_name, _ in FAMILIES:
+        module_path = ROOT / relative_root / (module_name.replace(".", "/") + ".py")
+        tree = ast.parse(module_path.read_text(encoding="utf-8"))
+        loaded_names = {
+            node.id
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load)
+        }
+        unused = [
+            node.name
+            for node in tree.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+            and node.name.startswith("_")
+            and node.name not in loaded_names
+        ]
+        if unused:
+            dead[str(module_path.relative_to(ROOT))] = unused
+
+    assert dead == {}

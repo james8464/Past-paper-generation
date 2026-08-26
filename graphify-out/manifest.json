@@ -115,8 +115,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/render_pdf.py": {
-    "mtime": 1787755406.7746773,
-    "ast_hash": "16cf4f74f136dc568182f2b2139f1806",
+    "mtime": 1787772545.7279174,
+    "ast_hash": "cf07ed88bb238ef20db4b4e8224ce7f5",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/syllabus.py": {
@@ -250,8 +250,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/render_pdf.py": {
-    "mtime": 1787761049.444745,
-    "ast_hash": "320da8c94c2379cbd4ea2fb37cfb8492",
+    "mtime": 1787772545.7251465,
+    "ast_hash": "996671b4c72718cb46ef79a0c8d05ba7",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/syllabus.py": {
@@ -340,8 +340,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/ocr/generator/ocrcsgen/render_pdf.py": {
-    "mtime": 1787764199.868645,
-    "ast_hash": "1cbebb8fcdecb22454ceb5f8cae5e4a5",
+    "mtime": 1787772545.7257404,
+    "ast_hash": "b06417446181b2934bd38f0d8d0b8e9b",
     "semantic_hash": ""
   },
   "Resources/computer-science/ocr/generator/ocrcsgen/syllabus.py": {
@@ -385,8 +385,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/aqaecongen/render_pdf.py": {
-    "mtime": 1787769810.7001696,
-    "ast_hash": "c0541a85b59446ddfdff604c325ac213",
+    "mtime": 1787772545.7263455,
+    "ast_hash": "6e1d7aa37c03771df543e5243e63c4f3",
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/aqaecongen/syllabus.py": {
@@ -465,8 +465,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/render_pdf.py": {
-    "mtime": 1787767416.2207427,
-    "ast_hash": "feb5031d76f564e6942ad3f7447f492a",
+    "mtime": 1787772545.7273145,
+    "ast_hash": "5ae09be4872a640e5a67ec0aa12d0a9d",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/source_cases.py": {
@@ -1555,8 +1555,8 @@
     "semantic_hash": ""
   },
   "tests/test_renderer_contracts.py": {
-    "mtime": 1787745633.1274807,
-    "ast_hash": "5eb102470f649fb6e47dd17ae29c0d25",
+    "mtime": 1787772469.9628646,
+    "ast_hash": "c11b41071d5183087ddf6410c3d7771a",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/State/BenchmarkCoordinator.swift": {

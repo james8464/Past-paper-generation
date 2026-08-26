@@ -2405,18 +2405,6 @@ def _banner(text: str) -> Table:
     )
 
 
-def _box(text: str) -> Table:
-    return Table(
-        [[Paragraph(text, STYLES["body"])]],
-        colWidths=[150 * mm],
-        style=TableStyle([
-            ("BOX", (0, 0), (-1, -1), 0.6, INK),
-            ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f7f7f7")),
-            ("PADDING", (0, 0), (-1, -1), 8),
-        ]),
-    )
-
-
 _base = getSampleStyleSheet()
 STYLES = {
     "body": ParagraphStyle("body", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14),
