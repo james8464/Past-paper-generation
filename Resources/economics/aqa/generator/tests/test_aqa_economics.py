@@ -78,6 +78,34 @@ def test_each_paper_is_valid_and_seed_changes_content() -> None:
         assert first.model_dump() != different.model_dump()
 
 
+def test_verified_examiner_guidance_is_retained_during_ai_authoring() -> None:
+    for rule in RULES.values():
+        paper = build_paper(rule, SYLLABUS, seed=123)
+        written_questions = [
+            question
+            for section in paper.sections
+            for option in section.options
+            for question in option.questions
+            if question.kind != "multiple_choice"
+        ]
+
+        assert written_questions
+        assert all(
+            question.authoring_context.get("preserve_mark_scheme") is True
+            for question in written_questions
+        )
+        assert all(
+            question.authoring_context.get("max_prompt_words")
+            == max(12, len(question.prompt.split()) + 2)
+            for question in written_questions
+        )
+        assert all(
+            len(question.mark_scheme) >= (18 if question.marks >= 15 else 8)
+            for question in written_questions
+            if question.marks >= 9
+        )
+
+
 def test_each_package_renders_readable_pdfs(tmp_path: Path) -> None:
     for paper in ("1", "2", "3"):
         output = tmp_path / paper

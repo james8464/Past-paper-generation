@@ -294,6 +294,10 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
     object_items = {"type": "object", "additionalProperties": True}
     if "`questions` array" in prompt or "a `questions` array" in prompt:
         item_count = _prompt_item_count(prompt)
+        all_mark_schemes_locked = (
+            '"mark_scheme_locked": true' in prompt
+            and '"mark_scheme_locked": false' not in prompt
+        )
         mark_point = {
             "type": "object",
             "properties": {
@@ -345,7 +349,7 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
                 "mark_scheme": {
                     "type": "array",
                     "items": mark_point,
-                    "maxItems": 10,
+                    "maxItems": 0 if all_mark_schemes_locked else 10,
                 },
             },
             "required": [
@@ -417,24 +421,124 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
             "ambiguity_issues",
         ]
     elif '"question_text": "string"' in prompt:
-        properties = {
-            "question_text": {"type": "string"},
-            "source_text": {"type": "string"},
-            "source_reference": {"type": "string"},
-            "mark_breakdown": {"type": "string"},
-            "indicative_content": {
-                "type": "array",
-                "items": {"type": "string"},
-            },
-            "mark_scheme": {"type": "array", "items": {"type": "string"}},
-            "graph_params": object_items,
-            "parts": {"type": "array", "items": object_items},
-        }
-        required = list(properties)
+        if "VERIFIED MARKING IS IMMUTABLE" in prompt:
+            part_count = _edexcel_part_count(prompt)
+            part = {
+                "type": "object",
+                "properties": {
+                    "label": {"type": "string", "maxLength": 16},
+                    "prompt": {"type": "string", "maxLength": 640},
+                },
+                "required": ["label", "prompt"],
+                "additionalProperties": False,
+            }
+            properties = {
+                "question_text": {"type": "string", "maxLength": 900},
+                "graph_params": object_items,
+                "parts": {
+                    "type": "array",
+                    "items": part,
+                    "minItems": part_count,
+                    "maxItems": part_count,
+                },
+            }
+            required = list(properties)
+        else:
+            option = {
+                "type": "object",
+                "properties": {
+                    "label": {"type": "string", "maxLength": 8},
+                    "text": {"type": "string", "maxLength": 240},
+                },
+                "required": ["label", "text"],
+                "additionalProperties": False,
+            }
+            part = {
+                "type": "object",
+                "properties": {
+                    "label": {"type": "string", "maxLength": 16},
+                    "prompt": {"type": "string", "maxLength": 800},
+                    "mark_breakdown": {"type": "string", "maxLength": 160},
+                    "mark_scheme": {
+                        "type": "array",
+                        "items": {"type": "string", "maxLength": 320},
+                        "maxItems": 10,
+                    },
+                    "indicative_content": {
+                        "type": "array",
+                        "items": {"type": "string", "maxLength": 320},
+                        "maxItems": 10,
+                    },
+                    "options": {"type": "array", "items": option, "maxItems": 4},
+                    "correct_option": {"type": "string", "maxLength": 8},
+                },
+                "required": [
+                    "label",
+                    "prompt",
+                    "mark_breakdown",
+                    "mark_scheme",
+                    "indicative_content",
+                    "options",
+                    "correct_option",
+                ],
+                "additionalProperties": False,
+            }
+            properties = {
+                "question_text": {"type": "string", "maxLength": 1200},
+                "source_text": {"type": "string", "maxLength": 2400},
+                "source_reference": {"type": "string", "maxLength": 80},
+                "mark_breakdown": {"type": "string", "maxLength": 160},
+                "indicative_content": {
+                    "type": "array",
+                    "items": {"type": "string", "maxLength": 320},
+                    "maxItems": 10,
+                },
+                "mark_scheme": {
+                    "type": "array",
+                    "items": {"type": "string", "maxLength": 320},
+                    "maxItems": 10,
+                },
+                "graph_params": object_items,
+                "parts": {"type": "array", "items": part, "maxItems": 6},
+            }
+            required = list(properties)
     elif '"stem": "string"' in prompt and '"parts": [' in prompt:
+        compact = "VERIFIED MARKING IS IMMUTABLE" in prompt
+        part_properties = {
+            "label": {"type": "string", "maxLength": 16},
+            "prompt": {"type": "string", "maxLength": 800},
+        }
+        if not compact:
+            part_properties.update(
+                {
+                    "marking_points": {
+                        "type": "array",
+                        "items": {"type": "string", "maxLength": 320},
+                        "maxItems": 8,
+                    },
+                    "accept": text_list,
+                    "reject": text_list,
+                }
+            )
+        part = {
+            "type": "object",
+            "properties": part_properties,
+            "required": list(part_properties),
+            "additionalProperties": False,
+        }
+        part_count = (
+            0
+            if "Do not repeat, rewrite or answer the parts" in prompt
+            else (_aqa_cs_part_count(prompt) if compact else 8)
+        )
         properties = {
-            "stem": {"type": "string"},
-            "parts": {"type": "array", "items": object_items},
+            "stem": {"type": "string", "maxLength": 1000},
+            "parts": {
+                "type": "array",
+                "items": part,
+                "minItems": part_count if compact else 0,
+                "maxItems": part_count,
+            },
         }
         required = ["stem", "parts"]
     else:
@@ -464,18 +568,60 @@ def _prompt_item_count(prompt: str) -> int:
     return min(6, max(1, count))
 
 
+def _edexcel_part_count(prompt: str) -> int:
+    parts_line = re.search(r"^Parts:\s*(.+)$", prompt, flags=re.MULTILINE)
+    if parts_line is None or parts_line.group(1).strip().casefold() == "none":
+        return 0
+    return min(
+        6,
+        len(re.findall(r"\([a-z]\)\s+\d+\s+marks?\b", parts_line.group(1), re.I)),
+    )
+
+
+def _aqa_cs_part_count(prompt: str) -> int:
+    return min(8, len(re.findall(r"^- Part\s+[^:]+:", prompt, re.MULTILINE)))
+
+
 def _ollama_output_budget(schema: dict[str, object]) -> int:
     required = set(schema.get("required", []))
     if "questions" in required:
         count = _schema_array_count(schema, "questions")
+        properties = schema.get("properties")
+        questions = (
+            properties.get("questions") if isinstance(properties, dict) else None
+        )
+        items = questions.get("items") if isinstance(questions, dict) else None
+        item_properties = (
+            items.get("properties") if isinstance(items, dict) else None
+        )
+        mark_scheme = (
+            item_properties.get("mark_scheme")
+            if isinstance(item_properties, dict)
+            else None
+        )
+        if isinstance(mark_scheme, dict) and mark_scheme.get("maxItems") == 0:
+            return min(1024, 256 + 256 * count)
         return min(4096, 1536 + 768 * count)
     if "reviews" in required:
         count = _schema_array_count(schema, "reviews")
         return min(2048, 512 + 256 * count)
     if "question_text" in required:
-        return 4096
+        if "mark_scheme" not in required and "source_text" not in required:
+            return 384
+        return 1536
     if "parts" in required:
-        return 3072
+        properties = schema.get("properties")
+        parts = properties.get("parts") if isinstance(properties, dict) else None
+        if isinstance(parts, dict) and parts.get("maxItems") == 0:
+            return 96
+        if isinstance(parts, dict):
+            items = parts.get("items")
+            item_properties = items.get("properties") if isinstance(items, dict) else None
+            if isinstance(item_properties, dict) and "marking_points" not in item_properties:
+                return 384
+        return 1024
+    if "approved" in required:
+        return 640
     return 1536
 
 

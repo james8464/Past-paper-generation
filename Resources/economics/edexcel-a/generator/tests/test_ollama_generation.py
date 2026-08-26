@@ -10,7 +10,9 @@ from Backend.Core.assessment_checkpoints import (
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.ollama_client import (
     _clean_prompt,
+    _merge_question_text,
     _merge_source_text,
+    _validate_ai_question,
     generate_questions_with_ollama,
 )
 from pastpapergen.paper_configs import load_builtin_paper_config
@@ -141,8 +143,8 @@ def _new_question(*, command: str, marks: int, reference: str) -> str:
         )
     if marks == 15:
         return (
-            f"{prefix}discuss the likely effects of a demerger on workers, "
-            "consumers and the firm's long-run costs."
+            f"{prefix}discuss how a demerger may affect workers, consumers "
+            "and long-run costs."
         )
     if marks == 25:
         return (
@@ -158,7 +160,7 @@ def _paper(seed: int = 5):
     return syllabus, build_paper_blueprint(config, syllabus, seed=seed)
 
 
-def test_generation_replaces_every_draft_and_runs_review() -> None:
+def test_generation_reviews_fixed_stimuli_and_reauthors_extended_questions() -> None:
     syllabus, blueprint = _paper()
     events: list[str] = []
 
@@ -178,9 +180,15 @@ def test_generation_replaces_every_draft_and_runs_review() -> None:
         candidate_text = " ".join(
             [candidate.prompt, *(part.prompt for part in candidate.parts)]
         )
-        assert candidate_text != original_text
+        if original.section == "A" and original.stimulus_kind:
+            assert candidate == original
+        else:
+            assert candidate_text != original_text
         assert candidate.marks == original.marks
         assert candidate.topic_id == original.topic_id
+        assert [part.prompt for part in candidate.parts] == [
+            part.prompt for part in original.parts
+        ]
     assert events[0].startswith("Generating question 1/12: 1 ")
     assert events[-1].startswith("Generated and reviewed question 12/12: 8 ")
 
@@ -221,8 +229,61 @@ def test_generation_resumes_family_questions_from_checkpoint(
     assert resumed == generated
 
 
+def test_resume_validation_rejects_changed_verified_marking_data() -> None:
+    _syllabus, blueprint = _paper(seed=26080122)
+    question = blueprint.questions[7]
+    stale = question.model_copy(
+        update={"mark_scheme": question.mark_scheme[:10]}
+    )
+
+    with pytest.raises(ValueError, match="verified assessment data"):
+        _validate_ai_question(question, stale)
+
+
+def test_generated_stem_cannot_exceed_reference_word_budget() -> None:
+    _syllabus, blueprint = _paper(seed=26080122)
+    question = blueprint.questions[7]
+    verbose = question.model_copy(
+        update={
+            "prompt": question.prompt
+            + " with additional unnecessary wording that changes the page rhythm"
+        }
+    )
+
+    with pytest.raises(ValueError, match="stem word budget"):
+        _validate_ai_question(question, verbose)
+
+
+def test_generated_stem_preserves_required_specification_scope() -> None:
+    _syllabus, blueprint = _paper(seed=26080122)
+    question = blueprint.questions[6]
+    narrowed = question.model_copy(
+        update={
+            "prompt": "Examine two conflicts between profit maximisation and revenue maximisation objectives."
+        }
+    )
+
+    with pytest.raises(ValueError, match="required scope term"):
+        _validate_ai_question(question, narrowed)
+
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    paper_two = build_paper_blueprint(
+        load_builtin_paper_config("paper_2"), syllabus, seed=26080123
+    )
+    policy_question = paper_two.questions[8]
+    broadened = policy_question.model_copy(
+        update={
+            "prompt": "With reference to Extract C, discuss the likely effectiveness of supply-side policies."
+        }
+    )
+    with pytest.raises(ValueError, match="training, childcare and infrastructure"):
+        _validate_ai_question(policy_question, broadened)
+
+
 def test_generation_rejects_unchanged_template_fallback() -> None:
-    syllabus, blueprint = _paper()
+    syllabus, full_blueprint = _paper()
+    question = next(question for question in full_blueprint.questions if not question.parts)
+    blueprint = full_blueprint.model_copy(update={"questions": [question]})
 
     with pytest.raises(ValueError, match="only a paraphrase"):
         generate_questions_with_ollama(EmptyClient(), blueprint, syllabus)
@@ -237,6 +298,229 @@ def test_generation_rejects_failed_second_pass_review() -> None:
             blueprint,
             syllabus,
         )
+
+
+def test_local_generation_retries_only_the_rejected_question() -> None:
+    syllabus, full_blueprint = _paper()
+    question = next(
+        question for question in full_blueprint.questions if not question.parts
+    )
+    blueprint = full_blueprint.model_copy(
+        update={"questions": [question]}
+    )
+
+    class FlakyClient(BlueprintAwareClient):
+        supports_parallel_generation = False
+
+        def __init__(self) -> None:
+            self.authoring_calls = 0
+
+        def generate_json(self, prompt: str) -> dict[str, object]:
+            if "second-pass UK A-level assessment editor" in prompt:
+                return super().generate_json(prompt)
+            self.authoring_calls += 1
+            if self.authoring_calls == 1:
+                return {}
+            return super().generate_json(prompt)
+
+    client = FlakyClient()
+    generated = generate_questions_with_ollama(
+        client,
+        blueprint,
+        syllabus,
+    )
+
+    assert client.authoring_calls == 2
+    assert generated.questions[0].prompt != blueprint.questions[0].prompt
+
+
+def test_local_generation_stops_before_queued_question_after_failure() -> None:
+    syllabus, full_blueprint = _paper()
+    questions = [
+        question for question in full_blueprint.questions if not question.parts
+    ][:2]
+    blueprint = full_blueprint.model_copy(
+        update={"questions": questions}
+    )
+
+    class RejectingLocalClient(EmptyClient):
+        supports_parallel_generation = False
+
+        def __init__(self) -> None:
+            self.authoring_calls = 0
+
+        def generate_json(self, prompt: str) -> dict[str, object]:
+            if "second-pass UK A-level assessment editor" in prompt:
+                return {
+                    "approved": False,
+                    "factual_issues": ["Seeded fallback remains invalid"],
+                    "marking_issues": [],
+                    "source_issues": [],
+                    "difficulty_issues": [],
+                    "ambiguity_issues": [],
+                }
+            self.authoring_calls += 1
+            return {}
+
+    client = RejectingLocalClient()
+    with pytest.raises(ValueError, match="failed after 3 reviewed attempts"):
+        generate_questions_with_ollama(client, blueprint, syllabus)
+
+    assert client.authoring_calls == 3
+
+
+def test_local_paper_three_uses_reviewed_seeded_fallback_after_paraphrases() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    full_blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_3"), syllabus, seed=26080124
+    )
+    question = full_blueprint.questions[0]
+    blueprint = full_blueprint.model_copy(update={"questions": [question]})
+
+    class ParaphrasingLocalClient(BlueprintAwareClient):
+        supports_parallel_generation = False
+
+        def __init__(self) -> None:
+            self.authoring_calls = 0
+
+        def generate_json(self, prompt: str) -> dict[str, object]:
+            if "second-pass UK A-level assessment editor" in prompt:
+                return super().generate_json(prompt)
+            self.authoring_calls += 1
+            return {"question_text": question.prompt, "parts": []}
+
+    client = ParaphrasingLocalClient()
+    generated = generate_questions_with_ollama(client, blueprint, syllabus)
+
+    assert client.authoring_calls == 3
+    assert generated.questions == [question]
+
+
+def test_local_paper_one_uses_reviewed_source_bound_fallback_after_paraphrases() -> None:
+    syllabus, full_blueprint = _paper(seed=26080122)
+    question = full_blueprint.questions[5]
+    blueprint = full_blueprint.model_copy(update={"questions": [question]})
+
+    class ParaphrasingLocalClient(BlueprintAwareClient):
+        supports_parallel_generation = False
+
+        def __init__(self) -> None:
+            self.authoring_calls = 0
+
+        def generate_json(self, prompt: str) -> dict[str, object]:
+            if "second-pass UK A-level assessment editor" in prompt:
+                return super().generate_json(prompt)
+            self.authoring_calls += 1
+            return {"question_text": question.prompt}
+
+    client = ParaphrasingLocalClient()
+    generated = generate_questions_with_ollama(client, blueprint, syllabus)
+
+    assert client.authoring_calls == 3
+    assert generated.questions == [question]
+
+
+def test_local_generation_uses_reviewed_fallback_after_scope_drift() -> None:
+    syllabus, full_blueprint = _paper(seed=26080122)
+    question = full_blueprint.questions[6]
+    blueprint = full_blueprint.model_copy(update={"questions": [question]})
+
+    class ScopeDriftClient(BlueprintAwareClient):
+        supports_parallel_generation = False
+
+        def __init__(self) -> None:
+            self.authoring_calls = 0
+
+        def generate_json(self, prompt: str) -> dict[str, object]:
+            if "second-pass UK A-level assessment editor" in prompt:
+                return super().generate_json(prompt)
+            self.authoring_calls += 1
+            return {
+                "question_text": "Examine two conflicts between profit maximisation and revenue maximisation objectives."
+            }
+
+    client = ScopeDriftClient()
+    generated = generate_questions_with_ollama(client, blueprint, syllabus)
+
+    assert client.authoring_calls == 3
+    assert generated.questions == [question]
+
+
+def test_multipart_question_keeps_verified_stem_and_source_separate() -> None:
+    _syllabus, blueprint = _paper()
+    question = blueprint.questions[0]
+
+    merged = _merge_question_text(
+        question,
+        "A newly established bicycle repair market faces changing input costs.",
+    )
+
+    assert merged == question.prompt
+    assert "bicycle repair market" not in merged
+
+    fallback = _merge_question_text(question, question.prompt)
+    assert fallback == question.prompt
+
+
+def test_exact_data_chart_is_reviewed_without_model_rewriting() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    full_blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_2"), syllabus, seed=26080123
+    )
+    question = full_blueprint.questions[0]
+    blueprint = full_blueprint.model_copy(update={"questions": [question]})
+
+    class ReviewClient:
+        supports_parallel_generation = False
+        authoring_calls = 0
+
+        def generate_json(self, prompt: str) -> dict[str, object]:
+            if "second-pass UK A-level assessment editor" not in prompt:
+                self.authoring_calls += 1
+            return {
+                "approved": True,
+                "factual_issues": [],
+                "marking_issues": [],
+                "source_issues": [],
+                "difficulty_issues": [],
+                "ambiguity_issues": [],
+            }
+
+    client = ReviewClient()
+    generated = generate_questions_with_ollama(client, blueprint, syllabus)
+
+    assert client.authoring_calls == 0
+    assert generated.questions == [question]
+    assert generated.questions[0].graph_params == question.graph_params
+
+
+def test_section_a_context_and_stem_remain_bound_to_rendered_source() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_1"), syllabus, seed=26080122
+    )
+    question = blueprint.questions[3]
+
+    assert _merge_question_text(question, "A consumer has £30 available.") == question.prompt
+    assert _merge_source_text(
+        "A consumer has £30 available.", question.source_text, question
+    ) == question.source_text
+
+
+def test_generated_paper_three_prompt_restores_numbered_source_reference() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_3"), syllabus, seed=26080124
+    )
+    question = blueprint.questions[0]
+
+    merged = _merge_question_text(
+        question,
+        "With reference to the diagram and Extract A, explain why energy supply may respond slowly to a price rise.",
+    )
+
+    assert "Figure 1 and Extract A" in merged
+    assert "the diagram" not in merged
 
 
 def test_source_length_guard_keeps_layout_safe_fallback() -> None:

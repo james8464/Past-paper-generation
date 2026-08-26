@@ -1,6 +1,6 @@
 # Implementation and fidelity report
 
-Date: 22 August 2026
+Date: 26 August 2026
 
 ## Release outcome
 
@@ -55,7 +55,7 @@ backend defaults, standalone CLIs, tests, and in-app guide.
 
 ## Automated and visual evidence
 
-- Python regression suite: **330 passed, 2 skipped**. The five warnings are
+- Python regression suite: **521 passed, 2 skipped**. The five warnings are
   upstream PyMuPDF SWIG deprecations.
 - Complete deterministic layout matrix: **18/18 papers passed**, producing all
   43 declared PDFs plus assessment packages and provenance manifests.
@@ -66,8 +66,12 @@ backend defaults, standalone CLIs, tests, and in-app guide.
 - App Store preflight passed: privacy and entitlement plists are valid, the
   sandboxed Release app builds, app and inherited helper signatures verify,
   hardened runtime is present, and no reference-corpus file is bundled.
-- Registered/masked schema-v3 fidelity audit: **67.8% aggregate** across all 36
+- Registered/masked schema-v3 fidelity audit: **68.9% aggregate** across all 36
   primary question-paper and mark-scheme roles.
+- The complete live Ollama matrix passed **18/18 papers** with `gemma4:12b`.
+  Every question paper, mark scheme, supporting file, assessment package and
+  provenance manifest passed its release contracts. Interrupted runs resumed
+  from independently validated item checkpoints.
 - All six overview sheets were inspected after the final OCR Economics Paper 3
   pagination work. Page roles, response grids, charts, marks, answer-space
   rhythm, and footer geometry align with the chosen official references.
@@ -92,25 +96,27 @@ backend defaults, standalone CLIs, tests, and in-app guide.
   26-page mark scheme were rendered and inspected at page level.
 - OCR Economics Paper 3 now starts Section B on page 16 and preserves the
   reference-like extract/question/continuation sequence through page 25.
+- OCR Computer Science marking tables now use a release-tested 9.5-point body
+  scale instead of 7.1 points. This raised live mark-scheme similarity from
+  65.4%/66.6% to 67.7%/68.1% without overlapping the densest preview seed.
+- Edexcel continuation rules now match the reference's measured solid rule
+  darkness and thickness; the old lightly dashed lines disappeared when
+  rasterised at normal viewing resolution.
 - The largest systematic raster difference is intentional neutral branding.
   Remaining variation is concentrated in independently authored text density,
   question-specific diagrams, and font-metric differences.
 
 The reproducible development evidence is ignored by Git and lives under
-`tmp/pdfs/layout-publication-2026-08-22/`. Its `matrix-report.json`,
+`tmp/pdfs/live-full-matrix-final-2026-08-23/`. Its `matrix-report.json`,
 `fidelity-report.json`, and `visual-review/` directory contain the detailed
 results and side-by-side sheets.
 
 ## Live-model evidence boundary
 
-The local `gemma4:12b` benchmark passed focused structured Accounting items,
-outperformed the tested 9B alternative on exact schema/cardinality, and passed
-the final representative Accounting Paper 1 run. The exact evidence package is
-under `tmp/pdfs/live-publication-contract-final-2026-08-22/`; it records 15
-model-authored items, six `verified-contract` calculation items, all expected
-roles, and the rendered PDFs. A full 18-paper live run remains a separate,
-resumable qualification matrix because a local model run takes many minutes per
-paper and depends on the exact model build and machine state. A failed run is
+The local `gemma4:12b` benchmark passed the full 18-paper qualification matrix,
+not only focused or preview generation. The exact evidence package is under
+`tmp/pdfs/live-full-matrix-final-2026-08-23/`; it records the provider, model,
+seed, duration, required roles and outcome for each paper. A failed run is
 recorded as failed; preview/layout evidence is never relabelled as live-model
 success.
 

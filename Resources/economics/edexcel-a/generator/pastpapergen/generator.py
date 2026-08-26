@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import random
+import re
 
 from pastpapergen.models import (
     MultipleChoiceOption,
@@ -79,13 +80,36 @@ def build_paper_blueprint(
                 rng,
                 section_stimulus_kinds,
             )
-            section_stimulus_kinds.add(stimulus_kind)
             available_topics = _topics_suitable_for_template(available_topics, part_commands, stimulus_kind)
             topic = source_context_topic or _choose_topic(rng, available_topics, excluded_ids) or SyllabusTopic(id="unknown", theme=1, title="Economics", points=[])
+            stimulus_kind = _specialize_stimulus_kind(stimulus_kind, topic.id)
+            section_stimulus_kinds.add(stimulus_kind)
             command_word = section.command_words[index]
             number = _question_number(config.id, section.name, absolute_question_number, index)
-            parts = _build_parts(part_marks, part_commands, topic.title, stimulus_kind, rng)
-            source_reference = _source_reference(config.id, section.name, index)
+            parts = _build_parts(
+                part_marks,
+                part_commands,
+                topic,
+                stimulus_kind,
+                rng,
+            )
+            source_reference = _source_reference(
+                config.id, section.name, index, stimulus_kind
+            )
+            question_mark_scheme, question_indicative_content = _question_guidance(
+                config.id,
+                marks,
+                command_word,
+                topic,
+                case_title,
+                source_reference,
+            )
+            question_mark_scheme = _complete_extended_guidance(
+                question_mark_scheme, marks, command_word
+            )
+            question_indicative_content = _complete_extended_guidance(
+                question_indicative_content, marks, command_word
+            )
             if group_index is not None:
                 choice_group_topics.setdefault(group_index, set()).add(topic.id)
             section_topic_ids.add(topic.id)
@@ -122,10 +146,29 @@ def build_paper_blueprint(
                         paper_id=config.id,
                         case_title=case_title,
                         source_variant=paper_3_source_variants.get(section.name, 0),
+                        source_reference=source_reference,
                     ),
-                    mark_breakdown=_mark_breakdown(marks, parts),
-                    mark_scheme=_mark_scheme(command_word, marks, topic.title),
-                    indicative_content=_indicative_content(topic.id, topic.title, topic.points),
+                    mark_breakdown=_mark_breakdown(marks, parts, stimulus_kind),
+                    mark_scheme=(
+                        [
+                            point
+                            for part in parts
+                            for point in part.mark_scheme
+                            if point.strip()
+                        ]
+                        if parts
+                        else question_mark_scheme
+                    ),
+                    indicative_content=(
+                        [
+                            point
+                            for part in parts
+                            for point in (part.indicative_content or part.mark_scheme)
+                            if point.strip()
+                        ]
+                        if parts
+                        else question_indicative_content
+                    ),
                 )
             )
         absolute_question_number += _section_question_increment(config.id, section.name)
@@ -148,12 +191,74 @@ def _choice_lookup(choice_groups: list[list[int]]) -> dict[int, int]:
     return lookup
 
 
+def _complete_extended_guidance(
+    points: list[str],
+    marks: int,
+    command_word: str,
+) -> list[str]:
+    """Add standardisation metadata omitted by a bespoke indicative scheme."""
+
+    if marks < 8 or command_word.casefold() not in {
+        "analyse",
+        "analyze",
+        "assess",
+        "advise",
+        "discuss",
+        "evaluate",
+        "justify",
+    }:
+        return points
+
+    completed = list(points)
+    combined = " ".join(points).casefold()
+    additions: list[str] = []
+    if not any(term in combined for term in ("level 1", "level 2", "best fit")):
+        top_floor = max(2, math.ceil(marks * 0.75))
+        middle_floor = max(2, math.ceil(marks * 0.4))
+        additions.append(
+            "Levels-based best fit: "
+            f"Level 3 ({top_floor}–{marks}) precise, sustained and supported; "
+            f"Level 2 ({middle_floor}–{top_floor - 1}) accurate with some development but uneven judgement; "
+            f"Level 1 (1–{middle_floor - 1}) isolated or limited; Level 0 (0) no rewardable material."
+        )
+    if not re.search(
+        r"\baccept\b.*\b(?:equivalent|alternative|valid)\b|\bvalid route\b|\bequivalent valid\b",
+        combined,
+    ):
+        additions.append("Accept an equivalent valid contextual analytical route.")
+    if not any(
+        term in combined
+        for term in ("do not", "reject", "no credit", "not award", "only award")
+    ):
+        additions.append(
+            "Do not award duplicate developed points or top-level credit without context."
+        )
+    if additions:
+        completed.append(" ".join(additions))
+    return completed
+
+
 def _choose_topic(rng: random.Random, topics, excluded_ids: set[str]):
     available = [topic for topic in topics if topic.id not in excluded_ids]
     if not available and not topics:
         return None
     pool = available or topics
     return rng.choice(pool)
+
+
+def _specialize_stimulus_kind(stimulus_kind: str, topic_id: str) -> str:
+    if topic_id == "3.3" and stimulus_kind in {"data_table", "line_graph"}:
+        return "shutdown_cost_table"
+    if topic_id == "4.2" and stimulus_kind == "line_graph":
+        return "inequality_line_chart"
+    if topic_id == "4.5" and stimulus_kind == "context_extract":
+        return "state_policy_context"
+    if stimulus_kind != "data_table":
+        return stimulus_kind
+    return {
+        "1.2.2": "ped_data_table",
+        "1.2.3": "pes_data_table",
+    }.get(topic_id, stimulus_kind)
 
 
 def _theme_plan(config: PaperConfig, rng: random.Random) -> dict[str, list[int]]:
@@ -443,6 +548,7 @@ _CALCULATION_STIMULI = {
     "household_savings_line_chart",
     "investment_line_chart",
     "current_account_line_chart",
+    "inequality_line_chart",
     "gdp_growth_bar_chart",
     "unemployment_rate_bar_chart",
     "terms_of_trade_index_chart",
@@ -461,6 +567,7 @@ _STIMULUS_TOPIC_IDS = {
     "marginal_utility_table": {"1.1"},
     "opportunity_cost_ppc_table": {"1.1"},
     "business_objective_context": {"3.2"},
+    "state_policy_context": {"4.5"},
     "xed_context": {"1.2.2"},
     "imperfect_information_context": {"1.3"},
     "minimum_wage_context": {"3.5"},
@@ -469,6 +576,7 @@ _STIMULUS_TOPIC_IDS = {
     "financial_market_context": {"4.4"},
     "development_data_table": {"2.1", "4.2", "4.3"},
     "current_account_line_chart": {"4.1", "2.6"},
+    "inequality_line_chart": {"4.2"},
     "gdp_growth_bar_chart": {"2.1", "2.5"},
     "terms_of_trade_index_chart": {"4.1"},
     "exchange_rate_index_chart": {"4.1"},
@@ -521,11 +629,11 @@ _STIMULUS_TOPIC_IDS = {
 
 _STIMULUS_PART_PROMPTS = {
     "ped_data_table": {
-        (None, "explain", 4): "With reference to the data above, explain one likely reason for the difference in price elasticity of demand.",
+        (None, "explain", 4): "Using the age-group coefficients above, explain why demand from 16–18-year-old consumers may be more price responsive than demand from adults.",
         (None, "calculate", 4): "Calculate the likely percentage change in quantity demanded following the price change. You are advised to show your working.",
     },
     "pes_data_table": {
-        (None, "explain", 4): "With reference to the data above, explain one likely reason for the difference in price elasticity of supply.",
+        (None, "explain", 4): "Using the regional coefficients above, explain why rural producers may be more able to expand supply after a price rise than urban producers.",
         (None, "calculate", 4): "Using the PES value for the rural market, calculate the percentage increase in price if quantity supplied increases by 3.6%. You are advised to show your working.",
     },
     "market_share_bar_chart": {
@@ -569,6 +677,7 @@ _STIMULUS_PART_PROMPTS = {
         (None, "calculate", 4): "Using the CPI index, calculate the percentage increase between 2021 and 2023. You are advised to show your working.",
     },
     "cost_revenue_graph": {
+        (None, "draw", 4): "For an imperfectly competitive firm facing a downward-sloping AR curve, draw and label a cost and revenue diagram showing the distinct profit-maximising and revenue-maximising output levels.",
         (None, "calculate", 4): "Calculate the change in total supernormal profit if the firm changes output. You are advised to show your working.",
         (None, "explain", 4): "Explain one likely reason why the firm may choose the output shown in the diagram.",
     },
@@ -612,14 +721,26 @@ _STIMULUS_PART_PROMPTS = {
     "financial_market_context": {
         (None, "explain", 4): "With reference to the information above, explain what is meant by market rigging.",
     },
+    "state_policy_context": {
+        (None, "explain", 4): "With reference to the information above, explain one likely effect of the increase in preventive healthcare spending on the economy's productive capacity.",
+    },
+    "trade_cycle": {
+        (None, "explain", 4): "With reference to Figure 1, explain one likely effect of a movement from the trough into recovery on cyclical unemployment.",
+    },
     "development_data_table": {
         (None, "calculate", 2): "Using the data provided, calculate the difference in HDI between Morocco and Pakistan. You are advised to show your working.",
         (None, "calculate", 4): "Using the data provided, calculate the difference in GDP per capita between Morocco and Pakistan. You are advised to show your working.",
         (None, "explain", 4): "With reference to the data provided, explain one limitation of using GDP to compare living standards between countries.",
     },
     "current_account_line_chart": {
-        (None, "calculate", 2): "Calculate the percentage point change in the current account balance over the period shown. You are advised to show your working.",
+        (None, "calculate", 2): "Using the Year 1 and Year 10 values, calculate the increase in the size of the current account deficit, in percentage points. Treat the deficit size as its distance below zero (for example, −3.8% has a deficit size of 3.8%). Show your working.",
+        (2, "explain", 2): "Explain one likely reason why the current account deficit was wider in Year 10 than in Year 1.",
         (None, "explain", 4): "With reference to the chart above, explain one likely reason for the change in the current account balance.",
+    },
+    "inequality_line_chart": {
+        (None, "calculate", 2): "Using Figure 1, calculate the fall in the Gini coefficient from Year 1 to Year 5. Show your working.",
+        (None, "calculate", 4): "Using Figure 1, calculate the percentage fall in the Gini coefficient from Year 1 to Year 5. Show your working and give your answer to one decimal place.",
+        (None, "explain", 4): "With reference to Figure 1, explain one likely effect on living standards of the fall in the Gini coefficient from 0.42 to 0.33.",
     },
     "gdp_growth_bar_chart": {
         (None, "calculate", 2): "Calculate the percentage point change in GDP growth over the period shown. You are advised to show your working.",
@@ -640,7 +761,7 @@ _STIMULUS_PART_PROMPTS = {
         (None, "calculate", 4): "Calculate the total increase in aggregate demand from an increase in government spending. You are advised to show your working.",
     },
     "tariff_context": {
-        (None, "explain", 4): "Explain the likely impact of this tariff on the market for the imported good.",
+        (None, "explain", 4): "With reference to the information above, explain the likely effect of the tariff on the UK price of imported solar panels and on domestic panel output.",
     },
     "exchange_rate_index_chart": {
         (None, "calculate", 2): "Calculate the percentage change in the exchange rate index over the period shown. You are advised to show your working.",
@@ -668,12 +789,12 @@ _STIMULUS_PART_PROMPTS = {
 
 
 _STIMULUS_MCQ_PROMPTS = {
-    "ped_data_table": "Which one of the following is most likely to be correct? Refer to the table above.",
-    "pes_data_table": "Which one of the following is the percentage increase in price implied by the data?",
+    "ped_data_table": "Which one of the following statements is correct? Refer to the table above.",
+    "pes_data_table": "Using the rural market PES, which one of the following is the percentage increase in price if quantity supplied rises by 3.6%?",
     "market_share_bar_chart": "Which one of the following is the value of the largest firm's market share?",
     "marginal_utility_table": "Which one of the following is most likely to be correct? Refer to the table above.",
     "opportunity_cost_ppc_table": "Which one of the following is the opportunity cost of increasing capital goods output from 20 to 40 units? Refer to the table above.",
-    "cost_revenue_graph": "Refer to the previous diagram. Which one of the following is most likely after a fall in demand?",
+    "cost_revenue_graph": "For the imperfectly competitive firm in the previous diagram, which one of the following occurs when demand falls and its demand curve shifts downwards?",
     "business_objective_context": "Which one of the following is most likely to occur if the firm changes to sales maximisation?",
     "xed_context": "Which one of the following is the most likely impact if the price of the substitute falls?",
     "imperfect_information_context": "Which one of the following is the most likely explanation of this behaviour?",
@@ -681,13 +802,16 @@ _STIMULUS_MCQ_PROMPTS = {
     "household_savings_line_chart": "With reference to the chart above, which one of the following is correct?",
     "investment_line_chart": "Which one of the following is the percentage point fall in investment between the two dates shown?",
     "financial_market_context": "Which one of the following is a role of financial markets?",
+    "state_policy_context": "Which one of the following is the opportunity cost of the additional healthcare spending?",
+    "trade_cycle": "With reference to Figure 1, which one of the following is most likely during the recovery phase?",
     "development_data_table": "Which one of the following is correct? Refer to the table above.",
     "current_account_line_chart": "With reference to the chart above, which one of the following is correct?",
+    "inequality_line_chart": "With reference to Figure 1, which one of the following is correct?",
     "gdp_growth_bar_chart": "With reference to the chart above, which one of the following is correct?",
     "terms_of_trade_index_chart": "Which one of the following is the percentage change in the terms of trade?",
     "labour_inactivity_context": "Which one of the following would be the most likely result of an increase in labour force inactivity?",
     "multiplier_context": "Which one of the following points on the trade cycle diagram above illustrates a boom?",
-    "tariff_context": "Which one of the following is likely to give a country a comparative advantage in production?",
+    "tariff_context": "Which one of the following is most likely after the tariff is imposed?",
     "shutdown_cost_table": "Which one of the following is most likely to be correct? Refer to the table above.",
     "wage_rate_table": "Which one of the following is the percentage change in hourly wages? Refer to the table above.",
     "contestability_barrier_table": "Which one of the following is most likely to increase contestability? Refer to the table above.",
@@ -700,10 +824,10 @@ _STIMULUS_MCQ_PROMPTS = {
 
 _STIMULUS_MCQ_OPTIONS = {
     "ped_data_table": [
-        ("A", "Demand is more price elastic for the younger age group shown"),
-        ("B", "Demand is perfectly price inelastic for both age groups"),
-        ("C", "A rise in price always increases total revenue for both groups"),
-        ("D", "Adults are more responsive to price changes than students"),
+        ("A", "The 16–18 group has more price elastic demand because |−0.7| > |−0.4|"),
+        ("B", "Both age groups have unit price elasticity of demand"),
+        ("C", "Both age groups have perfectly price-inelastic demand"),
+        ("D", "The adult group is more responsive to price changes than the 16–18 group"),
     ],
     "pes_data_table": [
         ("A", "2%"),
@@ -730,7 +854,7 @@ _STIMULUS_MCQ_OPTIONS = {
         ("D", "85 consumer goods"),
     ],
     "cost_revenue_graph": [
-        ("A", "Average revenue and marginal revenue both fall"),
+        ("A", "The AR and MR curves both shift downwards"),
         ("B", "Average revenue rises and marginal revenue stays the same"),
         ("C", "Average revenue falls and marginal revenue increases"),
         ("D", "Average revenue increases and marginal revenue falls"),
@@ -783,11 +907,29 @@ _STIMULUS_MCQ_OPTIONS = {
         ("C", "Both countries have identical living standards"),
         ("D", "The country with lower GDP per capita has no economic activity"),
     ],
+    "state_policy_context": [
+        ("A", "The next-best public programme that cannot now be funded"),
+        ("B", "The full £12 billion healthcare budget"),
+        ("C", "Every benefit received by patients"),
+        ("D", "The tax revenue collected to finance the policy"),
+    ],
+    "trade_cycle": [
+        ("A", "Real GDP rises and cyclical unemployment is likely to fall"),
+        ("B", "Real GDP falls and cyclical unemployment is likely to rise"),
+        ("C", "The economy must remain permanently at the trough"),
+        ("D", "The recovery phase eliminates every form of unemployment"),
+    ],
     "current_account_line_chart": [
-        ("A", "The current account deficit narrowed during part of the period shown"),
-        ("B", "The current account was always in surplus"),
-        ("C", "The deficit was unchanged in every year"),
-        ("D", "Exports must have been zero throughout the period"),
+        ("A", "The current account was in deficit in every year shown"),
+        ("B", "The current account was in surplus in the final year shown"),
+        ("C", "The current account deficit widened in every year shown"),
+        ("D", "The current account balance was positive in every year shown"),
+    ],
+    "inequality_line_chart": [
+        ("A", "The Gini coefficient fell by 0.09 over the period shown"),
+        ("B", "The Gini coefficient rose by 0.09 over the period shown"),
+        ("C", "The Gini coefficient remained at 0.42"),
+        ("D", "The chart proves that absolute poverty was eliminated"),
     ],
     "gdp_growth_bar_chart": [
         ("A", "Real GDP growth was negative in one of the quarters shown"),
@@ -814,10 +956,10 @@ _STIMULUS_MCQ_OPTIONS = {
         ("D", "D"),
     ],
     "tariff_context": [
-        ("A", "Higher productivity of workers"),
-        ("B", "Higher corporation tax"),
-        ("C", "Higher unit labour costs"),
-        ("D", "Lower investment in capital goods"),
+        ("A", "UK panel prices rise and imports are likely to fall"),
+        ("B", "UK panel prices fall by the full value of the tariff"),
+        ("C", "Domestic panel output must fall to zero"),
+        ("D", "The tariff removes every opportunity cost from production"),
     ],
     "shutdown_cost_table": [
         ("A", "The firm covers its variable costs but makes a loss overall"),
@@ -889,7 +1031,7 @@ _TOPIC_MCQ_OPTIONS = {
     "rational decision making": [
         ("A", "Consumers may compare marginal benefit with marginal cost when making choices"),
         ("B", "Sunk costs should always determine current decisions"),
-        ("C", "Rational consumers must have perfect information"),
+        ("C", "A utility-maximising consumer buys every unit they can afford regardless of marginal benefit"),
         ("D", "Opportunity cost is zero when a consumer makes a choice"),
     ],
     "market failure": [
@@ -990,9 +1132,9 @@ _SECTION_B_PROMPTS = {
     },
     "business objectives": {
         5: "With reference to {reference}, explain one reason why a firm may pursue objectives other than profit maximisation.",
-        8: "Examine two possible conflicts between profit and non-profit objectives.",
+        8: "With reference to {reference}, examine two possible conflicts between profit and non-profit objectives.",
         10: "With reference to {reference}, assess whether regulation is likely to change business objectives.",
-        12: "Discuss whether firms are likely to prioritise sales growth over profit maximisation.",
+        12: "With reference to {reference}, discuss whether regulated water companies should prioritise profit maximisation over service quality and environmental objectives.",
         15: "With reference to {reference}, discuss the likely effects of firms pursuing objectives other than profit maximisation.",
     },
     "measures of economic performance": {
@@ -1008,6 +1150,13 @@ _SECTION_B_PROMPTS = {
         10: "With reference to {reference}, assess whether government spending is likely to increase aggregate demand.",
         12: "Discuss whether a fall in consumer confidence is likely to reduce real output.",
         15: "With reference to {reference}, discuss the likely macroeconomic effects of a fall in aggregate demand.",
+    },
+    "macroeconomic objectives and policies": {
+        5: "With reference to {reference}, explain one likely effect of the higher Bank Rate on inflation.",
+        8: "With reference to {reference}, examine two reasons why expansionary fiscal policy may create conflicts between macroeconomic objectives.",
+        10: "With reference to {reference}, assess whether supply-side policies can reduce conflicts between economic growth, inflation and unemployment.",
+        12: "With reference to {reference}, discuss the likely effectiveness of training, childcare and infrastructure policies in improving growth without increasing inflation.",
+        15: "With reference to {reference}, discuss the likely effects of tighter anti-inflation policy on firms and consumers.",
     },
     "international economics": {
         5: "With reference to {reference}, explain one reason why the UK may run a trade deficit in goods.",
@@ -1061,7 +1210,7 @@ def _essay_question_prompt(topic_title: str) -> str:
     if topic == "supply":
         return "Evaluate the likely microeconomic effects of rising production costs in a market of your choice."
     if topic == "price determination":
-        return "Evaluate the likely effects of a change in equilibrium price on consumers and producers."
+        return "Evaluate the likely effects of a change in equilibrium price on consumer and producer surplus."
     if topic == "market failure":
         return "Evaluate whether government intervention is likely to correct market failure."
     if topic == "government intervention":
@@ -1094,14 +1243,22 @@ def _essay_question_prompt(topic_title: str) -> str:
 def _build_parts(
     part_marks: list[int],
     part_commands: list[str],
-    topic_title: str,
+    topic: SyllabusTopic,
     stimulus_kind: str,
     rng: random.Random,
 ) -> list[QuestionPart]:
     if not part_marks:
         return []
     return [
-        _build_part(chr(97 + part_index), marks, command, topic_title, stimulus_kind, part_index, rng)
+        _build_part(
+            chr(97 + part_index),
+            marks,
+            command,
+            topic,
+            stimulus_kind,
+            part_index,
+            rng,
+        )
         for part_index, (marks, command) in enumerate(zip(part_marks, part_commands, strict=True))
     ]
 
@@ -1110,21 +1267,23 @@ def _build_part(
     label: str,
     marks: int,
     command: str,
-    topic_title: str,
+    topic: SyllabusTopic,
     stimulus_kind: str,
     part_index: int,
     rng: random.Random,
 ) -> QuestionPart:
+    topic_title = topic.title
     if command == "mcq":
         options = _mcq_options(topic_title, stimulus_kind)
-        correct_label = options[0].label
+        correct_text = options[0].text
         if len(options) >= 2:
             labels = [opt.label for opt in options]
             rng.shuffle(options)
             for idx, opt in enumerate(options):
                 opt.label = labels[idx]
-                if idx == 0:
-                    correct_label = opt.label
+        correct_label = next(
+            option.label for option in options if option.text == correct_text
+        )
         return QuestionPart(
             label=label,
             marks=marks,
@@ -1134,22 +1293,647 @@ def _build_part(
             correct_option=correct_label,
             mark_breakdown="1 mark",
             mark_scheme=[
-                f"The only correct answer is {correct_label}",
-                *[
-                    f"{option.label} is not correct because it does not accurately describe {topic_title.lower()}."
+                f"The only correct answer is {correct_label}: "
+                + next(
+                    option.text
                     for option in options
-                    if option.label != correct_label
-                ],
+                    if option.label == correct_label
+                ),
+                "Do not award a mark for any other option.",
             ],
         )
+    mark_scheme, indicative_content = _part_guidance(
+        command,
+        marks,
+        topic,
+        stimulus_kind,
+        part_index,
+    )
+    mark_breakdown = (
+        "AO1 1, AO2 1, AO3 2"
+        if (
+            stimulus_kind
+            in {
+                "ped_data_table",
+                "pes_data_table",
+                "inequality_line_chart",
+                "state_policy_context",
+                "trade_cycle",
+                "tariff_context",
+            }
+            or (stimulus_kind == "context_extract" and topic.id == "1.2.1")
+            or stimulus_kind == "shutdown_cost_table"
+        )
+        and command == "explain"
+        and marks == 4
+        else _part_mark_breakdown(marks, command)
+    )
     return QuestionPart(
         label=label,
         marks=marks,
         command_word=command,
         prompt=_part_prompt(command, marks, topic_title, stimulus_kind, part_index),
-        mark_breakdown=_part_mark_breakdown(marks, command),
-        mark_scheme=_mark_scheme(command, marks, topic_title),
-        indicative_content=_indicative_content("", topic_title, []),
+        mark_breakdown=mark_breakdown,
+        mark_scheme=mark_scheme,
+        indicative_content=indicative_content,
+    )
+
+
+def _part_guidance(
+    command: str,
+    marks: int,
+    topic: SyllabusTopic,
+    stimulus_kind: str,
+    part_index: int,
+) -> tuple[list[str], list[str]]:
+    if stimulus_kind == "ped_data_table" and command == "explain" and marks == 4:
+        points = [
+            "AO1 (1 mark): Defines price elasticity of demand as the responsiveness of quantity demanded to a change in price.",
+            "AO2 (1 mark): Uses the table difference: PED is -0.7 for the younger group and -0.4 for adults.",
+            "AO3 (1 mark): Explains one relevant reason, such as younger consumers having more close substitutes or spending a larger share of income on the product. Accept any other valid determinant of PED applied to the 16–18 group.",
+            "AO3 (1 mark): Links that reason to a larger proportional response in quantity demanded and therefore |−0.7| > |−0.4|. Accept 'greater' or 'higher' when it clearly refers to absolute PED magnitude, and accept any clear causal link to greater responsiveness; the exact phrase 'proportional response' is not required.",
+        ]
+        return points, points
+    if stimulus_kind == "pes_data_table" and command == "explain" and marks == 4:
+        points = [
+            "AO1 (1 mark): Defines price elasticity of supply as the responsiveness of quantity supplied to a change in price.",
+            "AO2 (1 mark): Uses one relevant difference from the table and source, such as urban PES of 0.5 with limited spare capacity, contracts or delayed input access.",
+            "AO3 (1 mark): Explains how the chosen constraint prevents or delays producers increasing output after a price rise.",
+            "AO3 (1 mark): Links the smaller proportional output response to the lower PES shown for the urban market.",
+        ]
+        return points, points
+    if stimulus_kind == "current_account_line_chart":
+        if command == "calculate" and marks == 2:
+            points = [
+                "1 mark for method: correctly find the difference between the absolute values of Year 10 and Year 1, for example |−4.3| − |−3.8| = 4.3 − 3.8.",
+                "1 mark for an increase in deficit size of 0.5 percentage points. The final answer must state a positive size/widening of 0.5.",
+            ]
+            return points, points
+        if command == "explain" and marks == 2 and part_index == 2:
+            points = [
+                "1 mark for identifying one valid factor or proximate change from the source: higher domestic income/stronger import spending, lower overseas demand/weaker export revenue, or weaker non-price competitiveness. Only one route is required.",
+                "1 development mark for completing the chosen chain: higher domestic income raises imports; lower overseas demand reduces exports; or weaker non-price competitiveness makes foreign consumers buy fewer exports and/or domestic consumers buy more imports. As net exports (X − M) fall, the current account balance becomes more negative. A named factor without this link receives only the first mark.",
+            ]
+            return points, points
+    if stimulus_kind == "inequality_line_chart" and command == "explain" and marks == 4:
+        points = [
+            "AO1 (1 mark): States that a lower Gini coefficient indicates a more equal distribution of income, with 0 representing complete equality and 1 complete inequality.",
+            "AO2 (1 mark): Uses Figure 1 to identify that the Gini coefficient fell from 0.42 to 0.33, a decrease of 0.09.",
+            "AO3 (1 mark): Explains that, if the fall reflects higher disposable incomes for lower-income households, their ability to afford essential goods and services may increase.",
+            "AO3 (1 mark): Develops the chain to a likely improvement in material living standards; accept a reasoned limitation that the Gini coefficient does not show absolute income, so living standards need not rise if all incomes fall.",
+        ]
+        return points, points
+    if stimulus_kind == "inequality_line_chart" and command == "calculate":
+        if marks == 2:
+            points = [
+                "1 mark for method: 0.42 − 0.33.",
+                "1 mark for a fall of 0.09 in the Gini coefficient.",
+            ]
+            return points, points
+    if stimulus_kind == "state_policy_context" and command == "explain" and marks == 4:
+        points = [
+            "AO1 (1 mark): Defines productive capacity as the maximum sustainable output the economy can produce with its available resources and technology.",
+            "AO2 (1 mark): Uses the source evidence that preventive healthcare spending rises by £12 billion and is expected to reduce working days lost through illness.",
+            "AO3 (1 mark): Explains that healthier workers may be absent less often and supply more effective labour, increasing labour productivity.",
+            "AO3 (1 mark): Develops the chain to a rightward shift of long-run aggregate supply and a rise in the economy's productive capacity; accept that the effect depends on the healthcare programme being effective.",
+        ]
+        return points, points
+    if stimulus_kind == "trade_cycle" and topic.id == "2.1" and command == "explain" and marks == 4:
+        points = [
+            "AO1 (1 mark): Defines cyclical unemployment as unemployment caused by deficient aggregate demand during a downturn in the economic cycle.",
+            "AO2 (1 mark): Applies Figure 1 by identifying that real output rises as the economy moves from the trough into the recovery phase.",
+            "AO3 (1 mark): Explains that rising aggregate demand leads firms to increase production and derived demand for labour.",
+            "AO3 (1 mark): Develops the chain: firms recruit or retain more workers, so cyclical unemployment is likely to fall, although structural unemployment may remain.",
+        ]
+        return points, points
+    if stimulus_kind == "tariff_context" and command == "explain" and marks == 4:
+        points = [
+            "AO1 (1 mark): Explains that a tariff is a tax on imports that raises the landed marginal cost of the imported product.",
+            "AO2 (1 mark): Uses the source: the £20 tariff raises the pre-tariff world price of £100 per panel to as much as £120, before other costs.",
+            "AO3 (1 mark): Explains that the higher UK price contracts quantity demanded and makes domestic panels relatively more competitive, so imports are likely to fall.",
+            "AO3 (1 mark): Develops the chain to an expansion of domestic supply/output from 40,000 panels, although the exact price and quantity effects depend on demand and supply elasticities and overseas exporters absorbing part of the tariff.",
+        ]
+        return points, points
+        if marks == 4:
+            points = [
+                "1 mark for identifying the fall: 0.42 − 0.33 = 0.09.",
+                "1 mark for dividing by the initial value: 0.09 ÷ 0.42.",
+                "1 mark for multiplying by 100.",
+                "1 mark for 21.4% (accept 21.43% or a correctly rounded equivalent).",
+            ]
+            return points, points
+    if stimulus_kind == "cost_revenue_graph" and command == "draw" and marks == 4:
+        points = [
+            "AO1 (1 mark): In Figure 1, draws and labels a downward-sloping AR curve and an MR curve below it on axes labelled costs/revenues and output.",
+            "AO1 (1 mark): Draws and labels appropriate MC and AC curves.",
+            "AO2 (1 mark): Labels the profit-maximising output Qp on the output axis directly below MC = MR.",
+            "AO2 (1 mark): Labels the distinct revenue-maximising output Qr directly below MR = 0, with Qr to the right of Qp.",
+        ]
+        return points, points
+    if stimulus_kind == "context_extract" and topic.id == "1.2.1" and command == "explain" and marks == 4:
+        points = [
+            "AO1 (1 mark): Explains that a rational consumer compares the marginal benefit of the next unit with its marginal cost, including opportunity cost.",
+            "AO2 (1 mark): Uses the source values: the first ticket has marginal benefit £24 and price £18, giving positive marginal net benefit of £6.",
+            "AO3 (1 mark): Concludes that the first ticket is purchased because its marginal benefit exceeds its marginal cost.",
+            "AO3 (1 mark): Explains that the second ticket is not purchased because its marginal benefit is only £10, below its £18 marginal cost, so stopping after one ticket maximises utility at the margin.",
+        ]
+        return points, points
+    if stimulus_kind == "shutdown_cost_table" and command == "explain" and marks == 4:
+        points = [
+            "AO1 (1 mark): States the short-run shutdown rule: continue producing when price/average revenue is at least average variable cost, even if price is below average cost.",
+            "AO2 (1 mark): Uses the table: price £18 exceeds AVC £14 but is below AC £22 at output 500.",
+            "AO3 (1 mark): Calculates or explains the £4 contribution per unit towards fixed cost, equal to £2,000 across 500 units.",
+            "AO3 (1 mark): Concludes that the firm should continue in the short run because its £2,000 operating loss is smaller than the £4,000 fixed-cost loss from shutting down.",
+        ]
+        return points, points
+    return (
+        _mark_scheme(command, marks, topic.title),
+        _indicative_content(topic.id, topic.title, topic.points),
+    )
+
+
+def _adapt_paper_three_case_guidance(
+    points: list[str],
+    case_title: str,
+    source_reference: str,
+    topic_id: str,
+) -> list[str]:
+    if "healthcare" not in case_title.casefold():
+        return points
+    replacements = {
+        "Extract C": source_reference or "the extract",
+        "energy and utilities": "healthcare and pharmaceuticals",
+        "energy-sector": "healthcare-sector",
+        "energy capital": "healthcare capital",
+        "energy prices": "medicine prices",
+        "energy supply": "healthcare supply",
+        "energy infrastructure": "healthcare infrastructure",
+        "energy market": "healthcare market",
+        "imported-energy": "imported-medicine",
+        "additional generation or network capacity": "additional clinic, laboratory or medicine-production capacity",
+        "cheaper or more reliable energy": "more productive or reliable healthcare provision",
+        "14%": "13%",
+    }
+    if topic_id == "2.3":
+        replacements.update({"changed by 5%": "changed by 16%", "11%": "4%"})
+    adapted: list[str] = []
+    for point in points:
+        for original, replacement in replacements.items():
+            point = point.replace(original, replacement)
+        adapted.append(point)
+    return adapted
+
+
+def _paper_two_policy_guidance(marks: int) -> list[str]:
+    guidance = {
+        5: [
+            "AO1 (1 mark): Identifies Bank Rate as the policy interest rate set by the Bank of England. Accept 'interest rates' where the Extract A/Bank of England context makes the meaning unambiguous; no reference to saving is required.",
+            "AO2 (1 mark): Uses Extract A evidence that Bank Rate reached 5.25% in August 2023 in response to inflation.",
+            "AO3 (1 mark): Explains that the higher Bank Rate raises borrowing or debt-servicing costs for households or firms.",
+            "AO3 (1 mark): Develops the same route: interest-sensitive consumption or investment falls, reducing aggregate demand.",
+            "AO3 (1 mark): Completes that single chain: weaker aggregate demand reduces demand-pull inflation. Award full marks for this one developed route; no second transmission mechanism is required.",
+        ],
+        8: [
+            "Factor 1 — AO1 (1 mark): Identifies that expansionary fiscal policy raises aggregate demand through higher government spending or lower taxation.",
+            "Factor 1 — AO2 (1 mark): Applies the evidence that fiscal support can sustain demand during a downturn.",
+            "Factor 1 — AO3 (1 mark): Analyses that the multiplier can raise real GDP and reduce cyclical unemployment.",
+            "Factor 1 — AO3 (1 mark): Examines the conflict that, near full capacity, stronger demand may create demand-pull inflation.",
+            "Factor 2 — AO1 (1 mark): Explains that fiscal expansion may increase government borrowing and import demand.",
+            "Factor 2 — AO2 (1 mark): Applies the evidence that expansionary policy may increase borrowing or worsen external balance.",
+            "Factor 2 — AO3 (1 mark): Analyses that higher income raises imports, reducing net exports and potentially widening the current-account deficit.",
+            "Factor 2 — AO3 (1 mark): Examines the limit: spare capacity, targeted domestic spending and low import leakages can reduce inflation and external-balance conflicts.",
+        ],
+        10: [
+            "AO1 (1 mark): Defines supply-side policy as action intended to improve productivity, incentives, labour mobility or productive capacity.",
+            "AO1 (1 mark): Explains that a rightward LRAS shift permits higher potential output with less inflationary pressure.",
+            "AO2 (1 mark): Applies the evidence on training and childcare support increasing skills and labour-force participation.",
+            "AO2 (1 mark): Applies the evidence on infrastructure investment, implementation cost or time lags.",
+            "AO3 (1 mark): Analyses training raising labour productivity and occupational mobility, lowering unit labour cost and structural unemployment.",
+            "AO3 (1 mark): Analyses childcare raising effective labour supply, easing recruitment constraints and wage-driven inflation.",
+            "AO3 (1 mark): Develops infrastructure investment to lower firms' transport or digital costs and shift LRAS right.",
+            "AO4 (1 mark): Evaluates long time lags and uncertainty over whether training matches vacancies or infrastructure is used efficiently.",
+            "AO4 (1 mark): Evaluates short-run fiscal cost and AD effects, which can raise inflation before supply capacity expands.",
+            "AO4 (1 mark): Concludes that well-targeted policies can reduce the conflict in the long run, but cannot remove short-run trade-offs or demand-side shocks.",
+        ],
+        12: [
+            "AO1 (1 mark): Explains how training increases human capital and labour productivity.",
+            "AO1 (1 mark): Explains how childcare and infrastructure can increase labour supply and economy-wide productive capacity.",
+            "AO2 (1 mark): Uses Extract C evidence on training and childcare support.",
+            "AO2 (1 mark): Uses Extract C evidence on infrastructure, cost, financing or implementation lags.",
+            "AO3 Route A (1 mark): Analyses better skills raising output per worker and reducing structural unemployment.",
+            "AO3 Route A (1 mark): Develops the chain to lower unit cost, a rightward LRAS shift and non-inflationary growth.",
+            "AO3 Route B (1 mark): Analyses childcare increasing participation and easing labour shortages.",
+            "AO3 Route B (1 mark): Develops infrastructure reducing business costs, crowding in investment and raising potential output.",
+            "AO4 (1 mark): Evaluates time lags, regional mismatch and the quality of training or infrastructure.",
+            "AO4 (1 mark): Evaluates opportunity cost, taxation or borrowing and possible crowding out.",
+            "AO4 (1 mark): Evaluates that strong AD may still create short-run inflation before capacity comes on stream.",
+            "AO4 (1 mark): Reaches a supported judgement comparing the three policies and identifying targeting, spare capacity and time horizon as decisive.",
+        ],
+        15: [
+            "AO1 (1 mark): Explains tighter anti-inflation policy through higher interest rates, lower government spending or higher taxation.",
+            "AO1 (1 mark): Explains the monetary transmission mechanism from financing costs to consumption, investment and aggregate demand.",
+            "AO1 (1 mark): Distinguishes demand-pull from cost-push inflation and identifies the short-run output-inflation trade-off.",
+            "AO2 (1 mark): Uses Extract D evidence that policy makers face conflicts between inflation, growth and unemployment.",
+            "AO2 (1 mark): Applies the extract's evidence about borrowing costs, confidence, household disposable income or distributional effects.",
+            "AO2 (1 mark): Applies uncertainty over time lags and whether inflation originates from demand or supply.",
+            "AO3 (1 mark): Analyses higher interest costs reducing firms' investment, inventories and interest-sensitive expansion.",
+            "AO3 (1 mark): Analyses weaker consumption reducing firms' sales, output, labour demand and cyclical employment.",
+            "AO3 (1 mark): Analyses effects on consumers: mortgage or credit payments rise while savers may receive higher returns.",
+            "AO3 (1 mark): Develops lower AD to weaker price pressure and, through expectations or sterling, potentially lower inflation.",
+            "AO4 (1 mark): Evaluates sectoral differences between indebted firms/households and cash-rich savers or exporters.",
+            "AO4 (1 mark): Evaluates that policy is less effective against imported energy or other cost-push inflation.",
+            "AO4 (1 mark): Evaluates long and variable lags and the risk of overtightening into recession.",
+            "AO4 (1 mark): Evaluates credibility: anchored expectations may reduce the output cost of restoring price stability.",
+            "AO4 (1 mark): Reaches a supported judgement on the net effects for firms and consumers, conditional on inflation's cause, indebtedness and the time horizon.",
+        ],
+    }
+    return guidance.get(marks, [])
+
+
+def _paper_one_section_c_guidance(topic_id: str) -> list[str]:
+    if topic_id == "1.4":
+        return [
+            "AO1 (1 mark): Defines an indirect tax as a tax on expenditure that raises firms' marginal and average costs.",
+            "AO1 (1 mark): Explains a negative externality and the divergence between marginal social cost and marginal private cost.",
+            "AO1 (1 mark): Identifies the socially efficient output where marginal social benefit equals marginal social cost.",
+            "AO1 (1 mark): Explains government failure and opportunity cost when intervention is poorly designed.",
+            "AO2 (1 mark): Applies the source estimate of a £0.12 external clean-up cost per disposable cup.",
+            "AO2 (1 mark): Applies the proposed £0.10 per-cup tax and the estimated PED of −0.6.",
+            "AO2 (1 mark): Uses the source alternatives: a reusable-cup standard, information campaign or clean-technology subsidy.",
+            "AO2 (1 mark): Applies the distributional evidence that takeaway purchases form a larger budget share for some low-income consumers.",
+            "AO3 Tax (1 mark): Analyses the tax shifting supply upward/left by the amount charged and increasing market price.",
+            "AO3 Tax (1 mark): Develops the price mechanism to lower quantity demanded and produced, reducing external clean-up costs.",
+            "AO3 Tax (1 mark): Analyses tax revenue financing clean-up, monitoring or lower distortionary taxes elsewhere.",
+            "AO3 Tax (1 mark): Analyses incidence using relative elasticities and the source's inelastic-demand estimate.",
+            "AO3 Alternative (1 mark): Analyses a reusable standard directly limiting harmful packaging when consumer response to price is weak.",
+            "AO3 Alternative (1 mark): Analyses information improving consumer decisions where the external cost is poorly understood.",
+            "AO3 Alternative (1 mark): Analyses a clean-technology subsidy lowering the private cost of substitutes and encouraging innovation.",
+            "AO3 Comparison (1 mark): Compares how tax preserves choice and reveals abatement incentives while regulation gives greater quantity certainty.",
+            "AO4 (1 mark): Evaluates calibration: the £0.10 tax is below the estimated £0.12 external marginal cost and damage varies by location.",
+            "AO4 (1 mark): Evaluates inelastic PED: quantity may fall little while consumers bear a large price increase.",
+            "AO4 (1 mark): Evaluates equity and whether targeted compensation could protect low-income consumers without removing the incentive.",
+            "AO4 (1 mark): Evaluates administrative, monitoring and avoidance costs for the tax and reusable standard.",
+            "AO4 (1 mark): Evaluates dynamic effects: a predictable tax can induce packaging innovation, but subsidy may accelerate it more directly.",
+            "AO4 (1 mark): Evaluates unintended effects such as substitution into another material with its own external costs.",
+            "AO4 (1 mark): Compares effectiveness against regulation using the regulator's information and enforcement capacity.",
+            "AO4 (1 mark): Selects a proportionate policy mix, rather than assuming any single instrument removes the market failure completely.",
+            "AO4 (1 mark): Reaches a supported judgement on whether taxation is most effective, naming the decisive elasticity, tax accuracy and time horizon.",
+        ]
+    if topic_id == "1.2.4":
+        return [
+            "AO1 (1 mark): Defines equilibrium price as the price at which quantity demanded equals quantity supplied.",
+            "AO1 (1 mark): Explains consumer surplus as willingness to pay above market price and producer surplus as price above minimum willingness to supply.",
+            "AO1 (1 mark): Explains how a leftward supply shift raises equilibrium price and lowers equilibrium quantity, other things equal.",
+            "AO1 (1 mark): Distinguishes short-run from long-run demand and supply responsiveness.",
+            "AO2 (1 mark): Applies the source's 12% fall in domestic tomato supply after poor weather.",
+            "AO2 (1 mark): Uses the price increase from £2.40 to £3.00 per kilogram and the reported fall in purchases.",
+            "AO2 (1 mark): Applies evidence that energy and greenhouse costs rose for producers.",
+            "AO2 (1 mark): Applies evidence on low-income households, imports or growers able to invest in protected production.",
+            "AO3 Consumers (1 mark): Analyses the higher price contracting quantity demanded and reducing consumer surplus.",
+            "AO3 Consumers (1 mark): Develops the real-income effect, which is larger where tomatoes take a greater budget share.",
+            "AO3 Consumers (1 mark): Analyses substitution towards alternatives, depending on availability and cross elasticity of demand.",
+            "AO3 Consumers (1 mark): Analyses potential quality, nutrition or distributional consequences of reduced consumption.",
+            "AO3 Producers (1 mark): Analyses that the higher market price can increase revenue per unit and producer surplus for firms still able to supply.",
+            "AO3 Producers (1 mark): Develops that cost increases and lost crop volume may nevertheless reduce profit for badly affected growers.",
+            "AO3 Producers (1 mark): Analyses the price signal encouraging imports, greenhouse investment or future entry and supply.",
+            "AO3 Market (1 mark): Develops the long-run supply response towards a lower price and higher quantity than the short-run outcome.",
+            "AO4 indicative route: evaluate how PED, PES and the availability of substitutes change the size and duration of consumer- and producer-surplus effects.",
+            "AO4 indicative route: compare producer cost/exposure differences; a developed qualitative comparison between weather-damaged and protected growers is sufficient and need not repeat the £3.00 price.",
+            "AO4 indicative route: evaluate imports, investment and biological production lags as market-adjustment mechanisms over time.",
+            "AO4 indicative route: evaluate distribution and significance using household budget shares and the source evidence.",
+            "AO4 Level 3 (7–9): sustained, source-based evaluation; weighs at least two relevant conditions; reaches a supported overall judgement that addresses both consumer and producer surplus. Separate mini-conclusions are not required.",
+            "AO4 Level 2 (4–6): some developed evaluation and a conclusion, but comparison, context or coverage of one surplus measure is uneven.",
+            "AO4 Level 1 (1–3): limited evaluative comment or an unsupported judgement; analysis repeated without qualification remains AO3.",
+            "AO4 Level 0 (0): no evaluative content. Apply best fit holistically; the indicative routes are examples, not a checklist.",
+        ]
+    return []
+
+
+def _paper_two_section_c_guidance(topic_id: str) -> list[str]:
+    if topic_id == "4.1":
+        return [
+            "AO1 (1 mark): Defines protectionism as policies that restrict imports, including tariffs, quotas and non-tariff barriers.",
+            "AO1 (1 mark): Explains comparative advantage and gains from specialisation and trade.",
+            "AO1 (1 mark): Explains tariff effects on domestic price, demand, supply and imports.",
+            "AO1 (1 mark): Identifies trade creation/diversion, retaliation and government failure.",
+            "AO2 (1 mark): Uses the source's £900 world e-bike price and proposed 20% tariff.",
+            "AO2 (1 mark): Uses domestic output of 50,000 and imports of 150,000 bicycles.",
+            "AO2 (1 mark): Applies the 1,200 jobs at risk and domestic spare capacity.",
+            "AO2 (1 mark): Applies the evidence on imported components and possible retaliation against UK exports.",
+            "AO3 (1 mark): Analyses the tariff raising import price and expanding domestic output and employment.",
+            "AO3 (1 mark): Develops reduced import competition to higher producer surplus and tariff revenue.",
+            "AO3 (1 mark): Analyses higher prices and lower choice reducing consumer surplus.",
+            "AO3 (1 mark): Develops imported-component costs to weaker competitiveness for UK assemblers.",
+            "AO3 (1 mark): Analyses retaliation reducing UK exports, AD, output and employment.",
+            "AO3 (1 mark): Develops resource misallocation when protected firms lack comparative advantage.",
+            "AO3 (1 mark): Analyses a temporary infant-industry route through investment and learning economies.",
+            "AO3 (1 mark): Develops macro effects on inflation, current account, exchange rate or long-run productivity.",
+            "AO4 strand 1 — up to 2 marks: elasticities and incidence; develop how responsiveness determines price, import and welfare effects.",
+            "AO4 strand 2 — up to 2 marks: retaliation and component dependence; develop the net employment/current-account effect.",
+            "AO4 strand 3 — up to 2 marks: time and dynamic efficiency; compare temporary adjustment support with permanent protection.",
+            "AO4 strand 4 — up to 2 marks: distribution and policy alternatives; compare targeted training/innovation support with the tariff.",
+            "AO4 judgement — 1 mark: reaches an economy-wide conclusion that weighs consumers, producers and government and identifies the decisive elasticity, retaliation risk and time horizon.",
+        ]
+    if topic_id == "4.2":
+        return [
+            "AO1 (1 mark): Distinguishes income from wealth inequality and absolute from relative poverty.",
+            "AO1 (1 mark): Explains the Gini coefficient and Lorenz curve as measures of income distribution.",
+            "AO1 (1 mark): Explains progressive taxation, transfers, minimum wages and supply-side policies.",
+            "AO1 (1 mark): Identifies equity-efficiency trade-offs, incentives and government failure.",
+            "AO2 (1 mark): Uses the source Gini coefficient of 0.39.",
+            "AO2 (1 mark): Uses the bottom quintile's 8% income share and high food-bank demand.",
+            "AO2 (1 mark): Applies the proposed higher top marginal tax rate and targeted transfers.",
+            "AO2 (1 mark): Applies childcare, training and wealth-tax alternatives or administrative evidence.",
+            "AO3 (1 mark): Analyses progressive tax and transfers increasing lower-income disposable income and reducing relative poverty.",
+            "AO3 (1 mark): Develops redistribution to consumption, living standards and the multiplier.",
+            "AO3 (1 mark): Analyses higher marginal rates affecting labour supply, enterprise, avoidance and migration.",
+            "AO3 (1 mark): Develops targeted childcare/training to participation, skills, earnings and pre-tax inequality.",
+            "AO3 (1 mark): Analyses a minimum wage raising earnings but potentially changing employment where labour demand is elastic.",
+            "AO3 (1 mark): Analyses wealth taxation addressing asset inequality but creating valuation and avoidance problems.",
+            "AO3 (1 mark): Develops macro effects through AD, productivity, fiscal cost and LRAS.",
+            "AO3 (1 mark): Compares short-run redistribution with longer-run equality of opportunity.",
+            "AO4 strand 1 — up to 2 marks: incentives and elasticities; develop the scale of labour-supply, employment or avoidance responses.",
+            "AO4 strand 2 — up to 2 marks: targeting and administration; develop take-up, errors, stigma, valuation or fiscal cost.",
+            "AO4 strand 3 — up to 2 marks: time horizon; compare immediate disposable-income effects with slower human-capital effects.",
+            "AO4 strand 4 — up to 2 marks: policy mix and macro context; develop effects on growth, inflation, productivity and public finances.",
+            "AO4 judgement — 1 mark: selects a justified policy mix and states whether success means a lower Gini coefficient, less poverty or greater opportunity, with a decisive condition and time horizon.",
+        ]
+    return []
+
+
+def _question_guidance(
+    paper_id: str,
+    marks: int,
+    command: str,
+    topic: SyllabusTopic,
+    case_title: str = "",
+    source_reference: str = "",
+) -> tuple[list[str], list[str]]:
+    if paper_id == "paper_1" and marks == 25:
+        points = _paper_one_section_c_guidance(topic.id)
+        if points:
+            return points, points
+    if paper_id == "paper_2" and marks == 25:
+        points = _paper_two_section_c_guidance(topic.id)
+        if points:
+            return points, points
+    if paper_id == "paper_2" and topic.id == "2.6":
+        points = _paper_two_policy_guidance(marks)
+        if points:
+            return points, points
+    if paper_id == "paper_1" and topic.id == "3.2" and command == "explain" and marks == 5:
+        points = [
+            "AO1 (1 mark): Identifies a valid alternative objective, such as satisficing, employee welfare, service quality, sales revenue or long-term survival.",
+            "AO2 (1 mark): Applies the reason to Extract A, for example John Lewis is employee-owned and emphasises worker interests, service quality or long-term reputation.",
+            "AO3 (1 mark): Explains that employee-owners may value pay, job security or working conditions as well as the financial return from profit.",
+            "AO3 (1 mark): Develops the chain: retaining staff or service quality can strengthen customer loyalty and the firm's long-term reputation, even when it reduces short-run profit.",
+            "AO3 (1 mark): Concludes that managers may therefore accept a satisfactory level of profit that still funds investment while balancing employee and customer objectives. Accept another coherent, source-applied reason.",
+        ]
+        return points, points
+    if paper_id == "paper_1" and topic.id == "3.2" and command == "examine" and marks == 8:
+        points = [
+            "Conflict 1 — AO1 (1 mark): Explains that retaining profit for investment can conflict with an objective to improve employee pay or working conditions.",
+            "Conflict 1 — AO2 (1 mark): Applies the supplied evidence: Amazon reinvested profit in logistics, cloud computing and new services while rapid expansion increased pressure on workers.",
+            "Conflict 1 — AO3 (1 mark): Analyses that higher wages or safer staffing raise costs and reduce retained profit available to finance expansion in the short run.",
+            "Conflict 1 — AO3 (1 mark): Examines the qualification that improved conditions may reduce staff turnover and raise productivity, supporting future profit rather than creating a permanent conflict.",
+            "Conflict 2 — AO1 (1 mark): Explains that maximising short-run profit can conflict with sales-growth or market-share objectives when expansion requires lower margins or additional expenditure.",
+            "Conflict 2 — AO2 (1 mark): Applies the supplied evidence: investment in logistics and new services was intended to strengthen market share, brand loyalty and future economies of scale.",
+            "Conflict 2 — AO3 (1 mark): Analyses that lower prices or higher capital spending can sacrifice current profit while attracting customers and increasing output.",
+            "Conflict 2 — AO3 (1 mark): Examines the qualification that economies of scale and loyalty may later reduce average cost and increase profit, so the extent and duration of the conflict depend on successful demand growth.",
+        ]
+        return points, points
+    if paper_id == "paper_1" and topic.id == "3.2" and command == "assess" and marks == 10:
+        points = [
+            "AO1 (1 mark): Explains that regulation changes firms' constraints and incentives through enforceable standards, monitoring, penalties or controls on prices and returns.",
+            "AO1 (1 mark): Distinguishes profit maximisation from non-profit objectives such as service quality, environmental performance and stakeholder welfare.",
+            "AO2 (1 mark): Applies the evidence that UK water companies were criticised over dividends, executive pay and environmental performance.",
+            "AO2 (1 mark): Applies the evidence that regulators and consumers want stronger service and pollution targets, while investors argue profit finances infrastructure.",
+            "AO3 (1 mark): Analyses that binding pollution standards and credible fines raise the expected cost of non-compliance, encouraging managers to prioritise environmental performance rather than distributions to owners.",
+            "AO3 (1 mark): Analyses that service-quality targets can redirect investment and management effort towards reliability, changing the operational objective even if long-run profit remains important.",
+            "AO3 (1 mark): Analyses the counter-route: if penalties are weak or monitoring is poor, paying a fine may cost less than compliance, so profit maximisation and dividend targets may remain dominant.",
+            "AO4 (1 mark): Assesses that stricter objectives may reduce short-run distributable profit but infrastructure investment can improve efficiency, service and long-run returns.",
+            "AO4 (1 mark): Assesses that the effect depends on regulatory design, enforcement certainty, allowed prices and whether shareholders tolerate lower short-run returns.",
+            "AO4 (1 mark): Reaches a supported judgement: effective, binding and monitored regulation is likely to change proximate objectives, but need not replace profit as the firm's ultimate long-run objective.",
+            "Level 3 (8–10): accurate knowledge, sustained use of Extract C, developed analysis and a supported contextual judgement.",
+            "Level 2 (4–7): generally accurate knowledge with some contextual analysis, but development or judgement is uneven.",
+            "Level 1 (1–3): isolated relevant points with limited development or use of Extract C.",
+            "Level 0 (0): no rewardable material.",
+            "Accept an equivalent valid analytical route when it is applied to Extract C and reaches a supported outcome.",
+            "Do not award the same developed point twice; a response that does not use Extract C cannot reach Level 3.",
+        ]
+        return points, points
+    if paper_id == "paper_1" and topic.id == "3.2" and command == "discuss" and marks == 12:
+        points = [
+            "AO1 (1 mark): Explains profit maximisation as producing where marginal revenue equals marginal cost, subject to regulatory constraints.",
+            "AO1 (1 mark): Explains stakeholder objectives such as service quality, environmental performance and consumer welfare.",
+            "AO2 (1 mark): Uses Extract C evidence about criticism of water-company dividends, executive pay and environmental performance.",
+            "AO2 (1 mark): Uses Extract C evidence that profit is needed to finance infrastructure and improve long-run performance.",
+            "AO3 Route A (1 mark): Analyses that prioritising profit can retain funds for maintenance and investment when external finance is costly.",
+            "AO3 Route A (1 mark): Develops the chain to improved network reliability, productivity and potentially lower long-run unit costs.",
+            "AO3 Route B (1 mark): Analyses that prioritising service and pollution targets redirects resources towards maintenance, treatment and compliance.",
+            "AO3 Route B (1 mark): Develops the chain to fewer leaks or pollution incidents, higher consumer welfare and lower third-party costs.",
+            "AO4 (1 mark): Evaluates that dividends or executive pay may reduce the credibility of claims that maximum profit is needed for investment.",
+            "AO4 (1 mark): Evaluates the risk that very low allowed returns deter private investment and worsen service quality over time.",
+            "AO4 (1 mark): Compares time horizons: stakeholder spending may reduce current profit but protect reputation and future revenue.",
+            "AO4 (1 mark): Reaches a supported judgement that the appropriate priority depends on binding standards, infrastructure needs and whether profits are reinvested rather than distributed.",
+        ]
+        return points, points
+    if paper_id == "paper_1" and topic.id == "3.2" and command == "discuss" and marks == 15:
+        points = [
+            "AO1 (1 mark): Defines satisficing as pursuing an acceptable profit while meeting other objectives rather than maximising profit.",
+            "AO1 (1 mark): Explains separation of ownership and control as a reason managers may pursue growth, status or lower-risk objectives.",
+            "AO1 (1 mark): Identifies stakeholder objectives including employee welfare, customer service, sustainability, sales growth and survival.",
+            "AO2 (1 mark): Applies Extract D evidence that managers may satisfice where ownership and control are separated.",
+            "AO2 (1 mark): Applies the extract's distinction between short-run costs and possible long-run gains from loyalty, retention or reputation.",
+            "AO2 (1 mark): Applies uncertainty over demand, finance or stakeholder response when judging the scale of effects.",
+            "AO3 (1 mark): Analyses how higher employee pay or better conditions raise cost and reduce short-run profit but may reduce turnover and raise productivity.",
+            "AO3 (1 mark): Analyses how service quality or sustainability spending can differentiate the firm, increase loyalty and strengthen long-run revenue.",
+            "AO3 (1 mark): Analyses how sales-growth objectives may require lower prices and higher capacity spending, increasing output but compressing margins.",
+            "AO3 (1 mark): Develops stakeholder effects for consumers, workers, owners and rival firms rather than treating the firm as a single interest.",
+            "AO4 (1 mark): Evaluates whether non-profit objectives complement rather than conflict with long-run profit through productivity and reputation.",
+            "AO4 (1 mark): Evaluates finance: weak profit may constrain investment, resilience and survival, particularly for a highly geared firm.",
+            "AO4 (1 mark): Evaluates market structure and competition, which determine whether higher stakeholder costs can be passed into prices.",
+            "AO4 (1 mark): Evaluates the time horizon and how owners monitor managers, including the risk of managerial self-interest.",
+            "AO4 (1 mark): Reaches a supported overall judgement on the net effects and identifies the decisive objective, stakeholder and time period from Extract D.",
+        ]
+        return points, points
+    if paper_id == "paper_3" and topic.id == "1.2.3" and marks == 5:
+        points = [
+            "AO1 (1 mark): Defines price elasticity of supply as the responsiveness of quantity supplied to a change in price.",
+            "AO2 (1 mark): Uses the 15% price change and 6% output change shown in Figure 1.",
+            "AO2 (1 mark): Uses Extract A evidence about capacity, contracts or delayed access to inputs.",
+            "AO3 (1 mark): Explains that the chosen constraint prevents production capacity or inputs expanding quickly after the 15% price rise.",
+            "AO3 (1 mark): Infers from the smaller proportional output response (6% compared with the 15% price rise), or calculates PES = 6% / 15% = 0.4, that supply is price inelastic in the short run. Do not require the calculation when the qualitative comparison is clear.",
+        ]
+        return points, points
+    if paper_id == "paper_3" and topic.id == "1.3" and marks == 5:
+        points = [
+            "AO1 (1 mark): Defines a negative production externality as an external cost imposed on third parties, so marginal social cost exceeds marginal private cost.",
+            "AO2 (1 mark): Uses Figure 3: market output is 117 million doses, compared with the estimated socially efficient output of 100 million doses where MSB = MSC.",
+            "AO2 (1 mark): Uses Extract D evidence that untreated chemical waste creates an estimated £6 external marginal water-treatment and health cost per dose that producers do not pay.",
+            "AO3 (1 mark): Explains that excluding the £6 third-party cost makes MPC lower than MSC, so the private market price understates the full social cost and encourages excess output.",
+            "AO3 (1 mark): Concludes explicitly that the 17 million doses between the 100 million social optimum and 117 million market output are overproduced, creating deadweight welfare loss because their marginal social cost exceeds their marginal social benefit.",
+        ]
+        return points, points
+    if paper_id == "paper_3" and topic.id == "3.1" and marks == 8:
+        points = [
+            "Factor 1 — AO1 (1 mark): Identifies a technical economy of scale and explains that it can lower long-run average cost (LRAC) as output increases.",
+            "Factor 1 — AO2 (1 mark): Uses Figure 2 evidence that capital spending increased by 5% in 2025.",
+            "Factor 1 — AO3 (1 mark): Explains that the new capital raises productivity and spreads fixed costs over more units, reducing cost per unit and LRAC.",
+            "Factor 1 — AO3 (1 mark): Examines the limit: if demand is insufficient to use the added capacity, fixed cost per unit may not fall, so the LRAC reduction is conditional.",
+            "Factor 2 — AO1 (1 mark): Identifies a purchasing economy of scale and links bulk buying to a reduction in LRAC.",
+            "Factor 2 — AO2 (1 mark): Uses Extract A evidence that long-term supply contracts reduced unit input costs by 4%.",
+            "Factor 2 — AO3 (1 mark): Explains that the contract discount reduces variable cost per unit as output grows, lowering LRAC.",
+            "Factor 2 — AO3 (1 mark): Examines the limit: rapid expansion may create coordination diseconomies that offset the contract saving, so LRAC may not fall overall.",
+        ]
+        return points, points
+    if paper_id == "paper_3" and topic.id == "1.3" and marks == 12:
+        points = [
+            "AO1 (1 mark): Defines a negative externality as an external cost imposed on a third party, so marginal social cost exceeds marginal private cost.",
+            "AO1 (1 mark): Explains that allocative efficiency occurs where marginal social benefit equals marginal social cost and total economic welfare is maximised.",
+            "AO2 (1 mark): Uses Extract B evidence that energy prices changed by 29% and represented a larger share of expenditure for some income groups.",
+            "AO2 (1 mark): Uses Extract B evidence about pollution costs, wider benefits from resilient shared networks, or compliance costs deterring entry.",
+            "AO3 Route A (1 mark): Analyses how an unpriced pollution cost gives MSC > MPC, causing private energy output to exceed the socially efficient quantity.",
+            "AO3 Route A (1 mark): Develops that overproduction chain to deadweight welfare loss; a correctly labelled external-cost diagram may support the analysis.",
+            "AO3 Route B (1 mark): Analyses resilient-network investment as a positive spillover where MSB > MPB because firms cannot capture every wider benefit; it need not be classified as a pure public good.",
+            "AO3 Route B (1 mark): Develops that chain to private investment below the socially efficient quantity and a deadweight loss from forgone net social benefits.",
+            "AO4 (1 mark): Examines whether the welfare loss is large by considering the size and valuation of the external cost or benefit.",
+            "AO4 (1 mark): Examines how demand and supply elasticities determine the change in quantity, incidence and resulting welfare effect.",
+            "AO4 (1 mark): Considers a counterargument, such as contracts, reputation, property rights or profitable innovation allowing firms to internalise some effects.",
+            "AO4 (1 mark): Reaches a supported judgement on the size of the overall welfare loss using Extract B. The 29% price change and its distributional effect may supplement, but must not replace, allocative-efficiency analysis.",
+            "Level 3 (9–12): accurate welfare theory, sustained use of Extract B, developed causal analysis, balanced qualification and a supported contextual judgement.",
+            "Level 2 (5–8): generally accurate theory with some context and at least one developed chain, but qualification or judgement is partial.",
+            "Level 1 (1–4): isolated knowledge or assertions with limited use of Extract B and little causal development.",
+            "Level 0 (0): no rewardable material.",
+            "Accept an equivalent valid welfare-analysis route when it uses Extract B and reaches a supported conclusion.",
+            "Do not award the same developed point twice; a response without relevant Extract B application cannot reach Level 3.",
+        ]
+        return points, points
+    if paper_id == "paper_3" and topic.id == "3.5" and marks == 8:
+        points = [
+            "Factor 1 — AO1 (1 mark): Identifies occupational immobility caused by the qualifications and specialist training required for healthcare roles.",
+            "Factor 1 — AO2 (1 mark): Uses Extract E evidence that vacancies rose by 28% and the median vacancy lasted 14 weeks.",
+            "Factor 1 — AO3 (1 mark): Explains that a slow supply response leaves posts unfilled, constraining treatment capacity and raising recruitment or agency costs.",
+            "Factor 1 — AO3 (1 mark): Examines the limit: funded training places or recognition of overseas qualifications can make labour supply more elastic over time.",
+            "Factor 2 — AO1 (1 mark): Identifies non-wage working conditions as a determinant of labour supply and retention.",
+            "Factor 2 — AO2 (1 mark): Uses Extract E evidence that overtime increased and annual staff turnover reached 12% despite a 9% wage rise.",
+            "Factor 2 — AO3 (1 mark): Explains that workload and unsocial hours can reduce retention, shifting effective labour supply left and increasing wage pressure and provider costs.",
+            "Factor 2 — AO3 (1 mark): Examines the limit: improved staffing, flexible schedules or productivity-enhancing technology may improve conditions and output without continuing wage inflation.",
+        ]
+        return points, points
+    if paper_id == "paper_3" and topic.id == "1.4" and marks == 12:
+        points = [
+            "AO1 (1 mark): Explains that an indirect tax raises private marginal cost, while a subsidy lowers it; either can change producer and consumer incentives.",
+            "AO1 (1 mark): Defines government failure as intervention producing a net welfare loss through information problems, unintended incentives or excessive administrative cost.",
+            "AO2 (1 mark): Uses Extract E evidence that pharmaceutical prices changed by 28% and the product takes a larger expenditure share for some households.",
+            "AO2 (1 mark): Applies the evidence about third-party pollution costs, wider network benefits, compliance costs or contested subsidy evidence.",
+            "AO3 Route A (1 mark): Analyses how a tax calibrated to marginal external cost can raise price and reduce output towards the socially efficient level.",
+            "AO3 Route A (1 mark): Develops that incentive chain to lower pollution damage and tax revenue that could fund treatment or monitoring.",
+            "AO3 Route B (1 mark): Analyses how a targeted subsidy for research or resilient shared infrastructure can raise activity with positive external benefits.",
+            "AO3 Route B (1 mark): Develops that chain to greater access, innovation or network resilience where private returns understate social benefits.",
+            "AO4 (1 mark): Evaluates incidence and effectiveness using demand and supply elasticities; inelastic demand may leave patients paying much of a tax.",
+            "AO4 (1 mark): Evaluates distribution: higher medicine prices may disproportionately reduce access for lower-income or chronically ill households.",
+            "AO4 (1 mark): Evaluates information and compliance costs, including the risk that a poorly calibrated tax, subsidy or rule deters entry and innovation.",
+            "AO4 (1 mark): Reaches a supported judgement comparing instruments and identifying the market failure, targeting accuracy and time horizon that determine whether incentives improve welfare.",
+        ]
+        return points, points
+    if paper_id == "paper_3" and topic.id == "2.3" and marks == 25:
+        points = [
+            "AO1 Micro (1 mark): Defines productive capacity as the maximum sustainable output attainable with available capital, labour and technology.",
+            "AO1 Micro (1 mark): Explains how capital investment, specialisation or economies of scale may lower a firm's long-run average cost.",
+            "AO1 Macro (1 mark): Defines LRAS as the economy's productive potential at each price level and distinguishes it from short-run aggregate supply.",
+            "AO1 Macro (1 mark): Identifies investment as a component of aggregate demand and a source of capital deepening that can affect LRAS.",
+            "AO2 Micro (1 mark): Uses Extract C evidence that energy-sector output changed by 5%.",
+            "AO2 Micro (1 mark): Uses the 11% planned-investment figure and links it to new energy capital or infrastructure.",
+            "AO2 Macro (1 mark): Applies Extract C evidence about employment, aggregate demand or productive capacity in the UK economy.",
+            "AO2 Macro (1 mark): Applies one stated condition: spare capacity, business confidence, import dependence or crowding out.",
+            "AO3 Micro (1 mark): Analyses how new capital can raise labour or capital productivity in energy and utilities.",
+            "AO3 Micro (1 mark): Develops that chain to lower unit cost/LRAC, greater sector output and potentially lower energy prices.",
+            "AO3 Micro (1 mark): Analyses how additional generation or network capacity can improve reliability and reduce capacity constraints.",
+            "AO3 Micro (1 mark): Develops a stakeholder effect for consumers or competing firms, such as higher consumer surplus or lower input costs.",
+            "AO3 Macro (1 mark): Analyses how the 11% investment raises AD initially and may increase real GDP and employment through the multiplier.",
+            "AO3 Macro (1 mark): Develops how capital deepening and infrastructure shift LRAS right, increasing potential output.",
+            "AO3 Macro (1 mark): Explains that cheaper or more reliable energy can lower production costs across industries and shift SRAS right.",
+            "AO3 Macro (1 mark): Develops the macro chain to stronger non-inflationary growth or a lower price level than otherwise.",
+            "AO4 Micro (1 mark): Evaluates whether demand is strong enough to utilise the new sector capacity; unused capacity can prevent LRAC falling.",
+            "AO4 Micro (1 mark): Evaluates financing costs, construction delays or coordination diseconomies that may raise costs before benefits arrive.",
+            "AO4 Micro (1 mark): Evaluates market structure: a firm with market power may retain cost savings instead of passing them on through lower prices.",
+            "AO4 Micro (1 mark): Weighs short-run disruption against longer-run productivity, reliability and consumer benefits.",
+            "AO4 Macro (1 mark): Evaluates spare capacity: the AD effect may raise output when spare capacity is high but create demand-pull inflation near full capacity.",
+            "AO4 Macro (1 mark): Evaluates import dependence and multiplier leakages; imported equipment can weaken the domestic GDP effect and current account initially.",
+            "AO4 Macro (1 mark): Evaluates whether higher borrowing or public support crowds out private investment, depending on interest rates and confidence.",
+            "AO4 Macro (1 mark): Evaluates time lags and uncertainty over whether the planned 11% investment is completed and raises productivity.",
+            "AO4 Judgement (1 mark): Reaches a supported conclusion covering both energy-sector outcomes and UK macroeconomic outcomes, identifying the decisive condition and time horizon.",
+            "Level 4 (20–25): precise theory, sustained Extract C application, developed micro and macro analysis, evaluation across both scopes and an integrated judgement.",
+            "Level 3 (13–19): developed analysis of both scopes with relevant context, but evaluation or synthesis is uneven.",
+            "Level 2 (7–12): some accurate contextual analysis, but one scope is underdeveloped or evaluation is largely asserted.",
+            "Level 1 (1–6): isolated knowledge or generic statements with little use of Extract C.",
+            "Level 0 (0): no rewardable material. A response cannot reach Level 4 unless it develops both the microeconomic and macroeconomic effects.",
+        ]
+        points = _adapt_paper_three_case_guidance(
+            points, case_title, source_reference, topic.id
+        )
+        if "healthcare" in case_title.casefold():
+            points = [
+                *points[:16],
+                "AO4 Evaluation strand 1 — up to 2 marks: capacity utilisation and demand. Award 1 mark for identifying spare capacity or uncertain demand; award 2 only when the response develops how low utilisation prevents LRAC/productivity benefits or how strong demand enables them.",
+                "AO4 Evaluation strand 2 — up to 2 marks: finance and crowding out. Award 1 mark for identifying borrowing cost, public support or crowding out; award 2 only when the response develops the effect on private investment, AD or the net capacity increase.",
+                "AO4 Evaluation strand 3 — up to 2 marks: imported equipment and time lags. Award 1 mark for identifying dependence on imported equipment/medicines or implementation delay; award 2 only when the response develops the consequence for domestic multiplier gains, the current account or the timing of LRAS gains.",
+                "AO4 Evaluation strand 4 — up to 2 marks: pass-through and stakeholders. Award 1 mark for identifying market power or unequal stakeholder effects; award 2 only when the response develops whether productivity savings reach patients, taxpayers, workers or rival providers.",
+                "AO4 Judgement — 1 mark: gives a supported conclusion on both the microeconomic effects and the macroeconomic effects, then states their overall balance or explains why they cannot be directly aggregated. It must select one evidenced decisive condition, weigh it against an alternative and state a time horizon; no particular condition is prescribed.",
+                *points[25:],
+            ]
+        return points, points
+    if paper_id == "paper_3" and topic.id == "4.5" and marks == 25:
+        points = [
+            "AO1 Micro (1 mark): Defines state intervention as government action to alter market prices, output, quality, ownership or resource allocation.",
+            "AO1 Micro (1 mark): Explains how an indirect tax, subsidy, regulation or public provision can address an externality, information failure or market power.",
+            "AO1 Macro (1 mark): Defines discretionary fiscal policy as deliberate changes in government spending or taxation that affect aggregate demand.",
+            "AO1 Macro (1 mark): Explains opportunity cost and government failure as constraints on state allocation of scarce public funds.",
+            "AO2 Micro (1 mark): Uses Extract C's 14% international-price movement and applies it to energy prices, producer costs or consumer affordability.",
+            "AO2 Micro (1 mark): Applies the stated use of taxation, regulation or trade policy in the energy and utilities market.",
+            "AO2 Macro (1 mark): Applies Extract C evidence that public investment may improve resilience, productivity or regional employment.",
+            "AO2 Macro (1 mark): Uses the extract's evidence about imports and exports or the time needed for energy supply to respond.",
+            "AO3 Micro (1 mark): Analyses how targeted subsidy or public infrastructure investment can lower producer costs and increase energy supply.",
+            "AO3 Micro (1 mark): Develops the supply chain to lower prices, higher consumer surplus or improved network reliability.",
+            "AO3 Micro (1 mark): Analyses how regulation or an indirect tax can internalise pollution costs or improve service standards.",
+            "AO3 Micro (1 mark): Develops the intervention chain towards the socially efficient output/quality, while identifying the affected stakeholder.",
+            "AO3 Macro (1 mark): Analyses how public expenditure raises AD directly and may increase real GDP and employment through the multiplier.",
+            "AO3 Macro (1 mark): Analyses how resilient energy infrastructure raises productivity and shifts LRAS right over time.",
+            "AO3 Macro (1 mark): Develops the LRAS chain to greater non-inflationary growth and lower economy-wide production costs.",
+            "AO3 Macro (1 mark): Analyses a trade/current-account route, such as reduced imported-energy dependence improving net exports and resilience.",
+            "AO4 Micro (1 mark): Evaluates policy targeting and elasticities: tax or subsidy effects depend on producer and consumer responsiveness.",
+            "AO4 Micro (1 mark): Evaluates regulatory capture, compliance costs or barriers to entry that could weaken competition and raise prices.",
+            "AO4 Micro (1 mark): Evaluates information limits: government may misestimate external costs, benefits or the appropriate subsidy/tax rate.",
+            "AO4 Micro (1 mark): Compares intervention instruments and identifies which is most proportionate for the stated market failure.",
+            "AO4 Macro (1 mark): Evaluates the opportunity cost of public expenditure and the tax or borrowing needed to finance it.",
+            "AO4 Macro (1 mark): Evaluates crowding out, interest-rate conditions and business confidence when judging the net investment effect.",
+            "AO4 Macro (1 mark): Evaluates import leakages, implementation lags and whether domestic spare capacity is sufficient for a large multiplier.",
+            "AO4 Macro (1 mark): Weighs short-run AD/inflation effects against longer-run LRAS, productivity and resilience benefits.",
+            "AO4 Judgement (1 mark): Reaches a supported conclusion covering both market-level and UK macroeconomic effects, naming the preferred policy mix, decisive condition and time horizon.",
+            "Level 4 (20–25): precise theory, sustained Extract C application, developed micro and macro analysis, evaluation across both scopes and an integrated judgement.",
+            "Level 3 (13–19): developed analysis of both scopes with relevant context, but evaluation or synthesis is uneven.",
+            "Level 2 (7–12): some accurate contextual analysis, but one scope is underdeveloped or evaluation is largely asserted.",
+            "Level 1 (1–6): isolated knowledge or generic policy statements with little use of Extract C.",
+            "Level 0 (0): no rewardable material. A response cannot reach Level 4 unless it develops both microeconomic and macroeconomic effects.",
+        ]
+        points = _adapt_paper_three_case_guidance(
+            points, case_title, source_reference, topic.id
+        )
+        if "healthcare" in case_title.casefold():
+            points = [
+                *points[:16],
+                "AO4 Evaluation strand 1 — up to 2 marks: targeting and elasticities. Award 1 mark for identifying responsiveness or policy targeting; award 2 only when the response develops how this changes price, output, access or external-cost correction.",
+                "AO4 Evaluation strand 2 — up to 2 marks: information and regulatory design. Award 1 mark for identifying information failure, compliance cost or regulatory capture; award 2 only when the response develops the consequence for competition, innovation or welfare.",
+                "AO4 Evaluation strand 3 — up to 2 marks: finance and opportunity cost. Award 1 mark for identifying taxation, borrowing, public-spending opportunity cost or crowding out; award 2 only when the response develops the net effect on private investment, AD or public services.",
+                "AO4 Evaluation strand 4 — up to 2 marks: macro timing and leakages. Award 1 mark for identifying implementation lag, spare capacity or import leakage; award 2 only when the response develops the implication for inflation, the multiplier, LRAS or the current account.",
+                "AO4 Judgement — 1 mark: selects and justifies a healthcare policy mix, integrates micro and macro effects, and identifies an evidenced decisive condition and time horizon. No named instrument or condition is compulsory.",
+                *points[25:],
+            ]
+        return points, points
+    return (
+        _mark_scheme(command, marks, topic.title),
+        _indicative_content(topic.id, topic.title, topic.points),
     )
 
 
@@ -1230,6 +2014,8 @@ def _question_prompt(
     topic = _topic_phrase(topic_title)
     if parts:
         if parts[0].command_word == "draw":
+            if stimulus_kind == "cost_revenue_graph":
+                return "The axes below are for an imperfectly competitive firm with downward-sloping average and marginal revenue curves."
             return _section_a_draw_stem(topic_title)
         return _section_a_stem(topic_title, stimulus_kind)
     if section_name in {"A", "B"} and paper_id == "paper_3":
@@ -1270,10 +2056,16 @@ def _section_a_stem(topic_title: str, stimulus_kind: str) -> str:
         return "The chart below shows investment as a percentage of GDP over time."
     if stimulus_kind == "financial_market_context":
         return "Read the information below about firms operating in financial markets."
+    if stimulus_kind == "state_policy_context":
+        return "Read the information below about an increase in government spending on preventive healthcare."
     if stimulus_kind == "development_data_table":
         return "The table below shows selected economic development indicators for two countries."
     if stimulus_kind == "current_account_line_chart":
         return "The chart below shows the current account of the balance of payments as a percentage of GDP."
+    if stimulus_kind == "inequality_line_chart":
+        return "Figure 1 below shows the Gini coefficient for an economy over five years."
+    if stimulus_kind == "trade_cycle":
+        return "Figure 1 below shows a stylised economic cycle with recession, trough, recovery and boom phases."
     if stimulus_kind == "gdp_growth_bar_chart":
         return "The chart below shows real GDP percentage growth over recent quarters."
     if stimulus_kind == "terms_of_trade_index_chart":
@@ -1373,9 +2165,9 @@ def _section_b_15_marker_prompt(topic: str) -> str:
 
 _PAPER_3_SHORT_FOCI = {
     "demand": "demand may change",
-    "supply": "supply may be slow to respond",
+    "supply": "supply may be relatively price inelastic in the short run",
     "price determination": "prices may become volatile",
-    "market failure": "private market outcomes may reduce economic welfare",
+    "market failure": "private market outcomes may cause a significant loss of economic welfare",
     "government intervention": "government intervention may change incentives",
     "business growth": "business growth may reduce average costs",
     "business objectives": "firms may pursue objectives other than profit maximisation",
@@ -1427,12 +2219,38 @@ def _paper_3_question_prompt(
 ) -> str:
     context = case_title.lower() if case_title else "the case-study context"
     short_focus = _PAPER_3_SHORT_FOCI.get(topic, f"{topic} may affect economic outcomes")
+    if marks == 5 and topic == "market failure":
+        return (
+            f"With reference to {source_reference}, explain why an unpriced negative "
+            f"production externality may cause overproduction and a loss of economic welfare in {context}."
+        )
     if marks == 5:
         return f"With reference to {source_reference}, explain one reason why {short_focus} in {context}."
     if marks == 8:
         return f"With reference to {source_reference}, examine two factors that may explain why {short_focus} in {context}."
     if marks == 12:
         return f"With reference to {source_reference}, discuss whether {short_focus} in {context}."
+    if marks == 25 and topic == "aggregate supply":
+        capacity_focus = (
+            "increased energy-sector productive capacity"
+            if "energy" in context
+            else f"increased productive capacity in {context}"
+        )
+        return (
+            f"With reference to {source_reference}, evaluate the likely microeconomic and "
+            f"macroeconomic effects of {capacity_focus}: consider "
+            f"firms and consumers in {context}, and the productive potential, output and price "
+            "level of the UK economy."
+        )
+    if marks == 25 and topic in {
+        "role of the state in the macroeconomy",
+        "the role of the state in the macroeconomy",
+    }:
+        return (
+            f"With reference to {source_reference}, evaluate the likely microeconomic and "
+            f"macroeconomic effects of greater state intervention in {context} through public "
+            "investment, taxation, regulation or trade policy."
+        )
     extended_focus = _PAPER_3_EXTENDED_FOCI.get(topic, topic)
     return (
         f"Evaluate the microeconomic and macroeconomic effects of {extended_focus} "
@@ -1440,8 +2258,17 @@ def _paper_3_question_prompt(
     )
 
 
-def _source_reference(paper_id: str, section_name: str, index: int) -> str:
+def _source_reference(
+    paper_id: str,
+    section_name: str,
+    index: int,
+    stimulus_kind: str = "",
+) -> str:
     if section_name == "A" and paper_id in {"paper_1", "paper_2"}:
+        if stimulus_kind == "context_extract" or stimulus_kind.endswith("_context"):
+            return ""
+        if "table" in stimulus_kind:
+            return "Table 1"
         return "Figure 1"
     if section_name == "B" and paper_id in {"paper_1", "paper_2"}:
         return ["Extract A", "", "", "Extract C", "Extract D"][index % 5]
@@ -1481,10 +2308,18 @@ def _source_text(
     paper_id: str = "",
     case_title: str = "",
     source_variant: int = 0,
+    source_reference: str = "",
 ) -> str:
     focus = ", ".join(points[:3]) if points else _topic_phrase(topic_title)
     if paper_id == "paper_3":
-        return _paper_3_source_text(case_title, topic_title, points, index, source_variant)
+        return _paper_3_source_text(
+            case_title,
+            topic_title,
+            points,
+            index,
+            source_variant,
+            source_reference,
+        )
     if section_name == "C":
         return _section_c_extract(topic_id, topic_title, points, index)
     if section_name == "B":
@@ -1509,6 +2344,7 @@ def _paper_3_source_text(
     points: list[str],
     index: int,
     variant: int,
+    source_reference: str = "",
 ) -> str:
     context = case_title.lower() if case_title else "the case-study market"
     first = points[0].rstrip(".") if points else topic_title.lower()
@@ -1518,44 +2354,75 @@ def _paper_3_source_text(
     firm_count = 24 + (variant // 11 + index * 13) % 67
     investment = 3 + (variant // 17 + index * 3) % 18
     year = 2022 + (variant + index) % 4
+    figure_match = re.search(r"Figure\s+\d+", source_reference)
+    extract_match = re.search(r"Extract\s+[A-Z]", source_reference)
+    figure_ref = figure_match.group(0) if figure_match else "The figure"
+    extract_ref = extract_match.group(0) if extract_match else (source_reference or "The extract")
+    investment_intro = (
+        f"{figure_ref} shows that firms in {context} increased capital spending by {investment}% in {year}. "
+        f"{extract_ref} reports that long-term supply contracts reduced unit input costs by 4%. "
+        if figure_match
+        else f"{extract_ref} reports that firms in {context} increased capital spending by {investment}% in {year}, "
+        "while long-term supply contracts reduced unit input costs by 4%. "
+    )
+    if _normal_topic_key(topic_title) == "labour market" and index == 1:
+        return (
+            f"{extract_ref} reports that unfilled clinical and pharmaceutical vacancies in {context} "
+            "rose by 28%, with a median vacancy duration of 14 weeks. Employers increased average pay "
+            "by 9%, but overtime also rose and annual staff turnover reached 12%. Training for specialist "
+            "roles can take several years, and professional registration limits how quickly suitably "
+            "qualified workers can enter. Providers are considering funded training places, recognition "
+            "of overseas qualifications, flexible schedules and technology that complements scarce staff."
+        )
+    if _normal_topic_key(topic_title) == "market failure" and index == 0:
+        return (
+            f"{figure_ref} compares pharmaceutical output in {context}. The private market produced "
+            "117 million doses. Researchers estimated that the socially efficient output, where marginal "
+            f"social benefit equals marginal social cost, was 100 million doses. {extract_ref} reports that "
+            "some producers discharged untreated chemical waste. Water-treatment providers and nearby "
+            "households bore an estimated external marginal clean-up and health cost of £6 per dose. "
+            "Producers did not pay this cost or include it in the market price, so they based output "
+            "decisions on marginal private cost rather than the higher marginal social cost."
+        )
     templates = (
         (
-            f"Market data for {context} show that prices changed by {price_change}% in {year}, while "
-            f"output changed by {output_change}%. Analysts linked the adjustment to {first}. There "
+            f"{figure_ref} shows that prices in {context} changed by {price_change}% in {year}, while "
+            f"output changed by {output_change}%. {extract_ref} reports that analysts linked the adjustment to {first}. There "
             f"were {firm_count} active suppliers, but their ability to alter output differed because "
             "capacity, contracts and access to inputs could not be changed immediately. Consumer "
             "groups said substitution became easier over time, while producers argued that higher "
             "expected prices were needed before new capacity would be commercially viable."
         ),
         (
-            f"Firms in {context} increased capital spending by {investment}% in {year}. Larger "
-            f"businesses said {first} affected their average costs, while smaller firms reported "
-            "more limited access to finance and skilled labour. Managers considered organic growth, "
-            "mergers and long-term supply contracts, but warned that rapid expansion could create "
-            f"diseconomies and coordination problems. Evidence concerning {second} suggested that "
-            "the benefits of scale depended on demand remaining strong enough to use the additional "
-            "capacity."
+            investment_intro
+            +
+            f"Larger businesses said {first} affected their average costs, while smaller firms reported "
+            "more limited access to finance and skilled labour. Managers warned that rapid expansion "
+            f"could create diseconomies and coordination problems. Evidence concerning {second} suggested "
+            "that the benefits of scale depended on demand remaining strong enough to use the additional capacity."
         ),
         (
             f"Policy makers reviewing {context} focused on {first}. Households faced different effects "
             f"after prices changed by {price_change}%, because the product represented a larger share "
             "of expenditure for some income groups. Business representatives supported predictable "
-            "rules but said compliance costs could deter entry. Campaigners argued that private "
-            f"decisions did not fully reflect {second}. The final welfare effect depended on the size "
-            "of any market failure, the responsiveness of consumers and firms, and the risk that "
-            "intervention itself produced unintended consequences."
+            "rules but said compliance costs could deter entry. Campaigners reported air-pollution costs "
+            "borne by third parties and wider benefits from investment in resilient shared networks that "
+            f"private firms could not fully capture. Evidence on {second} remained contested. The final welfare effect depended on the size "
+            "of any market failure, the responsiveness of consumers and firms, and uncertainty when "
+            "valuing effects on third parties."
         ),
         (
             f"Changes in {context} affected the wider economy in {year}. Output in the sector changed "
             f"by {output_change}% and planned investment by {investment}%, influencing employment, "
-            f"aggregate demand and productive capacity. Economists linked the evidence to {first}. "
-            "Higher costs could raise inflation in the short run, while new capital and infrastructure "
+            "aggregate demand and productive capacity. Economists linked the evidence to capital "
+            "deepening, productivity and the economy's long-run productive potential. "
+            "Higher imported-input and wage costs could shift short-run aggregate supply left and raise inflation, while new capital and infrastructure "
             "could increase long-run aggregate supply. The scale of the effect depended on spare "
             "capacity, business confidence, import dependence and whether policy crowded private "
             "investment in or out."
         ),
         (
-            f"The government examined the long-run role of {context} after international prices moved "
+            f"The government examined the long-run role of the state in {context} after international prices moved "
             f"by {price_change}% in {year}. Officials considered {first}, alongside taxation, public "
             "spending, regulation and trade policy. Supporters of intervention argued that investment "
             "could improve resilience, productivity and regional employment. Critics emphasised the "
@@ -1572,6 +2439,34 @@ def _data_response_extract(topic_title: str, points: list[str], index: int) -> s
 
 
 def _section_c_extract(topic_id: str, topic_title: str, points: list[str], index: int) -> str:
+    if topic_id == "1.4":
+        return (
+            "A study estimated a £0.12 external clean-up cost per disposable cup. Policy makers proposed "
+            "a £0.10 tax; PED was −0.6. Alternatives included a reusable-cup standard, information and a "
+            "clean-technology subsidy. Takeaway purchases formed a larger budget share for some low-income "
+            "consumers, while environmental damage varied by location."
+        )
+    if topic_id == "1.2.4":
+        return (
+            "Poor weather reduced domestic tomato supply by 12%. The price rose from £2.40 to £3.00 per "
+            "kilogram and purchases fell. Growers faced higher energy costs; protected producers maintained "
+            "more output and retailers increased imports. The rise affected low-income households most, "
+            "while growers said higher prices could finance more resilient production."
+        )
+    if topic_id == "4.1":
+        return (
+            "Imported electric bicycles sell for a world price of £900. A proposed 20% tariff aims to "
+            "protect 1,200 UK jobs. Domestic firms currently produce 50,000 bicycles and imports supply "
+            "150,000; UK factories have some spare capacity but rely on imported batteries and motors. "
+            "Trading partners have warned that they may retaliate against UK exports."
+        )
+    if topic_id == "4.2":
+        return (
+            "The economy's Gini coefficient is 0.39 and the lowest-income fifth of households receives "
+            "8% of disposable income. Food banks report high demand. Proposals include a higher top "
+            "marginal income-tax rate, targeted transfers, subsidised childcare and training, a higher "
+            "minimum wage and wealth tax. Officials warn about take-up, valuation, avoidance and fiscal cost."
+        )
     return section_c_extract(topic_title, points, index)
 
 
@@ -1583,8 +2478,8 @@ def _section_a_context(
     stimulus_kind: str = "",
 ) -> str:
     stimulus_contexts = {
-        "ped_data_table": "The data compares responsiveness to a price change for two groups of consumers using the same service.",
-        "pes_data_table": "The data compares how quickly producers in two regional markets can respond to changes in price.",
+        "ped_data_table": "The table compares how two age groups buying the same premium coffee product respond to a price change.",
+        "pes_data_table": "The table gives PES coefficients showing how quantity supplied responds to price changes in two regional markets. Urban producers have limited spare capacity and contracts delay their access to inputs; rural producers report more flexible capacity and input access.",
         "market_share_bar_chart": "The figures show market shares for the largest firms in an industry where brand recognition and scale may matter.",
         "marginal_utility_table": "A consumer records the additional satisfaction gained from each extra unit consumed during a week.",
         "opportunity_cost_ppc_table": "An economy can switch resources between consumer goods and capital goods, but each change has an opportunity cost.",
@@ -1595,13 +2490,18 @@ def _section_a_context(
         "household_savings_line_chart": "Households changed their saving behaviour during a period of uncertainty about future income and prices.",
         "investment_line_chart": "Investment changed as firms responded to weaker confidence, higher costs and expectations about future demand.",
         "financial_market_context": "Several banks were fined after traders shared information that could distort prices in a foreign exchange market.",
+        "state_policy_context": "The government plans to increase annual spending on preventive healthcare by £12 billion, financed through higher progressive income taxation. It expects earlier treatment to reduce working days lost through illness and improve labour productivity. Funding the programme means that another public investment cannot proceed, and the outcome depends on whether patients can access the additional services.",
+        "trade_cycle": "Figure 1 shows real output falling through recession to a trough before rising during recovery towards a boom. Firms report spare capacity at the trough and stronger orders during recovery. The diagram does not imply that every type of unemployment disappears when output rises.",
         "development_data_table": "The data can be used to compare living standards and economic development in two emerging economies.",
-        "current_account_line_chart": "The balance changed as export revenue, import spending and exchange rates altered over time.",
+        "current_account_line_chart": "The balance changed as domestic income affected import spending, overseas demand affected export revenue, and firms' non-price competitiveness altered over time.",
+        "inequality_line_chart": "The Gini coefficient fell from 0.42 in Year 1 to 0.33 in Year 5. Over the same period, the government increased targeted transfers to low-income households, although the chart alone does not show whether every household's real income rose.",
+        "cost_revenue_graph": "A fictional imperfectly competitive firm faces a downward-sloping AR curve. It is comparing the output at which MC equals MR with the higher output at which MR equals zero. A fall in market demand would shift both its AR and MR curves downwards.",
+        "context_extract": "A consumer has £30 available. The first event ticket costs £18 and gives an estimated marginal benefit of £24. A second ticket also costs £18 but gives a marginal benefit of only £10. Money not spent can be used for another good.",
         "gdp_growth_bar_chart": "Quarterly real GDP growth varied as consumption, investment and government spending changed.",
         "terms_of_trade_index_chart": "The index compares average export prices with average import prices, using a base year of 100.",
         "labour_inactivity_context": "A higher share of working-age people were neither in work nor actively seeking employment.",
         "multiplier_context": "A survey estimates the marginal propensity to consume after households receive extra income.",
-        "tariff_context": "A government imposed an import tariff to protect domestic producers from overseas competition.",
+        "tariff_context": "Imported solar panels have a world price of £100 each. The UK imposes a £20 tariff per imported panel. Before the tariff, UK firms supplied 40,000 panels while imports met the remainder of demand. Domestic producers have some spare capacity, but overseas exporters may absorb part of the tariff in their margins.",
         "shutdown_cost_table": "A firm compares price, average revenue and average variable cost when deciding whether to continue production in the short run.",
         "wage_rate_table": "Average hourly pay changed in an occupation where vacancies and training requirements affected labour supply.",
         "contestability_barrier_table": "A regulator is examining sunk costs, brand loyalty and switching costs in a concentrated market.",
@@ -1711,7 +2611,17 @@ def _exam_context(topic_title: str) -> str:
     return _EXAM_CONTEXT.get(topic, f"a market affected by {_exam_focus(topic_title)}")
 
 
-def _mark_breakdown(marks: int, parts: list[QuestionPart]) -> str:
+def _mark_breakdown(
+    marks: int,
+    parts: list[QuestionPart],
+    stimulus_kind: str = "",
+) -> str:
+    if stimulus_kind == "current_account_line_chart":
+        return "AO1 1, AO2 2, AO3 2"
+    if stimulus_kind == "inequality_line_chart":
+        return "MCQ 1, AO1 1, AO2 1, AO3 2"
+    if stimulus_kind == "trade_cycle":
+        return "MCQ 1, AO1 1, AO2 1, AO3 2"
     if parts:
         return "Knowledge 2, Application 2"
     return _part_mark_breakdown(marks, "")
@@ -1748,8 +2658,8 @@ def _mark_scheme(command_word: str, marks: int, topic_title: str) -> list[str]:
         return [
             "",
             f"AO1 (Knowledge/Understanding) — up to {max(1, marks // 3)} mark(s):",
-            f"Correctly identifies or defines the relevant economic concept from {topic}.",
-            f"Accurately states the economic relationship or theory from the syllabus: {topic}.",
+            f"Correctly identifies or defines {topic}.",
+            f"Accurately states the economic relationship or theory that underpins {topic}.",
             "",
             f"AO2 (Application) — up to {max(1, marks // 3)} mark(s):",
             "Applies the concept to the specific data, figure or context provided in the question.",

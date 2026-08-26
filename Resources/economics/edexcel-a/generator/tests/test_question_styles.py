@@ -1,7 +1,11 @@
+import random
 from pathlib import Path
 
-from pastpapergen.generator import build_paper_blueprint
+from pastpapergen.generator import _build_part, build_paper_blueprint
+from pastpapergen.models import SyllabusTopic
+from pastpapergen.ollama_client import _merge_question_text
 from pastpapergen.paper_configs import load_builtin_paper_config
+from pastpapergen.stimulus_data import line_chart_data, review_table_rows
 from pastpapergen.syllabus import load_syllabus
 
 
@@ -26,7 +30,7 @@ def test_paper_1_uses_edexcel_command_word_pattern():
     one_mark_parts = [part for question in section_a for part in question.parts if part.marks == 1]
     assert one_mark_parts
     assert all(part.command_word == "mcq" for part in one_mark_parts)
-    assert all("Which one of the following" in part.prompt for part in one_mark_parts)
+    assert all("which one of the following" in part.prompt.casefold() for part in one_mark_parts)
     assert len({question.stimulus_kind for question in section_a}) == 5
     assert [question.number for question in section_b] == ["6(a)", "6(b)", "6(c)", "6(d)", "6(e)"]
     assert [question.number for question in section_c] == ["7", "8"]
@@ -43,6 +47,689 @@ def test_paper_1_uses_edexcel_command_word_pattern():
     ]
     assert section_c[0].choice_group == section_c[1].choice_group
     assert section_c[0].topic_id != section_c[1].topic_id
+
+
+def test_paper_one_business_objectives_guidance_is_bound_to_extract_a() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_1"), syllabus, seed=26080122
+    )
+    question = blueprint.questions[5]
+    guidance = " ".join(question.mark_scheme).casefold()
+
+    assert question.number == "6(a)" and question.topic_id == "3.2"
+    assert question.source_reference == "Extract A"
+    assert "john lewis" in question.source_text.casefold()
+    assert len(question.mark_scheme) == 5
+    assert "employee-owned" in guidance
+    assert "service quality" in guidance
+    assert "satisfactory level of profit" in guidance
+    assert "amazon" not in guidance and "netflix" not in guidance
+    assert question.mark_scheme == question.indicative_content
+
+
+def test_paper_one_business_objectives_examination_has_two_developed_conflicts() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_1"), syllabus, seed=26080122
+    )
+    question = blueprint.questions[6]
+    guidance = " ".join(question.indicative_content).casefold()
+
+    assert question.number == "6(b)" and question.marks == 8
+    assert question.prompt.startswith("With reference to the evidence")
+    assert len(question.indicative_content) == 8
+    assert guidance.count("conflict 1") == 4
+    assert guidance.count("conflict 2") == 4
+    assert "amazon" in guidance and "logistics" in guidance
+    assert "pressure on workers" in guidance
+    assert "economies of scale" in guidance
+    assert question.mark_scheme == question.indicative_content
+
+
+def test_paper_one_regulation_assessment_is_water_case_specific() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_1"), syllabus, seed=26080122
+    )
+    question = blueprint.questions[7]
+    guidance = " ".join(question.indicative_content).casefold()
+
+    assert question.number == "6(c)" and question.marks == 10
+    assert len(question.indicative_content) == 16
+    assert "water companies" in guidance
+    assert "pollution standards" in guidance
+    assert "infrastructure" in guidance
+    assert "monitoring is poor" in guidance
+    assert "supported judgement" in guidance
+    assert "amazon" not in guidance and "netflix" not in guidance
+    assert question.mark_scheme == question.indicative_content
+
+
+def test_paper_one_long_discussions_are_calibrated_and_source_bound() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_1"), syllabus, seed=26080122
+    )
+    water, objectives = blueprint.questions[8:10]
+    water_guidance = " ".join(water.mark_scheme).casefold()
+    objective_guidance = " ".join(objectives.mark_scheme).casefold()
+
+    assert len(water.mark_scheme) >= 12
+    assert "regulated water companies" in water.prompt
+    assert "dividends" in water_guidance and "third-party costs" in water_guidance
+    assert "supported judgement" in water_guidance
+    assert len(objectives.mark_scheme) >= 15
+    assert "satisficing" in objective_guidance
+    assert "separation of ownership and control" in objective_guidance
+    assert "consumers, workers, owners and rival firms" in objective_guidance
+    assert water.mark_scheme == water.indicative_content
+    assert objectives.mark_scheme == objectives.indicative_content
+
+
+def test_paper_one_section_c_essays_compare_policies_and_stakeholders() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_1"), syllabus, seed=26080122
+    )
+    tax, price = blueprint.questions[10:12]
+    tax_guidance = " ".join(tax.mark_scheme).casefold()
+    price_guidance = " ".join(price.mark_scheme).casefold()
+
+    assert len(tax.mark_scheme) >= 25
+    assert "£0.12" in tax.source_text and "ped was −0.6" in tax.source_text.casefold()
+    assert "reusable standard" in tax_guidance
+    assert "compares effectiveness against regulation" in tax_guidance
+    assert "most effective" in tax_guidance
+    assert len(price.mark_scheme) >= 24
+    assert "consumer and producer surplus" in price.prompt
+    assert "reduced domestic tomato supply by 12%" in price.source_text
+    assert "£2.40 to £3.00" in price.source_text
+    assert "consumer surplus" in price_guidance and "producer surplus" in price_guidance
+    assert "examples, not a checklist" in price_guidance
+    assert tax.mark_scheme == tax.indicative_content
+    assert price.mark_scheme == price.indicative_content
+
+
+def test_current_account_chart_has_exact_options_and_marking() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_2")
+    question = next(
+        question
+        for seed in range(1000)
+        for question in build_paper_blueprint(config, syllabus, seed=seed).questions
+        if question.section == "A"
+        and question.stimulus_kind == "current_account_line_chart"
+        and [part.marks for part in question.parts] == [1, 2, 2]
+    )
+    mcq, calculation, explanation = question.parts
+
+    assert _merge_question_text(question, question.source_text) == question.prompt
+    keyed = next(option.text for option in mcq.options if option.label == mcq.correct_option)
+    assert keyed == "The current account was in deficit in every year shown"
+    assert question.mark_breakdown == "AO1 1, AO2 2, AO3 2"
+    assert "Do not award a mark for any other option." in mcq.mark_scheme
+    assert "distance below zero" in calculation.prompt
+    assert any("1 mark for method" in point for point in calculation.mark_scheme)
+    assert "deficit was wider in Year 10" in explanation.prompt
+    assert any("1 development mark" in point for point in explanation.mark_scheme)
+    assert any("net exports" in point for point in explanation.mark_scheme)
+    assert any("from the source" in point for point in explanation.mark_scheme)
+    assert question.mark_scheme == [
+        point
+        for part in question.parts
+        for point in part.mark_scheme
+        if point.strip()
+    ]
+    _, x_label, values = line_chart_data("current_account_line_chart")
+    assert x_label == "Year"
+    assert len(values) == 10
+    assert values[0] == -3.8 and values[-1] == -4.3
+
+
+def test_inequality_chart_has_visible_data_and_source_bound_marking() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_2"), syllabus, seed=26080123
+    )
+    question = blueprint.questions[1]
+    mcq, explanation = question.parts
+    guidance = " ".join(explanation.mark_scheme).casefold()
+
+    assert question.topic_id == "4.2"
+    assert question.stimulus_kind == "inequality_line_chart"
+    assert question.source_reference == "Figure 1"
+    assert question.mark_breakdown == "MCQ 1, AO1 1, AO2 1, AO3 2"
+    assert explanation.mark_breakdown == "AO1 1, AO2 1, AO3 2"
+    assert "fall in the Gini coefficient from 0.42 to 0.33" in explanation.prompt
+    assert "targeted transfers" in question.source_text
+    assert "a decrease of 0.09" in guidance
+    assert "material living standards" in guidance
+    assert "do not award" not in guidance
+    keyed = next(option.text for option in mcq.options if option.label == mcq.correct_option)
+    assert keyed == "The Gini coefficient fell by 0.09 over the period shown"
+    y_label, x_label, values = line_chart_data(question.stimulus_kind)
+    assert (y_label, x_label) == ("Gini coefficient", "Year")
+    assert values == [0.42, 0.40, 0.38, 0.35, 0.33]
+
+
+def test_state_policy_context_replaces_unrelated_consumer_choice_case() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_2"), syllabus, seed=26080123
+    )
+    question = blueprint.questions[2]
+    explanation, mcq = question.parts
+    guidance = " ".join(explanation.mark_scheme).casefold()
+
+    assert question.topic_id == "4.5"
+    assert question.stimulus_kind == "state_policy_context"
+    assert "preventive healthcare" in question.prompt
+    assert "£12 billion" in question.source_text
+    assert "working days lost" in question.source_text
+    assert explanation.mark_breakdown == "AO1 1, AO2 1, AO3 2"
+    assert "productive capacity" in explanation.prompt
+    assert "long-run aggregate supply" in guidance
+    keyed = next(option.text for option in mcq.options if option.label == mcq.correct_option)
+    assert keyed == "The next-best public programme that cannot now be funded"
+    assert "first event ticket" not in question.source_text.casefold()
+
+
+def test_trade_cycle_item_has_specific_recovery_analysis() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_2"), syllabus, seed=26080123
+    )
+    question = blueprint.questions[3]
+    mcq, explanation = question.parts
+    guidance = " ".join(explanation.mark_scheme).casefold()
+
+    assert question.topic_id == "2.1" and question.stimulus_kind == "trade_cycle"
+    assert "recession, trough, recovery and boom" in question.prompt
+    assert question.mark_breakdown == "MCQ 1, AO1 1, AO2 1, AO3 2"
+    assert explanation.mark_breakdown == "AO1 1, AO2 1, AO3 2"
+    assert "cyclical unemployment" in explanation.prompt
+    assert "derived demand for labour" in guidance
+    assert "structural unemployment may remain" in guidance
+    keyed = next(option.text for option in mcq.options if option.label == mcq.correct_option)
+    assert keyed == "Real GDP rises and cyclical unemployment is likely to fall"
+
+
+def test_paper_two_policy_case_has_calibrated_questions_and_schemes() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_2"), syllabus, seed=26080123
+    )
+    questions = blueprint.questions[5:10]
+
+    assert [len(question.mark_scheme) for question in questions[:2]] == [5, 8]
+    assert all(
+        len(question.mark_scheme) >= question.marks
+        for question in questions[2:]
+    )
+    assert "higher Bank Rate on inflation" in questions[0].prompt
+    assert "one likely effect" in questions[0].prompt
+    assert "reduces demand-pull inflation" in " ".join(questions[0].mark_scheme)
+    assert "5.25%" in " ".join(questions[0].mark_scheme)
+    assert "expansionary fiscal policy" in questions[1].prompt
+    assert "current-account deficit" in " ".join(questions[1].mark_scheme)
+    assert "supply-side policies" in questions[2].prompt
+    assert "childcare" in " ".join(questions[2].mark_scheme).casefold()
+    assert "training, childcare and infrastructure" in questions[3].prompt
+    assert "supported judgement" in " ".join(questions[3].mark_scheme).casefold()
+    assert "tighter anti-inflation policy" in questions[4].prompt
+    assert "firms and consumers" in " ".join(questions[4].mark_scheme)
+    assert all(question.mark_scheme == question.indicative_content for question in questions)
+
+
+def test_custom_extended_schemes_include_standardisation_guidance() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+
+    paper_one = build_paper_blueprint(
+        load_builtin_paper_config("paper_1"), syllabus, seed=26080122
+    )
+    ten_marker = next(
+        question
+        for question in paper_one.questions
+        if question.number == "6(c)"
+    )
+    paper_three = build_paper_blueprint(
+        load_builtin_paper_config("paper_3"), syllabus, seed=26080124
+    )
+    welfare_marker = paper_three.questions[2]
+
+    for question in (ten_marker, welfare_marker):
+        guidance = " ".join(question.mark_scheme).casefold()
+        assert "level 1" in guidance and "level 2" in guidance
+        assert "accept an equivalent valid" in guidance
+        assert "do not award" in guidance
+
+
+def test_every_extended_response_has_complete_standardisation_guidance() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    extended_commands = {
+        "analyse",
+        "analyze",
+        "assess",
+        "advise",
+        "discuss",
+        "evaluate",
+        "justify",
+    }
+
+    for paper_id, seed in (
+        ("paper_1", 26080122),
+        ("paper_2", 26080123),
+        ("paper_3", 26080124),
+    ):
+        blueprint = build_paper_blueprint(
+            load_builtin_paper_config(paper_id), syllabus, seed=seed
+        )
+        for question in blueprint.questions:
+            if (
+                question.parts
+                or question.marks < 8
+                or question.command_word.casefold() not in extended_commands
+            ):
+                continue
+            guidance = " ".join(question.mark_scheme).casefold()
+            assert "level 1" in guidance, question.number
+            assert "accept an equivalent valid" in guidance, question.number
+            assert "do not award" in guidance, question.number
+
+
+def test_tariff_item_uses_price_output_chain_and_matching_mcq() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_2"), syllabus, seed=26080123
+    )
+    question = blueprint.questions[4]
+    explanation, mcq = question.parts
+    guidance = " ".join(explanation.mark_scheme).casefold()
+
+    assert question.stimulus_kind == "tariff_context"
+    assert "£100" in question.source_text and "£20 tariff" in question.source_text
+    assert explanation.mark_breakdown == "AO1 1, AO2 1, AO3 2"
+    assert "imported solar panels" in explanation.prompt
+    assert "40,000 panels" in guidance
+    assert "elasticities" in guidance
+    keyed = next(option.text for option in mcq.options if option.label == mcq.correct_option)
+    assert keyed == "UK panel prices rise and imports are likely to fall"
+    assert question.mark_scheme == [
+        point for part in question.parts for point in part.mark_scheme if point.strip()
+    ]
+
+
+def test_paper_two_section_c_has_evidenced_comparative_evaluation() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_2"), syllabus, seed=26080123
+    )
+    trade, inequality = blueprint.questions[10:12]
+    trade_guidance = " ".join(trade.mark_scheme).casefold()
+    inequality_guidance = " ".join(inequality.mark_scheme).casefold()
+
+    assert "£900" in trade.source_text and "20% tariff" in trade.source_text
+    assert "retaliation" in trade_guidance and "comparative advantage" in trade_guidance
+    assert trade_guidance.count("ao4 strand") == 4
+    assert "gini coefficient is 0.39" in inequality.source_text.casefold()
+    assert "childcare" in inequality_guidance and "wealth taxation" in inequality_guidance
+    assert inequality_guidance.count("ao4 strand") == 4
+    assert trade.mark_scheme == trade.indicative_content
+    assert inequality.mark_scheme == inequality.indicative_content
+
+
+def test_pes_table_guidance_is_bound_to_elasticity_and_source_constraints() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    question = next(
+        question
+        for seed in range(1000)
+        for question in build_paper_blueprint(config, syllabus, seed=seed).questions
+        if question.section == "A"
+        and question.stimulus_kind == "pes_data_table"
+    )
+    explanation = next(
+        part for part in question.parts if part.command_word == "explain"
+    )
+    guidance = " ".join(explanation.mark_scheme).casefold()
+
+    assert explanation.mark_breakdown == "AO1 1, AO2 1, AO3 2"
+    assert len(explanation.mark_scheme) == 4
+    assert "price elasticity of supply" in guidance
+    assert "spare capacity" in guidance
+    assert "lower pes" in guidance
+
+
+def test_ped_table_guidance_is_bound_to_age_group_data() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_1")
+    question = next(
+        question
+        for seed in range(1000)
+        for question in build_paper_blueprint(config, syllabus, seed=seed).questions
+        if question.section == "A" and question.stimulus_kind == "ped_data_table"
+    )
+    explanation = next(
+        part for part in question.parts if part.command_word == "explain"
+    )
+    guidance = " ".join(explanation.mark_scheme).casefold()
+
+    assert explanation.mark_breakdown == "AO1 1, AO2 1, AO3 2"
+    assert len(explanation.mark_scheme) == 4
+    assert "-0.7" in guidance and "-0.4" in guidance
+    assert "larger proportional response" in guidance
+    assert "exact phrase 'proportional response' is not required" in guidance
+    assert "premium coffee" in question.source_text
+    multiple_choice = next(part for part in question.parts if part.options)
+    assert "statements is correct" in multiple_choice.prompt
+    assert multiple_choice.correct_option in {
+        option.label for option in multiple_choice.options
+    }
+    keyed_text = next(
+        option.text
+        for option in multiple_choice.options
+        if option.label == multiple_choice.correct_option
+    )
+    assert keyed_text == "The 16–18 group has more price elastic demand because |−0.7| > |−0.4|"
+    assert not any(
+        "change in income" in option.text.casefold()
+        for option in multiple_choice.options
+    )
+
+
+def test_cost_revenue_draw_has_exact_objective_marking_and_context() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_1"), syllabus, seed=26080122
+    )
+    question = blueprint.questions[2]
+    drawing, multiple_choice = question.parts
+    guidance = " ".join(drawing.mark_scheme)
+
+    assert question.stimulus_kind == "cost_revenue_graph"
+    assert drawing.mark_breakdown == "Knowledge 2, Application 2"
+    assert len(drawing.mark_scheme) == 4
+    assert "AR curve" in guidance and "MR curve" in guidance
+    assert "MC = MR" in guidance and "MR = 0" in guidance
+    assert "Qp" in guidance and "Qr" in guidance
+    assert "imperfectly competitive firm" in question.prompt
+    assert "imperfectly competitive firm" in drawing.prompt
+    assert "fictional imperfectly competitive firm" in question.source_text
+    assert "AR and MR curves downwards" in question.source_text
+    assert "imperfectly competitive firm in the previous diagram" in multiple_choice.prompt
+    keyed = next(
+        option.text
+        for option in multiple_choice.options
+        if option.label == multiple_choice.correct_option
+    )
+    assert keyed == "The AR and MR curves both shift downwards"
+    assert "Netflix" not in guidance and "Spotify" not in guidance
+
+
+def test_rational_choice_item_has_source_bound_marginal_reasoning() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_1"), syllabus, seed=26080122
+    )
+    question = blueprint.questions[3]
+    explanation, multiple_choice = question.parts
+    guidance = " ".join(explanation.mark_scheme)
+
+    assert question.topic_id == "1.2.1"
+    assert question.source_reference == ""
+    assert "first event ticket costs £18" in question.source_text
+    assert explanation.mark_breakdown == "AO1 1, AO2 1, AO3 2"
+    assert len(explanation.mark_scheme) == 4
+    assert "marginal net benefit of £6" in guidance
+    assert "second ticket" in guidance and "below its £18 marginal cost" in guidance
+    assert not any("perfect information" in option.text for option in multiple_choice.options)
+    assert question.mark_scheme == [
+        point
+        for part in question.parts
+        for point in part.mark_scheme
+        if point.strip()
+    ]
+
+
+def test_costs_item_uses_exact_short_run_shutdown_data() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_1"), syllabus, seed=26080122
+    )
+    question = blueprint.questions[4]
+    explanation, multiple_choice = question.parts
+    guidance = " ".join(explanation.mark_scheme)
+
+    assert question.topic_id == "3.3"
+    assert question.stimulus_kind == "shutdown_cost_table"
+    assert question.source_reference == "Table 1"
+    assert explanation.mark_breakdown == "AO1 1, AO2 1, AO3 2"
+    assert len(explanation.mark_scheme) == 4
+    assert "price £18 exceeds AVC £14 but is below AC £22" in guidance
+    assert "£2,000 operating loss" in guidance
+    assert "£4,000 fixed-cost loss" in guidance
+    keyed = next(
+        option.text
+        for option in multiple_choice.options
+        if option.label == multiple_choice.correct_option
+    )
+    assert keyed == "The firm covers its variable costs but makes a loss overall"
+
+
+def test_supply_data_uses_the_matching_pes_stimulus_and_source() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_1"), syllabus, seed=26080122
+    )
+    question = blueprint.questions[0]
+
+    assert question.topic_id == "1.2.3"
+    assert question.stimulus_kind == "pes_data_table"
+    assert "producers" in question.source_text
+    assert "price" in question.source_text
+    assert "limited spare capacity" in question.source_text
+    assert review_table_rows(question.stimulus_kind) == [
+        ["Region", "PES coefficient"],
+        ["Urban", "0.5"],
+        ["Rural", "1.8"],
+    ]
+    mcq = next(part for part in question.parts if part.command_word == "mcq")
+    assert "quantity supplied rises by 3.6%" in mcq.prompt
+
+
+def test_mcq_shuffle_preserves_the_economically_correct_option() -> None:
+    topic = SyllabusTopic(
+        id="1.2.3",
+        theme=1,
+        title="Supply",
+        points=["supply curves", "price elasticity of supply", "production costs"],
+    )
+    part = _build_part("b", 1, "mcq", topic, "", 1, random.Random(26080122))
+    selected = next(
+        option.text for option in part.options if option.label == part.correct_option
+    )
+
+    assert selected == "Higher production costs may shift the supply curve to the left"
+
+
+def test_paper_three_supply_guidance_is_bound_to_figure_and_extract() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_3"), syllabus, seed=26080124
+    )
+    question = blueprint.questions[0]
+    guidance = " ".join(question.mark_scheme).casefold()
+
+    assert question.topic_id == "1.2.3"
+    assert "relatively price inelastic" in question.prompt
+    assert question.source_text.startswith("Figure 1 shows")
+    assert "Extract A reports" in question.source_text
+    assert "15%" in guidance and "6%" in guidance
+    assert "capacity" in guidance and "contracts" in guidance
+    assert "supply is price inelastic" in guidance
+    assert "pes = 6% / 15% = 0.4" in guidance
+    assert "do not require the calculation" in guidance
+    assert "more elastic over time" not in guidance
+    assert question.mark_scheme == question.indicative_content
+
+
+def test_paper_three_healthcare_externality_is_source_bound() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_3"), syllabus, seed=26080124
+    )
+    question = blueprint.questions[5]
+    guidance = " ".join(question.mark_scheme)
+
+    assert question.topic_id == "1.3" and question.marks == 5
+    assert question.source_reference == "Figure 3 and Extract D"
+    assert question.source_text.startswith("Figure 3 compares")
+    assert "Extract D reports" in question.source_text
+    assert "untreated chemical waste" in question.source_text
+    assert "negative production externality" in question.prompt
+    assert "market output is 117 million doses" in guidance
+    assert "socially efficient output of 100 million doses" in guidance
+    assert "£6 external marginal" in guidance
+    assert "marginal social cost exceeds marginal private cost" in guidance
+    assert "deadweight welfare loss" in guidance
+    assert "streetlights" not in guidance
+    assert question.mark_scheme == question.indicative_content
+
+
+def test_paper_three_healthcare_section_remains_case_bound() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_3"), syllabus, seed=26080124
+    )
+    labour, intervention, capacity, state = blueprint.questions[6:10]
+
+    labour_guidance = " ".join(labour.mark_scheme).casefold()
+    assert labour.source_text.startswith("Extract E reports")
+    assert "vacancies" in labour.source_text and "14 weeks" in labour.source_text
+    assert len(labour.mark_scheme) == 8
+    assert "occupational immobility" in labour_guidance
+    assert "annual staff turnover reached 12%" in labour_guidance
+
+    intervention_guidance = " ".join(intervention.mark_scheme).casefold()
+    assert len(intervention.mark_scheme) >= 12
+    assert "pharmaceutical prices changed by 28%" in intervention_guidance
+    assert "inelastic demand" in intervention_guidance
+    assert "government failure" in intervention_guidance
+
+    capacity_guidance = " ".join(capacity.mark_scheme).casefold()
+    assert "productive capacity in healthcare and pharmaceuticals" in capacity.prompt
+    assert "healthcare-sector output changed by 16%" in capacity_guidance
+    assert "4% planned-investment" in capacity_guidance
+    assert "energy-sector" not in capacity_guidance
+    assert "extract e" in capacity_guidance
+    assert capacity_guidance.count("evaluation strand") == 4
+    assert "award 2 only when" in capacity_guidance
+    assert "no particular condition is prescribed" in capacity_guidance
+    assert "short-run aggregate supply left" in capacity.source_text
+
+    state_guidance = " ".join(state.mark_scheme).casefold()
+    assert "greater state intervention in healthcare and pharmaceuticals" in state.prompt
+    assert "13% international-price movement" in state_guidance
+    assert "healthcare" in state_guidance
+    assert "extract f" in state_guidance
+    assert "energy" not in state_guidance
+    assert state_guidance.count("evaluation strand") == 4
+    assert "no named instrument or condition is compulsory" in state_guidance
+
+
+def test_paper_three_business_growth_guidance_examines_two_cost_factors() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_3"), syllabus, seed=26080124
+    )
+    question = blueprint.questions[1]
+    guidance = " ".join(question.mark_scheme).casefold()
+
+    assert question.topic_id == "3.1" and question.marks == 8
+    assert len(question.mark_scheme) == 8
+    assert question.source_text.startswith("Figure 2 shows")
+    assert "Extract A reports" in question.source_text
+    assert "unit input costs by 4%" in question.source_text
+    assert "capital spending increased by 5%" in guidance
+    assert guidance.count("factor 1") == 4
+    assert guidance.count("factor 2") == 4
+    assert "long-run average cost (lrac)" in guidance
+    assert "cost per unit and lrac" in guidance
+    assert guidance.count("examines the limit") == 2
+    assert "unit input costs by 4%" in guidance
+    assert "diseconomies" in guidance
+    assert "lego" not in guidance
+    assert question.mark_scheme == question.indicative_content
+
+
+def test_paper_three_market_failure_discussion_is_welfare_focused() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_3"), syllabus, seed=26080124
+    )
+    question = blueprint.questions[2]
+    guidance = " ".join(question.indicative_content).casefold()
+
+    assert question.topic_id == "1.3" and question.marks == 12
+    assert "significant loss of economic welfare" in question.prompt
+    assert "air-pollution costs" in question.source_text
+    assert "resilient shared networks" in question.source_text
+    assert "msc > mpc" in guidance
+    assert "msb > mpb" in guidance
+    assert "deadweight welfare loss" in guidance
+    assert guidance.count("ao3 route a") == 2
+    assert guidance.count("ao3 route b") == 2
+    assert "need not be classified as a pure public good" in guidance
+    assert "must not replace" in guidance
+    assert "contracts, reputation, property rights" in guidance
+    assert "level 3 (9–12)" in guidance
+    assert "streetlights" not in guidance
+    assert question.mark_scheme == question.indicative_content
+
+
+def test_paper_three_capacity_essay_balances_micro_and_macro_routes() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_3"), syllabus, seed=26080124
+    )
+    question = blueprint.questions[3]
+    guidance = " ".join(question.mark_scheme)
+
+    assert question.topic_id == "2.3" and question.marks == 25
+    assert "energy-sector productive capacity" in question.prompt
+    assert "productive potential, output and price level of the UK economy" in question.prompt
+    assert guidance.count("AO1 Micro") == 2 and guidance.count("AO1 Macro") == 2
+    assert guidance.count("AO2 Micro") == 2 and guidance.count("AO2 Macro") == 2
+    assert guidance.count("AO3 Micro") == 4 and guidance.count("AO3 Macro") == 4
+    assert guidance.count("AO4 Micro") == 4 and guidance.count("AO4 Macro") == 4
+    assert "AO4 Judgement" in guidance
+    assert "11%" in guidance and "5%" in guidance
+    assert "cannot reach Level 4" in guidance
+    assert "classical view" not in guidance
+    assert question.mark_scheme == question.indicative_content
+
+
+def test_paper_three_state_essay_balances_policy_scopes() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_3"), syllabus, seed=26080124
+    )
+    question = blueprint.questions[4]
+    guidance = " ".join(question.mark_scheme)
+
+    assert question.topic_id == "4.5" and question.marks == 25
+    assert "greater state intervention" in question.prompt
+    assert "public investment, taxation, regulation or trade policy" in question.prompt
+    assert guidance.count("AO1 Micro") == 2 and guidance.count("AO1 Macro") == 2
+    assert guidance.count("AO2 Micro") == 2 and guidance.count("AO2 Macro") == 2
+    assert guidance.count("AO3 Micro") == 4 and guidance.count("AO3 Macro") == 4
+    assert guidance.count("AO4 Micro") == 4 and guidance.count("AO4 Macro") == 4
+    assert "AO4 Judgement" in guidance
+    assert "14%" in guidance
+    assert "cannot reach Level 4" in guidance
+    assert "defence (6%)" not in guidance and "health care (18%)" not in guidance
+    assert question.mark_scheme == question.indicative_content
 
 
 def test_paper_1_presented_marks_are_balanced_between_themes():
@@ -151,6 +838,7 @@ def test_section_a_calculation_questions_only_use_visible_numeric_stimuli():
         "household_savings_line_chart",
         "investment_line_chart",
         "current_account_line_chart",
+        "inequality_line_chart",
         "gdp_growth_bar_chart",
         "unemployment_rate_bar_chart",
         "terms_of_trade_index_chart",

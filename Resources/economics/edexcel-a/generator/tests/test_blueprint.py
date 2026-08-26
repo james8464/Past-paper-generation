@@ -45,7 +45,8 @@ def test_blueprint_contains_structured_mcq_and_mark_scheme_content():
     first = blueprint.questions[0]
     mcq_part = next(part for part in first.parts if part.marks == 1)
 
-    assert first.source_reference == "Figure 1"
+    assert first.stimulus_kind.endswith("_table")
+    assert first.source_reference == "Table 1"
     assert first.mark_breakdown == "Knowledge 2, Application 2"
     assert len(mcq_part.options) == 4
     assert mcq_part.correct_option == "A"

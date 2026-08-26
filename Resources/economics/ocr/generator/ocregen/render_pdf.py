@@ -4,6 +4,8 @@ from html import escape
 import math
 from pathlib import Path
 
+import pymupdf as fitz
+
 from reportlab.graphics.shapes import Drawing, Line, PolyLine, Rect, String, Wedge
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT
@@ -54,7 +56,12 @@ def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
     doc.build(story)
 
 
-def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
+def render_mark_scheme(
+    paper: GeneratedPaper,
+    path: Path,
+    *,
+    _extension_adjustment: int = 0,
+) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     doc = _document(path, paper, "Mark scheme")
     story: list[Flowable] = [
@@ -90,7 +97,12 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
                     story.extend(_scheme_block(question))
             story.append(PageBreak())
         story.pop()
-    story.extend(_mark_scheme_extension_pages(paper))
+    story.extend(
+        _mark_scheme_extension_pages(
+            paper,
+            count_adjustment=_extension_adjustment,
+        )
+    )
     story.extend(
         [
             NextPageTemplate("ocr-mark-scheme-final"),
@@ -105,6 +117,20 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
         ]
     )
     doc.build(story)
+    target_pages = {"paper_1": 30, "paper_2": 33, "paper_3": 32}[paper.paper_id]
+    with fitz.open(path) as rendered:
+        page_count = rendered.page_count
+    if _extension_adjustment == 0 and page_count != target_pages:
+        render_mark_scheme(
+            paper,
+            path,
+            _extension_adjustment=target_pages - page_count,
+        )
+        return
+    if page_count != target_pages:
+        raise ValueError(
+            f"OCR economics mark scheme rendered {page_count} pages; expected {target_pages}"
+        )
 
 
 def _supplementary_marking_pages() -> list[Flowable]:
@@ -603,9 +629,10 @@ def _compact_indicative_guidance(
 ) -> list[Flowable]:
     points = list(dict.fromkeys(question.mark_scheme))
     while len(points) < limit:
+        previous_count = len(points)
         points.extend(_generated_guidance_points(question))
         points = list(dict.fromkeys(points))
-        if len(points) == len(question.mark_scheme):
+        if len(points) == previous_count:
             break
     rows: list[list[object]] = [
         [
@@ -943,8 +970,14 @@ MARK_SCHEME_EXTENSION_PAGE_COUNTS = {
 }
 
 
-def _mark_scheme_extension_pages(paper: GeneratedPaper) -> list[Flowable]:
-    count = MARK_SCHEME_EXTENSION_PAGE_COUNTS[paper.paper_id]
+def _mark_scheme_extension_pages(
+    paper: GeneratedPaper,
+    *,
+    count_adjustment: int = 0,
+) -> list[Flowable]:
+    count = MARK_SCHEME_EXTENSION_PAGE_COUNTS[paper.paper_id] + count_adjustment
+    if count < 2:
+        raise ValueError("OCR economics mark-scheme continuation budget is too small")
     questions = [
         question
         for section in paper.sections
@@ -2083,7 +2116,7 @@ class AnswerLines(Flowable):
 _base = getSampleStyleSheet()
 STYLES = {
     "body": ParagraphStyle("body", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14),
-    "small": ParagraphStyle("small", parent=_base["BodyText"], fontName=FONT, fontSize=9.3, leading=12),
+    "small": ParagraphStyle("small", parent=_base["BodyText"], fontName=FONT, fontSize=10, leading=12),
     "heading": ParagraphStyle("heading", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=11, leading=14),
     "kicker": ParagraphStyle("kicker", parent=_base["Heading2"], fontName=FONT_BOLD, fontSize=15, leading=18),
     "title": ParagraphStyle("title", parent=_base["Title"], fontName=FONT_BOLD, fontSize=23, leading=27),

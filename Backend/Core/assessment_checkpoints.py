@@ -168,12 +168,20 @@ class AssessmentCheckpointStore:
             stored_identity = CheckpointIdentity.model_validate(raw_identity)
         except ValidationError as error:
             raise CheckpointCorrupt("checkpoint identity is invalid") from error
-        for field_name in CheckpointIdentity.model_fields:
-            if getattr(stored_identity, field_name) != getattr(
-                self.identity,
-                field_name,
-            ):
-                raise CheckpointMismatch(
-                    f"checkpoint {field_name} does not match this generation job"
-                )
+        mismatches = [
+            field_name
+            for field_name in CheckpointIdentity.model_fields
+            if getattr(stored_identity, field_name)
+            != getattr(self.identity, field_name)
+        ]
+        if mismatches == ["blueprint_sha256"]:
+            # Retain expensive accepted items across a blueprint revision. Every
+            # caller revalidates each payload against the current immutable item
+            # contract before it is allowed back into the paper.
+            document["identity"] = self.identity.model_dump(mode="json")
+            self._write_document(document)
+        elif mismatches:
+            raise CheckpointMismatch(
+                f"checkpoint {mismatches[0]} does not match this generation job"
+            )
         return document

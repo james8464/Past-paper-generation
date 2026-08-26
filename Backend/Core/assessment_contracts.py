@@ -88,6 +88,7 @@ class AssessmentContract(BaseModel):
     generated_numeric_fields: list[GeneratedNumericField] = Field(
         default_factory=list
     )
+    allow_additional_numeric_values: bool = False
     evidence: list[EvidenceRecord] = Field(default_factory=list)
     allowed_evidence_ids: set[str] = Field(default_factory=set)
     graph: GraphContract | None = None
@@ -142,6 +143,11 @@ def contract_for_question(question: Any) -> AssessmentContract:
         ),
         numeric_values=_numeric_contracts(prompt),
         allowed_evidence_ids=references,
+        allow_additional_numeric_values=(
+            bool(context.get("allow_additional_numeric_values", False))
+            if isinstance(context, dict)
+            else False
+        ),
     )
 
 
@@ -160,6 +166,11 @@ def _numeric_contracts(prompt: str) -> list[NumericValueContract]:
             role = NumericRole.DISPLAY_LABEL
         elif re.match(r"\s*marks?\s*\]", suffix, flags=re.IGNORECASE):
             role = NumericRole.MARK
+        elif (
+            re.fullmatch(r"(?:19|20)\d{2}", match.group(0))
+            and re.search(r"\b(?:in|during)\s*$", prefix, flags=re.IGNORECASE)
+        ):
+            role = NumericRole.DATE
         else:
             role = NumericRole.ASSESSMENT_DATA
         contracts.append(

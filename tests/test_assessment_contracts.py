@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 import pytest
 from pydantic import ValidationError
 
@@ -15,6 +17,7 @@ from Backend.Core.assessment_contracts import (
 from Backend.Core.assessment_quality import (
     validate_candidate_contract,
     validate_economics_causal_direction,
+    validate_package_novelty,
 )
 from Backend.Core.exam_blueprints import GeneratedQuestion
 
@@ -152,6 +155,32 @@ def test_code_line_labels_are_not_assessment_values() -> None:
     validate_candidate_contract("01 total = 225", "07 total = 225", contract)
 
 
+def test_leading_context_year_is_not_immutable_assessment_data() -> None:
+    question = GeneratedQuestion(
+        rule_id="mcq",
+        number="18",
+        marks=1,
+        kind="multiple_choice",
+        command_word="Select",
+        topic_id="economics",
+        prompt=(
+            "In 2013, output exceeded its sustainable level. Which statement "
+            "describes a positive output gap?"
+        ),
+        mark_scheme=["Actual output exceeds sustainable output."],
+        assessment_objectives={"AO1": 1},
+    )
+
+    contract = contract_for_question(question)
+
+    assert contract.numeric_values[0].role is NumericRole.DATE
+    validate_candidate_contract(
+        question.prompt,
+        "Which statement describes a positive output gap?",
+        contract,
+    )
+
+
 def test_changed_immutable_value_is_rejected() -> None:
     contract = AssessmentContract(
         item_id="q1",
@@ -162,6 +191,59 @@ def test_changed_immutable_value_is_rejected() -> None:
 
     with pytest.raises(ValueError, match="immutable numeric"):
         validate_candidate_contract("Value 225", "Value 169", contract)
+
+
+def test_equivalent_precision_wording_is_not_treated_as_new_data() -> None:
+    contract = AssessmentContract(
+        item_id="q1",
+        marks=2,
+        assessment_objectives={"AO2": 2},
+        numeric_values=[
+            NumericValueContract(text="2024"),
+            NumericValueContract(text="2028"),
+        ],
+    )
+
+    validate_candidate_contract(
+        "Calculate the change from 2024 to 2028 to one decimal place.",
+        "Calculate the change from 2024 to 2028 to 1 decimal place.",
+        contract,
+    )
+
+    with pytest.raises(ValueError, match="precision instruction"):
+        validate_candidate_contract(
+            "Calculate the change from 2024 to 2028 to one decimal place.",
+            "Calculate the change from 2024 to 2028 to 3 decimal places.",
+            contract,
+        )
+
+
+def test_novelty_check_ignores_the_package_being_atomically_replaced(
+    tmp_path,
+) -> None:
+    history = tmp_path / "published"
+    staging = tmp_path / "transaction"
+    history.mkdir()
+    staging.mkdir()
+    name = "economics-paper-3-assessment.json"
+    document = {
+        "schema_version": 1,
+        "items": [
+            {
+                "id": "1",
+                "subject": "economics",
+                "paper": "3",
+                "prompt": "Assess the effect of a change in aggregate demand.",
+            }
+        ],
+    }
+    (history / name).write_text(json.dumps(document), encoding="utf-8")
+    current = staging / name
+    current.write_text(json.dumps(document), encoding="utf-8")
+
+    report = validate_package_novelty(current, history_root=history)
+
+    assert report["historic_comparisons"] == 0
 
 
 def test_declared_generated_graph_value_is_range_checked() -> None:

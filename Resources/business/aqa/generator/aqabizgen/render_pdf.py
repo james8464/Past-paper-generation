@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pymupdf as fitz
+
 from reportlab.graphics.shapes import Drawing, Ellipse, Line, PolyLine, Rect, String
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT
@@ -108,7 +110,12 @@ def render_source_booklet(paper: GeneratedPaper, path: Path) -> None:
     doc.build(story)
 
 
-def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
+def render_mark_scheme(
+    paper: GeneratedPaper,
+    path: Path,
+    *,
+    _extension_adjustment: int = 0,
+) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     doc = _document(path, paper, "Mark scheme")
     story: list[Flowable] = [
@@ -127,16 +134,35 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
             if index < len(pages) - 1:
                 story.append(PageBreak())
         doc.build(story)
+    else:
+        for section in paper.sections:
+            story.extend([_banner(f"Section {section.id}"), Spacer(1, 4 * mm)])
+            for option in section.options:
+                for question in option.questions:
+                    story.extend(_scheme_block(question))
+            story.append(PageBreak())
+        story.pop()
+        story.extend(
+            _mark_scheme_extension_pages(
+                paper,
+                count_adjustment=_extension_adjustment,
+            )
+        )
+        doc.build(story)
+    target_pages = {"paper_1": 23, "paper_2": 20, "paper_3": 14}[paper.paper_id]
+    with fitz.open(path) as rendered:
+        page_count = rendered.page_count
+    if _extension_adjustment == 0 and page_count != target_pages:
+        render_mark_scheme(
+            paper,
+            path,
+            _extension_adjustment=target_pages - page_count,
+        )
         return
-    for section in paper.sections:
-        story.extend([_banner(f"Section {section.id}"), Spacer(1, 4 * mm)])
-        for option in section.options:
-            for question in option.questions:
-                story.extend(_scheme_block(question))
-        story.append(PageBreak())
-    story.pop()
-    story.extend(_mark_scheme_extension_pages(paper))
-    doc.build(story)
+    if page_count != target_pages:
+        raise ValueError(
+            f"AQA business mark scheme rendered {page_count} pages; expected {target_pages}"
+        )
 
 
 def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
@@ -486,8 +512,14 @@ MARK_SCHEME_EXTENSION_PAGE_COUNTS = {
 }
 
 
-def _mark_scheme_extension_pages(paper: GeneratedPaper) -> list[Flowable]:
-    count = MARK_SCHEME_EXTENSION_PAGE_COUNTS[paper.paper_id]
+def _mark_scheme_extension_pages(
+    paper: GeneratedPaper,
+    *,
+    count_adjustment: int = 0,
+) -> list[Flowable]:
+    count = MARK_SCHEME_EXTENSION_PAGE_COUNTS[paper.paper_id] + count_adjustment
+    if count < 2:
+        raise ValueError("AQA business mark-scheme continuation budget is too small")
     questions = [
         question
         for section in paper.sections

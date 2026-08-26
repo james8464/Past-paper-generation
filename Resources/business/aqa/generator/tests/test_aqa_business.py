@@ -81,6 +81,13 @@ def test_paper_one_calculations_share_source_data_with_mark_scheme() -> None:
         "AO2",
         "AO2",
     ]
+    assert current_ratio.authoring_context["preserve_prompt"] is True
+    assert roce.authoring_context["source_data"]["capital_employed"] == (
+        financials.capital_employed
+    )
+    assert roce.authoring_context["verified_answers"]["operating_profit"] == (
+        financials.operating_profit_at_twelve_percent
+    )
 
 
 def test_paper_two_calculations_name_the_displayed_sales_series() -> None:
@@ -113,6 +120,24 @@ def test_mcq_choices_are_distinct() -> None:
     questions = [option.questions[0] for option in paper.sections[0].options]
     assert len(questions) == 15
     assert all(len(set(question.choices)) == 4 for question in questions)
+
+
+def test_question_13_contract_matches_the_rendered_performance_table() -> None:
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 123)
+    option = paper.sections[0].options[12]
+    question = option.questions[0]
+
+    assert question.number == "13"
+    assert option.chart_labels == [
+        "Capacity utilisation",
+        "Labour turnover",
+        "Market share",
+        "ROCE",
+    ]
+    assert option.chart_values == [88, 17, 15, 12]
+    assert question.authoring_context["source_data"]["targets"] == [90, 12, 13, 16]
+    assert question.authoring_context["preserve_prompt"] is True
+    assert question.authoring_context["preserve_mark_scheme"] is True
 
 
 def test_packages_render_current_page_geometry(tmp_path: Path) -> None:

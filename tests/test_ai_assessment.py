@@ -14,15 +14,21 @@ from Backend.Core.ai_assessment import (
     _clean_generated_prompt,
     _effective_batch_size,
     _generate_batch,
+    _generate_item_transaction,
     _generation_prompt,
+    _normalise_calculation_guidance,
+    _normalise_command_word,
     _normalise_multiple_choice_answer,
     _normalise_level_allocations,
     _review_prompt,
     _repair_prompt,
     _required_awarded_entries,
+    _seeded_fallback_allowed,
     _task_source,
+    _upgrade_checkpoint_metadata,
     _validate_checkpoint_item,
     _validate_mark_points,
+    _validate_prompt_length,
 )
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
@@ -30,6 +36,167 @@ from Backend.Core.exam_blueprints import (
     MarkSchemePoint,
 )
 from Backend.Core.model_review import ReviewResult
+
+
+def test_complete_command_receives_method_guidance() -> None:
+    question = GeneratedQuestion(
+        rule_id="trace",
+        number="3(a)",
+        marks=4,
+        kind="analysis",
+        command_word="complete",
+        topic_id="systems",
+        prompt="Complete the trace table.",
+        mark_scheme=["Credit correct results."],
+        assessment_objectives={"AO2": 4},
+    )
+    points = [
+        MarkSchemePoint(
+            text="Credit a correct result.",
+            marks=4,
+            assessment_objective="AO2",
+        )
+    ]
+
+    normalised = _normalise_calculation_guidance(question, points)
+
+    assert any("method credit" in point.text.casefold() for point in normalised)
+
+
+def test_equivalent_leading_command_is_normalised_to_blueprint_word() -> None:
+    assert _normalise_command_word(
+        "Identify 2 consequences for the program.",
+        "State",
+    ) == "State 2 consequences for the program."
+    assert _normalise_command_word(
+        "The developer should identify a suitable test.",
+        "State",
+    ) == "The developer should identify a suitable test."
+
+
+def test_family_prompt_word_limit_rejects_layout_breaking_text() -> None:
+    question = GeneratedQuestion(
+        rule_id="programming",
+        number="9(e)",
+        marks=5,
+        kind="programming",
+        command_word="Develop",
+        topic_id="algorithms",
+        prompt="Develop a concise solution.",
+        mark_scheme=["Credit a valid solution."],
+        assessment_objectives={"AO3": 5},
+        authoring_context={"max_prompt_words": 12},
+    )
+
+    with pytest.raises(ValueError, match="maximum is 12"):
+        _validate_prompt_length(
+            question,
+            "Develop a solution that includes many unnecessary explanatory words "
+            "which would force the response area onto another page.",
+        )
+
+
+def test_local_seeded_fallback_is_limited_to_safe_stem_failures() -> None:
+    assert _seeded_fallback_allowed(
+        provider="ollama",
+        failure="calculation changed the required precision instruction",
+    )
+    assert _seeded_fallback_allowed(
+        provider="ollama",
+        failure="question 7 is only a paraphrase of the draft (1.000)",
+    )
+    assert _seeded_fallback_allowed(
+        provider="ollama",
+        failure="question 8 prompt has 27 words; maximum is 20",
+    )
+    assert _seeded_fallback_allowed(
+        provider="ollama",
+        failure="question 9 omitted a required source or visual term",
+    )
+    assert _seeded_fallback_allowed(
+        provider="ollama",
+        failure=(
+            "mcq changed immutable numeric data: expected Counter(), "
+            "got Counter({'2016': 1})"
+        ),
+    )
+    assert not _seeded_fallback_allowed(
+        provider="openai",
+        failure="calculation changed the required precision instruction",
+    )
+    assert not _seeded_fallback_allowed(
+        provider="ollama",
+        failure="mark scheme has incorrect causal reasoning",
+    )
+
+
+def test_local_precision_drift_uses_independently_reviewed_seeded_stem() -> None:
+    point = MarkSchemePoint(
+        text="Award two marks for the correct method and result.",
+        marks=2,
+        assessment_objective="AO2",
+    )
+    question = GeneratedQuestion(
+        rule_id="calculation",
+        number="1",
+        marks=2,
+        kind="calculation",
+        command_word="Calculate",
+        topic_id="indices",
+        prompt="Calculate the change from 2024 to 2028 to one decimal place.",
+        mark_scheme=[point.text],
+        structured_mark_scheme=[point],
+        assessment_objectives={"AO2": 2},
+        authoring_context={
+            "preserve_mark_scheme": True,
+            "max_prompt_words": 14,
+        },
+    )
+    task = _Task(
+        key=(0, 0, 0),
+        question=question,
+        option=GeneratedOption(id="data", title="Indices", questions=[question]),
+        topic=type(
+            "Topic",
+            (),
+            {"id": "indices", "title": "Index numbers", "points": []},
+        )(),
+    )
+
+    class Client:
+        provider = "ollama"
+        model = "test"
+
+        def __init__(self) -> None:
+            invalid = {
+                "questions": [
+                    {
+                        "id": "0/0/0",
+                        "prompt": (
+                            "Calculate the change from 2024 to 2028 to 2 decimal places."
+                        ),
+                    }
+                ]
+            }
+            self.responses = iter(
+                [invalid, invalid, invalid, _review_response("0/0/0", approved=True)]
+            )
+
+        def generate_json(self, _prompt: str) -> dict[str, object]:
+            return next(self.responses)
+
+    result = _generate_item_transaction(
+        task,
+        client=Client(),
+        subject="Economics",
+        seed=1,
+        policy=GenerationPolicy(attempts=3),
+        progress=None,
+        accepted_prompts=[],
+    )
+
+    assert result.prompt == question.prompt
+    assert result.provenance == "reviewed-seeded-fallback:ollama"
 
 
 class _Client:
@@ -200,6 +367,49 @@ def test_generation_prompt_exposes_semantics_but_withholds_draft_marking_points(
     assert "an empty list means the prompt contains no numeric token" in prompt
     assert "source labels such as `Extract 1`" in prompt
     assert "Compose fresh prose around those elements" in prompt
+
+
+def test_generation_prompt_skips_model_scheme_for_verified_guidance() -> None:
+    question = GeneratedQuestion(
+        rule_id="q1",
+        number="1",
+        marks=2,
+        kind="calculation",
+        command_word="Calculate",
+        topic_id="indices",
+        prompt="Calculate the index change.",
+        mark_scheme=["Award the verified method and answer."],
+        assessment_objectives={"AO2": 2},
+        authoring_context={
+            "preserve_mark_scheme": True,
+            "max_prompt_words": 14,
+        },
+    )
+    task = _Task(
+        key=(0, 0, 0),
+        question=question,
+        option=GeneratedOption(id="data", title="Indices", questions=[question]),
+        topic=type(
+            "Topic",
+            (),
+            {"id": "indices", "title": "Index numbers", "points": []},
+        )(),
+    )
+
+    prompt = _generation_prompt(
+        [task],
+        subject="Economics",
+        seed=1,
+        attempt=1,
+        previous_failure="",
+    )
+
+    assert '"mark_scheme_locked": true' in prompt
+    assert '"minimum_substantive_mark_scheme_points": 0' in prompt
+    assert '"required_awarded_entries": []' in prompt
+    assert '"maximum_prompt_words": 14' in prompt
+    assert "return an empty `mark_scheme` array" in prompt
+    assert "must not exceed `maximum_prompt_words`" in prompt
 
 
 def test_self_contained_numeric_mcq_excludes_unrelated_option_stimulus() -> None:
@@ -657,6 +867,85 @@ def test_checkpointed_item_must_still_meet_release_quality_gate() -> None:
         _validate_checkpoint_item(task, question)
 
 
+def test_checkpoint_cannot_replace_a_locked_verified_mark_scheme() -> None:
+    verified = MarkSchemePoint(
+        text="Credit the verified economic relationship.",
+        marks=1,
+        assessment_objective="AO1",
+    )
+    question = GeneratedQuestion(
+        rule_id="q1",
+        number="1",
+        marks=1,
+        kind="explain",
+        command_word="Explain",
+        topic_id="economics",
+        prompt="Explain the economic relationship.",
+        mark_scheme=[verified.text],
+        structured_mark_scheme=[verified],
+        assessment_objectives={"AO1": 1},
+        authoring_context={"preserve_mark_scheme": True},
+    )
+    task = _Task(
+        key=(0, 0, 0),
+        question=question,
+        option=GeneratedOption(id="case", title="Case", questions=[question]),
+        topic=object(),
+    )
+    replacement = MarkSchemePoint(
+        text="Credit an unrelated replacement relationship.",
+        marks=1,
+        assessment_objective="AO1",
+    )
+    checkpoint = question.model_copy(
+        update={
+            "mark_scheme": [replacement.text],
+            "structured_mark_scheme": [replacement],
+        }
+    )
+
+    with pytest.raises(ValueError, match="changed verified marking guidance"):
+        _validate_checkpoint_item(task, checkpoint)
+
+
+def test_checkpoint_can_adopt_a_new_prompt_budget_without_content_changes() -> None:
+    point = MarkSchemePoint(
+        text="Credit the verified relationship.",
+        marks=1,
+        assessment_objective="AO1",
+    )
+    current = GeneratedQuestion(
+        rule_id="q1",
+        number="1",
+        marks=1,
+        kind="explain",
+        command_word="Explain",
+        topic_id="economics",
+        prompt="Explain the relationship.",
+        mark_scheme=[point.text],
+        structured_mark_scheme=[point],
+        assessment_objectives={"AO1": 1},
+        authoring_context={
+            "preserve_mark_scheme": True,
+            "max_prompt_words": 12,
+        },
+    )
+    task = _Task(
+        key=(0, 0, 0),
+        question=current,
+        option=GeneratedOption(id="case", title="Case", questions=[current]),
+        topic=object(),
+    )
+    stored = current.model_copy(
+        update={"authoring_context": {"preserve_mark_scheme": True}}
+    )
+
+    upgraded = _upgrade_checkpoint_metadata(task, stored)
+
+    assert upgraded.authoring_context == current.authoring_context
+    _validate_checkpoint_item(task, upgraded)
+
+
 def test_source_constrained_calculation_preserves_its_verified_prompt() -> None:
     question = GeneratedQuestion(
         rule_id="partnership",
@@ -797,6 +1086,10 @@ def test_verified_contract_item_bypasses_model_generation() -> None:
         def generate_json(self, _prompt: str) -> dict[str, object]:
             raise AssertionError("verified contracts must not invoke the model")
 
+    class Checkpoint:
+        def load_item(self, _key: str) -> GeneratedQuestion | None:
+            raise AssertionError("verified contracts must not reload a checkpoint")
+
     result = _generate_batch(
         [task],
         client=Client(),
@@ -804,6 +1097,7 @@ def test_verified_contract_item_bypasses_model_generation() -> None:
         seed=1,
         policy=GenerationPolicy(),
         progress=None,
+        checkpoint_store=Checkpoint(),  # type: ignore[arg-type]
     )
 
     assert result[task.key].prompt == question.prompt

@@ -12,23 +12,26 @@ from Backend.Core.model_review import (
 class ReviewClient:
     def __init__(self, response: dict[str, object]) -> None:
         self.response = response
+        self.prompt = ""
 
-    def generate_json(self, _prompt: str) -> dict[str, object]:
+    def generate_json(self, prompt: str) -> dict[str, object]:
+        self.prompt = prompt
         return self.response
 
 
 def test_independent_review_returns_structured_repair_diagnostics() -> None:
+    client = ReviewClient(
+        {
+            "approved": False,
+            "factual_issues": ["The exchange-rate direction is reversed."],
+            "marking_issues": [],
+            "source_issues": [],
+            "difficulty_issues": [],
+            "ambiguity_issues": [],
+        }
+    )
     result = independent_review(
-        ReviewClient(
-            {
-                "approved": False,
-                "factual_issues": ["The exchange-rate direction is reversed."],
-                "marking_issues": [],
-                "source_issues": [],
-                "difficulty_issues": [],
-                "ambiguity_issues": [],
-            }
-        ),
+        client,
         item_id="q1",
         subject="Economics",
         blueprint={"marks": 4},
@@ -41,6 +44,7 @@ def test_independent_review_returns_structured_repair_diagnostics() -> None:
         factual_issues=["The exchange-rate direction is reversed."],
     )
     assert result.issues == ["The exchange-rate direction is reversed."]
+    assert "Semantically equivalent original wording is expected" in client.prompt
 
 
 def test_require_independent_review_preserves_rejecting_wrapper_behavior() -> None:

@@ -57,7 +57,7 @@ def _analysis_prompt(point: str, evidence: str, index: int) -> str:
         )[(index - 1) % 4]
         return (
             "Explain how one machine-code instruction is processed during the "
-            "fetch-decode-execute cycle. Refer to the program counter, memory address "
+            f"fetch-decode-execute cycle in {evidence}. Refer to the program counter, memory address "
             "register, memory data register, current instruction register and control unit. "
             f"{emphasis}"
         )
@@ -93,6 +93,28 @@ def _programming_prompt(point: str, evidence: str) -> str:
         f"to {evidence}. Include validation, exceptional-input handling and explanations "
         "of the important design decisions."
     )
+
+
+def _programming_scheme(point: str, evidence: str) -> list[str]:
+    value = point.casefold()
+    if any(
+        term in value
+        for term in ("processor components", "fetch-decode", "processor performance")
+    ):
+        return [
+            "The processor and main memory are identified and connected correctly.",
+            "Relevant registers, such as the program counter, memory address register and memory data register, are labelled and used consistently.",
+            "The address bus, data bus and control bus are labelled with technically correct roles or transfer directions.",
+            "Input, processing, storage and output form a coherent transfer path.",
+            "Credit an equivalent technically valid architecture or diagram.",
+        ]
+    return [
+        "Inputs, outputs and identifiers are defined consistently.",
+        "Sequence, selection and iteration or an equivalent suitable structure are correct.",
+        "Boundary, invalid and exceptional inputs are handled.",
+        f"The solution applies {point} to {evidence}.",
+        "Award method credit for a coherent alternative design.",
+    ]
 
 
 def build_paper(
@@ -189,6 +211,32 @@ def _question(
     point = topic.points[(index - 1) % len(topic.points)]
     evidence = f"the {context.removeprefix('a ').removeprefix('an ')}"
     focus = _technical_focus(point)
+    authoring_context: dict[str, object] = (
+        {"allow_additional_numeric_values": True}
+        if rule.kind in {"analysis", "extended_response", "programming"}
+        else {}
+    )
+    authoring_context["max_prompt_words"] = (
+        45
+        if rule.kind == "programming"
+        else 65
+        if rule.kind == "extended_response"
+        else 55
+    )
+    if rule.command_word.casefold() == "state" and rule.marks <= 2:
+        authoring_context.update(
+            {
+                "preserve_prompt": True,
+                "preserve_mark_scheme": True,
+            }
+        )
+    if "fetch-decode-execute" in point.casefold():
+        authoring_context.update(
+            {
+                "preserve_prompt": True,
+                "preserve_mark_scheme": True,
+            }
+        )
     if rule.kind == "short_answer":
         if rule.marks == 1:
             aspect = (
@@ -213,28 +261,44 @@ def _question(
             )
         scheme = [
             f"One mark for each accurate, distinct point about {point}.",
-            f"Accept a technically equivalent answer applied to case {case_id}.",
+            f"Accept a technically equivalent answer applied to {evidence}.",
         ]
     elif rule.kind == "analysis":
         prompt = _analysis_prompt(point, evidence, index)
         scheme = [
             f"Accurate knowledge of {point}.",
             "A linked technical chain from design choice to system behaviour.",
-            f"Application to the constraints and data in case {case_id}.",
+            f"Application to the constraints and data for {evidence}.",
             "Credit a correct trace, calculation, diagram or equivalent reasoning.",
         ]
     elif rule.kind == "calculation":
-        value = rng.randint(18, 238)
-        prompt = (
-            f"Calculate the 8-bit unsigned binary and hexadecimal representations "
-            f"of the denary value {value}. Show each conversion stage required by "
-            "the number of marks available."
+        authoring_context.update(
+            {
+                "preserve_prompt": True,
+                "preserve_mark_scheme": True,
+            }
         )
-        scheme = [
-            f"8-bit binary: {value:08b}.",
-            f"Hexadecimal: {value:02X}.",
-            "Award method marks for correct place values or a valid intermediate conversion.",
-        ]
+        if topic.id == "systems-5":
+            boolean_tasks = {
+                2: (
+                    "Calculate the output Q when A = 0 and B = 1 for Q = A OR B.",
+                    ["Q = 1."],
+                ),
+                3: (
+                    "Calculate the output R when A = 1 and B = 0 for R = (NOT A) AND B.",
+                    ["NOT A = 0, therefore R = 0."],
+                ),
+                4: (
+                    "Calculate the output of Q = A XOR B for A = 0, B = 0 and for A = 1, B = 1.",
+                    [
+                        "For A = 0 and B = 0, Q = 0.",
+                        "For A = 1 and B = 1, Q = 0.",
+                    ],
+                ),
+            }
+            prompt, scheme = boolean_tasks[index]
+        else:
+            prompt, scheme = _representation_calculation(index, marks=rule.marks, rng=rng)
     elif rule.kind == "trace":
         iterations = rng.randint(3, 7)
         prompt = (
@@ -258,7 +322,7 @@ def _question(
             "Inputs and output are labelled.",
             f"The diagram implements {point} correctly.",
             "Connections, direction or Boolean operators are unambiguous.",
-            f"The result is applied to the requirements of case {case_id}.",
+            f"The result is applied to the requirements of {evidence}.",
         ]
     elif rule.kind == "table":
         comparison = topic.points[index % len(topic.points)]
@@ -272,25 +336,19 @@ def _question(
             f"Accurate operation of {point}.",
             f"Accurate operation of {comparison}.",
             "A technically valid benefit and limitation.",
-            f"A justified choice linked to case {case_id}.",
+            f"A justified choice linked to {evidence}.",
             "Award one mark per distinct correct table entry up to the maximum.",
         ]
     elif rule.kind == "programming":
         prompt = _programming_prompt(point, evidence)
-        scheme = [
-            "Inputs, outputs and identifiers are defined consistently.",
-            "Sequence, selection and iteration or an equivalent suitable structure are correct.",
-            "Boundary, invalid and exceptional inputs are handled.",
-            f"The solution applies {point} to case {case_id}.",
-            "Award method credit for a coherent alternative design.",
-        ]
+        scheme = _programming_scheme(point, evidence)
     elif rule.kind == "extended_response":
         prompt = (
             f"Discuss the consequences of using {point} in {evidence}, focusing on {focus}. "
             "Consider technical operation, users, risks, alternatives and the evidence "
             "needed before deployment."
         )
-        scheme = _levels(rule.marks, topic, point, case_id)
+        scheme = _levels(rule.marks, topic, point, evidence)
     else:
         raise ValueError(f"unsupported OCR H446 question kind: {rule.kind}")
     return GeneratedQuestion(
@@ -302,10 +360,72 @@ def _question(
         topic_id=topic.id,
         prompt=prompt,
         mark_scheme=scheme,
+        authoring_context=authoring_context,
     )
 
 
-def _levels(marks: int, topic: Topic, point: str, case_id: int) -> list[str]:
+def _representation_calculation(
+    index: int,
+    *,
+    marks: int,
+    rng: random.Random,
+) -> tuple[str, list[str]]:
+    if index == 1:
+        value = rng.randint(18, 238)
+        return (
+            f"Calculate the hexadecimal representation of the denary value {value}.",
+            [f"Hexadecimal: {value:02X}."],
+        )
+    if index == 3:
+        width = rng.choice([64, 128, 256])
+        height = rng.choice([32, 64, 128])
+        depth = rng.choice([4, 8])
+        bits = width * height * depth
+        return (
+            f"Calculate the uncompressed size in bytes of a {width} by {height} pixel bitmap with a colour depth of {depth} bits. Show your working.",
+            [
+                f"Method: {width} × {height} × {depth} = {bits} bits.",
+                f"{bits} ÷ 8 = {bits // 8} bytes.",
+            ],
+        )
+    if index == 4:
+        sample_rate = rng.choice([8_000, 12_000])
+        sample_depth = rng.choice([8, 16])
+        duration = rng.choice([2, 3])
+        size = sample_rate * sample_depth * duration // 8
+        return (
+            f"Calculate the uncompressed size in bytes of a mono sound sampled at {sample_rate} Hz with a {sample_depth}-bit sample depth for {duration} seconds. Show your working.",
+            [
+                f"Method: {sample_rate} × {sample_depth} × {duration} bits.",
+                "Divide the result by 8 to convert bits to bytes.",
+                f"File size = {size} bytes.",
+            ],
+        )
+    if index == 5:
+        left = rng.randint(40, 90)
+        right = rng.randint(20, 70)
+        total = left + right
+        return (
+            f"Calculate the sum of the two 8-bit unsigned binary values {left:08b} and {right:08b}. Give the 8-bit result and state whether overflow occurs. Show your working.",
+            [
+                f"Method: align {left:08b} and {right:08b} by place value.",
+                "Add corresponding bits from right to left, carrying where required.",
+                f"8-bit result: {total:08b}.",
+                "No overflow occurs because the result is no greater than 255.",
+            ],
+        )
+    if index == 6:
+        return (
+            "Calculate the representation of denary 6.5 in an 8-bit normalised floating-point format using a 5-bit two's complement mantissa followed by a 3-bit two's complement exponent. The binary point is after the mantissa sign bit.",
+            [
+                "6.5 is 110.1 in binary, which normalises to 0.1101 × 2³.",
+                "Mantissa 01101 and exponent 011, giving 01101011.",
+            ],
+        )
+    raise ValueError(f"unsupported representation calculation {index} ({marks} marks)")
+
+
+def _levels(marks: int, topic: Topic, point: str, evidence: str) -> list[str]:
     if marks == 12:
         bands = [
             "Level 4 (10–12): thorough technical knowledge, sustained contextual reasoning, balanced discussion and a supported conclusion.",
@@ -320,7 +440,7 @@ def _levels(marks: int, topic: Topic, point: str, case_id: int) -> list[str]:
             "Level 1 (1–3): isolated correct points or unsupported assertions.",
         ]
     return [
-        f"Indicative content: {topic.title}; {point}; application to case {case_id}.",
+        f"Indicative content: {topic.title}; {point}; application to {evidence}.",
         "Consider correctness, performance, security, maintainability, users and realistic alternatives where relevant.",
         *bands,
         "Level 0 (0): no creditworthy material.",

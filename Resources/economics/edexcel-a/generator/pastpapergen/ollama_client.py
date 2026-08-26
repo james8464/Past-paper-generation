@@ -12,13 +12,16 @@ from threading import Lock
 from typing import Callable
 
 from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
-from Backend.Core.assessment_quality import validate_economics_causal_direction
+from Backend.Core.assessment_quality import (
+    validate_economics_causal_direction,
+)
 from Backend.Core.model_review import (
     assert_materially_new,
     require_independent_review,
 )
-from pastpapergen.models import GraphParams, MultipleChoiceOption, PaperBlueprint, QuestionBlueprint, Syllabus, SyllabusTopic
+from pastpapergen.models import MultipleChoiceOption, PaperBlueprint, QuestionBlueprint, Syllabus, SyllabusTopic
 from pastpapergen.notes import note_context_for_topic
+from pastpapergen.stimulus_data import line_chart_data, line_chart_values, review_table_rows
 
 _logger = logging.getLogger(__name__)
 
@@ -88,7 +91,7 @@ def build_question_prompt(question: QuestionBlueprint, topic: SyllabusTopic) -> 
         topic.id,
         title=topic.title,
         keywords=topic.points,
-    )[:6000]
+    )[:1800]
     return f"""You are writing an unofficial A-Level Economics paper.
 
 Use only this syllabus topic:
@@ -98,7 +101,7 @@ Title: {topic.title}
 Syllabus points (you must align every mark scheme bullet to these):
 {points}
 
-Uploaded revision-note context (use this data for source figures, extraction content and specific examples):
+Revision-note context for factual grounding:
 {note_context}
 
 Write one genuinely new, independent Edexcel A-style question. Do not copy, reconstruct, or closely paraphrase any live, historic, or draft paper question.
@@ -109,63 +112,31 @@ Command word: {question.command_word}
 Parts: {_parts_for_prompt(question)}
 Stimulus kind: {question.stimulus_kind or "none"}
 Draft intent: {question.prompt}
+Verified source context: {question.source_text[:1600] or "none"}
+Authoring task: {"Return a new one- or two-sentence fictional scenario context in question_text; do not repeat the multipart wrapper or any part prompt." if question.parts else "Return a materially new question that preserves the command word and source-reference pattern."}
 
 Style rules:
 - Match the command word exactly: {question.command_word}.
 - Preserve the command word and source reference pattern from the draft intent.
+- Keep question_text to at most {max(12, len(question.prompt.split()) + 2)} words so it fits the measured examiner-paper layout.
+- Preserve these specification scope terms verbatim when present: {', '.join(_required_scope_terms(question)) or 'none'}.
+- Preserve the exact task framing. In particular, do not turn a question asking for one likely effect on an outcome into a question about how a policy tool is used.
 - 12-mark questions usually use discuss whether, discuss the extent, or to what extent.
 - 10-mark questions usually use assess whether, assess the, or to what extent.
 - For Section A, match the stimulus kind: graph, table, pay-off matrix, line graph or short context.
-- For Section C, write a short source-style extract in source_text; the question paper displays both choices first.
+- The verified source text, source reference, options, keyed answer, mark breakdown, mark scheme and indicative content are immutable. Do not return or rewrite them.
 - Do not add instructions such as 'Consider both positive and negative arguments' or 'include relevant theories'.
 - Do not include '(4 marks)' or similar mark text in any question or part text.
 - If parts are supplied, rewrite each part separately rather than combining the parts into the main question text.
 - Do not start part prompts with labels such as '(a)', 'a)' or 'Question 1(a)' because labels are rendered separately.
-- If a one-mark MCQ is supplied, return four options A-D and one correct_option.
 - If stimulus_kind is set, include a graph_params object with numeric values for equilibrium price and quantity that match the question context. This makes the diagram specific to the question data.
-- Return ALL JSON fields — do not omit anything.
+- Return every supplied part label exactly once. Return an empty parts array when Parts is none.
 
-CRITICAL: MARK SCHEME REQUIREMENTS
-Mark scheme bullets must be specific to the generated question.
-The mark_scheme and indicative_content fields must be EXCESSIVELY DETAILED. Follow these rules exactly:
-
-1. The mark_scheme array must have at least 8-15 bullets, depending on marks.
-2. Each bullet must be explicitly linked to one or more of the syllabus points listed above.
-3. Structure the mark scheme in three sections separated by empty-string bullets:
-   - "AO1 (Knowledge/Understanding):" then 2-4 specific knowledge bullets tied to exact syllabus points (e.g. "AO1: Recall that PED = %ΔQd / %ΔP (syllabus point: price elasticity of demand)")
-   - "AO2 (Application):" then 2-4 bullets using SPECIFIC numeric data from the source text, extract or figure (e.g. "AO2: Using the PED value of -1.4 and the 5% price fall from Figure 1, correctly calculates 5% × 1.4 = 7% increase in quantity demanded")
-   - "AO3 (Analysis):" then 2-4 bullets showing logical chains of reasoning with economic theory (e.g. "AO3: Explains that the price fall increases consumer surplus because the lower price expands the market along the demand curve")
-   - For questions of 10+ marks, also add:
-     - "AO4 (Evaluation):" then 2-4 bullets with counter-arguments, real-world limitations, stakeholder trade-offs, or judgement criteria
-4. Every bullet must reference actual numbers, syllabus concepts, or source data — never generic phrases like "accurate economic theory" or "relevant application".
-5. The indicative_content array must list 8-15 specific, concrete answer points that a top-band student would make, each directly addressing the question.
-6. For parts (sub-questions), each part must have its own mark_scheme and indicative_content following the same level of detail.
-7. Use exact syllabus terminology (e.g., "marginal social cost", "de-mutualisation", "quantitative easing") rather than vague terms.
-
-EXAMPLE of a good 8-mark mark_scheme:
-[
-  "",
-  "AO1 (Knowledge/Understanding):",
-  "Correctly identifies that PES measures the responsiveness of quantity supplied to a change in price (syllabus: price elasticity of supply).",
-  "States the formula PES = %ΔQs / %ΔP and recognises that PES > 1 indicates elastic supply.",
-  "",
-  "AO2 (Application):",
-  "Using the rural market PES value of 1.8 from the extract, correctly applies 3.6% / 1.8 = 2.0%.",
-  "Correctly interprets the result: price increases by 2.0% because supply is relatively elastic.",
-  "",
-  "AO3 (Analysis):",
-  "Explains that elastic supply in the rural market is due to spare capacity, available substitutes or time period (long run).",
-  "Analyses how the smaller price rise benefits consumers by limiting pass-through of cost increases."
-]
+VERIFIED MARKING IS IMMUTABLE. Return only the compact authoring fields below.
 
 Return JSON only with this schema:
 {{
   "question_text": "string",
-  "source_text": "string or empty string",
-  "source_reference": "Figure 1, Extract A, Extract B, or empty string",
-  "mark_breakdown": "string such as 'Knowledge 2, Application 2'",
-  "indicative_content": ["8-15 specific answer points a top student would make"],
-  "mark_scheme": ["8-15 detailed bullets structured as AO1/AO2/AO3(/AO4 for 10+ marks), each tied to specific syllabus points and source data"],
   "graph_params": {{
     "eq_price": <integer between 20 and 200, matching source data>,
     "eq_quantity": <integer between 30 and 300, matching source data>,
@@ -174,17 +145,7 @@ Return JSON only with this schema:
   "parts": [
     {{
       "label": "a",
-      "prompt": "string",
-      "mark_breakdown": "string",
-      "mark_scheme": ["8-15 detailed bullets per part, same AO structure"],
-      "indicative_content": ["specific answer points for this part"],
-      "options": [
-        {{"label": "A", "text": "string"}},
-        {{"label": "B", "text": "string"}},
-        {{"label": "C", "text": "string"}},
-        {{"label": "D", "text": "string"}}
-      ],
-      "correct_option": "A"
+      "prompt": "string"
     }}
   ]
 }}
@@ -227,14 +188,22 @@ def generate_questions_with_ollama(
         if checkpoint_store is not None:
             stored = checkpoint_store.load_payload(checkpoint_key)
             if stored is not None:
-                candidate = QuestionBlueprint.model_validate(stored)
-                _validate_ai_question(question, candidate)
-                with results_lock:
-                    results[question_index] = candidate
-                return (
-                    f"Resumed reviewed question {index}/{total}: "
-                    f"{question.number}"
-                )
+                try:
+                    candidate = QuestionBlueprint.model_validate(stored)
+                    if _uses_review_only_generation(question):
+                        if candidate != question:
+                            raise ValueError("stored immutable question changed")
+                    else:
+                        _validate_ai_question(question, candidate)
+                except (ValueError, TypeError):
+                    checkpoint_store.discard_item(checkpoint_key)
+                else:
+                    with results_lock:
+                        results[question_index] = candidate
+                    return (
+                        f"Resumed reviewed question {index}/{total}: "
+                        f"{question.number}"
+                    )
         try:
             topic = syllabus.get_topic(question.topic_id)
         except KeyError as error:
@@ -246,37 +215,103 @@ def generate_questions_with_ollama(
             f"Generating question {index}/{total}: {question.number} "
             f"(Section {question.section}, {question.marks} marks, {topic.title})"
         )
-        payload = client.generate_json(build_question_prompt(question, topic))
-        question_text = _merge_question_text(question, str(payload.get("question_text") or ""))
-        source_text = _merge_source_text(str(payload.get("source_text") or ""), question.source_text, question)
-        source_reference = str(payload.get("source_reference") or question.source_reference)
-        mark_breakdown = str(payload.get("mark_breakdown") or question.mark_breakdown)
-        indicative_content = _merge_text_list(payload.get("indicative_content"), question.indicative_content)
-        mark_scheme = _merge_text_list(payload.get("mark_scheme"), question.mark_scheme)
-        parts = _merge_parts(question, payload.get("parts"))
-        graph_params_raw = payload.get("graph_params")
-        graph_params = GraphParams.from_dict(graph_params_raw) if isinstance(graph_params_raw, dict) else GraphParams()
-        candidate = question.model_copy(
-            update={
-                "prompt": question_text,
-                "source_text": source_text,
-                "source_reference": source_reference,
-                "mark_breakdown": mark_breakdown,
-                "indicative_content": indicative_content,
-                "mark_scheme": mark_scheme,
-                "parts": parts,
-                "graph_params": graph_params,
-            }
-        )
-        _validate_ai_question(question, candidate)
-        require_independent_review(
-            client,
-            item_id=f"question-{question.number}",
-            subject="Edexcel A-level Economics A",
-            blueprint=question,
-            candidate=candidate,
-            specification=topic,
-        )
+        if _uses_review_only_generation(question):
+            require_independent_review(
+                client,
+                item_id=f"question-{question.number}",
+                subject="Edexcel A-level Economics A",
+                blueprint=question,
+                candidate=question,
+                specification=_review_specification(topic, question),
+            )
+            if checkpoint_store is not None:
+                checkpoint_store.save_payload(
+                    checkpoint_key,
+                    question.model_dump(mode="json"),
+                )
+            with results_lock:
+                results[question_index] = question
+            return (
+                f"Reviewed immutable question {index}/{total}: "
+                f"{question.number} ({topic.title})"
+            )
+        base_prompt = build_question_prompt(question, topic)
+        failure = ""
+        for attempt in range(1, 4):
+            retry_prompt = (
+                base_prompt
+                if not failure
+                else f"{base_prompt}\nPrevious attempt rejected: {failure}\nCorrect every issue in the next response."
+            )
+            payload = client.generate_json(retry_prompt)
+            question_text = _merge_question_text(question, str(payload.get("question_text") or ""))
+            source_text = _merge_source_text(str(payload.get("source_text") or ""), question.source_text, question)
+            source_reference = question.source_reference
+            # Source binding, answer data and AO allocation are immutable
+            # properties of the verified paper plan, not creative model output.
+            mark_breakdown = question.mark_breakdown
+            indicative_content = question.indicative_content
+            mark_scheme = question.mark_scheme
+            parts = question.parts
+            # Diagram geometry and numerical parameters are assessment data.
+            # Keep the seeded blueprint values instead of accepting an unrelated
+            # chart type invented by the authoring model.
+            graph_params = question.graph_params
+            candidate = question.model_copy(
+                update={
+                    "prompt": question_text,
+                    "source_text": source_text,
+                    "source_reference": source_reference,
+                    "mark_breakdown": mark_breakdown,
+                    "indicative_content": indicative_content,
+                    "mark_scheme": mark_scheme,
+                    "parts": parts,
+                    "graph_params": graph_params,
+                }
+            )
+            try:
+                _validate_ai_question(question, candidate)
+                require_independent_review(
+                    client,
+                    item_id=f"question-{question.number}",
+                    subject="Edexcel A-level Economics A",
+                    blueprint=_multipart_review_view(question),
+                    candidate=_multipart_review_view(candidate),
+                    specification=_review_specification(topic, candidate),
+                )
+                break
+            except ValueError as error:
+                failure = str(error)
+                if attempt == 3:
+                    fallback_eligible = any(
+                        reason in failure
+                        for reason in (
+                            "only a paraphrase of the draft",
+                            "stem word budget",
+                            "changed required scope term",
+                        )
+                    )
+                    if (
+                        not supports_parallel
+                        and fallback_eligible
+                    ):
+                        try:
+                            require_independent_review(
+                                client,
+                                item_id=f"question-{question.number}",
+                                subject="Edexcel A-level Economics A",
+                                blueprint=question,
+                                candidate=question,
+                                specification=_review_specification(topic, question),
+                            )
+                        except ValueError as review_error:
+                            failure = str(review_error)
+                        else:
+                            candidate = question
+                            break
+                    raise ValueError(
+                        f"question-{question.number} failed after 3 reviewed attempts: {failure}"
+                    ) from error
         if checkpoint_store is not None:
             checkpoint_store.save_payload(
                 checkpoint_key,
@@ -289,18 +324,72 @@ def generate_questions_with_ollama(
             f"{question.number} ({topic.title})"
         )
 
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = {executor.submit(_build_task, i, q): i for i, q in enumerate(blueprint.questions)}
-        completed_messages: dict[int, str] = {}
-        next_message = 0
-        for future in as_completed(futures):
-            question_index = futures[future]
-            completed_messages[question_index] = future.result()
-            while next_message in completed_messages:
-                emit(completed_messages.pop(next_message))
-                next_message += 1
+    if max_workers == 1:
+        for index, question in enumerate(blueprint.questions):
+            emit(_build_task(index, question))
+    else:
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(_build_task, i, question): i
+                for i, question in enumerate(blueprint.questions)
+            }
+            completed_messages: dict[int, str] = {}
+            next_message = 0
+            for future in as_completed(futures):
+                question_index = futures[future]
+                completed_messages[question_index] = future.result()
+                while next_message in completed_messages:
+                    emit(completed_messages.pop(next_message))
+                    next_message += 1
     questions = [results[i] for i in range(total)]
     return blueprint.model_copy(update={"questions": questions})
+
+
+def _multipart_review_view(question: QuestionBlueprint) -> QuestionBlueprint:
+    """Keep a multipart review focused on the rendered part-level guidance."""
+
+    if not question.parts:
+        return question
+    return question.model_copy(
+        update={
+            "mark_breakdown": "",
+            "mark_scheme": [],
+            "indicative_content": [],
+        }
+    )
+
+
+def _review_specification(
+    topic: SyllabusTopic,
+    question: QuestionBlueprint,
+) -> dict[str, object]:
+    _y_label, x_label, values = line_chart_data(question.stimulus_kind)
+    point_labels = (
+        [f"{x_label} {index}: {value}" for index, value in enumerate(values, start=1)]
+        if line_chart_values(question.stimulus_kind)
+        else []
+    )
+    return {
+        "topic": topic.model_dump(mode="json"),
+        "rendered_stimulus": {
+            "kind": question.stimulus_kind,
+            "values": line_chart_values(question.stimulus_kind),
+            "point_labels": point_labels,
+            "rows": review_table_rows(question.stimulus_kind),
+            "description": _stimulus_description(question.stimulus_kind),
+            "source_text": question.source_text,
+            "placement": "The complete stimulus/source text is rendered between the question stem and its subparts.",
+        },
+    }
+
+
+def _stimulus_description(kind: str) -> str:
+    if kind == "cost_revenue_graph":
+        return (
+            "The paper renders labelled costs/revenues and output axes for the "
+            "candidate's AR, MR, AC and MC diagram before both subparts."
+        )
+    return ""
 
 
 def _merge_parts(question: QuestionBlueprint, raw_parts: object) -> list:
@@ -359,21 +448,8 @@ def _clean_prompt(prompt: str) -> str:
     return " ".join(cleaned.split())
 
 
-def _merge_part_prompt(part, raw: dict) -> str:
-    if not isinstance(raw, dict):
-        return part.prompt
-    fallback = _strip_part_label(_clean_prompt(part.prompt), part.label)
-    candidate = _strip_part_label(_clean_prompt(str(raw.get("prompt") or part.prompt)), part.label)
-    lowered = candidate.lower()
-    if part.command_word == "draw" and not _has_word_starts(lowered, "draw"):
-        return fallback
-    if part.command_word == "calculate" and "calculate" not in lowered:
-        return fallback
-    if part.command_word == "explain" and "explain" not in lowered:
-        return fallback
-    if part.command_word == "mcq" and "which one of the following" not in lowered:
-        return fallback
-    return candidate
+def _merge_part_prompt(part, _raw: dict) -> str:
+    return _strip_part_label(_clean_prompt(part.prompt), part.label)
 
 
 def _validate_ai_question(
@@ -401,6 +477,56 @@ def _validate_ai_question(
     if actual != immutable:
         raise ValueError(
             f"question-{original.number} changed an immutable blueprint field"
+        )
+    verified_assessment_data = (
+        original.source_reference,
+        original.source_title,
+        original.source_text,
+        original.mark_breakdown,
+        original.mark_scheme,
+        original.indicative_content,
+        original.parts,
+        original.graph_params,
+    )
+    actual_assessment_data = (
+        candidate.source_reference,
+        candidate.source_title,
+        candidate.source_text,
+        candidate.mark_breakdown,
+        candidate.mark_scheme,
+        candidate.indicative_content,
+        candidate.parts,
+        candidate.graph_params,
+    )
+    if actual_assessment_data != verified_assessment_data:
+        raise ValueError(
+            f"question-{original.number} changed verified assessment data"
+        )
+    maximum_stem_words = max(12, len(original.prompt.split()) + 2)
+    if len(candidate.prompt.split()) > maximum_stem_words:
+        raise ValueError(
+            f"question-{original.number} exceeds the {maximum_stem_words}-word stem word budget"
+        )
+    missing_scope_terms = [
+        term
+        for term in _required_scope_terms(original)
+        if term not in candidate.prompt.casefold()
+    ]
+    if missing_scope_terms:
+        raise ValueError(
+            f"question-{original.number} changed required scope term(s): "
+            + ", ".join(missing_scope_terms)
+        )
+    if (
+        original.topic_id == "2.6"
+        and original.marks == 5
+        and (
+            "one likely effect" not in candidate.prompt.casefold()
+            or "on inflation" not in candidate.prompt.casefold()
+        )
+    ):
+        raise ValueError(
+            f"question-{original.number} changed the required effect-on-inflation task framing"
         )
     original_text = " ".join(
         [original.prompt, *(part.prompt for part in original.parts)]
@@ -495,9 +621,14 @@ def _validate_content_lists(
     scheme = [item.strip() for item in mark_scheme if item.strip()]
     indicative = [item.strip() for item in indicative_content if item.strip()]
     minimum = min(8, max(1, marks))
+    indicative_minimum = min(6, max(1, marks))
     if len(set(item.casefold() for item in scheme)) < minimum:
         raise ValueError(f"{item_id} has insufficient specific marking guidance")
-    if marks >= 5 and len(set(item.casefold() for item in indicative)) < minimum:
+    if (
+        marks >= 5
+        and len(set(item.casefold() for item in indicative))
+        < indicative_minimum
+    ):
         raise ValueError(f"{item_id} has insufficient indicative content")
 
 
@@ -520,13 +651,49 @@ def _strip_part_label(prompt: str, label: str) -> str:
     return cleaned
 
 
+def _required_scope_terms(question: QuestionBlueprint) -> tuple[str, ...]:
+    prompt = question.prompt.casefold()
+    terms = (
+        "non-profit objectives",
+        "training, childcare and infrastructure",
+    )
+    return tuple(term for term in terms if term in prompt)
+
+
 def _merge_question_text(question: QuestionBlueprint, generated: str) -> str:
     if question.parts:
-        return question.prompt
+        if question.section == "A" and question.stimulus_kind:
+            return question.prompt
+        source = " ".join(question.source_text.split())
+        if source:
+            sentence = re.split(r"(?<=[.!?])\s+", source, maxsplit=1)[0]
+            return " ".join(sentence.split()[:50])
+        return f"This question concerns {question.source_title or question.topic_id}."
     cleaned = _clean_prompt(generated or question.prompt)
     if not _matches_expected_question_style(question, cleaned):
         return question.prompt
-    return cleaned
+    return _restore_source_reference(cleaned, question.source_reference)
+
+
+def _uses_review_only_generation(question: QuestionBlueprint) -> bool:
+    """Keep calibrated Section A stimuli aligned with rendered assessment data."""
+    return question.section == "A" and bool(question.stimulus_kind)
+
+
+def _restore_source_reference(prompt: str, source_reference: str) -> str:
+    restored = prompt
+    if not source_reference:
+        return restored
+    figure = re.search(r"Figure\s+\d+", source_reference, flags=re.IGNORECASE)
+    table = re.search(r"Table\s+\d+", source_reference, flags=re.IGNORECASE)
+    extract = re.search(r"Extract\s+[A-Z]", source_reference, flags=re.IGNORECASE)
+    if figure:
+        restored = re.sub(r"\bthe diagram\b", figure.group(0), restored, count=1, flags=re.IGNORECASE)
+    if table:
+        restored = re.sub(r"\bthe table\b", table.group(0), restored, count=1, flags=re.IGNORECASE)
+    if extract:
+        restored = re.sub(r"\bthe extract\b", extract.group(0), restored, count=1, flags=re.IGNORECASE)
+    return restored
 
 
 def _has_word_starts(text: str, *words: str) -> bool:
@@ -585,6 +752,8 @@ def _matches_expected_question_style(question: QuestionBlueprint, prompt: str) -
 
 
 def _merge_source_text(generated: str, fallback: str, question: QuestionBlueprint) -> str:
+    if question.section == "A" and question.stimulus_kind:
+        return fallback
     cleaned = " ".join(generated.split())
     if not cleaned:
         return fallback

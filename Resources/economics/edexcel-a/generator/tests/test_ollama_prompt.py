@@ -29,13 +29,14 @@ def test_ollama_prompt_limits_generation_to_syllabus_topic():
     assert "10-mark questions usually use assess whether" in prompt
     assert "Return JSON only" in prompt
     assert '"parts"' in prompt
-    assert '"options"' in prompt
-    assert '"correct_option"' in prompt
-    assert '"mark_breakdown"' in prompt
+    assert '"options"' not in prompt
+    assert '"correct_option"' not in prompt
+    assert '"mark_breakdown"' not in prompt
+    assert "VERIFIED MARKING IS IMMUTABLE" in prompt
     assert "Do not include '(4 marks)' or similar mark text" in prompt
     assert "Preserve the command word and source reference pattern" in prompt
     assert "Do not add instructions such as 'Consider both positive and negative arguments'" in prompt
-    assert "Mark scheme bullets must be specific to the generated question" in prompt
+    assert "mark scheme and indicative content are immutable" in prompt
 
 
 def test_ollama_prompt_includes_uploaded_notes_context_for_topic():
@@ -56,6 +57,6 @@ def test_ollama_prompt_includes_uploaded_notes_context_for_topic():
 
     prompt = build_question_prompt(question, topic)
 
-    assert "Uploaded revision-note context" in prompt
+    assert "Revision-note context for factual grounding" in prompt
     assert "perfect competition" in prompt.lower()
     assert "contestability" in prompt.lower()

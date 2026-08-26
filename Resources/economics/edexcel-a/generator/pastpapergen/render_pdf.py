@@ -42,10 +42,12 @@ from pastpapergen.exam_dates import economics_exam_schedule
 from pastpapergen.models import GraphParams, PaperBlueprint, Syllabus
 from pastpapergen.notes import note_points_for_topic
 from pastpapergen.source_cases import GENERIC_SOURCE_ATTRIBUTION
+from pastpapergen.stimulus_data import line_chart_data, table_rows
 
 ANSWER_LINE_GAP_PT = L.answer_line_gap
 ANSWER_LINE_COLOR_HEX = L.answer_line_color
 ANSWER_LINE_DASH = L.answer_line_dash
+ANSWER_LINE_WIDTH_PT = 0.5
 BODY_FONT_SIZE_PT = L.body_font_size
 BODY_LEADING_PT = L.body_leading
 FONT_REGULAR = L.font_regular
@@ -1866,7 +1868,7 @@ def _draw_answer_lines_until(
 
 def _set_answer_line_style(pdf: canvas.Canvas) -> None:
     pdf.setStrokeColor(colors.HexColor(ANSWER_LINE_COLOR_HEX))
-    pdf.setLineWidth(0.25)
+    pdf.setLineWidth(ANSWER_LINE_WIDTH_PT)
     if ANSWER_LINE_DASH:
         pdf.setDash(*ANSWER_LINE_DASH)
     else:
@@ -2009,6 +2011,7 @@ _LINE_CHART_KINDS = {
     "household_savings_line_chart",
     "investment_line_chart",
     "current_account_line_chart",
+    "inequality_line_chart",
     "terms_of_trade_index_chart",
     "exchange_rate_index_chart",
 }
@@ -2062,44 +2065,7 @@ def _draw_data_table(pdf: canvas.Canvas, x: float, y: float, kind: str = "data_t
 
 
 def _table_rows(kind: str) -> list[list[str]]:
-    if kind == "ped_data_table":
-        return [["Age group", "PED"], ["16-18", "-0.7"], ["Adult", "-0.4"]]
-    if kind == "pes_data_table":
-        return [["Region", "PES"], ["Urban", "+0.5"], ["Rural", "+1.8"]]
-    if kind == "development_data_table":
-        return [
-            ["Country", "HDI", "GNI per head", "GDP per capita"],
-            ["Morocco", "0.683", "7 303", "3 795"],
-            ["Pakistan", "0.544", "4 624", "1 473"],
-        ]
-    if kind == "balance_payments_table":
-        return [["Year", "Exports", "Imports"], ["2021", "612", "645"], ["2022", "701", "748"], ["2023", "742", "789"]]
-    if kind == "inflation_index_table":
-        return [["Year", "CPI index", "Inflation"], ["2021", "100.0", "2.5%"], ["2022", "109.1", "9.1%"], ["2023", "116.0", "6.3%"]]
-    if kind == "concentration_ratio_table":
-        return [["Firm", "Market share", "Rank"], ["A", "26.6%", "1"], ["B", "19.5%", "2"], ["C", "12.7%", "3"]]
-    if kind == "elasticity_data_table":
-        return [["Good", "PED", "YED"], ["Bus travel", "-0.6", "+0.2"], ["Cinema", "-1.4", "+1.8"], ["Fuel", "-0.2", "+0.1"]]
-    if kind == "marginal_utility_table":
-        return [["Units consumed", "Total utility", "Marginal utility"], ["1", "42", "42"], ["2", "72", "30"], ["3", "90", "18"], ["4", "98", "8"]]
-    if kind == "opportunity_cost_ppc_table":
-        return [["Consumer goods", "100", "85", "60", "20"], ["Capital goods", "0", "20", "40", "60"]]
-    if kind == "shutdown_cost_table":
-        return [["Output", "Price", "AVC", "AC"], ["500", "£18", "£14", "£22"]]
-    if kind == "wage_rate_table":
-        return [["Year", "Average hourly wage", "Vacancies"], ["2021", "£12.00", "18 400"], ["2024", "£14.00", "26 700"]]
-    if kind == "contestability_barrier_table":
-        return [["Barrier", "Indicator"], ["Sunk costs", "High"], ["Switching costs", "Medium"], ["Legal barriers", "Low"]]
-    if kind == "income_tax_schedule_table":
-        return [["Band", "Taxable income", "Marginal rate"], ["Basic", "£12 571-£50 270", "20%"], ["Higher", "£50 271-£125 140", "40%"], ["Additional", "over £125 140", "45%"]]
-    if kind == "public_spending_pie_table":
-        return [["Area", "Share"], ["Health", "21%"], ["Education", "10%"], ["Debt interest", "8%"], ["Defence", "5%"]]
-    return [
-        ["Year", "Quantity demanded index", "Average price index"],
-        ["2021", "74.2", "68.5"],
-        ["2022", "81.6", "71.4"],
-        ["2023", "88.0", "75.2"],
-    ]
+    return table_rows(kind)
 
 
 def _draw_bar_chart(pdf: canvas.Canvas, x: float, y: float, kind: str = "bar_chart") -> float:
@@ -2179,17 +2145,7 @@ def _draw_line_graph(pdf: canvas.Canvas, x: float, y: float, kind: str = "line_g
 
 
 def _line_chart_data(kind: str) -> tuple[str, str, list[float]]:
-    if kind == "household_savings_line_chart":
-        return "%", "Quarter", [8.8, 9.6, 7.3, 4.8, 5.1, 22.8, 13.4, 16.9, 10.1]
-    if kind == "investment_line_chart":
-        return "% GDP", "Quarter", [22.7, 23.3, 21.6, 24.2, 23.1, 21.6, 20.8, 22.4, 22.7, 22.8, 22.5]
-    if kind == "current_account_line_chart":
-        return "% GDP", "Year", [-3.8, -4.6, -4.9, -4.8, -5.2, -3.8, -4.2, -3.5, -3.7, -1.1, -4.3]
-    if kind == "terms_of_trade_index_chart":
-        return "Index", "Year", [82, 79, 80, 81, 83, 92, 92, 88, 85, 86, 91]
-    if kind == "exchange_rate_index_chart":
-        return "Index", "Year", [100, 96, 91, 94, 101, 106, 109]
-    return "Index", "Year", [74.2, 81.6, 78.5, 88.0]
+    return line_chart_data(kind)
 
 
 def _draw_payoff_matrix(pdf: canvas.Canvas, x: float, y: float) -> float:

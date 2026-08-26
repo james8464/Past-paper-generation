@@ -141,6 +141,26 @@ def test_contribution_question_uses_a_complete_costing_identity() -> None:
     assert case.contribution != case.revenue - case.profit
 
 
+def test_every_management_calculation_has_complete_immutable_source_data() -> None:
+    generated = build_paper(RULES["paper_2"], SYLLABUS, 26080107)
+    calculations = {
+        item.rule_id: item
+        for section in generated.sections
+        for option in section.options
+        for item in option.questions
+        if item.kind == "calculation"
+    }
+
+    for rule_id in ("budget", "variance_1", "variance_2", "costing_1", "costing_3"):
+        question = calculations[rule_id]
+        context = question.authoring_context
+        assert context["preserve_prompt"] is True
+        assert context["preserve_mark_scheme"] is True
+        assert context["source_data"]
+        assert context["verified_answers"]
+        assert all(str(value) in question.prompt for value in context["prompt_values"])
+
+
 def test_partnership_calculations_have_complete_shared_source_contracts() -> None:
     generated = build_paper(RULES["paper_1"], SYLLABUS, 26080100)
     questions = {

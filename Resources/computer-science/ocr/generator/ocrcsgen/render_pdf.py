@@ -911,7 +911,7 @@ STYLES = {
     "code": ParagraphStyle("code", parent=_base["Code"], fontName=FONT_MONO, fontSize=8.8, leading=11, backColor=colors.HexColor("#f4f4f4"), borderWidth=0.4, borderColor=colors.grey, borderPadding=5),
     "centre": ParagraphStyle("centre", parent=_base["BodyText"], fontName=FONT, fontSize=10.5, leading=14, alignment=TA_CENTER),
     "centre_bold": ParagraphStyle("centre-bold", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=10.5, leading=14, alignment=TA_CENTER),
-    "scheme_header": ParagraphStyle("scheme-header", parent=_base["BodyText"], fontName=FONT_BOLD, fontSize=7.4, leading=8.5),
-    "scheme_small": ParagraphStyle("scheme-small", parent=_base["BodyText"], fontName=FONT, fontSize=7.1, leading=8.5),
-    "scheme_small_centre": ParagraphStyle("scheme-small-centre", parent=_base["BodyText"], fontName=FONT, fontSize=7.1, leading=8.5, alignment=TA_CENTER),
+    "scheme_header": ParagraphStyle("scheme-header", parent=_base["BodyText"], fontName=FONT_BOLD, fontSize=9.5, leading=11),
+    "scheme_small": ParagraphStyle("scheme-small", parent=_base["BodyText"], fontName=FONT, fontSize=9.5, leading=11),
+    "scheme_small_centre": ParagraphStyle("scheme-small-centre", parent=_base["BodyText"], fontName=FONT, fontSize=9.5, leading=11, alignment=TA_CENTER),
 }

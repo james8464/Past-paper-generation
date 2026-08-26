@@ -125,6 +125,65 @@ def test_ollama_schema_constrains_shared_generation_and_review() -> None:
     assert _ollama_output_budget(review) == 1024
 
 
+def test_ollama_schema_omits_verified_marking_output() -> None:
+    generation = _ollama_json_schema(
+        "Return one JSON object with a `questions` array. "
+        'BLUEPRINT_DATA=[{"id":"0/0/0","mark_scheme_locked": true}]'
+    )
+
+    question = generation["properties"]["questions"]["items"]
+    assert question["properties"]["mark_scheme"]["maxItems"] == 0
+    assert _ollama_output_budget(generation) == 512
+
+
+def test_ollama_schema_bounds_specialist_question_parts() -> None:
+    computer_science = _ollama_json_schema(
+        'Return JSON only: {"stem": "string", "parts": ['
+    )
+    economics = _ollama_json_schema(
+        'Return JSON only: {"question_text": "string", "parts": ['
+    )
+
+    cs_parts = computer_science["properties"]["parts"]
+    economics_parts = economics["properties"]["parts"]
+    assert cs_parts["maxItems"] == 8
+    assert cs_parts["items"]["additionalProperties"] is False
+    assert cs_parts["items"]["properties"]["marking_points"]["maxItems"] == 8
+    assert economics_parts["maxItems"] == 6
+    assert economics_parts["items"]["additionalProperties"] is False
+    assert economics_parts["items"]["properties"]["mark_scheme"]["maxItems"] == 10
+    assert _ollama_output_budget(computer_science) == 1024
+    assert _ollama_output_budget(economics) == 1536
+
+    compact_economics = _ollama_json_schema(
+        "Parts: (a) 4 marks, explain: x; (b) 1 mark, mcq: y\n"
+        "VERIFIED MARKING IS IMMUTABLE\n"
+        'Return JSON only: {"question_text": "string", "parts": ['
+    )
+    compact_parts = compact_economics["properties"]["parts"]
+    assert compact_parts["minItems"] == 2
+    assert compact_parts["maxItems"] == 2
+    assert set(compact_parts["items"]["properties"]) == {"label", "prompt"}
+    assert _ollama_output_budget(compact_economics) == 384
+
+    compact_computer_science = _ollama_json_schema(
+        "- Part 1: 4 marks, Explain x\n- Part 2: 2 marks, State y\n"
+        "VERIFIED MARKING IS IMMUTABLE\n"
+        'Return JSON only: {"stem": "string", "parts": ['
+    )
+    compact_cs_parts = compact_computer_science["properties"]["parts"]
+    assert compact_cs_parts["minItems"] == 2
+    assert compact_cs_parts["maxItems"] == 2
+    assert set(compact_cs_parts["items"]["properties"]) == {"label", "prompt"}
+    assert _ollama_output_budget(compact_computer_science) == 384
+
+    scenario_only = _ollama_json_schema(
+        'Do not repeat, rewrite or answer the parts. Return {"stem": "string", "parts": ['
+    )
+    assert scenario_only["properties"]["parts"]["maxItems"] == 0
+    assert _ollama_output_budget(scenario_only) == 96
+
+
 def test_ollama_uses_structured_chat_with_bounded_output(monkeypatch) -> None:
     captured: dict[str, object] = {}
 

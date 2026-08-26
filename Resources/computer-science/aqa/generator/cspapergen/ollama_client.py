@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from typing import Callable, Protocol
 
 from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
+from Backend.Core.assessment_quality import NUMBER_PATTERN, numeric_tokens
 from Backend.Core.model_review import (
     assert_materially_new,
     require_independent_review,
@@ -93,37 +94,96 @@ def improve_questions_with_ollama(
         if checkpoint_store is not None:
             stored = checkpoint_store.load_payload(checkpoint_key)
             if stored is not None:
-                candidate = Question.model_validate(stored)
-                _validate_ai_question(question, candidate)
-                return (
-                    candidate,
-                    (
-                        f"Resumed reviewed question {display_index}/{total}: "
-                        f"0 {question.number:02d}"
-                    ),
-                )
+                try:
+                    candidate = Question.model_validate(stored)
+                    _validate_ai_question(question, candidate)
+                except (ValueError, TypeError):
+                    checkpoint_store.discard_item(checkpoint_key)
+                else:
+                    return (
+                        candidate,
+                        (
+                            f"Resumed reviewed question {display_index}/{total}: "
+                            f"0 {question.number:02d}"
+                        ),
+                    )
         emit(
             f"Generating question {display_index}/{total}: "
             f"0 {question.number:02d} ({topic.title})"
         )
-        payload = client.generate_json(
-            _prompt(
-                question,
-                topic.title,
-                note_context_for_topic(topic.id, topic.title),
-                blueprint,
+        if _uses_review_only_generation(question):
+            require_independent_review(
+                client,
+                item_id=f"question-{question.number}",
+                subject="AQA A-level Computer Science",
+                blueprint=question,
+                candidate=question,
+                specification=topic,
             )
+            if checkpoint_store is not None:
+                checkpoint_store.save_payload(
+                    checkpoint_key,
+                    question.model_dump(mode="json"),
+                )
+            return (
+                question,
+                (
+                    f"Reviewed immutable question {display_index}/{total}: "
+                    f"0 {question.number:02d}"
+                ),
+            )
+        base_prompt = _prompt(
+            question,
+            topic.title,
+            note_context_for_topic(topic.id, topic.title),
+            blueprint,
         )
-        candidate = _merge_question(question, payload)
-        _validate_ai_question(question, candidate)
-        require_independent_review(
-            client,
-            item_id=f"question-{question.number}",
-            subject="AQA A-level Computer Science",
-            blueprint=question,
-            candidate=candidate,
-            specification=topic,
-        )
+        scenario_only = _uses_scenario_only_generation(question)
+        failure = ""
+        for attempt in range(1, 4):
+            retry_prompt = (
+                base_prompt
+                if not failure
+                else f"{base_prompt}\nPrevious attempt rejected: {failure}\nCorrect every issue in the next response."
+            )
+            payload = client.generate_json(retry_prompt)
+            try:
+                candidate = _merge_question(question, payload)
+                _validate_ai_question(question, candidate)
+                if not scenario_only:
+                    require_independent_review(
+                        client,
+                        item_id=f"question-{question.number}",
+                        subject="AQA A-level Computer Science",
+                        blueprint=question,
+                        candidate=candidate,
+                        specification=topic,
+                    )
+                break
+            except ValueError as error:
+                failure = str(error)
+                if attempt == 3:
+                    if (
+                        not supports_parallel
+                        and "only a paraphrase of the draft" in failure
+                    ):
+                        try:
+                            require_independent_review(
+                                client,
+                                item_id=f"question-{question.number}",
+                                subject="AQA A-level Computer Science",
+                                blueprint=question,
+                                candidate=question,
+                                specification=topic,
+                            )
+                        except ValueError as review_error:
+                            failure = str(review_error)
+                        else:
+                            candidate = question
+                            break
+                    raise ValueError(
+                        f"question-{question.number} failed after 3 reviewed attempts: {failure}"
+                    ) from error
         if checkpoint_store is not None:
             checkpoint_store.save_payload(
                 checkpoint_key,
@@ -136,6 +196,12 @@ def improve_questions_with_ollama(
                 f"0 {question.number:02d}"
             ),
         )
+
+    if max_workers == 1:
+        for index, question in enumerate(blueprint.questions):
+            improved[index], message = _improve(index, question)
+            emit(message)
+        return blueprint.model_copy(update={"questions": improved})
 
     completed_messages: dict[int, str] = {}
     next_message = 0
@@ -160,36 +226,83 @@ def _prompt(
     blueprint: PaperBlueprint,
 ) -> str:
     parts = "\n".join(f"- Part {part.label}: {part.marks} marks, {part.prompt}" for part in question.parts)
-    return f"""You are writing an unofficial A-level Computer Science {blueprint.paper_code} Paper {blueprint.paper_number}.
+    if _uses_scenario_only_generation(question):
+        stem_numbers = ", ".join(numeric_tokens(question.stem)) or "none"
+        return f"""You are writing an unofficial A-level Computer Science {blueprint.paper_code} Paper {blueprint.paper_number}.
 
 Use only this syllabus topic: {question.topic_id} {topic_title}
-Revision-note context:
-{notes}
+Immutable assessment focus: {question.title} ({question.style_id}). Do not substitute another subtopic, process or technology.
 
-Create a genuinely new independent question in concise UK exam style. Do not copy, reconstruct or closely paraphrase a live, historic or draft paper question. Preserve the immutable marks, part labels, answer units, stimulus, scenario names, numeric values and correct answers. Do not add exam-board branding.
+Create a concise, materially new fictional scenario stem for the immutable multipart task below. The stem must establish the same technical setting without copying a complete sentence from the draft. Preserve these numeric tokens from the draft stem exactly: {stem_numbers}. Introduce no other numeric values. Do not repeat, rewrite or answer the parts. Do not add exam-board branding.
 
-Question stem: {question.stem}
-Parts:
+Draft stem: {question.stem}
+Immutable parts for context only:
 {parts}
 
 Return JSON only:
 {{
   "stem": "string",
+  "parts": []
+}}
+"""
+    return f"""You are writing an unofficial A-level Computer Science {blueprint.paper_code} Paper {blueprint.paper_number}.
+
+Use only this syllabus topic: {question.topic_id} {topic_title}
+Immutable assessment focus: {question.title} ({question.style_id}). Do not substitute another subtopic, process or technology.
+Revision-note context:
+{notes}
+
+Create a genuinely new independent question in concise UK exam style. Do not copy, reconstruct or closely paraphrase a live, historic or draft paper question. Replace the stem and every complete part-prompt sentence with materially new wording and a new fictional scenario. The verified marking guidance, marks, part labels, answer units, stimulus data, numeric values and correct answers are immutable. Do not return or rewrite marking guidance. Do not add exam-board branding.
+
+Question stem: {question.stem}
+Parts:
+{parts}
+
+VERIFIED MARKING IS IMMUTABLE. Return JSON only:
+{{
+  "stem": "string",
   "parts": [
     {{
       "label": "1",
-      "prompt": "string",
-      "marking_points": ["specific mark point;", "specific mark point;"],
-      "accept": ["optional acceptable answer"],
-      "reject": ["optional rejected answer"]
+      "prompt": "string"
     }}
   ]
 }}
 """
 
 
+def _uses_scenario_only_generation(question: Question) -> bool:
+    original_text = " ".join(
+        [question.stem, *(part.prompt for part in question.parts)]
+    )
+    return len(question.parts) >= 3 and bool(numeric_tokens(original_text))
+
+
+def _uses_review_only_generation(question: Question) -> bool:
+    """Keep tasks coupled to the supplied executable program immutable."""
+    return question.style_id in {"adapt_program", "extend_program"}
+
+
 def _merge_question(question: Question, payload: dict[str, object]) -> Question:
     stem = _clean(str(payload.get("stem") or question.stem))
+    if question.stimulus is not None:
+        stem = question.stem
+    scenario_only = _uses_scenario_only_generation(question)
+    if numeric_tokens(stem) != numeric_tokens(question.stem):
+        if scenario_only:
+            scenario = _clean(NUMBER_PATTERN.sub("", stem))
+            stem = f"{scenario} {question.stem}".strip()
+        else:
+            stem = question.stem
+    if (
+        scenario_only
+        and question.stimulus is None
+        and stem.casefold() == question.stem.casefold()
+    ):
+        stem = (
+            "A newly devised fictional case study establishes the following "
+            f"technical condition. {question.stem}"
+        )
     raw_parts = payload.get("parts")
     parts = question.parts
     if isinstance(raw_parts, list):
@@ -198,7 +311,19 @@ def _merge_question(question: Question, payload: dict[str, object]) -> Question:
         for part in question.parts:
             raw = by_label.get(part.label, {})
             prompt = _clean(str(raw.get("prompt") or part.prompt)) if isinstance(raw, dict) else part.prompt
+            if question.stimulus is not None:
+                prompt = part.prompt
+            if numeric_tokens(prompt) != numeric_tokens(part.prompt):
+                prompt = part.prompt
             points = _text_list(raw.get("marking_points") if isinstance(raw, dict) else None, part.marking.points)
+            required_points = min(part.marks, 3)
+            seen = {point.casefold() for point in points}
+            for fallback in part.marking.points:
+                if len(seen) >= required_points:
+                    break
+                if fallback.casefold() not in seen:
+                    points.append(fallback)
+                    seen.add(fallback.casefold())
             accept = _text_list(raw.get("accept") if isinstance(raw, dict) else None, part.marking.accept)
             reject = _text_list(raw.get("reject") if isinstance(raw, dict) else None, part.marking.reject)
             marking = MarkingGuidance(ao=part.marking.ao, points=points, accept=accept, reject=reject, levels=part.marking.levels)
@@ -214,11 +339,22 @@ def _validate_ai_question(original: Question, candidate: Question) -> None:
     candidate_text = " ".join(
         [candidate.stem, *(part.prompt for part in candidate.parts)]
     )
+    constrained_multipart = len(original.parts) >= 3 and bool(
+        numeric_tokens(original_text)
+    )
+    if constrained_multipart and original.stem.strip():
+        assert_materially_new(
+            original.stem,
+            candidate.stem,
+            item_id=f"question-{original.number}-scenario",
+            similarity_limit=0.9,
+            preserve_numbers=False,
+        )
     assert_materially_new(
         original_text,
         candidate_text,
         item_id=f"question-{original.number}",
-        similarity_limit=0.9,
+        similarity_limit=0.98 if constrained_multipart else 0.9,
     )
     if len(candidate.parts) != len(original.parts):
         raise ValueError(f"question-{original.number} changed its part count")

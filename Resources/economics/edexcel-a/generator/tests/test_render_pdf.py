@@ -170,11 +170,16 @@ def test_question_paper_uses_closer_reference_font_family(tmp_path):
     assert "ArialMT" not in fonts
 
 
-def test_answer_line_style_matches_reference_dotted_lines():
-    from pastpapergen.render_pdf import ANSWER_LINE_COLOR_HEX, ANSWER_LINE_DASH
+def test_answer_line_style_matches_reference_solid_grey_rules():
+    from pastpapergen.render_pdf import (
+        ANSWER_LINE_COLOR_HEX,
+        ANSWER_LINE_DASH,
+        ANSWER_LINE_WIDTH_PT,
+    )
 
-    assert ANSWER_LINE_COLOR_HEX == "#a8a8a8"
-    assert ANSWER_LINE_DASH == (0.6, 1.6)
+    assert ANSWER_LINE_COLOR_HEX == "#9d9d9d"
+    assert ANSWER_LINE_DASH is None
+    assert ANSWER_LINE_WIDTH_PT == 0.5
 
 
 def test_question_paper_uses_reference_bleed_and_crop_boxes(tmp_path):
@@ -689,8 +694,8 @@ def _blank_axis_lines(path: Path) -> dict[str, list[float]]:
     doc = fitz.open(path)
     try:
         for page in doc:
-            text = page.get_text()
-            if "Draw a" not in text and "diagram to show" not in text and "diagram to identify" not in text:
+            text = page.get_text().casefold()
+            if "draw" not in text or "diagram" not in text:
                 continue
             for drawing in page.get_drawings():
                 for item in drawing["items"]:

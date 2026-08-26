@@ -58,3 +58,26 @@ def test_high_mark_analysis_receives_levels_guidance() -> None:
     )
 
     assert "Levels-based marking" in enriched.mark_scheme
+
+
+def test_enriched_guidance_does_not_quote_a_replaceable_draft_stem() -> None:
+    draft = question(kind="extended_response", command_word="Discuss", marks=25)
+
+    enriched = _enrich_question(draft, topic(), "economics")
+
+    assert draft.prompt not in " ".join(enriched.mark_scheme)
+    assert any(
+        "precise proposition in the final question" in point
+        for point in enriched.mark_scheme
+    )
+
+
+def test_enriched_written_item_locks_guidance_and_calibrates_stem_length() -> None:
+    draft = question(kind="extended_response", command_word="Discuss", marks=25)
+
+    enriched = _enrich_question(draft, topic(), "economics")
+
+    assert enriched.authoring_context["preserve_mark_scheme"] is True
+    assert enriched.authoring_context["max_prompt_words"] == max(
+        12, len(draft.prompt.split()) + 2
+    )

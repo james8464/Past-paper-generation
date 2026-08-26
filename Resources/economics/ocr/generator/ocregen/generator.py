@@ -259,9 +259,17 @@ def _question(
             "extract_text": figure.get("extract_text", ""),
             "bound_concepts": bound_concepts,
             "required_prompt_terms": [context, point],
+            "preserve_prompt": True,
+            "preserve_mark_scheme": True,
         }
         source_references = [f"Extract {extract_number}"]
     if rule.kind == "calculation":
+        authoring_context.update(
+            {
+                "preserve_prompt": True,
+                "preserve_mark_scheme": True,
+            }
+        )
         if extract_number is not None:
             prompt = (
                 f"Using Figure {extract_number}.1 and the information in {evidence}, "
@@ -335,20 +343,41 @@ def _question(
         else:
             verb = "compare" if rule.command_word == "Compare" else "explain"
             prompt = f"Using the data in {evidence}, {verb} the observed changes and relate them to {point}."
-        direction = (
-            "an increase"
-            if question_values[-1] >= question_values[0]
-            else "a decrease"
-        )
-        scheme = [
-            "Accurate comparison: the primary index changes from "
-            f"{question_values[0]} to {question_values[-1]}.",
-            f"This is {direction} of "
-            f"{abs(question_values[-1] - question_values[0]):.1f} index points.",
-            f"Developed economic reasoning involving {point}.",
-            "Recognition of the limits of the comparison.",
-        ]
-        if comparison_series is not None:
+        if rule.id == "relationship_3":
+            scheme = [
+                f"Accurate knowledge of the expected relationship involving {point}.",
+                f"A coherent economic mechanism explaining the relationship involving {point}.",
+                "Application to the observed change from "
+                f"{question_values[0]} to {question_values[-1]}, with a clear statement "
+                "of whether the evidence matches the expected relationship.",
+            ]
+        elif rule.id == "relationship_4":
+            scheme = [
+                f"Accurate knowledge of the relevant relationship involving {point}.",
+                f"A coherent economic mechanism explaining the relationship involving {point}.",
+                "Application to the primary index change from "
+                f"{question_values[0]} to {question_values[-1]}.",
+                "A developed link between the numerical trend and relevant evidence from "
+                "the extracts.",
+            ]
+        else:
+            direction = (
+                "an increase"
+                if question_values[-1] >= question_values[0]
+                else "a decrease"
+            )
+            scheme = [
+                "Accurate comparison: the primary index changes from "
+                f"{question_values[0]} to {question_values[-1]}.",
+                f"This is {direction} of "
+                f"{abs(question_values[-1] - question_values[0]):.1f} index points.",
+                f"Developed economic reasoning involving {point}.",
+                "Recognition of the limits of the comparison.",
+            ]
+        if comparison_series is not None and rule.id not in {
+            "relationship_3",
+            "relationship_4",
+        }:
             scheme.insert(
                 2,
                 f"The {comparison_series['label'].lower()} changes from "
@@ -473,6 +502,7 @@ def _evaluation_scheme(topic: Topic, point: str, marks: int) -> list[str]:
 
 
 def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedOption:
+    authoring_context: dict[str, object] = {}
     if number % 5 == 0:
         base = rng.randint(60, 180)
         rate = rng.choice([5, 8, 10, 12, 15])
@@ -498,6 +528,10 @@ def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedOption:
             f"The index is {base} and then rises by {rate}% while all other measurement conventions "
             "remain unchanged. What is its new value?"
         )
+        authoring_context = {
+            "preserve_prompt": True,
+            "preserve_mark_scheme": True,
+        }
     else:
         stem, correct, distractors = FACTS[topic.id]
         choices = [correct, *distractors]
@@ -513,6 +547,7 @@ def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedOption:
         rule_id="mcq", number=str(number), marks=1, kind="multiple_choice",
         command_word="Select", topic_id=topic.id, prompt=prompt, choices=choices,
         correct_choice=answer, mark_scheme=[f"Option {'ABCD'[answer]}: {correct}."],
+        authoring_context=authoring_context,
     )
     return GeneratedOption(id=f"A{number}", title=f"Question {number}", questions=[question])
 

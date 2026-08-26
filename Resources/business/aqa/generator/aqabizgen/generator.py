@@ -87,6 +87,22 @@ def build_paper(
                     )
                 questions.append(question)
             stimulus_count = _stimulus_count(rule.id, section_rule.id)
+            chart_title = f"Performance index for {business}"
+            chart_labels = ["2021", "2022", "2023", "2024", "2025"]
+            chart_values = values
+            if (
+                rule.id == "paper_1"
+                and section_rule.id == "A"
+                and option_index + 1 == 13
+            ):
+                chart_title = f"Performance against target for {business}"
+                chart_labels = [
+                    "Capacity utilisation",
+                    "Labour turnover",
+                    "Market share",
+                    "ROCE",
+                ]
+                chart_values = [88, 17, 15, 12]
             options.append(
                 GeneratedOption(
                     id=f"{section_rule.id}{option_index + 1}",
@@ -106,9 +122,9 @@ def build_paper(
                         )
                         for index in range(stimulus_count)
                     ],
-                    chart_title=f"Performance index for {business}",
-                    chart_labels=["2021", "2022", "2023", "2024", "2025"],
-                    chart_values=values,
+                    chart_title=chart_title,
+                    chart_labels=chart_labels,
+                    chart_values=chart_values,
                     questions=questions,
                 )
             )
@@ -168,6 +184,7 @@ def _stimulus_count(paper_id: str, section_id: str) -> int:
 
 def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedQuestion:
     business = rng.choice(BUSINESSES)
+    authoring_context: dict[str, object] = {}
     if number == 6:
         correct = "A rise in selling price and a fall in variable cost per unit"
         choices = [
@@ -214,6 +231,24 @@ def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedQuestion:
             "turnover is worse than target. Statement 2: capacity utilisation exceeded "
             "target. Which option is correct?"
         )
+        authoring_context = {
+            "preserve_prompt": True,
+            "preserve_mark_scheme": True,
+            "source_data": {
+                "measures": [
+                    "Capacity utilisation",
+                    "Labour turnover",
+                    "Market share",
+                    "ROCE",
+                ],
+                "targets": [90, 12, 13, 16],
+                "actuals": [88, 17, 15, 12],
+            },
+            "verified_answers": {
+                "statement_1": True,
+                "statement_2": False,
+            },
+        }
     elif number % 5 == 0:
         revenue = rng.randint(14, 48)
         cost = rng.randint(4, revenue - 3)
@@ -253,6 +288,7 @@ def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedQuestion:
         choices=choices,
         correct_choice=answer,
         mark_scheme=[f"Option {'ABCD'[answer]}: {correct}."],
+        authoring_context=authoring_context,
     )
 
 
@@ -269,6 +305,7 @@ def _written_question(
     context = f"the extracts about {business}"
     change = (values[-1] - values[0]) / values[0] * 100
     structured_scheme: list[MarkSchemePoint] = []
+    authoring_context: dict[str, object] = {}
     financials = FinancialPosition.from_chart_values(values)
     if rule.id == "current_ratio":
         ratio = format_number(financials.current_ratio)
@@ -304,6 +341,17 @@ def _written_question(
                 for text in scheme[1:]
             ],
         ]
+        authoring_context = {
+            "preserve_prompt": True,
+            "preserve_mark_scheme": True,
+            "source_data": {
+                "inventories": financials.inventories,
+                "receivables": financials.receivables,
+                "cash": financials.cash,
+                "current_liabilities": financials.payables,
+            },
+            "verified_answers": {"current_ratio": financials.current_ratio},
+        }
     elif rule.id == "roce_calculation":
         operating_profit = format_number(
             financials.operating_profit_at_twelve_percent
@@ -338,6 +386,19 @@ def _written_question(
                 for text in scheme[1:]
             ],
         ]
+        authoring_context = {
+            "preserve_prompt": True,
+            "preserve_mark_scheme": True,
+            "source_data": {
+                "total_equity": financials.total_equity,
+                "non_current_liabilities": financials.non_current_liabilities,
+                "capital_employed": financials.capital_employed,
+                "roce_percent": 12,
+            },
+            "verified_answers": {
+                "operating_profit": financials.operating_profit_at_twelve_percent
+            },
+        }
     elif rule.id == "analysis_1" and rule.marks == 9:
         prompt = (
             f"Analyse how the restructuring shown in the table might affect {business}'s "
@@ -421,6 +482,7 @@ def _written_question(
         prompt=prompt,
         mark_scheme=scheme,
         structured_mark_scheme=structured_scheme,
+        authoring_context=authoring_context,
     )
 
 

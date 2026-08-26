@@ -77,6 +77,19 @@ def test_checkpoint_rejects_model_mismatch(tmp_path: Path) -> None:
         AssessmentCheckpointStore(path, identity(model="qwen3:8b"))
 
 
+def test_checkpoint_retains_items_across_blueprint_revision_for_revalidation(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "job.json"
+    AssessmentCheckpointStore(path, identity()).save_item("0/0/0", question())
+    revised = identity().model_copy(update={"blueprint_sha256": "b" * 64})
+
+    store = AssessmentCheckpointStore(path, revised)
+
+    assert store.load_item("0/0/0") == question()
+    assert json.loads(path.read_text())["identity"]["blueprint_sha256"] == "b" * 64
+
+
 def test_checkpoint_write_is_atomic_and_valid_json(tmp_path: Path) -> None:
     path = tmp_path / "job.json"
     store = AssessmentCheckpointStore(path, identity())

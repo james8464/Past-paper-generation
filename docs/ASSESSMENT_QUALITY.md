@@ -120,9 +120,10 @@ paper, mark scheme, and observed page role. The command exits non-zero when a
 document is absent, a role disappears, the audit schema changes, or a score
 falls more than 0.5 percentage points below its qualified baseline.
 
-The 23 August 2026 qualification generated all 18 preview papers from a clean
-output root and release-validated every declared artifact. Its 36 primary PDFs
-produced 122 role summaries and a 68.5% aggregate registered similarity score.
+The final 26 August 2026 qualification generated all 18 papers with the
+recommended live `gemma4:12b` Ollama model and release-validated every declared
+artifact. Its 36 primary PDFs produced a 68.9% aggregate registered similarity
+score, and every calibrated document and page-role floor passed.
 All 151 overview, weakest-page, and per-document contact sheets were inspected
 for:
 

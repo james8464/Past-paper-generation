@@ -429,19 +429,11 @@ def _written(
         ]
         authoring_context = case.authoring_context()
     elif rule.kind == "calculation":
-        task = CALCULATION_TASKS.get(rule.id, "Calculate the required accounting figure")
-        prompt = (
-            f"{task} for {business} using the case evidence and accounting-information "
-            f"table. Show all workings and "
-            f"apply {point} where relevant."
+        prompt, scheme, authoring_context = _management_calculation(
+            rule.id,
+            business,
+            values,
         )
-        contribution = values[4] - values[2]
-        scheme = [
-            f"Contribution indicator: £{values[4]:.1f}000 − £{values[2]:.1f}000 = £{contribution:.1f}000.",
-            f"Profit indicator: £{contribution:.1f}000 − £{values[1]:.1f}000 = £{contribution - values[1]:.1f}000.",
-            "Award method marks for valid ledger, statement or costing workings.",
-            f"Credit a correctly labelled answer applied to {business}.",
-        ]
     elif rule.kind == "analysis":
         prompt = (
             f"{rule.command_word} how {point} should be treated or interpreted by "
@@ -472,6 +464,158 @@ def _written(
         mark_scheme=scheme,
         authoring_context=authoring_context,
     )
+
+
+def _management_calculation(
+    rule_id: str,
+    business: str,
+    values: list[float],
+) -> tuple[str, list[str], dict[str, object]]:
+    """Build a complete, internally solved data contract for each numeric task."""
+
+    seeds = [max(2, int(round(value))) for value in values]
+    if rule_id == "budget":
+        sales = seeds[4] * 1_000
+        variable_cost = seeds[2] * 1_000
+        fixed_cost = seeds[1] * 1_000
+        opening_cash = seeds[0] * 500
+        capital_payment = seeds[3] * 400
+        profit = sales - variable_cost - fixed_cost
+        closing_cash = opening_cash + sales - variable_cost - fixed_cost - capital_payment
+        source = {
+            "sales_receipts": sales,
+            "variable_cost_payments": variable_cost,
+            "fixed_cost_payments": fixed_cost,
+            "opening_cash": opening_cash,
+            "capital_payment": capital_payment,
+        }
+        answers = {"budgeted_profit": profit, "closing_cash": closing_cash}
+        prompt = (
+            f"Calculate the budgeted profit and closing cash balance for {business}. "
+            f"Sales receipts are £{sales}, variable-cost payments £{variable_cost}, "
+            f"fixed-cost payments £{fixed_cost}, opening cash £{opening_cash} and a "
+            f"capital payment of £{capital_payment}. Show all workings."
+        )
+        scheme = [
+            f"Budgeted profit: £{sales} − £{variable_cost} − £{fixed_cost} = £{profit}.",
+            f"Closing cash: £{opening_cash} + £{sales} − £{variable_cost} − £{fixed_cost} − £{capital_payment} = £{closing_cash}.",
+            "Award method credit for a correct cash-budget layout and consistent arithmetic.",
+        ]
+    elif rule_id == "variance_1":
+        standard_price = seeds[0] + 4
+        actual_price = max(1, standard_price - 2)
+        actual_quantity = seeds[4] * 100
+        variance = (standard_price - actual_price) * actual_quantity
+        source = {
+            "standard_price_per_kg": standard_price,
+            "actual_price_per_kg": actual_price,
+            "actual_quantity_kg": actual_quantity,
+        }
+        answers = {"direct_material_price_variance": variance, "direction": "favourable"}
+        prompt = (
+            f"Calculate the direct-material price variance for {business}. The standard "
+            f"price is £{standard_price} per kg, the actual price is £{actual_price} per kg "
+            f"and {actual_quantity} kg were purchased and used. Show all workings and state "
+            "whether the variance is favourable or adverse."
+        )
+        scheme = [
+            f"Price difference: £{standard_price} − £{actual_price} = £{standard_price - actual_price} per kg.",
+            f"Direct-material price variance: £{standard_price - actual_price} × {actual_quantity} = £{variance} favourable.",
+            "Award method credit for (standard price − actual price) × actual quantity.",
+        ]
+    elif rule_id == "variance_2":
+        standard_rate = seeds[0] + 8
+        actual_rate = standard_rate + 2
+        standard_hours = seeds[3] * 100
+        actual_hours = standard_hours + 100
+        budgeted_overhead = seeds[4] * 1_000
+        actual_overhead = budgeted_overhead + 2_000
+        rate_variance = (standard_rate - actual_rate) * actual_hours
+        efficiency_variance = (standard_hours - actual_hours) * standard_rate
+        overhead_variance = budgeted_overhead - actual_overhead
+        source = {
+            "standard_hourly_rate": standard_rate,
+            "actual_hourly_rate": actual_rate,
+            "standard_hours": standard_hours,
+            "actual_hours": actual_hours,
+            "budgeted_fixed_overhead": budgeted_overhead,
+            "actual_fixed_overhead": actual_overhead,
+        }
+        answers = {
+            "labour_rate_variance": abs(rate_variance),
+            "labour_efficiency_variance": abs(efficiency_variance),
+            "fixed_overhead_expenditure_variance": abs(overhead_variance),
+            "direction": "adverse",
+        }
+        prompt = (
+            f"Calculate the direct-labour rate and efficiency variances and the fixed-overhead "
+            f"expenditure variance for {business}. Standard labour is {standard_hours} hours at "
+            f"£{standard_rate} per hour; actual labour is {actual_hours} hours at £{actual_rate} "
+            f"per hour. Budgeted fixed overhead is £{budgeted_overhead} and actual fixed overhead "
+            f"is £{actual_overhead}. Show all workings and label each variance."
+        )
+        scheme = [
+            f"Labour rate variance: (£{standard_rate} − £{actual_rate}) × {actual_hours} = £{abs(rate_variance)} adverse.",
+            f"Labour efficiency variance: ({standard_hours} − {actual_hours}) × £{standard_rate} = £{abs(efficiency_variance)} adverse.",
+            f"Fixed-overhead expenditure variance: £{budgeted_overhead} − £{actual_overhead} = £{abs(overhead_variance)} adverse.",
+            "Award method marks for each correct variance formula and substitution.",
+        ]
+    elif rule_id == "costing_1":
+        activity_cost = seeds[4] * 10_000
+        driver_units = seeds[0] * 100
+        cost_per_driver = activity_cost / driver_units
+        source = {"activity_cost_pool": activity_cost, "cost_driver_units": driver_units}
+        answers = {"overhead_cost_per_driver_unit": cost_per_driver}
+        prompt = (
+            f"Calculate the overhead cost per cost-driver unit for {business} using activity-based "
+            f"costing. The activity cost pool is £{activity_cost} and expected cost-driver volume "
+            f"is {driver_units} units. Show all workings."
+        )
+        scheme = [
+            f"Overhead cost per driver unit: £{activity_cost} ÷ {driver_units} = £{cost_per_driver:.2f}.",
+            "Award method credit for activity cost pool divided by cost-driver volume.",
+        ]
+    elif rule_id == "costing_3":
+        contribution_a = seeds[4] + 8
+        hours_a = max(2, seeds[0] // 3)
+        contribution_b = seeds[3] + 6
+        hours_b = max(2, seeds[1] // 3)
+        return_a = contribution_a / hours_a
+        return_b = contribution_b / hours_b
+        source = {
+            "product_a_contribution": contribution_a,
+            "product_a_scarce_hours": hours_a,
+            "product_b_contribution": contribution_b,
+            "product_b_scarce_hours": hours_b,
+        }
+        answers = {
+            "product_a_contribution_per_scarce_hour": return_a,
+            "product_b_contribution_per_scarce_hour": return_b,
+        }
+        prompt = (
+            f"Calculate the contribution per scarce labour hour for both products made by "
+            f"{business}. Product A earns £{contribution_a} contribution and uses {hours_a} "
+            f"scarce hours per unit; Product B earns £{contribution_b} contribution and uses "
+            f"{hours_b} scarce hours per unit. Show all workings and rank the products."
+        )
+        scheme = [
+            f"Product A: £{contribution_a} ÷ {hours_a} = £{return_a:.2f} per scarce hour.",
+            f"Product B: £{contribution_b} ÷ {hours_b} = £{return_b:.2f} per scarce hour.",
+            "Rank the product with the higher contribution per scarce hour first.",
+            "Award method credit for contribution per unit divided by scarce-resource usage per unit.",
+        ]
+    else:
+        raise ValueError(f"unsupported accounting calculation rule: {rule_id}")
+
+    prompt_values = [value for value in source.values()]
+    return prompt, scheme, {
+        "preserve_prompt": True,
+        "preserve_mark_scheme": True,
+        "source_data": source,
+        "verified_answers": answers,
+        "prompt_values": prompt_values,
+        "task_scope": CALCULATION_TASKS[rule_id],
+    }
 
 
 def _levels(topic: Topic, point: str, case_id: int) -> list[str]:

@@ -10,12 +10,18 @@ from Backend.Core.exam_blueprints import validate_generated_paper, validate_rule
 from ocrcsgen.cli import generate_package
 from ocrcsgen.configs import PAPER_1_MARKS, PAPER_2_MARKS, RULES
 from ocrcsgen.generator import build_paper
-from ocrcsgen.render_pdf import MARK_SCHEME_PAGE_PLANS
+from ocrcsgen.render_pdf import MARK_SCHEME_PAGE_PLANS, STYLES, render_question_paper
 from ocrcsgen.syllabus import load_syllabus
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SYLLABUS = load_syllabus(ROOT / "data" / "syllabus.json")
+
+
+def test_mark_scheme_typography_matches_reference_scale() -> None:
+    assert STYLES["scheme_header"].fontSize == 9.5
+    assert STYLES["scheme_small"].fontSize == 9.5
+    assert STYLES["scheme_small"].leading == 11
 
 
 def _flatten(values: list[list[int]]) -> list[int]:
@@ -212,7 +218,175 @@ def test_every_question_has_board_specific_context_and_marking() -> None:
         assert all("Independent case" not in question.prompt for question in questions)
         assert all(question.mark_scheme for question in questions)
         assert all(
+            "case " not in " ".join(question.mark_scheme).casefold()
+            for question in questions
+        )
+        assert all(
             any("Level " in point for point in question.mark_scheme)
             for question in questions
             if question.marks >= 9
         )
+
+
+def test_programming_items_allow_reviewed_code_literals() -> None:
+    paper = build_paper(RULES["paper_2"], SYLLABUS, 26080118)
+    programming = next(
+        question
+        for section in paper.sections
+        for option in section.options
+        for question in option.questions
+        if question.kind == "programming"
+    )
+
+    assert programming.authoring_context["allow_additional_numeric_values"] is True
+    assert programming.authoring_context["max_prompt_words"] == max(
+        12, len(programming.prompt.split()) + 2
+    )
+    extended = next(
+        question
+        for section in paper.sections
+        for option in section.options
+        for question in option.questions
+        if question.number == "3(c)"
+    )
+    assert extended.authoring_context["allow_additional_numeric_values"] is True
+
+
+def test_processor_design_item_has_architecture_specific_mark_scheme() -> None:
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 26080117)
+    design = next(
+        question
+        for section in paper.sections
+        for option in section.options
+        for question in option.questions
+        if question.kind == "programming" and "processor" in question.prompt.casefold()
+    )
+    scheme = " ".join(design.mark_scheme).casefold()
+
+    assert "main memory" in scheme
+    assert "register" in scheme
+    assert "address bus" in scheme
+    assert "data bus" in scheme
+    assert "control bus" in scheme
+    assert "sequence, selection and iteration" not in scheme
+    assert "case 9320" not in scheme
+
+
+def test_low_mark_state_items_keep_verified_wording_and_key() -> None:
+    paper = build_paper(RULES["paper_2"], SYLLABUS, 26080118)
+    state_items = [
+        question
+        for section in paper.sections
+        for option in section.options
+        for question in option.questions
+        if question.command_word.casefold() == "state" and question.marks <= 2
+    ]
+
+    assert state_items
+    assert all(
+        question.authoring_context.get("preserve_prompt") is True
+        and question.authoring_context.get("preserve_mark_scheme") is True
+        for question in state_items
+    )
+
+
+def test_calculation_enrichment_always_contains_explicit_method_guidance() -> None:
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 26080117)
+    calculations = [
+        question
+        for section in paper.sections
+        for option in section.options
+        for question in option.questions
+        if question.kind == "calculation"
+    ]
+
+    assert calculations
+    assert all(
+        question.authoring_context.get("preserve_prompt") is True
+        and question.authoring_context.get("preserve_mark_scheme") is True
+        for question in calculations
+    )
+    assert all(
+        any(
+            token in " ".join(question.mark_scheme).casefold()
+            for token in ("working", "method", "substitution")
+        )
+        for question in calculations
+        if question.marks >= 3
+    )
+
+
+def test_boolean_calculation_parts_are_distinct_and_topic_aligned() -> None:
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 26080117)
+    group = paper.sections[4].options[0].questions
+    calculations = [question for question in group if question.kind == "calculation"]
+
+    assert [question.marks for question in calculations] == [1, 1, 2]
+    assert len({question.prompt for question in calculations}) == 3
+    assert all(
+        any(operator in question.prompt for operator in (" OR ", " AND ", " XOR "))
+        for question in calculations
+    )
+
+
+def test_data_representation_calculations_are_distinct_and_spec_aligned() -> None:
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 26080117)
+    calculations = [
+        question
+        for question in paper.sections[3].options[0].questions
+        if question.kind == "calculation"
+    ]
+    prompts = " ".join(question.prompt for question in calculations).casefold()
+
+    assert [question.marks for question in calculations] == [1, 2, 3, 4, 2]
+    assert len({question.prompt for question in calculations}) == len(calculations)
+    assert "hexadecimal" in prompts
+    assert "bitmap" in prompts
+    assert "mono sound" in prompts
+    assert "overflow" in prompts
+    assert "normalised floating-point" in prompts
+
+
+def test_fetch_decode_execute_questions_apply_distinct_case_evidence() -> None:
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 26080117)
+    questions = [
+        question
+        for section in paper.sections
+        for option in section.options
+        for question in option.questions
+        if "fetch-decode-execute cycle" in question.prompt.casefold()
+    ]
+
+    assert len(questions) >= 2
+    assert len({question.prompt for question in questions}) == len(questions)
+    assert all(
+        question.authoring_context.get("preserve_prompt") is True
+        and question.authoring_context.get("preserve_mark_scheme") is True
+        for question in questions
+    )
+
+
+def test_maximum_length_programming_prompt_preserves_paper_two_page_count(
+    tmp_path: Path,
+) -> None:
+    paper = build_paper(RULES["paper_2"], SYLLABUS, 26080118)
+    question = paper.sections[5].options[0].questions[2]
+    words = (
+        "Develop pseudocode that finds one appointment by its identifier, validates every "
+        "input, handles a missing record safely, and labels all variables consistently. "
+        "Include selection, iteration, a suitable data structure, and brief comments that "
+        "explain the important design decisions for the medical appointment service when implemented."
+    ).split()
+    assert len(words) == 45
+    paper.sections[5].options[0].questions[2] = question.model_copy(
+        update={"prompt": " ".join(words)}
+    )
+
+    output = tmp_path / "paper.pdf"
+    render_question_paper(paper, output)
+    document = fitz.open(output)
+    try:
+        assert len(document) == 32
+        assert "Question 7" in document[15].get_text()
+    finally:
+        document.close()

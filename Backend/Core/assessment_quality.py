@@ -45,6 +45,13 @@ def validate_candidate_contract(
 ) -> None:
     """Validate candidate quantities against their declared semantic roles."""
 
+    original_precision = _precision_instructions(original)
+    candidate_precision = _precision_instructions(candidate)
+    if original_precision != candidate_precision:
+        raise ValueError(
+            f"{contract.item_id} changed the required precision instruction"
+        )
+
     expected_values = [
         value
         for value in contract.numeric_values
@@ -54,6 +61,7 @@ def validate_candidate_contract(
     actual_tokens = list(numeric_tokens(candidate))
 
     ignored = _ignored_candidate_quantities(candidate)
+    ignored.extend(_precision_digit_tokens(candidate))
     _subtract_tokens(actual_tokens, ignored)
 
     supplied = generated_values or {}
@@ -69,7 +77,12 @@ def validate_candidate_contract(
         _subtract_tokens(actual_tokens, _value_tokens(value))
 
     actual = Counter(_normalise_quantity(token) for token in actual_tokens)
-    if actual != expected:
+    numeric_values_match = (
+        not (expected - actual)
+        if contract.allow_additional_numeric_values
+        else actual == expected
+    )
+    if not numeric_values_match:
         raise ValueError(
             f"{contract.item_id} changed immutable numeric data: "
             f"expected {expected}, got {actual}"
@@ -87,11 +100,6 @@ def validate_candidate_contract(
         raise ValueError(
             f"{contract.item_id} changed ordered immutable numeric data"
         )
-
-    # The original is retained in the interface so callers can log both sides and
-    # older call sites can migrate without reconstructing their contracts.
-    del original
-
 
 def validate_economics_causal_direction(value: str) -> None:
     """Reject common exchange-rate reversals before model review."""
@@ -126,6 +134,43 @@ def _ignored_candidate_quantities(value: str) -> list[str]:
             for match in re.finditer(pattern, value, flags=re.IGNORECASE)
         )
     return ignored
+
+
+def _precision_instructions(value: str) -> tuple[tuple[int, str], ...]:
+    words = {
+        "one": 1,
+        "two": 2,
+        "three": 3,
+        "four": 4,
+        "five": 5,
+    }
+    pattern = re.compile(
+        r"\b(one|two|three|four|five|\d+)\s+"
+        r"(decimal\s+places?|significant\s+figures?)\b",
+        flags=re.IGNORECASE,
+    )
+    return tuple(
+        (
+            (
+                words[match.group(1).casefold()]
+                if match.group(1).casefold() in words
+                else int(match.group(1))
+            ),
+            "decimal" if match.group(2).casefold().startswith("decimal") else "significant",
+        )
+        for match in pattern.finditer(value)
+    )
+
+
+def _precision_digit_tokens(value: str) -> list[str]:
+    return [
+        match.group(1)
+        for match in re.finditer(
+            r"\b(\d+)\s+(?:decimal\s+places?|significant\s+figures?)\b",
+            value,
+            flags=re.IGNORECASE,
+        )
+    ]
 
 
 def _value_tokens(value: float) -> list[str]:
@@ -200,7 +245,10 @@ def validate_package_novelty(
     comparisons = 0
     nearest: dict[str, Any] | None = None
     for historic_path in sorted(history_root.glob("*-assessment.json")):
-        if historic_path.resolve() == package_path.resolve():
+        if (
+            historic_path.resolve() == package_path.resolve()
+            or historic_path.name == package_path.name
+        ):
             continue
         try:
             historic = _load_package(historic_path)

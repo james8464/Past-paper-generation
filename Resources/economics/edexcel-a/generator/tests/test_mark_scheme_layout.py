@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+
 from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.pdf_text import extract_pdf_text, pdf_font_names
 from Backend.Core.pdf_validation import validate_pdf_for_release
@@ -225,6 +226,23 @@ def test_paper_1_final_essay_matches_reference_page_rhythm(tmp_path):
         assert "8" in document[28].get_text()
     finally:
         document.close()
+
+
+def test_live_paper_1_seed_keeps_reference_mark_scheme_page_count(tmp_path):
+    import pymupdf as fitz
+
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_1"),
+        syllabus,
+        seed=26080122,
+    )
+    output = tmp_path / "ms-live-seed.pdf"
+
+    render_mark_scheme(blueprint, syllabus, output)
+
+    with fitz.open(output) as document:
+        assert document.page_count == 29
 
 
 def test_paper_2_mark_scheme_matches_reference_pagination(tmp_path):

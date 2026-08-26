@@ -12,10 +12,16 @@ from ocregen.cli import generate_package
 from ocregen.configs import RULES
 from ocregen.generator import build_paper
 from ocregen.render_pdf import render_mark_scheme
+from ocregen.render_pdf import STYLES
+from ocregen.render_pdf import _compact_indicative_guidance
 from ocregen.syllabus import load_syllabus
 
 ROOT = Path(__file__).resolve().parents[1]
 SYLLABUS = load_syllabus(ROOT / "data" / "syllabus.json")
+
+
+def test_mark_scheme_body_scale_matches_reference() -> None:
+    assert STYLES["small"].fontSize == 10
 
 
 def test_all_rules_have_exact_candidate_marks() -> None:
@@ -62,6 +68,33 @@ def test_mcq_choices_are_distinct_and_contextual() -> None:
     questions = [option.questions[0] for option in paper.sections[0].options]
     assert all(len(set(question.choices)) == 4 for question in questions)
     assert all(len(question.prompt.split()) >= 20 for question in questions)
+    numeric = [question for index, question in enumerate(questions, start=1) if index % 5 == 0]
+    assert numeric
+    assert all(
+        question.authoring_context
+        == {"preserve_prompt": True, "preserve_mark_scheme": True}
+        for question in numeric
+    )
+
+
+def test_source_calculation_keeps_verified_figures_and_mark_scheme() -> None:
+    paper = build_paper(RULES["paper_3"], SYLLABUS, 123)
+    calculation = paper.sections[1].options[0].questions[0]
+    source_items = [
+        question
+        for section in paper.sections
+        for option in section.options
+        for question in option.questions
+        if question.source_references
+    ]
+
+    assert calculation.rule_id == "extract_1_calc"
+    assert source_items
+    assert all(
+        question.authoring_context["preserve_prompt"] is True
+        and question.authoring_context["preserve_mark_scheme"] is True
+        for question in source_items
+    )
 
 
 def test_written_references_match_rendered_figure() -> None:
@@ -69,6 +102,38 @@ def test_written_references_match_rendered_figure() -> None:
     prompts = [question.prompt for question in paper.sections[0].options[0].questions]
     assert all("Table 1" not in prompt for prompt in prompts)
     assert any("Figure 1" in prompt for prompt in prompts)
+
+
+def test_relationship_questions_align_knowledge_and_application_marks() -> None:
+    paper = build_paper(RULES["paper_2"], SYLLABUS, 26080120)
+    questions = {
+        question.number: question
+        for section in paper.sections
+        for option in section.options
+        for question in option.questions
+    }
+
+    three_mark = questions["1(c)"]
+    awarded_three = [point for point in three_mark.structured_mark_scheme if point.marks]
+    assert [point.assessment_objective for point in awarded_three] == [
+        "AO1",
+        "AO1",
+        "AO2",
+    ]
+    assert "expected relationship" in awarded_three[0].text.casefold()
+    assert "130.0" in awarded_three[2].text
+    assert "173.1" in awarded_three[2].text
+    assert "whether" in awarded_three[2].text.casefold()
+
+    four_mark = questions["1(d)"]
+    awarded_four = [point for point in four_mark.structured_mark_scheme if point.marks]
+    assert [point.assessment_objective for point in awarded_four] == [
+        "AO1",
+        "AO1",
+        "AO2",
+        "AO2",
+    ]
+    assert all("limits of the comparison" not in point.text.casefold() for point in awarded_four)
 
 
 def test_all_packages_render_reference_page_geometry(tmp_path: Path) -> None:
@@ -340,3 +405,15 @@ def test_long_short_answer_scheme_terminates_without_losing_points(
     assert result.elapsed_seconds < 5
     assert result.pages == 30
     assert all(point in text for point in marking_points)
+
+
+def test_compact_guidance_terminates_when_generated_points_are_exhausted() -> None:
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 123)
+    question = paper.sections[0].options[0].questions[4]
+    question = question.model_copy(
+        update={"mark_scheme": ["One concise valid indicative point."]}
+    )
+
+    flowables = _compact_indicative_guidance(question, 12)
+
+    assert flowables

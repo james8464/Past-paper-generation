@@ -225,9 +225,13 @@ def _generate_batch(
     resumed: list[_Task] = []
     if checkpoint_store is not None:
         for task in tasks:
+            if task.key in result:
+                continue
             stored = checkpoint_store.load_item(task.id)
             if stored is None:
                 continue
+            original_stored = stored
+            stored = _upgrade_checkpoint_metadata(task, stored)
             try:
                 _validate_checkpoint_item(task, stored)
             except ValueError as error:
@@ -238,6 +242,8 @@ def _generate_batch(
                 )
                 checkpoint_store.discard_item(task.id)
                 continue
+            if stored != original_stored:
+                checkpoint_store.save_item(task.id, stored)
             result[task.key] = stored
             resumed.append(task)
     accepted = [
@@ -300,6 +306,8 @@ def _validate_checkpoint_item(
         "expected_minutes",
         "scheme_mode",
         "contract",
+        "authoring_context",
+        "source_references",
     )
     changed = [
         name
@@ -310,10 +318,34 @@ def _validate_checkpoint_item(
         raise ValueError(
             f"checkpoint item {task.id} changed immutable fields: {changed}"
         )
+    if original.authoring_context.get("preserve_mark_scheme") is True and (
+        candidate.mark_scheme != original.mark_scheme
+        or candidate.structured_mark_scheme != original.structured_mark_scheme
+    ):
+        raise ValueError(
+            f"checkpoint item {task.id} changed verified marking guidance"
+        )
     if not candidate.prompt.strip() or not candidate.structured_mark_scheme:
         raise ValueError(f"checkpoint item {task.id} is incomplete")
+    _validate_prompt_length(original, candidate.prompt)
     _validate_mark_points(original, candidate.structured_mark_scheme)
     _validate_release_mark_scheme(candidate)
+
+
+def _upgrade_checkpoint_metadata(
+    task: _Task,
+    candidate: GeneratedQuestion,
+) -> GeneratedQuestion:
+    """Adopt a newly added layout budget without weakening item validation."""
+
+    current = task.question.authoring_context
+    if candidate.authoring_context == current or "max_prompt_words" not in current:
+        return candidate
+    previous = dict(current)
+    previous.pop("max_prompt_words")
+    if candidate.authoring_context != previous:
+        return candidate
+    return candidate.model_copy(update={"authoring_context": current})
 
 
 def _generate_item_transaction(
@@ -400,9 +432,51 @@ def _generate_item_transaction(
                 f"Refining AI item {task.question.number} after an automated "
                 f"quality check: {failure}"
             )
+    provider = str(getattr(client, "provider", "custom"))
+    if _seeded_fallback_allowed(provider=provider, failure=failure):
+        fallback = task.question
+        _validate_release_mark_scheme(fallback)
+        fallback_review = (
+            _review_batch(
+                [task],
+                [fallback],
+                client=client,
+                subject=subject,
+            )[task.id]
+            if policy.require_model_review
+            else ReviewResult(approved=True)
+        )
+        if fallback_review.approved and not fallback_review.issues:
+            assert_distinct_items(
+                [
+                    *accepted_prompts,
+                    {"id": task.id, "prompt": fallback.prompt},
+                ],
+                threshold=policy.paper_similarity_limit,
+                context="accepted AI items",
+            )
+            return fallback.model_copy(
+                update={"provenance": f"reviewed-seeded-fallback:{provider}"}
+            )
+        failure = "; ".join(fallback_review.issues or ["not approved"])
     raise RuntimeError(
         "AI could not produce a valid, second-pass reviewed item for "
         f"question {task.question.number}: {failure}"
+    )
+
+
+def _seeded_fallback_allowed(*, provider: str, failure: str) -> bool:
+    """Permit a reviewed local blueprint stem only for formatting-only drift."""
+
+    return provider.casefold() == "ollama" and any(
+        reason in failure.casefold()
+        for reason in (
+            "changed the required precision instruction",
+            "only a paraphrase of the draft",
+            "words; maximum is",
+            "omitted a required source or visual term",
+            "changed immutable numeric data",
+        )
     )
 
 
@@ -497,8 +571,13 @@ def _candidate_question(
         _bounded_text(raw.get("prompt"), name="prompt", limit=5000),
         question=original,
     )
+    generated_prompt = _normalise_command_word(
+        generated_prompt,
+        original.command_word,
+    )
     preserve_prompt = original.authoring_context.get("preserve_prompt") is True
     prompt = original.prompt if preserve_prompt else generated_prompt
+    _validate_prompt_length(original, prompt)
     generated_values = raw.get("generated_numeric_values")
     validate_candidate_contract(
         original.prompt,
@@ -576,6 +655,7 @@ def _candidate_question(
             )
         points = [MarkSchemePoint.model_validate(point) for point in raw_points]
         points = _normalise_level_allocations(original, points)
+    points = _normalise_calculation_guidance(original, points)
     if not preserve_mark_scheme:
         _validate_mark_points(original, points)
     required_mark_scheme_terms = original.authoring_context.get(
@@ -659,6 +739,36 @@ def _candidate_question(
     )
     _validate_release_mark_scheme(candidate)
     return candidate
+
+
+def _normalise_calculation_guidance(
+    question: GeneratedQuestion,
+    points: list[MarkSchemePoint],
+) -> list[MarkSchemePoint]:
+    calculation = question.kind == "calculation" or question.command_word.casefold() in {
+        "calculate",
+        "complete",
+        "prepare",
+    }
+    if not calculation or question.marks < 3:
+        return points
+    guidance_text = " ".join(point.text for point in points).casefold()
+    if any(
+        token in guidance_text
+        for token in ("working", "method", "formula", "calculation", " = ", "step")
+    ):
+        return points
+    return [
+        *points,
+        MarkSchemePoint(
+            text=(
+                "Award method credit for a correct formula, substitution and "
+                "consistent working, including a valid answer carried forward."
+            ),
+            marks=0,
+            credit_type="guidance",
+        ),
+    ]
 
 
 def _validate_release_mark_scheme(question: GeneratedQuestion) -> None:
@@ -931,23 +1041,39 @@ def _generation_prompt(
             "command_word": task.question.command_word,
             "marks": task.question.marks,
             "assessment_objectives": task.question.assessment_objectives,
-            "minimum_substantive_mark_scheme_points": max(
-                1,
-                min(6, (task.question.marks + 2) // 3),
+            "mark_scheme_locked": task.question.authoring_context.get(
+                "preserve_mark_scheme"
+            )
+            is True,
+            "minimum_substantive_mark_scheme_points": (
+                0
+                if task.question.authoring_context.get("preserve_mark_scheme") is True
+                else max(1, min(6, (task.question.marks + 2) // 3))
             ),
             "minimum_awarded_entries": (
-                1
-                if task.question.kind == "multiple_choice"
+                0
+                if task.question.authoring_context.get("preserve_mark_scheme") is True
                 else (
-                    len(task.question.assessment_objectives)
-                    if task.question.scheme_mode == "levels"
-                    else min(task.question.marks, 8)
+                    1
+                    if task.question.kind == "multiple_choice"
+                    else (
+                        len(task.question.assessment_objectives)
+                        if task.question.scheme_mode == "levels"
+                        else min(task.question.marks, 8)
+                    )
                 )
             ),
-            "required_awarded_entries": _required_awarded_entries(task.question),
+            "required_awarded_entries": (
+                []
+                if task.question.authoring_context.get("preserve_mark_scheme") is True
+                else _required_awarded_entries(task.question)
+            ),
             "intended_demand": task.question.intended_demand,
             "expected_minutes": task.question.expected_minutes,
             "scheme_mode": task.question.scheme_mode,
+            "maximum_prompt_words": task.question.authoring_context.get(
+                "max_prompt_words"
+            ),
             "semantic_task_contract": _semantic_task_contract(task),
             "topic": {
                 "id": str(task.topic.id),
@@ -991,6 +1117,9 @@ def _generation_prompt(
         "named entities, artefact, subject matter, and scope. Compose fresh prose "
         "around those elements; do not turn the term list into a fragment or copy a "
         "planning sentence. Before returning each prompt, "
+        "count words using ordinary exam prose; when a blueprint declares "
+        "`maximum_prompt_words`, the complete grammatical stem must not exceed "
+        "`maximum_prompt_words`. "
         "extract its digits, dates, currency values, percentages, and ratios and "
         "confirm that their ordered multiset is exactly `prompt_numeric_contract."
         "required_exact_tokens`; an empty list means the prompt contains no numeric "
@@ -1006,6 +1135,8 @@ def _generation_prompt(
         "specification points.\n\n"
         "Return one JSON object with a `questions` array. Each entry must contain: "
         "`id`, `prompt`, `choices`, `correct_choice`, and `mark_scheme`. "
+        "When `mark_scheme_locked` is true, return an empty `mark_scheme` array; "
+        "the application will attach its verified examiner guidance. Otherwise, "
         "`mark_scheme` must be an array of objects matching this schema: "
         '{"text":"specific creditworthy answer or guidance","marks":1,'
         '"credit_type":"answer|point|level|guidance",'
@@ -1375,3 +1506,57 @@ def _contains_command_word(prompt: str, command_word: str) -> bool:
     expected = aliases.get(command_word.casefold(), {command_word.casefold()})
     words = set(re.findall(r"[a-z]+", prompt.casefold()))
     return bool(words & expected)
+
+
+def _normalise_command_word(prompt: str, command_word: str) -> str:
+    """Replace only a leading alternative exam command with the blueprint command."""
+
+    if _contains_command_word(prompt, command_word):
+        return prompt
+    match = re.match(r"\s*([a-z]+)\b", prompt, flags=re.IGNORECASE)
+    alternatives = {
+        "analyse",
+        "analyze",
+        "assess",
+        "calculate",
+        "complete",
+        "define",
+        "describe",
+        "discuss",
+        "draw",
+        "evaluate",
+        "explain",
+        "give",
+        "identify",
+        "justify",
+        "name",
+        "outline",
+        "prepare",
+        "recommend",
+        "select",
+        "state",
+        "suggest",
+        "write",
+    }
+    if match is None or match.group(1).casefold() not in alternatives:
+        return prompt
+    replacement = command_word.strip()
+    if match.group(1)[:1].isupper():
+        replacement = replacement[:1].upper() + replacement[1:]
+    return f"{prompt[: match.start(1)]}{replacement}{prompt[match.end(1) :]}"
+
+
+def _validate_prompt_length(question: GeneratedQuestion, prompt: str) -> None:
+    raw_limit = question.authoring_context.get("max_prompt_words")
+    if raw_limit is None:
+        return
+    if not isinstance(raw_limit, int) or raw_limit < 8:
+        raise ValueError(
+            f"question {question.number} has an invalid prompt word limit"
+        )
+    word_count = len(re.findall(r"\b[\w'-]+\b", prompt))
+    if word_count > raw_limit:
+        raise ValueError(
+            f"question {question.number} prompt has {word_count} words; "
+            f"maximum is {raw_limit}"
+        )

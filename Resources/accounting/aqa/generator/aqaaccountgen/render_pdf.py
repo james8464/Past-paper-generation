@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pymupdf as fitz
+
 from reportlab.graphics.shapes import Drawing, Ellipse, Line, Rect, String
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT
@@ -65,7 +67,12 @@ def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
     doc.build(story)
 
 
-def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
+def render_mark_scheme(
+    paper: GeneratedPaper,
+    path: Path,
+    *,
+    _extension_adjustment: int = 0,
+) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     doc = _document(path, paper, "Mark scheme")
     story: list[Flowable] = mark_scheme_cover(
@@ -98,8 +105,27 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
             story.extend(_scheme_block(question))
         story.append(PageBreak())
     story.pop()
-    story.extend(_mark_scheme_extension_pages(paper))
+    story.extend(
+        _mark_scheme_extension_pages(
+            paper,
+            count_adjustment=_extension_adjustment,
+        )
+    )
     doc.build(story)
+    target_pages = 28
+    with fitz.open(path) as rendered:
+        page_count = rendered.page_count
+    if _extension_adjustment == 0 and page_count != target_pages:
+        render_mark_scheme(
+            paper,
+            path,
+            _extension_adjustment=target_pages - page_count,
+        )
+        return
+    if page_count != target_pages:
+        raise ValueError(
+            f"AQA accounting mark scheme rendered {page_count} pages; expected {target_pages}"
+        )
 
 
 def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
@@ -1033,8 +1059,14 @@ MARK_SCHEME_EXTENSION_PAGE_COUNTS = {
 }
 
 
-def _mark_scheme_extension_pages(paper: GeneratedPaper) -> list[Flowable]:
-    count = MARK_SCHEME_EXTENSION_PAGE_COUNTS[paper.paper_id]
+def _mark_scheme_extension_pages(
+    paper: GeneratedPaper,
+    *,
+    count_adjustment: int = 0,
+) -> list[Flowable]:
+    count = MARK_SCHEME_EXTENSION_PAGE_COUNTS[paper.paper_id] + count_adjustment
+    if count < 2:
+        raise ValueError("AQA accounting mark-scheme continuation budget is too small")
     questions = [
         question
         for section in paper.sections

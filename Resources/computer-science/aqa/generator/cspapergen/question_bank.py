@@ -16,7 +16,7 @@ class QuestionStyle:
 
 QUESTION_STYLES = [
     QuestionStyle("software_classification", "4.6", (8,), "software_classification"),
-    QuestionStyle("optical_storage", "4.5", (8,), "optical_storage"),
+    QuestionStyle("bitmap_storage", "4.5", (8,), "bitmap_storage"),
     QuestionStyle("legal_issues_short", "4.8", (3,), "legal_issues_short"),
     QuestionStyle("client_server_short", "4.9", (3,), "client_server_short"),
     QuestionStyle("ipv4_extended", "4.9", (12,), "ipv4_extended"),
@@ -70,7 +70,7 @@ def styles_for_total(total: int) -> list[QuestionStyle]:
 def build_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
     builders = {
         "software_classification": _software_classification_question,
-        "optical_storage": _optical_storage_question,
+        "bitmap_storage": _bitmap_storage_question,
         "legal_issues_short": _legal_issues_short_question,
         "client_server_short": _client_server_short_question,
         "ipv4_extended": _ipv4_extended_question,
@@ -164,9 +164,9 @@ def _software_classification_question(
 ) -> Question:
     examples = rng.choice(
         [
-            "Spreadsheet|Image editor|Backup utility|Compiler",
-            "Word processor|Video editor|Encryption utility|Assembler",
-            "Presentation software|Audio editor|Compression utility|Interpreter",
+            "Spreadsheet|Image editor|Utility software|Translators",
+            "Word processor|Video editor|Utility software|Translators",
+            "Presentation software|Audio editor|Utility software|Translators",
         ]
     )
     stimulus = Stimulus(
@@ -203,10 +203,10 @@ def _software_classification_question(
                 4,
                 "Compare developing a program in a low-level language with developing it in a high-level language.",
                 [
-                    "Low-level code offers direct hardware/register control;",
-                    "Low-level code is processor-specific and harder to maintain;",
-                    "High-level code provides abstraction and is easier to read or develop;",
-                    "High-level code usually requires translation and may provide less direct control;",
+                    "Low-level code offers direct hardware/register control (1 mark);",
+                    "Low-level code is processor-specific and harder to maintain (1 mark);",
+                    "High-level code provides abstraction and is easier to read or develop (1 mark);",
+                    "High-level code usually requires translation and may provide less direct control (1 mark);",
                 ],
                 "",
                 9,
@@ -223,51 +223,61 @@ def _software_classification_question(
     )
 
 
-def _optical_storage_question(
+def _bitmap_storage_question(
     style: QuestionStyle,
     number: int,
     total: int,
     rng: random.Random,
 ) -> Question:
-    medium = rng.choice(["archival photographs", "audio recordings", "installation media"])
-    stimulus = Stimulus(kind="optical", title="Figure 1", diagram=medium)
+    width, height = rng.choice([(1280, 720), (1600, 900), (1920, 1080)])
+    colour_depth = rng.choice([16, 24, 32])
+    bits = width * height * colour_depth
+    mebibytes = bits / 8 / 1024 / 1024
+    stimulus = Stimulus(
+        kind="table",
+        title="Table 1",
+        headers=["Property", "Value"],
+        rows=[
+            ["Width", f"{width} pixels"],
+            ["Height", f"{height} pixels"],
+            ["Colour depth", f"{colour_depth} bits per pixel"],
+        ],
+    )
     parts = _parts(
         [
             (
                 "1",
                 6,
-                "Describe how data is read from an optical disc.",
+                "Calculate the minimum uncompressed file size of the bitmap in mebibytes. Show your working and give the answer to two decimal places.",
                 [
-                    "The disc surface contains pits and lands arranged on a spiral track;",
-                    "A laser is focused on the rotating disc;",
-                    "Pits and lands reflect different amounts or phases of light;",
-                    "A light sensor detects the reflected light;",
-                    "The changes are converted into an electrical/digital signal;",
-                    "The pattern is decoded as binary data;",
+                    f"Number of pixels = {width} x {height};",
+                    f"Number of pixels = {width * height};",
+                    f"File size in bits = {width * height} x {colour_depth};",
+                    f"File size in bits = {bits};",
+                    "Convert bits to bytes and then divide by 1024 squared to obtain MiB;",
+                    f"Minimum uncompressed size = {mebibytes:.2f} MiB;",
                 ],
-                "",
-                14,
+                "MiB",
+                8,
             ),
             (
                 "2",
                 2,
-                f"State two reasons why optical storage may be unsuitable for {medium}.",
+                "Explain one effect of increasing the colour depth while keeping the dimensions unchanged.",
                 [
-                    "Capacity may be too low compared with solid-state or magnetic storage;",
-                    "Access and transfer speeds may be too slow;",
-                    "The surface can be scratched or damaged;",
-                    "A compatible drive may not be available;",
+                    "More distinct colours can be represented, which can improve colour accuracy or reduce banding;",
+                    "More bits are stored for every pixel, so the uncompressed file size increases;",
                 ],
                 "",
-                5,
+                4,
             ),
         ]
     )
     return _question(
         style,
         number,
-        "Optical storage",
-        f"An organisation is considering optical discs for {medium}.",
+        "Bitmap storage",
+        "A digital publisher stores an uncompressed bitmap for a magazine cover.",
         stimulus,
         parts,
     )
@@ -433,15 +443,15 @@ def _fibonacci_recursion_question(
     stimulus = Stimulus(kind="code", title="Program 1", code=code)
     parts = _parts(
         [
-            ("1", 1, "State the base case in Program 1.", ["The function returns n when n is 0 or 1;"], "", 2),
+            ("1", 1, "State the base case in Program 1.", ["n <= 1; accept that the function returns n when n is 0 or 1;"], "", 2),
             ("2", 1, f"State the value returned by {function_name}(6).", ["8;"], "", 2),
             (
                 "3",
                 2,
                 "Explain why a recursive call must move towards a base case.",
                 [
-                    "Otherwise calls continue without termination;",
-                    "This can exhaust the call stack or cause a runtime error;",
+                    "1 mark: otherwise recursive calls continue without termination;",
+                    "1 development mark: continued calls can exhaust the call stack or cause a runtime error;",
                 ],
                 "",
                 5,
@@ -451,8 +461,8 @@ def _fibonacci_recursion_question(
                 2,
                 "Explain why this recursive method performs repeated work.",
                 [
-                    "The same earlier Fibonacci terms are calculated by several branches;",
-                    "Memoisation or iteration can avoid repeated calculations;",
+                    "1 mark: overlapping branches call the function with the same earlier value of n;",
+                    "1 development mark: because results are not stored, those terms and their descendants are recalculated each time;",
                 ],
                 "",
                 5,
@@ -525,7 +535,8 @@ def _assembly_program_question(
         "      ADD R0, R0, #1\n"
         "      LSR R1, R1, #1\n"
         "      B loop\n"
-        "end:  STR R0, 100"
+        "end:  STR R0, [100]\n"
+        "      HALT"
     )
     stimulus = Stimulus(kind="code", title="Program 1", code=code)
     parts = _parts(
@@ -533,14 +544,14 @@ def _assembly_program_question(
             (
                 "1",
                 6,
-                "Explain the purpose of the assembly language program and how the instructions implement it.",
+                "Explain the purpose of the assembly language program and how the instructions implement it. In this instruction set, # marks an immediate value, [100] is direct memory address 100, and LSR performs a zero-fill logical right shift on an unsigned register.",
                 [
-                    "R0 is initialised as a counter;",
-                    f"R1 is initialised with the value {value};",
-                    "CMP and BEQ terminate the loop when R1 becomes zero;",
-                    "R0 is incremented once for each loop iteration;",
-                    "LSR divides the unsigned value in R1 by two;",
-                    "The number of shifts required to reach zero is stored at address 100;",
+                    "Purpose — 1 mark: identifies that the program counts how many logical right shifts are needed for the positive unsigned input to reach zero, equivalently its binary bit length;",
+                    f"Purpose — 1 mark: applies that purpose to input {value}, which requires {value.bit_length()} shifts / bits;",
+                    "Purpose — 1 mark: states that the final count is stored in direct memory address 100;",
+                    "Implementation — 1 mark: R0 is initialised to zero and incremented once on every loop iteration, so it records the shift count;",
+                    f"Implementation — 1 mark: R1 starts at {value} and each zero-fill LSR divides its unsigned value by two, discarding the least-significant bit;",
+                    "Implementation — 1 mark: CMP and BEQ stop the loop when R1 reaches zero, after which STR writes R0 to [100];",
                 ],
                 "",
                 15,
@@ -551,7 +562,7 @@ def _assembly_program_question(
         style,
         number,
         "Assembly language program",
-        "Program 1 executes on a processor with general-purpose registers.",
+        "Program 1 executes on a processor with general-purpose unsigned registers and the instruction conventions stated in the question.",
         stimulus,
         parts,
     )
@@ -745,14 +756,21 @@ def _rle_question(style: QuestionStyle, number: int, total: int, rng: random.Ran
 
 def _floating_point_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
     value = rng.choice(["010110 0011", "101010 0010", "011001 1101"])
+    conversion = {
+        "010110 0011": "0.10110₂ = 0.6875 and 0011₂ = 3, so 0.6875 × 2³ = 5.5",
+        "101010 0010": "1.01010₂ = -1 + 1/4 + 1/16 = -0.6875 and 0010₂ = 2, so -0.6875 × 2² = -2.75",
+        "011001 1101": "0.11001₂ = 0.78125 and 1101₂ = -3, so 0.78125 × 2⁻³ = 0.09765625",
+    }[value]
     stimulus = Stimulus(kind="bitgrid", title="Figure 1", headers=["Mantissa", "Exponent"], rows=[value.split()])
     parts = _parts([
-        ("1", 2, "State the mantissa and exponent shown in Figure 1.", ["Correct mantissa copied;", "Correct exponent copied;"], "", 3),
-        ("2", 2, "Convert the floating point number into denary.", ["Correct binary point movement shown;", "Correct denary value;"], "", 4),
-        ("3", 2, "Explain the effect of increasing the number of bits used for the mantissa.", ["More significant bits can be stored;", "Precision/accuracy of represented values increases;", "Range may decrease if total bit length is fixed;"], "", 4),
-        ("4", 2, "Explain the effect of increasing the number of bits used for the exponent.", ["Larger/smaller powers can be represented;", "Range of values increases;", "Precision may decrease if total bit length is fixed;"], "", 4),
+        ("1", 1, "State the mantissa and exponent bit patterns shown in Figure 1.", ["1 mark: both the six-bit mantissa and four-bit exponent are copied correctly;"], "", 2),
+        ("2", 1, "Convert the floating point number into denary. The mantissa and exponent are both stored in two's complement, the binary point is immediately after the mantissa sign bit, and value = mantissa × 2^exponent.", [f"1 mark: {conversion};"], "", 3),
+        ("3", 1, "State whether the floating point number in Figure 1 is normalised. Give a reason for your answer.", ["1 mark: it is normalised because a two's-complement fractional mantissa starts 01 when positive or 10 when negative; equivalently, its first two bits differ;"], "", 2),
+        ("4", 2, "Explain the effect of adding two bits to the mantissa while leaving the exponent unchanged.", ["1 mark: two additional fractional binary place values can be stored in the mantissa;", "1 mark: the smaller interval between adjacent representable values reduces quantisation / rounding error and therefore increases precision;"], "", 3),
+        ("5", 3, "Explain the trade-off if a fixed-length floating point format assigns more bits to the exponent and fewer bits to the mantissa.", ["1 mark: the exponent can represent a wider set of powers of two;", "1 mark: the range of magnitudes that can be represented increases;", "1 mark: fewer mantissa bits reduce precision / increase rounding error;"], "", 4),
+        ("6", 1, "Name the error that occurs when a non-zero value is too close to zero to be represented.", ["1 mark: underflow;"], "", 2),
     ])
-    return _question(style, number, "Floating point representation", "A floating point representation uses two's complement for both mantissa and exponent.", stimulus, _fit_parts(parts, total))
+    return _question(style, number, "Floating point representation", "A scientific sensor stores readings using the fixed-length floating point format shown.", stimulus, _fit_parts(parts, total))
 
 
 def _logic_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
@@ -778,18 +796,30 @@ def _boolean_question(style: QuestionStyle, number: int, total: int, rng: random
 
 
 def _truth_table_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
-    expression, rows = rng.choice(
+    expression, rows, outputs = rng.choice(
         [
-            ("(A AND B) OR C", [["0", "0", "0", ""], ["0", "1", "1", ""], ["1", "0", "0", ""], ["1", "1", "1", ""]]),
-            ("A AND (B OR NOT C)", [["0", "0", "0", ""], ["0", "1", "0", ""], ["1", "0", "1", ""], ["1", "1", "0", ""]]),
-            ("(A XOR B) AND C", [["0", "1", "1", ""], ["1", "0", "1", ""], ["1", "1", "1", ""], ["0", "0", "1", ""]]),
+            ("(A AND B) OR C", [["0", "0", "0", ""], ["0", "1", "1", ""], ["1", "0", "0", ""], ["1", "1", "1", ""]], ["0", "1", "0", "1"]),
+            ("A AND (B OR NOT C)", [["0", "0", "0", ""], ["0", "1", "0", ""], ["1", "0", "1", ""], ["1", "1", "0", ""]], ["0", "0", "0", "1"]),
+            ("(A XOR B) AND C", [["0", "1", "1", ""], ["1", "0", "1", ""], ["1", "1", "1", ""], ["0", "0", "1", ""]], ["1", "1", "0", "0"]),
         ]
+    )
+    valid_rows = [row[:3] for row, output in zip(rows, outputs, strict=True) if output == "1"]
+    valid_text = " or ".join(
+        f"A={row[0]}, B={row[1]}, C={row[2]}" for row in valid_rows
     )
     stimulus = Stimulus(kind="truth_table", title="Figure 1", headers=["A", "B", "C", "X"], rows=rows)
     parts = _parts([
-        ("1", 3, f"Complete Figure 1 for the Boolean expression {expression}.", ["All input rows interpreted correctly;", "Intermediate logic applied correctly;", "Final output column completed correctly;"], "", 7),
-        ("2", 2, "State one input combination for which X has the value 1.", ["Correct row identified from the completed truth table;", "Answer uses A, B and C values clearly;"], "", 4),
-        ("3", 3, "Explain why truth tables are useful when testing a logic circuit.", ["They show every possible input combination;", "Expected output can be compared with actual circuit output;", "Errors in the expression or circuit can be found systematically;"], "", 5),
+        ("1", 4, f"Complete Figure 1 for the Boolean expression {expression}.", [
+            f"Row {row_index}: X = {output};"
+            for row_index, output in enumerate(outputs, start=1)
+        ], "", 7),
+        ("2", 2, "State one input combination from Figure 1 for which X has the value 1.", [
+            f"1 mark for A and B values matching one of these rows: {valid_text};",
+            "1 mark for the corresponding C value from the same row;",
+        ], "", 4),
+        ("3", 1, "Explain one reason why a truth table is useful when testing a logic circuit.", [
+            "Award 1 mark for one valid reason, such as comparing expected and actual outputs systematically or finding an incorrect circuit output;",
+        ], "", 5),
     ])
     return _question(style, number, "Truth tables", "A logic circuit has three inputs, A, B and C, and one output, X.", stimulus, _fit_parts(parts, total))
 
@@ -826,8 +856,16 @@ def _processor_question(style: QuestionStyle, number: int, total: int, rng: rand
 def _stored_program_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
     parts = _parts([
         ("1", 2, "Explain the stored program concept.", ["Instructions and data are stored in main memory;", "The processor fetches instructions from memory to execute them;"], "", 4),
-        ("2", 2, "State the role of the current instruction register.", ["Stores the instruction currently being decoded/executed;", "Allows the control unit to interpret the instruction;"], "", 4),
-        ("3", 4, "Describe the fetch-decode-execute cycle.", ["Fetch instruction from memory using address in PC/MAR;", "Decode instruction in control unit;", "Execute operation using ALU/registers/memory as required;", "Update PC/status registers as appropriate;"], "", 8),
+        ("2", 6, "Describe how one instruction is processed during the fetch-decode-execute cycle.", [
+            "The program counter holds the address of the next instruction;",
+            "The address is copied to the memory address register;",
+            "The instruction is transferred from memory to the memory data register and then the current instruction register;",
+            "The program counter is incremented;",
+            "The control unit decodes the instruction;",
+            "The instruction is executed using the ALU, registers or memory as required;",
+        ], "", 10),
+        ("3", 1, "State the role of the current instruction register.", ["It stores the instruction currently being decoded or executed;"], "", 3),
+        ("4", 1, "State one benefit of the stored program concept.", ["A different program can be loaded and executed without rewiring the computer;"], "", 3),
     ])
     return _question(style, number, "Stored program concept", "A von Neumann architecture computer executes machine code instructions.", None, _fit_parts(parts, total))
 
@@ -868,10 +906,21 @@ def _tcpip_question(style: QuestionStyle, number: int, total: int, rng: random.R
 def _sql_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
     stimulus = Stimulus(kind="code", title="Table 1", code="Student(StudentID, Name, HouseID)\nHouse(HouseID, HouseName)")
     parts = _parts([
-        ("1", 2, "Identify the primary key in Student and the foreign key in Student.", ["StudentID identified as primary key;", "HouseID identified as foreign key;"], "", 3),
-        ("2", 2, "Explain why the data should be normalised.", ["Reduces data duplication/redundancy;", "Reduces update/insert/delete anomalies and improves consistency;"], "", 4),
-        ("3", 3, "Write an SQL query to output the names of students in house 'Kepler'.", ["SELECT Name used;", "Correct tables/join condition used;", "WHERE HouseName = 'Kepler' used;"], "", 7),
-        ("4", 1, "State the purpose of referential integrity in this database.", ["Ensures a foreign key refers to an existing primary key;", "Prevents orphan records/inconsistent relationships;", "Linked to Student and House tables;"], "", 3),
+        ("1", 1, "Identify the primary key in Student.", ["StudentID;"], "", 3),
+        ("2", 1, "Identify the foreign key in Student.", ["HouseID;"], "", 3),
+        ("3", 2, "Write an SQL query to output the names of all students whose HouseID is 3.", ["SELECT Name FROM Student used;", "WHERE HouseID = 3 used;"], "", 6),
+        ("4", 6, "Explain how normalisation, primary and foreign keys, and referential integrity help maintain this database.", [
+            "Normalisation reduces duplicated data;",
+            "Reducing duplication limits update, insertion or deletion anomalies;",
+            "StudentID uniquely identifies each Student record;",
+            "HouseID links each Student record to a House record;",
+            "Referential integrity requires each Student.HouseID value to match an existing House.HouseID value;",
+            "This prevents orphan Student records and preserves consistent relationships;",
+        ], "", 10),
+        ("5", 2, "Explain one benefit of indexing StudentID when student records are searched frequently.", [
+            "An index provides a direct or ordered lookup structure for StudentID;",
+            "Fewer records need to be examined, so searches are usually faster;",
+        ], "", 5),
     ])
     return _question(style, number, "Relational databases", "A school stores student and house data in a relational database.", stimulus, _fit_parts(parts, total))
 

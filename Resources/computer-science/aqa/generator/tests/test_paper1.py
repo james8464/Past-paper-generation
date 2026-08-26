@@ -48,6 +48,7 @@ def test_paper1_skeleton_program_is_valid_python() -> None:
     compile(context.skeleton_program, "skeleton.py", "exec")
     assert "def add_record(records):" in context.skeleton_program
     assert "def print_report(records):" in context.skeleton_program
+    assert "descending adjusted-total order" in context.skeleton_program
     assert 'load_records("cs-paper-1-practice-data.txt")' in context.skeleton_program
     assert context.data_file.count("\n") == 8
 

@@ -59,6 +59,15 @@ def _enrich_question(
     if question.kind == "multiple_choice":
         return question.model_copy(update={"prompt": _clean_text(question.prompt)})
 
+    prompt = _clean_text(question.prompt)
+    authoring_context = {
+        **question.authoring_context,
+        "preserve_mark_scheme": True,
+        "max_prompt_words": max(
+            12,
+            len(re.findall(r"\b[\w'-]+\b", prompt)) + 2,
+        ),
+    }
     points = [str(point).strip() for point in topic.points if str(point).strip()]
     selected = (points * 3)[:6]
     scheme = list(question.mark_scheme)
@@ -66,8 +75,9 @@ def _enrich_question(
         scheme.extend(_compact_technical_guidance(question, topic.title, selected))
         return question.model_copy(
             update={
-                "prompt": _clean_text(question.prompt),
+                "prompt": prompt,
                 "mark_scheme": _deduplicate(scheme),
+                "authoring_context": authoring_context,
             }
         )
     scheme.extend(_objective_guidance(question, topic.title, selected, subject))
@@ -83,8 +93,9 @@ def _enrich_question(
     scheme = _deduplicate(scheme)
     return question.model_copy(
         update={
-            "prompt": _clean_text(question.prompt),
+            "prompt": prompt,
             "mark_scheme": scheme,
+            "authoring_context": authoring_context,
         }
     )
 
@@ -129,7 +140,6 @@ def _objective_guidance(
     points: list[str],
     subject: str,
 ) -> list[str]:
-    prompt = _clean_text(question.prompt)
     application = _application_label(subject)
     if question.marks <= 4:
         concise = [
@@ -155,7 +165,7 @@ def _objective_guidance(
             for point in points[:3]
         ],
         f"{application}: select and use the figures, constraints or evidence supplied in the question; unsupported generic statements do not demonstrate application.",
-        f"{application}: link each applied point directly to the named organisation, market, system or decision in: “{prompt}”",
+        f"{application}: link each applied point directly to the named organisation, market, system or decision and the precise proposition in the final question.",
         f"AO3: develop a complete chain of reasoning from {points[0]} through an intermediate effect to a supported outcome.",
         f"AO3: a second valid route may use {points[1]} and {points[2]}; reward the reasoning rather than the wording of this guidance.",
     ]

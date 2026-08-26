@@ -22,7 +22,7 @@ QUESTION_TOTALS = [8, 8, 8, 3, 3, 12, 10, 12, 7, 4, 6, 9, 4, 6]
 PAPER2_QUESTION_PLAN = [
     ("software_classification", (2, 2, 4)),
     ("sound_sampling", (2, 2, 2, 2)),
-    ("optical_storage", (6, 2)),
+    ("bitmap_storage", (6, 2)),
     ("legal_issues_short", (3,)),
     ("client_server_short", (3,)),
     ("sql_normalisation", (1, 1, 2, 6, 2)),
@@ -249,7 +249,7 @@ def add_record(records):
 
 
 def print_report(records):
-    # Candidate task: display categories in descending total order.
+    # Candidate task: display categories in descending adjusted-total order.
     pass
 
 
@@ -385,7 +385,7 @@ def _build_paper1_questions(context: Paper1Context, rng: random.Random) -> list[
         ),
         _paper1_question(
             8, "4.3", "search_sort", "Searching and sorting",
-            "A report must display records in descending adjusted-value order and then locate a record by identifier.",
+            "A report displays records in descending adjusted-value order. A separate identifier index is used to locate records.",
             None,
             [_paper1_part("1", 8, "Recommend a sorting algorithm and a searching algorithm. Explain the conditions needed for the search algorithm and compare their time complexities.", [
                 "Suitable efficient comparison sort identified;",
@@ -417,8 +417,8 @@ def _build_paper1_questions(context: Paper1Context, rng: random.Random) -> list[
         ),
         _paper1_question(
             10, "4.1", "skeleton_analysis", "Skeleton Program analysis",
-            f"The supplied program loads {context.record_name} objects and calculates category totals.",
-            Stimulus(kind="code", title="Relevant function", code="def adjusted_value(record):\n    if record.value >= THRESHOLD:\n        return record.value * MULTIPLIER\n    return record.value"),
+            "The supplied program reads raw value fields from a data file. THRESHOLD and MULTIPLIER are defined constants.",
+            Stimulus(kind="code", title="Function to complete", code="def adjusted_value(raw_value):\n    # Complete this function. Return None if raw_value is malformed.\n    pass"),
             [_paper1_part("1", 10, "Using the supplied constants and data file, explain how adjusted values and category totals are produced. Identify two robustness weaknesses in the supplied program.", [
                 "Threshold comparison is described correctly;",
                 "Multiplier is applied only at or above threshold;",
@@ -576,7 +576,7 @@ def _align_paper1_structure(
             ], 4, "AO2"),
         ],
         8: [
-            _paper1_part("1", 1, "State the condition that must be true before binary search can be used.", ["Records must be ordered by the search key;"], 2, "AO1"),
+            _paper1_part("1", 1, "State the condition that must be true of the identifier index before binary search can be used.", ["The index must be ordered by identifier;"], 1, "AO1"),
         ],
         9: [
             _paper1_part("1", 4, f"Write code to validate that a category is one of {', '.join(context.category_names)} and that a numeric value is between 0 and 100 inclusive.", [
@@ -586,20 +586,20 @@ def _align_paper1_structure(
                 "A correct Boolean result or validation action is produced;",
             ], 8, "AO3"),
             _paper1_part("2", 1, "State one test that checks a boundary of the numeric range.", [
-                "A screen capture shows input 0 or 100, the expected acceptance and the matching actual result;",
+                "Use 0 or 100 and expect the value to be accepted;",
             ], 3, "AO3"),
         ],
         10: [
-            _paper1_part("1", 7, "Complete a function that evaluates an adjusted value safely and reports malformed input without terminating the program.", [
-                "Function receives the record or values;",
-                "Numeric conversion is attempted;",
-                "Conversion failure is handled;",
-                "Threshold comparison is correct;",
-                "Multiplier is applied only at or above the threshold;",
-                "Unadjusted value is returned otherwise;",
-                "A clear error result is returned for malformed input;",
+            _paper1_part("1", 7, "Complete adjusted_value. Convert raw_value to an integer, return None if conversion fails, return the converted value multiplied by MULTIPLIER when it is at least THRESHOLD, and otherwise return the converted integer value.", [
+                "1 mark: int(raw_value) or an equivalent conversion is attempted;",
+                "1 mark: ValueError and/or TypeError is caught without terminating the program;",
+                "1 mark: None is returned from the exception path;",
+                "1 mark: the converted value is compared with THRESHOLD using >=;",
+                "1 mark: the converted value is multiplied by MULTIPLIER only on the threshold branch;",
+                "1 mark: the adjusted result is returned from that branch;",
+                "1 mark: the converted integer value is returned otherwise;",
             ], 12, "AO3"),
-            _paper1_part("2", 1, "State one test that exercises the threshold boundary.", ["Use a value equal to THRESHOLD and expect multiplication;"], 3, "AO3"),
+            _paper1_part("2", 1, "State one test that exercises the threshold boundary.", ["Input raw_value equal to THRESHOLD; expected output THRESHOLD * MULTIPLIER;"], 3, "AO3"),
         ],
         11: [
             _paper1_part("1", 11, "Complete add_record so that all inputs are validated, duplicate identifiers are rejected and a new object is appended only when every value is valid.", [
@@ -618,20 +618,20 @@ def _align_paper1_structure(
             _paper1_part("2", 1, "State one test that demonstrates duplicate identifiers are rejected.", ["Use an identifier already present and confirm that no record is appended;"], 3, "AO3"),
         ],
         12: [
-            _paper1_part("1", 11, "Complete print_report so that categories are displayed in descending adjusted-total order, ties are resolved alphabetically and the best record in each category is shown.", [
-                "Current records are traversed;",
-                "Adjusted values are used;",
-                "A total is maintained for every category;",
-                "The best record is tracked separately for each category;",
-                "Empty categories are handled;",
-                "Categories are sorted by descending total;",
-                "Category name is used as the ascending tie break;",
-                "Each category name is displayed;",
-                "Each total is displayed;",
-                "The best record identifier is displayed where available;",
-                "The implementation is complete, efficient and readable;",
+            _paper1_part("1", 11, "Complete print_report so that categories are displayed in descending adjusted-total order, ties are resolved alphabetically and record.identifier is shown for the best record in each category. You may define suitable helper functions.", [
+                "1 mark: traverses every current record exactly once when accumulating report data;",
+                "1 mark: calls adjusted_value, or implements the same threshold rule, instead of adding each raw value;",
+                "1 mark: maintains a separate accumulated total for every category, including categories with no records;",
+                "1 mark: tracks the record with the greatest adjusted value separately within each non-empty category;",
+                "1 mark: represents an empty category without attempting to access a missing best record;",
+                "1 mark: orders categories using the adjusted total as a descending primary key;",
+                "1 mark: uses the category name as an ascending secondary key when adjusted totals are equal;",
+                "1 mark: displays every category name once;",
+                "1 mark: displays the corresponding adjusted total for every category;",
+                "1 mark: displays record.identifier for the tracked best record in each non-empty category;",
+                "1 mark: leaves the records list and its Record objects unchanged after producing the report;",
             ], 18, "AO3"),
-            _paper1_part("2", 1, "State one test that demonstrates the alphabetical tie break.", ["Use two categories with equal totals and expect alphabetical order;"], 3, "AO3"),
+            _paper1_part("2", 1, "State one input data set and its expected output order that tests the alphabetical tie break.", ["1 mark: gives two categories with equal adjusted totals and expects those category names in alphabetical order;"], 3, "AO3"),
             _paper1_part("3", 2, "Explain why a dictionary is suitable for storing the category totals.", [
                 "A category key gives direct access to its accumulated total;",
                 "Lookup and update are efficient on average;",
