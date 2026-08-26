@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import signal
 import subprocess
 import sys
 import time
@@ -180,6 +181,8 @@ def run_matrix(
             for event in events
             if event.get("type") == "error"
         ]
+        if not error_messages and return_code != 0:
+            error_messages = [_process_failure_message(return_code, timed_out, stderr)]
         passed = (
             return_code == 0
             and not missing_roles
@@ -317,6 +320,26 @@ def _timeout_text(value: str | bytes | None) -> str:
     if value is None:
         return ""
     return value.decode(errors="replace") if isinstance(value, bytes) else value
+
+
+def _process_failure_message(
+    return_code: int,
+    timed_out: bool,
+    stderr: str,
+) -> str:
+    if timed_out:
+        return "backend timed out"
+    if return_code < 0:
+        signal_number = -return_code
+        try:
+            signal_name = signal.Signals(signal_number).name
+        except ValueError:
+            signal_name = "unknown signal"
+        return f"backend terminated by signal {signal_name} ({signal_number})"
+    detail = next((line.strip() for line in reversed(stderr.splitlines()) if line.strip()), "")
+    if detail:
+        return f"backend exited with status {return_code}: {detail}"
+    return f"backend exited with status {return_code}"
 
 
 def _write_qualification_manifest(

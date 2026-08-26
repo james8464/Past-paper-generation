@@ -54,6 +54,35 @@ def test_live_matrix_markdown_reports_failures_without_false_success() -> None:
     assert "model rejected the schema" in rendered
 
 
+def test_live_matrix_reports_backend_signal_exit_without_event_error(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    job = jobs()[0]
+
+    def trapped(command, **_kwargs):
+        return subprocess.CompletedProcess(command, -5, "", "")
+
+    monkeypatch.setattr("tools.live_generation_matrix.subprocess.run", trapped)
+
+    report = run_matrix(
+        [job],
+        output_root=tmp_path,
+        command_prefix=["backend"],
+        model="gemma4:12b",
+        provider="ollama",
+        ollama_url="http://localhost:11434",
+        base_seed=42,
+        timeout_seconds=30,
+        dry_run=False,
+        resume=False,
+    )
+
+    errors = report["results"][0]["errors"]
+    assert errors == ["backend terminated by signal SIGTRAP (5)"]
+    assert "SIGTRAP" in (tmp_path / "matrix-report.md").read_text(encoding="utf-8")
+
+
 def test_live_matrix_writes_per_paper_and_aggregate_qualification_manifests(
     tmp_path: Path,
     monkeypatch,

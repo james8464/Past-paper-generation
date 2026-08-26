@@ -1280,8 +1280,8 @@
     "semantic_hash": ""
   },
   "tests/test_live_generation_matrix.py": {
-    "mtime": 1787741759.5940046,
-    "ast_hash": "0ceedd79cca7a28e6747d411cec87f7d",
+    "mtime": 1787754072.8139696,
+    "ast_hash": "3dab17008c4dae626fb3407baab139f8",
     "semantic_hash": ""
   },
   "tests/test_model_recommendations.py": {
@@ -1290,8 +1290,8 @@
     "semantic_hash": ""
   },
   "tools/live_generation_matrix.py": {
-    "mtime": 1787747469.9456985,
-    "ast_hash": "c4c2277a3def0e28daa7a454e5011eb9",
+    "mtime": 1787754132.229605,
+    "ast_hash": "4f19dedcc54c3337ccdcd7a86c41f22f",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Assets.xcassets/TutorialModelSettings.imageset/TutorialModelSettings.png": {
@@ -1710,8 +1710,8 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1787752007.6154606,
-    "ast_hash": "768d81aa9b96dd0c362b2918368738aa",
+    "mtime": 1787753798.35096,
+    "ast_hash": "dd1e36b4d75ec88dce5d2656207da53b",
     "semantic_hash": ""
   },
   "tests/test_repository_hygiene.py": {
@@ -1730,18 +1730,18 @@
     "semantic_hash": ""
   },
   "Backend/Core/fonts/README.md": {
-    "mtime": 1787753706.7827423,
-    "ast_hash": "00d9f068707e15c66175860e520ce4d8",
+    "mtime": 1787753809.3112714,
+    "ast_hash": "af4cc0491de34a4373986e9af7461e6d",
     "semantic_hash": ""
   },
   "Backend/Core/fonts/arimo/OFL.txt": {
-    "mtime": 1787752853.4990895,
-    "ast_hash": "78e154931d797c163206cb7914f91e09",
+    "mtime": 1787753809.3108203,
+    "ast_hash": "85a2cc2c0a5b638df233306bf22a9de4",
     "semantic_hash": ""
   },
   "Backend/Core/fonts/tinos/OFL.txt": {
-    "mtime": 1787752856.2886014,
-    "ast_hash": "e89538f7df7a41e548fb1b8e15377a21",
+    "mtime": 1787753809.3110745,
+    "ast_hash": "3e2490bd7e7d154925ab6e8f79c4f998",
     "semantic_hash": ""
   }
 }
