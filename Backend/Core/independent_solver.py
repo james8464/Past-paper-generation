@@ -128,8 +128,17 @@ class IndependentSolver:
         if not answer:
             raise ValueError(f"{item_id} independent solver returned no answer")
 
-        observable = _string_list(
-            context.get("observable_mark_points") or result.get("mark_points")
+        is_single_mark_choice = (
+            raw_item.get("kind") == "multiple_choice"
+            and raw_item.get("marks") == 1
+            and isinstance(raw_item.get("choices"), list)
+        )
+        observable = (
+            [answer]
+            if is_single_mark_choice
+            else _string_list(
+                context.get("observable_mark_points") or result.get("mark_points")
+            )
         )
         return CanonicalSolution(
             item_id=item_id,

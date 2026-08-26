@@ -176,3 +176,47 @@ def test_solver_rejects_citation_to_unavailable_evidence() -> None:
             {"id": "q4", "marks": 1, "prompt": "State the change."},
             [EvidenceRecord(id="source-a", text="Exports rose by 4%.")],
         )
+
+
+def test_one_mark_multiple_choice_ignores_uncredited_solver_explanation() -> None:
+    class Client:
+        def generate_json(self, _prompt: str) -> dict[str, object]:
+            return {
+                "answer": "Purchases journal",
+                "mark_points": [
+                    "The purchase ledger is the book of prime entry for credit purchases"
+                ],
+            }
+
+    item = {
+        "id": "q-mcq",
+        "marks": 1,
+        "kind": "multiple_choice",
+        "prompt": "Which book of prime entry records credit purchases?",
+        "choices": [
+            "Cash book",
+            "General journal",
+            "Purchases journal",
+            "Sales journal",
+        ],
+        "correct_choice": 2,
+        "assessment_objectives": {"AO1": 1},
+    }
+
+    solution = IndependentSolver(Client()).solve(item, [])
+    result = reconcile_solution(
+        solution,
+        {
+            "marks": 1,
+            "points": [
+                {
+                    "text": "Purchases journal",
+                    "marks": 1,
+                    "assessment_objective": "AO1",
+                }
+            ],
+        },
+    )
+
+    assert solution.mark_points == ["Purchases journal"]
+    assert result.passed, result.issues
