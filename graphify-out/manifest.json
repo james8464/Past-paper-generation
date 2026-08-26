@@ -1215,8 +1215,8 @@
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1787755518.5008864,
-    "ast_hash": "e1965efdff6c9bfd9cbda42ee74e66f9",
+    "mtime": 1787772724.2843082,
+    "ast_hash": "129f91b67ea6fcb0f61d76867db242e7",
     "semantic_hash": ""
   },
   "graphify-out/memory/query_20260801_164531_how_does_the_generation_quality_pipeline_connect.md": {
@@ -1700,8 +1700,8 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1787772427.3915098,
-    "ast_hash": "7dff34e57437d5f691abbd5f1a100238",
+    "mtime": 1787772745.498896,
+    "ast_hash": "18ce3deb869b40be5ad513489f4c6543",
     "semantic_hash": ""
   },
   "tests/test_repository_hygiene.py": {
@@ -1737,6 +1737,16 @@
   "docs/qualification/2026-08-current-family-review.md": {
     "mtime": 1787772115.956776,
     "ast_hash": "02471504ccbab0cea55f0589de29204f",
+    "semantic_hash": ""
+  },
+  "tests/test_release_compliance.py": {
+    "mtime": 1787772712.7170167,
+    "ast_hash": "f9a8b9097bb5ef69269dd7235704a2d9",
+    "semantic_hash": ""
+  },
+  "tools/release_compliance.py": {
+    "mtime": 1787772712.7175243,
+    "ast_hash": "34a883bf1e597c1286ef307bbf64c89f",
     "semantic_hash": ""
   }
 }

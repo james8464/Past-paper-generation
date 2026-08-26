@@ -126,6 +126,7 @@ $(TARGET_PREFIX)build-app-store:
 	@$(MAKE) --no-print-directory $(TARGET_PREFIX)build CONFIGURATION=Release DISTRIBUTION_MODE=app-store APP_SANDBOX_ENABLED=YES CODE_SIGN_ENTITLEMENTS_FILE=PaperCreator/PaperCreator.entitlements CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO
 
 $(TARGET_PREFIX)preflight-app-store:
+	@../.venv/bin/python ../tools/release_compliance.py ..
 	@plutil -lint PaperCreator/Info.plist PaperCreator/PrivacyInfo.xcprivacy PaperCreator/PaperCreator.entitlements PaperCreator/PaperCreatorBackend.entitlements
 	@$(MAKE) --no-print-directory $(TARGET_PREFIX)build-app-store
 	@codesign --verify --deep --strict --verbose=2 "$(APP_STORE_APP_PATH)"

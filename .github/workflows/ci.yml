@@ -38,6 +38,8 @@ jobs:
             -e Resources/economics/ocr/generator
       - name: Reject unclassified repository debris
         run: python tools/repository_hygiene.py .
+      - name: Verify release compliance metadata
+        run: python tools/release_compliance.py .
       - name: Run Python lint gate
         run: ruff check Backend Resources tools tests
       - name: Run backend tests
