@@ -71,10 +71,19 @@ def test_every_current_paper_has_truthful_qualification_levels() -> None:
         for paper in capability.papers
     }
 
-    assert len(readiness) == 18
+    assert len(readiness) == 21
     assert all(value.engineering_validated for value in readiness.values())
     assert all(not value.empirically_calibrated for value in readiness.values())
-    assert all(value.visually_calibrated for value in readiness.values())
+    assert all(
+        value.visually_calibrated
+        for (_family, paper), value in readiness.items()
+        if not paper.startswith("bank-")
+    )
+    assert all(
+        not value.visually_calibrated
+        for (_family, paper), value in readiness.items()
+        if paper.startswith("bank-")
+    )
 
 
 def test_every_advertised_generator_creates_unique_ai_content() -> None:

@@ -87,6 +87,7 @@ python bridge.py generate --subject economics --paper 1 --output ~/Downloads --d
 python bridge.py generate --subject economics_aqa --paper 3 --output ~/Downloads --dry-run
 python bridge.py generate --subject economics_ocr --paper 3 --output ~/Downloads --dry-run
 python bridge.py generate --subject computer_science --paper 2 --output ~/Downloads --dry-run
+python bridge.py generate --subject computer_science --paper bank-4.2 --output ~/Downloads --dry-run
 python bridge.py generate --subject computer_science_ocr --paper 2 --output ~/Downloads --dry-run
 python bridge.py generate --subject business_aqa --paper 3 --output ~/Downloads --dry-run
 python bridge.py generate --subject accounting_aqa --paper 2 --output ~/Downloads --dry-run
@@ -99,7 +100,8 @@ python bridge.py generate --subject accounting_aqa --paper 2 --output ~/Download
 - `Resources/economics/edexcel-a/`: Economics generator and local resources.
 - `Resources/economics/aqa/`: AQA 7136 Papers 1–3, source insert, and calibration evidence.
 - `Resources/economics/ocr/`: OCR H460 Papers 1–3 and aggregate calibration evidence.
-- `Resources/computer-science/aqa/`: Computer Science generator and local resources.
+- `Resources/computer-science/aqa/`: Computer Science Papers 1–2 plus data
+  structures, database, and functional-programming topic banks.
 - `Resources/computer-science/ocr/`: OCR H446 Papers 1–2 and aggregate calibration evidence.
 - `Resources/business/aqa/`: AQA 7132 Papers 1–3, source insert, and aggregate calibration evidence.
 - `Resources/accounting/aqa/`: AQA 7127 Papers 1–2 and aggregate calibration evidence.

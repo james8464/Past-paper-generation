@@ -205,8 +205,13 @@ class MigrationValidator:
 
         thresholds = self._json(self.resources / "fidelity-thresholds.json") or {}
         threshold_keys = set(thresholds.get("families", {}))
+        full_paper_ids = [
+            str(paper["id"])
+            for paper in papers
+            if paper.get("assessment_kind", "full-paper") == "full-paper"
+        ]
         expected_thresholds = {
-            _threshold_key(family, paper) for paper in declared
+            _threshold_key(family, paper) for paper in full_paper_ids
         }
         if not expected_thresholds or not expected_thresholds <= threshold_keys:
             issue("fidelity-threshold", "per-paper fidelity thresholds are missing")

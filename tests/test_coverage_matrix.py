@@ -63,8 +63,9 @@ def test_existing_generators_are_reported_without_false_verification() -> None:
     assert economics["supported_papers"] == ["1", "2", "3"]
     assert economics["verified_papers"] == []
     assert computer_science["status"] == "implemented"
-    assert computer_science["declared_papers"] == ["1", "2"]
-    assert computer_science["supported_papers"] == ["1", "2"]
+    expected = ["1", "2", "bank-4.2", "bank-4.10", "bank-4.12"]
+    assert computer_science["declared_papers"] == expected
+    assert computer_science["supported_papers"] == expected
     assert computer_science["verified_papers"] == []
 
 

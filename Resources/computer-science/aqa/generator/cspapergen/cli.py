@@ -11,7 +11,12 @@ from Backend.Core.family_adapter import (
     run_family_adapter,
 )
 from Backend.Core.model_recommendations import default_ollama_model
-from cspapergen.generator import build_paper1_blueprint, build_paper2_blueprint
+from cspapergen.generator import (
+    TOPIC_QUESTION_BANK_PLANS,
+    build_paper1_blueprint,
+    build_paper2_blueprint,
+    build_topic_question_bank,
+)
 from cspapergen.notes import DEFAULT_NOTES_SOURCE, cache_notes
 from cspapergen.ollama_client import OllamaClient, improve_questions_with_ollama
 from cspapergen.paper1_assets import write_paper1_supporting_files
@@ -21,7 +26,8 @@ from cspapergen.validation import validate_blueprint
 
 
 def _load_rule(paper: str) -> str:
-    if paper not in {"1", "2"}:
+    supported = {"1", "2", *(f"bank-{topic}" for topic in TOPIC_QUESTION_BANK_PLANS)}
+    if paper not in supported:
         raise ValueError(f"Unsupported Computer Science paper: {paper}")
     return paper
 
@@ -30,7 +36,15 @@ def _build(paper: str, syllabus, seed: int | None) -> BuildResult:
     if paper == "1":
         blueprint, context = build_paper1_blueprint(syllabus, seed=seed)
         return BuildResult(blueprint, context)
-    return BuildResult(build_paper2_blueprint(syllabus, seed=seed))
+    if paper == "2":
+        return BuildResult(build_paper2_blueprint(syllabus, seed=seed))
+    return BuildResult(
+        build_topic_question_bank(
+            syllabus,
+            topic_id=paper.removeprefix("bank-"),
+            seed=seed,
+        )
+    )
 
 
 def _improve(blueprint, syllabus, _paper, client, progress, checkpoint_store):
@@ -44,7 +58,7 @@ def _improve(blueprint, syllabus, _paper, client, progress, checkpoint_store):
 
 
 def _artifacts(blueprint, _context, _syllabus, paper: str) -> tuple[ArtifactSpec, ...]:
-    stem = f"cs-paper-{paper}"
+    stem = f"cs-{paper}" if paper.startswith("bank-") else f"cs-paper-{paper}"
     return (
         ArtifactSpec(
             "question_paper",
@@ -79,7 +93,9 @@ ADAPTER = FamilyAdapter(
     load_rule=_load_rule,
     build=_build,
     artifacts=_artifacts,
-    stem=lambda _paper_rule, paper: f"cs-paper-{paper}",
+    stem=lambda _paper_rule, paper: (
+        f"cs-{paper}" if paper.startswith("bank-") else f"cs-paper-{paper}"
+    ),
     validate=lambda blueprint, _paper, syllabus: validate_blueprint(
         blueprint, syllabus
     ),
@@ -142,7 +158,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Generate an unofficial AQA A-Level Computer Science practice paper."
     )
-    parser.add_argument("--paper", choices=["1", "2"], default="2")
+    parser.add_argument(
+        "--paper",
+        choices=["1", "2", *(f"bank-{topic}" for topic in TOPIC_QUESTION_BANK_PLANS)],
+        default="2",
+    )
     parser.add_argument("--out", default=str(default_output_dir()))
     parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--model", default=default_ollama_model())

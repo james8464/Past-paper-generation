@@ -5,7 +5,6 @@ from pathlib import Path
 
 import pytest
 
-
 ROOT = Path(__file__).resolve().parent
 ECONOMICS_ROOT = ROOT / "Resources" / "economics" / "edexcel-a" / "generator"
 AQA_ECONOMICS_ROOT = ROOT / "Resources" / "economics" / "aqa" / "generator"

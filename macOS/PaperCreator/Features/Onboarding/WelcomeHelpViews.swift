@@ -235,10 +235,10 @@ private struct HelpTopicPage: View {
             HelpSteps(
                 rows: [
                     ("Select subject and board", "Only implemented generators appear. Their papers come from the canonical generator registry."),
-                    ("Choose the paper", "The blueprint locks section order, marks, assessment objectives, command words, and expected demand."),
+                    ("Choose the assessment", "Select a full paper or, where available, Topic Practice. The blueprint locks marks, command words, syllabus scope, and expected demand."),
                     ("Check the provider", "Ollama must be running and the selected model must be installed. Hosted providers require a key and explicit consent."),
                     ("Choose a folder", "The question paper, mark scheme, assessment evidence, and package manifest are published together only after validation passes."),
-                    ("Create Paper", "Generation can take several minutes. Progress and the estimated time remain visible, and Command-Period cancels safely."),
+                    ("Create the assessment", "Generation can take several minutes. Progress and the estimated time remain visible, and Command-Period cancels safely."),
                     ("Preview and reuse", "Documents opens every generated PDF in the app. History can duplicate a setup or create a new form with a new seed."),
                 ]
             )
@@ -247,6 +247,12 @@ private struct HelpTopicPage: View {
                 title: "Preview mode is not a finished paper",
                 message: "Create a layout preview only when checking document geometry. Its placeholder questions are deliberately not release-ready.",
                 systemImage: "doc.text.magnifyingglass"
+            )
+
+            HelpCallout(
+                title: "Use Topic Practice for focused revision",
+                message: "A topic question bank contains original questions and its own mark scheme for one syllabus section. Data structures, databases, and functional programming are currently available for AQA Computer Science.",
+                systemImage: "square.stack.3d.up"
             )
         }
     }

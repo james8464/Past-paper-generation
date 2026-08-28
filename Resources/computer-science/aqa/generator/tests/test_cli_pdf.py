@@ -20,6 +20,19 @@ def test_generate_package_writes_rendered_and_assessment_outputs(tmp_path):
     assert not list(tmp_path.glob("*audit*"))
 
 
+def test_generate_package_writes_data_structures_question_bank(tmp_path):
+    paths = generate_package(
+        output_dir=tmp_path,
+        paper="bank-4.2",
+        seed=42,
+        dry_run=True,
+    )
+
+    assert paths["question_paper"].name == "cs-bank-4.2-question-paper.pdf"
+    assert paths["mark_scheme"].name == "cs-bank-4.2-mark-scheme.pdf"
+    assert paths["assessment_package"].name == "cs-bank-4.2-assessment.json"
+
+
 def test_generated_pdfs_are_a4(tmp_path):
     paths = generate_package(output_dir=tmp_path, seed=42, dry_run=True)
 

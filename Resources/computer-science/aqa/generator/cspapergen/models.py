@@ -74,6 +74,8 @@ class Question(BaseModel):
 
 
 class PaperBlueprint(BaseModel):
+    assessment_kind: str = "full-paper"
+    focus_topic_id: str = ""
     paper_code: str = "7517/2"
     title: str = "A-level COMPUTER SCIENCE Paper 2"
     paper_number: str = "2"

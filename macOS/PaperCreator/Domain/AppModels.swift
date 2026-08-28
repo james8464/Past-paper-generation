@@ -12,11 +12,41 @@ enum BoardStatus: String, Equatable {
     }
 }
 
+enum AssessmentKind: String, Codable, Hashable {
+    case fullPaper = "full-paper"
+    case questionBank = "question-bank"
+
+    var title: String {
+        switch self {
+        case .fullPaper: "Full Paper"
+        case .questionBank: "Topic Practice"
+        }
+    }
+}
+
 struct PaperOption: Identifiable, Hashable {
     let id: String
     let title: String
     let detail: String
     let readiness: QualificationReadiness
+    let assessmentKind: AssessmentKind
+    let topicID: String?
+
+    init(
+        id: String,
+        title: String,
+        detail: String,
+        readiness: QualificationReadiness,
+        assessmentKind: AssessmentKind = .fullPaper,
+        topicID: String? = nil
+    ) {
+        self.id = id
+        self.title = title
+        self.detail = detail
+        self.readiness = readiness
+        self.assessmentKind = assessmentKind
+        self.topicID = topicID
+    }
 }
 
 struct QualificationReadiness: Hashable {
@@ -75,6 +105,12 @@ struct ExamBoardOption: Identifiable, Hashable {
 
     var isReady: Bool { status == .ready && backendSubject != nil }
     var usesAI: Bool { contentMode.usesAI }
+    var fullPapers: [PaperOption] {
+        papers.filter { $0.assessmentKind == .fullPaper }
+    }
+    var questionBanks: [PaperOption] {
+        papers.filter { $0.assessmentKind == .questionBank }
+    }
 
     func supports(_ provider: AIProvider) -> Bool {
         supportedProviders.contains(provider)
@@ -166,7 +202,9 @@ enum CatalogLoader {
                                 id: $0.id,
                                 title: $0.title,
                                 detail: $0.detail,
-                                readiness: $0.readiness
+                                readiness: $0.readiness,
+                                assessmentKind: $0.assessmentKind,
+                                topicID: $0.topicId
                             )
                         },
                         resourcePath: implementation.resourcePath,
@@ -241,6 +279,8 @@ private struct GeneratorPaperDocument: Decodable {
     let checks: [String: Bool]
     let qualification: [String: QualificationLevelDocument]?
     let legacyGates: [String: Bool]
+    let assessmentKind: AssessmentKind
+    let topicId: String?
 
     var readiness: QualificationReadiness {
         if let qualification {
@@ -264,6 +304,8 @@ private struct GeneratorPaperDocument: Decodable {
         case checks
         case qualification
         case gates
+        case assessmentKind
+        case topicId
     }
 
     init(from decoder: Decoder) throws {
@@ -280,6 +322,11 @@ private struct GeneratorPaperDocument: Decodable {
             [String: Bool].self,
             forKey: .gates
         ) ?? [:]
+        assessmentKind = try values.decodeIfPresent(
+            AssessmentKind.self,
+            forKey: .assessmentKind
+        ) ?? .fullPaper
+        topicId = try values.decodeIfPresent(String.self, forKey: .topicId)
     }
 }
 

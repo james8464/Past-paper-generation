@@ -32,6 +32,24 @@ final class PaperCreatorTests: XCTestCase {
         XCTAssertFalse(readiness.empiricallyCalibrated)
     }
 
+    func testCatalogExposesQuestionBanksAsASeparateAssessmentKind() throws {
+        let subjects = try CatalogLoader.load(bundle: .main)
+        let board = try XCTUnwrap(
+            subjects.flatMap(\.boards).first { $0.id == "computer-science-aqa" }
+        )
+        let dataStructures = try XCTUnwrap(
+            board.papers.first { $0.id == "bank-4.2" }
+        )
+
+        XCTAssertEqual(dataStructures.assessmentKind, .questionBank)
+        XCTAssertEqual(dataStructures.topicID, "4.2")
+        XCTAssertEqual(board.fullPapers.map(\.id), ["1", "2"])
+        XCTAssertEqual(
+            board.questionBanks.map(\.id),
+            ["bank-4.2", "bank-4.10", "bank-4.12"]
+        )
+    }
+
     func testBackendHandshakeDecodesProtocolCapabilities() throws {
         let event = try BackendEvent(
             jsonLine: #"{"protocol":2,"type":"hello","event_id":1,"timestamp":"2026-07-29T12:00:00Z","job_id":"job","backend_version":"2.0.0","capabilities":["manifest"]}"#
@@ -294,7 +312,10 @@ final class PaperCreatorTests: XCTestCase {
         XCTAssertTrue(computerScience.isReady)
         XCTAssertEqual(computerScience.resourcePath, "computer-science/aqa")
         XCTAssertEqual(computerScience.backendSubject, "computer_science")
-        XCTAssertEqual(computerScience.papers.map(\.id), ["1", "2"])
+        XCTAssertEqual(
+            computerScience.papers.map(\.id),
+            ["1", "2", "bank-4.2", "bank-4.10", "bank-4.12"]
+        )
 
         let ocrComputerScience = try XCTUnwrap(ExamCatalog.board(id: "computer-science-ocr"))
         XCTAssertTrue(ocrComputerScience.isReady)

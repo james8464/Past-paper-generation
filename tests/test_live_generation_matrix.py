@@ -19,9 +19,9 @@ def jobs():
 def test_live_matrix_is_derived_from_every_advertised_registry_paper() -> None:
     value = jobs()
 
-    assert len(value) == 18
-    assert [job.seed_offset for job in value] == list(range(18))
-    assert len({job.id for job in value}) == 18
+    assert len(value) == 21
+    assert [job.seed_offset for job in value] == list(range(21))
+    assert len({job.id for job in value}) == 21
     assert {job.backend_subject for job in value} == {
         "accounting_aqa",
         "business_aqa",

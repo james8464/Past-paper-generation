@@ -25,7 +25,7 @@ PAPER2_QUESTION_PLAN = [
     ("bitmap_storage", (6, 2)),
     ("legal_issues_short", (3,)),
     ("client_server_short", (3,)),
-    ("sql_normalisation", (1, 1, 2, 6, 2)),
+    ("sql_normalisation", (2, 3, 2, 3, 2)),
     ("stored_program", (2, 6, 1, 1)),
     ("ipv4_extended", (12,)),
     ("truth_table_completion", (4, 2, 1)),
@@ -53,6 +53,61 @@ def build_paper2_blueprint(syllabus: Syllabus, seed: int | None = None) -> Paper
     ]
 
     return PaperBlueprint(seed=run_seed, questions=questions)
+
+
+TOPIC_QUESTION_BANK_PLANS: dict[str, tuple[tuple[str, int], ...]] = {
+    "4.2": (
+        ("data_structures_stack_queue", 6),
+        ("data_structures_hash", 6),
+        ("data_structures_tree", 6),
+        ("data_structures_graph", 6),
+        ("data_structures_choice", 6),
+    ),
+    "4.10": (
+        ("sql_normalisation", 12),
+        ("erd_keys", 8),
+        ("database_extended", 10),
+    ),
+    "4.12": (
+        ("functional_programming", 8),
+        ("functional_recursion", 8),
+        ("functional_type_short", 4),
+        ("functional_extended", 10),
+    ),
+}
+
+
+def build_topic_question_bank(
+    syllabus: Syllabus,
+    *,
+    topic_id: str,
+    seed: int | None = None,
+) -> PaperBlueprint:
+    try:
+        plan = TOPIC_QUESTION_BANK_PLANS[topic_id]
+    except KeyError as error:
+        raise ValueError(f"No question bank is available for topic {topic_id}") from error
+    topic = syllabus.get_topic(topic_id)
+    run_seed = seed if seed is not None else secrets.randbits(64)
+    rng = random.Random(run_seed)
+    styles = {style.id: style for style in QUESTION_STYLES}
+    questions = [
+        build_question(styles[style_id], number, marks, rng)
+        for number, (style_id, marks) in enumerate(plan, start=1)
+    ]
+    return PaperBlueprint(
+        assessment_kind="question-bank",
+        focus_topic_id=topic_id,
+        paper_code="7517/QB",
+        title=f"A-level COMPUTER SCIENCE {topic.title} Question Bank",
+        paper_number="QB",
+        delivery_mode="written",
+        session="Practice",
+        duration_minutes=45,
+        total_marks=sum(question.total_marks for question in questions),
+        seed=run_seed,
+        questions=questions,
+    )
 
 
 def _repartition_paper2_question(
@@ -94,12 +149,13 @@ def _repartition_paper2_question(
                 f"Credit a technically accurate point about {question.title.lower()};",
                 "The point must be developed and applied to the stated scenario;",
             ]
-        points.extend(
-            _paper2_marking_checks(question, prompt, marks)
-        )
         guidance = part.marking.model_copy(
             update={
-                "ao": ao_for_marks(marks),
+                "ao": (
+                    part.marking.ao
+                    if question.style_id == "sql_normalisation"
+                    else ao_for_marks(marks)
+                ),
                 "points": points,
             }
         )
@@ -115,27 +171,6 @@ def _repartition_paper2_question(
             )
         )
     return question.model_copy(update={"parts": rebuilt})
-
-
-def _paper2_marking_checks(
-    question: Question,
-    prompt: str,
-    marks: int,
-) -> list[str]:
-    checks = [
-        f"Apply the guidance specifically to {question.title.lower()} and the scenario stated in the question;",
-        "Credit precise technical terminology and an equivalent correct method or representation;",
-        "Do not award the same technical point twice; ignore differences that do not change the meaning;",
-    ]
-    if marks >= 4:
-        checks.extend(
-            [
-                "Award development only where the response establishes a valid technical chain from cause to consequence;",
-                f"The response must answer this requirement: {prompt}",
-            ]
-        )
-    return checks
-
 
 def build_paper1_blueprint(
     syllabus: Syllabus,
@@ -418,7 +453,7 @@ def _build_paper1_questions(context: Paper1Context, rng: random.Random) -> list[
         _paper1_question(
             10, "4.1", "skeleton_analysis", "Skeleton Program analysis",
             "The supplied program reads raw value fields from a data file. THRESHOLD and MULTIPLIER are defined constants.",
-            Stimulus(kind="code", title="Function to complete", code="def adjusted_value(raw_value):\n    # Complete this function. Return None if raw_value is malformed.\n    pass"),
+            Stimulus(kind="code", title="Function to complete", code="def adjusted_value(raw_value):\n    # Return None if raw_value is malformed.\n    pass"),
             [_paper1_part("1", 10, "Using the supplied constants and data file, explain how adjusted values and category totals are produced. Identify two robustness weaknesses in the supplied program.", [
                 "Threshold comparison is described correctly;",
                 "Multiplier is applied only at or above threshold;",

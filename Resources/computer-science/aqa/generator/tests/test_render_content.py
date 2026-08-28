@@ -1,6 +1,6 @@
 from cspapergen.cli import generate_package
 from cspapergen.generator import build_paper2_blueprint
-from cspapergen.render_pdf import render_question_paper
+from cspapergen.render_pdf import _logic_gate_names, render_question_paper
 from cspapergen.syllabus import load_syllabus
 
 from Backend.Core.pdf_text import extract_pdf_text
@@ -48,6 +48,17 @@ def test_question_paper_page_two_has_aqa_answer_all_questions_header(tmp_path):
     text = _pdf_text(output)
 
     assert "Answer all questions." in text
+
+
+def test_logic_renderer_recognises_all_six_aqa_boolean_operations():
+    assert _logic_gate_names("A·B + C̅ ⊕ (D ⊼ E) ⊽ F") == [
+        "AND",
+        "OR",
+        "NOT",
+        "XOR",
+        "NAND",
+        "NOR",
+    ]
 
 
 def _pdf_text(path):

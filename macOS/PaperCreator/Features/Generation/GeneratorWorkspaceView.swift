@@ -39,7 +39,7 @@ struct GeneratorWorkspace: View {
                     .help("Cancel paper creation")
                 } else {
                     Button(action: application.generate) {
-                        Label("Create Paper", systemImage: "doc.badge.plus")
+                        Label(createButtonTitle, systemImage: "doc.badge.plus")
                     }
                     .buttonStyle(.borderedProminent)
                     .disabled(!application.canGenerate)
@@ -67,7 +67,14 @@ struct GeneratorWorkspace: View {
     }
 
     private var generateHelp: String {
-        application.generationBlocker ?? "Create a new question paper, mark scheme, and validation package."
+        application.generationBlocker
+            ?? "Create a new assessment, mark scheme, and validation package."
+    }
+
+    private var createButtonTitle: String {
+        application.selectedPaper.assessmentKind == .questionBank
+            ? "Create Practice Set"
+            : "Create Paper"
     }
 }
 
@@ -85,15 +92,32 @@ private struct PaperConfiguration: View {
                 TipView(PaperCreationTips.preview)
             }
 
-            Section("Paper") {
+            Section("Assessment") {
+                if !board.fullPapers.isEmpty, !board.questionBanks.isEmpty {
+                    Picker(
+                        "Type",
+                        selection: Binding(
+                            get: { application.selectedPaper.assessmentKind },
+                            set: { application.selectAssessmentKind($0) }
+                        )
+                    ) {
+                        ForEach([AssessmentKind.fullPaper, .questionBank], id: \.self) { kind in
+                            Text(kind.title).tag(kind)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+
                 Picker(
-                    "Paper",
+                    application.selectedPaper.assessmentKind == .questionBank
+                        ? "Topic"
+                        : "Paper",
                     selection: Binding(
                         get: { application.selectedPaperID },
                         set: { application.selectPaperID($0) }
                     )
                 ) {
-                    ForEach(board.papers) { paper in
+                    ForEach(visibleAssessments) { paper in
                         Text(paper.title).tag(paper.id)
                     }
                 }
@@ -189,6 +213,12 @@ private struct PaperConfiguration: View {
         }
         .formStyle(.grouped)
         .disabled(application.isRunning)
+    }
+
+    private var visibleAssessments: [PaperOption] {
+        application.selectedPaper.assessmentKind == .questionBank
+            ? board.questionBanks
+            : board.fullPapers
     }
 }
 

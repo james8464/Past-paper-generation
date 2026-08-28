@@ -8,6 +8,7 @@ from cspapergen.generator import (
     QUESTION_TOTALS,
     build_paper1_blueprint,
     build_paper2_blueprint,
+    build_topic_question_bank,
 )
 from cspapergen.ollama_client import (
     _merge_question,
@@ -25,6 +26,25 @@ def test_blueprint_is_deterministic_for_seed():
     second = build_paper2_blueprint(syllabus, seed=123)
 
     assert first.model_dump() == second.model_dump()
+
+
+def test_all_supported_assessments_keep_code_inside_the_renderable_width() -> None:
+    syllabus = load_syllabus()
+    paper_one, _ = build_paper1_blueprint(syllabus, seed=26080116)
+    assessments = [
+        paper_one,
+        build_paper2_blueprint(syllabus, seed=26080116),
+        *(build_topic_question_bank(syllabus, topic_id=topic, seed=26080116)
+          for topic in ("4.2", "4.10", "4.12")),
+    ]
+
+    assert all(
+        len(line) <= 58
+        for assessment in assessments
+        for question in assessment.questions
+        if question.stimulus
+        for line in question.stimulus.code.splitlines()
+    )
 
 
 def test_blueprint_totals_100_marks_and_uses_paper2_topics_only():
@@ -94,11 +114,17 @@ def test_paper_2_uses_reference_part_mark_pattern():
     ] == [marks for _style_id, marks in PAPER2_QUESTION_PLAN]
 
 
-def test_all_question_styles_are_specific_to_paper2_spec_topics():
+def test_all_question_styles_are_specific_to_the_aqa_specification():
     syllabus = load_syllabus()
 
     assert {style.topic_id for style in QUESTION_STYLES} <= syllabus.topic_ids
-    assert all(style.topic_id.startswith(("4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12")) for style in QUESTION_STYLES)
+    styles = {style.id: style for style in QUESTION_STYLES}
+    assert all(
+        styles[style_id].topic_id.startswith(
+            ("4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12")
+        )
+        for style_id, _marks in PAPER2_QUESTION_PLAN
+    )
 
 
 def test_question_bank_covers_expected_aqa_paper2_styles():
@@ -120,6 +146,52 @@ def test_question_bank_covers_expected_aqa_paper2_styles():
     }
 
     assert expected <= STYLE_IDS
+
+
+@pytest.mark.parametrize(
+    ("topic_id", "expected_styles"),
+    [
+        (
+            "4.2",
+            {
+                "data_structures_stack_queue",
+                "data_structures_hash",
+                "data_structures_tree",
+                "data_structures_graph",
+                "data_structures_choice",
+            },
+        ),
+        ("4.10", {"sql_normalisation", "erd_keys", "database_extended"}),
+        (
+            "4.12",
+            {
+                "functional_programming",
+                "functional_recursion",
+                "functional_type_short",
+                "functional_extended",
+            },
+        ),
+    ],
+)
+def test_topic_question_banks_are_focused_and_mark_complete(
+    topic_id: str,
+    expected_styles: set[str],
+) -> None:
+    bank = build_topic_question_bank(load_syllabus(), topic_id=topic_id, seed=42)
+
+    assert bank.assessment_kind == "question-bank"
+    assert bank.focus_topic_id == topic_id
+    assert bank.paper_code == "7517/QB"
+    assert bank.paper_number == "QB"
+    assert bank.total_marks == 30
+    assert sum(question.total_marks for question in bank.questions) == 30
+    assert {question.topic_id for question in bank.questions} == {topic_id}
+    assert {question.style_id for question in bank.questions} == expected_styles
+
+
+def test_topic_question_bank_rejects_an_unsupported_topic() -> None:
+    with pytest.raises(ValueError, match="No question bank is available"):
+        build_topic_question_bank(load_syllabus(), topic_id="4.99", seed=42)
 
 
 def test_packet_stimulus_is_introduced_as_figure_context():
@@ -382,6 +454,8 @@ def test_paper_two_floating_point_convention_and_marks_are_unambiguous() -> None
     question = blueprint.questions[11]
 
     assert [part.marks for part in question.parts] == [1, 1, 1, 2, 3, 1]
+    assert "State whether the binary point" in question.parts[0].prompt
+    assert "copied" not in " ".join(question.parts[0].marking.points).casefold()
     assert "binary point is immediately after the mantissa sign bit" in question.parts[1].prompt
     conversion = question.parts[1].marking.points[0]
     assert "-1 + 1/4 + 1/16 = -0.6875" in conversion
@@ -432,12 +506,29 @@ def test_database_question_has_exact_command_and_mark_coverage() -> None:
     blueprint = build_paper2_blueprint(load_syllabus(), seed=26080116)
     question = blueprint.questions[5]
 
-    assert [part.marks for part in question.parts] == [1, 1, 2, 6, 2]
-    assert question.parts[0].prompt == "Identify the primary key in Student."
-    assert question.parts[1].prompt == "Identify the foreign key in Student."
-    assert question.parts[3].prompt.startswith("Explain how normalisation")
-    assert len(question.parts[3].marking.points) >= 6
-    assert "indexing StudentID" in question.parts[4].prompt
+    assert [part.marks for part in question.parts] == [2, 3, 2, 3, 2]
+    assert question.stimulus is not None
+    assert "fitness centre" in question.stem
+    assert all(name in question.stimulus.code for name in ("MEMBER", "SESSION", "BOOKING"))
+    assert all(len(line) <= 58 for line in question.stimulus.code.splitlines())
+    prompts = " ".join(part.prompt for part in question.parts).upper()
+    assert all(command in prompts for command in ("SELECT", "INSERT", "UPDATE", "DELETE"))
+    assert "ERROR" in prompts
+    assert all(part.marking.points for part in question.parts)
+    assert all(part.marking.ao == "AO3 (programming)" for part in question.parts)
+
+
+def test_boolean_questions_use_exam_notation_instead_of_programming_punctuation() -> None:
+    blueprint = build_paper2_blueprint(load_syllabus(), seed=26080116)
+    boolean_questions = (blueprint.questions[8], blueprint.questions[12])
+
+    for question in boolean_questions:
+        assert question.stimulus is not None
+        visible_notation = " ".join(
+            [question.stimulus.code, *(part.prompt for part in question.parts)]
+        )
+        assert not any(token in visible_notation for token in ("A.B", "A.C", ").("))
+        assert any(symbol in visible_notation for symbol in ("·", "+", "⊕", "⊼", "⊽", "̅"))
 
 
 def test_stored_program_question_has_exact_command_and_mark_coverage() -> None:
@@ -446,7 +537,9 @@ def test_stored_program_question_has_exact_command_and_mark_coverage() -> None:
 
     assert [part.marks for part in question.parts] == [2, 6, 1, 1]
     assert question.parts[1].prompt.startswith("Describe how one instruction")
-    assert len(question.parts[1].marking.points) >= 6
+    cycle_guidance = " ".join(question.parts[1].marking.points).casefold()
+    assert all(bus in cycle_guidance for bus in ("address bus", "data bus", "control bus"))
+    assert len(question.parts[1].marking.points) == 6
     assert question.parts[2].prompt.startswith("State the role")
     assert question.parts[3].prompt.startswith("State one benefit")
 
@@ -464,19 +557,62 @@ def test_truth_table_question_has_row_specific_marking() -> None:
     ]
     assert "1 mark for A and B" in question.parts[1].marking.points[0]
     assert question.parts[2].prompt.startswith("Explain one reason")
+    expression = question.parts[0].prompt
+    assert not any(word in expression for word in (" AND ", " OR ", " NOT ", " XOR "))
+    assert any(symbol in expression for symbol in ("·", "+", "⊕", "¬"))
 
 
-def test_fibonacci_question_marks_the_cause_of_repeated_work() -> None:
+def test_paper_two_question_eleven_is_unmistakably_functional() -> None:
     blueprint = build_paper2_blueprint(load_syllabus(), seed=26080116)
     question = blueprint.questions[10]
 
-    assert "n <= 1" in question.parts[0].marking.points[0]
-    assert question.parts[2].marking.points[0].startswith("1 mark:")
-    assert question.parts[2].marking.points[1].startswith("1 development mark:")
-    repeated = " ".join(question.parts[3].marking.points).casefold()
-    assert "overlapping branches" in repeated
-    assert "results are not stored" in repeated
-    assert "memoisation" not in repeated
+    assert question.topic_id == "4.12"
+    assert question.stimulus is not None
+    functional_content = " ".join(
+        [question.title, question.stem, question.stimulus.code]
+        + [part.prompt for part in question.parts]
+        + [point for part in question.parts for point in part.marking.points]
+    ).casefold()
+    assert "pattern matching" in functional_content
+    assert "immutable" in functional_content
+    assert "pure function" in functional_content
+
+
+def test_sound_calculation_scheme_includes_the_canonical_final_answer() -> None:
+    blueprint = build_paper2_blueprint(load_syllabus(), seed=26080116)
+    part = blueprint.questions[1].parts[0]
+
+    assert any("mib" in point.casefold() and "=" in point for point in part.marking.points)
+
+
+def test_contextual_compression_scheme_names_the_scenario_consequence() -> None:
+    blueprint = build_paper2_blueprint(load_syllabus(), seed=26080116)
+    question = blueprint.questions[9]
+    scenario = question.stem.casefold()
+    guidance = " ".join(question.parts[1].marking.points).casefold()
+
+    assert any(
+        term in guidance
+        for term in ("diagnos", "executable", "backup", "archive", "financial")
+    )
+    assert any(term in scenario for term in ("medical", "software", "financial"))
+
+
+def test_repetitive_examiner_guidance_is_not_attached_to_every_part() -> None:
+    blueprint = build_paper2_blueprint(load_syllabus(), seed=26080116)
+    repeated = (
+        "credit precise technical terminology",
+        "do not award the same technical point twice",
+        "apply the guidance specifically",
+    )
+
+    assert not any(
+        phrase in point.casefold()
+        for question in blueprint.questions
+        for part in question.parts
+        for point in part.marking.points
+        for phrase in repeated
+    )
 
 
 def test_generated_part_with_new_quantity_keeps_verified_prompt() -> None:

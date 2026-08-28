@@ -30,6 +30,25 @@ def test_truth_table_is_recomputed_from_the_expression() -> None:
     assert rows[-1] == {"A": True, "B": True, "C": True, "result": True}
 
 
+def test_truth_table_accepts_aqa_symbols_for_all_six_boolean_operations() -> None:
+    expressions = {
+        "A · B": (False, False),
+        "A + B": (False, True),
+        "¬A": (True, True),
+        "A ⊕ B": (False, True),
+        "A ⊼ B": (True, True),
+        "A ⊽ B": (True, False),
+    }
+
+    for expression, expected in expressions.items():
+        rows = truth_table(expression, variables=("A", "B"))
+        observed = (rows[0]["result"], rows[1]["result"])
+        assert observed == expected
+
+    overbar_rows = truth_table("A̅ + B", variables=("A", "B"))
+    assert overbar_rows[0]["result"] is True
+
+
 def test_programming_paper_accepts_only_declared_languages_and_evidence() -> None:
     plugin = ComputerSciencePlugin()
     invalid = plugin.validate_item(

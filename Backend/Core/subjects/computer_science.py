@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import ast
 import itertools
 import re
 from typing import Any
@@ -31,15 +30,16 @@ def truth_table(
         raise ValueError("truth table variables must be unique and non-empty")
     if any(not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*", value) for value in variables):
         raise ValueError("truth table variable has an invalid name")
-    normalized = re.sub(r"\bAND\b", "and", expression, flags=re.IGNORECASE)
-    normalized = re.sub(r"\bOR\b", "or", normalized, flags=re.IGNORECASE)
-    normalized = re.sub(r"\bNOT\b", "not", normalized, flags=re.IGNORECASE)
-    tree = ast.parse(normalized, mode="eval")
-    _validate_boolean_tree(tree, set(variables))
+    normalized_expression = re.sub(
+        r"([A-Za-z][A-Za-z0-9_]*)\u0305",
+        r"¬\1",
+        expression,
+    )
+    tree = _BooleanParser(normalized_expression, set(variables)).parse()
     rows: list[dict[str, bool]] = []
     for values in itertools.product((False, True), repeat=len(variables)):
         environment = dict(zip(variables, values, strict=True))
-        rows.append({**environment, "result": _evaluate_boolean(tree.body, environment)})
+        rows.append({**environment, "result": _evaluate_boolean(tree, environment)})
     return tuple(rows)
 
 
@@ -112,33 +112,102 @@ class ComputerSciencePlugin:
         }
 
 
-def _validate_boolean_tree(tree: ast.AST, variables: set[str]) -> None:
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Name) and node.id not in variables:
-            raise ValueError(f"undeclared truth-table variable: {node.id}")
-        if not isinstance(
-            node,
-            (
-                ast.Expression,
-                ast.BoolOp,
-                ast.UnaryOp,
-                ast.Name,
-                ast.Load,
-                ast.And,
-                ast.Or,
-                ast.Not,
-            ),
-        ):
-            raise ValueError("logic expression contains an unsupported operation")
+_BOOLEAN_TOKEN = re.compile(
+    r"\s*(?:(AND|OR|NOT|XOR|NAND|NOR)|([A-Za-z][A-Za-z0-9_]*)|([()+·.¬⊕⊼⊽]))",
+    re.IGNORECASE,
+)
+BooleanNode = tuple[str, object] | tuple[str, object, object]
 
 
-def _evaluate_boolean(node: ast.AST, environment: dict[str, bool]) -> bool:
-    if isinstance(node, ast.Name):
-        return environment[node.id]
-    if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
-        return not _evaluate_boolean(node.operand, environment)
-    if isinstance(node, ast.BoolOp) and isinstance(node.op, ast.And):
-        return all(_evaluate_boolean(value, environment) for value in node.values)
-    if isinstance(node, ast.BoolOp) and isinstance(node.op, ast.Or):
-        return any(_evaluate_boolean(value, environment) for value in node.values)
+class _BooleanParser:
+    def __init__(self, expression: str, variables: set[str]) -> None:
+        self.variables = variables
+        self.tokens = self._tokens(expression)
+        self.index = 0
+
+    @staticmethod
+    def _tokens(expression: str) -> list[str]:
+        tokens: list[str] = []
+        cursor = 0
+        while cursor < len(expression):
+            match = _BOOLEAN_TOKEN.match(expression, cursor)
+            if match is None:
+                raise ValueError("logic expression contains an unsupported operation")
+            tokens.append(next(value for value in match.groups() if value is not None))
+            cursor = match.end()
+        return tokens
+
+    def parse(self) -> BooleanNode:
+        if not self.tokens:
+            raise ValueError("logic expression is empty")
+        result = self._or_expression()
+        if self.index != len(self.tokens):
+            raise ValueError("logic expression contains an unexpected token")
+        return result
+
+    def _or_expression(self) -> BooleanNode:
+        node = self._xor_expression()
+        while self._peek() in {"OR", "+", "NOR", "⊽"}:
+            operator = self._take().upper()
+            node = (operator, node, self._xor_expression())
+        return node
+
+    def _xor_expression(self) -> BooleanNode:
+        node = self._and_expression()
+        while self._peek() in {"XOR", "⊕"}:
+            operator = self._take().upper()
+            node = (operator, node, self._and_expression())
+        return node
+
+    def _and_expression(self) -> BooleanNode:
+        node = self._unary_expression()
+        while self._peek() in {"AND", "·", ".", "NAND", "⊼"}:
+            operator = self._take().upper()
+            node = (operator, node, self._unary_expression())
+        return node
+
+    def _unary_expression(self) -> BooleanNode:
+        if self._peek() in {"NOT", "¬"}:
+            self._take()
+            return ("NOT", self._unary_expression())
+        if self._peek() == "(":
+            self._take()
+            node = self._or_expression()
+            if self._take() != ")":
+                raise ValueError("logic expression has unmatched parentheses")
+            return node
+        name = self._take()
+        if name not in self.variables:
+            raise ValueError(f"undeclared truth-table variable: {name}")
+        return ("VARIABLE", name)
+
+    def _peek(self) -> str:
+        return self.tokens[self.index].upper() if self.index < len(self.tokens) else ""
+
+    def _take(self) -> str:
+        if self.index >= len(self.tokens):
+            raise ValueError("logic expression ended unexpectedly")
+        value = self.tokens[self.index]
+        self.index += 1
+        return value
+
+
+def _evaluate_boolean(node: BooleanNode, environment: dict[str, bool]) -> bool:
+    operator = node[0]
+    if operator == "VARIABLE":
+        return environment[str(node[1])]
+    if operator == "NOT":
+        return not _evaluate_boolean(node[1], environment)  # type: ignore[arg-type]
+    left = _evaluate_boolean(node[1], environment)  # type: ignore[arg-type]
+    right = _evaluate_boolean(node[2], environment)  # type: ignore[arg-type,index]
+    if operator in {"AND", "·", "."}:
+        return left and right
+    if operator in {"OR", "+"}:
+        return left or right
+    if operator in {"XOR", "⊕"}:
+        return left != right
+    if operator in {"NAND", "⊼"}:
+        return not (left and right)
+    if operator in {"NOR", "⊽"}:
+        return not (left or right)
     raise ValueError("logic expression contains an unsupported operation")

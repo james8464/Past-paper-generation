@@ -631,6 +631,10 @@ def render_mark_scheme(blueprint: PaperBlueprint, output_path: Path) -> None:
     pdf.showPage()
     _mark_scheme_levels(pdf, 3, blueprint)
     pdf.showPage()
+    if blueprint.assessment_kind == "question-bank":
+        _render_generic_mark_scheme_pages(pdf, blueprint, first_page=4)
+        pdf.save()
+        return
     _mark_scheme_annotations(pdf, 4, blueprint)
     pdf.showPage()
     _mark_scheme_examiner_notes(pdf, 5, blueprint)
@@ -643,7 +647,17 @@ def render_mark_scheme(blueprint: PaperBlueprint, output_path: Path) -> None:
         _render_paper2_mark_scheme_pages(pdf, blueprint)
         pdf.save()
         return
-    page = 6
+    _render_generic_mark_scheme_pages(pdf, blueprint, first_page=6)
+    pdf.save()
+
+
+def _render_generic_mark_scheme_pages(
+    pdf: canvas.Canvas,
+    blueprint: PaperBlueprint,
+    *,
+    first_page: int,
+) -> None:
+    page = first_page
     y = _mark_scheme_table_header(pdf, page, blueprint)
     for question_index, question in enumerate(blueprint.questions):
         if question_index:
@@ -657,7 +671,6 @@ def render_mark_scheme(blueprint: PaperBlueprint, output_path: Path) -> None:
                 page += 1
                 y = _mark_scheme_table_header(pdf, page, blueprint)
             y = _render_mark_scheme_part(pdf, question, part, y)
-    pdf.save()
 
 
 def _set_document_metadata(
@@ -1273,13 +1286,25 @@ def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.setFont(FONT_BOLD, 22)
     pdf.drawString(40, 501, "COMPUTER SCIENCE")
     pdf.setFont(FONT_BOLD, 16)
-    pdf.drawString(40, 476, f"Paper {blueprint.paper_number}")
+    document_title = (
+        "Topic Question Bank"
+        if blueprint.assessment_kind == "question-bank"
+        else f"Paper {blueprint.paper_number}"
+    )
+    pdf.drawString(40, 476, document_title)
     pdf.setLineWidth(2)
     pdf.line(40, 455, 545, 455)
     pdf.setFont(FONT, 11)
     pdf.drawString(40, 438, _formatted_exam_date(blueprint))
     pdf.drawString(231, 438, blueprint.session)
-    pdf.drawString(306, 438, "Time allowed: 2 hours 30 minutes")
+    hours, minutes = divmod(blueprint.duration_minutes, 60)
+    if hours and minutes:
+        duration = f"{hours} hour{'s' if hours != 1 else ''} {minutes} minutes"
+    elif hours:
+        duration = f"{hours} hour{'s' if hours != 1 else ''}"
+    else:
+        duration = f"{minutes} minutes"
+    pdf.drawString(306, 438, f"Time allowed: {duration}")
 
     y = 410
     material_lines = ["For this paper you must have:"] + [f"\u2022 {item}." for item in blueprint.materials]
@@ -1394,7 +1419,7 @@ def _examiner_table(pdf: canvas.Canvas, count: int, y_top: float = 470) -> None:
 def _draw_question_page_header(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
     pdf.setFont(FONT, 10)
     pdf.drawCentredString(297, 805, str(page))
-    pdf.setFont(FONT, 8)
+    pdf.setFont(FONT, 7)
     pdf.drawCentredString(564, 780, "Do not write")
     pdf.drawCentredString(564, 769, "outside the")
     pdf.drawCentredString(564, 758, "box")
@@ -1409,7 +1434,7 @@ def _draw_question_page_header(pdf: canvas.Canvas, page: int, blueprint: PaperBl
             else "Answer all questions."
         )
         pdf.drawCentredString(289, 768, instruction)
-    pdf.setFont(FONT, 8)
+    pdf.setFont(FONT, 7)
     _draw_footer_barcode(pdf, 52, 17, page)
     pdf.drawRightString(539, 28, f"Paper Creator / {blueprint.paper_code}")
 
@@ -1633,8 +1658,9 @@ def _draw_logic_box(pdf: canvas.Canvas, expression: str, x: float, y: float) -> 
     for idx, label in enumerate(["A", "B", "C"]):
         pdf.line(x + 24, y - 35 - idx * 16, x + 94, y - 35 - idx * 16)
         pdf.drawString(x + 8, y - 39 - idx * 16, label)
-    first_gate = "XOR" if "XOR" in expression else "AND"
-    second_gate = "OR" if " OR " in expression else "AND"
+    gates = _logic_gate_names(expression)
+    first_gate = gates[0] if gates else "AND"
+    second_gate = gates[1] if len(gates) > 1 else first_gate
     _draw_logic_gate_symbol(pdf, first_gate, x + 102, y - 66)
     pdf.line(x + 158, y - 48, x + 202, y - 48)
     _draw_logic_gate_symbol(pdf, second_gate, x + 204, y - 66)
@@ -1648,11 +1674,17 @@ def _draw_logic_box(pdf: canvas.Canvas, expression: str, x: float, y: float) -> 
 def _draw_logic_gate_symbol(pdf: canvas.Canvas, label: str, x: float, y: float) -> None:
     top = y + 28
     bottom = y - 10
-    if label == "OR":
+    base_gate = {"NOR": "OR", "NAND": "AND"}.get(label, label)
+    if base_gate == "NOT":
+        pdf.line(x, bottom, x, top)
+        pdf.line(x, top, x + 48, y + 9)
+        pdf.line(x + 48, y + 9, x, bottom)
+        pdf.circle(x + 53, y + 9, 5, stroke=1, fill=0)
+    elif base_gate == "OR":
         pdf.bezier(x + 2, bottom, x + 20, y + 2, x + 20, y + 16, x + 2, top)
         pdf.bezier(x + 2, top, x + 44, top, x + 54, y + 18, x + 54, y + 9)
         pdf.bezier(x + 54, y + 9, x + 44, bottom, x + 2, bottom, x + 2, bottom)
-    elif label == "XOR":
+    elif base_gate == "XOR":
         pdf.bezier(x - 4, bottom, x + 14, y + 2, x + 14, y + 16, x - 4, top)
         pdf.bezier(x + 2, bottom, x + 20, y + 2, x + 20, y + 16, x + 2, top)
         pdf.bezier(x + 2, top, x + 44, top, x + 54, y + 18, x + 54, y + 9)
@@ -1660,8 +1692,22 @@ def _draw_logic_gate_symbol(pdf: canvas.Canvas, label: str, x: float, y: float) 
     else:
         pdf.line(x, bottom, x, top)
         pdf.bezier(x, top, x + 58, top, x + 58, bottom, x, bottom)
-    pdf.setFont(FONT_BOLD, 7.5)
-    pdf.drawCentredString(x + 30, y + 6, label)
+    if label in {"NAND", "NOR"}:
+        pdf.circle(x + 59, y + 9, 5, stroke=1, fill=0)
+
+
+def _logic_gate_names(expression: str) -> list[str]:
+    symbols = {
+        "⊼": "NAND",
+        "⊽": "NOR",
+        "⊕": "XOR",
+        "̅": "NOT",
+        "¬": "NOT",
+        "·": "AND",
+        ".": "AND",
+        "+": "OR",
+    }
+    return [symbols[character] for character in expression if character in symbols]
 
 
 def _draw_erd(pdf: canvas.Canvas, diagram: str, x: float, y: float) -> float:
@@ -1913,7 +1959,11 @@ def _mark_scheme_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
             board="aqa",
             subject="Computer Science",
             code=blueprint.paper_code,
-            paper_title=f"Paper {blueprint.paper_number}",
+            paper_title=(
+                "Topic Question Bank"
+                if blueprint.assessment_kind == "question-bank"
+                else f"Paper {blueprint.paper_number}"
+            ),
             duration=(
                 f"{blueprint.duration_minutes // 60} hours "
                 f"{blueprint.duration_minutes % 60} minutes"
@@ -1932,13 +1982,18 @@ def _mark_scheme_intro(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint)
     y = 705
     pdf.setFont(FONT, 10)
     paragraphs = [
-        f"This independent mark scheme supports consistent marking of Paper Creator's A-level Computer Science Paper {blueprint.paper_number} practice assessment.",
+        (
+            "This independent mark scheme supports consistent marking of Paper Creator's A-level Computer Science topic question bank."
+            if blueprint.assessment_kind == "question-bank"
+            else f"This independent mark scheme supports consistent marking of Paper Creator's A-level Computer Science Paper {blueprint.paper_number} practice assessment."
+        ),
         "Apply the guidance positively. Award credit for what a response demonstrates, and do not deduct marks for an omission unless the question or guidance explicitly requires that element.",
         "The listed answers describe responses that are likely to earn credit. They are not exhaustive. Credit a technically correct alternative when it answers the precise question and is consistent with the stated scenario.",
         "Judge each response against the published marking guidance rather than against another candidate's work. The same standard must be applied throughout the script.",
         "Where a point is followed by an explanation, award the explanation mark only when the reasoning is technically valid and linked to the point made. Do not award the same mark twice for equivalent wording.",
         "Accept established technical terminology, unambiguous pseudocode and logically equivalent expressions. Minor spelling or grammatical errors should not prevent credit when the intended technical meaning is clear.",
         "For calculations, accept a correct answer obtained from valid working. If an earlier arithmetic error is carried forward consistently, award subsequent method marks where the method remains valid.",
+        "For context-based questions, award application marks only when the response uses the named system, data or stakeholder to establish the relevant consequence. A generic statement that could apply unchanged to any scenario is not contextual application.",
         "For programming and algorithm questions, judge the logic of the whole response. Equivalent control structures, identifiers and data representations should be credited when they preserve the required behaviour.",
         "For diagram and table questions, labels must be sufficiently clear to establish the intended relationship. Neatness is not assessed unless ambiguity prevents the response from being interpreted.",
         "A response that contradicts an otherwise valid point cannot receive credit for that point. Ignore additional material only where it does not undermine or contradict the credited answer.",

@@ -24,9 +24,10 @@ level are defined by `Resources/qualification-policy.json`. A live matrix run
 writes one immutable manifest per paper and an aggregate manifest containing
 only relative evidence references and hashes.
 
-The current live baseline contains seven advertised generator families and 18
-papers. The latest complete `gemma4:12b` Ollama run passed generation and release
-validation for all 18 and has been backfilled into the qualification ledger.
+The current live baseline contains seven advertised generator families, 18
+full papers, and three AQA Computer Science topic-practice banks. The latest
+complete `gemma4:12b` Ollama run passed generation and release validation for
+all 18 full papers and has been backfilled into the qualification ledger.
 That baseline is engineering evidence. A subsequent fixed-seed, print-resolution
 qualification calibrated all 18 papers visually against the local multi-year
 reference corpus. Every current paper retains an uncalibrated empirical state
@@ -104,6 +105,36 @@ duplicate points, missing mark coverage, incorrect AO totals, generic empty
 guidance, invalid keys, and schemes too sparse for the available marks.
 Question papers and mark schemes are rendered from the same model, preventing
 answer drift.
+
+### AQA Computer Science examiner-feedback contract
+
+AQA Computer Science Paper 2 and its topic-practice banks have additional
+deterministic checks derived from teacher review and the published 7517 subject
+content. They require:
+
+- a worked calculation route and explicit final value for the digital-sound
+  calculation;
+- contextual database tasks spanning error correction, a joined aggregate
+  `SELECT`, `INSERT`, precisely scoped `UPDATE`, and conditional `DELETE`;
+- address, data, and control buses in fetch-decode-execute guidance;
+- the six Boolean operations in mathematical notation rather than programming
+  words or punctuation;
+- functional-programming questions that visibly assess pattern matching,
+  immutable data, recursion, and pure functions;
+- context-linked compression marking points and a substantive floating-point
+  interpretation task.
+
+General marking principles appear once near the front of each mark scheme.
+Question rows contain only item-specific guidance, alternatives, and credit
+limits. The release validator rejects a package that loses any of the contracts
+above, including after AI rewriting.
+
+The registry also exposes 30-mark banks for data structures (`4.2`), databases
+(`4.10`), and functional programming (`4.12`). A bank is a distinct assessment
+kind with a topic identity, a written-response-only contract, and bounds of
+three to twelve questions and 10 to 60 total marks. It uses the same originality,
+mark-scheme-depth, typography, and release checks as a full paper, but does not
+claim empirical difficulty calibration.
 
 The release-depth gate also scales with response type and tariff. It requires
 enough substantive credit points for the available marks, AO coverage matching

@@ -490,12 +490,30 @@
           "question_paper",
           "mark_scheme",
           "assessment_package"
+        ],
+        "bank-4.2": [
+          "question_paper",
+          "mark_scheme",
+          "assessment_package"
+        ],
+        "bank-4.10": [
+          "question_paper",
+          "mark_scheme",
+          "assessment_package"
+        ],
+        "bank-4.12": [
+          "question_paper",
+          "mark_scheme",
+          "assessment_package"
         ]
       },
       "advertised": true,
       "declared_papers": [
         "1",
-        "2"
+        "2",
+        "bank-4.2",
+        "bank-4.10",
+        "bank-4.12"
       ],
       "papers": [
         {
@@ -568,6 +586,81 @@
             "mark_scheme": true,
             "runtime": true,
             "visual": true,
+            "release": true
+          }
+        },
+        {
+          "id": "bank-4.2",
+          "assessment_kind": "question-bank",
+          "topic_id": "4.2",
+          "title": "Data structures",
+          "detail": "30-mark topic practice: stacks, queues, hashing, trees and graphs",
+          "qualification": {
+            "engineering": {"state": "passed", "evidence": ["docs/ASSESSMENT_QUALITY.md"]},
+            "visual": {"state": "not_run", "evidence": []},
+            "empirical": {"state": "not_run", "evidence": []}
+          },
+          "checks": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": false,
+            "release": true
+          }
+        },
+        {
+          "id": "bank-4.10",
+          "assessment_kind": "question-bank",
+          "topic_id": "4.10",
+          "title": "Databases",
+          "detail": "30-mark topic practice: SQL, relational design and database choices",
+          "qualification": {
+            "engineering": {"state": "passed", "evidence": ["docs/ASSESSMENT_QUALITY.md"]},
+            "visual": {"state": "not_run", "evidence": []},
+            "empirical": {"state": "not_run", "evidence": []}
+          },
+          "checks": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": false,
+            "release": true
+          }
+        },
+        {
+          "id": "bank-4.12",
+          "assessment_kind": "question-bank",
+          "topic_id": "4.12",
+          "title": "Functional programming",
+          "detail": "30-mark topic practice: pure functions, recursion and higher-order functions",
+          "qualification": {
+            "engineering": {"state": "passed", "evidence": ["docs/ASSESSMENT_QUALITY.md"]},
+            "visual": {"state": "not_run", "evidence": []},
+            "empirical": {"state": "not_run", "evidence": []}
+          },
+          "checks": {
+            "blueprint": true,
+            "syllabus": true,
+            "question_types": true,
+            "mark_distribution": true,
+            "difficulty": false,
+            "unique_content": true,
+            "renderer": true,
+            "mark_scheme": true,
+            "runtime": true,
+            "visual": false,
             "release": true
           }
         }

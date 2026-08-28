@@ -272,6 +272,14 @@ final class ApplicationCoordinator: ObservableObject {
         _ = catalogStore.selectPaperID(paperID, isLocked: isRunning)
     }
 
+    func selectAssessmentKind(_ kind: AssessmentKind) {
+        let options = kind == .fullPaper
+            ? selectedBoard.fullPapers
+            : selectedBoard.questionBanks
+        guard let first = options.first else { return }
+        selectPaperID(first.id)
+    }
+
     func selectAIProvider(_ provider: AIProvider) {
         guard !isRunning else { return }
         guard provider != aiProvider else { return }
