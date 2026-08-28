@@ -117,7 +117,7 @@ class QuestionBlock(BaseComponent):
             raise ValueError("marks cannot be negative")
 
     def measure(self, profile: BoardProfile, available: Size) -> Size:
-        lines = _text_lines(self.prompt, profile, max(20, available.width.pt - 58))
+        lines = _text_lines(self.prompt, profile, max(20, available.width.pt - 115))
         return Size(
             available.width, Length(max(28, lines * profile.fonts.body.leading.pt + 10))
         )
@@ -137,7 +137,7 @@ class QuestionBlock(BaseComponent):
         for word in words:
             candidate = " ".join((*used, word))
             if (
-                _text_lines(candidate, profile, max(20, available.width.pt - 58))
+                _text_lines(candidate, profile, max(20, available.width.pt - 115))
                 > target_lines
             ):
                 break
@@ -209,8 +209,30 @@ class Table(BaseComponent):
             raise ValueError("table rows must match non-empty headers")
 
     def measure(self, profile: BoardProfile, available: Size) -> Size:
-        del profile
-        return Size(available.width, Length((1 + len(self.rows)) * self.row_height.pt))
+        column_widths = tuple(
+            available.width.pt * weight for weight in self.column_weights()
+        )
+        maximum_lines = max(
+            _text_lines(
+                str(value),
+                profile,
+                max(20, column_widths[column_index] - 8),
+            )
+            for row in (self.headers, *self.rows)
+            for column_index, value in enumerate(row)
+        )
+        effective_row_height = max(
+            self.row_height.pt,
+            maximum_lines * profile.fonts.small.leading.pt + 6,
+        )
+        return Size(
+            available.width,
+            Length((1 + len(self.rows)) * effective_row_height),
+        )
+
+    def column_weights(self) -> tuple[float, ...]:
+        weight = 1 / len(self.headers)
+        return tuple(weight for _ in self.headers)
 
 
 @dataclass(frozen=True)
@@ -275,7 +297,10 @@ class BlankPage(BaseComponent):
 
 @dataclass(frozen=True)
 class SchemeGrid(Table):
-    pass
+    def column_weights(self) -> tuple[float, ...]:
+        if len(self.headers) == 3:
+            return (0.14, 0.74, 0.12)
+        return super().column_weights()
 
 
 @dataclass(frozen=True)
@@ -285,7 +310,21 @@ class LevelTable(BaseComponent):
     keep_together: bool = True
 
     def measure(self, profile: BoardProfile, available: Size) -> Size:
-        del profile
-        return Size(
-            available.width, Length((1 + len(self.levels)) * self.row_height.pt)
+        column_widths = tuple(
+            available.width.pt * weight for weight in self.column_weights()
         )
+        maximum_lines = max(
+            _text_lines(str(value), profile, max(20, column_widths[index] - 8))
+            for row in (("Level", "Descriptor", "Marks"), *self.levels)
+            for index, value in enumerate(row)
+        )
+        effective_row_height = max(
+            self.row_height.pt,
+            maximum_lines * profile.fonts.small.leading.pt + 6,
+        )
+        return Size(
+            available.width, Length((1 + len(self.levels)) * effective_row_height)
+        )
+
+    def column_weights(self) -> tuple[float, float, float]:
+        return (0.14, 0.72, 0.14)

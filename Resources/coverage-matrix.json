@@ -16,10 +16,11 @@
     "release"
   ],
   "summary": {
-    "families": 105,
-    "boards": 3,
+    "families": 107,
+    "boards": 4,
     "advertised_families": 7,
     "reference-profiled": 98,
+    "implementation-pending-reference": 2,
     "partial": 0,
     "implemented": 7,
     "verified": 0
@@ -4050,6 +4051,328 @@
       "supported_papers": [],
       "verified_papers": [],
       "papers": []
+    },
+    {
+      "id": "cambridge-international/computer-science",
+      "board": "cambridge-international",
+      "subject": "computer-science",
+      "status": "implementation-pending-reference",
+      "reference": null,
+      "declared_papers": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "supported_papers": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "verified_papers": [],
+      "papers": [
+        {
+          "id": "1",
+          "title": "Paper 1",
+          "detail": "Theory Fundamentals",
+          "status": "implemented",
+          "checks": {
+            "blueprint": false,
+            "syllabus": false,
+            "question_types": false,
+            "mark_distribution": false,
+            "difficulty": false,
+            "unique_content": false,
+            "renderer": false,
+            "mark_scheme": false,
+            "runtime": false,
+            "visual": false,
+            "release": false
+          },
+          "qualification": {
+            "engineering": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          }
+        },
+        {
+          "id": "2",
+          "title": "Paper 2",
+          "detail": "Problem-solving and Programming Skills",
+          "status": "implemented",
+          "checks": {
+            "blueprint": false,
+            "syllabus": false,
+            "question_types": false,
+            "mark_distribution": false,
+            "difficulty": false,
+            "unique_content": false,
+            "renderer": false,
+            "mark_scheme": false,
+            "runtime": false,
+            "visual": false,
+            "release": false
+          },
+          "qualification": {
+            "engineering": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          }
+        },
+        {
+          "id": "3",
+          "title": "Paper 3",
+          "detail": "Advanced Theory",
+          "status": "implemented",
+          "checks": {
+            "blueprint": false,
+            "syllabus": false,
+            "question_types": false,
+            "mark_distribution": false,
+            "difficulty": false,
+            "unique_content": false,
+            "renderer": false,
+            "mark_scheme": false,
+            "runtime": false,
+            "visual": false,
+            "release": false
+          },
+          "qualification": {
+            "engineering": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          }
+        },
+        {
+          "id": "4",
+          "title": "Paper 4",
+          "detail": "Practical",
+          "status": "implemented",
+          "checks": {
+            "blueprint": false,
+            "syllabus": false,
+            "question_types": false,
+            "mark_distribution": false,
+            "difficulty": false,
+            "unique_content": false,
+            "renderer": false,
+            "mark_scheme": false,
+            "runtime": false,
+            "visual": false,
+            "release": false
+          },
+          "qualification": {
+            "engineering": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          }
+        }
+      ],
+      "implementation": {
+        "app_subject": "computer-science",
+        "app_board": "cambridge-international",
+        "backend_subject": "computer_science_cambridge_international",
+        "resource_path": "computer-science/cambridge-international",
+        "advertised": false
+      }
+    },
+    {
+      "id": "cambridge-international/economics",
+      "board": "cambridge-international",
+      "subject": "economics",
+      "status": "implementation-pending-reference",
+      "reference": null,
+      "declared_papers": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "supported_papers": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "verified_papers": [],
+      "papers": [
+        {
+          "id": "1",
+          "title": "Paper 1",
+          "detail": "Multiple Choice",
+          "status": "implemented",
+          "checks": {
+            "blueprint": false,
+            "syllabus": false,
+            "question_types": false,
+            "mark_distribution": false,
+            "difficulty": false,
+            "unique_content": false,
+            "renderer": false,
+            "mark_scheme": false,
+            "runtime": false,
+            "visual": false,
+            "release": false
+          },
+          "qualification": {
+            "engineering": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          }
+        },
+        {
+          "id": "2",
+          "title": "Paper 2",
+          "detail": "Data Response and Essays",
+          "status": "implemented",
+          "checks": {
+            "blueprint": false,
+            "syllabus": false,
+            "question_types": false,
+            "mark_distribution": false,
+            "difficulty": false,
+            "unique_content": false,
+            "renderer": false,
+            "mark_scheme": false,
+            "runtime": false,
+            "visual": false,
+            "release": false
+          },
+          "qualification": {
+            "engineering": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          }
+        },
+        {
+          "id": "3",
+          "title": "Paper 3",
+          "detail": "Multiple Choice",
+          "status": "implemented",
+          "checks": {
+            "blueprint": false,
+            "syllabus": false,
+            "question_types": false,
+            "mark_distribution": false,
+            "difficulty": false,
+            "unique_content": false,
+            "renderer": false,
+            "mark_scheme": false,
+            "runtime": false,
+            "visual": false,
+            "release": false
+          },
+          "qualification": {
+            "engineering": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          }
+        },
+        {
+          "id": "4",
+          "title": "Paper 4",
+          "detail": "Data Response and Essays",
+          "status": "implemented",
+          "checks": {
+            "blueprint": false,
+            "syllabus": false,
+            "question_types": false,
+            "mark_distribution": false,
+            "difficulty": false,
+            "unique_content": false,
+            "renderer": false,
+            "mark_scheme": false,
+            "runtime": false,
+            "visual": false,
+            "release": false
+          },
+          "qualification": {
+            "engineering": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          }
+        }
+      ],
+      "implementation": {
+        "app_subject": "economics",
+        "app_board": "cambridge-international",
+        "backend_subject": "economics_cambridge_international",
+        "resource_path": "economics/cambridge-international",
+        "advertised": false
+      }
     }
   ]
 }

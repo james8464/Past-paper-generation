@@ -1,0 +1,247 @@
+{
+  "schema_version": 1,
+  "family_id": "cambridge-international/computer-science",
+  "backend_subject": "computer_science_cambridge_international",
+  "subject_label": "Cambridge International AS & A Level Computer Science",
+  "subject_plugin": "computer-science",
+  "board_profile": "cambridge-international",
+  "specification_version": "9618-2026",
+  "blueprint_version": "9618-2026-v1",
+  "provenance": [
+    "https://www.cambridgeinternational.org/Images/697372-2026-syllabus.pdf",
+    "https://www.cambridgeinternational.org/Images/697374-2026-pseudocode-guide-for-teachers.pdf"
+  ],
+  "topics": [
+    {
+      "id": "data-representation",
+      "title": "information representation",
+      "points": [
+        "binary and hexadecimal encode numeric data",
+        "character sets map symbols to codes",
+        "images use pixels, resolution and colour depth",
+        "compression trades representation size against fidelity"
+      ],
+      "papers": ["1"]
+    },
+    {
+      "id": "communication",
+      "title": "communication and networking",
+      "points": [
+        "protocols define interoperable communication rules",
+        "packet switching divides data for transmission",
+        "error checking detects altered data",
+        "network security protects confidentiality and integrity"
+      ],
+      "papers": ["1"]
+    },
+    {
+      "id": "hardware-software",
+      "title": "hardware, software and processor fundamentals",
+      "points": [
+        "the fetch-execute cycle coordinates processor activity",
+        "registers hold data and control information",
+        "system software manages hardware resources",
+        "logic gates implement Boolean functions"
+      ],
+      "papers": ["1"]
+    },
+    {
+      "id": "security-ethics",
+      "title": "security, privacy and ethics",
+      "points": [
+        "authentication establishes an asserted identity",
+        "authorisation limits permitted actions",
+        "encryption protects data from unauthorised reading",
+        "ethical analysis weighs impacts on affected stakeholders"
+      ],
+      "papers": ["1", "3"]
+    },
+    {
+      "id": "algorithm-design",
+      "title": "algorithm design and problem solving",
+      "points": [
+        "decomposition separates a problem into manageable parts",
+        "selection changes the executed path",
+        "iteration repeats a defined block",
+        "testing uses normal, boundary and erroneous data"
+      ],
+      "papers": ["2", "4"]
+    },
+    {
+      "id": "data-structures",
+      "title": "data types and structures",
+      "points": [
+        "arrays store indexed values of a defined type",
+        "records group related fields",
+        "stacks use last-in first-out access",
+        "queues use first-in first-out access"
+      ],
+      "papers": ["2", "3", "4"]
+    },
+    {
+      "id": "programming",
+      "title": "programming",
+      "points": [
+        "procedures and functions encapsulate reusable behaviour",
+        "parameters pass data across an interface",
+        "validation rejects data that violates constraints",
+        "file handling preserves data beyond one execution"
+      ],
+      "papers": ["2", "4"]
+    },
+    {
+      "id": "advanced-algorithms",
+      "title": "advanced algorithms and data structures",
+      "points": [
+        "recursion solves a problem using smaller instances",
+        "trees represent hierarchical relationships",
+        "linked structures use references between nodes",
+        "algorithm choice affects time and space requirements"
+      ],
+      "papers": ["3", "4"]
+    },
+    {
+      "id": "databases-ai",
+      "title": "databases and artificial intelligence",
+      "points": [
+        "normalisation reduces avoidable redundancy",
+        "transactions preserve database consistency",
+        "machine learning identifies patterns from data",
+        "expert systems combine a knowledge base with inference"
+      ],
+      "papers": ["3"]
+    }
+  ],
+  "papers": [
+    {
+      "id": "1",
+      "code": "9618/1",
+      "title": "Theory Fundamentals",
+      "duration_minutes": 90,
+      "marks": 75,
+      "instructions": ["Answer all questions.", "No calculator is required."],
+      "sections": [
+        {
+          "id": "A",
+          "title": "Theory fundamentals",
+          "option_count": 1,
+          "answer_options": 1,
+          "option_marks": 75,
+          "questions": [
+            {"id": "q1", "marks": 4, "kind": "constructed_response", "command_word": "State"},
+            {"id": "q2", "marks": 6, "kind": "constructed_response", "command_word": "Explain"},
+            {"id": "q3", "marks": 6, "kind": "constructed_response", "command_word": "Describe"},
+            {"id": "q4", "marks": 7, "kind": "constructed_response", "command_word": "Explain"},
+            {"id": "q5", "marks": 8, "kind": "constructed_response", "command_word": "Analyse"},
+            {"id": "q6", "marks": 8, "kind": "constructed_response", "command_word": "Explain"},
+            {"id": "q7", "marks": 8, "kind": "constructed_response", "command_word": "Describe"},
+            {"id": "q8", "marks": 9, "kind": "constructed_response", "command_word": "Analyse"},
+            {"id": "q9", "marks": 9, "kind": "constructed_response", "command_word": "Explain"},
+            {"id": "q10", "marks": 10, "kind": "extended_response", "command_word": "Discuss"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "code": "9618/2",
+      "title": "Fundamental Problem-solving and Programming Skills",
+      "duration_minutes": 120,
+      "marks": 75,
+      "instructions": [
+        "Answer all questions.",
+        "Write algorithms using the pseudocode conventions in the syllabus."
+      ],
+      "sections": [
+        {
+          "id": "A",
+          "title": "Problem-solving and programming",
+          "option_count": 1,
+          "answer_options": 1,
+          "option_marks": 75,
+          "questions": [
+            {"id": "q1", "marks": 4, "kind": "trace", "command_word": "Complete"},
+            {"id": "q2", "marks": 6, "kind": "constructed_response", "command_word": "Explain"},
+            {"id": "q3", "marks": 6, "kind": "programming", "command_word": "Write"},
+            {"id": "q4", "marks": 7, "kind": "trace", "command_word": "Trace"},
+            {"id": "q5", "marks": 8, "kind": "programming", "command_word": "Write"},
+            {"id": "q6", "marks": 8, "kind": "constructed_response", "command_word": "Explain"},
+            {"id": "q7", "marks": 8, "kind": "programming", "command_word": "Design"},
+            {"id": "q8", "marks": 9, "kind": "programming", "command_word": "Write"},
+            {"id": "q9", "marks": 9, "kind": "trace", "command_word": "Complete"},
+            {"id": "q10", "marks": 10, "kind": "programming", "command_word": "Design"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "code": "9618/3",
+      "title": "Advanced Theory",
+      "duration_minutes": 90,
+      "marks": 75,
+      "instructions": ["Answer all questions."],
+      "sections": [
+        {
+          "id": "A",
+          "title": "Advanced theory",
+          "option_count": 1,
+          "answer_options": 1,
+          "option_marks": 75,
+          "questions": [
+            {"id": "q1", "marks": 4, "kind": "constructed_response", "command_word": "State"},
+            {"id": "q2", "marks": 6, "kind": "constructed_response", "command_word": "Explain"},
+            {"id": "q3", "marks": 6, "kind": "constructed_response", "command_word": "Describe"},
+            {"id": "q4", "marks": 7, "kind": "constructed_response", "command_word": "Explain"},
+            {"id": "q5", "marks": 8, "kind": "constructed_response", "command_word": "Analyse"},
+            {"id": "q6", "marks": 8, "kind": "constructed_response", "command_word": "Explain"},
+            {"id": "q7", "marks": 8, "kind": "constructed_response", "command_word": "Describe"},
+            {"id": "q8", "marks": 9, "kind": "constructed_response", "command_word": "Analyse"},
+            {"id": "q9", "marks": 9, "kind": "constructed_response", "command_word": "Explain"},
+            {"id": "q10", "marks": 10, "kind": "extended_response", "command_word": "Discuss"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "code": "9618/4",
+      "title": "Practical",
+      "duration_minutes": 150,
+      "marks": 75,
+      "instructions": [
+        "Answer all questions on a computer without internet or email access.",
+        "Use Python, Java console mode or Visual Basic console mode.",
+        "Submit complete source code and evidence of testing."
+      ],
+      "output_roles": [
+        "question_paper",
+        "mark_scheme",
+        "evidence_document",
+        "source_file",
+        "assessment_package"
+      ],
+      "sections": [
+        {
+          "id": "A",
+          "title": "Practical programming",
+          "option_count": 1,
+          "answer_options": 1,
+          "option_marks": 75,
+          "questions": [
+            {"id": "q1", "marks": 4, "kind": "programming", "command_word": "Implement"},
+            {"id": "q2", "marks": 6, "kind": "programming", "command_word": "Write"},
+            {"id": "q3", "marks": 6, "kind": "trace", "command_word": "Test"},
+            {"id": "q4", "marks": 7, "kind": "programming", "command_word": "Implement"},
+            {"id": "q5", "marks": 8, "kind": "programming", "command_word": "Write"},
+            {"id": "q6", "marks": 8, "kind": "trace", "command_word": "Test"},
+            {"id": "q7", "marks": 8, "kind": "programming", "command_word": "Implement"},
+            {"id": "q8", "marks": 9, "kind": "programming", "command_word": "Design"},
+            {"id": "q9", "marks": 9, "kind": "programming", "command_word": "Implement"},
+            {"id": "q10", "marks": 10, "kind": "programming", "command_word": "Evaluate"}
+          ]
+        }
+      ]
+    }
+  ]
+}

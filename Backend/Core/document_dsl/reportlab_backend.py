@@ -86,9 +86,25 @@ class ReportLabBackend:
         pdf.setFillColor(colors.black)
         pdf.setStrokeColor(colors.black)
         if isinstance(component, Cover):
-            pdf.setFont(bold.name, profile.fonts.title.size.pt)
+            board_size = self._fitted_font_size(
+                pdf,
+                component.board_label,
+                font=bold.name,
+                maximum=profile.fonts.title.size.pt,
+                minimum=10,
+                width=width,
+            )
+            pdf.setFont(bold.name, board_size)
             pdf.drawString(x, y + height - 30, component.board_label)
-            pdf.setFont(bold.name, 24)
+            title_size = self._fitted_font_size(
+                pdf,
+                component.title.upper(),
+                font=bold.name,
+                maximum=24,
+                minimum=11,
+                width=width,
+            )
+            pdf.setFont(bold.name, title_size)
             pdf.drawString(x, y + height - 75, component.title.upper())
             pdf.setFont(body.name, 14)
             pdf.drawString(x, y + height - 100, component.subtitle)
@@ -110,7 +126,7 @@ class ReportLabBackend:
                 component.prompt,
                 x + 42,
                 y + height - body.leading.pt,
-                width - 75,
+                width - 115,
                 body,
             )
             pdf.drawRightString(x + width, y + 4, f"[{component.marks} marks]")
@@ -135,6 +151,7 @@ class ReportLabBackend:
                 width,
                 height,
                 body.name,
+                component.column_weights(),
             )
         elif isinstance(component, LevelTable):
             self._table(
@@ -145,6 +162,7 @@ class ReportLabBackend:
                 width,
                 height,
                 body.name,
+                component.column_weights(),
             )
         elif isinstance(component, Graph):
             self._graph(pdf, component, x, y, width, height, body.name)
@@ -198,11 +216,23 @@ class ReportLabBackend:
 
     @staticmethod
     def _table(
-        pdf: Canvas, rows, x: float, y: float, width: float, height: float, font: str
+        pdf: Canvas,
+        rows,
+        x: float,
+        y: float,
+        width: float,
+        height: float,
+        font: str,
+        column_weights: tuple[float, ...],
     ) -> None:  # type: ignore[no-untyped-def]
         columns = max(len(row) for row in rows)
+        if len(column_weights) != columns or abs(sum(column_weights) - 1) > 0.001:
+            raise ValueError("table column weights must match columns and sum to one")
         row_height = height / len(rows)
-        column_width = width / columns
+        column_widths = tuple(width * weight for weight in column_weights)
+        column_starts = [x]
+        for column_width in column_widths[:-1]:
+            column_starts.append(column_starts[-1] + column_width)
         pdf.setFont(font, 8)
         pdf.rect(x, y, width, height, stroke=1, fill=0)
         for row_index, row in enumerate(rows):
@@ -212,16 +242,68 @@ class ReportLabBackend:
             for column_index, value in enumerate(row):
                 if column_index:
                     pdf.line(
-                        x + column_index * column_width,
+                        column_starts[column_index],
                         y,
-                        x + column_index * column_width,
+                        column_starts[column_index],
                         y + height,
                     )
-                pdf.drawString(
-                    x + column_index * column_width + 4,
-                    row_y + row_height / 2 - 3,
+                column_width = column_widths[column_index]
+                lines = ReportLabBackend._table_lines(
+                    pdf,
                     str(value),
+                    font=font,
+                    size=8,
+                    width=max(4, column_width - 8),
                 )
+                text_y = row_y + row_height - 10
+                for line in lines:
+                    pdf.drawString(
+                        column_starts[column_index] + 4,
+                        text_y,
+                        line,
+                    )
+                    text_y -= 9
+
+    @staticmethod
+    def _table_lines(
+        pdf: Canvas,
+        text: str,
+        *,
+        font: str,
+        size: float,
+        width: float,
+    ) -> list[str]:
+        words = text.split()
+        if not words:
+            return [""]
+        lines: list[str] = []
+        current = ""
+        for word in words:
+            candidate = word if not current else f"{current} {word}"
+            if pdf.stringWidth(candidate, font, size) <= width:
+                current = candidate
+            else:
+                if current:
+                    lines.append(current)
+                current = word
+        if current:
+            lines.append(current)
+        return lines
+
+    @staticmethod
+    def _fitted_font_size(
+        pdf: Canvas,
+        text: str,
+        *,
+        font: str,
+        maximum: float,
+        minimum: float,
+        width: float,
+    ) -> float:
+        size = maximum
+        while size > minimum and pdf.stringWidth(text, font, size) > width:
+            size -= 0.5
+        return max(minimum, size)
 
     @staticmethod
     def _graph(

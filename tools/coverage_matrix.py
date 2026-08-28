@@ -106,13 +106,51 @@ def build_matrix(
             }
         matrix_families.append(row)
 
-    if implementations:
-        unknown = ", ".join(sorted(implementations))
+    advertised_without_reference = sorted(
+        family_id
+        for family_id, implementation in implementations.items()
+        if implementation.get("advertised")
+    )
+    if advertised_without_reference:
+        unknown = ", ".join(advertised_without_reference)
         raise ValueError(f"generator families have no matching layout profile: {unknown}")
+
+    for family_id in sorted(implementations):
+        implementation = implementations[family_id]
+        papers = _paper_rows(implementation, gates)
+        matrix_families.append(
+            {
+                "id": family_id,
+                "board": str(implementation["board"]),
+                "subject": str(implementation["subject"]),
+                "status": "implementation-pending-reference",
+                "reference": None,
+                "declared_papers": list(implementation["declared_papers"]),
+                "supported_papers": [paper["id"] for paper in papers],
+                "verified_papers": [],
+                "papers": papers,
+                "implementation": {
+                    key: implementation[key]
+                    for key in (
+                        "app_subject",
+                        "app_board",
+                        "backend_subject",
+                        "resource_path",
+                        "advertised",
+                    )
+                },
+            }
+        )
 
     counts = {
         status: sum(family["status"] == status for family in matrix_families)
-        for status in ("reference-profiled", "partial", "implemented", "verified")
+        for status in (
+            "reference-profiled",
+            "implementation-pending-reference",
+            "partial",
+            "implemented",
+            "verified",
+        )
     }
     return {
         "schema_version": 1,

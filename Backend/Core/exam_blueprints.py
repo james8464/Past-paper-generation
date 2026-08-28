@@ -25,6 +25,8 @@ class SectionRule(BaseModel):
     answer_options: int = Field(gt=0)
     option_marks: int = Field(gt=0)
     questions: list[QuestionRule]
+    allowed_topic_ids: set[str] = Field(default_factory=set)
+    stimulus_required: bool = False
 
     @property
     def candidate_marks(self) -> int:
@@ -119,6 +121,13 @@ def validate_rule(rule: PaperRule, syllabus_topic_ids: Iterable[str]) -> None:
         if section.id in section_ids:
             raise ValueError(f"{rule.id} repeats section {section.id}")
         section_ids.add(section.id)
+        section_topics = section.allowed_topic_ids or rule.allowed_topic_ids
+        outside_paper = section_topics - rule.allowed_topic_ids
+        if outside_paper:
+            raise ValueError(
+                f"{rule.id} section {section.id} references out-of-scope topics: "
+                f"{sorted(outside_paper)}"
+            )
         if section.answer_options > section.option_count:
             raise ValueError(f"{rule.id} section {section.id} answers more options than printed")
         marks = sum(question.marks for question in section.questions)
@@ -231,10 +240,16 @@ def validate_generated_paper(
                         f"question {question.number} assessment metadata does not "
                         f"match rule {question_rule.id}"
                     )
-                if question.topic_id not in rule.allowed_topic_ids:
-                    raise ValueError(f"question {question.number} uses an out-of-scope topic")
+                section_topics = (
+                    section_rule.allowed_topic_ids or rule.allowed_topic_ids
+                )
+                if question.topic_id not in section_topics:
+                    raise ValueError(
+                        f"question {question.number} uses an out-of-scope topic "
+                        f"for section {section_rule.id}"
+                    )
                 unknown_outcomes = (
-                    set(question.syllabus_outcomes) - rule.allowed_topic_ids
+                    set(question.syllabus_outcomes) - section_topics
                 )
                 if unknown_outcomes:
                     raise ValueError(

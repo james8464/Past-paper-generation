@@ -139,6 +139,115 @@ def test_reportlab_backend_renders_selectable_tagged_metadata_atomically(
         assert document.metadata["title"] == "Economics Paper 1"
 
 
+def test_scheme_grid_wraps_long_guidance_inside_the_page(tmp_path: Path) -> None:
+    ending = "supported conclusion at the end of the response"
+    guidance = (
+        "Credit an accurate applied chain of reasoning that distinguishes the "
+        "initial change, the intermediate mechanism and a " + ending
+    )
+    spec = DocumentSpec(
+        profile_id="cambridge-international",
+        role=DocumentRole.MARK_SCHEME,
+        pages=(
+            PageSpec(
+                role=PageRole.SCHEME,
+                components=(
+                    SchemeGrid(
+                        headers=("Question", "Answer / marking guidance", "Marks"),
+                        rows=(("1", guidance, "4"),),
+                    ),
+                ),
+            ),
+        ),
+        metadata=DocumentMetadata(title="Scheme", author="Paper Creator"),
+    )
+    destination = tmp_path / "scheme.pdf"
+
+    ReportLabBackend().render(Paginator().layout(spec), destination)
+
+    with fitz.open(destination) as document:
+        page = document[0]
+        text = page.get_text()
+        assert ending in " ".join(text.split())
+        assert all(
+            block[0] >= 0
+            and block[1] >= 0
+            and block[2] <= page.rect.width
+            and block[3] <= page.rect.height
+            for block in page.get_text("blocks")
+        )
+
+
+def test_scheme_grid_prioritises_guidance_column() -> None:
+    grid = SchemeGrid(
+        headers=("Question", "Answer / marking guidance", "Marks"),
+        rows=(("1", "Credit a developed applied explanation.", "4"),),
+    )
+
+    assert grid.column_weights() == pytest.approx((0.14, 0.74, 0.12))
+
+
+def test_question_mark_label_does_not_collide_with_prompt(tmp_path: Path) -> None:
+    prompt = (
+        "Analyse how a sustained increase in production costs could affect "
+        "the organisation in the scenario."
+    )
+    spec = DocumentSpec(
+        profile_id="cambridge-international",
+        role=DocumentRole.QUESTION_PAPER,
+        pages=(
+            PageSpec(
+                role=PageRole.QUESTION,
+                components=(QuestionBlock(number="4", prompt=prompt, marks=8),),
+            ),
+        ),
+        metadata=DocumentMetadata(title="Question", author="Paper Creator"),
+    )
+    destination = tmp_path / "question.pdf"
+
+    ReportLabBackend().render(Paginator().layout(spec), destination)
+
+    with fitz.open(destination) as document:
+        words = document[0].get_text("words")
+        mark_words = [word for word in words if "marks" in word[4]]
+        assert len(mark_words) == 1
+        mark = mark_words[0]
+        prompt_words = [word for word in words if word[4].strip(".[]") in prompt]
+        same_line = [
+            word
+            for word in prompt_words
+            if word[1] < mark[3] and word[3] > mark[1]
+        ]
+        assert all(word[2] < mark[0] for word in same_line)
+
+
+def test_cover_fits_long_paper_titles_inside_the_page(tmp_path: Path) -> None:
+    spec = DocumentSpec(
+        profile_id="cambridge-international",
+        role=DocumentRole.MARK_SCHEME,
+        pages=(
+            PageSpec(
+                role=PageRole.COVER,
+                components=(
+                    Cover(
+                        title="Data Response and Essays Mark Scheme",
+                        subtitle="Original practice material",
+                        code="9708/2",
+                    ),
+                ),
+            ),
+        ),
+        metadata=DocumentMetadata(title="Scheme", author="Paper Creator"),
+    )
+    destination = tmp_path / "long-cover.pdf"
+
+    ReportLabBackend().render(Paginator().layout(spec), destination)
+
+    with fitz.open(destination) as document:
+        page = document[0]
+        assert all(block[2] <= page.rect.width for block in page.get_text("blocks"))
+
+
 def test_board_profile_rejects_content_outside_safe_print_area() -> None:
     with pytest.raises(ValueError, match="safe-print"):
         BoardProfile.testing(content_left=1)

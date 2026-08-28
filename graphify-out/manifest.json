@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/exam_blueprints.py": {
-    "mtime": 1787755406.772538,
-    "ast_hash": "f87abceff80fa57bcd3d4ba7ff4677b7",
+    "mtime": 1787775523.6413903,
+    "ast_hash": "a2bed73de42fa91b1ed2f9db0e6218a4",
     "semantic_hash": ""
   },
   "Backend/Core/fonts/__init__.py": {
@@ -360,8 +360,8 @@
     "semantic_hash": ""
   },
   "Resources/coverage-matrix.json": {
-    "mtime": 1787771995.47246,
-    "ast_hash": "d74a6784ef059505ca22ccbefc1cad65",
+    "mtime": 1787774791.7065194,
+    "ast_hash": "65a298d5562a41c86d96eddd32f2e831",
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/aqaecongen/__init__.py": {
@@ -605,8 +605,8 @@
     "semantic_hash": ""
   },
   "Resources/generator-registry.json": {
-    "mtime": 1787771910.0837414,
-    "ast_hash": "909dfadc89917bcd5fb1e73e3568b1b1",
+    "mtime": 1787774746.437137,
+    "ast_hash": "9a3717507eb6b7aab0f73da1d102afdc",
     "semantic_hash": ""
   },
   "Resources/layout-master-runtime.json": {
@@ -705,8 +705,8 @@
     "semantic_hash": ""
   },
   "tests/test_coverage_matrix.py": {
-    "mtime": 1787741921.5834515,
-    "ast_hash": "fc61c8e73cbbba95eea24caff571db70",
+    "mtime": 1787774427.3461199,
+    "ast_hash": "3784f0f929cb5be8da8607efed786c72",
     "semantic_hash": ""
   },
   "tests/test_difficulty_calibration.py": {
@@ -715,8 +715,8 @@
     "semantic_hash": ""
   },
   "tests/test_exam_blueprints.py": {
-    "mtime": 1787493454.5639288,
-    "ast_hash": "71bc72c04b7191002dc44440b28f3f8c",
+    "mtime": 1787775492.5903895,
+    "ast_hash": "fd453470e8b3203379b873955e862d55",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {
@@ -775,8 +775,8 @@
     "semantic_hash": ""
   },
   "tools/coverage_matrix.py": {
-    "mtime": 1787742318.5117588,
-    "ast_hash": "0b9fa609618c1098bb3cdfef693aa707",
+    "mtime": 1787774765.9258897,
+    "ast_hash": "38fb127f285b38f88d696b2b1c9bd584",
     "semantic_hash": ""
   },
   "tools/difficulty_calibration.py": {
@@ -1515,8 +1515,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/document_dsl/components.py": {
-    "mtime": 1787745534.1651118,
-    "ast_hash": "6753fc578f0adcc4bd57dcee3ebc9d61",
+    "mtime": 1787775336.9081705,
+    "ast_hash": "a1207e15b3be86bacdd53295cd48cdd9",
     "semantic_hash": ""
   },
   "Backend/Core/document_dsl/model.py": {
@@ -1535,8 +1535,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/document_dsl/reportlab_backend.py": {
-    "mtime": 1787748240.1866133,
-    "ast_hash": "c2dc444dc20abdf2eb52c2a5260b0cf0",
+    "mtime": 1787775336.9088457,
+    "ast_hash": "64e68703a3e0b3701afc4dcfb4278e5e",
     "semantic_hash": ""
   },
   "Backend/Core/document_dsl/vector_components.py": {
@@ -1545,8 +1545,8 @@
     "semantic_hash": ""
   },
   "tests/test_document_dsl.py": {
-    "mtime": 1787773606.7293243,
-    "ast_hash": "afcb90f270ed4544d0257193dc166e26",
+    "mtime": 1787775278.6698325,
+    "ast_hash": "36cb431b873a769e4f2956ec549d51a9",
     "semantic_hash": ""
   },
   "tests/test_document_paginator.py": {
@@ -1700,8 +1700,8 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1787773642.8645515,
-    "ast_hash": "97eed2e9fffb3fe0c0e6c42778f719f4",
+    "mtime": 1787774287.0686545,
+    "ast_hash": "19cf1e8b17558e68e61604a74e2ae8cf",
     "semantic_hash": ""
   },
   "tests/test_repository_hygiene.py": {
@@ -1832,6 +1832,56 @@
   "Resources/empirical-calibration-policy.json": {
     "mtime": 1787774075.7348325,
     "ast_hash": "b59e58e85d425cfa957f066bd9ba8d6d",
+    "semantic_hash": ""
+  },
+  "Resources/computer-science/cambridge-international/generator/data/syllabus.json": {
+    "mtime": 1787774681.4959836,
+    "ast_hash": "203e95d224f3a74be8106768a2017707",
+    "semantic_hash": ""
+  },
+  "Resources/configured-generators/generator/configuredgen/__init__.py": {
+    "mtime": 1787774566.7150507,
+    "ast_hash": "598cd3ded4156b40a064d695f61e0226",
+    "semantic_hash": ""
+  },
+  "Resources/configured-generators/generator/configuredgen/cli.py": {
+    "mtime": 1787774810.0621846,
+    "ast_hash": "ef80d53cd50f5399cf92ad9577479bbc",
+    "semantic_hash": ""
+  },
+  "Resources/configured-generators/generator/configuredgen/generator.py": {
+    "mtime": 1787775611.9723787,
+    "ast_hash": "58aabc5570361f07bb9c199a1bd9466a",
+    "semantic_hash": ""
+  },
+  "Resources/configured-generators/generator/configuredgen/models.py": {
+    "mtime": 1787774566.7153804,
+    "ast_hash": "33e9bb86ed08bd4f89c1c154998614a1",
+    "semantic_hash": ""
+  },
+  "Resources/configured-generators/generator/configuredgen/render_pdf.py": {
+    "mtime": 1787774893.703133,
+    "ast_hash": "52339c62b39c1e40ab093af3c5e833c8",
+    "semantic_hash": ""
+  },
+  "Resources/configured-generators/generator/pyproject.toml": {
+    "mtime": 1787774566.7164838,
+    "ast_hash": "7821b71ecaaaeaea54397e88146b220e",
+    "semantic_hash": ""
+  },
+  "Resources/economics/cambridge-international/generator/data/syllabus.json": {
+    "mtime": 1787775523.6424236,
+    "ast_hash": "4d9d5b3afe4e6ceab1b57fe2c25d701e",
+    "semantic_hash": ""
+  },
+  "tests/test_configured_family.py": {
+    "mtime": 1787775611.9718156,
+    "ast_hash": "d4cfce4997751b8bce842112bd377b58",
+    "semantic_hash": ""
+  },
+  "docs/qualification/2026-08-cambridge-engineering-foundation.md": {
+    "mtime": 1787775720.915218,
+    "ast_hash": "d4eac14775fbf512abaa28fd9126ddf7",
     "semantic_hash": ""
   }
 }

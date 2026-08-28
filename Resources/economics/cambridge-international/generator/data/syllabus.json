@@ -1,0 +1,262 @@
+{
+  "schema_version": 1,
+  "family_id": "cambridge-international/economics",
+  "backend_subject": "economics_cambridge_international",
+  "subject_label": "Cambridge International AS & A Level Economics",
+  "subject_plugin": "economics",
+  "board_profile": "cambridge-international",
+  "specification_version": "9708-2026-2028",
+  "blueprint_version": "9708-2026-v1",
+  "provenance": [
+    "https://www.cambridgeinternational.org/Images/697423-2026-2028-syllabus.pdf"
+  ],
+  "topics": [
+    {
+      "id": "as-basic-economic-ideas",
+      "title": "basic economic ideas and resource allocation",
+      "points": [
+        "scarcity creates an opportunity cost",
+        "factors of production have alternative uses",
+        "specialisation can raise productivity",
+        "resource allocation involves choices at the margin"
+      ],
+      "papers": ["1", "2"]
+    },
+    {
+      "id": "as-price-system",
+      "title": "the price system and the microeconomy",
+      "points": [
+        "demand responds to price and non-price determinants",
+        "supply reflects costs and productive conditions",
+        "elasticity influences revenue and incidence",
+        "consumer and producer surplus measure welfare"
+      ],
+      "papers": ["1", "2"]
+    },
+    {
+      "id": "as-government-micro",
+      "title": "government microeconomic intervention",
+      "points": [
+        "externalities create a divergence between private and social costs",
+        "indirect taxes alter incentives and market outcomes",
+        "subsidies can encourage consumption or production",
+        "regulation may address information or market-power failures"
+      ],
+      "papers": ["1", "2"]
+    },
+    {
+      "id": "as-macroeconomy",
+      "title": "the macroeconomy",
+      "points": [
+        "aggregate demand affects output and the price level",
+        "inflation changes real incomes and competitiveness",
+        "unemployment has cyclical and structural causes",
+        "the current account records international transactions"
+      ],
+      "papers": ["1", "2"]
+    },
+    {
+      "id": "a-level-market-structure",
+      "title": "market structures and business behaviour",
+      "points": [
+        "market structure changes pricing power",
+        "marginal analysis informs profit-maximising output",
+        "contestability depends on entry and exit conditions",
+        "price discrimination affects consumers and producers"
+      ],
+      "papers": ["3", "4"]
+    },
+    {
+      "id": "a-level-labour-market",
+      "title": "the labour market",
+      "points": [
+        "labour demand is derived from marginal revenue product",
+        "wage differentials can reflect skills and market power",
+        "monopsony may reduce wages and employment",
+        "trade unions can alter bargaining outcomes"
+      ],
+      "papers": ["3", "4"]
+    },
+    {
+      "id": "a-level-growth-development",
+      "title": "economic growth and development",
+      "points": [
+        "growth and development measure different outcomes",
+        "human capital can increase productive potential",
+        "inequality may affect opportunity and welfare",
+        "institutions influence investment and development"
+      ],
+      "papers": ["3", "4"]
+    },
+    {
+      "id": "a-level-policy",
+      "title": "macroeconomic policy",
+      "points": [
+        "fiscal policy changes demand and incentives",
+        "monetary policy affects credit and exchange rates",
+        "supply-side policy targets productive capacity",
+        "policy objectives may conflict over different time periods"
+      ],
+      "papers": ["3", "4"]
+    }
+  ],
+  "papers": [
+    {
+      "id": "1",
+      "code": "9708/1",
+      "title": "Multiple Choice",
+      "duration_minutes": 60,
+      "marks": 30,
+      "instructions": [
+        "Answer all questions.",
+        "For each question select the one correct answer."
+      ],
+      "sections": [
+        {
+          "id": "A",
+          "title": "Multiple-choice questions",
+          "option_count": 30,
+          "answer_options": 30,
+          "option_marks": 1,
+          "questions": [
+            {"id": "mcq", "marks": 1, "kind": "multiple_choice", "command_word": "Select"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "code": "9708/2",
+      "title": "Data Response and Essays",
+      "duration_minutes": 120,
+      "marks": 60,
+      "instructions": [
+        "Answer all questions in Section A.",
+        "Answer one question from Section B and one from Section C."
+      ],
+      "sections": [
+        {
+          "id": "A",
+          "title": "Data response",
+          "stimulus_required": true,
+          "option_count": 1,
+          "answer_options": 1,
+          "option_marks": 20,
+          "questions": [
+            {"id": "calculation", "marks": 2, "kind": "calculation", "command_word": "Calculate"},
+            {"id": "explain", "marks": 4, "kind": "constructed_response", "command_word": "Explain"},
+            {"id": "analyse", "marks": 6, "kind": "constructed_response", "command_word": "Analyse"},
+            {"id": "assess", "marks": 8, "kind": "extended_response", "command_word": "Assess"}
+          ]
+        },
+        {
+          "id": "B",
+          "title": "Microeconomics essays",
+          "allowed_topic_ids": [
+            "as-basic-economic-ideas",
+            "as-price-system",
+            "as-government-micro"
+          ],
+          "option_count": 2,
+          "answer_options": 1,
+          "option_marks": 20,
+          "questions": [
+            {"id": "explain", "marks": 8, "kind": "constructed_response", "command_word": "Explain"},
+            {"id": "discuss", "marks": 12, "kind": "extended_response", "command_word": "Discuss"}
+          ]
+        },
+        {
+          "id": "C",
+          "title": "Macroeconomics essays",
+          "allowed_topic_ids": ["as-macroeconomy"],
+          "option_count": 2,
+          "answer_options": 1,
+          "option_marks": 20,
+          "questions": [
+            {"id": "analyse", "marks": 8, "kind": "constructed_response", "command_word": "Analyse"},
+            {"id": "evaluate", "marks": 12, "kind": "extended_response", "command_word": "Evaluate"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "code": "9708/3",
+      "title": "Multiple Choice",
+      "duration_minutes": 75,
+      "marks": 30,
+      "instructions": [
+        "Answer all questions.",
+        "For each question select the one correct answer."
+      ],
+      "sections": [
+        {
+          "id": "A",
+          "title": "Multiple-choice questions",
+          "option_count": 30,
+          "answer_options": 30,
+          "option_marks": 1,
+          "questions": [
+            {"id": "mcq", "marks": 1, "kind": "multiple_choice", "command_word": "Select"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "code": "9708/4",
+      "title": "Data Response and Essays",
+      "duration_minutes": 120,
+      "marks": 60,
+      "instructions": [
+        "Answer all questions in Section A.",
+        "Answer one question from Section B and one from Section C."
+      ],
+      "sections": [
+        {
+          "id": "A",
+          "title": "Data response",
+          "stimulus_required": true,
+          "option_count": 1,
+          "answer_options": 1,
+          "option_marks": 20,
+          "questions": [
+            {"id": "interpret", "marks": 5, "kind": "constructed_response", "command_word": "Explain"},
+            {"id": "analyse", "marks": 5, "kind": "constructed_response", "command_word": "Analyse"},
+            {"id": "assess", "marks": 10, "kind": "extended_response", "command_word": "Assess"}
+          ]
+        },
+        {
+          "id": "B",
+          "title": "Microeconomics essays",
+          "allowed_topic_ids": [
+            "a-level-market-structure",
+            "a-level-labour-market"
+          ],
+          "option_count": 2,
+          "answer_options": 1,
+          "option_marks": 20,
+          "questions": [
+            {"id": "analyse", "marks": 8, "kind": "constructed_response", "command_word": "Analyse"},
+            {"id": "evaluate", "marks": 12, "kind": "extended_response", "command_word": "Evaluate"}
+          ]
+        },
+        {
+          "id": "C",
+          "title": "Macroeconomics essays",
+          "allowed_topic_ids": [
+            "a-level-growth-development",
+            "a-level-policy"
+          ],
+          "option_count": 2,
+          "answer_options": 1,
+          "option_marks": 20,
+          "questions": [
+            {"id": "explain", "marks": 8, "kind": "constructed_response", "command_word": "Explain"},
+            {"id": "discuss", "marks": 12, "kind": "extended_response", "command_word": "Discuss"}
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -82,6 +82,23 @@ def test_rule_rejects_bad_mark_total() -> None:
         validate_rule(value, {"a"})
 
 
+def test_rule_rejects_section_topic_outside_paper_scope() -> None:
+    value = rule()
+    value.sections[0].allowed_topic_ids = {"outside"}
+
+    with pytest.raises(ValueError, match="section A references out-of-scope topics"):
+        validate_rule(value, {"a", "outside"})
+
+
+def test_generated_paper_rejects_topic_outside_section_scope() -> None:
+    configured = rule()
+    configured.allowed_topic_ids = {"a", "b"}
+    configured.sections[0].allowed_topic_ids = {"b"}
+
+    with pytest.raises(ValueError, match="out-of-scope topic for section A"):
+        validate_generated_paper(paper(), configured, {"a", "b"})
+
+
 def test_generated_paper_rejects_duplicate_prompts() -> None:
     value = paper()
     value.sections[0].options[1].questions[0].prompt = "Evaluate option 1."

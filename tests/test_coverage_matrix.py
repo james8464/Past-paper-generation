@@ -33,11 +33,26 @@ def family(value: dict[str, object], family_id: str) -> dict[str, object]:
 def test_matrix_exactly_covers_layout_profiles() -> None:
     value = matrix()
     profiles = load_json(LAYOUT_PROFILES)["profiles"]
-    assert value["summary"]["families"] == 105
-    assert value["summary"]["boards"] == 3
-    assert {item["id"] for item in value["families"]} == {
+    assert value["summary"]["families"] == 107
+    assert value["summary"]["boards"] == 4
+    assert {
+        item["id"] for item in value["families"]
+        if item["status"] != "implementation-pending-reference"
+    } == {
         f"{item['board']}/{item['subject']}" for item in profiles
     }
+
+
+def test_unadvertised_cambridge_families_remain_pending_reference_evidence() -> None:
+    value = matrix()
+    for family_id in (
+        "cambridge-international/economics",
+        "cambridge-international/computer-science",
+    ):
+        item = family(value, family_id)
+        assert item["status"] == "implementation-pending-reference"
+        assert item["implementation"]["advertised"] is False
+        assert item["reference"] is None
 
 
 def test_existing_generators_are_reported_without_false_verification() -> None:
@@ -68,6 +83,7 @@ def test_registry_rejects_unknown_layout_family() -> None:
     registry = copy.deepcopy(load_json(GENERATOR_REGISTRY))
     registry["families"][0]["id"] = "aqa/not-a-subject"
     registry["families"][0]["subject"] = "not-a-subject"
+    registry["families"][0]["advertised"] = True
     with pytest.raises(ValueError, match="no matching layout profile"):
         build_matrix(load_json(LAYOUT_PROFILES), registry)
 
