@@ -255,11 +255,12 @@ def _written(
             f"Explain two reasons why {business} may offer a customer a trade discount."
         )
         scheme = [
-            "Encourages the customer to place a larger order;",
-            "Encourages repeat purchases or customer loyalty;",
-            "May increase sales revenue or market share;",
-            "Reduces the unit selling price and therefore gross profit per unit;",
-            "Award each reason only when it is developed in the business context.",
+            "A trade discount reduces the list price when the customer meets the stated purchasing condition;",
+            "One valid reason is to encourage the customer to place a larger order;",
+            "A second valid reason is to encourage repeat purchases and strengthen customer retention;",
+            f"The lower effective unit price can persuade the customer to increase the order size, so {business} may earn more sales revenue overall;",
+            f"The saving gives the customer an incentive to buy from {business} again, therefore future revenue may become more predictable;",
+            f"A larger discounted order moves more units, therefore {business} may hold less inventory through increased inventory turnover;",
         ]
     elif rule.id == "statement_extract":
         prompt = (

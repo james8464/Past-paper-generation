@@ -139,6 +139,33 @@ def test_contribution_question_uses_a_complete_costing_identity() -> None:
     assert case.contribution != case.revenue - case.profit
 
 
+def test_trade_discount_explanation_has_two_contextual_reasoning_chains() -> None:
+    generated = build_paper(RULES["paper_1"], SYLLABUS, 26083001)
+    question = next(
+        item
+        for section in generated.sections
+        for item in section.options[0].questions
+        if item.rule_id == "explain_trade"
+    )
+    awarded = [
+        point.text
+        for point in question.structured_mark_scheme
+        if point.marks > 0
+    ]
+
+    assert len(awarded) == question.marks
+    assert not any(
+        text.casefold().startswith(("award", "credit", "indicative content"))
+        for text in awarded
+    )
+    developed = [
+        text
+        for text in awarded
+        if question.prompt.split()[4] in text and " therefore " in text.casefold()
+    ]
+    assert len(developed) >= 2
+
+
 def test_every_management_calculation_has_complete_immutable_source_data() -> None:
     generated = build_paper(RULES["paper_2"], SYLLABUS, 26080107)
     calculations = {
