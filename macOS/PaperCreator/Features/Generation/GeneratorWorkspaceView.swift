@@ -213,6 +213,7 @@ private struct PaperConfiguration: View {
         }
         .formStyle(.grouped)
         .disabled(application.isRunning)
+        .focusSection()
     }
 
     private var visibleAssessments: [PaperOption] {
@@ -290,6 +291,7 @@ private struct RecentDocuments: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .padding(.bottom, 12)
+        .focusSection()
     }
 }
 

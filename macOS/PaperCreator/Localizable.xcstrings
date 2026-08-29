@@ -4,6 +4,12 @@
     "" : {
 
     },
+    "%@. %lld samples. Latest %@ %@. Range %@ to %@ %@." : {
+
+    },
+    "%@. No samples." : {
+
+    },
     "%@ for %@ is not available yet." : {
       "localizations" : {
         "en" : {
@@ -28,6 +34,9 @@
 
     },
     "A generated PDF can look convincing and still contain a weak or ambiguous question. Review content and presentation separately." : {
+
+    },
+    "A time-series chart summarised by its latest, minimum and maximum values." : {
 
     },
     "AI" : {

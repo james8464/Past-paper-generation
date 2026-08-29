@@ -31,6 +31,12 @@ progress is genuinely indeterminate. VoiceOver receives one concise, frequently
 updated progress element containing the stage, percentage, and remaining-time
 estimate instead of reading the visual row piecemeal.
 
+Benchmark charts expose a localized VoiceOver summary containing sample count,
+latest value, and observed range. The visual plot is therefore supplementary,
+not the only way to obtain the result. Creation controls and recent documents
+are separate keyboard focus sections so Full Keyboard Access follows the task
+before moving into output actions.
+
 Apple MLX setup always starts from an explicit confirmation. Before downloading,
 the backend checks Apple-silicon compatibility, its managed Python version, and
 at least 8 GB of free model storage; failures use recovery copy rather than
@@ -99,7 +105,9 @@ partially consumed model stream.
 ## Accessibility verification
 
 The source uses semantic labels, combined status rows, non-colour state labels,
-and accessibility hints. Before distribution, the built app still requires
+localized chart summaries, explicit keyboard focus sections, and accessibility
+hints. The automated accessibility and macOS suites pass under warnings-as-errors
+and strict concurrency. Before distribution, the built app still requires
 manual verification in:
 
 - VoiceOver and Full Keyboard Access;

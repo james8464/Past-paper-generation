@@ -1115,13 +1115,13 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Benchmark/BenchmarkView.swift": {
-    "mtime": 1787755105.3852487,
-    "ast_hash": "7a7cee9a79c53b7bbb48f7ee28de05f5",
+    "mtime": 1788042768.3799818,
+    "ast_hash": "b28ef05dabe56b2cab279e7886a2e9d8",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Generation/GeneratorWorkspaceView.swift": {
-    "mtime": 1788018943.0240402,
-    "ast_hash": "487fbdf703ecac6cb309237e5c81d0d3",
+    "mtime": 1788042719.4482157,
+    "ast_hash": "da8dc19d73aab9b32fb0a30b87e00bb8",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Onboarding/WelcomeHelpViews.swift": {
@@ -1180,8 +1180,8 @@
     "semantic_hash": ""
   },
   "docs/HIG_COMPLIANCE.md": {
-    "mtime": 1787755155.7176814,
-    "ast_hash": "10ac6b80afd07e824012010b8f376302",
+    "mtime": 1788042817.2338557,
+    "ast_hash": "866cf87c81bd0580460b94fab4997257",
     "semantic_hash": ""
   },
   "graphify-out/memory/query_20260729_215735_how_can_we_make_even_more_improvements_to_get_the.md": {
@@ -1425,8 +1425,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-26-paper-creator-excellence-programme.md": {
-    "mtime": 1787753738.0605505,
-    "ast_hash": "10ee9175eee7a4c3229a00a139a3d48b",
+    "mtime": 1788042534.6425092,
+    "ast_hash": "c249fb9a9e70b5213f314a05426bbd7d",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md": {
@@ -1615,8 +1615,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/AccessibilityTests.swift": {
-    "mtime": 1787746494.6889126,
-    "ast_hash": "c7443b191c5e3d552b2da93f144c8849",
+    "mtime": 1788042611.570917,
+    "ast_hash": "1d47d66f48dd43d41f6a55e8e1008abf",
     "semantic_hash": ""
   },
   "Backend/Core/board_profiles.py": {
@@ -1700,8 +1700,8 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1787946953.7410607,
-    "ast_hash": "475f295915df49c74c6131bb8ad88449",
+    "mtime": 1788041671.6790214,
+    "ast_hash": "d73949c77fa856d2fd7f46a0d43e2b65",
     "semantic_hash": ""
   },
   "tests/test_repository_hygiene.py": {
@@ -1735,8 +1735,8 @@
     "semantic_hash": ""
   },
   "docs/qualification/2026-08-current-family-review.md": {
-    "mtime": 1788041452.4029877,
-    "ast_hash": "e555fafe8fc1c733c4566e5581b50508",
+    "mtime": 1788042534.6418738,
+    "ast_hash": "5fdc538808b925de695acdfb5d5f83f4",
     "semantic_hash": ""
   },
   "tests/test_release_compliance.py": {

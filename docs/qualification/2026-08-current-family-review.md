@@ -78,6 +78,8 @@ Git:
 - `tmp/fidelity/artifacts-v13-ci-300/`
 - `tmp/fidelity/deterministic-role-metrics-v16-qualification.json`
 - `tmp/fidelity/artifacts-v16-qualification-600/`
+- `tmp/fidelity/deterministic-role-metrics-68b45e1-ci.json`
+- `tmp/fidelity/artifacts-68b45e1-ci-300/`
 
 Durable, reviewable policy and qualification evidence is versioned in:
 
@@ -109,3 +111,12 @@ rule-width and reading-order checks passed. Manual review of all five mark
 scheme contact sheets found no clipping, collision, malformed table or broken
 continuation page. This is deterministic visual and content-structure evidence
 only; it does not change the outstanding empirical gates above.
+
+The same commit was then used to regenerate the complete 21-job advertised
+matrix (18 full papers and three topic question banks). All jobs completed with
+fresh manifests. The full 300-DPI audit passed every versioned document and
+page-role floor with aggregate registered similarity 0.708. All six worst-page
+overview sheets were reviewed; no clipping, collision, broken rule, malformed
+visual, missing page furniture or unsafe print placement was found. The lower
+OCR scheme end-page scores remain the documented neutral-branding difference,
+not a missing content page.

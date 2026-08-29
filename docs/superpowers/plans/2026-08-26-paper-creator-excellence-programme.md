@@ -88,7 +88,7 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - [x] Run `PYTHONPATH=. .venv/bin/pytest -q tests/test_qualification_manifest.py` and confirm the module/schema absence fails.
 - [x] Implement immutable Pydantic manifest models, canonical JSON serialization, SHA-256 artifact hashing, and explicit `not_run`, `passed`, `failed`, and `not_applicable` states.
 - [x] Extend the live matrix to emit one manifest per paper plus an aggregate run manifest without embedding PDFs or private review data.
-- [ ] Capture a fresh baseline for all 18 papers using a fixed seed set, recording failures rather than silently resuming old artifacts.
+- [x] Capture a fresh baseline for all 18 papers using a fixed seed set, recording failures rather than silently resuming old artifacts.
 - [x] Add the baseline counts and known false gates to `docs/ASSESSMENT_QUALITY.md`.
 - [x] Run the focused tests, `PYTHONPATH=. .venv/bin/pytest -q tests/test_live_generation_matrix.py`, Ruff on changed Python, and `graphify update .`.
 - [x] Commit as `Establish qualification evidence manifests`.
@@ -151,8 +151,8 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - [x] Match each generated page against same-role references across at least three years; compare against a measured acceptable range rather than one chosen page.
 - [x] Add role-specific weights and thresholds for stable furniture, text layout, drawings, images, ink density, reading order, tags, and print survival.
 - [x] Make page-count policy exact for declared fixed roles and range-based only where the profile records genuine multi-year variation.
-- [ ] Generate compact 300-DPI CI evidence and 600-DPI qualification contact sheets with reference, generated, overlay, difference, and annotated metric callouts.
-- [ ] Run focused tests and a deterministic all-family audit; manually inspect the worst page and every page role before changing thresholds.
+- [x] Generate compact 300-DPI CI evidence and 600-DPI qualification contact sheets with reference, generated, overlay, difference, and annotated metric callouts.
+- [x] Run focused tests and a deterministic all-family audit; manually inspect the worst page and every page role before changing thresholds.
 - [x] Update Graphify and commit as `Qualify paper fidelity at print resolution`.
 
 ### Task 3: Complete Question and Mark-Scheme Validity
@@ -187,8 +187,8 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - [x] Implement AQA, OCR, Pearson Edexcel, and Cambridge level-of-response policies as data-backed engines with best-fit rules, caps, indicative content, and annotation output.
 - [x] Simulate weak, average, and excellent responses; require monotonic marks and a written reason for every awarded/withheld mark.
 - [x] Add cross-paper checks for topic/AO/command-word/mark/demand balance, duplication, answer leakage, ambiguous pronouns, impossible data, and unintended clues.
-- [ ] Run core tests plus all seven family suites, Ruff, deterministic solution recomputation for all generated items, and update Graphify.
-- [ ] Commit as `Independently validate questions and schemes`.
+- [x] Run core tests plus all seven family suites, Ruff, deterministic solution recomputation for all generated items, and update Graphify.
+- [x] Commit as `Independently validate questions and schemes`.
 
 ### Task 4: Introduce the Shared Board Rendering DSL
 

@@ -51,4 +51,23 @@ final class AccessibilityTests: XCTestCase {
         XCTAssertGreaterThan(longCopy.count, 250)
         XCTAssertEqual(rightToLeft, .rightToLeft)
     }
+
+    func testBenchmarkChartSummaryExposesLatestValueAndRangeWithoutVision() {
+        XCTAssertEqual(
+            BenchmarkAccessibility.chartSummary(
+                title: "CPU Load",
+                unit: "%",
+                values: [40, 55]
+            ),
+            "CPU Load. 2 samples. Latest 55 %. Range 40 to 55 %."
+        )
+        XCTAssertEqual(
+            BenchmarkAccessibility.chartSummary(
+                title: "CPU Load",
+                unit: "%",
+                values: []
+            ),
+            "CPU Load. No samples."
+        )
+    }
 }

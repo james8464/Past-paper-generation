@@ -1,6 +1,40 @@
 import Charts
 import SwiftUI
 
+enum BenchmarkAccessibility {
+    static func chartSummary(
+        title: String,
+        unit: String,
+        values: [Double]
+    ) -> String {
+        guard let latest = values.last,
+              let minimum = values.min(),
+              let maximum = values.max() else {
+            return String(
+                format: String(localized: "%@. No samples."),
+                locale: .current,
+                title
+            )
+        }
+        let value: (Double) -> String = {
+            $0.formatted(.number.precision(.fractionLength(0...1)))
+        }
+        return String(
+            format: String(
+                localized: "%@. %lld samples. Latest %@ %@. Range %@ to %@ %@."
+            ),
+            locale: .current,
+            title,
+            Int64(values.count),
+            value(latest),
+            unit,
+            value(minimum),
+            value(maximum),
+            unit
+        )
+    }
+}
+
 struct BenchmarkWorkspace: View {
     @Environment(BenchmarkCoordinator.self) private var benchmark
     @Environment(GenerationCoordinator.self) private var generation
@@ -230,6 +264,19 @@ private struct BenchmarkChart: View {
         } label: {
             Label(title, systemImage: "chart.xyaxis.line")
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilitySummary)
+        .accessibilityHint(
+            "A time-series chart summarised by its latest, minimum and maximum values."
+        )
+    }
+
+    private var accessibilitySummary: String {
+        BenchmarkAccessibility.chartSummary(
+            title: title,
+            unit: unit,
+            values: samples.map { $0[keyPath: value] }
+        )
     }
 }
 
