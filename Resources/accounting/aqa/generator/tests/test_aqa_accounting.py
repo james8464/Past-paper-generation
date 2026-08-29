@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import subprocess
 from pathlib import Path
 
@@ -126,17 +127,30 @@ def test_contribution_question_uses_a_complete_costing_identity() -> None:
     case = CostingCase.from_chart_values(option.chart_values)
 
     assert question.authoring_context["source_data"] == {
-        "revenue": case.revenue,
-        "variable_cost": case.variable_cost,
+        "units_sold": case.units_sold,
+        "selling_price_per_unit": case.selling_price_per_unit,
+        "variable_cost_per_unit": case.variable_cost_per_unit,
         "fixed_cost": case.fixed_cost,
     }
     assert question.authoring_context["verified_answers"] == {
+        "contribution_per_unit": case.contribution_per_unit,
         "contribution": case.contribution,
         "profit": case.profit,
     }
-    assert case.contribution == case.revenue - case.variable_cost
+    assert question.authoring_context["preserve_prompt"] is True
+    assert question.authoring_context["preserve_mark_scheme"] is True
+    assert case.contribution_per_unit == (
+        case.selling_price_per_unit - case.variable_cost_per_unit
+    )
+    assert case.contribution == case.units_sold * case.contribution_per_unit
     assert case.profit == case.contribution - case.fixed_cost
-    assert case.contribution != case.revenue - case.profit
+    awarded = [
+        point for point in question.structured_mark_scheme if point.marks > 0
+    ]
+    assert len(awarded) == question.marks
+    assert any("Contribution per unit" in point.text for point in awarded)
+    assert any("Total contribution" in point.text for point in awarded)
+    assert any("Profit" in point.text for point in awarded)
 
 
 def test_trade_discount_explanation_has_two_contextual_reasoning_chains() -> None:
@@ -166,6 +180,39 @@ def test_trade_discount_explanation_has_two_contextual_reasoning_chains() -> Non
     assert len(developed) >= 2
 
 
+def test_paper_two_written_items_use_specific_a_level_accounting_tasks() -> None:
+    generated = build_paper(RULES["paper_2"], SYLLABUS, 26083002)
+    questions = {
+        item.rule_id: item
+        for section in generated.sections
+        for item in section.options[0].questions
+    }
+    required_focus = {
+        "frc": "accounting standards",
+        "limitation": "special order",
+        "variance_3": "adverse direct materials price variance",
+        "variance_4": "investigate",
+        "costing_2": "cost driver",
+        "costing_4": "activity-based costing",
+    }
+
+    for rule_id, focus in required_focus.items():
+        question = questions[rule_id]
+        assert focus in question.prompt.casefold()
+        assert "treated or interpreted" not in question.prompt.casefold()
+        assert len(
+            [point for point in question.structured_mark_scheme if point.marks > 0]
+        ) == question.marks
+
+    for rule_id in ("variance_4", "costing_4"):
+        developed = [
+            point.text.casefold()
+            for point in questions[rule_id].structured_mark_scheme
+            if point.marks > 0 and " therefore " in point.text.casefold()
+        ]
+        assert len(developed) >= 2
+
+
 def test_every_management_calculation_has_complete_immutable_source_data() -> None:
     generated = build_paper(RULES["paper_2"], SYLLABUS, 26080107)
     calculations = {
@@ -183,7 +230,50 @@ def test_every_management_calculation_has_complete_immutable_source_data() -> No
         assert context["preserve_mark_scheme"] is True
         assert context["source_data"]
         assert context["verified_answers"]
-        assert all(str(value) in question.prompt for value in context["prompt_values"])
+        compact_prompt = question.prompt.replace(",", "")
+        assert all(str(value) in compact_prompt for value in context["prompt_values"])
+        awarded = [
+            point
+            for point in question.structured_mark_scheme
+            if point.marks > 0
+        ]
+        assert len(awarded) == question.marks
+        assert all(point.marks == 1 for point in awarded)
+
+
+def test_budget_uses_exam_standard_currency_formatting() -> None:
+    generated = build_paper(RULES["paper_2"], SYLLABUS, 26080107)
+    budget = next(
+        item
+        for section in generated.sections
+        for option in section.options
+        for item in option.questions
+        if item.rule_id == "budget"
+    )
+    rendered_scheme = " ".join(budget.mark_scheme)
+    sales = budget.authoring_context["source_data"]["sales_receipts"]
+    formatted_sales = f"£{sales:,}"
+
+    assert "£-" not in rendered_scheme
+    assert "−£" in rendered_scheme
+    assert formatted_sales in budget.prompt
+    assert formatted_sales in rendered_scheme
+
+
+def test_management_calculations_group_large_currency_values() -> None:
+    generated = build_paper(RULES["paper_2"], SYLLABUS, 26080107)
+    calculations = [
+        item
+        for section in generated.sections
+        for option in section.options
+        for item in option.questions
+        if item.kind == "calculation"
+    ]
+
+    for question in calculations:
+        rendered = " ".join([question.prompt, *question.mark_scheme])
+        assert re.search(r"£\d{4,}", rendered) is None, question.rule_id
+        assert "£-" not in rendered, question.rule_id
 
 
 def test_partnership_calculations_have_complete_shared_source_contracts() -> None:
@@ -239,6 +329,47 @@ def test_both_packages_render_36_page_question_papers(tmp_path: Path) -> None:
         assert page_count(paths["question_paper"]) == 36
         assert page_count(paths["mark_scheme"]) == mark_scheme_pages[paper]
         assert all(path.stat().st_size > 2000 for path in paths.values())
+
+
+def test_paper_two_calculations_do_not_print_unrelated_index_tables(
+    tmp_path: Path,
+) -> None:
+    paths = generate_package(
+        paper="2",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=26083002,
+    )
+    pages = PdfReader(paths["question_paper"]).pages
+    contribution_page = next(
+        page
+        for page in pages
+        if "Calculate total contribution and profit" in (page.extract_text() or "")
+    )
+    text = contribution_page.extract_text() or ""
+
+    assert "Revenue / activity index" not in text
+    assert "Variable-cost index" not in text
+
+
+def test_paper_two_mark_scheme_rows_contain_only_item_specific_guidance(
+    tmp_path: Path,
+) -> None:
+    paths = generate_package(
+        paper="2",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=26083002,
+    )
+    text = "\n".join(
+        page.extract_text() or ""
+        for page in PdfReader(paths["mark_scheme"]).pages
+    )
+
+    assert "Contribution per unit: £10 − £6 = £4." in text
+    assert "Accounting standards require consistent recognition" in text
+    assert "Marker check: reward a valid alternative route" not in text
+    assert "confusing Marginal costing with a superficially related concept" not in text
 
 
 def test_paper_one_section_a_matches_measured_case_and_account_pages(tmp_path: Path) -> None:

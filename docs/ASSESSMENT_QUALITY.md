@@ -121,9 +121,13 @@ after the complete package publishes successfully; cancellation and failure
 retain it.
 
 High-risk deterministic subject rules run before model review. Current rules
-include complete accounting costing identities and exchange-rate direction
-checks. This prevents a fluent reviewer response from approving a contribution
-calculated from profit or a reversed appreciation/depreciation effect.
+include complete accounting costing, budgeting, variance, activity-based-costing
+and limiting-factor identities, plus exchange-rate direction checks. Accounting
+calculations retain immutable source figures and verified answers, expose a
+separate method or accuracy point for every available mark, and use exam-standard
+currency notation. This prevents a fluent reviewer response from approving a
+two-step task at a higher tariff, a contribution calculated from profit, or a
+reversed appreciation/depreciation effect.
 
 ## Mark-scheme quality
 
@@ -191,8 +195,11 @@ rules do not depend on model compliance.
 PDF qualification separately rejects clipped or overlapping text and
 unexplained content-free pages. OCR Economics mark-scheme overflow is allocated
 across bounded continuation pages so every marking point remains present even
-under adversarially long content. The deterministic qualification matrix
-renders and validates every declared role for all 18 advertised papers.
+under adversarially long content. AQA Economics question tables omit repeated
+front-of-document examiner instructions while retaining awarded, item-specific
+points and level descriptors, preventing long valid schemes from overflowing.
+The deterministic qualification matrix renders and validates every declared
+role for all 18 advertised papers.
 
 ### Measured visual qualification
 

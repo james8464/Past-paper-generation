@@ -471,9 +471,10 @@ def _scheme_question_page(
     include_level_table: bool = True,
     compact_content: bool = False,
 ) -> list[Flowable]:
-    chunk_size = max(1, math.ceil(len(question.mark_scheme) / segment_count))
+    visible_points = _visible_scheme_points(question)
+    chunk_size = max(1, math.ceil(len(visible_points) / segment_count))
     start = (segment - 1) * chunk_size
-    points = question.mark_scheme[start : start + chunk_size]
+    points = visible_points[start : start + chunk_size]
     title = (
         f"{heading} · Total: {total_marks} marks"
         if heading and total_marks is not None
@@ -577,6 +578,18 @@ def _scheme_question_page(
     )
     flowables.append(table)
     return flowables
+
+
+def _visible_scheme_points(question: GeneratedQuestion) -> list[str]:
+    """Keep awarded and item-specific rows; common guidance is printed once up front."""
+
+    if not question.structured_mark_scheme:
+        return question.mark_scheme
+    return [
+        point.text
+        for point in question.structured_mark_scheme
+        if point.marks > 0 or point.credit_type in {"point", "level"}
+    ]
 
 
 def _is_level_descriptor(text: str) -> bool:

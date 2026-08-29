@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/exam_blueprints.py": {
-    "mtime": 1787775523.6413903,
-    "ast_hash": "a2bed73de42fa91b1ed2f9db0e6218a4",
+    "mtime": 1788046373.321545,
+    "ast_hash": "048a61cce90a60500840b2b5ea257fd0",
     "semantic_hash": ""
   },
   "Backend/Core/fonts/__init__.py": {
@@ -50,7 +50,7 @@
     "semantic_hash": ""
   },
   "Backend/Core/mark_scheme_enrichment.py": {
-    "mtime": 1787744739.9979074,
+    "mtime": 1788046240.5861387,
     "ast_hash": "1520d1b187d2c707049d062543293b47",
     "semantic_hash": ""
   },
@@ -110,13 +110,13 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/generator.py": {
-    "mtime": 1788043975.9736304,
-    "ast_hash": "603483c626b84ca31fcff565b6acba07",
+    "mtime": 1788047147.8121188,
+    "ast_hash": "65de719e35600db9a9ca7267eb2668fb",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/render_pdf.py": {
-    "mtime": 1787772545.7279174,
-    "ast_hash": "cf07ed88bb238ef20db4b4e8224ce7f5",
+    "mtime": 1788046136.5048277,
+    "ast_hash": "5ec5568aef7f20165c47e6c7c41ae467",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/syllabus.py": {
@@ -140,8 +140,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/tests/test_aqa_accounting.py": {
-    "mtime": 1788043951.1762552,
-    "ast_hash": "53372ba231c3575ff01caef4dfa7c523",
+    "mtime": 1788047094.6615162,
+    "ast_hash": "b954942d58bd186be45dc2ca39425d5e",
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/__init__.py": {
@@ -385,8 +385,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/aqaecongen/render_pdf.py": {
-    "mtime": 1787772545.7263455,
-    "ast_hash": "6e1d7aa37c03771df543e5243e63c4f3",
+    "mtime": 1788047578.9015858,
+    "ast_hash": "4ab38b84a7a4815317ad26074063f3d8",
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/aqaecongen/syllabus.py": {
@@ -410,8 +410,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/tests/test_aqa_economics.py": {
-    "mtime": 1787769792.09468,
-    "ast_hash": "f25a242427008f880f3e2bce92b1f08e",
+    "mtime": 1788047569.8888776,
+    "ast_hash": "0cebb447c0a7319e1f0eb40de73b5477",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/data/syllabus_seed.json": {
@@ -715,8 +715,8 @@
     "semantic_hash": ""
   },
   "tests/test_exam_blueprints.py": {
-    "mtime": 1787775492.5903895,
-    "ast_hash": "fd453470e8b3203379b873955e862d55",
+    "mtime": 1788046345.2002826,
+    "ast_hash": "54cf79aae0b5fbf826445b6b7beea989",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {
@@ -1175,8 +1175,8 @@
     "semantic_hash": ""
   },
   "docs/ASSESSMENT_QUALITY.md": {
-    "mtime": 1788019611.3964705,
-    "ast_hash": "ace2c602f938e4225c6114999110ed1a",
+    "mtime": 1788047788.8442144,
+    "ast_hash": "dcb9cff4f02f5462313f944905578f8c",
     "semantic_hash": ""
   },
   "docs/HIG_COMPLIANCE.md": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/case_data.py": {
-    "mtime": 1787492676.177155,
-    "ast_hash": "8bbc2070bfe382cca96e4a2e17859e58",
+    "mtime": 1788045762.16932,
+    "ast_hash": "07b7c62e01d0470ea56ab07e9f207178",
     "semantic_hash": ""
   },
   "Resources/ollama-model-recommendations.json": {

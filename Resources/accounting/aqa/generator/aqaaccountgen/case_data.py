@@ -9,23 +9,32 @@ def _nearest_hundred(value: float) -> int:
 
 @dataclass(frozen=True)
 class CostingCase:
-    revenue: int
-    variable_cost: int
+    units_sold: int
+    selling_price_per_unit: int
+    variable_cost_per_unit: int
     fixed_cost: int
 
     @classmethod
     def from_chart_values(cls, values: list[float]) -> CostingCase:
         if len(values) != 5:
             raise ValueError("costing case requires five chart values")
+        variable_cost_per_unit = max(4, round(values[2] / 15))
         return cls(
-            revenue=int(values[4] * 10_000),
-            variable_cost=int(values[2] * 6_000),
+            units_sold=int(values[4] * 1_000),
+            selling_price_per_unit=(
+                variable_cost_per_unit + max(4, round(values[0] / 20))
+            ),
+            variable_cost_per_unit=variable_cost_per_unit,
             fixed_cost=int(values[1] * 2_000),
         )
 
     @property
+    def contribution_per_unit(self) -> int:
+        return self.selling_price_per_unit - self.variable_cost_per_unit
+
+    @property
     def contribution(self) -> int:
-        return self.revenue - self.variable_cost
+        return self.units_sold * self.contribution_per_unit
 
     @property
     def profit(self) -> int:
@@ -33,17 +42,22 @@ class CostingCase:
 
     def authoring_context(self) -> dict[str, object]:
         return {
+            "preserve_prompt": True,
+            "preserve_mark_scheme": True,
             "required_prompt_terms": [
-                "revenue",
+                "units",
+                "selling price",
                 "variable cost",
                 "fixed cost",
             ],
             "source_data": {
-                "revenue": self.revenue,
-                "variable_cost": self.variable_cost,
+                "units_sold": self.units_sold,
+                "selling_price_per_unit": self.selling_price_per_unit,
+                "variable_cost_per_unit": self.variable_cost_per_unit,
                 "fixed_cost": self.fixed_cost,
             },
             "verified_answers": {
+                "contribution_per_unit": self.contribution_per_unit,
                 "contribution": self.contribution,
                 "profit": self.profit,
             },

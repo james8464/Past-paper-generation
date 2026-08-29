@@ -120,6 +120,31 @@ def test_generated_paper_matches_contract() -> None:
     assert question.provenance == "built-in"
 
 
+def test_generic_examiner_guidance_never_receives_marks() -> None:
+    generated = paper()
+    for option in generated.sections[0].options:
+        option.questions[0].mark_scheme = [
+            "Specific analysis of the option.",
+            "Indicative content",
+            "Accept an alternative treatment when it is supported.",
+        ]
+
+    validate_generated_paper(generated, rule(), {"a"})
+
+    for option in generated.sections[0].options:
+        points = option.questions[0].structured_mark_scheme
+        assert sum(point.marks for point in points) == 10
+        generic = [
+            point
+            for point in points
+            if point.text.startswith(
+                ("Indicative content", "Accept an alternative treatment")
+            )
+        ]
+        assert len(generic) == 2
+        assert all(point.marks == 0 for point in generic)
+
+
 def test_rule_metadata_is_authoritative_for_generated_questions() -> None:
     configured = rule()
     configured.sections[0].questions[0].assessment_objectives = {

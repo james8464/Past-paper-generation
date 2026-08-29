@@ -425,11 +425,18 @@ def _structured_scheme(question: GeneratedQuestion) -> list[MarkSchemePoint]:
         "ao2",
         "ao3",
         "ao4",
+        "accept ",
+        "allow ",
+        "award ",
+        "credit ",
+        "do not ",
+        "ignore ",
+        "indicative content",
         "level ",
         "levels-based",
         "marker check",
-        "do not award",
         "maximum ",
+        "reward ",
     )
     content_indices = [
         index

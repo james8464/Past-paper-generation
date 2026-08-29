@@ -1092,15 +1092,12 @@ def _mark_scheme_extension_pages(
 
 def _continued_marking_guidance(
     question: GeneratedQuestion,
-    page_index: int,
+    _page_index: int,
 ) -> list[Flowable]:
-    points = question.mark_scheme
-    chunk_size = 9
-    start = (page_index * chunk_size) % max(len(points), 1)
-    chunk = (points + points)[start : start + chunk_size]
+    points = [text for text, _marks in _item_specific_mark_scheme_rows(question)]
     rows = [["Indicative marking guidance", ""]]
     rows.extend(
-        [[Paragraph(f"• {point}", STYLES["small"]), ""] for point in chunk]
+        [[Paragraph(f"• {point}", STYLES["small"]), ""] for point in points]
     )
     table = Table(rows, colWidths=[155 * mm, 12 * mm])
     table.setStyle(
@@ -1120,12 +1117,6 @@ def _continued_marking_guidance(
         Paragraph(question.prompt, STYLES["body"]),
         Spacer(1, 4 * mm),
         table,
-        Spacer(1, 5 * mm),
-        Paragraph(
-            "Credit a valid alternative accounting treatment when the method is applied "
-            "consistently, the workings are shown and the resulting figures follow from it.",
-            STYLES["body"],
-        ),
     ]
 
 
@@ -1202,7 +1193,13 @@ def _paper_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
                         Spacer(1, 4 * mm),
                     ]
                 )
-            content.extend(_question_page(question, a_option, lines=18))
+            content.extend(
+                _question_page(
+                    question,
+                    a_option,
+                    lines=_response_line_count(question),
+                )
+            )
             pages.append(content)
             if index == 0:
                 pages.append(
@@ -1230,7 +1227,13 @@ def _paper_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
                         Spacer(1, 3 * mm),
                     ]
                 )
-            content.extend(_question_page(question, b_option, lines=18))
+            content.extend(
+                _question_page(
+                    question,
+                    b_option,
+                    lines=_response_line_count(question),
+                )
+            )
             pages.append(content)
     expected_before_c = 20 if paper.paper_id == "paper_1" else 18
     assert len(pages) == expected_before_c
@@ -2155,16 +2158,20 @@ def _ledger_answer_table(title: str, rows: int) -> Table:
 
 
 def _question_page(
-    question: GeneratedQuestion, option: GeneratedOption, lines: int
+    question: GeneratedQuestion, _option: GeneratedOption, lines: int
 ) -> list[Flowable]:
     content: list[Flowable] = [
         _question_table(question),
         Spacer(1, 4 * mm),
     ]
-    if question.kind == "calculation":
-        content.extend([_accounting_table(option), Spacer(1, 4 * mm)])
     content.append(AnswerLines(lines))
     return content
+
+
+def _response_line_count(question: GeneratedQuestion) -> int:
+    if question.kind == "calculation":
+        return min(18, max(7, question.marks * 2))
+    return min(18, max(4, question.marks * 2 + 2))
 
 
 def _mcq_block(question: GeneratedQuestion) -> list[Flowable]:
@@ -2239,33 +2246,16 @@ def _lozenge() -> Drawing:
     return drawing
 
 
-def _accounting_table(option: GeneratedOption) -> Table:
-    values = option.chart_values
-    rows = [
-        ["Accounting information", "£000"],
-        ["Revenue / activity index", f"{values[4]:.1f}"],
-        ["Variable-cost index", f"{values[2]:.1f}"],
-        ["Fixed-cost index", f"{values[1]:.1f}"],
-        ["Comparative figure", f"{values[0]:.1f}"],
-    ]
-    table = Table(rows, colWidths=[110 * mm, 45 * mm])
-    table.setStyle(TableStyle([
-        ("GRID", (0, 0), (-1, -1), 0.5, INK),
-        ("BACKGROUND", (0, 0), (-1, 0), GREY),
-        ("FONT", (0, 0), (-1, 0), FONT_BOLD),
-        ("ALIGN", (1, 1), (-1, -1), "RIGHT"),
-        ("PADDING", (0, 0), (-1, -1), 6),
-    ]))
-    return table
-
-
 def _scheme_block(question: GeneratedQuestion) -> list[Flowable]:
     rows = [[
         Paragraph(f"<b>{question.number}</b> {question.prompt}", STYLES["body"]),
         str(question.marks),
     ]]
     rows.extend(
-        [[Paragraph(f"• {point}", STYLES["small"]), ""] for point in question.mark_scheme]
+        [
+            [Paragraph(f"• {point}", STYLES["small"]), str(marks)]
+            for point, marks in _item_specific_mark_scheme_rows(question)
+        ]
     )
     table = Table(rows, colWidths=[155 * mm, 12 * mm], repeatRows=1)
     table.setStyle(TableStyle([
@@ -2275,6 +2265,19 @@ def _scheme_block(question: GeneratedQuestion) -> list[Flowable]:
         ("PADDING", (0, 0), (-1, -1), 5),
     ]))
     return [table, Spacer(1, 4 * mm)]
+
+
+def _item_specific_mark_scheme_rows(
+    question: GeneratedQuestion,
+) -> list[tuple[str, int]]:
+    rows: list[tuple[str, int]] = []
+    for point in question.structured_mark_scheme:
+        if point.marks <= 0:
+            continue
+        rows.append((point.text, point.marks))
+        rows.extend((f"Accept: {alternative}", 0) for alternative in point.alternatives)
+        rows.extend((f"Do not accept: {answer}", 0) for answer in point.do_not_accept)
+    return rows
 
 
 def _intro(section) -> list[Flowable]:

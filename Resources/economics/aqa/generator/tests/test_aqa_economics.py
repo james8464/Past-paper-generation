@@ -194,3 +194,19 @@ def test_each_package_renders_readable_pdfs(tmp_path: Path) -> None:
             levels_page = scheme_pages[3].extract_text() or ""
             assert "Levels of response" in levels_page
             assert "Highest" in levels_page
+
+
+def test_paper_three_mark_scheme_fits_long_reference_guidance(tmp_path: Path) -> None:
+    paths = generate_package(
+        paper="3",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=26083024,
+    )
+
+    mark_scheme = PdfReader(paths["mark_scheme"])
+    scheme_text = "\n".join(page.extract_text() or "" for page in mark_scheme.pages)
+
+    assert len(mark_scheme.pages) == 11
+    assert scheme_text.count("Marker check:") <= 1
+    assert "A justified recommendation that follows" in scheme_text
