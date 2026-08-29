@@ -62,13 +62,49 @@ The parser then verifies:
 8. low similarity to every previously accepted item;
 9. the same examiner-usable mark-scheme depth gate used by package release.
 
-A separate, deterministic-temperature model call receives the frozen blueprint,
-candidate item, and syllabus point. It reviews adversarially and must explicitly
-approve factual correctness, mark coverage, source consistency, difficulty,
+A separate, deterministic-temperature content-review call receives the frozen
+blueprint, candidate item, and syllabus point. It reviews adversarially and must
+explicitly approve factual correctness, mark coverage, source consistency,
 ambiguity, grammatical scope, distractor exclusivity, and answer correctness
 with no issue arrays. A missing, malformed, or negative review rejects the item.
-Because the selected model performs both passes, this is second-pass quality
-control, not an independent examiner review.
+
+A third, dedicated reference-demand call receives the candidate and an immutable
+per-item demand contract. It independently estimates the demand band and number
+of reasoning steps, then checks tariff, command-word depth, contextual
+application, analysis chains, judgement and fit to the measured reference
+profile. Both under-demanded and over-demanded questions are rejected. Repairs
+receive the precise demand findings, while accepted or seeded fallback items must
+pass the same gate. Because the selected model performs these passes, they are
+model-assisted quality control, not an independent examiner review.
+
+## Reference-demand calibration
+
+`Resources/reference-demand-profiles.json` contains a versioned profile for all
+18 full papers and three AQA Computer Science topic banks. The development tool
+`tools/reference_demand_profiles.py` derives each full-paper profile from the
+local relevant-paper corpus. It retains only aggregate mark bands, command-word
+frequencies, derived demand proportions, document counts and a source
+fingerprint—never question wording, extracts or source paths.
+
+Generation uses the profile at three levels:
+
+1. the authoring prompt receives an immutable item-level cognitive contract;
+2. a separate model pass must approve the finished item's actual demand;
+3. assessment-package validation compares the complete form's mark-band,
+   command-word and demand distributions with the configured reference envelope.
+
+Live publication fails closed if any item review or whole-form comparison fails.
+Preview packages retain the report for diagnosis without claiming release
+readiness. The package manifest records the profile fingerprint, source-document
+count, distances and profile-file hash so a result remains auditable after the
+profile changes.
+
+Reference-demand success means the generated form matches observable structural
+and cognitive patterns in the relevant papers. It does not establish equivalent
+experienced difficulty. That remains an empirical claim requiring representative
+student responses, qualified marker evidence and psychometric analysis, so the
+empirical qualification flag remains separate and false until such evidence is
+available.
 
 Numeric values carry semantic roles. Assessment data is compared as a multiset
 unless order is explicitly meaningful; marks, item IDs, figure/extract labels,

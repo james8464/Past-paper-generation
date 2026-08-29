@@ -40,6 +40,7 @@ class GeneratorCapability:
     board_profile: str
     specification_version: str
     blueprint_version: str
+    reference_demand_profile: str
     content_mode: str
     supported_providers: tuple[str, ...]
     papers: tuple[str, ...]
@@ -154,6 +155,13 @@ def _capability(raw: dict[str, Any]) -> GeneratorCapability:
     blueprint_version = str(
         raw.get("blueprint_version", "legacy-registry-v3")
     ).strip()
+    reference_demand_profile = (
+        _relative_path(raw, "reference_demand_profile")
+        if raw.get("reference_demand_profile")
+        else ""
+    )
+    if raw.get("advertised") and mode == "ai-assisted" and not reference_demand_profile:
+        raise ValueError(f"{raw['id']} is missing its reference demand profile")
     if not all(
         (subject_plugin, board_profile, specification_version, blueprint_version)
     ):
@@ -173,6 +181,7 @@ def _capability(raw: dict[str, Any]) -> GeneratorCapability:
         board_profile=board_profile,
         specification_version=specification_version,
         blueprint_version=blueprint_version,
+        reference_demand_profile=reference_demand_profile,
         content_mode=mode,
         supported_providers=providers,
         papers=papers,

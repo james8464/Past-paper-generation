@@ -197,6 +197,11 @@ def test_economics_dry_run_generates_expected_files(tmp_path: Path) -> None:
         manifest["evidence"]["assessment_validation"]["form_id"]
         == assessment["form_id"]
     )
+    reference_demand = manifest["evidence"]["reference_demand"]
+    assert reference_demand == assessment["reference_demand"]
+    assert reference_demand["passed"] is True
+    assert reference_demand["empirical_equivalence_claimed"] is False
+    assert manifest["inputs"]["reference_demand_profile_sha256"]
     assert set(manifest["outputs"]) == {
         "question_paper",
         "source_booklet",

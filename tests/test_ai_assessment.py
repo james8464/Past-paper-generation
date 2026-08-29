@@ -36,6 +36,20 @@ from Backend.Core.exam_blueprints import (
     MarkSchemePoint,
 )
 from Backend.Core.model_review import ReviewResult
+from Backend.Core.reference_demand import ReferenceDemandProfile
+
+
+def _demand_profile() -> ReferenceDemandProfile:
+    return ReferenceDemandProfile(
+        family_id="aqa/economics",
+        paper_id="1",
+        comparison_basis="Aggregate features from official A-level papers.",
+        source_document_count=4,
+        source_fingerprint="b" * 64,
+        mark_band_distribution={"short": 1.0},
+        command_word_distribution={"explain": 1.0},
+        demand_distribution={"standard": 1.0},
+    )
 
 
 def test_complete_command_receives_method_guidance() -> None:
@@ -367,6 +381,131 @@ def test_generation_prompt_exposes_semantics_but_withholds_draft_marking_points(
     assert "an empty list means the prompt contains no numeric token" in prompt
     assert "source labels such as `Extract 1`" in prompt
     assert "Compose fresh prose around those elements" in prompt
+
+
+def test_generation_prompt_includes_a_concrete_reference_demand_target() -> None:
+    question = GeneratedQuestion(
+        rule_id="q1",
+        number="1",
+        marks=15,
+        kind="essay",
+        command_word="Evaluate",
+        topic_id="topic",
+        prompt="Evaluate the decision using the case evidence.",
+        mark_scheme=["Credit a supported judgement."],
+        assessment_objectives={"AO1": 3, "AO2": 3, "AO3": 4, "AO4": 5},
+        intended_demand="high",
+    )
+    task = _Task(
+        key=(0, 0, 0),
+        question=question,
+        option=GeneratedOption(
+            id="case",
+            title="Case",
+            stimulus=["The case supplies evidence."],
+            questions=[question],
+        ),
+        topic=type("Topic", (), {"id": "topic", "title": "Topic", "points": []})(),
+    )
+
+    prompt = _generation_prompt(
+        [task],
+        subject="Economics",
+        seed=1,
+        attempt=1,
+        previous_failure="",
+        demand_profile=_demand_profile(),
+    )
+
+    assert '"demand_target": {' in prompt
+    assert '"minimum_reasoning_steps": 4' in prompt
+    assert '"requires_judgement": true' in prompt
+    assert '"reference_profile_fingerprint": "' + "b" * 64 + '"' in prompt
+    assert "Do not make the item easier or harder than this target" in prompt
+
+
+def test_content_approval_cannot_bypass_separate_difficulty_rejection() -> None:
+    point = MarkSchemePoint(
+        text="Credit a developed explanation linked to the supplied case.",
+        marks=1,
+        assessment_objective="AO1",
+    )
+    question = GeneratedQuestion(
+        rule_id="q1",
+        number="1",
+        marks=1,
+        kind="data_response",
+        command_word="Explain",
+        topic_id="topic",
+        prompt="Explain one effect using the supplied case.",
+        mark_scheme=[point.text],
+        structured_mark_scheme=[point],
+        assessment_objectives={"AO1": 1},
+        intended_demand="standard",
+    )
+    task = _Task(
+        key=(0, 0, 0),
+        question=question,
+        option=GeneratedOption(
+            id="case",
+            title="Case",
+            stimulus=["A firm's costs and demand both changed."],
+            questions=[question],
+        ),
+        topic=type("Topic", (), {"id": "topic", "title": "Business change", "points": []})(),
+    )
+
+    class Client:
+        provider = "openai"
+        model = "test"
+
+        def __init__(self) -> None:
+            self.prompts: list[str] = []
+            self.responses = iter(
+                [
+                    _question_response(
+                        "0/0/0",
+                        "Explain one effect of higher costs using the supplied case.",
+                    ),
+                    _review_response("0/0/0", approved=True),
+                    _difficulty_response(
+                        approved=False,
+                        demand="low",
+                        steps=1,
+                        issues=["The item can be answered by one recalled statement."],
+                    ),
+                    _question_response(
+                        "0/0/0",
+                        "Explain how higher costs change profit and the firm's response using the supplied case.",
+                    ),
+                    _review_response("0/0/0", approved=True),
+                    _difficulty_response(
+                        approved=True,
+                        demand="standard",
+                        steps=2,
+                    ),
+                ]
+            )
+
+        def generate_json(self, prompt: str) -> dict[str, object]:
+            self.prompts.append(prompt)
+            return next(self.responses)
+
+    client = Client()
+    result = _generate_item_transaction(
+        task,
+        client=client,
+        subject="Economics",
+        seed=1,
+        policy=GenerationPolicy(attempts=2, require_difficulty_review=True),
+        progress=None,
+        accepted_prompts=[],
+        demand_profile=_demand_profile(),
+    )
+
+    assert result.prompt.startswith("Explain how higher costs")
+    assert len(client.prompts) == 6
+    assert "one recalled statement" in client.prompts[3]
 
 
 def test_generation_prompt_skips_model_scheme_for_verified_guidance() -> None:
@@ -1270,6 +1409,25 @@ def _review_response(
                 "ambiguity_issues": [],
             }
         ]
+    }
+
+
+def _difficulty_response(
+    *,
+    approved: bool,
+    demand: str,
+    steps: int,
+    issues: list[str] | None = None,
+) -> dict[str, object]:
+    return {
+        "approved": approved,
+        "estimated_demand": demand,
+        "reasoning_steps": steps,
+        "tariff_fit": approved,
+        "command_word_fit": approved,
+        "context_fit": True,
+        "profile_fit": approved,
+        "issues": issues or [],
     }
 
 

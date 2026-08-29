@@ -636,6 +636,10 @@ struct GenerationQualityReport: Equatable {
     let historicComparisons: Int
     let nearestSimilarity: Double?
     let pdfCount: Int
+    let referenceDemandPassed: Bool?
+    let referenceDemandItems: Int
+    let referenceDemandDocuments: Int
+    let referenceDemandMaxDistance: Double?
 
     static func load(from url: URL) -> GenerationQualityReport? {
         guard let data = try? Data(contentsOf: url),
@@ -647,6 +651,8 @@ struct GenerationQualityReport: Equatable {
             return nil
         }
         let nearest = novelty["nearest_match"] as? [String: Any]
+        let referenceDemand = assessment["reference_demand"] as? [String: Any]
+        let distances = referenceDemand?["gated_distances"] as? [String: Double]
         let pdfCount = outputs.values.compactMap { value -> [String: Any]? in
             value as? [String: Any]
         }.filter { $0["pdf_validation"] is [String: Any] }.count
@@ -655,7 +661,11 @@ struct GenerationQualityReport: Equatable {
             fingerprintsVerified: assessment["fingerprints_verified"] as? Bool ?? false,
             historicComparisons: novelty["historic_comparisons"] as? Int ?? 0,
             nearestSimilarity: nearest?["similarity"] as? Double,
-            pdfCount: pdfCount
+            pdfCount: pdfCount,
+            referenceDemandPassed: referenceDemand?["passed"] as? Bool,
+            referenceDemandItems: referenceDemand?["items_checked"] as? Int ?? 0,
+            referenceDemandDocuments: referenceDemand?["source_document_count"] as? Int ?? 0,
+            referenceDemandMaxDistance: distances?.values.max()
         )
     }
 }

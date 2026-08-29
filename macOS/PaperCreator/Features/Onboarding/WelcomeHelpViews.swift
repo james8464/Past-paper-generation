@@ -205,7 +205,8 @@ private struct HelpTopicPage: View {
                     "It follows the app’s exact JSON schemas and immutable marks, command words, topics, and assessment-objective totals.",
                     "It has enough reasoning capacity for source-based questions and detailed level-of-response mark schemes while remaining practical on a Mac.",
                     "Ollama keeps prompts and generated content on this Mac.",
-                    "The app uses a second model pass plus deterministic validation; this is useful quality control, but it is not an independent examiner or student-response calibration.",
+                    "The app uses separate content and difficulty review passes. Difficulty targets come from aggregate mark, command-word, and demand patterns measured across relevant papers.",
+                    "Every completed form is checked again for distribution drift. This is strong reference calibration, but it is not independent examiner or student-response calibration.",
                 ]
             )
 

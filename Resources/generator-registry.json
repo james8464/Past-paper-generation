@@ -32,6 +32,7 @@
       "board_profile": "aqa",
       "specification_version": "bundled-2026-08",
       "blueprint_version": "contract-v1",
+      "reference_demand_profile": "reference-demand-profiles.json",
       "content_mode": "ai-assisted",
       "supported_providers": [
         "ollama",
@@ -149,6 +150,7 @@
       "board_profile": "aqa",
       "specification_version": "bundled-2026-08",
       "blueprint_version": "contract-v1",
+      "reference_demand_profile": "reference-demand-profiles.json",
       "content_mode": "ai-assisted",
       "supported_providers": [
         "ollama",
@@ -309,6 +311,7 @@
       "board_profile": "aqa",
       "specification_version": "bundled-2026-08",
       "blueprint_version": "contract-v1",
+      "reference_demand_profile": "reference-demand-profiles.json",
       "content_mode": "ai-assisted",
       "supported_providers": [
         "ollama",
@@ -469,6 +472,7 @@
       "board_profile": "aqa",
       "specification_version": "bundled-2026-08",
       "blueprint_version": "contract-v1",
+      "reference_demand_profile": "reference-demand-profiles.json",
       "content_mode": "ai-assisted",
       "supported_providers": [
         "ollama",
@@ -683,6 +687,7 @@
       "board_profile": "ocr",
       "specification_version": "bundled-2026-08",
       "blueprint_version": "contract-v1",
+      "reference_demand_profile": "reference-demand-profiles.json",
       "content_mode": "ai-assisted",
       "supported_providers": [
         "ollama",
@@ -800,6 +805,7 @@
       "board_profile": "ocr",
       "specification_version": "bundled-2026-08",
       "blueprint_version": "contract-v1",
+      "reference_demand_profile": "reference-demand-profiles.json",
       "content_mode": "ai-assisted",
       "supported_providers": [
         "ollama",
@@ -959,6 +965,7 @@
       "board_profile": "pearson-edexcel",
       "specification_version": "bundled-2026-08",
       "blueprint_version": "contract-v1",
+      "reference_demand_profile": "reference-demand-profiles.json",
       "content_mode": "ai-assisted",
       "supported_providers": [
         "ollama",

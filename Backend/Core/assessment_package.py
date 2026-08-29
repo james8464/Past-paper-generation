@@ -14,6 +14,7 @@ from Backend.Core.assessment_quality import (
     assert_distinct_items,
     item_fingerprint,
 )
+from Backend.Core.generator_registry import generator_capability
 from Backend.Core.level_of_response import (
     LevelOfResponseEngine,
     load_level_policies,
@@ -21,6 +22,7 @@ from Backend.Core.level_of_response import (
 )
 from Backend.Core.mark_scheme_quality import validate_mark_scheme_item
 from Backend.Core.paths import REPO_ROOT
+from Backend.Core.reference_demand import audit_form_demand, profile_for
 from Backend.Core.response_simulation import ResponseSimulator
 
 
@@ -109,6 +111,11 @@ def write_assessment_package(
         paper_number=paper_number,
         items=items,
     )
+    reference_demand = _reference_demand_audit(
+        subject=subject,
+        paper_number=paper_number,
+        items=items,
+    )
     document = {
         "schema_version": 1,
         "form_id": form_id,
@@ -121,6 +128,8 @@ def write_assessment_package(
         "items": items,
         "blueprint": payload,
     }
+    if reference_demand is not None:
+        document["reference_demand"] = reference_demand
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(document, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
@@ -182,6 +191,20 @@ def validate_assessment_package(
         if simulation:
             response_simulation_reports.append(simulation)
     cross_paper_quality = validate_cross_paper_quality(items)
+    reference_demand = _reference_demand_audit(
+        subject=subject,
+        paper_number=paper_number,
+        items=items,
+    )
+    if reference_demand is not None:
+        if document.get("reference_demand") != reference_demand:
+            raise ValueError("assessment package reference-demand evidence is invalid")
+        if not preview and not reference_demand["passed"]:
+            failed = ", ".join(reference_demand["failed_checks"])
+            raise ValueError(
+                "assessment form is outside its reference-demand tolerance: "
+                + failed
+            )
     if not preview:
         assert_distinct_items(items)
     expected_form_id = _form_id(
@@ -216,11 +239,26 @@ def validate_assessment_package(
             ),
         },
         "cross_paper_quality": cross_paper_quality,
+        "reference_demand": reference_demand,
         "response_simulation": {
             "items_verified": len(response_simulation_reports),
             "results": response_simulation_reports,
         },
     }
+
+
+def _reference_demand_audit(
+    *,
+    subject: str,
+    paper_number: str,
+    items: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    try:
+        capability = generator_capability(subject)
+    except ValueError:
+        return None
+    profile = profile_for(capability.id, paper_number)
+    return audit_form_demand(items, profile)
 
 
 def _serialise(value: Any) -> dict[str, Any]:
@@ -249,6 +287,9 @@ def _extract_items(
             stem = value.get("stem")
             if isinstance(stem, str) and stem.strip():
                 stems = [*inherited_stems, stem.strip()]
+            source_text = value.get("source_text")
+            if isinstance(source_text, str) and source_text.strip():
+                stems = [*stems, source_text.strip()]
             stimulus = value.get("stimulus")
             if isinstance(stimulus, list):
                 stimulus_text = " ".join(
@@ -258,10 +299,28 @@ def _extract_items(
                     stems = [*stems, stimulus_text]
             prompt = value.get("prompt")
             marks = value.get("marks")
-            if isinstance(prompt, str) and prompt.strip() and isinstance(marks, int):
+            parts = value.get("parts")
+            has_marked_parts = isinstance(parts, list) and any(
+                isinstance(part, dict)
+                and isinstance(part.get("prompt"), str)
+                and bool(part["prompt"].strip())
+                and isinstance(part.get("marks"), int)
+                for part in parts
+            )
+            if (
+                isinstance(prompt, str)
+                and prompt.strip()
+                and isinstance(marks, int)
+                and not has_marked_parts
+            ):
                 discovered.append((".".join(path), value, stems))
+            child_stems = (
+                [*stems, prompt.strip()]
+                if has_marked_parts and isinstance(prompt, str) and prompt.strip()
+                else stems
+            )
             for key, child in value.items():
-                walk(child, [*path, str(key)], stems)
+                walk(child, [*path, str(key)], child_stems)
         elif isinstance(value, list):
             for index, child in enumerate(value):
                 walk(child, [*path, str(index)], inherited_stems)

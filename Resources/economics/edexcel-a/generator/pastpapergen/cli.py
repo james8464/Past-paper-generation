@@ -13,7 +13,11 @@ from Backend.Core.family_adapter import (
 )
 from Backend.Core.model_recommendations import default_ollama_model
 from pastpapergen.generator import build_paper_blueprint
-from pastpapergen.ollama_client import OllamaClient, generate_questions_with_ollama
+from pastpapergen.ollama_client import (
+    OllamaClient,
+    generate_questions_with_ollama,
+    review_blueprint_difficulty,
+)
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.render_pdf import (
     render_mark_scheme,
@@ -75,7 +79,7 @@ ADAPTER = FamilyAdapter(
     backend_subject="economics",
     load_message="Loading syllabus",
     build_message="Building paper blueprint",
-    prompt_version="edexcel-economics-v1",
+    prompt_version="edexcel-economics-v2",
     load_syllabus=load_syllabus,
     load_rule=_load_rule,
     build=_build,
@@ -89,6 +93,9 @@ ADAPTER = FamilyAdapter(
         blueprint, config, syllabus
     ),
     improve=_improve,
+    calibrate_difficulty=lambda blueprint, syllabus, _paper, client, progress: (
+        review_blueprint_difficulty(client, blueprint, syllabus, progress)
+    ),
     client_factory=lambda model, url: OllamaClient(base_url=url, model=model),
     checkpoint_identity=lambda blueprint, _config, _paper: {
         "paper_id": blueprint.paper_id,

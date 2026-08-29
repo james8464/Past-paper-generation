@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://papercreator.local/schemas/reference-demand-profile.schema.json",
+  "title": "Reference Demand Profiles",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "purpose",
+    "derived_aggregate_only",
+    "retains_source_text",
+    "profiles"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "purpose": { "type": "string", "minLength": 20 },
+    "derived_aggregate_only": { "const": true },
+    "retains_source_text": { "const": false },
+    "profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "family_id",
+          "paper_id",
+          "assessment_kind",
+          "comparison_basis",
+          "source_document_count",
+          "source_fingerprint",
+          "mark_band_distribution",
+          "command_word_distribution",
+          "demand_distribution",
+          "distribution_tolerance"
+        ],
+        "properties": {
+          "family_id": { "type": "string", "minLength": 3 },
+          "paper_id": { "type": "string", "minLength": 1 },
+          "assessment_kind": {
+            "enum": ["full-paper", "question-bank"]
+          },
+          "comparison_basis": { "type": "string", "minLength": 12 },
+          "source_document_count": { "type": "integer", "minimum": 1 },
+          "source_fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "mark_band_distribution": { "$ref": "#/$defs/distribution" },
+          "command_word_distribution": { "$ref": "#/$defs/distribution" },
+          "demand_distribution": { "$ref": "#/$defs/distribution" },
+          "distribution_tolerance": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 2
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "distribution": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+      }
+    }
+  }
+}

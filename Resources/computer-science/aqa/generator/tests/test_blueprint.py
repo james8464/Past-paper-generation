@@ -1,4 +1,5 @@
 import random
+import re
 import threading
 import time
 
@@ -14,6 +15,7 @@ from cspapergen.ollama_client import (
     _merge_question,
     _prompt,
     improve_questions_with_ollama,
+    review_blueprint_difficulty,
 )
 from cspapergen.question_bank import QUESTION_STYLES, STYLE_IDS, build_question
 from cspapergen.syllabus import load_syllabus
@@ -264,6 +266,41 @@ def test_hosted_question_generation_runs_independent_prompts_concurrently():
         improve_questions_with_ollama(client, blueprint, syllabus)
 
     assert client.maximum_active == 4
+
+
+def test_blueprint_receives_a_separate_reference_demand_review() -> None:
+    syllabus = load_syllabus()
+    full = build_paper2_blueprint(syllabus, seed=7)
+    hardest = max(full.questions, key=lambda question: question.total_marks)
+    blueprint = full.model_copy(update={"questions": [hardest]})
+
+    class Client:
+        def __init__(self) -> None:
+            self.prompts: list[str] = []
+
+        def generate_json(self, prompt: str) -> dict[str, object]:
+            self.prompts.append(prompt)
+            demand = re.search(r'"demand_band": "(low|standard|high)"', prompt)
+            steps = re.search(r'"minimum_reasoning_steps": (\d+)', prompt)
+            assert demand is not None and steps is not None
+            return {
+                "approved": True,
+                "estimated_demand": demand.group(1),
+                "reasoning_steps": int(steps.group(1)),
+                "tariff_fit": True,
+                "command_word_fit": True,
+                "context_fit": True,
+                "profile_fit": True,
+                "issues": [],
+            }
+
+    client = Client()
+    review_blueprint_difficulty(client, blueprint, syllabus)
+
+    assert len(client.prompts) == len(hardest.parts)
+    assert all("difficulty calibration specialist" in prompt for prompt in client.prompts)
+    assert all('"reference_profile_fingerprint"' in prompt for prompt in client.prompts)
+    assert all('"minimum_reasoning_steps": 1' in prompt for prompt in client.prompts)
 
 
 def test_local_generation_retries_only_the_rejected_question():

@@ -13,6 +13,7 @@ from Backend.Core.assessment_checkpoints import (
 from Backend.Core.assessment_package import write_assessment_package
 from Backend.Core.model_recommendations import default_ollama_model
 from Backend.Core.providers import HostedLLMClient
+from Backend.Core.reference_demand import profile_for
 from Backend.Core.render_transaction import render_pdf_atomically
 
 ProgressCallback = Callable[[str], None]
@@ -53,6 +54,9 @@ class FamilyAdapter:
     improve: Callable[
         [Any, Any, Any, object, ProgressCallback | None, AssessmentCheckpointStore | None],
         Any,
+    ] | None = None
+    calibrate_difficulty: Callable[
+        [Any, Any, Any, object, ProgressCallback | None], None
     ] | None = None
     client_factory: Callable[[str, str], object] | None = None
     checkpoint_identity: Callable[[Any, Any, str], Any] | None = None
@@ -124,7 +128,20 @@ def run_family_adapter(
                 progress,
                 checkpoint_store,
             )
+            if adapter.calibrate_difficulty is None:
+                raise ValueError(
+                    f"{adapter.id} has a custom AI pipeline without a "
+                    "reference-demand reviewer"
+                )
+            adapter.calibrate_difficulty(
+                assessment,
+                syllabus,
+                rule,
+                question_client,
+                progress,
+            )
         else:
+            demand_profile = profile_for(adapter.id, paper)
             assessment = generate_unique_paper(
                 assessment,
                 rule=rule,
@@ -134,7 +151,11 @@ def run_family_adapter(
                 subject=adapter.subject_label,
                 progress=progress,
                 checkpoint_store=checkpoint_store,
-                policy=GenerationPolicy(require_independent_solution=True),
+                policy=GenerationPolicy(
+                    require_independent_solution=True,
+                    require_difficulty_review=True,
+                ),
+                demand_profile=demand_profile,
             )
 
     if adapter.validate is not None:

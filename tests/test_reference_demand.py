@@ -1,0 +1,294 @@
+from __future__ import annotations
+
+import importlib
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+from Backend.Core.assessment_package import write_assessment_package
+from Backend.Core.exam_blueprints import (
+    GeneratedOption,
+    GeneratedPaper,
+    GeneratedQuestion,
+    GeneratedSection,
+)
+from Backend.Core.generator_registry import REGISTRY_PATH
+
+
+def module():
+    return importlib.import_module("Backend.Core.reference_demand")
+
+
+def tool_module():
+    return importlib.import_module("tools.reference_demand_profiles")
+
+
+def profile_payload() -> dict[str, object]:
+    return {
+        "family_id": "aqa/economics",
+        "paper_id": "1",
+        "assessment_kind": "full-paper",
+        "comparison_basis": "Aggregate features from current official question papers.",
+        "source_document_count": 4,
+        "source_fingerprint": "a" * 64,
+        "mark_band_distribution": {
+            "short": 0.5,
+            "medium": 0.25,
+            "extended": 0.25,
+        },
+        "command_word_distribution": {
+            "explain": 0.5,
+            "analyse": 0.25,
+            "evaluate": 0.25,
+        },
+        "demand_distribution": {
+            "low": 0.25,
+            "standard": 0.5,
+            "high": 0.25,
+        },
+        "distribution_tolerance": 0.5,
+    }
+
+
+def test_profile_rejects_missing_aggregate_evidence() -> None:
+    reference_demand = module()
+    payload = profile_payload()
+    payload["source_document_count"] = 0
+
+    with pytest.raises(ValueError):
+        reference_demand.ReferenceDemandProfile.model_validate(payload)
+
+
+def test_item_target_turns_high_demand_into_observable_requirements() -> None:
+    reference_demand = module()
+    profile = reference_demand.ReferenceDemandProfile.model_validate(profile_payload())
+
+    target = reference_demand.build_item_demand_target(
+        {
+            "id": "q8",
+            "marks": 15,
+            "kind": "essay",
+            "command_word": "Evaluate",
+            "intended_demand": "high",
+            "assessment_objectives": {"AO1": 3, "AO2": 3, "AO3": 4, "AO4": 5},
+            "context": ["A case study supplies financial and operational evidence."],
+        },
+        profile,
+    )
+
+    assert target.demand_band == "high"
+    assert target.minimum_reasoning_steps == 4
+    assert target.requires_context is True
+    assert target.requires_analysis_chain is True
+    assert target.requires_judgement is True
+    assert target.requires_multiple_concepts is True
+    assert target.reference_profile_fingerprint == "a" * 64
+
+
+def test_item_target_distinguishes_multistage_calculation_from_recall() -> None:
+    reference_demand = module()
+    profile = reference_demand.ReferenceDemandProfile.model_validate(profile_payload())
+
+    calculation = reference_demand.build_item_demand_target(
+        {
+            "id": "q2",
+            "marks": 6,
+            "kind": "calculation",
+            "command_word": "Calculate",
+            "assessment_objectives": {"AO2": 6},
+            "context": ["A table supplies values."],
+        },
+        profile,
+    )
+    recall = reference_demand.build_item_demand_target(
+        {
+            "id": "q1",
+            "marks": 2,
+            "kind": "short_answer",
+            "command_word": "State",
+            "assessment_objectives": {"AO1": 2},
+            "context": [],
+        },
+        profile,
+    )
+
+    assert calculation.response_mode == "multi-stage-calculation"
+    assert calculation.minimum_reasoning_steps == 3
+    assert calculation.requires_data_transformation is True
+    assert recall.response_mode == "recall"
+    assert recall.minimum_reasoning_steps == 1
+
+
+def test_form_audit_rejects_distribution_drift() -> None:
+    reference_demand = module()
+    profile = reference_demand.ReferenceDemandProfile.model_validate(profile_payload())
+    items = [
+        {
+            "id": f"q{index}",
+            "marks": 1,
+            "kind": "multiple_choice",
+            "command_word": "Select",
+            "assessment_objectives": {"AO1": 1},
+            "context": [],
+        }
+        for index in range(12)
+    ]
+
+    report = reference_demand.audit_form_demand(items, profile)
+
+    assert report["passed"] is False
+    assert report["profile_fingerprint"] == "a" * 64
+    assert "command_family_distribution" in report["failed_checks"]
+    assert "command_word_distribution" in report["distances"]
+    assert "command_word_distribution" not in report["gated_distances"]
+
+
+def test_committed_profiles_cover_every_advertised_assessment_without_source_text() -> None:
+    reference_demand = module()
+    document = reference_demand.load_reference_demand_document()
+    registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    expected = {
+        (family["id"], str(paper["id"]))
+        for family in registry["families"]
+        if family["advertised"]
+        for paper in family["papers"]
+    }
+    actual = {(profile.family_id, profile.paper_id) for profile in document.profiles}
+
+    assert actual == expected
+    assert document.derived_aggregate_only is True
+    assert document.retains_source_text is False
+    rendered = Path(reference_demand.PROFILES_PATH).read_text(encoding="utf-8")
+    assert "Reference Corpus" not in rendered
+    assert "question-papers" not in rendered
+
+
+def test_reference_extraction_keeps_demand_features_but_discards_question_prose() -> None:
+    tool = tool_module()
+    text = """
+    01 Explain two consequences for the business.
+    [4 marks]
+    02 Evaluate whether the investment should proceed.
+    [12 marks]
+    """
+
+    features = tool.extract_reference_features(text, board="aqa")
+
+    assert features == {
+        "marks": [4, 12],
+        "command_words": ["explain", "evaluate"],
+    }
+    assert "business" not in json.dumps(features)
+    assert "investment" not in json.dumps(features)
+
+
+def test_reference_extraction_recognises_board_style_command_phrases() -> None:
+    tool = tool_module()
+    text = """
+    01 Which one of the following is correct?
+    [1 mark]
+    02 Which of the following combinations is correct?
+    [1 mark]
+    03 To what extent is the proposed strategy appropriate?
+    [20 marks]
+    """
+
+    features = tool.extract_reference_features(text, board="aqa")
+
+    assert features == {
+        "marks": [1, 1, 20],
+        "command_words": ["select", "select", "evaluate"],
+    }
+
+
+def test_reference_extraction_models_the_published_ocr_paper_three_mcq_block() -> None:
+    tool = tool_module()
+    text = "1 What is scarcity?\n[1]\n31 Explain one effect.\n[4]"
+
+    features = tool.extract_reference_features(
+        text,
+        board="ocr",
+        family_id="ocr/economics",
+        paper_id="3",
+    )
+
+    assert features["command_words"] == ["select"] * 30 + ["explain"]
+
+
+def test_profile_tool_runs_standalone_outside_the_repository(tmp_path: Path) -> None:
+    script = Path(__file__).parents[1] / "tools" / "reference_demand_profiles.py"
+
+    result = subprocess.run(
+        [sys.executable, str(script), "--help"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=False,
+        env={key: value for key, value in os.environ.items() if key != "PYTHONPATH"},
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "aggregate reference-demand profiles" in result.stdout
+
+
+def test_assessment_package_records_the_exact_reference_demand_audit(
+    tmp_path: Path,
+) -> None:
+    question = GeneratedQuestion(
+        rule_id="q1",
+        number="1",
+        marks=4,
+        kind="data_response",
+        command_word="Explain",
+        topic_id="markets",
+        prompt="Explain one effect of the change shown in the extract.",
+        mark_scheme=["One developed effect using the extract."],
+        assessment_objectives={"AO1": 1, "AO2": 1, "AO3": 2},
+        source_references=["Extract A"],
+    )
+    paper = GeneratedPaper(
+        paper_id="paper_1",
+        paper_code="7136/1",
+        title="Paper 1",
+        duration_minutes=120,
+        total_marks=4,
+        seed=1,
+        sections=[
+            GeneratedSection(
+                id="A",
+                title="Section A",
+                instructions="Answer the question.",
+                options=[
+                    GeneratedOption(
+                        id="A1",
+                        title="Extract A",
+                        stimulus=["A market changed after a policy intervention."],
+                        questions=[question],
+                    )
+                ],
+            )
+        ],
+    )
+    path = tmp_path / "assessment.json"
+
+    write_assessment_package(
+        paper,
+        path,
+        subject="economics_aqa",
+        paper_number="1",
+        preview=True,
+        provider=None,
+        model=None,
+    )
+
+    document = json.loads(path.read_text(encoding="utf-8"))
+    audit = document["reference_demand"]
+    assert audit["items_checked"] == 1
+    assert audit["profile_fingerprint"] == module().profile_for(
+        "aqa/economics", "1"
+    ).source_fingerprint
+    assert audit["empirical_equivalence_claimed"] is False

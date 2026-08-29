@@ -197,7 +197,6 @@ _BUILTIN_CONFIGS: dict[str, PaperConfig] = {
                         "current_account_line_chart",
                         "terms_of_trade_index_chart",
                         "exchange_rate_index_chart",
-                        "line_graph",
                     ],
                     [
                         "investment_line_chart",

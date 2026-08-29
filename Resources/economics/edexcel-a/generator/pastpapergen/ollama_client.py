@@ -17,8 +17,10 @@ from Backend.Core.assessment_quality import (
 )
 from Backend.Core.model_review import (
     assert_materially_new,
+    require_difficulty_review,
     require_independent_review,
 )
+from Backend.Core.reference_demand import build_item_demand_target, profile_for
 from pastpapergen.models import (
     MultipleChoiceOption,
     PaperBlueprint,
@@ -95,13 +97,33 @@ class OllamaClient:
         return parsed
 
 
-def build_question_prompt(question: QuestionBlueprint, topic: SyllabusTopic) -> str:
+def build_question_prompt(
+    question: QuestionBlueprint,
+    topic: SyllabusTopic,
+    paper_id: str | None = None,
+) -> str:
     points = "\n".join(f"- {point}" for point in topic.points)
     note_context = note_context_for_topic(
         topic.id,
         title=topic.title,
         keywords=topic.points,
     )[:1800]
+    demand_target = ""
+    if paper_id is not None:
+        profile = profile_for(
+            "pearson-edexcel/economics-a-2015",
+            _normalise_profile_paper_id(paper_id),
+        )
+        targets = [
+            build_item_demand_target(item, profile).model_dump(mode="json")
+            for item in _question_demand_items(question)
+        ]
+        demand_target = (
+            "\nImmutable reference-demand targets (one per rendered item):\n"
+            f"{json.dumps(targets, sort_keys=True)}\n"
+            "Match each target's cognitive depth, reasoning chain, context use, "
+            "and judgement requirement exactly; do not make it easier or harder.\n"
+        )
     return f"""You are writing an unofficial A-Level Economics paper.
 
 Use only this syllabus topic:
@@ -124,6 +146,7 @@ Stimulus kind: {question.stimulus_kind or "none"}
 Draft intent: {question.prompt}
 Verified source context: {question.source_text[:1600] or "none"}
 Authoring task: {"Return a new one- or two-sentence fictional scenario context in question_text; do not repeat the multipart wrapper or any part prompt." if question.parts else "Return a materially new question that preserves the command word and source-reference pattern."}
+{demand_target}
 
 Style rules:
 - Match the command word exactly: {question.command_word}.
@@ -245,7 +268,7 @@ def generate_questions_with_ollama(
                 f"Reviewed immutable question {index}/{total}: "
                 f"{question.number} ({topic.title})"
             )
-        base_prompt = build_question_prompt(question, topic)
+        base_prompt = build_question_prompt(question, topic, blueprint.paper_id)
         failure = ""
         for attempt in range(1, 4):
             retry_prompt = (
@@ -353,6 +376,70 @@ def generate_questions_with_ollama(
                     next_message += 1
     questions = [results[i] for i in range(total)]
     return blueprint.model_copy(update={"questions": questions})
+
+
+def review_blueprint_difficulty(
+    client: object,
+    blueprint: PaperBlueprint,
+    syllabus: Syllabus,
+    progress: Callable[[str], None] | None = None,
+) -> None:
+    """Run an independent demand-only gate over every rendered question item."""
+
+    emit = progress or (lambda _message: None)
+    profile = profile_for(
+        "pearson-edexcel/economics-a-2015",
+        _normalise_profile_paper_id(blueprint.paper_id),
+    )
+    items = [
+        (question, item)
+        for question in blueprint.questions
+        for item in _question_demand_items(question)
+    ]
+    for index, (question, item) in enumerate(items, start=1):
+        topic = syllabus.get_topic(question.topic_id)
+        label = str(item.get("label") or question.number)
+        emit(f"Calibrating difficulty {index}/{len(items)}: {question.number}{label}")
+        require_difficulty_review(
+            client,
+            item_id=f"question-{question.number}-{label}",
+            subject="Edexcel A-level Economics A",
+            candidate=item,
+            target=build_item_demand_target(item, profile),
+            specification=_review_specification(topic, question),
+        )
+
+
+def _normalise_profile_paper_id(paper_id: str) -> str:
+    return str(paper_id).removeprefix("paper_").removeprefix("paper-")
+
+
+def _question_demand_items(question: QuestionBlueprint) -> list[dict[str, object]]:
+    shared = {
+        "kind": question.stimulus_kind or "written",
+        "context": question.source_text,
+        "source_reference": question.source_reference,
+    }
+    if question.parts:
+        return [
+            {
+                **shared,
+                "label": part.label,
+                "marks": part.marks,
+                "command_word": part.command_word,
+                "prompt": part.prompt,
+            }
+            for part in question.parts
+        ]
+    return [
+        {
+            **shared,
+            "label": question.number,
+            "marks": question.marks,
+            "command_word": question.command_word,
+            "prompt": question.prompt,
+        }
+    ]
 
 
 def _multipart_review_view(question: QuestionBlueprint) -> QuestionBlueprint:

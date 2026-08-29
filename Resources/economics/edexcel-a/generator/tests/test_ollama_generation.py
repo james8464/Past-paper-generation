@@ -9,6 +9,7 @@ from pastpapergen.ollama_client import (
     _merge_source_text,
     _validate_ai_question,
     generate_questions_with_ollama,
+    review_blueprint_difficulty,
 )
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.syllabus import load_syllabus
@@ -28,6 +29,41 @@ GUIDANCE = [
     "AO4: Identifies a condition that could change the predicted effect.",
     "AO4: Reaches a supported judgement tied to the question.",
 ]
+
+
+def test_blueprint_receives_a_separate_reference_demand_review() -> None:
+    syllabus = load_syllabus(
+        Path(__file__).parents[1] / "data" / "syllabus_seed.json"
+    )
+    config = load_builtin_paper_config("paper_1")
+    full = build_paper_blueprint(config, syllabus, seed=7)
+    hardest = max(full.questions, key=lambda question: question.marks)
+    blueprint = full.model_copy(update={"questions": [hardest]})
+
+    class Client:
+        def __init__(self) -> None:
+            self.prompts: list[str] = []
+
+        def generate_json(self, prompt: str) -> dict[str, object]:
+            self.prompts.append(prompt)
+            return {
+                "approved": True,
+                "estimated_demand": "high",
+                "reasoning_steps": 6,
+                "tariff_fit": True,
+                "command_word_fit": True,
+                "context_fit": True,
+                "profile_fit": True,
+                "issues": [],
+            }
+
+    client = Client()
+    review_blueprint_difficulty(client, blueprint, syllabus)
+
+    assert len(client.prompts) == 1
+    assert "difficulty calibration specialist" in client.prompts[0]
+    assert '"reference_profile_fingerprint"' in client.prompts[0]
+    assert '"requires_judgement": true' in client.prompts[0]
 
 
 class BlueprintAwareClient:

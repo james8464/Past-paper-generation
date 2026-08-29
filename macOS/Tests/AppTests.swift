@@ -107,6 +107,26 @@ final class PaperCreatorTests: XCTestCase {
             "Contents/Resources/PaperCreatorBackend/_internal/Resources/empirical-calibration-policy.json"
         )
         XCTAssertTrue(FileManager.default.fileExists(atPath: calibrationPolicy.path))
+        let demandProfiles = bundle.appendingPathComponent(
+            "Contents/Resources/PaperCreatorBackend/_internal/Resources/reference-demand-profiles.json"
+        )
+        XCTAssertTrue(FileManager.default.fileExists(atPath: demandProfiles.path))
+    }
+
+    func testGenerationQualityReportDecodesReferenceDemandEvidence() throws {
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+            .appendingPathExtension("json")
+        defer { try? FileManager.default.removeItem(at: url) }
+        let manifest = #"{"evidence":{"assessment_validation":{"item_count":12,"fingerprints_verified":true,"reference_demand":{"passed":true,"items_checked":12,"source_document_count":4,"gated_distances":{"mark_band_distribution":0.12,"command_family_distribution":0.31,"demand_distribution":0.08}}},"novelty_validation":{"historic_comparisons":20,"nearest_match":{"similarity":0.14}}},"outputs":{"question_paper":{"pdf_validation":{}}}}"#
+        try Data(manifest.utf8).write(to: url)
+
+        let report = try XCTUnwrap(GenerationQualityReport.load(from: url))
+
+        XCTAssertTrue(report.referenceDemandPassed == true)
+        XCTAssertEqual(report.referenceDemandItems, 12)
+        XCTAssertEqual(report.referenceDemandDocuments, 4)
+        XCTAssertEqual(report.referenceDemandMaxDistance, 0.31)
     }
 
     func testBenchmarkSampleEventDecodes() throws {

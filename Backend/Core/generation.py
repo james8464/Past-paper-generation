@@ -369,9 +369,11 @@ def _write_package_manifest(
             "difficulty_independently_verified": gate_results.get(
                 "difficulty", False
             ),
+            "reference_demand": assessment_validation.get("reference_demand"),
             "warning": (
-                "Intended demand and document structure are validated; "
-                "difficulty is not established by student-response calibration."
+                "Each item and the complete form are checked against aggregate "
+                "reference-paper demand patterns; equivalent difficulty is not "
+                "claimed without student-response calibration."
             ),
             "assessment_validation": assessment_validation,
             "novelty_validation": novelty_validation,
@@ -387,10 +389,13 @@ def _write_package_manifest(
             "layout_profile_sha256": _sha256(
                 REPO_ROOT / "Resources" / "layout-master-runtime.json"
             ),
+            "reference_demand_profile_sha256": _sha256(
+                REPO_ROOT / "Resources" / capability.reference_demand_profile
+            ),
             "assessment_schema": "Backend.Core.exam_blueprints:v3",
             "assessment_package_schema": 1,
             "blueprint_version": capability.blueprint_version,
-            "prompt_version": "Backend.Core.ai_assessment:v4",
+            "prompt_version": "Backend.Core.ai_assessment:v5",
             "validator": "Backend.Core.pdf_validation:v2",
         },
         "outputs": {

@@ -319,6 +319,11 @@ private struct QualityInspector: View {
                     state: application.selectedPaper.readiness.visuallyCalibrated ? .passed : .pending
                 )
                 qualityRow(
+                    "Reference demand",
+                    detail: referenceDemandDetail,
+                    state: referenceDemandState
+                )
+                qualityRow(
                     "Empirical demand",
                     detail: application.selectedPaper.readiness.empiricallyCalibrated
                         ? "Independent student and marker calibration is complete."
@@ -345,6 +350,22 @@ private struct QualityInspector: View {
                         )
                     }
                     LabeledContent("Validated PDFs", value: "\(report.pdfCount)")
+                    LabeledContent(
+                        "Demand profile",
+                        value: report.referenceDemandPassed == true ? "Passed" : "Review needed"
+                    )
+                    if report.referenceDemandItems > 0 {
+                        LabeledContent(
+                            "Demand evidence",
+                            value: "\(report.referenceDemandItems) items · \(report.referenceDemandDocuments) reference papers"
+                        )
+                    }
+                    if let distance = report.referenceDemandMaxDistance {
+                        LabeledContent(
+                            "Maximum demand drift",
+                            value: distance.formatted(.number.precision(.fractionLength(2)))
+                        )
+                    }
                 }
             }
 
@@ -408,6 +429,21 @@ private struct QualityInspector: View {
             return "Draft and history similarity are checked before files are published."
         }
         return "Draft and historic-item similarity passed the release threshold."
+    }
+
+    private var referenceDemandState: QualityState {
+        guard let report = application.lastQualityReport else { return .atCreation }
+        return report.referenceDemandPassed == true ? .passed : .pending
+    }
+
+    private var referenceDemandDetail: String {
+        guard let report = application.lastQualityReport else {
+            return "Every generated item and the complete form are checked against aggregate patterns from relevant papers."
+        }
+        if report.referenceDemandPassed == true {
+            return "Item depth and whole-paper mark, command-word, and demand distributions match the configured reference envelope."
+        }
+        return "The latest package moved outside its reference-demand envelope and needs review."
     }
 }
 

@@ -1551,8 +1551,20 @@ def _draw_section_a_question(
         pdf.showPage()
         page_number += 1
         y = _prepare_answer_page(pdf, blueprint, page_number)
-        for part in question.parts[1:]:
-            y = _draw_compact_part(pdf, part, x, y - 4)
+        # The official three-part response page starts below the frame header and
+        # uses the full writable height: 11 rules for working, then 9 for the
+        # explanation. Preserve that measured rhythm even when the generated
+        # calculation stem is one line shorter than the reference example.
+        y -= 63
+        for index, part in enumerate(question.parts[1:]):
+            part_y = y - 4 if index == 0 else y + 6
+            y = _draw_compact_part(
+                pdf,
+                part,
+                x,
+                part_y,
+                bottom_y=100,
+            )
         _draw_total_for_question(pdf, question.number, question.marks, x, y)
         if question.number == "5":
             _draw_section_a_total(pdf, x, y - 34)
@@ -1655,7 +1667,14 @@ def _draw_calculate_part_with_working_lines(pdf: canvas.Canvas, part, x: float, 
     return y - 12
 
 
-def _draw_compact_part(pdf: canvas.Canvas, part, x: float, y: float) -> float:
+def _draw_compact_part(
+    pdf: canvas.Canvas,
+    part,
+    x: float,
+    y: float,
+    *,
+    bottom_y: float = SECTION_A_FOOTER_SAFE_Y,
+) -> float:
     width, _ = A4
     if part.command_word == "mcq":
         return _draw_mcq_part(pdf, part, x, y)
@@ -1665,8 +1684,17 @@ def _draw_compact_part(pdf: canvas.Canvas, part, x: float, y: float) -> float:
     pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({part.marks})")
     pdf.setFillColor(colors.black)
     y -= 18
-    lines = 4 if part.marks <= 2 else 7
-    return _draw_answer_lines(pdf, x, y, width - x, lines, bottom_y=SECTION_A_FOOTER_SAFE_Y) - 12
+    lines = (
+        11 if part.command_word == "calculate" else 9
+    ) if part.marks <= 2 else 7
+    return _draw_answer_lines(
+        pdf,
+        x,
+        y,
+        width - x,
+        lines,
+        bottom_y=bottom_y,
+    ) - 12
 
 
 def _axis_labels_for_draw_prompt(prompt: str) -> tuple[str, str]:

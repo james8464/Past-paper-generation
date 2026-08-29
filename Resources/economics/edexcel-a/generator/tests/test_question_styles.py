@@ -859,6 +859,41 @@ def test_section_a_calculation_questions_only_use_visible_numeric_stimuli():
                     assert question.stimulus_kind in numeric_stimuli
 
 
+def test_household_savings_calculation_is_answerable_from_the_chart() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_2"),
+        syllabus,
+        seed=26082919,
+    )
+    question = blueprint.questions[0]
+    calculation = question.parts[1]
+    explanation = question.parts[2]
+
+    assert question.stimulus_kind == "household_savings_line_chart"
+    assert "range" in calculation.prompt.casefold()
+    assert any("22.8 − 4.8" in point for point in calculation.mark_scheme)
+    assert any("18.0 percentage points" in point for point in calculation.mark_scheme)
+    assert any("precautionary" in point.casefold() for point in explanation.mark_scheme)
+    assert set(calculation.mark_scheme).isdisjoint(explanation.mark_scheme)
+
+
+def test_paper_two_three_part_guidance_stays_distinct_across_seed_pool() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_2")
+
+    for seed in range(200):
+        question = build_paper_blueprint(config, syllabus, seed=seed).questions[0]
+        written_parts = [part for part in question.parts if part.command_word != "mcq"]
+        points = [
+            point
+            for part in written_parts
+            for point in part.mark_scheme
+            if point.strip()
+        ]
+        assert len(points) == len(set(points)), (seed, question.stimulus_kind)
+
+
 def test_section_a_calculation_prompts_are_specific_to_visible_data():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
 

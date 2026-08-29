@@ -695,6 +695,7 @@ final class ApplicationCoordinator: ObservableObject {
             "Selected paper: \(selectedPaper.title) - \(selectedPaper.detail)",
             "Generation mode: \(generationMode)",
             "Visual profile: \(selectedPaper.readiness.visuallyCalibrated ? "Reviewed" : "Not reviewed")",
+            "Reference demand: \(lastQualityReport?.referenceDemandPassed == true ? "Passed" : "Not yet passed")",
             "Empirical calibration: \(selectedPaper.readiness.empiricallyCalibrated ? "Passed" : "Not independently verified")",
             "Hosted AI consent: \(hasHostedAIConsent ? "Accepted" : "Not accepted")",
             "Ollama: \(ollamaState.message)",

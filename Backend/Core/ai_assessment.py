@@ -31,7 +31,11 @@ from Backend.Core.exam_blueprints import (
 )
 from Backend.Core.independent_solver import IndependentSolver, reconcile_solution
 from Backend.Core.mark_scheme_quality import validate_mark_scheme_item
-from Backend.Core.model_review import ReviewResult
+from Backend.Core.model_review import ReviewResult, require_difficulty_review
+from Backend.Core.reference_demand import (
+    ReferenceDemandProfile,
+    build_item_demand_target,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -55,6 +59,7 @@ class GenerationPolicy:
     paper_similarity_limit: float = 0.84
     require_model_review: bool = True
     require_independent_solution: bool = False
+    require_difficulty_review: bool = False
 
 
 @dataclass(frozen=True)
@@ -80,6 +85,7 @@ def generate_unique_paper(
     progress: Callable[[str | GenerationUpdate], None] | None = None,
     policy: GenerationPolicy | None = None,
     checkpoint_store: AssessmentCheckpointStore | None = None,
+    demand_profile: ReferenceDemandProfile | None = None,
 ) -> GeneratedPaper:
     """Replace draft items while keeping the authoritative assessment blueprint frozen."""
 
@@ -109,6 +115,7 @@ def generate_unique_paper(
                     policy=policy,
                     progress=None,
                     checkpoint_store=checkpoint_store,
+                    demand_profile=demand_profile,
                 ): batch
                 for batch in batches
             }
@@ -141,6 +148,7 @@ def generate_unique_paper(
                     policy=policy,
                     progress=emit,
                     checkpoint_store=checkpoint_store,
+                    demand_profile=demand_profile,
                     total_items=len(tasks),
                     completed_before=completed_items,
                 )
@@ -207,6 +215,7 @@ def _generate_batch(
     checkpoint_store: AssessmentCheckpointStore | None = None,
     total_items: int | None = None,
     completed_before: int = 0,
+    demand_profile: ReferenceDemandProfile | None = None,
 ) -> dict[tuple[int, int, int], GeneratedQuestion]:
     verified = [
         task
@@ -269,6 +278,7 @@ def _generate_batch(
             policy=policy,
             progress=progress,
             accepted_prompts=accepted,
+            demand_profile=demand_profile,
         )
         if checkpoint_store is not None:
             checkpoint_store.save_item(task.id, candidate)
@@ -353,6 +363,7 @@ def _generate_item_transaction(
     policy: GenerationPolicy,
     progress: Callable[[str | GenerationUpdate], None] | None,
     accepted_prompts: list[dict[str, str]],
+    demand_profile: ReferenceDemandProfile | None = None,
 ) -> GeneratedQuestion:
     failure = ""
     candidate: GeneratedQuestion | None = None
@@ -366,6 +377,7 @@ def _generate_item_transaction(
                     seed=seed,
                     attempt=attempt,
                     previous_failure=failure,
+                    demand_profile=demand_profile,
                 )
                 if candidate is None or review is None
                 else _repair_prompt(
@@ -375,6 +387,7 @@ def _generate_item_transaction(
                     subject=subject,
                     seed=seed,
                     attempt=attempt,
+                    demand_profile=demand_profile,
                 )
             )
             raw = client.generate_json(prompt)
@@ -410,6 +423,40 @@ def _generate_item_transaction(
                 else ReviewResult(approved=True)
             )
             if review.approved and not review.issues:
+                if policy.require_difficulty_review:
+                    if demand_profile is None:
+                        raise ValueError(
+                            "reference-demand review requires a paper profile"
+                        )
+                    if progress is not None:
+                        progress(
+                            GenerationUpdate(
+                                stage="difficulty-review",
+                                message=(
+                                    "Checking question "
+                                    f"{task.question.number} against real-paper demand"
+                                ),
+                                item_id=task.id,
+                            )
+                        )
+                    try:
+                        require_difficulty_review(
+                            client,
+                            item_id=task.id,
+                            subject=subject,
+                            target=build_item_demand_target(
+                                _demand_item(task),
+                                demand_profile,
+                            ),
+                            candidate=candidate,
+                            specification=_difficulty_specification(task),
+                        )
+                    except ValueError as error:
+                        review = ReviewResult(
+                            approved=False,
+                            difficulty_issues=[str(error)],
+                        )
+                        raise
                 assert_distinct_items(
                     [
                         *accepted_prompts,
@@ -449,6 +496,22 @@ def _generate_item_transaction(
             else ReviewResult(approved=True)
         )
         if fallback_review.approved and not fallback_review.issues:
+            if policy.require_difficulty_review:
+                if demand_profile is None:
+                    raise ValueError(
+                        "reference-demand review requires a paper profile"
+                    )
+                require_difficulty_review(
+                    client,
+                    item_id=task.id,
+                    subject=subject,
+                    target=build_item_demand_target(
+                        _demand_item(task),
+                        demand_profile,
+                    ),
+                    candidate=fallback,
+                    specification=_difficulty_specification(task),
+                )
             assert_distinct_items(
                 [
                     *accepted_prompts,
@@ -1058,6 +1121,7 @@ def _repair_prompt(
     subject: str,
     seed: int,
     attempt: int,
+    demand_profile: ReferenceDemandProfile | None = None,
 ) -> str:
     failure = "; ".join(review.issues or ["not approved"])
     base = _generation_prompt(
@@ -1066,6 +1130,7 @@ def _repair_prompt(
         seed=seed,
         attempt=attempt,
         previous_failure=failure,
+        demand_profile=demand_profile,
     )
     repair = {
         "id": task.id,
@@ -1087,6 +1152,7 @@ def _generation_prompt(
     seed: int,
     attempt: int,
     previous_failure: str,
+    demand_profile: ReferenceDemandProfile | None = None,
 ) -> str:
     data = [
         {
@@ -1150,6 +1216,14 @@ def _generation_prompt(
                     "prompt."
                 ),
             },
+            "demand_target": (
+                build_item_demand_target(
+                    _demand_item(task),
+                    demand_profile,
+                ).model_dump(mode="json")
+                if demand_profile is not None
+                else None
+            ),
         }
         for task in tasks
     ]
@@ -1185,7 +1259,10 @@ def _generation_prompt(
         "wording choice rather than defending it. Draft wording and draft mark "
         "points are deliberately withheld: author the wording and creditworthy "
         "content independently from the semantic contract, immutable source, and "
-        "specification points.\n\n"
+        "specification points. When `demand_target` is present, make every required "
+        "reasoning operation necessary to earn full marks. Do not make the item "
+        "easier or harder than this target, and do not merely mention the target's "
+        "features in the stem.\n\n"
         "Return one JSON object with a `questions` array. Each entry must contain: "
         "`id`, `prompt`, `choices`, `correct_choice`, and `mark_scheme`. "
         "When `mark_scheme_locked` is true, return an empty `mark_scheme` array; "
@@ -1415,8 +1492,8 @@ def _review_prompt(
     return (
         "Act as a second-pass UK A-level assessment editor. Do not rewrite the "
         f"{subject} items. Check each candidate for factual correctness, a unique "
-        "and unambiguous task, source/data consistency, realistic board-level "
-        "difficulty, correct command-word demand, complete mark coverage, accurate "
+        "and unambiguous task, source/data consistency, correct command-word "
+        "demand, complete mark coverage, accurate "
         "AO classification, plausible distractors, and a mark scheme that a second "
         "examiner could apply consistently. Confirm that the candidate preserves "
         "the exact artefact, subject matter, and scope of `semantic_task_contract` "
@@ -1430,7 +1507,9 @@ def _review_prompt(
         "awarded AO allocation rows are "
         "accounting metadata; assess substantive coverage from the zero-mark level "
         "descriptors and indicative guidance, and do not reject an allocation row "
-        "merely for referring to that grid. Return JSON only: `reviews` must contain "
+        "merely for referring to that grid. Cognitive difficulty is checked by a "
+        "separate reference-demand review, so leave difficulty_issues empty here. "
+        "Return JSON only: `reviews` must contain "
         "one object per id "
         'with {"id":"...","approved":true|false,"factual_issues":[],'
         '"marking_issues":[],"source_issues":[],"difficulty_issues":[],'
@@ -1471,6 +1550,27 @@ def _task_source(task: _Task) -> dict[str, object]:
         "chart_labels": task.option.chart_labels,
         "chart_values": task.option.chart_values,
         "source_references": task.question.source_references,
+    }
+
+
+def _demand_item(task: _Task) -> dict[str, object]:
+    value = task.question.model_dump(mode="json")
+    value["context"] = [
+        *task.option.stimulus,
+        *([task.option.chart_title] if task.option.chart_title else []),
+    ]
+    value["evidence_ids"] = list(task.question.source_references)
+    return value
+
+
+def _difficulty_specification(task: _Task) -> dict[str, object]:
+    return {
+        "topic_id": str(task.topic.id),
+        "topic_title": str(task.topic.title),
+        "specification_points": [
+            str(point) for point in getattr(task.topic, "points", [])
+        ],
+        "source": _task_source(task),
     }
 
 

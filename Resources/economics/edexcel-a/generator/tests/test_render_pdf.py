@@ -637,6 +637,28 @@ def test_section_a_calculate_page_fills_remaining_answer_space(tmp_path):
     assert _answer_rule_count(output, page_number) >= 12
 
 
+def test_paper_two_three_part_page_uses_reference_answer_space(tmp_path) -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_2"),
+        syllabus,
+        seed=26082919,
+    )
+    calculation = blueprint.questions[0].parts[1]
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+    pages = _pdf_text(output).split("\f")
+    prompt = _normalised(calculation.prompt)
+    page_number = next(
+        index + 1
+        for index, page in enumerate(pages)
+        if prompt in _normalised(page)
+    )
+
+    assert _answer_rule_count(output, page_number) >= 20
+
+
 def test_section_a_generic_data_table_uses_economic_labels(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")

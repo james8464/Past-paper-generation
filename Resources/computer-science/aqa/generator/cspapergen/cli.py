@@ -18,7 +18,11 @@ from cspapergen.generator import (
     build_topic_question_bank,
 )
 from cspapergen.notes import DEFAULT_NOTES_SOURCE, cache_notes
-from cspapergen.ollama_client import OllamaClient, improve_questions_with_ollama
+from cspapergen.ollama_client import (
+    OllamaClient,
+    improve_questions_with_ollama,
+    review_blueprint_difficulty,
+)
 from cspapergen.paper1_assets import write_paper1_supporting_files
 from cspapergen.render_pdf import render_mark_scheme, render_question_paper
 from cspapergen.syllabus import DEFAULT_SYLLABUS_PATH, load_syllabus
@@ -88,7 +92,7 @@ ADAPTER = FamilyAdapter(
     backend_subject="computer_science",
     load_message="Loading AQA Computer Science specification map",
     build_message="Building AQA 7517 paper blueprint",
-    prompt_version="aqa-computer-science-v1",
+    prompt_version="aqa-computer-science-v2",
     load_syllabus=load_syllabus,
     load_rule=_load_rule,
     build=_build,
@@ -100,6 +104,9 @@ ADAPTER = FamilyAdapter(
         blueprint, syllabus
     ),
     improve=_improve,
+    calibrate_difficulty=lambda blueprint, syllabus, _paper, client, progress: (
+        review_blueprint_difficulty(client, blueprint, syllabus, progress)
+    ),
     client_factory=lambda model, url: OllamaClient(base_url=url, model=model),
     checkpoint_identity=lambda blueprint, _paper_rule, paper: {
         "paper_id": f"paper-{paper}",

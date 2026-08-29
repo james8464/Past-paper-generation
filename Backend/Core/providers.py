@@ -405,6 +405,30 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
             }
         }
         required = ["reviews"]
+    elif '"estimated_demand":"low|standard|high"' in prompt:
+        properties = {
+            "approved": {"type": "boolean"},
+            "estimated_demand": {
+                "type": "string",
+                "enum": ["low", "standard", "high"],
+            },
+            "reasoning_steps": {"type": "integer", "minimum": 0, "maximum": 12},
+            "tariff_fit": {"type": "boolean"},
+            "command_word_fit": {"type": "boolean"},
+            "context_fit": {"type": "boolean"},
+            "profile_fit": {"type": "boolean"},
+            "issues": text_list,
+        }
+        required = [
+            "approved",
+            "estimated_demand",
+            "reasoning_steps",
+            "tariff_fit",
+            "command_word_fit",
+            "context_fit",
+            "profile_fit",
+            "issues",
+        ]
     elif '"approved":true|false' in prompt:
         properties = {
             "approved": {"type": "boolean"},

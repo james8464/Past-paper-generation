@@ -153,6 +153,31 @@ def test_ollama_schema_constrains_shared_generation_and_review() -> None:
     assert _ollama_output_budget(review) == 1024
 
 
+def test_ollama_schema_constrains_the_separate_difficulty_judge() -> None:
+    schema = _ollama_json_schema(
+        'Return JSON only: {"approved":true|false,'
+        '"estimated_demand":"low|standard|high","reasoning_steps":0,'
+        '"tariff_fit":true|false,"command_word_fit":true|false,'
+        '"context_fit":true|false,"profile_fit":true|false,"issues":[]}.'
+    )
+
+    assert set(schema["required"]) == {
+        "approved",
+        "estimated_demand",
+        "reasoning_steps",
+        "tariff_fit",
+        "command_word_fit",
+        "context_fit",
+        "profile_fit",
+        "issues",
+    }
+    assert schema["properties"]["estimated_demand"]["enum"] == [
+        "low",
+        "standard",
+        "high",
+    ]
+
+
 def test_ollama_schema_omits_verified_marking_output() -> None:
     generation = _ollama_json_schema(
         "Return one JSON object with a `questions` array. "

@@ -14,9 +14,17 @@ from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
 from Backend.Core.assessment_quality import NUMBER_PATTERN, numeric_tokens
 from Backend.Core.model_review import (
     assert_materially_new,
+    require_difficulty_review,
     require_independent_review,
 )
-from cspapergen.models import MarkingGuidance, PaperBlueprint, Question, Syllabus
+from Backend.Core.reference_demand import build_item_demand_target, profile_for
+from cspapergen.models import (
+    MarkingGuidance,
+    PaperBlueprint,
+    Question,
+    QuestionPart,
+    Syllabus,
+)
 from cspapergen.notes import note_context_for_topic
 
 
@@ -220,6 +228,51 @@ def improve_questions_with_ollama(
     return blueprint.model_copy(update={"questions": improved})
 
 
+def review_blueprint_difficulty(
+    client: JSONGenerationClient,
+    blueprint: PaperBlueprint,
+    syllabus: Syllabus,
+    progress: Callable[[str], None] | None = None,
+) -> None:
+    emit = progress or (lambda _message: None)
+    paper_id = (
+        f"bank-{blueprint.focus_topic_id}"
+        if blueprint.assessment_kind == "question-bank"
+        else blueprint.paper_number
+    )
+    profile = profile_for("aqa/computer-science", paper_id)
+    review_items = [
+        (question, part)
+        for question in blueprint.questions
+        for part in question.parts
+    ]
+    for index, (question, part) in enumerate(review_items, start=1):
+        topic = syllabus.get_topic(question.topic_id)
+        emit(
+            f"Checking reference demand {index}/{len(review_items)}: "
+            f"0 {question.number:02d}({part.label})"
+        )
+        require_difficulty_review(
+            client,
+            item_id=f"question-{question.number}-{part.label}",
+            subject="AQA A-level Computer Science",
+            target=build_item_demand_target(
+                _part_demand_item(question, part),
+                profile,
+            ),
+            candidate={
+                "stem": question.stem,
+                "stimulus": (
+                    question.stimulus.model_dump(mode="json")
+                    if question.stimulus is not None
+                    else None
+                ),
+                "part": part.model_dump(mode="json"),
+            },
+            specification=topic,
+        )
+
+
 def _prompt(
     question: Question,
     topic_title: str,
@@ -227,12 +280,26 @@ def _prompt(
     blueprint: PaperBlueprint,
 ) -> str:
     parts = "\n".join(f"- Part {part.label}: {part.marks} marks, {part.prompt}" for part in question.parts)
+    paper_id = (
+        f"bank-{blueprint.focus_topic_id}"
+        if blueprint.assessment_kind == "question-bank"
+        else blueprint.paper_number
+    )
+    profile = profile_for("aqa/computer-science", paper_id)
+    demand_targets = [
+        build_item_demand_target(
+            _part_demand_item(question, part),
+            profile,
+        ).model_dump(mode="json")
+        for part in question.parts
+    ]
     if _uses_scenario_only_generation(question):
         stem_numbers = ", ".join(numeric_tokens(question.stem)) or "none"
         return f"""You are writing an unofficial A-level Computer Science {blueprint.paper_code} Paper {blueprint.paper_number}.
 
 Use only this syllabus topic: {question.topic_id} {topic_title}
 Immutable assessment focus: {question.title} ({question.style_id}). Do not substitute another subtopic, process or technology.
+Immutable reference-demand targets: {json.dumps(demand_targets, ensure_ascii=False)}
 
 Create a concise, materially new fictional scenario stem for the immutable multipart task below. The stem must establish the same technical setting without copying a complete sentence from the draft. Preserve these numeric tokens from the draft stem exactly: {stem_numbers}. Introduce no other numeric values. Do not repeat, rewrite or answer the parts. Do not add exam-board branding.
 
@@ -250,6 +317,7 @@ Return JSON only:
 
 Use only this syllabus topic: {question.topic_id} {topic_title}
 Immutable assessment focus: {question.title} ({question.style_id}). Do not substitute another subtopic, process or technology.
+Immutable reference-demand targets: {json.dumps(demand_targets, ensure_ascii=False)}
 Revision-note context:
 {notes}
 
@@ -270,6 +338,33 @@ VERIFIED MARKING IS IMMUTABLE. Return JSON only:
   ]
 }}
 """
+
+
+def _part_demand_item(
+    question: Question,
+    part: QuestionPart,
+) -> dict[str, object]:
+    marking = part.marking
+    objective_names = re.findall(r"AO[1-4]", str(marking.ao).upper())
+    objectives = {name: 1 for name in objective_names}
+    if objectives:
+        objectives[objective_names[0]] += int(part.marks) - len(objectives)
+    stimulus: list[str] = []
+    if question.stimulus is not None:
+        stimulus.extend(question.stimulus.lines)
+        stimulus.extend(cell for row in question.stimulus.rows for cell in row)
+        if question.stimulus.code:
+            stimulus.append(question.stimulus.code)
+    prompt = str(part.prompt)
+    return {
+        "id": f"question-{question.number}-{part.label}",
+        "marks": int(part.marks),
+        "kind": question.style_id,
+        "command_word": prompt.split(maxsplit=1)[0].strip(".,:;!?()[]{}"),
+        "prompt": prompt,
+        "assessment_objectives": objectives,
+        "context": [question.stem, *stimulus],
+    }
 
 
 def _uses_scenario_only_generation(question: Question) -> bool:

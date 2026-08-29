@@ -89,6 +89,7 @@ def test_every_current_paper_has_truthful_qualification_levels() -> None:
 def test_every_advertised_generator_creates_unique_ai_content() -> None:
     for capability in generator_capabilities().values():
         assert capability.uses_ai
+        assert capability.reference_demand_profile == "reference-demand-profiles.json"
         assert set(capability.supported_providers) == {
             "ollama",
             "openai",
@@ -136,4 +137,5 @@ def test_backend_bundle_includes_declarative_profile_resources() -> None:
 
     assert "generator-capability.schema.json" in script
     assert "empirical-calibration-policy.json" in script
+    assert "reference-demand-profiles.json" in script
     assert "Resources/board-profiles:Resources/board-profiles" in script

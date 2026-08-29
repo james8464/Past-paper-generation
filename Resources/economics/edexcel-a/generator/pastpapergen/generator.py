@@ -713,7 +713,7 @@ _STIMULUS_PART_PROMPTS = {
         (None, "explain", 4): "Explain one likely effect of the increase in the National Minimum Wage on firms.",
     },
     "household_savings_line_chart": {
-        (1, "calculate", 2): "Calculate the total amount saved by the average household. You are advised to show your working.",
+        (1, "calculate", 2): "Using the chart, calculate the range of the household saving rate. You are advised to show your working.",
         (2, "explain", 2): "Explain one likely reason for the change in household savings over the period shown.",
     },
     "investment_line_chart": {
@@ -766,6 +766,7 @@ _STIMULUS_PART_PROMPTS = {
     },
     "exchange_rate_index_chart": {
         (None, "calculate", 2): "Calculate the percentage change in the exchange rate index over the period shown. You are advised to show your working.",
+        (2, "explain", 2): "Explain one likely effect of the change in the exchange rate index on exporters.",
         (None, "explain", 4): "With reference to the chart above, explain one likely effect of the change in the exchange rate on exporters.",
     },
     "income_tax_schedule_table": {
@@ -1347,6 +1348,19 @@ def _part_guidance(
     stimulus_kind: str,
     part_index: int,
 ) -> tuple[list[str], list[str]]:
+    if stimulus_kind == "household_savings_line_chart":
+        if command == "calculate" and marks == 2 and part_index == 1:
+            points = [
+                "1 mark for method: maximum saving rate minus minimum saving rate, 22.8 − 4.8.",
+                "1 mark for a range of 18.0 percentage points. Accept 18 percentage points with correct working.",
+            ]
+            return points, points
+        if command == "explain" and marks == 2 and part_index == 2:
+            points = [
+                "1 mark for identifying a relevant cause of the rise, such as greater uncertainty about future income or prices increasing precautionary saving.",
+                "1 development mark for explaining that households postpone consumption to build a financial buffer, so the saving rate rises; accept a coherent reverse chain for the later fall as confidence and consumption recover.",
+            ]
+            return points, points
     if stimulus_kind == "ped_data_table" and command == "explain" and marks == 4:
         points = [
             "AO1 (1 mark): Defines price elasticity of demand as the responsiveness of quantity demanded to a change in price.",
@@ -1363,17 +1377,51 @@ def _part_guidance(
             "AO3 (1 mark): Links the smaller proportional output response to the lower PES shown for the urban market.",
         ]
         return points, points
-    if stimulus_kind == "current_account_line_chart":
+    if (
+        stimulus_kind == "current_account_line_chart"
+        and command == "calculate"
+        and marks == 2
+    ):
+        points = [
+            "1 mark for method: correctly find the difference between the absolute values of Year 10 and Year 1, for example |−4.3| − |−3.8| = 4.3 − 3.8.",
+            "1 mark for an increase in deficit size of 0.5 percentage points. The final answer must state a positive size/widening of 0.5.",
+        ]
+        return points, points
+    if (
+        stimulus_kind == "current_account_line_chart"
+        and command == "explain"
+        and marks == 2
+        and part_index == 2
+    ):
+        points = [
+            "1 mark for identifying one valid factor or proximate change from the source: higher domestic income/stronger import spending, lower overseas demand/weaker export revenue, or weaker non-price competitiveness. Only one route is required.",
+            "1 development mark for completing the chosen chain: higher domestic income raises imports; lower overseas demand reduces exports; or weaker non-price competitiveness makes foreign consumers buy fewer exports and/or domestic consumers buy more imports. As net exports (X − M) fall, the current account balance becomes more negative. A named factor without this link receives only the first mark.",
+        ]
+        return points, points
+    if stimulus_kind == "terms_of_trade_index_chart":
         if command == "calculate" and marks == 2:
             points = [
-                "1 mark for method: correctly find the difference between the absolute values of Year 10 and Year 1, for example |−4.3| − |−3.8| = 4.3 − 3.8.",
-                "1 mark for an increase in deficit size of 0.5 percentage points. The final answer must state a positive size/widening of 0.5.",
+                "1 mark for method: ((91 − 82) ÷ 82) × 100.",
+                "1 mark for an increase of 11.0% (accept 10.98% or a correctly rounded equivalent).",
             ]
             return points, points
         if command == "explain" and marks == 2 and part_index == 2:
             points = [
-                "1 mark for identifying one valid factor or proximate change from the source: higher domestic income/stronger import spending, lower overseas demand/weaker export revenue, or weaker non-price competitiveness. Only one route is required.",
-                "1 development mark for completing the chosen chain: higher domestic income raises imports; lower overseas demand reduces exports; or weaker non-price competitiveness makes foreign consumers buy fewer exports and/or domestic consumers buy more imports. As net exports (X − M) fall, the current account balance becomes more negative. A named factor without this link receives only the first mark.",
+                "1 mark for recognising that the rise from 82 to 91 means average export prices increased relative to average import prices.",
+                "1 development mark for a valid current-account chain: export revenue may rise if overseas demand is sufficiently price inelastic, but a loss of export competitiveness can reduce export volume and make the overall effect uncertain.",
+            ]
+            return points, points
+    if stimulus_kind == "exchange_rate_index_chart":
+        if command == "calculate" and marks == 2:
+            points = [
+                "1 mark for method: ((109 − 100) ÷ 100) × 100.",
+                "1 mark for a 9% increase in the exchange rate index, indicating an appreciation.",
+            ]
+            return points, points
+        if command == "explain" and marks == 2 and part_index == 2:
+            points = [
+                "1 mark for explaining that an appreciation makes UK exports more expensive in foreign currency, assuming sterling prices are unchanged.",
+                "1 development mark for linking the higher foreign-currency price to lower quantity demanded and therefore lower export sales or revenue, depending on price elasticity of demand.",
             ]
             return points, points
     if stimulus_kind == "inequality_line_chart" and command == "explain" and marks == 4:
