@@ -36,6 +36,378 @@ PAPER2_QUESTION_PLAN = [
     ("assembly_program", (6,)),
 ]
 
+Paper2Standardisation = tuple[tuple[str, ...], tuple[str, ...]]
+
+# These notes play the same role as question-specific standardisation guidance in
+# an awarding-body mark scheme.  They are deliberately attached here, after the
+# Paper 2 repartitioning step, because the source question-bank items can be used
+# with different part structures and mark totals elsewhere in the application.
+PAPER2_STANDARDISATION: dict[str, tuple[Paper2Standardisation, ...]] = {
+    "software_classification": (
+        (
+            (
+                "Accept application software and utility software in either order when the arrows make each intended branch unambiguous.",
+                "Accept applications for application software, but both missing branches must be named for both marks.",
+            ),
+            (
+                "Do not accept system software for the user-task examples or a named package where the question asks for a category.",
+            ),
+        ),
+        (
+            (
+                "Accept a contrast expressed through purpose: maintaining or configuring the system versus completing a user-oriented task.",
+                "Accept one paired example only when the function of each example makes the distinction explicit.",
+            ),
+            (
+                "Do not award two independent descriptions that never establish a difference between the categories.",
+            ),
+        ),
+        (
+            (
+                "Accept assembly language as the low-level language and any compiled or interpreted high-level language as a valid comparison.",
+                "Credit linked contrasts involving abstraction, portability, hardware control, development time, maintainability or translation.",
+            ),
+            (
+                "Do not credit the absolute claim that every high-level program is slower or that low-level code needs no translation.",
+            ),
+        ),
+    ),
+    "sound_sampling": (
+        (
+            (
+                "Accept an exact unrounded value or a correctly rounded two-decimal value when the unit MiB is stated.",
+                "Allow a single arithmetic slip after a correct rate × duration × resolution × channels method; award subsequent method marks consistently.",
+            ),
+            (
+                "Do not accept MB in place of MiB unless the candidate explicitly converts using 1024 squared and merely mislabels the final unit.",
+            ),
+        ),
+        (
+            (
+                "Accept 36 kHz or 36 000 Hz; the numerical answer and the twice-the-highest-frequency justification are separately creditworthy.",
+                "Accept a rate greater than 36 kHz only if it is explicitly identified as sufficient rather than the requested minimum.",
+            ),
+            (
+                "Do not accept 18 kHz, or a bare 36 with no unit where its scale is ambiguous.",
+            ),
+        ),
+        (
+            (
+                "Accept a clearly described false lower-frequency signal, frequency folding, or two different analogue signals producing the same samples.",
+                "Accept the term aliasing only when accompanied by a consequence for reconstruction or the represented waveform.",
+            ),
+            (
+                "Do not credit only 'lower quality', 'distortion' or 'data is lost' without explaining the sampling effect.",
+            ),
+        ),
+        (
+            (
+                "Treat sampling rate and sample resolution as separate dimensions; credit a linked accuracy and storage consequence for each.",
+                "Accept bit depth for sample resolution and amplitude levels or quantisation levels for the representable values.",
+            ),
+            (
+                "Do not credit a higher sampling rate as creating more amplitude levels or a higher resolution as taking samples more often.",
+            ),
+        ),
+    ),
+    "bitmap_storage": (
+        (
+            (
+                "Accept any equivalent staged calculation using width × height × colour depth, division by eight, then division by 1024 squared.",
+                "Award subsequent method marks after one numerical slip when the candidate carries their value forward consistently and states MiB.",
+            ),
+            (
+                "Do not use a 1000-based megabyte conversion for a mebibyte answer, and do not omit the bits-to-bytes division.",
+            ),
+        ),
+        (
+            (
+                "Accept greater colour accuracy, more representable colours or reduced colour banding together with the increased bits-per-pixel storage cost.",
+                "Credit one correct effect if only image quality or only file size is developed; the two marking points are independent.",
+            ),
+            (
+                "Do not credit increased spatial resolution, pixel count or image dimensions because those properties are held constant.",
+            ),
+        ),
+    ),
+    "legal_issues_short": (
+        (
+            (
+                "Credit distinct developed reasons about technological change, cross-border jurisdiction, attribution of responsibility, evidence or enforceability.",
+                "Accept a relevant contemporary example when it explains why a particular legal definition or enforcement action becomes difficult.",
+            ),
+            (
+                "Do not award a list of named laws or a generic statement that technology is complicated without a linked legal difficulty.",
+            ),
+        ),
+    ),
+    "client_server_short": (
+        (
+            (
+                "Credit centrally managed authentication, permissions, backups or shared files when the benefit is applied to the organisation in the stem.",
+                "Accept dedicated service availability or consistent data as a third reason if it is contrasted with peer-to-peer responsibility.",
+            ),
+            (
+                "Do not credit 'faster', 'more secure' or 'more reliable' unless the answer explains which central server feature produces that outcome.",
+            ),
+        ),
+    ),
+    "sql_normalisation": (
+        (
+            (
+                "Accept ISNULL(Email) only for a named SQL dialect that supports it; standard SQL uses Email IS NULL.",
+                "The identification mark may be earned by stating that NULL is not compared using the equality operator.",
+            ),
+            (
+                "Do not accept Email = 'NULL', Email = 0 or Email = an empty string as equivalent to a null value.",
+            ),
+        ),
+        (
+            (
+                "Accept INNER JOIN or an unambiguous equi-join, COUNT of any non-null booking field, and an alias used consistently in HAVING and ORDER BY.",
+                "Allow GROUP BY Activity with SESSION.Activity qualified or unqualified where no ambiguity exists; the ordering must be descending by the aggregate.",
+            ),
+            (
+                "Do not accept a WHERE condition on COUNT, DISTINCT activities without grouping, or ordering alphabetically instead of by booking count.",
+            ),
+        ),
+        (
+            (
+                "Accept omission of the column list only when all three values are supplied in the schema order and the statement remains syntactically valid.",
+                "Allow double-quoted string literals only if the candidate consistently states a database dialect in which they are valid.",
+            ),
+            (
+                "Do not credit a statement that omits either quote-delimited text value or places the email and name against the wrong columns.",
+            ),
+        ),
+        (
+            (
+                "Accept TRUE, 1 or the dialect's equivalent Boolean literal; both composite-key fields must constrain the same WHERE clause.",
+                "Award the update and assignment mark even if one key predicate is wrong, provided no other column is unintentionally changed.",
+            ),
+            (
+                "Do not award full credit for filtering only by MemberID or only by SessionID because that can alter multiple bookings.",
+            ),
+        ),
+        (
+            (
+                "Accept FALSE, 0 or an equivalent Boolean literal and either order of the two AND-connected predicates.",
+                "A valid table alias may qualify both SessionID and Attended without affecting credit.",
+            ),
+            (
+                "Do not accept DELETE * FROM BOOKING, and do not award the selection mark if attended bookings could also be removed.",
+            ),
+        ),
+    ),
+    "stored_program": (
+        (
+            (
+                "Accept that machine-code instructions and the data they operate on share addressable main memory and are fetched by the processor.",
+                "The two points may be expressed in either order, but storage and execution must both be present.",
+            ),
+            (
+                "Do not accept only that programs are saved on secondary storage or that the processor itself permanently stores every instruction.",
+            ),
+        ),
+        (
+            (
+                "Award bus marks only where the address bus carries an address, the data bus carries the instruction, and the control bus carries a read signal.",
+                "Accept MDR or MBR, and accept PC increment before or after transfer to MAR when the sequence remains logically consistent.",
+            ),
+            (
+                "Do not interchange MAR with MDR, or claim that the program counter contains the instruction currently being decoded.",
+            ),
+        ),
+        (
+            (
+                "Accept the current instruction, the instruction being decoded, or the instruction presently being executed as equivalent descriptions.",
+            ),
+            (
+                "Do not accept the address of the next instruction; that is the role of the program counter.",
+            ),
+        ),
+        (
+            (
+                "Accept reprogrammability, loading a different instruction sequence, or treating instructions as data, with no hardware rewiring required.",
+            ),
+            (
+                "Do not credit only 'it is faster' or 'it stores programs' without explaining the resulting benefit.",
+            ),
+        ),
+    ),
+    "ipv4_extended": (
+        (
+            (
+                "Use the level descriptors holistically; a top-level response should compare at least two approaches and reach a context-based recommendation.",
+                "Credit accurate development of private addressing with NAT, DHCP lease management, IPv6 migration, dual stack, routing and firewall policy.",
+                "Accept carrier-grade NAT or address sharing when limitations for inbound services, logging or troubleshooting are considered.",
+            ),
+            (
+                "Do not treat NAT as a firewall, IPv6 as automatically secure, or DHCP as creating additional public IPv4 addresses.",
+            ),
+        ),
+    ),
+    "truth_table_completion": (
+        (
+            (
+                "Award one mark for each correct output row; a copied input value in the output column is not sufficient working.",
+                "If a candidate evaluates an unprinted intermediate column, use it to apply positive marking to the final output where possible.",
+            ),
+            (
+                "Do not infer a correct row from an altered input combination; mark only the output for the supplied row.",
+            ),
+        ),
+        (
+            (
+                "Accept any one complete A, B and C combination whose output is 1; allocate the two marks according to the published split.",
+                "The values may be written as a binary triple if their variable order is clear.",
+            ),
+            (
+                "Do not combine A and B from one valid row with C from another row.",
+            ),
+        ),
+        (
+            (
+                "Accept systematic coverage of inputs, comparison with an expected result, or isolation of the input that exposes a circuit fault.",
+            ),
+            (
+                "Do not credit only that a truth table 'shows whether it works' without identifying what is checked.",
+            ),
+        ),
+    ),
+    "compression_short": (
+        (
+            (
+                "Accept reduced storage, shorter transfer time, lower bandwidth use or lower transmission cost as distinct reasons where appropriate.",
+                "Two marks require two consequences rather than two phrasings of the same storage saving.",
+            ),
+            (
+                "Do not credit improved data quality, greater security or automatic removal of redundant records.",
+            ),
+        ),
+        (
+            (
+                "Accept exact reconstruction or no permanently discarded source data, followed by a consequence specific to the named data in the stem.",
+                "For executable data, the consequence must concern unchanged instructions or correct execution; for records, it must concern exact values or auditability.",
+            ),
+            (
+                "Do not credit a generic statement that lossless is 'better quality' without explaining why exact recovery matters here.",
+            ),
+        ),
+    ),
+    "fibonacci_recursion": (
+        (
+            (
+                "Accept the empty-list pattern, the [] clause, or the expression returning 0 as the base case.",
+            ),
+            (
+                "Do not accept x:xs or the recursive call, which belongs to the recursive case.",
+            ),
+        ),
+        (
+            (
+                "Accept 8 with or without a shown expansion; zero and the negative value contribute nothing to the total.",
+            ),
+            (
+                "Do not accept 6 from summing every list member or 10 from treating the negative value as positive.",
+            ),
+        ),
+        (
+            (
+                "Accept head and tail terminology for x and xs when the answer explains how the matching clause selects the recursive definition.",
+                "The termination point must be linked to repeatedly shortening the immutable list until [] matches.",
+            ),
+            (
+                "Do not credit only that the function calls itself; the role of the two patterns is required.",
+            ),
+        ),
+        (
+            (
+                "Accept referential transparency expressed as the same immutable input giving the same output with no externally visible state change.",
+                "Credit absence of file, global-variable or input/output side effects as a valid development.",
+            ),
+            (
+                "Do not claim that every recursive function is pure; purity depends on its data dependencies and side effects.",
+            ),
+        ),
+    ),
+    "floating_point": (
+        (
+            (
+                "Accept the named direction only; judge it from the signed exponent rather than the mantissa sign.",
+            ),
+            (
+                "Do not reverse the movement by describing movement of digits instead of movement of the binary point.",
+            ),
+        ),
+        (
+            (
+                "Accept an exact fraction or equivalent denary value; award the mark only when both two's-complement mantissa and exponent are interpreted correctly.",
+            ),
+            (
+                "Do not read either field as unsigned, and do not place the binary point before the mantissa sign bit.",
+            ),
+        ),
+        (
+            (
+                "Accept 'normalised' with the first-two-bits-differ test, namely 01 for a positive fraction or 10 for a negative fraction.",
+            ),
+            (
+                "Do not accept that normalisation merely means there are no leading zeroes in the printed bit pattern.",
+            ),
+        ),
+        (
+            (
+                "Accept smaller representable steps, more significant fractional bits, reduced quantisation error or increased precision as linked statements.",
+            ),
+            (
+                "Do not credit increased range because the exponent field is explicitly unchanged.",
+            ),
+        ),
+        (
+            (
+                "Credit wider exponent range and therefore wider magnitude range separately from the loss of mantissa precision.",
+                "Accept increased rounding or quantisation error as the consequence of fewer mantissa bits.",
+            ),
+            (
+                "Do not claim that more exponent bits increase precision or that fewer mantissa bits reduce the range.",
+            ),
+        ),
+        (
+            (
+                "Accept underflow; accept underflow error, but no explanation is required for the single mark.",
+            ),
+            (
+                "Do not accept overflow, truncation or rounding error for a non-zero magnitude too close to zero.",
+            ),
+        ),
+    ),
+    "boolean_simplification": (
+        (
+            (
+                "Accept any sequence of named or visibly correct Boolean identities provided every intermediate expression is equivalent and the final form is minimal.",
+                "Use the symbols ·, +, overbar, ⊕, ⊼ and ⊽ consistently with the operation being shown; accept conventional prime notation for NOT.",
+            ),
+            (
+                "Do not credit an arithmetic cancellation rule, an unexplained final answer after invalid working, or words used in place of the required Boolean expression.",
+            ),
+        ),
+    ),
+    "assembly_program": (
+        (
+            (
+                "Credit purpose, application to the supplied immediate value, stored result and implementation as separate marking dimensions.",
+                "Accept floor(log2(n)) + 1 as the bit length for the positive input, or a correct iteration trace showing the same count.",
+                "Accept division by two only when the answer respects unsigned, zero-fill logical shifting and integer bit behaviour.",
+            ),
+            (
+                "Do not describe the loop as counting set bits: R0 increments for every shift, including when the discarded least-significant bit is zero.",
+                "Do not treat # as an address or [100] as the literal value 100; those meanings are stated explicitly in the question.",
+            ),
+        ),
+    ),
+}
+
 
 def build_paper2_blueprint(syllabus: Syllabus, seed: int | None = None) -> PaperBlueprint:
     run_seed = seed if seed is not None else secrets.randbits(64)
@@ -116,6 +488,17 @@ def _repartition_paper2_question(
 ) -> Question:
     source = question.parts
     desired_count = len(target_marks)
+    try:
+        standardisation = PAPER2_STANDARDISATION[question.style_id]
+    except KeyError as error:
+        raise ValueError(
+            f"Paper 2 standardisation is missing for {question.style_id}"
+        ) from error
+    if len(standardisation) != desired_count:
+        raise ValueError(
+            f"Paper 2 standardisation for {question.style_id} has "
+            f"{len(standardisation)} parts; expected {desired_count}"
+        )
     rebuilt: list[QuestionPart] = []
     for index, marks in enumerate(target_marks):
         if index < desired_count - 1:
@@ -149,6 +532,7 @@ def _repartition_paper2_question(
                 f"Credit a technically accurate point about {question.title.lower()};",
                 "The point must be developed and applied to the stated scenario;",
             ]
+        accept, reject = standardisation[index]
         guidance = part.marking.model_copy(
             update={
                 "ao": (
@@ -157,6 +541,8 @@ def _repartition_paper2_question(
                     else ao_for_marks(marks)
                 ),
                 "points": points,
+                "accept": list(accept),
+                "reject": list(reject),
             }
         )
         rebuilt.append(

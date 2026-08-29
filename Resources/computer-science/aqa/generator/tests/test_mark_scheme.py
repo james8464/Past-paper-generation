@@ -95,6 +95,28 @@ def test_paper_2_mark_scheme_matches_measured_page_plan(tmp_path):
         document.close()
 
 
+def test_paper_2_mark_scheme_keeps_reference_like_specific_content_density(
+    tmp_path,
+):
+    import pymupdf as fitz
+
+    blueprint = build_paper2_blueprint(load_syllabus(), seed=26080116)
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, output)
+
+    document = fitz.open(output)
+    try:
+        words = sum(len(page.get_text("words")) for page in document)
+        assert words >= 4_500
+
+        text = " ".join(page.get_text() for page in document).casefold()
+        assert text.count("apply the guidance specifically") == 0
+        assert text.count("credit precise technical terminology") <= 1
+    finally:
+        document.close()
+
+
 def test_paper_1_mark_scheme_includes_measured_question_and_solution_pages(tmp_path):
     import pymupdf as fitz
 

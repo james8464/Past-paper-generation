@@ -91,3 +91,21 @@ Durable, reviewable policy and qualification evidence is versioned in:
 All 18 empirical gates remain false. Live two-seed model variability and blind
 review by independent subject specialists are separate evidence requirements;
 they cannot be inferred from deterministic visual qualification.
+
+## 30 August Paper 2 mark-scheme regression check
+
+A fresh 300-DPI audit caught a real regression after repetitive examiner
+boilerplate was removed from AQA Computer Science Paper 2: the mark scheme
+retained its measured 35-page structure but its registered document score fell
+to 0.648, below the 0.679 release floor. The renderer and floor were left
+unchanged. Each of the 35 sub-questions instead received question-specific
+standardisation guidance covering acceptable equivalents, required units or
+syntax, and the misconceptions that must not receive credit.
+
+The package was regenerated through `tools/live_generation_matrix.py` with
+seed 8464 and audited at 300 DPI with the CI print profile. The question paper
+scored 0.680 and the mark scheme 0.702. All font, tagging, safe-print, contrast,
+rule-width and reading-order checks passed. Manual review of all five mark
+scheme contact sheets found no clipping, collision, malformed table or broken
+continuation page. This is deterministic visual and content-structure evidence
+only; it does not change the outstanding empirical gates above.
