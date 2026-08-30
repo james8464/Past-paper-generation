@@ -4,7 +4,7 @@ Date: 30 August 2026
 
 ## Outcome
 
-Difficulty Calibration v2 is implemented across all advertised assessment routes. It replaces tariff-only calibration with copyright-safe reference features and an item-level, independently solved difficulty gate.
+The Difficulty Calibration v2 framework is implemented across all advertised assessment routes. It replaces tariff-only calibration with copyright-safe reference features and an item-level, independently solved difficulty gate. Continued live and manual qualification has exposed unresolved subject-policy and closed-answer validation defects, recorded below; implementation coverage is not evidence that every route is yet correctly calibrated.
 
 ## Implemented evidence
 
@@ -42,7 +42,7 @@ Difficulty Calibration v2 is implemented across all advertised assessment routes
 - A second focused review confirmed supported-decision classification for `Advise`, `Recommend` and `Justify`, including consistency at 2, 8 and 25 marks. Four regression cases failed before the correction and passed afterwards.
 - Focused live Ollama `gemma4:12b` checks passed the company-statement and both partnership calculation contracts, with no reported issues. Reviewed demand/steps/minutes: company high/8/21; retirement standard/5/9; appropriation standard/8/12.
 - Full live AQA Accounting Paper 1, seed 26083031, passed generation and release validation with 21 of 21 independently solved, content-reviewed and difficulty-reviewed parts. The first attempt stopped safely at question 17 because of the `Advise` classification bug; the corrected run resumed the 20 accepted parts and completed in 314.76 seconds. This is one live paper, not a full live matrix.
-- The exported assessment was reconstructed from its saved blueprint and revalidated under the final checks. After the label correction, the same accepted blueprint was rendered again through the app's normal finalisation, assessment validation, PDF validation and manifest creation. Its 36-page question paper and 26-page scheme passed with zero detected text overlaps. This replay reused the accepted AI content; it was not another AI generation run.
+- The exported assessment was reconstructed from its saved blueprint and revalidated under the final checks. After the label correction, the same accepted blueprint was rendered again through package finalisation, assessment validation, basic PDF validation and manifest creation. Its 36-page question paper and 26-page scheme passed those checks with zero detected text overlaps. This replay reused the accepted AI content; it was not another AI generation run. A subsequent print audit found that this QA replay had bypassed the production render transaction and therefore omitted accessibility tags. The original live exports contain those tags. The replay's basic validation pass must not be interpreted as print/accessibility qualification.
 - Manually inspected the generated company source page beside the official AQA 2025 Paper 1 page 12, and the revised data-structures comparison page. Both changed generated pages fit without clipping. The accounting page still differs from the official table placement and spacing; pixel-identical layout is not claimed.
 - Manually inspected the live question 17 source, answer page and indicative scheme. Corrected the misplaced AO labels, then inspected the final rendered scheme again. A focused read-only review also verified all three affected table builders and seven prefix-handling cases.
 
@@ -64,6 +64,15 @@ The completed live run and its events are retained under
 `tmp/pdfs/difficulty-v8-accounting-p1-26083031/`. The final renderer replay,
 including both PDFs, the assessment record, package manifest and inspected
 scheme image, is under `tmp/pdfs/difficulty-v14-live-final/`.
+The failed 300-DPI print audit of that replay is preserved in
+`tmp/fidelity/excellence-accounting-live-300.json`. A corrected saved-content
+replay using `render_pdf_atomically` is under
+`tmp/pdfs/excellence-accounting-replay-tagged-26083031/`. Its scoped 300-DPI and
+600-DPI audits passed the unchanged Accounting Paper 1 document/page-role floors
+and print checks with zero failures (aggregate scores 0.685 and 0.684).
+Reports: `tmp/fidelity/excellence-accounting-tagged-300.json` and
+`tmp/fidelity/excellence-accounting-tagged-600.json`. These are single-family,
+saved-content checks, not fresh model runs or full-matrix qualification.
 Fresh assessment-revalidation evidence is in
 `tmp/difficulty-v13-live-revalidation.json`; final replay evidence is in
 `tmp/difficulty-v14-live-replay.json`. The preserved first-attempt failure is
@@ -85,3 +94,64 @@ aggregate heuristics with explicitly reported extraction coverage, not measured
 item-response parameters. The 63-package preview matrix verifies every supported
 route and its structural demand envelope; it does not constitute 63 live AI runs
 or examiner approval of every generated question.
+
+## 31 August continued qualification findings
+
+Fresh live AQA Computer Science Paper 2 (base seed 26083031) authored and
+content-reviewed 14 question groups, then stopped at the first final independent
+solution reconciliation after 648 seconds. No paper was released. The saved
+groups do not yet constitute passing difficulty evidence. Its report and events
+are under `tmp/pdfs/excellence-phase7-live-26083031/`.
+
+A captured follow-up solver check exposed an additional false-pass mechanism:
+closed classification labels were treated as a non-exhaustive open response,
+allowing duplicated partial points to conceal an incorrect final answer. The
+figure also lacked the maintenance examples referenced by its scheme. The
+reproduction is retained in `tmp/excellence-cs-solver-probe.json`; these defects
+must be fixed before claiming the route is qualified.
+
+Manual Accounting contact-sheet review covered all 36 question-paper pages and
+26 scheme pages at overview scale. No clipping was apparent, but the shareholder
+source was not the same data reviewed by the model, introductory guidance was
+repeated, and some objective labels were incorrect. AQA Accounting has only
+AO1–AO3; analysis and evaluation belong to AO3. These are substantive content
+and calibration defects, not cosmetic exceptions to waive. [Official scheme of
+assessment](https://www.aqa.org.uk/subjects/accounting/a-level/accounting-7127/specification/scheme-of-assessment).
+
+The cross-route objective audit also found unsupported AO4 allocations in both
+OCR Computer Science papers. AQA Computer Science Paper 2's saved preview
+allocation is 81/7/12 marks for AO1/AO2/AO3, versus the specification's approximate
+55/40/5 raw-paper split. Its published component shares must be divided by the
+component's 40% qualification weight before comparing them with a 100-mark
+paper. Correcting both task demand and objective allocation remains open;
+metadata relabelling alone is not sufficient. [AQA Computer Science assessment
+scheme](https://www.aqa.org.uk/subjects/computer-science/a-level/computer-science-7517/specification/scheme-of-assessment),
+[OCR Computer Science specification](https://www.ocr.org.uk/images/170844-specification-accredited-a-level-gce-computer-science-h446.pdf).
+
+### Shareholder source correction verified
+
+Commits `c538e93`, `65123ce` and `a92f2c5` replace Accounting's renderer-only
+investor data with one typed candidate-source contract. Nominal share value,
+equity movements, explicit units and numerical comparison evidence now agree
+between generation, solving and the printed source. The scheme prints all eight
+case-specific worked/analytical points; solver-only derived equity data and
+separately paraphrased source facts were removed. Actual PDF regressions check
+source parity, scheme completeness, table containment and each header word's
+padded cell bounds.
+
+Final verification: 857 backend tests passed, 2 skipped, 5 third-party warnings;
+34 Accounting tests passed. Both papers passed preview checks across three seeds
+after the source repair, and Paper 1 passed all three again after the final
+header wrap. All three final source pages were manually inspected. Scoped
+300/600-DPI audits passed unchanged thresholds and print checks with zero
+failures (0.681/0.680). Reports are
+`tmp/fidelity/excellence-shareholder-round2-{300,600}.json`; previews are under
+`tmp/pdfs/excellence-shareholder-round2-<seed>/`. The independent scoped review
+approved the correction. Fresh macOS tests passed 48/48; Release/App Store
+preflight passed before the final header-only change. This is not App Store
+approval or fresh live qualification of the revised source.
+
+The new Economics Paper 1 live attempt failed on a provider timeout during a
+recorded low-battery hibernation, before accepting its first item; no PDFs were
+released. Preserve `tmp/pdfs/excellence-economics-live-26083031/` as failed
+runtime evidence, not a content-review verdict.

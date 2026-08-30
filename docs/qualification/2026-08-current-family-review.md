@@ -6,6 +6,11 @@ This record covers the 18 papers advertised by registry schema 3. It supports
 the **visually calibrated** claim only. It does not claim official endorsement,
 identical branding, equivalent difficulty, or empirical calibration.
 
+**31 August qualification status:** subsequent live/content checks reopened
+Accounting source/marking and Computer Science solver/objective defects. The
+historical deterministic visual results below are not current all-route live
+or content sign-off. See the continued-qualification record at the end.
+
 The qualification used fixed-seed deterministic packages so renderer geometry
 could be isolated from model variability. Each question paper and mark scheme
 was compared with same-role pages from at least three locally held reference
@@ -159,3 +164,60 @@ This is deterministic engineering and visual evidence. It does not change the
 empirical difficulty gates: independent subject review and representative
 student-response evidence are still required before claiming equivalent
 difficulty.
+
+## 31 August continued qualification
+
+### Accounting Paper 1
+
+The accepted seed-26083031 content was replayed using the production atomic
+render transaction. Scoped 300/600-DPI audits passed all unchanged document and
+page-role floors and print policies, with aggregate scores 0.685/0.684. This
+corrects an earlier QA replay which had bypassed that transaction and omitted
+PDF accessibility tags; the original live export was tagged. It is a replay,
+not new AI generation, and predates the shareholder source correction.
+
+| Manual field | Observation / outcome |
+|---|---|
+| Typography, page furniture, numbering, marks | Baseline contact sheets show consistent placement; automated font embedding/print policies pass. Pixel-identical layout is not claimed. |
+| Cover, instructions, answer space, continuation pages | All 36 question pages overviewed; no clipping apparent at contact-sheet scale. Neutral branding remains intentional. |
+| Tables and sources | Existing shareholder source did not match model input. New contract preview at `c538e93` supplies coherent figures, but page 28 has a collided header and malformed currency grouping. Fix required. |
+| Question demand and objective balance | Accounting wrongly inherits AO4; official AO3 includes evaluation. Objective and downstream demand correction remains open. |
+| Mark-scheme completeness | All 26 baseline pages overviewed. New preview's last three shareholder reasoning points are absent from the PDF, and general front matter is repeated. Fix required. |
+| Source/solver parity | Independent code review found a derived equity total supplied only to the solver and separately written source prose. Fix required. |
+| Print | Saved-content baseline passes both resolutions; this does not establish new source content validity. |
+| Reviewer outcome | Not finalised. Engineering/visual passes are insufficient while content and calibration defects remain. |
+
+Both Accounting papers were regenerated at seeds 42, 20260830 and 26083031 after
+`c538e93`: six preview package checks passed. The three changed source pages
+were inspected individually, plus the affected scheme pages; these previews
+are not live AI-authorship evidence. Review fixes are tracked under programme
+Task 7.A, with broader objective/guidance corrections tracked separately.
+
+Evidence: `tmp/pdfs/excellence-accounting-replay-tagged-26083031/`,
+`tmp/fidelity/excellence-accounting-tagged-300.json`,
+`tmp/fidelity/excellence-accounting-tagged-600.json`,
+`tmp/pdfs/excellence-shareholder-<seed>/`, and
+`tmp/fidelity/excellence-shareholder-pages/`.
+
+**Correction at `a92f2c5`:** the source-contract defects above are now fixed.
+Candidate/solver/PDF facts agree, the derived solver-only total is removed, all
+eight scheme points render, amounts have explicit units, and header words fit
+their own padded cells. Both papers passed three-seed previews after the source
+repair; the final header-only change passed three more Paper 1 previews. The
+controller inspected each final source page. Scoped final 300/600-DPI checks
+passed unchanged thresholds and print policies, scores 0.681/0.680, with zero
+failures. Evidence: `tmp/pdfs/excellence-shareholder-round2-<seed>/` and
+`tmp/fidelity/excellence-shareholder-round2-{300,600}.json`. The full backend
+suite passed 857 tests, with 2 skips. Objective calibration and repetitive
+general guidance remain unresolved; the family is still not finalised.
+
+### Computer Science Paper 2
+
+The fresh live AQA run at base seed 26083031 stopped safely at its first final
+independent-solution reconciliation after authoring/content-review of 14 question
+groups. No PDFs were released. A focused captured probe then demonstrated an
+incorrect classification answer passing because closed labels were treated as
+a non-exhaustive open response. Source sufficiency and objective calibration
+also need correction. This run is retained as a failed qualification attempt,
+not omitted from the evidence: `tmp/pdfs/excellence-phase7-live-26083031/` and
+`tmp/excellence-cs-solver-probe.json`.
