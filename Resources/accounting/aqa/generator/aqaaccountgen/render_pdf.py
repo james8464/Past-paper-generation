@@ -857,13 +857,13 @@ def _income_statement_finishing_scheme(
                 [
                     "New debenture",
                     "6% × 4/12",
-                    f"{case.new_debenture * 6 // 100 * 4 // 12:,}",
+                    f"{case.new_debenture_interest:,}",
                     "Check",
                 ],
                 [
                     "Earlier debenture",
                     "8% × 10/12",
-                    f"{case.earlier_debenture * 8 // 100 * 10 // 12:,}",
+                    f"{case.earlier_debenture_interest:,}",
                     "Check",
                 ],
                 [
@@ -1935,6 +1935,7 @@ def _company_statement_case(option: GeneratedOption) -> Table:
             f"The current-year taxation charge is £{case.current_tax_charge:,}. "
             "No entry has yet been made for this charge."
         ),
+        "Round each monetary adjustment to the nearest whole pound.",
     ]
     case = Table(
         [

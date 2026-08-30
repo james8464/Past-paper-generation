@@ -52,6 +52,33 @@ def test_independent_solver_recomputes_arithmetic_without_the_draft_scheme() -> 
     assert any(issue.field == "answer" for issue in reconciliation.issues)
 
 
+def test_model_solver_prompt_excludes_nested_answer_key_and_marking_guidance() -> None:
+    prompts: list[str] = []
+
+    class Client:
+        def generate_json(self, prompt: str) -> dict[str, object]:
+            prompts.append(prompt)
+            return {"answer": "42", "steps": ["Compute from the supplied data."]}
+
+    IndependentSolver(Client()).solve(
+        {
+            "id": "q1",
+            "marks": 1,
+            "prompt": "Calculate the result from the supplied values.",
+            "authoring_context": {
+                "source_data": {"x": 6, "y": 7},
+                "verified_answers": {"answer": "SECRET_ANSWER_KEY"},
+                "observable_mark_points": ["SECRET_MARKING_GUIDANCE"],
+            },
+        },
+        [],
+    )
+
+    assert "SECRET_ANSWER_KEY" not in prompts[0]
+    assert "SECRET_MARKING_GUIDANCE" not in prompts[0]
+    assert '"x": 6' in prompts[0]
+
+
 def test_reconciliation_rejects_missing_alternative_and_partial_credit_boundary() -> (
     None
 ):

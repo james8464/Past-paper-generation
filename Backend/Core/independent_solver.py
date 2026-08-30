@@ -13,6 +13,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from Backend.Core.assessment_contracts import EvidenceRecord
 from Backend.Core.assessment_quality import content_similarity
+from Backend.Core.subjects.accounting import solve_accounting_calculation
 
 
 class SolverClient(Protocol):
@@ -70,20 +71,10 @@ class IndependentSolver:
         )
         context = dict(raw_item.get("authoring_context") or {})
         allowed_source_ids = {source.id for source in sources}
-        solver_item = {
-            key: value
-            for key, value in raw_item.items()
-            if key
-            not in {
-                "mark_scheme",
-                "structured_mark_scheme",
-                "marking",
-                "indicative_content",
-                "correct_choice",
-            }
-        }
-        result: dict[str, Any] = {}
-        if self.client is not None:
+        solver_item = _without_answer_key(raw_item)
+        deterministic = solve_accounting_calculation(raw_item)
+        result: dict[str, Any] = deterministic or {}
+        if deterministic is None and self.client is not None:
             result = dict(
                 self.client.generate_json(
                     "Independently solve this UK A-level assessment item. Do not "
@@ -104,7 +95,7 @@ class IndependentSolver:
                 )
             )
 
-        numeric_results: dict[str, float] = {}
+        numeric_results: dict[str, float] = dict(result.get("numeric_results") or {})
         expression = context.get("calculation_expression")
         variables = context.get("calculation_variables")
         if isinstance(expression, str) and isinstance(variables, dict):
@@ -184,6 +175,34 @@ class IndependentSolver:
             numeric_results=numeric_results,
             solver_context_fields=sorted(solver_item),
         )
+
+
+def _without_answer_key(value: Any) -> Any:
+    hidden = {
+        "mark_scheme",
+        "structured_mark_scheme",
+        "marking",
+        "indicative_content",
+        "correct_choice",
+        "verified_answers",
+        "canonical_solution",
+        "observable_mark_points",
+        "valid_alternatives",
+        "partial_credit_boundaries",
+        "follow_through_rules",
+        "difficulty_evidence",
+        "required_mark_scheme_terms",
+        "forbidden_mark_scheme_terms",
+    }
+    if isinstance(value, dict):
+        return {
+            key: _without_answer_key(child)
+            for key, child in value.items()
+            if key not in hidden
+        }
+    if isinstance(value, list):
+        return [_without_answer_key(child) for child in value]
+    return value
 
 
 def reconcile_solution(

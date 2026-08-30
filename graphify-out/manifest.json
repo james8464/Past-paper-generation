@@ -30,8 +30,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
-    "mtime": 1788115506.0013244,
-    "ast_hash": "82624ee5cc2755705d7d347364d86c3b",
+    "mtime": 1788121660.8467383,
+    "ast_hash": "494e2c362fa362135862c39fc3e8f889",
     "semantic_hash": ""
   },
   "Backend/Core/generation_date.py": {
@@ -100,8 +100,8 @@
     "semantic_hash": "509e4d1e65ef049a42dcffa1c8314ee2"
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/cli.py": {
-    "mtime": 1788113736.5317812,
-    "ast_hash": "5b6bb1de79a81bdc804e6fab32fa53db",
+    "mtime": 1788121660.8470378,
+    "ast_hash": "8e1dbf71902e16d64a5cae8071c07055",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/configs.py": {
@@ -115,8 +115,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/render_pdf.py": {
-    "mtime": 1788094207.538708,
-    "ast_hash": "622e9158a44302ec94d172579e4da52d",
+    "mtime": 1788121346.6543674,
+    "ast_hash": "2827683ddd8598be736b433b61a78b82",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/syllabus.py": {
@@ -150,8 +150,8 @@
     "semantic_hash": "8fad60317c5790f7b622e24ba14fbcf0"
   },
   "Resources/business/aqa/generator/aqabizgen/cli.py": {
-    "mtime": 1788113736.5320919,
-    "ast_hash": "471bbebe8064594221be6207ed13ecee",
+    "mtime": 1788121660.8472261,
+    "ast_hash": "c8dafdcca0f3cf6b0a81fcfb423dc480",
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/configs.py": {
@@ -325,8 +325,8 @@
     "semantic_hash": "56d870e1030f0dced36c6d3226caa451"
   },
   "Resources/computer-science/ocr/generator/ocrcsgen/cli.py": {
-    "mtime": 1788113736.532352,
-    "ast_hash": "d6640861d29252c30896da0568fcd03b",
+    "mtime": 1788121660.8480775,
+    "ast_hash": "3ffc02e89b883ed793422953e3461025",
     "semantic_hash": ""
   },
   "Resources/computer-science/ocr/generator/ocrcsgen/configs.py": {
@@ -370,8 +370,8 @@
     "semantic_hash": "f7a0b3033bf1284f4e52db971d25ff73"
   },
   "Resources/economics/aqa/generator/aqaecongen/cli.py": {
-    "mtime": 1788113736.5326157,
-    "ast_hash": "c46555882755cfb577b69a23b3df8e21",
+    "mtime": 1788121660.8474429,
+    "ast_hash": "3057f8ac269f5f6f45f4528fe699ae84",
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/aqaecongen/configs.py": {
@@ -570,8 +570,8 @@
     "semantic_hash": "a8e99e04cbad1d5adeefb31d441959fd"
   },
   "Resources/economics/ocr/generator/ocregen/cli.py": {
-    "mtime": 1788113736.5328526,
-    "ast_hash": "b3706d1d0e825d32ae6e9a3dc5d71d24",
+    "mtime": 1788121660.8476868,
+    "ast_hash": "23561bf01c30c5942e14a958fdd548e9",
     "semantic_hash": ""
   },
   "Resources/economics/ocr/generator/ocregen/configs.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/case_data.py": {
-    "mtime": 1788117765.133341,
-    "ast_hash": "732fcc18a30508e3d09b5e6001b97904",
+    "mtime": 1788121591.638019,
+    "ast_hash": "2dcabba9cab8c80b7c89f22fbb47a656",
     "semantic_hash": ""
   },
   "Resources/ollama-model-recommendations.json": {
@@ -1470,8 +1470,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/independent_solver.py": {
-    "mtime": 1787756892.5301628,
-    "ast_hash": "681c476c7c0863bb4d56ee1a19ce2c0e",
+    "mtime": 1788121499.5757551,
+    "ast_hash": "ea4bcbb0974ddb49bf4c8a7b52353e82",
     "semantic_hash": ""
   },
   "Backend/Core/level_of_response.py": {
@@ -1495,8 +1495,8 @@
     "semantic_hash": ""
   },
   "tests/test_independent_solver.py": {
-    "mtime": 1787756882.754014,
-    "ast_hash": "fb03da9d7b65a690c2096b0f98509b4a",
+    "mtime": 1788121275.3169482,
+    "ast_hash": "b8ee8ecd83b58f57def41d01cf6ea031",
     "semantic_hash": ""
   },
   "tests/test_level_of_response.py": {
@@ -1700,8 +1700,8 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1788115574.4814093,
-    "ast_hash": "6bd3d4d1734ccde42fc87ea6203bc483",
+    "mtime": 1788121660.9468026,
+    "ast_hash": "f3924556232e88960554b48062f2bd6f",
     "semantic_hash": ""
   },
   "tests/test_repository_hygiene.py": {
@@ -1957,6 +1957,16 @@
   "Resources/mathematics/aqa/generator/data/syllabus.json": {
     "mtime": 1788110201.1232166,
     "ast_hash": "981d7274fd87040b2e75d97b575e8f0e",
+    "semantic_hash": ""
+  },
+  "Backend/Core/subjects/accounting.py": {
+    "mtime": 1788121471.6726124,
+    "ast_hash": "e5b9d2bba87e997dfb976c910eadb6b1",
+    "semantic_hash": ""
+  },
+  "tests/test_accounting_solver.py": {
+    "mtime": 1788121631.5310738,
+    "ast_hash": "65880a109c61ff772c0c2a7d82ce6bc4",
     "semantic_hash": ""
   }
 }

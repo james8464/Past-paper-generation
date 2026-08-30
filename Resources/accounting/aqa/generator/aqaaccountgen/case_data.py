@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from decimal import ROUND_HALF_UP, Decimal
 
 
 def _nearest_hundred(value: float) -> int:
@@ -10,6 +11,10 @@ def _nearest_hundred(value: float) -> int:
 def _gbp(value: int) -> str:
     sign = "−" if value < 0 else ""
     return f"{sign}£{abs(value):,}"
+
+
+def _round_pounds(value: Decimal) -> int:
+    return int(value.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
 
 
 @dataclass(frozen=True)
@@ -127,7 +132,7 @@ class IncomeStatementCase:
 
     @property
     def irrecoverable_debt(self) -> int:
-        return self.trade_receivable * 90 // 100
+        return _round_pounds(Decimal(self.trade_receivable) * 90 / 100)
 
     @property
     def adjusted_cost_of_sales(self) -> int:
@@ -142,10 +147,16 @@ class IncomeStatementCase:
         return self.marketing_expenses + self.supplier_invoice
 
     @property
+    def new_debenture_interest(self) -> int:
+        return _round_pounds(Decimal(self.new_debenture) * 6 / 100 * 4 / 12)
+
+    @property
+    def earlier_debenture_interest(self) -> int:
+        return _round_pounds(Decimal(self.earlier_debenture) * 8 / 100 * 10 / 12)
+
+    @property
     def finance_cost(self) -> int:
-        new_interest = self.new_debenture * 6 // 100 * 4 // 12
-        earlier_interest = self.earlier_debenture * 8 // 100 * 10 // 12
-        return new_interest + earlier_interest
+        return self.new_debenture_interest + self.earlier_debenture_interest
 
     @property
     def profit_before_tax(self) -> int:
@@ -161,7 +172,7 @@ class IncomeStatementCase:
 
     @property
     def current_tax_charge(self) -> int:
-        return max(0, self.profit_before_tax * 19 // 100)
+        return max(0, _round_pounds(Decimal(self.profit_before_tax) * 19 / 100))
 
     @property
     def profit_for_year(self) -> int:
@@ -170,8 +181,8 @@ class IncomeStatementCase:
     def mark_scheme_points(self) -> list[str]:
         """Return one exact, independently checkable award point per mark."""
         gross_profit = self.revenue - self.adjusted_cost_of_sales
-        new_interest = self.new_debenture * 6 // 100 * 4 // 12
-        earlier_interest = self.earlier_debenture * 8 // 100 * 10 // 12
+        new_interest = self.new_debenture_interest
+        earlier_interest = self.earlier_debenture_interest
         return [
             f"Revenue: {_gbp(self.revenue)}.",
             (
@@ -207,8 +218,9 @@ class IncomeStatementCase:
             ),
             f"Warehouse expenses: {_gbp(self.warehouse_expenses)}.",
             (
-                f"Other income — insurance claim: {_gbp(self.roof_repair)} × "
-                f"88% = {_gbp(self.insurance_claim)}."
+                f"Other income — insurance claim: {_gbp(self.insurance_claim)}. "
+                f"The roof repair of {_gbp(self.roof_repair)} is already included "
+                "in warehouse expenses."
             ),
             (
                 f"Debenture interest: {_gbp(self.new_debenture)} × 6% × 4/12 "
@@ -218,8 +230,8 @@ class IncomeStatementCase:
             f"Total finance cost: {_gbp(self.finance_cost)}.",
             f"Profit before tax: {_gbp(self.profit_before_tax)}.",
             (
-                f"Taxation: 19% × {_gbp(self.profit_before_tax)} = "
-                f"{_gbp(self.current_tax_charge)}; final profit for the year: "
+                f"Supplied taxation charge: {_gbp(self.current_tax_charge)}; "
+                "final profit for the year: "
                 f"{_gbp(self.profit_for_year)}."
             ),
         ]
@@ -252,6 +264,15 @@ class IncomeStatementCase:
                 "supplier_invoice": self.supplier_invoice,
                 "new_debenture": self.new_debenture,
                 "earlier_debenture": self.earlier_debenture,
+                "current_tax_charge": self.current_tax_charge,
+            },
+            "adjustment_policy": {
+                "irrecoverable_debt_percent": 90,
+                "new_debenture_rate_percent": 6,
+                "new_debenture_months": 4,
+                "earlier_debenture_rate_percent": 8,
+                "earlier_debenture_months": 10,
+                "round_each_adjustment_to_nearest_pound": True,
             },
             "adjustments": {
                 "inventory_write_down": self.inventory_write_down,
@@ -298,7 +319,9 @@ class PartnershipCase:
             "Morgan": _nearest_hundred(values[1] * 210),
             "Riley": _nearest_hundred(values[2] * 210),
         }
-        goodwill = _nearest_hundred(values[4] * 300)
+        # Divisibility by both profit-sharing ratios keeps the goodwill
+        # accounts exact in whole pounds.
+        goodwill = round(values[4]) * 300
         goodwill_credit = {
             "Alex": goodwill * 3 // 6,
             "Morgan": goodwill * 2 // 6,
@@ -318,7 +341,7 @@ class PartnershipCase:
             partner: _nearest_hundred(amount * 0.8)
             for partner, amount in adjusted.items()
         }
-        return cls(
+        case = cls(
             opening_capital=opening,
             goodwill=goodwill,
             target_capital=target,
@@ -326,6 +349,17 @@ class PartnershipCase:
             first_period_drawings_interest={"Alex": 140, "Morgan": 130, "Riley": 150},
             second_period_drawings_interest={"Alex": 10, "Morgan": 14},
         )
+        # Keep both residual-profit allocations exact rather than silently
+        # losing a pound by truncating each partner's share.
+        for offset in sorted(range(-45, 46, 3), key=abs):
+            candidate = replace(case, profit_for_year=case.profit_for_year + offset)
+            periods = candidate.appropriation_by_period()
+            if (
+                periods["first_period"]["residual_profit"] % 6 == 0
+                and periods["second_period"]["residual_profit"] % 5 == 0
+            ):
+                return candidate
+        raise ValueError("could not construct exact partnership profit shares")
 
     @property
     def old_profit_sharing_ratio(self) -> dict[str, int]:
@@ -646,9 +680,7 @@ class NonCurrentAssetCase:
 
     @property
     def plant_depreciation_charge(self) -> int:
-        return _nearest_hundred(
-            self.plant_cost_closing * self.plant_rate_percent / 100
-        )
+        return self.plant_cost_closing * self.plant_rate_percent // 100
 
     @property
     def plant_accumulated_depreciation_closing(self) -> int:
@@ -678,7 +710,7 @@ class NonCurrentAssetCase:
             self.motor_cost_closing
             - self.motor_accumulated_depreciation_before_charge
         )
-        return _nearest_hundred(carrying_amount * self.motor_rate_percent / 100)
+        return carrying_amount * self.motor_rate_percent // 100
 
     @property
     def motor_accumulated_depreciation_closing(self) -> int:
