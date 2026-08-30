@@ -196,6 +196,17 @@ def test_topic_question_bank_rejects_an_unsupported_topic() -> None:
         build_topic_question_bank(load_syllabus(), topic_id="4.99", seed=42)
 
 
+def test_data_structures_bank_includes_sustained_comparison_demand() -> None:
+    bank = build_topic_question_bank(load_syllabus(), topic_id="4.2", seed=42)
+    choice = next(q for q in bank.questions if q.style_id == "data_structures_choice")
+
+    assert [part.marks for part in choice.parts] == [2, 4]
+    assert choice.parts[1].prompt.startswith("Compare")
+    assert len(choice.parts[1].marking.points) == 4
+    assert "references" in choice.stem
+    assert bank.total_marks == 30
+
+
 def test_packet_stimulus_is_introduced_as_figure_context():
     style = next(style for style in QUESTION_STYLES if style.id == "packet_switching")
 

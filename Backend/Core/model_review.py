@@ -185,10 +185,10 @@ def require_difficulty_review(
 
 
 def validate_saved_difficulty_evidence(
-    evidence: dict[str, Any], target: Any, *, item_id: str
+    evidence: Any, target: Any, *, item_id: str
 ) -> None:
     """Recheck persisted evidence without another model request or permissive defaults."""
-    if set(DifficultyReviewResult.model_fields) - evidence.keys():
+    if not isinstance(evidence, dict) or set(DifficultyReviewResult.model_fields) - evidence.keys():
         raise ValueError(f"{item_id} has incomplete difficulty evidence")
     result = DifficultyReviewResult.model_validate(evidence, strict=True)
     target_payload = _serialise(target)

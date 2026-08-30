@@ -4,6 +4,8 @@ import json
 import subprocess
 from pathlib import Path
 
+import pytest
+
 from tools.live_generation_matrix import (
     REGISTRY_PATH,
     matrix_jobs,
@@ -83,9 +85,11 @@ def test_live_matrix_reports_backend_signal_exit_without_event_error(
     assert "SIGTRAP" in (tmp_path / "matrix-report.md").read_text(encoding="utf-8")
 
 
+@pytest.mark.parametrize("demand_passed", [True, False, None])
 def test_live_matrix_writes_per_paper_and_aggregate_qualification_manifests(
     tmp_path: Path,
     monkeypatch,
+    demand_passed,
 ) -> None:
     job = jobs()[0]
 
@@ -97,6 +101,11 @@ def test_live_matrix_writes_per_paper_and_aggregate_qualification_manifests(
             suffix = ".json" if role == "assessment_package" else ".pdf"
             path = run_dir / f"{role.replace('_', '-')}{suffix}"
             path.write_bytes(b"{}" if suffix == ".json" else b"%PDF-test")
+            if role == "assessment_package" and demand_passed is not None:
+                path.write_text(json.dumps({"reference_demand": {
+                    "passed": demand_passed,
+                    "failed_checks": [] if demand_passed else ["mark_weighted_demand_distribution"],
+                }}), encoding="utf-8")
             role_paths[role] = path
         package.write_text(
             json.dumps(
@@ -153,12 +162,19 @@ def test_live_matrix_writes_per_paper_and_aggregate_qualification_manifests(
     assert manifest["seed"] == 42
     assert manifest["model"]["name"] == "gemma4:12b"
     assert manifest["gate_results"]["generation"] == "passed"
+    assert manifest["gate_results"]["reference_demand"] == (
+        "passed" if demand_passed else "failed"
+    )
     assert manifest["gate_results"]["visual"] == "not_run"
     assert {artifact["role"] for artifact in manifest["artifacts"]} == (
         set(job.expected_roles) | {"package_manifest"}
     )
     assert aggregate["paper_manifests"][0]["sha256"]
-    assert aggregate["summary"] == {"papers": 1, "passed": 1, "failed": 0}
+    assert aggregate["summary"] == {
+        "papers": 1, "passed": int(bool(demand_passed)), "failed": int(not demand_passed)
+    }
+    if not demand_passed:
+        assert result["errors"]
 
 
 def test_resume_backfills_qualification_evidence_without_regenerating(
@@ -171,7 +187,8 @@ def test_resume_backfills_qualification_evidence_without_regenerating(
     files: dict[str, str] = {}
     for role in (*job.expected_roles, "package_manifest"):
         path = run_dir / f"{role}.json"
-        path.write_text("{}", encoding="utf-8")
+        payload = {"reference_demand": {"passed": True}} if role == "assessment_package" else {}
+        path.write_text(json.dumps(payload), encoding="utf-8")
         files[role] = str(path)
     (run_dir / "events.jsonl").write_text("{\"type\":\"done\"}\n", encoding="utf-8")
     previous = {

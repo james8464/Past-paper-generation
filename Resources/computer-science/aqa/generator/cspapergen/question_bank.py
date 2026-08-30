@@ -254,10 +254,15 @@ def _data_structures_choice_question(
 ) -> Question:
     context = rng.choice(["hospital treatment requests", "roadside-assistance callouts", "print jobs in a shared laboratory"])
     parts = _parts([
-        ("1", 3, f"Explain why a priority queue is more suitable than an ordinary queue for scheduling {context}.", ["An ordinary queue removes items in arrival/FIFO order;", "A priority queue removes an item according to its stored priority rather than arrival alone;", f"Urgent {context} can therefore be processed before less urgent items while equal-priority items can retain arrival order;"], "", 7),
-        ("2", 3, "Explain why a linked list could be preferable to an array when the number of waiting items changes frequently.", ["A linked list can grow or shrink without allocating one fixed contiguous block sized for the maximum;", "Insertion or deletion can update links without shifting all later elements;", "The trade-off is extra link storage and no constant-time indexed access;"], "", 7),
+        ("1", 2, f"Explain why a priority queue is more suitable than an ordinary queue for scheduling {context}.", ["A priority queue selects by stored priority rather than only FIFO arrival order;", f"Urgent {context} can therefore be processed before less urgent items;"], "", 5),
+        ("2", 4, "Compare a doubly linked list with an array for storing the waiting items. Relate your comparison to removal, storage and access requirements in this service.", ["With a reference to the cancelled node, a doubly linked list can update neighbouring links without shifting later items as an array would;", "The list can grow with the waiting workload without resizing a contiguous array or reserving capacity for the maximum;", "A list needs additional storage for links, whereas an array does not need per-item links;", "An array provides constant-time indexed access; a list requires traversal, but this service rarely accesses items by position;"], "", 9),
     ])
-    return _question(style, number, "Selecting data structures", f"A service needs to schedule {context} and frequently add or remove waiting items.", None, _fit_parts(parts, total))
+    stem = (
+        f"A service needs to schedule {context} and frequently add or remove waiting items. "
+        "The workload varies substantially. The cancellation system holds direct references "
+        "to stored items, and items are rarely accessed by their position in the sequence."
+    )
+    return _question(style, number, "Selecting data structures", stem, None, _fit_parts(parts, total))
 
 
 def _software_classification_question(

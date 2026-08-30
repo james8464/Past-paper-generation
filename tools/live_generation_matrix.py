@@ -183,12 +183,21 @@ def run_matrix(
         ]
         if not error_messages and return_code != 0:
             error_messages = [_process_failure_message(return_code, timed_out, stderr)]
-        passed = (
+        generation_passed = (
             return_code == 0
             and not missing_roles
             and not missing_files
             and any(event.get("type") == "done" for event in events)
         )
+        demand = _read_package_manifest(file_events.get("assessment_package")).get("reference_demand")
+        demand_passed = isinstance(demand, dict) and demand.get("passed") is True
+        if generation_passed and not demand_passed:
+            checks = demand.get("failed_checks", []) if isinstance(demand, dict) else []
+            error_messages.append(
+                "reference-demand audit failed: "
+                + (", ".join(map(str, checks)) or "missing or invalid evidence")
+            )
+        passed = generation_passed and demand_passed
         result = {
             "id": job.id,
             "family_id": job.family_id,
@@ -204,6 +213,8 @@ def run_matrix(
             "return_code": return_code,
             "timed_out": timed_out,
             "passed": passed,
+            "generation_passed": generation_passed,
+            "reference_demand_passed": demand_passed,
             "missing_roles": missing_roles,
             "missing_files": missing_files,
             "errors": error_messages,
@@ -313,6 +324,11 @@ def _resumable_result(path: Path) -> dict[str, Any] | None:
     files = result.get("files")
     if not isinstance(files, dict) or not files:
         return None
+    demand = _read_package_manifest(files.get("assessment_package")).get("reference_demand")
+    if not isinstance(demand, dict) or demand.get("passed") is not True:
+        return None
+    result["generation_passed"] = True
+    result["reference_demand_passed"] = True
     return result if all(Path(str(path)).is_file() for path in files.values()) else None
 
 
@@ -355,6 +371,7 @@ def _write_qualification_manifest(
     generator = package.get("generator", {})
     backend = package.get("backend", {})
     passed = bool(result["passed"])
+    generation_passed = bool(result.get("generation_passed", passed))
     artifacts = [
         ArtifactEvidence.from_path(role, Path(path))
         for role, path in result.get("files", {}).items()
@@ -393,8 +410,11 @@ def _write_qualification_manifest(
         ),
         artifacts=artifacts,
         gate_results={
-            "generation": GateState.PASSED if passed else GateState.FAILED,
-            "pdf": GateState.PASSED if passed else GateState.FAILED,
+            "generation": GateState.PASSED if generation_passed else GateState.FAILED,
+            "pdf": GateState.PASSED if generation_passed else GateState.FAILED,
+            "reference_demand": (
+                GateState.PASSED if result.get("reference_demand_passed") else GateState.FAILED
+            ),
             "visual": GateState.NOT_RUN,
             "expert_review": GateState.NOT_RUN,
             "student_calibration": GateState.NOT_RUN,

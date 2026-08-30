@@ -35,7 +35,11 @@ from Backend.Core.independent_solver import (
     reconcile_solution,
 )
 from Backend.Core.mark_scheme_quality import validate_mark_scheme_item
-from Backend.Core.model_review import ReviewResult, require_difficulty_review
+from Backend.Core.model_review import (
+    ReviewResult,
+    require_difficulty_review,
+    validate_saved_difficulty_evidence,
+)
 from Backend.Core.reference_demand import (
     ReferenceDemandProfile,
     build_item_demand_target,
@@ -246,7 +250,11 @@ def _generate_batch(
             original_stored = stored
             stored = _upgrade_checkpoint_metadata(task, stored)
             try:
-                _validate_checkpoint_item(task, stored)
+                _validate_checkpoint_item(
+                    task,
+                    stored,
+                    demand_profile=demand_profile if policy.require_difficulty_review else None,
+                )
             except ValueError as error:
                 LOGGER.info(
                     "Discarding invalid checkpoint item %s: %s",
@@ -395,6 +403,8 @@ def _review_verified_contract(
 def _validate_checkpoint_item(
     task: _Task,
     candidate: GeneratedQuestion,
+    *,
+    demand_profile: ReferenceDemandProfile | None = None,
 ) -> None:
     original = task.question
     immutable = (
@@ -440,6 +450,12 @@ def _validate_checkpoint_item(
     if not preserves_scheme:
         _validate_mark_points(original, candidate.structured_mark_scheme)
     _validate_release_mark_scheme(candidate)
+    if demand_profile is not None:
+        validate_saved_difficulty_evidence(
+            candidate.authoring_context.get("difficulty_evidence", {}),
+            build_item_demand_target(_demand_item(task), demand_profile),
+            item_id=task.id,
+        )
 
 
 def _upgrade_checkpoint_metadata(

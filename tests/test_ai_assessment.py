@@ -1139,7 +1139,10 @@ def test_checkpoint_can_adopt_a_new_prompt_budget_without_content_changes() -> N
     _validate_checkpoint_item(task, upgraded)
 
 
-def test_checkpoint_accepts_persisted_difficulty_evidence() -> None:
+@pytest.mark.parametrize("evidence", [{"schema_version": 2, "approved": True}, None, []])
+def test_checkpoint_requires_complete_evidence_when_difficulty_review_is_enabled(evidence) -> None:
+    from Backend.Core.reference_demand import profile_for
+
     point = MarkSchemePoint(
         text="A change in the independent variable changes the outcome.",
         marks=1,
@@ -1168,13 +1171,17 @@ def test_checkpoint_accepts_persisted_difficulty_evidence() -> None:
         update={
             "authoring_context": {
                 **current.authoring_context,
-                "difficulty_evidence": {"schema_version": 2, "approved": True},
+                "difficulty_evidence": evidence,
             },
             "provenance": "verified-contract-reviewed",
         }
     )
 
     _validate_checkpoint_item(task, checkpoint)
+    with pytest.raises(ValueError, match="incomplete difficulty evidence"):
+        _validate_checkpoint_item(
+            task, checkpoint, demand_profile=profile_for("aqa/economics", "1")
+        )
 
 
 def test_source_constrained_calculation_preserves_its_verified_prompt() -> None:
