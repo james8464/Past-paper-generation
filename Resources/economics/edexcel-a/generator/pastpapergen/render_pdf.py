@@ -19,7 +19,14 @@ _PROJECT_ROOT = str(Path(__file__).resolve().parents[5])
 if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
-from Backend.Core.document_dsl import DocumentRole, renderer_contract
+from Backend.Core.document_dsl import (
+    CanvasBarcodeStyle,
+    DocumentRole,
+    GlyphRuleStyle,
+    draw_barcode,
+    draw_glyph_answer_rules,
+    renderer_contract,
+)
 from Backend.Core.fonts import register_fonts as _rf
 from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.overlay.graphs import (
@@ -63,6 +70,16 @@ BODY_FONT_SIZE_PT = L.body_font_size
 BODY_LEADING_PT = L.body_leading
 FONT_REGULAR = L.font_regular
 FONT_BOLD = L.font_bold
+EDEXCEL_ANSWER_RULES = GlyphRuleStyle(
+    left=42.5,
+    gap=ANSWER_LINE_GAP_PT,
+    glyph=".",
+    glyph_count=276,
+    font=FONT_REGULAR,
+    font_size=6,
+    character_spacing=0.174,
+    color=colors.HexColor(ANSWER_LINE_COLOR_HEX),
+)
 FONT_ITALIC = "ExamSans-Italic"
 MS_FONT = "ExamMarkScheme"
 MS_FONT_BOLD = "ExamMarkScheme-Bold"
@@ -414,20 +431,24 @@ def _encode_barcode(barcode_text: str) -> list[int]:
 
 
 def _draw_fake_barcode(pdf: canvas.Canvas, x: float, y: float, caption: str) -> None:
-    widths = _encode_barcode(caption)
     module = 2.7
-    cursor = x
-    pdf.setFillColor(colors.black)
-    for idx, width in enumerate(widths):
-        if idx % 2 == 0:
-            pdf.rect(cursor, y + 13, width * module, 28, stroke=0, fill=1)
-        cursor += (width + 1) * module
-    total_width = cursor - x
-    pdf.setFont(FONT_REGULAR, 6.5)
-    character_step = total_width / max(1, len(caption))
-    for index, character in enumerate(caption):
-        pdf.drawCentredString(x + character_step * (index + 0.5), y, character)
-    pdf.setFillColor(colors.black)
+    draw_barcode(
+        pdf,
+        x=x,
+        y=y,
+        caption=caption,
+        style=CanvasBarcodeStyle(
+            widths=tuple(width * module for width in _encode_barcode(caption)),
+            repetitions=1,
+            height=28,
+            bar_y_offset=13,
+            gap=module,
+            font=FONT_REGULAR,
+            font_size=6.5,
+            caption_center_offset=0,
+            spread_caption=True,
+        ),
+    )
 
 
 def _instruction_line(blueprint: PaperBlueprint) -> str:
@@ -1842,12 +1863,13 @@ def _draw_answer_lines(
     line_count: int,
     bottom_y: float = 90,
 ) -> float:
-    for _ in range(line_count):
-        if y < bottom_y:
-            break
-        _draw_dotted_answer_rule(pdf, y)
-        y -= ANSWER_LINE_GAP_PT
-    return y
+    available = max(0, int((y - bottom_y) // ANSWER_LINE_GAP_PT) + 1)
+    return draw_glyph_answer_rules(
+        pdf,
+        first_y=y,
+        count=min(line_count, available),
+        style=EDEXCEL_ANSWER_RULES,
+    )
 
 
 def _draw_answer_lines_until(
@@ -1857,20 +1879,13 @@ def _draw_answer_lines_until(
     right_x: float,
     bottom_y: float = 70,
 ) -> float:
-    while y >= bottom_y:
-        _draw_dotted_answer_rule(pdf, y)
-        y -= ANSWER_LINE_GAP_PT
-    return y
-
-
-def _draw_dotted_answer_rule(pdf: canvas.Canvas, y: float) -> None:
-    text = pdf.beginText()
-    text.setTextOrigin(42.5, y)
-    text.setFont(FONT_REGULAR, 6)
-    text.setCharSpace(0.174)
-    text.setFillColor(colors.HexColor(ANSWER_LINE_COLOR_HEX))
-    text.textOut("." * 276)
-    pdf.drawText(text)
+    line_count = max(0, int((y - bottom_y) // ANSWER_LINE_GAP_PT) + 1)
+    return draw_glyph_answer_rules(
+        pdf,
+        first_y=y,
+        count=line_count,
+        style=EDEXCEL_ANSWER_RULES,
+    )
 
 
 def _answer_line_count(marks: int) -> int:

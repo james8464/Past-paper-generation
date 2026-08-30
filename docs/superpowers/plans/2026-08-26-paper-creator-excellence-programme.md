@@ -216,11 +216,11 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - [x] Implement measured units, typed constraints, page-role frames, font tokens, rule tokens, widow/orphan controls, deterministic split points, and a progress watchdog.
 - [x] Adapt existing `exam_cover`, `exam_pages`, and theme code behind the DSL so their current tests continue to pass.
 - [x] Migrate one low-risk family, prove byte-stable output for a fixed package where feasible and metric-stable output otherwise, then migrate the remaining six.
-- [ ] Remove repeated page furniture, theme, pagination, barcode, answer-line, table, graph, and mark-scheme-grid code only after `rg` and import tests show every family uses the shared path.
+- [x] Remove repeated page furniture, theme, pagination, barcode, answer-line, table, graph, and mark-scheme-grid code only after `rg` and import tests show every family uses the shared path.
 - [x] Add vector renderers for economic curves, accounting tables, program trace tables, logic/circuit diagrams, scientific apparatus, molecules, mathematical plots, and statistical charts from typed contracts.
 - [x] Verify embedded fonts, PDF text selection, tags/reading order, 100%-scale print margins, bounded render time, and atomic publication.
 - [x] Run all renderer tests, all 18 deterministic renders, the 300-DPI regression audit, the 600-DPI phase audit, and manual role review.
-- [ ] Update Graphify and commit per migrated family, finishing with `Complete shared board rendering DSL`.
+- [x] Update Graphify and commit per migrated family, finishing with `Complete shared board rendering DSL`.
 
 ### Task 5: Split AppViewModel into Focused Coordinators
 

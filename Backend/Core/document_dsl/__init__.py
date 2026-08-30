@@ -38,6 +38,14 @@ from Backend.Core.document_dsl.model import (
 from Backend.Core.document_dsl.paginator import PaginationError, Paginator
 from Backend.Core.document_dsl.profiles import board_profile, renderer_contract
 from Backend.Core.document_dsl.reportlab_backend import ReportLabBackend
+from Backend.Core.document_dsl.reportlab_canvas import (
+    CanvasBarcodeStyle,
+    GlyphRuleStyle,
+    SolidRuleStyle,
+    draw_barcode,
+    draw_glyph_answer_rules,
+    draw_solid_answer_rules,
+)
 from Backend.Core.document_dsl.reportlab_flowables import (
     AQAQuestionHeaderFactory,
     OCRQuestionHeaderFactory,
@@ -65,6 +73,7 @@ __all__ = [
     "AnswerSpace",
     "BlankPage",
     "BoardProfile",
+    "CanvasBarcodeStyle",
     "Component",
     "ContinuationPage",
     "Cover",
@@ -76,6 +85,7 @@ __all__ = [
     "FontToken",
     "FontTokens",
     "Frame",
+    "GlyphRuleStyle",
     "Graph",
     "InstructionBlock",
     "LayoutBox",
@@ -104,12 +114,16 @@ __all__ = [
     "ScientificApparatus",
     "SingleCellPanelFactory",
     "Size",
+    "SolidRuleStyle",
     "SourcePanel",
     "StatisticalChart",
     "Table",
     "aqa_lozenge",
     "aqa_section_intro",
     "board_profile",
+    "draw_barcode",
+    "draw_glyph_answer_rules",
+    "draw_solid_answer_rules",
     "flowable_question_block",
     "independent_practice_page",
     "page_sequence",

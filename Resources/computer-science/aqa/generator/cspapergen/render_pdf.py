@@ -8,7 +8,14 @@ from pathlib import Path
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 
-from Backend.Core.document_dsl import DocumentRole, renderer_contract
+from Backend.Core.document_dsl import (
+    CanvasBarcodeStyle,
+    DocumentRole,
+    SolidRuleStyle,
+    draw_barcode,
+    draw_solid_answer_rules,
+    renderer_contract,
+)
 from Backend.Core.exam_cover import CoverProfile, draw_mark_scheme_cover
 from Backend.Core.exam_pages import ExamPageProfile, draw_exam_page
 from Backend.Core.fonts import register_fonts as _rf
@@ -32,6 +39,23 @@ TOP = 770
 BOTTOM = 76
 RAIL_X = 516
 LINE_GAP = 20
+AQA_CS_ANSWER_RULES = SolidRuleStyle(
+    left=118,
+    right=534,
+    gap=LINE_GAP,
+    color=colors.HexColor("#404040"),
+    width=0.45,
+)
+AQA_CS_FOOTER_BARCODE = CanvasBarcodeStyle(
+    widths=(1, 1, 2, 1, 3, 1, 1, 2, 1, 2, 3, 1, 1, 1, 2, 2, 1, 3),
+    repetitions=3,
+    height=27,
+    bar_y_offset=11,
+    gap=1,
+    font=FONT,
+    font_size=8,
+    caption_center_offset=31,
+)
 AQA_A4 = (595.32, 841.92)
 EXTRA_ANSWER_PAGES = 3
 PAPER2_QUESTION_PAGE_ALLOCATION = (3, 2, 2, 1, 2, 5, 3, 2, 4, 2, 2, 3, 1, 3)
@@ -315,7 +339,12 @@ def _draw_question_continuation(
 ) -> None:
     pdf.setFont(FONT_BOLD, 10)
     pdf.drawCentredString(282, 718, f"Question {question_number} continued")
-    _answer_lines(pdf, 680, 25)
+    draw_solid_answer_rules(
+        pdf,
+        first_y=680,
+        count=25,
+        style=AQA_CS_ANSWER_RULES,
+    )
     state.y = 160
 
 
@@ -1349,7 +1378,13 @@ def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     _cover_section(pdf, y - 8, "Advice", advice)
 
     _examiner_table(pdf, len(blueprint.questions), y_top=390)
-    _draw_footer_barcode(pdf, 52, 17, 1)
+    draw_barcode(
+        pdf,
+        x=52,
+        y=17,
+        caption="01",
+        style=AQA_CS_FOOTER_BARCODE,
+    )
     pdf.setFont(FONT_BOLD, 8)
     pdf.drawString(130, 35, f"*PRACTICE{blueprint.paper_code.replace('/', '')}01*")
     pdf.setFont(FONT, 9)
@@ -1435,7 +1470,13 @@ def _draw_question_page_header(pdf: canvas.Canvas, page: int, blueprint: PaperBl
         )
         pdf.drawCentredString(289, 768, instruction)
     pdf.setFont(FONT, 7)
-    _draw_footer_barcode(pdf, 52, 17, page)
+    draw_barcode(
+        pdf,
+        x=52,
+        y=17,
+        caption=f"{page:02d}",
+        style=AQA_CS_FOOTER_BARCODE,
+    )
     pdf.drawRightString(539, 28, f"Paper Creator / {blueprint.paper_code}")
 
 
@@ -1876,15 +1917,6 @@ def _answer_line_count(part: QuestionPart) -> int:
     return max(part.answer_lines, 42)
 
 
-def _answer_lines(pdf: canvas.Canvas, y: float, count: int) -> None:
-    pdf.setStrokeColor(colors.HexColor("#404040"))
-    pdf.setLineWidth(0.45)
-    for index in range(count):
-        line_y = y - index * LINE_GAP
-        pdf.line(118, line_y, 534, line_y)
-    pdf.setStrokeColor(colors.black)
-
-
 def _answer_lines_paginated(pdf: canvas.Canvas, state: _QuestionRenderState, count: int) -> _QuestionRenderState:
     remaining = count
     while remaining:
@@ -1893,7 +1925,12 @@ def _answer_lines_paginated(pdf: canvas.Canvas, state: _QuestionRenderState, cou
             state = _new_question_page(pdf, state)
             continue
         lines = min(remaining, available)
-        _answer_lines(pdf, state.y, lines)
+        draw_solid_answer_rules(
+            pdf,
+            first_y=state.y,
+            count=lines,
+            style=AQA_CS_ANSWER_RULES,
+        )
         state.y -= lines * LINE_GAP
         remaining -= lines
         if remaining:
@@ -1937,19 +1974,6 @@ def _draw_extra_answer_page(
         page_number=0,
         include_footer=True,
     )
-
-
-def _draw_footer_barcode(pdf: canvas.Canvas, x: float, y: float, page: int) -> None:
-    widths = [1, 1, 2, 1, 3, 1, 1, 2, 1, 2, 3, 1, 1, 1, 2, 2, 1, 3]
-    cursor = x
-    pdf.setFillColor(colors.black)
-    for index, width in enumerate(widths * 3):
-        if index % 2 == 0:
-            pdf.rect(cursor, y + 11, width, 27, stroke=0, fill=1)
-        cursor += width + 1
-    pdf.setFont(FONT, 8)
-    pdf.drawCentredString(x + 31, y, f"{page:02d}")
-    pdf.setFillColor(colors.black)
 
 
 def _mark_scheme_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
