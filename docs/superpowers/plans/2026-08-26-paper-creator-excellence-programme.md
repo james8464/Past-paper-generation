@@ -480,9 +480,9 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - Modify: `README.md`
 
 - [x] Inventory every tracked file and classify it as runtime source, resource, test, fixture, documentation, build/release configuration, durable derived metadata, or removable; fail CI on unclassified generated/binary additions.
-- [ ] Use `rg`, import graphs, Xcode bundle manifests, test discovery, and Graphify paths to prove candidates unused before deleting them.
-- [ ] Remove obsolete generated PDFs, caches, old matrix outputs, duplicate scripts, dead renderers, superseded package copies, unused assets/tutorial screenshots, editor/system files, and stale empty directories; do not delete current reference-derived metadata or active historical migrations.
-- [ ] Consolidate duplicated documentation and archive superseded plans only when their completed decisions are represented in current architecture/quality docs.
+- [x] Use `rg`, import graphs, Xcode bundle manifests, test discovery, and Graphify paths to prove candidates unused before deleting them.
+- [x] Remove obsolete generated PDFs, caches, old matrix outputs, duplicate scripts, dead renderers, superseded package copies, unused assets/tutorial screenshots, editor/system files, and stale empty directories; do not delete current reference-derived metadata or active historical migrations.
+- [x] Consolidate duplicated documentation and archive superseded plans only when their completed decisions are represented in current architecture/quality docs.
 - [x] Add integration tests for offline model use, missing model, low disk space, unwritable output, corrupt cache/checkpoint/history, interrupted model stream, backend crash, renderer timeout, app restart, schema upgrade, denied MLX consent, failed MLX install, and unsupported old package.
 - [ ] Run clean-install tests on the oldest supported low-memory Apple Silicon Mac and a current higher-memory Mac with recommended Ollama tiers; verify warnings for all other models.
 - [ ] Run VoiceOver, Full Keyboard Access, contrast/transparency, localisation, compact-window, multi-window, printing, Quick Look, and long-running cancellation/resume test scripts.

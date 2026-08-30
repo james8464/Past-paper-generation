@@ -229,3 +229,40 @@ New Roman metrics measured from official papers. Release evidence ignores
 unused PDF resource entries and decorative bleed, but still fails genuine
 unembedded text, clipped answerable content, weak text contrast, rules below
 the print minimum, or missing marked-content structure.
+
+## Repository hygiene and retained evidence
+
+`tools/repository_hygiene.py` classifies every tracked path and rejects build
+outputs, caches, system metadata, arbitrary binary files, and unclassified
+additions. `tests/test_repository_hygiene.py` also requires the committed
+`Resources/repository-inventory.json` snapshot to match the current Git index,
+so a source change cannot silently leave the release inventory stale.
+
+The cleanup audit combines Git inventory, Python import/test discovery,
+Graphify relationships, registry entry points, Xcode's synchronised source
+group, asset-catalog manifests, and exact content hashes. The only identical
+tracked files are intentional macOS icon slots at equivalent pixel dimensions
+and empty package markers. Every generator is reachable from the canonical
+registry and bundle health check; every tool is imported by tests, used by CI,
+documented as an operator command, or composes another retained tool.
+
+The following large or historical assets are retained deliberately:
+
+- official reference PDFs and source specifications are ignored development
+  evidence and never ship in the app;
+- numeric layout masters, demand profiles, qualification policy, and migrations
+  are active versioned runtime or release evidence;
+- the AppIcon master is the editable source for the complete asset-catalog icon
+  set, while tutorial screenshots are referenced by Help and bundle tests;
+- completed plans and design specifications preserve the decisions behind
+  current architecture and quality policy, while operational guidance lives in
+  this document, `ASSESSMENT_QUALITY.md`, `HIG_COMPLIANCE.md`, and the README;
+- current Graphify graph, report, tree, call flow, memory, and lessons files are
+  durable navigation metadata; rolling cache and dated safety backups remain
+  ignored.
+
+Generated matrix PDFs, rendered comparison images, local Xcode products, and
+test caches remain ignored. Only evidence paths still cited by a qualification
+record are retained locally; superseded intermediate matrices, duplicate visual
+audits, Python caches, Xcode user state, and stale empty output directories are
+removed during qualification cleanup.

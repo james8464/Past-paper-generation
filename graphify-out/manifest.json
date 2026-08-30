@@ -1170,8 +1170,8 @@
     "semantic_hash": ""
   },
   "docs/ARCHITECTURE.md": {
-    "mtime": 1787753706.7829242,
-    "ast_hash": "1d7bf38cc8253281ef8a3303f5c130fc",
+    "mtime": 1788106036.3968139,
+    "ast_hash": "5834551eb8a49b4cab93d5eb7df881a5",
     "semantic_hash": ""
   },
   "docs/ASSESSMENT_QUALITY.md": {
@@ -1425,8 +1425,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-26-paper-creator-excellence-programme.md": {
-    "mtime": 1788105742.2089994,
-    "ast_hash": "5be47af4d362f631ead195b243e0f872",
+    "mtime": 1788106036.3974032,
+    "ast_hash": "13715162d21b7460ea5e003af9276740",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md": {
@@ -1700,13 +1700,13 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1788041671.6790214,
-    "ast_hash": "d73949c77fa856d2fd7f46a0d43e2b65",
+    "mtime": 1788105836.7495673,
+    "ast_hash": "bd191790eec248319bdcbdf1f5cea40b",
     "semantic_hash": ""
   },
   "tests/test_repository_hygiene.py": {
-    "mtime": 1787772326.0154867,
-    "ast_hash": "07d2bd797184f0300f06125415f8c4ae",
+    "mtime": 1788105828.3804655,
+    "ast_hash": "bf5783d62cfc6963a5e1d8dd2b816377",
     "semantic_hash": ""
   },
   "tools/repository_hygiene.py": {

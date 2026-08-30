@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from tools.repository_hygiene import classify_path, inspect_repository
@@ -13,6 +14,16 @@ def test_every_tracked_file_has_a_durable_classification() -> None:
     assert report["unclassified"] == []
     assert report["forbidden"] == []
     assert sum(report["counts"].values()) == report["tracked_files"]
+
+
+def test_committed_inventory_matches_the_current_repository() -> None:
+    committed = json.loads(
+        (ROOT / "Resources" / "repository-inventory.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert committed == inspect_repository(ROOT)
 
 
 def test_generated_and_binary_outputs_are_rejected() -> None:
