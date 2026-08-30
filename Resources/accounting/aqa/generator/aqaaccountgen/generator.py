@@ -275,68 +275,37 @@ def _written(
             f"A larger discounted order moves more units, therefore {business} may hold less inventory through increased inventory turnover;",
         ]
     elif rule.id == "statement_extract":
+        case = NonCurrentAssetCase.from_chart_values(business, values)
         prompt = (
             f"Prepare an extract from the statement of financial position for {business}, "
             "showing the non-current assets section. Show all workings."
         )
-        scheme = [
-            "Calculate depreciation for each class of non-current asset;",
-            "Account correctly for additions and disposals;",
-            "Show cost, accumulated depreciation and carrying amount;",
-            "Use the correct statement heading and date;",
-            "Award method marks for valid workings carried through consistently.",
-        ]
-        authoring_context = NonCurrentAssetCase.from_chart_values(
-            business,
-            values,
-        ).authoring_context()
+        scheme = case.mark_scheme_points()
+        authoring_context = case.authoring_context()
     elif rule.id == "ledger_calculation":
+        case = SalesLedgerCase.from_chart_values(business, values)
         prompt = (
             f"Prepare the sales ledger control account for {business}. Balance the "
             "account and bring the balance down at the start of the next period."
         )
-        scheme = [
-            "Enter opening trade receivables on the debit side;",
-            "Enter credit sales from the sales journal;",
-            "Enter receipts, sales returns and discount allowed on the credit side;",
-            "Calculate and carry down the closing balance;",
-            "Bring down the balance on the debit side in the next period.",
-        ]
-        authoring_context = SalesLedgerCase.from_chart_values(
-            business,
-            values,
-        ).ledger_authoring_context()
+        scheme = case.ledger_mark_scheme_points()
+        authoring_context = case.ledger_authoring_context()
     elif rule.id == "accounting_concept":
+        case = SalesLedgerCase.from_chart_values(business, values)
         prompt = (
             f"Prepare the sales account for {business}. Show clearly the amount "
             "transferred to the income statement."
         )
-        scheme = [
-            "Enter sales returns on the debit side where required;",
-            "Enter gross credit sales on the credit side;",
-            "Transfer net sales to the income statement;",
-        ]
-        authoring_context = SalesLedgerCase.from_chart_values(
-            business,
-            values,
-        ).sales_account_authoring_context()
+        scheme = case.sales_account_mark_scheme_points()
+        authoring_context = case.sales_account_authoring_context()
     elif rule.id == "company_statement":
+        case = IncomeStatementCase.from_chart_values(business, values)
         prompt = (
             f"Prepare the income statement for {business} for the year ended. "
             "Show all workings."
         )
-        scheme = [
-            "Calculate adjusted revenue and cost of sales;",
-            "Account correctly for damaged inventory and irrecoverable debts;",
-            "Accrue the outstanding supplier invoice;",
-            "Calculate the debenture finance cost using time apportionment;",
-            "Show profit before tax, tax charge and profit for the year;",
-            "Use a correct income-statement heading and layout.",
-        ]
-        authoring_context = IncomeStatementCase.from_chart_values(
-            business,
-            values,
-        ).authoring_context()
+        scheme = case.mark_scheme_points()
+        authoring_context = case.authoring_context()
     elif rule.id == "company_adjustment":
         prompt = (
             f"Assess the usefulness of the income statement to the employees of {business}."
@@ -349,37 +318,22 @@ def _written(
             "A supported conclusion considers other financial and non-financial information.",
         ]
     elif rule.id == "partnership_1":
+        case = PartnershipCase.from_chart_values(values)
         prompt = (
             "Using the information provided, prepare Alex and Morgan's capital accounts "
             "following Riley's retirement. Balance the accounts and bring down the "
             "remaining balances."
         )
-        scheme = [
-            "Enter the opening capital balances for Alex and Morgan;",
-            "Credit goodwill in the old profit-sharing ratio;",
-            "Write goodwill off against Alex and Morgan in the new ratio;",
-            "Record the cash withdrawn by Alex and Morgan;",
-            "Show the correct closing capital balances.",
-        ]
-        authoring_context = PartnershipCase.from_chart_values(
-            values
-        ).retirement_authoring_context()
+        scheme = case.retirement_mark_scheme_points()
+        authoring_context = case.retirement_authoring_context()
     elif rule.id == "partnership_2":
+        case = PartnershipCase.from_chart_values(values)
         prompt = (
             "Using the information provided, prepare the partnership profit and loss "
             "appropriation account for both periods of the year."
         )
-        scheme = [
-            "Apportion profit between the first period and second period;",
-            "Calculate Morgan's salary for each period;",
-            "Calculate interest on capital for both periods;",
-            "Include interest on drawings for both periods;",
-            "Calculate residual profit for each period;",
-            "Share residual profit using the applicable profit-sharing ratio.",
-        ]
-        authoring_context = PartnershipCase.from_chart_values(
-            values
-        ).appropriation_authoring_context()
+        scheme = case.appropriation_mark_scheme_points()
+        authoring_context = case.appropriation_authoring_context()
     elif rule.id == "partnership_3":
         prompt = (
             "Assess the view that the formal partnership agreement was unnecessary."

@@ -67,6 +67,13 @@ def _enrich_question(
         return question.model_copy(update={"prompt": _clean_text(question.prompt)})
 
     prompt = _clean_text(question.prompt)
+    observable_mark_points = question.authoring_context.get(
+        "observable_mark_points"
+    ) or [
+        point.text for point in question.structured_mark_scheme if point.marks
+    ]
+    if not observable_mark_points:
+        observable_mark_points = list(question.mark_scheme)
     authoring_context = {
         **question.authoring_context,
         "preserve_mark_scheme": True,
@@ -80,9 +87,7 @@ def _enrich_question(
         "misconception_targets": [
             f"confusing {topic.title} with a superficially related concept"
         ],
-        "observable_mark_points": [
-            point.text for point in question.structured_mark_scheme if point.marks
-        ],
+        "observable_mark_points": list(observable_mark_points),
         "valid_alternatives": [
             "Marker check: reward a valid alternative route where it demonstrates the same assessed knowledge or skill."
         ],

@@ -7,11 +7,18 @@ import subprocess
 from pathlib import Path
 
 import pymupdf as fitz
-from aqaaccountgen.case_data import CostingCase, NonCurrentAssetCase, SalesLedgerCase
+from aqaaccountgen.case_data import (
+    CostingCase,
+    IncomeStatementCase,
+    NonCurrentAssetCase,
+    PartnershipCase,
+    SalesLedgerCase,
+)
 from aqaaccountgen.cli import generate_package
 from aqaaccountgen.configs import RULES
 from aqaaccountgen.generator import build_paper
 from aqaaccountgen.syllabus import load_syllabus
+from Backend.Core.independent_solver import CanonicalSolution, reconcile_solution
 from pypdf import PdfReader
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -90,6 +97,129 @@ def test_non_current_asset_question_and_scheme_share_verified_case_data() -> Non
     assert case.total_carrying_amount == (
         case.plant_carrying_amount + case.motor_carrying_amount
     )
+
+
+def test_locked_calculation_schemes_are_exactly_derived_from_the_case_data() -> None:
+    generated = build_paper(RULES["paper_1"], SYLLABUS, 26080100)
+    questions = {
+        question.rule_id: (question, option)
+        for section in generated.sections
+        for option in section.options
+        for question in option.questions
+    }
+    assets_option = questions["statement_extract"][1]
+    ledger_option = questions["ledger_calculation"][1]
+    statement_option = questions["company_statement"][1]
+    partnership_option = questions["partnership_1"][1]
+    assets = NonCurrentAssetCase.from_chart_values(
+        assets_option.title, assets_option.chart_values
+    )
+    ledger = SalesLedgerCase.from_chart_values(
+        ledger_option.title, ledger_option.chart_values
+    )
+    statement = IncomeStatementCase.from_chart_values(
+        statement_option.title, statement_option.chart_values
+    )
+    partnership = PartnershipCase.from_chart_values(partnership_option.chart_values)
+
+    expected = {
+        "statement_extract": assets.mark_scheme_points(),
+        "ledger_calculation": ledger.ledger_mark_scheme_points(),
+        "accounting_concept": ledger.sales_account_mark_scheme_points(),
+        "company_statement": statement.mark_scheme_points(),
+        "partnership_1": partnership.retirement_mark_scheme_points(),
+        "partnership_2": partnership.appropriation_mark_scheme_points(),
+    }
+    for rule_id, mark_points in expected.items():
+        question = questions[rule_id][0]
+        assert question.mark_scheme[: len(mark_points)] == mark_points
+        assert question.authoring_context["observable_mark_points"] == mark_points
+        assert len(mark_points) == question.marks
+
+
+def test_locked_calculation_schemes_include_final_answers_and_all_case_numbers() -> None:
+    generated = build_paper(RULES["paper_1"], SYLLABUS, 26080100)
+    questions = {
+        question.rule_id: (question, option)
+        for section in generated.sections
+        for option in section.options
+        for question in option.questions
+    }
+    assets_option = questions["statement_extract"][1]
+    ledger_option = questions["ledger_calculation"][1]
+    statement_option = questions["company_statement"][1]
+    partnership_option = questions["partnership_1"][1]
+    assets = NonCurrentAssetCase.from_chart_values(
+        assets_option.title, assets_option.chart_values
+    )
+    ledger = SalesLedgerCase.from_chart_values(
+        ledger_option.title, ledger_option.chart_values
+    )
+    statement = IncomeStatementCase.from_chart_values(
+        statement_option.title, statement_option.chart_values
+    )
+    partnership = PartnershipCase.from_chart_values(partnership_option.chart_values)
+
+    assert f"£{assets.total_carrying_amount:,}" in " ".join(
+        questions["statement_extract"][0].mark_scheme
+    )
+    assert f"£{ledger.closing_receivables:,}" in " ".join(
+        questions["ledger_calculation"][0].mark_scheme
+    )
+    assert f"£{ledger.net_sales:,}" in " ".join(
+        questions["accounting_concept"][0].mark_scheme
+    )
+    assert f"£{statement.profit_for_year:,}" in " ".join(
+        questions["company_statement"][0].mark_scheme
+    )
+    for amount in partnership.target_capital.values():
+        assert f"£{amount:,}" in " ".join(questions["partnership_1"][0].mark_scheme)
+    for period in partnership.appropriation_by_period().values():
+        assert f"£{period['residual_profit']:,}" in " ".join(
+            questions["partnership_2"][0].mark_scheme
+        )
+
+
+def test_asset_scheme_reconciles_with_an_independent_exact_solution() -> None:
+    generated = build_paper(RULES["paper_1"], SYLLABUS, 26080100)
+    option = generated.sections[0].options[0]
+    question = next(
+        item for item in option.questions if item.rule_id == "statement_extract"
+    )
+    case = NonCurrentAssetCase.from_chart_values(option.title, option.chart_values)
+    solution = CanonicalSolution(
+        item_id=question.number,
+        answer=(
+            f"Plant and machinery: £{case.plant_carrying_amount:,}\n"
+            f"Motor vehicles: £{case.motor_carrying_amount:,}\n"
+            f"Total non-current assets: £{case.total_carrying_amount:,}"
+        ),
+        steps=[],
+        mark_points=[
+            f"plant cost after purchase £{case.plant_cost_closing:,}",
+            f"plant depreciation £{case.plant_depreciation_charge:,}",
+            f"plant carrying amount £{case.plant_carrying_amount:,}",
+            f"motor cost after disposal £{case.motor_cost_closing:,}",
+            f"motor depreciation £{case.motor_depreciation_charge:,}",
+            f"motor carrying amount £{case.motor_carrying_amount:,}",
+            f"total non-current assets £{case.total_carrying_amount:,}",
+        ],
+        assessment_objectives={"AO2": question.marks},
+        mark_points_exhaustive=True,
+    )
+
+    result = reconcile_solution(
+        solution,
+        {
+            "marks": question.marks,
+            "points": [
+                point.model_dump(mode="json")
+                for point in question.structured_mark_scheme
+            ],
+        },
+    )
+
+    assert result.passed, result.issues
 
 
 def test_income_statement_question_has_a_complete_task_specific_source_contract() -> None:

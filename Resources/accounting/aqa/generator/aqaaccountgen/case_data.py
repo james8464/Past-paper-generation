@@ -7,6 +7,11 @@ def _nearest_hundred(value: float) -> int:
     return int(round(value / 100.0) * 100)
 
 
+def _gbp(value: int) -> str:
+    sign = "−" if value < 0 else ""
+    return f"{sign}£{abs(value):,}"
+
+
 @dataclass(frozen=True)
 class CostingCase:
     units_sold: int
@@ -162,6 +167,58 @@ class IncomeStatementCase:
     def profit_for_year(self) -> int:
         return self.profit_before_tax - self.current_tax_charge
 
+    def mark_scheme_points(self) -> list[str]:
+        """Return one exact, independently checkable award point per mark."""
+        gross_profit = self.revenue - self.adjusted_cost_of_sales
+        new_interest = self.new_debenture * 6 // 100 * 4 // 12
+        earlier_interest = self.earlier_debenture * 8 // 100 * 10 // 12
+        return [
+            f"Revenue: {_gbp(self.revenue)}.",
+            (
+                "Damaged inventory write-down: "
+                f"{_gbp(self.damaged_inventory_cost)} − "
+                f"({_gbp(self.damaged_inventory_sale_proceeds)} − "
+                f"{_gbp(self.damaged_inventory_repair_cost)}) = "
+                f"{_gbp(self.inventory_write_down)}."
+            ),
+            (
+                f"Adjusted cost of sales: {_gbp(self.cost_of_sales)} + "
+                f"{_gbp(self.inventory_write_down)} = "
+                f"{_gbp(self.adjusted_cost_of_sales)}."
+            ),
+            (
+                f"Gross profit: {_gbp(self.revenue)} − "
+                f"{_gbp(self.adjusted_cost_of_sales)} = {_gbp(gross_profit)}."
+            ),
+            (
+                f"Irrecoverable debt: 90% × {_gbp(self.trade_receivable)} = "
+                f"{_gbp(self.irrecoverable_debt)}."
+            ),
+            (
+                f"Administration expenses: {_gbp(self.administration_expenses)} + "
+                f"{_gbp(self.irrecoverable_debt)} = "
+                f"{_gbp(self.adjusted_administration_expenses)}."
+            ),
+            f"Accrue the supplier invoice of {_gbp(self.supplier_invoice)}.",
+            (
+                f"Marketing expenses: {_gbp(self.marketing_expenses)} + "
+                f"{_gbp(self.supplier_invoice)} = "
+                f"{_gbp(self.adjusted_marketing_expenses)}."
+            ),
+            f"Warehouse expenses: {_gbp(self.warehouse_expenses)}.",
+            f"Other income — insurance claim: {_gbp(self.insurance_claim)}.",
+            (
+                f"Debenture interest: 6% × 4/12 = {_gbp(new_interest)} and "
+                f"8% × 10/12 = {_gbp(earlier_interest)}."
+            ),
+            f"Total finance cost: {_gbp(self.finance_cost)}.",
+            f"Profit before tax: {_gbp(self.profit_before_tax)}.",
+            (
+                f"Taxation: {_gbp(self.current_tax_charge)}; final profit for "
+                f"the year: {_gbp(self.profit_for_year)}."
+            ),
+        ]
+
     def authoring_context(self) -> dict[str, object]:
         return {
             "preserve_prompt": True,
@@ -196,6 +253,7 @@ class IncomeStatementCase:
                 "profit_before_tax": self.profit_before_tax,
                 "profit_for_year": self.profit_for_year,
             },
+            "observable_mark_points": self.mark_scheme_points(),
         }
 
 
@@ -338,6 +396,85 @@ class PartnershipCase:
             }
         return result
 
+    def retirement_mark_scheme_points(self) -> list[str]:
+        return [
+            (
+                "Opening capital balances: "
+                f"Alex {_gbp(self.opening_capital['Alex'])}; "
+                f"Morgan {_gbp(self.opening_capital['Morgan'])}."
+            ),
+            (
+                "Credit goodwill in the old ratio: "
+                f"Alex {_gbp(self.goodwill_credit['Alex'])}; "
+                f"Morgan {_gbp(self.goodwill_credit['Morgan'])}."
+            ),
+            (
+                "Write goodwill off in the new ratio: "
+                f"Alex {_gbp(self.goodwill_write_off['Alex'])}; "
+                f"Morgan {_gbp(self.goodwill_write_off['Morgan'])}."
+            ),
+            f"Record Alex's cash withdrawal of {_gbp(self.cash_withdrawn['Alex'])}.",
+            f"Record Morgan's cash withdrawal of {_gbp(self.cash_withdrawn['Morgan'])}.",
+            (
+                "Closing capital balances: "
+                f"Alex {_gbp(self.target_capital['Alex'])}; "
+                f"Morgan {_gbp(self.target_capital['Morgan'])}."
+            ),
+        ]
+
+    def appropriation_mark_scheme_points(self) -> list[str]:
+        periods = self.appropriation_by_period()
+        first = periods["first_period"]
+        second = periods["second_period"]
+        return [
+            (
+                "Apportioned profit: first period "
+                f"{_gbp(first['profit'])}; second period {_gbp(second['profit'])}."
+            ),
+            (
+                "Interest on drawings: first period "
+                f"{_gbp(sum(first['interest_on_drawings'].values()))}; second "
+                f"period {_gbp(sum(second['interest_on_drawings'].values()))}."
+            ),
+            (
+                "First-period interest on capital: "
+                + "; ".join(
+                    f"{partner} {_gbp(amount)}"
+                    for partner, amount in first["interest_on_capital"].items()
+                )
+                + "."
+            ),
+            (
+                "Second-period interest on capital: "
+                + "; ".join(
+                    f"{partner} {_gbp(amount)}"
+                    for partner, amount in second["interest_on_capital"].items()
+                )
+                + "."
+            ),
+            (
+                "Morgan's salary: first period "
+                f"{_gbp(first['partner_salary']['Morgan'])}; second period "
+                f"{_gbp(second['partner_salary']['Morgan'])}."
+            ),
+            (
+                "Residual profit: first period "
+                f"{_gbp(first['residual_profit'])}; second period "
+                f"{_gbp(second['residual_profit'])}."
+            ),
+            (
+                "Alex's residual-profit share: first period "
+                f"{_gbp(first['residual_profit_shares']['Alex'])}; second period "
+                f"{_gbp(second['residual_profit_shares']['Alex'])}."
+            ),
+            (
+                "Morgan's residual-profit share: first period "
+                f"{_gbp(first['residual_profit_shares']['Morgan'])}; second period "
+                f"{_gbp(second['residual_profit_shares']['Morgan'])}; Riley's "
+                f"first-period share {_gbp(first['residual_profit_shares']['Riley'])}."
+            ),
+        ]
+
     def retirement_authoring_context(self) -> dict[str, object]:
         return {
             "preserve_prompt": True,
@@ -378,6 +515,7 @@ class PartnershipCase:
                 "cash_withdrawn": self.cash_withdrawn,
                 "closing_capital": self.target_capital,
             },
+            "observable_mark_points": self.retirement_mark_scheme_points(),
         }
 
     def appropriation_authoring_context(self) -> dict[str, object]:
@@ -422,6 +560,7 @@ class PartnershipCase:
                 "period_profit": self.period_profit,
                 "appropriation_by_period": self.appropriation_by_period(),
             },
+            "observable_mark_points": self.appropriation_mark_scheme_points(),
         }
 
 
@@ -520,6 +659,38 @@ class NonCurrentAssetCase:
     def total_carrying_amount(self) -> int:
         return self.plant_carrying_amount + self.motor_carrying_amount
 
+    def mark_scheme_points(self) -> list[str]:
+        return [
+            (
+                f"Plant cost: {_gbp(self.plant_cost_opening)} + "
+                f"{_gbp(self.plant_purchase)} = {_gbp(self.plant_cost_closing)}."
+            ),
+            (
+                f"Plant depreciation: {_gbp(self.plant_cost_closing)} × "
+                f"{self.plant_rate_percent}% = {_gbp(self.plant_depreciation_charge)}; "
+                "closing accumulated depreciation "
+                f"{_gbp(self.plant_accumulated_depreciation_closing)}."
+            ),
+            f"Plant and machinery carrying amount: {_gbp(self.plant_carrying_amount)}.",
+            (
+                f"Motor cost: {_gbp(self.motor_cost_opening)} − "
+                f"{_gbp(self.motor_disposal_cost)} = {_gbp(self.motor_cost_closing)}; "
+                "remove disposal accumulated depreciation of "
+                f"{_gbp(self.motor_disposal_accumulated_depreciation)}."
+            ),
+            (
+                f"Motor depreciation: ({_gbp(self.motor_cost_closing)} − "
+                f"{_gbp(self.motor_accumulated_depreciation_before_charge)}) × "
+                f"{self.motor_rate_percent}% = {_gbp(self.motor_depreciation_charge)}."
+            ),
+            (
+                "Motor vehicles closing accumulated depreciation "
+                f"{_gbp(self.motor_accumulated_depreciation_closing)} and carrying "
+                f"amount {_gbp(self.motor_carrying_amount)}."
+            ),
+            f"Total non-current assets: {_gbp(self.total_carrying_amount)} (own figure).",
+        ]
+
     def authoring_context(self) -> dict[str, object]:
         return {
             "preserve_prompt": True,
@@ -568,6 +739,7 @@ class NonCurrentAssetCase:
                 "motor_carrying_amount": self.motor_carrying_amount,
                 "total_carrying_amount": self.total_carrying_amount,
             },
+            "observable_mark_points": self.mark_scheme_points(),
         }
 
 
@@ -619,6 +791,31 @@ class SalesLedgerCase:
     def net_sales(self) -> int:
         return self.credit_sales - self.sales_returns
 
+    def ledger_mark_scheme_points(self) -> list[str]:
+        total = self.opening_receivables + self.credit_sales
+        return [
+            f"Debit opening trade receivables of {_gbp(self.opening_receivables)}.",
+            f"Debit credit sales of {_gbp(self.credit_sales)}.",
+            f"Credit bank with cash received of {_gbp(self.cash_received)}.",
+            (
+                f"Credit sales returns of {_gbp(self.sales_returns)} and discount "
+                f"allowed of {_gbp(self.discount_allowed)}."
+            ),
+            (
+                f"Balance the account at {_gbp(total)}; carry down and bring down "
+                f"closing trade receivables of {_gbp(self.closing_receivables)}."
+            ),
+        ]
+
+    def sales_account_mark_scheme_points(self) -> list[str]:
+        return [
+            f"Credit gross credit sales of {_gbp(self.credit_sales)}.",
+            (
+                f"Debit sales returns of {_gbp(self.sales_returns)} and transfer "
+                f"net sales of {_gbp(self.net_sales)} to the income statement."
+            ),
+        ]
+
     def ledger_authoring_context(self) -> dict[str, object]:
         return {
             "preserve_prompt": True,
@@ -647,6 +844,7 @@ class SalesLedgerCase:
                 "closing_trade_receivables": self.closing_receivables,
                 "next_period_opening_balance": self.closing_receivables,
             },
+            "observable_mark_points": self.ledger_mark_scheme_points(),
         }
 
     def sales_account_authoring_context(self) -> dict[str, object]:
@@ -668,4 +866,5 @@ class SalesLedgerCase:
             "verified_answers": {
                 "net_sales_transferred_to_income_statement": self.net_sales,
             },
+            "observable_mark_points": self.sales_account_mark_scheme_points(),
         }

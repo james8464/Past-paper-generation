@@ -6,7 +6,14 @@ from Backend.Core.exam_blueprints import GeneratedQuestion
 from Backend.Core.mark_scheme_enrichment import _enrich_question
 
 
-def question(*, kind: str, command_word: str, marks: int) -> GeneratedQuestion:
+def question(
+    *,
+    kind: str,
+    command_word: str,
+    marks: int,
+    mark_scheme: list[str] | None = None,
+    authoring_context: dict[str, object] | None = None,
+) -> GeneratedQuestion:
     return GeneratedQuestion(
         rule_id="test",
         number="1",
@@ -15,7 +22,8 @@ def question(*, kind: str, command_word: str, marks: int) -> GeneratedQuestion:
         command_word=command_word,
         topic_id="topic",
         prompt=f"{command_word} the required response.",
-        mark_scheme=["Credit an accurate, fully worked answer."],
+        mark_scheme=mark_scheme or ["Credit an accurate, fully worked answer."],
+        authoring_context=authoring_context or {},
     )
 
 
@@ -81,3 +89,32 @@ def test_enriched_written_item_locks_guidance_and_calibrates_stem_length() -> No
     assert enriched.authoring_context["max_prompt_words"] == max(
         12, len(draft.prompt.split()) + 2
     )
+
+
+def test_enrichment_keeps_explicit_observable_mark_points() -> None:
+    expected = ["Exact answer: £12,345.", "Exact working: £15,000 − £2,655."]
+    draft = question(
+        kind="calculation",
+        command_word="Calculate",
+        marks=2,
+        mark_scheme=expected,
+        authoring_context={"observable_mark_points": expected},
+    )
+
+    enriched = _enrich_question(draft, topic(), "accounting")
+
+    assert enriched.authoring_context["observable_mark_points"] == expected
+
+
+def test_enrichment_derives_observable_points_before_structured_hydration() -> None:
+    expected = ["Answer: 42.", "Working: 6 × 7."]
+    draft = question(
+        kind="calculation",
+        command_word="Calculate",
+        marks=2,
+        mark_scheme=expected,
+    )
+
+    enriched = _enrich_question(draft, topic(), "accounting")
+
+    assert enriched.authoring_context["observable_mark_points"] == expected

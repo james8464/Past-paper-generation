@@ -50,8 +50,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/mark_scheme_enrichment.py": {
-    "mtime": 1788046240.5861387,
-    "ast_hash": "1520d1b187d2c707049d062543293b47",
+    "mtime": 1788116115.975876,
+    "ast_hash": "bcb886ce8bedaaea83918e85d286e7f8",
     "semantic_hash": ""
   },
   "Backend/Core/mark_scheme_front_matter.py": {
@@ -110,8 +110,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/generator.py": {
-    "mtime": 1788047147.8121188,
-    "ast_hash": "65de719e35600db9a9ca7267eb2668fb",
+    "mtime": 1788116194.038696,
+    "ast_hash": "781448b705ee1c2917a956c5cf68b0cd",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/render_pdf.py": {
@@ -140,8 +140,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/tests/test_aqa_accounting.py": {
-    "mtime": 1788047094.6615162,
-    "ast_hash": "b954942d58bd186be45dc2ca39425d5e",
+    "mtime": 1788116262.833019,
+    "ast_hash": "419afb2d9f93cc42559c25d84dee9026",
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/__init__.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/case_data.py": {
-    "mtime": 1788045762.16932,
-    "ast_hash": "07b7c62e01d0470ea56ab07e9f207178",
+    "mtime": 1788116171.1457834,
+    "ast_hash": "c54bd382f16f3db3306fadf1737257e8",
     "semantic_hash": ""
   },
   "Resources/ollama-model-recommendations.json": {
@@ -1305,8 +1305,8 @@
     "semantic_hash": ""
   },
   "tests/test_mark_scheme_enrichment.py": {
-    "mtime": 1787702228.0088792,
-    "ast_hash": "6c836e1bd7ee3be6e283475f34ff02d8",
+    "mtime": 1788116020.414261,
+    "ast_hash": "9e7c8e86846864693a175eed390bdee1",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-23-contract-first-paper-generation-design.md": {
@@ -1700,7 +1700,7 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1788113807.572998,
+    "mtime": 1788115574.4814093,
     "ast_hash": "6bd3d4d1734ccde42fc87ea6203bc483",
     "semantic_hash": ""
   },
