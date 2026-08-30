@@ -169,6 +169,13 @@ def build_item_demand_target(
         "standard": max(4, minimum_steps + 2),
         "high": min(8, minimum_steps + 3),
     }[demand]
+    if calculation:
+        # A multi-stage calculation can legitimately expose roughly one
+        # independently checkable operation per mark. A demand-band-only cap
+        # misclassifies complete accounts and longer numerical proofs as too
+        # difficult even when their tariff and official-paper role require
+        # those stages.
+        maximum_steps = max(maximum_steps, min(12, marks))
 
     requires_judgement = objectives.get("AO4", 0) > 0 or command in {
         "assess",

@@ -154,6 +154,33 @@ def test_item_target_distinguishes_multistage_calculation_from_recall() -> None:
     assert recall.required_cognitive_operations == ["retrieve"]
 
 
+@pytest.mark.parametrize(
+    ("marks", "expected_maximum"),
+    [(5, 5), (7, 7), (8, 8), (14, 12)],
+)
+def test_calculation_reasoning_ceiling_scales_with_tariff(
+    marks: int,
+    expected_maximum: int,
+) -> None:
+    reference_demand = module()
+    profile = reference_demand.ReferenceDemandProfile.model_validate(profile_payload())
+
+    target = reference_demand.build_item_demand_target(
+        {
+            "id": f"q-{marks}",
+            "marks": marks,
+            "kind": "calculation",
+            "command_word": "Prepare",
+            "assessment_objectives": {"AO2": marks},
+            "intended_demand": "high" if marks >= 12 else "standard",
+            "context": ["A complete accounting case supplies the required figures."],
+        },
+        profile,
+    )
+
+    assert target.maximum_reasoning_steps == expected_maximum
+
+
 def test_reference_extraction_pairs_local_command_and_mark_without_retaining_prose() -> (
     None
 ):
