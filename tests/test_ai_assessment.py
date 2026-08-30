@@ -1065,6 +1065,42 @@ def test_checkpoint_cannot_replace_a_locked_verified_mark_scheme() -> None:
         _validate_checkpoint_item(task, checkpoint)
 
 
+def test_checkpoint_preserves_verified_examiner_guidance_without_reauthoring_limits() -> None:
+    points = [
+        MarkSchemePoint(text="Revenue is £12,000.", marks=1, assessment_objective="AO2"),
+        MarkSchemePoint(text="Profit is £3,000.", marks=1, assessment_objective="AO2"),
+        *[
+            MarkSchemePoint(
+                text=f"Marker note {index}: accept a valid equivalent presentation.",
+                marks=0,
+                credit_type="guidance",
+            )
+            for index in range(10)
+        ],
+    ]
+    question = GeneratedQuestion(
+        rule_id="verified",
+        number="12",
+        marks=2,
+        kind="calculation",
+        command_word="Prepare",
+        topic_id="accounts",
+        prompt="Prepare the verified statement.",
+        mark_scheme=[point.text for point in points],
+        structured_mark_scheme=points,
+        assessment_objectives={"AO2": 2},
+        authoring_context={"preserve_mark_scheme": True},
+    )
+    task = _Task(
+        key=(0, 0, 0),
+        question=question,
+        option=GeneratedOption(id="case", title="Case", questions=[question]),
+        topic=object(),
+    )
+
+    _validate_checkpoint_item(task, question)
+
+
 def test_checkpoint_can_adopt_a_new_prompt_budget_without_content_changes() -> None:
     point = MarkSchemePoint(
         text="A change in the independent variable changes the outcome.",

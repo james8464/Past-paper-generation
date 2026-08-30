@@ -428,7 +428,8 @@ def _validate_checkpoint_item(
         raise ValueError(
             f"checkpoint item {task.id} changed immutable authoring context"
         )
-    if original.authoring_context.get("preserve_mark_scheme") is True and (
+    preserves_scheme = original.authoring_context.get("preserve_mark_scheme") is True
+    if preserves_scheme and (
         candidate.mark_scheme != original.mark_scheme
         or candidate.structured_mark_scheme != original.structured_mark_scheme
     ):
@@ -436,7 +437,8 @@ def _validate_checkpoint_item(
     if not candidate.prompt.strip() or not candidate.structured_mark_scheme:
         raise ValueError(f"checkpoint item {task.id} is incomplete")
     _validate_prompt_length(original, candidate.prompt)
-    _validate_mark_points(original, candidate.structured_mark_scheme)
+    if not preserves_scheme:
+        _validate_mark_points(original, candidate.structured_mark_scheme)
     _validate_release_mark_scheme(candidate)
 
 
