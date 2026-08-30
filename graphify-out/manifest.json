@@ -1885,8 +1885,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/reference_demand.py": {
-    "mtime": 1788119473.551583,
-    "ast_hash": "b4723becbc8c3c95fa7dcebb800b3a54",
+    "mtime": 1788120109.0825586,
+    "ast_hash": "b7cab4aa553850f9aa728c06891b570c",
     "semantic_hash": ""
   },
   "Resources/reference-demand-profile.schema.json": {
@@ -1900,8 +1900,8 @@
     "semantic_hash": ""
   },
   "tests/test_reference_demand.py": {
-    "mtime": 1788119459.6871693,
-    "ast_hash": "ac24f9cc0f4b9d86dc8154ca47504312",
+    "mtime": 1788120089.4187956,
+    "ast_hash": "466b2e2eb275af403aefba4e8cb50f1e",
     "semantic_hash": ""
   },
   "tools/reference_demand_profiles.py": {

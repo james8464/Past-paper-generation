@@ -156,7 +156,7 @@ def test_item_target_distinguishes_multistage_calculation_from_recall() -> None:
 
 @pytest.mark.parametrize(
     ("marks", "expected_maximum"),
-    [(5, 5), (7, 7), (8, 8), (14, 12)],
+    [(2, 3), (5, 5), (7, 7), (8, 8), (14, 12)],
 )
 def test_calculation_reasoning_ceiling_scales_with_tariff(
     marks: int,
@@ -172,7 +172,9 @@ def test_calculation_reasoning_ceiling_scales_with_tariff(
             "kind": "calculation",
             "command_word": "Prepare",
             "assessment_objectives": {"AO2": marks},
-            "intended_demand": "high" if marks >= 12 else "standard",
+            "intended_demand": (
+                "low" if marks <= 3 else "high" if marks >= 12 else "standard"
+            ),
             "context": ["A complete accounting case supplies the required figures."],
         },
         profile,

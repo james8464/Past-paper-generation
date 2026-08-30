@@ -216,6 +216,11 @@ def build_item_demand_target(
         requires_judgement=requires_judgement,
         multiple_concepts=(demand == "high" or marks >= 8),
     )
+    # A target cannot require more distinct cognitive operations than the
+    # reviewer permits reasoning steps. This matters for short applied
+    # calculations whose tariff bundles presentation and transformation into
+    # the same award point.
+    maximum_steps = max(maximum_steps, len(operations))
     expected_minutes = float(raw.get("expected_minutes") or max(1.0, marks * 1.2))
     return ItemDemandTarget(
         demand_band=demand,
