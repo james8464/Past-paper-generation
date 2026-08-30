@@ -1699,9 +1699,7 @@ def _shareholder_case(question: GeneratedQuestion) -> Table:
         [
             [
                 "",
-                (
-                    "Ordinary share\ncapital\n£000"
-                ),
+                ("Ordinary\nshare capital\n£000"),
                 "Share\npremium\n£000",
                 "Revaluation\nreserve\n£000",
                 "Retained\nearnings\n£000",

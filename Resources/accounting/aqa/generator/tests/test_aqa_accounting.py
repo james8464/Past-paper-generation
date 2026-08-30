@@ -176,6 +176,57 @@ def test_shareholder_pdf_source_and_scheme_preserve_the_complete_visible_contrac
     premium = next(word for word in header_words if word[4] == "premium")
     assert ordinary[2] < premium[0]
     rectangles = [drawing["rect"] for drawing in page.get_drawings()]
+
+    header_top = min(
+        rect.y0 for rect in rectangles if 250 < rect.y0 < 270 and rect.width > 400
+    )
+    header_bottom = min(
+        rect.y0 for rect in rectangles if 295 < rect.y0 < 310 and rect.width > 400
+    )
+    header_edges = sorted(
+        {
+            round(rect.x0, 3)
+            for rect in rectangles
+            if rect.height >= header_bottom - header_top - 0.5
+            and rect.y0 <= header_top + 0.5
+            and rect.y1 >= header_bottom - 0.5
+            and 105 < rect.x0 < 530
+        }
+    )
+    assert len(header_edges) == 6
+    header_word_bounds = [
+        word
+        for word in header_words
+        if header_top < (word[1] + word[3]) / 2 < header_bottom
+    ]
+    assert header_word_bounds
+    horizontal_padding = 6
+    vertical_padding = 3
+    extraction_tolerance = 0.2
+    for word in header_word_bounds:
+        word_centre = (word[0] + word[2]) / 2
+        cell_index = next(
+            (
+                index
+                for index in range(len(header_edges) - 1)
+                if header_edges[index] < word_centre < header_edges[index + 1]
+            ),
+            None,
+        )
+        assert cell_index is not None, word[4]
+        assert (
+            word[0]
+            >= header_edges[cell_index] + horizontal_padding - extraction_tolerance
+        ), word[4]
+        assert (
+            word[2]
+            <= header_edges[cell_index + 1] - horizontal_padding + extraction_tolerance
+        ), word[4]
+        assert word[1] >= header_top + vertical_padding - extraction_tolerance, word[4]
+        assert word[3] <= header_bottom - vertical_padding + extraction_tolerance, word[
+            4
+        ]
+
     source_panel_right = max(
         rect.x1
         for rect in rectangles

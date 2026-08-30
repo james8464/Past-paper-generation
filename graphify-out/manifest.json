@@ -115,8 +115,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/render_pdf.py": {
-    "mtime": 1788128922.736114,
-    "ast_hash": "019eaa1767ac6a840df9254f8a4a9bc8",
+    "mtime": 1788131918.1671069,
+    "ast_hash": "54efa8e9a23cc2a5656a79a9017ea035",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/syllabus.py": {
@@ -140,8 +140,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/tests/test_aqa_accounting.py": {
-    "mtime": 1788128901.7267177,
-    "ast_hash": "8007bf3d35d7b8f4b5e15be3df872604",
+    "mtime": 1788131918.167477,
+    "ast_hash": "03b339d090eaf785d2e2ca13d57d5ea0",
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/__init__.py": {
@@ -1940,8 +1940,8 @@
     "semantic_hash": ""
   },
   "docs/quality/difficulty-calibration-v2-report.md": {
-    "mtime": 1788128326.264653,
-    "ast_hash": "bdb19524ae50fdded72e6f0bbdad6268",
+    "mtime": 1788129674.2953594,
+    "ast_hash": "614af32fca0d9c72fc9f3bcf63eefe9c",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-30-difficulty-calibration-v2.md": {
