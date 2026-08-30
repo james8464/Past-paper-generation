@@ -1175,8 +1175,8 @@
     "semantic_hash": ""
   },
   "docs/ASSESSMENT_QUALITY.md": {
-    "mtime": 1788047788.8442144,
-    "ast_hash": "dcb9cff4f02f5462313f944905578f8c",
+    "mtime": 1788055524.0314424,
+    "ast_hash": "b7b43fd3d1a0c66c81e80782a9b9feef",
     "semantic_hash": ""
   },
   "docs/HIG_COMPLIANCE.md": {
@@ -1425,8 +1425,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-26-paper-creator-excellence-programme.md": {
-    "mtime": 1788042534.6425092,
-    "ast_hash": "c249fb9a9e70b5213f314a05426bbd7d",
+    "mtime": 1788055826.7085881,
+    "ast_hash": "70d798e2b06b15e34dc9c3b8b69f05b4",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md": {
@@ -1735,8 +1735,8 @@
     "semantic_hash": ""
   },
   "docs/qualification/2026-08-current-family-review.md": {
-    "mtime": 1788042534.6418738,
-    "ast_hash": "5fdc538808b925de695acdfb5d5f83f4",
+    "mtime": 1788055524.030885,
+    "ast_hash": "142e4ebfca13b3185464b24afb465d85",
     "semantic_hash": ""
   },
   "tests/test_release_compliance.py": {

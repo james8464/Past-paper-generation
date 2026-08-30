@@ -120,3 +120,42 @@ overview sheets were reviewed; no clipping, collision, broken rule, malformed
 visual, missing page furniture or unsafe print placement was found. The lower
 OCR scheme end-page scores remain the documented neutral-branding difference,
 not a missing content page.
+
+## 30 August shared-renderer and economics-scheme qualification
+
+Commit `8fee27c` was qualified after the shared AQA/OCR header and measured-panel
+migrations and after restoring item-specific AQA Economics guidance and
+source-relevant Edexcel Economics marking points. A clean fixed-seed matrix
+(`26083030`) completed all 21 advertised routes: 18 complete papers and three
+AQA Computer Science question-bank routes.
+
+The complete matrix passed the locked document and page-role thresholds at
+both resolutions without changing `Resources/fidelity-thresholds.json`:
+
+- 300-DPI CI profile: aggregate 0.707, 18 paper families, 36 primary PDFs,
+  151 contact sheets and zero print failures;
+- 600-DPI qualification profile: aggregate 0.706, the same 18 families and 36
+  primary PDFs, 151 contact sheets and zero print failures;
+- AQA Economics Paper 2 mark scheme: 0.726 at 300 DPI and 0.725 at 600 DPI;
+- Pearson Edexcel Economics A Paper 1 mark scheme: 0.654 at both resolutions.
+
+The AQA and OCR production migrations were first compared against the previous
+fixed-seed PDFs and produced no text, font, bounding-box or page-size changes
+across all 28 affected documents. The newly changed economics mark-scheme
+contact sheets and their same-role official comparisons were then inspected at
+page level. Marking grids, continuation rows, level tables and mark columns fit
+without clipping, collision or broken rules; the restored guidance remains
+question-specific rather than repeating common boilerplate.
+
+Local reproducible evidence:
+
+- `tmp/pdfs/dsl-final-fixed-2026-08-30/`
+- `tmp/fidelity/dsl-final-fixed-2026-08-30-ci.json`
+- `tmp/fidelity/dsl-final-fixed-2026-08-30-ci-artifacts/`
+- `tmp/fidelity/dsl-final-fixed-2026-08-30-qualification.json`
+- `tmp/fidelity/dsl-final-fixed-2026-08-30-qualification-artifacts/`
+
+This is deterministic engineering and visual evidence. It does not change the
+empirical difficulty gates: independent subject review and representative
+student-response evidence are still required before claiming equivalent
+difficulty.

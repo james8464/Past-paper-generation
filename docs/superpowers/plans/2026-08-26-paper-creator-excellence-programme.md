@@ -219,7 +219,7 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - [ ] Remove repeated page furniture, theme, pagination, barcode, answer-line, table, graph, and mark-scheme-grid code only after `rg` and import tests show every family uses the shared path.
 - [x] Add vector renderers for economic curves, accounting tables, program trace tables, logic/circuit diagrams, scientific apparatus, molecules, mathematical plots, and statistical charts from typed contracts.
 - [x] Verify embedded fonts, PDF text selection, tags/reading order, 100%-scale print margins, bounded render time, and atomic publication.
-- [ ] Run all renderer tests, all 18 deterministic renders, the 300-DPI regression audit, the 600-DPI phase audit, and manual role review.
+- [x] Run all renderer tests, all 18 deterministic renders, the 300-DPI regression audit, the 600-DPI phase audit, and manual role review.
 - [ ] Update Graphify and commit per migrated family, finishing with `Complete shared board rendering DSL`.
 
 ### Task 5: Split AppViewModel into Focused Coordinators
@@ -312,7 +312,7 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - [ ] Re-open any existing family whose role score, manual review, solution check, or mark-scheme review regresses and fix it before continuing.
 - [ ] Have at least two subject-competent reviewers blindly score sampled questions/schemes; record disagreement and retain empirical gates as false until Task 14.
 - [ ] Run the matrix twice with different seeds to detect seed-specific overflow, repetition, factual, and layout defects.
-- [ ] Run the full Python suite, Ruff, macOS agent verification, App Store preflight, and Graphify update.
+- [x] Run the full Python suite, Ruff, macOS agent verification, App Store preflight, and Graphify update.
 - [ ] Commit family fixes separately; finish with `Qualify all current paper layouts`.
 
 ### Task 8: Make Subject and Board Onboarding Declarative
@@ -486,11 +486,11 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - [x] Add integration tests for offline model use, missing model, low disk space, unwritable output, corrupt cache/checkpoint/history, interrupted model stream, backend crash, renderer timeout, app restart, schema upgrade, denied MLX consent, failed MLX install, and unsupported old package.
 - [ ] Run clean-install tests on the oldest supported low-memory Apple Silicon Mac and a current higher-memory Mac with recommended Ollama tiers; verify warnings for all other models.
 - [ ] Run VoiceOver, Full Keyboard Access, contrast/transparency, localisation, compact-window, multi-window, printing, Quick Look, and long-running cancellation/resume test scripts.
-- [ ] Run dependency/licence, secret, privacy-manifest, entitlement, hardened-runtime, helper-signing, sandbox, notarisation-ready, and App Store preflight checks.
-- [ ] Run `.venv/bin/ruff check Backend Resources tools tests`, `.venv/bin/python -m pytest -q`, all family suites, `make -C macOS agent-verify`, and `make -C macOS preflight-app-store` from a clean clone-equivalent environment.
+- [x] Run dependency/licence, secret, privacy-manifest, entitlement, hardened-runtime, helper-signing, sandbox, notarisation-ready, and App Store preflight checks.
+- [x] Run `.venv/bin/ruff check Backend Resources tools tests`, `.venv/bin/python -m pytest -q`, all family suites, `make -C macOS agent-verify`, and `make -C macOS preflight-app-store` from a clean clone-equivalent environment.
 - [ ] Generate every advertised paper twice with distinct seeds; require complete qualification manifests, no crashes/timeouts, no visual regressions, no scheme/solution failures, and no unreviewed manual defects.
-- [ ] Run `graphify update .`, inspect `graphify query "What ships in the final Paper Creator release and how is each paper qualified?"`, and update architecture docs if the graph exposes a mismatch.
-- [ ] Confirm `git status --short` is empty, all changes are committed locally on `main`, and no push has occurred.
+- [x] Run `graphify update .`, inspect `graphify query "What ships in the final Paper Creator release and how is each paper qualified?"`, and update architecture docs if the graph exposes a mismatch.
+- [x] Confirm `git status --short` is empty, all changes are committed locally on `main`, and no push has occurred.
 - [ ] Commit final documentation/evidence metadata as `Qualify Paper Creator release candidate`.
 
 ## Phase Completion Gates

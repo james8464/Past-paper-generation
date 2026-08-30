@@ -218,7 +218,11 @@ artifact. Its 36 primary PDFs produced a 68.9% aggregate registered similarity
 score. The later fixed-seed print-resolution matrix, after renderer repairs,
 produced a 70.8% aggregate score at both 300 and 600 DPI. Every versioned
 document and page-role floor passed, every PDF passed the qualification print
-profile, and 152 contact-sheet artifacts were generated at each resolution.
+profile, and 152 contact-sheet artifacts were generated at each resolution. A
+fresh 30 August qualification after the shared-renderer migrations and
+economics mark-scheme repairs scored 70.7% at 300 DPI and 70.6% at 600 DPI;
+every locked floor and print check passed, with 151 contact sheets at each
+resolution.
 The six worst-page overview sheets, covering every primary document, were
 inspected for:
 
