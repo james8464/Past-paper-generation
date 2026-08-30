@@ -154,7 +154,9 @@ def test_item_target_distinguishes_multistage_calculation_from_recall() -> None:
     assert recall.required_cognitive_operations == ["retrieve"]
 
 
-def test_reference_extraction_pairs_local_command_and_mark_without_retaining_prose() -> None:
+def test_reference_extraction_pairs_local_command_and_mark_without_retaining_prose() -> (
+    None
+):
     tool = tool_module()
     text = """
     01 Explain two consequences for the business.
@@ -195,7 +197,12 @@ def test_form_audit_weights_demand_by_marks_and_reports_review_coverage() -> Non
             "kind": "multiple_choice",
             "command_word": "Select",
             "intended_demand": "low",
-            "difficulty_evidence": {"approved": True, "reasoning_range_fit": True, "context_fit": True, "shortcut_resistant": True},
+            "difficulty_evidence": {
+                "approved": True,
+                "reasoning_range_fit": True,
+                "context_fit": True,
+                "shortcut_resistant": True,
+            },
         },
         {
             "id": "q2",
@@ -203,7 +210,12 @@ def test_form_audit_weights_demand_by_marks_and_reports_review_coverage() -> Non
             "kind": "essay",
             "command_word": "Evaluate",
             "intended_demand": "high",
-            "difficulty_evidence": {"approved": True, "reasoning_range_fit": True, "context_fit": True, "shortcut_resistant": True},
+            "difficulty_evidence": {
+                "approved": True,
+                "reasoning_range_fit": True,
+                "context_fit": True,
+                "shortcut_resistant": True,
+            },
         },
     ]
 
@@ -242,7 +254,9 @@ def test_form_audit_rejects_distribution_drift() -> None:
     assert "command_word_distribution" not in report["gated_distances"]
 
 
-def test_committed_profiles_cover_every_advertised_assessment_without_source_text() -> None:
+def test_committed_profiles_cover_every_advertised_assessment_without_source_text() -> (
+    None
+):
     reference_demand = module()
     document = reference_demand.load_reference_demand_document()
     registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
@@ -254,7 +268,7 @@ def test_committed_profiles_cover_every_advertised_assessment_without_source_tex
     }
     actual = {(profile.family_id, profile.paper_id) for profile in document.profiles}
 
-    assert actual == expected
+    assert expected <= actual
     assert document.derived_aggregate_only is True
     assert document.retains_source_text is False
     rendered = Path(reference_demand.PROFILES_PATH).read_text(encoding="utf-8")
@@ -262,7 +276,27 @@ def test_committed_profiles_cover_every_advertised_assessment_without_source_tex
     assert "question-papers" not in rendered
 
 
-def test_reference_extraction_keeps_demand_features_but_discards_question_prose() -> None:
+def test_committed_profiles_include_unadvertised_aqa_mathematics_evidence() -> None:
+    reference_demand = module()
+    document = reference_demand.load_reference_demand_document()
+    profiles = {
+        profile.paper_id: profile
+        for profile in document.profiles
+        if profile.family_id == "aqa/mathematics"
+    }
+
+    assert set(profiles) == {"1", "2", "3"}
+    assert all(profile.source_document_count >= 3 for profile in profiles.values())
+    assert all(profile.extraction_coverage >= 0.6 for profile in profiles.values())
+    assert all(
+        "unspecified" not in profile.command_word_distribution
+        for profile in profiles.values()
+    )
+
+
+def test_reference_extraction_keeps_demand_features_but_discards_question_prose() -> (
+    None
+):
     tool = tool_module()
     text = """
     01 Explain two consequences for the business.
@@ -298,6 +332,51 @@ def test_reference_extraction_recognises_board_style_command_phrases() -> None:
         "marks": [1, 1, 20],
         "command_words": ["select", "select", "evaluate"],
     }
+
+
+def test_reference_extraction_recognises_mathematical_command_words() -> None:
+    tool = tool_module()
+    text = """
+    01 Show that the result has the stated form.
+    [3 marks]
+    02 Find the exact value of the constant.
+    [4 marks]
+    03 Solve the equation for the stated interval.
+    [5 marks]
+    04 Determine the range of values.
+    [6 marks]
+    05 Prove that the assertion is true.
+    [7 marks]
+    """
+
+    features = tool.extract_reference_features(text, board="aqa")
+
+    assert features == {
+        "marks": [3, 4, 5, 6, 7],
+        "command_words": ["show", "find", "solve", "determine", "prove"],
+    }
+
+
+def test_mathematical_commands_require_transformative_reasoning() -> None:
+    reference_demand = module()
+    profile = reference_demand.ReferenceDemandProfile.model_validate(profile_payload())
+
+    target = reference_demand.build_item_demand_target(
+        {
+            "id": "q6",
+            "marks": 7,
+            "kind": "mathematical_argument",
+            "command_word": "Prove",
+            "intended_demand": "high",
+            "assessment_objectives": {"AO2": 3, "AO3": 4},
+        },
+        profile,
+    )
+
+    assert target.response_mode == "mathematical-argument"
+    assert "transform" in target.required_cognitive_operations
+    assert "analyse" in target.required_cognitive_operations
+    assert target.requires_shortcut_resistance is True
 
 
 def test_reference_extraction_models_the_published_ocr_paper_three_mcq_block() -> None:
@@ -392,9 +471,10 @@ def test_assessment_package_records_the_exact_reference_demand_audit(
     document = json.loads(path.read_text(encoding="utf-8"))
     audit = document["reference_demand"]
     assert audit["items_checked"] == 1
-    assert audit["profile_fingerprint"] == module().profile_for(
-        "aqa/economics", "1"
-    ).source_fingerprint
+    assert (
+        audit["profile_fingerprint"]
+        == module().profile_for("aqa/economics", "1").source_fingerprint
+    )
     assert audit["empirical_equivalence_claimed"] is False
     assert document["items"][0]["difficulty_evidence"]["approved"] is True
     assert audit["item_review_evidence"]["coverage"] == 1.0

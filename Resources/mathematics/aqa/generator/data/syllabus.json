@@ -1,0 +1,389 @@
+{
+  "schema_version": 1,
+  "family_id": "aqa/mathematics",
+  "backend_subject": "mathematics_aqa",
+  "subject_label": "AQA A-level Mathematics",
+  "subject_plugin": "mathematics",
+  "board_profile": "aqa",
+  "specification_version": "7357-2017",
+  "blueprint_version": "7357-v1",
+  "provenance": [
+    "https://www.aqa.org.uk/subjects/mathematics/a-level/mathematics-7357/specification",
+    "https://filestore.aqa.org.uk/resources/mathematics/specifications/AQA-7357-SP-2017.PDF"
+  ],
+  "topics": [
+    {
+      "id": "pure-proof",
+      "title": "proof",
+      "points": [
+        "construct a deductive mathematical argument",
+        "use proof by contradiction",
+        "disprove a statement with a counterexample",
+        "use precise implication and equivalence notation"
+      ],
+      "papers": ["1", "2", "3"]
+    },
+    {
+      "id": "pure-algebra-functions",
+      "title": "algebra and functions",
+      "points": [
+        "manipulate algebraic expressions and surds exactly",
+        "solve equations and inequalities",
+        "compose and invert functions with stated domains",
+        "use partial fractions and the factor theorem"
+      ],
+      "papers": ["1", "2", "3"]
+    },
+    {
+      "id": "pure-coordinate-geometry",
+      "title": "coordinate geometry",
+      "points": [
+        "use straight-line equations and gradients",
+        "derive and use equations of circles",
+        "apply parametric equations to curves",
+        "find intersections and tangents algebraically"
+      ],
+      "papers": ["1", "2", "3"]
+    },
+    {
+      "id": "pure-sequences-series",
+      "title": "sequences and series",
+      "points": [
+        "use arithmetic and geometric series",
+        "apply sigma notation",
+        "expand binomial expressions",
+        "model a process with a recurrence relation"
+      ],
+      "papers": ["1", "2", "3"]
+    },
+    {
+      "id": "pure-trigonometry",
+      "title": "trigonometry",
+      "points": [
+        "use radians and arc-length relationships",
+        "solve trigonometric equations in a stated interval",
+        "prove and apply trigonometric identities",
+        "use inverse functions with appropriate domains"
+      ],
+      "papers": ["1", "2", "3"]
+    },
+    {
+      "id": "pure-exponentials-logarithms",
+      "title": "exponentials and logarithms",
+      "points": [
+        "apply logarithm laws",
+        "solve exponential equations",
+        "use exponential growth and decay models",
+        "linearise a relationship using logarithms"
+      ],
+      "papers": ["1", "2", "3"]
+    },
+    {
+      "id": "pure-differentiation",
+      "title": "differentiation",
+      "points": [
+        "differentiate standard and composite functions",
+        "use product, quotient and chain rules",
+        "apply derivatives to rates of change and optimisation",
+        "use implicit and parametric differentiation"
+      ],
+      "papers": ["1", "2", "3"]
+    },
+    {
+      "id": "pure-integration",
+      "title": "integration",
+      "points": [
+        "integrate standard functions",
+        "use substitution and integration by parts",
+        "solve a separable differential equation",
+        "interpret a definite integral geometrically"
+      ],
+      "papers": ["1", "2", "3"]
+    },
+    {
+      "id": "pure-numerical-methods",
+      "title": "numerical methods",
+      "points": [
+        "locate a root by a sign change",
+        "apply fixed-point iteration",
+        "apply the Newton-Raphson method",
+        "justify convergence and interpret numerical error"
+      ],
+      "papers": ["1", "2", "3"]
+    },
+    {
+      "id": "mechanics-vectors",
+      "title": "vectors",
+      "points": [
+        "use two-dimensional and three-dimensional vectors",
+        "resolve a vector into components",
+        "find magnitudes and directions",
+        "apply vectors to position, force and motion"
+      ],
+      "papers": ["2"]
+    },
+    {
+      "id": "mechanics-quantities-units",
+      "title": "quantities and units in mechanics",
+      "points": [
+        "use SI base and derived units",
+        "distinguish scalar and vector quantities",
+        "check dimensional consistency",
+        "interpret a mathematical model in context"
+      ],
+      "papers": ["2"]
+    },
+    {
+      "id": "mechanics-kinematics",
+      "title": "kinematics",
+      "points": [
+        "use displacement velocity and acceleration",
+        "apply constant-acceleration formulae",
+        "interpret displacement-time and velocity-time graphs",
+        "model motion under gravity"
+      ],
+      "papers": ["2"]
+    },
+    {
+      "id": "mechanics-forces-newton",
+      "title": "forces and Newton's laws",
+      "points": [
+        "draw and use a force diagram",
+        "apply Newton's laws to connected particles",
+        "model friction and normal reaction",
+        "resolve forces on an inclined plane"
+      ],
+      "papers": ["2"]
+    },
+    {
+      "id": "mechanics-moments",
+      "title": "moments",
+      "points": [
+        "calculate a moment about a point",
+        "apply equilibrium conditions",
+        "model a rigid body with a centre of mass",
+        "interpret reaction forces in context"
+      ],
+      "papers": ["2"]
+    },
+    {
+      "id": "statistics-sampling",
+      "title": "statistical sampling",
+      "points": [
+        "distinguish a population from a sample",
+        "compare sampling methods",
+        "identify sources of sampling bias",
+        "interpret a sampling frame"
+      ],
+      "papers": ["3"]
+    },
+    {
+      "id": "statistics-data-presentation",
+      "title": "data presentation and interpretation",
+      "points": [
+        "calculate and interpret summary statistics",
+        "use histograms and cumulative-frequency diagrams",
+        "interpret correlation without inferring causation",
+        "identify outliers and compare distributions"
+      ],
+      "papers": ["3"]
+    },
+    {
+      "id": "statistics-probability",
+      "title": "probability",
+      "points": [
+        "use conditional probability",
+        "apply set notation and probability laws",
+        "use tree diagrams and independent events",
+        "model discrete outcomes"
+      ],
+      "papers": ["3"]
+    },
+    {
+      "id": "statistics-distributions",
+      "title": "statistical distributions",
+      "points": [
+        "use a binomial distribution",
+        "use a normal distribution",
+        "select and justify a probability model",
+        "apply a continuity correction where appropriate"
+      ],
+      "papers": ["3"]
+    },
+    {
+      "id": "statistics-hypothesis-testing",
+      "title": "statistical hypothesis testing",
+      "points": [
+        "state null and alternative hypotheses",
+        "calculate a critical region or p-value",
+        "make a conclusion in context",
+        "interpret the significance level and possible error"
+      ],
+      "papers": ["3"]
+    }
+  ],
+  "papers": [
+    {
+      "id": "1",
+      "code": "7357/1",
+      "title": "Paper 1",
+      "duration_minutes": 120,
+      "marks": 100,
+      "instructions": [
+        "Answer all questions.",
+        "A calculator is required.",
+        "Give exact answers unless the question states otherwise."
+      ],
+      "sections": [
+        {
+          "id": "A",
+          "title": "Questions",
+          "option_count": 1,
+          "answer_options": 1,
+          "option_marks": 100,
+          "questions": [
+            {"id": "mcq-1", "marks": 1, "kind": "multiple_choice", "command_word": "Select"},
+            {"id": "mcq-2", "marks": 1, "kind": "multiple_choice", "command_word": "Select"},
+            {"id": "mcq-3", "marks": 1, "kind": "multiple_choice", "command_word": "Select"},
+            {"id": "mcq-4", "marks": 1, "kind": "multiple_choice", "command_word": "Select"},
+            {"id": "short-1", "marks": 5, "kind": "calculation", "command_word": "Find"},
+            {"id": "short-2", "marks": 5, "kind": "calculation", "command_word": "Solve"},
+            {"id": "short-3", "marks": 5, "kind": "mathematical_argument", "command_word": "Show"},
+            {"id": "problem-1", "marks": 6, "kind": "calculation", "command_word": "Determine"},
+            {"id": "problem-2", "marks": 6, "kind": "calculation", "command_word": "Calculate"},
+            {"id": "problem-3", "marks": 7, "kind": "mathematical_argument", "command_word": "Prove"},
+            {"id": "problem-4", "marks": 7, "kind": "calculation", "command_word": "Find"},
+            {"id": "problem-5", "marks": 8, "kind": "calculation", "command_word": "Determine"},
+            {"id": "problem-6", "marks": 8, "kind": "mathematical_argument", "command_word": "Show"},
+            {"id": "problem-7", "marks": 9, "kind": "calculation", "command_word": "Solve"},
+            {"id": "problem-8", "marks": 10, "kind": "calculation", "command_word": "Determine"},
+            {"id": "problem-9", "marks": 10, "kind": "mathematical_argument", "command_word": "Justify"},
+            {"id": "problem-10", "marks": 10, "kind": "calculation", "command_word": "Calculate"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "code": "7357/2",
+      "title": "Paper 2",
+      "duration_minutes": 120,
+      "marks": 100,
+      "instructions": [
+        "Answer all questions in both sections.",
+        "A calculator is required.",
+        "Give exact answers unless the question states otherwise."
+      ],
+      "sections": [
+        {
+          "id": "A",
+          "title": "Section A: Pure mathematics",
+          "allowed_topic_ids": [
+            "pure-proof", "pure-algebra-functions", "pure-coordinate-geometry",
+            "pure-sequences-series", "pure-trigonometry", "pure-exponentials-logarithms",
+            "pure-differentiation", "pure-integration", "pure-numerical-methods"
+          ],
+          "option_count": 1,
+          "answer_options": 1,
+          "option_marks": 50,
+          "questions": [
+            {"id": "pure-mcq-1", "marks": 1, "kind": "multiple_choice", "command_word": "Select"},
+            {"id": "pure-mcq-2", "marks": 1, "kind": "multiple_choice", "command_word": "Select"},
+            {"id": "pure-mcq-3", "marks": 1, "kind": "multiple_choice", "command_word": "Select"},
+            {"id": "pure-mcq-4", "marks": 1, "kind": "multiple_choice", "command_word": "Select"},
+            {"id": "pure-1", "marks": 5, "kind": "calculation", "command_word": "Find"},
+            {"id": "pure-2", "marks": 6, "kind": "calculation", "command_word": "Solve"},
+            {"id": "pure-3", "marks": 7, "kind": "mathematical_argument", "command_word": "Show"},
+            {"id": "pure-4", "marks": 8, "kind": "calculation", "command_word": "Determine"},
+            {"id": "pure-5", "marks": 10, "kind": "calculation", "command_word": "Calculate"},
+            {"id": "pure-6", "marks": 10, "kind": "mathematical_argument", "command_word": "Justify"}
+          ]
+        },
+        {
+          "id": "B",
+          "title": "Section B: Mechanics",
+          "allowed_topic_ids": [
+            "mechanics-vectors", "mechanics-quantities-units", "mechanics-kinematics",
+            "mechanics-forces-newton", "mechanics-moments"
+          ],
+          "option_count": 1,
+          "answer_options": 1,
+          "option_marks": 50,
+          "questions": [
+            {"id": "mechanics-mcq-1", "marks": 1, "kind": "multiple_choice", "command_word": "Select"},
+            {"id": "mechanics-mcq-2", "marks": 1, "kind": "multiple_choice", "command_word": "Select"},
+            {"id": "mechanics-1", "marks": 4, "kind": "calculation", "command_word": "Find"},
+            {"id": "mechanics-2", "marks": 5, "kind": "calculation", "command_word": "Calculate"},
+            {"id": "mechanics-3", "marks": 6, "kind": "mathematical_argument", "command_word": "Show"},
+            {"id": "mechanics-4", "marks": 7, "kind": "calculation", "command_word": "Determine"},
+            {"id": "mechanics-5", "marks": 8, "kind": "calculation", "command_word": "Find"},
+            {"id": "mechanics-6", "marks": 9, "kind": "mathematical_argument", "command_word": "Justify"},
+            {"id": "mechanics-7", "marks": 9, "kind": "calculation", "command_word": "Calculate"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "code": "7357/3",
+      "title": "Paper 3",
+      "duration_minutes": 120,
+      "marks": 100,
+      "instructions": [
+        "Answer all questions in both sections.",
+        "A calculator is required.",
+        "Give exact answers unless the question states otherwise."
+      ],
+      "sections": [
+        {
+          "id": "A",
+          "title": "Section A: Pure mathematics",
+          "allowed_topic_ids": [
+            "pure-proof", "pure-algebra-functions", "pure-coordinate-geometry",
+            "pure-sequences-series", "pure-trigonometry", "pure-exponentials-logarithms",
+            "pure-differentiation", "pure-integration", "pure-numerical-methods"
+          ],
+          "option_count": 1,
+          "answer_options": 1,
+          "option_marks": 50,
+          "questions": [
+            {"id": "pure-mcq-1", "marks": 1, "kind": "multiple_choice", "command_word": "Select"},
+            {"id": "pure-mcq-2", "marks": 1, "kind": "multiple_choice", "command_word": "Select"},
+            {"id": "pure-mcq-3", "marks": 1, "kind": "multiple_choice", "command_word": "Select"},
+            {"id": "pure-mcq-4", "marks": 1, "kind": "multiple_choice", "command_word": "Select"},
+            {"id": "pure-1", "marks": 5, "kind": "calculation", "command_word": "Find"},
+            {"id": "pure-2", "marks": 6, "kind": "calculation", "command_word": "Solve"},
+            {"id": "pure-3", "marks": 7, "kind": "mathematical_argument", "command_word": "Show"},
+            {"id": "pure-4", "marks": 8, "kind": "calculation", "command_word": "Determine"},
+            {"id": "pure-5", "marks": 10, "kind": "calculation", "command_word": "Calculate"},
+            {"id": "pure-6", "marks": 10, "kind": "mathematical_argument", "command_word": "Justify"}
+          ]
+        },
+        {
+          "id": "B",
+          "title": "Section B: Statistics",
+          "allowed_topic_ids": [
+            "statistics-sampling", "statistics-data-presentation", "statistics-probability",
+            "statistics-distributions", "statistics-hypothesis-testing"
+          ],
+          "option_count": 1,
+          "answer_options": 1,
+          "option_marks": 50,
+          "questions": [
+            {"id": "statistics-mcq-1", "marks": 1, "kind": "multiple_choice", "command_word": "Select"},
+            {"id": "statistics-mcq-2", "marks": 1, "kind": "multiple_choice", "command_word": "Select"},
+            {"id": "statistics-mcq-3", "marks": 1, "kind": "multiple_choice", "command_word": "Select"},
+            {"id": "statistics-mcq-4", "marks": 1, "kind": "multiple_choice", "command_word": "Select"},
+            {"id": "statistics-1", "marks": 4, "kind": "calculation", "command_word": "Find"},
+            {"id": "statistics-2", "marks": 5, "kind": "calculation", "command_word": "Calculate"},
+            {"id": "statistics-3", "marks": 6, "kind": "mathematical_argument", "command_word": "Show"},
+            {"id": "statistics-4", "marks": 7, "kind": "calculation", "command_word": "Determine"},
+            {"id": "statistics-5", "marks": 8, "kind": "mathematical_argument", "command_word": "Justify"},
+            {"id": "statistics-6", "marks": 8, "kind": "calculation", "command_word": "Find"},
+            {"id": "statistics-7", "marks": 8, "kind": "calculation", "command_word": "Calculate"}
+          ]
+        }
+      ]
+    }
+  ]
+}

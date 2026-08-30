@@ -360,8 +360,8 @@
     "semantic_hash": ""
   },
   "Resources/coverage-matrix.json": {
-    "mtime": 1787948020.7989464,
-    "ast_hash": "2bea3482d506dab5221632f5a972d768",
+    "mtime": 1788110781.0437841,
+    "ast_hash": "489294a6e7f866cd6199bbc90055bf1f",
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/aqaecongen/__init__.py": {
@@ -605,8 +605,8 @@
     "semantic_hash": ""
   },
   "Resources/generator-registry.json": {
-    "mtime": 1788018394.6980522,
-    "ast_hash": "ee54855d1ddeb44894ef6cd61218c5b8",
+    "mtime": 1788110763.3677433,
+    "ast_hash": "3d85b4d1febbce1a30627a604311d837",
     "semantic_hash": ""
   },
   "Resources/layout-master-runtime.json": {
@@ -705,8 +705,8 @@
     "semantic_hash": ""
   },
   "tests/test_coverage_matrix.py": {
-    "mtime": 1787948006.7499316,
-    "ast_hash": "7df92ee4303c7749ef6436446e437c83",
+    "mtime": 1788111006.7227068,
+    "ast_hash": "117807ad91176d1767ffc930b8f81028",
     "semantic_hash": ""
   },
   "tests/test_difficulty_calibration.py": {
@@ -1700,8 +1700,8 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1788108196.0828779,
-    "ast_hash": "4c1ca952e0cb522d1dadcbfeff0bd4c6",
+    "mtime": 1788110919.3701239,
+    "ast_hash": "6bd3d4d1734ccde42fc87ea6203bc483",
     "semantic_hash": ""
   },
   "tests/test_repository_hygiene.py": {
@@ -1850,8 +1850,8 @@
     "semantic_hash": ""
   },
   "Resources/configured-generators/generator/configuredgen/generator.py": {
-    "mtime": 1787775611.9723787,
-    "ast_hash": "58aabc5570361f07bb9c199a1bd9466a",
+    "mtime": 1788111006.7226272,
+    "ast_hash": "970158a5656294c6e4b3c2b0e5fc2d3e",
     "semantic_hash": ""
   },
   "Resources/configured-generators/generator/configuredgen/models.py": {
@@ -1875,8 +1875,8 @@
     "semantic_hash": ""
   },
   "tests/test_configured_family.py": {
-    "mtime": 1787775611.9718156,
-    "ast_hash": "d4cfce4997751b8bce842112bd377b58",
+    "mtime": 1788111006.7224586,
+    "ast_hash": "7918c66ac49260b16f3ad855c55d4f36",
     "semantic_hash": ""
   },
   "docs/qualification/2026-08-cambridge-engineering-foundation.md": {
@@ -1885,8 +1885,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/reference_demand.py": {
-    "mtime": 1788107794.7769082,
-    "ast_hash": "d532980a1f06064e10d59183b3d8495c",
+    "mtime": 1788111006.722743,
+    "ast_hash": "159f994e9cff2d4f55ecbefed3575998",
     "semantic_hash": ""
   },
   "Resources/reference-demand-profile.schema.json": {
@@ -1895,18 +1895,18 @@
     "semantic_hash": ""
   },
   "Resources/reference-demand-profiles.json": {
-    "mtime": 1788107951.8434546,
-    "ast_hash": "d4a971c860b6ee574c451e39481016e6",
+    "mtime": 1788110709.1465337,
+    "ast_hash": "72676679cdda2f047774df4b2a95f1be",
     "semantic_hash": ""
   },
   "tests/test_reference_demand.py": {
-    "mtime": 1788107115.058508,
-    "ast_hash": "72a571d8bb20e4d2b17262020e571bd9",
+    "mtime": 1788111006.7225242,
+    "ast_hash": "fb41ee976826abe86666f3a44f4079e3",
     "semantic_hash": ""
   },
   "tools/reference_demand_profiles.py": {
-    "mtime": 1788107902.1959026,
-    "ast_hash": "6c927b0b0fdb160b35acfe360c4daa6e",
+    "mtime": 1788111006.7225575,
+    "ast_hash": "7c20d6b50b66a153398d641574f49bb9",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-29-reference-demand-calibration.md": {
@@ -1952,6 +1952,11 @@
   "docs/superpowers/specs/2026-08-30-difficulty-calibration-v2-design.md": {
     "mtime": 1788108281.3094764,
     "ast_hash": "fe36c6c778cb3fe29a6227805b88d433",
+    "semantic_hash": ""
+  },
+  "Resources/mathematics/aqa/generator/data/syllabus.json": {
+    "mtime": 1788110201.1232166,
+    "ast_hash": "981d7274fd87040b2e75d97b575e8f0e",
     "semantic_hash": ""
   }
 }

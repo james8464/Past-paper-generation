@@ -1115,6 +1115,69 @@
     },
     {
       "manifest_version": 1,
+      "id": "aqa/mathematics",
+      "board": "aqa",
+      "subject": "mathematics",
+      "app_subject": "mathematics",
+      "app_board": "aqa",
+      "backend_subject": "mathematics_aqa",
+      "resource_path": "mathematics/aqa",
+      "python_path": "configured-generators/generator",
+      "package": "configuredgen",
+      "entry_point": "configuredgen.cli:generate_package",
+      "syllabus_path": "mathematics/aqa/generator/data/syllabus.json",
+      "subject_plugin": "mathematics",
+      "board_profile": "aqa",
+      "specification_version": "7357-2017",
+      "blueprint_version": "7357-v1",
+      "reference_demand_profile": "reference-demand-profiles.json",
+      "content_mode": "ai-assisted",
+      "supported_providers": ["ollama", "openai", "anthropic", "apple"],
+      "outputs_by_paper": {
+        "1": ["question_paper", "mark_scheme", "assessment_package"],
+        "2": ["question_paper", "mark_scheme", "assessment_package"],
+        "3": ["question_paper", "mark_scheme", "assessment_package"]
+      },
+      "advertised": false,
+      "declared_papers": ["1", "2", "3"],
+      "papers": [
+        {
+          "id": "1",
+          "title": "Paper 1",
+          "detail": "Pure mathematics",
+          "qualification": {
+            "engineering": {"state": "not_run", "evidence": []},
+            "visual": {"state": "not_run", "evidence": []},
+            "empirical": {"state": "not_run", "evidence": []}
+          },
+          "checks": {"blueprint": false, "syllabus": false, "question_types": false, "mark_distribution": false, "difficulty": false, "unique_content": false, "renderer": false, "mark_scheme": false, "runtime": false, "visual": false, "release": false}
+        },
+        {
+          "id": "2",
+          "title": "Paper 2",
+          "detail": "Pure mathematics and mechanics",
+          "qualification": {
+            "engineering": {"state": "not_run", "evidence": []},
+            "visual": {"state": "not_run", "evidence": []},
+            "empirical": {"state": "not_run", "evidence": []}
+          },
+          "checks": {"blueprint": false, "syllabus": false, "question_types": false, "mark_distribution": false, "difficulty": false, "unique_content": false, "renderer": false, "mark_scheme": false, "runtime": false, "visual": false, "release": false}
+        },
+        {
+          "id": "3",
+          "title": "Paper 3",
+          "detail": "Pure mathematics and statistics",
+          "qualification": {
+            "engineering": {"state": "not_run", "evidence": []},
+            "visual": {"state": "not_run", "evidence": []},
+            "empirical": {"state": "not_run", "evidence": []}
+          },
+          "checks": {"blueprint": false, "syllabus": false, "question_types": false, "mark_distribution": false, "difficulty": false, "unique_content": false, "renderer": false, "mark_scheme": false, "runtime": false, "visual": false, "release": false}
+        }
+      ]
+    },
+    {
+      "manifest_version": 1,
       "id": "cambridge-international/economics",
       "board": "cambridge-international",
       "subject": "economics",

@@ -36,11 +36,10 @@ def test_matrix_exactly_covers_layout_profiles() -> None:
     assert value["summary"]["families"] == 107
     assert value["summary"]["boards"] == 4
     assert {
-        item["id"] for item in value["families"]
+        item["id"]
+        for item in value["families"]
         if item["status"] != "implementation-pending-reference"
-    } == {
-        f"{item['board']}/{item['subject']}" for item in profiles
-    }
+    } == {f"{item['board']}/{item['subject']}" for item in profiles}
 
 
 def test_unadvertised_cambridge_families_remain_pending_reference_evidence() -> None:
@@ -53,6 +52,17 @@ def test_unadvertised_cambridge_families_remain_pending_reference_evidence() -> 
         assert item["status"] == "implementation-pending-reference"
         assert item["implementation"]["advertised"] is False
         assert item["reference"] is None
+
+
+def test_unadvertised_aqa_mathematics_foundation_uses_real_reference_profiles() -> None:
+    item = family(matrix(), "aqa/mathematics")
+
+    assert item["status"] == "implemented"
+    assert item["implementation"]["advertised"] is False
+    assert item["reference"] is not None
+    assert item["declared_papers"] == ["1", "2", "3"]
+    assert item["verified_papers"] == []
+    assert all(not any(paper["checks"].values()) for paper in item["papers"])
 
 
 def test_existing_generators_are_reported_without_false_verification() -> None:
@@ -130,7 +140,11 @@ def test_catalog_availability_is_owned_only_by_registry() -> None:
     catalog = load_json(RESOURCES / "catalog.json")
     registry = load_json(GENERATOR_REGISTRY)
     assert "ready_generators" not in catalog
-    assert all("status" not in board for subject in catalog["subjects"] for board in subject["boards"])
+    assert all(
+        "status" not in board
+        for subject in catalog["subjects"]
+        for board in subject["boards"]
+    )
     catalog_keys = {
         f"{subject['id']}/{board['id']}"
         for subject in catalog["subjects"]

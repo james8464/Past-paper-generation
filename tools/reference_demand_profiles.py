@@ -37,19 +37,29 @@ COMMAND_WORDS = (
     "describe",
     "discuss",
     "draw",
+    "estimate",
     "evaluate",
     "examine",
     "explain",
+    "find",
     "give",
+    "hence",
     "identify",
     "justify",
     "name",
     "outline",
     "prepare",
+    "prove",
     "recommend",
     "select",
+    "show",
+    "sketch",
+    "solve",
     "state",
     "suggest",
+    "determine",
+    "deduce",
+    "verify",
     "write",
 )
 COMMAND_PATTERN = re.compile(
@@ -116,6 +126,16 @@ FAMILIES = (
             "1": "AQA-71361-QP-*.PDF",
             "2": "AQA-71362-QP-*.PDF",
             "3": "AQA-71363-QP-*.PDF",
+        },
+    ),
+    CorpusFamily(
+        "aqa/mathematics",
+        "aqa",
+        CORPUS_ROOT / "aqa" / "mathematics" / "mathematics-7357" / "question-papers",
+        {
+            "1": "AQA-73571-QP-*.PDF",
+            "2": "AQA-73572-QP-*.PDF",
+            "3": "AQA-73573-QP-*.PDF",
         },
     ),
     CorpusFamily(
@@ -190,7 +210,7 @@ def extract_reference_features(
             raise ValueError(
                 f"could not locate question {mcq_count + 1} after MCQ block"
             )
-        command_text = text[constructed.start():]
+        command_text = text[constructed.start() :]
     for raw_line in command_text.splitlines():
         line = " ".join(raw_line.split())
         lowered = line.casefold()
@@ -232,8 +252,10 @@ def extract_reference_items(
     items: list[dict[str, Any]] = []
     for index, match in enumerate(matches):
         marks = int(match.group(1))
-        command = "select" if index < mcq_count else _nearest_command(
-            text[max(0, match.start() - 3000):match.start()]
+        command = (
+            "select"
+            if index < mcq_count
+            else _nearest_command(text[max(0, match.start() - 3000) : match.start()])
         )
         items.append(
             {
@@ -295,11 +317,29 @@ def _item_demand(marks: int, command: str) -> str:
 def _reference_response_mode(marks: int, command: str) -> str:
     if command == "select":
         return "selected-response"
-    if command in {"calculate", "complete", "construct", "draw", "prepare", "write"}:
+    if command in {"deduce", "prove", "show", "verify"}:
+        return "mathematical-argument"
+    if command in {
+        "calculate",
+        "complete",
+        "construct",
+        "determine",
+        "draw",
+        "estimate",
+        "find",
+        "hence",
+        "prepare",
+        "sketch",
+        "solve",
+        "write",
+    }:
         return "multi-stage-calculation" if marks >= 4 else "calculation"
     if command in {"define", "give", "identify", "name", "state"}:
         return "recall"
-    if command in {"assess", "discuss", "evaluate", "justify", "recommend"} or marks >= 12:
+    if (
+        command in {"assess", "discuss", "evaluate", "justify", "recommend"}
+        or marks >= 12
+    ):
         return "extended-evaluation"
     if command in {"analyse", "compare", "examine", "explain"}:
         return "structured-reasoning"
@@ -309,7 +349,24 @@ def _reference_response_mode(marks: int, command: str) -> str:
 def _reference_operation(command: str) -> str:
     if command in {"define", "give", "identify", "name", "select", "state"}:
         return "retrieve"
-    if command in {"calculate", "complete", "construct", "draw", "prepare", "write"}:
+    if command in {
+        "calculate",
+        "complete",
+        "construct",
+        "deduce",
+        "determine",
+        "draw",
+        "estimate",
+        "find",
+        "hence",
+        "prepare",
+        "prove",
+        "show",
+        "sketch",
+        "solve",
+        "verify",
+        "write",
+    }:
         return "transform"
     if command in {"assess", "discuss", "evaluate", "justify", "recommend"}:
         return "judge"
@@ -359,7 +416,8 @@ def build_document() -> ReferenceDemandDocument:
                     f"paper {paper_id}"
                 )
             paired = [
-                item for item in reference_items
+                item
+                for item in reference_items
                 if item["command_word"] != "unspecified"
             ]
             coverage = len(paired) / len(reference_items) if reference_items else 0
@@ -379,9 +437,13 @@ def build_document() -> ReferenceDemandDocument:
                 ),
                 source_document_count=len(paths),
                 source_fingerprint=_fingerprint(paths),
-                mark_band_distribution=_distribution(_mark_band(mark) for mark in marks),
+                mark_band_distribution=_distribution(
+                    _mark_band(mark) for mark in marks
+                ),
                 command_word_distribution=_distribution(commands),
-                demand_distribution=_distribution(item["demand_band"] for item in paired),
+                demand_distribution=_distribution(
+                    item["demand_band"] for item in paired
+                ),
                 mark_weighted_demand_distribution=_weighted_distribution(
                     (item["demand_band"], item["marks"]) for item in paired
                 ),
@@ -411,8 +473,12 @@ def build_document() -> ReferenceDemandDocument:
 
 
 def _reference_paths(root: Path, pattern: str) -> list[Path]:
-    paths = [path for path in root.glob(pattern) if "correction" not in path.name.casefold()]
-    current = [path for path in paths if re.search(r"(?:JUN2[2-6]|202[2-6])", path.name, re.I)]
+    paths = [
+        path for path in root.glob(pattern) if "correction" not in path.name.casefold()
+    ]
+    current = [
+        path for path in paths if re.search(r"(?:JUN2[2-6]|202[2-6])", path.name, re.I)
+    ]
     return sorted(current or paths)
 
 
@@ -483,8 +549,7 @@ def _question_bank_profiles(
 def _mean_distribution(values: list[dict[str, float]]) -> dict[str, float]:
     keys = sorted({key for value in values for key in value})
     raw = {
-        key: sum(value.get(key, 0) for value in values) / len(values)
-        for key in keys
+        key: sum(value.get(key, 0) for value in values) / len(values) for key in keys
     }
     return _renormalise(raw)
 
@@ -539,12 +604,15 @@ def _mark_demand(mark: int) -> str:
 
 
 def render(document: ReferenceDemandDocument) -> str:
-    return json.dumps(
-        document.model_dump(mode="json"),
-        indent=2,
-        sort_keys=True,
-        ensure_ascii=False,
-    ) + "\n"
+    return (
+        json.dumps(
+            document.model_dump(mode="json"),
+            indent=2,
+            sort_keys=True,
+            ensure_ascii=False,
+        )
+        + "\n"
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -560,7 +628,10 @@ def main(argv: list[str] | None = None) -> int:
         PROFILES_PATH.write_text(value, encoding="utf-8")
         return 0
     if args.check:
-        if not PROFILES_PATH.exists() or PROFILES_PATH.read_text(encoding="utf-8") != value:
+        if (
+            not PROFILES_PATH.exists()
+            or PROFILES_PATH.read_text(encoding="utf-8") != value
+        ):
             raise SystemExit(
                 "reference demand profiles are stale; run "
                 "tools/reference_demand_profiles.py --write"

@@ -19,10 +19,10 @@
     "families": 107,
     "boards": 4,
     "advertised_families": 7,
-    "reference-profiled": 98,
+    "reference-profiled": 97,
     "implementation-pending-reference": 2,
     "partial": 0,
-    "implemented": 7,
+    "implemented": 8,
     "verified": 0
   },
   "families": [
@@ -1192,7 +1192,7 @@
       "id": "aqa/mathematics",
       "board": "aqa",
       "subject": "mathematics",
-      "status": "reference-profiled",
+      "status": "implemented",
       "reference": {
         "question_papers_profiled": 67,
         "page_count": {
@@ -1214,10 +1214,125 @@
           "bottom": 15.99
         }
       },
-      "declared_papers": [],
-      "supported_papers": [],
+      "declared_papers": [
+        "1",
+        "2",
+        "3"
+      ],
+      "supported_papers": [
+        "1",
+        "2",
+        "3"
+      ],
       "verified_papers": [],
-      "papers": []
+      "papers": [
+        {
+          "id": "1",
+          "title": "Paper 1",
+          "detail": "Pure mathematics",
+          "status": "implemented",
+          "checks": {
+            "blueprint": false,
+            "syllabus": false,
+            "question_types": false,
+            "mark_distribution": false,
+            "difficulty": false,
+            "unique_content": false,
+            "renderer": false,
+            "mark_scheme": false,
+            "runtime": false,
+            "visual": false,
+            "release": false
+          },
+          "qualification": {
+            "engineering": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          }
+        },
+        {
+          "id": "2",
+          "title": "Paper 2",
+          "detail": "Pure mathematics and mechanics",
+          "status": "implemented",
+          "checks": {
+            "blueprint": false,
+            "syllabus": false,
+            "question_types": false,
+            "mark_distribution": false,
+            "difficulty": false,
+            "unique_content": false,
+            "renderer": false,
+            "mark_scheme": false,
+            "runtime": false,
+            "visual": false,
+            "release": false
+          },
+          "qualification": {
+            "engineering": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          }
+        },
+        {
+          "id": "3",
+          "title": "Paper 3",
+          "detail": "Pure mathematics and statistics",
+          "status": "implemented",
+          "checks": {
+            "blueprint": false,
+            "syllabus": false,
+            "question_types": false,
+            "mark_distribution": false,
+            "difficulty": false,
+            "unique_content": false,
+            "renderer": false,
+            "mark_scheme": false,
+            "runtime": false,
+            "visual": false,
+            "release": false
+          },
+          "qualification": {
+            "engineering": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "visual": {
+              "state": "not_run",
+              "evidence": []
+            },
+            "empirical": {
+              "state": "not_run",
+              "evidence": []
+            }
+          }
+        }
+      ],
+      "implementation": {
+        "app_subject": "mathematics",
+        "app_board": "aqa",
+        "backend_subject": "mathematics_aqa",
+        "resource_path": "mathematics/aqa",
+        "advertised": false
+      }
     },
     {
       "id": "aqa/media-studies",

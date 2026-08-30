@@ -10,14 +10,15 @@
         "transform": 0.225352
       },
       "command_word_distribution": {
-        "assess": 0.115385,
-        "calculate": 0.051282,
-        "complete": 0.025641,
-        "evaluate": 0.051282,
-        "justify": 0.012821,
-        "prepare": 0.217949,
-        "select": 0.512819,
-        "suggest": 0.012821
+        "assess": 0.113924,
+        "calculate": 0.050633,
+        "complete": 0.025316,
+        "evaluate": 0.050633,
+        "find": 0.012658,
+        "justify": 0.012658,
+        "prepare": 0.21519,
+        "select": 0.50633,
+        "suggest": 0.012658
       },
       "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
@@ -64,12 +65,13 @@
         "transform": 0.333333
       },
       "command_word_distribution": {
-        "assess": 0.1,
-        "calculate": 0.1875,
-        "evaluate": 0.1,
-        "justify": 0.0125,
-        "prepare": 0.1,
-        "select": 0.5
+        "assess": 0.098765,
+        "calculate": 0.185185,
+        "evaluate": 0.098765,
+        "justify": 0.012346,
+        "prepare": 0.098765,
+        "select": 0.493828,
+        "show": 0.012346
       },
       "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
@@ -100,7 +102,8 @@
       "response_mode_distribution": {
         "calculation": 0.068966,
         "extended-evaluation": 0.172414,
-        "multi-stage-calculation": 0.264368,
+        "mathematical-argument": 0.011494,
+        "multi-stage-calculation": 0.252874,
         "selected-response": 0.459769,
         "structured-reasoning": 0.034483
       },
@@ -110,26 +113,27 @@
     {
       "assessment_kind": "full-paper",
       "cognitive_operation_distribution": {
-        "analyse": 0.142857,
-        "judge": 0.190476,
-        "retrieve": 0.595238,
-        "transform": 0.071429
+        "analyse": 0.141176,
+        "judge": 0.188235,
+        "retrieve": 0.564707,
+        "transform": 0.105882
       },
       "command_word_distribution": {
-        "analyse": 0.176471,
-        "calculate": 0.117647,
-        "evaluate": 0.147059,
-        "justify": 0.088235,
-        "prepare": 0.014706,
-        "select": 0.455882
+        "analyse": 0.16,
+        "calculate": 0.106667,
+        "evaluate": 0.133333,
+        "justify": 0.08,
+        "prepare": 0.013333,
+        "select": 0.413334,
+        "show": 0.093333
       },
       "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.190476,
-        "low": 0.630953,
-        "standard": 0.178571
+        "high": 0.188235,
+        "low": 0.62353,
+        "standard": 0.188235
       },
-      "extraction_coverage": 0.884211,
+      "extraction_coverage": 0.894737,
       "family_id": "aqa/business",
       "mark_band_distribution": {
         "extended": 0.168421,
@@ -137,9 +141,9 @@
         "short": 0.705263
       },
       "mark_weighted_demand_distribution": {
-        "high": 0.692042,
-        "low": 0.100346,
-        "standard": 0.207612
+        "high": 0.687286,
+        "low": 0.099656,
+        "standard": 0.213058
       },
       "metric_tolerances": {
         "cognitive_operation_distribution": 0.8,
@@ -150,11 +154,11 @@
       },
       "paper_id": "1",
       "response_mode_distribution": {
-        "calculation": 0.035714,
-        "extended-evaluation": 0.190476,
-        "multi-stage-calculation": 0.035714,
-        "selected-response": 0.595239,
-        "structured-reasoning": 0.142857
+        "calculation": 0.035294,
+        "extended-evaluation": 0.188235,
+        "mathematical-argument": 0.070588,
+        "selected-response": 0.564707,
+        "structured-reasoning": 0.141176
       },
       "source_document_count": 4,
       "source_fingerprint": "37a933acd2527681b420371affbab1dde379168aced7359486e639d839100738"
@@ -168,12 +172,14 @@
         "transform": 0.230769
       },
       "command_word_distribution": {
-        "analyse": 0.347826,
-        "calculate": 0.217391,
-        "complete": 0.021739,
-        "evaluate": 0.152174,
-        "explain": 0.173913,
-        "justify": 0.086957
+        "analyse": 0.333335,
+        "calculate": 0.208333,
+        "complete": 0.020833,
+        "estimate": 0.020833,
+        "evaluate": 0.145833,
+        "explain": 0.166667,
+        "find": 0.020833,
+        "justify": 0.083333
       },
       "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
@@ -251,31 +257,36 @@
     {
       "assessment_kind": "full-paper",
       "cognitive_operation_distribution": {
-        "describe": 0.13913,
-        "explain": 0.373914,
-        "retrieve": 0.373913,
-        "transform": 0.113043
+        "describe": 0.137931,
+        "explain": 0.370689,
+        "retrieve": 0.318966,
+        "transform": 0.172414
       },
       "command_word_distribution": {
-        "calculate": 0.007576,
-        "complete": 0.113636,
-        "define": 0.007576,
-        "describe": 0.128788,
-        "evaluate": 0.015152,
-        "explain": 0.280303,
-        "name": 0.037879,
-        "select": 0.045455,
-        "state": 0.303028,
-        "suggest": 0.015152,
-        "write": 0.045455
+        "calculate": 0.006944,
+        "complete": 0.104167,
+        "define": 0.006944,
+        "describe": 0.118056,
+        "determine": 0.006944,
+        "evaluate": 0.013889,
+        "explain": 0.256944,
+        "find": 0.006944,
+        "name": 0.034722,
+        "prove": 0.006944,
+        "select": 0.041667,
+        "show": 0.055556,
+        "solve": 0.006944,
+        "state": 0.277779,
+        "suggest": 0.013889,
+        "write": 0.041667
       },
       "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.043478,
-        "low": 0.895652,
-        "standard": 0.06087
+        "high": 0.043103,
+        "low": 0.887931,
+        "standard": 0.068966
       },
-      "extraction_coverage": 0.793103,
+      "extraction_coverage": 0.8,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
         "extended": 0.068966,
@@ -283,9 +294,9 @@
         "short": 0.848275
       },
       "mark_weighted_demand_distribution": {
-        "high": 0.226562,
-        "low": 0.621094,
-        "standard": 0.152344
+        "high": 0.224806,
+        "low": 0.589147,
+        "standard": 0.186047
       },
       "metric_tolerances": {
         "cognitive_operation_distribution": 0.8,
@@ -296,12 +307,13 @@
       },
       "paper_id": "1",
       "response_mode_distribution": {
-        "calculation": 0.078261,
-        "constructed-response": 0.156522,
-        "multi-stage-calculation": 0.034783,
-        "recall": 0.304348,
-        "selected-response": 0.069565,
-        "structured-reasoning": 0.356521
+        "calculation": 0.086207,
+        "constructed-response": 0.155172,
+        "mathematical-argument": 0.043103,
+        "multi-stage-calculation": 0.043103,
+        "recall": 0.25,
+        "selected-response": 0.068966,
+        "structured-reasoning": 0.353449
       },
       "source_document_count": 4,
       "source_fingerprint": "0e822b688236b2d2bd1aad6f24b44ca2b765e8d5dc3f6b6ff05cacf8ce31eb01"
@@ -309,37 +321,39 @@
     {
       "assessment_kind": "full-paper",
       "cognitive_operation_distribution": {
-        "analyse": 0.013605,
-        "describe": 0.299321,
-        "explain": 0.183673,
-        "judge": 0.013605,
-        "retrieve": 0.238095,
-        "transform": 0.251701
+        "analyse": 0.012987,
+        "describe": 0.272727,
+        "explain": 0.168831,
+        "judge": 0.012987,
+        "retrieve": 0.214286,
+        "transform": 0.318182
       },
       "command_word_distribution": {
-        "calculate": 0.087719,
-        "compare": 0.035088,
-        "complete": 0.052632,
-        "define": 0.005848,
-        "describe": 0.25146,
-        "discuss": 0.011696,
-        "draw": 0.023392,
-        "explain": 0.152047,
-        "give": 0.005848,
-        "identify": 0.02924,
-        "name": 0.05848,
-        "outline": 0.005848,
-        "select": 0.052632,
-        "state": 0.157895,
-        "write": 0.070175
+        "calculate": 0.076923,
+        "compare": 0.030769,
+        "complete": 0.046154,
+        "define": 0.005128,
+        "describe": 0.220514,
+        "discuss": 0.010256,
+        "draw": 0.020513,
+        "explain": 0.133333,
+        "give": 0.005128,
+        "identify": 0.025641,
+        "name": 0.051282,
+        "outline": 0.005128,
+        "select": 0.046154,
+        "show": 0.117949,
+        "state": 0.138462,
+        "verify": 0.005128,
+        "write": 0.061538
       },
       "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.040816,
-        "low": 0.843538,
-        "standard": 0.115646
+        "high": 0.038961,
+        "low": 0.837662,
+        "standard": 0.123377
       },
-      "extraction_coverage": 0.90184,
+      "extraction_coverage": 0.944785,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
         "extended": 0.030675,
@@ -347,9 +361,9 @@
         "short": 0.907975
       },
       "mark_weighted_demand_distribution": {
-        "high": 0.174387,
-        "low": 0.59673,
-        "standard": 0.228883
+        "high": 0.167539,
+        "low": 0.591623,
+        "standard": 0.240838
       },
       "metric_tolerances": {
         "cognitive_operation_distribution": 0.8,
@@ -360,12 +374,13 @@
       },
       "paper_id": "2",
       "response_mode_distribution": {
-        "calculation": 0.190476,
-        "constructed-response": 0.292518,
-        "extended-evaluation": 0.027211,
-        "multi-stage-calculation": 0.061224,
-        "recall": 0.238095,
-        "structured-reasoning": 0.190476
+        "calculation": 0.103896,
+        "constructed-response": 0.266233,
+        "extended-evaluation": 0.025974,
+        "mathematical-argument": 0.162338,
+        "multi-stage-calculation": 0.051948,
+        "recall": 0.214286,
+        "structured-reasoning": 0.175325
       },
       "source_document_count": 4,
       "source_fingerprint": "c2442cabcaa707382d85570f3feb9653e86f1ea597cd2ae65784e0906ff3bf7e"
@@ -373,39 +388,45 @@
     {
       "assessment_kind": "question-bank",
       "cognitive_operation_distribution": {
-        "analyse": 0.006803,
-        "describe": 0.219226,
-        "explain": 0.278794,
-        "judge": 0.006803,
-        "retrieve": 0.306002,
-        "transform": 0.182372
+        "analyse": 0.006494,
+        "describe": 0.205329,
+        "explain": 0.269759,
+        "judge": 0.006494,
+        "retrieve": 0.266626,
+        "transform": 0.245298
       },
       "command_word_distribution": {
-        "calculate": 0.047648,
-        "compare": 0.017544,
-        "complete": 0.083134,
-        "define": 0.006712,
-        "describe": 0.190124,
-        "discuss": 0.005848,
-        "draw": 0.011696,
-        "evaluate": 0.007576,
-        "explain": 0.216175,
-        "give": 0.002924,
-        "identify": 0.01462,
-        "name": 0.04818,
-        "outline": 0.002924,
-        "select": 0.049044,
-        "state": 0.23046,
-        "suggest": 0.007576,
-        "write": 0.057815
+        "calculate": 0.041934,
+        "compare": 0.015385,
+        "complete": 0.07516,
+        "define": 0.006036,
+        "describe": 0.169285,
+        "determine": 0.003472,
+        "discuss": 0.005128,
+        "draw": 0.010256,
+        "evaluate": 0.006945,
+        "explain": 0.195138,
+        "find": 0.003472,
+        "give": 0.002564,
+        "identify": 0.012821,
+        "name": 0.043002,
+        "outline": 0.002564,
+        "prove": 0.003472,
+        "select": 0.043911,
+        "show": 0.086752,
+        "solve": 0.003472,
+        "state": 0.208119,
+        "suggest": 0.006945,
+        "verify": 0.002564,
+        "write": 0.051603
       },
       "comparison_basis": "Focused-practice target derived from aggregate mark tariffs and command-word frequencies across 8 official AQA A-level Computer Science papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.042147,
-        "low": 0.869595,
-        "standard": 0.088258
+        "high": 0.041032,
+        "low": 0.862797,
+        "standard": 0.096171
       },
-      "extraction_coverage": 0.793103,
+      "extraction_coverage": 0.8,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
         "extended": 0.049821,
@@ -413,9 +434,9 @@
         "short": 0.878125
       },
       "mark_weighted_demand_distribution": {
-        "high": 0.200474,
-        "low": 0.608913,
-        "standard": 0.190613
+        "high": 0.196173,
+        "low": 0.590384,
+        "standard": 0.213443
       },
       "metric_tolerances": {
         "cognitive_operation_distribution": 1.0,
@@ -426,13 +447,14 @@
       },
       "paper_id": "bank-4.10",
       "response_mode_distribution": {
-        "calculation": 0.134369,
-        "constructed-response": 0.22452,
-        "extended-evaluation": 0.013605,
-        "multi-stage-calculation": 0.048004,
-        "recall": 0.271222,
-        "selected-response": 0.034783,
-        "structured-reasoning": 0.273497
+        "calculation": 0.095052,
+        "constructed-response": 0.210703,
+        "extended-evaluation": 0.012987,
+        "mathematical-argument": 0.102721,
+        "multi-stage-calculation": 0.047525,
+        "recall": 0.232143,
+        "selected-response": 0.034483,
+        "structured-reasoning": 0.264386
       },
       "source_document_count": 8,
       "source_fingerprint": "221e1369d67507e866a6930f24ac89f9bbe0c5a3fcf7a71b0d6cb1c4772ffd98"
@@ -440,39 +462,45 @@
     {
       "assessment_kind": "question-bank",
       "cognitive_operation_distribution": {
-        "analyse": 0.006803,
-        "describe": 0.219226,
-        "explain": 0.278794,
-        "judge": 0.006803,
-        "retrieve": 0.306002,
-        "transform": 0.182372
+        "analyse": 0.006494,
+        "describe": 0.205329,
+        "explain": 0.269759,
+        "judge": 0.006494,
+        "retrieve": 0.266626,
+        "transform": 0.245298
       },
       "command_word_distribution": {
-        "calculate": 0.047648,
-        "compare": 0.017544,
-        "complete": 0.083134,
-        "define": 0.006712,
-        "describe": 0.190124,
-        "discuss": 0.005848,
-        "draw": 0.011696,
-        "evaluate": 0.007576,
-        "explain": 0.216175,
-        "give": 0.002924,
-        "identify": 0.01462,
-        "name": 0.04818,
-        "outline": 0.002924,
-        "select": 0.049044,
-        "state": 0.23046,
-        "suggest": 0.007576,
-        "write": 0.057815
+        "calculate": 0.041934,
+        "compare": 0.015385,
+        "complete": 0.07516,
+        "define": 0.006036,
+        "describe": 0.169285,
+        "determine": 0.003472,
+        "discuss": 0.005128,
+        "draw": 0.010256,
+        "evaluate": 0.006945,
+        "explain": 0.195138,
+        "find": 0.003472,
+        "give": 0.002564,
+        "identify": 0.012821,
+        "name": 0.043002,
+        "outline": 0.002564,
+        "prove": 0.003472,
+        "select": 0.043911,
+        "show": 0.086752,
+        "solve": 0.003472,
+        "state": 0.208119,
+        "suggest": 0.006945,
+        "verify": 0.002564,
+        "write": 0.051603
       },
       "comparison_basis": "Focused-practice target derived from aggregate mark tariffs and command-word frequencies across 8 official AQA A-level Computer Science papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.042147,
-        "low": 0.869595,
-        "standard": 0.088258
+        "high": 0.041032,
+        "low": 0.862797,
+        "standard": 0.096171
       },
-      "extraction_coverage": 0.793103,
+      "extraction_coverage": 0.8,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
         "extended": 0.049821,
@@ -480,9 +508,9 @@
         "short": 0.878125
       },
       "mark_weighted_demand_distribution": {
-        "high": 0.200474,
-        "low": 0.608913,
-        "standard": 0.190613
+        "high": 0.196173,
+        "low": 0.590384,
+        "standard": 0.213443
       },
       "metric_tolerances": {
         "cognitive_operation_distribution": 1.0,
@@ -493,13 +521,14 @@
       },
       "paper_id": "bank-4.12",
       "response_mode_distribution": {
-        "calculation": 0.134369,
-        "constructed-response": 0.22452,
-        "extended-evaluation": 0.013605,
-        "multi-stage-calculation": 0.048004,
-        "recall": 0.271222,
-        "selected-response": 0.034783,
-        "structured-reasoning": 0.273497
+        "calculation": 0.095052,
+        "constructed-response": 0.210703,
+        "extended-evaluation": 0.012987,
+        "mathematical-argument": 0.102721,
+        "multi-stage-calculation": 0.047525,
+        "recall": 0.232143,
+        "selected-response": 0.034483,
+        "structured-reasoning": 0.264386
       },
       "source_document_count": 8,
       "source_fingerprint": "221e1369d67507e866a6930f24ac89f9bbe0c5a3fcf7a71b0d6cb1c4772ffd98"
@@ -507,39 +536,45 @@
     {
       "assessment_kind": "question-bank",
       "cognitive_operation_distribution": {
-        "analyse": 0.006803,
-        "describe": 0.219226,
-        "explain": 0.278794,
-        "judge": 0.006803,
-        "retrieve": 0.306002,
-        "transform": 0.182372
+        "analyse": 0.006494,
+        "describe": 0.205329,
+        "explain": 0.269759,
+        "judge": 0.006494,
+        "retrieve": 0.266626,
+        "transform": 0.245298
       },
       "command_word_distribution": {
-        "calculate": 0.047648,
-        "compare": 0.017544,
-        "complete": 0.083134,
-        "define": 0.006712,
-        "describe": 0.190124,
-        "discuss": 0.005848,
-        "draw": 0.011696,
-        "evaluate": 0.007576,
-        "explain": 0.216175,
-        "give": 0.002924,
-        "identify": 0.01462,
-        "name": 0.04818,
-        "outline": 0.002924,
-        "select": 0.049044,
-        "state": 0.23046,
-        "suggest": 0.007576,
-        "write": 0.057815
+        "calculate": 0.041934,
+        "compare": 0.015385,
+        "complete": 0.07516,
+        "define": 0.006036,
+        "describe": 0.169285,
+        "determine": 0.003472,
+        "discuss": 0.005128,
+        "draw": 0.010256,
+        "evaluate": 0.006945,
+        "explain": 0.195138,
+        "find": 0.003472,
+        "give": 0.002564,
+        "identify": 0.012821,
+        "name": 0.043002,
+        "outline": 0.002564,
+        "prove": 0.003472,
+        "select": 0.043911,
+        "show": 0.086752,
+        "solve": 0.003472,
+        "state": 0.208119,
+        "suggest": 0.006945,
+        "verify": 0.002564,
+        "write": 0.051603
       },
       "comparison_basis": "Focused-practice target derived from aggregate mark tariffs and command-word frequencies across 8 official AQA A-level Computer Science papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.042147,
-        "low": 0.869595,
-        "standard": 0.088258
+        "high": 0.041032,
+        "low": 0.862797,
+        "standard": 0.096171
       },
-      "extraction_coverage": 0.793103,
+      "extraction_coverage": 0.8,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
         "extended": 0.049821,
@@ -547,9 +582,9 @@
         "short": 0.878125
       },
       "mark_weighted_demand_distribution": {
-        "high": 0.200474,
-        "low": 0.608913,
-        "standard": 0.190613
+        "high": 0.196173,
+        "low": 0.590384,
+        "standard": 0.213443
       },
       "metric_tolerances": {
         "cognitive_operation_distribution": 1.0,
@@ -560,13 +595,14 @@
       },
       "paper_id": "bank-4.2",
       "response_mode_distribution": {
-        "calculation": 0.134369,
-        "constructed-response": 0.22452,
-        "extended-evaluation": 0.013605,
-        "multi-stage-calculation": 0.048004,
-        "recall": 0.271222,
-        "selected-response": 0.034783,
-        "structured-reasoning": 0.273497
+        "calculation": 0.095052,
+        "constructed-response": 0.210703,
+        "extended-evaluation": 0.012987,
+        "mathematical-argument": 0.102721,
+        "multi-stage-calculation": 0.047525,
+        "recall": 0.232143,
+        "selected-response": 0.034483,
+        "structured-reasoning": 0.264386
       },
       "source_document_count": 8,
       "source_fingerprint": "221e1369d67507e866a6930f24ac89f9bbe0c5a3fcf7a71b0d6cb1c4772ffd98"
@@ -581,16 +617,19 @@
         "transform": 0.058824
       },
       "command_word_distribution": {
-        "analyse": 0.028169,
-        "assess": 0.098592,
-        "calculate": 0.112676,
-        "discuss": 0.028169,
-        "evaluate": 0.169014,
-        "explain": 0.352112,
-        "give": 0.084507,
-        "state": 0.028169,
-        "suggest": 0.056338,
-        "write": 0.042254
+        "analyse": 0.025974,
+        "assess": 0.090909,
+        "calculate": 0.103896,
+        "discuss": 0.025974,
+        "estimate": 0.012987,
+        "evaluate": 0.155844,
+        "explain": 0.324676,
+        "give": 0.077922,
+        "show": 0.038961,
+        "solve": 0.025974,
+        "state": 0.025974,
+        "suggest": 0.051948,
+        "write": 0.038961
       },
       "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
@@ -724,47 +763,45 @@
     {
       "assessment_kind": "full-paper",
       "cognitive_operation_distribution": {
-        "analyse": 0.025316,
-        "describe": 0.177215,
-        "explain": 0.177215,
-        "judge": 0.044304,
-        "retrieve": 0.417722,
-        "transform": 0.158228
+        "explain": 0.058824,
+        "judge": 0.052288,
+        "retrieve": 0.228758,
+        "transform": 0.66013
       },
       "command_word_distribution": {
-        "analyse": 0.005464,
-        "calculate": 0.016393,
-        "compare": 0.021858,
-        "complete": 0.120219,
-        "define": 0.005464,
-        "describe": 0.136612,
-        "discuss": 0.04918,
-        "draw": 0.010929,
-        "evaluate": 0.005464,
-        "explain": 0.153008,
-        "give": 0.125683,
-        "identify": 0.038251,
-        "name": 0.092896,
-        "state": 0.147541,
-        "write": 0.071038
+        "deduce": 0.005319,
+        "determine": 0.026596,
+        "draw": 0.005319,
+        "estimate": 0.005319,
+        "explain": 0.042553,
+        "find": 0.303193,
+        "give": 0.090426,
+        "hence": 0.085106,
+        "identify": 0.005319,
+        "justify": 0.042553,
+        "prove": 0.005319,
+        "select": 0.010638,
+        "show": 0.191489,
+        "sketch": 0.047872,
+        "solve": 0.021277,
+        "state": 0.074468,
+        "suggest": 0.005319,
+        "write": 0.031915
       },
-      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official OCR A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.044304,
-        "low": 0.765823,
-        "standard": 0.189873
+        "low": 0.784314,
+        "standard": 0.215686
       },
-      "extraction_coverage": 0.897727,
-      "family_id": "ocr/computer-science",
+      "extraction_coverage": 0.974522,
+      "family_id": "aqa/mathematics",
       "mark_band_distribution": {
-        "extended": 0.022727,
-        "medium": 0.136364,
-        "short": 0.840909
+        "medium": 0.11465,
+        "short": 0.88535
       },
       "mark_weighted_demand_distribution": {
-        "high": 0.151822,
-        "low": 0.550607,
-        "standard": 0.297571
+        "low": 0.591371,
+        "standard": 0.408629
       },
       "metric_tolerances": {
         "cognitive_operation_distribution": 0.8,
@@ -775,62 +812,59 @@
       },
       "paper_id": "1",
       "response_mode_distribution": {
-        "calculation": 0.082278,
-        "constructed-response": 0.177215,
-        "extended-evaluation": 0.044304,
-        "multi-stage-calculation": 0.075949,
-        "recall": 0.417722,
-        "structured-reasoning": 0.202532
+        "calculation": 0.366013,
+        "constructed-response": 0.006536,
+        "extended-evaluation": 0.052288,
+        "mathematical-argument": 0.20915,
+        "multi-stage-calculation": 0.084967,
+        "recall": 0.20915,
+        "selected-response": 0.019608,
+        "structured-reasoning": 0.052288
       },
       "source_document_count": 4,
-      "source_fingerprint": "c1d66bab8da22dc5ef45ce71d5439432cb22290a765db2b5a1495dde2b3cea9d"
+      "source_fingerprint": "83be18bd68ae2cc4ef99a9d3c2128ac092a6ffe8241a146d74352b52fc32b45e"
     },
     {
       "assessment_kind": "full-paper",
       "cognitive_operation_distribution": {
-        "analyse": 0.021429,
-        "describe": 0.235714,
-        "explain": 0.078571,
-        "judge": 0.021429,
-        "retrieve": 0.4,
-        "transform": 0.242857
+        "describe": 0.006061,
+        "explain": 0.066667,
+        "judge": 0.054545,
+        "retrieve": 0.242424,
+        "transform": 0.630303
       },
       "command_word_distribution": {
-        "analyse": 0.010582,
-        "calculate": 0.037037,
-        "compare": 0.037037,
-        "complete": 0.079365,
-        "construct": 0.005291,
-        "define": 0.015873,
-        "describe": 0.164022,
-        "discuss": 0.026455,
-        "draw": 0.005291,
-        "evaluate": 0.005291,
-        "explain": 0.058201,
-        "give": 0.137566,
-        "identify": 0.089947,
-        "name": 0.111111,
-        "select": 0.005291,
-        "state": 0.116402,
-        "write": 0.095238
+        "calculate": 0.010256,
+        "describe": 0.005128,
+        "determine": 0.041026,
+        "explain": 0.05641,
+        "find": 0.328206,
+        "give": 0.061538,
+        "hence": 0.051282,
+        "identify": 0.025641,
+        "justify": 0.046154,
+        "prove": 0.020513,
+        "show": 0.2,
+        "sketch": 0.005128,
+        "solve": 0.020513,
+        "state": 0.107692,
+        "verify": 0.005128,
+        "write": 0.015385
       },
-      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official OCR A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.021429,
-        "low": 0.7,
-        "standard": 0.278571
+        "low": 0.781818,
+        "standard": 0.218182
       },
-      "extraction_coverage": 0.886076,
-      "family_id": "ocr/computer-science",
+      "extraction_coverage": 0.993976,
+      "family_id": "aqa/mathematics",
       "mark_band_distribution": {
-        "extended": 0.012658,
-        "medium": 0.259494,
-        "short": 0.727848
+        "medium": 0.084337,
+        "short": 0.915663
       },
       "mark_weighted_demand_distribution": {
-        "high": 0.067568,
-        "low": 0.484234,
-        "standard": 0.448198
+        "low": 0.576441,
+        "standard": 0.423559
       },
       "metric_tolerances": {
         "cognitive_operation_distribution": 0.8,
@@ -841,12 +875,222 @@
       },
       "paper_id": "2",
       "response_mode_distribution": {
-        "calculation": 0.057143,
-        "constructed-response": 0.235714,
-        "extended-evaluation": 0.021429,
-        "multi-stage-calculation": 0.185714,
-        "recall": 0.4,
-        "structured-reasoning": 0.1
+        "calculation": 0.309091,
+        "constructed-response": 0.006061,
+        "extended-evaluation": 0.054545,
+        "mathematical-argument": 0.224242,
+        "multi-stage-calculation": 0.09697,
+        "recall": 0.242424,
+        "structured-reasoning": 0.066667
+      },
+      "source_document_count": 4,
+      "source_fingerprint": "d76c3f601e4d61b1e6f7edcac3331304f63747316b0f92628c034b37a6279c62"
+    },
+    {
+      "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "analyse": 0.017341,
+        "describe": 0.023121,
+        "explain": 0.034682,
+        "judge": 0.034682,
+        "retrieve": 0.271676,
+        "transform": 0.618498
+      },
+      "command_word_distribution": {
+        "calculate": 0.026455,
+        "compare": 0.015873,
+        "complete": 0.015873,
+        "describe": 0.021164,
+        "determine": 0.026455,
+        "estimate": 0.010582,
+        "explain": 0.031746,
+        "find": 0.396826,
+        "give": 0.063492,
+        "hence": 0.026455,
+        "identify": 0.05291,
+        "justify": 0.031746,
+        "name": 0.005291,
+        "prove": 0.010582,
+        "select": 0.026455,
+        "show": 0.111111,
+        "sketch": 0.010582,
+        "solve": 0.010582,
+        "state": 0.100529,
+        "write": 0.005291
+      },
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
+      "demand_distribution": {
+        "high": 0.00578,
+        "low": 0.895954,
+        "standard": 0.098266
+      },
+      "extraction_coverage": 0.935135,
+      "family_id": "aqa/mathematics",
+      "mark_band_distribution": {
+        "extended": 0.005405,
+        "medium": 0.07027,
+        "short": 0.924325
+      },
+      "mark_weighted_demand_distribution": {
+        "high": 0.028409,
+        "low": 0.741477,
+        "standard": 0.230114
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
+      "paper_id": "3",
+      "response_mode_distribution": {
+        "calculation": 0.473989,
+        "constructed-response": 0.023121,
+        "extended-evaluation": 0.034682,
+        "mathematical-argument": 0.098266,
+        "multi-stage-calculation": 0.046243,
+        "recall": 0.248555,
+        "selected-response": 0.023121,
+        "structured-reasoning": 0.052023
+      },
+      "source_document_count": 4,
+      "source_fingerprint": "7b3d181715115d116da11201cc9e2360ea220646959ee723b274c72058c43ed0"
+    },
+    {
+      "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "analyse": 0.024691,
+        "describe": 0.17284,
+        "explain": 0.17284,
+        "judge": 0.04321,
+        "retrieve": 0.401234,
+        "transform": 0.185185
+      },
+      "command_word_distribution": {
+        "analyse": 0.005051,
+        "calculate": 0.015152,
+        "compare": 0.020202,
+        "complete": 0.111111,
+        "define": 0.005051,
+        "describe": 0.126263,
+        "determine": 0.005051,
+        "discuss": 0.045455,
+        "draw": 0.010101,
+        "evaluate": 0.005051,
+        "explain": 0.141408,
+        "find": 0.015152,
+        "give": 0.116162,
+        "identify": 0.035354,
+        "name": 0.085859,
+        "show": 0.055556,
+        "state": 0.136364,
+        "write": 0.065657
+      },
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official OCR A-level question papers; no source wording retained.",
+      "demand_distribution": {
+        "high": 0.04321,
+        "low": 0.753086,
+        "standard": 0.203704
+      },
+      "extraction_coverage": 0.920455,
+      "family_id": "ocr/computer-science",
+      "mark_band_distribution": {
+        "extended": 0.022727,
+        "medium": 0.136364,
+        "short": 0.840909
+      },
+      "mark_weighted_demand_distribution": {
+        "high": 0.147059,
+        "low": 0.539216,
+        "standard": 0.313725
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
+      "paper_id": "1",
+      "response_mode_distribution": {
+        "calculation": 0.067901,
+        "constructed-response": 0.17284,
+        "extended-evaluation": 0.04321,
+        "mathematical-argument": 0.04321,
+        "multi-stage-calculation": 0.074074,
+        "recall": 0.401234,
+        "structured-reasoning": 0.197531
+      },
+      "source_document_count": 4,
+      "source_fingerprint": "c1d66bab8da22dc5ef45ce71d5439432cb22290a765db2b5a1495dde2b3cea9d"
+    },
+    {
+      "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "analyse": 0.020833,
+        "describe": 0.229167,
+        "explain": 0.076389,
+        "judge": 0.020833,
+        "retrieve": 0.375,
+        "transform": 0.277778
+      },
+      "command_word_distribution": {
+        "analyse": 0.009756,
+        "calculate": 0.034146,
+        "compare": 0.034146,
+        "complete": 0.073171,
+        "construct": 0.004878,
+        "define": 0.014634,
+        "describe": 0.15122,
+        "determine": 0.009756,
+        "discuss": 0.02439,
+        "draw": 0.004878,
+        "evaluate": 0.004878,
+        "explain": 0.053659,
+        "find": 0.009756,
+        "give": 0.126829,
+        "identify": 0.082927,
+        "name": 0.102439,
+        "select": 0.004878,
+        "show": 0.058537,
+        "state": 0.107317,
+        "write": 0.087805
+      },
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official OCR A-level question papers; no source wording retained.",
+      "demand_distribution": {
+        "high": 0.020833,
+        "low": 0.680556,
+        "standard": 0.298611
+      },
+      "extraction_coverage": 0.911392,
+      "family_id": "ocr/computer-science",
+      "mark_band_distribution": {
+        "extended": 0.012658,
+        "medium": 0.259494,
+        "short": 0.727848
+      },
+      "mark_weighted_demand_distribution": {
+        "high": 0.064935,
+        "low": 0.458874,
+        "standard": 0.476191
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
+      "paper_id": "2",
+      "response_mode_distribution": {
+        "calculation": 0.055556,
+        "constructed-response": 0.229167,
+        "extended-evaluation": 0.020833,
+        "mathematical-argument": 0.041667,
+        "multi-stage-calculation": 0.180556,
+        "recall": 0.374999,
+        "structured-reasoning": 0.097222
       },
       "source_document_count": 4,
       "source_fingerprint": "ae2f6a97ba71ca2ded2607df7283a064b1187706c34f22eb7c7d5d6bd3cf1be2"
@@ -1023,16 +1267,18 @@
         "transform": 0.193548
       },
       "command_word_distribution": {
-        "assess": 0.083333,
-        "calculate": 0.083333,
-        "discuss": 0.166667,
-        "draw": 0.069444,
-        "evaluate": 0.083333,
-        "examine": 0.083333,
-        "explain": 0.194445,
-        "name": 0.041667,
-        "select": 0.180556,
-        "state": 0.013889
+        "assess": 0.077922,
+        "calculate": 0.077922,
+        "discuss": 0.155844,
+        "draw": 0.064935,
+        "evaluate": 0.077922,
+        "examine": 0.077922,
+        "explain": 0.181819,
+        "find": 0.025974,
+        "name": 0.038961,
+        "select": 0.168831,
+        "show": 0.038961,
+        "state": 0.012987
       },
       "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 3 official PEARSON-EDEXCEL A-level question papers; no source wording retained.",
       "demand_distribution": {
@@ -1061,8 +1307,9 @@
       },
       "paper_id": "1",
       "response_mode_distribution": {
-        "calculation": 0.080645,
+        "calculation": 0.048387,
         "extended-evaluation": 0.290323,
+        "mathematical-argument": 0.032258,
         "multi-stage-calculation": 0.112903,
         "selected-response": 0.209677,
         "structured-reasoning": 0.306452
@@ -1080,17 +1327,18 @@
         "transform": 0.101695
       },
       "command_word_distribution": {
-        "assess": 0.08,
-        "calculate": 0.066667,
-        "complete": 0.013333,
-        "discuss": 0.16,
-        "draw": 0.013333,
-        "evaluate": 0.08,
-        "examine": 0.08,
-        "explain": 0.24,
-        "name": 0.04,
-        "select": 0.186667,
-        "state": 0.04
+        "assess": 0.078947,
+        "calculate": 0.065789,
+        "complete": 0.013158,
+        "discuss": 0.157895,
+        "draw": 0.013158,
+        "estimate": 0.013158,
+        "evaluate": 0.078947,
+        "examine": 0.078947,
+        "explain": 0.236842,
+        "name": 0.039474,
+        "select": 0.184211,
+        "state": 0.039474
       },
       "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 3 official PEARSON-EDEXCEL A-level question papers; no source wording retained.",
       "demand_distribution": {
@@ -1131,18 +1379,21 @@
     {
       "assessment_kind": "full-paper",
       "cognitive_operation_distribution": {
-        "analyse": 0.192982,
+        "analyse": 0.157895,
         "explain": 0.192982,
-        "judge": 0.614036
+        "judge": 0.614035,
+        "transform": 0.035088
       },
       "command_word_distribution": {
-        "complete": 0.015385,
-        "discuss": 0.184615,
-        "evaluate": 0.369231,
-        "examine": 0.184615,
-        "explain": 0.184615,
-        "name": 0.046154,
-        "suggest": 0.015385
+        "complete": 0.014493,
+        "discuss": 0.173913,
+        "evaluate": 0.347826,
+        "examine": 0.173913,
+        "explain": 0.173913,
+        "name": 0.043478,
+        "show": 0.043478,
+        "solve": 0.014493,
+        "suggest": 0.014493
       },
       "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 3 official PEARSON-EDEXCEL A-level question papers; no source wording retained.",
       "demand_distribution": {
@@ -1169,7 +1420,8 @@
       "paper_id": "3",
       "response_mode_distribution": {
         "extended-evaluation": 0.614035,
-        "structured-reasoning": 0.385965
+        "mathematical-argument": 0.035088,
+        "structured-reasoning": 0.350877
       },
       "source_document_count": 3,
       "source_fingerprint": "98b74d55653fc05be081af834a8a8a49f47fccfe2656a70b830722db85020740"

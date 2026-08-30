@@ -41,12 +41,16 @@ class ReferenceDemandProfile(BaseModel):
     )
     @classmethod
     def validate_distribution(cls, value: dict[str, float]) -> dict[str, float]:
-        if not value or any(not key.strip() or amount < 0 for key, amount in value.items()):
+        if not value or any(
+            not key.strip() or amount < 0 for key, amount in value.items()
+        ):
             raise ValueError("reference distributions must contain non-negative values")
         total = sum(value.values())
         if abs(total - 1.0) > 0.002:
             raise ValueError("reference distributions must total 1")
-        return {key.casefold(): round(float(amount), 6) for key, amount in value.items()}
+        return {
+            key.casefold(): round(float(amount), 6) for key, amount in value.items()
+        }
 
     @field_validator("metric_tolerances")
     @classmethod
@@ -120,9 +124,7 @@ def profile_for(
     for profile in source.profiles:
         if (profile.family_id, profile.paper_id) == (family_id, str(paper_id)):
             return profile
-    raise ValueError(
-        f"no reference demand profile for {family_id} paper {paper_id}"
-    )
+    raise ValueError(f"no reference demand profile for {family_id} paper {paper_id}")
 
 
 def build_item_demand_target(
@@ -131,7 +133,9 @@ def build_item_demand_target(
 ) -> ItemDemandTarget:
     raw = _serialise_item(item)
     marks = _positive_int(raw.get("marks"), name="marks")
-    command = str(raw.get("command_word") or _leading_command(raw.get("prompt"))).casefold()
+    command = str(
+        raw.get("command_word") or _leading_command(raw.get("prompt"))
+    ).casefold()
     kind = str(raw.get("kind") or raw.get("style_id") or "").casefold()
     objectives = _objective_marks(raw.get("assessment_objectives"))
     demand = str(raw.get("intended_demand") or "").casefold()
@@ -143,8 +147,18 @@ def build_item_demand_target(
         "calculate",
         "complete",
         "construct",
+        "deduce",
+        "determine",
         "derive",
+        "estimate",
+        "find",
+        "hence",
         "prepare",
+        "show",
+        "sketch",
+        "solve",
+        "verify",
+        "prove",
     }
     if calculation and marks >= 4:
         minimum_steps = max(minimum_steps, 3)
@@ -171,6 +185,9 @@ def build_item_demand_target(
         "evaluate",
         "examine",
         "explain",
+        "prove",
+        "show",
+        "verify",
     }
     requires_context = objectives.get("AO2", 0) > 0 or bool(
         raw.get("context")
@@ -228,17 +245,16 @@ def audit_form_demand(
     targets = [build_item_demand_target(item, profile) for item in items]
     observed = {
         "mark_band_distribution": _distribution(
-            _mark_band(_positive_int(item.get("marks"), name="marks"))
-            for item in items
+            _mark_band(_positive_int(item.get("marks"), name="marks")) for item in items
         ),
         "command_word_distribution": _distribution(
-            str(item.get("command_word") or _leading_command(item.get("prompt"))).casefold()
+            str(
+                item.get("command_word") or _leading_command(item.get("prompt"))
+            ).casefold()
             or "unspecified"
             for item in items
         ),
-        "demand_distribution": _distribution(
-            target.demand_band for target in targets
-        ),
+        "demand_distribution": _distribution(target.demand_band for target in targets),
         "mark_weighted_demand_distribution": _weighted_distribution(
             (target.demand_band, _positive_int(item.get("marks"), name="marks"))
             for item, target in zip(items, targets, strict=True)
@@ -282,7 +298,8 @@ def audit_form_demand(
         "cognitive_operation_distribution",
     )
     failed = [
-        name for name in gated_distributions
+        name
+        for name in gated_distributions
         for distance in [distances[name]]
         if distance > profile.metric_tolerances[name]
     ]
@@ -291,7 +308,9 @@ def audit_form_demand(
     evidence_failures = []
     if require_item_evidence and len(reviewed) != len(items):
         evidence_failures.append("item_review_coverage")
-    if require_item_evidence and any(not bool(value.get("approved")) for value in reviewed):
+    if require_item_evidence and any(
+        not bool(value.get("approved")) for value in reviewed
+    ):
         evidence_failures.append("item_difficulty_review")
     failed.extend(evidence_failures)
     return {
@@ -306,9 +325,7 @@ def audit_form_demand(
         "observed": observed,
         "expected": expected,
         "distances": distances,
-        "gated_distances": {
-            name: distances[name] for name in gated_distributions
-        },
+        "gated_distances": {name: distances[name] for name in gated_distributions},
         "failed_checks": failed,
         "item_review_evidence": {
             "reviewed_items": len(reviewed),
@@ -369,14 +386,19 @@ def _infer_demand(*, marks: int, command: str, kind: str) -> DemandBand:
     return "standard"
 
 
-def _response_mode(
-    *, marks: int, command: str, kind: str, calculation: bool
-) -> str:
+def _response_mode(*, marks: int, command: str, kind: str, calculation: bool) -> str:
     if kind in {"multiple_choice", "multiple-choice", "mcq"} or command in {
         "mcq",
         "select",
     }:
         return "selected-response"
+    if kind in {"mathematical_argument", "proof"} or command in {
+        "deduce",
+        "prove",
+        "show",
+        "verify",
+    }:
+        return "mathematical-argument"
     if calculation:
         return "multi-stage-calculation" if marks >= 4 else "calculation"
     if command in {"state", "identify", "give", "name", "define", "select"}:
@@ -421,7 +443,25 @@ def _primary_cognitive_operation(*, command: str, calculation: bool) -> str:
     if command in {"define", "give", "identify", "name", "select", "state", "mcq"}:
         return "retrieve"
     if calculation or command in {
-        "calculate", "complete", "construct", "design", "develop", "draw", "prepare", "trace", "write"
+        "calculate",
+        "complete",
+        "construct",
+        "deduce",
+        "design",
+        "determine",
+        "develop",
+        "draw",
+        "estimate",
+        "find",
+        "hence",
+        "prepare",
+        "prove",
+        "show",
+        "sketch",
+        "solve",
+        "trace",
+        "verify",
+        "write",
     }:
         return "transform"
     if command in {"assess", "discuss", "evaluate", "justify", "recommend"}:
@@ -461,11 +501,21 @@ def _command_family(command: str) -> str:
         "complete",
         "construct",
         "convert",
+        "deduce",
         "design",
+        "determine",
         "develop",
         "draw",
+        "estimate",
+        "find",
+        "hence",
         "prepare",
+        "prove",
+        "show",
+        "sketch",
+        "solve",
         "trace",
+        "verify",
         "write",
     }:
         return "procedural"
@@ -495,10 +545,7 @@ def _command_family(command: str) -> str:
 def _distribution(values: Any) -> dict[str, float]:
     counts = Counter(values)
     total = sum(counts.values())
-    return {
-        key: round(count / total, 6)
-        for key, count in sorted(counts.items())
-    }
+    return {key: round(count / total, 6) for key, count in sorted(counts.items())}
 
 
 def _weighted_distribution(values: Any) -> dict[str, float]:
@@ -508,10 +555,7 @@ def _weighted_distribution(values: Any) -> dict[str, float]:
     total = sum(counts.values())
     if total <= 0:
         raise ValueError("cannot build an empty weighted distribution")
-    return {
-        key: round(weight / total, 6)
-        for key, weight in sorted(counts.items())
-    }
+    return {key: round(weight / total, 6) for key, weight in sorted(counts.items())}
 
 
 def _difficulty_evidence(item: dict[str, Any]) -> dict[str, Any]:
@@ -519,7 +563,9 @@ def _difficulty_evidence(item: dict[str, Any]) -> dict[str, Any]:
     if isinstance(direct, dict):
         return direct
     context = item.get("authoring_context")
-    if isinstance(context, dict) and isinstance(context.get("difficulty_evidence"), dict):
+    if isinstance(context, dict) and isinstance(
+        context.get("difficulty_evidence"), dict
+    ):
         return context["difficulty_evidence"]
     return {}
 
