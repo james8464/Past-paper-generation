@@ -295,7 +295,6 @@ class ShareholderCase:
                 "closing_ordinary_share_capital": self.ordinary_share_capital_closing_thousands,
                 "closing_share_premium": self.share_premium_closing_thousands,
                 "closing_retained_earnings": self.retained_earnings_closing_thousands,
-                "closing_total_equity": self.total_equity_closing_thousands,
             },
             "long_term_borrowings": self.long_term_borrowings_thousands,
             "comparator": {
@@ -328,32 +327,33 @@ class ShareholderCase:
     def mark_scheme_points(self) -> list[str]:
         return [
             (
-                f"Analyse the share-price movement from {self.share_price_start_pence}p to "
+                f"AO2: Apply the share-price movement from {self.share_price_start_pence}p to "
                 f"{self.share_price_end_pence}p and what it may indicate about investor confidence."
             ),
             (
-                f"Calculate and interpret the price earnings ratio: {self.share_price_end_pence}p ÷ "
+                f"AO2: Calculate and interpret the price earnings ratio: {self.share_price_end_pence}p ÷ "
                 f"{self.earnings_per_share_pence:.1f}p = {self.price_earnings_ratio:.1f} times."
             ),
             (
-                f"Calculate and interpret dividend yield: {self.dividend_per_share_pence:.1f}p ÷ "
+                f"AO2: Calculate and interpret dividend yield: {self.dividend_per_share_pence:.1f}p ÷ "
                 f"{self.share_price_end_pence}p × 100 = {self.dividend_yield_percent:.1f}%."
             ),
             (
-                f"Calculate gearing from published long-term borrowings and closing equity: "
-                f"£{self.long_term_borrowings_thousands:,}000 ÷ "
-                f"(£{self.long_term_borrowings_thousands:,}000 + £{self.total_equity_closing_thousands:,}000) "
+                f"AO2: Calculate gearing from published long-term borrowings and closing equity: "
+                f"£{self.long_term_borrowings_thousands * 1_000:,} ÷ "
+                f"(£{self.long_term_borrowings_thousands * 1_000:,} + "
+                f"£{self.total_equity_closing_thousands * 1_000:,}) "
                 f"× 100 = {self.gearing_percent:.1f}%."
             ),
             (
-                f"Compare with {self.comparator_name}: price earnings ratio "
+                f"AO3: Compare with {self.comparator_name}: price earnings ratio "
                 f"{self.comparator_price_earnings_ratio:.1f} times, dividend yield "
                 f"{self.comparator_dividend_yield_percent:.1f}% and gearing "
                 f"{self.comparator_gearing_percent:.1f}%; explain the trade-off for the investor."
             ),
-            "Develop whether retaining profit can finance growth and reduce future share issues, while reducing current shareholder income.",
-            "Develop the risk that uncertain demand or higher interest rates could prevent the new capacity improving returns, despite lower energy use.",
-            "Reach a balanced, conditional judgement linked to the investor's income, growth and risk priorities; do not treat one ratio as decisive.",
+            "AO3: Develop whether retaining profit can finance growth and reduce future share issues, while reducing current shareholder income.",
+            "AO3: Develop the risk that uncertain demand or higher interest rates could prevent the new capacity improving returns, despite lower energy use.",
+            "AO3: Reach a balanced, conditional judgement linked to the investor's income, growth and risk priorities; do not treat one ratio as decisive.",
         ]
 
 

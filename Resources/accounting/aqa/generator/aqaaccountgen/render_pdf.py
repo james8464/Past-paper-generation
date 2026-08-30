@@ -1052,14 +1052,21 @@ def _extended_indicative_content_page(
     # The generator also carries reusable level descriptors and marker checks.
     # Those are printed on the preceding page; this page mirrors the concise
     # question-specific indicative-content page used in the reference scheme.
-    points = [
-        *question.mark_scheme[:5],
-        *[
-            point
-            for point in question.mark_scheme
-            if _indicative_objective(point) != "—"
-        ][:7],
-    ]
+    shareholder_source = question.authoring_context.get("candidate_source")
+    if (
+        isinstance(shareholder_source, dict)
+        and shareholder_source.get("source_type") == "shareholder_investor_case"
+    ):
+        points = question.mark_scheme[:5]
+    else:
+        points = [
+            *question.mark_scheme[:5],
+            *[
+                point
+                for point in question.mark_scheme
+                if _indicative_objective(point) != "—"
+            ][:7],
+        ]
     rows = [
         [
             Paragraph(point, STYLES["scheme_small"]),
@@ -1091,16 +1098,23 @@ def _extended_judgement_page(
     question: GeneratedQuestion,
     title: str,
 ) -> list[Flowable]:
-    applied_points = [
-        point for point in question.mark_scheme if point.startswith(("AO2:", "AO3:"))
-    ][7:]
+    shareholder_source = question.authoring_context.get("candidate_source")
+    if (
+        isinstance(shareholder_source, dict)
+        and shareholder_source.get("source_type") == "shareholder_investor_case"
+    ):
+        applied_points = question.mark_scheme[5:8]
+    else:
+        applied_points = [
+            point for point in question.mark_scheme if point.startswith(("AO2:", "AO3:"))
+        ][7:]
     return [
         Paragraph(f"{title} continued", STYLES["kicker"]),
         Paragraph("Analysis and evaluation", STYLES["heading"]),
         Spacer(1, 3 * mm),
         _scheme_grid(
             ["Further guidance", "AO"],
-            [[point, "AO3"] for point in applied_points[:5]],
+            [[point, _indicative_objective(point)] for point in applied_points[:5]],
             [137 * mm, 30 * mm],
         ),
         Spacer(1, 5 * mm),
@@ -1676,13 +1690,17 @@ def _shareholder_case(question: GeneratedQuestion) -> Table:
     if not isinstance(source, dict):
         raise ValueError("shareholder question requires a candidate-visible source contract")
     shareholder = ShareholderCase.from_candidate_source(source)
+    qualitative_evidence = source.get("qualitative_evidence")
+    if not isinstance(qualitative_evidence, list) or not all(
+        isinstance(item, str) for item in qualitative_evidence
+    ):
+        raise ValueError("shareholder source requires published qualitative evidence")
     statement = Table(
         [
             [
                 "",
                 (
-                    "Ordinary share\ncapital £000\n"
-                    f"({shareholder.nominal_share_value_pence}p shares)"
+                    "Ordinary share\ncapital\n£000"
                 ),
                 "Share\npremium\n£000",
                 "Revaluation\nreserve\n£000",
@@ -1731,7 +1749,7 @@ def _shareholder_case(question: GeneratedQuestion) -> Table:
                 f"{shareholder.retained_earnings_closing_thousands:,}",
             ],
         ],
-        colWidths=[47 * mm, 22.25 * mm, 22.25 * mm, 22.25 * mm, 22.25 * mm],
+        colWidths=[45 * mm, 25 * mm, 25 * mm, 25 * mm, 25 * mm],
         style=TableStyle(
             [
                 ("GRID", (0, 0), (-1, -1), 0.45, INK),
@@ -1772,7 +1790,7 @@ def _shareholder_case(question: GeneratedQuestion) -> Table:
             f"There were {shareholder.opening_ordinary_shares:,} ordinary shares at the "
             f"start of the year. A 1 for 5 bonus issue created "
             f"{shareholder.bonus_shares_issued:,} additional shares. Long-term borrowings "
-            f"at the year end were £{shareholder.long_term_borrowings_thousands:,}000.",
+            f"at the year end were {shareholder.long_term_borrowings_thousands:,} (£000).",
             STYLES["body"],
         ),
         Spacer(1, 4 * mm),
@@ -1782,15 +1800,13 @@ def _shareholder_case(question: GeneratedQuestion) -> Table:
             f"Share price: {shareholder.comparator_share_price_pence}p; earnings per share: "
             f"{shareholder.comparator_earnings_per_share_pence:.1f}p; dividend per share: "
             f"{shareholder.comparator_dividend_per_share_pence:.1f}p; long-term borrowings: "
-            f"£{shareholder.comparator_long_term_borrowings_thousands:,}000; total equity: "
-            f"£{shareholder.comparator_total_equity_thousands:,}000.",
+            f"{shareholder.comparator_long_term_borrowings_thousands:,} (£000); total equity: "
+            f"{shareholder.comparator_total_equity_thousands:,} (£000).",
             STYLES["body"],
         ),
         Spacer(1, 4 * mm),
         Paragraph(
-            "New capacity could support growth and reduce energy use, but demand for the "
-            "expansion is uncertain. Directors intend to retain more profit, while higher "
-            "interest rates could increase finance costs.",
+            "<br/>".join(qualitative_evidence),
             STYLES["body"],
         ),
     ]

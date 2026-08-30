@@ -72,9 +72,7 @@ def test_shareholder_case_keeps_equity_and_investor_figures_in_consistent_units(
     assert case.gearing_percent == 29.3
 
 
-def test_shareholder_question_uses_the_same_visible_case_for_context_and_rendering() -> None:
-    from aqaaccountgen import render_pdf
-
+def test_shareholder_question_uses_the_same_visible_case_for_generator_context() -> None:
     paper = build_paper(RULES["paper_1"], SYLLABUS, 26083107)
     option = paper.sections[-1].options[0]
     question = next(item for item in option.questions if item.rule_id == "decision_2")
@@ -85,15 +83,6 @@ def test_shareholder_question_uses_the_same_visible_case_for_context_and_renderi
     assert "verified_answers" not in question.authoring_context
     assert "price_earnings_ratio" not in question.authoring_context["candidate_source"]
     assert "dividend_yield_percent" not in question.authoring_context["candidate_source"]
-    source = render_pdf._shareholder_case(question)
-    rendered = " ".join(
-        item.getPlainText()
-        for item in source._cellvalues[0][1]._cellvalues[0][0]
-        if hasattr(item, "getPlainText")
-    )
-    assert f"{case.nominal_share_value_pence}p" in rendered
-    assert f"{case.earnings_per_share_pence:.1f}p" in rendered
-    assert f"{case.long_term_borrowings_thousands:,}" in rendered
 
 
 def test_shareholder_visible_source_reaches_reviewer_and_solver_without_answer_keys() -> None:
@@ -122,6 +111,82 @@ def test_shareholder_visible_source_reaches_reviewer_and_solver_without_answer_k
     assert solver_item["authoring_context"]["candidate_source"] == visible_source
     assert "mark_scheme" not in solver_item
     assert "verified_answers" not in solver_item["authoring_context"]
+    assert (
+        "closing_total_equity"
+        not in solver_item["authoring_context"]["candidate_source"]
+        ["statement_of_changes_in_equity"]
+    )
+
+
+def test_shareholder_pdf_source_and_scheme_preserve_the_complete_visible_contract(
+    tmp_path: Path,
+) -> None:
+    seed = 26083112
+    paper = build_paper(RULES["paper_1"], SYLLABUS, seed)
+    option = paper.sections[-1].options[0]
+    case = ShareholderCase.from_chart_values(option.title, option.chart_values)
+    source = case.candidate_source()
+    paths = generate_package(
+        paper="1",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=seed,
+    )
+
+    source_page = next(
+        page
+        for page in PdfReader(paths["question_paper"]).pages
+        if "Statement of changes in equity" in (page.extract_text() or "")
+    )
+    source_text = re.sub(r"\s+", " ", source_page.extract_text() or "")
+    scheme_text = re.sub(
+        r"\s+",
+        " ",
+        " ".join(page.extract_text() or "" for page in PdfReader(paths["mark_scheme"]).pages),
+    )
+
+    assert "closing_total_equity" not in source["statement_of_changes_in_equity"]
+    for visible_value in (
+        case.business,
+        f"{case.nominal_share_value_pence}p",
+        f"{case.opening_ordinary_shares:,}",
+        f"{case.bonus_shares_issued:,}",
+        f"{case.share_price_start_pence}p",
+        f"{case.share_price_end_pence}p",
+        f"{case.earnings_per_share_pence:.1f}p",
+        f"{case.dividend_per_share_pence:.1f}p",
+        f"{case.long_term_borrowings_thousands:,} (£000)",
+        case.comparator_name,
+        f"{case.comparator_share_price_pence}p",
+        f"{case.comparator_earnings_per_share_pence:.1f}p",
+        f"{case.comparator_dividend_per_share_pence:.1f}p",
+        f"{case.comparator_long_term_borrowings_thousands:,} (£000)",
+        f"{case.comparator_total_equity_thousands:,} (£000)",
+    ):
+        assert visible_value in source_text
+    for evidence in source["qualitative_evidence"]:
+        assert evidence in source_text
+    for point in case.mark_scheme_points():
+        assert point in scheme_text
+
+    rendered = fitz.open(paths["question_paper"])
+    page = next(page for page in rendered if "Statement of changes in equity" in page.get_text())
+    header_words = page.get_text("words")
+    ordinary = next(word for word in header_words if word[4] == "Ordinary")
+    premium = next(word for word in header_words if word[4] == "premium")
+    assert ordinary[2] < premium[0]
+    rectangles = [drawing["rect"] for drawing in page.get_drawings()]
+    source_panel_right = max(
+        rect.x1
+        for rect in rectangles
+        if 520 < rect.x0 < 540 and rect.height > 500
+    )
+    equity_table_right = max(
+        rect.x1
+        for rect in rectangles
+        if 200 < rect.y0 < 300 and rect.width > 400
+    )
+    assert equity_table_right <= source_panel_right
 
 
 def test_shareholder_cases_vary_deterministically_and_keep_bonus_premium_non_negative() -> None:
@@ -142,7 +207,7 @@ def test_shareholder_cases_vary_deterministically_and_keep_bonus_premium_non_neg
 
         assert equity["bonus_issue_capital_transfer"] == bonus_shares * nominal_value // 100_000
         assert equity["closing_share_premium"] >= 0
-        assert equity["closing_total_equity"] == sum(
+        published_total_equity = sum(
             equity[column]
             for column in (
                 "closing_ordinary_share_capital",
@@ -151,6 +216,7 @@ def test_shareholder_cases_vary_deterministically_and_keep_bonus_premium_non_neg
                 "closing_retained_earnings",
             )
         )
+        assert published_total_equity == case.total_equity_closing_thousands
         assert source["market_data"]["earnings_per_share"] == round(
             equity["profit_for_year"] * 100_000 / closing_shares,
             1,
