@@ -362,3 +362,58 @@ def test_difficulty_review_makes_single_item_timing_units_unambiguous() -> None:
     )
 
     assert result.estimated_minutes == 9.0
+
+
+def test_difficulty_review_surfaces_exact_target_checklist_before_payload() -> None:
+    class ChecklistSensitiveClient:
+        def generate_json(self, prompt: str) -> dict[str, object]:
+            checklist_is_prominent = (
+                'REQUIRED_COGNITIVE_OPERATIONS=["explain", "contextualise", "analyse"]'
+                in prompt
+                and "EXPECTED_MINUTES_RANGE=6.75..11.25" in prompt
+            )
+            return {
+                "approved": checklist_is_prominent,
+                "estimated_demand": "standard",
+                "reasoning_steps": 3,
+                "tariff_fit": True,
+                "command_word_fit": True,
+                "context_fit": True,
+                "profile_fit": True,
+                "observed_cognitive_operations": (
+                    ["explain", "contextualise", "analyse"]
+                    if checklist_is_prominent
+                    else ["contextualise", "analyse"]
+                ),
+                "cognitive_operations_fit": checklist_is_prominent,
+                "reasoning_range_fit": True,
+                "shortcut_resistant": True,
+                "timing_fit": True,
+                "scaffolding_fit": True,
+                "estimated_minutes": 9.0,
+                "issues": [],
+            }
+
+    result = model_review.require_difficulty_review(
+        ChecklistSensitiveClient(),
+        item_id="q11",
+        subject="Accounting",
+        target={
+            "demand_band": "standard",
+            "minimum_reasoning_steps": 2,
+            "maximum_reasoning_steps": 4,
+            "required_cognitive_operations": [
+                "explain",
+                "contextualise",
+                "analyse",
+            ],
+            "requires_shortcut_resistance": True,
+            "expected_minutes_min": 6.75,
+            "expected_minutes_max": 11.25,
+        },
+        candidate={"prompt": "Explain the accounting effect.", "marks": 6},
+        specification={"topic": "financial accounting"},
+        canonical_solution={"answer": "Explanation", "steps": ["a", "b", "c"]},
+    )
+
+    assert result.approved is True

@@ -255,6 +255,21 @@ def difficulty_review(
     specification: Any,
     canonical_solution: Any | None = None,
 ) -> DifficultyReviewResult:
+    target_payload = _serialise(target)
+    required_operations = target_payload.get("required_cognitive_operations", [])
+    minimum_minutes = target_payload.get("expected_minutes_min")
+    maximum_minutes = target_payload.get("expected_minutes_max")
+    timing_range = (
+        f"{float(minimum_minutes):g}..{float(maximum_minutes):g}"
+        if isinstance(minimum_minutes, (int, float))
+        and isinstance(maximum_minutes, (int, float))
+        else "unspecified"
+    )
+    checklist = (
+        "REQUIRED_COGNITIVE_OPERATIONS="
+        + json.dumps(required_operations, ensure_ascii=False)
+        + f"\nEXPECTED_MINUTES_RANGE={timing_range}\n"
+    )
     raw = client.generate_json(
         "Act as an independent UK A-level difficulty calibration specialist; "
         "factual correctness is reviewed separately. Concentrate only on whether "
@@ -287,10 +302,11 @@ def difficulty_review(
         '"cognitive_operations_fit":true|false,"reasoning_range_fit":true|false,'
         '"shortcut_resistant":true|false,"timing_fit":true|false,'
         '"scaffolding_fit":true|false,"estimated_minutes":0,"issues":[]}.\n'
+        + checklist
         + json.dumps(
             {
                 "item_id": item_id,
-                "target": _serialise(target),
+                "target": target_payload,
                 "candidate": _serialise(candidate),
                 "canonical_solution": _serialise(canonical_solution),
                 "specification": _serialise(specification),
