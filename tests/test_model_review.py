@@ -315,3 +315,50 @@ def test_difficulty_review_makes_low_demand_operation_tokens_unambiguous() -> No
 
     assert result.approved is True
     assert result.observed_cognitive_operations == ["retrieve", "contextualise"]
+
+
+def test_difficulty_review_makes_single_item_timing_units_unambiguous() -> None:
+    class TimingSensitiveClient:
+        def generate_json(self, prompt: str) -> dict[str, object]:
+            minutes_are_explicit = (
+                "estimated_minutes is minutes for this one item" in prompt
+                and "9.0 means nine minutes" in prompt
+                and "never seconds" in prompt
+            )
+            return {
+                "approved": True,
+                "estimated_demand": "standard",
+                "reasoning_steps": 3,
+                "tariff_fit": True,
+                "command_word_fit": True,
+                "context_fit": True,
+                "profile_fit": True,
+                "observed_cognitive_operations": ["apply", "transform"],
+                "cognitive_operations_fit": True,
+                "reasoning_range_fit": True,
+                "shortcut_resistant": True,
+                "timing_fit": True,
+                "scaffolding_fit": True,
+                "estimated_minutes": 9.0 if minutes_are_explicit else 90.0,
+                "issues": [],
+            }
+
+    result = model_review.require_difficulty_review(
+        TimingSensitiveClient(),
+        item_id="q11",
+        subject="Accounting",
+        target={
+            "demand_band": "standard",
+            "minimum_reasoning_steps": 2,
+            "maximum_reasoning_steps": 5,
+            "required_cognitive_operations": ["apply", "transform"],
+            "requires_shortcut_resistance": True,
+            "expected_minutes_min": 6.75,
+            "expected_minutes_max": 11.25,
+        },
+        candidate={"prompt": "Prepare the account.", "marks": 9},
+        specification={"topic": "financial accounting"},
+        canonical_solution={"answer": "Account", "steps": ["a", "b", "c"]},
+    )
+
+    assert result.estimated_minutes == 9.0

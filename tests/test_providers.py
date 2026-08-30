@@ -194,6 +194,7 @@ def test_ollama_schema_constrains_the_separate_difficulty_judge() -> None:
             "enum": [
                 "retrieve",
                 "contextualise",
+                "apply",
                 "transform",
                 "explain",
                 "analyse",
@@ -201,7 +202,7 @@ def test_ollama_schema_constrains_the_separate_difficulty_judge() -> None:
                 "judge",
             ],
         },
-        "maxItems": 7,
+        "maxItems": 8,
     }
 
 

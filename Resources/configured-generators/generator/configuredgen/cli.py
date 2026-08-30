@@ -112,7 +112,7 @@ def _adapter(syllabus: ConfiguredSyllabus, paper_id: str) -> FamilyAdapter:
         backend_subject=syllabus.backend_subject,
         load_message=f"Loading {syllabus.specification_version} specification map",
         build_message="Building specification-constrained paper blueprint",
-        prompt_version="configured-assessment-v2",
+        prompt_version="configured-assessment-v3",
         load_syllabus=lambda _path: syllabus,
         load_rule=syllabus.rule,
         build=build_paper,
