@@ -20,6 +20,25 @@ class ReviewClient:
         return self.response
 
 
+@pytest.mark.parametrize(
+    "missing",
+    ["observed_cognitive_operations", "cognitive_operations_fit", "reasoning_range_fit",
+     "shortcut_resistant", "timing_fit", "scaffolding_fit", "estimated_minutes"],
+)
+def test_live_difficulty_response_must_explicitly_include_every_check(missing) -> None:
+    response = model_review.DifficultyReviewResult(
+        approved=True, estimated_demand="low", reasoning_steps=1,
+        tariff_fit=True, command_word_fit=True, context_fit=True, profile_fit=True,
+        observed_cognitive_operations=["retrieve"], estimated_minutes=1.5,
+    ).model_dump(mode="json")
+    del response[missing]
+    with pytest.raises(ValueError, match="invalid difficulty review response"):
+        model_review.difficulty_review(
+            ReviewClient(response), item_id="q1", subject="Accounting",
+            target={}, candidate={}, specification={},
+        )
+
+
 def test_independent_review_returns_structured_repair_diagnostics() -> None:
     client = ReviewClient(
         {
@@ -159,6 +178,13 @@ def test_require_difficulty_review_rejects_under_demanded_item() -> None:
             "command_word_fit": True,
             "context_fit": True,
             "profile_fit": True,
+            "observed_cognitive_operations": ["explain", "analyse"],
+            "cognitive_operations_fit": True,
+            "reasoning_range_fit": True,
+            "shortcut_resistant": True,
+            "timing_fit": True,
+            "scaffolding_fit": True,
+            "estimated_minutes": 4.0,
             "issues": [],
         }
     )

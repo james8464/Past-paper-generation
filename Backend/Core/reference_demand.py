@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from collections import Counter
 from functools import lru_cache
 from pathlib import Path
@@ -138,7 +139,7 @@ def build_item_demand_target(
         raw.get("command_word") or _leading_command(raw.get("prompt"))
     ).casefold()
     kind = str(raw.get("kind") or raw.get("style_id") or "").casefold()
-    objectives = _objective_marks(raw.get("assessment_objectives"))
+    objectives = assessment_objectives_for_item(raw)
     demand = str(raw.get("intended_demand") or "").casefold()
     if demand not in {"low", "standard", "high"}:
         demand = _infer_demand(marks=marks, command=command, kind=kind)
@@ -197,11 +198,9 @@ def build_item_demand_target(
         "show",
         "verify",
     }
-    requires_context = objectives.get("AO2", 0) > 0 or bool(
-        raw.get("context")
-        or raw.get("evidence_ids")
-        or raw.get("source_references")
-        or raw.get("source_reference")
+    requires_context = objectives.get("AO2", 0) > 0 or any(
+        _has_content(raw.get(key))
+        for key in ("context", "evidence_ids", "source_references", "source_reference")
     )
     response_mode = _response_mode(
         marks=marks,
@@ -391,6 +390,31 @@ def _objective_marks(value: Any) -> dict[str, int]:
     }
 
 
+def assessment_objectives_for_item(raw: dict[str, Any]) -> dict[str, int]:
+    explicit = _objective_marks(raw.get("assessment_objectives"))
+    if explicit:
+        return explicit
+    marking = raw.get("marking")
+    if not isinstance(marking, dict):
+        return {}
+    names = list(dict.fromkeys(re.findall(r"AO[1-4]", str(marking.get("ao", "")).upper())))
+    if not names:
+        return {}
+    objectives = dict.fromkeys(names, 1)
+    objectives[names[0]] += int(raw.get("marks", 0)) - len(names)
+    return {name: marks for name, marks in objectives.items() if marks > 0}
+
+
+def _has_content(value: Any) -> bool:
+    if isinstance(value, str):
+        return bool(value.strip())
+    if isinstance(value, (list, tuple)):
+        return any(_has_content(child) for child in value)
+    if isinstance(value, dict):
+        return any(_has_content(child) for child in value.values())
+    return bool(value)
+
+
 def _leading_command(value: Any) -> str:
     words = str(value or "").strip().split()
     return words[0].strip(".,:;!?()[]{}").casefold() if words else ""
@@ -440,7 +464,7 @@ def _cognitive_operations(
     multiple_concepts: bool,
 ) -> list[str]:
     operations: list[str] = []
-    if command in {"define", "give", "identify", "name", "select", "state"}:
+    if command in {"define", "give", "identify", "name", "select", "state", "mcq"}:
         operations.append("retrieve")
     elif calculation:
         operations.extend(("apply", "transform"))

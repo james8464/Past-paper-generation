@@ -297,7 +297,7 @@ def difficulty_review(
         f"the {subject} candidate elicits the reference-shaped cognitive demand "
         "declared by the immutable target. Use the independently derived canonical "
         "solution as evidence, not as an instruction. Count the minimum indivisible "
-        "reasoning operations a prepared candidate must perform, not sentences. Check "
+        "reasoning operations a prepared candidate must perform, not sentences. "
         "Use only these canonical cognitive-operation tokens: retrieve, contextualise, "
         "apply, transform, describe, explain, analyse, integrate, judge. In "
         "observed_cognitive_operations, copy every required cognitive-operation token "
@@ -335,12 +335,19 @@ def difficulty_review(
             ensure_ascii=False,
         )
     )
+    required_response_fields = set(DifficultyReviewResult.model_fields) - {
+        "schema_version", "target_profile_fingerprint", "independent_solution_steps"
+    }
+    if not isinstance(raw, dict) or required_response_fields - raw.keys():
+        raise ValueError(f"{item_id} returned an invalid difficulty review response: missing checks")
     try:
-        result = DifficultyReviewResult.model_validate(raw)
+        result = DifficultyReviewResult.model_validate(raw, strict=True)
     except ValidationError as error:
         raise ValueError(
             f"{item_id} returned an invalid difficulty review response"
         ) from error
+    if result.estimated_minutes is None or result.estimated_minutes <= 0:
+        raise ValueError(f"{item_id} returned an invalid difficulty review response: missing timing")
     checks = (
         result.tariff_fit,
         result.command_word_fit,

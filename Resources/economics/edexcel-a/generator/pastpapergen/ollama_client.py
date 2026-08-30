@@ -15,26 +15,26 @@ from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
 from Backend.Core.assessment_quality import (
     validate_economics_causal_direction,
 )
+from Backend.Core.independent_solver import (
+    IndependentSolver,
+    require_solution_matches_scheme,
+)
 from Backend.Core.model_review import (
     assert_materially_new,
     require_difficulty_review,
     require_independent_review,
 )
-from Backend.Core.independent_solver import IndependentSolver
 from Backend.Core.reference_demand import build_item_demand_target, profile_for
 from pastpapergen.models import (
     MultipleChoiceOption,
     PaperBlueprint,
     QuestionBlueprint,
+    QuestionPart,
     Syllabus,
     SyllabusTopic,
 )
 from pastpapergen.notes import note_context_for_topic
-from pastpapergen.stimulus_data import (
-    line_chart_data,
-    line_chart_values,
-    review_table_rows,
-)
+from pastpapergen.render_pdf import candidate_stimulus_data
 
 _logger = logging.getLogger(__name__)
 
@@ -399,16 +399,24 @@ def review_blueprint_difficulty(
         topic = syllabus.get_topic(question.topic_id)
         items = _question_demand_items(question)
         evidences: list[dict[str, object]] = []
-        for item in items:
+        for item, part in zip(items, question.parts or [question], strict=True):
             item_index += 1
             label = str(item.get("label") or question.number)
             emit(f"Calibrating difficulty {item_index}/{item_count}: {question.number}{label}")
-            solution = IndependentSolver(client).solve(item, [])
+            solver_item = _question_solver_item(question, part)
+            solution = IndependentSolver(client).solve(solver_item, [])
+            options = getattr(part, "options", [])
+            require_solution_matches_scheme(
+                solution,
+                {"marks": part.marks, "mark_scheme": [*part.mark_scheme, *part.indicative_content]},
+                expected_choice=(next((o.text for o in options if o.label == part.correct_option), "")
+                                 if options else None),
+            )
             evidence = require_difficulty_review(
                 client,
                 item_id=f"question-{question.number}-{label}",
                 subject="Edexcel A-level Economics A",
-                candidate=item,
+                candidate=solver_item,
                 target=build_item_demand_target(item, profile),
                 specification=_review_specification(topic, question),
                 canonical_solution=solution,
@@ -429,6 +437,24 @@ def review_blueprint_difficulty(
 
 def _normalise_profile_paper_id(paper_id: str) -> str:
     return str(paper_id).removeprefix("paper_").removeprefix("paper-")
+
+
+def _question_solver_item(
+    question: QuestionBlueprint, part: QuestionPart | QuestionBlueprint
+) -> dict[str, object]:
+    options = getattr(part, "options", [])
+    return {
+        **part.model_dump(mode="json"),
+        "id": f"question-{question.number}-{getattr(part, 'label', question.number)}",
+        "context": [question.prompt, question.source_text] if question.parts else question.source_text,
+        "stimulus": candidate_stimulus_data(question),
+        "kind": "multiple_choice" if options else question.stimulus_kind,
+        "choices": [option.text for option in options],
+        "authoring_context": {"expected_answer_form": (
+            "numeric" if part.command_word.casefold() in {"calculate", "determine"}
+            else "constructed_response"
+        )},
+    }
 
 
 def _question_demand_items(question: QuestionBlueprint) -> list[dict[str, object]]:
@@ -477,19 +503,10 @@ def _review_specification(
     topic: SyllabusTopic,
     question: QuestionBlueprint,
 ) -> dict[str, object]:
-    _y_label, x_label, values = line_chart_data(question.stimulus_kind)
-    point_labels = (
-        [f"{x_label} {index}: {value}" for index, value in enumerate(values, start=1)]
-        if line_chart_values(question.stimulus_kind)
-        else []
-    )
     return {
         "topic": topic.model_dump(mode="json"),
         "rendered_stimulus": {
-            "kind": question.stimulus_kind,
-            "values": line_chart_values(question.stimulus_kind),
-            "point_labels": point_labels,
-            "rows": review_table_rows(question.stimulus_kind),
+            **candidate_stimulus_data(question),
             "description": _stimulus_description(question.stimulus_kind),
             "source_text": question.source_text,
             "placement": "The complete stimulus/source text is rendered between the question stem and its subparts.",

@@ -207,6 +207,53 @@ def test_data_structures_bank_includes_sustained_comparison_demand() -> None:
     assert bank.total_marks == 30
 
 
+@pytest.mark.parametrize("paper_id", ["1", "2", "bank-4.2", "bank-4.10", "bank-4.12"])
+def test_generation_and_package_use_identical_demand_targets(paper_id) -> None:
+    from cspapergen.ollama_client import _part_demand_item
+
+    from Backend.Core.assessment_package import _extract_items
+    from Backend.Core.reference_demand import build_item_demand_target, profile_for
+
+    syllabus = load_syllabus()
+    if paper_id == "1":
+        blueprint, _ = build_paper1_blueprint(syllabus, seed=7)
+    elif paper_id == "2":
+        blueprint = build_paper2_blueprint(syllabus, seed=7)
+    else:
+        blueprint = build_topic_question_bank(syllabus, topic_id=paper_id.removeprefix("bank-"), seed=7)
+    profile = profile_for("aqa/computer-science", paper_id)
+    original = [_part_demand_item(q, p) for q in blueprint.questions for p in q.parts]
+    exported = _extract_items(blueprint.model_dump(mode="json"), subject="computer_science", paper_number=paper_id)
+    assert len(original) == len(exported)
+    for before, after in zip(original, exported, strict=True):
+        assert build_item_demand_target(before, profile) == build_item_demand_target(after, profile), after["id"]
+
+
+def test_solver_view_includes_candidate_visible_stimulus_and_hides_answers() -> None:
+    from cspapergen.ollama_client import _part_solver_item
+
+    from Backend.Core.independent_solver import IndependentSolver
+
+    blueprint = build_paper2_blueprint(load_syllabus(), seed=7)
+    question = next(q for q in blueprint.questions if q.style_id == "software_classification")
+    part = question.parts[0]
+    captured = []
+
+    class Client:
+        def generate_json(self, prompt):
+            captured.append(prompt)
+            return {"answer": "Candidate answer", "steps": ["Use the diagram"]}
+
+    item = _part_solver_item(question, part)
+    IndependentSolver(Client()).solve(item, [])
+    assert "Spreadsheet" in captured[0] or "Word processor" in captured[0] or "Presentation software" in captured[0]
+    assert "System software" in captured[0]
+    assert "Application software" not in captured[0]
+    assert "Utility software" not in captured[0]
+    assert "correct_option" not in captured[0]
+    assert "marking" not in captured[0]
+
+
 def test_packet_stimulus_is_introduced_as_figure_context():
     style = next(style for style in QUESTION_STYLES if style.id == "packet_switching")
 
@@ -295,7 +342,7 @@ def test_blueprint_receives_a_separate_reference_demand_review() -> None:
                 return {
                     "answer": "A complete answer.",
                     "steps": ["Apply the relevant concept."],
-                    "mark_points": [],
+                    "mark_points": ["Apply the relevant concept."],
                     "evidence_ids": [],
                     "alternatives": [],
                     "partial_credit_boundaries": [],
@@ -318,6 +365,7 @@ def test_blueprint_receives_a_separate_reference_demand_review() -> None:
                 "shortcut_resistant": True,
                 "timing_fit": True,
                 "scaffolding_fit": True,
+                "estimated_minutes": float(re.search(r'"expected_minutes_min": ([\d.]+)', prompt).group(1)),
                 "issues": [],
             }
 

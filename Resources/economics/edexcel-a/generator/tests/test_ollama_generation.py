@@ -50,7 +50,7 @@ def test_blueprint_receives_a_separate_reference_demand_review() -> None:
                 return {
                     "answer": "A supported judgement.",
                     "steps": ["Analyse the evidence.", "Reach a judgement."],
-                    "mark_points": [],
+                    "mark_points": ["Analyse the evidence."],
                     "evidence_ids": [],
                     "alternatives": [],
                     "partial_credit_boundaries": [],
@@ -70,6 +70,7 @@ def test_blueprint_receives_a_separate_reference_demand_review() -> None:
                 "shortcut_resistant": True,
                 "timing_fit": True,
                 "scaffolding_fit": True,
+                "estimated_minutes": 30.0,
                 "issues": [],
             }
 
@@ -81,6 +82,69 @@ def test_blueprint_receives_a_separate_reference_demand_review() -> None:
     assert '"reference_profile_fingerprint"' in difficulty_prompts[0]
     assert '"requires_judgement": true' in difficulty_prompts[0]
     assert reviewed.questions[0].difficulty_evidence["approved"] is True
+
+
+@pytest.mark.parametrize("paper_id", ["paper_1", "paper_2", "paper_3"])
+def test_generation_and_package_use_identical_demand_targets(paper_id) -> None:
+    from pastpapergen.ollama_client import _question_demand_items
+
+    from Backend.Core.assessment_package import _extract_items
+    from Backend.Core.reference_demand import build_item_demand_target, profile_for
+
+    syllabus = load_syllabus(Path(__file__).parents[1] / "data" / "syllabus_seed.json")
+    blueprint = build_paper_blueprint(load_builtin_paper_config(paper_id), syllabus, seed=7)
+    profile = profile_for("pearson-edexcel/economics-a-2015", paper_id.removeprefix("paper_"))
+    original = [item for q in blueprint.questions for item in _question_demand_items(q)]
+    exported = _extract_items(blueprint.model_dump(mode="json"), subject="economics", paper_number=paper_id.removeprefix("paper_"))
+    assert len(original) == len(exported)
+    for before, after in zip(original, exported, strict=True):
+        assert build_item_demand_target(before, profile) == build_item_demand_target(after, profile), after["id"]
+
+
+def test_solver_view_includes_chart_values_and_all_choices_without_answer_key() -> None:
+    from pastpapergen.ollama_client import _question_solver_item
+
+    from Backend.Core.independent_solver import IndependentSolver
+
+    syllabus = load_syllabus(Path(__file__).parents[1] / "data" / "syllabus_seed.json")
+    blueprint = build_paper_blueprint(load_builtin_paper_config("paper_2"), syllabus, seed=7)
+    question = blueprint.questions[0]
+    part = question.parts[0]
+    captured = []
+
+    class Client:
+        def generate_json(self, prompt):
+            captured.append(prompt)
+            return {"answer": part.options[0].text, "steps": ["Read the chart"]}
+
+    item = _question_solver_item(question, part)
+    IndependentSolver(Client()).solve(item, [])
+    assert item["stimulus"]["values"]
+    assert all(option.text in captured[0] for option in part.options)
+    assert "correct_option" not in captured[0]
+    assert "mark_scheme" not in captured[0]
+
+
+@pytest.mark.parametrize("kind", ["line_graph", "index_number_chart", "market_share_bar_chart", "data_table"])
+def test_review_stimulus_uses_rendered_defaults(kind) -> None:
+    from pastpapergen.models import QuestionBlueprint
+    from pastpapergen.render_pdf import (
+        _bar_chart_data,
+        _table_rows,
+        candidate_stimulus_data,
+    )
+    from pastpapergen.stimulus_data import line_chart_data
+
+    question = QuestionBlueprint(section="A", number="1", marks=1, command_word="mcq",
+                                 topic_id="test", prompt="Read the figure.", stimulus_kind=kind)
+    data = candidate_stimulus_data(question)
+    if kind == "data_table":
+        assert data["rows"] == _table_rows(kind)
+    elif kind == "market_share_bar_chart":
+        assert data["values"] == _bar_chart_data(kind)[2]
+    else:
+        assert data["values"] == line_chart_data(kind)[2]
+        assert len(data["point_labels"]) == len(data["values"])
 
 
 class BlueprintAwareClient:

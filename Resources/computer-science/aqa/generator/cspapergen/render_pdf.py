@@ -1571,6 +1571,40 @@ def _render_part(
     return state
 
 
+def candidate_stimulus_data(stimulus: Stimulus | None) -> dict[str, object]:
+    """Describe visible figure content for text-only independent solvers."""
+    if stimulus is None:
+        return {}
+    data = stimulus.model_dump(mode="json")
+    if stimulus.kind == "classification":
+        first, second, *_ = stimulus.diagram.split("|")
+        data.pop("diagram", None)
+        data["links"] = [
+            ["Software", "1"], ["Software", "System software"],
+            ["1", first], ["1", second],
+            ["System software", "2"], ["System software", "Translators"],
+        ]
+    elif stimulus.kind == "network":
+        data.pop("diagram", None)
+        data["links"] = [
+            ["Client", "Switch"], ["Laptop", "Switch"],
+            ["Switch", "Router"], ["Router", "Server"],
+        ]
+    elif stimulus.kind == "fsm":
+        data.pop("diagram", None)
+        data.update({
+            "start_state": "S0", "accepting_states": ["S1"],
+            "transitions": [["S0", "1", "S1"], ["S1", "0", "S2"],
+                            ["S2", "0", "S1"], ["S1", "1", "S1"], ["S2", "1", "S2"]],
+        })
+    elif stimulus.kind == "optical":
+        data["visible_labels"] = ["laser", "spiral track", "pits and lands"]
+    if stimulus.kind in {"table", "bitgrid", "packet", "truth_table", "fsm"}:
+        data["headers"] = [cell[:34] for cell in stimulus.headers]
+        data["rows"] = [[cell[:34] for cell in row] for row in stimulus.rows]
+    return data
+
+
 def _render_stimulus(pdf: canvas.Canvas, stimulus: Stimulus, state: _QuestionRenderState) -> _QuestionRenderState:
     state = _ensure_space(pdf, state, 110)
     pdf.setFont(FONT_BOLD, 10)

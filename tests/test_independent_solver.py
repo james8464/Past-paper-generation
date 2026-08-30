@@ -404,3 +404,13 @@ def test_open_response_solver_examples_are_not_treated_as_exhaustive() -> None:
 
     assert not solution.mark_points_exhaustive
     assert result.passed, result.issues
+# Specialist schemes can encode keyed letters instead of full option text.
+def test_specialist_reconciliation_rejects_a_different_keyed_option() -> None:
+    from Backend.Core.independent_solver import require_solution_matches_scheme
+
+    solution = CanonicalSolution(item_id="q1", answer="Current ratio", mark_points=["Current ratio"])
+    with pytest.raises(ValueError, match="keyed option"):
+        require_solution_matches_scheme(
+            solution, {"marks": 1, "mark_scheme": ["Current ratio"]},
+            expected_choice="Gearing",
+        )

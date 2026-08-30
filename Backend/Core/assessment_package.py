@@ -22,7 +22,11 @@ from Backend.Core.level_of_response import (
 )
 from Backend.Core.mark_scheme_quality import validate_mark_scheme_item
 from Backend.Core.paths import REPO_ROOT
-from Backend.Core.reference_demand import audit_form_demand, profile_for
+from Backend.Core.reference_demand import (
+    assessment_objectives_for_item,
+    audit_form_demand,
+    profile_for,
+)
 from Backend.Core.response_simulation import ResponseSimulator
 
 
@@ -282,10 +286,11 @@ def _extract_items(
     subject: str,
     paper_number: str,
 ) -> list[dict[str, Any]]:
-    discovered: list[tuple[str, dict[str, Any], list[str]]] = []
+    discovered: list[tuple[str, dict[str, Any], list[str], str]] = []
 
-    def walk(value: Any, path: list[str], inherited_stems: list[str]) -> None:
+    def walk(value: Any, path: list[str], inherited_stems: list[str], inherited_kind: str = "") -> None:
         if isinstance(value, dict):
+            kind = str(value.get("kind") or value.get("style_id") or value.get("stimulus_kind") or inherited_kind)
             stems = inherited_stems
             stem = value.get("stem")
             if isinstance(stem, str) and stem.strip():
@@ -294,6 +299,13 @@ def _extract_items(
             if isinstance(source_text, str) and source_text.strip():
                 stems = [*stems, source_text.strip()]
             stimulus = value.get("stimulus")
+            if isinstance(stimulus, dict):
+                source_parts = [
+                    *stimulus.get("lines", []),
+                    *(cell for row in stimulus.get("rows", []) for cell in row),
+                    stimulus.get("code", ""),
+                ]
+                stems = [*stems, *(str(part).strip() for part in source_parts if str(part).strip())]
             if isinstance(stimulus, list):
                 stimulus_text = " ".join(
                     str(item).strip() for item in stimulus if str(item).strip()
@@ -316,21 +328,21 @@ def _extract_items(
                 and isinstance(marks, int)
                 and not has_marked_parts
             ):
-                discovered.append((".".join(path), value, stems))
+                discovered.append((".".join(path), value, stems, kind))
             child_stems = (
                 [*stems, prompt.strip()]
                 if has_marked_parts and isinstance(prompt, str) and prompt.strip()
                 else stems
             )
             for key, child in value.items():
-                walk(child, [*path, str(key)], child_stems)
+                walk(child, [*path, str(key)], child_stems, kind)
         elif isinstance(value, list):
             for index, child in enumerate(value):
-                walk(child, [*path, str(index)], inherited_stems)
+                walk(child, [*path, str(index)], inherited_stems, inherited_kind)
 
     walk(blueprint, [], [])
     items: list[dict[str, Any]] = []
-    for index, (path, raw, stems) in enumerate(discovered, start=1):
+    for index, (path, raw, stems, kind) in enumerate(discovered, start=1):
         prompt = str(raw["prompt"]).strip()
         item_id = str(
             raw.get("number")
@@ -349,11 +361,11 @@ def _extract_items(
                 "command_word": raw.get("command_word"),
                 "intended_demand": raw.get("intended_demand"),
                 "expected_minutes": raw.get("expected_minutes"),
-                "kind": raw.get("kind") or raw.get("style_id") or "",
+                "kind": kind,
                 "prompt": prompt,
                 "context": stems,
                 "mark_scheme": scheme,
-                "assessment_objectives": raw.get("assessment_objectives") or {},
+                "assessment_objectives": assessment_objectives_for_item(raw),
                 "scheme_mode": raw.get("scheme_mode") or "points",
                 "structured_mark_scheme": _structured_scheme(raw),
                 "evidence_ids": _evidence_ids(raw),

@@ -1650,6 +1650,7 @@ def _difficulty_response(
         "shortcut_resistant": approved,
         "timing_fit": approved,
         "scaffolding_fit": approved,
+        "estimated_minutes": 1.2,
         "issues": issues or [],
     }
 

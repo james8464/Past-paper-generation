@@ -12,13 +12,20 @@ from typing import Protocol
 
 from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
 from Backend.Core.assessment_quality import NUMBER_PATTERN, numeric_tokens
+from Backend.Core.independent_solver import (
+    IndependentSolver,
+    require_solution_matches_scheme,
+)
 from Backend.Core.model_review import (
     assert_materially_new,
     require_difficulty_review,
     require_independent_review,
 )
-from Backend.Core.independent_solver import IndependentSolver
-from Backend.Core.reference_demand import build_item_demand_target, profile_for
+from Backend.Core.reference_demand import (
+    assessment_objectives_for_item,
+    build_item_demand_target,
+    profile_for,
+)
 from cspapergen.models import (
     MarkingGuidance,
     PaperBlueprint,
@@ -27,6 +34,7 @@ from cspapergen.models import (
     Syllabus,
 )
 from cspapergen.notes import note_context_for_topic
+from cspapergen.render_pdf import candidate_stimulus_data
 
 
 @dataclass(frozen=True)
@@ -255,7 +263,14 @@ def review_blueprint_difficulty(
                 f"Checking reference demand {item_index}/{item_count}: "
                 f"0 {question.number:02d}({part.label})"
             )
-            solution = IndependentSolver(client).solve(item, [])
+            solution = IndependentSolver(client).solve(_part_solver_item(question, part), [])
+            require_solution_matches_scheme(
+                solution,
+                {"marks": part.marks, "mark_scheme": [*part.marking.points, *part.marking.levels],
+                 "alternatives": part.marking.accept},
+                expected_choice=(next((o.text for o in part.options if o.label == part.correct_option), "")
+                                 if part.options else None),
+            )
             evidence = require_difficulty_review(
                 client,
                 item_id=f"question-{question.number}-{part.label}",
@@ -353,11 +368,7 @@ def _part_demand_item(
     question: Question,
     part: QuestionPart,
 ) -> dict[str, object]:
-    marking = part.marking
-    objective_names = re.findall(r"AO[1-4]", str(marking.ao).upper())
-    objectives = {name: 1 for name in objective_names}
-    if objectives:
-        objectives[objective_names[0]] += int(part.marks) - len(objectives)
+    objectives = assessment_objectives_for_item(part.model_dump(mode="json"))
     stimulus: list[str] = []
     if question.stimulus is not None:
         stimulus.extend(question.stimulus.lines)
@@ -373,6 +384,21 @@ def _part_demand_item(
         "prompt": prompt,
         "assessment_objectives": objectives,
         "context": [question.stem, *stimulus],
+    }
+
+
+def _part_solver_item(question: Question, part: QuestionPart) -> dict[str, object]:
+    return {
+        **part.model_dump(mode="json"),
+        "id": f"question-{question.number}-{part.label}",
+        "context": question.stem,
+        "stimulus": candidate_stimulus_data(question.stimulus),
+        "kind": "multiple_choice" if part.options else question.style_id,
+        "choices": [option.text for option in part.options],
+        "authoring_context": {"expected_answer_form": (
+            "numeric" if part.prompt.split(maxsplit=1)[0].casefold() in {"calculate", "determine"}
+            else "constructed_response"
+        )},
     }
 
 

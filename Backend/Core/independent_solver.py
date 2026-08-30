@@ -182,8 +182,10 @@ def _without_answer_key(value: Any) -> Any:
         "mark_scheme",
         "structured_mark_scheme",
         "marking",
+        "mark_breakdown",
         "indicative_content",
         "correct_choice",
+        "correct_option",
         "verified_answers",
         "canonical_solution",
         "observable_mark_points",
@@ -203,6 +205,24 @@ def _without_answer_key(value: Any) -> Any:
     if isinstance(value, list):
         return [_without_answer_key(child) for child in value]
     return value
+
+
+def require_solution_matches_scheme(
+    solution: CanonicalSolution,
+    scheme: dict[str, Any],
+    *,
+    expected_choice: str | None = None,
+) -> None:
+    if expected_choice is not None and _normalise(solution.answer) != _normalise(expected_choice):
+        raise ValueError(f"{solution.item_id} independent answer disagrees with the keyed option")
+    if expected_choice is not None:
+        scheme = {**scheme, "mark_scheme": [*scheme.get("mark_scheme", []), expected_choice]}
+    result = reconcile_solution(solution, scheme)
+    if not result.passed:
+        raise ValueError(
+            f"{solution.item_id} failed independent solution reconciliation: "
+            + "; ".join(issue.message for issue in result.issues)
+        )
 
 
 def reconcile_solution(

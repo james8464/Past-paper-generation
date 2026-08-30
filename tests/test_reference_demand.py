@@ -610,3 +610,13 @@ def test_live_form_audit_does_not_default_missing_checks_to_approval() -> None:
         require_item_evidence=True,
     )
     assert "item_difficulty_review" in report["failed_checks"]
+
+
+def test_empty_context_does_not_create_an_application_requirement() -> None:
+    reference_demand = module()
+    profile = reference_demand.ReferenceDemandProfile.model_validate(profile_payload())
+    target = reference_demand.build_item_demand_target(
+        {"marks": 1, "command_word": "mcq", "context": ["", "  "]}, profile
+    )
+    assert target.requires_context is False
+    assert target.required_cognitive_operations == ["retrieve"]

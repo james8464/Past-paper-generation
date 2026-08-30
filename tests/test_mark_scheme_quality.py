@@ -267,3 +267,11 @@ def test_contract_alternatives_boundaries_and_follow_through_are_mandatory() -> 
         ]
     )
     assert validate_mark_scheme_item(item).has_alternatives is True
+def test_combined_legacy_objective_labels_cover_each_declared_objective() -> None:
+    validate_mark_scheme_item({
+        "id": "q1", "marks": 2, "prompt": "Explain the relation.",
+        "mark_scheme": ["Identify the relation.", "Apply it to the context."],
+        "assessment_objectives": {"AO1": 1, "AO2": 1},
+        "structured_mark_scheme": [{"text": "Apply the relation.", "marks": 0,
+                                    "assessment_objective": "AO1/AO2"}],
+    })

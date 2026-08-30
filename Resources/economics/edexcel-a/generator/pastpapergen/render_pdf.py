@@ -48,7 +48,7 @@ from Backend.Core.overlay.graphs import (
 )
 from Backend.Core.overlay.layouts import EDEXCEL_ECONOMICS as L
 from pastpapergen.exam_dates import economics_exam_schedule
-from pastpapergen.models import GraphParams, PaperBlueprint, Syllabus
+from pastpapergen.models import GraphParams, PaperBlueprint, QuestionBlueprint, Syllabus
 from pastpapergen.notes import note_points_for_topic
 from pastpapergen.source_cases import GENERIC_SOURCE_ATTRIBUTION
 from pastpapergen.stimulus_data import line_chart_data, table_rows
@@ -1939,6 +1939,32 @@ _GRAPH_FUNCS: dict[str, object] = {
     "poverty_trap_diagram": laffer_curve,
     "exchange_rate_diagram": demand_supply_diagram,
 }
+
+
+def candidate_stimulus_data(question: QuestionBlueprint) -> dict[str, object]:
+    """Expose the same source values and dispatch rules used to draw a figure."""
+    kind = question.stimulus_kind
+    data: dict[str, object] = {"kind": kind, "source_text": question.source_text}
+    if kind in _TABLE_KINDS:
+        data["rows"] = _table_rows(kind)
+    elif kind in _BAR_CHART_KINDS or kind in _LINE_CHART_KINDS:
+        y_label, x_label, values = (
+            _bar_chart_data(kind) if kind in _BAR_CHART_KINDS else line_chart_data(kind)
+        )
+        data.update({"y_label": y_label, "x_label": x_label, "values": values})
+        data["point_labels"] = (
+            [_bar_label(kind, index) for index in range(len(values))]
+            if kind in _BAR_CHART_KINDS else
+            [f"{x_label} {index}" for index in range(1, len(values) + 1)]
+        )
+    elif kind == "payoff_matrix":
+        data.update({"row_player": "Firm A", "column_player": "Firm B",
+                     "strategies": ["High price", "Low price"],
+                     "payoffs_A_B": [[[8, 8], [4, 10]], [[10, 4], [6, 6]]]})
+    elif kind in _ECONOMICS_GRAPH_KINDS:
+        data["graph_params"] = question.graph_params.to_dict() if question.graph_params.kind else {}
+        data["diagram_kind"] = kind
+    return data
 
 
 def _draw_stimulus(pdf: canvas.Canvas, kind: str, x: float, y: float, context_text: str = "", graph_params: GraphParams | None = None) -> float:
