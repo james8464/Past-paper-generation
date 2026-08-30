@@ -69,3 +69,48 @@ class AQAQuestionHeaderFactory:
                 ]
             ),
         )
+
+
+@dataclass(frozen=True)
+class OCRQuestionHeaderFactory:
+    """Measured OCR question-number, prompt, and tariff flowables."""
+
+    body_style: ParagraphStyle
+    marks_style: ParagraphStyle
+    extended_response_threshold: int | None = None
+    table_class: type[Table] = Table
+
+    def question_table(
+        self,
+        question: QuestionHeaderData,
+        *,
+        show_marks: bool = True,
+    ) -> Table:
+        display_number = question.number
+        if (
+            self.extended_response_threshold is not None
+            and question.marks >= self.extended_response_threshold
+        ):
+            display_number = f"{display_number}*"
+        return self.table_class(
+            [
+                [
+                    Paragraph(
+                        f"<b>{display_number}</b> {question.prompt}",
+                        self.body_style,
+                    ),
+                    Paragraph(
+                        f"[{question.marks}]" if show_marks else "",
+                        self.marks_style,
+                    ),
+                ]
+            ],
+            colWidths=[155 * mm, 12 * mm],
+            style=TableStyle(
+                [
+                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 0),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+                ]
+            ),
+        )

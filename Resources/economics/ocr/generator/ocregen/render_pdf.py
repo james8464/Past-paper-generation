@@ -25,7 +25,11 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-from Backend.Core.document_dsl import DocumentRole, renderer_contract
+from Backend.Core.document_dsl import (
+    DocumentRole,
+    OCRQuestionHeaderFactory,
+    renderer_contract,
+)
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -1855,30 +1859,6 @@ def _answer_mark(question: GeneratedQuestion) -> Table:
     )
 
 
-def _question_table(
-    question: GeneratedQuestion,
-    *,
-    show_marks: bool = True,
-) -> Table:
-    display_number = f"{question.number}*" if question.marks >= 15 else question.number
-    return Table(
-        [
-            [
-                Paragraph(
-                    f"<b>{display_number}</b> {question.prompt}",
-                    STYLES["body"],
-                ),
-                Paragraph(
-                    f"[{question.marks}]" if show_marks else "",
-                    STYLES["marks"],
-                ),
-            ]
-        ],
-        colWidths=[155 * mm, 12 * mm],
-        style=TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"), ("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0)]),
-    )
-
-
 def _scheme_block(
     question: GeneratedQuestion,
     diagram_questions: list[GeneratedQuestion] | None = None,
@@ -2176,3 +2156,9 @@ STYLES = {
     "centre": ParagraphStyle("centre", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14, alignment=TA_CENTER),
     "centre_bold": ParagraphStyle("centre", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=10.5, leading=14, alignment=TA_CENTER),
 }
+_question_table = OCRQuestionHeaderFactory(
+    body_style=STYLES["body"],
+    marks_style=STYLES["marks"],
+    extended_response_threshold=15,
+    table_class=Table,
+).question_table

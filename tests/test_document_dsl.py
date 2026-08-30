@@ -380,3 +380,43 @@ def test_shared_aqa_question_header_preserves_measured_geometry_and_text(
         text = " ".join(document[0].get_text().split())
     assert "Calculate the exact value." in text
     assert "[2 marks]" in text
+
+
+def test_shared_ocr_question_header_supports_board_specific_star_and_deferred_marks(
+    tmp_path: Path,
+) -> None:
+    from reportlab.lib.styles import ParagraphStyle
+    from reportlab.lib.units import mm
+    from reportlab.platypus import SimpleDocTemplate
+    from reportlab.platypus import Table as ReportLabTable
+
+    import Backend.Core.document_dsl as document_dsl
+
+    factory_type = getattr(document_dsl, "OCRQuestionHeaderFactory", None)
+    assert factory_type is not None, "shared OCR question headers are not implemented"
+
+    class FamilyTable(ReportLabTable):
+        pass
+
+    factory = factory_type(
+        body_style=ParagraphStyle("OCRQuestionBody", fontName="Helvetica", fontSize=11),
+        marks_style=ParagraphStyle("OCRQuestionMarks", fontName="Helvetica-Bold"),
+        extended_response_threshold=15,
+        table_class=FamilyTable,
+    )
+    question = SimpleNamespace(
+        number="4",
+        prompt="Evaluate the policy in the stated context.",
+        marks=20,
+    )
+    table = factory.question_table(question, show_marks=False)
+
+    assert isinstance(table, FamilyTable)
+    assert table._colWidths == pytest.approx([155 * mm, 12 * mm])
+    destination = tmp_path / "ocr-question-header.pdf"
+    SimpleDocTemplate(str(destination), pagesize=(210 * mm, 297 * mm)).build([table])
+    with fitz.open(destination) as document:
+        text = " ".join(document[0].get_text().split())
+    assert "4*" in text
+    assert "Evaluate the policy in the stated context." in text
+    assert "[20]" not in text

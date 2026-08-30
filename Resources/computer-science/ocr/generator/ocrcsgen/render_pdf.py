@@ -23,7 +23,11 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-from Backend.Core.document_dsl import DocumentRole, renderer_contract
+from Backend.Core.document_dsl import (
+    DocumentRole,
+    OCRQuestionHeaderFactory,
+    renderer_contract,
+)
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -682,27 +686,6 @@ def _response_table_style() -> TableStyle:
     )
 
 
-def _question_table(question: GeneratedQuestion) -> Table:
-    return Table(
-        [
-            [
-                Paragraph(
-                    f"<b>{question.number}</b> {question.prompt}", STYLES["body"]
-                ),
-                Paragraph(f"[{question.marks}]", STYLES["marks"]),
-            ]
-        ],
-        colWidths=[155 * mm, 12 * mm],
-        style=TableStyle(
-            [
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                ("LEFTPADDING", (0, 0), (-1, -1), 0),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 0),
-            ]
-        ),
-    )
-
-
 def _trace_table(option: GeneratedOption) -> Table:
     rows = [
         [Paragraph(option.chart_title, STYLES["small_bold"]), *option.chart_labels],
@@ -959,3 +942,8 @@ STYLES = {
     "scheme_small": ParagraphStyle("scheme-small", parent=_base["BodyText"], fontName=FONT, fontSize=9.5, leading=11),
     "scheme_small_centre": ParagraphStyle("scheme-small-centre", parent=_base["BodyText"], fontName=FONT, fontSize=9.5, leading=11, alignment=TA_CENTER),
 }
+_question_table = OCRQuestionHeaderFactory(
+    body_style=STYLES["body"],
+    marks_style=STYLES["marks"],
+    table_class=Table,
+).question_table
