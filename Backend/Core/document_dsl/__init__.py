@@ -38,6 +38,7 @@ from Backend.Core.document_dsl.model import (
 from Backend.Core.document_dsl.paginator import PaginationError, Paginator
 from Backend.Core.document_dsl.profiles import board_profile, renderer_contract
 from Backend.Core.document_dsl.reportlab_backend import ReportLabBackend
+from Backend.Core.document_dsl.reportlab_flowables import AQAQuestionHeaderFactory
 from Backend.Core.document_dsl.vector_components import (
     AccountingTable,
     EconomicCurve,
@@ -50,6 +51,7 @@ from Backend.Core.document_dsl.vector_components import (
 )
 
 __all__ = [
+    "AQAQuestionHeaderFactory",
     "AccountingTable",
     "AnswerSpace",
     "BlankPage",

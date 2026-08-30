@@ -115,8 +115,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/render_pdf.py": {
-    "mtime": 1788046136.5048277,
-    "ast_hash": "5ec5568aef7f20165c47e6c7c41ae467",
+    "mtime": 1788048388.9842293,
+    "ast_hash": "b87399fa389c111f2841de8df3bd595e",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/syllabus.py": {
@@ -165,8 +165,8 @@
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/render_pdf.py": {
-    "mtime": 1787759576.4130294,
-    "ast_hash": "c2614b98d96244c3ebb5037fa967e8ef",
+    "mtime": 1788048388.984675,
+    "ast_hash": "d80681e228613682959504b06613312a",
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/syllabus.py": {
@@ -385,8 +385,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/aqaecongen/render_pdf.py": {
-    "mtime": 1788047578.9015858,
-    "ast_hash": "4ab38b84a7a4815317ad26074063f3d8",
+    "mtime": 1788048388.9850566,
+    "ast_hash": "0ff5f851714fa50ee124c83fb44067ba",
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/aqaecongen/syllabus.py": {
@@ -1510,8 +1510,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/document_dsl/__init__.py": {
-    "mtime": 1787745534.095331,
-    "ast_hash": "1248baeffd7b6004b3bcb1583e8ddb5f",
+    "mtime": 1788048107.3174424,
+    "ast_hash": "0ff10dee1f5424d8a2d14c6d8dfd5014",
     "semantic_hash": ""
   },
   "Backend/Core/document_dsl/components.py": {
@@ -1545,8 +1545,8 @@
     "semantic_hash": ""
   },
   "tests/test_document_dsl.py": {
-    "mtime": 1787775278.6698325,
-    "ast_hash": "36cb431b873a769e4f2956ec549d51a9",
+    "mtime": 1788048400.3842971,
+    "ast_hash": "35e3f94ffd6c3050484f016f9a912099",
     "semantic_hash": ""
   },
   "tests/test_document_paginator.py": {
@@ -1917,6 +1917,11 @@
   "docs/superpowers/specs/2026-08-29-reference-demand-calibration-design.md": {
     "mtime": 1788017653.7446156,
     "ast_hash": "0aa443ec1c50940a105ab8bf5a4b28f8",
+    "semantic_hash": ""
+  },
+  "Backend/Core/document_dsl/reportlab_flowables.py": {
+    "mtime": 1788048365.2828043,
+    "ast_hash": "9d85536a71af4c5e8596b1a27baed2ea",
     "semantic_hash": ""
   }
 }

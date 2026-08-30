@@ -22,7 +22,11 @@ from reportlab.platypus import (
 )
 
 from aqabizgen.financials import FinancialPosition
-from Backend.Core.document_dsl import DocumentRole, renderer_contract
+from Backend.Core.document_dsl import (
+    AQAQuestionHeaderFactory,
+    DocumentRole,
+    renderer_contract,
+)
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -1169,44 +1173,6 @@ def _question_block(question: GeneratedQuestion) -> list[Flowable]:
     return [_question_table(question), Spacer(1, 3 * mm)]
 
 
-def _question_table(question: GeneratedQuestion) -> Table:
-    mark_label = "mark" if question.marks == 1 else "marks"
-    return Table(
-        [
-            [
-                _question_reference(question.number),
-                Paragraph(question.prompt, STYLES["body"]),
-                Paragraph(f"[{question.marks} {mark_label}]", STYLES["marks"]),
-            ]
-        ],
-        colWidths=[14 * mm, 134 * mm, 19 * mm],
-        style=TableStyle(
-            [
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                ("LEFTPADDING", (0, 0), (-1, -1), 0),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 0),
-            ]
-        ),
-    )
-
-
-def _question_reference(number: str) -> Table:
-    compact = "".join(character for character in number if character.isdigit())
-    cells = list(compact.zfill(2)) if len(compact) <= 2 else [number]
-    return Table(
-        [cells],
-        colWidths=[5.5 * mm] * len(cells),
-        rowHeights=[5.5 * mm],
-        style=TableStyle([
-            ("GRID", (0, 0), (-1, -1), 0.55, INK),
-            ("FONT", (0, 0), (-1, -1), FONT_BOLD, 9),
-            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-            ("PADDING", (0, 0), (-1, -1), 0),
-        ]),
-    )
-
-
 def _lozenge() -> Drawing:
     drawing = Drawing(25, 15)
     drawing.add(Rect(1, 1, 22, 13, strokeColor=INK, fillColor=None, strokeWidth=0.7))
@@ -1539,3 +1505,10 @@ STYLES = {
     "answer": ParagraphStyle("answer", parent=_base["BodyText"], fontName=FONT_BOLD, fontSize=9.5, leading=12, alignment=TA_RIGHT),
     "centre_bold": ParagraphStyle("centre", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=10.5, leading=14, alignment=TA_CENTER),
 }
+_question_table = AQAQuestionHeaderFactory(
+    body_style=STYLES["body"],
+    marks_style=STYLES["marks"],
+    bold_font=FONT_BOLD,
+    ink=INK,
+    table_class=Table,
+).question_table

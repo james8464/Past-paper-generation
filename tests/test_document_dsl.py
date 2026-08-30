@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
 
 import fitz
 import pytest
@@ -340,3 +341,42 @@ def test_renderer_contract_is_versioned_and_profile_backed() -> None:
     assert isinstance(contract, RendererContract)
     assert contract.schema_version == 1
     assert contract.profile.id == "ocr"
+
+
+def test_shared_aqa_question_header_preserves_measured_geometry_and_text(
+    tmp_path: Path,
+) -> None:
+    from reportlab.lib import colors
+    from reportlab.lib.styles import ParagraphStyle
+    from reportlab.lib.units import mm
+    from reportlab.platypus import SimpleDocTemplate
+    from reportlab.platypus import Table as ReportLabTable
+
+    import Backend.Core.document_dsl as document_dsl
+
+    factory_type = getattr(document_dsl, "AQAQuestionHeaderFactory", None)
+    assert factory_type is not None, "shared AQA question headers are not implemented"
+
+    class FamilyTable(ReportLabTable):
+        pass
+
+    factory = factory_type(
+        body_style=ParagraphStyle("QuestionBody", fontName="Helvetica", fontSize=11),
+        marks_style=ParagraphStyle("QuestionMarks", fontName="Helvetica-Bold"),
+        bold_font="Helvetica-Bold",
+        ink=colors.black,
+        table_class=FamilyTable,
+    )
+    table = factory.question_table(
+        SimpleNamespace(number="1.2", prompt="Calculate the exact value.", marks=2)
+    )
+
+    assert isinstance(table, FamilyTable)
+    assert isinstance(table._cellvalues[0][0], FamilyTable)
+    assert table._colWidths == pytest.approx([14 * mm, 134 * mm, 19 * mm])
+    destination = tmp_path / "aqa-question-header.pdf"
+    SimpleDocTemplate(str(destination), pagesize=(210 * mm, 297 * mm)).build([table])
+    with fitz.open(destination) as document:
+        text = " ".join(document[0].get_text().split())
+    assert "Calculate the exact value." in text
+    assert "[2 marks]" in text

@@ -26,7 +26,11 @@ from aqaecongen.configs import (
     PAPER3_MCQ_PAGE_COUNTS,
     PAPER3_VISUAL_QUESTION_NUMBERS,
 )
-from Backend.Core.document_dsl import DocumentRole, renderer_contract
+from Backend.Core.document_dsl import (
+    AQAQuestionHeaderFactory,
+    DocumentRole,
+    renderer_contract,
+)
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -1058,51 +1062,6 @@ def _question_block(question: GeneratedQuestion) -> list[Flowable]:
     ]
 
 
-def _question_table(question: GeneratedQuestion) -> Table:
-    mark_label = "mark" if question.marks == 1 else "marks"
-    return Table(
-        [
-            [
-                _question_reference(question.number),
-                Paragraph(question.prompt, STYLES["question"]),
-                Paragraph(
-                    f"[{question.marks} {mark_label}]",
-                    STYLES["marks"],
-                ),
-            ]
-        ],
-        colWidths=[14 * mm, 134 * mm, 19 * mm],
-        style=TableStyle(
-            [
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                ("LEFTPADDING", (0, 0), (-1, -1), 0),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 0),
-                ("TOPPADDING", (0, 0), (-1, -1), 0),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
-            ]
-        ),
-    )
-
-
-def _question_reference(number: str) -> Table:
-    compact = "".join(character for character in number if character.isdigit())
-    cells = list(compact.zfill(2)) if len(compact) <= 2 else [number]
-    return Table(
-        [cells],
-        colWidths=[5.5 * mm] * len(cells),
-        rowHeights=[5.5 * mm],
-        style=TableStyle(
-            [
-                ("GRID", (0, 0), (-1, -1), 0.55, BLACK),
-                ("FONT", (0, 0), (-1, -1), FONT_BOLD, 9),
-                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                ("PADDING", (0, 0), (-1, -1), 0),
-            ]
-        ),
-    )
-
-
 def _line_chart(title: str, labels: list[str], values: list[float]) -> Drawing:
     drawing = Drawing(165 * mm, 55 * mm)
     x0, y0, width, height = 32, 25, 410, 95
@@ -1483,3 +1442,11 @@ STYLES = {
         alignment=TA_CENTER,
     ),
 }
+_question_table = AQAQuestionHeaderFactory(
+    body_style=STYLES["question"],
+    marks_style=STYLES["marks"],
+    bold_font=FONT_BOLD,
+    ink=BLACK,
+    vertical_padding=0,
+    table_class=Table,
+).question_table
