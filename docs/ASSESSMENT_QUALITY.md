@@ -68,8 +68,8 @@ explicitly approve factual correctness, mark coverage, source consistency,
 ambiguity, grammatical scope, distractor exclusivity, and answer correctness
 with no issue arrays. A missing, malformed, or negative review rejects the item.
 
-A third, dedicated reference-demand call receives the candidate and an immutable
-per-item demand contract. It independently estimates the demand band and number
+A dedicated reference-demand call receives the candidate, the independently
+derived solution trace and an immutable per-item demand contract. It estimates the demand band and number
 of reasoning steps, then checks tariff, command-word depth, contextual
 application, analysis chains, judgement and fit to the measured reference
 profile. Both under-demanded and over-demanded questions are rejected. Repairs
@@ -86,6 +86,14 @@ local relevant-paper corpus. It retains only aggregate mark bands, command-word
 frequencies, derived demand proportions, document counts and a source
 fingerprint—never question wording, extracts or source paths.
 
+Schema version 2 also records mark-weighted demand, response modes, cognitive
+operations, command/tariff pairing coverage and individual metric tolerances.
+Item contracts specify lower and upper reasoning bounds, required operations,
+completion-time ranges, scaffolding limits and resistance to superficial shortcuts.
+The macOS Quality inspector presents these checks separately from empirical
+calibration. Focused topic banks use broader form-level envelopes than full papers;
+they are not represented as full-paper difficulty equivalents.
+
 Generation uses the profile at three levels:
 
 1. the authoring prompt receives an immutable item-level cognitive contract;
@@ -98,6 +106,25 @@ Preview packages retain the report for diagnosis without claiming release
 readiness. The package manifest records the profile fingerprint, source-document
 count, distances and profile-file hash so a result remains auditable after the
 profile changes.
+
+Saved live evidence is revalidated with strict types and complete fields, its
+reference fingerprint, reasoning bounds, timing and required operations. An
+approval flag alone cannot bypass these checks. The matrix qualification tool
+checks the reference-demand result even for previews and distinguishes successful
+generation from a passing demand audit.
+
+The live response parser requires each check explicitly; serialization cannot
+turn omitted checks into positive evidence. Specialist solvers receive the
+candidate-visible options and rendered stimulus data, not just a demand summary.
+Their canonical answers are reconciled with the scheme before the difficulty
+judge runs. Shared AO interpretation keeps generation and export targets aligned,
+including Computer Science's legacy combined-objective labels.
+
+Closed, source-constrained accounting calculations have deterministic independent
+solvers for asset statements, ledger accounts, income statements and partnership
+accounts. They recompute from source data without consulting draft answers. The
+content and difficulty model reviews still run. Other calculations use the general
+independent solver; its prompt recursively excludes draft-answer material.
 
 Reference-demand success means the generated form matches observable structural
 and cognitive patterns in the relevant papers. It does not establish equivalent

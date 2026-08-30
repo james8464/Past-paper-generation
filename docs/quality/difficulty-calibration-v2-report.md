@@ -15,15 +15,73 @@ Difficulty Calibration v2 is implemented across all advertised assessment routes
 - AQA Computer Science and Pearson Edexcel Economics use the same solver-grounded review and persisted evidence contract.
 - Live assessment packages fail closed if any item lacks passing difficulty evidence. Preview packages expose evidence coverage without implying that an AI review occurred.
 - The macOS Quality inspector reports item-review coverage, reasoning-range fit, context fit, shortcut resistance, extraction coverage and maximum form drift.
+- Saved evidence is strictly revalidated against the current profile, reasoning bounds, operations and timing. Missing fields, contradictory approvals and stale profiles fail; shared-generator resume regenerates invalid items individually.
+- Accounting has six independent deterministic solvers for closed source-constrained calculations. They do not consult draft answers and do not replace the subsequent content and difficulty reviews.
+- Accounting schemes now include the complete exact answers and working. Depreciation no longer silently rounds to hundreds; company adjustments state their rounding policy; partnership allocations conserve the supplied amounts exactly.
+- The data-structures bank retains its 30-mark total but now includes a sustained four-mark, context-dependent comparison, instead of consisting entirely of short-tariff parts.
+- Matrix qualification distinguishes successful PDF generation from a passing reference-demand audit and requires both, including in preview runs.
+- Live model responses must explicitly contain every difficulty check; omitted checks cannot be filled with affirmative defaults.
+- Specialist solver inputs include candidate-visible options, table headers, chart values and diagram structure. Classification blanks remain blank, answer-key fields are excluded recursively, and canonical answers are reconciled before difficulty review.
+- Specialist generation and package export share assessment-objective interpretation and preserve inherited question styles. Empty context no longer creates an application requirement; selected-response items no longer incorrectly require explanation.
+- Supported decisions (`Advise`, `Recommend`, `Justify`) require analysis and judgement rather than falling through to generic explanation. Corpus extraction now recognises `Advise`, matching [AQA's Accounting command-word guidance](https://www.aqa.org.uk/resources/accounting/as-and-a-level/accounting/teach/command-words).
+- Accounting indicative-content tables preserve explicitly declared assessment objectives. Unassigned points show an em dash instead of receiving an invented label based on row position.
 
 ## Verification
 
-- Python: 775 passed, 2 skipped. The skips are pre-existing environment-dependent checks.
-- Advertised preview matrix: 21 of 21 packages generated and passed the schema-v2 reference-demand audit.
-- Maximum gated distribution distance across that matrix: 0.782174 (within the focused question-bank tolerance of 0.8).
-- Minimum official-corpus extraction coverage: 0.793103.
+- Python: 851 passed, 2 skipped, 5 third-party deprecation warnings. The skips are pre-existing environment-dependent checks.
+- macOS: 48 tests passed, zero failures, with warnings treated as errors and complete strict-concurrency checking.
+- App Store preflight: passed on the final code, including the Release build, property-list checks, strict signature verification, app/helper sandbox entitlements and helper hardened runtime. This is not a guarantee of App Store review approval.
+- Advertised preview matrix: 21 of 21 packages generated and passed the schema-v2 reference-demand audit for each of three base seeds (42, 20260830, 26083031): 63 passing packages in total.
+- After the final Accounting label correction, both Accounting papers were rerendered and passed again for all three seeds: six additional passing preview packages.
+- For base seed 26083031, maximum gated distribution distance was 0.771384 (data-structures cognitive-operation distribution; its focused-bank tolerance is 1.0). Its mark-weighted demand distance improved from 0.819232, which failed, to 0.552566, below the unchanged 0.8 tolerance.
+- Minimum official-corpus extraction coverage across the advertised matrix: 0.8.
+- Recognising `Advise` raised official Accounting Paper 1 extraction coverage from 0.934211 to 0.973684 without relaxing any tolerance.
+- Repository hygiene: 436 tracked files, with no forbidden or unclassified paths. Graphify's code map was refreshed; its existing warning about 37 non-code resources yielding no AST nodes remains visible.
 - The corpus profile freshness check passed and retained no official question prose or corpus paths.
+- A read-only follow-up review confirmed target equality for 468 specialist items across eight routes and three seeds, explicit rejection of missing checks, complete candidate inputs, answer-key exclusion and reconciliation wiring. It identified no further concrete blocker in that bounded review.
+- A second focused review confirmed supported-decision classification for `Advise`, `Recommend` and `Justify`, including consistency at 2, 8 and 25 marks. Four regression cases failed before the correction and passed afterwards.
+- Focused live Ollama `gemma4:12b` checks passed the company-statement and both partnership calculation contracts, with no reported issues. Reviewed demand/steps/minutes: company high/8/21; retirement standard/5/9; appropriation standard/8/12.
+- Full live AQA Accounting Paper 1, seed 26083031, passed generation and release validation with 21 of 21 independently solved, content-reviewed and difficulty-reviewed parts. The first attempt stopped safely at question 17 because of the `Advise` classification bug; the corrected run resumed the 20 accepted parts and completed in 314.76 seconds. This is one live paper, not a full live matrix.
+- The exported assessment was reconstructed from its saved blueprint and revalidated under the final checks. After the label correction, the same accepted blueprint was rendered again through the app's normal finalisation, assessment validation, PDF validation and manifest creation. Its 36-page question paper and 26-page scheme passed with zero detected text overlaps. This replay reused the accepted AI content; it was not another AI generation run.
+- Manually inspected the generated company source page beside the official AQA 2025 Paper 1 page 12, and the revised data-structures comparison page. Both changed generated pages fit without clipping. The accounting page still differs from the official table placement and spacing; pixel-identical layout is not claimed.
+- Manually inspected the live question 17 source, answer page and indicative scheme. Corrected the misplaced AO labels, then inspected the final rendered scheme again. A focused read-only review also verified all three affected table builders and seven prefix-handling cases.
+
+### Reproduction and local evidence
+
+Run the full backend suite with `.venv/bin/pytest -q`. Run strict app tests and
+distribution preflight from `macOS/` with `make test AGENT_NAME=codex-difficulty`
+and `make preflight-app-store AGENT_NAME=codex-difficulty`.
+
+For each of the three seeds, run `tools/live_generation_matrix.py --dry-run`
+with `PYTHONPATH=.`, the project virtual environment, an output directory and
+the corresponding `--seed`. The retained local reports are under
+`tmp/pdfs/difficulty-v13-preview-26083031/`,
+`tmp/pdfs/difficulty-v13-preview-42/`, and
+`tmp/pdfs/difficulty-v13-preview-20260830/`. These generated artifacts are
+deliberately excluded from Git.
+
+The completed live run and its events are retained under
+`tmp/pdfs/difficulty-v8-accounting-p1-26083031/`. The final renderer replay,
+including both PDFs, the assessment record, package manifest and inspected
+scheme image, is under `tmp/pdfs/difficulty-v14-live-final/`.
+Fresh assessment-revalidation evidence is in
+`tmp/difficulty-v13-live-revalidation.json`; final replay evidence is in
+`tmp/difficulty-v14-live-replay.json`. The preserved first-attempt failure is
+`tmp/difficulty-v13-first-live-result.json`, with its corresponding events file.
+
+Final verification logs: `tmp/difficulty-v14-final-pytest.log`,
+`tmp/difficulty-v13-macos-test.log`, `tmp/difficulty-v14-app-store.log`, and
+`tmp/difficulty-v13-profile-freshness.log`. The final Accounting-only preview
+reports are under `tmp/pdfs/difficulty-v14-accounting-preview-<seed>/`.
 
 ## Interpretation
 
 The result supports a claim that generated items and forms are shaped to the observable demand of relevant official papers. It does not establish psychometric equivalence. That remains dependent on independent examiner review, student response data and marker agreement under the empirical-calibration policy.
+
+The same chosen model can perform authorship, content review and difficulty
+review in separate contexts. This reduces shared prompt contamination but does
+not make their judgements statistically independent. Reference profiles are
+aggregate heuristics with explicitly reported extraction coverage, not measured
+item-response parameters. The 63-package preview matrix verifies every supported
+route and its structural demand envelope; it does not constitute 63 live AI runs
+or examiner approval of every generated question.

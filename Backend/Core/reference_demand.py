@@ -180,6 +180,7 @@ def build_item_demand_target(
         maximum_steps = max(maximum_steps, min(12, marks))
 
     requires_judgement = objectives.get("AO4", 0) > 0 or command in {
+        "advise",
         "assess",
         "discuss",
         "evaluate",
@@ -187,6 +188,7 @@ def build_item_demand_target(
         "recommend",
     }
     requires_analysis = objectives.get("AO3", 0) > 0 or command in {
+        "advise",
         "analyse",
         "analyze",
         "assess",
@@ -194,7 +196,9 @@ def build_item_demand_target(
         "evaluate",
         "examine",
         "explain",
+        "justify",
         "prove",
+        "recommend",
         "show",
         "verify",
     }
@@ -397,7 +401,9 @@ def assessment_objectives_for_item(raw: dict[str, Any]) -> dict[str, int]:
     marking = raw.get("marking")
     if not isinstance(marking, dict):
         return {}
-    names = list(dict.fromkeys(re.findall(r"AO[1-4]", str(marking.get("ao", "")).upper())))
+    names = list(
+        dict.fromkeys(re.findall(r"AO[1-4]", str(marking.get("ao", "")).upper()))
+    )
     if not names:
         return {}
     objectives = dict.fromkeys(names, 1)
@@ -447,7 +453,10 @@ def _response_mode(*, marks: int, command: str, kind: str, calculation: bool) ->
         return "multi-stage-calculation" if marks >= 4 else "calculation"
     if command in {"state", "identify", "give", "name", "define", "select"}:
         return "recall"
-    if command in {"assess", "discuss", "evaluate", "recommend"} or marks >= 12:
+    if (
+        command in {"advise", "assess", "discuss", "evaluate", "justify", "recommend"}
+        or marks >= 12
+    ):
         return "extended-evaluation"
     if command in {"analyse", "analyze", "examine", "explain"}:
         return "structured-reasoning"
@@ -471,6 +480,7 @@ def _cognitive_operations(
     elif command in {"describe", "outline"}:
         operations.append("describe")
     elif command in {
+        "advise",
         "analyse",
         "analyze",
         "assess",
@@ -478,6 +488,8 @@ def _cognitive_operations(
         "discuss",
         "evaluate",
         "examine",
+        "justify",
+        "recommend",
     }:
         operations.append("analyse")
     else:
@@ -518,7 +530,7 @@ def _primary_cognitive_operation(*, command: str, calculation: bool) -> str:
         "write",
     }:
         return "transform"
-    if command in {"assess", "discuss", "evaluate", "justify", "recommend"}:
+    if command in {"advise", "assess", "discuss", "evaluate", "justify", "recommend"}:
         return "judge"
     if command in {"analyse", "analyze", "compare", "examine"}:
         return "analyse"

@@ -4,29 +4,30 @@
     {
       "assessment_kind": "full-paper",
       "cognitive_operation_distribution": {
-        "explain": 0.042254,
-        "judge": 0.169014,
-        "retrieve": 0.56338,
-        "transform": 0.225352
+        "explain": 0.040541,
+        "judge": 0.202703,
+        "retrieve": 0.54054,
+        "transform": 0.216216
       },
       "command_word_distribution": {
-        "assess": 0.113924,
-        "calculate": 0.050633,
-        "complete": 0.025316,
-        "evaluate": 0.050633,
-        "find": 0.012658,
-        "justify": 0.012658,
-        "prepare": 0.21519,
-        "select": 0.50633,
-        "suggest": 0.012658
+        "advise": 0.036585,
+        "assess": 0.109756,
+        "calculate": 0.04878,
+        "complete": 0.02439,
+        "evaluate": 0.04878,
+        "find": 0.012195,
+        "justify": 0.012195,
+        "prepare": 0.207317,
+        "select": 0.487807,
+        "suggest": 0.012195
       },
       "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.28169,
-        "low": 0.591549,
-        "standard": 0.126761
+        "high": 0.310811,
+        "low": 0.567567,
+        "standard": 0.121622
       },
-      "extraction_coverage": 0.934211,
+      "extraction_coverage": 0.973684,
       "family_id": "aqa/accounting",
       "mark_band_distribution": {
         "extended": 0.210526,
@@ -34,9 +35,9 @@
         "short": 0.539474
       },
       "mark_weighted_demand_distribution": {
-        "high": 0.716146,
-        "low": 0.145833,
-        "standard": 0.138021
+        "high": 0.762528,
+        "low": 0.122004,
+        "standard": 0.115468
       },
       "metric_tolerances": {
         "cognitive_operation_distribution": 0.8,
@@ -47,11 +48,11 @@
       },
       "paper_id": "1",
       "response_mode_distribution": {
-        "calculation": 0.014085,
-        "extended-evaluation": 0.169014,
-        "multi-stage-calculation": 0.211268,
-        "selected-response": 0.563379,
-        "structured-reasoning": 0.042254
+        "calculation": 0.013514,
+        "extended-evaluation": 0.202703,
+        "multi-stage-calculation": 0.202703,
+        "selected-response": 0.540539,
+        "structured-reasoning": 0.040541
       },
       "source_document_count": 4,
       "source_fingerprint": "ef955a60e09169541456c0274a03d3fe48204f507b13f96cba0f79c071732bf5"
@@ -172,14 +173,15 @@
         "transform": 0.230769
       },
       "command_word_distribution": {
-        "analyse": 0.333335,
-        "calculate": 0.208333,
-        "complete": 0.020833,
-        "estimate": 0.020833,
-        "evaluate": 0.145833,
-        "explain": 0.166667,
-        "find": 0.020833,
-        "justify": 0.083333
+        "advise": 0.020408,
+        "analyse": 0.326531,
+        "calculate": 0.204082,
+        "complete": 0.020408,
+        "estimate": 0.020408,
+        "evaluate": 0.142857,
+        "explain": 0.163265,
+        "find": 0.020408,
+        "justify": 0.081633
       },
       "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
@@ -219,20 +221,21 @@
     {
       "assessment_kind": "full-paper",
       "cognitive_operation_distribution": {
-        "analyse": 0.363636,
-        "judge": 0.636364
+        "analyse": 0.347826,
+        "judge": 0.652174
       },
       "command_word_distribution": {
-        "analyse": 0.333333,
-        "evaluate": 0.458333,
-        "justify": 0.166667,
-        "recommend": 0.041667
+        "advise": 0.04,
+        "analyse": 0.32,
+        "evaluate": 0.44,
+        "justify": 0.16,
+        "recommend": 0.04
       },
       "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
         "high": 1.0
       },
-      "extraction_coverage": 0.916667,
+      "extraction_coverage": 0.958333,
       "family_id": "aqa/business",
       "mark_band_distribution": {
         "extended": 1.0

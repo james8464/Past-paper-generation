@@ -143,3 +143,48 @@
 - [x] Run available live-model smoke calibration without converting unavailable external services into a false pass.
 - [x] Run strict macOS build, App Store preflight, inventory validation, and repository hygiene checks.
 - [x] Record exact results and limitations, update Graphify, verify a clean tree, and commit all remaining evidence.
+
+### Task 8: Live-validation hardening
+
+The live accounting run and final matrix audit exposed issues beyond the initial
+implementation. These are part of this delivery, not deferred quality work.
+
+- [x] Require locked numerical contracts to pass independent content and difficulty review.
+- [x] Make accounting schemes solver-complete, including exact finals and intermediate working.
+- [x] Recompute six closed accounting contracts independently from their source data; remove draft-answer leakage from model solver prompts.
+- [x] Correct implicit depreciation rounding, declare whole-pound company rounding, and conserve partnership allocations exactly across seeds.
+- [x] Scale calculation reasoning ceilings with tariff and required operations; clarify minutes and operation tokens in reviewer prompts.
+- [x] Resume complete verified guidance without applying unrelated AI-authoring entry caps.
+- [x] Strictly revalidate saved difficulty evidence at release and on shared-generator resume.
+- [x] Add a sustained four-mark data-structures comparison within the existing 30-mark bank.
+- [x] Make the matrix qualification tool fail on a missing or failed reference-demand audit, even when preview rendering succeeds.
+- [x] Run focused live company/partnership reviews and visually check changed question pages.
+- [x] Complete the fresh full live accounting paper and record its actual outcome.
+- [x] Record final multi-seed matrix, backend/macOS/App Store results and commit the updated evidence.
+
+### Task 9: Independent review corrections
+
+- [x] Reject raw model responses that omit any required difficulty check or completion-time estimate.
+- [x] Keep generation and exported-package targets identical across all specialist routes, including legacy AO labels, inherited styles and empty context.
+- [x] Classify the `mcq` command as selected-response retrieval instead of requiring an explanation.
+- [x] Supply candidate-visible options, chart values, table headers and diagram structure to specialist solvers without leaking hidden classification labels or keyed answers.
+- [x] Reconcile specialist canonical answers before difficulty review, including explicit keyed-option agreement.
+- [x] Accept combined legacy objective labels as their individual declared objectives without losing release validation.
+- [x] Obtain a bounded follow-up review and rerun regression tests and all 21 advertised routes across three seeds.
+
+### Task 10: Supported-decision command calibration
+
+The full live run accepted 20 parts, then rejected question 17 three times because
+`Advise` incorrectly fell through to an `explain` requirement. AQA defines this
+command as recommending an appropriate choice or course of action.
+
+- [x] Reproduce the missing command recognition and unsupported explanation requirement with four failing regression cases.
+- [x] Recognise `Advise` in corpus extraction and align advice, recommendation and justification with analysis and judgement in item targets and form audits.
+- [x] Obtain a focused read-only review of the correction.
+- [x] Rebuild the reference profiles, resume the saved live paper and rerun final qualification without weakening any acceptance gate.
+
+### Task 11: Visual review correction
+
+- [x] Reproduce incorrect positional assessment-objective labels in Accounting indicative-content tables.
+- [x] Preserve explicit objective labels and show an em dash for unassigned points in all three affected table builders.
+- [x] Rerender the accepted live blueprint through normal package finalisation, inspect the corrected PDF, obtain a focused review and run regression tests and three-seed Accounting previews.

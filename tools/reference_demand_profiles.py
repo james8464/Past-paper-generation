@@ -26,6 +26,7 @@ from Backend.Core.reference_demand import (  # noqa: E402
 CORPUS_ROOT = REPO_ROOT / "Reference Corpus" / "a-level"
 
 COMMAND_WORDS = (
+    "advise",
     "analyse",
     "analyze",
     "assess",
@@ -337,7 +338,7 @@ def _reference_response_mode(marks: int, command: str) -> str:
     if command in {"define", "give", "identify", "name", "state"}:
         return "recall"
     if (
-        command in {"assess", "discuss", "evaluate", "justify", "recommend"}
+        command in {"advise", "assess", "discuss", "evaluate", "justify", "recommend"}
         or marks >= 12
     ):
         return "extended-evaluation"
@@ -368,7 +369,7 @@ def _reference_operation(command: str) -> str:
         "write",
     }:
         return "transform"
-    if command in {"assess", "discuss", "evaluate", "justify", "recommend"}:
+    if command in {"advise", "assess", "discuss", "evaluate", "justify", "recommend"}:
         return "judge"
     if command in {"analyse", "compare", "examine"}:
         return "analyse"

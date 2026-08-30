@@ -115,8 +115,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/render_pdf.py": {
-    "mtime": 1788121346.6543674,
-    "ast_hash": "2827683ddd8598be736b433b61a78b82",
+    "mtime": 1788126218.088652,
+    "ast_hash": "640493a898f2132be535795dc2ce92f7",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/syllabus.py": {
@@ -140,8 +140,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/tests/test_aqa_accounting.py": {
-    "mtime": 1788117733.6245282,
-    "ast_hash": "2c0be29632debad17bb4a5d79464903e",
+    "mtime": 1788126218.0892522,
+    "ast_hash": "5fb3190525bd8e8e4ce10244e853fcf7",
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/__init__.py": {
@@ -1175,8 +1175,8 @@
     "semantic_hash": ""
   },
   "docs/ASSESSMENT_QUALITY.md": {
-    "mtime": 1788123114.4014933,
-    "ast_hash": "3a1dc3c71c45b436d87d888e92063951",
+    "mtime": 1788124318.8339336,
+    "ast_hash": "fd98bc2e1d01e5451719b1e768f44541",
     "semantic_hash": ""
   },
   "docs/HIG_COMPLIANCE.md": {
@@ -1885,8 +1885,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/reference_demand.py": {
-    "mtime": 1788123571.2155576,
-    "ast_hash": "f5d3307df1c9e0964298cf20c76745e8",
+    "mtime": 1788125477.92116,
+    "ast_hash": "0369c0d230048bdda2e5ce1c729458d3",
     "semantic_hash": ""
   },
   "Resources/reference-demand-profile.schema.json": {
@@ -1895,18 +1895,18 @@
     "semantic_hash": ""
   },
   "Resources/reference-demand-profiles.json": {
-    "mtime": 1788110709.1465337,
-    "ast_hash": "72676679cdda2f047774df4b2a95f1be",
+    "mtime": 1788125542.248937,
+    "ast_hash": "767dec310ed14d5cb0447bb05ae29fff",
     "semantic_hash": ""
   },
   "tests/test_reference_demand.py": {
-    "mtime": 1788123521.1196845,
-    "ast_hash": "97ae18b8a35e8e2e4a63f6ac66aa01d9",
+    "mtime": 1788125477.921159,
+    "ast_hash": "d566db1224eb387f5869cd2384465e59",
     "semantic_hash": ""
   },
   "tools/reference_demand_profiles.py": {
-    "mtime": 1788111006.7225575,
-    "ast_hash": "7c20d6b50b66a153398d641574f49bb9",
+    "mtime": 1788125477.814125,
+    "ast_hash": "1a7cd00fd02fb00f8e807995e93ed093",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-29-reference-demand-calibration.md": {
@@ -1940,13 +1940,13 @@
     "semantic_hash": ""
   },
   "docs/quality/difficulty-calibration-v2-report.md": {
-    "mtime": 1788123221.2541268,
-    "ast_hash": "2cf3d73ce2a74f4826d10a4b16084710",
+    "mtime": 1788126322.8276045,
+    "ast_hash": "4485e4a6d0b6ecc8b99dc7f11535135a",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-30-difficulty-calibration-v2.md": {
-    "mtime": 1788123114.40231,
-    "ast_hash": "35f1ebaf24d37e8aeb67ede81122040e",
+    "mtime": 1788126322.8279805,
+    "ast_hash": "c5e85d4c3b1af92fd5558704bf415c1b",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-30-difficulty-calibration-v2-design.md": {

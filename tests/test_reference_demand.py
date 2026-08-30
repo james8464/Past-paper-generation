@@ -116,6 +116,50 @@ def test_item_target_turns_high_demand_into_observable_requirements() -> None:
     assert target.reference_profile_fingerprint == "a" * 64
 
 
+@pytest.mark.parametrize("command", ["Advise", "Recommend", "Justify"])
+def test_supported_decisions_require_analysis_and_judgement(command: str) -> None:
+    reference_demand = module()
+    profile = reference_demand.ReferenceDemandProfile.model_validate(profile_payload())
+    item = {
+        "id": "decision",
+        "marks": 8,
+        "kind": "short_answer",
+        "command_word": command,
+        "context": ["An investor compares risk, returns and cash needs."],
+    }
+
+    target = reference_demand.build_item_demand_target(item, profile)
+
+    assert target.requires_judgement is True
+    assert target.requires_analysis_chain is True
+    assert target.response_mode == "extended-evaluation"
+    assert set(target.required_cognitive_operations) == {
+        "analyse",
+        "contextualise",
+        "integrate",
+        "judge",
+    }
+    report = reference_demand.audit_form_demand([item], profile)
+    assert report["observed"]["cognitive_operation_distribution"] == {"judge": 1.0}
+
+
+def test_reference_extraction_recognises_advice_as_a_supported_decision() -> None:
+    items = tool_module().extract_reference_items(
+        "17 Advise the investor whether to retain the shares.\n[25 marks]",
+        board="aqa",
+    )
+
+    assert items == [
+        {
+            "marks": 25,
+            "command_word": "advise",
+            "demand_band": "high",
+            "response_mode": "extended-evaluation",
+            "cognitive_operation": "judge",
+        }
+    ]
+
+
 def test_item_target_distinguishes_multistage_calculation_from_recall() -> None:
     reference_demand = module()
     profile = reference_demand.ReferenceDemandProfile.model_validate(profile_payload())
@@ -592,11 +636,15 @@ def test_live_form_audit_rechecks_saved_review_against_target(changed) -> None:
         independent_solution_steps=2,
     ).model_dump(mode="json")
     item["difficulty_evidence"] = evidence
-    good = reference_demand.audit_form_demand([item], profile, require_item_evidence=True)
+    good = reference_demand.audit_form_demand(
+        [item], profile, require_item_evidence=True
+    )
     assert "item_difficulty_review" not in good["failed_checks"]
 
     evidence.update(changed)
-    rejected = reference_demand.audit_form_demand([item], profile, require_item_evidence=True)
+    rejected = reference_demand.audit_form_demand(
+        [item], profile, require_item_evidence=True
+    )
     assert "item_difficulty_review" in rejected["failed_checks"]
 
 
@@ -604,8 +652,14 @@ def test_live_form_audit_does_not_default_missing_checks_to_approval() -> None:
     reference_demand = module()
     profile = reference_demand.ReferenceDemandProfile.model_validate(profile_payload())
     report = reference_demand.audit_form_demand(
-        [{"id": "q1", "marks": 4, "command_word": "Explain",
-          "difficulty_evidence": {"approved": True}}],
+        [
+            {
+                "id": "q1",
+                "marks": 4,
+                "command_word": "Explain",
+                "difficulty_evidence": {"approved": True},
+            }
+        ],
         profile,
         require_item_evidence=True,
     )

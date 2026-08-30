@@ -7,6 +7,7 @@ import subprocess
 from pathlib import Path
 
 import pymupdf as fitz
+import pytest
 from aqaaccountgen.case_data import (
     CostingCase,
     IncomeStatementCase,
@@ -18,8 +19,9 @@ from aqaaccountgen.cli import generate_package
 from aqaaccountgen.configs import RULES
 from aqaaccountgen.generator import build_paper
 from aqaaccountgen.syllabus import load_syllabus
-from Backend.Core.independent_solver import CanonicalSolution, reconcile_solution
 from pypdf import PdfReader
+
+from Backend.Core.independent_solver import CanonicalSolution, reconcile_solution
 
 ROOT = Path(__file__).resolve().parents[1]
 SYLLABUS = load_syllabus(ROOT / "data" / "syllabus.json")
@@ -27,6 +29,60 @@ EXPECTED = {
     "paper_1": [1] * 10 + [6, 7, 5, 2, 14, 6, 6, 8, 6, 25, 25],
     "paper_2": [1] * 10 + [3, 6, 3, 8, 4, 8, 2, 6, 8, 1, 5, 6, 25, 25],
 }
+
+
+@pytest.mark.parametrize(
+    "page_builder",
+    [
+        "_levels_with_indicative_scheme_page",
+        "_indicative_content_page",
+        "_extended_indicative_content_page",
+    ],
+)
+def test_indicative_rows_preserve_explicit_objectives_without_inventing_labels(
+    page_builder: str,
+) -> None:
+    from aqaaccountgen import render_pdf
+    from reportlab.platypus import Table
+
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 123)
+    question = paper.sections[-1].options[0].questions[-1].model_copy(
+        update={
+            "mark_scheme": [
+                "AO1: Explain the meaning of dividend yield.",
+                "AO4: Justify the recommendation against the investor's needs.",
+                "AO2/AO3: Apply and interpret the supplied figures.",
+                "AO2: Use the company's financial evidence.",
+                "Consider another valid approach.",
+            ]
+        }
+    )
+    flowables = getattr(render_pdf, page_builder)(question, "Question 17")
+    expected = {
+        "AO1: Explain the meaning of dividend yield.": "AO1",
+        "AO4: Justify the recommendation against the investor's needs.": "AO4",
+        "AO2/AO3: Apply and interpret the supplied figures.": "AO2/AO3",
+        "AO2: Use the company's financial evidence.": "AO2",
+        "Consider another valid approach.": "—",
+    }
+    checked = set()
+    for table in (item for item in flowables if isinstance(item, Table)):
+        for row in table._cellvalues[1:]:
+            text = (
+                row[0].getPlainText()
+                if hasattr(row[0], "getPlainText")
+                else str(row[0])
+            )
+            if text not in expected:
+                continue
+            label = (
+                row[1].getPlainText()
+                if hasattr(row[1], "getPlainText")
+                else str(row[1])
+            )
+            assert label == expected[text]
+            checked.add(text)
+    assert checked == set(expected)
 
 
 def page_count(path: Path) -> int:

@@ -964,6 +964,17 @@ def _levels_scheme_page(
     ]
 
 
+def _indicative_objective(point: str) -> str:
+    """Preserve declared objectives; row position is not assessment evidence."""
+    prefix, separator, _ = point.partition(":")
+    objectives = [value.strip().upper() for value in prefix.split("/")]
+    if separator and all(
+        value in {"AO1", "AO2", "AO3", "AO4"} for value in objectives
+    ):
+        return "/".join(objectives)
+    return "—"
+
+
 def _levels_with_indicative_scheme_page(
     question: GeneratedQuestion,
     context: str,
@@ -998,7 +1009,10 @@ def _levels_with_indicative_scheme_page(
         Paragraph("Indicative content", STYLES["heading"]),
         _scheme_grid(
             ["Possible content", "AO"],
-            [[point, "AO2/AO3"] for point in question.mark_scheme[:5]],
+            [
+                [point, _indicative_objective(point)]
+                for point in question.mark_scheme[:5]
+            ],
             [137 * mm, 30 * mm],
         ),
     ]
@@ -1009,7 +1023,7 @@ def _indicative_content_page(
     title: str,
 ) -> list[Flowable]:
     rows = [
-        [Paragraph(point, STYLES["scheme_small"]), "AO2/AO3"]
+        [Paragraph(point, STYLES["scheme_small"]), _indicative_objective(point)]
         for point in question.mark_scheme
     ]
     return [
@@ -1042,15 +1056,15 @@ def _extended_indicative_content_page(
         *[
             point
             for point in question.mark_scheme
-            if point.startswith(("AO1:", "AO2:", "AO3:"))
+            if _indicative_objective(point) != "—"
         ][:7],
     ]
     rows = [
         [
             Paragraph(point, STYLES["scheme_small"]),
-            "AO2/AO3" if index < max(1, len(points) - 2) else "AO4",
+            _indicative_objective(point),
         ]
-        for index, point in enumerate(points)
+        for point in points
     ]
     return [
         Paragraph(f"{title} continued", STYLES["kicker"]),
