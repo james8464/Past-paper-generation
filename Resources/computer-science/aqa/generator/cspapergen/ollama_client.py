@@ -21,6 +21,7 @@ from Backend.Core.model_review import (
     require_difficulty_review,
     require_independent_review,
 )
+from Backend.Core.providers import parse_json_object
 from Backend.Core.reference_demand import (
     assessment_objectives_for_item,
     build_item_demand_target,
@@ -68,9 +69,7 @@ class OllamaClient:
                     if len(response_payload) > 2_097_152:
                         raise ValueError("Ollama response exceeded the 2 MB limit")
                     raw = json.loads(response_payload.decode("utf-8"))
-                parsed = json.loads(str(raw.get("response", "{}")))
-                if not isinstance(parsed, dict):
-                    raise ValueError("Ollama returned JSON, but not an object")
+                parsed = parse_json_object(str(raw.get("response", "{}")))
                 return parsed
             except (
                 urllib.error.URLError,
@@ -267,7 +266,8 @@ def review_blueprint_difficulty(
             require_solution_matches_scheme(
                 solution,
                 {"marks": part.marks, "mark_scheme": [*part.marking.points, *part.marking.levels],
-                 "alternatives": part.marking.accept},
+                 "alternatives": part.marking.accept,
+                 "closed_answers": part.marking.closed_answers},
                 expected_choice=(next((o.text for o in part.options if o.label == part.correct_option), "")
                                  if part.options else None),
             )
@@ -395,6 +395,7 @@ def _part_solver_item(question: Question, part: QuestionPart) -> dict[str, objec
         "stimulus": candidate_stimulus_data(question.stimulus),
         "kind": "multiple_choice" if part.options else question.style_id,
         "choices": [option.text for option in part.options],
+        "response_slots": ["choice"] if part.options else part.response_slots,
         "authoring_context": {"expected_answer_form": (
             "numeric" if part.prompt.split(maxsplit=1)[0].casefold() in {"calculate", "determine"}
             else "constructed_response"

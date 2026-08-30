@@ -1577,12 +1577,16 @@ def candidate_stimulus_data(stimulus: Stimulus | None) -> dict[str, object]:
         return {}
     data = stimulus.model_dump(mode="json")
     if stimulus.kind == "classification":
+        if not stimulus.lines:
+            raise ValueError("classification figure lacks candidate-visible maintenance examples")
         first, second, *_ = stimulus.diagram.split("|")
         data.pop("diagram", None)
         data["links"] = [
-            ["Software", "1"], ["Software", "System software"],
-            ["1", first], ["1", second],
-            ["System software", "2"], ["System software", "Translators"],
+            {"parent": parent, "child": child} for parent, child in [
+                ("Software", "1"), ("Software", "System software"),
+                ("1", first), ("1", second),
+                ("System software", "2"), ("System software", "Translators"),
+            ]
         ]
     elif stimulus.kind == "network":
         data.pop("diagram", None)
@@ -1621,7 +1625,7 @@ def _render_stimulus(pdf: canvas.Canvas, stimulus: Stimulus, state: _QuestionRen
     elif stimulus.kind == "network":
         state.y = _draw_network_diagram(pdf, stimulus.diagram, 118, state.y)
     elif stimulus.kind == "classification":
-        state.y = _draw_classification_diagram(pdf, stimulus.diagram, 118, state.y)
+        state.y = _draw_classification_diagram(pdf, stimulus, 118, state.y)
     elif stimulus.kind == "optical":
         state.y = _draw_optical_diagram(pdf, stimulus.diagram, 118, state.y)
     elif stimulus.kind == "fsm":
@@ -1821,46 +1825,43 @@ def _draw_network_diagram(pdf: canvas.Canvas, diagram: str, x: float, y: float) 
 
 def _draw_classification_diagram(
     pdf: canvas.Canvas,
-    diagram: str,
+    stimulus: Stimulus,
     x: float,
     y: float,
 ) -> float:
-    application_one, application_two, _utility, _translator = diagram.split("|")
+    data = candidate_stimulus_data(stimulus)
+    application_one, application_two = data["links"][2]["child"], data["links"][3]["child"]
     boxes = {
         "Software": (x, y - 104, 76, 34),
-        "Application software": (x + 110, y - 55, 112, 34),
+        "1": (x + 110, y - 55, 112, 34),
         "System software": (x + 110, y - 155, 112, 34),
         application_one: (x + 258, y - 26, 112, 34),
         application_two: (x + 258, y - 70, 112, 34),
-        "Utility software": (x + 258, y - 126, 112, 34),
+        "2": (x + 258, y - 126, 112, 34),
         "Translators": (x + 258, y - 170, 112, 34),
     }
-    links = [
-        ("Software", "Application software"),
-        ("Software", "System software"),
-        ("Application software", application_one),
-        ("Application software", application_two),
-        ("System software", "Utility software"),
-        ("System software", "Translators"),
-    ]
-    for start, end in links:
+    links = data["links"]
+    for link in links:
+        start, end = link["parent"], link["child"]
         sx, sy, sw, sh = boxes[start]
         ex, ey, _ew, eh = boxes[end]
         pdf.line(sx + sw, sy + sh / 2, ex, ey + eh / 2)
-    display_labels = {
-        "Application software": "1",
-        "Utility software": "2",
-    }
     for label, (bx, by, width, height) in boxes.items():
         pdf.rect(bx, by, width, height, stroke=1, fill=0)
-        pdf.setFont(FONT_BOLD if label in {"Software", "Application software", "System software"} else FONT, 8)
-        for line_index, line in enumerate(_wrap(display_labels.get(label, label), 19)):
+        pdf.setFont(FONT_BOLD if label in {"Software", "1", "System software"} else FONT, 8)
+        for line_index, line in enumerate(_wrap(label, 19)):
             pdf.drawCentredString(
                 bx + width / 2,
                 by + height / 2 + 3 - line_index * 10,
                 line,
             )
-    return y - 192
+    note_y = y - 190
+    pdf.setFont(FONT, 8)
+    for note in data["lines"]:
+        for line in _wrap(note, 82):
+            pdf.drawString(x, note_y, line)
+            note_y -= 12
+    return note_y - 12
 
 
 def _draw_optical_diagram(

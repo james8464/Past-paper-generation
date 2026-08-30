@@ -35,6 +35,8 @@ class CanonicalSolution(BaseModel):
     evidence_ids: list[str] = Field(default_factory=list)
     numeric_results: dict[str, float] = Field(default_factory=dict)
     solver_context_fields: list[str] = Field(default_factory=list)
+    response_slots: list[str] = Field(default_factory=list)
+    answer_slots: dict[str, str] = Field(default_factory=dict)
 
 
 class ReconciliationIssue(BaseModel):
@@ -72,8 +74,30 @@ class IndependentSolver:
         context = dict(raw_item.get("authoring_context") or {})
         allowed_source_ids = {source.id for source in sources}
         solver_item = _without_answer_key(raw_item)
+        response_slots = raw_item.get("response_slots") or []
+        if (
+            not isinstance(response_slots, list)
+            or any(
+                not isinstance(slot, str) or not slot.strip() for slot in response_slots
+            )
+            or len(set(response_slots)) != len(response_slots)
+        ):
+            raise ValueError(f"{item_id} invalid closed response slot contract")
         deterministic = solve_accounting_calculation(raw_item)
         result: dict[str, Any] = deterministic or {}
+        response_instructions = (
+            " For a closed response (response_slots supplied), answer and "
+            "mark_points must EACH be a JSON object mapping EVERY supplied "
+            "slot ID to the same single final answer string, with no extra "
+            "slots or commentary. Work out the solution in steps FIRST, then "
+            "write answer, then copy those final values into mark_points. "
+            'Format example only: "answer": {"slot-id": "final value"}, '
+            '"mark_points": {"slot-id": "final value"}. Use the actual supplied '
+            "slot IDs. Do not put grading prose or nested objects in either mapping."
+            if response_slots
+            else " For multiple choice, mark_points must contain exactly one string: "
+            "the same selected option as answer. Put reasoning in steps."
+        )
         if deterministic is None and self.client is not None:
             result = dict(
                 self.client.generate_json(
@@ -83,8 +107,10 @@ class IndependentSolver:
                     "empty, evidence_ids must be an empty array. For multiple choice, "
                     "return the complete option text rather than its number or letter. "
                     "Return JSON with "
-                    "answer, steps, mark_points, evidence_ids, alternatives, "
-                    "partial_credit_boundaries and follow_through_rules.\n"
+                    "steps, answer, mark_points, evidence_ids, alternatives, "
+                    "partial_credit_boundaries and follow_through_rules."
+                    + response_instructions
+                    + "\n"
                     + json.dumps(
                         {
                             "item": solver_item,
@@ -115,18 +141,55 @@ class IndependentSolver:
                 f"{sorted(unavailable)}"
             )
 
-        answer = str(result.get("answer", "")).strip()
-        choices = raw_item.get("choices")
-        if raw_item.get("kind") == "multiple_choice" and isinstance(choices, list):
-            answer = _normalise_choice_answer(answer, choices)
-        if not answer and self.client is None:
-            correct = raw_item.get("correct_choice")
-            if (
-                isinstance(choices, list)
-                and isinstance(correct, int)
-                and 0 <= correct < len(choices)
+        answer_slots: dict[str, str] = {}
+        if response_slots:
+            for field in ("answer", "mark_points"):
+                values = result.get(field)
+                if (
+                    not isinstance(values, dict)
+                    or set(values) != set(response_slots)
+                    or any(
+                        not isinstance(value, str) or not value.strip()
+                        for value in values.values()
+                    )
+                ):
+                    raise ValueError(
+                        f"{item_id} closed response {field} must fill every slot exactly once"
+                    )
+            answer_slots = {
+                slot: result["answer"][slot].strip() for slot in response_slots
+            }
+            if any(
+                _closed_normalise(answer_slots[slot])
+                != _closed_normalise(result["mark_points"][slot])
+                for slot in response_slots
             ):
-                answer = str(choices[correct]).strip()
+                raise ValueError(
+                    f"{item_id} closed response answer and mark_points contradict"
+                )
+        answer = (
+            json.dumps(answer_slots, ensure_ascii=False)
+            if response_slots
+            else str(result.get("answer", "")).strip()
+        )
+        choices = raw_item.get("choices")
+        if (
+            raw_item.get("kind") == "multiple_choice"
+            and isinstance(choices, list)
+            and not response_slots
+        ):
+            answer = _normalise_choice_answer(answer, choices)
+            points = result.get("mark_points")
+            if (
+                answer not in choices
+                or not isinstance(points, list)
+                or len(points) != 1
+                or not isinstance(points[0], str)
+                or _normalise_choice_answer(points[0], choices) != answer
+            ):
+                raise ValueError(
+                    f"{item_id} closed response choice and mark_points must name the same single option"
+                )
         if not answer:
             raise ValueError(f"{item_id} independent solver returned no answer")
 
@@ -137,16 +200,25 @@ class IndependentSolver:
         )
         declared_observable = _string_list(context.get("observable_mark_points"))
         observable = (
-            [answer]
-            if is_single_mark_choice
-            else declared_observable or _string_list(result.get("mark_points"))
+            []
+            if response_slots
+            else (
+                [answer]
+                if is_single_mark_choice
+                else declared_observable or _string_list(result.get("mark_points"))
+            )
         )
         answer_form = str(
             context.get("expected_answer_form", "constructed_response")
         ).casefold()
-        fixed_answer = is_single_mark_choice or bool(numeric_results) or any(
-            token in answer_form
-            for token in ("calculation", "numeric", "exact", "choice", "closed")
+        fixed_answer = (
+            bool(response_slots)
+            or is_single_mark_choice
+            or bool(numeric_results)
+            or any(
+                token in answer_form
+                for token in ("calculation", "numeric", "exact", "choice", "closed")
+            )
         )
         return CanonicalSolution(
             item_id=item_id,
@@ -174,6 +246,8 @@ class IndependentSolver:
             evidence_ids=evidence_ids,
             numeric_results=numeric_results,
             solver_context_fields=sorted(solver_item),
+            response_slots=response_slots,
+            answer_slots=answer_slots,
         )
 
 
@@ -195,6 +269,7 @@ def _without_answer_key(value: Any) -> Any:
         "difficulty_evidence",
         "required_mark_scheme_terms",
         "forbidden_mark_scheme_terms",
+        "closed_answers",
     }
     if isinstance(value, dict):
         return {
@@ -213,10 +288,20 @@ def require_solution_matches_scheme(
     *,
     expected_choice: str | None = None,
 ) -> None:
-    if expected_choice is not None and _normalise(solution.answer) != _normalise(expected_choice):
-        raise ValueError(f"{solution.item_id} independent answer disagrees with the keyed option")
+    if expected_choice is not None and solution.response_slots == ["choice"]:
+        scheme = {**scheme, "closed_answers": {"choice": [expected_choice]}}
+        expected_choice = None
+    if expected_choice is not None and _closed_normalise(
+        solution.answer
+    ) != _closed_normalise(expected_choice):
+        raise ValueError(
+            f"{solution.item_id} independent answer disagrees with the keyed option"
+        )
     if expected_choice is not None:
-        scheme = {**scheme, "mark_scheme": [*scheme.get("mark_scheme", []), expected_choice]}
+        scheme = {
+            **scheme,
+            "mark_scheme": [*scheme.get("mark_scheme", []), expected_choice],
+        }
     result = reconcile_solution(solution, scheme)
     if not result.passed:
         raise ValueError(
@@ -252,7 +337,74 @@ def reconcile_solution(
     normalised_text = _normalise(text)
     issues: list[ReconciliationIssue] = []
 
-    expected_numbers = _numbers(solution.answer)
+    if raw.get("kind") == "multiple_choice":
+        choices, key = raw.get("choices"), raw.get("correct_choice")
+        if (
+            not isinstance(choices, list)
+            or type(key) is not int
+            or not 0 <= key < len(choices)
+            or _closed_normalise(solution.answer)
+            != _closed_normalise(str(choices[key]))
+        ):
+            issues.append(
+                ReconciliationIssue(
+                    field="answer",
+                    message="independent answer disagrees with the keyed option",
+                )
+            )
+    if raw.get("closed_answers") and not solution.response_slots:
+        issues.append(
+            ReconciliationIssue(
+                field="answer",
+                message="closed response is missing its required slot contract",
+            )
+        )
+    if solution.response_slots:
+        if solution.answer != json.dumps(solution.answer_slots, ensure_ascii=False):
+            issues.append(
+                ReconciliationIssue(
+                    field="answer",
+                    message="closed response answer contradicts its slot values",
+                )
+            )
+        accepted = raw.get("closed_answers")
+        if not isinstance(accepted, dict) or set(accepted) != set(
+            solution.response_slots
+        ):
+            issues.append(
+                ReconciliationIssue(
+                    field="answer",
+                    message="scheme lacks the complete closed response slot key",
+                )
+            )
+        elif set(solution.answer_slots) != set(solution.response_slots):
+            issues.append(
+                ReconciliationIssue(
+                    field="answer",
+                    message="closed response is missing required answers",
+                )
+            )
+        else:
+            for slot in solution.response_slots:
+                alternatives = accepted[slot]
+                if (
+                    not isinstance(alternatives, list)
+                    or not alternatives
+                    or any(
+                        not isinstance(value, str) or not value.strip()
+                        for value in alternatives
+                    )
+                    or _closed_normalise(solution.answer_slots[slot])
+                    not in {_closed_normalise(value) for value in alternatives}
+                ):
+                    issues.append(
+                        ReconciliationIssue(
+                            field="answer",
+                            message=f"closed response disagrees at slot {slot}",
+                        )
+                    )
+
+    expected_numbers = [] if solution.response_slots else _numbers(solution.answer)
     scheme_numbers = _numbers(text)
     if expected_numbers and solution.mark_points_exhaustive:
         if not all(
@@ -269,7 +421,8 @@ def reconcile_solution(
                 )
             )
     elif (
-        solution.answer
+        not solution.response_slots
+        and solution.answer
         and not solution.mark_points
         and content_similarity(solution.answer, text) < 0.2
     ):
@@ -353,6 +506,13 @@ def reconcile_solution(
                 )
             )
     return ReconciliationResult(passed=not issues, issues=issues)
+
+
+def _closed_normalise(value: str) -> str:
+    # No fuzzy overlap: preserve signs, decimal points, order and logical operators.
+    normalised = " ".join(value.casefold().split()).rstrip(".;")
+    normalised = re.sub(r"\s*,\s*", ",", normalised)
+    return re.sub(r"(?<=\d)\s+(?=[a-z%])", "", normalised)
 
 
 _OPERATORS = {
@@ -442,11 +602,7 @@ def _semantic_text(value: Any) -> str:
         "partial_credit_boundaries",
         "follow_through_rules",
     )
-    return "\n".join(
-        text
-        for key in fields
-        if (text := _semantic_text(value.get(key)))
-    )
+    return "\n".join(text for key in fields if (text := _semantic_text(value.get(key))))
 
 
 def _requirement_present(
@@ -472,8 +628,7 @@ def _requirement_present(
     ):
         return True
     return allow_concept_coverage and any(
-        _concept_coverage(requirement, segment) >= 0.4
-        for segment in segments
+        _concept_coverage(requirement, segment) >= 0.4 for segment in segments
     )
 
 
@@ -563,17 +718,12 @@ def _normalise_choice_answer(answer: str, choices: list[Any]) -> str:
     options = [str(choice).strip() for choice in choices]
     if not answer or not options or any(not option for option in options):
         return answer
-    normalised_answer = _normalise(answer)
-    exact = [option for option in options if _normalise(option) == normalised_answer]
+    normalised_answer = _closed_normalise(answer)
+    exact = [
+        option for option in options if _closed_normalise(option) == normalised_answer
+    ]
     if len(exact) == 1:
         return exact[0]
-    contained = [
-        option
-        for option in options
-        if _normalise(option) and _normalise(option) in normalised_answer
-    ]
-    if len(contained) == 1:
-        return contained[0]
     label = re.fullmatch(r"(?:option\s*)?([a-d])", normalised_answer)
     if label:
         index = ord(label.group(1)) - ord("a")

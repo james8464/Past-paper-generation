@@ -242,7 +242,8 @@ def test_solver_view_includes_candidate_visible_stimulus_and_hides_answers() -> 
     class Client:
         def generate_json(self, prompt):
             captured.append(prompt)
-            return {"answer": "Candidate answer", "steps": ["Use the diagram"]}
+            answer = {"1": "Application software", "2": "Utility software"}
+            return {"answer": answer, "mark_points": answer, "steps": ["Use the diagram"]}
 
     item = _part_solver_item(question, part)
     IndependentSolver(Client()).solve(item, [])

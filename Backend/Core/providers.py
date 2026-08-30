@@ -269,18 +269,27 @@ def parse_json_object(text: str) -> dict[str, object]:
         raw = re.sub(r"^```(?:json)?", "", raw, flags=re.IGNORECASE).strip()
         raw = re.sub(r"```$", "", raw).strip()
     try:
-        value = json.loads(raw)
+        value = json.loads(raw, object_pairs_hook=_unique_json_fields)
     except json.JSONDecodeError:
         start = raw.find("{")
         end = raw.rfind("}")
         if start == -1 or end == -1 or end <= start:
             raise ValueError("Model returned response with no JSON object.") from None
         try:
-            value = json.loads(raw[start : end + 1])
+            value = json.loads(raw[start : end + 1], object_pairs_hook=_unique_json_fields)
         except json.JSONDecodeError:
             raise ValueError("Model returned response that could not be parsed as JSON.") from None
     if not isinstance(value, dict):
         raise ValueError("Model returned JSON, but not an object.")
+    return value
+
+
+def _unique_json_fields(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    value: dict[str, Any] = {}
+    for key, child in pairs:
+        if key in value:
+            raise ValueError(f"Model returned duplicate JSON field: {key}")
+        value[key] = child
     return value
 
 
@@ -294,6 +303,30 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
         "maxItems": 6,
     }
     object_items = {"type": "object", "additionalProperties": True}
+    if prompt.startswith("Independently solve") and '"response_slots": [' in prompt:
+        item = json.JSONDecoder().raw_decode(prompt.split("\n", 1)[1])[0]["item"]
+        slots = item.get("response_slots") or []
+        if slots:
+            answers = {
+                "type": "object",
+                "properties": {slot: {"type": "string", "minLength": 1, "maxLength": 240} for slot in slots},
+                "required": slots,
+                "additionalProperties": False,
+            }
+            return {
+                "type": "object",
+                "properties": {
+                    "steps": {"type": "array", "items": short_text, "maxItems": 16},
+                    "answer": answers,
+                    "mark_points": answers,
+                    "evidence_ids": text_list,
+                    "alternatives": text_list,
+                    "partial_credit_boundaries": text_list,
+                    "follow_through_rules": text_list,
+                },
+                "required": ["steps", "answer", "mark_points"],
+                "additionalProperties": False,
+            }
     if "`questions` array" in prompt or "a `questions` array" in prompt:
         item_count = _prompt_item_count(prompt)
         all_mark_schemes_locked = (

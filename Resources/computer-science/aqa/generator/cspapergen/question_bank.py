@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import random
 from dataclasses import dataclass
+from itertools import pairwise
 
 from cspapergen.models import MarkingGuidance, Question, QuestionPart, Stimulus
 
@@ -186,6 +187,8 @@ def _data_structures_stack_queue_question(
         ("2", 2, "State the sequence of values removed if the same four inserted values were processed by a queue instead of a stack.", [f"The first removed value is {a};", f"FIFO order gives {a}, {b}, {c}, {d};"], "", 4),
         ("3", 2, "Explain why a stack is suitable for an undo feature in a drawing application.", ["The most recent action is stored at the top of the stack;", "LIFO removal reverses actions in the opposite order to that in which they were performed;"], "", 5),
     ])
+    parts[0].set_closed_answers({f"bottom-{i}": [str(value)] for i, value in enumerate([a, c, d], 1)})
+    parts[1].set_closed_answers({f"removed-{i}": [str(value)] for i, value in enumerate([a, b, c, d], 1)})
     return _question(style, number, "Stacks and queues", "A program applies the operations shown to an initially empty stack.", stimulus, _fit_parts(parts, total))
 
 
@@ -209,6 +212,7 @@ def _data_structures_hash_question(
         ("2", 1, "State what is meant by a collision in a hash table.", ["Two different keys produce the same initial table index;"], "", 3),
         ("3", 2, "Explain one reason why the table should not be allowed to become almost full.", ["Linear probing may need to inspect many occupied slots because clusters become longer;", "Insertion and retrieval therefore become slower and may approach a linear search;"], "", 5),
     ])
+    parts[0].set_closed_answers({f"key-{key}": [str(slot)] for key, slot in zip(keys, final_slots, strict=True)})
     return _question(style, number, "Hash tables", "A hash table stores integer keys using the rule shown.", stimulus, _fit_parts(parts, total))
 
 
@@ -227,6 +231,15 @@ def _data_structures_tree_question(
         ("2", 1, "State the in-order traversal of the completed tree.", [f"{', '.join(map(str, sorted_values))};"], "", 3),
         ("3", 2, "Explain why an unbalanced binary search tree can make searching less efficient.", ["Many nodes can lie on one long branch so each comparison removes little of the remaining search space;", "In the worst case the search visits a number of nodes proportional to the number stored, like a linear search;"], "", 5),
     ])
+    parents = [None, root, root, root - 20, root - 20, root + 20]
+    sides = ["root", "left", "right", "left", "right", "left"]
+    tree_answers = {}
+    for value, parent, side in zip(values, parents, sides, strict=True):
+        tree_answers[f"node-{value}-parent"] = [str(parent)] if parent is not None else ["none", "no parent"]
+        tree_answers[f"node-{value}-side"] = [side]
+    parts[0].set_closed_answers(tree_answers)
+    # Slot IDs refer only to supplied values, never to the answer's tree shape.
+    parts[1].set_closed_answers({f"visit-{i}": [str(value)] for i, value in enumerate(sorted_values, 1)})
     return _question(style, number, "Binary search trees", "The values shown are inserted into an initially empty binary search tree.", stimulus, _fit_parts(parts, total))
 
 
@@ -243,6 +256,8 @@ def _data_structures_graph_question(
         ("2", 2, "State one shortest route from A to F and give its number of edges.", ["A, C, F;", "The route contains 2 edges;"], "", 4),
         ("3", 2, "Explain one advantage of an adjacency list over an adjacency matrix for this graph.", ["Only existing edges and their endpoint references need to be stored;", "Because the graph is sparse, this normally uses less memory than storing a cell for every possible pair of vertices;"], "", 5),
     ])
+    parts[0].set_closed_answers({f"visit-{i}": [value] for i, value in enumerate("ABCDEF", 1)})
+    parts[1].set_closed_answers({"route-1": ["A"], "route-2": ["C"], "route-3": ["F"], "edges": ["2", "2 edges"]})
     return _question(style, number, "Graphs", "An undirected graph is represented by the adjacency list shown.", stimulus, _fit_parts(parts, total))
 
 
@@ -282,6 +297,10 @@ def _software_classification_question(
         kind="classification",
         title="Figure 1",
         diagram=examples,
+        lines=[
+            "Category 2 includes Aster Backup, which makes recovery copies of files,",
+            "and Lumen Scan, which detects and removes malware.",
+        ],
     )
     parts = _parts(
         [
@@ -290,8 +309,8 @@ def _software_classification_question(
                 2,
                 "Complete Figure 1 by naming the two missing categories of software.",
                 [
-                    "Application software identified for the user-task examples;",
-                    "Utility software identified for the maintenance examples;",
+                    "Blank 1: Application software, for the user-task examples;",
+                    "Blank 2: Utility software, for the maintenance examples;",
                 ],
                 "",
                 4,
@@ -322,6 +341,11 @@ def _software_classification_question(
             ),
         ]
     )
+    parts[0].response_slots = ["1", "2"]
+    parts[0].marking.closed_answers = {
+        "1": ["Application software", "applications"],
+        "2": ["Utility software"],
+    }
     return _question(
         style,
         number,
@@ -382,6 +406,8 @@ def _bitmap_storage_question(
             ),
         ]
     )
+    parts[0].response_slots = ["result"]
+    parts[0].marking.closed_answers = {"result": [f"{mebibytes:.2f} MiB"]}
     return _question(
         style,
         number,
@@ -592,6 +618,7 @@ def _fibonacci_recursion_question(
             ),
         ]
     )
+    parts[1].set_closed_answers({"result": ["8"]})
     return _question(
         style,
         number,
@@ -703,6 +730,10 @@ def _bitmap_question(style: QuestionStyle, number: int, total: int, rng: random.
         ("3", 2, "Explain why metadata may be stored with the image.", ["Metadata stores data about the image such as dimensions/date/location;", "It allows software to interpret, search or manage the image correctly;"], "", 4),
         ("4", 3, "A lossy compression algorithm is applied to the image. Explain one advantage and one disadvantage of using lossy compression.", ["Advantage: smaller file size / faster transmission;", "Disadvantage: some original data is permanently removed;", "Linked explanation to image quality or suitability for purpose;"], "", 6),
     ])
+    size_mib = width * height * bits / 8 / 1024**2
+    parts[0].response_slots = ["result"]
+    parts[0].marking.closed_answers = {"result": [f"{size_mib} MiB", f"{size_mib} mebibytes"]}
+    parts[0].marking.points.append(f"Final answer = {size_mib} MiB;")
     return _question(style, number, "Bitmap image data", "A digital camera stores images as bitmaps.", stimulus, _fit_parts(parts, total))
 
 
@@ -801,6 +832,9 @@ def _binary_short_question(style: QuestionStyle, number: int, total: int, rng: r
         ("1", 2, f"Add the denary numbers {first} and {second}. Give your answer as an 8-bit unsigned binary number.", ["Correct conversion or binary addition method;", "Correct 8-bit binary result;"], "", 4),
         ("2", 2, "Explain what is meant by overflow in unsigned binary arithmetic.", ["Result is too large for the available number of bits;", "Most significant/carry bit is lost or cannot be represented;"], "", 4),
     ])
+    result = f"{first + second:08b}"
+    parts[0].set_closed_answers({"8-bit-result": [result, f"{result[:4]} {result[4:]}"]})
+    parts[0].marking.points[-1] = f"Correct 8-bit binary result: {result};"
     return _question(style, number, "Unsigned binary arithmetic", "Unsigned binary is used to store integer values.", None, _fit_parts(parts, total))
 
 
@@ -859,6 +893,10 @@ def _sound_question(style: QuestionStyle, number: int, total: int, rng: random.R
         ("3", 2, "Explain what can happen if the sound is sampled below the Nyquist rate.", ["The samples can represent a false lower-frequency waveform, known as aliasing;", "The original waveform cannot then be reconstructed accurately from those samples;"], "", 4),
         ("4", 4, "Explain how increasing the sampling rate and sample resolution can affect the stored sound.", ["Increasing sampling rate captures the waveform more frequently;", "Increasing sample resolution increases the number of possible amplitude values;", "Both can improve accuracy/quality;", "Both increase file size/storage requirement;"], "", 7),
     ])
+    parts[0].response_slots = ["result"]
+    parts[0].marking.closed_answers = {"result": [f"{size_mib:.2f} MiB", f"{size_mib} MiB"]}
+    parts[1].response_slots = ["result"]
+    parts[1].marking.closed_answers = {"result": ["36 kHz", "36000 Hz", "36 000 Hz"]}
     return _question(style, number, "Digital sound", "A sound is sampled and stored digitally.", stimulus, _fit_parts(parts, total))
 
 
@@ -875,6 +913,11 @@ def _rle_question(style: QuestionStyle, number: int, total: int, rng: random.Ran
         ("3", 2, "Comment on whether RLE is effective for this row of pixels.", ["Judgement based on whether encoded data is smaller/larger;", "Explanation linked to number and length of repeated runs;"], "", 4),
         ("4", 2, "State two circumstances in which RLE would be a suitable compression method.", ["Data contains long runs of repeated values;", "The data is lossless-compression sensitive / original must be recoverable;", "Images contain large flat areas of identical colour;"], "", 5),
     ])
+    pixels = row.split(", ")
+    runs = 1 + sum(first != second for first, second in pairwise(pixels))
+    parts[1].response_slots = ["before", "after"]
+    parts[1].marking.closed_answers = {"before": [f"{len(pixels)} bytes"], "after": [f"{2 * runs} bytes"]}
+    parts[1].marking.points.extend([f"Before: {len(pixels)} bytes;", f"After: {2 * runs} bytes;"])
     return _question(style, number, "Run length encoding", "A row of bitmap pixel data is to be compressed using RLE.", stimulus, _fit_parts(parts, total))
 
 
@@ -895,6 +938,13 @@ def _floating_point_question(style: QuestionStyle, number: int, total: int, rng:
         ("5", 3, "Explain the trade-off if a fixed-length floating point format assigns more bits to the exponent and fewer bits to the mantissa.", ["1 mark: the exponent can represent a wider set of powers of two;", "1 mark: the range of magnitudes that can be represented increases;", "1 mark: fewer mantissa bits reduce precision / increase rounding error;"], "", 4),
         ("6", 1, "Name the error that occurs when a non-zero value is too close to zero to be represented.", ["1 mark: underflow;"], "", 2),
     ])
+    parts[0].set_closed_answers({"direction": [shift, f"to the {shift}"]})
+    parts[2].set_closed_answers({"normalised": ["yes", "normalised", "normalized"], "leading-mantissa-bits": [value[:2]]})
+    parts[5].set_closed_answers({"error": ["underflow"]})
+    parts[1].response_slots = ["result"]
+    parts[1].marking.closed_answers = {"result": [{
+        "010110 0011": "5.5", "101010 0010": "-2.75", "011001 1101": "0.09765625",
+    }[value]]}
     return _question(style, number, "Floating point representation", "A scientific sensor stores readings using the fixed-length floating point format shown.", stimulus, _fit_parts(parts, total))
 
 
@@ -906,6 +956,19 @@ def _logic_question(style: QuestionStyle, number: int, total: int, rng: random.R
         ("2", 3, "Complete a truth table for the expression.", ["All input combinations attempted;", "Intermediate output correct;", "Final output correct;"], "", 7),
         ("3", 3, "Explain one benefit of using Boolean algebra to simplify a logic circuit.", ["Simplification can reduce number of gates;", "This can reduce cost/power/latency;", "Answer linked to maintaining same logical output;"], "", 5),
     ])
+    answers = {}
+    for inputs in range(8):
+        a, b, c = map(int, f"{inputs:03b}")
+        result = {
+            "(A · B) + C": (a & b) | c,
+            "A · (B + C̅)": a & (b | (1 - c)),
+            "(A ⊕ B) · C": (a ^ b) & c,
+            "(A ⊼ B) + C": (1 - (a & b)) | c,
+            "(A ⊽ B) ⊕ C": (1 - (a | b)) ^ c,
+        }[expr]
+        answers[f"{inputs:03b}"] = [str(result)]
+    parts[1].set_closed_answers(answers)
+    parts[1].marking.points.extend(f"ABC={inputs}: output {values[0]};" for inputs, values in answers.items())
     return _question(style, number, "Logic gates", f"A logic circuit implements the expression {expr}.", stimulus, _fit_parts(parts, total))
 
 
@@ -946,6 +1009,16 @@ def _truth_table_question(style: QuestionStyle, number: int, total: int, rng: ra
             "Award 1 mark for one valid reason, such as comparing expected and actual outputs systematically or finding an incorrect circuit output;",
         ], "", 5),
     ])
+    parts[0].response_slots = [f"row-{index}" for index in range(1, len(rows) + 1)]
+    parts[0].marking.closed_answers = {
+        slot: [output] for slot, output in zip(parts[0].response_slots, outputs, strict=True)
+    }
+    parts[1].set_closed_answers({"A,B,C": [
+        representation for row in valid_rows for representation in (
+            ",".join(row), "[" + ",".join(row) + "]",
+            ",".join(f"{name}={value}" for name, value in zip("ABC", row, strict=True)),
+        )
+    ]})
     return _question(style, number, "Truth tables", "A logic circuit has three inputs, A, B and C, and one output, X.", stimulus, _fit_parts(parts, total))
 
 
@@ -1074,6 +1147,7 @@ def _erd_question(style: QuestionStyle, number: int, total: int, rng: random.Ran
         ("3", 2, "State two fields that would be suitable foreign keys.", ["CustomerID in ORDER;", "OrderID in ORDER_ITEM;", "ProductID in ORDER_ITEM;"], "", 3),
         ("4", 2, "Explain one benefit of using a relational database for this data.", ["Relationships can be enforced using keys;", "Queries can combine related data reliably;", "Redundancy can be reduced;"], "", 4),
     ])
+    parts[0].set_closed_answers({"cardinality": ["one-to-many", "one to many", "1:M", "1:N"]})
     return _question(style, number, "Entity relationship modelling", "An online shop stores orders in a relational database.", stimulus, _fit_parts(parts, total))
 
 
@@ -1099,6 +1173,7 @@ def _functional_question(style: QuestionStyle, number: int, total: int, rng: ran
         ("3", 2, "Explain why immutability can make functional programs easier to reason about.", ["Values are not changed after creation;", "This reduces side effects/unexpected state changes;"], "", 4),
         ("4", 2, "Describe one use of recursion in functional programming.", ["A function calls itself;", "It processes a list/problem by reducing it to a base case;"], "", 4),
     ])
+    parts[0].set_closed_answers({"output-1": ["16"], "output-2": ["36"], "output-3": ["25"]})
     return _question(style, number, "Functional programming", "A program uses higher-order functions.", stimulus, _fit_parts(parts, total))
 
 
@@ -1110,6 +1185,7 @@ def _recursion_question(style: QuestionStyle, number: int, total: int, rng: rand
         ("2", 2, "State the result of evaluating sum [3, 5, 7]. Show the recursive accumulation.", ["The recursive cases produce 3 + 5 + 7 + sum [];", "The base case contributes 0, giving a final result of 15;"], "", 4),
         ("3", 4, "Explain how head and tail are used when processing a list recursively.", ["Head is the first item in a list;", "Tail is the remaining list;", "Recursive function processes head and calls itself on tail;", "Base case stops recursion when list is empty;"], "", 7),
     ])
+    parts[1].set_closed_answers({"result": ["15"]})
     return _question(style, number, "Recursion in functional programming", "A recursive function processes a list.", stimulus, _fit_parts(parts, total))
 
 
@@ -1137,6 +1213,12 @@ def _assembly_trace_question(style: QuestionStyle, number: int, total: int, rng:
         ("3", 2, "Describe two advantages of writing programs in assembly language rather than a high-level language.", ["Can directly control registers/hardware;", "Can produce efficient code for a specific processor;", "Useful for low-level embedded/system routines;"], "", 7),
         ("4", 1, "Some high-level languages are described as imperative. Explain what imperative means in this context.", ["The program is written as a sequence of commands/statements that change state;"], "", 4),
     ])
+    trace = {
+        "R0-initial-and-after-loops": "0,1,2,3,4", "R1-initial-and-after-loops": "13,6,3,1,0",
+        "R2-initial-and-after-loops": "0,1,1,2,3", "R3-after-loops": "1,0,1,1", "memory-120": "3",
+    }
+    parts[0].set_closed_answers({key: [value, f"[{value}]"] if "," in value else [value] for key, value in trace.items()})
+    parts[0].marking.points.extend(f"{key}: {value};" for key, value in trace.items())
     return _question(style, number, "Assembly language trace", "Figure 1 shows an assembly language program for a processor using general purpose registers.", stimulus, parts)
 
 

@@ -205,7 +205,7 @@ def test_solver_rejects_citation_to_unavailable_evidence() -> None:
         )
 
 
-def test_one_mark_multiple_choice_ignores_uncredited_solver_explanation() -> None:
+def test_one_mark_multiple_choice_rejects_contradictory_solver_mark_point() -> None:
     class Client:
         def generate_json(self, _prompt: str) -> dict[str, object]:
             return {
@@ -230,23 +230,8 @@ def test_one_mark_multiple_choice_ignores_uncredited_solver_explanation() -> Non
         "assessment_objectives": {"AO1": 1},
     }
 
-    solution = IndependentSolver(Client()).solve(item, [])
-    result = reconcile_solution(
-        solution,
-        {
-            "marks": 1,
-            "points": [
-                {
-                    "text": "Purchases journal",
-                    "marks": 1,
-                    "assessment_objective": "AO1",
-                }
-            ],
-        },
-    )
-
-    assert solution.mark_points == ["Purchases journal"]
-    assert result.passed, result.issues
+    with pytest.raises(ValueError, match="closed response"):
+        IndependentSolver(Client()).solve(item, [])
 
 
 def test_multiple_choice_solver_hides_key_and_normalises_option_number() -> None:
@@ -257,7 +242,7 @@ def test_multiple_choice_solver_hides_key_and_normalises_option_number() -> None
             self.prompt = prompt
             return {
                 "answer": "1",
-                "mark_points": ["Use the first option"],
+                "mark_points": ["1"],
                 "evidence_ids": ["q-mcq"],
             }
 

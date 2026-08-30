@@ -46,7 +46,7 @@ PAPER2_STANDARDISATION: dict[str, tuple[Paper2Standardisation, ...]] = {
     "software_classification": (
         (
             (
-                "Accept application software and utility software in either order when the arrows make each intended branch unambiguous.",
+                "Blank 1 must name application software; blank 2 must name utility software. Answer order is immaterial only when each blank number is explicitly identified.",
                 "Accept applications for application software, but both missing branches must be named for both marks.",
             ),
             (
@@ -911,6 +911,7 @@ def _align_paper1_structure(
     rng: random.Random,
 ) -> list[Question]:
     """Match the recurring 7517/1 sub-question and mark pattern."""
+    recursive_n = rng.choice([5, 6])
     parts_by_question: dict[int, list[QuestionPart]] = {
         1: [
             _paper1_part("1", 1, "Explain why a record can normally be found more quickly in a hash table than in an ordered list.", ["A hash function gives direct access to the expected storage location;"], 2, "AO1"),
@@ -965,7 +966,7 @@ def _align_paper1_structure(
             _paper1_part("2", 1, "State one reason why a single timing trial may be unreliable.", ["Other processes, caching or timer variation can affect one measurement;"], 3, "AO3"),
         ],
         5: [
-            _paper1_part("1", 2, f"State the first two recursive calls made when evaluating the supplied function for n = {rng.choice([5, 6])}.", [
+            _paper1_part("1", 2, f"State the first two recursive calls made when evaluating the supplied function for n = {recursive_n}.", [
                 "First recursive call decreases n by one;",
                 "Second recursive call decreases n by one again;",
             ], 4, "AO1"),
@@ -1059,6 +1060,21 @@ def _align_paper1_structure(
             ], 4, "AO2"),
         ],
     }
+    parts_by_question[1][7].set_closed_answers({"passes": ["79", "79 passes"]})
+    parts_by_question[5][0].set_closed_answers({"first-call-n": [str(recursive_n - 1)], "second-call-n": [str(recursive_n - 2)]})
+    matrix_rows = ["010100", "101010", "010001", "100010", "010101", "001010"]
+    parts_by_question[3][2].set_closed_answers({
+        f"r{r}c{c}": [value]
+        for r, row in enumerate(matrix_rows, 1) for c, value in enumerate(row, 1)
+    })
+    parts_by_question[3][4].set_closed_answers({
+        "called-current-vertices-in-order": ["3,2,1,4,5,6", "[3,2,1,4,5,6]"],
+        "visited-additions-in-order": ["3,2,1,4,5", "[3,2,1,4,5]"],
+        "result": ["True"],
+    })
+    parts_by_question[6][0].set_closed_answers({"S2-input-0": ["S1"], "S2-input-1": ["S2"]})
+    parts_by_question[6][0].marking.points = ["S2 with input 0 transitions to S1;", "S2 with input 1 transitions to S2;"]
+    parts_by_question[6][4].set_closed_answers({"answer": ["no"]})
     question_updates = {
         1: {
             "topic_id": "4.3",

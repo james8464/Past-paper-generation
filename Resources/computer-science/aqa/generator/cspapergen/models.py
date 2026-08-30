@@ -46,6 +46,7 @@ class MarkingGuidance(BaseModel):
     accept: list[str] = Field(default_factory=list)
     reject: list[str] = Field(default_factory=list)
     levels: list[str] = Field(default_factory=list)
+    closed_answers: dict[str, list[str]] = Field(default_factory=dict)
 
 
 class QuestionPart(BaseModel):
@@ -58,6 +59,12 @@ class QuestionPart(BaseModel):
     correct_option: str = ""
     marking: MarkingGuidance
     difficulty_evidence: dict[str, object] = Field(default_factory=dict)
+    response_slots: list[str] = Field(default_factory=list)
+
+    def set_closed_answers(self, answers: dict[str, list[str]]) -> None:
+        """Attach the immutable marking key separately from candidate slot IDs."""
+        self.response_slots = list(answers)
+        self.marking.closed_answers = answers
 
 
 class Question(BaseModel):
