@@ -20,6 +20,7 @@ from Backend.Core.model_review import (
     require_difficulty_review,
     require_independent_review,
 )
+from Backend.Core.independent_solver import IndependentSolver
 from Backend.Core.reference_demand import build_item_demand_target, profile_for
 from pastpapergen.models import (
     MultipleChoiceOption,
@@ -383,7 +384,7 @@ def review_blueprint_difficulty(
     blueprint: PaperBlueprint,
     syllabus: Syllabus,
     progress: Callable[[str], None] | None = None,
-) -> None:
+) -> PaperBlueprint:
     """Run an independent demand-only gate over every rendered question item."""
 
     emit = progress or (lambda _message: None)
@@ -391,23 +392,39 @@ def review_blueprint_difficulty(
         "pearson-edexcel/economics-a-2015",
         _normalise_profile_paper_id(blueprint.paper_id),
     )
-    items = [
-        (question, item)
-        for question in blueprint.questions
-        for item in _question_demand_items(question)
-    ]
-    for index, (question, item) in enumerate(items, start=1):
+    item_count = sum(len(_question_demand_items(question)) for question in blueprint.questions)
+    item_index = 0
+    reviewed_questions: list[QuestionBlueprint] = []
+    for question in blueprint.questions:
         topic = syllabus.get_topic(question.topic_id)
-        label = str(item.get("label") or question.number)
-        emit(f"Calibrating difficulty {index}/{len(items)}: {question.number}{label}")
-        require_difficulty_review(
-            client,
-            item_id=f"question-{question.number}-{label}",
-            subject="Edexcel A-level Economics A",
-            candidate=item,
-            target=build_item_demand_target(item, profile),
-            specification=_review_specification(topic, question),
-        )
+        items = _question_demand_items(question)
+        evidences: list[dict[str, object]] = []
+        for item in items:
+            item_index += 1
+            label = str(item.get("label") or question.number)
+            emit(f"Calibrating difficulty {item_index}/{item_count}: {question.number}{label}")
+            solution = IndependentSolver(client).solve(item, [])
+            evidence = require_difficulty_review(
+                client,
+                item_id=f"question-{question.number}-{label}",
+                subject="Edexcel A-level Economics A",
+                candidate=item,
+                target=build_item_demand_target(item, profile),
+                specification=_review_specification(topic, question),
+                canonical_solution=solution,
+            )
+            evidences.append(evidence.model_dump(mode="json"))
+        if question.parts:
+            parts = [
+                part.model_copy(update={"difficulty_evidence": evidence})
+                for part, evidence in zip(question.parts, evidences, strict=True)
+            ]
+            reviewed_questions.append(question.model_copy(update={"parts": parts}))
+        else:
+            reviewed_questions.append(
+                question.model_copy(update={"difficulty_evidence": evidences[0]})
+            )
+    return blueprint.model_copy(update={"questions": reviewed_questions})
 
 
 def _normalise_profile_paper_id(paper_id: str) -> str:

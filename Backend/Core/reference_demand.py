@@ -25,12 +25,19 @@ class ReferenceDemandProfile(BaseModel):
     mark_band_distribution: dict[str, float]
     command_word_distribution: dict[str, float]
     demand_distribution: dict[str, float]
-    distribution_tolerance: float = Field(default=0.55, gt=0, le=2)
+    mark_weighted_demand_distribution: dict[str, float]
+    response_mode_distribution: dict[str, float]
+    cognitive_operation_distribution: dict[str, float]
+    extraction_coverage: float = Field(ge=0.6, le=1)
+    metric_tolerances: dict[str, float]
 
     @field_validator(
         "mark_band_distribution",
         "command_word_distribution",
         "demand_distribution",
+        "mark_weighted_demand_distribution",
+        "response_mode_distribution",
+        "cognitive_operation_distribution",
     )
     @classmethod
     def validate_distribution(cls, value: dict[str, float]) -> dict[str, float]:
@@ -41,9 +48,25 @@ class ReferenceDemandProfile(BaseModel):
             raise ValueError("reference distributions must total 1")
         return {key.casefold(): round(float(amount), 6) for key, amount in value.items()}
 
+    @field_validator("metric_tolerances")
+    @classmethod
+    def validate_tolerances(cls, value: dict[str, float]) -> dict[str, float]:
+        required = {
+            "mark_band_distribution",
+            "command_family_distribution",
+            "mark_weighted_demand_distribution",
+            "response_mode_distribution",
+            "cognitive_operation_distribution",
+        }
+        if set(value) != required:
+            raise ValueError("metric tolerances must cover every gated distribution")
+        if any(amount <= 0 or amount > 2 for amount in value.values()):
+            raise ValueError("metric tolerances must be within (0, 2]")
+        return {key: round(float(amount), 6) for key, amount in value.items()}
+
 
 class ReferenceDemandDocument(BaseModel):
-    schema_version: Literal[1]
+    schema_version: Literal[2]
     purpose: str = Field(min_length=20)
     derived_aggregate_only: Literal[True]
     retains_source_text: Literal[False]
@@ -60,13 +83,18 @@ class ReferenceDemandDocument(BaseModel):
 class ItemDemandTarget(BaseModel):
     demand_band: DemandBand
     minimum_reasoning_steps: int = Field(ge=1, le=8)
+    maximum_reasoning_steps: int = Field(ge=2, le=12)
     response_mode: str
+    required_cognitive_operations: list[str] = Field(min_length=1)
     requires_context: bool
     requires_analysis_chain: bool
     requires_judgement: bool
     requires_multiple_concepts: bool
     requires_data_transformation: bool
-    expected_minutes: float | None = Field(default=None, gt=0)
+    requires_shortcut_resistance: bool
+    maximum_scaffolding: Literal["explicit", "limited", "minimal"]
+    expected_minutes_min: float = Field(gt=0)
+    expected_minutes_max: float = Field(gt=0)
     reference_comparison_basis: str
     reference_profile_fingerprint: str
 
@@ -122,6 +150,11 @@ def build_item_demand_target(
         minimum_steps = max(minimum_steps, 3)
     if demand == "high" and marks >= 12:
         minimum_steps = 4
+    maximum_steps = {
+        "low": max(2, minimum_steps + 1),
+        "standard": max(4, minimum_steps + 2),
+        "high": min(8, minimum_steps + 3),
+    }[demand]
 
     requires_judgement = objectives.get("AO4", 0) > 0 or command in {
         "assess",
@@ -151,17 +184,34 @@ def build_item_demand_target(
         kind=kind,
         calculation=calculation,
     )
-    expected_minutes = raw.get("expected_minutes")
+    operations = _cognitive_operations(
+        command=command,
+        calculation=calculation,
+        requires_context=requires_context,
+        requires_analysis=requires_analysis,
+        requires_judgement=requires_judgement,
+        multiple_concepts=(demand == "high" or marks >= 8),
+    )
+    expected_minutes = float(raw.get("expected_minutes") or max(1.0, marks * 1.2))
     return ItemDemandTarget(
         demand_band=demand,
         minimum_reasoning_steps=minimum_steps,
+        maximum_reasoning_steps=maximum_steps,
         response_mode=response_mode,
+        required_cognitive_operations=operations,
         requires_context=requires_context,
         requires_analysis_chain=requires_analysis,
         requires_judgement=requires_judgement,
         requires_multiple_concepts=(demand == "high" or marks >= 8),
         requires_data_transformation=calculation or kind in {"data", "graph"},
-        expected_minutes=(float(expected_minutes) if expected_minutes else None),
+        requires_shortcut_resistance=(marks >= 4 or demand != "low"),
+        maximum_scaffolding={
+            "low": "explicit",
+            "standard": "limited",
+            "high": "minimal",
+        }[demand],
+        expected_minutes_min=round(max(0.5, expected_minutes * 0.75), 2),
+        expected_minutes_max=round(expected_minutes * 1.25, 2),
         reference_comparison_basis=profile.comparison_basis,
         reference_profile_fingerprint=profile.source_fingerprint,
     )
@@ -170,6 +220,8 @@ def build_item_demand_target(
 def audit_form_demand(
     items: list[dict[str, Any]],
     profile: ReferenceDemandProfile,
+    *,
+    require_item_evidence: bool = False,
 ) -> dict[str, Any]:
     if not items:
         raise ValueError("reference demand audit requires assessment items")
@@ -187,11 +239,30 @@ def audit_form_demand(
         "demand_distribution": _distribution(
             target.demand_band for target in targets
         ),
+        "mark_weighted_demand_distribution": _weighted_distribution(
+            (target.demand_band, _positive_int(item.get("marks"), name="marks"))
+            for item, target in zip(items, targets, strict=True)
+        ),
+        "response_mode_distribution": _distribution(
+            target.response_mode for target in targets
+        ),
+        "cognitive_operation_distribution": _distribution(
+            _primary_cognitive_operation(
+                command=str(
+                    item.get("command_word") or _leading_command(item.get("prompt"))
+                ).casefold(),
+                calculation=target.requires_data_transformation,
+            )
+            for item, target in zip(items, targets, strict=True)
+        ),
     }
     expected = {
         "mark_band_distribution": profile.mark_band_distribution,
         "command_word_distribution": profile.command_word_distribution,
         "demand_distribution": profile.demand_distribution,
+        "mark_weighted_demand_distribution": profile.mark_weighted_demand_distribution,
+        "response_mode_distribution": profile.response_mode_distribution,
+        "cognitive_operation_distribution": profile.cognitive_operation_distribution,
     }
     observed["command_family_distribution"] = _collapse_command_distribution(
         observed["command_word_distribution"]
@@ -206,21 +277,32 @@ def audit_form_demand(
     gated_distributions = (
         "mark_band_distribution",
         "command_family_distribution",
-        "demand_distribution",
+        "mark_weighted_demand_distribution",
+        "response_mode_distribution",
+        "cognitive_operation_distribution",
     )
     failed = [
         name for name in gated_distributions
         for distance in [distances[name]]
-        if distance > profile.distribution_tolerance
+        if distance > profile.metric_tolerances[name]
     ]
+    evidence = [_difficulty_evidence(item) for item in items]
+    reviewed = [value for value in evidence if value]
+    evidence_failures = []
+    if require_item_evidence and len(reviewed) != len(items):
+        evidence_failures.append("item_review_coverage")
+    if require_item_evidence and any(not bool(value.get("approved")) for value in reviewed):
+        evidence_failures.append("item_difficulty_review")
+    failed.extend(evidence_failures)
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "passed": not failed,
         "profile_fingerprint": profile.source_fingerprint,
         "comparison_basis": profile.comparison_basis,
         "source_document_count": profile.source_document_count,
         "items_checked": len(items),
-        "tolerance": profile.distribution_tolerance,
+        "metric_tolerances": profile.metric_tolerances,
+        "extraction_coverage": profile.extraction_coverage,
         "observed": observed,
         "expected": expected,
         "distances": distances,
@@ -228,6 +310,18 @@ def audit_form_demand(
             name: distances[name] for name in gated_distributions
         },
         "failed_checks": failed,
+        "item_review_evidence": {
+            "reviewed_items": len(reviewed),
+            "coverage": round(len(reviewed) / len(items), 6),
+            "approved_items": sum(bool(value.get("approved")) for value in reviewed),
+            "reasoning_range_fit": sum(
+                bool(value.get("reasoning_range_fit")) for value in reviewed
+            ),
+            "context_fit": sum(bool(value.get("context_fit")) for value in reviewed),
+            "shortcut_resistant": sum(
+                bool(value.get("shortcut_resistant")) for value in reviewed
+            ),
+        },
         "empirical_equivalence_claimed": False,
     }
 
@@ -278,7 +372,10 @@ def _infer_demand(*, marks: int, command: str, kind: str) -> DemandBand:
 def _response_mode(
     *, marks: int, command: str, kind: str, calculation: bool
 ) -> str:
-    if kind == "multiple_choice":
+    if kind in {"multiple_choice", "multiple-choice", "mcq"} or command in {
+        "mcq",
+        "select",
+    }:
         return "selected-response"
     if calculation:
         return "multi-stage-calculation" if marks >= 4 else "calculation"
@@ -289,6 +386,51 @@ def _response_mode(
     if command in {"analyse", "analyze", "examine", "explain"}:
         return "structured-reasoning"
     return "constructed-response"
+
+
+def _cognitive_operations(
+    *,
+    command: str,
+    calculation: bool,
+    requires_context: bool,
+    requires_analysis: bool,
+    requires_judgement: bool,
+    multiple_concepts: bool,
+) -> list[str]:
+    operations: list[str] = []
+    if command in {"define", "give", "identify", "name", "select", "state"}:
+        operations.append("retrieve")
+    elif calculation:
+        operations.extend(("apply", "transform"))
+    elif command in {"describe", "outline"}:
+        operations.append("describe")
+    else:
+        operations.append("explain")
+    if requires_context:
+        operations.append("contextualise")
+    if requires_analysis:
+        operations.append("analyse")
+    if multiple_concepts:
+        operations.append("integrate")
+    if requires_judgement:
+        operations.append("judge")
+    return list(dict.fromkeys(operations))
+
+
+def _primary_cognitive_operation(*, command: str, calculation: bool) -> str:
+    if command in {"define", "give", "identify", "name", "select", "state", "mcq"}:
+        return "retrieve"
+    if calculation or command in {
+        "calculate", "complete", "construct", "design", "develop", "draw", "prepare", "trace", "write"
+    }:
+        return "transform"
+    if command in {"assess", "discuss", "evaluate", "justify", "recommend"}:
+        return "judge"
+    if command in {"analyse", "analyze", "compare", "examine"}:
+        return "analyse"
+    if command in {"describe", "outline"}:
+        return "describe"
+    return "explain"
 
 
 def _mark_band(marks: int) -> str:
@@ -357,6 +499,29 @@ def _distribution(values: Any) -> dict[str, float]:
         key: round(count / total, 6)
         for key, count in sorted(counts.items())
     }
+
+
+def _weighted_distribution(values: Any) -> dict[str, float]:
+    counts: Counter[str] = Counter()
+    for key, weight in values:
+        counts[str(key)] += float(weight)
+    total = sum(counts.values())
+    if total <= 0:
+        raise ValueError("cannot build an empty weighted distribution")
+    return {
+        key: round(weight / total, 6)
+        for key, weight in sorted(counts.items())
+    }
+
+
+def _difficulty_evidence(item: dict[str, Any]) -> dict[str, Any]:
+    direct = item.get("difficulty_evidence")
+    if isinstance(direct, dict):
+        return direct
+    context = item.get("authoring_context")
+    if isinstance(context, dict) and isinstance(context.get("difficulty_evidence"), dict):
+        return context["difficulty_evidence"]
+    return {}
 
 
 def _distribution_distance(

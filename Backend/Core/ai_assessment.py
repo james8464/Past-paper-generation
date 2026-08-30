@@ -29,7 +29,11 @@ from Backend.Core.exam_blueprints import (
     PaperRule,
     validate_generated_paper,
 )
-from Backend.Core.independent_solver import IndependentSolver, reconcile_solution
+from Backend.Core.independent_solver import (
+    CanonicalSolution,
+    IndependentSolver,
+    reconcile_solution,
+)
 from Backend.Core.mark_scheme_quality import validate_mark_scheme_item
 from Backend.Core.model_review import ReviewResult, require_difficulty_review
 from Backend.Core.reference_demand import (
@@ -397,8 +401,9 @@ def _generate_item_transaction(
                 client=client,
                 policy=policy,
             )[0]
+            canonical_solution: CanonicalSolution | None = None
             if policy.require_independent_solution:
-                _independently_validate_candidate(
+                canonical_solution = _independently_validate_candidate(
                     task,
                     candidate,
                     client=client,
@@ -440,7 +445,7 @@ def _generate_item_transaction(
                             )
                         )
                     try:
-                        require_difficulty_review(
+                        difficulty_evidence = require_difficulty_review(
                             client,
                             item_id=task.id,
                             subject=subject,
@@ -450,6 +455,17 @@ def _generate_item_transaction(
                             ),
                             candidate=candidate,
                             specification=_difficulty_specification(task),
+                            canonical_solution=canonical_solution,
+                        )
+                        candidate = candidate.model_copy(
+                            update={
+                                "authoring_context": {
+                                    **candidate.authoring_context,
+                                    "difficulty_evidence": difficulty_evidence.model_dump(
+                                        mode="json"
+                                    ),
+                                }
+                            }
                         )
                     except ValueError as error:
                         review = ReviewResult(
@@ -496,12 +512,17 @@ def _generate_item_transaction(
             else ReviewResult(approved=True)
         )
         if fallback_review.approved and not fallback_review.issues:
+            canonical_solution = (
+                _independently_validate_candidate(task, fallback, client=client)
+                if policy.require_independent_solution
+                else None
+            )
             if policy.require_difficulty_review:
                 if demand_profile is None:
                     raise ValueError(
                         "reference-demand review requires a paper profile"
                     )
-                require_difficulty_review(
+                difficulty_evidence = require_difficulty_review(
                     client,
                     item_id=task.id,
                     subject=subject,
@@ -511,6 +532,17 @@ def _generate_item_transaction(
                     ),
                     candidate=fallback,
                     specification=_difficulty_specification(task),
+                    canonical_solution=canonical_solution,
+                )
+                fallback = fallback.model_copy(
+                    update={
+                        "authoring_context": {
+                            **fallback.authoring_context,
+                            "difficulty_evidence": difficulty_evidence.model_dump(
+                                mode="json"
+                            ),
+                        }
+                    }
                 )
             assert_distinct_items(
                 [
@@ -535,7 +567,7 @@ def _independently_validate_candidate(
     candidate: GeneratedQuestion,
     *,
     client: AssessmentLLMClient,
-) -> None:
+) -> CanonicalSolution:
     contract = contract_for_question(candidate)
     sources = list(contract.evidence)
     known_ids = {source.id for source in sources}
@@ -560,6 +592,7 @@ def _independently_validate_candidate(
             f"question {candidate.number} failed independent solution "
             f"reconciliation: {json.dumps(diagnostics, ensure_ascii=False)}"
         )
+    return solution
 
 
 def _seeded_fallback_allowed(*, provider: str, failure: str) -> bool:
@@ -1260,9 +1293,17 @@ def _generation_prompt(
         "points are deliberately withheld: author the wording and creditworthy "
         "content independently from the semantic contract, immutable source, and "
         "specification points. When `demand_target` is present, make every required "
-        "reasoning operation necessary to earn full marks. Do not make the item "
-        "easier or harder than this target, and do not merely mention the target's "
-        "features in the stem.\n\n"
+        "cognitive operation necessary to earn full marks and keep the shortest "
+        "valid solution within its minimum and maximum reasoning-step range. A "
+        "context requirement means evidence must change the reasoning or judgement; "
+        "a generic answer with the names substituted must not earn full application "
+        "credit. A shortcut-resistant item must not disclose its own answer, reduce "
+        "to recall, or allow one operation to bypass a multi-stage target. Respect "
+        "the expected time range and scaffolding ceiling. Do not make the item easier "
+        "or harder than this target, and do not merely mention the target's features "
+        "in the stem. For calculations, require the declared transformations and "
+        "make the scheme state the method, final answer, units or precision, and any "
+        "valid follow-through boundary.\n\n"
         "Return one JSON object with a `questions` array. Each entry must contain: "
         "`id`, `prompt`, `choices`, `correct_choice`, and `mark_scheme`. "
         "When `mark_scheme_locked` is true, return an empty `mark_scheme` array; "

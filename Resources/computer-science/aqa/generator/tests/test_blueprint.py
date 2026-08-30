@@ -280,6 +280,16 @@ def test_blueprint_receives_a_separate_reference_demand_review() -> None:
 
         def generate_json(self, prompt: str) -> dict[str, object]:
             self.prompts.append(prompt)
+            if "Independently solve" in prompt:
+                return {
+                    "answer": "A complete answer.",
+                    "steps": ["Apply the relevant concept."],
+                    "mark_points": [],
+                    "evidence_ids": [],
+                    "alternatives": [],
+                    "partial_credit_boundaries": [],
+                    "follow_through_rules": [],
+                }
             demand = re.search(r'"demand_band": "(low|standard|high)"', prompt)
             steps = re.search(r'"minimum_reasoning_steps": (\d+)', prompt)
             assert demand is not None and steps is not None
@@ -291,16 +301,23 @@ def test_blueprint_receives_a_separate_reference_demand_review() -> None:
                 "command_word_fit": True,
                 "context_fit": True,
                 "profile_fit": True,
+                "observed_cognitive_operations": ["retrieve", "apply", "transform", "explain", "contextualise", "analyse", "integrate", "judge"],
+                "cognitive_operations_fit": True,
+                "reasoning_range_fit": True,
+                "shortcut_resistant": True,
+                "timing_fit": True,
+                "scaffolding_fit": True,
                 "issues": [],
             }
 
     client = Client()
-    review_blueprint_difficulty(client, blueprint, syllabus)
+    reviewed = review_blueprint_difficulty(client, blueprint, syllabus)
 
-    assert len(client.prompts) == len(hardest.parts)
-    assert all("difficulty calibration specialist" in prompt for prompt in client.prompts)
-    assert all('"reference_profile_fingerprint"' in prompt for prompt in client.prompts)
-    assert all('"minimum_reasoning_steps": 1' in prompt for prompt in client.prompts)
+    difficulty_prompts = [prompt for prompt in client.prompts if "difficulty calibration specialist" in prompt]
+    assert len(difficulty_prompts) == len(hardest.parts)
+    assert all('"reference_profile_fingerprint"' in prompt for prompt in difficulty_prompts)
+    assert all('"minimum_reasoning_steps": 1' in prompt for prompt in difficulty_prompts)
+    assert all(part.difficulty_evidence["approved"] for part in reviewed.questions[0].parts)
 
 
 def test_local_generation_retries_only_the_rejected_question():

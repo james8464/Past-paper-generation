@@ -412,6 +412,30 @@ private struct QualityInspector: View {
                             value: distance.formatted(.number.precision(.fractionLength(2)))
                         )
                     }
+                    if report.difficultyReviewedItems > 0 {
+                        LabeledContent(
+                            "Independent item reviews",
+                            value: "\(report.difficultyReviewedItems) of \(report.referenceDemandItems)"
+                        )
+                        LabeledContent(
+                            "Reasoning range",
+                            value: "\(report.difficultyReasoningFitItems) of \(report.difficultyReviewedItems) fit"
+                        )
+                        LabeledContent(
+                            "Context use",
+                            value: "\(report.difficultyContextFitItems) of \(report.difficultyReviewedItems) fit"
+                        )
+                        LabeledContent(
+                            "Shortcut resistance",
+                            value: "\(report.difficultyShortcutFitItems) of \(report.difficultyReviewedItems) pass"
+                        )
+                    }
+                    if let coverage = report.referenceDemandExtractionCoverage {
+                        LabeledContent(
+                            "Reference extraction",
+                            value: coverage.formatted(.percent.precision(.fractionLength(0)))
+                        )
+                    }
                 }
             }
 

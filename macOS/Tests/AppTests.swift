@@ -118,7 +118,7 @@ final class PaperCreatorTests: XCTestCase {
             .appendingPathComponent(UUID().uuidString)
             .appendingPathExtension("json")
         defer { try? FileManager.default.removeItem(at: url) }
-        let manifest = #"{"evidence":{"assessment_validation":{"item_count":12,"fingerprints_verified":true,"reference_demand":{"passed":true,"items_checked":12,"source_document_count":4,"gated_distances":{"mark_band_distribution":0.12,"command_family_distribution":0.31,"demand_distribution":0.08}}},"novelty_validation":{"historic_comparisons":20,"nearest_match":{"similarity":0.14}}},"outputs":{"question_paper":{"pdf_validation":{}}}}"#
+        let manifest = #"{"evidence":{"assessment_validation":{"item_count":12,"fingerprints_verified":true,"reference_demand":{"passed":true,"items_checked":12,"source_document_count":4,"extraction_coverage":0.94,"item_review_evidence":{"reviewed_items":12,"coverage":1.0,"reasoning_range_fit":12,"context_fit":12,"shortcut_resistant":11},"gated_distances":{"mark_band_distribution":0.12,"command_family_distribution":0.31,"mark_weighted_demand_distribution":0.08}}},"novelty_validation":{"historic_comparisons":20,"nearest_match":{"similarity":0.14}}},"outputs":{"question_paper":{"pdf_validation":{}}}}"#
         try Data(manifest.utf8).write(to: url)
 
         let report = try XCTUnwrap(GenerationQualityReport.load(from: url))
@@ -127,6 +127,11 @@ final class PaperCreatorTests: XCTestCase {
         XCTAssertEqual(report.referenceDemandItems, 12)
         XCTAssertEqual(report.referenceDemandDocuments, 4)
         XCTAssertEqual(report.referenceDemandMaxDistance, 0.31)
+        XCTAssertEqual(report.referenceDemandExtractionCoverage, 0.94)
+        XCTAssertEqual(report.difficultyReviewedItems, 12)
+        XCTAssertEqual(report.difficultyReasoningFitItems, 12)
+        XCTAssertEqual(report.difficultyContextFitItems, 12)
+        XCTAssertEqual(report.difficultyShortcutFitItems, 11)
     }
 
     func testBenchmarkSampleEventDecodes() throws {

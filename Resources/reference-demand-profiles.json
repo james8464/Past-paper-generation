@@ -3,65 +3,118 @@
   "profiles": [
     {
       "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "explain": 0.042254,
+        "judge": 0.169014,
+        "retrieve": 0.56338,
+        "transform": 0.225352
+      },
       "command_word_distribution": {
-        "assess": 0.160714,
-        "calculate": 0.071429,
-        "complete": 0.053571,
-        "evaluate": 0.071429,
-        "explain": 0.071429,
-        "justify": 0.017857,
-        "prepare": 0.392857,
-        "select": 0.142857,
-        "suggest": 0.017857
+        "assess": 0.115385,
+        "calculate": 0.051282,
+        "complete": 0.025641,
+        "evaluate": 0.051282,
+        "justify": 0.012821,
+        "prepare": 0.217949,
+        "select": 0.512819,
+        "suggest": 0.012821
       },
-      "comparison_basis": "Aggregate mark tariffs and command-word frequencies from 4 official AQA A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.210526,
-        "low": 0.526316,
-        "standard": 0.263158
+        "high": 0.28169,
+        "low": 0.591549,
+        "standard": 0.126761
       },
-      "distribution_tolerance": 0.85,
+      "extraction_coverage": 0.934211,
       "family_id": "aqa/accounting",
       "mark_band_distribution": {
         "extended": 0.210526,
         "medium": 0.25,
         "short": 0.539474
       },
+      "mark_weighted_demand_distribution": {
+        "high": 0.716146,
+        "low": 0.145833,
+        "standard": 0.138021
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
       "paper_id": "1",
+      "response_mode_distribution": {
+        "calculation": 0.014085,
+        "extended-evaluation": 0.169014,
+        "multi-stage-calculation": 0.211268,
+        "selected-response": 0.563379,
+        "structured-reasoning": 0.042254
+      },
       "source_document_count": 4,
       "source_fingerprint": "ef955a60e09169541456c0274a03d3fe48204f507b13f96cba0f79c071732bf5"
     },
     {
       "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "explain": 0.034483,
+        "judge": 0.172414,
+        "retrieve": 0.45977,
+        "transform": 0.333333
+      },
       "command_word_distribution": {
-        "assess": 0.125,
-        "calculate": 0.359375,
-        "evaluate": 0.125,
-        "explain": 0.046875,
-        "give": 0.015625,
-        "justify": 0.015625,
-        "prepare": 0.171875,
-        "select": 0.140625
+        "assess": 0.1,
+        "calculate": 0.1875,
+        "evaluate": 0.1,
+        "justify": 0.0125,
+        "prepare": 0.1,
+        "select": 0.5
       },
-      "comparison_basis": "Aggregate mark tariffs and command-word frequencies from 4 official AQA A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.136364,
-        "low": 0.556818,
-        "standard": 0.306818
+        "high": 0.218391,
+        "low": 0.563218,
+        "standard": 0.218391
       },
-      "distribution_tolerance": 0.85,
+      "extraction_coverage": 0.988636,
       "family_id": "aqa/accounting",
       "mark_band_distribution": {
         "extended": 0.136364,
         "medium": 0.261364,
         "short": 0.602272
       },
+      "mark_weighted_demand_distribution": {
+        "high": 0.606837,
+        "low": 0.132479,
+        "standard": 0.260684
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
       "paper_id": "2",
+      "response_mode_distribution": {
+        "calculation": 0.068966,
+        "extended-evaluation": 0.172414,
+        "multi-stage-calculation": 0.264368,
+        "selected-response": 0.459769,
+        "structured-reasoning": 0.034483
+      },
       "source_document_count": 4,
       "source_fingerprint": "4418afc68b78528d7475176d82f1ea40385d93b4f4eb940a5b5f8af580c64869"
     },
     {
       "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "analyse": 0.142857,
+        "judge": 0.190476,
+        "retrieve": 0.595238,
+        "transform": 0.071429
+      },
       "command_word_distribution": {
         "analyse": 0.176471,
         "calculate": 0.117647,
@@ -70,25 +123,50 @@
         "prepare": 0.014706,
         "select": 0.455882
       },
-      "comparison_basis": "Aggregate mark tariffs and command-word frequencies from 4 official AQA A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.168421,
-        "low": 0.663158,
-        "standard": 0.168421
+        "high": 0.190476,
+        "low": 0.630953,
+        "standard": 0.178571
       },
-      "distribution_tolerance": 0.85,
+      "extraction_coverage": 0.884211,
       "family_id": "aqa/business",
       "mark_band_distribution": {
         "extended": 0.168421,
         "medium": 0.126316,
         "short": 0.705263
       },
+      "mark_weighted_demand_distribution": {
+        "high": 0.692042,
+        "low": 0.100346,
+        "standard": 0.207612
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
       "paper_id": "1",
+      "response_mode_distribution": {
+        "calculation": 0.035714,
+        "extended-evaluation": 0.190476,
+        "multi-stage-calculation": 0.035714,
+        "selected-response": 0.595239,
+        "structured-reasoning": 0.142857
+      },
       "source_document_count": 4,
       "source_fingerprint": "37a933acd2527681b420371affbab1dde379168aced7359486e639d839100738"
     },
     {
       "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "analyse": 0.307693,
+        "explain": 0.179487,
+        "judge": 0.282051,
+        "transform": 0.230769
+      },
       "command_word_distribution": {
         "analyse": 0.347826,
         "calculate": 0.217391,
@@ -97,46 +175,87 @@
         "explain": 0.173913,
         "justify": 0.086957
       },
-      "comparison_basis": "Aggregate mark tariffs and command-word frequencies from 4 official AQA A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.292683,
-        "low": 0.243902,
-        "standard": 0.463415
+        "high": 0.307692,
+        "low": 0.205128,
+        "standard": 0.48718
       },
-      "distribution_tolerance": 0.85,
+      "extraction_coverage": 0.95122,
       "family_id": "aqa/business",
       "mark_band_distribution": {
         "extended": 0.292683,
         "medium": 0.268293,
         "short": 0.439024
       },
+      "mark_weighted_demand_distribution": {
+        "high": 0.563049,
+        "low": 0.061584,
+        "standard": 0.375367
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
       "paper_id": "2",
+      "response_mode_distribution": {
+        "calculation": 0.179487,
+        "extended-evaluation": 0.307692,
+        "multi-stage-calculation": 0.051282,
+        "structured-reasoning": 0.461539
+      },
       "source_document_count": 4,
       "source_fingerprint": "b2e3b7e77518c70cbf615e63551f4484483d7bc54f07ce83078952bc2a5db42d"
     },
     {
       "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "analyse": 0.363636,
+        "judge": 0.636364
+      },
       "command_word_distribution": {
         "analyse": 0.333333,
         "evaluate": 0.458333,
         "justify": 0.166667,
         "recommend": 0.041667
       },
-      "comparison_basis": "Aggregate mark tariffs and command-word frequencies from 4 official AQA A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
         "high": 1.0
       },
-      "distribution_tolerance": 0.85,
+      "extraction_coverage": 0.916667,
       "family_id": "aqa/business",
       "mark_band_distribution": {
         "extended": 1.0
       },
+      "mark_weighted_demand_distribution": {
+        "high": 1.0
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
       "paper_id": "3",
+      "response_mode_distribution": {
+        "extended-evaluation": 1.0
+      },
       "source_document_count": 4,
       "source_fingerprint": "dcaed9acd2d0d6e92e79ce7469c55b2183171606d654ec21910250f0d70a6397"
     },
     {
       "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "describe": 0.13913,
+        "explain": 0.373914,
+        "retrieve": 0.373913,
+        "transform": 0.113043
+      },
       "command_word_distribution": {
         "calculate": 0.007576,
         "complete": 0.113636,
@@ -150,25 +269,53 @@
         "suggest": 0.015152,
         "write": 0.045455
       },
-      "comparison_basis": "Aggregate mark tariffs and command-word frequencies from 4 official AQA A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.068966,
-        "low": 0.806896,
-        "standard": 0.124138
+        "high": 0.043478,
+        "low": 0.895652,
+        "standard": 0.06087
       },
-      "distribution_tolerance": 0.85,
+      "extraction_coverage": 0.793103,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
         "extended": 0.068966,
         "medium": 0.082759,
         "short": 0.848275
       },
+      "mark_weighted_demand_distribution": {
+        "high": 0.226562,
+        "low": 0.621094,
+        "standard": 0.152344
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
       "paper_id": "1",
+      "response_mode_distribution": {
+        "calculation": 0.078261,
+        "constructed-response": 0.156522,
+        "multi-stage-calculation": 0.034783,
+        "recall": 0.304348,
+        "selected-response": 0.069565,
+        "structured-reasoning": 0.356521
+      },
       "source_document_count": 4,
       "source_fingerprint": "0e822b688236b2d2bd1aad6f24b44ca2b765e8d5dc3f6b6ff05cacf8ce31eb01"
     },
     {
       "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "analyse": 0.013605,
+        "describe": 0.299321,
+        "explain": 0.183673,
+        "judge": 0.013605,
+        "retrieve": 0.238095,
+        "transform": 0.251701
+      },
       "command_word_distribution": {
         "calculate": 0.087719,
         "compare": 0.035088,
@@ -186,25 +333,53 @@
         "state": 0.157895,
         "write": 0.070175
       },
-      "comparison_basis": "Aggregate mark tariffs and command-word frequencies from 4 official AQA A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.030675,
-        "low": 0.834356,
-        "standard": 0.134969
+        "high": 0.040816,
+        "low": 0.843538,
+        "standard": 0.115646
       },
-      "distribution_tolerance": 0.85,
+      "extraction_coverage": 0.90184,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
         "extended": 0.030675,
         "medium": 0.06135,
         "short": 0.907975
       },
+      "mark_weighted_demand_distribution": {
+        "high": 0.174387,
+        "low": 0.59673,
+        "standard": 0.228883
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
       "paper_id": "2",
+      "response_mode_distribution": {
+        "calculation": 0.190476,
+        "constructed-response": 0.292518,
+        "extended-evaluation": 0.027211,
+        "multi-stage-calculation": 0.061224,
+        "recall": 0.238095,
+        "structured-reasoning": 0.190476
+      },
       "source_document_count": 4,
       "source_fingerprint": "c2442cabcaa707382d85570f3feb9653e86f1ea597cd2ae65784e0906ff3bf7e"
     },
     {
       "assessment_kind": "question-bank",
+      "cognitive_operation_distribution": {
+        "analyse": 0.006803,
+        "describe": 0.219226,
+        "explain": 0.278794,
+        "judge": 0.006803,
+        "retrieve": 0.306002,
+        "transform": 0.182372
+      },
       "command_word_distribution": {
         "calculate": 0.047648,
         "compare": 0.017544,
@@ -226,23 +401,52 @@
       },
       "comparison_basis": "Focused-practice target derived from aggregate mark tariffs and command-word frequencies across 8 official AQA A-level Computer Science papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.049821,
-        "low": 0.820626,
-        "standard": 0.129553
+        "high": 0.042147,
+        "low": 0.869595,
+        "standard": 0.088258
       },
-      "distribution_tolerance": 1.4,
+      "extraction_coverage": 0.793103,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
         "extended": 0.049821,
         "medium": 0.072054,
         "short": 0.878125
+      },
+      "mark_weighted_demand_distribution": {
+        "high": 0.200474,
+        "low": 0.608913,
+        "standard": 0.190613
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 1.0,
+        "command_family_distribution": 0.9,
+        "mark_band_distribution": 0.7,
+        "mark_weighted_demand_distribution": 0.8,
+        "response_mode_distribution": 0.9
       },
       "paper_id": "bank-4.10",
+      "response_mode_distribution": {
+        "calculation": 0.134369,
+        "constructed-response": 0.22452,
+        "extended-evaluation": 0.013605,
+        "multi-stage-calculation": 0.048004,
+        "recall": 0.271222,
+        "selected-response": 0.034783,
+        "structured-reasoning": 0.273497
+      },
       "source_document_count": 8,
       "source_fingerprint": "221e1369d67507e866a6930f24ac89f9bbe0c5a3fcf7a71b0d6cb1c4772ffd98"
     },
     {
       "assessment_kind": "question-bank",
+      "cognitive_operation_distribution": {
+        "analyse": 0.006803,
+        "describe": 0.219226,
+        "explain": 0.278794,
+        "judge": 0.006803,
+        "retrieve": 0.306002,
+        "transform": 0.182372
+      },
       "command_word_distribution": {
         "calculate": 0.047648,
         "compare": 0.017544,
@@ -264,23 +468,52 @@
       },
       "comparison_basis": "Focused-practice target derived from aggregate mark tariffs and command-word frequencies across 8 official AQA A-level Computer Science papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.049821,
-        "low": 0.820626,
-        "standard": 0.129553
+        "high": 0.042147,
+        "low": 0.869595,
+        "standard": 0.088258
       },
-      "distribution_tolerance": 1.4,
+      "extraction_coverage": 0.793103,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
         "extended": 0.049821,
         "medium": 0.072054,
         "short": 0.878125
+      },
+      "mark_weighted_demand_distribution": {
+        "high": 0.200474,
+        "low": 0.608913,
+        "standard": 0.190613
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 1.0,
+        "command_family_distribution": 0.9,
+        "mark_band_distribution": 0.7,
+        "mark_weighted_demand_distribution": 0.8,
+        "response_mode_distribution": 0.9
       },
       "paper_id": "bank-4.12",
+      "response_mode_distribution": {
+        "calculation": 0.134369,
+        "constructed-response": 0.22452,
+        "extended-evaluation": 0.013605,
+        "multi-stage-calculation": 0.048004,
+        "recall": 0.271222,
+        "selected-response": 0.034783,
+        "structured-reasoning": 0.273497
+      },
       "source_document_count": 8,
       "source_fingerprint": "221e1369d67507e866a6930f24ac89f9bbe0c5a3fcf7a71b0d6cb1c4772ffd98"
     },
     {
       "assessment_kind": "question-bank",
+      "cognitive_operation_distribution": {
+        "analyse": 0.006803,
+        "describe": 0.219226,
+        "explain": 0.278794,
+        "judge": 0.006803,
+        "retrieve": 0.306002,
+        "transform": 0.182372
+      },
       "command_word_distribution": {
         "calculate": 0.047648,
         "compare": 0.017544,
@@ -302,23 +535,51 @@
       },
       "comparison_basis": "Focused-practice target derived from aggregate mark tariffs and command-word frequencies across 8 official AQA A-level Computer Science papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.049821,
-        "low": 0.820626,
-        "standard": 0.129553
+        "high": 0.042147,
+        "low": 0.869595,
+        "standard": 0.088258
       },
-      "distribution_tolerance": 1.4,
+      "extraction_coverage": 0.793103,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
         "extended": 0.049821,
         "medium": 0.072054,
         "short": 0.878125
       },
+      "mark_weighted_demand_distribution": {
+        "high": 0.200474,
+        "low": 0.608913,
+        "standard": 0.190613
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 1.0,
+        "command_family_distribution": 0.9,
+        "mark_band_distribution": 0.7,
+        "mark_weighted_demand_distribution": 0.8,
+        "response_mode_distribution": 0.9
+      },
       "paper_id": "bank-4.2",
+      "response_mode_distribution": {
+        "calculation": 0.134369,
+        "constructed-response": 0.22452,
+        "extended-evaluation": 0.013605,
+        "multi-stage-calculation": 0.048004,
+        "recall": 0.271222,
+        "selected-response": 0.034783,
+        "structured-reasoning": 0.273497
+      },
       "source_document_count": 8,
       "source_fingerprint": "221e1369d67507e866a6930f24ac89f9bbe0c5a3fcf7a71b0d6cb1c4772ffd98"
     },
     {
       "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "analyse": 0.039216,
+        "explain": 0.431372,
+        "judge": 0.392157,
+        "retrieve": 0.078431,
+        "transform": 0.058824
+      },
       "command_word_distribution": {
         "analyse": 0.028169,
         "assess": 0.098592,
@@ -331,25 +592,48 @@
         "suggest": 0.056338,
         "write": 0.042254
       },
-      "comparison_basis": "Aggregate mark tariffs and command-word frequencies from 4 official AQA A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
         "high": 0.627451,
         "low": 0.137255,
         "standard": 0.235294
       },
-      "distribution_tolerance": 0.85,
+      "extraction_coverage": 1.0,
       "family_id": "aqa/economics",
       "mark_band_distribution": {
         "extended": 0.627451,
         "medium": 0.117647,
         "short": 0.254902
       },
+      "mark_weighted_demand_distribution": {
+        "high": 0.880829,
+        "low": 0.018135,
+        "standard": 0.101036
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
       "paper_id": "1",
+      "response_mode_distribution": {
+        "calculation": 0.058824,
+        "extended-evaluation": 0.627451,
+        "recall": 0.078431,
+        "structured-reasoning": 0.235294
+      },
       "source_document_count": 4,
       "source_fingerprint": "ad407f7bdba729e1ade1798204a650e585cb1121d537f739a751b4fc2a4f47be"
     },
     {
       "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "explain": 0.442308,
+        "judge": 0.423077,
+        "retrieve": 0.134615
+      },
       "command_word_distribution": {
         "assess": 0.166667,
         "calculate": 0.121212,
@@ -361,47 +645,92 @@
         "give": 0.121212,
         "write": 0.030303
       },
-      "comparison_basis": "Aggregate mark tariffs and command-word frequencies from 4 official AQA A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
         "high": 0.615385,
         "low": 0.134615,
         "standard": 0.25
       },
-      "distribution_tolerance": 0.85,
+      "extraction_coverage": 1.0,
       "family_id": "aqa/economics",
       "mark_band_distribution": {
         "extended": 0.615385,
         "medium": 0.134615,
         "short": 0.25
       },
+      "mark_weighted_demand_distribution": {
+        "high": 0.870678,
+        "low": 0.017926,
+        "standard": 0.111396
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
       "paper_id": "2",
+      "response_mode_distribution": {
+        "extended-evaluation": 0.615385,
+        "recall": 0.134615,
+        "structured-reasoning": 0.25
+      },
       "source_document_count": 4,
       "source_fingerprint": "701294db67b114a22a5a78d6b568443aa3ee54e49af706c683225a34517ba9de"
     },
     {
       "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "explain": 0.019417,
+        "judge": 0.038835,
+        "retrieve": 0.941748
+      },
       "command_word_distribution": {
         "justify": 0.008197,
         "recommend": 0.008197,
         "select": 0.983606
       },
-      "comparison_basis": "Aggregate mark tariffs and command-word frequencies from 4 official AQA A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
         "high": 0.116505,
         "low": 0.883495
       },
-      "distribution_tolerance": 0.85,
+      "extraction_coverage": 1.0,
       "family_id": "aqa/economics",
       "mark_band_distribution": {
         "extended": 0.116505,
         "short": 0.883495
       },
+      "mark_weighted_demand_distribution": {
+        "high": 0.687285,
+        "low": 0.312715
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
       "paper_id": "3",
+      "response_mode_distribution": {
+        "extended-evaluation": 0.058252,
+        "selected-response": 0.941748
+      },
       "source_document_count": 4,
       "source_fingerprint": "c1c31734d400de5140a7c7b0eaf1270615b7f3436820ba76b970fd48a4242597"
     },
     {
       "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "analyse": 0.025316,
+        "describe": 0.177215,
+        "explain": 0.177215,
+        "judge": 0.044304,
+        "retrieve": 0.417722,
+        "transform": 0.158228
+      },
       "command_word_distribution": {
         "analyse": 0.005464,
         "calculate": 0.016393,
@@ -419,25 +748,53 @@
         "state": 0.147541,
         "write": 0.071038
       },
-      "comparison_basis": "Aggregate mark tariffs and command-word frequencies from 4 official OCR A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official OCR A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.022727,
-        "low": 0.681818,
-        "standard": 0.295455
+        "high": 0.044304,
+        "low": 0.765823,
+        "standard": 0.189873
       },
-      "distribution_tolerance": 0.85,
+      "extraction_coverage": 0.897727,
       "family_id": "ocr/computer-science",
       "mark_band_distribution": {
         "extended": 0.022727,
         "medium": 0.136364,
         "short": 0.840909
       },
+      "mark_weighted_demand_distribution": {
+        "high": 0.151822,
+        "low": 0.550607,
+        "standard": 0.297571
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
       "paper_id": "1",
+      "response_mode_distribution": {
+        "calculation": 0.082278,
+        "constructed-response": 0.177215,
+        "extended-evaluation": 0.044304,
+        "multi-stage-calculation": 0.075949,
+        "recall": 0.417722,
+        "structured-reasoning": 0.202532
+      },
       "source_document_count": 4,
       "source_fingerprint": "c1d66bab8da22dc5ef45ce71d5439432cb22290a765db2b5a1495dde2b3cea9d"
     },
     {
       "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "analyse": 0.021429,
+        "describe": 0.235714,
+        "explain": 0.078571,
+        "judge": 0.021429,
+        "retrieve": 0.4,
+        "transform": 0.242857
+      },
       "command_word_distribution": {
         "analyse": 0.010582,
         "calculate": 0.037037,
@@ -457,25 +814,52 @@
         "state": 0.116402,
         "write": 0.095238
       },
-      "comparison_basis": "Aggregate mark tariffs and command-word frequencies from 4 official OCR A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official OCR A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.012658,
-        "low": 0.582279,
-        "standard": 0.405063
+        "high": 0.021429,
+        "low": 0.7,
+        "standard": 0.278571
       },
-      "distribution_tolerance": 0.85,
+      "extraction_coverage": 0.886076,
       "family_id": "ocr/computer-science",
       "mark_band_distribution": {
         "extended": 0.012658,
         "medium": 0.259494,
         "short": 0.727848
       },
+      "mark_weighted_demand_distribution": {
+        "high": 0.067568,
+        "low": 0.484234,
+        "standard": 0.448198
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
       "paper_id": "2",
+      "response_mode_distribution": {
+        "calculation": 0.057143,
+        "constructed-response": 0.235714,
+        "extended-evaluation": 0.021429,
+        "multi-stage-calculation": 0.185714,
+        "recall": 0.4,
+        "structured-reasoning": 0.1
+      },
       "source_document_count": 4,
       "source_fingerprint": "ae2f6a97ba71ca2ded2607df7283a064b1187706c34f22eb7c7d5d6bd3cf1be2"
     },
     {
       "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "analyse": 0.025641,
+        "describe": 0.025641,
+        "explain": 0.282051,
+        "judge": 0.589744,
+        "transform": 0.076923
+      },
       "command_word_distribution": {
         "calculate": 0.057692,
         "compare": 0.019231,
@@ -486,25 +870,49 @@
         "select": 0.019231,
         "state": 0.019231
       },
-      "comparison_basis": "Aggregate mark tariffs and command-word frequencies from 4 official OCR A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official OCR A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.5,
-        "low": 0.3,
-        "standard": 0.2
+        "high": 0.589744,
+        "low": 0.307692,
+        "standard": 0.102564
       },
-      "distribution_tolerance": 0.85,
+      "extraction_coverage": 0.975,
       "family_id": "ocr/economics",
       "mark_band_distribution": {
         "extended": 0.5,
         "medium": 0.1,
         "short": 0.4
       },
+      "mark_weighted_demand_distribution": {
+        "high": 0.921875,
+        "low": 0.046875,
+        "standard": 0.03125
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
       "paper_id": "1",
+      "response_mode_distribution": {
+        "calculation": 0.076923,
+        "constructed-response": 0.025641,
+        "extended-evaluation": 0.589744,
+        "structured-reasoning": 0.307692
+      },
       "source_document_count": 4,
       "source_fingerprint": "a04bd9bb7fb06bcbc32399bc79d4be583ee21d7dd3c4c3de0f829ed3f9387e5f"
     },
     {
       "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "explain": 0.210526,
+        "judge": 0.578948,
+        "retrieve": 0.105263,
+        "transform": 0.105263
+      },
       "command_word_distribution": {
         "calculate": 0.081633,
         "evaluate": 0.489796,
@@ -512,25 +920,51 @@
         "identify": 0.081633,
         "name": 0.183673
       },
-      "comparison_basis": "Aggregate mark tariffs and command-word frequencies from 4 official OCR A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official OCR A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.5,
-        "low": 0.3,
-        "standard": 0.2
+        "high": 0.578948,
+        "low": 0.315789,
+        "standard": 0.105263
       },
-      "distribution_tolerance": 0.85,
+      "extraction_coverage": 0.95,
       "family_id": "ocr/economics",
       "mark_band_distribution": {
         "extended": 0.5,
         "medium": 0.1,
         "short": 0.4
       },
+      "mark_weighted_demand_distribution": {
+        "high": 0.92,
+        "low": 0.048,
+        "standard": 0.032
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
       "paper_id": "2",
+      "response_mode_distribution": {
+        "calculation": 0.105263,
+        "extended-evaluation": 0.578948,
+        "recall": 0.105263,
+        "structured-reasoning": 0.210526
+      },
       "source_document_count": 4,
       "source_fingerprint": "2fb133923905107efe7245f5c47e316e0550f2b6a7583a4bdd8cda1823a831c5"
     },
     {
       "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "analyse": 0.013605,
+        "describe": 0.006803,
+        "explain": 0.07483,
+        "judge": 0.054422,
+        "retrieve": 0.823129,
+        "transform": 0.027211
+      },
       "command_word_distribution": {
         "calculate": 0.025974,
         "compare": 0.012987,
@@ -542,25 +976,52 @@
         "name": 0.006494,
         "select": 0.779219
       },
-      "comparison_basis": "Aggregate mark tariffs and command-word frequencies from 4 official OCR A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official OCR A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.05298,
-        "low": 0.907285,
-        "standard": 0.039735
+        "high": 0.054422,
+        "low": 0.931973,
+        "standard": 0.013605
       },
-      "distribution_tolerance": 0.85,
+      "extraction_coverage": 0.97351,
       "family_id": "ocr/economics",
       "mark_band_distribution": {
         "extended": 0.05298,
         "medium": 0.02649,
         "short": 0.92053
       },
+      "mark_weighted_demand_distribution": {
+        "high": 0.416667,
+        "low": 0.555555,
+        "standard": 0.027778
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
       "paper_id": "3",
+      "response_mode_distribution": {
+        "calculation": 0.027211,
+        "constructed-response": 0.006803,
+        "extended-evaluation": 0.054422,
+        "recall": 0.006803,
+        "selected-response": 0.816326,
+        "structured-reasoning": 0.088435
+      },
       "source_document_count": 4,
       "source_fingerprint": "07190e39b04a276ff91acab3eb7b89d7f9594f520704e8dbd2411927510f4fa7"
     },
     {
       "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "analyse": 0.096774,
+        "explain": 0.209677,
+        "judge": 0.290324,
+        "retrieve": 0.209677,
+        "transform": 0.193548
+      },
       "command_word_distribution": {
         "assess": 0.083333,
         "calculate": 0.083333,
@@ -573,25 +1034,51 @@
         "select": 0.180556,
         "state": 0.013889
       },
-      "comparison_basis": "Aggregate mark tariffs and command-word frequencies from 3 official PEARSON-EDEXCEL A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 3 official PEARSON-EDEXCEL A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.285714,
-        "low": 0.36508,
-        "standard": 0.349206
+        "high": 0.290323,
+        "low": 0.354838,
+        "standard": 0.354839
       },
-      "distribution_tolerance": 0.85,
+      "extraction_coverage": 0.984127,
       "family_id": "pearson-edexcel/economics-a-2015",
       "mark_band_distribution": {
         "extended": 0.285714,
         "medium": 0.190476,
         "short": 0.52381
       },
+      "mark_weighted_demand_distribution": {
+        "high": 0.6,
+        "low": 0.081081,
+        "standard": 0.318919
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
       "paper_id": "1",
+      "response_mode_distribution": {
+        "calculation": 0.080645,
+        "extended-evaluation": 0.290323,
+        "multi-stage-calculation": 0.112903,
+        "selected-response": 0.209677,
+        "structured-reasoning": 0.306452
+      },
       "source_document_count": 3,
       "source_fingerprint": "cd7ac4f1518c9536b7c44f0a1012b4eb76db8fc9f65fe6248dfb4495d1815511"
     },
     {
       "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "analyse": 0.101695,
+        "explain": 0.271186,
+        "judge": 0.305085,
+        "retrieve": 0.220339,
+        "transform": 0.101695
+      },
       "command_word_distribution": {
         "assess": 0.08,
         "calculate": 0.066667,
@@ -605,25 +1092,49 @@
         "select": 0.186667,
         "state": 0.04
       },
-      "comparison_basis": "Aggregate mark tariffs and command-word frequencies from 3 official PEARSON-EDEXCEL A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 3 official PEARSON-EDEXCEL A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.3,
-        "low": 0.333333,
-        "standard": 0.366667
+        "high": 0.305085,
+        "low": 0.322034,
+        "standard": 0.372881
       },
-      "distribution_tolerance": 0.85,
+      "extraction_coverage": 0.983333,
       "family_id": "pearson-edexcel/economics-a-2015",
       "mark_band_distribution": {
         "extended": 0.3,
         "medium": 0.2,
         "short": 0.5
       },
+      "mark_weighted_demand_distribution": {
+        "high": 0.608219,
+        "low": 0.068493,
+        "standard": 0.323288
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
       "paper_id": "2",
+      "response_mode_distribution": {
+        "calculation": 0.050847,
+        "extended-evaluation": 0.305085,
+        "multi-stage-calculation": 0.050847,
+        "selected-response": 0.220339,
+        "structured-reasoning": 0.372882
+      },
       "source_document_count": 3,
       "source_fingerprint": "1ab22239f05fb13c318377794112e49ff9c934a035d80d80c06e97f46c6e8cae"
     },
     {
       "assessment_kind": "full-paper",
+      "cognitive_operation_distribution": {
+        "analyse": 0.192982,
+        "explain": 0.192982,
+        "judge": 0.614036
+      },
       "command_word_distribution": {
         "complete": 0.015385,
         "discuss": 0.184615,
@@ -633,23 +1144,38 @@
         "name": 0.046154,
         "suggest": 0.015385
       },
-      "comparison_basis": "Aggregate mark tariffs and command-word frequencies from 3 official PEARSON-EDEXCEL A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 3 official PEARSON-EDEXCEL A-level question papers; no source wording retained.",
       "demand_distribution": {
         "high": 0.614035,
         "standard": 0.385965
       },
-      "distribution_tolerance": 0.85,
+      "extraction_coverage": 1.0,
       "family_id": "pearson-edexcel/economics-a-2015",
       "mark_band_distribution": {
         "extended": 0.614035,
         "medium": 0.385965
       },
+      "mark_weighted_demand_distribution": {
+        "high": 0.836571,
+        "standard": 0.163429
+      },
+      "metric_tolerances": {
+        "cognitive_operation_distribution": 0.8,
+        "command_family_distribution": 0.7,
+        "mark_band_distribution": 0.5,
+        "mark_weighted_demand_distribution": 0.45,
+        "response_mode_distribution": 0.7
+      },
       "paper_id": "3",
+      "response_mode_distribution": {
+        "extended-evaluation": 0.614035,
+        "structured-reasoning": 0.385965
+      },
       "source_document_count": 3,
       "source_fingerprint": "98b74d55653fc05be081af834a8a8a49f47fccfe2656a70b830722db85020740"
     }
   ],
   "purpose": "Copyright-safe aggregate demand fingerprints for reference-shaped authoring and automated form checks; not psychometric evidence.",
   "retains_source_text": false,
-  "schema_version": 1
+  "schema_version": 2
 }

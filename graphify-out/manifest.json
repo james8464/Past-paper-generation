@@ -30,8 +30,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
-    "mtime": 1788018943.0218017,
-    "ast_hash": "822a948d985236c5e343a930d2ff3afd",
+    "mtime": 1788107524.8641615,
+    "ast_hash": "2f513e59b071c3407688fad6b1e6ecd0",
     "semantic_hash": ""
   },
   "Backend/Core/generation_date.py": {
@@ -100,8 +100,8 @@
     "semantic_hash": "509e4d1e65ef049a42dcffa1c8314ee2"
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/cli.py": {
-    "mtime": 1788018943.0221918,
-    "ast_hash": "50c958b54c80d46be5b6658f1c7442d1",
+    "mtime": 1788107524.8623626,
+    "ast_hash": "c524235c947a3fe3eaf027c8412b55da",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/configs.py": {
@@ -150,8 +150,8 @@
     "semantic_hash": "8fad60317c5790f7b622e24ba14fbcf0"
   },
   "Resources/business/aqa/generator/aqabizgen/cli.py": {
-    "mtime": 1788018943.0225036,
-    "ast_hash": "b161c033bfcd479602d46849131f17ba",
+    "mtime": 1788107524.8627257,
+    "ast_hash": "dfe5874aa52d931d6a99b190ba83b90b",
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/configs.py": {
@@ -210,8 +210,8 @@
     "semantic_hash": "1338a6788cf559bb81551beacd59aeb4"
   },
   "Resources/computer-science/aqa/generator/cspapergen/cli.py": {
-    "mtime": 1788018630.0484915,
-    "ast_hash": "54d25b1fc15aef1867a4a04aa8c7621e",
+    "mtime": 1788107524.863581,
+    "ast_hash": "2a46ca02bca6336a14ad8e8aff012aff",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/exam_dates.py": {
@@ -225,8 +225,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/models.py": {
-    "mtime": 1787947740.0498078,
-    "ast_hash": "f6bc8ffba36cd42b7dcbb7f8debbd05d",
+    "mtime": 1788107165.304186,
+    "ast_hash": "fdd0b0ea9749f696509eabd4c9a3f4d8",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/notes.py": {
@@ -235,8 +235,8 @@
     "semantic_hash": "c603406d49fa609e455e75306a249d9e"
   },
   "Resources/computer-science/aqa/generator/cspapergen/ollama_client.py": {
-    "mtime": 1788038595.1412616,
-    "ast_hash": "b0617dfc10f71150d89acde82ebbd6fe",
+    "mtime": 1788107233.0412095,
+    "ast_hash": "bc36e8167b48eec04d08486f41620415",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/paper1_assets.py": {
@@ -275,8 +275,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_blueprint.py": {
-    "mtime": 1788018826.3262863,
-    "ast_hash": "19ca276de6614f08fcfd7a3b3c90f6a6",
+    "mtime": 1788107197.8602166,
+    "ast_hash": "6f4747a75cf195552c7b88747ba87208",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_cli_pdf.py": {
@@ -325,8 +325,8 @@
     "semantic_hash": "56d870e1030f0dced36c6d3226caa451"
   },
   "Resources/computer-science/ocr/generator/ocrcsgen/cli.py": {
-    "mtime": 1788018943.0227926,
-    "ast_hash": "643c10bd6a10a04025e75f2d10691ad2",
+    "mtime": 1788107524.862954,
+    "ast_hash": "3d56ea57e2eaf3f3aa24f562f65b2e25",
     "semantic_hash": ""
   },
   "Resources/computer-science/ocr/generator/ocrcsgen/configs.py": {
@@ -370,8 +370,8 @@
     "semantic_hash": "f7a0b3033bf1284f4e52db971d25ff73"
   },
   "Resources/economics/aqa/generator/aqaecongen/cli.py": {
-    "mtime": 1788018943.0230424,
-    "ast_hash": "aad29d9bb24004b87d07ab5d2a842063",
+    "mtime": 1788107524.8631778,
+    "ast_hash": "94bf1a90d9d8cef880446893323e260d",
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/aqaecongen/configs.py": {
@@ -430,8 +430,8 @@
     "semantic_hash": "b9e6ae432a75667203d8046ab699cba3"
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/cli.py": {
-    "mtime": 1788018826.3275716,
-    "ast_hash": "4ba0865fd3217a86721c2d8fb84f713b",
+    "mtime": 1788107524.863834,
+    "ast_hash": "a9fdcff22038e604140f7ef97275140d",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/exam_dates.py": {
@@ -445,8 +445,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/models.py": {
-    "mtime": 1787755258.1989222,
-    "ast_hash": "c9a9592281174ec685a5b52fd54f3299",
+    "mtime": 1788107165.3046927,
+    "ast_hash": "a6cba98761977fc2fad20caf384ca611",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/notes.py": {
@@ -455,8 +455,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/ollama_client.py": {
-    "mtime": 1788018826.3270562,
-    "ast_hash": "1a5f5bcd8c7436c8054e08ed45a5b76a",
+    "mtime": 1788107233.0419042,
+    "ast_hash": "6161644e24ecd80d9fa46de284cec261",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/paper_configs.py": {
@@ -515,8 +515,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/tests/test_ollama_generation.py": {
-    "mtime": 1788018846.138428,
-    "ast_hash": "f70117c319c6877dcce138456a79c971",
+    "mtime": 1788107197.8608425,
+    "ast_hash": "0b2a275fa63184c47a78e535292e099f",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/tests/test_ollama_prompt.py": {
@@ -570,8 +570,8 @@
     "semantic_hash": "a8e99e04cbad1d5adeefb31d441959fd"
   },
   "Resources/economics/ocr/generator/ocregen/cli.py": {
-    "mtime": 1788018943.0233018,
-    "ast_hash": "1c0fef44740499669cd9cd4a427b69be",
+    "mtime": 1788107524.8633611,
+    "ast_hash": "c7a23ab9b834315e796568652d341797",
     "semantic_hash": ""
   },
   "Resources/economics/ocr/generator/ocregen/configs.py": {
@@ -645,8 +645,8 @@
     "semantic_hash": "9deb2ada1cc834bbebf8bbad9c8978a1"
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1788106137.334141,
-    "ast_hash": "fcb7484a78aa617d0ff125f12d9acc4c",
+    "mtime": 1788107364.3786633,
+    "ast_hash": "f486cf993c8e67bfd3397c6906e7d2cb",
     "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
@@ -1055,13 +1055,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/ai_assessment.py": {
-    "mtime": 1788018943.021296,
-    "ast_hash": "17e69f66b4ec5def463ccf7905ae3a27",
+    "mtime": 1788107080.2901986,
+    "ast_hash": "5c2b9029236a207dd2fccfb89a4713db",
     "semantic_hash": ""
   },
   "Backend/Core/assessment_package.py": {
-    "mtime": 1788038595.1399157,
-    "ast_hash": "a6fb553852d569beb94b578827703299",
+    "mtime": 1788107127.5383308,
+    "ast_hash": "48dbb00356c10760c8b50d12b857fa76",
     "semantic_hash": ""
   },
   "Backend/Core/assessment_quality.py": {
@@ -1070,8 +1070,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/model_review.py": {
-    "mtime": 1788019008.5812716,
-    "ast_hash": "8307e23ef74ada6065a52b46887ae30f",
+    "mtime": 1788107006.5786278,
+    "ast_hash": "60ce765e0a7ffbeaf6d49c9cc8a03b5a",
     "semantic_hash": ""
   },
   "Backend/Core/psychometrics.py": {
@@ -1105,8 +1105,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Domain/AppModels.swift": {
-    "mtime": 1788106177.337957,
-    "ast_hash": "74680d541d9ac9a69f7670a148dfdda3",
+    "mtime": 1788107502.1629956,
+    "ast_hash": "43e717149980984d8ed25a56dfc43ca5",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Domain/GenerationEstimator.swift": {
@@ -1120,13 +1120,13 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Generation/GeneratorWorkspaceView.swift": {
-    "mtime": 1788106200.7982364,
-    "ast_hash": "16f08e20fcbd2063ace75f9669304495",
+    "mtime": 1788107502.1637728,
+    "ast_hash": "501f2c242099ddd56ed29d32d49afa3e",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Onboarding/WelcomeHelpViews.swift": {
-    "mtime": 1788018943.024899,
-    "ast_hash": "be1e192c585e5275f90bcd5c3316efba",
+    "mtime": 1788108012.15469,
+    "ast_hash": "ace72e2717ecc371690f77a10c7c5ddc",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Settings/SettingsPane.swift": {
@@ -1155,8 +1155,8 @@
     "semantic_hash": ""
   },
   "tests/test_ai_assessment.py": {
-    "mtime": 1788018256.2224097,
-    "ast_hash": "4137d25254771579e21565e6626a848e",
+    "mtime": 1788107044.7331455,
+    "ast_hash": "ab380ce4195102498329207731b1b11a",
     "semantic_hash": ""
   },
   "tests/test_psychometrics.py": {
@@ -1330,8 +1330,8 @@
     "semantic_hash": ""
   },
   "tests/test_model_review.py": {
-    "mtime": 1788038595.1417258,
-    "ast_hash": "6a1ba96d1bc00a4e687272f1ae6ea57e",
+    "mtime": 1788106973.4324315,
+    "ast_hash": "034e677e4d00121140cce34f92ea01af",
     "semantic_hash": ""
   },
   "Backend/Core/assessment_checkpoints.py": {
@@ -1625,8 +1625,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/family_adapter.py": {
-    "mtime": 1788038595.1405144,
-    "ast_hash": "bb0f2c12293e69bcb2dfead1892b3d8b",
+    "mtime": 1788107173.210984,
+    "ast_hash": "3b61f6c73958a1bcf1da8bd29d237a22",
     "semantic_hash": ""
   },
   "Backend/Core/subject_plugins.py": {
@@ -1885,28 +1885,28 @@
     "semantic_hash": ""
   },
   "Backend/Core/reference_demand.py": {
-    "mtime": 1788038395.9785619,
-    "ast_hash": "5baa226ff006f7373b0cd764844fe135",
+    "mtime": 1788107794.7769082,
+    "ast_hash": "d532980a1f06064e10d59183b3d8495c",
     "semantic_hash": ""
   },
   "Resources/reference-demand-profile.schema.json": {
-    "mtime": 1788018017.6897159,
-    "ast_hash": "e83352cd59f636f325608fbd151f3e6c",
+    "mtime": 1788106900.4498136,
+    "ast_hash": "8f999427a33a9ded04a7233163578395",
     "semantic_hash": ""
   },
   "Resources/reference-demand-profiles.json": {
-    "mtime": 1788038355.841122,
-    "ast_hash": "bd03adebbabc8d83231e24fcec9666f1",
+    "mtime": 1788107951.8434546,
+    "ast_hash": "d4a971c860b6ee574c451e39481016e6",
     "semantic_hash": ""
   },
   "tests/test_reference_demand.py": {
-    "mtime": 1788038595.1423333,
-    "ast_hash": "b02565410199751bd634fa11c6bf55c2",
+    "mtime": 1788107115.058508,
+    "ast_hash": "72a571d8bb20e4d2b17262020e571bd9",
     "semantic_hash": ""
   },
   "tools/reference_demand_profiles.py": {
-    "mtime": 1788038607.8781612,
-    "ast_hash": "f4421383549bb94ad40ee00d9d2080af",
+    "mtime": 1788107902.1959026,
+    "ast_hash": "6c927b0b0fdb160b35acfe360c4daa6e",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-29-reference-demand-calibration.md": {
@@ -1937,6 +1937,21 @@
   "tests/test_canvas_furniture.py": {
     "mtime": 1788104065.7534704,
     "ast_hash": "a1ac7d13e441d7bd2a32d35adb8f2170",
+    "semantic_hash": ""
+  },
+  "docs/quality/difficulty-calibration-v2-report.md": {
+    "mtime": 1788108012.1555882,
+    "ast_hash": "aba6e178f85b8f5432bc8698a64960d2",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-08-30-difficulty-calibration-v2.md": {
+    "mtime": 1788108177.50763,
+    "ast_hash": "780656153c520f0fe41908f504fde910",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-08-30-difficulty-calibration-v2-design.md": {
+    "mtime": 1788106589.3860257,
+    "ast_hash": "b30a08f413de71407d423d0123bba3c9",
     "semantic_hash": ""
   }
 }

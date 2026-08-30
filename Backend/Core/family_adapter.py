@@ -56,7 +56,7 @@ class FamilyAdapter:
         Any,
     ] | None = None
     calibrate_difficulty: Callable[
-        [Any, Any, Any, object, ProgressCallback | None], None
+        [Any, Any, Any, object, ProgressCallback | None], Any
     ] | None = None
     client_factory: Callable[[str, str], object] | None = None
     checkpoint_identity: Callable[[Any, Any, str], Any] | None = None
@@ -133,7 +133,7 @@ def run_family_adapter(
                     f"{adapter.id} has a custom AI pipeline without a "
                     "reference-demand reviewer"
                 )
-            adapter.calibrate_difficulty(
+            assessment = adapter.calibrate_difficulty(
                 assessment,
                 syllabus,
                 rule,

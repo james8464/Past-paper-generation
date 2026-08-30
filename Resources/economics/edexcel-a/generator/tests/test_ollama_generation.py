@@ -46,6 +46,16 @@ def test_blueprint_receives_a_separate_reference_demand_review() -> None:
 
         def generate_json(self, prompt: str) -> dict[str, object]:
             self.prompts.append(prompt)
+            if "Independently solve" in prompt:
+                return {
+                    "answer": "A supported judgement.",
+                    "steps": ["Analyse the evidence.", "Reach a judgement."],
+                    "mark_points": [],
+                    "evidence_ids": [],
+                    "alternatives": [],
+                    "partial_credit_boundaries": [],
+                    "follow_through_rules": [],
+                }
             return {
                 "approved": True,
                 "estimated_demand": "high",
@@ -54,16 +64,23 @@ def test_blueprint_receives_a_separate_reference_demand_review() -> None:
                 "command_word_fit": True,
                 "context_fit": True,
                 "profile_fit": True,
+                "observed_cognitive_operations": ["retrieve", "apply", "transform", "explain", "contextualise", "analyse", "integrate", "judge"],
+                "cognitive_operations_fit": True,
+                "reasoning_range_fit": True,
+                "shortcut_resistant": True,
+                "timing_fit": True,
+                "scaffolding_fit": True,
                 "issues": [],
             }
 
     client = Client()
-    review_blueprint_difficulty(client, blueprint, syllabus)
+    reviewed = review_blueprint_difficulty(client, blueprint, syllabus)
 
-    assert len(client.prompts) == 1
-    assert "difficulty calibration specialist" in client.prompts[0]
-    assert '"reference_profile_fingerprint"' in client.prompts[0]
-    assert '"requires_judgement": true' in client.prompts[0]
+    difficulty_prompts = [prompt for prompt in client.prompts if "difficulty calibration specialist" in prompt]
+    assert len(difficulty_prompts) == 1
+    assert '"reference_profile_fingerprint"' in difficulty_prompts[0]
+    assert '"requires_judgement": true' in difficulty_prompts[0]
+    assert reviewed.questions[0].difficulty_evidence["approved"] is True
 
 
 class BlueprintAwareClient:

@@ -12,7 +12,7 @@
     "profiles"
   ],
   "properties": {
-    "schema_version": { "const": 1 },
+    "schema_version": { "const": 2 },
     "purpose": { "type": "string", "minLength": 20 },
     "derived_aggregate_only": { "const": true },
     "retains_source_text": { "const": false },
@@ -32,7 +32,11 @@
           "mark_band_distribution",
           "command_word_distribution",
           "demand_distribution",
-          "distribution_tolerance"
+          "mark_weighted_demand_distribution",
+          "response_mode_distribution",
+          "cognitive_operation_distribution",
+          "extraction_coverage",
+          "metric_tolerances"
         ],
         "properties": {
           "family_id": { "type": "string", "minLength": 3 },
@@ -49,16 +53,42 @@
           "mark_band_distribution": { "$ref": "#/$defs/distribution" },
           "command_word_distribution": { "$ref": "#/$defs/distribution" },
           "demand_distribution": { "$ref": "#/$defs/distribution" },
-          "distribution_tolerance": {
+          "mark_weighted_demand_distribution": { "$ref": "#/$defs/distribution" },
+          "response_mode_distribution": { "$ref": "#/$defs/distribution" },
+          "cognitive_operation_distribution": { "$ref": "#/$defs/distribution" },
+          "extraction_coverage": {
             "type": "number",
-            "exclusiveMinimum": 0,
-            "maximum": 2
+            "minimum": 0.6,
+            "maximum": 1
+          },
+          "metric_tolerances": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "mark_band_distribution",
+              "command_family_distribution",
+              "mark_weighted_demand_distribution",
+              "response_mode_distribution",
+              "cognitive_operation_distribution"
+            ],
+            "properties": {
+              "mark_band_distribution": { "$ref": "#/$defs/tolerance" },
+              "command_family_distribution": { "$ref": "#/$defs/tolerance" },
+              "mark_weighted_demand_distribution": { "$ref": "#/$defs/tolerance" },
+              "response_mode_distribution": { "$ref": "#/$defs/tolerance" },
+              "cognitive_operation_distribution": { "$ref": "#/$defs/tolerance" }
+            }
           }
         }
       }
     }
   },
   "$defs": {
+    "tolerance": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 2
+    },
     "distribution": {
       "type": "object",
       "minProperties": 1,

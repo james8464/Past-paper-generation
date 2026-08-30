@@ -66,6 +66,8 @@ IGNORED_LINES = (
     "copyright holder",
 )
 MCQ_BLOCKS = {
+    ("aqa/accounting", "1"): 10,
+    ("aqa/accounting", "2"): 10,
     ("aqa/economics", "3"): 30,
     ("ocr/economics", "3"): 30,
 }
@@ -216,6 +218,108 @@ def extract_reference_features(
     }
 
 
+def extract_reference_items(
+    text: str,
+    *,
+    board: str,
+    family_id: str | None = None,
+    paper_id: str | None = None,
+) -> list[dict[str, Any]]:
+    """Pair each tariff with its nearest local command, retaining no prose."""
+
+    matches = list(_mark_pattern(board).finditer(text))
+    mcq_count = MCQ_BLOCKS.get((family_id or "", str(paper_id or "")), 0)
+    items: list[dict[str, Any]] = []
+    for index, match in enumerate(matches):
+        marks = int(match.group(1))
+        command = "select" if index < mcq_count else _nearest_command(
+            text[max(0, match.start() - 3000):match.start()]
+        )
+        items.append(
+            {
+                "marks": marks,
+                "command_word": command,
+                "demand_band": _item_demand(marks, command),
+                "response_mode": _reference_response_mode(marks, command),
+                "cognitive_operation": _reference_operation(command),
+            }
+        )
+    return items
+
+
+def _mark_pattern(board: str) -> re.Pattern[str]:
+    if board == "aqa":
+        return re.compile(r"\[(\d+)\s+marks?\]", re.IGNORECASE)
+    if board == "ocr":
+        return re.compile(r"\[(\d+)\]")
+    if board == "pearson-edexcel":
+        return re.compile(r"(?m)^\s*\((\d{1,2})\)\s*$")
+    raise ValueError(f"unsupported reference board: {board}")
+
+
+def _nearest_command(window: str) -> str:
+    commands: list[tuple[int, str]] = []
+    for raw_line in window.splitlines():
+        line = " ".join(raw_line.split())
+        lowered = line.casefold()
+        if not line or any(ignored in lowered for ignored in IGNORED_LINES):
+            continue
+        if re.search(r"\bwhich\s+(?:one\s+)?of\s+the\s+following\b", lowered):
+            commands.append((window.rfind(raw_line), "select"))
+            continue
+        if "to what extent" in lowered:
+            commands.append((window.rfind(raw_line), "evaluate"))
+            continue
+        match = COMMAND_PATTERN.search(line)
+        if match is None:
+            continue
+        value = match.group(1).casefold()
+        if value == "write" and not re.search(
+            r"\bwrite\s+(?:a|an|code|down|pseudocode|sql|the)", lowered
+        ):
+            continue
+        commands.append(
+            (window.rfind(raw_line), "analyse" if value == "analyze" else value)
+        )
+    return max(commands, default=(-1, "unspecified"))[1]
+
+
+def _item_demand(marks: int, command: str) -> str:
+    if marks >= 10 or command in {"assess", "discuss", "evaluate"}:
+        return "high"
+    if marks <= 3 or command in {"define", "give", "identify", "select", "state"}:
+        return "low"
+    return "standard"
+
+
+def _reference_response_mode(marks: int, command: str) -> str:
+    if command == "select":
+        return "selected-response"
+    if command in {"calculate", "complete", "construct", "draw", "prepare", "write"}:
+        return "multi-stage-calculation" if marks >= 4 else "calculation"
+    if command in {"define", "give", "identify", "name", "state"}:
+        return "recall"
+    if command in {"assess", "discuss", "evaluate", "justify", "recommend"} or marks >= 12:
+        return "extended-evaluation"
+    if command in {"analyse", "compare", "examine", "explain"}:
+        return "structured-reasoning"
+    return "constructed-response"
+
+
+def _reference_operation(command: str) -> str:
+    if command in {"define", "give", "identify", "name", "select", "state"}:
+        return "retrieve"
+    if command in {"calculate", "complete", "construct", "draw", "prepare", "write"}:
+        return "transform"
+    if command in {"assess", "discuss", "evaluate", "justify", "recommend"}:
+        return "judge"
+    if command in {"analyse", "compare", "examine"}:
+        return "analyse"
+    if command in {"describe", "outline"}:
+        return "describe"
+    return "explain"
+
+
 def build_document() -> ReferenceDemandDocument:
     profiles: list[ReferenceDemandProfile] = []
     for family in FAMILIES:
@@ -239,16 +343,37 @@ def build_document() -> ReferenceDemandDocument:
             commands = [
                 value for feature in features for value in feature["command_words"]
             ]
+            reference_items = [
+                item
+                for path in paths
+                for item in extract_reference_items(
+                    _pdf_text(path),
+                    board=family.board,
+                    family_id=family.family_id,
+                    paper_id=paper_id,
+                )
+            ]
             if not marks or not commands:
                 raise ValueError(
                     f"reference extraction is incomplete for {family.family_id} "
                     f"paper {paper_id}"
                 )
+            paired = [
+                item for item in reference_items
+                if item["command_word"] != "unspecified"
+            ]
+            coverage = len(paired) / len(reference_items) if reference_items else 0
+            if coverage < 0.6:
+                raise ValueError(
+                    f"reference item pairing coverage is only {coverage:.1%} for "
+                    f"{family.family_id} paper {paper_id}"
+                )
             profile = ReferenceDemandProfile(
                 family_id=family.family_id,
                 paper_id=paper_id,
                 comparison_basis=(
-                    f"Aggregate mark tariffs and command-word frequencies from "
+                    "Aggregate paired tariffs, response modes and cognitive "
+                    "operations from "
                     f"{len(paths)} official {family.board.upper()} A-level question "
                     "papers; no source wording retained."
                 ),
@@ -256,15 +381,25 @@ def build_document() -> ReferenceDemandDocument:
                 source_fingerprint=_fingerprint(paths),
                 mark_band_distribution=_distribution(_mark_band(mark) for mark in marks),
                 command_word_distribution=_distribution(commands),
-                demand_distribution=_distribution(_mark_demand(mark) for mark in marks),
-                distribution_tolerance=0.85,
+                demand_distribution=_distribution(item["demand_band"] for item in paired),
+                mark_weighted_demand_distribution=_weighted_distribution(
+                    (item["demand_band"], item["marks"]) for item in paired
+                ),
+                response_mode_distribution=_distribution(
+                    item["response_mode"] for item in paired
+                ),
+                cognitive_operation_distribution=_distribution(
+                    item["cognitive_operation"] for item in paired
+                ),
+                extraction_coverage=round(coverage, 6),
+                metric_tolerances=_metric_tolerances(question_bank=False),
             )
             profiles.append(profile)
             family_profiles.append(profile)
         if family.family_id == "aqa/computer-science":
             profiles.extend(_question_bank_profiles(family_profiles))
     return ReferenceDemandDocument(
-        schema_version=1,
+        schema_version=2,
         purpose=(
             "Copyright-safe aggregate demand fingerprints for reference-shaped "
             "authoring and automated form checks; not psychometric evidence."
@@ -311,6 +446,15 @@ def _question_bank_profiles(
     demand_distribution = _mean_distribution(
         [profile.demand_distribution for profile in parents]
     )
+    weighted_demand_distribution = _mean_distribution(
+        [profile.mark_weighted_demand_distribution for profile in parents]
+    )
+    response_mode_distribution = _mean_distribution(
+        [profile.response_mode_distribution for profile in parents]
+    )
+    operation_distribution = _mean_distribution(
+        [profile.cognitive_operation_distribution for profile in parents]
+    )
     return [
         ReferenceDemandProfile(
             family_id="aqa/computer-science",
@@ -326,7 +470,11 @@ def _question_bank_profiles(
             mark_band_distribution=mark_distribution,
             command_word_distribution=command_distribution,
             demand_distribution=demand_distribution,
-            distribution_tolerance=1.4,
+            mark_weighted_demand_distribution=weighted_demand_distribution,
+            response_mode_distribution=response_mode_distribution,
+            cognitive_operation_distribution=operation_distribution,
+            extraction_coverage=min(profile.extraction_coverage for profile in parents),
+            metric_tolerances=_metric_tolerances(question_bank=True),
         )
         for paper_id in ("bank-4.2", "bank-4.10", "bank-4.12")
     ]
@@ -344,6 +492,23 @@ def _mean_distribution(values: list[dict[str, float]]) -> dict[str, float]:
 def _distribution(values: Any) -> dict[str, float]:
     counts = Counter(values)
     return _renormalise(dict(counts))
+
+
+def _weighted_distribution(values: Any) -> dict[str, float]:
+    counts: Counter[str] = Counter()
+    for key, weight in values:
+        counts[str(key)] += float(weight)
+    return _renormalise(dict(counts))
+
+
+def _metric_tolerances(*, question_bank: bool) -> dict[str, float]:
+    return {
+        "mark_band_distribution": 0.7 if question_bank else 0.5,
+        "command_family_distribution": 0.9 if question_bank else 0.7,
+        "mark_weighted_demand_distribution": 0.8 if question_bank else 0.45,
+        "response_mode_distribution": 0.9 if question_bank else 0.7,
+        "cognitive_operation_distribution": 1.0 if question_bank else 0.8,
+    }
 
 
 def _renormalise(values: dict[str, float]) -> dict[str, float]:

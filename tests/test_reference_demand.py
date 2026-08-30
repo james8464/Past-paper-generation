@@ -50,7 +50,29 @@ def profile_payload() -> dict[str, object]:
             "standard": 0.5,
             "high": 0.25,
         },
-        "distribution_tolerance": 0.5,
+        "mark_weighted_demand_distribution": {
+            "low": 0.1,
+            "standard": 0.4,
+            "high": 0.5,
+        },
+        "response_mode_distribution": {
+            "recall": 0.25,
+            "structured-reasoning": 0.5,
+            "extended-evaluation": 0.25,
+        },
+        "cognitive_operation_distribution": {
+            "retrieve": 0.25,
+            "explain": 0.5,
+            "judge": 0.25,
+        },
+        "extraction_coverage": 0.95,
+        "metric_tolerances": {
+            "mark_band_distribution": 0.5,
+            "command_family_distribution": 0.5,
+            "mark_weighted_demand_distribution": 0.5,
+            "response_mode_distribution": 0.7,
+            "cognitive_operation_distribution": 0.7,
+        },
     }
 
 
@@ -82,6 +104,11 @@ def test_item_target_turns_high_demand_into_observable_requirements() -> None:
 
     assert target.demand_band == "high"
     assert target.minimum_reasoning_steps == 4
+    assert target.maximum_reasoning_steps == 7
+    assert "judge" in target.required_cognitive_operations
+    assert "integrate" in target.required_cognitive_operations
+    assert target.requires_shortcut_resistance is True
+    assert target.maximum_scaffolding == "minimal"
     assert target.requires_context is True
     assert target.requires_analysis_chain is True
     assert target.requires_judgement is True
@@ -118,9 +145,77 @@ def test_item_target_distinguishes_multistage_calculation_from_recall() -> None:
 
     assert calculation.response_mode == "multi-stage-calculation"
     assert calculation.minimum_reasoning_steps == 3
+    assert calculation.maximum_reasoning_steps >= calculation.minimum_reasoning_steps
+    assert "transform" in calculation.required_cognitive_operations
     assert calculation.requires_data_transformation is True
     assert recall.response_mode == "recall"
     assert recall.minimum_reasoning_steps == 1
+    assert recall.maximum_reasoning_steps == 2
+    assert recall.required_cognitive_operations == ["retrieve"]
+
+
+def test_reference_extraction_pairs_local_command_and_mark_without_retaining_prose() -> None:
+    tool = tool_module()
+    text = """
+    01 Explain two consequences for the business.
+    [4 marks]
+    02 Evaluate whether the investment should proceed.
+    [12 marks]
+    """
+
+    items = tool.extract_reference_items(text, board="aqa")
+
+    assert items == [
+        {
+            "marks": 4,
+            "command_word": "explain",
+            "demand_band": "standard",
+            "response_mode": "structured-reasoning",
+            "cognitive_operation": "explain",
+        },
+        {
+            "marks": 12,
+            "command_word": "evaluate",
+            "demand_band": "high",
+            "response_mode": "extended-evaluation",
+            "cognitive_operation": "judge",
+        },
+    ]
+    assert "business" not in json.dumps(items)
+    assert "investment" not in json.dumps(items)
+
+
+def test_form_audit_weights_demand_by_marks_and_reports_review_coverage() -> None:
+    reference_demand = module()
+    profile = reference_demand.ReferenceDemandProfile.model_validate(profile_payload())
+    items = [
+        {
+            "id": "q1",
+            "marks": 1,
+            "kind": "multiple_choice",
+            "command_word": "Select",
+            "intended_demand": "low",
+            "difficulty_evidence": {"approved": True, "reasoning_range_fit": True, "context_fit": True, "shortcut_resistant": True},
+        },
+        {
+            "id": "q2",
+            "marks": 9,
+            "kind": "essay",
+            "command_word": "Evaluate",
+            "intended_demand": "high",
+            "difficulty_evidence": {"approved": True, "reasoning_range_fit": True, "context_fit": True, "shortcut_resistant": True},
+        },
+    ]
+
+    report = reference_demand.audit_form_demand(items, profile)
+
+    assert report["schema_version"] == 2
+    assert report["observed"]["mark_weighted_demand_distribution"] == {
+        "high": 0.9,
+        "low": 0.1,
+    }
+    assert report["item_review_evidence"]["coverage"] == 1.0
+    assert report["extraction_coverage"] == 0.95
 
 
 def test_form_audit_rejects_distribution_drift() -> None:
@@ -249,6 +344,15 @@ def test_assessment_package_records_the_exact_reference_demand_audit(
         mark_scheme=["One developed effect using the extract."],
         assessment_objectives={"AO1": 1, "AO2": 1, "AO3": 2},
         source_references=["Extract A"],
+        authoring_context={
+            "difficulty_evidence": {
+                "schema_version": 2,
+                "approved": True,
+                "reasoning_range_fit": True,
+                "context_fit": True,
+                "shortcut_resistant": True,
+            }
+        },
     )
     paper = GeneratedPaper(
         paper_id="paper_1",
@@ -292,3 +396,27 @@ def test_assessment_package_records_the_exact_reference_demand_audit(
         "aqa/economics", "1"
     ).source_fingerprint
     assert audit["empirical_equivalence_claimed"] is False
+    assert document["items"][0]["difficulty_evidence"]["approved"] is True
+    assert audit["item_review_evidence"]["coverage"] == 1.0
+
+
+def test_live_form_audit_fails_closed_without_item_review_evidence() -> None:
+    reference_demand = module()
+    profile = reference_demand.ReferenceDemandProfile.model_validate(profile_payload())
+
+    report = reference_demand.audit_form_demand(
+        [
+            {
+                "id": "q1",
+                "marks": 4,
+                "command_word": "Explain",
+                "kind": "data_response",
+                "context": ["An extract"],
+            }
+        ],
+        profile,
+        require_item_evidence=True,
+    )
+
+    assert report["passed"] is False
+    assert "item_review_coverage" in report["failed_checks"]

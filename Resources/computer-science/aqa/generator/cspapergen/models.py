@@ -57,6 +57,7 @@ class QuestionPart(BaseModel):
     options: list[MultipleChoiceOption] = Field(default_factory=list)
     correct_option: str = ""
     marking: MarkingGuidance
+    difficulty_evidence: dict[str, object] = Field(default_factory=dict)
 
 
 class Question(BaseModel):

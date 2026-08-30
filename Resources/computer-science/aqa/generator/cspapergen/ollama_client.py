@@ -17,6 +17,7 @@ from Backend.Core.model_review import (
     require_difficulty_review,
     require_independent_review,
 )
+from Backend.Core.independent_solver import IndependentSolver
 from Backend.Core.reference_demand import build_item_demand_target, profile_for
 from cspapergen.models import (
     MarkingGuidance,
@@ -233,7 +234,7 @@ def review_blueprint_difficulty(
     blueprint: PaperBlueprint,
     syllabus: Syllabus,
     progress: Callable[[str], None] | None = None,
-) -> None:
+) -> PaperBlueprint:
     emit = progress or (lambda _message: None)
     paper_id = (
         f"bank-{blueprint.focus_topic_id}"
@@ -241,36 +242,44 @@ def review_blueprint_difficulty(
         else blueprint.paper_number
     )
     profile = profile_for("aqa/computer-science", paper_id)
-    review_items = [
-        (question, part)
-        for question in blueprint.questions
-        for part in question.parts
-    ]
-    for index, (question, part) in enumerate(review_items, start=1):
+    item_count = sum(len(question.parts) for question in blueprint.questions)
+    item_index = 0
+    reviewed_questions: list[Question] = []
+    for question in blueprint.questions:
         topic = syllabus.get_topic(question.topic_id)
-        emit(
-            f"Checking reference demand {index}/{len(review_items)}: "
-            f"0 {question.number:02d}({part.label})"
-        )
-        require_difficulty_review(
-            client,
-            item_id=f"question-{question.number}-{part.label}",
-            subject="AQA A-level Computer Science",
-            target=build_item_demand_target(
-                _part_demand_item(question, part),
-                profile,
-            ),
-            candidate={
-                "stem": question.stem,
-                "stimulus": (
-                    question.stimulus.model_dump(mode="json")
-                    if question.stimulus is not None
-                    else None
-                ),
-                "part": part.model_dump(mode="json"),
-            },
-            specification=topic,
-        )
+        reviewed_parts: list[QuestionPart] = []
+        for part in question.parts:
+            item_index += 1
+            item = _part_demand_item(question, part)
+            emit(
+                f"Checking reference demand {item_index}/{item_count}: "
+                f"0 {question.number:02d}({part.label})"
+            )
+            solution = IndependentSolver(client).solve(item, [])
+            evidence = require_difficulty_review(
+                client,
+                item_id=f"question-{question.number}-{part.label}",
+                subject="AQA A-level Computer Science",
+                target=build_item_demand_target(item, profile),
+                candidate={
+                    "stem": question.stem,
+                    "stimulus": (
+                        question.stimulus.model_dump(mode="json")
+                        if question.stimulus is not None
+                        else None
+                    ),
+                    "part": part.model_dump(mode="json"),
+                },
+                specification=topic,
+                canonical_solution=solution,
+            )
+            reviewed_parts.append(
+                part.model_copy(
+                    update={"difficulty_evidence": evidence.model_dump(mode="json")}
+                )
+            )
+        reviewed_questions.append(question.model_copy(update={"parts": reviewed_parts}))
+    return blueprint.model_copy(update={"questions": reviewed_questions})
 
 
 def _prompt(

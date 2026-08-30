@@ -652,6 +652,11 @@ struct GenerationQualityReport: Equatable {
     let referenceDemandItems: Int
     let referenceDemandDocuments: Int
     let referenceDemandMaxDistance: Double?
+    let referenceDemandExtractionCoverage: Double?
+    let difficultyReviewedItems: Int
+    let difficultyReasoningFitItems: Int
+    let difficultyContextFitItems: Int
+    let difficultyShortcutFitItems: Int
 
     static func load(from url: URL) -> GenerationQualityReport? {
         guard let data = try? Data(contentsOf: url),
@@ -665,6 +670,7 @@ struct GenerationQualityReport: Equatable {
         let nearest = novelty["nearest_match"] as? [String: Any]
         let referenceDemand = assessment["reference_demand"] as? [String: Any]
         let distances = referenceDemand?["gated_distances"] as? [String: Double]
+        let itemReview = referenceDemand?["item_review_evidence"] as? [String: Any]
         let pdfCount = outputs.values.compactMap { value -> [String: Any]? in
             value as? [String: Any]
         }.filter { $0["pdf_validation"] is [String: Any] }.count
@@ -677,7 +683,12 @@ struct GenerationQualityReport: Equatable {
             referenceDemandPassed: referenceDemand?["passed"] as? Bool,
             referenceDemandItems: referenceDemand?["items_checked"] as? Int ?? 0,
             referenceDemandDocuments: referenceDemand?["source_document_count"] as? Int ?? 0,
-            referenceDemandMaxDistance: distances?.values.max()
+            referenceDemandMaxDistance: distances?.values.max(),
+            referenceDemandExtractionCoverage: referenceDemand?["extraction_coverage"] as? Double,
+            difficultyReviewedItems: itemReview?["reviewed_items"] as? Int ?? 0,
+            difficultyReasoningFitItems: itemReview?["reasoning_range_fit"] as? Int ?? 0,
+            difficultyContextFitItems: itemReview?["context_fit"] as? Int ?? 0,
+            difficultyShortcutFitItems: itemReview?["shortcut_resistant"] as? Int ?? 0
         )
     }
 }

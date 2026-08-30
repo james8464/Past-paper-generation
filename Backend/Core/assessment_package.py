@@ -115,6 +115,7 @@ def write_assessment_package(
         subject=subject,
         paper_number=paper_number,
         items=items,
+        preview=preview,
     )
     document = {
         "schema_version": 1,
@@ -195,6 +196,7 @@ def validate_assessment_package(
         subject=subject,
         paper_number=paper_number,
         items=items,
+        preview=preview,
     )
     if reference_demand is not None:
         if document.get("reference_demand") != reference_demand:
@@ -252,13 +254,14 @@ def _reference_demand_audit(
     subject: str,
     paper_number: str,
     items: list[dict[str, Any]],
+    preview: bool,
 ) -> dict[str, Any] | None:
     try:
         capability = generator_capability(subject)
     except ValueError:
         return None
     profile = profile_for(capability.id, paper_number)
-    return audit_form_demand(items, profile)
+    return audit_form_demand(items, profile, require_item_evidence=not preview)
 
 
 def _serialise(value: Any) -> dict[str, Any]:
@@ -359,6 +362,15 @@ def _extract_items(
                 "choices": raw.get("choices") or [],
                 "correct_choice": raw.get("correct_choice"),
                 "chart_values": raw.get("chart_values") or [],
+                "difficulty_evidence": (
+                    raw.get("difficulty_evidence")
+                    if isinstance(raw.get("difficulty_evidence"), dict)
+                    else (
+                        raw.get("authoring_context", {}).get("difficulty_evidence", {})
+                        if isinstance(raw.get("authoring_context"), dict)
+                        else {}
+                    )
+                ),
             }
         )
     if not items:

@@ -49,6 +49,17 @@ def _demand_profile() -> ReferenceDemandProfile:
         mark_band_distribution={"short": 1.0},
         command_word_distribution={"explain": 1.0},
         demand_distribution={"standard": 1.0},
+        mark_weighted_demand_distribution={"standard": 1.0},
+        response_mode_distribution={"structured-reasoning": 1.0},
+        cognitive_operation_distribution={"explain": 1.0},
+        extraction_coverage=1.0,
+        metric_tolerances={
+            "mark_band_distribution": 0.5,
+            "command_family_distribution": 0.5,
+            "mark_weighted_demand_distribution": 0.5,
+            "response_mode_distribution": 0.5,
+            "cognitive_operation_distribution": 0.5,
+        },
     )
 
 
@@ -504,6 +515,8 @@ def test_content_approval_cannot_bypass_separate_difficulty_rejection() -> None:
     )
 
     assert result.prompt.startswith("Explain how higher costs")
+    assert result.authoring_context["difficulty_evidence"]["approved"] is True
+    assert result.authoring_context["difficulty_evidence"]["schema_version"] == 2
     assert len(client.prompts) == 6
     assert "one recalled statement" in client.prompts[3]
 
@@ -1427,6 +1440,21 @@ def _difficulty_response(
         "command_word_fit": approved,
         "context_fit": True,
         "profile_fit": approved,
+        "observed_cognitive_operations": [
+            "retrieve",
+            "apply",
+            "transform",
+            "explain",
+            "contextualise",
+            "analyse",
+            "integrate",
+            "judge",
+        ],
+        "cognitive_operations_fit": approved,
+        "reasoning_range_fit": approved,
+        "shortcut_resistant": approved,
+        "timing_fit": approved,
+        "scaffolding_fit": approved,
         "issues": issues or [],
     }
 
