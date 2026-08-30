@@ -206,16 +206,21 @@ class IncomeStatementCase:
                 f"{_gbp(self.adjusted_marketing_expenses)}."
             ),
             f"Warehouse expenses: {_gbp(self.warehouse_expenses)}.",
-            f"Other income — insurance claim: {_gbp(self.insurance_claim)}.",
             (
-                f"Debenture interest: 6% × 4/12 = {_gbp(new_interest)} and "
+                f"Other income — insurance claim: {_gbp(self.roof_repair)} × "
+                f"88% = {_gbp(self.insurance_claim)}."
+            ),
+            (
+                f"Debenture interest: {_gbp(self.new_debenture)} × 6% × 4/12 "
+                f"= {_gbp(new_interest)} and {_gbp(self.earlier_debenture)} × "
                 f"8% × 10/12 = {_gbp(earlier_interest)}."
             ),
             f"Total finance cost: {_gbp(self.finance_cost)}.",
             f"Profit before tax: {_gbp(self.profit_before_tax)}.",
             (
-                f"Taxation: {_gbp(self.current_tax_charge)}; final profit for "
-                f"the year: {_gbp(self.profit_for_year)}."
+                f"Taxation: 19% × {_gbp(self.profit_before_tax)} = "
+                f"{_gbp(self.current_tax_charge)}; final profit for the year: "
+                f"{_gbp(self.profit_for_year)}."
             ),
         ]
 
@@ -234,6 +239,19 @@ class IncomeStatementCase:
                 "marketing_expenses": self.marketing_expenses,
                 "revenue": self.revenue,
                 "warehouse_expenses": self.warehouse_expenses,
+            },
+            "adjustment_source_data": {
+                "damaged_inventory_cost": self.damaged_inventory_cost,
+                "damaged_inventory_sale_proceeds": (
+                    self.damaged_inventory_sale_proceeds
+                ),
+                "damaged_inventory_repair_cost": self.damaged_inventory_repair_cost,
+                "roof_repair": self.roof_repair,
+                "insurance_claim": self.insurance_claim,
+                "trade_receivable": self.trade_receivable,
+                "supplier_invoice": self.supplier_invoice,
+                "new_debenture": self.new_debenture,
+                "earlier_debenture": self.earlier_debenture,
             },
             "adjustments": {
                 "inventory_write_down": self.inventory_write_down,
@@ -404,7 +422,8 @@ class PartnershipCase:
                 f"Morgan {_gbp(self.opening_capital['Morgan'])}."
             ),
             (
-                "Credit goodwill in the old ratio: "
+                f"Credit total goodwill of {_gbp(self.goodwill)} in the old "
+                f"3:2:1 ratio: "
                 f"Alex {_gbp(self.goodwill_credit['Alex'])}; "
                 f"Morgan {_gbp(self.goodwill_credit['Morgan'])}."
             ),
@@ -428,34 +447,51 @@ class PartnershipCase:
         second = periods["second_period"]
         return [
             (
-                "Apportioned profit: first period "
-                f"{_gbp(first['profit'])}; second period {_gbp(second['profit'])}."
+                f"Apportion annual profit of {_gbp(self.profit_for_year)} for "
+                f"{self.period_months[0]} and {self.period_months[1]} months: "
+                f"first period {_gbp(first['profit'])}; second period "
+                f"{_gbp(second['profit'])}."
             ),
             (
                 "Interest on drawings: first period "
-                f"{_gbp(sum(first['interest_on_drawings'].values()))}; second "
-                f"period {_gbp(sum(second['interest_on_drawings'].values()))}."
+                + ", ".join(
+                    f"{partner} {_gbp(amount)}"
+                    for partner, amount in first["interest_on_drawings"].items()
+                )
+                + f", total {_gbp(sum(first['interest_on_drawings'].values()))}; "
+                + "second period "
+                + ", ".join(
+                    f"{partner} {_gbp(amount)}"
+                    for partner, amount in second["interest_on_drawings"].items()
+                )
+                + f", total {_gbp(sum(second['interest_on_drawings'].values()))}."
             ),
             (
-                "First-period interest on capital: "
+                f"First-period interest on capital at "
+                f"{self.capital_interest_rate_percent}% for "
+                f"{self.period_months[0]} months: "
                 + "; ".join(
-                    f"{partner} {_gbp(amount)}"
+                    f"{partner} {_gbp(self.opening_capital[partner])} gives "
+                    f"{_gbp(amount)}"
                     for partner, amount in first["interest_on_capital"].items()
                 )
                 + "."
             ),
             (
-                "Second-period interest on capital: "
+                f"Second-period interest on capital at "
+                f"{self.capital_interest_rate_percent}% for "
+                f"{self.period_months[1]} months: "
                 + "; ".join(
-                    f"{partner} {_gbp(amount)}"
+                    f"{partner} {_gbp(self.target_capital[partner])} gives "
+                    f"{_gbp(amount)}"
                     for partner, amount in second["interest_on_capital"].items()
                 )
                 + "."
             ),
             (
-                "Morgan's salary: first period "
-                f"{_gbp(first['partner_salary']['Morgan'])}; second period "
-                f"{_gbp(second['partner_salary']['Morgan'])}."
+                f"Morgan's annual salary {_gbp(self.partner_salary_per_year)}: "
+                f"first period {_gbp(first['partner_salary']['Morgan'])}; "
+                f"second period {_gbp(second['partner_salary']['Morgan'])}."
             ),
             (
                 "Residual profit: first period "
@@ -463,12 +499,12 @@ class PartnershipCase:
                 f"{_gbp(second['residual_profit'])}."
             ),
             (
-                "Alex's residual-profit share: first period "
+                "Alex's residual-profit share using 3:2:1 then 3:2: first period "
                 f"{_gbp(first['residual_profit_shares']['Alex'])}; second period "
                 f"{_gbp(second['residual_profit_shares']['Alex'])}."
             ),
             (
-                "Morgan's residual-profit share: first period "
+                "Morgan's residual-profit share using 3:2:1 then 3:2: first period "
                 f"{_gbp(first['residual_profit_shares']['Morgan'])}; second period "
                 f"{_gbp(second['residual_profit_shares']['Morgan'])}; Riley's "
                 f"first-period share {_gbp(first['residual_profit_shares']['Riley'])}."
@@ -668,15 +704,17 @@ class NonCurrentAssetCase:
             (
                 f"Plant depreciation: {_gbp(self.plant_cost_closing)} × "
                 f"{self.plant_rate_percent}% = {_gbp(self.plant_depreciation_charge)}; "
-                "closing accumulated depreciation "
+                f"accumulated depreciation {_gbp(self.plant_accumulated_depreciation_opening)} "
+                f"+ {_gbp(self.plant_depreciation_charge)} = "
                 f"{_gbp(self.plant_accumulated_depreciation_closing)}."
             ),
             f"Plant and machinery carrying amount: {_gbp(self.plant_carrying_amount)}.",
             (
                 f"Motor cost: {_gbp(self.motor_cost_opening)} − "
                 f"{_gbp(self.motor_disposal_cost)} = {_gbp(self.motor_cost_closing)}; "
-                "remove disposal accumulated depreciation of "
-                f"{_gbp(self.motor_disposal_accumulated_depreciation)}."
+                f"accumulated depreciation {_gbp(self.motor_accumulated_depreciation_opening)} "
+                f"− {_gbp(self.motor_disposal_accumulated_depreciation)} = "
+                f"{_gbp(self.motor_accumulated_depreciation_before_charge)}."
             ),
             (
                 f"Motor depreciation: ({_gbp(self.motor_cost_closing)} − "

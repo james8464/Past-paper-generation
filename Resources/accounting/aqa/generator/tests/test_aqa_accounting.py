@@ -192,15 +192,30 @@ def test_asset_scheme_reconciles_with_an_independent_exact_solution() -> None:
         answer=(
             f"Plant and machinery: £{case.plant_carrying_amount:,}\n"
             f"Motor vehicles: £{case.motor_carrying_amount:,}\n"
-            f"Total non-current assets: £{case.total_carrying_amount:,}"
+            f"Total non-current assets: £{case.total_carrying_amount:,}\n"
+            f"Plant accumulated depreciation: £{case.plant_accumulated_depreciation_opening:,} "
+            f"+ £{case.plant_depreciation_charge:,} = "
+            f"£{case.plant_accumulated_depreciation_closing:,}\n"
+            f"Motor accumulated depreciation before charge: "
+            f"£{case.motor_accumulated_depreciation_opening:,} − "
+            f"£{case.motor_disposal_accumulated_depreciation:,} = "
+            f"£{case.motor_accumulated_depreciation_before_charge:,}"
         ),
         steps=[],
         mark_points=[
             f"plant cost after purchase £{case.plant_cost_closing:,}",
             f"plant depreciation £{case.plant_depreciation_charge:,}",
+            (
+                "plant opening accumulated depreciation "
+                f"£{case.plant_accumulated_depreciation_opening:,}"
+            ),
             f"plant carrying amount £{case.plant_carrying_amount:,}",
             f"motor cost after disposal £{case.motor_cost_closing:,}",
             f"motor depreciation £{case.motor_depreciation_charge:,}",
+            (
+                "motor opening accumulated depreciation "
+                f"£{case.motor_accumulated_depreciation_opening:,}"
+            ),
             f"motor carrying amount £{case.motor_carrying_amount:,}",
             f"total non-current assets £{case.total_carrying_amount:,}",
         ],
@@ -220,6 +235,46 @@ def test_asset_scheme_reconciles_with_an_independent_exact_solution() -> None:
     )
 
     assert result.passed, result.issues
+
+
+def test_company_and_partnership_schemes_expose_complete_working_data() -> None:
+    generated = build_paper(RULES["paper_1"], SYLLABUS, 26083031)
+    questions = {
+        question.rule_id: (question, option)
+        for section in generated.sections
+        for option in section.options
+        for question in option.questions
+    }
+    company_question, company_option = questions["company_statement"]
+    retirement_question, partnership_option = questions["partnership_1"]
+    appropriation_question = questions["partnership_2"][0]
+    company = IncomeStatementCase.from_chart_values(
+        company_option.title, company_option.chart_values
+    )
+    partnership = PartnershipCase.from_chart_values(partnership_option.chart_values)
+
+    adjustment_data = company_question.authoring_context["adjustment_source_data"]
+    assert adjustment_data["new_debenture"] == company.new_debenture
+    assert adjustment_data["earlier_debenture"] == company.earlier_debenture
+    company_scheme = " ".join(company_question.mark_scheme)
+    for amount in (
+        company.roof_repair,
+        company.insurance_claim,
+        company.new_debenture,
+        company.earlier_debenture,
+    ):
+        assert f"£{amount:,}" in company_scheme
+
+    retirement_scheme = " ".join(retirement_question.mark_scheme)
+    assert f"£{partnership.goodwill:,}" in retirement_scheme
+    appropriation_scheme = " ".join(appropriation_question.mark_scheme)
+    assert f"£{partnership.profit_for_year:,}" in appropriation_scheme
+    for drawings in (
+        partnership.first_period_drawings_interest,
+        partnership.second_period_drawings_interest,
+    ):
+        for amount in drawings.values():
+            assert f"£{amount:,}" in appropriation_scheme
 
 
 def test_income_statement_question_has_a_complete_task_specific_source_contract() -> None:
