@@ -25,6 +25,7 @@ from aqabizgen.financials import FinancialPosition
 from Backend.Core.document_dsl import (
     AQAQuestionHeaderFactory,
     DocumentRole,
+    SingleCellPanelFactory,
     renderer_contract,
 )
 from Backend.Core.exam_blueprints import (
@@ -1463,30 +1464,6 @@ def _chrome(canvas, doc, code: str, kind: str) -> None:
     canvas.restoreState()
 
 
-def _banner(text: str) -> Table:
-    return Table(
-        [[Paragraph(text, STYLES["banner"])]],
-        colWidths=[167 * mm],
-        style=TableStyle(
-            [("BACKGROUND", (0, 0), (-1, -1), INK), ("PADDING", (0, 0), (-1, -1), 7)]
-        ),
-    )
-
-
-def _box(text: str) -> Table:
-    return Table(
-        [[Paragraph(text, STYLES["body"])]],
-        colWidths=[150 * mm],
-        style=TableStyle(
-            [
-                ("BOX", (0, 0), (-1, -1), 0.6, INK),
-                ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f7f7f7")),
-                ("PADDING", (0, 0), (-1, -1), 8),
-            ]
-        ),
-    )
-
-
 _base = getSampleStyleSheet()
 STYLES = {
     "body": ParagraphStyle("body", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14),
@@ -1512,3 +1489,19 @@ _question_table = AQAQuestionHeaderFactory(
     ink=INK,
     table_class=Table,
 ).question_table
+_banner = SingleCellPanelFactory(
+    paragraph_style=STYLES["banner"],
+    width=167 * mm,
+    background=INK,
+    padding=7,
+    table_class=Table,
+).panel
+_box = SingleCellPanelFactory(
+    paragraph_style=STYLES["body"],
+    width=150 * mm,
+    background=colors.HexColor("#f7f7f7"),
+    padding=8,
+    border_width=0.6,
+    border_color=INK,
+    table_class=Table,
+).panel

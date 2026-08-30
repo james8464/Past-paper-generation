@@ -30,6 +30,7 @@ from aqaaccountgen.case_data import (
 from Backend.Core.document_dsl import (
     AQAQuestionHeaderFactory,
     DocumentRole,
+    SingleCellPanelFactory,
     renderer_contract,
 )
 from Backend.Core.exam_blueprints import (
@@ -2367,17 +2368,6 @@ def _chrome(canvas, doc, code: str, kind: str) -> None:
     canvas.restoreState()
 
 
-def _banner(text: str) -> Table:
-    return Table(
-        [[Paragraph(text, STYLES["banner"])]],
-        colWidths=[167 * mm],
-        style=TableStyle([
-            ("BACKGROUND", (0, 0), (-1, -1), INK),
-            ("PADDING", (0, 0), (-1, -1), 7),
-        ]),
-    )
-
-
 _base = getSampleStyleSheet()
 STYLES = {
     "body": ParagraphStyle("body", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14),
@@ -2405,3 +2395,10 @@ _question_headers = AQAQuestionHeaderFactory(
 )
 _question_table = _question_headers.question_table
 _question_reference = _question_headers.question_reference
+_banner = SingleCellPanelFactory(
+    paragraph_style=STYLES["banner"],
+    width=167 * mm,
+    background=INK,
+    padding=7,
+    table_class=Table,
+).panel

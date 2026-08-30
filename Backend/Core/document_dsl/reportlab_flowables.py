@@ -114,3 +114,48 @@ class OCRQuestionHeaderFactory:
                 ]
             ),
         )
+
+
+@dataclass(frozen=True)
+class SingleCellPanelFactory:
+    """Create measured section banners and information panels."""
+
+    paragraph_style: ParagraphStyle
+    width: float
+    background: Color
+    padding: float | None = None
+    horizontal_padding: float | None = None
+    vertical_padding: float | None = None
+    border_width: float | None = None
+    border_color: Color | None = None
+    table_class: type[Table] = Table
+
+    def panel(self, text: str) -> Table:
+        commands: list[tuple[object, ...]] = [
+            ("BACKGROUND", (0, 0), (-1, -1), self.background)
+        ]
+        if self.padding is not None:
+            commands.append(("PADDING", (0, 0), (-1, -1), self.padding))
+        if self.horizontal_padding is not None:
+            commands.extend(
+                [
+                    ("LEFTPADDING", (0, 0), (-1, -1), self.horizontal_padding),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), self.horizontal_padding),
+                ]
+            )
+        if self.vertical_padding is not None:
+            commands.extend(
+                [
+                    ("TOPPADDING", (0, 0), (-1, -1), self.vertical_padding),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), self.vertical_padding),
+                ]
+            )
+        if self.border_width is not None and self.border_color is not None:
+            commands.append(
+                ("BOX", (0, 0), (-1, -1), self.border_width, self.border_color)
+            )
+        return self.table_class(
+            [[Paragraph(text, self.paragraph_style)]],
+            colWidths=[self.width],
+            style=TableStyle(commands),
+        )

@@ -29,6 +29,7 @@ from aqaecongen.configs import (
 from Backend.Core.document_dsl import (
     AQAQuestionHeaderFactory,
     DocumentRole,
+    SingleCellPanelFactory,
     renderer_contract,
 )
 from Backend.Core.exam_blueprints import (
@@ -1179,39 +1180,6 @@ def _economic_diagram(
     return drawing
 
 
-def _section_banner(text: str) -> Table:
-    return Table(
-        [[Paragraph(text, STYLES["section"])]],
-        colWidths=[169 * mm],
-        style=TableStyle(
-            [
-                ("BACKGROUND", (0, 0), (-1, -1), colors.white),
-                ("LEFTPADDING", (0, 0), (-1, -1), 7),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 7),
-                ("TOPPADDING", (0, 0), (-1, -1), 6),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
-            ]
-        ),
-    )
-
-
-def _info_box(text: str) -> Table:
-    return Table(
-        [[Paragraph(text, STYLES["body"])]],
-        colWidths=[150 * mm],
-        style=TableStyle(
-            [
-                ("BOX", (0, 0), (-1, -1), 0.7, BLACK),
-                ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f7f7f7")),
-                ("LEFTPADDING", (0, 0), (-1, -1), 8),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 8),
-                ("TOPPADDING", (0, 0), (-1, -1), 7),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
-            ]
-        ),
-    )
-
-
 def _page_chrome(canvas, doc, paper_code: str, document_type: str) -> None:
     canvas.saveState()
     if document_type == "Question paper":
@@ -1450,3 +1418,21 @@ _question_table = AQAQuestionHeaderFactory(
     vertical_padding=0,
     table_class=Table,
 ).question_table
+_section_banner = SingleCellPanelFactory(
+    paragraph_style=STYLES["section"],
+    width=169 * mm,
+    background=colors.white,
+    horizontal_padding=7,
+    vertical_padding=6,
+    table_class=Table,
+).panel
+_info_box = SingleCellPanelFactory(
+    paragraph_style=STYLES["body"],
+    width=150 * mm,
+    background=colors.HexColor("#f7f7f7"),
+    horizontal_padding=8,
+    vertical_padding=7,
+    border_width=0.7,
+    border_color=BLACK,
+    table_class=Table,
+).panel

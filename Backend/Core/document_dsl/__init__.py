@@ -41,6 +41,7 @@ from Backend.Core.document_dsl.reportlab_backend import ReportLabBackend
 from Backend.Core.document_dsl.reportlab_flowables import (
     AQAQuestionHeaderFactory,
     OCRQuestionHeaderFactory,
+    SingleCellPanelFactory,
 )
 from Backend.Core.document_dsl.vector_components import (
     AccountingTable,
@@ -96,6 +97,7 @@ __all__ = [
     "RuleTokens",
     "SchemeGrid",
     "ScientificApparatus",
+    "SingleCellPanelFactory",
     "Size",
     "SourcePanel",
     "StatisticalChart",

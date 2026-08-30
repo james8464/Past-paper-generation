@@ -420,3 +420,30 @@ def test_shared_ocr_question_header_supports_board_specific_star_and_deferred_ma
     assert "4*" in text
     assert "Evaluate the policy in the stated context." in text
     assert "[20]" not in text
+
+
+def test_shared_single_cell_panel_preserves_width_style_and_family_table() -> None:
+    from reportlab.lib import colors
+    from reportlab.lib.styles import ParagraphStyle
+    from reportlab.lib.units import mm
+    from reportlab.platypus import Table as ReportLabTable
+
+    import Backend.Core.document_dsl as document_dsl
+
+    factory_type = getattr(document_dsl, "SingleCellPanelFactory", None)
+    assert factory_type is not None, "shared single-cell panels are not implemented"
+
+    class FamilyTable(ReportLabTable):
+        pass
+
+    panel = factory_type(
+        paragraph_style=ParagraphStyle("Panel", fontName="Helvetica-Bold"),
+        width=167 * mm,
+        background=colors.black,
+        padding=7,
+        table_class=FamilyTable,
+    ).panel("Section A")
+
+    assert isinstance(panel, FamilyTable)
+    assert panel._colWidths == pytest.approx([167 * mm])
+    assert panel._cellvalues[0][0].getPlainText() == "Section A"
