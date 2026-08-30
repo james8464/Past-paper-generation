@@ -110,13 +110,13 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/generator.py": {
-    "mtime": 1788116194.038696,
-    "ast_hash": "781448b705ee1c2917a956c5cf68b0cd",
+    "mtime": 1788127371.8515291,
+    "ast_hash": "3a4c8fa539a2664eff51f2885045b779",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/render_pdf.py": {
-    "mtime": 1788126218.088652,
-    "ast_hash": "640493a898f2132be535795dc2ce92f7",
+    "mtime": 1788127429.629785,
+    "ast_hash": "a06450de62663b8fc15f7561faabf4f5",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/syllabus.py": {
@@ -140,8 +140,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/tests/test_aqa_accounting.py": {
-    "mtime": 1788126218.0892522,
-    "ast_hash": "5fb3190525bd8e8e4ce10244e853fcf7",
+    "mtime": 1788127525.4904406,
+    "ast_hash": "086714e639a8c59b17c920e015c2b17f",
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/__init__.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/case_data.py": {
-    "mtime": 1788121591.638019,
-    "ast_hash": "2dcabba9cab8c80b7c89f22fbb47a656",
+    "mtime": 1788127461.3188894,
+    "ast_hash": "4281f3ba989a4b3cfdb12c9acc0ba1f9",
     "semantic_hash": ""
   },
   "Resources/ollama-model-recommendations.json": {
@@ -1425,8 +1425,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-26-paper-creator-excellence-programme.md": {
-    "mtime": 1788106036.3974032,
-    "ast_hash": "13715162d21b7460ea5e003af9276740",
+    "mtime": 1788127592.7571242,
+    "ast_hash": "57b5e71183c7c1eeca51c6c08e4b7050",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md": {
@@ -1940,8 +1940,8 @@
     "semantic_hash": ""
   },
   "docs/quality/difficulty-calibration-v2-report.md": {
-    "mtime": 1788126322.8276045,
-    "ast_hash": "4485e4a6d0b6ecc8b99dc7f11535135a",
+    "mtime": 1788127552.5908337,
+    "ast_hash": "f82095d2e97c166a9a3af8a12a5196e1",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-30-difficulty-calibration-v2.md": {

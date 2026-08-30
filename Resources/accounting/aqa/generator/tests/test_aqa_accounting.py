@@ -8,12 +8,14 @@ from pathlib import Path
 
 import pymupdf as fitz
 import pytest
+from aqaaccountgen import case_data
 from aqaaccountgen.case_data import (
     CostingCase,
     IncomeStatementCase,
     NonCurrentAssetCase,
     PartnershipCase,
     SalesLedgerCase,
+    ShareholderCase,
 )
 from aqaaccountgen.cli import generate_package
 from aqaaccountgen.configs import RULES
@@ -29,6 +31,134 @@ EXPECTED = {
     "paper_1": [1] * 10 + [6, 7, 5, 2, 14, 6, 6, 8, 6, 25, 25],
     "paper_2": [1] * 10 + [3, 6, 3, 8, 4, 8, 2, 6, 8, 1, 5, 6, 25, 25],
 }
+
+
+def test_shareholder_case_exposes_candidate_visible_source_contract() -> None:
+    assert getattr(case_data, "ShareholderCase", None) is not None
+
+
+def test_shareholder_case_keeps_equity_and_investor_figures_in_consistent_units() -> None:
+    case = ShareholderCase(
+        business="Cedar Components plc",
+        nominal_share_value_pence=50,
+        opening_ordinary_shares=5_000_000,
+        bonus_shares_issued=1_000_000,
+        opening_share_premium_thousands=1_600,
+        opening_retained_earnings_thousands=4_000,
+        revaluation_reserve_increase_thousands=600,
+        profit_for_year_thousands=1_200,
+        dividends_paid_thousands=240,
+        share_price_start_pence=150,
+        share_price_end_pence=180,
+        long_term_borrowings_thousands=4_000,
+        comparator_name="Northbridge plc",
+        comparator_share_price_pence=156,
+        comparator_earnings_per_share_pence=24.0,
+        comparator_dividend_per_share_pence=5.0,
+        comparator_long_term_borrowings_thousands=2_400,
+        comparator_total_equity_thousands=9_600,
+    )
+
+    assert case.ordinary_share_capital_opening_thousands == 2_500
+    assert case.bonus_issue_capital_thousands == 500
+    assert case.ordinary_share_capital_closing_thousands == 3_000
+    assert case.share_premium_closing_thousands == 1_100
+    assert case.retained_earnings_closing_thousands == 4_960
+    assert case.total_equity_closing_thousands == 9_660
+    assert case.earnings_per_share_pence == 20.0
+    assert case.dividend_per_share_pence == 4.0
+    assert case.price_earnings_ratio == 9.0
+    assert case.dividend_yield_percent == 2.2
+    assert case.gearing_percent == 29.3
+
+
+def test_shareholder_question_uses_the_same_visible_case_for_context_and_rendering() -> None:
+    from aqaaccountgen import render_pdf
+
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 26083107)
+    option = paper.sections[-1].options[0]
+    question = next(item for item in option.questions if item.rule_id == "decision_2")
+    case = ShareholderCase.from_chart_values(option.title, option.chart_values)
+
+    assert question.authoring_context["candidate_source"] == case.candidate_source()
+    assert question.authoring_context["source_data"] == case.candidate_source()
+    assert "verified_answers" not in question.authoring_context
+    assert "price_earnings_ratio" not in question.authoring_context["candidate_source"]
+    assert "dividend_yield_percent" not in question.authoring_context["candidate_source"]
+    source = render_pdf._shareholder_case(question)
+    rendered = " ".join(
+        item.getPlainText()
+        for item in source._cellvalues[0][1]._cellvalues[0][0]
+        if hasattr(item, "getPlainText")
+    )
+    assert f"{case.nominal_share_value_pence}p" in rendered
+    assert f"{case.earnings_per_share_pence:.1f}p" in rendered
+    assert f"{case.long_term_borrowings_thousands:,}" in rendered
+
+
+def test_shareholder_visible_source_reaches_reviewer_and_solver_without_answer_keys() -> None:
+    from Backend.Core.ai_assessment import _Task, _task_source
+    from Backend.Core.independent_solver import IndependentSolver
+
+    class CapturingSolver:
+        payload: dict[str, object]
+
+        def generate_json(self, prompt: str) -> dict[str, object]:
+            self.payload = json.loads(prompt.rsplit("\n", 1)[-1])
+            return {"answer": "A conditional retain-or-sell judgement.", "evidence_ids": []}
+
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 26083108)
+    option = paper.sections[-1].options[0]
+    question = next(item for item in option.questions if item.rule_id == "decision_2")
+    visible_source = question.authoring_context["candidate_source"]
+    task = _Task(key=(2, 0, 1), question=question, option=option, topic=None)
+    reviewer_source = _task_source(task)
+    client = CapturingSolver()
+
+    IndependentSolver(client).solve(question, [])
+
+    assert reviewer_source["question_context"]["candidate_source"] == visible_source
+    solver_item = client.payload["item"]
+    assert solver_item["authoring_context"]["candidate_source"] == visible_source
+    assert "mark_scheme" not in solver_item
+    assert "verified_answers" not in solver_item["authoring_context"]
+
+
+def test_shareholder_cases_vary_deterministically_and_keep_bonus_premium_non_negative() -> None:
+    cases = []
+    for seed in (26083109, 26083110, 26083111):
+        paper = build_paper(RULES["paper_1"], SYLLABUS, seed)
+        option = paper.sections[-1].options[0]
+        cases.append(ShareholderCase.from_chart_values(option.title, option.chart_values))
+
+    assert len({repr(case.candidate_source()) for case in cases}) == 3
+    for case in cases:
+        source = case.candidate_source()
+        equity = source["statement_of_changes_in_equity"]
+        opening_shares = source["opening_ordinary_shares"]
+        bonus_shares = source["bonus_shares_issued"]
+        nominal_value = source["nominal_share_value_pence"]
+        closing_shares = opening_shares + bonus_shares
+
+        assert equity["bonus_issue_capital_transfer"] == bonus_shares * nominal_value // 100_000
+        assert equity["closing_share_premium"] >= 0
+        assert equity["closing_total_equity"] == sum(
+            equity[column]
+            for column in (
+                "closing_ordinary_share_capital",
+                "closing_share_premium",
+                "revaluation_increase",
+                "closing_retained_earnings",
+            )
+        )
+        assert source["market_data"]["earnings_per_share"] == round(
+            equity["profit_for_year"] * 100_000 / closing_shares,
+            1,
+        )
+        assert source["market_data"]["dividend_per_share"] == round(
+            equity["dividends_paid"] * 100_000 / closing_shares,
+            1,
+        )
 
 
 @pytest.mark.parametrize(

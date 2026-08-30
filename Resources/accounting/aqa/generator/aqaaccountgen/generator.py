@@ -9,6 +9,7 @@ from aqaaccountgen.case_data import (
     NonCurrentAssetCase,
     PartnershipCase,
     SalesLedgerCase,
+    ShareholderCase,
 )
 from aqaaccountgen.syllabus import Syllabus, Topic
 from Backend.Core.exam_blueprints import (
@@ -151,7 +152,7 @@ def build_paper(
                 question = _mcq(question_rule, number, index, topic, business, rng)
             else:
                 question = _written(
-                    question_rule, number, topic, business, case_id, values, rng
+                    rule.id, question_rule, number, topic, business, case_id, values, rng
                 )
             questions.append(question)
         option = GeneratedOption(
@@ -252,6 +253,7 @@ def _mcq(
 
 
 def _written(
+    paper_id: str,
     rule: QuestionRule,
     number: str,
     topic: Topic,
@@ -365,14 +367,19 @@ def _written(
             "or sold. Use the financial and non-financial evidence and reach a "
             "justified conclusion."
         )
-        scheme = [
-            "Analyse movements in profit, equity, dividends and the market price;",
-            "Use relevant investor ratios and explain what they indicate;",
-            "Assess gearing, interest-rate exposure and future cost pressure;",
-            "Consider dividend policy and relevant non-financial evidence;",
-            "Reach a balanced judgement that recognises the investor's objectives.",
-            *_levels(topic, point, case_id),
-        ]
+        if paper_id == "paper_1":
+            case = ShareholderCase.from_chart_values(business, values)
+            scheme = [*case.mark_scheme_points(), *_levels(topic, point, case_id)]
+            authoring_context = case.authoring_context()
+        else:
+            scheme = [
+                "Analyse movements in profit, equity, dividends and the market price;",
+                "Use relevant investor ratios and explain what they indicate;",
+                "Assess gearing, interest-rate exposure and future cost pressure;",
+                "Consider dividend policy and relevant non-financial evidence;",
+                "Reach a balanced judgement that recognises the investor's objectives.",
+                *_levels(topic, point, case_id),
+            ]
     elif rule.id == "frc":
         prompt = (
             f"Explain one benefit to investors of {business} preparing its financial "

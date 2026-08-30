@@ -75,6 +75,289 @@ class CostingCase:
 
 
 @dataclass(frozen=True)
+class ShareholderCase:
+    """Candidate-visible source contract for the Paper 1 shareholder decision."""
+
+    business: str
+    nominal_share_value_pence: int
+    opening_ordinary_shares: int
+    bonus_shares_issued: int
+    opening_share_premium_thousands: int
+    opening_retained_earnings_thousands: int
+    revaluation_reserve_increase_thousands: int
+    profit_for_year_thousands: int
+    dividends_paid_thousands: int
+    share_price_start_pence: int
+    share_price_end_pence: int
+    long_term_borrowings_thousands: int
+    comparator_name: str
+    comparator_share_price_pence: int
+    comparator_earnings_per_share_pence: float
+    comparator_dividend_per_share_pence: float
+    comparator_long_term_borrowings_thousands: int
+    comparator_total_equity_thousands: int
+
+    @classmethod
+    def from_chart_values(
+        cls,
+        business: str,
+        values: list[float],
+    ) -> ShareholderCase:
+        if len(values) != 5:
+            raise ValueError("shareholder case requires five chart values")
+        nominal_value = 50
+        opening_shares = (round(values[4]) * 50_000 // 5) * 5
+        bonus_shares = opening_shares // 5
+        bonus_capital = bonus_shares * nominal_value // 100_000
+        profit = round(values[3]) * 12
+        closing_shares = opening_shares + bonus_shares
+        dividends = closing_shares * 4 // 100_000
+        share_price_end = round(values[4] * 1.15)
+        comparator_price = max(80, round(share_price_end * 0.95))
+        return cls(
+            business=business,
+            nominal_share_value_pence=nominal_value,
+            opening_ordinary_shares=opening_shares,
+            bonus_shares_issued=bonus_shares,
+            opening_share_premium_thousands=bonus_capital + round(values[1] * 9),
+            opening_retained_earnings_thousands=round(values[3] * 35),
+            revaluation_reserve_increase_thousands=round(values[0] * 6),
+            profit_for_year_thousands=profit,
+            dividends_paid_thousands=dividends,
+            share_price_start_pence=round(values[0] * 1.25),
+            share_price_end_pence=share_price_end,
+            long_term_borrowings_thousands=round(values[2] * 35),
+            comparator_name="Northbridge plc",
+            comparator_share_price_pence=comparator_price,
+            comparator_earnings_per_share_pence=round(comparator_price / 6.5, 1),
+            comparator_dividend_per_share_pence=5.0,
+            comparator_long_term_borrowings_thousands=round(values[2] * 23),
+            comparator_total_equity_thousands=round(values[3] * 78),
+        )
+
+    @classmethod
+    def from_candidate_source(cls, source: dict[str, object]) -> ShareholderCase:
+        """Rehydrate the renderer's case only from the published source data."""
+
+        equity = dict(source["statement_of_changes_in_equity"])
+        market = dict(source["market_data"])
+        comparator = dict(source["comparator"])
+        return cls(
+            business=str(source["business"]),
+            nominal_share_value_pence=int(source["nominal_share_value_pence"]),
+            opening_ordinary_shares=int(source["opening_ordinary_shares"]),
+            bonus_shares_issued=int(source["bonus_shares_issued"]),
+            opening_share_premium_thousands=int(equity["opening_share_premium"]),
+            opening_retained_earnings_thousands=int(equity["opening_retained_earnings"]),
+            revaluation_reserve_increase_thousands=int(equity["revaluation_increase"]),
+            profit_for_year_thousands=int(equity["profit_for_year"]),
+            dividends_paid_thousands=int(equity["dividends_paid"]),
+            share_price_start_pence=int(market["share_price_start"]),
+            share_price_end_pence=int(market["share_price_end"]),
+            long_term_borrowings_thousands=int(source["long_term_borrowings"]),
+            comparator_name=str(comparator["name"]),
+            comparator_share_price_pence=int(comparator["share_price"]),
+            comparator_earnings_per_share_pence=float(comparator["earnings_per_share"]),
+            comparator_dividend_per_share_pence=float(comparator["dividend_per_share"]),
+            comparator_long_term_borrowings_thousands=int(comparator["long_term_borrowings"]),
+            comparator_total_equity_thousands=int(comparator["total_equity"]),
+        )
+
+    @property
+    def closing_ordinary_shares(self) -> int:
+        return self.opening_ordinary_shares + self.bonus_shares_issued
+
+    @property
+    def ordinary_share_capital_opening_thousands(self) -> int:
+        return self.opening_ordinary_shares * self.nominal_share_value_pence // 100_000
+
+    @property
+    def bonus_issue_capital_thousands(self) -> int:
+        return self.bonus_shares_issued * self.nominal_share_value_pence // 100_000
+
+    @property
+    def ordinary_share_capital_closing_thousands(self) -> int:
+        return self.ordinary_share_capital_opening_thousands + self.bonus_issue_capital_thousands
+
+    @property
+    def share_premium_closing_thousands(self) -> int:
+        return self.opening_share_premium_thousands - self.bonus_issue_capital_thousands
+
+    @property
+    def retained_earnings_closing_thousands(self) -> int:
+        return (
+            self.opening_retained_earnings_thousands
+            + self.profit_for_year_thousands
+            - self.dividends_paid_thousands
+        )
+
+    @property
+    def total_equity_closing_thousands(self) -> int:
+        return (
+            self.ordinary_share_capital_closing_thousands
+            + self.share_premium_closing_thousands
+            + self.revaluation_reserve_increase_thousands
+            + self.retained_earnings_closing_thousands
+        )
+
+    @property
+    def earnings_per_share_pence(self) -> float:
+        return round(
+            self.profit_for_year_thousands * 100_000 / self.closing_ordinary_shares,
+            1,
+        )
+
+    @property
+    def dividend_per_share_pence(self) -> float:
+        return round(
+            self.dividends_paid_thousands * 100_000 / self.closing_ordinary_shares,
+            1,
+        )
+
+    @property
+    def price_earnings_ratio(self) -> float:
+        return round(self.share_price_end_pence / self.earnings_per_share_pence, 1)
+
+    @property
+    def dividend_yield_percent(self) -> float:
+        return round(
+            self.dividend_per_share_pence / self.share_price_end_pence * 100,
+            1,
+        )
+
+    @property
+    def gearing_percent(self) -> float:
+        return round(
+            self.long_term_borrowings_thousands
+            / (self.long_term_borrowings_thousands + self.total_equity_closing_thousands)
+            * 100,
+            1,
+        )
+
+    @property
+    def comparator_price_earnings_ratio(self) -> float:
+        return round(
+            self.comparator_share_price_pence / self.comparator_earnings_per_share_pence,
+            1,
+        )
+
+    @property
+    def comparator_dividend_yield_percent(self) -> float:
+        return round(
+            self.comparator_dividend_per_share_pence
+            / self.comparator_share_price_pence
+            * 100,
+            1,
+        )
+
+    @property
+    def comparator_gearing_percent(self) -> float:
+        return round(
+            self.comparator_long_term_borrowings_thousands
+            / (
+                self.comparator_long_term_borrowings_thousands
+                + self.comparator_total_equity_thousands
+            )
+            * 100,
+            1,
+        )
+
+    def candidate_source(self) -> dict[str, object]:
+        """Return only facts and units printed on the candidate source page."""
+
+        return {
+            "business": self.business,
+            "source_type": "shareholder_investor_case",
+            "units": {
+                "ordinary_shares": "number of shares",
+                "nominal_share_value": "pence per ordinary share",
+                "market_data": "pence per ordinary share",
+                "equity_statement": "£000",
+                "borrowings": "£000",
+            },
+            "nominal_share_value_pence": self.nominal_share_value_pence,
+            "opening_ordinary_shares": self.opening_ordinary_shares,
+            "bonus_shares_issued": self.bonus_shares_issued,
+            "market_data": {
+                "share_price_start": self.share_price_start_pence,
+                "share_price_end": self.share_price_end_pence,
+                "earnings_per_share": self.earnings_per_share_pence,
+                "dividend_per_share": self.dividend_per_share_pence,
+            },
+            "statement_of_changes_in_equity": {
+                "opening_ordinary_share_capital": self.ordinary_share_capital_opening_thousands,
+                "opening_share_premium": self.opening_share_premium_thousands,
+                "opening_retained_earnings": self.opening_retained_earnings_thousands,
+                "revaluation_increase": self.revaluation_reserve_increase_thousands,
+                "bonus_issue_capital_transfer": self.bonus_issue_capital_thousands,
+                "profit_for_year": self.profit_for_year_thousands,
+                "dividends_paid": self.dividends_paid_thousands,
+                "closing_ordinary_share_capital": self.ordinary_share_capital_closing_thousands,
+                "closing_share_premium": self.share_premium_closing_thousands,
+                "closing_retained_earnings": self.retained_earnings_closing_thousands,
+                "closing_total_equity": self.total_equity_closing_thousands,
+            },
+            "long_term_borrowings": self.long_term_borrowings_thousands,
+            "comparator": {
+                "name": self.comparator_name,
+                "share_price": self.comparator_share_price_pence,
+                "earnings_per_share": self.comparator_earnings_per_share_pence,
+                "dividend_per_share": self.comparator_dividend_per_share_pence,
+                "long_term_borrowings": self.comparator_long_term_borrowings_thousands,
+                "total_equity": self.comparator_total_equity_thousands,
+            },
+            "qualitative_evidence": [
+                "New production equipment increases capacity but demand for the expansion is uncertain.",
+                "The equipment is expected to reduce energy use, but higher interest rates could increase finance costs.",
+                "Directors plan to retain more profit to support the expansion.",
+            ],
+        }
+
+    def authoring_context(self) -> dict[str, object]:
+        return {
+            "preserve_mark_scheme": True,
+            "task_scope": (
+                "Advise an investor whether to retain or sell shares using the complete "
+                "published shareholder source, comparator data and uncertainty."
+            ),
+            "required_prompt_terms": ["shares", "investor"],
+            "candidate_source": self.candidate_source(),
+            "source_data": self.candidate_source(),
+        }
+
+    def mark_scheme_points(self) -> list[str]:
+        return [
+            (
+                f"Analyse the share-price movement from {self.share_price_start_pence}p to "
+                f"{self.share_price_end_pence}p and what it may indicate about investor confidence."
+            ),
+            (
+                f"Calculate and interpret the price earnings ratio: {self.share_price_end_pence}p ÷ "
+                f"{self.earnings_per_share_pence:.1f}p = {self.price_earnings_ratio:.1f} times."
+            ),
+            (
+                f"Calculate and interpret dividend yield: {self.dividend_per_share_pence:.1f}p ÷ "
+                f"{self.share_price_end_pence}p × 100 = {self.dividend_yield_percent:.1f}%."
+            ),
+            (
+                f"Calculate gearing from published long-term borrowings and closing equity: "
+                f"£{self.long_term_borrowings_thousands:,}000 ÷ "
+                f"(£{self.long_term_borrowings_thousands:,}000 + £{self.total_equity_closing_thousands:,}000) "
+                f"× 100 = {self.gearing_percent:.1f}%."
+            ),
+            (
+                f"Compare with {self.comparator_name}: price earnings ratio "
+                f"{self.comparator_price_earnings_ratio:.1f} times, dividend yield "
+                f"{self.comparator_dividend_yield_percent:.1f}% and gearing "
+                f"{self.comparator_gearing_percent:.1f}%; explain the trade-off for the investor."
+            ),
+            "Develop whether retaining profit can finance growth and reduce future share issues, while reducing current shareholder income.",
+            "Develop the risk that uncertain demand or higher interest rates could prevent the new capacity improving returns, despite lower energy use.",
+            "Reach a balanced, conditional judgement linked to the investor's income, growth and risk priorities; do not treat one ratio as decisive.",
+        ]
+
+
+@dataclass(frozen=True)
 class IncomeStatementCase:
     """Complete, internally consistent source for the Paper 1 company statement."""
 

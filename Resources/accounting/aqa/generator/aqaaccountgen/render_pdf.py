@@ -27,6 +27,7 @@ from aqaaccountgen.case_data import (
     NonCurrentAssetCase,
     PartnershipCase,
     SalesLedgerCase,
+    ShareholderCase,
 )
 from Backend.Core.document_dsl import (
     AQAQuestionHeaderFactory,
@@ -1569,7 +1570,7 @@ def _paper_one_section_c_pages(
         ],
         [AnswerLines(34)],
         _do_not_write_page(),
-        [_shareholder_case(option)],
+        [_shareholder_case(question_17)],
         [
             _question_table(question_17),
             Spacer(1, 4 * mm),
@@ -1670,48 +1671,64 @@ def _accounting_system_case(option: GeneratedOption) -> Table:
     )
 
 
-def _shareholder_case(option: GeneratedOption) -> Table:
-    values = [round(value * 1000) for value in option.chart_values]
-    ordinary_opening = int(values[4] * 1.0)
-    premium_opening = int(values[1] * 0.22)
-    retained_opening = int(values[3] * 0.45)
-    share_issue = int(ordinary_opening * 0.2)
-    revaluation = int(values[0] * 0.24)
-    profit = int(values[3] * 0.30)
-    dividends = int(profit * 0.1)
-    retained_closing = retained_opening + profit - dividends
+def _shareholder_case(question: GeneratedQuestion) -> Table:
+    source = question.authoring_context.get("candidate_source")
+    if not isinstance(source, dict):
+        raise ValueError("shareholder question requires a candidate-visible source contract")
+    shareholder = ShareholderCase.from_candidate_source(source)
     statement = Table(
         [
             [
                 "",
-                "Ordinary\nshares\n£000",
+                (
+                    "Ordinary share\ncapital £000\n"
+                    f"({shareholder.nominal_share_value_pence}p shares)"
+                ),
                 "Share\npremium\n£000",
                 "Revaluation\nreserve\n£000",
                 "Retained\nearnings\n£000",
             ],
             [
                 "At start of year",
-                f"{ordinary_opening:,}",
-                f"{premium_opening:,}",
+                f"{shareholder.ordinary_share_capital_opening_thousands:,}",
+                f"{shareholder.opening_share_premium_thousands:,}",
                 "–",
-                f"{retained_opening:,}",
+                f"{shareholder.opening_retained_earnings_thousands:,}",
             ],
-            ["Revaluation", "", "", f"{revaluation:,}", ""],
             [
-                "Issue of shares",
-                f"{share_issue:,}",
-                f"({share_issue:,})",
+                "Revaluation",
+                "",
+                "",
+                f"{shareholder.revaluation_reserve_increase_thousands:,}",
+                "",
+            ],
+            [
+                "Bonus issue (1 for 5)",
+                f"{shareholder.bonus_issue_capital_thousands:,}",
+                f"({shareholder.bonus_issue_capital_thousands:,})",
                 "",
                 "",
             ],
-            ["Dividends", "", "", "", f"({dividends:,})"],
-            ["Profit for the year", "", "", "", f"{profit:,}"],
+            [
+                "Dividends",
+                "",
+                "",
+                "",
+                f"({shareholder.dividends_paid_thousands:,})",
+            ],
+            [
+                "Profit for the year",
+                "",
+                "",
+                "",
+                f"{shareholder.profit_for_year_thousands:,}",
+            ],
             [
                 "At end of year",
-                f"{ordinary_opening + share_issue:,}",
-                f"{premium_opening - share_issue:,}",
-                f"{revaluation:,}",
-                f"{retained_closing:,}",
+                f"{shareholder.ordinary_share_capital_closing_thousands:,}",
+                f"{shareholder.share_premium_closing_thousands:,}",
+                f"{shareholder.revaluation_reserve_increase_thousands:,}",
+                f"{shareholder.retained_earnings_closing_thousands:,}",
             ],
         ],
         colWidths=[47 * mm, 22.25 * mm, 22.25 * mm, 22.25 * mm, 22.25 * mm],
@@ -1727,22 +1744,24 @@ def _shareholder_case(option: GeneratedOption) -> Table:
     )
     content: list[Flowable] = [
         Paragraph(
-            f"An investor owns shares in <b>{option.title}</b>. The company operates "
-            "in a competitive market and has recently increased its borrowing to finance "
-            "new production equipment. Since acquiring the shares, the investor has "
-            "received only one dividend and is considering selling the investment.",
+            f"An investor owns shares in <b>{shareholder.business}</b> and is considering "
+            "whether to retain or sell the investment. The company has borrowed to fund "
+            f"new production equipment. Each ordinary share has a nominal value of "
+            f"{shareholder.nominal_share_value_pence}p.",
             STYLES["body"],
         ),
         Spacer(1, 4 * mm),
         Paragraph(
-            f"Share price at the start of the year: {values[0]:.0f}p<br/>"
-            f"Share price at the end of the year: {values[2]:.0f}p<br/>"
-            f"Earnings per share at the end of the year: {values[1] / 4:.1f}p",
+            "<b>Market data (pence per ordinary share)</b><br/>"
+            f"Share price at the start of the year: {shareholder.share_price_start_pence}p<br/>"
+            f"Share price at the end of the year: {shareholder.share_price_end_pence}p<br/>"
+            f"Earnings per share: {shareholder.earnings_per_share_pence:.1f}p<br/>"
+            f"Dividend per share: {shareholder.dividend_per_share_pence:.1f}p",
             STYLES["body"],
         ),
         Spacer(1, 4 * mm),
         Paragraph(
-            f"<b>{option.title}</b><br/>"
+            f"<b>{shareholder.business}</b><br/>"
             "<b>Statement of changes in equity for the year (extract)</b>",
             STYLES["centre_bold"],
         ),
@@ -1750,17 +1769,28 @@ def _shareholder_case(option: GeneratedOption) -> Table:
         statement,
         Spacer(1, 4 * mm),
         Paragraph(
-            "Note 1: Non-current assets were revalued following the discovery of "
-            "additional productive capacity.<br/><br/>"
-            "Note 2: Bonus shares were issued to existing shareholders during the year.",
+            f"There were {shareholder.opening_ordinary_shares:,} ordinary shares at the "
+            f"start of the year. A 1 for 5 bonus issue created "
+            f"{shareholder.bonus_shares_issued:,} additional shares. Long-term borrowings "
+            f"at the year end were £{shareholder.long_term_borrowings_thousands:,}000.",
             STYLES["body"],
         ),
         Spacer(1, 4 * mm),
         Paragraph(
-            "Directors intend to retain more profit to fund expansion. The investor is "
-            "concerned about the dividend policy, gearing, higher interest rates and the "
-            "environmental effect of the new equipment. A comparable company has a higher "
-            "dividend yield but a lower price earnings ratio.",
+            f"<b>Comparable company: {shareholder.comparator_name}</b> (pence per ordinary "
+            "share unless stated)<br/>"
+            f"Share price: {shareholder.comparator_share_price_pence}p; earnings per share: "
+            f"{shareholder.comparator_earnings_per_share_pence:.1f}p; dividend per share: "
+            f"{shareholder.comparator_dividend_per_share_pence:.1f}p; long-term borrowings: "
+            f"£{shareholder.comparator_long_term_borrowings_thousands:,}000; total equity: "
+            f"£{shareholder.comparator_total_equity_thousands:,}000.",
+            STYLES["body"],
+        ),
+        Spacer(1, 4 * mm),
+        Paragraph(
+            "New capacity could support growth and reduce energy use, but demand for the "
+            "expansion is uncertain. Directors intend to retain more profit, while higher "
+            "interest rates could increase finance costs.",
             STYLES["body"],
         ),
     ]
