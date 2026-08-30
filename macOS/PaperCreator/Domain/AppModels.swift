@@ -181,8 +181,8 @@ enum CatalogLoader {
         }
 
         var seenBoards: Set<String> = []
-        let subjects = try catalog.subjects.compactMap { subject -> CatalogSubject? in
-            let boards = try subject.boards.compactMap { board -> ExamBoardOption? in
+        let subjects = try catalog.subjects.map { subject -> CatalogSubject in
+            let boards = try subject.boards.map { board -> ExamBoardOption in
                 let key = implementationKey(subject: subject.id, board: board.id)
                 guard seenBoards.insert(key).inserted else {
                     throw CatalogLoadError.duplicateBoard(key)
@@ -217,9 +217,21 @@ enum CatalogLoader {
                         }
                     )
                 }
-                return nil
+                return ExamBoardOption(
+                    id: key,
+                    subjectID: subject.id,
+                    subjectTitle: subject.title,
+                    title: board.title,
+                    shortTitle: board.shortTitle ?? board.title,
+                    systemImage: subject.systemImage,
+                    status: .placeholder,
+                    backendSubject: nil,
+                    papers: [],
+                    resourcePath: "",
+                    contentMode: .deterministic,
+                    supportedProviders: []
+                )
             }
-            guard !boards.isEmpty else { return nil }
             return CatalogSubject(
                 id: subject.id,
                 title: subject.title,

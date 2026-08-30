@@ -355,13 +355,28 @@ final class PaperCreatorTests: XCTestCase {
         XCTAssertEqual(aqaAccounting.backendSubject, "accounting_aqa")
         XCTAssertEqual(aqaAccounting.papers.map(\.id), ["1", "2"])
 
-        XCTAssertNil(ExamCatalog.board(id: "biology-aqa"))
+        let plannedBiology = try XCTUnwrap(ExamCatalog.board(id: "biology-aqa"))
+        XCTAssertFalse(plannedBiology.isReady)
+        XCTAssertEqual(plannedBiology.status, .placeholder)
+        XCTAssertNil(plannedBiology.backendSubject)
+        XCTAssertTrue(plannedBiology.papers.isEmpty)
+
+        let plannedCambridge = try XCTUnwrap(
+            ExamCatalog.board(id: "computer-science-cambridge-international")
+        )
+        XCTAssertFalse(plannedCambridge.isReady)
+        XCTAssertNil(plannedCambridge.backendSubject)
     }
 
     func testBundledCatalogLoadsFromCanonicalResources() throws {
         let subjects = try CatalogLoader.load(bundle: .main)
-        XCTAssertEqual(subjects.count, 4)
+        XCTAssertEqual(subjects.count, 8)
+        XCTAssertEqual(subjects.flatMap(\.boards).count, 23)
         XCTAssertEqual(subjects.flatMap(\.boards).filter(\.isReady).count, 7)
+        XCTAssertEqual(
+            subjects.flatMap(\.boards).filter { !$0.isReady }.count,
+            16
+        )
     }
 
     func testCatalogExposesAIForEveryGenerator() throws {

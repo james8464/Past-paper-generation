@@ -24,33 +24,35 @@ struct GeneratorWorkspace: View {
         .navigationTitle("\(board.subjectTitle) — \(board.shortTitle)")
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
-                Button {
-                    if layoutMode.showsInspector {
-                        showsQualityInspector.toggle()
-                    } else {
-                        showsCompactQualityInspector = true
+                if board.isReady {
+                    Button {
+                        if layoutMode.showsInspector {
+                            showsQualityInspector.toggle()
+                        } else {
+                            showsCompactQualityInspector = true
+                        }
+                    } label: {
+                        Label(
+                            qualityButtonTitle,
+                            systemImage: "checklist"
+                        )
                     }
-                } label: {
-                    Label(
-                        qualityButtonTitle,
-                        systemImage: "checklist"
-                    )
-                }
-                .help(qualityButtonTitle)
+                    .help(qualityButtonTitle)
 
-                if application.isRunning {
-                    Button(role: .cancel, action: application.cancelGeneration) {
-                        Label("Cancel", systemImage: "xmark.circle")
+                    if application.isRunning {
+                        Button(role: .cancel, action: application.cancelGeneration) {
+                            Label("Cancel", systemImage: "xmark.circle")
+                        }
+                        .help("Cancel paper creation")
+                    } else {
+                        Button(action: application.generate) {
+                            Label(createButtonTitle, systemImage: "doc.badge.plus")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(!application.canGenerate)
+                        .help(generateHelp)
+                        .accessibilityHint(generateHelp)
                     }
-                    .help("Cancel paper creation")
-                } else {
-                    Button(action: application.generate) {
-                        Label(createButtonTitle, systemImage: "doc.badge.plus")
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(!application.canGenerate)
-                    .help(generateHelp)
-                    .accessibilityHint(generateHelp)
                 }
             }
         }
@@ -107,9 +109,13 @@ struct GeneratorWorkspace: View {
 
     private var inspectorPresentation: Binding<Bool> {
         Binding(
-            get: { layoutMode.showsInspector && showsQualityInspector },
+            get: {
+                board.isReady
+                    && layoutMode.showsInspector
+                    && showsQualityInspector
+            },
             set: { isPresented in
-                guard layoutMode.showsInspector else { return }
+                guard board.isReady, layoutMode.showsInspector else { return }
                 showsQualityInspector = isPresented
             }
         )
