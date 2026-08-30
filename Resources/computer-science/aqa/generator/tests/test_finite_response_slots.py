@@ -212,3 +212,25 @@ def test_assembly_trace_checks_every_register_series_and_stored_value():
         solve(question, part, {**answers, "R3-after-loops": "0,0,1,1"}),
         part.marking.model_dump(),
     ).passed
+
+
+def test_rle_encoding_checks_both_ordered_sequences_without_fixing_pair_notation():
+    style = next(s for s in QUESTION_STYLES if s.id == "rle_compression")
+    question = build_question(style, 1, style.totals[0], random.Random(7))
+    part = question.parts[0]
+    answers = {"run-lengths": "2,4,1,1,3,5", "pixel-values": "3,6,9,10,11,4"}
+    assert part.response_slots == list(answers)
+    for valid in (answers, {key: f"[{value}]" for key, value in answers.items()}):
+        assert reconcile_solution(
+            solve(question, part, valid), part.marking.model_dump()
+        ).passed
+    for wrong in (
+        {**answers, "run-lengths": "2,4,1,1,4,4"},
+        dict(zip(answers, reversed(list(answers.values())), strict=True)),
+        {**answers, "pixel-values": "3,6,9,10,11,11"},
+    ):
+        assert not reconcile_solution(
+            solve(question, part, wrong), part.marking.model_dump()
+        ).passed
+    with pytest.raises(ValueError, match="every slot"):
+        solve(question, part, {"run-lengths": answers["run-lengths"]})

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import random
 from dataclasses import dataclass
-from itertools import pairwise
+from itertools import groupby
 
 from cspapergen.models import MarkingGuidance, Question, QuestionPart, Stimulus
 
@@ -407,7 +407,7 @@ def _bitmap_storage_question(
         ]
     )
     parts[0].response_slots = ["result"]
-    parts[0].marking.closed_answers = {"result": [f"{mebibytes:.2f} MiB"]}
+    parts[0].marking.closed_answers = {"result": [f"{mebibytes:.2f} MiB", f"{mebibytes:.2f}"]}
     return _question(
         style,
         number,
@@ -732,7 +732,7 @@ def _bitmap_question(style: QuestionStyle, number: int, total: int, rng: random.
     ])
     size_mib = width * height * bits / 8 / 1024**2
     parts[0].response_slots = ["result"]
-    parts[0].marking.closed_answers = {"result": [f"{size_mib} MiB", f"{size_mib} mebibytes"]}
+    parts[0].marking.closed_answers = {"result": [f"{size_mib} MiB", f"{size_mib} mebibytes", str(size_mib)]}
     parts[0].marking.points.append(f"Final answer = {size_mib} MiB;")
     return _question(style, number, "Bitmap image data", "A digital camera stores images as bitmaps.", stimulus, _fit_parts(parts, total))
 
@@ -894,9 +894,10 @@ def _sound_question(style: QuestionStyle, number: int, total: int, rng: random.R
         ("4", 4, "Explain how increasing the sampling rate and sample resolution can affect the stored sound.", ["Increasing sampling rate captures the waveform more frequently;", "Increasing sample resolution increases the number of possible amplitude values;", "Both can improve accuracy/quality;", "Both increase file size/storage requirement;"], "", 7),
     ])
     parts[0].response_slots = ["result"]
-    parts[0].marking.closed_answers = {"result": [f"{size_mib:.2f} MiB", f"{size_mib} MiB"]}
+    # The PDF preprints MiB beside the answer line; bare values use that unit.
+    parts[0].marking.closed_answers = {"result": [f"{size_mib:.2f} MiB", f"{size_mib} MiB", f"{size_mib:.2f}", str(size_mib)]}
     parts[1].response_slots = ["result"]
-    parts[1].marking.closed_answers = {"result": ["36 kHz", "36000 Hz", "36 000 Hz"]}
+    parts[1].marking.closed_answers = {"result": ["36 kHz", "36000 Hz", "36 000 Hz", "36000", "36 000"]}
     return _question(style, number, "Digital sound", "A sound is sampled and stored digitally.", stimulus, _fit_parts(parts, total))
 
 
@@ -914,9 +915,19 @@ def _rle_question(style: QuestionStyle, number: int, total: int, rng: random.Ran
         ("4", 2, "State two circumstances in which RLE would be a suitable compression method.", ["Data contains long runs of repeated values;", "The data is lossless-compression sensitive / original must be recoverable;", "Images contain large flat areas of identical colour;"], "", 5),
     ])
     pixels = row.split(", ")
-    runs = 1 + sum(first != second for first, second in pairwise(pixels))
+    groups = [(value, len(list(run))) for value, run in groupby(pixels)]
+    sequences = {
+        "run-lengths": ",".join(str(count) for _, count in groups),
+        "pixel-values": ",".join(value for value, _ in groups),
+    }
+    parts[0].set_closed_answers({key: [value, f"[{value}]"] for key, value in sequences.items()})
+    parts[0].marking.points.extend([
+        f"Ordered run lengths: {sequences['run-lengths']};",
+        f"Corresponding pixel values: {sequences['pixel-values']}; accept count-first or value-first pairs when clearly identified;",
+    ])
+    runs = len(groups)
     parts[1].response_slots = ["before", "after"]
-    parts[1].marking.closed_answers = {"before": [f"{len(pixels)} bytes"], "after": [f"{2 * runs} bytes"]}
+    parts[1].marking.closed_answers = {"before": [f"{len(pixels)} bytes", str(len(pixels))], "after": [f"{2 * runs} bytes", str(2 * runs)]}
     parts[1].marking.points.extend([f"Before: {len(pixels)} bytes;", f"After: {2 * runs} bytes;"])
     return _question(style, number, "Run length encoding", "A row of bitmap pixel data is to be compressed using RLE.", stimulus, _fit_parts(parts, total))
 

@@ -12,6 +12,7 @@ from reportlab.pdfgen import canvas
 
 from Backend.Core.independent_solver import (
     IndependentSolver,
+    reconcile_solution,
     require_solution_matches_scheme,
 )
 from Backend.Core.providers import _ollama_json_schema
@@ -128,7 +129,15 @@ def test_old_figure_review_is_not_current_evidence(tmp_path):
 
 
 @pytest.mark.parametrize(
-    "answer", ["24.72 MiB", "24.72MiB", "24.71923828125 MiB", "24.71923828125MiB"]
+    "answer",
+    [
+        "24.72 MiB",
+        "24.72MiB",
+        "24.71923828125 MiB",
+        "24.71923828125MiB",
+        "24.72",
+        "24.71923828125",
+    ],
 )
 def test_sound_slot_accepts_documented_exact_and_rounded_results(answer):
     # 48000 samples/s * 180 s * 24 bits * 1 channel / 8 / 1024**2.
@@ -157,3 +166,49 @@ def test_sound_slot_rejects_wrong_units_and_incorrect_exact_or_rounded_result(an
     solution = IndependentSolver(Client()).solve(_part_solver_item(question, part), [])
     with pytest.raises(ValueError, match="slot result"):
         require_solution_matches_scheme(solution, part.marking.model_dump())
+
+
+@pytest.mark.parametrize(
+    "answer,valid",
+    [
+        ("36000", True),
+        ("36 000", True),
+        ("36 kHz", True),
+        ("36000 Hz", True),
+        ("36", False),
+        ("36 Hz", False),
+        ("36000 kHz", False),
+    ],
+)
+def test_prefilled_hz_slot_requires_the_correct_unit_scale(answer, valid):
+    question = build_paper2_blueprint(load_syllabus(), seed=26083031).questions[1]
+    part = question.parts[1]
+    item = _part_solver_item(question, part)
+    assert item["answer_unit"] == "Hz"
+
+    class Client:
+        def generate_json(self, prompt):
+            values = {"result": answer}
+            return {"answer": values, "mark_points": values}
+
+    solution = IndependentSolver(Client()).solve(item, [])
+    assert reconcile_solution(solution, part.marking.model_dump()).passed is valid
+
+
+def test_sound_pdf_preprints_the_same_unit_supplied_to_solver(tmp_path):
+    from cspapergen.render_pdf import render_question_paper
+
+    blueprint = build_paper2_blueprint(load_syllabus(), seed=26083031)
+    question = blueprint.questions[1]
+    assert question.parts[0].answer_unit == "MiB"
+    assert _part_solver_item(question, question.parts[0])["answer_unit"] == "MiB"
+    output = tmp_path / "question-paper.pdf"
+    render_question_paper(blueprint, output)
+    with pymupdf.open(output) as document:
+        page = next(
+            page for page in document if "size of the recording" in page.get_text()
+        )
+        words = page.get_text("words")
+        for unit in ("MiB", "Hz"):
+            assert any(word[4] == unit and abs(word[0] - 460) < 1 for word in words)
+        assert "24.72" not in page.get_text()
