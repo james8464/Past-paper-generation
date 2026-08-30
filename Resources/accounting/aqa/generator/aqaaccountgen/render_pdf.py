@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from functools import partial
 from pathlib import Path
 
 import pymupdf as fitz
-from reportlab.graphics.shapes import Drawing, Ellipse, Line, Rect, String
+from reportlab.graphics.shapes import Drawing, Line, String
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
@@ -31,6 +32,9 @@ from Backend.Core.document_dsl import (
     AQAQuestionHeaderFactory,
     DocumentRole,
     SingleCellPanelFactory,
+    aqa_lozenge,
+    aqa_section_intro,
+    independent_practice_page,
     renderer_contract,
 )
 from Backend.Core.exam_blueprints import (
@@ -67,7 +71,7 @@ RENDERER_CONTRACT = renderer_contract(
 def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     doc = _document(path, paper, "Question paper")
-    story: list[Flowable] = _cover(paper)
+    story: list[Flowable] = aqa_question_cover(_cover_profile(paper), FONT, FONT_BOLD)
     pages = _paper_pages(paper)
     assert len(pages) == 35
     for page in pages:
@@ -147,7 +151,9 @@ def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
     financial_option = paper.sections[1].options[0]
     pages = [
         *_accounting_marking_guidance_pages(),
-        _objective_test_answers([questions[f"{number:02d}"] for number in range(1, 11)]),
+        _objective_test_answers(
+            [questions[f"{number:02d}"] for number in range(1, 11)]
+        ),
         _short_answer_scheme_page(questions["11"]),
         _statement_of_financial_position_scheme(questions["12"], short_option),
         _completed_ledger_scheme(questions["13.1"], short_option),
@@ -239,7 +245,10 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
             Spacer(1, 3 * mm),
             _guidance_table(
                 [
-                    ("Step 1", "Read the whole response and identify the best-fit level."),
+                    (
+                        "Step 1",
+                        "Read the whole response and identify the best-fit level.",
+                    ),
                     (
                         "Step 2",
                         "Match the response to the level descriptor. The response need not "
@@ -267,7 +276,10 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
                 [
                     ["Top", "Consistently precise, well-developed and fully applied."],
                     ["Middle", "Clear and generally developed, with minor omissions."],
-                    ["Bottom", "Meets the level threshold but is uneven or partially developed."],
+                    [
+                        "Bottom",
+                        "Meets the level threshold but is uneven or partially developed.",
+                    ],
                 ],
                 [38 * mm, 129 * mm],
             ),
@@ -283,12 +295,30 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
             _scheme_grid(
                 ["Type of mark", "Application"],
                 [
-                    ["Knowledge", "Credit accurate accounting principles, definitions and treatments."],
-                    ["Application", "Credit use of figures, business circumstances and named stakeholders."],
-                    ["Analysis", "Credit developed cause-and-effect links and supported calculations."],
-                    ["Evaluation", "Credit balanced comparison and a judgement supported by the evidence."],
-                    ["Calculation", "Award method marks where a valid approach is shown, even if an earlier figure is wrong."],
-                    ["Narrative", "Do not reward repetition of the stem unless it is used to develop an accounting point."],
+                    [
+                        "Knowledge",
+                        "Credit accurate accounting principles, definitions and treatments.",
+                    ],
+                    [
+                        "Application",
+                        "Credit use of figures, business circumstances and named stakeholders.",
+                    ],
+                    [
+                        "Analysis",
+                        "Credit developed cause-and-effect links and supported calculations.",
+                    ],
+                    [
+                        "Evaluation",
+                        "Credit balanced comparison and a judgement supported by the evidence.",
+                    ],
+                    [
+                        "Calculation",
+                        "Award method marks where a valid approach is shown, even if an earlier figure is wrong.",
+                    ],
+                    [
+                        "Narrative",
+                        "Do not reward repetition of the stem unless it is used to develop an accounting point.",
+                    ],
                 ],
                 [38 * mm, 129 * mm],
             ),
@@ -324,7 +354,10 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
                     ["FT", "Follow through"],
                     ["NE", "No evaluation"],
                     ["NAQ", "Not answering the question"],
-                    ["Max", "Maximum mark available after a specified error or omission"],
+                    [
+                        "Max",
+                        "Maximum mark available after a specified error or omission",
+                    ],
                 ],
                 [35 * mm, 132 * mm],
             ),
@@ -342,10 +375,22 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
             _scheme_grid(
                 ["Objective", "What is assessed"],
                 [
-                    ["AO1", "Demonstrate knowledge and understanding of accounting principles, concepts and techniques."],
-                    ["AO2", "Apply knowledge and understanding to familiar and unfamiliar accounting situations."],
-                    ["AO3", "Analyse accounting information, issues and evidence to support reasoned conclusions."],
-                    ["AO4", "Evaluate accounting information to make judgements, decisions and recommendations."],
+                    [
+                        "AO1",
+                        "Demonstrate knowledge and understanding of accounting principles, concepts and techniques.",
+                    ],
+                    [
+                        "AO2",
+                        "Apply knowledge and understanding to familiar and unfamiliar accounting situations.",
+                    ],
+                    [
+                        "AO3",
+                        "Analyse accounting information, issues and evidence to support reasoned conclusions.",
+                    ],
+                    [
+                        "AO4",
+                        "Evaluate accounting information to make judgements, decisions and recommendations.",
+                    ],
                 ],
                 [28 * mm, 139 * mm],
             ),
@@ -407,9 +452,18 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
             _scheme_grid(
                 ["Example", "Marking treatment"],
                 [
-                    ["Correct method, one arithmetic slip", "Award method marks and follow through the result."],
-                    ["Correct answer without workings", "Award full marks unless workings are explicitly required."],
-                    ["Two alternative answers", "Credit only where the final intended answer is clear."],
+                    [
+                        "Correct method, one arithmetic slip",
+                        "Award method marks and follow through the result.",
+                    ],
+                    [
+                        "Correct answer without workings",
+                        "Award full marks unless workings are explicitly required.",
+                    ],
+                    [
+                        "Two alternative answers",
+                        "Credit only where the final intended answer is clear.",
+                    ],
                 ],
                 [60 * mm, 107 * mm],
             ),
@@ -460,7 +514,9 @@ def _objective_test_answers(questions: list[GeneratedQuestion]) -> list[Flowable
         Paragraph("Section A", STYLES["kicker"]),
         Paragraph("Objective test answers", STYLES["heading"]),
         Spacer(1, 4 * mm),
-        _scheme_grid(["Question", "Answer", "Mark"], rows, [25 * mm, 117 * mm, 25 * mm]),
+        _scheme_grid(
+            ["Question", "Answer", "Mark"], rows, [25 * mm, 117 * mm, 25 * mm]
+        ),
         Spacer(1, 6 * mm),
         Paragraph(
             "Award one mark for the correct option. No mark is awarded for selecting "
@@ -490,7 +546,11 @@ def _short_answer_scheme_page(question: GeneratedQuestion) -> list[Flowable]:
         _scheme_grid(
             ["Level", "Marks", "Descriptor"],
             [
-                ["3", "3", "A clear and thorough explanation showing a benefit to the business."],
+                [
+                    "3",
+                    "3",
+                    "A clear and thorough explanation showing a benefit to the business.",
+                ],
                 ["2", "2", "A partial explanation showing a relevant benefit."],
                 ["1", "1", "A fragmented or identified point."],
                 ["0", "0", "Nothing worthy of credit."],
@@ -499,10 +559,7 @@ def _short_answer_scheme_page(question: GeneratedQuestion) -> list[Flowable]:
         ),
         Spacer(1, 5 * mm),
         Paragraph("Answers may include:", STYLES["body"]),
-        *[
-            Paragraph(f"• {example}", STYLES["small"])
-            for example in examples
-        ],
+        *[Paragraph(f"• {example}", STYLES["small"]) for example in examples],
         Spacer(1, 3 * mm),
         Paragraph("Reward other valid answers.", STYLES["small"]),
     ]
@@ -514,7 +571,13 @@ def _statement_of_financial_position_scheme(
 ) -> list[Flowable]:
     case = NonCurrentAssetCase.from_chart_values(option.title, option.chart_values)
     rows = [
-        ["Non-current assets", "Cost\n£", "Accumulated\ndepreciation\n£", "Carrying\namount\n£", "Marks"],
+        [
+            "Non-current assets",
+            "Cost\n£",
+            "Accumulated\ndepreciation\n£",
+            "Carrying\namount\n£",
+            "Marks",
+        ],
         [
             "Plant and machinery",
             f"{case.plant_cost_closing:,}",
@@ -594,18 +657,44 @@ def _completed_ledger_scheme(
     case = SalesLedgerCase.from_chart_values(option.title, option.chart_values)
     data = [
         ["Date", "Details", "£", "Date", "Details", "£"],
-        ["1 Jan", "Balance b/d", f"{case.opening_receivables:,}", "31 Dec", "Bank", f"{case.cash_received:,}"],
-        ["31 Dec", "Sales", f"{case.credit_sales:,}", "31 Dec", "Sales returns", f"{case.sales_returns:,}"],
+        [
+            "1 Jan",
+            "Balance b/d",
+            f"{case.opening_receivables:,}",
+            "31 Dec",
+            "Bank",
+            f"{case.cash_received:,}",
+        ],
+        [
+            "31 Dec",
+            "Sales",
+            f"{case.credit_sales:,}",
+            "31 Dec",
+            "Sales returns",
+            f"{case.sales_returns:,}",
+        ],
         ["", "", "", "31 Dec", "Discount allowed", f"{case.discount_allowed:,}"],
         ["", "", "", "31 Dec", "Balance c/d", f"{case.closing_receivables:,}"],
-        ["", "", f"{case.opening_receivables + case.credit_sales:,}", "", "", f"{case.opening_receivables + case.credit_sales:,}"],
+        [
+            "",
+            "",
+            f"{case.opening_receivables + case.credit_sales:,}",
+            "",
+            "",
+            f"{case.opening_receivables + case.credit_sales:,}",
+        ],
         ["1 Jan", "Balance b/d", f"{case.closing_receivables:,}", "", "", ""],
     ]
     return [
         _scheme_question_heading(question),
-        Paragraph(f"<b>{option.title}</b> — Sales Ledger Control Account", STYLES["centre_bold"]),
+        Paragraph(
+            f"<b>{option.title}</b> — Sales Ledger Control Account",
+            STYLES["centre_bold"],
+        ),
         Spacer(1, 3 * mm),
-        _scheme_grid(data[0], data[1:], [19 * mm, 38 * mm, 25 * mm, 19 * mm, 41 * mm, 25 * mm]),
+        _scheme_grid(
+            data[0], data[1:], [19 * mm, 38 * mm, 25 * mm, 19 * mm, 41 * mm, 25 * mm]
+        ),
         Spacer(1, 5 * mm),
         Paragraph(
             "One mark each for opening balance, credit sales, bank and returns/discount. "
@@ -621,7 +710,14 @@ def _completed_sales_account_scheme(
 ) -> list[Flowable]:
     case = SalesLedgerCase.from_chart_values(option.title, option.chart_values)
     rows = [
-        ["31 Dec", "Sales returns", f"{case.sales_returns:,}", "31 Dec", "Sales journal", f"{case.credit_sales:,}"],
+        [
+            "31 Dec",
+            "Sales returns",
+            f"{case.sales_returns:,}",
+            "31 Dec",
+            "Sales journal",
+            f"{case.credit_sales:,}",
+        ],
         ["31 Dec", "Income statement", f"{case.net_sales:,}", "", "", ""],
         ["", "", f"{case.credit_sales:,}", "", "", f"{case.credit_sales:,}"],
     ]
@@ -639,7 +735,10 @@ def _completed_sales_account_scheme(
             ["Mark", "Requirement"],
             [
                 ["1", "Credit sales entered on the credit side."],
-                ["1", "Sales returns deducted and net sales transferred to the income statement."],
+                [
+                    "1",
+                    "Sales returns deducted and net sales transferred to the income statement.",
+                ],
             ],
             [25 * mm, 142 * mm],
         ),
@@ -655,7 +754,12 @@ def _completed_income_statement_scheme(
         ["Revenue", f"{case.revenue:,}", "", "1"],
         ["Cost of sales", f"({case.adjusted_cost_of_sales:,})", "", "2"],
         ["Gross profit", "", f"{case.revenue - case.adjusted_cost_of_sales:,}", "1 OF"],
-        ["Administration expenses", f"({case.adjusted_administration_expenses:,})", "", "2"],
+        [
+            "Administration expenses",
+            f"({case.adjusted_administration_expenses:,})",
+            "",
+            "2",
+        ],
         ["Marketing expenses", f"({case.adjusted_marketing_expenses:,})", "", "2"],
         ["Warehouse expenses", f"({case.warehouse_expenses:,})", "", "1"],
         ["Other income – insurance claim", f"{case.insurance_claim:,}", "", "1"],
@@ -695,11 +799,31 @@ def _income_statement_workings_scheme(
         _scheme_grid(
             ["Adjustment", "Treatment", "Marks"],
             [
-                ["Damaged inventory", f"Write down inventory by £{case.inventory_write_down:,} to net realisable value.", "Included"],
-                ["Irrecoverable debt", f"Charge £{case.irrecoverable_debt:,} to administration expenses.", "Included"],
-                ["Supplier invoice", f"Accrue £{case.supplier_invoice:,} in marketing expenses.", "Included"],
-                ["Insurance claim", f"Recognise £{case.insurance_claim:,} as other income.", "Included"],
-                ["Presentation", "Use a clear income-statement layout with appropriate labels and subtotals.", "Check"],
+                [
+                    "Damaged inventory",
+                    f"Write down inventory by £{case.inventory_write_down:,} to net realisable value.",
+                    "Included",
+                ],
+                [
+                    "Irrecoverable debt",
+                    f"Charge £{case.irrecoverable_debt:,} to administration expenses.",
+                    "Included",
+                ],
+                [
+                    "Supplier invoice",
+                    f"Accrue £{case.supplier_invoice:,} in marketing expenses.",
+                    "Included",
+                ],
+                [
+                    "Insurance claim",
+                    f"Recognise £{case.insurance_claim:,} as other income.",
+                    "Included",
+                ],
+                [
+                    "Presentation",
+                    "Use a clear income-statement layout with appropriate labels and subtotals.",
+                    "Check",
+                ],
             ],
             [49 * mm, 93 * mm, 25 * mm],
         ),
@@ -724,10 +848,30 @@ def _income_statement_finishing_scheme(
         _scheme_grid(
             ["Item", "Calculation", "Result £", "Mark"],
             [
-                ["Taxation", "Current-year charge supplied", f"{case.current_tax_charge:,}", "Check"],
-                ["New debenture", "6% × 4/12", f"{case.new_debenture * 6 // 100 * 4 // 12:,}", "Check"],
-                ["Earlier debenture", "8% × 10/12", f"{case.earlier_debenture * 8 // 100 * 10 // 12:,}", "Check"],
-                ["Finance costs", "Total of both debenture charges", f"{case.finance_cost:,}", "Check"],
+                [
+                    "Taxation",
+                    "Current-year charge supplied",
+                    f"{case.current_tax_charge:,}",
+                    "Check",
+                ],
+                [
+                    "New debenture",
+                    "6% × 4/12",
+                    f"{case.new_debenture * 6 // 100 * 4 // 12:,}",
+                    "Check",
+                ],
+                [
+                    "Earlier debenture",
+                    "8% × 10/12",
+                    f"{case.earlier_debenture * 8 // 100 * 10 // 12:,}",
+                    "Check",
+                ],
+                [
+                    "Finance costs",
+                    "Total of both debenture charges",
+                    f"{case.finance_cost:,}",
+                    "Check",
+                ],
             ],
             [48 * mm, 58 * mm, 38 * mm, 23 * mm],
         ),
@@ -735,8 +879,14 @@ def _income_statement_finishing_scheme(
         Paragraph("Marker notes", STYLES["heading"]),
         _guidance_table(
             [
-                ("OF", "Follow through the student's gross-profit figure into profit for the year."),
-                ("Tax", "Credit a tax charge calculated consistently from the student's profit figure."),
+                (
+                    "OF",
+                    "Follow through the student's gross-profit figure into profit for the year.",
+                ),
+                (
+                    "Tax",
+                    "Credit a tax charge calculated consistently from the student's profit figure.",
+                ),
                 ("Format", "Accept alternative conventional labels and ordering."),
                 ("Total", "Do not award more than 14 marks across Question 14.1."),
             ]
@@ -750,18 +900,50 @@ def _levels_scheme_page(
 ) -> list[Flowable]:
     if question.marks == 6:
         levels = [
-            ["3", "5–6", "A well-developed assessment. Uses relevant accounting evidence, analyses effects and reaches a supported judgement."],
-            ["2", "3–4", "A reasonable response with some application and developed analysis. Judgement may be partial or uneven."],
-            ["1", "1–2", "Limited knowledge or application. Points are asserted with little development."],
+            [
+                "3",
+                "5–6",
+                "A well-developed assessment. Uses relevant accounting evidence, analyses effects and reaches a supported judgement.",
+            ],
+            [
+                "2",
+                "3–4",
+                "A reasonable response with some application and developed analysis. Judgement may be partial or uneven.",
+            ],
+            [
+                "1",
+                "1–2",
+                "Limited knowledge or application. Points are asserted with little development.",
+            ],
             ["0", "0", "Nothing worthy of credit."],
         ]
     else:
         levels = [
-            ["5", "21–25", "Thorough knowledge and precise application. Sustained analysis leads to a balanced, fully supported recommendation."],
-            ["4", "16–20", "Good knowledge and effective application. Analysis is developed and the judgement is supported."],
-            ["3", "11–15", "Reasonable knowledge and some relevant application. Analysis supports a partially developed judgement."],
-            ["2", "6–10", "Some knowledge and limited application. Analysis is incomplete and evaluation is weak."],
-            ["1", "1–5", "Fragmented knowledge with little application or development."],
+            [
+                "5",
+                "21–25",
+                "Thorough knowledge and precise application. Sustained analysis leads to a balanced, fully supported recommendation.",
+            ],
+            [
+                "4",
+                "16–20",
+                "Good knowledge and effective application. Analysis is developed and the judgement is supported.",
+            ],
+            [
+                "3",
+                "11–15",
+                "Reasonable knowledge and some relevant application. Analysis supports a partially developed judgement.",
+            ],
+            [
+                "2",
+                "6–10",
+                "Some knowledge and limited application. Analysis is incomplete and evaluation is weak.",
+            ],
+            [
+                "1",
+                "1–5",
+                "Fragmented knowledge with little application or development.",
+            ],
             ["0", "0", "Nothing worthy of credit."],
         ]
     return [
@@ -793,9 +975,21 @@ def _levels_with_indicative_scheme_page(
         _scheme_grid(
             ["Level", "Marks", "Descriptor"],
             [
-                ["3", "5–6", "A well-developed assessment with relevant application, analysis and a supported judgement."],
-                ["2", "3–4", "A reasonable response with some application and development; judgement may be partial."],
-                ["1", "1–2", "Limited knowledge or application with little development."],
+                [
+                    "3",
+                    "5–6",
+                    "A well-developed assessment with relevant application, analysis and a supported judgement.",
+                ],
+                [
+                    "2",
+                    "3–4",
+                    "A reasonable response with some application and development; judgement may be partial.",
+                ],
+                [
+                    "1",
+                    "1–2",
+                    "Limited knowledge or application with little development.",
+                ],
                 ["0", "0", "Nothing worthy of credit."],
             ],
             [20 * mm, 25 * mm, 122 * mm],
@@ -804,10 +998,7 @@ def _levels_with_indicative_scheme_page(
         Paragraph("Indicative content", STYLES["heading"]),
         _scheme_grid(
             ["Possible content", "AO"],
-            [
-                [point, "AO2/AO3"]
-                for point in question.mark_scheme[:5]
-            ],
+            [[point, "AO2/AO3"] for point in question.mark_scheme[:5]],
             [137 * mm, 30 * mm],
         ),
     ]
@@ -886,9 +1077,7 @@ def _extended_judgement_page(
     title: str,
 ) -> list[Flowable]:
     applied_points = [
-        point
-        for point in question.mark_scheme
-        if point.startswith(("AO2:", "AO3:"))
+        point for point in question.mark_scheme if point.startswith(("AO2:", "AO3:"))
     ][7:]
     return [
         Paragraph(f"{title} continued", STYLES["kicker"]),
@@ -896,20 +1085,29 @@ def _extended_judgement_page(
         Spacer(1, 3 * mm),
         _scheme_grid(
             ["Further guidance", "AO"],
-            [
-                [point, "AO3"]
-                for point in applied_points[:5]
-            ],
+            [[point, "AO3"] for point in applied_points[:5]],
             [137 * mm, 30 * mm],
         ),
         Spacer(1, 5 * mm),
         Paragraph("Judgement", STYLES["heading"]),
         _guidance_table(
             [
-                ("Balance", "Weigh the principal financial and non-financial evidence."),
-                ("Limits", "Recognise uncertainty, assumptions and information that is unavailable."),
-                ("Decision", "Make a clear recommendation that follows from the preceding analysis."),
-                ("Context", "Use the named organisation, stakeholder objectives and supplied figures."),
+                (
+                    "Balance",
+                    "Weigh the principal financial and non-financial evidence.",
+                ),
+                (
+                    "Limits",
+                    "Recognise uncertainty, assumptions and information that is unavailable.",
+                ),
+                (
+                    "Decision",
+                    "Make a clear recommendation that follows from the preceding analysis.",
+                ),
+                (
+                    "Context",
+                    "Use the named organisation, stakeholder objectives and supplied figures.",
+                ),
             ]
         ),
         Spacer(1, 4 * mm),
@@ -932,16 +1130,52 @@ def _completed_capital_accounts_scheme(
     withdrawn = case.cash_withdrawn
     closing = case.target_capital
     rows = [
-        ["31 Aug", "Goodwill written off", f"{write_off['Alex']:,}", f"{write_off['Morgan']:,}", "1 Jan", "Balance b/d", f"{opening['Alex']:,}", f"{opening['Morgan']:,}"],
-        ["31 Aug", "Bank", f"{withdrawn['Alex']:,}", f"{withdrawn['Morgan']:,}", "31 Aug", "Goodwill", f"{credit['Alex']:,}", f"{credit['Morgan']:,}"],
-        ["31 Dec", "Balance c/d", f"{closing['Alex']:,}", f"{closing['Morgan']:,}", "", "", "", ""],
+        [
+            "31 Aug",
+            "Goodwill written off",
+            f"{write_off['Alex']:,}",
+            f"{write_off['Morgan']:,}",
+            "1 Jan",
+            "Balance b/d",
+            f"{opening['Alex']:,}",
+            f"{opening['Morgan']:,}",
+        ],
+        [
+            "31 Aug",
+            "Bank",
+            f"{withdrawn['Alex']:,}",
+            f"{withdrawn['Morgan']:,}",
+            "31 Aug",
+            "Goodwill",
+            f"{credit['Alex']:,}",
+            f"{credit['Morgan']:,}",
+        ],
+        [
+            "31 Dec",
+            "Balance c/d",
+            f"{closing['Alex']:,}",
+            f"{closing['Morgan']:,}",
+            "",
+            "",
+            "",
+            "",
+        ],
     ]
     return [
         _scheme_question_heading(question),
         Paragraph("Partners' Capital Accounts", STYLES["centre_bold"]),
         Spacer(1, 3 * mm),
         _scheme_grid(
-            ["Date", "Details", "Alex £", "Morgan £", "Date", "Details", "Alex £", "Morgan £"],
+            [
+                "Date",
+                "Details",
+                "Alex £",
+                "Morgan £",
+                "Date",
+                "Details",
+                "Alex £",
+                "Morgan £",
+            ],
             rows,
             [16 * mm, 27 * mm, 20 * mm, 20 * mm, 16 * mm, 27 * mm, 20 * mm, 21 * mm],
         ),
@@ -966,12 +1200,42 @@ def _completed_appropriation_scheme(
     second_shares = second["residual_profit_shares"]
     rows = [
         ["Profit for the period", f"{first['profit']:,}", f"{second['profit']:,}", "1"],
-        ["Interest on drawings", f"{sum(first['interest_on_drawings'].values()):,}", f"{sum(second['interest_on_drawings'].values()):,}", "1"],
-        ["Interest on capital", f"({sum(first['interest_on_capital'].values()):,})", f"({sum(second['interest_on_capital'].values()):,})", "2"],
-        ["Morgan's salary", f"({first['partner_salary']['Morgan']:,})", f"({second['partner_salary']['Morgan']:,})", "1"],
-        ["Residual profit", f"{first['residual_profit']:,}", f"{second['residual_profit']:,}", "1"],
-        ["Alex's share", f"{first_shares['Alex']:,}", f"{second_shares['Alex']:,}", "1"],
-        ["Morgan's share", f"{first_shares['Morgan']:,}", f"{second_shares['Morgan']:,}", "1"],
+        [
+            "Interest on drawings",
+            f"{sum(first['interest_on_drawings'].values()):,}",
+            f"{sum(second['interest_on_drawings'].values()):,}",
+            "1",
+        ],
+        [
+            "Interest on capital",
+            f"({sum(first['interest_on_capital'].values()):,})",
+            f"({sum(second['interest_on_capital'].values()):,})",
+            "2",
+        ],
+        [
+            "Morgan's salary",
+            f"({first['partner_salary']['Morgan']:,})",
+            f"({second['partner_salary']['Morgan']:,})",
+            "1",
+        ],
+        [
+            "Residual profit",
+            f"{first['residual_profit']:,}",
+            f"{second['residual_profit']:,}",
+            "1",
+        ],
+        [
+            "Alex's share",
+            f"{first_shares['Alex']:,}",
+            f"{second_shares['Alex']:,}",
+            "1",
+        ],
+        [
+            "Morgan's share",
+            f"{first_shares['Morgan']:,}",
+            f"{second_shares['Morgan']:,}",
+            "1",
+        ],
         ["Riley's share", f"{first_shares['Riley']:,}", "—", "0"],
     ]
     return [
@@ -1101,9 +1365,7 @@ def _continued_marking_guidance(
 ) -> list[Flowable]:
     points = [text for text, _marks in _item_specific_mark_scheme_rows(question)]
     rows = [["Indicative marking guidance", ""]]
-    rows.extend(
-        [[Paragraph(f"• {point}", STYLES["small"]), ""] for point in points]
-    )
+    rows.extend([[Paragraph(f"• {point}", STYLES["small"]), ""] for point in points])
     table = Table(rows, colWidths=[155 * mm, 12 * mm])
     table.setStyle(
         TableStyle(
@@ -1131,11 +1393,7 @@ def _assessment_objectives_page(
 ) -> list[Flowable]:
     rows = [["Question", "Marks", "Assessment focus"]]
     for question in questions:
-        focus = (
-            "AO1, AO2 and AO3"
-            if question.marks >= 6
-            else "AO1 and AO2"
-        )
+        focus = "AO1, AO2 and AO3" if question.marks >= 6 else "AO1 and AO2"
         rows.append([question.number, str(question.marks), focus])
     table = Table(rows, colWidths=[38 * mm, 25 * mm, 104 * mm], repeatRows=1)
     table.setStyle(
@@ -1157,19 +1415,6 @@ def _assessment_objectives_page(
             f"The candidate paper maximum is {paper.total_marks}. Verify each subtotal "
             "against the marks printed beside the corresponding question.",
             STYLES["body"],
-        ),
-    ]
-
-
-def _independent_practice_page() -> list[Flowable]:
-    return [
-        Spacer(1, 205 * mm),
-        Paragraph("Independent practice material", STYLES["heading"]),
-        Spacer(1, 3 * mm),
-        Paragraph(
-            "Created by Paper Creator for private revision. This mark scheme is not "
-            "produced, endorsed or approved by AQA or any examination board.",
-            STYLES["small"],
         ),
     ]
 
@@ -1208,7 +1453,11 @@ def _paper_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
             pages.append(content)
             if index == 0:
                 pages.append(
-                    [Paragraph("Turn over for the next question", STYLES["centre_bold"])]
+                    [
+                        Paragraph(
+                            "Turn over for the next question", STYLES["centre_bold"]
+                        )
+                    ]
                 )
         pages.append(
             [
@@ -1245,9 +1494,7 @@ def _paper_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
 
     c_option = section_c.options[0]
     if paper.paper_id == "paper_1":
-        pages.extend(
-            _paper_one_section_c_pages(section_c, c_option, paper.paper_code)
-        )
+        pages.extend(_paper_one_section_c_pages(section_c, c_option, paper.paper_code))
         return pages
 
     pages.extend(_paper_two_section_c_pages(section_c, c_option, paper.paper_code))
@@ -1531,9 +1778,7 @@ def _no_questions_page(
     *,
     include_legal_notice: bool = False,
 ) -> list[Flowable]:
-    page = _do_not_write_page(
-        height=165 * mm if include_legal_notice else 226 * mm
-    )
+    page = _do_not_write_page(height=165 * mm if include_legal_notice else 226 * mm)
     page[0] = Paragraph(
         "There are no questions printed on this page",
         STYLES["centre_bold"],
@@ -1711,7 +1956,9 @@ def _company_statement_case(option: GeneratedOption) -> Table:
             [
                 Paragraph(
                     "<b>Additional information</b><br/>"
-                    + "<br/>".join(f"{index}. {item}" for index, item in enumerate(additional, 1)),
+                    + "<br/>".join(
+                        f"{index}. {item}" for index, item in enumerate(additional, 1)
+                    ),
                     STYLES["body"],
                 )
             ],
@@ -1784,11 +2031,29 @@ def _partnership_case(option: GeneratedOption) -> Table:
 
 
 def _partners_capital_table() -> Table:
-    headers = ["Date", "Details", "Alex\n£", "Morgan\n£", "Date", "Details", "Alex\n£", "Morgan\n£"]
+    headers = [
+        "Date",
+        "Details",
+        "Alex\n£",
+        "Morgan\n£",
+        "Date",
+        "Details",
+        "Alex\n£",
+        "Morgan\n£",
+    ]
     data = [headers, *[[""] * 8 for _ in range(6)]]
     table = Table(
         data,
-        colWidths=[18 * mm, 30 * mm, 18 * mm, 18 * mm, 18 * mm, 30 * mm, 18 * mm, 18 * mm],
+        colWidths=[
+            18 * mm,
+            30 * mm,
+            18 * mm,
+            18 * mm,
+            18 * mm,
+            30 * mm,
+            18 * mm,
+            18 * mm,
+        ],
         rowHeights=[10 * mm, *([9 * mm] * 6)],
     )
     table.setStyle(
@@ -1805,7 +2070,11 @@ def _partners_capital_table() -> Table:
     )
     return Table(
         [
-            [Paragraph("<b>Dr</b>", STYLES["small"]), Paragraph("<b>Capital Accounts</b>", STYLES["centre_bold"]), Paragraph("<b>Cr</b>", STYLES["marks"])],
+            [
+                Paragraph("<b>Dr</b>", STYLES["small"]),
+                Paragraph("<b>Capital Accounts</b>", STYLES["centre_bold"]),
+                Paragraph("<b>Cr</b>", STYLES["marks"]),
+            ],
             [table, "", ""],
         ],
         colWidths=[8 * mm, 151 * mm, 8 * mm],
@@ -1826,8 +2095,18 @@ def _partnership_drawings_case(option: GeneratedOption) -> Table:
     drawings_interest = Table(
         [
             ["", "Alex\n£", "Morgan\n£", "Riley\n£"],
-            ["1 Jan–31 Aug", f"{first_interest['Alex']:,}", f"{first_interest['Morgan']:,}", f"{first_interest['Riley']:,}"],
-            ["1 Sep–31 Dec", f"{second_interest['Alex']:,}", f"{second_interest['Morgan']:,}", "—"],
+            [
+                "1 Jan–31 Aug",
+                f"{first_interest['Alex']:,}",
+                f"{first_interest['Morgan']:,}",
+                f"{first_interest['Riley']:,}",
+            ],
+            [
+                "1 Sep–31 Dec",
+                f"{second_interest['Alex']:,}",
+                f"{second_interest['Morgan']:,}",
+                "—",
+            ],
         ],
         colWidths=[70 * mm, 27 * mm, 27 * mm, 27 * mm],
         style=TableStyle(
@@ -1855,7 +2134,12 @@ def _partnership_drawings_case(option: GeneratedOption) -> Table:
                     STYLES["body"],
                 )
             ],
-            [Paragraph("<b>Interest on drawings has been calculated as:</b>", STYLES["small"])],
+            [
+                Paragraph(
+                    "<b>Interest on drawings has been calculated as:</b>",
+                    STYLES["small"],
+                )
+            ],
             [drawings_interest],
             [
                 Paragraph(
@@ -1890,11 +2174,13 @@ def _partnership_drawings_case(option: GeneratedOption) -> Table:
 def _appropriation_answer_table() -> Table:
     data = [
         [
-            Paragraph("<b>Profit and loss appropriation account</b>", STYLES["centre_bold"]),
+            Paragraph(
+                "<b>Profit and loss appropriation account</b>", STYLES["centre_bold"]
+            ),
             Paragraph("<b>First period<br/>£</b>", STYLES["marks"]),
             Paragraph("<b>Second period<br/>£</b>", STYLES["marks"]),
         ],
-        *( [["", "", ""] for _ in range(20)] ),
+        *([["", "", ""] for _ in range(20)]),
     ]
     table = Table(
         data,
@@ -2026,8 +2312,7 @@ def _non_current_asset_case(option: GeneratedOption) -> Table:
     case_rows.append(
         [
             Paragraph(
-                "<b>Additional information</b><br/><br/>"
-                + "<br/>".join(information),
+                "<b>Additional information</b><br/><br/>" + "<br/>".join(information),
                 STYLES["small"],
             ),
             "",
@@ -2073,12 +2358,18 @@ def _sales_ledger_case(option: GeneratedOption) -> Table:
         ]
     )
     sales_table = Table(
-        [["Date", "Detail", "£"], ["Year end", "Total for year", f"{case_data.credit_sales:,}"]],
+        [
+            ["Date", "Detail", "£"],
+            ["Year end", "Total for year", f"{case_data.credit_sales:,}"],
+        ],
         colWidths=[38 * mm, 48 * mm, 26 * mm],
         style=journal_style,
     )
     returns_table = Table(
-        [["Date", "Detail", "£"], ["Year end", "Total for year", f"{case_data.sales_returns:,}"]],
+        [
+            ["Date", "Detail", "£"],
+            ["Year end", "Total for year", f"{case_data.sales_returns:,}"],
+        ],
         colWidths=[38 * mm, 48 * mm, 26 * mm],
         style=journal_style,
     )
@@ -2190,13 +2481,15 @@ def _mcq_block(question: GeneratedQuestion) -> list[Flowable]:
             for index, text in enumerate(question.choices)
         ],
         colWidths=[9 * mm, 119 * mm, 12 * mm],
-        style=TableStyle([
-            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-            ("LEFTPADDING", (0, 0), (-1, -1), 0),
-            ("RIGHTPADDING", (0, 0), (-1, -1), 0),
-            ("TOPPADDING", (0, 0), (-1, -1), 2),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
-        ]),
+        style=TableStyle(
+            [
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 0),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+                ("TOPPADDING", (0, 0), (-1, -1), 2),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+            ]
+        ),
     )
     return [
         KeepTogether(
@@ -2210,18 +2503,13 @@ def _mcq_block(question: GeneratedQuestion) -> list[Flowable]:
     ]
 
 
-def _lozenge() -> Drawing:
-    drawing = Drawing(25, 15)
-    drawing.add(Rect(1, 1, 22, 13, strokeColor=INK, fillColor=None, strokeWidth=0.7))
-    drawing.add(Ellipse(12, 7.5, 4, 2.2, strokeColor=INK, fillColor=None, strokeWidth=0.6))
-    return drawing
-
-
 def _scheme_block(question: GeneratedQuestion) -> list[Flowable]:
-    rows = [[
-        Paragraph(f"<b>{question.number}</b> {question.prompt}", STYLES["body"]),
-        str(question.marks),
-    ]]
+    rows = [
+        [
+            Paragraph(f"<b>{question.number}</b> {question.prompt}", STYLES["body"]),
+            str(question.marks),
+        ]
+    ]
     rows.extend(
         [
             [Paragraph(f"• {point}", STYLES["small"]), str(marks)]
@@ -2229,12 +2517,16 @@ def _scheme_block(question: GeneratedQuestion) -> list[Flowable]:
         ]
     )
     table = Table(rows, colWidths=[155 * mm, 12 * mm], repeatRows=1)
-    table.setStyle(TableStyle([
-        ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
-        ("BACKGROUND", (0, 0), (-1, 0), GREY),
-        ("VALIGN", (0, 0), (-1, -1), "TOP"),
-        ("PADDING", (0, 0), (-1, -1), 5),
-    ]))
+    table.setStyle(
+        TableStyle(
+            [
+                ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
+                ("BACKGROUND", (0, 0), (-1, 0), GREY),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("PADDING", (0, 0), (-1, -1), 5),
+            ]
+        )
+    )
     return [table, Spacer(1, 4 * mm)]
 
 
@@ -2251,31 +2543,6 @@ def _item_specific_mark_scheme_rows(
     return rows
 
 
-def _intro(section) -> list[Flowable]:
-    return [
-        Table(
-            [
-                [Paragraph(f"<b>Section {section.id}</b>", STYLES["centre_bold"])],
-                [Paragraph(section.instructions, STYLES["instruction"])],
-            ],
-            colWidths=[167 * mm],
-            style=TableStyle(
-                [
-                    ("LINEBELOW", (0, -1), (-1, -1), 0.65, INK),
-                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                    ("TOPPADDING", (0, 0), (-1, -1), 3),
-                    ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
-                ]
-            ),
-        ),
-        Spacer(1, 4 * mm),
-    ]
-
-
-def _cover(paper: GeneratedPaper) -> list[Flowable]:
-    return aqa_question_cover(_cover_profile(paper), FONT, FONT_BOLD)
-
-
 def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
     return CoverProfile(
         board="aqa",
@@ -2284,9 +2551,7 @@ def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
         paper_title=f"Paper {paper.paper_id[-1]}  {paper.title}",
         duration="3 hours",
         total_marks=paper.total_marks,
-        materials=(
-            "For this paper you must have a calculator.",
-        ),
+        materials=("For this paper you must have a calculator.",),
         instructions=(
             "Use black ink or black ball-point pen.",
             "Fill in the boxes at the top of this page.",
@@ -2295,9 +2560,7 @@ def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
             "Use the lined pages at the end if you need extra space and write the question number against your answer.",
             "Cross through any rough work you do not want to be marked.",
         ),
-        information=(
-            "The marks for questions are shown in brackets.",
-        ),
+        information=("The marks for questions are shown in brackets.",),
         mark_rows=tuple(
             (
                 section.id,
@@ -2325,9 +2588,7 @@ def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
         PageTemplate(
             id="aqa-accounting-practice",
             frames=[frame],
-            onPage=lambda canvas, value: _chrome(
-                canvas, value, paper.paper_code, kind
-            ),
+            onPage=lambda canvas, value: _chrome(canvas, value, paper.paper_code, kind),
         )
     )
     return doc
@@ -2370,21 +2631,95 @@ def _chrome(canvas, doc, code: str, kind: str) -> None:
 
 _base = getSampleStyleSheet()
 STYLES = {
-    "body": ParagraphStyle("body", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14),
-    "small": ParagraphStyle("small", parent=_base["BodyText"], fontName=FONT, fontSize=9.0, leading=12),
-    "scheme_small": ParagraphStyle("scheme_small", parent=_base["BodyText"], fontName=FONT, fontSize=8.1, leading=9.7),
-    "heading": ParagraphStyle("heading", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=11, leading=14),
-    "kicker": ParagraphStyle("kicker", parent=_base["Heading2"], fontName=FONT_BOLD, fontSize=15, leading=18),
-    "title": ParagraphStyle("title", parent=_base["Title"], fontName=FONT_BOLD, fontSize=23, leading=27),
-    "subtitle": ParagraphStyle("subtitle", parent=_base["Heading2"], fontName=FONT, fontSize=14, leading=18),
-    "banner": ParagraphStyle("banner", parent=_base["Heading2"], fontName=FONT_BOLD, fontSize=12, leading=15, textColor=colors.white),
-    "instruction": ParagraphStyle("instruction", parent=_base["BodyText"], fontName=FONT_BOLD, fontSize=10.5, leading=14),
-    "option": ParagraphStyle("option", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=11.5, leading=15),
-    "extract": ParagraphStyle("extract", parent=_base["BodyText"], fontName=FONT, fontSize=9.3, leading=12, borderWidth=0.4, borderColor=colors.grey, borderPadding=5),
-    "marks": ParagraphStyle("marks", parent=_base["BodyText"], fontName=FONT_BOLD, fontSize=9.5, leading=13, alignment=TA_RIGHT),
-    "choices": ParagraphStyle("choices", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=17, leftIndent=22),
-    "answer": ParagraphStyle("answer", parent=_base["BodyText"], fontName=FONT_BOLD, fontSize=9.5, leading=12, alignment=TA_RIGHT),
-    "centre_bold": ParagraphStyle("centre", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=10.5, leading=14, alignment=TA_CENTER),
+    "body": ParagraphStyle(
+        "body", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14
+    ),
+    "small": ParagraphStyle(
+        "small", parent=_base["BodyText"], fontName=FONT, fontSize=9.0, leading=12
+    ),
+    "scheme_small": ParagraphStyle(
+        "scheme_small",
+        parent=_base["BodyText"],
+        fontName=FONT,
+        fontSize=8.1,
+        leading=9.7,
+    ),
+    "heading": ParagraphStyle(
+        "heading", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=11, leading=14
+    ),
+    "kicker": ParagraphStyle(
+        "kicker", parent=_base["Heading2"], fontName=FONT_BOLD, fontSize=15, leading=18
+    ),
+    "title": ParagraphStyle(
+        "title", parent=_base["Title"], fontName=FONT_BOLD, fontSize=23, leading=27
+    ),
+    "subtitle": ParagraphStyle(
+        "subtitle", parent=_base["Heading2"], fontName=FONT, fontSize=14, leading=18
+    ),
+    "banner": ParagraphStyle(
+        "banner",
+        parent=_base["Heading2"],
+        fontName=FONT_BOLD,
+        fontSize=12,
+        leading=15,
+        textColor=colors.white,
+    ),
+    "instruction": ParagraphStyle(
+        "instruction",
+        parent=_base["BodyText"],
+        fontName=FONT_BOLD,
+        fontSize=10.5,
+        leading=14,
+    ),
+    "option": ParagraphStyle(
+        "option",
+        parent=_base["Heading3"],
+        fontName=FONT_BOLD,
+        fontSize=11.5,
+        leading=15,
+    ),
+    "extract": ParagraphStyle(
+        "extract",
+        parent=_base["BodyText"],
+        fontName=FONT,
+        fontSize=9.3,
+        leading=12,
+        borderWidth=0.4,
+        borderColor=colors.grey,
+        borderPadding=5,
+    ),
+    "marks": ParagraphStyle(
+        "marks",
+        parent=_base["BodyText"],
+        fontName=FONT_BOLD,
+        fontSize=9.5,
+        leading=13,
+        alignment=TA_RIGHT,
+    ),
+    "choices": ParagraphStyle(
+        "choices",
+        parent=_base["BodyText"],
+        fontName=FONT,
+        fontSize=11,
+        leading=17,
+        leftIndent=22,
+    ),
+    "answer": ParagraphStyle(
+        "answer",
+        parent=_base["BodyText"],
+        fontName=FONT_BOLD,
+        fontSize=9.5,
+        leading=12,
+        alignment=TA_RIGHT,
+    ),
+    "centre_bold": ParagraphStyle(
+        "centre",
+        parent=_base["Heading3"],
+        fontName=FONT_BOLD,
+        fontSize=10.5,
+        leading=14,
+        alignment=TA_CENTER,
+    ),
 }
 _question_headers = AQAQuestionHeaderFactory(
     body_style=STYLES["body"],
@@ -2402,3 +2737,6 @@ _banner = SingleCellPanelFactory(
     padding=7,
     table_class=Table,
 ).panel
+_intro = partial(aqa_section_intro, styles=STYLES, ink=INK, table_class=Table)
+_independent_practice_page = partial(independent_practice_page, styles=STYLES)
+_lozenge = partial(aqa_lozenge, INK)

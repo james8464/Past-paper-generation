@@ -153,7 +153,7 @@ MARK_SCHEME_PAGE_PLANS = {
 def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     doc = _document(path, paper, "Question paper")
-    story: list[Flowable] = _cover(paper)
+    story: list[Flowable] = ocr_question_cover(_cover_profile(paper), FONT, FONT_BOLD)
     if paper.paper_id == "paper_1":
         story.extend(
             [
@@ -228,9 +228,7 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
         ),
         NextPageTemplate("ocr-cs-mark-scheme-landscape"),
         PageBreak(),
-        *_supplementary_marking_pages(
-            6 if paper.paper_id == "paper_1" else 4
-        ),
+        *_supplementary_marking_pages(6 if paper.paper_id == "paper_1" else 4),
         PageBreak(),
     ]
     story.extend(_mark_scheme_content_pages(paper))
@@ -286,8 +284,7 @@ def _scheme_page_table(
         rows.append(
             [
                 Paragraph(
-                    escape(question.number)
-                    + (" continued" if segment > 1 else ""),
+                    escape(question.number) + (" continued" if segment > 1 else ""),
                     STYLES["scheme_small"],
                 ),
                 _scheme_answer(question, segment, segment_count, item_count),
@@ -343,7 +340,11 @@ def _scheme_answer(
     else:
         limit = 2 if item_count >= 4 else 4 if item_count >= 2 else len(points)
         selected = points[:limit]
-    prompt = escape(question.prompt) if segment == 1 else "<b>Indicative content continued</b>"
+    prompt = (
+        escape(question.prompt)
+        if segment == 1
+        else "<b>Indicative content continued</b>"
+    )
     bullets = "<br/>".join(f"• {escape(point)}" for point in selected)
     return Paragraph(
         f"{prompt}<br/><br/>{bullets}",
@@ -456,7 +457,11 @@ def _annotation_conventions_page() -> list[Flowable]:
         ("×", "Incorrect response", "A response that cannot be credited."),
         ("BOD", "Benefit of doubt", "Meaning is clear despite minor imprecision."),
         ("NBOD", "No benefit of doubt", "The response remains ambiguous."),
-        ("ECF", "Error carried forward", "Later working follows an earlier error consistently."),
+        (
+            "ECF",
+            "Error carried forward",
+            "Later working follows an earlier error consistently.",
+        ),
         ("REP", "Repeated point", "Do not award the same idea twice."),
         ("CON", "Contradiction", "Withhold credit where a valid point is reversed."),
         ("L1", "Level 1", "Limited technical knowledge or development."),
@@ -738,12 +743,16 @@ def _additional_answer_page(
                 heading=(
                     "BLANK PAGE"
                     if final_blank
-                    else "" if continuation else "EXTRA ANSWER SPACE"
+                    else ""
+                    if continuation
+                    else "EXTRA ANSWER SPACE"
                 ),
                 variant=(
                     "blank"
                     if final_blank
-                    else "continuation" if continuation else "additional"
+                    else "continuation"
+                    if continuation
+                    else "additional"
                 ),
                 legal_notice=include_legal_notice,
                 do_not_write=final_blank,
@@ -752,10 +761,6 @@ def _additional_answer_page(
             bold_font=FONT_BOLD,
         )
     ]
-
-
-def _cover(paper: GeneratedPaper) -> list[Flowable]:
-    return ocr_question_cover(_cover_profile(paper), FONT, FONT_BOLD)
 
 
 def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
@@ -779,9 +784,7 @@ def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
     )
 
 
-def _document(
-    path: Path, paper: GeneratedPaper, kind: str
-) -> BaseDocTemplate:
+def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
     if kind == "Question paper":
         left_margin = 17.5 * mm
         right_margin = 17.5 * mm
@@ -901,23 +904,114 @@ def _chrome(canvas, doc, code: str, kind: str) -> None:
 
 _base = getSampleStyleSheet()
 STYLES = {
-    "body": ParagraphStyle("body", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14),
-    "small": ParagraphStyle("small", parent=_base["BodyText"], fontName=FONT, fontSize=9.2, leading=12),
-    "small_bold": ParagraphStyle("small-bold", parent=_base["BodyText"], fontName=FONT_BOLD, fontSize=9.2, leading=12),
-    "heading": ParagraphStyle("heading", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=11, leading=14),
-    "kicker": ParagraphStyle("kicker", parent=_base["Heading2"], fontName=FONT_BOLD, fontSize=15, leading=18),
-    "title": ParagraphStyle("title", parent=_base["Title"], fontName=FONT_BOLD, fontSize=23, leading=27),
-    "subtitle": ParagraphStyle("subtitle", parent=_base["Heading2"], fontName=FONT, fontSize=14, leading=18),
-    "banner": ParagraphStyle("banner", parent=_base["Heading2"], fontName=FONT_BOLD, fontSize=11, leading=14, textColor=INK, alignment=TA_CENTER),
-    "instruction": ParagraphStyle("instruction", parent=_base["BodyText"], fontName=FONT_BOLD, fontSize=11, leading=14),
-    "extract": ParagraphStyle("extract", parent=_base["BodyText"], fontName=FONT, fontSize=9.3, leading=12, borderWidth=0.4, borderColor=colors.grey, borderPadding=5),
-    "marks": ParagraphStyle("marks", parent=_base["BodyText"], fontName=FONT_BOLD, fontSize=10.5, leading=14, alignment=TA_RIGHT),
-    "code": ParagraphStyle("code", parent=_base["Code"], fontName=FONT_MONO, fontSize=8.8, leading=11, backColor=colors.HexColor("#f4f4f4"), borderWidth=0.4, borderColor=colors.grey, borderPadding=5),
-    "centre": ParagraphStyle("centre", parent=_base["BodyText"], fontName=FONT, fontSize=10.5, leading=14, alignment=TA_CENTER),
-    "centre_bold": ParagraphStyle("centre-bold", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=10.5, leading=14, alignment=TA_CENTER),
-    "scheme_header": ParagraphStyle("scheme-header", parent=_base["BodyText"], fontName=FONT_BOLD, fontSize=9.5, leading=11),
-    "scheme_small": ParagraphStyle("scheme-small", parent=_base["BodyText"], fontName=FONT, fontSize=9.5, leading=11),
-    "scheme_small_centre": ParagraphStyle("scheme-small-centre", parent=_base["BodyText"], fontName=FONT, fontSize=9.5, leading=11, alignment=TA_CENTER),
+    "body": ParagraphStyle(
+        "body", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14
+    ),
+    "small": ParagraphStyle(
+        "small", parent=_base["BodyText"], fontName=FONT, fontSize=9.2, leading=12
+    ),
+    "small_bold": ParagraphStyle(
+        "small-bold",
+        parent=_base["BodyText"],
+        fontName=FONT_BOLD,
+        fontSize=9.2,
+        leading=12,
+    ),
+    "heading": ParagraphStyle(
+        "heading", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=11, leading=14
+    ),
+    "kicker": ParagraphStyle(
+        "kicker", parent=_base["Heading2"], fontName=FONT_BOLD, fontSize=15, leading=18
+    ),
+    "title": ParagraphStyle(
+        "title", parent=_base["Title"], fontName=FONT_BOLD, fontSize=23, leading=27
+    ),
+    "subtitle": ParagraphStyle(
+        "subtitle", parent=_base["Heading2"], fontName=FONT, fontSize=14, leading=18
+    ),
+    "banner": ParagraphStyle(
+        "banner",
+        parent=_base["Heading2"],
+        fontName=FONT_BOLD,
+        fontSize=11,
+        leading=14,
+        textColor=INK,
+        alignment=TA_CENTER,
+    ),
+    "instruction": ParagraphStyle(
+        "instruction",
+        parent=_base["BodyText"],
+        fontName=FONT_BOLD,
+        fontSize=11,
+        leading=14,
+    ),
+    "extract": ParagraphStyle(
+        "extract",
+        parent=_base["BodyText"],
+        fontName=FONT,
+        fontSize=9.3,
+        leading=12,
+        borderWidth=0.4,
+        borderColor=colors.grey,
+        borderPadding=5,
+    ),
+    "marks": ParagraphStyle(
+        "marks",
+        parent=_base["BodyText"],
+        fontName=FONT_BOLD,
+        fontSize=10.5,
+        leading=14,
+        alignment=TA_RIGHT,
+    ),
+    "code": ParagraphStyle(
+        "code",
+        parent=_base["Code"],
+        fontName=FONT_MONO,
+        fontSize=8.8,
+        leading=11,
+        backColor=colors.HexColor("#f4f4f4"),
+        borderWidth=0.4,
+        borderColor=colors.grey,
+        borderPadding=5,
+    ),
+    "centre": ParagraphStyle(
+        "centre",
+        parent=_base["BodyText"],
+        fontName=FONT,
+        fontSize=10.5,
+        leading=14,
+        alignment=TA_CENTER,
+    ),
+    "centre_bold": ParagraphStyle(
+        "centre-bold",
+        parent=_base["Heading3"],
+        fontName=FONT_BOLD,
+        fontSize=10.5,
+        leading=14,
+        alignment=TA_CENTER,
+    ),
+    "scheme_header": ParagraphStyle(
+        "scheme-header",
+        parent=_base["BodyText"],
+        fontName=FONT_BOLD,
+        fontSize=9.5,
+        leading=11,
+    ),
+    "scheme_small": ParagraphStyle(
+        "scheme-small",
+        parent=_base["BodyText"],
+        fontName=FONT,
+        fontSize=9.5,
+        leading=11,
+    ),
+    "scheme_small_centre": ParagraphStyle(
+        "scheme-small-centre",
+        parent=_base["BodyText"],
+        fontName=FONT,
+        fontSize=9.5,
+        leading=11,
+        alignment=TA_CENTER,
+    ),
 }
 _question_table = OCRQuestionHeaderFactory(
     body_style=STYLES["body"],

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import re
+from functools import partial
 from pathlib import Path
 
 from reportlab.graphics.shapes import Drawing, Line, PolyLine, Rect, String
@@ -30,6 +31,7 @@ from Backend.Core.document_dsl import (
     AQAQuestionHeaderFactory,
     DocumentRole,
     SingleCellPanelFactory,
+    flowable_question_block,
     renderer_contract,
 )
 from Backend.Core.exam_blueprints import (
@@ -88,17 +90,29 @@ COMMON_MARKING_GUIDANCE = (
 def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     doc = _document(path, paper, "Question paper")
-    story: list[Flowable] = _cover(paper)
+    story: list[Flowable] = aqa_question_cover(_cover_profile(paper), FONT, FONT_BOLD)
     if paper.paper_id == "paper_3":
         story.extend(_paper_three_pages(paper))
         doc.build(story)
         return
     for section in paper.sections:
-        story.extend([PageBreak(), *_section_intro(section.id, section.title, section.instructions)])
+        story.extend(
+            [
+                PageBreak(),
+                *_section_intro(section.id, section.title, section.instructions),
+            ]
+        )
         if paper.paper_id in {"paper_1", "paper_2"} and section.id == "A":
             for index, option in enumerate(section.options):
                 if index:
-                    story.extend([PageBreak(), *_section_intro(section.id, section.title, section.instructions)])
+                    story.extend(
+                        [
+                            PageBreak(),
+                            *_section_intro(
+                                section.id, section.title, section.instructions
+                            ),
+                        ]
+                    )
                 story.extend(_context_first_page(option))
                 story.extend(
                     [
@@ -116,9 +130,7 @@ def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
                     Spacer(1, 3 * mm),
                     *_written_option(second),
                     PageBreak(),
-                    *_section_intro(
-                        section.id, section.title, section.instructions
-                    ),
+                    *_section_intro(section.id, section.title, section.instructions),
                     *_written_option(third),
                     PageBreak(),
                     *_no_questions_page(),
@@ -137,7 +149,9 @@ def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
                     Spacer(1, 5 * mm),
                     *_option_questions(option, count=2),
                     PageBreak(),
-                    _section_banner(f"Section {section.id}: Case-study questions continued"),
+                    _section_banner(
+                        f"Section {section.id}: Case-study questions continued"
+                    ),
                     Spacer(1, 5 * mm),
                     *_option_questions(option, start=2),
                 ]
@@ -188,7 +202,9 @@ def render_source_booklet(paper: GeneratedPaper, path: Path) -> None:
             story.extend(
                 [
                     Spacer(1, 7 * mm),
-                    _line_chart(option.chart_title, option.chart_labels, option.chart_values),
+                    _line_chart(
+                        option.chart_title, option.chart_labels, option.chart_values
+                    ),
                 ]
             )
     story.extend(
@@ -202,7 +218,9 @@ def render_source_booklet(paper: GeneratedPaper, path: Path) -> None:
                 STYLES["source_extract"],
             ),
             PageBreak(),
-            Paragraph("There are no sources printed on this page.", STYLES["centred_note"]),
+            Paragraph(
+                "There are no sources printed on this page.", STYLES["centred_note"]
+            ),
         ]
     )
     doc.build(story)
@@ -323,7 +341,9 @@ def _paper_three_mark_scheme_pages(
                         if question.number == "31" and segment == 1
                         else None
                     ),
-                    total_marks=50 if question.number == "31" and segment == 1 else None,
+                    total_marks=50
+                    if question.number == "31" and segment == 1
+                    else None,
                     compact_content=question.number in {"32", "33"},
                 )
             )
@@ -511,9 +531,7 @@ def _scheme_question_page(
     )
     flowables: list[Flowable] = []
     content_style = (
-        STYLES["scheme_table_compact"]
-        if compact_content
-        else STYLES["scheme_table"]
+        STYLES["scheme_table_compact"] if compact_content else STYLES["scheme_table"]
     )
     cell_style = STYLES["scheme_table_compact"]
     if title:
@@ -545,9 +563,7 @@ def _scheme_question_page(
         if point not in level_points
         and point.casefold() not in {"indicative content", "levels-based marking"}
     ]
-    answer.extend(
-        [Paragraph(f"• {point}", content_style) for point in content_points]
-    )
+    answer.extend([Paragraph(f"• {point}", content_style) for point in content_points])
     if level_points and include_level_table:
         answer.extend(
             [
@@ -574,8 +590,7 @@ def _scheme_question_page(
         ],
         [
             Paragraph(
-                f"<b>{question.number}</b>"
-                + ("<br/>continued" if segment > 1 else ""),
+                f"<b>{question.number}</b>" + ("<br/>continued" if segment > 1 else ""),
                 cell_style,
             ),
             answer,
@@ -676,7 +691,9 @@ def _question_level_table(
 
 
 def _document(path: Path, paper: GeneratedPaper, document_type: str) -> BaseDocTemplate:
-    is_answer_booklet = document_type == "Question paper" and paper.paper_id == "paper_3"
+    is_answer_booklet = (
+        document_type == "Question paper" and paper.paper_id == "paper_3"
+    )
     doc = BaseDocTemplate(
         str(path),
         pagesize=AQA_A4,
@@ -701,10 +718,6 @@ def _document(path: Path, paper: GeneratedPaper, document_type: str) -> BaseDocT
     return doc
 
 
-def _cover(paper: GeneratedPaper) -> list[Flowable]:
-    return aqa_question_cover(_cover_profile(paper), FONT, FONT_BOLD)
-
-
 def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
     hours, minutes = divmod(paper.duration_minutes, 60)
     duration = f"{hours} hours" if not minutes else f"{hours} hours {minutes} minutes"
@@ -727,17 +740,12 @@ def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
             "Answer in the spaces provided and do not write outside the box around each page.",
             "Show all working and use diagrams where appropriate.",
         ),
-        information=(
-            "The marks for questions are shown in brackets.",
-        ),
+        information=("The marks for questions are shown in brackets.",),
         mark_rows=(
             tuple(
                 (
                     section.id,
-                    sum(
-                        question.marks
-                        for question in section.options[0].questions
-                    ),
+                    sum(question.marks for question in section.options[0].questions),
                 )
                 for section in paper.sections
             )
@@ -765,7 +773,9 @@ def _written_option(option: GeneratedOption) -> list[Flowable]:
     if option.chart_values:
         flowables.extend(
             [
-                _line_chart(option.chart_title, option.chart_labels, option.chart_values),
+                _line_chart(
+                    option.chart_title, option.chart_labels, option.chart_values
+                ),
                 Spacer(1, 3 * mm),
             ]
         )
@@ -783,16 +793,16 @@ def _paper_three_pages(paper: GeneratedPaper) -> list[Flowable]:
         flowables.append(PageBreak())
         if page_index == 0:
             flowables.extend(
-                _section_intro(mcq_section.id, mcq_section.title, mcq_section.instructions)
+                _section_intro(
+                    mcq_section.id, mcq_section.title, mcq_section.instructions
+                )
             )
         for option in mcq_section.options[cursor : cursor + question_count]:
             question_number = int(option.questions[0].number)
             flowables.extend(
                 _mcq_block(
                     option,
-                    include_visual=(
-                        question_number in PAPER3_VISUAL_QUESTION_NUMBERS
-                    ),
+                    include_visual=(question_number in PAPER3_VISUAL_QUESTION_NUMBERS),
                 )
             )
         cursor += question_count
@@ -825,12 +835,16 @@ def _paper_three_pages(paper: GeneratedPaper) -> list[Flowable]:
                     Spacer(1, 4 * mm),
                 ]
             )
-        flowables.extend([_question_table(question), Spacer(1, 4 * mm), AnswerLines(28)])
+        flowables.extend(
+            [_question_table(question), Spacer(1, 4 * mm), AnswerLines(28)]
+        )
         for _ in range(continuation_pages):
             flowables.extend(
                 [
                     PageBreak(),
-                    Paragraph(f"Question {question.number} continued", STYLES["continuation"]),
+                    Paragraph(
+                        f"Question {question.number} continued", STYLES["continuation"]
+                    ),
                     Spacer(1, 3 * mm),
                     AnswerLines(34),
                 ]
@@ -899,7 +913,9 @@ def _stimulus_page(option: GeneratedOption) -> list[Flowable]:
     for paragraph in option.stimulus:
         flowables.extend([Paragraph(paragraph, STYLES["extract"]), Spacer(1, 2 * mm)])
     if option.chart_values:
-        flowables.append(_line_chart(option.chart_title, option.chart_labels, option.chart_values))
+        flowables.append(
+            _line_chart(option.chart_title, option.chart_labels, option.chart_values)
+        )
     return flowables
 
 
@@ -909,9 +925,7 @@ def _context_first_page(option: GeneratedOption) -> list[Flowable]:
         Spacer(1, 2 * mm),
     ]
     for paragraph in option.stimulus[:2]:
-        flowables.extend(
-            [Paragraph(paragraph, STYLES["extract"]), Spacer(1, 2 * mm)]
-        )
+        flowables.extend([Paragraph(paragraph, STYLES["extract"]), Spacer(1, 2 * mm)])
     if option.chart_values:
         flowables.extend(
             [
@@ -933,9 +947,7 @@ def _context_second_page(option: GeneratedOption) -> list[Flowable]:
         Spacer(1, 3 * mm),
     ]
     for paragraph in option.stimulus[2:]:
-        flowables.extend(
-            [Paragraph(paragraph, STYLES["extract"]), Spacer(1, 3 * mm)]
-        )
+        flowables.extend([Paragraph(paragraph, STYLES["extract"]), Spacer(1, 3 * mm)])
     return flowables
 
 
@@ -997,7 +1009,11 @@ def _option_questions(
     start: int = 0,
     count: int | None = None,
 ) -> list[Flowable]:
-    questions = option.questions[start:] if count is None else option.questions[start : start + count]
+    questions = (
+        option.questions[start:]
+        if count is None
+        else option.questions[start : start + count]
+    )
     flowables: list[Flowable] = []
     for question in questions:
         flowables.extend(_question_block(question))
@@ -1017,9 +1033,7 @@ def _mcq_block(
     if include_visual:
         contents.extend([_mcq_visual(question), Spacer(1, 3 * mm)])
     contents.extend([_mcq_choice_table(question), Spacer(1, 5 * mm)])
-    return [
-        KeepTogether(contents)
-    ]
+    return [KeepTogether(contents)]
 
 
 def _mcq_choice_table(question: GeneratedQuestion) -> Table:
@@ -1084,13 +1098,6 @@ def _mcq_visual(question: GeneratedQuestion) -> Flowable:
         )
     )
     return table
-
-
-def _question_block(question: GeneratedQuestion) -> list[Flowable]:
-    return [
-        _question_table(question),
-        Spacer(1, 4 * mm),
-    ]
 
 
 def _line_chart(title: str, labels: list[str], values: list[float]) -> Drawing:
@@ -1192,16 +1199,10 @@ def _economic_diagram(
     else:
         drawing.add(PolyLine(demand, strokeColor=BLACK, strokeWidth=1.1))
         drawing.add(PolyLine(supply, strokeColor=BLACK, strokeWidth=1.1))
-        drawing.add(
-            String(x0 + 290, y0 + 12, demand_name, fontName=FONT, fontSize=8)
-        )
-        drawing.add(
-            String(x0 + 292, y0 + 106, supply_name, fontName=FONT, fontSize=8)
-        )
+        drawing.add(String(x0 + 290, y0 + 12, demand_name, fontName=FONT, fontSize=8))
+        drawing.add(String(x0 + 292, y0 + 106, supply_name, fontName=FONT, fontSize=8))
 
-    y_axis = str(
-        (visual or {}).get("y_axis", "Price level" if aggregate else "Price")
-    )
+    y_axis = str((visual or {}).get("y_axis", "Price level" if aggregate else "Price"))
     x_axis = str(
         (visual or {}).get("x_axis", "Real output" if aggregate else "Quantity")
     )
@@ -1216,7 +1217,9 @@ def _page_chrome(canvas, doc, paper_code: str, document_type: str) -> None:
         canvas.setFillColor(BLACK)
         if doc.page > 1:
             canvas.setFont(FONT, 11)
-            canvas.drawCentredString(PAGE_WIDTH / 2, PAGE_HEIGHT - 13 * mm, str(doc.page))
+            canvas.drawCentredString(
+                PAGE_WIDTH / 2, PAGE_HEIGHT - 13 * mm, str(doc.page)
+            )
             if paper_code == "7136/3":
                 frame_x = 14 * mm
                 frame_y = 27 * mm
@@ -1266,7 +1269,9 @@ def _page_chrome(canvas, doc, paper_code: str, document_type: str) -> None:
         return
     canvas.setStrokeColor(colors.HexColor("#aaaaaa"))
     canvas.setLineWidth(0.45)
-    canvas.line(16 * mm, PAGE_HEIGHT - 12 * mm, PAGE_WIDTH - 17 * mm, PAGE_HEIGHT - 12 * mm)
+    canvas.line(
+        16 * mm, PAGE_HEIGHT - 12 * mm, PAGE_WIDTH - 17 * mm, PAGE_HEIGHT - 12 * mm
+    )
     canvas.setFont(FONT, 7.5)
     canvas.setFillColor(MID_GREY)
     canvas.drawString(16 * mm, PAGE_HEIGHT - 9 * mm, f"{paper_code} · {document_type}")
@@ -1280,7 +1285,11 @@ STYLES = {
         "Body", parent=_sample["BodyText"], fontName=FONT, fontSize=11, leading=14
     ),
     "heading": ParagraphStyle(
-        "Heading", parent=_sample["Heading3"], fontName=FONT_BOLD, fontSize=11, leading=14
+        "Heading",
+        parent=_sample["Heading3"],
+        fontName=FONT_BOLD,
+        fontSize=11,
+        leading=14,
     ),
     "cover_kicker": ParagraphStyle(
         "CoverKicker",
@@ -1466,3 +1475,4 @@ _info_box = SingleCellPanelFactory(
     border_color=BLACK,
     table_class=Table,
 ).panel
+_question_block = partial(flowable_question_block, question_table=_question_table)

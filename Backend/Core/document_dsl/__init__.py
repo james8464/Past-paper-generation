@@ -42,6 +42,11 @@ from Backend.Core.document_dsl.reportlab_flowables import (
     AQAQuestionHeaderFactory,
     OCRQuestionHeaderFactory,
     SingleCellPanelFactory,
+    aqa_lozenge,
+    aqa_section_intro,
+    flowable_question_block,
+    independent_practice_page,
+    page_sequence,
 )
 from Backend.Core.document_dsl.vector_components import (
     AccountingTable,
@@ -102,6 +107,11 @@ __all__ = [
     "SourcePanel",
     "StatisticalChart",
     "Table",
+    "aqa_lozenge",
+    "aqa_section_intro",
     "board_profile",
+    "flowable_question_block",
+    "independent_practice_page",
+    "page_sequence",
     "renderer_contract",
 ]

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from functools import partial
 from html import escape
 from pathlib import Path
 
@@ -29,6 +30,8 @@ from Backend.Core.document_dsl import (
     DocumentRole,
     OCRQuestionHeaderFactory,
     SingleCellPanelFactory,
+    flowable_question_block,
+    page_sequence,
     renderer_contract,
 )
 from Backend.Core.exam_blueprints import (
@@ -66,8 +69,12 @@ RENDERER_CONTRACT = renderer_contract(
 def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     doc = _document(path, paper, "Question paper")
-    story: list[Flowable] = _cover(paper)
-    story.extend(_paper_three_pages(paper) if paper.paper_id == "paper_3" else _paper_one_two_pages(paper))
+    story: list[Flowable] = ocr_question_cover(_cover_profile(paper), FONT, FONT_BOLD)
+    story.extend(
+        _paper_three_pages(paper)
+        if paper.paper_id == "paper_3"
+        else _paper_one_two_pages(paper)
+    )
     doc.build(story)
 
 
@@ -189,15 +196,42 @@ def _supplementary_marking_pages() -> list[Flowable]:
 
 def _preparation_for_marking_page() -> list[Flowable]:
     rows = [
-        ("1", "Read the complete question paper, source material and mark scheme before marking any response."),
-        ("2", "Apply the published criteria directly. Do not compare one candidate with another."),
-        ("3", "Mark positively: award credit for relevant economic knowledge, application, analysis and evaluation."),
-        ("4", "Credit a valid alternative route when it answers the precise question and is economically coherent."),
-        ("5", "Where a response is crossed out, mark a clearly presented replacement. Otherwise mark the legible original response."),
-        ("6", "Do not award a point that is contradicted elsewhere in the same response."),
-        ("7", "Check additional answer space before recording no response or completing a question total."),
-        ("8", "For calculations, apply error carried forward only where the later method remains valid."),
-        ("9", "For levels questions, read the whole response before selecting the best-fit level and mark."),
+        (
+            "1",
+            "Read the complete question paper, source material and mark scheme before marking any response.",
+        ),
+        (
+            "2",
+            "Apply the published criteria directly. Do not compare one candidate with another.",
+        ),
+        (
+            "3",
+            "Mark positively: award credit for relevant economic knowledge, application, analysis and evaluation.",
+        ),
+        (
+            "4",
+            "Credit a valid alternative route when it answers the precise question and is economically coherent.",
+        ),
+        (
+            "5",
+            "Where a response is crossed out, mark a clearly presented replacement. Otherwise mark the legible original response.",
+        ),
+        (
+            "6",
+            "Do not award a point that is contradicted elsewhere in the same response.",
+        ),
+        (
+            "7",
+            "Check additional answer space before recording no response or completing a question total.",
+        ),
+        (
+            "8",
+            "For calculations, apply error carried forward only where the later method remains valid.",
+        ),
+        (
+            "9",
+            "For levels questions, read the whole response before selecting the best-fit level and mark.",
+        ),
     ]
     return [
         Paragraph("MARKING INSTRUCTIONS", STYLES["centre_bold"]),
@@ -210,16 +244,44 @@ def _preparation_for_marking_page() -> list[Flowable]:
 
 def _assessment_objectives_guidance_page() -> list[Flowable]:
     rows = [
-        ("AO1", "Knowledge and understanding", "Accurate economic ideas, principles, models and terminology."),
-        ("AO2", "Application", "Relevant use of the supplied context, figures, constraints and evidence."),
-        ("AO3", "Analysis", "A connected chain of reasoning that establishes causes, mechanisms and consequences."),
-        ("AO4", "Evaluation", "Testing assumptions and significance before reaching a supported judgement."),
+        (
+            "AO1",
+            "Knowledge and understanding",
+            "Accurate economic ideas, principles, models and terminology.",
+        ),
+        (
+            "AO2",
+            "Application",
+            "Relevant use of the supplied context, figures, constraints and evidence.",
+        ),
+        (
+            "AO3",
+            "Analysis",
+            "A connected chain of reasoning that establishes causes, mechanisms and consequences.",
+        ),
+        (
+            "AO4",
+            "Evaluation",
+            "Testing assumptions and significance before reaching a supported judgement.",
+        ),
     ]
     notes = [
-        ("Accurate", "The response is economically correct and uses terminology precisely."),
-        ("Applied", "The response selects contextual material and uses it to answer the question set."),
-        ("Developed", "Each link in the analysis is explained rather than merely asserted."),
-        ("Supported", "The final judgement follows from the analysis and evaluation presented."),
+        (
+            "Accurate",
+            "The response is economically correct and uses terminology precisely.",
+        ),
+        (
+            "Applied",
+            "The response selects contextual material and uses it to answer the question set.",
+        ),
+        (
+            "Developed",
+            "Each link in the analysis is explained rather than merely asserted.",
+        ),
+        (
+            "Supported",
+            "The final judgement follows from the analysis and evaluation presented.",
+        ),
     ]
     return [
         Paragraph("MARKING INSTRUCTIONS CONTINUED", STYLES["centre_bold"]),
@@ -240,35 +302,81 @@ def _assessment_objectives_guidance_page() -> list[Flowable]:
 
 def _levels_application_page() -> list[Flowable]:
     rows = [
-        ("1", "Read the response as a whole and identify the highest descriptor it meets securely."),
+        (
+            "1",
+            "Read the response as a whole and identify the highest descriptor it meets securely.",
+        ),
         ("2", "Use best fit when a response shows qualities from adjacent levels."),
-        ("3", "Select the top of a level when its qualities are sustained; select the bottom when they are only just demonstrated."),
-        ("4", "Do not count isolated points. Consider accuracy, relevance, development and coherence together."),
-        ("5", "A balanced response need not give equal space to every view, but material counterarguments must be considered."),
-        ("6", "A judgement earns evaluation credit only when it is supported by the preceding reasoning."),
+        (
+            "3",
+            "Select the top of a level when its qualities are sustained; select the bottom when they are only just demonstrated.",
+        ),
+        (
+            "4",
+            "Do not count isolated points. Consider accuracy, relevance, development and coherence together.",
+        ),
+        (
+            "5",
+            "A balanced response need not give equal space to every view, but material counterarguments must be considered.",
+        ),
+        (
+            "6",
+            "A judgement earns evaluation credit only when it is supported by the preceding reasoning.",
+        ),
         ("7", "If no material is worthy of credit, award zero."),
     ]
     bands = [
-        ("Top", "Descriptor is met consistently; analysis is secure and judgement is fully supported."),
-        ("Middle", "Descriptor is met reasonably well; development is sound but not sustained throughout."),
-        ("Bottom", "Response just enters the level; relevant qualities are present but uneven or incomplete."),
+        (
+            "Top",
+            "Descriptor is met consistently; analysis is secure and judgement is fully supported.",
+        ),
+        (
+            "Middle",
+            "Descriptor is met reasonably well; development is sound but not sustained throughout.",
+        ),
+        (
+            "Bottom",
+            "Response just enters the level; relevant qualities are present but uneven or incomplete.",
+        ),
     ]
     return [
         Paragraph("LEVELS-BASED RESPONSES", STYLES["centre_bold"]),
         Spacer(1, 4 * mm),
         _guidance_table(["", "Procedure"], rows, [12 * mm, 248 * mm]),
         Spacer(1, 6 * mm),
-        _guidance_table(["Position", "How to place the mark"], bands, [32 * mm, 228 * mm]),
+        _guidance_table(
+            ["Position", "How to place the mark"], bands, [32 * mm, 228 * mm]
+        ),
     ]
 
 
 def _diagrams_and_calculations_page() -> list[Flowable]:
     rows = [
-        ("Economic diagram", "Correct axes, curves, labels, shift and equilibrium relevant to the question.", "A diagram that contradicts the written analysis or has ambiguous axes."),
-        ("Calculation", "Valid method, substituted figures, correct answer, units and requested accuracy.", "An unsupported answer where working is required or a value with the wrong sign/unit."),
-        ("Data comparison", "Accurate figures, direction, magnitude and a comparison tied to the question.", "Copying a figure without using it or describing two values independently."),
-        ("Chain of reasoning", "A cause linked through a mechanism to a relevant economic consequence.", "A list of effects with no explained connection."),
-        ("Judgement", "A conclusion supported by criteria such as scale, time, assumptions or distribution.", "An unsupported assertion or repetition of the question."),
+        (
+            "Economic diagram",
+            "Correct axes, curves, labels, shift and equilibrium relevant to the question.",
+            "A diagram that contradicts the written analysis or has ambiguous axes.",
+        ),
+        (
+            "Calculation",
+            "Valid method, substituted figures, correct answer, units and requested accuracy.",
+            "An unsupported answer where working is required or a value with the wrong sign/unit.",
+        ),
+        (
+            "Data comparison",
+            "Accurate figures, direction, magnitude and a comparison tied to the question.",
+            "Copying a figure without using it or describing two values independently.",
+        ),
+        (
+            "Chain of reasoning",
+            "A cause linked through a mechanism to a relevant economic consequence.",
+            "A list of effects with no explained connection.",
+        ),
+        (
+            "Judgement",
+            "A conclusion supported by criteria such as scale, time, assumptions or distribution.",
+            "An unsupported assertion or repetition of the question.",
+        ),
     ]
     return [
         Paragraph("DIAGRAMS, DATA AND CALCULATIONS", STYLES["centre_bold"]),
@@ -284,16 +392,40 @@ def _diagrams_and_calculations_page() -> list[Flowable]:
 def _annotation_conventions_page() -> list[Flowable]:
     rows = [
         ("✓", "Creditworthy point", "A distinct valid point earns the available mark."),
-        ("DEV", "Developed analysis", "A valid consequence is linked to the preceding economic point."),
-        ("APP", "Application", "The response uses a supplied figure, fact or contextual feature."),
-        ("EVAL", "Evaluation", "A relevant limitation, condition or counterargument is developed."),
+        (
+            "DEV",
+            "Developed analysis",
+            "A valid consequence is linked to the preceding economic point.",
+        ),
+        (
+            "APP",
+            "Application",
+            "The response uses a supplied figure, fact or contextual feature.",
+        ),
+        (
+            "EVAL",
+            "Evaluation",
+            "A relevant limitation, condition or counterargument is developed.",
+        ),
         ("J", "Judgement", "A supported conclusion answers the precise question."),
         ("BOD", "Benefit of doubt", "Meaning is clear despite minor imprecision."),
-        ("ECF", "Error carried forward", "A later valid method follows an earlier numerical error."),
+        (
+            "ECF",
+            "Error carried forward",
+            "A later valid method follows an earlier numerical error.",
+        ),
         ("REP", "Repeated point", "Do not award the same developed idea twice."),
-        ("CON", "Contradiction", "Withhold credit where the response reverses a valid point."),
+        (
+            "CON",
+            "Contradiction",
+            "Withhold credit where the response reverses a valid point.",
+        ),
         ("MAX", "Maximum", "Stop awarding when the stated maximum is reached."),
-        ("0", "Attempted, no credit", "Some response is present but it does not meet the criteria."),
+        (
+            "0",
+            "Attempted, no credit",
+            "Some response is present but it does not meet the criteria.",
+        ),
         ("NR", "No response", "Nothing relevant is written in the answer space."),
     ]
     return [
@@ -309,19 +441,37 @@ def _annotation_conventions_page() -> list[Flowable]:
 
 def _short_answer_guidance_page() -> list[Flowable]:
     rows = [
-        ("State / identify", "Award one mark for each distinct correct item up to the stated maximum."),
-        ("Define", "Require the essential economic meaning; exact wording is not necessary."),
-        ("Explain", "Award the explanation mark only where a valid link or mechanism is established."),
-        ("Calculate", "Follow the question-specific allocation for method, substitution and final answer."),
+        (
+            "State / identify",
+            "Award one mark for each distinct correct item up to the stated maximum.",
+        ),
+        (
+            "Define",
+            "Require the essential economic meaning; exact wording is not necessary.",
+        ),
+        (
+            "Explain",
+            "Award the explanation mark only where a valid link or mechanism is established.",
+        ),
+        (
+            "Calculate",
+            "Follow the question-specific allocation for method, substitution and final answer.",
+        ),
         ("Compare", "Require a relative statement using both values, trends or cases."),
         ("Analyse", "Reward developed, connected reasoning applied to the question."),
-        ("Evaluate", "Reward a relevant counterargument or condition and a supported conclusion."),
+        (
+            "Evaluate",
+            "Reward a relevant counterargument or condition and a supported conclusion.",
+        ),
     ]
     examples = [
         ("Two valid points where two are requested", "2"),
         ("Three listed points where only two are requested", "Maximum 2"),
         ("Correct point followed by a contradiction", "0 for that point"),
-        ("Correct method with a carried-forward arithmetic error", "Method credit as specified"),
+        (
+            "Correct method with a carried-forward arithmetic error",
+            "Method credit as specified",
+        ),
     ]
     return [
         Paragraph("SHORT-ANSWER QUESTIONS", STYLES["centre_bold"]),
@@ -420,10 +570,7 @@ def _guidance_table(
         [Paragraph(f"<b>{escape(value)}</b>", STYLES["small"]) for value in headers]
     ]
     data.extend(
-        [
-            [Paragraph(escape(value), STYLES["small"]) for value in row]
-            for row in rows
-        ]
+        [[Paragraph(escape(value), STYLES["small"]) for value in row] for row in rows]
     )
     table = Table(data, colWidths=widths, repeatRows=1)
     table.setStyle(
@@ -498,8 +645,7 @@ def _choice_level_descriptor_page(
 ) -> list[Flowable]:
     first = questions[0]
     alternatives = " OR ".join(
-        f"{escape(question.number)} {escape(question.prompt)}"
-        for question in questions
+        f"{escape(question.number)} {escape(question.prompt)}" for question in questions
     )
     return [
         Paragraph("SECTION B AND SECTION C", STYLES["centre_bold"]),
@@ -561,7 +707,13 @@ def _level_descriptor_table(
 
 def _level_bands(marks: int) -> list[tuple[int, str]]:
     if marks >= 20:
-        return [(5, "21\u201325"), (4, "16\u201320"), (3, "11\u201315"), (2, "6\u201310"), (1, "1\u20135")]
+        return [
+            (5, "21\u201325"),
+            (4, "16\u201320"),
+            (3, "11\u201315"),
+            (2, "6\u201310"),
+            (1, "1\u20135"),
+        ]
     if marks >= 12:
         return [(3, "9\u201312"), (2, "5\u20138"), (1, "1\u20134")]
     return [(3, "6\u20138"), (2, "3\u20135"), (1, "1\u20132")]
@@ -813,13 +965,23 @@ def _add_economics_diagram(
     if "labour" in focus:
         y_label, x_label, down_label, up_label = "Wage", "Employment", "DL", "SL"
     elif "aggregate" in focus or "macroeconomic" in focus or "policy" in focus:
-        y_label, x_label, down_label, up_label = "Price level", "Real output", "AD", "SRAS"
+        y_label, x_label, down_label, up_label = (
+            "Price level",
+            "Real output",
+            "AD",
+            "SRAS",
+        )
     elif "exchange" in focus or "international" in focus:
         y_label, x_label, down_label, up_label = "Exchange rate", "Currency", "D", "S"
     elif "financial" in focus or "credit" in focus:
         y_label, x_label, down_label, up_label = "Interest rate", "Credit", "D", "S"
     elif "market failure" in focus:
-        y_label, x_label, down_label, up_label = "Price / cost", "Quantity", "MPB", "MPC"
+        y_label, x_label, down_label, up_label = (
+            "Price / cost",
+            "Quantity",
+            "MPB",
+            "MPC",
+        )
     else:
         y_label, x_label, down_label, up_label = "Price", "Quantity", "D", "S"
 
@@ -842,16 +1004,44 @@ def _add_economics_diagram(
     title_size = 6 if compact else 9
     label_size = 5 if compact else 7
     inset = 10 if compact else 18
-    drawing.add(String(x0, y0 + height + (10 if compact else 28), title, fontName=FONT_BOLD, fontSize=title_size))
+    drawing.add(
+        String(
+            x0,
+            y0 + height + (10 if compact else 28),
+            title,
+            fontName=FONT_BOLD,
+            fontSize=title_size,
+        )
+    )
     drawing.add(Line(x0, y0, x0, y0 + height))
     drawing.add(Line(x0, y0, x0 + width, y0))
-    drawing.add(String(x0 - 3, y0 + height + 3, y_label, fontName=FONT, fontSize=label_size))
-    drawing.add(String(x0 + width - 15, y0 - 9, x_label, fontName=FONT, fontSize=label_size))
+    drawing.add(
+        String(x0 - 3, y0 + height + 3, y_label, fontName=FONT, fontSize=label_size)
+    )
+    drawing.add(
+        String(x0 + width - 15, y0 - 9, x_label, fontName=FONT, fontSize=label_size)
+    )
 
     drawing.add(Line(x0 + inset, y0 + height - inset, x0 + width - inset, y0 + inset))
     drawing.add(Line(x0 + inset, y0 + inset, x0 + width - inset, y0 + height - inset))
-    drawing.add(String(x0 + width - inset + 1, y0 + inset - 3, down_label, fontName=FONT, fontSize=label_size))
-    drawing.add(String(x0 + width - inset + 1, y0 + height - inset - 2, up_label, fontName=FONT, fontSize=label_size))
+    drawing.add(
+        String(
+            x0 + width - inset + 1,
+            y0 + inset - 3,
+            down_label,
+            fontName=FONT,
+            fontSize=label_size,
+        )
+    )
+    drawing.add(
+        String(
+            x0 + width - inset + 1,
+            y0 + height - inset - 2,
+            up_label,
+            fontName=FONT,
+            fontSize=label_size,
+        )
+    )
 
     equilibrium_x = x0 + width / 2
     equilibrium_y = y0 + height / 2
@@ -881,8 +1071,12 @@ def _add_economics_diagram(
         equilibrium_label = "E1"
 
     dash = [2, 2] if compact else [3, 2]
-    drawing.add(Line(equilibrium_x, y0, equilibrium_x, equilibrium_y, strokeDashArray=dash))
-    drawing.add(Line(x0, equilibrium_y, equilibrium_x, equilibrium_y, strokeDashArray=dash))
+    drawing.add(
+        Line(equilibrium_x, y0, equilibrium_x, equilibrium_y, strokeDashArray=dash)
+    )
+    drawing.add(
+        Line(x0, equilibrium_y, equilibrium_x, equilibrium_y, strokeDashArray=dash)
+    )
     drawing.add(
         String(
             equilibrium_x + 3,
@@ -917,11 +1111,29 @@ def _add_firm_objectives_diagram(
     bottom = y0 + inset
     top = y0 + height - inset
 
-    drawing.add(String(x0, y0 + height + (10 if compact else 28), title, fontName=FONT_BOLD, fontSize=title_size))
+    drawing.add(
+        String(
+            x0,
+            y0 + height + (10 if compact else 28),
+            title,
+            fontName=FONT_BOLD,
+            fontSize=title_size,
+        )
+    )
     drawing.add(Line(x0, y0, x0, y0 + height))
     drawing.add(Line(x0, y0, x0 + width, y0))
-    drawing.add(String(x0 - 3, y0 + height + 3, "Cost / revenue", fontName=FONT, fontSize=label_size))
-    drawing.add(String(x0 + width - 15, y0 - 9, "Output", fontName=FONT, fontSize=label_size))
+    drawing.add(
+        String(
+            x0 - 3,
+            y0 + height + 3,
+            "Cost / revenue",
+            fontName=FONT,
+            fontSize=label_size,
+        )
+    )
+    drawing.add(
+        String(x0 + width - 15, y0 - 9, "Output", fontName=FONT, fontSize=label_size)
+    )
 
     drawing.add(Line(left, top, right, bottom))
     mr_end_x = x0 + width * 0.62
@@ -976,11 +1188,23 @@ def _add_ppf_diagram(
     )
     title_size = 6 if compact else 9
     label_size = 5 if compact else 7
-    drawing.add(String(x0, y0 + height + (10 if compact else 28), title, fontName=FONT_BOLD, fontSize=title_size))
+    drawing.add(
+        String(
+            x0,
+            y0 + height + (10 if compact else 28),
+            title,
+            fontName=FONT_BOLD,
+            fontSize=title_size,
+        )
+    )
     drawing.add(Line(x0, y0, x0, y0 + height))
     drawing.add(Line(x0, y0, x0 + width, y0))
-    drawing.add(String(x0 - 3, y0 + height + 3, "Good Y", fontName=FONT, fontSize=label_size))
-    drawing.add(String(x0 + width - 15, y0 - 9, "Good X", fontName=FONT, fontSize=label_size))
+    drawing.add(
+        String(x0 - 3, y0 + height + 3, "Good Y", fontName=FONT, fontSize=label_size)
+    )
+    drawing.add(
+        String(x0 + width - 15, y0 - 9, "Good X", fontName=FONT, fontSize=label_size)
+    )
 
     def frontier(scale: float) -> list[float]:
         points: list[float] = []
@@ -1001,10 +1225,26 @@ def _add_ppf_diagram(
         return points
 
     drawing.add(PolyLine(frontier(0.88 if shifted else 1.0)))
-    drawing.add(String(x0 + width * 0.68, y0 + height * 0.42, "PPF", fontName=FONT, fontSize=label_size))
+    drawing.add(
+        String(
+            x0 + width * 0.68,
+            y0 + height * 0.42,
+            "PPF",
+            fontName=FONT,
+            fontSize=label_size,
+        )
+    )
     if shifted:
         drawing.add(PolyLine(frontier(1.0)))
-        drawing.add(String(x0 + width * 0.76, y0 + height * 0.52, "PPF1", fontName=FONT, fontSize=label_size))
+        drawing.add(
+            String(
+                x0 + width * 0.76,
+                y0 + height * 0.52,
+                "PPF1",
+                fontName=FONT,
+                fontSize=label_size,
+            )
+        )
 
 
 MARK_SCHEME_EXTENSION_PAGE_COUNTS = {
@@ -1090,7 +1330,9 @@ def _overflow_guidance_page(
     rows: list[list[object]] = [
         [
             Paragraph("<b>Question</b>", STYLES["small"]),
-            Paragraph("<b>Additional indicative content and guidance</b>", STYLES["small"]),
+            Paragraph(
+                "<b>Additional indicative content and guidance</b>", STYLES["small"]
+            ),
         ]
     ]
     rows.extend(
@@ -1125,7 +1367,11 @@ def _mcq_rationale_page(questions: list[GeneratedQuestion]) -> list[Flowable]:
     rows = [["Question", "Answer and rationale"]]
     for question in questions:
         answer = "ABCD"[question.correct_choice or 0]
-        rationale = question.mark_scheme[0] if question.mark_scheme else "Credit the keyed answer."
+        rationale = (
+            question.mark_scheme[0]
+            if question.mark_scheme
+            else "Credit the keyed answer."
+        )
         rows.append(
             [
                 Paragraph(question.number, STYLES["small"]),
@@ -1146,7 +1392,11 @@ def _mcq_rationale_page(questions: list[GeneratedQuestion]) -> list[Flowable]:
             ]
         )
     )
-    return [Paragraph("Multiple-choice rationale", STYLES["heading"]), Spacer(1, 4 * mm), table]
+    return [
+        Paragraph("Multiple-choice rationale", STYLES["heading"]),
+        Spacer(1, 4 * mm),
+        table,
+    ]
 
 
 def _extended_guidance_page(
@@ -1212,11 +1462,16 @@ def _assessment_objectives_page(
     extended_group_index = 0
     for label, question in grouped:
         allocation = _assessment_allocation(question)
-        totals = [total + value for total, value in zip(totals, allocation, strict=True)]
+        totals = [
+            total + value for total, value in zip(totals, allocation, strict=True)
+        ]
         if question.marks >= 20:
             quantitative = 8 if extended_group_index == 0 else 0
             extended_group_index += 1
-        elif question.kind == "calculation" or "compare" in question.command_word.casefold():
+        elif (
+            question.kind == "calculation"
+            or "compare" in question.command_word.casefold()
+        ):
             quantitative = question.marks
         elif "diagram" in question.prompt.casefold():
             quantitative = min(question.marks, 4)
@@ -1269,8 +1524,12 @@ def _assessment_grid_groups(
     questions: list[GeneratedQuestion],
 ) -> list[tuple[str, GeneratedQuestion]]:
     if paper.paper_id == "paper_3":
-        multiple_choice = [question for question in questions if question.kind == "multiple_choice"]
-        written = [question for question in questions if question.kind != "multiple_choice"]
+        multiple_choice = [
+            question for question in questions if question.kind == "multiple_choice"
+        ]
+        written = [
+            question for question in questions if question.kind != "multiple_choice"
+        ]
         grouped: list[tuple[str, GeneratedQuestion]] = []
         if multiple_choice:
             combined = multiple_choice[0].model_copy(
@@ -1316,10 +1575,10 @@ def _assessment_allocation(question: GeneratedQuestion) -> tuple[int, int, int, 
     }
     if question.marks in fixed:
         return fixed[question.marks]
-    if (
-        question.kind in {"calculation", "data"}
-        or question.command_word.casefold() in {"calculate", "compare"}
-    ):
+    if question.kind in {"calculation", "data"} or question.command_word.casefold() in {
+        "calculate",
+        "compare",
+    }:
         return 0, question.marks, 0, 0
     return question.marks, 0, 0, 0
 
@@ -1597,7 +1856,10 @@ def _paper_three_pages(paper: GeneratedPaper) -> list[Flowable]:
                 ),
             ],
             [*_question_block(data.questions[2]), AnswerLines(28, spacing_mm=8.0)],
-            [Paragraph("Question 33 continued", STYLES["centre_bold"]), AnswerLines(28, spacing_mm=8.0)],
+            [
+                Paragraph("Question 33 continued", STYLES["centre_bold"]),
+                AnswerLines(28, spacing_mm=8.0),
+            ],
             [
                 _banner("Extract 2"),
                 Spacer(1, 3 * mm),
@@ -1620,7 +1882,10 @@ def _paper_three_pages(paper: GeneratedPaper) -> list[Flowable]:
                 Paragraph("Turn over for the next question", STYLES["centre_bold"]),
             ],
             [*_question_block(data.questions[5]), AnswerLines(28, spacing_mm=8.0)],
-            [Paragraph("Question 36 continued", STYLES["centre_bold"]), AnswerLines(28, spacing_mm=8.0)],
+            [
+                Paragraph("Question 36 continued", STYLES["centre_bold"]),
+                AnswerLines(28, spacing_mm=8.0),
+            ],
             [
                 _banner("Extract 3"),
                 Spacer(1, 3 * mm),
@@ -1678,11 +1943,7 @@ def _paper_three_figure(option: GeneratedOption, extract_number: int) -> Drawing
             fontSize=9,
         )
     )
-    all_values = [
-        float(value)
-        for item in series
-        for value in item.get("values", [])
-    ]
+    all_values = [float(value) for item in series for value in item.get("values", [])]
     low = min(all_values)
     high = max(all_values)
     padding = max(2.0, (high - low) * 0.12)
@@ -1775,14 +2036,6 @@ def _paper_three_figure(option: GeneratedOption, extract_number: int) -> Drawing
     return drawing
 
 
-def _page_sequence(pages: list[list[Flowable]]) -> list[Flowable]:
-    result: list[Flowable] = []
-    for page in pages:
-        result.append(PageBreak())
-        result.extend(page)
-    return result
-
-
 def _question_paper_legal_page() -> list[Flowable]:
     return [
         Spacer(1, 105 * mm),
@@ -1800,20 +2053,33 @@ def _question_paper_legal_page() -> list[Flowable]:
 
 
 def _intro(section) -> list[Flowable]:
-    return [_banner(f"Section {section.id}: {section.title}"), Spacer(1, 3 * mm), Paragraph(section.instructions, STYLES["instruction"]), Spacer(1, 4 * mm)]
+    return [
+        _banner(f"Section {section.id}: {section.title}"),
+        Spacer(1, 3 * mm),
+        Paragraph(section.instructions, STYLES["instruction"]),
+        Spacer(1, 4 * mm),
+    ]
 
 
 def _choice_prompts(section) -> list[Flowable]:
     result: list[Flowable] = []
     for index, option in enumerate(section.options):
         if index:
-            result.extend([Spacer(1, 6 * mm), Paragraph("OR", STYLES["centre_bold"]), Spacer(1, 6 * mm)])
+            result.extend(
+                [
+                    Spacer(1, 6 * mm),
+                    Paragraph("OR", STYLES["centre_bold"]),
+                    Spacer(1, 6 * mm),
+                ]
+            )
         result.extend(_question_block(option.questions[0]))
     return result
 
 
 def _mcq_block(question: GeneratedQuestion) -> list[Flowable]:
-    choices = "<br/>".join(f"<b>{'ABCD'[index]}</b> {text}" for index, text in enumerate(question.choices))
+    choices = "<br/>".join(
+        f"<b>{'ABCD'[index]}</b> {text}" for index, text in enumerate(question.choices)
+    )
     return [
         KeepTogether(
             [
@@ -1824,10 +2090,6 @@ def _mcq_block(question: GeneratedQuestion) -> list[Flowable]:
             ]
         )
     ]
-
-
-def _question_block(question: GeneratedQuestion) -> list[Flowable]:
-    return [_question_table(question), Spacer(1, 4 * mm)]
 
 
 def _question_with_answer_lines(
@@ -1866,16 +2128,18 @@ def _scheme_block(
     body_height: float | None = None,
 ) -> list[Flowable]:
     answer_points, guidance_points = _split_scheme_points(question)
-    answer = (
-        f"<b>{escape(question.prompt)}</b><br/><br/>"
-        + "<br/>".join(f"• {escape(point)}" for point in answer_points)
+    answer = f"<b>{escape(question.prompt)}</b><br/><br/>" + "<br/>".join(
+        f"• {escape(point)}" for point in answer_points
     )
     answer_cell: list[Flowable] = [Paragraph(answer, STYLES["small"])]
     if diagram_questions:
         answer_cell.extend(
             [
                 Spacer(1, 2 * mm),
-                Paragraph(f"<b>Diagram guidance for {escape(question.number)}</b>", STYLES["small"]),
+                Paragraph(
+                    f"<b>Diagram guidance for {escape(question.number)}</b>",
+                    STYLES["small"],
+                ),
                 _compact_economics_diagram_pair(diagram_questions),
             ]
         )
@@ -1951,11 +2215,7 @@ def _partition_scheme_points(
     answer: list[str] = []
     guidance: list[str] = []
     for point in question.mark_scheme:
-        target = (
-            guidance
-            if point.casefold().startswith(guidance_prefixes)
-            else answer
-        )
+        target = guidance if point.casefold().startswith(guidance_prefixes) else answer
         if point.casefold() != "indicative content":
             target.append(point)
     return answer or question.mark_scheme[:1], guidance
@@ -2011,14 +2271,14 @@ def _chart(option: GeneratedOption) -> Drawing:
         y = y0 + 7 + (value - low) / span * (height - 14)
         points.extend([x, y])
         drawing.add(Rect(x - 2, y - 2, 4, 4, fillColor=INK))
-        drawing.add(String(x - 8, y0 - 13, option.chart_labels[index], fontName=FONT, fontSize=7))
+        drawing.add(
+            String(
+                x - 8, y0 - 13, option.chart_labels[index], fontName=FONT, fontSize=7
+            )
+        )
         drawing.add(String(x + 4, y + 2, f"{value:.1f}", fontName=FONT, fontSize=7))
     drawing.add(PolyLine(points, strokeColor=INK, strokeWidth=1.2))
     return drawing
-
-
-def _cover(paper: GeneratedPaper) -> list[Flowable]:
-    return ocr_question_cover(_cover_profile(paper), FONT, FONT_BOLD)
 
 
 def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
@@ -2044,7 +2304,17 @@ def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
 
 def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
     page_size = OCR_MARK_SCHEME_FRONT_SIZE if kind == "Mark scheme" else A4
-    doc = BaseDocTemplate(str(path), pagesize=page_size, leftMargin=18 * mm, rightMargin=17 * mm, topMargin=19 * mm, bottomMargin=18 * mm, title=f"{paper.paper_code} {paper.title} — {kind}", author="Paper creator", subject="Independent A-level Economics practice material")
+    doc = BaseDocTemplate(
+        str(path),
+        pagesize=page_size,
+        leftMargin=18 * mm,
+        rightMargin=17 * mm,
+        topMargin=19 * mm,
+        bottomMargin=18 * mm,
+        title=f"{paper.paper_code} {paper.title} — {kind}",
+        author="Paper creator",
+        subject="Independent A-level Economics practice material",
+    )
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="body")
 
     def draw_chrome(canvas, value) -> None:
@@ -2133,21 +2403,90 @@ def _chrome(canvas, doc, code: str, kind: str) -> None:
 
 _base = getSampleStyleSheet()
 STYLES = {
-    "body": ParagraphStyle("body", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14),
-    "small": ParagraphStyle("small", parent=_base["BodyText"], fontName=FONT, fontSize=10, leading=12),
-    "heading": ParagraphStyle("heading", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=11, leading=14),
-    "kicker": ParagraphStyle("kicker", parent=_base["Heading2"], fontName=FONT_BOLD, fontSize=15, leading=18),
-    "title": ParagraphStyle("title", parent=_base["Title"], fontName=FONT_BOLD, fontSize=23, leading=27),
-    "subtitle": ParagraphStyle("subtitle", parent=_base["Heading2"], fontName=FONT, fontSize=14, leading=18),
-    "banner": ParagraphStyle("banner", parent=_base["Heading2"], fontName=FONT_BOLD, fontSize=11, leading=14, textColor=INK, alignment=TA_CENTER),
-    "instruction": ParagraphStyle("instruction", parent=_base["BodyText"], fontName=FONT_BOLD, fontSize=11, leading=14),
-    "option": ParagraphStyle("option", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=11.5, leading=15),
-    "extract": ParagraphStyle("extract", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14),
-    "marks": ParagraphStyle("marks", parent=_base["BodyText"], fontName=FONT_BOLD, fontSize=10.5, leading=14, alignment=TA_RIGHT),
-    "choices": ParagraphStyle("choices", parent=_base["BodyText"], fontName=FONT, fontSize=9.8, leading=13, leftIndent=22),
-    "answer": ParagraphStyle("answer", parent=_base["BodyText"], fontName=FONT_BOLD, fontSize=9.5, leading=12, alignment=TA_RIGHT),
-    "centre": ParagraphStyle("centre", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14, alignment=TA_CENTER),
-    "centre_bold": ParagraphStyle("centre", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=10.5, leading=14, alignment=TA_CENTER),
+    "body": ParagraphStyle(
+        "body", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14
+    ),
+    "small": ParagraphStyle(
+        "small", parent=_base["BodyText"], fontName=FONT, fontSize=10, leading=12
+    ),
+    "heading": ParagraphStyle(
+        "heading", parent=_base["Heading3"], fontName=FONT_BOLD, fontSize=11, leading=14
+    ),
+    "kicker": ParagraphStyle(
+        "kicker", parent=_base["Heading2"], fontName=FONT_BOLD, fontSize=15, leading=18
+    ),
+    "title": ParagraphStyle(
+        "title", parent=_base["Title"], fontName=FONT_BOLD, fontSize=23, leading=27
+    ),
+    "subtitle": ParagraphStyle(
+        "subtitle", parent=_base["Heading2"], fontName=FONT, fontSize=14, leading=18
+    ),
+    "banner": ParagraphStyle(
+        "banner",
+        parent=_base["Heading2"],
+        fontName=FONT_BOLD,
+        fontSize=11,
+        leading=14,
+        textColor=INK,
+        alignment=TA_CENTER,
+    ),
+    "instruction": ParagraphStyle(
+        "instruction",
+        parent=_base["BodyText"],
+        fontName=FONT_BOLD,
+        fontSize=11,
+        leading=14,
+    ),
+    "option": ParagraphStyle(
+        "option",
+        parent=_base["Heading3"],
+        fontName=FONT_BOLD,
+        fontSize=11.5,
+        leading=15,
+    ),
+    "extract": ParagraphStyle(
+        "extract", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14
+    ),
+    "marks": ParagraphStyle(
+        "marks",
+        parent=_base["BodyText"],
+        fontName=FONT_BOLD,
+        fontSize=10.5,
+        leading=14,
+        alignment=TA_RIGHT,
+    ),
+    "choices": ParagraphStyle(
+        "choices",
+        parent=_base["BodyText"],
+        fontName=FONT,
+        fontSize=9.8,
+        leading=13,
+        leftIndent=22,
+    ),
+    "answer": ParagraphStyle(
+        "answer",
+        parent=_base["BodyText"],
+        fontName=FONT_BOLD,
+        fontSize=9.5,
+        leading=12,
+        alignment=TA_RIGHT,
+    ),
+    "centre": ParagraphStyle(
+        "centre",
+        parent=_base["BodyText"],
+        fontName=FONT,
+        fontSize=11,
+        leading=14,
+        alignment=TA_CENTER,
+    ),
+    "centre_bold": ParagraphStyle(
+        "centre",
+        parent=_base["Heading3"],
+        fontName=FONT_BOLD,
+        fontSize=10.5,
+        leading=14,
+        alignment=TA_CENTER,
+    ),
 }
 _question_table = OCRQuestionHeaderFactory(
     body_style=STYLES["body"],
@@ -2171,3 +2510,5 @@ _box = SingleCellPanelFactory(
     border_color=INK,
     table_class=Table,
 ).panel
+_page_sequence = page_sequence
+_question_block = partial(flowable_question_block, question_table=_question_table)
