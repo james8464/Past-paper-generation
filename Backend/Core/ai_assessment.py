@@ -229,9 +229,11 @@ def _generate_batch(
     ]
     for task in verified:
         _validate_release_mark_scheme(task.question)
+    verified_to_review = verified if policy.require_difficulty_review else []
+    trusted_verified = [] if verified_to_review else verified
     result: dict[tuple[int, int, int], GeneratedQuestion] = {
         task.key: task.question.model_copy(update={"provenance": "verified-contract"})
-        for task in verified
+        for task in trusted_verified
     }
     resumed: list[_Task] = []
     if checkpoint_store is not None:
@@ -257,12 +259,12 @@ def _generate_batch(
                 checkpoint_store.save_item(task.id, stored)
             result[task.key] = stored
             resumed.append(task)
-    accepted = [
+    accepted: list[dict[str, str]] = [
         {"id": task.id, "prompt": result[task.key].prompt}
-        for task in [*verified, *resumed]
+        for task in [*trusted_verified, *resumed]
     ]
     if progress is not None:
-        for index, task in enumerate([*verified, *resumed], start=1):
+        for index, task in enumerate([*trusted_verified, *resumed], start=1):
             progress(
                 GenerationUpdate(
                     stage="checkpoint",
@@ -272,7 +274,32 @@ def _generate_batch(
                     total_units=total_items or len(tasks),
                 )
             )
-    completed_keys = {task.key for task in [*verified, *resumed]}
+    for task in verified_to_review:
+        if task.key in result:
+            continue
+        candidate = _review_verified_contract(
+            task,
+            client=client,
+            subject=subject,
+            policy=policy,
+            progress=progress,
+            demand_profile=demand_profile,
+        )
+        if checkpoint_store is not None:
+            checkpoint_store.save_item(task.id, candidate)
+        result[task.key] = candidate
+        accepted.append({"id": task.id, "prompt": candidate.prompt})
+        if progress is not None:
+            progress(
+                GenerationUpdate(
+                    stage="checkpoint",
+                    message=f"Accepted reviewed contract {task.question.number}",
+                    item_id=task.id,
+                    completed_units=completed_before + len(result),
+                    total_units=total_items or len(tasks),
+                )
+            )
+    completed_keys = set(result)
     for task in (task for task in tasks if task.key not in completed_keys):
         candidate = _generate_item_transaction(
             task,
@@ -301,6 +328,70 @@ def _generate_batch(
     return result
 
 
+def _review_verified_contract(
+    task: _Task,
+    *,
+    client: AssessmentLLMClient,
+    subject: str,
+    policy: GenerationPolicy,
+    progress: Callable[[str | GenerationUpdate], None] | None,
+    demand_profile: ReferenceDemandProfile | None,
+) -> GeneratedQuestion:
+    candidate = task.question
+    canonical_solution = (
+        _independently_validate_candidate(task, candidate, client=client)
+        if policy.require_independent_solution
+        else None
+    )
+    review = (
+        _review_batch(
+            [task],
+            [candidate],
+            client=client,
+            subject=subject,
+        )[task.id]
+        if policy.require_model_review
+        else ReviewResult(approved=True)
+    )
+    if not review.approved or review.issues:
+        raise RuntimeError(
+            f"verified contract {task.question.number} failed assessment review: "
+            + "; ".join(review.issues or ["not approved"])
+        )
+    if policy.require_difficulty_review:
+        if demand_profile is None:
+            raise ValueError("reference-demand review requires a paper profile")
+        if progress is not None:
+            progress(
+                GenerationUpdate(
+                    stage="difficulty-review",
+                    message=(
+                        "Checking locked question "
+                        f"{task.question.number} against real-paper demand"
+                    ),
+                    item_id=task.id,
+                )
+            )
+        difficulty_evidence = require_difficulty_review(
+            client,
+            item_id=task.id,
+            subject=subject,
+            target=build_item_demand_target(_demand_item(task), demand_profile),
+            candidate=candidate,
+            specification=_difficulty_specification(task),
+            canonical_solution=canonical_solution,
+        )
+        candidate = candidate.model_copy(
+            update={
+                "authoring_context": {
+                    **candidate.authoring_context,
+                    "difficulty_evidence": difficulty_evidence.model_dump(mode="json"),
+                }
+            }
+        )
+    return candidate.model_copy(update={"provenance": "verified-contract-reviewed"})
+
+
 def _validate_checkpoint_item(
     task: _Task,
     candidate: GeneratedQuestion,
@@ -318,7 +409,6 @@ def _validate_checkpoint_item(
         "expected_minutes",
         "scheme_mode",
         "contract",
-        "authoring_context",
         "source_references",
     )
     changed = [
@@ -329,6 +419,14 @@ def _validate_checkpoint_item(
     if changed:
         raise ValueError(
             f"checkpoint item {task.id} changed immutable fields: {changed}"
+        )
+    original_context = dict(original.authoring_context)
+    candidate_context = dict(candidate.authoring_context)
+    original_context.pop("difficulty_evidence", None)
+    candidate_context.pop("difficulty_evidence", None)
+    if candidate_context != original_context:
+        raise ValueError(
+            f"checkpoint item {task.id} changed immutable authoring context"
         )
     if original.authoring_context.get("preserve_mark_scheme") is True and (
         candidate.mark_scheme != original.mark_scheme
@@ -348,13 +446,17 @@ def _upgrade_checkpoint_metadata(
 ) -> GeneratedQuestion:
     """Adopt a newly added layout budget without weakening item validation."""
 
-    current = task.question.authoring_context
-    if candidate.authoring_context == current or "max_prompt_words" not in current:
+    current = dict(task.question.authoring_context)
+    stored = dict(candidate.authoring_context)
+    evidence = stored.pop("difficulty_evidence", None)
+    if stored == current or "max_prompt_words" not in current:
         return candidate
     previous = dict(current)
     previous.pop("max_prompt_words")
-    if candidate.authoring_context != previous:
+    if stored != previous:
         return candidate
+    if evidence is not None:
+        current["difficulty_evidence"] = evidence
     return candidate.model_copy(update={"authoring_context": current})
 
 

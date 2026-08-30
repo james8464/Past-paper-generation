@@ -35,7 +35,8 @@ from Backend.Core.exam_blueprints import (
     GeneratedQuestion,
     MarkSchemePoint,
 )
-from Backend.Core.model_review import ReviewResult
+from Backend.Core.independent_solver import CanonicalSolution
+from Backend.Core.model_review import DifficultyReviewResult, ReviewResult
 from Backend.Core.reference_demand import ReferenceDemandProfile
 
 
@@ -792,7 +793,11 @@ def test_generated_question_rejects_a_forbidden_semantic_relationship() -> None:
         key=(0, 0, 0),
         question=question,
         option=GeneratedOption(id="case", title="Partnership", questions=[question]),
-        topic=object(),
+        topic=type(
+            "Topic",
+            (),
+            {"id": "partnerships", "title": "Partnerships", "points": []},
+        )(),
     )
     raw = {
         "prompt": (
@@ -1098,6 +1103,44 @@ def test_checkpoint_can_adopt_a_new_prompt_budget_without_content_changes() -> N
     _validate_checkpoint_item(task, upgraded)
 
 
+def test_checkpoint_accepts_persisted_difficulty_evidence() -> None:
+    point = MarkSchemePoint(
+        text="A change in the independent variable changes the outcome.",
+        marks=1,
+        assessment_objective="AO1",
+    )
+    current = GeneratedQuestion(
+        rule_id="q1",
+        number="1",
+        marks=1,
+        kind="explain",
+        command_word="Explain",
+        topic_id="economics",
+        prompt="Explain the relationship.",
+        mark_scheme=[point.text],
+        structured_mark_scheme=[point],
+        assessment_objectives={"AO1": 1},
+        authoring_context={"preserve_mark_scheme": True},
+    )
+    task = _Task(
+        key=(0, 0, 0),
+        question=current,
+        option=GeneratedOption(id="case", title="Case", questions=[current]),
+        topic=object(),
+    )
+    checkpoint = current.model_copy(
+        update={
+            "authoring_context": {
+                **current.authoring_context,
+                "difficulty_evidence": {"schema_version": 2, "approved": True},
+            },
+            "provenance": "verified-contract-reviewed",
+        }
+    )
+
+    _validate_checkpoint_item(task, checkpoint)
+
+
 def test_source_constrained_calculation_preserves_its_verified_prompt() -> None:
     question = GeneratedQuestion(
         rule_id="partnership",
@@ -1254,6 +1297,115 @@ def test_verified_contract_item_bypasses_model_generation() -> None:
 
     assert result[task.key].prompt == question.prompt
     assert result[task.key].provenance == "verified-contract"
+
+
+def test_live_verified_contract_is_solved_and_difficulty_reviewed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    point = MarkSchemePoint(
+        text="M1: calculates the closing balance.",
+        marks=1,
+        assessment_objective="AO2",
+    )
+    question = GeneratedQuestion(
+        rule_id="verified",
+        number="12",
+        marks=1,
+        kind="calculation",
+        command_word="prepare",
+        topic_id="partnerships",
+        prompt="Prepare the verified capital account.",
+        mark_scheme=[point.text],
+        structured_mark_scheme=[point],
+        assessment_objectives={"AO2": 1},
+        intended_demand="low",
+        expected_minutes=1.5,
+        authoring_context={
+            "preserve_prompt": True,
+            "preserve_mark_scheme": True,
+        },
+    )
+    task = _Task(
+        key=(0, 0, 0),
+        question=question,
+        option=GeneratedOption(id="case", title="Partnership", questions=[question]),
+        topic=type(
+            "Topic",
+            (),
+            {"id": "partnerships", "title": "Partnerships", "points": []},
+        )(),
+    )
+    calls: list[str] = []
+
+    monkeypatch.setattr(
+        "Backend.Core.ai_assessment._independently_validate_candidate",
+        lambda *_args, **_kwargs: calls.append("solve")
+        or CanonicalSolution(
+            item_id="verified",
+            answer="Balance",
+            steps=["calculate the balance"],
+            mark_points=[point.text],
+            assessment_objectives={"AO2": 1},
+        ),
+    )
+    monkeypatch.setattr(
+        "Backend.Core.ai_assessment._review_batch",
+        lambda *_args, **_kwargs: calls.append("review")
+        or {task.id: ReviewResult(approved=True)},
+    )
+    monkeypatch.setattr(
+        "Backend.Core.ai_assessment.require_difficulty_review",
+        lambda *_args, **_kwargs: calls.append("difficulty")
+        or DifficultyReviewResult(
+            approved=True,
+            estimated_demand="low",
+            reasoning_steps=2,
+            tariff_fit=True,
+            command_word_fit=True,
+            context_fit=True,
+            profile_fit=True,
+            observed_cognitive_operations=["apply", "transform", "contextualise"],
+        ),
+    )
+
+    class Client:
+        provider = "ollama"
+        model = "test"
+
+        def generate_json(self, _prompt: str) -> dict[str, object]:
+            raise AssertionError("locked contracts must not be re-authored")
+
+    class Checkpoint:
+        saved: GeneratedQuestion | None = None
+
+        def load_item(self, _key: str) -> GeneratedQuestion | None:
+            return None
+
+        def save_item(self, _key: str, value: GeneratedQuestion) -> None:
+            self.saved = value
+
+    checkpoint = Checkpoint()
+    result = _generate_batch(
+        [task],
+        client=Client(),
+        subject="accounting",
+        seed=1,
+        policy=GenerationPolicy(
+            require_independent_solution=True,
+            require_difficulty_review=True,
+        ),
+        progress=None,
+        checkpoint_store=checkpoint,  # type: ignore[arg-type]
+        demand_profile=_demand_profile(),
+    )
+
+    reviewed = result[task.key]
+    assert calls == ["solve", "review", "difficulty"]
+    assert reviewed.prompt == question.prompt
+    assert reviewed.mark_scheme == question.mark_scheme
+    assert reviewed.provenance == "verified-contract-reviewed"
+    assert reviewed.authoring_context["difficulty_evidence"]["approved"] is True
+    assert checkpoint.saved == reviewed
 
 
 def test_rejected_second_item_does_not_regenerate_accepted_first_item() -> None:
