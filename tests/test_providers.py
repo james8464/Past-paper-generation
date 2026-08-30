@@ -158,7 +158,11 @@ def test_ollama_schema_constrains_the_separate_difficulty_judge() -> None:
         'Return JSON only: {"approved":true|false,'
         '"estimated_demand":"low|standard|high","reasoning_steps":0,'
         '"tariff_fit":true|false,"command_word_fit":true|false,'
-        '"context_fit":true|false,"profile_fit":true|false,"issues":[]}.'
+        '"context_fit":true|false,"profile_fit":true|false,'
+        '"observed_cognitive_operations":[],"cognitive_operations_fit":true|false,'
+        '"reasoning_range_fit":true|false,"shortcut_resistant":true|false,'
+        '"timing_fit":true|false,"scaffolding_fit":true|false,'
+        '"estimated_minutes":0,"issues":[]}.'
     )
 
     assert set(schema["required"]) == {
@@ -169,6 +173,13 @@ def test_ollama_schema_constrains_the_separate_difficulty_judge() -> None:
         "command_word_fit",
         "context_fit",
         "profile_fit",
+        "observed_cognitive_operations",
+        "cognitive_operations_fit",
+        "reasoning_range_fit",
+        "shortcut_resistant",
+        "timing_fit",
+        "scaffolding_fit",
+        "estimated_minutes",
         "issues",
     }
     assert schema["properties"]["estimated_demand"]["enum"] == [
@@ -176,6 +187,22 @@ def test_ollama_schema_constrains_the_separate_difficulty_judge() -> None:
         "standard",
         "high",
     ]
+    assert schema["properties"]["observed_cognitive_operations"] == {
+        "type": "array",
+        "items": {
+            "type": "string",
+            "enum": [
+                "retrieve",
+                "contextualise",
+                "transform",
+                "explain",
+                "analyse",
+                "integrate",
+                "judge",
+            ],
+        },
+        "maxItems": 7,
+    }
 
 
 def test_ollama_schema_omits_verified_marking_output() -> None:

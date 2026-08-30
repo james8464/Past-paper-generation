@@ -406,6 +406,18 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
         }
         required = ["reviews"]
     elif '"estimated_demand":"low|standard|high"' in prompt:
+        cognitive_operation = {
+            "type": "string",
+            "enum": [
+                "retrieve",
+                "contextualise",
+                "transform",
+                "explain",
+                "analyse",
+                "integrate",
+                "judge",
+            ],
+        }
         properties = {
             "approved": {"type": "boolean"},
             "estimated_demand": {
@@ -417,6 +429,21 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
             "command_word_fit": {"type": "boolean"},
             "context_fit": {"type": "boolean"},
             "profile_fit": {"type": "boolean"},
+            "observed_cognitive_operations": {
+                "type": "array",
+                "items": cognitive_operation,
+                "maxItems": 7,
+            },
+            "cognitive_operations_fit": {"type": "boolean"},
+            "reasoning_range_fit": {"type": "boolean"},
+            "shortcut_resistant": {"type": "boolean"},
+            "timing_fit": {"type": "boolean"},
+            "scaffolding_fit": {"type": "boolean"},
+            "estimated_minutes": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 180,
+            },
             "issues": text_list,
         }
         required = [
@@ -427,6 +454,13 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
             "command_word_fit",
             "context_fit",
             "profile_fit",
+            "observed_cognitive_operations",
+            "cognitive_operations_fit",
+            "reasoning_range_fit",
+            "shortcut_resistant",
+            "timing_fit",
+            "scaffolding_fit",
+            "estimated_minutes",
             "issues",
         ]
     elif '"approved":true|false' in prompt:

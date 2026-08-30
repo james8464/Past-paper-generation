@@ -267,3 +267,51 @@ def test_difficulty_review_receives_independent_solution_and_operation_contract(
     assert result.independent_solution_steps == 4
     assert "canonical_solution" in client.prompt
     assert "shortcut" in client.prompt.casefold()
+
+
+def test_difficulty_review_makes_low_demand_operation_tokens_unambiguous() -> None:
+    class VocabularySensitiveClient:
+        def generate_json(self, prompt: str) -> dict[str, object]:
+            explicit_contract = (
+                "copy every required cognitive-operation token verbatim" in prompt
+                and "retrieval and contextualisation still count" in prompt
+            )
+            return {
+                "approved": explicit_contract,
+                "estimated_demand": "low",
+                "reasoning_steps": 1,
+                "tariff_fit": True,
+                "command_word_fit": True,
+                "context_fit": True,
+                "profile_fit": True,
+                "observed_cognitive_operations": (
+                    ["retrieve", "contextualise"] if explicit_contract else []
+                ),
+                "cognitive_operations_fit": explicit_contract,
+                "reasoning_range_fit": True,
+                "shortcut_resistant": True,
+                "timing_fit": True,
+                "scaffolding_fit": True,
+                "estimated_minutes": 1.0,
+                "issues": [],
+            }
+
+    result = model_review.require_difficulty_review(
+        VocabularySensitiveClient(),
+        item_id="q1",
+        subject="Accounting",
+        target={
+            "demand_band": "low",
+            "minimum_reasoning_steps": 1,
+            "maximum_reasoning_steps": 2,
+            "required_cognitive_operations": ["retrieve", "contextualise"],
+            "expected_minutes_min": 0.5,
+            "expected_minutes_max": 1.5,
+        },
+        candidate={"prompt": "Which treatment is correct?", "marks": 1},
+        specification={"topic": "financial accounting"},
+        canonical_solution={"answer": "B", "steps": ["identify the treatment"]},
+    )
+
+    assert result.approved is True
+    assert result.observed_cognitive_operations == ["retrieve", "contextualise"]
