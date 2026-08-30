@@ -1,4 +1,5 @@
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from pastpapergen.generator import build_paper_blueprint
@@ -7,6 +8,7 @@ from pastpapergen.render_pdf import (
     MARK_SCHEME_MIN_PAGES,
     _mark_scheme_rows,
     _ms_row_height,
+    _one_mark_points,
     render_mark_scheme,
 )
 from pastpapergen.syllabus import load_syllabus
@@ -373,6 +375,31 @@ def test_mark_scheme_uses_uploaded_note_points_for_extended_questions(tmp_path):
 
     text = _pdf_text(output).lower()
     assert "perfect competition" in text or "contestability" in text
+
+
+def test_short_mark_scheme_prioritises_points_relevant_to_question_and_source() -> None:
+    question = SimpleNamespace(
+        prompt="Explain the likely relationship between the two goods.",
+        source_text=(
+            "The cross elasticity of demand is positive, and the price of one good "
+            "has increased."
+        ),
+        indicative_content=[],
+        mark_scheme=[
+            "Cross elasticity of demand measures the responsiveness of demand for "
+            "one good to a change in the price of another."
+        ],
+    )
+    topic = SimpleNamespace(
+        id="1.2.1",
+        title="Demand",
+        points=["Demand curves", "Price elasticity of demand"],
+    )
+
+    points = _one_mark_points(question, topic, limit=4)
+
+    assert any("cross elasticity" in point.casefold() for point in points)
+    assert any("quantity consumers are willing and able" in point for point in points)
 
 
 def _pdf_text(path: Path) -> str:

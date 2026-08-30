@@ -67,6 +67,23 @@ RENDERER_CONTRACT = renderer_contract(
     vector_components=("economic-curve", "statistical-chart"),
 )
 
+COMMON_MARKING_GUIDANCE = (
+    "Marker check: reward a valid alternative route where it demonstrates the same "
+    "assessed knowledge or skill.",
+    "Do not award the same developed point twice. Where an early numerical error is "
+    "carried through consistently, award the later method marks.",
+    "AO2: select and use the figures, constraints or evidence supplied in the "
+    "question; unsupported generic statements do not demonstrate application.",
+    "AO2: link each applied point directly to the named organisation, market, system "
+    "or decision and the precise proposition in the final question.",
+    "AO2: reward accurate use of source data, including units, direction and scale; "
+    "a quotation alone is not application.",
+    "AO3: analysis should identify the relevant economic agent, incentive and "
+    "transmission mechanism before stating the final effect.",
+    "AO4: evaluation may consider assumptions, elasticities, magnitude, time period, "
+    "distributional effects and unintended consequences.",
+)
+
 
 def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -333,6 +350,13 @@ def _general_marking_page() -> list[Flowable]:
             "remains economically and mathematically valid.",
             STYLES["body"],
         ),
+        Spacer(1, 5 * mm),
+        Paragraph("Common marking guidance", STYLES["heading"]),
+        Spacer(1, 2 * mm),
+        Paragraph(
+            "<br/>".join(f"• {point}" for point in COMMON_MARKING_GUIDANCE),
+            STYLES["scheme"],
+        ),
     ]
 
 
@@ -593,7 +617,13 @@ def _visible_scheme_points(question: GeneratedQuestion) -> list[str]:
     return [
         point.text
         for point in question.structured_mark_scheme
-        if point.marks > 0 or point.credit_type in {"point", "level"}
+        if point.marks > 0
+        or point.credit_type in {"point", "level"}
+        or (
+            point.credit_type == "guidance"
+            and point.text != "Indicative content"
+            and point.text not in COMMON_MARKING_GUIDANCE
+        )
     ]
 
 

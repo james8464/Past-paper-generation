@@ -3008,14 +3008,69 @@ def _question_mark_scheme_lines(question, topic) -> list[str]:
 
 
 def _one_mark_points(question, topic, *, limit: int) -> list[str]:
+    core_points = list(_CORE_MARK_SCHEME_POINTS.get(topic.title.lower(), ()))
+    specific_points = _specific_answer_points(question, topic)
+    context = " ".join(
+        [
+            getattr(question, "prompt", ""),
+            getattr(question, "source_text", ""),
+            *[
+                getattr(part, "prompt", "")
+                for part in getattr(question, "parts", ())
+            ],
+        ]
+    )
+    relevant_specific = sorted(
+        enumerate(specific_points),
+        key=lambda item: (-_mark_point_relevance(item[1], context), item[0]),
+    )
+    selected_specific = [
+        point
+        for _index, point in relevant_specific[: max(1, limit // 2)]
+        if _mark_point_relevance(point, context) > 0
+    ]
     points = [
-        *_CORE_MARK_SCHEME_POINTS.get(topic.title.lower(), ()),
-        *_specific_answer_points(question, topic),
+        *core_points[:1],
+        *selected_specific,
+        *core_points[1:],
+        *specific_points,
     ]
     points = list(dict.fromkeys(points))
     if not points:
         points = [f"Accurate explanation of {topic.title.lower()}."]
     return [f"● {point.rstrip('.')} (1)" for point in points[:limit]]
+
+
+def _mark_point_relevance(point: str, context: str) -> int:
+    ignored = {
+        "about",
+        "after",
+        "above",
+        "between",
+        "change",
+        "credit",
+        "explain",
+        "likely",
+        "market",
+        "point",
+        "question",
+        "reference",
+        "their",
+        "there",
+        "these",
+        "those",
+        "where",
+        "which",
+    }
+
+    def terms(text: str) -> set[str]:
+        return {
+            token
+            for token in re.findall(r"[a-z]{4,}", text.casefold())
+            if token not in ignored
+        }
+
+    return len(terms(point) & terms(context))
 
 
 _CORE_MARK_SCHEME_POINTS = {

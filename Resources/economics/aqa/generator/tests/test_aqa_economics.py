@@ -7,10 +7,16 @@ import pymupdf as fitz
 from aqaecongen.cli import generate_package
 from aqaecongen.configs import PAPER3_VISUAL_QUESTION_NUMBERS, RULES
 from aqaecongen.generator import build_paper
+from aqaecongen.render_pdf import _visible_scheme_points
 from aqaecongen.syllabus import load_syllabus
 from pypdf import PdfReader
 
-from Backend.Core.exam_blueprints import validate_generated_paper, validate_rule
+from Backend.Core.exam_blueprints import (
+    GeneratedQuestion,
+    MarkSchemePoint,
+    validate_generated_paper,
+    validate_rule,
+)
 from Backend.Core.pdf_validation import extract_pdf_evidence
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -106,6 +112,34 @@ def test_verified_examiner_guidance_is_retained_during_ai_authoring() -> None:
             for question in written_questions
             if question.marks >= 9
         )
+
+
+def test_mark_scheme_prints_item_specific_guidance_once_per_question() -> None:
+    common = (
+        "Marker check: reward a valid alternative route where it demonstrates "
+        "the same assessed knowledge or skill."
+    )
+    specific = (
+        "AO3: develop a complete chain from an interest-rate rise through "
+        "mortgage costs to household consumption."
+    )
+    question = GeneratedQuestion(
+        rule_id="test",
+        number="3",
+        marks=4,
+        kind="explain",
+        command_word="Explain",
+        topic_id="monetary-policy",
+        prompt="Explain one effect of a rise in interest rates.",
+        mark_scheme=["Accurate effect.", common, specific],
+        structured_mark_scheme=[
+            MarkSchemePoint(text="Accurate effect.", marks=1),
+            MarkSchemePoint(text=common, marks=0, credit_type="guidance"),
+            MarkSchemePoint(text=specific, marks=0, credit_type="guidance"),
+        ],
+    )
+
+    assert _visible_scheme_points(question) == ["Accurate effect.", specific]
 
 
 def test_each_package_renders_readable_pdfs(tmp_path: Path) -> None:
