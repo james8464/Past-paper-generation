@@ -169,6 +169,39 @@ def require_difficulty_review(
         canonical_solution=canonical_solution,
     )
     target_payload = _serialise(target)
+    _validate_difficulty_result(result, target_payload, item_id=item_id)
+    solution_payload = _serialise(canonical_solution) if canonical_solution is not None else {}
+    solution_steps = solution_payload.get("steps", []) if isinstance(solution_payload, dict) else []
+    return result.model_copy(
+        update={
+            "target_profile_fingerprint": str(
+                target_payload.get("reference_profile_fingerprint", "")
+            ),
+            "independent_solution_steps": (
+                len(solution_steps) if isinstance(solution_steps, list) else 0
+            ),
+        }
+    )
+
+
+def validate_saved_difficulty_evidence(
+    evidence: dict[str, Any], target: Any, *, item_id: str
+) -> None:
+    """Recheck persisted evidence without another model request or permissive defaults."""
+    if set(DifficultyReviewResult.model_fields) - evidence.keys():
+        raise ValueError(f"{item_id} has incomplete difficulty evidence")
+    result = DifficultyReviewResult.model_validate(evidence, strict=True)
+    target_payload = _serialise(target)
+    if result.target_profile_fingerprint != target_payload.get("reference_profile_fingerprint"):
+        raise ValueError(f"{item_id} difficulty evidence refers to a different reference profile")
+    if result.estimated_minutes is None:
+        raise ValueError(f"{item_id} difficulty evidence has no completion-time estimate")
+    _validate_difficulty_result(result, target_payload, item_id=item_id)
+
+
+def _validate_difficulty_result(
+    result: DifficultyReviewResult, target_payload: dict[str, Any], *, item_id: str
+) -> None:
     minimum_steps = int(target_payload.get("minimum_reasoning_steps", 1))
     maximum_steps = int(target_payload.get("maximum_reasoning_steps", 12))
     expected_demand = str(target_payload.get("demand_band", ""))
@@ -231,18 +264,6 @@ def require_difficulty_review(
         raise ValueError(
             f"{item_id} failed reference-demand review: " + "; ".join(failures)
         )
-    solution_payload = _serialise(canonical_solution) if canonical_solution is not None else {}
-    solution_steps = solution_payload.get("steps", []) if isinstance(solution_payload, dict) else []
-    return result.model_copy(
-        update={
-            "target_profile_fingerprint": str(
-                target_payload.get("reference_profile_fingerprint", "")
-            ),
-            "independent_solution_steps": (
-                len(solution_steps) if isinstance(solution_steps, list) else 0
-            ),
-        }
-    )
 
 
 def difficulty_review(

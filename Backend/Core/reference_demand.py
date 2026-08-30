@@ -8,6 +8,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
+from Backend.Core.model_review import validate_saved_difficulty_evidence
 from Backend.Core.paths import REPO_ROOT
 
 PROFILES_PATH = REPO_ROOT / "Resources" / "reference-demand-profiles.json"
@@ -320,10 +321,17 @@ def audit_form_demand(
     evidence_failures = []
     if require_item_evidence and len(reviewed) != len(items):
         evidence_failures.append("item_review_coverage")
-    if require_item_evidence and any(
-        not bool(value.get("approved")) for value in reviewed
-    ):
-        evidence_failures.append("item_difficulty_review")
+    if require_item_evidence:
+        for item, target, value in zip(items, targets, evidence, strict=True):
+            if not value:
+                continue
+            try:
+                validate_saved_difficulty_evidence(
+                    value, target, item_id=str(item.get("id", "unknown"))
+                )
+            except ValueError:
+                evidence_failures.append("item_difficulty_review")
+                break
     failed.extend(evidence_failures)
     return {
         "schema_version": 2,

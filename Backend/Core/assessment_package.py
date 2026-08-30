@@ -348,6 +348,7 @@ def _extract_items(
                 "marks": raw["marks"],
                 "command_word": raw.get("command_word"),
                 "intended_demand": raw.get("intended_demand"),
+                "expected_minutes": raw.get("expected_minutes"),
                 "kind": raw.get("kind") or raw.get("style_id") or "",
                 "prompt": prompt,
                 "context": stems,

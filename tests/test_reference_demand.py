@@ -554,3 +554,59 @@ def test_live_form_audit_fails_closed_without_item_review_evidence() -> None:
 
     assert report["passed"] is False
     assert "item_review_coverage" in report["failed_checks"]
+
+
+@pytest.mark.parametrize(
+    "changed",
+    [
+        {"approved": "true"},
+        {"timing_fit": False},
+        {"context_fit": False},
+        {"issues": ["The answer requires recall only."]},
+        {"target_profile_fingerprint": "b" * 64},
+        {"reasoning_steps": 0},
+        {"estimated_demand": "high"},
+        {"estimated_minutes": 500.0},
+        {"observed_cognitive_operations": []},
+        {"estimated_minutes": None},
+    ],
+)
+def test_live_form_audit_rechecks_saved_review_against_target(changed) -> None:
+    from Backend.Core.model_review import DifficultyReviewResult
+
+    reference_demand = module()
+    profile = reference_demand.ReferenceDemandProfile.model_validate(profile_payload())
+    item = {"id": "q1", "marks": 4, "command_word": "Explain"}
+    target = reference_demand.build_item_demand_target(item, profile)
+    evidence = DifficultyReviewResult(
+        approved=True,
+        estimated_demand=target.demand_band,
+        reasoning_steps=target.minimum_reasoning_steps,
+        tariff_fit=True,
+        command_word_fit=True,
+        context_fit=True,
+        profile_fit=True,
+        observed_cognitive_operations=target.required_cognitive_operations,
+        estimated_minutes=target.expected_minutes_min,
+        target_profile_fingerprint=profile.source_fingerprint,
+        independent_solution_steps=2,
+    ).model_dump(mode="json")
+    item["difficulty_evidence"] = evidence
+    good = reference_demand.audit_form_demand([item], profile, require_item_evidence=True)
+    assert "item_difficulty_review" not in good["failed_checks"]
+
+    evidence.update(changed)
+    rejected = reference_demand.audit_form_demand([item], profile, require_item_evidence=True)
+    assert "item_difficulty_review" in rejected["failed_checks"]
+
+
+def test_live_form_audit_does_not_default_missing_checks_to_approval() -> None:
+    reference_demand = module()
+    profile = reference_demand.ReferenceDemandProfile.model_validate(profile_payload())
+    report = reference_demand.audit_form_demand(
+        [{"id": "q1", "marks": 4, "command_word": "Explain",
+          "difficulty_evidence": {"approved": True}}],
+        profile,
+        require_item_evidence=True,
+    )
+    assert "item_difficulty_review" in report["failed_checks"]
