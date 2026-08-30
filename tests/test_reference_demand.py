@@ -379,6 +379,31 @@ def test_mathematical_commands_require_transformative_reasoning() -> None:
     assert target.requires_shortcut_resistance is True
 
 
+def test_evaluative_commands_do_not_require_redundant_explain_operation() -> None:
+    reference_demand = module()
+    profile = reference_demand.ReferenceDemandProfile.model_validate(profile_payload())
+
+    target = reference_demand.build_item_demand_target(
+        {
+            "id": "q14.2",
+            "marks": 6,
+            "kind": "analysis",
+            "command_word": "Assess",
+            "intended_demand": "high",
+            "assessment_objectives": {"AO2": 2, "AO3": 2, "AO4": 2},
+            "context": ["A complete financial scenario."],
+        },
+        profile,
+    )
+
+    assert target.required_cognitive_operations == [
+        "analyse",
+        "contextualise",
+        "integrate",
+        "judge",
+    ]
+
+
 def test_reference_extraction_models_the_published_ocr_paper_three_mcq_block() -> None:
     tool = tool_module()
     text = "1 What is scarcity?\n[1]\n31 Explain one effect.\n[4]"

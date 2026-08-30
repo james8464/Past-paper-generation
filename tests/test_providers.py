@@ -196,13 +196,14 @@ def test_ollama_schema_constrains_the_separate_difficulty_judge() -> None:
                 "contextualise",
                 "apply",
                 "transform",
+                "describe",
                 "explain",
                 "analyse",
                 "integrate",
                 "judge",
             ],
         },
-        "maxItems": 8,
+        "maxItems": 9,
     }
 
 

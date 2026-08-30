@@ -413,6 +413,7 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
                 "contextualise",
                 "apply",
                 "transform",
+                "describe",
                 "explain",
                 "analyse",
                 "integrate",
@@ -433,7 +434,7 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
             "observed_cognitive_operations": {
                 "type": "array",
                 "items": cognitive_operation,
-                "maxItems": 8,
+                "maxItems": 9,
             },
             "cognitive_operations_fit": {"type": "boolean"},
             "reasoning_range_fit": {"type": "boolean"},

@@ -426,6 +426,16 @@ def _cognitive_operations(
         operations.extend(("apply", "transform"))
     elif command in {"describe", "outline"}:
         operations.append("describe")
+    elif command in {
+        "analyse",
+        "analyze",
+        "assess",
+        "compare",
+        "discuss",
+        "evaluate",
+        "examine",
+    }:
+        operations.append("analyse")
     else:
         operations.append("explain")
     if requires_context:
