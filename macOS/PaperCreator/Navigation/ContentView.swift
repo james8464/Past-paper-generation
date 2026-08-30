@@ -8,28 +8,32 @@ struct ContentView: View {
 
     var body: some View {
         @Bindable var catalog = catalog
-        NavigationSplitView(columnVisibility: columnVisibility) {
-            Sidebar(selection: $catalog.sidebarSelection)
-        } detail: {
-            switch catalog.sidebarSelection ?? .board(catalog.selectedBoardID) {
-            case let .board(id):
-                if let board = ExamCatalog.board(id: id) {
-                    GeneratorWorkspace(board: board)
-                } else {
-                    ContentUnavailableView("Exam board not found", systemImage: "questionmark.folder")
+        GeometryReader { geometry in
+            let layoutMode = WorkspaceLayoutPolicy.mode(for: geometry.size.width)
+
+            NavigationSplitView(columnVisibility: columnVisibility(for: layoutMode)) {
+                Sidebar(selection: $catalog.sidebarSelection)
+            } detail: {
+                switch catalog.sidebarSelection ?? .board(catalog.selectedBoardID) {
+                case let .board(id):
+                    if let board = ExamCatalog.board(id: id) {
+                        GeneratorWorkspace(board: board, layoutMode: layoutMode)
+                    } else {
+                        ContentUnavailableView("Exam board not found", systemImage: "questionmark.folder")
+                    }
+                case .benchmark:
+                    BenchmarkWorkspace()
+                case .documents:
+                    DocumentPreviewView(
+                        files: application.generatedFiles,
+                        selectedID: application.previewedFileID
+                    )
+                case .history:
+                    JobHistoryView(store: application.recentDocumentStore)
                 }
-            case .benchmark:
-                BenchmarkWorkspace()
-            case .documents:
-                DocumentPreviewView(
-                    files: application.generatedFiles,
-                    selectedID: application.previewedFileID
-                )
-            case .history:
-                JobHistoryView(store: application.recentDocumentStore)
             }
+            .navigationSplitViewStyle(.balanced)
         }
-        .navigationSplitViewStyle(.balanced)
         .frame(minWidth: 720, minHeight: 560)
         .alert("Generation Error", isPresented: $application.showError) {
             Button("OK", role: .cancel) { }
@@ -83,16 +87,20 @@ struct ContentView: View {
         }
     }
 
-    private var columnVisibility: Binding<NavigationSplitViewVisibility> {
+    private func columnVisibility(
+        for layoutMode: WorkspaceLayoutMode
+    ) -> Binding<NavigationSplitViewVisibility> {
         Binding(
-            get: {
+            get: { () -> NavigationSplitViewVisibility in
+                guard layoutMode.showsSidebar else { return .detailOnly }
                 switch navigationColumnVisibility {
-                case "detail": .detailOnly
-                case "double": .doubleColumn
-                default: .all
+                case "detail": return .detailOnly
+                case "double": return .doubleColumn
+                default: return .all
                 }
             },
             set: { value in
+                guard layoutMode.showsSidebar else { return }
                 switch value {
                 case .detailOnly: navigationColumnVisibility = "detail"
                 case .doubleColumn: navigationColumnVisibility = "double"

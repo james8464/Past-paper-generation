@@ -284,11 +284,11 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - [x] Restore unfinished configuration, selected navigation item, window geometry, column visibility, and safe resumable jobs.
 - [x] Replace decorative custom controls with native Button, Toggle, Picker, Form, Table, NavigationSplitView, Toolbar, Menu, Sheet, Alert, ProgressView, and standard materials; remove fake glass layers and hard-coded decorative corner radii.
 - [x] Collapse/hide sidebar and inspector at compact widths while preserving one clear primary action and no clipped text.
-- [ ] Label every control and progress state for VoiceOver; establish logical focus order, Full Keyboard Access, command shortcuts, visible focus rings, Increase Contrast, Reduce Transparency, reduced motion, and text-size resilience.
+- [x] Label every control and progress state for VoiceOver; establish logical focus order, Full Keyboard Access, command shortcuts, visible focus rings, Increase Contrast, Reduce Transparency, reduced motion, and text-size resilience.
 - [x] Move all user-facing strings to the string catalog; test long pseudo-localisation and right-to-left layout without translating board-owned codes.
-- [ ] Capture current screenshots at standard/compact widths and light/dark, then manually audit against Apple HIG sections for macOS, navigation, toolbars, menus, settings, onboarding, progress, accessibility, and writing.
+- [x] Capture current screenshots at standard/compact widths and light/dark, then manually audit against Apple HIG sections for macOS, navigation, toolbars, menus, settings, onboarding, progress, accessibility, and writing.
 - [x] Run Swift unit/accessibility tests, strict build, `make -C macOS preflight-app-store`, update `docs/HIG_COMPLIANCE.md`, and refresh Graphify.
-- [ ] Commit per coherent surface, ending with `Complete native macOS product experience`.
+- [x] Commit per coherent surface, ending with `Complete native macOS product experience`.
 
 ### Task 7: Close Every Current 18-Paper Quality Gap
 

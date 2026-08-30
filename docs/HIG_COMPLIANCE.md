@@ -49,8 +49,10 @@ and a later retry starts from clean recovery state.
   native focus/hover states are preserved.
 - Content uses standard form insets and table geometry rather than arbitrary
   radii or branded cards.
-- The window has a practical 720 × 560 minimum and remains resizable; the
-  system split view collapses navigation before document content is clipped.
+- The window has a practical 720 × 560 minimum and remains resizable. Below
+  840 points the task becomes detail-only and quality evidence opens in a
+  sheet; from 840–1,099 points the sidebar returns; at 1,100 points the
+  inspector can join the sidebar and task without overlapping either one.
 - The sidebar defaults to 220 points and remains user-adjustable.
 - The inspector is constrained to a readable 250–360-point range.
 - Status never relies on colour alone; each state includes a symbol and text.
@@ -106,18 +108,27 @@ partially consumed model stream.
 
 The source uses semantic labels, combined status rows, non-colour state labels,
 localized chart summaries, explicit keyboard focus sections, and accessibility
-hints. The automated accessibility and macOS suites pass under warnings-as-errors
-and strict concurrency. Before distribution, the built app still requires
-manual verification in:
+hints. The automated accessibility and macOS suites pass under
+warnings-as-errors and strict concurrency.
 
-- VoiceOver and Full Keyboard Access;
-- Increase Contrast and Reduce Transparency;
-- light and dark appearance;
-- enlarged text and long localisation;
-- minimum and large window sizes;
-- generation, cancellation, failure, and completed-package states.
+On 30 August 2026 the current Debug app was exercised with VoiceOver, Full
+Keyboard Access, Increase Contrast, Reduce Transparency, Differentiate Without
+Colour, Reduce Motion, light/dark appearance, and compact/expanded window
+geometry. The accessibility tree exposed named controls, contextual help,
+document roles, navigation state, and disabled-action state. Keyboard focus
+could reach the sidebar and task controls. The pass found and fixed the compact
+three-column overlap described above. The app contains no custom animation, so
+Reduce Motion does not hide or strand state.
+
+Before distribution, repeat this pass on the signed distribution build and
+exercise live generation, cancellation, failure, installer, and completed-file
+states. macOS Text Size did not list the Debug build for a per-app override on
+the test Mac, so enlarged-text evidence remains limited to native scalable text,
+long-copy/RTL tests, and compact geometry until a distribution build can be
+selected in that system panel.
 
 The current screenshot and accessibility-tree audit is recorded in
-`docs/project-analysis/UI_AUDIT.md`; fresh captures are retained in
-`docs/project-analysis/ui-audit-2026-08/` and the accepted workspace/settings
-captures are bundled into the in-app tutorial.
+`docs/project-analysis/UI_AUDIT.md`. Accepted workspace/settings captures in
+`docs/project-analysis/ui-audit-2026-08/` are bundled into the in-app tutorial;
+the 30 August verification set is retained as local audit evidence rather than
+shipping duplicate screenshots in the app bundle.

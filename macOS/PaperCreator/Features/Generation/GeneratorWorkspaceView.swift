@@ -5,7 +5,9 @@ struct GeneratorWorkspace: View {
     @EnvironmentObject private var application: ApplicationCoordinator
     @AppStorage(AppStorageKey.qualityInspectorVisible)
     private var showsQualityInspector = true
+    @State private var showsCompactQualityInspector = false
     let board: ExamBoardOption
+    let layoutMode: WorkspaceLayoutMode
 
     var body: some View {
         Group {
@@ -23,14 +25,18 @@ struct GeneratorWorkspace: View {
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
-                    showsQualityInspector.toggle()
+                    if layoutMode.showsInspector {
+                        showsQualityInspector.toggle()
+                    } else {
+                        showsCompactQualityInspector = true
+                    }
                 } label: {
                     Label(
-                        showsQualityInspector ? "Hide Quality Inspector" : "Show Quality Inspector",
+                        qualityButtonTitle,
                         systemImage: "checklist"
                     )
                 }
-                .help(showsQualityInspector ? "Hide Quality Inspector" : "Show Quality Inspector")
+                .help(qualityButtonTitle)
 
                 if application.isRunning {
                     Button(role: .cancel, action: application.cancelGeneration) {
@@ -48,9 +54,22 @@ struct GeneratorWorkspace: View {
                 }
             }
         }
-        .inspector(isPresented: $showsQualityInspector) {
+        .inspector(isPresented: inspectorPresentation) {
             QualityInspector()
                 .inspectorColumnWidth(min: 250, ideal: 290, max: 360)
+        }
+        .sheet(isPresented: $showsCompactQualityInspector) {
+            NavigationStack {
+                QualityInspector()
+                    .frame(minWidth: 480, minHeight: 520)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Close") {
+                                showsCompactQualityInspector = false
+                            }
+                        }
+                    }
+            }
         }
     }
 
@@ -75,6 +94,25 @@ struct GeneratorWorkspace: View {
         application.selectedPaper.assessmentKind == .questionBank
             ? "Create Practice Set"
             : "Create Paper"
+    }
+
+    private var qualityButtonTitle: String {
+        if !layoutMode.showsInspector {
+            return "Show Quality Inspector"
+        }
+        return showsQualityInspector
+            ? "Hide Quality Inspector"
+            : "Show Quality Inspector"
+    }
+
+    private var inspectorPresentation: Binding<Bool> {
+        Binding(
+            get: { layoutMode.showsInspector && showsQualityInspector },
+            set: { isPresented in
+                guard layoutMode.showsInspector else { return }
+                showsQualityInspector = isPresented
+            }
+        )
     }
 }
 

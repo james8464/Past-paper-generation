@@ -3,6 +3,20 @@ import XCTest
 @testable import PaperCreator
 
 final class AccessibilityTests: XCTestCase {
+    func testWorkspaceLayoutProtectsCompactWindowsFromColumnOverlap() {
+        XCTAssertEqual(WorkspaceLayoutPolicy.mode(for: 720), .compact)
+        XCTAssertEqual(WorkspaceLayoutPolicy.mode(for: 839), .compact)
+        XCTAssertEqual(WorkspaceLayoutPolicy.mode(for: 840), .standard)
+        XCTAssertEqual(WorkspaceLayoutPolicy.mode(for: 900), .standard)
+        XCTAssertEqual(WorkspaceLayoutPolicy.mode(for: 1_099), .standard)
+        XCTAssertEqual(WorkspaceLayoutPolicy.mode(for: 1_100), .expanded)
+        XCTAssertEqual(WorkspaceLayoutPolicy.mode(for: 1_200), .expanded)
+
+        XCTAssertFalse(WorkspaceLayoutPolicy.mode(for: 720).showsSidebar)
+        XCTAssertFalse(WorkspaceLayoutPolicy.mode(for: 900).showsInspector)
+        XCTAssertTrue(WorkspaceLayoutPolicy.mode(for: 1_200).showsInspector)
+    }
+
     func testEveryProviderAndHelpTopicHasSpokenTextAndSymbol() {
         for provider in AIProvider.allCases {
             XCTAssertFalse(provider.title.isEmpty)

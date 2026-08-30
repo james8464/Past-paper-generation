@@ -4,6 +4,8 @@ Date: 22 August 2026
 
 Implementation re-audit: 26 August 2026
 
+Hands-on accessibility and responsive-layout re-audit: 30 August 2026
+
 ## Scope and method
 
 The current Debug app was built with strict concurrency and warnings-as-errors,
@@ -53,13 +55,20 @@ tutorial images rather than placeholders.
   reveal/open/drag behaviour, and sandbox bookmarks in the App Store build.
 - Settings are immediate and task-local paper choices remain in the main flow.
 
-## Required hands-on release checks
+## Hands-on verification status
 
-Source and accessibility-tree inspection confirm semantic labels and native
-control structure, but the release owner must still exercise VoiceOver, Full
-Keyboard Access, Increase Contrast, Reduce Transparency, light/dark appearance,
-large text, long localisation, minimum/large window sizes, and generation error
-and cancellation states on the distribution build.
+The 30 August pass exercised the current Debug app with VoiceOver, Full Keyboard
+Access, Increase Contrast, Reduce Transparency, Differentiate Without Colour,
+Reduce Motion, light/dark appearance, and minimum/large window sizes. Current
+accessibility-tree output confirmed named controls and state for the creation
+form, quality inspector, Settings, Help, Documents, History, and Benchmark.
+
+The signed distribution build still requires the same pass before submission,
+together with live generation error, cancellation, MLX-install, and completed
+package states. macOS Text Size did not offer the Debug app as a per-app target
+on this Mac, so enlarged-text behaviour is supported by system text styles,
+long-copy/RTL tests, and responsive geometry but is not recorded as manually
+proven through that system panel.
 
 ## 26 August native-workflow delta
 
@@ -81,3 +90,26 @@ The fresh sighted screenshot pass could not run on 26 August because the test
 Mac was locked. The earlier images therefore remain historical evidence, not a
 claim that the new Documents and History surfaces were visually approved.
 Those surfaces remain subject to the hands-on release checks above.
+
+## 30 August responsive and accessibility pass
+
+The current app was captured and inspected in the creation, compact quality,
+expanded workspace, AI Settings, Help, Documents, History, and Benchmark
+destinations. Separate captures cover dark appearance, increased contrast, Full
+Keyboard Access, and VoiceOver. The evidence set is stored locally at
+`tmp/ui-audit/2026-08-30-native-workflow/`; it is deliberately not bundled as
+duplicate tutorial content.
+
+The compact capture exposed a real defect: the sidebar, task, and inspector
+could overlap at the 720-point minimum. The workspace now uses three explicit
+modes. Compact windows show the task only and present quality evidence in a
+native sheet, standard windows show navigation plus task, and expanded windows
+restore the optional inspector. Boundary tests cover 839/840 and 1,099/1,100
+points so future changes cannot silently reintroduce the overlap.
+
+The sighted review found no clipped controls, non-native card styling,
+unlabelled icon-only actions, colour-only status, fixed low-contrast text, or
+custom motion in the inspected states. Documents and History use clear native
+empty states. Benchmark charts provide both a visual plot and a spoken summary;
+their empty state and primary Run action remain understandable without sample
+data.
