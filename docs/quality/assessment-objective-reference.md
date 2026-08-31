@@ -161,6 +161,21 @@ Business Paper 1 has four (15+35 compulsory, then 25+25). The other inspected
 components are compulsory. An essay pair must be selected together. A commercial
 decision inside a question is not an optional examination-question branch.
 
+## Qualitative examiner evidence
+
+OCR's 2024 H460/03 examiner report identifies MCQs 7, 13, 15, 23 and 28 as
+particularly challenging (PDF6). Its PDF19 example requires net welfare
+reasoning from a trade diagram despite carrying one mark. This supports
+task-specific MCQ analysis rather than a blanket low-demand/recall rule.
+PDF24 distinguishes selecting relevant evidence and developing reasoning from
+simply repeating extracts. [Official examiner report](https://www.ocr.org.uk/Images/726376-examiners-report-themes-in-economics.pdf).
+
+These are qualitative observations about the 2024 cohort, not facility values,
+reasoning-step counts, timings or evidence that generated items are equally
+difficult. Metadata may inform misconception-aware distractors and review;
+do not invent quantitative difficulty targets. Controller inspected PDF19.
+SHA256: `c59b9e54ba24027399ad568c1ed817f373b0ca7f3e8655afd2e0b47c56d85909`.
+
 ## Verification boundary
 
 These reference facts support the pending subject-policy corrections in the
