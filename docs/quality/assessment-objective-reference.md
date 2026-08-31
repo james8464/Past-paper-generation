@@ -37,6 +37,22 @@ version 3.0, PDF page 23 / printed page 17. The local OCR scheme inventory spans
 Autumn 2021 and June 2022–2024; those schemes do not uniformly supply per-item
 AO allocations. Do not present inferred mappings as published board metadata.
 
+The June 2025 AQA schemes give explicit per-item subskills. Summing all aligned
+item tariffs gives Paper 1 **20/30/50** across 39 items and Paper 2 **56/40/4**
+across 38. The latter includes its six-mark SQL query split AO2 = 4, AO3 = 2
+(`AQA-75172-MS-JUN25.PDF`, PDF pages 17–18). Thus SQL is not automatically all
+AO3, and the approximate 55/40/5 specification target must not overwrite a
+valid exact-year pattern. Paper 1 question 6.4 was discounted and awarded to
+all candidates: its mark belongs in the published total, but it is not valid
+positive evidence of question difficulty (`AQA-75171-MS-JUN25.PDF`, page 14).
+
+Useful task distinctions in those schemes include recursive tracing (Paper 1,
+page 9: AO2), a twelve-mark program's separate design/programming credit
+(pages 10–11: AO3), one-mark functional selected responses (Paper 2, page 28:
+AO2), and floating-point conversion with precise acceptable answers and method
+credit (page 31: AO2). Response length, table-cell count and arithmetic-step
+count are not interchangeable with conceptual demand or tariff.
+
 ## Current Accounting form pattern
 
 The June 2025 AQA 7127 schemes match the current generators' mark sequences:
