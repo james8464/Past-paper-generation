@@ -460,3 +460,12 @@ source-registration mismatch. F2 now covers these adapter corrections after J;
 H1 additionally covers the observed contestability MCQ whose table is not
 needed to choose its answer despite its application allocation. No failed
 response has been edited or promoted to a passing difficulty check.
+
+The completed Paper 3 probe reproduced the same source-registration rejection
+on all four selected 5/8/12/25-mark questions. Source/import identity verified at
+the end. All seven selected transactions across Papers 1–3 failed before their
+difficulty judge; these were not seven full-paper runs. Three Paper 3 questions
+used reviewed deterministic fallback after unsuccessful wording attempts, while
+one retained an AI-authored stem. Reporting must preserve that provenance and
+cannot infer newly AI-authored questions from live mode alone. Further Edexcel
+model runs wait for the source/key correction rather than repeating this gate.
