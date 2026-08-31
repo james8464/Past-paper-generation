@@ -384,6 +384,15 @@ unsupported attribution of fictional extracts. These are being corrected using
 the relevant point-based or levels-based official marking style; prototype
 rendering is not a live-quality pass.
 
+Normal preview runs then exposed an exact-reference page-count rule that had
+previously been satisfied using empty mark-scheme padding (Paper 2: 26 content
+pages versus 36 required; Paper 3: 22 versus 31). The scoped correction permits
+explicit content-driven Edexcel mark-scheme pagination only with printed-part
+and credit-completeness checks. Reference counts remain comparison metadata;
+question-paper rules, other-family policies and fidelity thresholds are unchanged.
+The failed previews are retained, and this is an intentional structural-policy
+change rather than evidence of unchanged visual qualification.
+
 Read-only preparation and a baseline Business PDF inspection also found a
 break-even graph whose cost/revenue labels, intersections and keyed movement
 disagree. Some other Business tables are printed without supplying their values
