@@ -358,6 +358,10 @@ totals are recorded in `docs/quality/assessment-objective-reference.md`.
   reference totals rather than copying them into generated forms.
 - [ ] 7.J/7.I: Repair declared versus advisory open-credit reconciliation and
   candidate-grounded SQL verification before the next full live CS attempt.
+- [ ] 7.F2: Register actual Edexcel candidate sources and normalize selected
+  answer keys at the independent-solver handoff; retain privacy and rejection
+  of unknown sources/wrong answers. Committed-source live probes exposed both
+  adapter defects after the scoped F review. Execute after J, before I.
 - [ ] 7.K: After once-only guidance, correct the complete-credit OCR/Edexcel
   scheme presentation and rerun unchanged 300/600-DPI layout checks. Preserve
   all specific marking content and failed evidence; no blank-page padding.

@@ -451,3 +451,12 @@ adapter had not registered in its evidence list. The app rejected the response
 before difficulty scoring. Content review passed, but the transaction did not.
 The evidence was recorded from an immutable `b7ec042` archive with successful
 source/import checks; this is a real integration follow-up, not a passing paper.
+
+Two Paper 2 live items then returned the correct selected answers (Quarter 6
+and a 16.1% terms-of-trade increase), but reconciliation rejected both because
+the specialist supplied a labelled key where the shared check requires its
+integer index. Paper 3's five-mark source explanation also reproduced the
+source-registration mismatch. F2 now covers these adapter corrections after J;
+H1 additionally covers the observed contestability MCQ whose table is not
+needed to choose its answer despite its application allocation. No failed
+response has been edited or promoted to a passing difficulty check.
