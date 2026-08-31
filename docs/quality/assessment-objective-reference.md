@@ -97,6 +97,15 @@ Highest-band conditions depend on the actual task, such as addressing both
 specified concepts, multiple requested policies or a designated extract. Do
 not apply those conditions indiscriminately to every question of that tariff.
 
+Paper 3's 2024 eight-mark Q1(b) is point-based (2/2/2/2), not a levels grid:
+KAA is capped at six and evaluation at two, allowing one developed or two
+distinct evaluative points. Its diagram-specific KAA cap is not universal.
+The twelve-mark task does use KAA bands 1–2/3–5/6–8 and evaluation bands
+1–2/3–4. The twenty-five-mark task uses KAA 1–4/5–8/9–12/13–16 and
+evaluation 1–3/4–6/7–9, with separate zero categories. Generated guidance
+needs usable quality distinctions for each band, not just a maximum score.
+Source: `9ec0-03-rms-20240815.pdf`, PDF pages 5, 7–9 and 12–13.
+
 The locally held Economics A specification, Issue 2, PDF pages 16–18 and 56,
 gives 100 marks and 120 minutes per component. Papers 1–2 each contribute 35%
 of the qualification; Paper 3 contributes 30%. Normalise their component AO
