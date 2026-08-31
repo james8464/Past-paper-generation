@@ -4,7 +4,11 @@ from io import BytesIO
 import pymupdf
 import pytest
 from cspapergen.generator import build_paper2_blueprint
-from cspapergen.ollama_client import _part_solver_item, review_blueprint_difficulty
+from cspapergen.ollama_client import (
+    _merge_question,
+    _part_solver_item,
+    review_blueprint_difficulty,
+)
 from cspapergen.question_bank import QUESTION_STYLES, build_question
 from cspapergen.render_pdf import _draw_classification_diagram, candidate_stimulus_data
 from cspapergen.syllabus import load_syllabus
@@ -82,6 +86,51 @@ def test_classification_final_review_rejects_swapped_slots_before_demand_review(
 
 
 @pytest.mark.parametrize(
+    "raw_parts",
+    [
+        [],
+        [
+            {
+                "label": "1",
+                "closed_answers": {
+                    "1": ["System software"],
+                    "2": ["Application software"],
+                },
+            }
+        ],
+    ],
+)
+def test_authoring_merge_preserves_closed_key_through_final_solver(raw_parts):
+    blueprint = build_paper2_blueprint(load_syllabus(), seed=26083031)
+    original = blueprint.questions[0]
+    merged = _merge_question(original, {"parts": raw_parts})
+    merged = merged.model_copy(update={"parts": [merged.parts[0]]})
+    blueprint = blueprint.model_copy(update={"questions": [merged]})
+
+    class ReachedDemandReview(Exception):
+        pass
+
+    class Client:
+        def generate_json(self, prompt):
+            if not prompt.startswith("Independently solve"):
+                raise ReachedDemandReview
+            assert "closed_answers" not in prompt
+            assert "Application software" not in prompt
+            assert "Utility software" not in prompt
+            values = {"1": "Application software", "2": "Utility software"}
+            return {"steps": [], "answer": values, "mark_points": values}
+
+    # Exercise the real final-review solver and reconciliation before the unrelated
+    # demand-model call; losing the key makes this raise ValueError instead.
+    with pytest.raises(ReachedDemandReview):
+        review_blueprint_difficulty(Client(), blueprint, load_syllabus())
+    assert merged.parts[0].marking.closed_answers == {
+        "1": ["Application software", "applications"],
+        "2": ["Utility software"],
+    }
+
+
+@pytest.mark.parametrize(
     "style_id,part_index,slots",
     [
         ("truth_table_completion", 0, ["row-1", "row-2", "row-3", "row-4"]),
@@ -101,7 +150,10 @@ def test_specialist_closed_shapes_declare_required_slots(style_id, part_index, s
     assert set(part.marking.closed_answers) == set(slots)
 
 
-def test_old_figure_review_is_not_current_evidence(tmp_path):
+@pytest.mark.parametrize(
+    "old_version", ["aqa-computer-science-v7", "aqa-computer-science-v8-closed-slots"]
+)
+def test_old_figure_review_is_not_current_evidence(tmp_path, old_version):
     from cspapergen.cli import ADAPTER
 
     from Backend.Core.assessment_checkpoints import (
@@ -118,7 +170,7 @@ def test_old_figure_review_is_not_current_evidence(tmp_path):
         model="test",
         prompt_version=ADAPTER.prompt_version,
     )
-    old = current.model_copy(update={"prompt_version": "aqa-computer-science-v7"})
+    old = current.model_copy(update={"prompt_version": old_version})
     path = tmp_path / "checkpoint.json"
     AssessmentCheckpointStore(path, old).save_payload("question-1", {"approved": True})
     with pytest.raises(CheckpointMismatch):

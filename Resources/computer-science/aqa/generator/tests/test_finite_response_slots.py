@@ -74,12 +74,12 @@ def solve(question, part, answers):
         (
             "data_structures_graph",
             1,
-            {"route-1": "A", "route-2": "C", "route-3": "F", "edges": "2"},
+            {"route-in-order": "A,C,F", "edges": "2"},
         ),
         (
             "functional_programming",
             0,
-            {"output-1": "16", "output-2": "36", "output-3": "25"},
+            {"output-in-order": "16,36,25"},
         ),
         ("functional_recursion", 1, {"result": "15"}),
         ("erd_keys", 0, {"cardinality": "one-to-many"}),
@@ -234,3 +234,49 @@ def test_rle_encoding_checks_both_ordered_sequences_without_fixing_pair_notation
         ).passed
     with pytest.raises(ValueError, match="every slot"):
         solve(question, part, {"run-lengths": answers["run-lengths"]})
+
+
+@pytest.mark.parametrize(
+    "style_id,part_index,answers,wrong_sequence",
+    [
+        ("data_structures_graph", 1, {"route-in-order": "A,C,F", "edges": "2"}, "A,F"),
+        ("functional_programming", 0, {"output-in-order": "16,36,25"}, "16,36"),
+    ],
+)
+def test_solver_sequence_slots_do_not_disclose_computed_length(
+    style_id, part_index, answers, wrong_sequence
+):
+    import json
+
+    style = next(s for s in QUESTION_STYLES if s.id == style_id)
+    question = build_question(style, 1, style.totals[0], random.Random(7))
+    part = question.parts[part_index]
+    prompts = []
+
+    class Client:
+        def generate_json(self, prompt):
+            prompts.append(prompt)
+            return {"steps": [], "answer": answers, "mark_points": answers}
+
+    solution = IndependentSolver(Client()).solve(_part_solver_item(question, part), [])
+    payload = json.JSONDecoder().raw_decode(prompts[0].split("\n", 1)[1])[0]
+    assert payload["item"]["response_slots"] == list(answers)
+    assert "closed_answers" not in prompts[0]
+    assert "route-3" not in prompts[0] and "output-3" not in prompts[0]
+    assert reconcile_solution(solution, part.marking.model_dump()).passed
+    sequence_slot = next(iter(answers))
+    for value in (
+        wrong_sequence,
+        ",".join(reversed(answers[sequence_slot].split(","))),
+        answers[sequence_slot] + ",0",
+    ):
+        assert not reconcile_solution(
+            solve(question, part, {**answers, sequence_slot: value}),
+            part.marking.model_dump(),
+        ).passed
+    assert reconcile_solution(
+        solve(
+            question, part, {**answers, sequence_slot: f"[{answers[sequence_slot]}]"}
+        ),
+        part.marking.model_dump(),
+    ).passed

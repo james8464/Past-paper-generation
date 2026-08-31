@@ -28,7 +28,6 @@ from Backend.Core.reference_demand import (
     profile_for,
 )
 from cspapergen.models import (
-    MarkingGuidance,
     PaperBlueprint,
     Question,
     QuestionPart,
@@ -458,7 +457,9 @@ def _merge_question(question: Question, payload: dict[str, object]) -> Question:
                     seen.add(fallback.casefold())
             accept = _text_list(raw.get("accept") if isinstance(raw, dict) else None, part.marking.accept)
             reject = _text_list(raw.get("reject") if isinstance(raw, dict) else None, part.marking.reject)
-            marking = MarkingGuidance(ao=part.marking.ao, points=points, accept=accept, reject=reject, levels=part.marking.levels)
+            marking = part.marking.model_copy(
+                deep=True, update={"points": points, "accept": accept, "reject": reject}
+            )
             merged.append(part.model_copy(update={"prompt": prompt, "marking": marking}))
         parts = merged
     return question.model_copy(update={"stem": stem, "parts": parts})

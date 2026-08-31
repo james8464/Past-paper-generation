@@ -257,7 +257,7 @@ def _data_structures_graph_question(
         ("3", 2, "Explain one advantage of an adjacency list over an adjacency matrix for this graph.", ["Only existing edges and their endpoint references need to be stored;", "Because the graph is sparse, this normally uses less memory than storing a cell for every possible pair of vertices;"], "", 5),
     ])
     parts[0].set_closed_answers({f"visit-{i}": [value] for i, value in enumerate("ABCDEF", 1)})
-    parts[1].set_closed_answers({"route-1": ["A"], "route-2": ["C"], "route-3": ["F"], "edges": ["2", "2 edges"]})
+    parts[1].set_closed_answers({"route-in-order": ["A,C,F", "[A,C,F]"], "edges": ["2", "2 edges"]})
     return _question(style, number, "Graphs", "An undirected graph is represented by the adjacency list shown.", stimulus, _fit_parts(parts, total))
 
 
@@ -1184,7 +1184,7 @@ def _functional_question(style: QuestionStyle, number: int, total: int, rng: ran
         ("3", 2, "Explain why immutability can make functional programs easier to reason about.", ["Values are not changed after creation;", "This reduces side effects/unexpected state changes;"], "", 4),
         ("4", 2, "Describe one use of recursion in functional programming.", ["A function calls itself;", "It processes a list/problem by reducing it to a base case;"], "", 4),
     ])
-    parts[0].set_closed_answers({"output-1": ["16"], "output-2": ["36"], "output-3": ["25"]})
+    parts[0].set_closed_answers({"output-in-order": ["16,36,25", "[16,36,25]"]})
     return _question(style, number, "Functional programming", "A program uses higher-order functions.", stimulus, _fit_parts(parts, total))
 
 
