@@ -35,6 +35,9 @@ SDD ledger rather than restarting completed work:
 - [ ] Separate declared credit from model marking advice, preserve partial-credit structure and verify the reproduced CPU criteria without imposing exact advisory wording (7.J).
 - [ ] Reject reproduced non-SQL/unknown-field solver answers using candidate-grounded, explicitly bounded SQL validation; preserve dialect distinctions and rerun the actual SQL transaction (7.I).
 - [ ] All permitted candidate paths and remaining Economics/Business application/analysis demand, including MCQs (7.H).
+  - [ ] H1: task-specific objectives, source/key/diagram parity and meaningful MCQ demand.
+  - [ ] H2: candidate-bound saved reviews and truthful saved-package UI/help/diagnostics.
+  - [ ] H3: matched candidate-path/reference weighting, topic-bank evidence and integrated verification.
 - [ ] Once-only general marking instructions with all case-specific credit retained (7.D).
 - [ ] Fresh all-route verification and live/manual evidence after these corrections.
 
