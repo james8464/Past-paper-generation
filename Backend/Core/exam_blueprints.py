@@ -204,6 +204,10 @@ def validate_generated_paper(
             for question, question_rule in zip(
                 option.questions, section_rule.questions, strict=True
             ):
+                if objective_policy_for(rule.code).computational and (
+                    not question.assessment_objectives or question.expected_minutes is None
+                ):
+                    raise ValueError("explicit CS objectives and timing are required; saved metadata is stale")
                 _hydrate_assessment_metadata(
                     question,
                     question_rule=question_rule,

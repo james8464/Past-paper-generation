@@ -25,6 +25,9 @@ def enrich_paper(
         subject == "computer science" and paper.paper_code == "H446/02"
     )
     policy_id = (
+        "ocr-computer-science-3-band"
+        if subject == "computer science" and paper.paper_code.startswith("H446")
+        else
         "ocr-standard-4-level"
         if paper.paper_code.startswith("H")
         else "aqa-standard-4-level"
@@ -47,7 +50,9 @@ def enrich_paper(
                 option.model_copy(
                     update={
                         "title": _clean_text(option.title),
-                        "stimulus": [_clean_text(text) for text in option.stimulus],
+                        # Indentation is source syntax, not cosmetic whitespace.
+                        "stimulus": [text if subject == "computer science" and "\n" in text
+                                     else _clean_text(text) for text in option.stimulus],
                         "questions": questions,
                     }
                 )
@@ -105,7 +110,7 @@ def _enrich_question(
     points = [str(point).strip() for point in topic.points if str(point).strip()]
     selected = (points * 3)[:6]
     scheme = list(question.mark_scheme)
-    if compact:
+    if compact and subject != "computer science":
         scheme.extend(_compact_technical_guidance(question, topic.title, selected))
         authoring_context["valid_alternatives"] = [
             "Accept equivalent pseudocode, terminology or a technically valid alternative method."
@@ -120,7 +125,7 @@ def _enrich_question(
             }
         )
     scheme.extend(_objective_guidance(question, topic.title, selected, subject))
-    if _uses_levels(question):
+    if _uses_levels(question) and subject != "computer science":
         scheme.extend(_level_guidance(question.marks, subject))
     scheme.append(
         "Marker check: reward a valid alternative route where it demonstrates the same assessed knowledge or skill."
@@ -163,7 +168,7 @@ def _compact_technical_guidance(
 
 
 def _uses_levels(question: GeneratedQuestion) -> bool:
-    if question.kind in {"calculation", "data", "multiple_choice"}:
+    if question.kind in {"calculation", "data", "multiple_choice", "programming", "trace"}:
         return False
     if any(
         point.casefold().startswith(("level ", "levels-based"))
@@ -179,7 +184,7 @@ def _objective_guidance(
     points: list[str],
     subject: str,
 ) -> list[str]:
-    if subject == "accounting":
+    if subject in {"accounting", "computer science"}:
         # Accounting credit is item-specific. Topic revision notes are not extra
         # award points, and familiar technique marks must not become AO2 by default.
         policy = objective_policy_for(subject)

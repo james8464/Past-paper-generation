@@ -349,6 +349,19 @@ def test_closed_slot_schema_survives_provider_json_repair_instruction():
     assert schema["properties"]["answer"]["required"] == ["1", "2"]
 
 
+def test_closed_prompt_requires_independent_slot_reasoning_without_leaking_keys():
+    answers = {"1": "0", "2": "0"}
+    client = ResponseClient({"answer": answers, "mark_points": answers})
+    solution = IndependentSolver(client).solve(closed_item(), [])
+    assert "solve each requested slot in turn" in client.prompt
+    assert "results may coincide only if separately justified" in client.prompt
+    assert "SECRET_KEY" not in client.prompt
+    assert reconcile_solution(solution, {"closed_answers": {"1": ["0"], "2": ["0"]}}).passed
+    open_client = ResponseClient({"answer": "A description", "mark_points": ["A description"]})
+    IndependentSolver(open_client).solve({"id": "open", "marks": 2, "prompt": "Describe caching."}, [])
+    assert "solve each requested slot in turn" not in open_client.prompt
+
+
 @pytest.mark.parametrize(
     "response",
     [

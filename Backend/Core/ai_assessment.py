@@ -695,7 +695,7 @@ def _independently_validate_candidate(
         raise ValueError(f"question {candidate.number} changed immutable numeric prompt")
     numeric_fields = {
         key for key in task.question.authoring_context
-        if key.startswith("calculation_") or key in {"numeric_input_contract", "source_data", "opening_balances", "depreciation_policy", "transactions_at_start_of_year", "adjustment_source_data", "adjustment_policy", "task_scope", "required_entries"}
+        if key.startswith("calculation_") or key in {"cs_input_contract", "numeric_input_contract", "source_data", "opening_balances", "depreciation_policy", "transactions_at_start_of_year", "adjustment_source_data", "adjustment_policy", "task_scope", "required_entries"}
     }
     if any(candidate.authoring_context.get(key) != task.question.authoring_context[key] for key in numeric_fields):
         raise ValueError(f"question {candidate.number} changed immutable numeric source contract")

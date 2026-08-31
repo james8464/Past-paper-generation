@@ -202,12 +202,40 @@ def build_item_demand_target(
         requires_judgement=requires_judgement,
         multiple_concepts=(demand == "high" or marks >= 8),
     )
+    task_operation = None
+    if objective_policy.computational:
+        task_operation = objective_policy.task_operation(raw, command, kind)
+        response_mode = objective_policy.response_mode(task_operation, command, marks)
+        requires_context = bool(objectives.get("AO2")) or task_operation in {"design", "program", "trace"}
+        requires_analysis = False  # computational analysis is not a prose causal chain
+        requires_judgement = task_operation == "judge"
+        calculation = task_operation in {"transform", "trace"}
+        operations = [task_operation]
+        if objectives.get("AO2") and task_operation not in {"analyse", "trace"}:
+            operations.append("apply")
+        if demand == "high" and task_operation in {"design", "program", "judge"}:
+            operations.append("integrate")
+        if task_operation in {"design", "program"}:
+            minimum_steps = max(1, min(4, marks // 3))
+            maximum_steps = min(12, max(3, marks))
+        elif task_operation == "trace":
+            minimum_steps, maximum_steps = 2, 4
+        elif marks <= 2:
+            minimum_steps, maximum_steps = 1, 3
     # A target cannot require more distinct cognitive operations than the
     # reviewer permits reasoning steps. This matters for short applied
     # calculations whose tariff bundles presentation and transformation into
     # the same award point.
     maximum_steps = max(maximum_steps, len(operations))
     expected_minutes = float(raw.get("expected_minutes") or max(1.0, marks * 1.2))
+    policy_fingerprint = objective_policy.fingerprint(objectives, command, kind)
+    if objective_policy.computational:
+        # Time and task operation are review obligations even if the demand band
+        # and broad reasoning bounds happen to remain unchanged.
+        import hashlib
+        policy_fingerprint = hashlib.sha256(
+            f"{policy_fingerprint}|{task_operation}|{expected_minutes}".encode()
+        ).hexdigest()
     return ItemDemandTarget(
         demand_band=demand,
         minimum_reasoning_steps=minimum_steps,
@@ -229,7 +257,7 @@ def build_item_demand_target(
         expected_minutes_max=round(expected_minutes * 1.25, 2),
         reference_comparison_basis=profile.comparison_basis,
         reference_profile_fingerprint=profile.source_fingerprint,
-        objective_policy_fingerprint=objective_policy.fingerprint(objectives, command, kind),
+        objective_policy_fingerprint=policy_fingerprint,
     )
 
 
@@ -262,7 +290,8 @@ def audit_form_demand(
             target.response_mode for target in targets
         ),
         "cognitive_operation_distribution": _distribution(
-            _primary_cognitive_operation(
+            target.required_cognitive_operations[0]
+            if objective_policy_for(profile.family_id).computational else _primary_cognitive_operation(
                 command=str(
                     item.get("command_word") or _leading_command(item.get("prompt"))
                 ).casefold(),

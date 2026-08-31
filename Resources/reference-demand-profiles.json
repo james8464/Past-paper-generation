@@ -260,36 +260,40 @@
     {
       "assessment_kind": "full-paper",
       "cognitive_operation_distribution": {
-        "describe": 0.137931,
-        "explain": 0.370689,
-        "retrieve": 0.318966,
-        "transform": 0.172414
+        "analyse": 0.236222,
+        "describe": 0.07874,
+        "explain": 0.204724,
+        "judge": 0.141732,
+        "program": 0.173228,
+        "retrieve": 0.15748,
+        "transform": 0.007874
       },
       "command_word_distribution": {
-        "calculate": 0.006944,
-        "complete": 0.104167,
-        "define": 0.006944,
-        "describe": 0.118056,
-        "determine": 0.006944,
-        "evaluate": 0.013889,
-        "explain": 0.256944,
-        "find": 0.006944,
-        "name": 0.034722,
-        "prove": 0.006944,
-        "select": 0.041667,
-        "show": 0.055556,
-        "solve": 0.006944,
-        "state": 0.277779,
-        "suggest": 0.013889,
-        "write": 0.041667
+        "calculate": 0.006897,
+        "complete": 0.103448,
+        "define": 0.006897,
+        "describe": 0.117241,
+        "determine": 0.006897,
+        "evaluate": 0.013793,
+        "explain": 0.255172,
+        "find": 0.006897,
+        "name": 0.034483,
+        "prove": 0.006897,
+        "select": 0.041379,
+        "show": 0.055172,
+        "solve": 0.006897,
+        "state": 0.275861,
+        "suggest": 0.013793,
+        "trace": 0.006897,
+        "write": 0.041379
       },
-      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
+      "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained. Discounted June 2025 Q06.4 excluded from cognitive-demand evidence.",
       "demand_distribution": {
-        "high": 0.043103,
-        "low": 0.887931,
-        "standard": 0.068966
+        "high": 0.228346,
+        "low": 0.637796,
+        "standard": 0.133858
       },
-      "extraction_coverage": 0.8,
+      "extraction_coverage": 0.875862,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
         "extended": 0.068966,
@@ -297,9 +301,9 @@
         "short": 0.848275
       },
       "mark_weighted_demand_distribution": {
-        "high": 0.224806,
-        "low": 0.589147,
-        "standard": 0.186047
+        "high": 0.384401,
+        "low": 0.339833,
+        "standard": 0.275766
       },
       "metric_tolerances": {
         "cognitive_operation_distribution": 0.8,
@@ -310,53 +314,60 @@
       },
       "paper_id": "1",
       "response_mode_distribution": {
-        "calculation": 0.086207,
-        "constructed-response": 0.155172,
-        "mathematical-argument": 0.043103,
-        "multi-stage-calculation": 0.043103,
-        "recall": 0.25,
-        "selected-response": 0.068966,
-        "structured-reasoning": 0.353449
+        "calculation": 0.007874,
+        "computational-analysis": 0.236222,
+        "constructed-response": 0.110236,
+        "extended-evaluation": 0.141732,
+        "programming": 0.173228,
+        "recall": 0.15748,
+        "structured-reasoning": 0.173228
       },
       "source_document_count": 4,
-      "source_fingerprint": "0e822b688236b2d2bd1aad6f24b44ca2b765e8d5dc3f6b6ff05cacf8ce31eb01"
+      "source_fingerprint": "20a0b2202ad9f4d30491af14c67ab9c153e76e3cc5ab974d4d42f0d385381f22"
     },
     {
       "assessment_kind": "full-paper",
       "cognitive_operation_distribution": {
-        "analyse": 0.012987,
-        "describe": 0.272727,
-        "explain": 0.168831,
-        "judge": 0.012987,
-        "retrieve": 0.214286,
-        "transform": 0.318182
+        "analyse": 0.260561,
+        "describe": 0.239437,
+        "design": 0.014085,
+        "explain": 0.161972,
+        "judge": 0.007042,
+        "program": 0.042254,
+        "retrieve": 0.126761,
+        "trace": 0.021127,
+        "transform": 0.126761
       },
       "command_word_distribution": {
-        "calculate": 0.076923,
-        "compare": 0.030769,
-        "complete": 0.046154,
-        "define": 0.005128,
-        "describe": 0.220514,
-        "discuss": 0.010256,
-        "draw": 0.020513,
-        "explain": 0.133333,
-        "give": 0.005128,
-        "identify": 0.025641,
-        "name": 0.051282,
-        "outline": 0.005128,
-        "select": 0.046154,
-        "show": 0.117949,
-        "state": 0.138462,
-        "verify": 0.005128,
-        "write": 0.061538
+        "calculate": 0.074257,
+        "compare": 0.029703,
+        "complete": 0.044554,
+        "convert": 0.009901,
+        "define": 0.00495,
+        "describe": 0.212877,
+        "develop": 0.00495,
+        "discuss": 0.009901,
+        "draw": 0.019802,
+        "explain": 0.128713,
+        "give": 0.00495,
+        "identify": 0.024752,
+        "name": 0.049505,
+        "outline": 0.00495,
+        "select": 0.044554,
+        "show": 0.113861,
+        "simplify": 0.014851,
+        "state": 0.133663,
+        "trace": 0.00495,
+        "verify": 0.00495,
+        "write": 0.059406
       },
       "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official AQA A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.038961,
-        "low": 0.837662,
-        "standard": 0.123377
+        "high": 0.042254,
+        "low": 0.816901,
+        "standard": 0.140845
       },
-      "extraction_coverage": 0.944785,
+      "extraction_coverage": 0.871166,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
         "extended": 0.030675,
@@ -364,9 +375,9 @@
         "short": 0.907975
       },
       "mark_weighted_demand_distribution": {
-        "high": 0.167539,
-        "low": 0.591623,
-        "standard": 0.240838
+        "high": 0.172507,
+        "low": 0.566037,
+        "standard": 0.261456
       },
       "metric_tolerances": {
         "cognitive_operation_distribution": 0.8,
@@ -377,59 +388,69 @@
       },
       "paper_id": "2",
       "response_mode_distribution": {
-        "calculation": 0.103896,
-        "constructed-response": 0.266233,
-        "extended-evaluation": 0.025974,
-        "mathematical-argument": 0.162338,
-        "multi-stage-calculation": 0.051948,
-        "recall": 0.214286,
-        "structured-reasoning": 0.175325
+        "algorithm-trace": 0.021127,
+        "calculation": 0.112676,
+        "computational-analysis": 0.260563,
+        "computational-design": 0.014085,
+        "constructed-response": 0.267604,
+        "extended-evaluation": 0.007042,
+        "multi-stage-calculation": 0.014085,
+        "programming": 0.042254,
+        "recall": 0.126761,
+        "structured-reasoning": 0.133803
       },
       "source_document_count": 4,
-      "source_fingerprint": "c2442cabcaa707382d85570f3feb9653e86f1ea597cd2ae65784e0906ff3bf7e"
+      "source_fingerprint": "c66580fbcf759fa6dd161ce94c5fea3d7dd002fa51780519488bf65f5611229c"
     },
     {
       "assessment_kind": "question-bank",
       "cognitive_operation_distribution": {
-        "analyse": 0.006494,
-        "describe": 0.205329,
-        "explain": 0.269759,
-        "judge": 0.006494,
-        "retrieve": 0.266626,
-        "transform": 0.245298
+        "analyse": 0.24839,
+        "describe": 0.159089,
+        "design": 0.007043,
+        "explain": 0.183348,
+        "judge": 0.074387,
+        "program": 0.107741,
+        "retrieve": 0.142121,
+        "trace": 0.010563,
+        "transform": 0.067318
       },
       "command_word_distribution": {
-        "calculate": 0.041934,
-        "compare": 0.015385,
-        "complete": 0.07516,
-        "define": 0.006036,
-        "describe": 0.169285,
-        "determine": 0.003472,
-        "discuss": 0.005128,
-        "draw": 0.010256,
-        "evaluate": 0.006945,
-        "explain": 0.195138,
-        "find": 0.003472,
-        "give": 0.002564,
-        "identify": 0.012821,
-        "name": 0.043002,
-        "outline": 0.002564,
-        "prove": 0.003472,
-        "select": 0.043911,
-        "show": 0.086752,
-        "solve": 0.003472,
-        "state": 0.208119,
-        "suggest": 0.006945,
-        "verify": 0.002564,
-        "write": 0.051603
+        "calculate": 0.040577,
+        "compare": 0.014852,
+        "complete": 0.074001,
+        "convert": 0.004951,
+        "define": 0.005923,
+        "describe": 0.165059,
+        "determine": 0.003449,
+        "develop": 0.002475,
+        "discuss": 0.004951,
+        "draw": 0.009901,
+        "evaluate": 0.006896,
+        "explain": 0.191943,
+        "find": 0.003449,
+        "give": 0.002475,
+        "identify": 0.012376,
+        "name": 0.041994,
+        "outline": 0.002475,
+        "prove": 0.003449,
+        "select": 0.042967,
+        "show": 0.084516,
+        "simplify": 0.007425,
+        "solve": 0.003449,
+        "state": 0.204761,
+        "suggest": 0.006896,
+        "trace": 0.005923,
+        "verify": 0.002475,
+        "write": 0.050392
       },
-      "comparison_basis": "Focused-practice target derived from aggregate mark tariffs and command-word frequencies across 8 official AQA A-level Computer Science papers; no source wording retained.",
+      "comparison_basis": "Pooled whole-paper proxy, not topic-specific difficulty evidence: aggregate mark tariffs and command-word frequencies across 8 official AQA A-level Computer Science papers. Topic-level evidence is insufficient for a validated topic-bank match; no source wording retained.",
       "demand_distribution": {
-        "high": 0.041032,
-        "low": 0.862797,
-        "standard": 0.096171
+        "high": 0.1353,
+        "low": 0.727348,
+        "standard": 0.137352
       },
-      "extraction_coverage": 0.8,
+      "extraction_coverage": 0.871166,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
         "extended": 0.049821,
@@ -437,9 +458,9 @@
         "short": 0.878125
       },
       "mark_weighted_demand_distribution": {
-        "high": 0.196173,
-        "low": 0.590384,
-        "standard": 0.213443
+        "high": 0.278454,
+        "low": 0.452935,
+        "standard": 0.268611
       },
       "metric_tolerances": {
         "cognitive_operation_distribution": 1.0,
@@ -450,60 +471,69 @@
       },
       "paper_id": "bank-4.10",
       "response_mode_distribution": {
-        "calculation": 0.095052,
-        "constructed-response": 0.210703,
-        "extended-evaluation": 0.012987,
-        "mathematical-argument": 0.102721,
-        "multi-stage-calculation": 0.047525,
-        "recall": 0.232143,
-        "selected-response": 0.034483,
-        "structured-reasoning": 0.264386
+        "algorithm-trace": 0.010563,
+        "calculation": 0.060275,
+        "computational-analysis": 0.248392,
+        "computational-design": 0.007043,
+        "constructed-response": 0.18892,
+        "extended-evaluation": 0.074387,
+        "multi-stage-calculation": 0.007043,
+        "programming": 0.107741,
+        "recall": 0.142121,
+        "structured-reasoning": 0.153515
       },
       "source_document_count": 8,
-      "source_fingerprint": "221e1369d67507e866a6930f24ac89f9bbe0c5a3fcf7a71b0d6cb1c4772ffd98"
+      "source_fingerprint": "6ea1408557966575f52e461e726ce714bf4b197b40f2501f1fc402e8bded6afa"
     },
     {
       "assessment_kind": "question-bank",
       "cognitive_operation_distribution": {
-        "analyse": 0.006494,
-        "describe": 0.205329,
-        "explain": 0.269759,
-        "judge": 0.006494,
-        "retrieve": 0.266626,
-        "transform": 0.245298
+        "analyse": 0.24839,
+        "describe": 0.159089,
+        "design": 0.007043,
+        "explain": 0.183348,
+        "judge": 0.074387,
+        "program": 0.107741,
+        "retrieve": 0.142121,
+        "trace": 0.010563,
+        "transform": 0.067318
       },
       "command_word_distribution": {
-        "calculate": 0.041934,
-        "compare": 0.015385,
-        "complete": 0.07516,
-        "define": 0.006036,
-        "describe": 0.169285,
-        "determine": 0.003472,
-        "discuss": 0.005128,
-        "draw": 0.010256,
-        "evaluate": 0.006945,
-        "explain": 0.195138,
-        "find": 0.003472,
-        "give": 0.002564,
-        "identify": 0.012821,
-        "name": 0.043002,
-        "outline": 0.002564,
-        "prove": 0.003472,
-        "select": 0.043911,
-        "show": 0.086752,
-        "solve": 0.003472,
-        "state": 0.208119,
-        "suggest": 0.006945,
-        "verify": 0.002564,
-        "write": 0.051603
+        "calculate": 0.040577,
+        "compare": 0.014852,
+        "complete": 0.074001,
+        "convert": 0.004951,
+        "define": 0.005923,
+        "describe": 0.165059,
+        "determine": 0.003449,
+        "develop": 0.002475,
+        "discuss": 0.004951,
+        "draw": 0.009901,
+        "evaluate": 0.006896,
+        "explain": 0.191943,
+        "find": 0.003449,
+        "give": 0.002475,
+        "identify": 0.012376,
+        "name": 0.041994,
+        "outline": 0.002475,
+        "prove": 0.003449,
+        "select": 0.042967,
+        "show": 0.084516,
+        "simplify": 0.007425,
+        "solve": 0.003449,
+        "state": 0.204761,
+        "suggest": 0.006896,
+        "trace": 0.005923,
+        "verify": 0.002475,
+        "write": 0.050392
       },
-      "comparison_basis": "Focused-practice target derived from aggregate mark tariffs and command-word frequencies across 8 official AQA A-level Computer Science papers; no source wording retained.",
+      "comparison_basis": "Pooled whole-paper proxy, not topic-specific difficulty evidence: aggregate mark tariffs and command-word frequencies across 8 official AQA A-level Computer Science papers. Topic-level evidence is insufficient for a validated topic-bank match; no source wording retained.",
       "demand_distribution": {
-        "high": 0.041032,
-        "low": 0.862797,
-        "standard": 0.096171
+        "high": 0.1353,
+        "low": 0.727348,
+        "standard": 0.137352
       },
-      "extraction_coverage": 0.8,
+      "extraction_coverage": 0.871166,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
         "extended": 0.049821,
@@ -511,9 +541,9 @@
         "short": 0.878125
       },
       "mark_weighted_demand_distribution": {
-        "high": 0.196173,
-        "low": 0.590384,
-        "standard": 0.213443
+        "high": 0.278454,
+        "low": 0.452935,
+        "standard": 0.268611
       },
       "metric_tolerances": {
         "cognitive_operation_distribution": 1.0,
@@ -524,60 +554,69 @@
       },
       "paper_id": "bank-4.12",
       "response_mode_distribution": {
-        "calculation": 0.095052,
-        "constructed-response": 0.210703,
-        "extended-evaluation": 0.012987,
-        "mathematical-argument": 0.102721,
-        "multi-stage-calculation": 0.047525,
-        "recall": 0.232143,
-        "selected-response": 0.034483,
-        "structured-reasoning": 0.264386
+        "algorithm-trace": 0.010563,
+        "calculation": 0.060275,
+        "computational-analysis": 0.248392,
+        "computational-design": 0.007043,
+        "constructed-response": 0.18892,
+        "extended-evaluation": 0.074387,
+        "multi-stage-calculation": 0.007043,
+        "programming": 0.107741,
+        "recall": 0.142121,
+        "structured-reasoning": 0.153515
       },
       "source_document_count": 8,
-      "source_fingerprint": "221e1369d67507e866a6930f24ac89f9bbe0c5a3fcf7a71b0d6cb1c4772ffd98"
+      "source_fingerprint": "6ea1408557966575f52e461e726ce714bf4b197b40f2501f1fc402e8bded6afa"
     },
     {
       "assessment_kind": "question-bank",
       "cognitive_operation_distribution": {
-        "analyse": 0.006494,
-        "describe": 0.205329,
-        "explain": 0.269759,
-        "judge": 0.006494,
-        "retrieve": 0.266626,
-        "transform": 0.245298
+        "analyse": 0.24839,
+        "describe": 0.159089,
+        "design": 0.007043,
+        "explain": 0.183348,
+        "judge": 0.074387,
+        "program": 0.107741,
+        "retrieve": 0.142121,
+        "trace": 0.010563,
+        "transform": 0.067318
       },
       "command_word_distribution": {
-        "calculate": 0.041934,
-        "compare": 0.015385,
-        "complete": 0.07516,
-        "define": 0.006036,
-        "describe": 0.169285,
-        "determine": 0.003472,
-        "discuss": 0.005128,
-        "draw": 0.010256,
-        "evaluate": 0.006945,
-        "explain": 0.195138,
-        "find": 0.003472,
-        "give": 0.002564,
-        "identify": 0.012821,
-        "name": 0.043002,
-        "outline": 0.002564,
-        "prove": 0.003472,
-        "select": 0.043911,
-        "show": 0.086752,
-        "solve": 0.003472,
-        "state": 0.208119,
-        "suggest": 0.006945,
-        "verify": 0.002564,
-        "write": 0.051603
+        "calculate": 0.040577,
+        "compare": 0.014852,
+        "complete": 0.074001,
+        "convert": 0.004951,
+        "define": 0.005923,
+        "describe": 0.165059,
+        "determine": 0.003449,
+        "develop": 0.002475,
+        "discuss": 0.004951,
+        "draw": 0.009901,
+        "evaluate": 0.006896,
+        "explain": 0.191943,
+        "find": 0.003449,
+        "give": 0.002475,
+        "identify": 0.012376,
+        "name": 0.041994,
+        "outline": 0.002475,
+        "prove": 0.003449,
+        "select": 0.042967,
+        "show": 0.084516,
+        "simplify": 0.007425,
+        "solve": 0.003449,
+        "state": 0.204761,
+        "suggest": 0.006896,
+        "trace": 0.005923,
+        "verify": 0.002475,
+        "write": 0.050392
       },
-      "comparison_basis": "Focused-practice target derived from aggregate mark tariffs and command-word frequencies across 8 official AQA A-level Computer Science papers; no source wording retained.",
+      "comparison_basis": "Pooled whole-paper proxy, not topic-specific difficulty evidence: aggregate mark tariffs and command-word frequencies across 8 official AQA A-level Computer Science papers. Topic-level evidence is insufficient for a validated topic-bank match; no source wording retained.",
       "demand_distribution": {
-        "high": 0.041032,
-        "low": 0.862797,
-        "standard": 0.096171
+        "high": 0.1353,
+        "low": 0.727348,
+        "standard": 0.137352
       },
-      "extraction_coverage": 0.8,
+      "extraction_coverage": 0.871166,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
         "extended": 0.049821,
@@ -585,9 +624,9 @@
         "short": 0.878125
       },
       "mark_weighted_demand_distribution": {
-        "high": 0.196173,
-        "low": 0.590384,
-        "standard": 0.213443
+        "high": 0.278454,
+        "low": 0.452935,
+        "standard": 0.268611
       },
       "metric_tolerances": {
         "cognitive_operation_distribution": 1.0,
@@ -598,17 +637,19 @@
       },
       "paper_id": "bank-4.2",
       "response_mode_distribution": {
-        "calculation": 0.095052,
-        "constructed-response": 0.210703,
-        "extended-evaluation": 0.012987,
-        "mathematical-argument": 0.102721,
-        "multi-stage-calculation": 0.047525,
-        "recall": 0.232143,
-        "selected-response": 0.034483,
-        "structured-reasoning": 0.264386
+        "algorithm-trace": 0.010563,
+        "calculation": 0.060275,
+        "computational-analysis": 0.248392,
+        "computational-design": 0.007043,
+        "constructed-response": 0.18892,
+        "extended-evaluation": 0.074387,
+        "multi-stage-calculation": 0.007043,
+        "programming": 0.107741,
+        "recall": 0.142121,
+        "structured-reasoning": 0.153515
       },
       "source_document_count": 8,
-      "source_fingerprint": "221e1369d67507e866a6930f24ac89f9bbe0c5a3fcf7a71b0d6cb1c4772ffd98"
+      "source_fingerprint": "6ea1408557966575f52e461e726ce714bf4b197b40f2501f1fc402e8bded6afa"
     },
     {
       "assessment_kind": "full-paper",
@@ -963,40 +1004,46 @@
     {
       "assessment_kind": "full-paper",
       "cognitive_operation_distribution": {
-        "analyse": 0.024691,
-        "describe": 0.17284,
-        "explain": 0.17284,
-        "judge": 0.04321,
-        "retrieve": 0.401234,
-        "transform": 0.185185
+        "analyse": 0.234285,
+        "describe": 0.131429,
+        "design": 0.011429,
+        "explain": 0.108571,
+        "judge": 0.051429,
+        "program": 0.12,
+        "retrieve": 0.182857,
+        "trace": 0.005714,
+        "transform": 0.154286
       },
       "command_word_distribution": {
-        "analyse": 0.005051,
-        "calculate": 0.015152,
-        "compare": 0.020202,
-        "complete": 0.111111,
-        "define": 0.005051,
-        "describe": 0.126263,
-        "determine": 0.005051,
-        "discuss": 0.045455,
-        "draw": 0.010101,
-        "evaluate": 0.005051,
-        "explain": 0.141408,
-        "find": 0.015152,
-        "give": 0.116162,
-        "identify": 0.035354,
-        "name": 0.085859,
-        "show": 0.055556,
-        "state": 0.136364,
-        "write": 0.065657
+        "analyse": 0.004587,
+        "calculate": 0.013761,
+        "compare": 0.018349,
+        "complete": 0.100917,
+        "convert": 0.06422,
+        "define": 0.004587,
+        "describe": 0.114679,
+        "determine": 0.004587,
+        "develop": 0.004587,
+        "discuss": 0.041284,
+        "draw": 0.009174,
+        "evaluate": 0.004587,
+        "explain": 0.128442,
+        "find": 0.013761,
+        "give": 0.105505,
+        "identify": 0.03211,
+        "name": 0.077982,
+        "show": 0.050459,
+        "simplify": 0.022936,
+        "state": 0.123853,
+        "write": 0.059633
       },
       "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official OCR A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.04321,
-        "low": 0.753086,
-        "standard": 0.203704
+        "high": 0.051429,
+        "low": 0.725714,
+        "standard": 0.222857
       },
-      "extraction_coverage": 0.920455,
+      "extraction_coverage": 0.994318,
       "family_id": "ocr/computer-science",
       "mark_band_distribution": {
         "extended": 0.022727,
@@ -1004,9 +1051,9 @@
         "short": 0.840909
       },
       "mark_weighted_demand_distribution": {
-        "high": 0.147059,
-        "low": 0.539216,
-        "standard": 0.313725
+        "high": 0.167568,
+        "low": 0.495495,
+        "standard": 0.336937
       },
       "metric_tolerances": {
         "cognitive_operation_distribution": 0.8,
@@ -1017,56 +1064,65 @@
       },
       "paper_id": "1",
       "response_mode_distribution": {
-        "calculation": 0.067901,
-        "constructed-response": 0.17284,
-        "extended-evaluation": 0.04321,
-        "mathematical-argument": 0.04321,
-        "multi-stage-calculation": 0.074074,
-        "recall": 0.401234,
-        "structured-reasoning": 0.197531
+        "algorithm-trace": 0.005714,
+        "calculation": 0.131429,
+        "computational-analysis": 0.234285,
+        "computational-design": 0.011429,
+        "constructed-response": 0.142857,
+        "extended-evaluation": 0.051429,
+        "multi-stage-calculation": 0.022857,
+        "programming": 0.12,
+        "recall": 0.182857,
+        "structured-reasoning": 0.097143
       },
       "source_document_count": 4,
-      "source_fingerprint": "c1d66bab8da22dc5ef45ce71d5439432cb22290a765db2b5a1495dde2b3cea9d"
+      "source_fingerprint": "e60d29dd52a7f5ddc3a62d9f14317ef89d536aa0eb5fab503f8f84802264697c"
     },
     {
       "assessment_kind": "full-paper",
       "cognitive_operation_distribution": {
-        "analyse": 0.020833,
-        "describe": 0.229167,
-        "explain": 0.076389,
-        "judge": 0.020833,
-        "retrieve": 0.375,
-        "transform": 0.277778
+        "analyse": 0.277419,
+        "describe": 0.174194,
+        "explain": 0.051613,
+        "judge": 0.03871,
+        "program": 0.180645,
+        "retrieve": 0.232258,
+        "trace": 0.032258,
+        "transform": 0.012903
       },
       "command_word_distribution": {
-        "analyse": 0.009756,
-        "calculate": 0.034146,
-        "compare": 0.034146,
-        "complete": 0.073171,
-        "construct": 0.004878,
-        "define": 0.014634,
-        "describe": 0.15122,
-        "determine": 0.009756,
-        "discuss": 0.02439,
-        "draw": 0.004878,
-        "evaluate": 0.004878,
-        "explain": 0.053659,
-        "find": 0.009756,
-        "give": 0.126829,
-        "identify": 0.082927,
-        "name": 0.102439,
-        "select": 0.004878,
-        "show": 0.058537,
-        "state": 0.107317,
-        "write": 0.087805
+        "analyse": 0.009174,
+        "calculate": 0.027523,
+        "compare": 0.03211,
+        "complete": 0.068807,
+        "construct": 0.004587,
+        "convert": 0.009174,
+        "define": 0.013761,
+        "describe": 0.142204,
+        "design": 0.045872,
+        "determine": 0.009174,
+        "develop": 0.004587,
+        "discuss": 0.022936,
+        "draw": 0.004587,
+        "evaluate": 0.004587,
+        "explain": 0.050459,
+        "find": 0.009174,
+        "give": 0.114679,
+        "identify": 0.077982,
+        "name": 0.09633,
+        "select": 0.004587,
+        "show": 0.055046,
+        "state": 0.100917,
+        "trace": 0.009174,
+        "write": 0.082569
       },
       "comparison_basis": "Aggregate paired tariffs, response modes and cognitive operations from 4 official OCR A-level question papers; no source wording retained.",
       "demand_distribution": {
-        "high": 0.020833,
-        "low": 0.680556,
-        "standard": 0.298611
+        "high": 0.045161,
+        "low": 0.632258,
+        "standard": 0.322581
       },
-      "extraction_coverage": 0.911392,
+      "extraction_coverage": 0.981013,
       "family_id": "ocr/computer-science",
       "mark_band_distribution": {
         "extended": 0.012658,
@@ -1074,9 +1130,9 @@
         "short": 0.727848
       },
       "mark_weighted_demand_distribution": {
-        "high": 0.064935,
-        "low": 0.458874,
-        "standard": 0.476191
+        "high": 0.124101,
+        "low": 0.392086,
+        "standard": 0.483813
       },
       "metric_tolerances": {
         "cognitive_operation_distribution": 0.8,
@@ -1087,16 +1143,18 @@
       },
       "paper_id": "2",
       "response_mode_distribution": {
-        "calculation": 0.055556,
-        "constructed-response": 0.229167,
-        "extended-evaluation": 0.020833,
-        "mathematical-argument": 0.041667,
-        "multi-stage-calculation": 0.180556,
-        "recall": 0.374999,
-        "structured-reasoning": 0.097222
+        "algorithm-trace": 0.032258,
+        "calculation": 0.006452,
+        "computational-analysis": 0.277418,
+        "constructed-response": 0.174194,
+        "extended-evaluation": 0.03871,
+        "multi-stage-calculation": 0.006452,
+        "programming": 0.180645,
+        "recall": 0.232258,
+        "structured-reasoning": 0.051613
       },
       "source_document_count": 4,
-      "source_fingerprint": "ae2f6a97ba71ca2ded2607df7283a064b1187706c34f22eb7c7d5d6bd3cf1be2"
+      "source_fingerprint": "0e7bfb09474b7c0093bac8146cd7fca6fcf417acc375d5c04c339a26900a8065"
     },
     {
       "assessment_kind": "full-paper",

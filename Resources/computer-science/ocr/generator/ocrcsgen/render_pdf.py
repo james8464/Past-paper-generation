@@ -43,6 +43,7 @@ from Backend.Core.exam_pages import ExamPage, ExamPageProfile
 from Backend.Core.fonts import register_fonts
 from Backend.Core.reportlab_theme import OCRComputerScienceAnswerLines as AnswerLines
 from Backend.Core.reportlab_theme import themed_table_class
+from Backend.Core.subjects.computer_science_contracts import SumTrace
 
 PAGE_WIDTH, PAGE_HEIGHT = A4
 OCR_MARK_SCHEME_FRONT_SIZE = (594.96, 842.04)
@@ -333,7 +334,11 @@ def _scheme_answer(
     item_count: int,
 ) -> Paragraph:
     points = question.mark_scheme
-    if segment_count > 1:
+    if question.authoring_context.get("cs_input_contract"):
+        # Closed outputs are exhaustive, not illustrative bullets: truncating a
+        # trace or conversion can remove the only published final answer.
+        selected = question.authoring_context.get("observable_mark_points") or points
+    elif segment_count > 1:
         chunk_size = max(1, math.ceil(len(points) / segment_count))
         start = (segment - 1) * chunk_size
         selected = points[start : start + chunk_size]
@@ -595,6 +600,8 @@ def _question_group_pages(
                     )
                 else:
                     result.extend([_trace_table(option), Spacer(1, 2 * mm)])
+                if any(q.kind == "trace" for q in option.questions):
+                    result.extend([_trace_table(option), Spacer(1, 2 * mm)])
         else:
             result.extend(
                 [
@@ -622,16 +629,17 @@ def _response_space(
     line_count: int,
 ) -> list[Flowable]:
     if question.kind == "trace":
-        iterations = 6 if "6 iterations" in question.prompt else 5
-        rows = [["Iteration", "Changed variables", "Output"]]
-        rows.extend([[str(index), "", ""] for index in range(1, iterations + 1)])
+        source = SumTrace.model_validate(question.authoring_context["cs_input_contract"])
+        iterations = len(source.values)
+        rows = [["Iteration", "total after iteration"]]
+        rows.extend([[str(index), ""] for index in range(1, iterations + 1)])
         table = Table(
             rows,
-            colWidths=[25 * mm, 90 * mm, 50 * mm],
+            colWidths=[35 * mm, 130 * mm],
             rowHeights=[8 * mm, *([7 * mm] * iterations)],
         )
         table.setStyle(_response_table_style())
-        return [table]
+        return [table, Spacer(1, 2 * mm), Paragraph("Final output: ................................", STYLES["body"])]
     if question.kind == "table":
         rows = [["Feature", "First technology", "Second technology"]]
         rows.extend([["", "", ""] for _ in range(4)])
@@ -697,7 +705,7 @@ def _trace_table(option: GeneratedOption) -> Table:
         [Paragraph(option.chart_title, STYLES["small_bold"]), *option.chart_labels],
         ["Value", *[f"{value:.0f}" for value in option.chart_values]],
     ]
-    table = Table(rows, colWidths=[40 * mm, *([21 * mm] * 6)])
+    table = Table(rows, colWidths=[40 * mm, *([125 * mm / len(option.chart_values)] * len(option.chart_values))])
     table.setStyle(
         TableStyle(
             [

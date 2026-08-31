@@ -6,6 +6,7 @@ from datetime import date
 from pathlib import Path
 
 from reportlab.lib import colors
+from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfgen import canvas
 
 from Backend.Core.document_dsl import (
@@ -1845,10 +1846,15 @@ def _draw_classification_diagram(
         start, end = link["parent"], link["child"]
         sx, sy, sw, sh = boxes[start]
         ex, ey, _ew, eh = boxes[end]
-        pdf.line(sx + sw, sy + sh / 2, ex, ey + eh / 2)
+        middle = (sx + sw + ex) / 2
+        pdf.line(sx + sw, sy + sh / 2, middle, sy + sh / 2)
+        pdf.line(middle, sy + sh / 2, middle, ey + eh / 2)
+        pdf.line(middle, ey + eh / 2, ex, ey + eh / 2)
+        pdf.line(ex - 4, ey + eh / 2 + 3, ex, ey + eh / 2)
+        pdf.line(ex - 4, ey + eh / 2 - 3, ex, ey + eh / 2)
     for label, (bx, by, width, height) in boxes.items():
         pdf.rect(bx, by, width, height, stroke=1, fill=0)
-        pdf.setFont(FONT_BOLD if label in {"Software", "1", "System software"} else FONT, 8)
+        pdf.setFont(FONT_BOLD if label in {"Software", "1", "System software"} else FONT, 9.5)
         for line_index, line in enumerate(_wrap(label, 19)):
             pdf.drawCentredString(
                 bx + width / 2,
@@ -1856,7 +1862,7 @@ def _draw_classification_diagram(
                 line,
             )
     note_y = y - 190
-    pdf.setFont(FONT, 8)
+    pdf.setFont(FONT, 9)
     for note in data["lines"]:
         for line in _wrap(note, 82):
             pdf.drawString(x, note_y, line)
@@ -2198,15 +2204,15 @@ def _render_mark_scheme_part(
     pdf.setFont(FONT, 11)
     for point in part.marking.points:
         for line in _wrap(point, 62):
-            pdf.drawString(125, y, line)
+            _draw_scheme_text(pdf, 125, y, line)
             y -= 15
     for item in part.marking.accept:
         for line in _wrap(f"A. {item}", 59):
-            pdf.drawString(125, y, line)
+            _draw_scheme_text(pdf, 125, y, line)
             y -= 15
     for item in part.marking.reject:
         for line in _wrap(f"R. {item}", 59):
-            pdf.drawString(125, y, line)
+            _draw_scheme_text(pdf, 125, y, line)
             y -= 15
     for item in part.marking.levels:
         for line in _wrap(item, 62):
@@ -2471,3 +2477,34 @@ def _wrap(text: str, width: int) -> list[str]:
     if current:
         lines.append(current)
     return lines or [""]
+
+
+def _draw_scheme_text(pdf: canvas.Canvas, x: float, y: float, text: str) -> None:
+    """Original vector Boolean glyphs, with accessible Unicode ActualText.
+
+    Bundled Arial-compatible fonts do not contain these three operators. Keep
+    the symbols and their meaning instead of silently painting .notdef blanks.
+    """
+    for chunk in re.split(r"([⊕⊼⊽])", text):
+        if chunk not in {"⊕", "⊼", "⊽"}:
+            pdf.drawString(x, y, chunk)
+            x += pdfmetrics.stringWidth(chunk, FONT, 11)
+            continue
+        width, size = 9.0, 7.0
+        pdf.saveState()
+        pdf.addLiteral(f"/Span << /ActualText <FEFF{ord(chunk):04X}> >> BDC")
+        # The space supplies a selectable text box; the vectors supply the ink.
+        pdf.drawString(x, y, "  ")
+        pdf.setLineWidth(.7)
+        if chunk == "⊕":
+            pdf.circle(x + width / 2, y + size / 2, size / 2, stroke=1, fill=0)
+            pdf.line(x + 2, y + size / 2, x + width - 2, y + size / 2)
+            pdf.line(x + width / 2, y + 1, x + width / 2, y + size - 1)
+        else:
+            low, high = (0, size - 1) if chunk == "⊼" else (size - 1, 0)
+            pdf.line(x + 1, y + low, x + width / 2, y + high)
+            pdf.line(x + width / 2, y + high, x + width - 1, y + low)
+            pdf.line(x + 1, y + size + 1, x + width - 1, y + size + 1)
+        pdf.addLiteral("EMC")
+        pdf.restoreState()
+        x += width

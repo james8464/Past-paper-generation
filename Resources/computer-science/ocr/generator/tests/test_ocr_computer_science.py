@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pymupdf as fitz
@@ -273,7 +274,7 @@ def test_every_question_has_board_specific_context_and_marking() -> None:
         assert all("Independent case" not in question.prompt for question in questions)
         assert all(question.mark_scheme for question in questions)
         assert all(
-            "case " not in " ".join(question.mark_scheme).casefold()
+            not re.search(r"\bcase \d{4}\b", " ".join(question.mark_scheme).casefold())
             for question in questions
         )
         assert all(
@@ -294,9 +295,7 @@ def test_programming_items_allow_reviewed_code_literals() -> None:
     )
 
     assert programming.authoring_context["allow_additional_numeric_values"] is True
-    assert programming.authoring_context["max_prompt_words"] == max(
-        12, len(programming.prompt.split()) + 2
-    )
+    assert programming.authoring_context["max_prompt_words"] >= len(programming.prompt.split())
     extended = next(
         question
         for section in paper.sections

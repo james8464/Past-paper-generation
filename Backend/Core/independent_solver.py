@@ -13,6 +13,7 @@ from typing import Any, Protocol
 from pydantic import BaseModel, ConfigDict, Field
 
 from Backend.Core.assessment_contracts import EvidenceRecord
+from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.assessment_quality import content_similarity
 from Backend.Core.numeric_integrity import (
     NUMERIC_INTEGRITY_VERSION,
@@ -25,6 +26,9 @@ from Backend.Core.numeric_integrity import (
     numeric_result,
 )
 from Backend.Core.subjects.accounting import solve_accounting_calculation
+from Backend.Core.subjects.computer_science_contracts import (
+    solve_computer_science_contract,
+)
 
 
 class SolverClient(Protocol):
@@ -91,6 +95,11 @@ class IndependentSolver:
             or "unknown"
         )
         context = dict(raw_item.get("authoring_context") or {})
+        policy = objective_policy_for(
+            str(raw_item.get("subject", "")), str(context.get("objective_subject", "")),
+            "computer science" if context.get("cs_input_contract") else "",
+        )
+        policy.validate(raw_item)
         allowed_source_ids = {source.id for source in sources}
         solver_item = _without_answer_key(raw_item)
         response_slots = raw_item.get("response_slots") or []
@@ -103,6 +112,8 @@ class IndependentSolver:
         ):
             raise ValueError(f"{item_id} invalid closed response slot contract")
         deterministic = solve_accounting_calculation(raw_item)
+        if deterministic is None:
+            deterministic = solve_computer_science_contract(raw_item)
         expression = context.get("calculation_expression")
         variables = context.get("calculation_variables")
         expressions = context.get("calculation_expressions")
@@ -159,6 +170,10 @@ class IndependentSolver:
             "slot ID to the same single final answer string, with no extra "
             "slots or commentary. Work out the solution in steps FIRST, then "
             "write answer, then copy those final values into mark_points. "
+            "In steps, solve each requested slot in turn using that slot's position and "
+            "all relevant source evidence. Check that every slot has been considered before "
+            "finalising either map; results may coincide only if separately justified by "
+            "the item. "
             'Format example only: "answer": {"slot-id": "final value"}, '
             '"mark_points": {"slot-id": "final value"}. Use the actual supplied '
             "slot IDs. Do not put grading prose or nested objects in either mapping."
@@ -430,7 +445,7 @@ def reconcile_solution(
             )
         )
 
-    if solution.numeric_checks:
+    if solution.numeric_checks or solution.text_checks:
         if raw.get("authoring_context"):
             try:
                 recomputed = IndependentSolver().solve(raw, [])
@@ -527,11 +542,14 @@ def reconcile_solution(
                 )
             )
             for check in solution.text_checks:
-                matches = re.findall(
-                    check.scheme_pattern, "\n".join(published), re.MULTILINE
+                selected = [statement for statement in published if re.search(check.scheme_pattern, statement, re.MULTILINE)]
+                matches = re.findall(check.scheme_pattern, "\n".join(published), re.MULTILINE)
+                complete = not check.whole_statement or all(
+                    re.fullmatch(check.scheme_pattern, statement.strip()) for statement in selected
                 )
                 if (
                     not matches
+                    or not complete
                     or any(value != check.value for value in matches)
                     or solution.answer_slots.get(check.role) != check.value
                 ):
@@ -580,7 +598,7 @@ def reconcile_solution(
                 },
                 **{check.role: [check.value] for check in solution.text_checks},
             }
-            if solution.numeric_checks
+            if solution.numeric_checks or solution.text_checks
             else raw.get("closed_answers")
         )
         if not isinstance(accepted, dict) or set(accepted) != set(
@@ -675,7 +693,7 @@ def reconcile_solution(
             allocation[str(objective)] += marks
     if (
         solution.assessment_objectives
-        and dict(allocation) != solution.assessment_objectives
+        and (dict(allocation) if total_marks else raw.get("assessment_objectives", {})) != solution.assessment_objectives
     ):
         issues.append(
             ReconciliationIssue(

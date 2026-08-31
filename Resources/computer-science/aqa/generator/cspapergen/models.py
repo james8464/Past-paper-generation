@@ -42,6 +42,7 @@ class Stimulus(BaseModel):
 
 class MarkingGuidance(BaseModel):
     ao: str
+    assessment_objectives: dict[str, int] = Field(default_factory=dict)
     points: list[str] = Field(default_factory=list)
     accept: list[str] = Field(default_factory=list)
     reject: list[str] = Field(default_factory=list)
@@ -60,6 +61,9 @@ class QuestionPart(BaseModel):
     marking: MarkingGuidance
     difficulty_evidence: dict[str, object] = Field(default_factory=dict)
     response_slots: list[str] = Field(default_factory=list)
+    assessment_objectives: dict[str, int] = Field(default_factory=dict)
+    expected_minutes: float | None = Field(default=None, gt=0)
+    task_operation: str = ""
 
     def set_closed_answers(self, answers: dict[str, list[str]]) -> None:
         """Attach the immutable marking key separately from candidate slot IDs."""

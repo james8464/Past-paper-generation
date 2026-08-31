@@ -26,6 +26,7 @@ class NumericOutput(BaseModel):
         "GBP/scarce hour",
         "%",
         "1",
+        "bytes",
     ]
     decimal_places: int = Field(ge=0, le=12)
     scheme_pattern: str = Field(min_length=1)
@@ -42,6 +43,7 @@ class CheckedTextOutput(BaseModel):
     role: str
     value: str
     scheme_pattern: str
+    whole_statement: bool = False
 
 
 def rounded(value: Decimal, places: int) -> Decimal:
@@ -98,6 +100,8 @@ def _published_unit_boundary(check: CheckedNumericOutput, suffix: str) -> bool:
         unit_pattern = r"m\b"
     elif check.unit == "%":
         unit_pattern = "%"
+    elif check.unit == "bytes":
+        unit_pattern = r"bytes\b"
     elif check.unit == "1":
         unit_pattern = r":1\b"
     elif check.unit.startswith("GBP/"):
@@ -108,7 +112,7 @@ def _published_unit_boundary(check: CheckedNumericOutput, suffix: str) -> bool:
         unit = re.match(unit_pattern, suffix, re.IGNORECASE)
         if unit:
             suffix = suffix[unit.end() :].lstrip(" \t")
-        elif check.unit in {"GBPm", "%"}:
+        elif check.unit in {"GBPm", "%", "bytes"}:
             return False
         # GBP rates can get their denominator from the explicitly selected
         # row heading. An explicit contradictory denominator is never ignored.
@@ -245,7 +249,7 @@ def _equivalent_quantity(check: CheckedNumericOutput, quantity: str) -> bool:
             if sign == "nil" and actual != 0:
                 return False
     else:
-        unit = r"(?:%|\s+percent)" if check.unit == "%" else r"(?::1)?"
+        unit = r"(?:%|\s+percent)" if check.unit == "%" else r"\s+bytes" if check.unit == "bytes" else r"(?::1)?"
         match = re.fullmatch(rf"(?P<value>{NUMBER}){unit}[.]?", quantity, re.IGNORECASE)
         if not match:
             return False

@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from Backend.Core.assessment_objectives import objective_policy_for  # noqa: E402
 from Backend.Core.paths import REPO_ROOT  # noqa: E402
 from Backend.Core.reference_demand import (  # noqa: E402
     PROFILES_PATH,
@@ -36,6 +37,8 @@ COMMAND_WORDS = (
     "construct",
     "define",
     "describe",
+    "design",
+    "develop",
     "discuss",
     "draw",
     "estimate",
@@ -57,14 +60,21 @@ COMMAND_WORDS = (
     "sketch",
     "solve",
     "state",
+    "trace",
     "suggest",
     "determine",
     "deduce",
     "verify",
     "write",
+    "convert",
+    "simplify",
 )
 COMMAND_PATTERN = re.compile(
     r"\b(" + "|".join(COMMAND_WORDS) + r")\b",
+    flags=re.IGNORECASE,
+)
+GENERAL_COMMAND_PATTERN = re.compile(
+    r"\b(" + "|".join(word for word in COMMAND_WORDS if word not in {"design", "develop", "trace", "convert", "simplify"}) + r")\b",
     flags=re.IGNORECASE,
 )
 IGNORED_LINES = (
@@ -223,7 +233,8 @@ def extract_reference_features(
         if "to what extent" in lowered:
             commands.append("evaluate")
             continue
-        match = COMMAND_PATTERN.search(line)
+        pattern = COMMAND_PATTERN if objective_policy_for(family_id or "").computational else GENERAL_COMMAND_PATTERN
+        match = pattern.search(line)
         if match is None:
             continue
         command = match.group(1).casefold()
@@ -245,28 +256,63 @@ def extract_reference_items(
     board: str,
     family_id: str | None = None,
     paper_id: str | None = None,
+    source_name: str | None = None,
 ) -> list[dict[str, Any]]:
     """Pair each tariff with its nearest local command, retaining no prose."""
 
+    policy = objective_policy_for(family_id or "")
+    if policy.computational:
+        # Layout extraction can put thousands of padding spaces between a task
+        # and its tariff. Count source content, not invisible page geometry.
+        text = "\n".join(" ".join(line.split()) for line in text.splitlines())
     matches = list(_mark_pattern(board).finditer(text))
     mcq_count = MCQ_BLOCKS.get((family_id or "", str(paper_id or "")), 0)
     items: list[dict[str, Any]] = []
     for index, match in enumerate(matches):
         marks = int(match.group(1))
+        window = text[max(matches[index - 1].end() if index and policy.computational else 0,
+                          match.start() - 12000 if policy.computational else match.start() - 3000):match.start()]
         command = (
             "select"
             if index < mcq_count
-            else _nearest_command(text[max(0, match.start() - 3000) : match.start()])
+            else _nearest_command(window, computational=policy.computational)
         )
+        operation = _reference_operation(command)
+        response_mode = _reference_response_mode(marks, command)
+        if policy.computational:
+            # Prefer the actual imperative at a part boundary, not incidental
+            # verbs in the scenario, table rows or 'show your working' reminders.
+            task_matches = list(re.finditer(
+                r"(?im)^(?:\([a-zivx]+\)[ \t]+){0,2}(?:\d(?:[ \t]+\d)?(?:[ \t]*\.[ \t]*\d+)?[ \t]+)?"
+                r"(" + "|".join(COMMAND_WORDS) + r")\b", window))
+            task_matches = [candidate for candidate in task_matches
+                            if not window[candidate.start():].lower().startswith("show your working")]
+            task_text = window
+            if task_matches:
+                first = task_matches[0]
+                command = first.group(1).lower()
+                task_text = window[first.start():]
+            operation = policy.task_operation({"prompt": task_text}, command, "")
+            if "program source code" in " ".join(window.lower().split()):
+                command = "write"
+            elif "screen capture" in window.lower() and "test" in window.lower():
+                command = "evaluate"
+            response_mode = policy.response_mode(operation, command, marks)
         items.append(
             {
                 "marks": marks,
                 "command_word": command,
                 "demand_band": _item_demand(marks, command),
-                "response_mode": _reference_response_mode(marks, command),
-                "cognitive_operation": _reference_operation(command),
+                "response_mode": response_mode,
+                "cognitive_operation": operation,
             }
         )
+    if source_name == "AQA-75171-QP-JUN25.PDF" and family_id == "aqa/computer-science":
+        # June 2025 MS PDF14 explicitly discounts Q06.4. Preserve its tariff in
+        # structural totals, but never use it as positive cognitive-demand evidence.
+        if len(items) != 39 or sum(item["marks"] for item in items) != 100 or items[22]["marks"] != 1:
+            raise ValueError("discounted AQA item inventory no longer aligns")
+        items[22]["demand_eligible"] = False
     return items
 
 
@@ -280,7 +326,7 @@ def _mark_pattern(board: str) -> re.Pattern[str]:
     raise ValueError(f"unsupported reference board: {board}")
 
 
-def _nearest_command(window: str) -> str:
+def _nearest_command(window: str, *, computational: bool = False) -> str:
     commands: list[tuple[int, str]] = []
     for raw_line in window.splitlines():
         line = " ".join(raw_line.split())
@@ -293,7 +339,7 @@ def _nearest_command(window: str) -> str:
         if "to what extent" in lowered:
             commands.append((window.rfind(raw_line), "evaluate"))
             continue
-        match = COMMAND_PATTERN.search(line)
+        match = (COMMAND_PATTERN if computational else GENERAL_COMMAND_PATTERN).search(line)
         if match is None:
             continue
         value = match.group(1).casefold()
@@ -409,6 +455,7 @@ def build_document() -> ReferenceDemandDocument:
                     board=family.board,
                     family_id=family.family_id,
                     paper_id=paper_id,
+                    source_name=path.name,
                 )
             ]
             if not marks or not commands:
@@ -420,6 +467,7 @@ def build_document() -> ReferenceDemandDocument:
                 item
                 for item in reference_items
                 if item["command_word"] != "unspecified"
+                and item.get("demand_eligible", True)
             ]
             coverage = len(paired) / len(reference_items) if reference_items else 0
             if coverage < 0.6:
@@ -435,9 +483,13 @@ def build_document() -> ReferenceDemandDocument:
                     "operations from "
                     f"{len(paths)} official {family.board.upper()} A-level question "
                     "papers; no source wording retained."
+                    + (" Discounted June 2025 Q06.4 excluded from cognitive-demand evidence."
+                       if family.family_id == "aqa/computer-science" and paper_id == "1" else "")
                 ),
                 source_document_count=len(paths),
-                source_fingerprint=_fingerprint(paths),
+                source_fingerprint=(hashlib.sha256(
+                    (_fingerprint(paths) + "|cs-task-operations-v1-discount-exclusion").encode()
+                ).hexdigest() if "computer-science" in family.family_id else _fingerprint(paths)),
                 mark_band_distribution=_distribution(
                     _mark_band(mark) for mark in marks
                 ),
@@ -528,9 +580,9 @@ def _question_bank_profiles(
             paper_id=paper_id,
             assessment_kind="question-bank",
             comparison_basis=(
-                "Focused-practice target derived from aggregate mark tariffs and "
+                "Pooled whole-paper proxy, not topic-specific difficulty evidence: aggregate mark tariffs and "
                 f"command-word frequencies across {documents} official AQA A-level "
-                "Computer Science papers; no source wording retained."
+                "Computer Science papers. Topic-level evidence is insufficient for a validated topic-bank match; no source wording retained."
             ),
             source_document_count=documents,
             source_fingerprint=digest,

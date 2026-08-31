@@ -14,7 +14,8 @@ def test_every_part_has_specific_marking_guidance():
         for part in question.parts:
             assert part.marking.points
             assert part.marking.ao
-            assert any(";" in point for point in part.marking.points)
+            assert all(point.strip() for point in part.marking.points)
+            assert sum(part.marking.assessment_objectives.values()) == part.marks
 
 
 def test_validation_rejects_missing_part_mark_scheme():

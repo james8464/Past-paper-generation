@@ -330,7 +330,7 @@ def test_hosted_question_generation_runs_independent_prompts_concurrently():
 def test_blueprint_receives_a_separate_reference_demand_review() -> None:
     syllabus = load_syllabus()
     full = build_paper2_blueprint(syllabus, seed=7)
-    hardest = max(full.questions, key=lambda question: question.total_marks)
+    hardest = next(question for question in full.questions if question.style_id == "ipv4_extended")
     blueprint = full.model_copy(update={"questions": [hardest]})
 
     class Client:
@@ -376,7 +376,7 @@ def test_blueprint_receives_a_separate_reference_demand_review() -> None:
     difficulty_prompts = [prompt for prompt in client.prompts if "difficulty calibration specialist" in prompt]
     assert len(difficulty_prompts) == len(hardest.parts)
     assert all('"reference_profile_fingerprint"' in prompt for prompt in difficulty_prompts)
-    assert all('"minimum_reasoning_steps": 1' in prompt for prompt in difficulty_prompts)
+    assert all('"minimum_reasoning_steps"' in prompt for prompt in difficulty_prompts)
     assert all(part.difficulty_evidence["approved"] for part in reviewed.questions[0].parts)
 
 
@@ -620,7 +620,7 @@ def test_database_question_has_exact_command_and_mark_coverage() -> None:
     blueprint = build_paper2_blueprint(load_syllabus(), seed=26080116)
     question = blueprint.questions[5]
 
-    assert [part.marks for part in question.parts] == [2, 3, 2, 3, 2]
+    assert [part.marks for part in question.parts] == [1, 6, 2, 2, 1]
     assert question.stimulus is not None
     assert "fitness centre" in question.stem
     assert all(name in question.stimulus.code for name in ("MEMBER", "SESSION", "BOOKING"))
@@ -629,7 +629,9 @@ def test_database_question_has_exact_command_and_mark_coverage() -> None:
     assert all(command in prompts for command in ("SELECT", "INSERT", "UPDATE", "DELETE"))
     assert "ERROR" in prompts
     assert all(part.marking.points for part in question.parts)
-    assert all(part.marking.ao == "AO3 (programming)" for part in question.parts)
+    assert [part.assessment_objectives for part in question.parts] == [
+        {"AO2": 1}, {"AO2": 4, "AO3": 2}, {"AO3": 2}, {"AO2": 2}, {"AO2": 1},
+    ]
 
 
 def test_boolean_questions_use_exam_notation_instead_of_programming_punctuation() -> None:

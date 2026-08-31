@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from typing import Protocol
 
 from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
+from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.assessment_quality import NUMBER_PATTERN, numeric_tokens
 from Backend.Core.independent_solver import (
     IndependentSolver,
@@ -265,6 +266,7 @@ def review_blueprint_difficulty(
             require_solution_matches_scheme(
                 solution,
                 {"marks": part.marks, "mark_scheme": [*part.marking.points, *part.marking.levels],
+                 "assessment_objectives": part.marking.assessment_objectives,
                  "alternatives": part.marking.accept,
                  "closed_answers": part.marking.closed_answers},
                 expected_choice=(next((o.text for o in part.options if o.label == part.correct_option), "")
@@ -316,6 +318,7 @@ def _prompt(
         ).model_dump(mode="json")
         for part in question.parts
     ]
+    objective_guidance = objective_policy_for("computer science").guidance() + " Computer Science has no AO4."
     if _uses_scenario_only_generation(question):
         stem_numbers = ", ".join(numeric_tokens(question.stem)) or "none"
         return f"""You are writing an unofficial A-level Computer Science {blueprint.paper_code} Paper {blueprint.paper_number}.
@@ -323,6 +326,7 @@ def _prompt(
 Use only this syllabus topic: {question.topic_id} {topic_title}
 Immutable assessment focus: {question.title} ({question.style_id}). Do not substitute another subtopic, process or technology.
 Immutable reference-demand targets: {json.dumps(demand_targets, ensure_ascii=False)}
+{objective_guidance}
 
 Create a concise, materially new fictional scenario stem for the immutable multipart task below. The stem must establish the same technical setting without copying a complete sentence from the draft. Preserve these numeric tokens from the draft stem exactly: {stem_numbers}. Introduce no other numeric values. Do not repeat, rewrite or answer the parts. Do not add exam-board branding.
 
@@ -341,6 +345,7 @@ Return JSON only:
 Use only this syllabus topic: {question.topic_id} {topic_title}
 Immutable assessment focus: {question.title} ({question.style_id}). Do not substitute another subtopic, process or technology.
 Immutable reference-demand targets: {json.dumps(demand_targets, ensure_ascii=False)}
+{objective_guidance}
 Revision-note context:
 {notes}
 
@@ -382,6 +387,8 @@ def _part_demand_item(
         "command_word": prompt.split(maxsplit=1)[0].strip(".,:;!?()[]{}"),
         "prompt": prompt,
         "assessment_objectives": objectives,
+        "expected_minutes": part.expected_minutes,
+        "task_operation": part.task_operation,
         "context": [question.stem, *stimulus],
     }
 
@@ -389,6 +396,7 @@ def _part_demand_item(
 def _part_solver_item(question: Question, part: QuestionPart) -> dict[str, object]:
     return {
         **part.model_dump(mode="json"),
+        "subject": "AQA Computer Science",
         "id": f"question-{question.number}-{part.label}",
         "context": question.stem,
         "stimulus": candidate_stimulus_data(question.stimulus),
@@ -502,6 +510,11 @@ def _validate_ai_question(original: Question, candidate: Question) -> None:
             original_part.options,
             original_part.correct_option,
             original_part.marking.ao,
+            original_part.assessment_objectives,
+            original_part.expected_minutes,
+            original_part.task_operation,
+            original_part.response_slots,
+            original_part.marking.closed_answers,
         )
         actual = (
             candidate_part.label,
@@ -511,6 +524,11 @@ def _validate_ai_question(original: Question, candidate: Question) -> None:
             candidate_part.options,
             candidate_part.correct_option,
             candidate_part.marking.ao,
+            candidate_part.assessment_objectives,
+            candidate_part.expected_minutes,
+            candidate_part.task_operation,
+            candidate_part.response_slots,
+            candidate_part.marking.closed_answers,
         )
         if actual != immutable:
             raise ValueError(

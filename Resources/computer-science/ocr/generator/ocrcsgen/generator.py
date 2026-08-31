@@ -13,8 +13,10 @@ from Backend.Core.exam_blueprints import (
     validate_generated_paper,
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
+from Backend.Core.subjects.computer_science_contracts import SumTrace
 from ocrcsgen.configs import SECTION_TOPICS
 from ocrcsgen.syllabus import Syllabus, Topic
+from ocrcsgen.task_calibration import calibrated_task
 
 CONTEXTS = [
     "a community transport service",
@@ -126,13 +128,18 @@ def build_paper(
         topic = topics[SECTION_TOPICS[rule.id][section_index]]
         context = rng.choice(CONTEXTS)
         case_id = rng.randint(1000, 9999)
-        values = [float(rng.randint(12, 48)) for _ in range(6)]
+        threshold = rng.randint(18, 40)
+        values = [threshold - rng.randint(1, 6), threshold, threshold + rng.randint(1, 8)]
+        values.extend(rng.randint(12, 48) for _ in range(rng.randint(0, 3)))
+        rng.shuffle(values)
+        trace = SumTrace(values=values, initial_total=rng.randint(2, 9), threshold=threshold)
+        values = [float(value) for value in trace.values]
         option = GeneratedOption(
             id=f"Q{section_rule.id}",
             title=f"Question {section_rule.id}",
-            stimulus=_stimulus(topic, context, case_id, rng),
-            chart_title="Trace data for the supplied scenario",
-            chart_labels=[f"N{index}" for index in range(1, 7)],
+            stimulus=_stimulus(topic, context, case_id, rng, trace),
+            chart_title="Array values (zero-based)",
+            chart_labels=[str(index) for index in range(len(values))],
             chart_values=values,
             questions=[
                 _question(
@@ -143,6 +150,7 @@ def build_paper(
                     context,
                     case_id,
                     rng,
+                    trace,
                 )
                 for question_index, question_rule in enumerate(
                     section_rule.questions, start=1
@@ -172,7 +180,7 @@ def build_paper(
 
 
 def _stimulus(
-    topic: Topic, context: str, case_id: int, rng: random.Random
+    topic: Topic, context: str, case_id: int, rng: random.Random, trace: SumTrace
 ) -> list[str]:
     first = rng.choice(topic.points)
     second = rng.choice([point for point in topic.points if point != first])
@@ -183,15 +191,7 @@ def _stimulus(
         f"{size} records. It must continue to behave predictably when data is missing, duplicated "
         f"or delayed. The design uses {first}. The team is also considering {second}."
     )
-    code = (
-        f"01 total = {rng.randint(2, 9)}\n"
-        f"02 for index = 0 to {rng.randint(4, 9)}\n"
-        f"03     if values[index] > {rng.randint(10, 40)} then\n"
-        "04         total = total + values[index]\n"
-        "05     endif\n"
-        "06 next index\n"
-        "07 print(total)"
-    )
+    code = trace.code()
     return [paragraph, code]
 
 
@@ -203,6 +203,7 @@ def _question(
     context: str,
     case_id: int,
     rng: random.Random,
+    trace: SumTrace,
 ) -> GeneratedQuestion:
     letter = chr(96 + index)
     number = f"{group}({letter})"
@@ -214,6 +215,7 @@ def _question(
         if rule.kind in {"analysis", "extended_response", "programming"}
         else {}
     )
+    authoring_context["objective_subject"] = "computer science"
     authoring_context["max_prompt_words"] = (
         45
         if rule.kind == "programming"
@@ -280,36 +282,51 @@ def _question(
             boolean_tasks = {
                 2: (
                     "Calculate the output Q when A = 0 and B = 1 for Q = A OR B.",
-                    ["Q = 1."],
+                    ["Case 1 output: 1."],
                 ),
                 3: (
                     "Calculate the output R when A = 1 and B = 0 for R = (NOT A) AND B.",
-                    ["NOT A = 0, therefore R = 0."],
+                    ["NOT A = 0.", "Case 1 output: 0."],
                 ),
                 4: (
                     "Calculate the output of Q = A XOR B for A = 0, B = 0 and for A = 1, B = 1.",
                     [
-                        "For A = 0 and B = 0, Q = 0.",
-                        "For A = 1 and B = 1, Q = 0.",
+                        "Case 1 output: 0.",
+                        "Case 2 output: 0.",
                     ],
                 ),
             }
             prompt, scheme = boolean_tasks[index]
+            expression, inputs = {
+                2: ("A OR B", [{"A": 0, "B": 1}]),
+                3: ("(NOT A) AND B", [{"A": 1, "B": 0}]),
+                4: ("A XOR B", [{"A": 0, "B": 0}, {"A": 1, "B": 1}]),
+            }[index]
+            authoring_context["cs_input_contract"] = {"kind": "boolean-evaluation", "expression": expression, "inputs": inputs}
         else:
-            prompt, scheme = _representation_calculation(index, marks=rule.marks, rng=rng)
+            prompt, scheme, source = _representation_calculation(index, marks=rule.marks, rng=rng)
+            authoring_context["cs_input_contract"] = source
     elif rule.kind == "trace":
-        iterations = rng.randint(3, 7)
+        iterations = len(trace.values)
         prompt = (
-            f"Trace the supplied pseudocode for the first {iterations} iterations. "
-            "Record each changed variable and "
-            "the resulting output in order."
+            f"Trace all {iterations} iterations of the supplied pseudocode. "
+            "Record total after each iteration, then give the single final output. "
+            "Array indices start at zero and the loop's upper bound is inclusive."
         )
-        scheme = [
-            "Each iteration uses the correct array index and condition.",
-            "Changed values are recorded in execution order.",
-            "The final output follows from the completed trace.",
-            "Award follow-through for one earlier arithmetic error.",
-        ]
+        total = trace.initial_total
+        scheme = []
+        for position, value in enumerate(trace.values, 1):
+            total += value if value > trace.threshold else 0
+            scheme.append(f"After iteration {position}, total: {total:,}.")
+        sequence_groups = rule.marks - 1
+        groups = [list(range(1, iterations + 1))[i * iterations // sequence_groups:(i + 1) * iterations // sequence_groups]
+                  for i in range(sequence_groups)]
+        credit = "; ".join(f"1 mark for correct totals in iterations {','.join(map(str, group))}" for group in groups)
+        scheme.extend([f"Final output: {total:,}.",
+            f"Credit: {credit}; 1 mark for the single final output. Total {rule.marks} marks.",
+            "Allow follow-through from one arithmetic error when subsequent control flow is correct."])
+        authoring_context.update({"preserve_prompt": True, "preserve_mark_scheme": True,
+                                  "cs_input_contract": trace.model_dump(mode="json")})
     elif rule.kind == "diagram":
         prompt = (
             f"Draw a clearly labelled logic or data-structure diagram that applies {point} "
@@ -327,14 +344,13 @@ def _question(
         prompt = (
             f"Complete a comparison table for {point} and {comparison} in the context of "
             f"{evidence}. Include operation, one benefit, one limitation concerning {focus} "
-            "and a justified "
-            "choice."
+            "and a scenario-specific use."
         )
         scheme = [
             f"Accurate operation of {point}.",
             f"Accurate operation of {comparison}.",
             "A technically valid benefit and limitation.",
-            f"A justified choice linked to {evidence}.",
+            f"A valid use linked to the constraints of {evidence}.",
             "Award one mark per distinct correct table entry up to the maximum.",
         ]
     elif rule.kind == "programming":
@@ -349,12 +365,20 @@ def _question(
         scheme = _levels(rule.marks, topic, point, evidence)
     else:
         raise ValueError(f"unsupported OCR H446 question kind: {rule.kind}")
+    calibrated = calibrated_task(topic.id, group, index)
+    if calibrated:
+        prompt, scheme = calibrated
+        authoring_context.update({"preserve_prompt": True, "preserve_mark_scheme": True})
+    if rule.kind == "analysis" and rule.assessment_objectives.get("AO2"):
+        authoring_context["task_operation"] = "analyse"
     return GeneratedQuestion(
         rule_id=rule.id,
         number=number,
         marks=rule.marks,
         kind=rule.kind,
         command_word=rule.command_word,
+        assessment_objectives=dict(rule.assessment_objectives),
+        expected_minutes=rule.expected_minutes,
         topic_id=topic.id,
         prompt=prompt,
         mark_scheme=scheme,
@@ -367,12 +391,13 @@ def _representation_calculation(
     *,
     marks: int,
     rng: random.Random,
-) -> tuple[str, list[str]]:
+) -> tuple[str, list[str], dict]:
     if index == 1:
         value = rng.randint(18, 238)
         return (
             f"Calculate the hexadecimal representation of the denary value {value}.",
             [f"Hexadecimal: {value:02X}."],
+            {"kind": "denary-hex", "value": value},
         )
     if index == 3:
         width = rng.choice([64, 128, 256])
@@ -383,8 +408,9 @@ def _representation_calculation(
             f"Calculate the uncompressed size in bytes of a {width} by {height} pixel bitmap with a colour depth of {depth} bits. Show your working.",
             [
                 f"Method: {width} × {height} × {depth} = {bits} bits.",
-                f"{bits} ÷ 8 = {bits // 8} bytes.",
+                f"File size: {bits // 8:,} bytes.",
             ],
+            {"kind": "bitmap-bytes", "width": width, "height": height, "depth": depth},
         )
     if index == 4:
         sample_rate = rng.choice([8_000, 12_000])
@@ -396,8 +422,9 @@ def _representation_calculation(
             [
                 f"Method: {sample_rate} × {sample_depth} × {duration} bits.",
                 "Divide the result by 8 to convert bits to bytes.",
-                f"File size = {size} bytes.",
+                f"File size: {size:,} bytes.",
             ],
+            {"kind": "sound-bytes", "sample_rate": sample_rate, "sample_depth": sample_depth, "duration": duration, "channels": 1},
         )
     if index == 5:
         left = rng.randint(40, 90)
@@ -409,16 +436,20 @@ def _representation_calculation(
                 f"Method: align {left:08b} and {right:08b} by place value.",
                 "Add corresponding bits from right to left, carrying where required.",
                 f"8-bit result: {total:08b}.",
-                "No overflow occurs because the result is no greater than 255.",
+                "Overflow: no.",
+                "The unsigned result is no greater than 255.",
             ],
+            {"kind": "unsigned-sum", "left": left, "right": right},
         )
     if index == 6:
         return (
             "Calculate the representation of denary 6.5 in an 8-bit normalised floating-point format using a 5-bit two's complement mantissa followed by a 3-bit two's complement exponent. The binary point is after the mantissa sign bit.",
             [
                 "6.5 is 110.1 in binary, which normalises to 0.1101 × 2³.",
-                "Mantissa 01101 and exponent 011, giving 01101011.",
+                "Mantissa 01101 and exponent 011.",
+                "Floating representation: 01101011.",
             ],
+            {"kind": "floating-encode", "value": "6.5", "mantissa_bits": 5, "exponent_bits": 3},
         )
     raise ValueError(f"unsupported representation calculation {index} ({marks} marks)")
 
@@ -426,10 +457,9 @@ def _representation_calculation(
 def _levels(marks: int, topic: Topic, point: str, evidence: str) -> list[str]:
     if marks == 12:
         bands = [
-            "Level 4 (10–12): thorough technical knowledge, sustained contextual reasoning, balanced discussion and a supported conclusion.",
-            "Level 3 (7–9): good technical knowledge and developed reasoning with relevant discussion, though balance or context may be uneven.",
-            "Level 2 (4–6): some correct knowledge and short reasoning chains; discussion is limited or generic.",
-            "Level 1 (1–3): isolated relevant facts or assertions with little development.",
+            "Level 3 (9–12): thorough technical knowledge, sustained contextual reasoning, balanced discussion and a supported conclusion.",
+            "Level 2 (5–8): relevant technical knowledge and developed reasoning, though balance or context may be uneven.",
+            "Level 1 (1–4): isolated relevant facts or assertions with limited development or application.",
         ]
     else:
         bands = [

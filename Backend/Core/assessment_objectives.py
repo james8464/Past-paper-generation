@@ -16,6 +16,7 @@ class ObjectivePolicy:
     analysis_objectives: tuple[str, ...] = ("AO3",)
     judgement_objectives: tuple[str, ...] = ("AO4",)
     explicit_allocations: bool = False
+    computational: bool = False
 
     def operations(self, objectives: dict[str, int], command: str) -> tuple[bool, bool]:
         judgement_commands = {
@@ -56,7 +57,7 @@ class ObjectivePolicy:
         )
 
     def validate(self, value: Any) -> None:
-        """Reject unsupported labels in new or persisted Accounting contracts."""
+        """Reject unsupported labels in new or persisted qualified contracts."""
         if not self.explicit_allocations:
             return
         if hasattr(value, "model_dump"):
@@ -85,6 +86,61 @@ class ObjectivePolicy:
         payload = [self.version, self.meanings, objectives, command, kind]
         return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
+    def task_operation(self, raw: dict[str, Any], command: str, kind: str) -> str:
+        """CS tasks are not classified from their tariff or AO3 label alone."""
+        explicit = raw.get("task_operation") or (raw.get("authoring_context") or {}).get("task_operation")
+        if explicit:
+            return str(explicit)
+        prompt = " ".join(str(raw.get("prompt", "")).casefold().split())
+        objectives = raw.get("assessment_objectives") or {}
+        # Reference tasks may request artefacts without an imperative verb.
+        if "program source code" in prompt:
+            return "program"
+        if "screen capture" in prompt and "test" in prompt:
+            return "judge"
+        if command == "trace" or kind == "trace" or "trace table" in prompt or (
+            command in {"show", "give", "state", "complete"}
+            and re.search(r"\b(contents|output|values|pointers?)\b.*\b(after|execut|following)", prompt)
+        ):
+            return "trace"
+        if command in {"design", "develop"}:
+            return "design" if command == "design" else "program"
+        if command == "draw" and re.search(r"\b(circuit|logic|algorithm)\b", prompt):
+            return "design" if not objectives or objectives.get("AO3") else "analyse"
+        if kind == "table" or (command == "complete" and "table" in prompt
+                                and not re.search(r"\b(truth|binary|denary|hexadecimal)\b", prompt)):
+            return "analyse"
+        if kind == "programming" or (
+            command in {"write", "complete"} and re.search(
+                r"\b(program|code|function|subroutine|algorithm|pseudocode|query|statement|add_record|adjusted_value|print_report)\b", prompt
+            )
+        ):
+            return "program"
+        contextual = bool(objectives.get("AO2")) or (not objectives and bool(re.search(
+            r"\b(this|these|shown|given|supplied|following|above|below|figure|fig|table|line)\b", prompt)))
+        if command in {"calculate", "convert", "simplify", "complete", "determine"}:
+            if command == "complete" and re.search(r"\b(fsm|transition|classification|hierarchy)\b", prompt):
+                return "analyse"
+            return "transform"
+        if command in {"discuss", "evaluate", "assess", "justify", "recommend"}:
+            return "judge"
+        if command in {"state", "identify", "select", "name", "give", "define"}:
+            return "analyse" if contextual else "retrieve"
+        if command in {"describe", "outline"}:
+            return "analyse" if contextual else "describe"
+        return "analyse" if contextual else "explain"
+
+    def response_mode(self, operation: str, command: str, marks: int) -> str:
+        return {
+            "design": "computational-design", "program": "programming",
+            "trace": "algorithm-trace", "analyse": "computational-analysis",
+            "transform": "multi-stage-calculation" if marks >= 4 else "calculation",
+            "retrieve": "selected-response" if command == "select" else "recall",
+            "judge": "extended-evaluation",
+            "describe": "constructed-response",
+            "explain": "structured-reasoning" if command == "explain" else "constructed-response",
+        }.get(operation, "constructed-response")
+
 
 GENERAL_OBJECTIVES = ObjectivePolicy(
     version="general-objectives-v1",
@@ -105,11 +161,30 @@ ACCOUNTING_OBJECTIVES = ObjectivePolicy(
     judgement_objectives=(),
     explicit_allocations=True,
 )
+COMPUTER_SCIENCE_OBJECTIVES = ObjectivePolicy(
+    version="computer-science-aqa7517-ocrh446-objectives-v1",
+    meanings={
+        "AO1": "knowledge and understanding of computing principles, concepts, algorithms and representation",
+        "AO2": "application of computing principles to supplied data and analysis of problems in computational terms",
+        "AO3": "design, programming and evaluation of systems that solve problems; reasoned judgements only where the task asks for evaluation",
+    },
+    analysis_objectives=(),
+    judgement_objectives=(),
+    explicit_allocations=True,
+    computational=True,
+)
 
 
 def objective_policy_for(*identifiers: str) -> ObjectivePolicy:
-    """Resolve family IDs, subject names or qualification codes; CS follows separately."""
+    """Resolve family IDs, subject names or qualification codes."""
     identity = " ".join(identifiers).casefold()
+    # Explicit board identities precede subject aliases. Cambridge 9618 is an
+    # unqualified configured preview; its placeholder policy is Task 9 debt,
+    # not evidence that the AQA/OCR policy or its old AO4 allocation is valid.
+    if "cambridge" in identity or "9618" in identity:
+        return GENERAL_OBJECTIVES
     if "accounting" in identity or "7127" in identity:
         return ACCOUNTING_OBJECTIVES
+    if any(token in identity for token in ("computer science", "computer-science", "computer_science", "7517", "h446")):
+        return COMPUTER_SCIENCE_OBJECTIVES
     return GENERAL_OBJECTIVES

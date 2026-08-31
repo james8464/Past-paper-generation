@@ -12,6 +12,7 @@ from cspapergen.models import (
     Stimulus,
     Syllabus,
 )
+from cspapergen.objective_calibration import calibrate_blueprint
 from cspapergen.question_bank import (
     QUESTION_STYLES,
     ao_for_marks,
@@ -25,7 +26,7 @@ PAPER2_QUESTION_PLAN = [
     ("bitmap_storage", (6, 2)),
     ("legal_issues_short", (3,)),
     ("client_server_short", (3,)),
-    ("sql_normalisation", (2, 3, 2, 3, 2)),
+    ("sql_normalisation", (1, 6, 2, 2, 1)),
     ("stored_program", (2, 6, 1, 1)),
     ("ipv4_extended", (12,)),
     ("truth_table_completion", (4, 2, 1)),
@@ -424,7 +425,7 @@ def build_paper2_blueprint(syllabus: Syllabus, seed: int | None = None) -> Paper
         )
     ]
 
-    return PaperBlueprint(seed=run_seed, questions=questions)
+    return calibrate_blueprint(PaperBlueprint(seed=run_seed, questions=questions))
 
 
 TOPIC_QUESTION_BANK_PLANS: dict[str, tuple[tuple[str, int], ...]] = {
@@ -467,7 +468,7 @@ def build_topic_question_bank(
         build_question(styles[style_id], number, marks, rng)
         for number, (style_id, marks) in enumerate(plan, start=1)
     ]
-    return PaperBlueprint(
+    return calibrate_blueprint(PaperBlueprint(
         assessment_kind="question-bank",
         focus_topic_id=topic_id,
         paper_code="7517/QB",
@@ -479,13 +480,15 @@ def build_topic_question_bank(
         total_marks=sum(question.total_marks for question in questions),
         seed=run_seed,
         questions=questions,
-    )
+    ))
 
 
 def _repartition_paper2_question(
     question: Question,
     target_marks: tuple[int, ...],
 ) -> Question:
+    if question.style_id == "sql_normalisation":
+        return _paper2_sql_task(question)
     source = question.parts
     desired_count = len(target_marks)
     try:
@@ -556,7 +559,83 @@ def _repartition_paper2_question(
                 }
             )
         )
+    if question.style_id == "ipv4_extended":
+        rebuilt[0].prompt = (
+            "Explain how private addressing, NAT, DHCP, IPv6, subnetting and "
+            "firewalls operate. For each, identify its purpose and explain one "
+            "mechanism relevant to connecting or protecting networked devices."
+        )
+        rebuilt[0].marking.points = [
+            "Private addresses identify devices inside a private network.",
+            "They are not globally routed, so separate networks may reuse them.",
+            "NAT permits private hosts to communicate using a public address.",
+            "It maintains translation mappings to route returning traffic.",
+            "DHCP automatically supplies host configuration.",
+            "Leases allocate addresses for a controlled period and permit reuse.",
+            "IPv6 provides a much larger address space.",
+            "Its 128-bit addresses reduce reliance on sharing scarce IPv4 addresses.",
+            "Subnetting divides an address space into smaller networks.",
+            "A prefix distinguishes network and host portions for routing.",
+            "A firewall enforces a network traffic policy.",
+            "Rules accept or reject traffic using fields such as address, port or connection state.",
+        ]
+        rebuilt[0].marking.levels = []
+        rebuilt[0].marking.accept = ["Credit each distinct correct purpose and mechanism, up to two marks per named approach."]
+        rebuilt[0].marking.reject = ["Do not credit a bare product name or an unsupported claim of security."]
+    if question.style_id == "fibonacci_recursion":
+        rebuilt[2].prompt = "Explain how pattern matching can control recursion in functional programming."
+        rebuilt[2].marking.points = [
+            "Separate patterns distinguish a base case from a recursive case;",
+            "The matching pattern selects the corresponding result or recursive expression;",
+        ]
     return question.model_copy(update={"parts": rebuilt})
+
+
+def _paper2_sql_task(question: Question) -> Question:
+    """Six marks for the compound query; finite row analysis replaces two writes."""
+    assert question.stimulus is not None
+    stimulus = question.stimulus.model_copy(deep=True)
+    stimulus.code += (
+        "\nBOOKING rows: MemberID, SessionID, Attended"
+        "\n1842, 27, FALSE\n1842, 28, FALSE"
+        "\n1843, 27, FALSE\n1844, 27, TRUE"
+    )
+    prompts = [
+        "Identify the error in this SQL condition: Email = NULL.",
+        question.parts[1].prompt,
+        question.parts[2].prompt.replace("1842", "1900"),
+        "Identify both bookings affected by UPDATE BOOKING SET Attended = TRUE WHERE MemberID = 1842. Give each (MemberID, SessionID) pair in ascending SessionID order.",
+        "Identify the booking removed by DELETE FROM BOOKING WHERE SessionID = 27 AND Attended = TRUE. Give its (MemberID, SessionID) pair.",
+    ]
+    points = [
+        ["NULL is incorrectly compared using equality; a null test requires IS NULL."],
+        ["AO2: select Activity and count bookings rather than members.",
+         "AO2: join SESSION and BOOKING on their matching SessionID.",
+         "AO2: group on Activity to combine sessions for the same activity.",
+         "AO2: select groups with at least five bookings and sort by count descending.",
+         "AO3: express the projection, FROM/JOIN and GROUP BY as a coherent SELECT statement.",
+         "AO3: implement the aggregate condition using HAVING COUNT(*) >= 5 and ordering using ORDER BY COUNT(*) DESC."],
+        [point.replace("1842", "1900") for point in question.parts[2].marking.points],
+        ["First affected booking: (1842, 27).", "Second affected booking: (1842, 28)."],
+        ["Removed booking: (1844, 27)."],
+    ]
+    parts = [
+        QuestionPart(label=str(i + 1), prompt=prompt, marks=marks,
+                     answer_lines=8 if i == 1 else 4,
+                     marking=MarkingGuidance(ao="pending", points=points[i]))
+        for i, (prompt, marks) in enumerate(zip(prompts, (1, 6, 2, 2, 1), strict=True))
+    ]
+    parts[1].marking.accept = [
+        "Accept an equivalent equi-join, valid aliases and COUNT of a non-null booking field.",
+        "Each of the four analysis requirements and two programming requirements is worth one mark.",
+        "Worked exemplar (non-additive): SELECT S.Activity, COUNT(*) FROM SESSION AS S JOIN BOOKING AS B ON S.SessionID = B.SessionID GROUP BY S.Activity HAVING COUNT(*) >= 5 ORDER BY COUNT(*) DESC;",
+    ]
+    parts[3].set_closed_answers({"first-booking": ["(1842,27)", "1842,27"], "second-booking": ["(1842,28)", "1842,28"]})
+    parts[4].set_closed_answers({"removed-booking": ["(1844,27)", "1844,27"]})
+    return question.model_copy(update={
+        "stimulus": stimulus, "parts": parts,
+        "stem": question.stem + " Members 1842, 1843 and 1844 and sessions 27 and 28 already exist; MemberID 1900 is not yet used. Each SQL statement runs independently on the original supplied rows.",
+    })
 
 def build_paper1_blueprint(
     syllabus: Syllabus,
@@ -581,7 +660,7 @@ def build_paper1_blueprint(
         seed=run_seed,
         questions=questions,
     )
-    return blueprint, context
+    return calibrate_blueprint(blueprint), context
 
 
 def _build_paper1_context(rng: random.Random) -> Paper1Context:
@@ -936,7 +1015,7 @@ def _align_paper1_structure(
         ],
         3: [
             _paper1_part("1", 1, "State the purpose of a depth-first traversal of a graph.", ["To visit or search all reachable vertices by following a path as far as possible before backtracking;"], 2, "AO1"),
-            _paper1_part("2", 2, "State two properties that would show that the represented graph is not a tree.", ["It contains a cycle;", "It is disconnected or has more than one path between a pair of vertices;"], 4, "AO2"),
+            _paper1_part("2", 2, "Using AL, identify one cycle and explain why it proves that this graph is not a tree.", ["A valid cycle is 1–2–5–4–1;", "A tree is acyclic, whereas that route returns to its start using distinct edges;"], 4, "AO2"),
             _paper1_part("3", 2, "Complete an adjacency matrix for the graph represented by AL. Record only the entries that contain 1.", ["Entries are symmetric for the undirected graph;", "All and only the listed edges are represented;"], 5, "AO2"),
             _paper1_part("4", 1, "Describe the base case in reachable that returns True.", ["The current vertex is the target vertex;"], 2, "AO2"),
             _paper1_part("5", 6, "Trace the call reachable(3, 6). Record, in order, every recursive call and every change made to visited.", [
@@ -949,21 +1028,21 @@ def _align_paper1_structure(
             ], 10, "AO2"),
         ],
         4: [
-            _paper1_part("1", 12, "Design an algorithm that selects the more suitable implementation for a supplied input size, executes it and records comparable timing evidence. Give the algorithm in structured English or code.", [
+            _paper1_part("1", 12, "Write a program that compares two implementations for a supplied input size n. The functions run_X(data), run_Y(data), make_data(n) and timer() are available; timer() returns a monotonic time in seconds. Execute five comparable trials of each implementation, using fresh copies of the same data. Calculate each mean elapsed time and output the faster implementation and both means. Use a programming language or unambiguous executable pseudocode.", [
                 "Accept or receive the input size;",
                 "Generate equivalent input data for both algorithms;",
                 "Use a monotonic high-resolution timer;",
                 "Record the start time immediately before execution;",
                 "Record the end time immediately after execution;",
                 "Calculate elapsed time;",
-                "Repeat trials;",
+                "Repeat exactly five trials for each implementation;",
                 "Use the same data or equivalent copies;",
-                "Calculate a representative average or median;",
+                "Calculate each arithmetic mean as its sum of elapsed times divided by five;",
                 "Select the algorithm with the lower measured time;",
                 "Return or display the selection and evidence;",
                 "Algorithm is complete, unambiguous and terminates;",
             ], 18, "AO3"),
-            _paper1_part("2", 1, "State one reason why a single timing trial may be unreliable.", ["Other processes, caching or timer variation can affect one measurement;"], 3, "AO3"),
+            _paper1_part("2", 1, "Evaluate this timing claim: one trial found X faster, so X will always be faster on this input size. State one limitation of the evidence.", ["One trial does not distinguish an algorithm effect from caching, background processes or timer variation; repeated comparable trials are needed;"], 3, "AO3"),
         ],
         5: [
             _paper1_part("1", 2, f"State the first two recursive calls made when evaluating the supplied function for n = {recursive_n}.", [
@@ -982,12 +1061,12 @@ def _align_paper1_structure(
             _paper1_part("3", 2, "State two test strings: one accepted and one rejected by the finite-state machine.", ["Valid accepted string;", "Valid rejected string;"], 4, "AO2"),
             _paper1_part("4", 1, "State the meaning of a double circle on a state-transition diagram.", ["An accepting/final state;"], 2, "AO1"),
             _paper1_part("5", 1, "State whether a deterministic finite-state machine may have two transitions with the same input from one state.", ["No;"], 2, "AO1"),
-            _paper1_part("6", 2, "Explain how the machine processes an input string.", ["Start in the initial state and consume one symbol at a time;", "Follow the matching transition and accept only if the final state is accepting;"], 4, "AO2"),
+            _paper1_part("6", 2, "Explain why an input beginning with 0 is rejected, but a 0 after the initial 1 can be processed by this machine.", ["S0 has no transition on 0, so a leading 0 cannot be consumed;", "After the initial 1, S1 has a transition on 0 to S2;"], 4, "AO2"),
             _paper1_part("7", 1, "State one reason for representing validation rules as a finite-state machine.", ["It provides an unambiguous, implementable model of every valid transition;"], 3, "AO2"),
-            _paper1_part("8", 3, "Explain how an implementation should respond when no transition exists for the next input symbol.", [
-                "Reject the input;",
-                "Do not consume further symbols or enter an undefined state;",
-                "Return a clear invalid result without terminating the whole program;",
+            _paper1_part("8", 3, "Explain why the validator must reject the complete input 102 even though its prefix 1 reaches an accepting state.", [
+                "Acceptance applies to the complete input, not just a prefix;",
+                "The symbol 2 has no defined transition in this binary machine;",
+                "An earlier accepting state cannot validate the unconsumed invalid suffix;",
             ], 6, "AO2"),
         ],
         7: [

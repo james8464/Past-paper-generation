@@ -73,9 +73,46 @@ COMMANDS = {
 }
 
 
-def _question(index: int, marks: int, kind: str) -> QuestionRule:
+# Task-based inferred allocations, NOT published per-item OCR data. The rounded
+# H446 specification component shares imply about 52.5/22.5/25% and 37.5/45/17.5%.
+# These integer budgets (74/31/35 and 53/63/24) are original-task design choices.
+OBJECTIVES = {
+    "paper_1": [
+        [(4,0,0),(1,0,0),(3,0,0),(0,3,0),(0,0,4),(3,0,0),(2,0,0),(3,0,0)],
+        [(2,0,0),(4,0,0),(3,0,0),(2,0,0),(4,0,0),(4,1,0),(3,2,4)],
+        [(4,1,0),(1,0,0),(3,0,0),(2,0,0),(2,0,0)],
+        [(0,1,0),(1,0,0),(0,2,0),(0,3,0),(0,4,0),(0,2,0)],
+        [(0,0,4),(0,1,0),(0,1,0),(0,2,0)],
+        [(4,2,6),(4,0,0),(2,0,0),(0,0,6)],
+        [(3,2,4)],
+        [(2,0,0),(0,4,0),(2,0,2)],
+        [(0,0,5)],
+        [(3,0,0),(3,0,0)],
+    ],
+    "paper_2": [
+        [(2,0,0),(1,0,0),(0,2,0),(0,0,4)],
+        [(4,4,4)],
+        [(0,0,7),(0,4,0),(4,3,2)],
+        [(2,0,0),(2,0,0),(2,0,0)],
+        [(0,4,0),(4,0,0),(0,4,0)],
+        [(0,3,0),(1,0,0),(5,0,0),(2,0,0),(2,0,0),(1,0,0),(1,0,0)],
+        [(2,0,0),(2,0,0),(1,0,0),(0,5,0),(3,0,0)],
+        [(0,4,0),(0,3,0),(3,0,0),(1,0,0),(2,0,0)],
+        [(0,3,0),(2,0,0),(0,3,0),(0,3,0),(0,0,5),(0,5,0),(0,6,0),(0,4,0),(4,3,2)],
+    ],
+}
+
+
+def _question(index: int, marks: int, kind: str, allocation: tuple[int, int, int], *, description: bool = False) -> QuestionRule:
+    # These former generic "develop" prompts now analyse supplied implementations
+    # (or explain general principles); they do not pretend to assess new code.
+    if kind == "programming" and not allocation[2]:
+        kind = "analysis"
     return QuestionRule(
-        id=f"q{index}", marks=marks, kind=kind, command_word=COMMANDS[kind]
+        id=f"q{index}", marks=marks, kind=kind,
+        command_word="Describe" if description else "Evaluate" if kind == "analysis" and allocation[2] else COMMANDS[kind],
+        assessment_objectives={f"AO{i}": n for i, n in enumerate(allocation, 1) if n},
+        expected_minutes=150 * marks / 140,
     )
 
 
@@ -90,7 +127,8 @@ def _sections(
             answer_options=1,
             option_marks=sum(sequence),
             questions=[
-                _question(question_index, value, kind)
+                _question(question_index, value, kind, OBJECTIVES[paper_id][index - 1][question_index - 1],
+                          description=paper_id == "paper_1" and (index, question_index) in {(3, 3), (6, 2), (10, 1), (10, 2)})
                 for question_index, (value, kind) in enumerate(
                     zip(sequence, kinds[index - 1], strict=True), start=1
                 )

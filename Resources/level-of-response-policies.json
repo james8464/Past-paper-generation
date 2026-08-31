@@ -2,6 +2,19 @@
   "schema_version": 1,
   "policies": [
     {
+      "id": "ocr-computer-science-3-band",
+      "board": "ocr",
+      "maximum_mark": 12,
+      "best_fit": true,
+      "levels": [
+        {"level": 0, "minimum_mark": 0, "maximum_mark": 0, "minimum_coverage": 0.0, "descriptor": "No creditworthy computing content."},
+        {"level": 1, "minimum_mark": 1, "maximum_mark": 4, "minimum_coverage": 0.01, "descriptor": "Isolated computing knowledge with limited contextual application or evaluation."},
+        {"level": 2, "minimum_mark": 5, "maximum_mark": 8, "minimum_coverage": 0.35, "descriptor": "Relevant technical knowledge and developed contextual reasoning; evaluation may be uneven."},
+        {"level": 3, "minimum_mark": 9, "maximum_mark": 12, "minimum_coverage": 0.75, "descriptor": "Thorough technical knowledge, sustained contextual reasoning and a supported evaluation."}
+      ],
+      "misconception_cap_level": 1
+    },
+    {
       "id": "aqa-standard-4-level",
       "board": "aqa",
       "maximum_mark": 20,

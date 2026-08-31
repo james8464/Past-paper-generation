@@ -15,6 +15,7 @@ from Backend.Core.assessment_quality import (
     assert_distinct_items,
     item_fingerprint,
 )
+from Backend.Core.computer_science_audit import audit_computer_science_blueprint
 from Backend.Core.generator_registry import generator_capability
 from Backend.Core.level_of_response import (
     LevelOfResponseEngine,
@@ -138,6 +139,8 @@ def write_assessment_package(
     }
     if reference_demand is not None:
         document["reference_demand"] = reference_demand
+    if objective_policy_for(subject).computational:
+        document["assessment_policy"] = audit_computer_science_blueprint(payload)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(document, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
@@ -177,6 +180,12 @@ def validate_assessment_package(
     if not isinstance(items, list) or not items:
         raise ValueError("assessment package has no items")
     mark_scheme_reports = []
+    if objective_policy_for(subject).computational:
+        audit = audit_computer_science_blueprint(document.get("blueprint", {}))
+        if document.get("assessment_policy") != audit:
+            raise ValueError("CS assessment policy evidence is stale or inconsistent")
+        if items != _extract_items(document["blueprint"], subject=subject, paper_number=paper_number):
+            raise ValueError("CS exported item allocations or timing differ from the blueprint")
     response_simulation_reports = []
     for item in items:
         if not isinstance(item, dict):
@@ -365,6 +374,7 @@ def _extract_items(
                 "command_word": raw.get("command_word"),
                 "intended_demand": raw.get("intended_demand"),
                 "expected_minutes": raw.get("expected_minutes"),
+                "task_operation": raw.get("task_operation") or (raw.get("authoring_context") or {}).get("task_operation"),
                 "kind": kind,
                 "prompt": prompt,
                 "context": stems,

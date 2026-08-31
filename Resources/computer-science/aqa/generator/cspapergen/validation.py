@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+from collections import Counter
+from math import isclose
+
+from Backend.Core.assessment_objectives import objective_policy_for
 from cspapergen.models import PaperBlueprint, Syllabus
 
 
 def validate_blueprint(blueprint: PaperBlueprint, syllabus: Syllabus) -> None:
+    objective_policy_for("7517").validate(blueprint)
     if blueprint.assessment_kind not in {"full-paper", "question-bank"}:
         raise ValueError("Unsupported assessment kind")
     if blueprint.assessment_kind == "question-bank":
@@ -27,6 +32,7 @@ def validate_blueprint(blueprint: PaperBlueprint, syllabus: Syllabus) -> None:
         raise ValueError("Question bank must contain 3 to 12 questions")
 
     total = 0
+    objective_totals = Counter()
     seen_numbers: set[int] = set()
     seen_prompts: set[str] = set()
     for question in blueprint.questions:
@@ -46,6 +52,15 @@ def validate_blueprint(blueprint: PaperBlueprint, syllabus: Syllabus) -> None:
         _validate_verified_question_contract(question)
         total += question.total_marks
         for part in question.parts:
+            if not part.assessment_objectives or sum(part.assessment_objectives.values()) != part.marks:
+                raise ValueError("CS requires explicit assessment objectives matching each tariff")
+            if part.marking.assessment_objectives != part.assessment_objectives:
+                raise ValueError("CS marking objective allocation differs from the item")
+            objective_totals.update(part.assessment_objectives)
+            if part.expected_minutes is None or not isclose(
+                part.expected_minutes, blueprint.duration_minutes * part.marks / blueprint.total_marks
+            ):
+                raise ValueError("CS item timing must match the declared component or bank allowance")
             if part.marks <= 0:
                 raise ValueError(f"Question {question.number}.{part.label} has invalid marks")
             if not part.prompt.strip():
@@ -89,6 +104,11 @@ def validate_blueprint(blueprint: PaperBlueprint, syllabus: Syllabus) -> None:
                     )
     if total != blueprint.total_marks:
         raise ValueError(f"Question marks total {total}, expected {blueprint.total_marks}")
+    if blueprint.assessment_kind == "full-paper":
+        expected = {"1": {"AO1": 20, "AO2": 30, "AO3": 50},
+                    "2": {"AO1": 56, "AO2": 40, "AO3": 4}}[blueprint.paper_number]
+        if dict(objective_totals) != expected:
+            raise ValueError("CS full-paper objective budget differs from the calibrated task plan")
 
 
 def _validate_question_bank_identity(
