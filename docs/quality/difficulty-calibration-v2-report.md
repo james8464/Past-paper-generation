@@ -407,3 +407,17 @@ candidate-path weighting and topic-bank reference evidence. Their implementation
 and final qualification remain open. Local long-running probes now support
 verified committed-source archives with before/after integrity checks, preventing
 concurrent development from silently changing the version under test.
+
+Edexcel implementation `7216ce4` now has nine passing three-seed previews and a
+successful strict packaged build. Checks: 842 root tests, 260 Edexcel tests and
+225 affected shared tests (the last group overlaps the root suite). Graphify and
+the 456-file inventory were refreshed. Eleven incomplete latent calculation
+contracts remain explicitly unsupported; no currently reached live numeric route
+was downgraded. Preview evidence is not a live-content or difficulty approval.
+
+The controller's final PDF inspection still found cross-section source citations
+in Paper 3 marking, including references to Extract E where the actual evidence
+is in Extract A. Other variants retained stale figure labels and case values.
+Source-page headings also cross the top frame. These are under independent
+review and require correction before this slice is accepted. All failed and
+superseded artifacts remain available; the programme is not yet qualified.
