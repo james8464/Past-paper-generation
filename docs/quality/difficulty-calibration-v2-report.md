@@ -427,3 +427,19 @@ floor: 0.628 versus 0.680, with no detected print failures (overall 0.680).
 Content-complete pagination therefore does not establish visual similarity.
 Further presentation corrections must retain all specific credit and the failed
 comparison, rather than lowering the threshold.
+
+An additional committed-source prompt capture found that Edexcel's new private
+assessment contract exposed all four expected marking statements to the blind
+solver on the tested contestability item. The corrective round now removes that
+private payload while retaining candidate inputs and full contracts for later
+marking comparison. Actual prompt-capture negatives pass; final regression,
+packaging and independent re-review are still required before live qualification.
+
+Corrective commit `b7ec042` rebuilds contextual credit from selected source roles,
+selects the actual three largest firm shares, clears source-page headings and
+protects the blind-solver input. Final checks: 285 Edexcel tests, 225 affected
+shared tests, nine fresh normal previews and a successful strict packaged build.
+The earlier 842-test root run preceded the last blind-projection change; its
+affected tests were rerun, rather than claiming the old run covered new code.
+Graphify and the 458-file inventory are current for the implementation. Scoped
+independent re-review is underway; live and visual qualification remain open.
