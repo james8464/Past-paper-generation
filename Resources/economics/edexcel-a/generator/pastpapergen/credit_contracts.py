@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import re
 
+from pastpapergen.source_credit import source_bound_points
+
 # Each scenario states a direction rather than asking about unspecified 'changes'.
 # The pair supplies an economic mechanism and its consequence, not revision notes.
 TOPIC_CHAINS = {
@@ -395,32 +397,6 @@ def short_credit(question, part, source) -> list[str]:
     ]
 
 
-def _instance_synoptic_points(question, points):
-    text = question.source_text
-    patterns = {
-        "investment": r"planned investment by (\d+)%",
-        "output": r"Output in the sector changed by (\d+)%",
-        "price": r"international prices moved by (\d+)%",
-    }
-    values = {
-        role: match.group(1)
-        for role, pattern in patterns.items()
-        if (match := re.search(pattern, text))
-    }
-    result = []
-    for point in points:
-        for role, value in values.items():
-            if role in point.casefold() and "%" in point:
-                point = re.sub(r"\d+%", value + "%", point)
-                break
-        if "energy" not in question.source_title.casefold():
-            point = point.replace(
-                "energy and utilities", question.source_title.lower()
-            ).replace("energy", "sector")
-        result.append(point)
-    return result
-
-
 KNOWLEDGE_FACTS = {
     "1.2.2": (
         "Real income is purchasing power after allowing for the price level.",
@@ -522,44 +498,9 @@ def extended_credit(
 ) -> tuple[list[str], dict]:
     points = clean_points(question.mark_scheme)
     if source and question.number.startswith(("1(", "2(")):
-        if question.topic_id == "3.5" and "tourism" in question.source_title.casefold():
-            points = [
-                p.replace(
-                    "healthcare roles",
-                    "experienced chef and hospitality-supervisor roles",
-                )
-                .replace("treatment capacity", "service capacity")
-                .replace("overseas qualifications", "overseas experience")
-                for p in points
-            ]
-        if question.topic_id == "1.2.3" and question.marks == 5:
-            price = source.givens["Price change"].number
-            quantity = source.givens["Quantity supplied change"].number
-            points = [
-                "Price elasticity of supply measures the responsiveness of quantity supplied to price.",
-                f"Use the price increase of {price}% and quantity-supplied increase of {quantity}% in the figure.",
-                "Use the extract's limited capacity, fixed contracts or delayed access to inputs.",
-                "The selected constraint prevents output expanding quickly after the price rise, so the smaller proportional supply response indicates price-inelastic supply; a qualitative comparison is sufficient.",
-            ]
-        elif question.topic_id == "3.1" and question.marks == 8:
-            investment = source.givens["Capital spending change"].number
-            points = [
-                re.sub(r"5% in 2025", f"{investment}% in the stated period", p)
-                for p in points
-            ]
-        # The old case examples used a different seed's percentages. Replace
-        # only named input roles, never every matching number in a string.
-        elif question.topic_id == "1.3" and question.marks == 12:
-            match = re.search(r"prices changed by (\d+)%", source.context)
-            if match:
-                points = [
-                    p.replace("29%", match.group(1) + "%")
-                    .replace("energy prices", "sector prices")
-                    .replace("energy output", "sector output")
-                    for p in points
-                ]
-        elif question.topic_id in {"2.3", "4.5"} and question.marks == 25:
-            points = _instance_synoptic_points(question, points)
+        selected_points = source_bound_points(question, source)
+        if selected_points is not None:
+            points = selected_points
     generic = any(
         "Correctly identifies or defines" in p or "syllabus alignment" in p
         for p in question.mark_scheme

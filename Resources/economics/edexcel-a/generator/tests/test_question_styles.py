@@ -583,8 +583,8 @@ def test_paper_three_healthcare_externality_is_source_bound() -> None:
     assert "untreated chemical waste" in question.source_text
     assert "negative production externality" in question.prompt
     assert "market output is 117 million doses" in guidance
-    assert "socially efficient output of 100 million doses" in guidance
-    assert "£6 external marginal" in guidance
+    assert "socially efficient 100 million doses" in guidance
+    assert "external marginal clean-up and health cost of £6 per dose" in guidance
     assert "Marginal social cost includes marginal private cost plus marginal external cost" in guidance
     assert "deadweight welfare loss" in guidance
     assert "streetlights" not in guidance
@@ -607,18 +607,20 @@ def test_paper_three_healthcare_section_remains_case_bound() -> None:
 
     intervention_guidance = " ".join(intervention.mark_scheme).casefold()
     assert len(intervention.mark_scheme) >= 12
-    assert "pharmaceutical prices changed by 28%" in intervention_guidance
+    assert "prices changed by 28%" in intervention_guidance
+    assert "healthcare and pharmaceuticals" in intervention_guidance
     assert "inelastic demand" in intervention_guidance
     assert "government failure" in intervention_guidance
 
     capacity_guidance = " ".join(capacity.mark_scheme).casefold()
     assert "productive capacity in healthcare and pharmaceuticals" in capacity.prompt
-    assert "healthcare-sector output changed by 16%" in capacity_guidance
-    assert "4% planned-investment" in capacity_guidance
+    assert "output in healthcare and pharmaceuticals changed by 16%" in capacity_guidance
+    assert "4% planned-investment increase" in capacity_guidance
     assert "energy-sector" not in capacity_guidance
     assert "extract e" in capacity_guidance
     assert capacity.assessment_contract["evaluation_marks"] == 9
-    assert "stronger assessment develops" in capacity_guidance
+    assert "limited maintenance staff and college places may delay effective use of capital" in capacity_guidance
+    assert "imported machinery creates a leakage" in capacity_guidance
     assert "no particular condition is prescribed" in capacity_guidance
     assert "Imported component invoices and negotiated wages both rose" in capacity.source_text
     assert "short-run aggregate supply left" not in capacity.source_text
@@ -650,9 +652,9 @@ def test_paper_three_business_growth_guidance_examines_two_cost_factors() -> Non
     assert guidance.count("ao1 (1 mark)") == 2
     assert guidance.count("ao3 (1 mark)") == 2
     assert "two distinct relevant qualifications" in guidance
-    assert "long-run average cost (lrac)" in guidance
-    assert "cost per unit and lrac" in guidance
-    assert guidance.count("examines the limit") == 2
+    assert "long-run average cost" in guidance and "reducing lrac" in guidance
+    assert "capacity utilisation uncertain" in guidance
+    assert "coordination diseconomies" in guidance
     assert "unit input costs by 4%" in guidance
     assert "diseconomies" in guidance
     assert "lego" not in guidance
@@ -676,7 +678,7 @@ def test_paper_three_market_failure_discussion_is_welfare_focused() -> None:
     assert "deadweight welfare loss" in guidance
     assert question.assessment_contract["kaa_marks"] == 8
     assert question.assessment_contract["evaluation_marks"] == 4
-    assert "need not be classified as a pure public good" in guidance
+    assert "without the service necessarily being a pure public good" in guidance
     assert "must not replace" in guidance
     assert "contracts, reputation, property rights" in guidance
     assert question.assessment_contract["kaa_bands"][-1] == [6, 8]

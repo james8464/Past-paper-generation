@@ -353,6 +353,10 @@ class IndependentSolver:
 
 def _without_answer_key(value: Any) -> Any:
     hidden = {
+        # Private instance credit must not enter the blind model context.
+        # Keep candidate input contracts and ordinary source fields (including
+        # a source's own "credit" column) intact for independent derivation.
+        "assessment_contract",
         "mark_scheme",
         "structured_mark_scheme",
         "marking",

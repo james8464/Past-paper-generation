@@ -43,19 +43,58 @@ def source_instance(question, seed: int) -> EconomicsSource:
         )
     if not question.parts and question.number.startswith(("1(", "2(")):
         patterns = {
-            "Price change": r"prices .*?increased by (\d+(?:\.\d+)?)%",
-            "Quantity supplied change": r"quantity supplied increased by (\d+(?:\.\d+)?)%",
-            "Capital spending change": r"increased capital spending by (\d+(?:\.\d+)?)%",
-            "Unit input cost reduction": r"reduced unit input costs by (\d+(?:\.\d+)?)%",
-            "Market output (million doses)": r"market produced (\d+) million doses",
-            "Socially efficient output (million doses)": r"was (\d+) million doses",
+            "Price change": (r"prices .*?increased by (\d+(?:\.\d+)?)%", "%"),
+            "Quantity supplied change": (
+                r"quantity supplied increased by (\d+(?:\.\d+)?)%",
+                "%",
+            ),
+            "Capital spending change": (
+                r"increased capital spending by (\d+(?:\.\d+)?)%",
+                "%",
+            ),
+            "Unit input cost reduction": (
+                r"reduced unit input costs by (\d+(?:\.\d+)?)%",
+                "%",
+            ),
+            "Market output (million doses)": (
+                r"market produced (\d+) million doses",
+                "units",
+            ),
+            "Socially efficient output (million doses)": (
+                r"was (\d+) million doses",
+                "units",
+            ),
+            "External marginal cost per dose": (
+                r"health cost of £(\d+(?:\.\d+)?) per dose",
+                "GBP",
+            ),
+            "Vacancy growth": (r"vacancies .*?rose by (\d+(?:\.\d+)?)%", "%"),
+            "Median vacancy duration (weeks)": (
+                r"median vacancy duration of (\d+) weeks",
+                "1",
+            ),
+            "Pay growth": (r"increased average pay by (\d+(?:\.\d+)?)%", "%"),
+            "Annual staff turnover": (r"annual staff turnover reached (\d+(?:\.\d+)?)%", "%"),
+            "Later-period price change": (r"prices changed by (\d+(?:\.\d+)?)%", "%"),
+            "Sector output change": (
+                r"Output in the sector changed by (\d+(?:\.\d+)?)%",
+                "%",
+            ),
+            "Planned investment change": (
+                r"planned investment by (\d+(?:\.\d+)?)%",
+                "%",
+            ),
+            "International price change": (
+                r"international prices moved by (\d+(?:\.\d+)?)%",
+                "%",
+            ),
         }
         givens = {
             label: SourceCell(
                 number=Decimal(match.group(1)),
-                unit="%" if "change" in label or "reduction" in label else "units",
+                unit=unit,
             )
-            for label, pattern in patterns.items()
+            for label, (pattern, unit) in patterns.items()
             if (match := re.search(pattern, question.source_text))
         }
         rows = (

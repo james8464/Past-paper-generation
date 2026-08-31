@@ -617,6 +617,7 @@ def _draw_paper_3_source_page(
 ) -> None:
     width, _ = A4
     margin = 76
+    y = min(y, ANSWER_FRAME_Y + ANSWER_FRAME_H - 42)
     case_title = questions[0].source_title if questions else "Economic context"
 
     if source_page == 0:

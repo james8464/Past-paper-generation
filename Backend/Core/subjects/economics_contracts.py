@@ -292,6 +292,24 @@ def calculation_label(source: EconomicsSource, marks: int) -> str:
     }[source.kind]
 
 
+def _three_largest_shares(source: EconomicsSource) -> list[Decimal]:
+    if len(source.rows) < 4 or any(len(row) not in {2, 3} for row in source.rows):
+        raise ValueError("Concentration ratio requires at least three identified firms")
+    firms = [row[0].text.strip().casefold() for row in source.rows[1:]]
+    if not all(firms) or len(set(firms)) != len(firms):
+        raise ValueError("Concentration shares require distinct firm identities")
+    shares = [source.cell(row, 1, "%") for row in range(1, len(source.rows))]
+    if any(not share.is_finite() or not 0 <= share <= 100 for share in shares):
+        raise ValueError(
+            "Market shares must be finite percentages between zero and 100"
+        )
+    if not 0 < sum(shares) <= 100:
+        raise ValueError(
+            "Listed market shares must have a positive total no greater than 100%"
+        )
+    return sorted(shares, reverse=True)[:3]
+
+
 def calculation_working(source: EconomicsSource, marks: int) -> str:
     """Show substituted inputs without inventing unchecked intermediate outputs."""
     c, v, kind = source.cell, source.values, source.kind
@@ -316,7 +334,7 @@ def calculation_working(source: EconomicsSource, marks: int) -> str:
             else f"({c(3, 1, 'index')} − {c(1, 1, 'index')}) ÷ {c(1, 1, 'index')} × 100"
         )
     if kind == "concentration_ratio_table":
-        return " + ".join(str(c(row, 1, "%")) for row in (1, 2, 3))
+        return " + ".join(str(share) for share in _three_largest_shares(source))
     if kind == "opportunity_cost_ppc_table":
         return f"{c(0, 2, 'units')} − {c(0, 3, 'units')}"
     if kind == "shutdown_cost_table":
@@ -394,7 +412,7 @@ def calculation(source: EconomicsSource, marks: int) -> dict:
         value = c(2, 1, "1") * source.givens["price_change"].number
         method = "Multiply cinema PED by the stated signed percentage price change."
     elif kind == "concentration_ratio_table":
-        value = sum(c(r, 1, "%") for r in (1, 2, 3))
+        value = sum(_three_largest_shares(source))
         method = "Add the market shares of the three largest firms."
     elif kind == "opportunity_cost_ppc_table":
         value, unit, dp = c(0, 2, "units") - c(0, 3, "units"), "consumer units", 0
