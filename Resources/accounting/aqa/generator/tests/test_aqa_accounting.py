@@ -23,7 +23,7 @@ from aqaaccountgen.generator import build_paper
 from aqaaccountgen.syllabus import load_syllabus
 from pypdf import PdfReader
 
-from Backend.Core.independent_solver import CanonicalSolution, reconcile_solution
+from Backend.Core.independent_solver import reconcile_solution
 
 ROOT = Path(__file__).resolve().parents[1]
 SYLLABUS = load_syllabus(ROOT / "data" / "syllabus.json")
@@ -490,41 +490,11 @@ def test_asset_scheme_reconciles_with_an_independent_exact_solution() -> None:
         item for item in option.questions if item.rule_id == "statement_extract"
     )
     case = NonCurrentAssetCase.from_chart_values(option.title, option.chart_values)
-    solution = CanonicalSolution(
-        item_id=question.number,
-        answer=(
-            f"Plant and machinery: £{case.plant_carrying_amount:,}\n"
-            f"Motor vehicles: £{case.motor_carrying_amount:,}\n"
-            f"Total non-current assets: £{case.total_carrying_amount:,}\n"
-            f"Plant accumulated depreciation: £{case.plant_accumulated_depreciation_opening:,} "
-            f"+ £{case.plant_depreciation_charge:,} = "
-            f"£{case.plant_accumulated_depreciation_closing:,}\n"
-            f"Motor accumulated depreciation before charge: "
-            f"£{case.motor_accumulated_depreciation_opening:,} − "
-            f"£{case.motor_disposal_accumulated_depreciation:,} = "
-            f"£{case.motor_accumulated_depreciation_before_charge:,}"
-        ),
-        steps=[],
-        mark_points=[
-            f"plant cost after purchase £{case.plant_cost_closing:,}",
-            f"plant depreciation £{case.plant_depreciation_charge:,}",
-            (
-                "plant opening accumulated depreciation "
-                f"£{case.plant_accumulated_depreciation_opening:,}"
-            ),
-            f"plant carrying amount £{case.plant_carrying_amount:,}",
-            f"motor cost after disposal £{case.motor_cost_closing:,}",
-            f"motor depreciation £{case.motor_depreciation_charge:,}",
-            (
-                "motor opening accumulated depreciation "
-                f"£{case.motor_accumulated_depreciation_opening:,}"
-            ),
-            f"motor carrying amount £{case.motor_carrying_amount:,}",
-            f"total non-current assets £{case.total_carrying_amount:,}",
-        ],
-        assessment_objectives={"AO1": 7},
-        mark_points_exhaustive=True,
-    )
+    from Backend.Core.independent_solver import IndependentSolver
+    solution = IndependentSolver().solve(question, [])
+    assert solution.numeric_results["plant_carrying_amount"] == case.plant_carrying_amount
+    assert solution.numeric_results["motor_carrying_amount"] == case.motor_carrying_amount
+    assert solution.numeric_results["total_carrying_amount"] == case.total_carrying_amount
 
     result = reconcile_solution(
         solution,

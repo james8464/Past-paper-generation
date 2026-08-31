@@ -15,6 +15,7 @@ from Backend.Core.exam_blueprints import (
     validate_generated_paper,
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
+from Backend.Core.numeric_integrity import percentage_change_context
 
 INDUSTRIES = [
     "urban bus services",
@@ -373,6 +374,10 @@ def _written_question(
         topic_id=topic.id,
         prompt=prompt,
         mark_scheme=scheme,
+        authoring_context=(
+            percentage_change_context(values[0], values[-1])
+            if rule.kind == "calculation" else {}
+        ),
     )
 
 

@@ -395,7 +395,7 @@ def _write_package_manifest(
             "assessment_schema": "Backend.Core.exam_blueprints:v3",
             "assessment_package_schema": 1,
             "blueprint_version": capability.blueprint_version,
-            "prompt_version": "Backend.Core.ai_assessment:v12",
+            "prompt_version": "Backend.Core.ai_assessment:v13-closed-numeric-v1",
             "validator": "Backend.Core.pdf_validation:v2",
         },
         "outputs": {

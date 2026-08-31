@@ -12,6 +12,7 @@ from Backend.Core.assessment_checkpoints import (
 )
 from Backend.Core.assessment_package import write_assessment_package
 from Backend.Core.model_recommendations import default_ollama_model
+from Backend.Core.numeric_integrity import NUMERIC_INTEGRITY_VERSION
 from Backend.Core.providers import HostedLLMClient
 from Backend.Core.reference_demand import profile_for
 from Backend.Core.render_transaction import render_pdf_atomically
@@ -113,7 +114,7 @@ def run_family_adapter(
                     identity_payload,
                     provider=str(getattr(question_client, "provider", "ollama")),
                     model=str(getattr(question_client, "model", model)),
-                    prompt_version=adapter.prompt_version,
+                    prompt_version=f"{adapter.prompt_version}:{NUMERIC_INTEGRITY_VERSION}",
                 ),
             )
             if checkpoint_path is not None

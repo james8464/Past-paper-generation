@@ -24,6 +24,7 @@ from Backend.Core.exam_blueprints import (
     validate_rule,
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
+from Backend.Core.subjects.accounting import management_input_contract
 
 BUSINESSES = [
     "Alder Manufacturing",
@@ -474,6 +475,7 @@ def _written(
             ),
         ]
         authoring_context = case.authoring_context()
+        authoring_context["numeric_input_contract"] = management_input_contract("contribution", authoring_context["source_data"])
     elif rule.id == "limitation":
         prompt = (
             f"Explain one limitation of using contribution alone when deciding whether "
@@ -750,7 +752,8 @@ def _management_calculation(
             f"Set-up costs are {_gbp(setup_cost_pool)} for {total_setups:,} set-ups and "
             f"purchase-order costs are {_gbp(purchase_order_cost_pool)} for "
             f"{total_purchase_orders:,} orders. The product uses {product_setups:,} set-ups "
-            f"and {product_purchase_orders:,} orders for {product_units:,} units. Show all workings."
+            f"and {product_purchase_orders:,} orders for {product_units:,} units. Show all workings. "
+            "Give your final monetary answer to two decimal places; retain full precision in calculations."
         )
         scheme = [
             "Method: set-up driver rate = set-up cost pool ÷ total set-ups;",
@@ -797,7 +800,8 @@ def _management_calculation(
             f"Calculate the contribution per scarce labour hour for both products made by "
             f"{business}. Product A earns {_gbp(contribution_a)} contribution and uses {hours_a} "
             f"scarce hours per unit; Product B earns {_gbp(contribution_b)} contribution and uses "
-            f"{hours_b} scarce hours per unit. Show all workings and rank the products."
+            f"{hours_b} scarce hours per unit. Show all workings and rank the products. "
+            "Give the monetary answers to two decimal places; use unrounded values to rank the products."
         )
         scheme = [
             "Method for Product A: contribution per unit ÷ scarce hours per unit;",
@@ -816,6 +820,7 @@ def _management_calculation(
         "preserve_prompt": True,
         "preserve_mark_scheme": True,
         "source_data": source,
+        "numeric_input_contract": management_input_contract(rule_id, source),
         "verified_answers": answers,
         "prompt_values": prompt_values,
         "task_scope": CALCULATION_TASKS[rule_id],

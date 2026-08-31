@@ -7,12 +7,22 @@ import operator
 import re
 from collections import Counter
 from collections.abc import Sequence
+from decimal import Decimal
 from typing import Any, Protocol
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from Backend.Core.assessment_contracts import EvidenceRecord
 from Backend.Core.assessment_quality import content_similarity
+from Backend.Core.numeric_integrity import (
+    NUMERIC_INTEGRITY_VERSION,
+    CheckedNumericOutput,
+    CheckedTextOutput,
+    NumericOutput,
+    check_published_outputs,
+    display,
+    numeric_result,
+)
 from Backend.Core.subjects.accounting import solve_accounting_calculation
 
 
@@ -37,6 +47,14 @@ class CanonicalSolution(BaseModel):
     solver_context_fields: list[str] = Field(default_factory=list)
     response_slots: list[str] = Field(default_factory=list)
     answer_slots: dict[str, str] = Field(default_factory=dict)
+    integrity_version: str = "legacy-unverified"
+    solution_source: str = "legacy-unverified"
+    verified_scope: str = "none"
+    examiner_expectations: list[str] = Field(default_factory=list)
+    numeric_checks: list[CheckedNumericOutput] = Field(default_factory=list)
+    text_checks: list[CheckedTextOutput] = Field(default_factory=list)
+    is_choice: bool = False
+    unverified_model_working: dict[str, Any] = Field(default_factory=dict)
 
 
 class ReconciliationIssue(BaseModel):
@@ -84,6 +102,55 @@ class IndependentSolver:
         ):
             raise ValueError(f"{item_id} invalid closed response slot contract")
         deterministic = solve_accounting_calculation(raw_item)
+        expression = context.get("calculation_expression")
+        variables = context.get("calculation_variables")
+        expressions = context.get("calculation_expressions")
+        if expression is not None or variables is not None or expressions is not None:
+            if not isinstance(variables, dict):
+                raise ValueError(f"{item_id} incomplete numeric expression contract")
+            if expressions is None:
+                output = NumericOutput.model_validate(context.get("calculation_output"))
+                outputs = [output]
+                expressions = {output.role: expression}
+            else:
+                outputs = [
+                    NumericOutput.model_validate(raw)
+                    for raw in context.get("calculation_outputs", [])
+                ]
+            if (
+                not isinstance(expressions, dict)
+                or set(expressions) != {output.role for output in outputs}
+                or len(expressions) != len(outputs)
+                or not outputs
+            ):
+                raise ValueError(f"{item_id} incomplete numeric output contract")
+            units = context.get("calculation_input_units")
+            if (
+                not isinstance(units, dict)
+                or set(units) != set(variables)
+                or not all(
+                    isinstance(unit, str) and unit.strip() for unit in units.values()
+                )
+            ):
+                raise ValueError(
+                    f"{item_id} numeric input units contract is incomplete"
+                )
+            values = {}
+            steps = []
+            for role, expr in expressions.items():
+                if not isinstance(expr, str):
+                    raise ValueError(f"{item_id} invalid numeric expression contract")
+                values[role] = _safe_calculate(expr, {**variables, **values})
+                steps.append(f"Evaluate {expr} from candidate inputs for {role}.")
+            deterministic = numeric_result(
+                values,
+                outputs,
+                steps,
+            )
+        if deterministic:
+            response_slots = list(deterministic["answer"])
+        elif not response_slots and _requires_numeric_contract(raw_item):
+            raise ValueError(f"{item_id} unsupported closed numeric output contract")
         result: dict[str, Any] = deterministic or {}
         response_instructions = (
             " For a closed response (response_slots supplied), answer and "
@@ -121,13 +188,9 @@ class IndependentSolver:
                 )
             )
 
-        numeric_results: dict[str, float] = dict(result.get("numeric_results") or {})
-        expression = context.get("calculation_expression")
-        variables = context.get("calculation_variables")
-        if isinstance(expression, str) and isinstance(variables, dict):
-            numeric = _safe_calculate(expression, variables)
-            numeric_results["result"] = numeric
-            result["answer"] = _format_number(numeric)
+        numeric_results: dict[str, float] = (
+            dict(result.get("numeric_results") or {}) if deterministic else {}
+        )
 
         evidence_ids = [
             evidence_id
@@ -205,7 +268,7 @@ class IndependentSolver:
             else (
                 [answer]
                 if is_single_mark_choice
-                else declared_observable or _string_list(result.get("mark_points"))
+                else _string_list(result.get("mark_points"))
             )
         )
         answer_form = str(
@@ -225,16 +288,15 @@ class IndependentSolver:
             answer=answer,
             steps=_string_list(result.get("steps")),
             mark_points=observable,
-            mark_points_exhaustive=bool(declared_observable) or fixed_answer,
+            mark_points_exhaustive=fixed_answer,
+            examiner_expectations=declared_observable,
             assessment_objectives={
                 str(key): int(value)
                 for key, value in dict(
                     raw_item.get("assessment_objectives") or {}
                 ).items()
             },
-            alternatives=_string_list(
-                context.get("valid_alternatives") or result.get("alternatives")
-            ),
+            alternatives=_string_list(result.get("alternatives")),
             partial_credit_boundaries=_string_list(
                 context.get("partial_credit_boundaries")
                 or result.get("partial_credit_boundaries")
@@ -248,6 +310,25 @@ class IndependentSolver:
             solver_context_fields=sorted(solver_item),
             response_slots=response_slots,
             answer_slots=answer_slots,
+            integrity_version=NUMERIC_INTEGRITY_VERSION,
+            solution_source="deterministic-candidate-inputs"
+            if deterministic
+            else "independent-model",
+            verified_scope="declared-numeric-outputs-only"
+            if deterministic
+            else "closed-slots"
+            if response_slots
+            else "semantic-review-only",
+            numeric_checks=result.get("numeric_checks", []) if deterministic else [],
+            text_checks=result.get("text_checks", []) if deterministic else [],
+            is_choice=raw_item.get("kind") == "multiple_choice",
+            unverified_model_working={
+                key: result[key]
+                for key in ("numeric_results", "calculation_details")
+                if key in result
+            }
+            if not deterministic
+            else {},
         )
 
 
@@ -327,6 +408,7 @@ def reconcile_solution(
         part
         for part in (
             *(_semantic_text(point) for point in points),
+            _semantic_text(raw.get("mark_scheme")),
             _semantic_text(raw.get("alternatives")),
             _semantic_text(raw.get("partial_credit_boundaries")),
             _semantic_text(raw.get("follow_through_rules")),
@@ -336,6 +418,98 @@ def reconcile_solution(
     text = "\n".join(semantic_parts)
     normalised_text = _normalise(text)
     issues: list[ReconciliationIssue] = []
+
+    if (
+        _requires_numeric_contract(raw) or solution.numeric_results
+    ) and not solution.response_slots:
+        issues.append(
+            ReconciliationIssue(
+                field="answer",
+                message="closed numeric response is missing its output contract",
+            )
+        )
+
+    if solution.numeric_checks:
+        if raw.get("authoring_context"):
+            try:
+                recomputed = IndependentSolver().solve(raw, [])
+                if (
+                    solution.numeric_checks != recomputed.numeric_checks
+                    or solution.text_checks != recomputed.text_checks
+                ):
+                    issues.append(
+                        ReconciliationIssue(
+                            field="answer",
+                            message="numeric checks disagree with the complete candidate-input contract",
+                        )
+                    )
+            except (ValueError, KeyError, ArithmeticError):
+                issues.append(
+                    ReconciliationIssue(
+                        field="answer",
+                        message="numeric candidate-input contract cannot be recomputed",
+                    )
+                )
+        numeric_roles = {check.role for check in solution.numeric_checks}
+        required = numeric_roles | {check.role for check in solution.text_checks}
+        if (
+            solution.integrity_version != NUMERIC_INTEGRITY_VERSION
+            or solution.solution_source != "deterministic-candidate-inputs"
+            or solution.verified_scope != "declared-numeric-outputs-only"
+            or set(solution.answer_slots) != required
+            or set(solution.response_slots) != required
+            or set(solution.numeric_results) != numeric_roles
+        ):
+            issues.append(
+                ReconciliationIssue(
+                    field="answer",
+                    message="numeric response has stale or incomplete output contract",
+                )
+            )
+        for check in solution.numeric_checks:
+            if solution.answer_slots.get(check.role) != display(
+                Decimal(check.value), check
+            ):
+                issues.append(
+                    ReconciliationIssue(
+                        field="answer",
+                        message=f"numeric answer disagrees at role {check.role}",
+                    )
+                )
+            if solution.numeric_results.get(check.role) != float(check.value):
+                issues.append(
+                    ReconciliationIssue(
+                        field="answer",
+                        message=f"numeric result disagrees at role {check.role}",
+                    )
+                )
+        # Check both representations when supplied: neither a stale structured
+        # scheme nor the published prose may hide behind the other.
+        texts = ["\n".join(_semantic_text(point) for point in points)]
+        if isinstance(raw.get("mark_scheme"), list) and raw.get(
+            "structured_mark_scheme"
+        ):
+            texts.append("\n".join(raw["mark_scheme"]))
+        for published in texts:
+            issues.extend(
+                ReconciliationIssue(field="answer", message=message)
+                for message in check_published_outputs(
+                    solution.numeric_checks, published
+                )
+            )
+            for check in solution.text_checks:
+                matches = re.findall(check.scheme_pattern, published, re.MULTILINE)
+                if (
+                    not matches
+                    or any(value != check.value for value in matches)
+                    or solution.answer_slots.get(check.role) != check.value
+                ):
+                    issues.append(
+                        ReconciliationIssue(
+                            field="answer",
+                            message=f"closed response disagrees at role {check.role}",
+                        )
+                    )
 
     if raw.get("kind") == "multiple_choice":
         choices, key = raw.get("choices"), raw.get("correct_choice")
@@ -367,7 +541,17 @@ def reconcile_solution(
                     message="closed response answer contradicts its slot values",
                 )
             )
-        accepted = raw.get("closed_answers")
+        accepted = (
+            {
+                **{
+                    check.role: [display(Decimal(check.value), check)]
+                    for check in solution.numeric_checks
+                },
+                **{check.role: [check.value] for check in solution.text_checks},
+            }
+            if solution.numeric_checks
+            else raw.get("closed_answers")
+        )
         if not isinstance(accepted, dict) or set(accepted) != set(
             solution.response_slots
         ):
@@ -405,21 +589,13 @@ def reconcile_solution(
                     )
 
     expected_numbers = [] if solution.response_slots else _numbers(solution.answer)
-    scheme_numbers = _numbers(text)
-    if expected_numbers and solution.mark_points_exhaustive:
-        if not all(
-            any(
-                math.isclose(expected, actual, rel_tol=1e-7, abs_tol=1e-7)
-                for actual in scheme_numbers
+    if expected_numbers and solution.mark_points_exhaustive and not solution.is_choice:
+        issues.append(
+            ReconciliationIssue(
+                field="answer",
+                message="closed numeric response requires an exhaustive role/value/unit contract",
             )
-            for expected in expected_numbers
-        ):
-            issues.append(
-                ReconciliationIssue(
-                    field="answer",
-                    message=f"scheme does not contain canonical answer {solution.answer}",
-                )
-            )
+        )
     elif (
         not solution.response_slots
         and solution.answer
@@ -491,7 +667,10 @@ def reconcile_solution(
                 message=f"scheme awards {total_marks} marks, expected {declared_marks}",
             )
         )
-    for mark_point in solution.mark_points if solution.mark_points_exhaustive else ():
+    for mark_point in [
+        *solution.examiner_expectations,
+        *(solution.mark_points if solution.mark_points_exhaustive else []),
+    ]:
         if not _requirement_present(
             mark_point,
             normalised_text=normalised_text,
@@ -506,6 +685,21 @@ def reconcile_solution(
                 )
             )
     return ReconciliationResult(passed=not issues, issues=issues)
+
+
+def _requires_numeric_contract(item: dict[str, Any]) -> bool:
+    if item.get("kind") == "multiple_choice":
+        return False
+    context = item.get("authoring_context") or {}
+    form = str(context.get("expected_answer_form", "")).casefold()
+    return (
+        item.get("kind") in {"calculation", "trace"}
+        or any(
+            token in form
+            for token in ("numeric", "calculation", "closed", "trace_table")
+        )
+        or str(item.get("command_word", "")).casefold() == "calculate"
+    )
 
 
 def _closed_normalise(value: str) -> str:
@@ -526,26 +720,30 @@ _OPERATORS = {
 }
 
 
-def _safe_calculate(expression: str, variables: dict[str, Any]) -> float:
+def _safe_calculate(expression: str, variables: dict[str, Any]) -> Decimal:
     numeric_variables = {
-        str(name): float(value)
+        str(name): Decimal(str(value))
         for name, value in variables.items()
-        if isinstance(value, (int, float)) and math.isfinite(float(value))
+        if not isinstance(value, bool)
+        and isinstance(value, (int, float, Decimal))
+        and Decimal(str(value)).is_finite()
     }
+    if set(numeric_variables) != set(variables):
+        raise ValueError("numeric variables must be finite numbers, not booleans")
 
-    def evaluate(node: ast.AST) -> float:
+    def evaluate(node: ast.AST) -> Decimal:
         if isinstance(node, ast.Expression):
             return evaluate(node.body)
         if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
-            return float(node.value)
+            return Decimal(str(node.value))
         if isinstance(node, ast.Name) and node.id in numeric_variables:
             return numeric_variables[node.id]
         if isinstance(node, ast.BinOp) and type(node.op) in _OPERATORS:
-            return float(
+            return Decimal(
                 _OPERATORS[type(node.op)](evaluate(node.left), evaluate(node.right))
             )
         if isinstance(node, ast.UnaryOp) and type(node.op) in _OPERATORS:
-            return float(_OPERATORS[type(node.op)](evaluate(node.operand)))
+            return Decimal(_OPERATORS[type(node.op)](evaluate(node.operand)))
         raise ValueError("calculation expression contains an unsupported operation")
 
     result = evaluate(ast.parse(expression, mode="eval"))

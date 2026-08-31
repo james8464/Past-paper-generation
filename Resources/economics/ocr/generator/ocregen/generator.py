@@ -263,6 +263,8 @@ def _question(
         }
         source_references = [f"Extract {extract_number}"]
     if rule.kind == "calculation":
+        from Backend.Core.numeric_integrity import percentage_change_context
+        authoring_context.update(percentage_change_context(question_values[0], question_values[-1]))
         authoring_context.update(
             {
                 "preserve_prompt": True,

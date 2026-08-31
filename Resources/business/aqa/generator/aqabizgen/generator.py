@@ -431,6 +431,8 @@ def _written_question(
             "Credit a developed counter-effect or dependency.",
         ]
     elif rule.kind == "calculation":
+        from Backend.Core.numeric_integrity import percentage_change_context
+        authoring_context.update(percentage_change_context(values[0], values[-1]))
         if "." in number:
             prompt = (
                 f"Using the business sales data for {business}, calculate the "
@@ -470,6 +472,20 @@ def _written_question(
             f"{business}. Use the evidence in {context} and make a supported judgement."
         )
         scheme = _levels(rule.marks, topic, point, case_id)
+    if rule.id in {"current_ratio", "roce_calculation"}:
+        from Backend.Core.numeric_integrity import MONEY, NUMBER, NumericOutput
+        source = authoring_context["source_data"]
+        is_ratio = rule.id == "current_ratio"
+        expressions = (
+            {"current_assets": "inventories + receivables + cash", "current_ratio": "current_assets / current_liabilities"}
+            if is_ratio else {"capital_employed": "total_equity + non_current_liabilities", "operating_profit": "capital_employed * roce_percent / 100"}
+        )
+        source = {key: value for key, value in source.items() if key != "capital_employed"}
+        outputs = (
+            [NumericOutput(role="current_assets", unit="GBPm", decimal_places=0, scheme_pattern=rf"^Current assets =[^\n=]*=\s*{MONEY}m"), NumericOutput(role="current_ratio", unit="1", decimal_places=2, scheme_pattern=rf"^Answer: (?P<value>{NUMBER}):1")]
+            if is_ratio else [NumericOutput(role="capital_employed", unit="GBPm", decimal_places=0, scheme_pattern=rf"^Capital employed =[^\n=]*=\s*{MONEY}m"), NumericOutput(role="operating_profit", unit="GBPm", decimal_places=2, scheme_pattern=rf"^Operating profit =\s*{MONEY}m")]
+        )
+        authoring_context.update({"calculation_variables": source, "calculation_input_units": {key: "%" if key == "roce_percent" else "GBPm" for key in source}, "calculation_expressions": expressions, "calculation_outputs": [output.model_dump() for output in outputs]})
     return GeneratedQuestion(
         rule_id=rule.id,
         number=number,

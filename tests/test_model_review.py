@@ -243,6 +243,7 @@ def test_require_difficulty_review_rejects_over_demanded_item() -> None:
             specification={"topic": "networks"},
             canonical_solution={
                 "answer": "A complete answer",
+                "integrity_version": "closed-numeric-v1",
                 "steps": ["one", "two", "three", "four", "five", "six", "seven"],
             },
         )
@@ -285,7 +286,7 @@ def test_difficulty_review_receives_independent_solution_and_operation_contract(
         },
         candidate={"prompt": "Evaluate the decision.", "marks": 15},
         specification={"topic": "market failure"},
-        canonical_solution={"answer": "Judgement", "steps": ["a", "b", "c", "d"]},
+        canonical_solution={"answer": "Judgement", "steps": ["a", "b", "c", "d"], "integrity_version": "closed-numeric-v1"},
     )
 
     assert result.schema_version == 2
@@ -336,7 +337,7 @@ def test_difficulty_review_makes_low_demand_operation_tokens_unambiguous() -> No
         },
         candidate={"prompt": "Which treatment is correct?", "marks": 1},
         specification={"topic": "financial accounting"},
-        canonical_solution={"answer": "B", "steps": ["identify the treatment"]},
+        canonical_solution={"answer": "B", "steps": ["identify the treatment"], "integrity_version": "closed-numeric-v1"},
     )
 
     assert result.approved is True
@@ -384,7 +385,7 @@ def test_difficulty_review_makes_single_item_timing_units_unambiguous() -> None:
         },
         candidate={"prompt": "Prepare the account.", "marks": 9},
         specification={"topic": "financial accounting"},
-        canonical_solution={"answer": "Account", "steps": ["a", "b", "c"]},
+        canonical_solution={"answer": "Account", "steps": ["a", "b", "c"], "integrity_version": "closed-numeric-v1"},
     )
 
     assert result.estimated_minutes == 9.0
@@ -439,7 +440,7 @@ def test_difficulty_review_surfaces_exact_target_checklist_before_payload() -> N
         },
         candidate={"prompt": "Explain the accounting effect.", "marks": 6},
         specification={"topic": "financial accounting"},
-        canonical_solution={"answer": "Explanation", "steps": ["a", "b", "c"]},
+        canonical_solution={"answer": "Explanation", "steps": ["a", "b", "c"], "integrity_version": "closed-numeric-v1"},
     )
 
     assert result.approved is True

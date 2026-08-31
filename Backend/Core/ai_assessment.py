@@ -408,6 +408,8 @@ def _validate_checkpoint_item(
     demand_profile: ReferenceDemandProfile | None = None,
 ) -> None:
     original = task.question
+    if original.authoring_context.get("preserve_prompt") and candidate.prompt != original.prompt:
+        raise ValueError(f"checkpoint item {task.id} changed immutable preserved prompt")
     immutable = (
         "rule_id",
         "number",
@@ -689,6 +691,14 @@ def _independently_validate_candidate(
     *,
     client: AssessmentLLMClient,
 ) -> CanonicalSolution:
+    if task.question.authoring_context.get("preserve_prompt") and candidate.prompt != task.question.prompt:
+        raise ValueError(f"question {candidate.number} changed immutable numeric prompt")
+    numeric_fields = {
+        key for key in task.question.authoring_context
+        if key.startswith("calculation_") or key in {"numeric_input_contract", "source_data", "opening_balances", "depreciation_policy", "transactions_at_start_of_year", "adjustment_source_data", "adjustment_policy", "task_scope", "required_entries"}
+    }
+    if any(candidate.authoring_context.get(key) != task.question.authoring_context[key] for key in numeric_fields):
+        raise ValueError(f"question {candidate.number} changed immutable numeric source contract")
     contract = contract_for_question(candidate)
     sources = list(contract.evidence)
     known_ids = {source.id for source in sources}

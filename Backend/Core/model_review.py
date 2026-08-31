@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field, ValidationError
 
 from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.assessment_quality import content_similarity, numeric_tokens
+from Backend.Core.numeric_integrity import NUMERIC_INTEGRITY_VERSION
 
 
 class JSONClient(Protocol):
@@ -56,6 +57,7 @@ class DifficultyReviewResult(BaseModel):
     target_profile_fingerprint: str = ""
     target_objective_policy_fingerprint: str = ""
     independent_solution_steps: int = Field(default=0, ge=0)
+    solution_integrity_version: str = "legacy-unverified"
     issues: list[str] = Field(default_factory=list)
 
 
@@ -162,6 +164,8 @@ def require_difficulty_review(
     specification: Any,
     canonical_solution: Any | None = None,
 ) -> DifficultyReviewResult:
+    if canonical_solution is not None and _serialise(canonical_solution).get("integrity_version") != NUMERIC_INTEGRITY_VERSION:
+        raise ValueError(f"{item_id} has incompatible canonical solution evidence")
     result = difficulty_review(
         client,
         item_id=item_id,
@@ -186,6 +190,7 @@ def require_difficulty_review(
             "independent_solution_steps": (
                 len(solution_steps) if isinstance(solution_steps, list) else 0
             ),
+            "solution_integrity_version": NUMERIC_INTEGRITY_VERSION,
         }
     )
 
@@ -198,6 +203,8 @@ def validate_saved_difficulty_evidence(
     if not isinstance(evidence, dict) or required - evidence.keys():
         raise ValueError(f"{item_id} has incomplete difficulty evidence")
     result = DifficultyReviewResult.model_validate(evidence, strict=True)
+    if result.solution_integrity_version != NUMERIC_INTEGRITY_VERSION:
+        raise ValueError(f"{item_id} difficulty evidence has incompatible solution integrity")
     target_payload = _serialise(target)
     if result.target_objective_policy_fingerprint != target_payload.get("objective_policy_fingerprint", ""):
         raise ValueError(f"{item_id} difficulty evidence refers to a different objective policy")
@@ -348,6 +355,7 @@ def difficulty_review(
     required_response_fields = set(DifficultyReviewResult.model_fields) - {
         "schema_version", "target_profile_fingerprint", "independent_solution_steps",
         "target_objective_policy_fingerprint",
+        "solution_integrity_version",
     }
     if not isinstance(raw, dict) or required_response_fields - raw.keys():
         raise ValueError(f"{item_id} returned an invalid difficulty review response: missing checks")

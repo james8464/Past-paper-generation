@@ -613,6 +613,7 @@ def test_live_form_audit_fails_closed_without_item_review_evidence() -> None:
         {"estimated_minutes": 500.0},
         {"observed_cognitive_operations": []},
         {"estimated_minutes": None},
+        {"solution_integrity_version": "legacy-unverified"},
     ],
 )
 def test_live_form_audit_rechecks_saved_review_against_target(changed) -> None:
@@ -634,6 +635,7 @@ def test_live_form_audit_rechecks_saved_review_against_target(changed) -> None:
         estimated_minutes=target.expected_minutes_min,
         target_profile_fingerprint=profile.source_fingerprint,
         independent_solution_steps=2,
+        solution_integrity_version="closed-numeric-v1",
     ).model_dump(mode="json")
     item["difficulty_evidence"] = evidence
     good = reference_demand.audit_form_demand(

@@ -23,6 +23,8 @@ def _calculation_item() -> dict:
                 "variable_cost": 60,
                 "units": 10,
             },
+            "calculation_input_units": {"revenue": "GBP/unit", "variable_cost": "GBP/unit", "units": "units"},
+            "calculation_output": {"role": "result", "unit": "GBP", "decimal_places": 0, "scheme_pattern": r"Answer (?P<value>\d+)"},
             "observable_mark_points": [
                 "subtract variable cost from revenue",
                 "multiply unit contribution by units",
@@ -34,7 +36,7 @@ def _calculation_item() -> dict:
 def test_independent_solver_recomputes_arithmetic_without_the_draft_scheme() -> None:
     solution = IndependentSolver().solve(_calculation_item(), [])
 
-    assert solution.answer == "400"
+    assert solution.answer_slots == {"result": "£400"}
     assert solution.numeric_results["result"] == 400
     assert "mark_scheme" not in solution.solver_context_fields
 
@@ -138,7 +140,7 @@ def test_reconciliation_rejects_ao_misallocation() -> None:
 def test_solver_and_reconciliation_accept_structured_rubric_metadata() -> None:
     class Client:
         def generate_json(self, _prompt: str) -> dict[str, object]:
-            return {"answer": "19.6%", "steps": ["Calculate the percentage change"]}
+            return {"answer": "19.6%", "steps": ["Calculate the percentage change"], "mark_points": ["Percentage change is 19.6%"]}
 
     item = {
         "id": "q-structured",
@@ -160,7 +162,8 @@ def test_solver_and_reconciliation_accept_structured_rubric_metadata() -> None:
     }
     solution = IndependentSolver(Client()).solve(item, [])
 
-    assert solution.mark_points == [
+    assert solution.mark_points == ["Percentage change is 19.6%"]
+    assert solution.examiner_expectations == [
         "Correct identification of values 78.0 and 93.3",
         "Correct percentage change of 19.6%",
     ]
