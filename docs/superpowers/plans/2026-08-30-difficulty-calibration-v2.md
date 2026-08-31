@@ -29,7 +29,7 @@ SDD ledger rather than restarting completed work:
 - [x] Candidate-visible Accounting shareholder source and exact worked credit (7.A).
 - [x] Accounting AO1–AO3 meanings, actual 30/42/48 paper allocation and stale-policy rejection (7.B).
 - [x] Exhaustive finite CS answers, retained private keys and candidate/source parity (7.C).
-- [ ] Shared closed-numeric verification without draft-answer substitution; role/value/unit checks and deterministic coverage (7.G, in progress).
+- [x] Shared closed-numeric verification without draft-answer substitution; role/value/unit checks and explicit deterministic coverage (7.G, reviewed through `7ea51fa`; remaining OCR/Edexcel contracts tracked below).
 - [ ] AQA/OCR CS actual task demand, objective meanings, answerable trace sources, consistent operations and component-specific timing (7.E).
 - [ ] Edexcel item-specific marking and complete explicit shared content-review responses (7.F).
 - [ ] All permitted candidate paths and remaining Economics/Business application/analysis demand, including MCQs (7.H).

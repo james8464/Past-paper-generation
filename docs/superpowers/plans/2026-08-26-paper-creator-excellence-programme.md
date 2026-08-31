@@ -183,7 +183,7 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - [x] Add contract fields for expected answer form, completion time, prerequisite knowledge, misconception targets, observable mark points, alternatives, partial-credit boundaries, common errors, follow-through, and level-policy ID.
 - [x] Add red tests where the drafted scheme shares the same wrong arithmetic as the question author, omits a valid alternative, overcredits a boundary answer, misallocates AO marks, cites unavailable evidence, or cannot distinguish weak/average/excellent responses.
 - [ ] Complete independent canonical solving without draft-answer substitution; finish deterministic numeric/symbolic verification for supported closed contracts and bind factual claims to allowed source evidence. The 31 August shared-numeric false pass is tracked in Task 7.G.
-- [ ] Finish exhaustive reconciliation of every requested closed output, mark, AO, alternative and follow-through rule. Specialist closed slots are repaired; the shared numeric path remains open under Task 7.G.
+- [ ] Finish exhaustive reconciliation of every requested closed output, mark, AO, alternative and follow-through rule. Specialist closed slots and enumerated shared numeric outputs are repaired; remaining OCR/Edexcel contracts are tracked in Tasks 7.E/7.F.
 - [x] Implement AQA, OCR, Pearson Edexcel, and Cambridge level-of-response policies as data-backed engines with best-fit rules, caps, indicative content, and annotation output.
 - [x] Simulate weak, average, and excellent responses; require monotonic marks and a written reason for every awarded/withheld mark.
 - [x] Add cross-paper checks for topic/AO/command-word/mark/demand balance, duplication, answer leakage, ambiguous pronouns, impossible data, and unintended clues.
@@ -342,7 +342,7 @@ totals are recorded in `docs/quality/assessment-objective-reference.md`.
   budgets, actual credit points and printed/exported schemes for every task
   style; require explicit content-review checks rather than defaulting omitted
   checks to clear. Preserve the captured live rejection as evidence.
-- [ ] 7.G: Repair shared numeric independent-solution false passes. Never copy
+- [x] 7.G: Repair shared numeric independent-solution false passes. Never copy
   draft observable answers into canonical work or accept an input number as a
   requested result merely because it appears in the scheme. Check every output
   by role, value and unit; extend candidate-source deterministic verification and
