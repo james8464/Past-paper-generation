@@ -182,12 +182,12 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - [x] Retain and finish every unchecked item in `2026-08-23-assessment-reliability-core.md` and `2026-08-23-rendering-and-mark-scheme-reliability.md`; do not reimplement checked work.
 - [x] Add contract fields for expected answer form, completion time, prerequisite knowledge, misconception targets, observable mark points, alternatives, partial-credit boundaries, common errors, follow-through, and level-policy ID.
 - [x] Add red tests where the drafted scheme shares the same wrong arithmetic as the question author, omits a valid alternative, overcredits a boundary answer, misallocates AO marks, cites unavailable evidence, or cannot distinguish weak/average/excellent responses.
-- [x] Generate the canonical solution in an independent model context without the draft scheme; recompute numeric/symbolic results deterministically and bind every factual claim to allowed syllabus/source evidence.
-- [x] Reconcile every subpart, mark, AO, alternative, and follow-through rule. Fail closed with field-addressed repair diagnostics.
+- [ ] Complete independent canonical solving without draft-answer substitution; finish deterministic numeric/symbolic verification for supported closed contracts and bind factual claims to allowed source evidence. The 31 August shared-numeric false pass is tracked in Task 7.G.
+- [ ] Finish exhaustive reconciliation of every requested closed output, mark, AO, alternative and follow-through rule. Specialist closed slots are repaired; the shared numeric path remains open under Task 7.G.
 - [x] Implement AQA, OCR, Pearson Edexcel, and Cambridge level-of-response policies as data-backed engines with best-fit rules, caps, indicative content, and annotation output.
 - [x] Simulate weak, average, and excellent responses; require monotonic marks and a written reason for every awarded/withheld mark.
 - [x] Add cross-paper checks for topic/AO/command-word/mark/demand balance, duplication, answer leakage, ambiguous pronouns, impossible data, and unintended clues.
-- [x] Run core tests plus all seven family suites, Ruff, deterministic solution recomputation for all generated items, and update Graphify.
+- [ ] Complete deterministic recomputation coverage for all supported closed items and rerun core/family tests, Ruff and Graphify. Earlier test passes do not establish the previously claimed universal recomputation coverage; Task 7.G records the confirmed gap.
 - [x] Commit as `Independently validate questions and schemes`.
 
 ### Task 4: Introduce the Shared Board Rendering DSL
@@ -326,7 +326,7 @@ totals are recorded in `docs/quality/assessment-objective-reference.md`.
 - [x] 7.A: Replace the Accounting investor source assembled only by the renderer
   with one coherent, candidate-visible source contract shared by generation,
   independent solving/review and PDF output; include worked investor ratios.
-- [ ] 7.B: Correct Accounting's objective allocations and all downstream guidance
+- [x] 7.B: Correct Accounting's objective allocations and all downstream guidance
   to the official AO1–AO3 framework, including analysis/evaluation under AO3.
 - [x] 7.C: Repair specialist closed-answer reconciliation after the captured CS
   classification false pass; make the figure's evidence sufficient and keep
@@ -342,6 +342,11 @@ totals are recorded in `docs/quality/assessment-objective-reference.md`.
   budgets, actual credit points and printed/exported schemes for every task
   style; require explicit content-review checks rather than defaulting omitted
   checks to clear. Preserve the captured live rejection as evidence.
+- [ ] 7.G: Repair shared numeric independent-solution false passes. Never copy
+  draft observable answers into canonical work or accept an input number as a
+  requested result merely because it appears in the scheme. Check every output
+  by role, value and unit; extend candidate-source deterministic verification and
+  invalidate incompatible saved evidence. This precedes further live qualification.
 - [x] Correct the saved-content Accounting QA replay to use the production
   accessible-PDF render transaction; pass scoped 300/600-DPI print audits.
 

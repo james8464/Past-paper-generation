@@ -128,6 +128,17 @@ metadata relabelling alone is not sufficient. [AQA Computer Science assessment
 scheme](https://www.aqa.org.uk/subjects/computer-science/a-level/computer-science-7517/specification/scheme-of-assessment),
 [OCR Computer Science specification](https://www.ocr.org.uk/images/170844-specification-accredited-a-level-gce-computer-science-h446.pdf).
 
+The OCR trace audit found a related answerability defect in the saved normal
+preview (base seed 26083031, route seed 26083044). Paper 1 question 1 supplies a
+loop over indices 0–8 but has only six data values; the rendered source page
+omits those values. Its trace subpart asks for five iterations and output even
+though output occurs after the loop. The response table also derives its row
+count from a two-case text match rather than the actual requested iterations.
+The source, exact trace answers and response rows need one coherent contract
+before their difficulty can be judged. This correction is included in the CS
+task-demand work; existing preview distribution passes do not establish that
+the trace is answerable. The source PDF page was manually checked.
+
 ### Shareholder source correction verified
 
 Commits `c538e93`, `65123ce` and `a92f2c5` replace Accounting's renderer-only
@@ -186,6 +197,15 @@ affected normal-backend preview routes passed again under
 approved the corrections and passed six focused checks. Whole-paper live and
 empirical qualification remain open.
 
+A fresh three-item production-provider probe through the repaired authoring
+merge passed sound-size and truth-table answers; classification again produced
+a wrong duplicated category and was correctly rejected. Evidence:
+`tmp/excellence-closed-solver-live-probe-review1.json`. A separate prompt-only
+experiment requiring working for every slot, without expected-answer hints,
+corrected that classification response. Its integration and regression checks
+are queued with the CS demand-policy changes. This single-item result is not
+a full live paper or a general model-quality claim.
+
 The preceding final previews passed unchanged 300-DPI print/fidelity checks for
 AQA CS Paper 1 (0.704) and Paper 2 (0.692), with no threshold or print failures;
 the review correction changes neither rendered source nor geometry. Reports:
@@ -199,3 +219,49 @@ A separate shared content-review probe found that a response containing only
 `{"approved":true}` passes because omitted issue categories default to empty.
 Requiring explicit checks is queued with the Economics content-contract repair;
 the existing strict difficulty-review checks do not close this distinct gap.
+
+### Accounting objective and credit calibration verified
+
+Commits `dbea456` and `3dcb5c5` replace Accounting's generic four-objective
+policy with its published three-objective meanings. Both 120-mark papers now
+allocate AO1/AO2/AO3 as 30/42/48, matching the inspected June 2025 pattern.
+Allocation follows actual calculations, case analysis and judgements; mixed
+best-fit tasks retain their non-additive indicative content. Shared review and
+checkpoint identities now include the subject policy and actual objective
+budget, so obsolete approvals cannot silently survive. Other subjects' valid
+AO4 support is retained; Computer Science's separate correction remains open.
+
+The independent review found misleading zero-award cells beside valid
+indicative content and nonzero level descriptors. A rendered-cell regression
+failed before the display fix and passes afterward: these cells now show a
+dash, while genuine Level 0 and positive awards retain their numbers. Scoped
+re-review approved the fix. Final controller verification: 990 backend tests
+passed, 2 skipped, 5 existing third-party warnings. Six normal Accounting
+previews passed across three seeds, plus a fresh Paper 2 display preview;
+assessment JSON is unchanged by that display correction. These are not live
+AI-authorship or external-examiner qualifications.
+
+The controller's two-item production-provider probe passed the current gates
+for fixed, reviewed Paper 2 tasks 14.4 and 15.1. It did not author new questions.
+For 15.1 the rounded final answer was correct, but an unused extra model field
+contained incorrect intermediate arithmetic. The published scheme was correct;
+this evidence does not establish that all model working was independently
+verified. Probe: `tmp/excellence-accounting-policy-live-probe.json`.
+
+### Shared numeric reconciliation remains a release blocker
+
+A new adversarial reproduction on `3dcb5c5` calls the real shared independent
+validation path for Accounting Paper 2, seed 26083122, question 14.2. The task
+requires three variances: £22,600 adverse, £9,700 adverse and £2,000 adverse.
+An intentionally wrong solver response containing only the input rate £97
+passes. Its canonical mark points are then populated from the correct draft
+scheme, masking the failure. Presence of a number anywhere in the draft is not
+proof that a requested result was independently solved.
+
+Task 7.G now precedes further live qualification: separate expected credit from
+solver-derived results, verify closed numeric outputs exhaustively by role and
+unit, extend candidate-source deterministic Accounting coverage, invalidate old
+approvals, and regression-test the actual shared path. Earlier universal claims
+about deterministic or independent verification have been reopened in the plan.
+The existing specialist finite-response fixes remain valid but do not cover
+this distinct generic numeric path.
