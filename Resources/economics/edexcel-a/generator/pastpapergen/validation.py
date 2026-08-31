@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 
+from pastpapergen.assessment_contracts import validate_assessment_contract
 from pastpapergen.models import PaperBlueprint, PaperConfig, Syllabus
 
 
@@ -49,6 +50,7 @@ def validate_blueprint(
                 f"{question.marks}"
             )
         for part in question.parts:
+            validate_assessment_contract(question, part)
             _reject_mark_text(f"{question.number}({part.label})", part.prompt)
             if part.command_word == "mcq":
                 if len(part.options) != 4 or part.correct_option not in {"A", "B", "C", "D"}:
@@ -77,6 +79,11 @@ def validate_blueprint(
                 part.mark_scheme,
                 part.marks,
             )
+        if question.parts:
+            if question.source_instance and (question.mark_scheme or question.assessment_objectives):
+                raise ValueError("Multipart parent must not duplicate part credit")
+            continue
+        validate_assessment_contract(question, question)
         if not question.mark_scheme:
             raise ValueError(f"Question {question.number} has no mark scheme")
         _validate_scheme(question.number, question.mark_scheme, question.marks)

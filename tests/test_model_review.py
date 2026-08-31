@@ -20,6 +20,32 @@ class ReviewClient:
         return self.response
 
 
+@pytest.mark.parametrize("field", list(ReviewResult.model_fields))
+@pytest.mark.parametrize("mutation", ["missing", "null", "wrong_type"])
+def test_live_content_review_requires_every_explicit_strict_check(field, mutation):
+    response = ReviewResult(approved=True).model_dump()
+    if mutation == "missing":
+        del response[field]
+    else:
+        response[field] = None if mutation == "null" else (
+            "true" if field == "approved" else "clear"
+        )
+    with pytest.raises(ValueError, match="invalid review response"):
+        independent_review(ReviewClient(response), item_id="q", subject="Economics",
+                           blueprint={}, candidate={}, specification={})
+
+
+@pytest.mark.parametrize("bad", [1, [], {}, [None], [1]])
+def test_live_content_review_rejects_invalid_issue_members(bad):
+    response = ReviewResult(approved=True).model_dump()
+    response["source_issues"] = bad
+    if bad == []:
+        response["approved"] = 1
+    with pytest.raises(ValueError, match="invalid review response"):
+        independent_review(ReviewClient(response), item_id="q", subject="Economics",
+                           blueprint={}, candidate={}, specification={})
+
+
 @pytest.mark.parametrize(
     "missing",
     ["observed_cognitive_operations", "cognitive_operations_fit", "reasoning_range_fit",

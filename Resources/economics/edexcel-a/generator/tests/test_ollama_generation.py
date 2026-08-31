@@ -297,7 +297,8 @@ def test_generation_reviews_fixed_stimuli_and_reauthors_extended_questions() -> 
             [candidate.prompt, *(part.prompt for part in candidate.parts)]
         )
         if original.section == "A" and original.stimulus_kind:
-            assert candidate == original
+            assert candidate.model_copy(update={"provenance": original.provenance}) == original
+            assert candidate.provenance == "reviewed-deterministic-contract"
         else:
             assert candidate_text != original_text
         assert candidate.marks == original.marks
@@ -509,7 +510,7 @@ def test_local_paper_three_uses_reviewed_seeded_fallback_after_paraphrases() -> 
     generated = generate_questions_with_ollama(client, blueprint, syllabus)
 
     assert client.authoring_calls == 3
-    assert generated.questions == [question]
+    assert generated.questions == [question.model_copy(update={"provenance": "reviewed-deterministic-contract"})]
 
 
 def test_local_paper_one_uses_reviewed_source_bound_fallback_after_paraphrases() -> None:
@@ -533,7 +534,7 @@ def test_local_paper_one_uses_reviewed_source_bound_fallback_after_paraphrases()
     generated = generate_questions_with_ollama(client, blueprint, syllabus)
 
     assert client.authoring_calls == 3
-    assert generated.questions == [question]
+    assert generated.questions == [question.model_copy(update={"provenance": "reviewed-deterministic-contract"})]
 
 
 def test_local_generation_uses_reviewed_fallback_after_scope_drift() -> None:
@@ -559,7 +560,7 @@ def test_local_generation_uses_reviewed_fallback_after_scope_drift() -> None:
     generated = generate_questions_with_ollama(client, blueprint, syllabus)
 
     assert client.authoring_calls == 3
-    assert generated.questions == [question]
+    assert generated.questions == [question.model_copy(update={"provenance": "reviewed-deterministic-contract"})]
 
 
 def test_multipart_question_keeps_verified_stem_and_source_separate() -> None:
@@ -606,7 +607,7 @@ def test_exact_data_chart_is_reviewed_without_model_rewriting() -> None:
     generated = generate_questions_with_ollama(client, blueprint, syllabus)
 
     assert client.authoring_calls == 0
-    assert generated.questions == [question]
+    assert generated.questions == [question.model_copy(update={"provenance": "reviewed-deterministic-contract"})]
     assert generated.questions[0].graph_params == question.graph_params
 
 

@@ -78,9 +78,10 @@ def test_paper_one_business_objectives_examination_has_two_developed_conflicts()
 
     assert question.number == "6(b)" and question.marks == 8
     assert question.prompt.startswith("With reference to the evidence")
-    assert len(question.indicative_content) == 8
-    assert guidance.count("conflict 1") == 4
-    assert guidance.count("conflict 2") == 4
+    assert question.assessment_contract["scheme_mode"] == "points"
+    assert guidance.count("ao1 (1 mark)") == 2
+    assert guidance.count("ao3 (1 mark)") == 2
+    assert "two distinct relevant qualifications" in guidance
     assert "amazon" in guidance and "logistics" in guidance
     assert "pressure on workers" in guidance
     assert "economies of scale" in guidance
@@ -96,7 +97,7 @@ def test_paper_one_regulation_assessment_is_water_case_specific() -> None:
     guidance = " ".join(question.indicative_content).casefold()
 
     assert question.number == "6(c)" and question.marks == 10
-    assert len(question.indicative_content) == 16
+    assert question.assessment_contract["kaa_marks"] == 6 and question.assessment_contract["evaluation_marks"] == 4
     assert "water companies" in guidance
     assert "pollution standards" in guidance
     assert "infrastructure" in guidance
@@ -167,20 +168,16 @@ def test_current_account_chart_has_exact_options_and_marking() -> None:
     assert _merge_question_text(question, question.source_text) == question.prompt
     keyed = next(option.text for option in mcq.options if option.label == mcq.correct_option)
     assert keyed == "The current account was in deficit in every year shown"
-    assert question.mark_breakdown == "AO1 1, AO2 2, AO3 2"
+    assert question.mark_breakdown == ""
     assert "Do not award a mark for any other option." in mcq.mark_scheme
-    assert "distance below zero" in calculation.prompt
-    assert any("1 mark for method" in point for point in calculation.mark_scheme)
+    assert "size of the current-account deficit" in calculation.prompt
+    assert any("1 AO2 mark" in point for point in calculation.mark_scheme)
     assert "deficit was wider in Year 10" in explanation.prompt
-    assert any("1 development mark" in point for point in explanation.mark_scheme)
+    assert any("AO3 (1 mark)" in point for point in explanation.mark_scheme)
     assert any("net exports" in point for point in explanation.mark_scheme)
-    assert any("from the source" in point for point in explanation.mark_scheme)
-    assert question.mark_scheme == [
-        point
-        for part in question.parts
-        for point in part.mark_scheme
-        if point.strip()
-    ]
+    assert explanation.assessment_objectives == {"AO1": 1, "AO3": 1}
+    assert question.mark_scheme == []
+    assert all(part.assessment_contract["published_scheme"] == part.mark_scheme for part in question.parts)
     _, x_label, values = line_chart_data("current_account_line_chart")
     assert x_label == "Year"
     assert len(values) == 10
@@ -199,8 +196,8 @@ def test_inequality_chart_has_visible_data_and_source_bound_marking() -> None:
     assert question.topic_id == "4.2"
     assert question.stimulus_kind == "inequality_line_chart"
     assert question.source_reference == "Figure 1"
-    assert question.mark_breakdown == "MCQ 1, AO1 1, AO2 1, AO3 2"
-    assert explanation.mark_breakdown == "AO1 1, AO2 1, AO3 2"
+    assert question.mark_breakdown == ""
+    assert explanation.mark_breakdown == "AO1 2, AO2 1, AO3 1"
     assert "fall in the Gini coefficient from 0.42 to 0.33" in explanation.prompt
     assert "targeted transfers" in question.source_text
     assert "a decrease of 0.09" in guidance
@@ -227,7 +224,7 @@ def test_state_policy_context_replaces_unrelated_consumer_choice_case() -> None:
     assert "preventive healthcare" in question.prompt
     assert "£12 billion" in question.source_text
     assert "working days lost" in question.source_text
-    assert explanation.mark_breakdown == "AO1 1, AO2 1, AO3 2"
+    assert explanation.mark_breakdown == "AO1 2, AO2 1, AO3 1"
     assert "productive capacity" in explanation.prompt
     assert "long-run aggregate supply" in guidance
     keyed = next(option.text for option in mcq.options if option.label == mcq.correct_option)
@@ -246,8 +243,8 @@ def test_trade_cycle_item_has_specific_recovery_analysis() -> None:
 
     assert question.topic_id == "2.1" and question.stimulus_kind == "trade_cycle"
     assert "recession, trough, recovery and boom" in question.prompt
-    assert question.mark_breakdown == "MCQ 1, AO1 1, AO2 1, AO3 2"
-    assert explanation.mark_breakdown == "AO1 1, AO2 1, AO3 2"
+    assert question.mark_breakdown == ""
+    assert explanation.mark_breakdown == "AO1 2, AO2 1, AO3 1"
     assert "cyclical unemployment" in explanation.prompt
     assert "derived demand for labour" in guidance
     assert "structural unemployment may remain" in guidance
@@ -262,7 +259,8 @@ def test_paper_two_policy_case_has_calibrated_questions_and_schemes() -> None:
     )
     questions = blueprint.questions[5:10]
 
-    assert [len(question.mark_scheme) for question in questions[:2]] == [5, 8]
+    assert len(questions[0].mark_scheme) == 5
+    assert questions[1].assessment_contract["scheme_mode"] == "points"
     assert all(
         len(question.mark_scheme) >= question.marks
         for question in questions[2:]
@@ -300,7 +298,8 @@ def test_custom_extended_schemes_include_standardisation_guidance() -> None:
 
     for question in (ten_marker, welfare_marker):
         guidance = " ".join(question.mark_scheme).casefold()
-        assert "level 1" in guidance and "level 2" in guidance
+        assert question.assessment_contract["kaa_bands"][0] == [1, 2]
+        assert len(question.assessment_contract["evaluation_descriptors"]) >= 2
         assert "accept an equivalent valid" in guidance
         assert "do not award" in guidance
 
@@ -333,7 +332,7 @@ def test_every_extended_response_has_complete_standardisation_guidance() -> None
             ):
                 continue
             guidance = " ".join(question.mark_scheme).casefold()
-            assert "level 1" in guidance, question.number
+            assert question.assessment_contract["scheme_mode"] == "levels", question.number
             assert "accept an equivalent valid" in guidance, question.number
             assert "do not award" in guidance, question.number
 
@@ -349,15 +348,14 @@ def test_tariff_item_uses_price_output_chain_and_matching_mcq() -> None:
 
     assert question.stimulus_kind == "tariff_context"
     assert "£100" in question.source_text and "£20 tariff" in question.source_text
-    assert explanation.mark_breakdown == "AO1 1, AO2 1, AO3 2"
+    assert explanation.mark_breakdown == "AO1 2, AO2 1, AO3 1"
     assert "imported solar panels" in explanation.prompt
     assert "40,000 panels" in guidance
     assert "elasticities" in guidance
     keyed = next(option.text for option in mcq.options if option.label == mcq.correct_option)
     assert keyed == "UK panel prices rise and imports are likely to fall"
-    assert question.mark_scheme == [
-        point for part in question.parts for point in part.mark_scheme if point.strip()
-    ]
+    assert question.mark_scheme == []
+    assert all(part.assessment_contract["published_scheme"] == part.mark_scheme for part in question.parts)
 
 
 def test_paper_two_section_c_has_evidenced_comparative_evaluation() -> None:
@@ -371,10 +369,10 @@ def test_paper_two_section_c_has_evidenced_comparative_evaluation() -> None:
 
     assert "£900" in trade.source_text and "20% tariff" in trade.source_text
     assert "retaliation" in trade_guidance and "comparative advantage" in trade_guidance
-    assert trade_guidance.count("ao4 strand") == 4
+    assert trade.assessment_contract["evaluation_marks"] == 9
     assert "gini coefficient is 0.39" in inequality.source_text.casefold()
     assert "childcare" in inequality_guidance and "wealth taxation" in inequality_guidance
-    assert inequality_guidance.count("ao4 strand") == 4
+    assert inequality.assessment_contract["evaluation_marks"] == 9
     assert trade.mark_scheme == trade.indicative_content
     assert inequality.mark_scheme == inequality.indicative_content
 
@@ -394,7 +392,7 @@ def test_pes_table_guidance_is_bound_to_elasticity_and_source_constraints() -> N
     )
     guidance = " ".join(explanation.mark_scheme).casefold()
 
-    assert explanation.mark_breakdown == "AO1 1, AO2 1, AO3 2"
+    assert explanation.mark_breakdown == "AO1 2, AO2 1, AO3 1"
     assert len(explanation.mark_scheme) == 4
     assert "price elasticity of supply" in guidance
     assert "spare capacity" in guidance
@@ -415,7 +413,7 @@ def test_ped_table_guidance_is_bound_to_age_group_data() -> None:
     )
     guidance = " ".join(explanation.mark_scheme).casefold()
 
-    assert explanation.mark_breakdown == "AO1 1, AO2 1, AO3 2"
+    assert explanation.mark_breakdown == "AO1 2, AO2 1, AO3 1"
     assert len(explanation.mark_scheme) == 4
     assert "-0.7" in guidance and "-0.4" in guidance
     assert "larger proportional response" in guidance
@@ -448,7 +446,7 @@ def test_cost_revenue_draw_has_exact_objective_marking_and_context() -> None:
     guidance = " ".join(drawing.mark_scheme)
 
     assert question.stimulus_kind == "cost_revenue_graph"
-    assert drawing.mark_breakdown == "Knowledge 2, Application 2"
+    assert drawing.mark_breakdown == "AO1 2, AO2 2"
     assert len(drawing.mark_scheme) == 4
     assert "AR curve" in guidance and "MR curve" in guidance
     assert "MC = MR" in guidance and "MR = 0" in guidance
@@ -479,17 +477,13 @@ def test_rational_choice_item_has_source_bound_marginal_reasoning() -> None:
     assert question.topic_id == "1.2.1"
     assert question.source_reference == ""
     assert "first event ticket costs £18" in question.source_text
-    assert explanation.mark_breakdown == "AO1 1, AO2 1, AO3 2"
+    assert explanation.mark_breakdown == "AO1 2, AO2 1, AO3 1"
     assert len(explanation.mark_scheme) == 4
     assert "marginal net benefit of £6" in guidance
     assert "second ticket" in guidance and "below its £18 marginal cost" in guidance
     assert not any("perfect information" in option.text for option in multiple_choice.options)
-    assert question.mark_scheme == [
-        point
-        for part in question.parts
-        for point in part.mark_scheme
-        if point.strip()
-    ]
+    assert question.mark_scheme == []
+    assert all(part.assessment_contract["published_scheme"] == part.mark_scheme for part in question.parts)
 
 
 def test_costs_item_uses_exact_short_run_shutdown_data() -> None:
@@ -504,7 +498,7 @@ def test_costs_item_uses_exact_short_run_shutdown_data() -> None:
     assert question.topic_id == "3.3"
     assert question.stimulus_kind == "shutdown_cost_table"
     assert question.source_reference == "Table 1"
-    assert explanation.mark_breakdown == "AO1 1, AO2 1, AO3 2"
+    assert explanation.mark_breakdown == "AO1 2, AO2 1, AO3 1"
     assert len(explanation.mark_scheme) == 4
     assert "price £18 exceeds AVC £14 but is below AC £22" in guidance
     assert "£2,000 operating loss" in guidance
@@ -567,9 +561,9 @@ def test_paper_three_supply_guidance_is_bound_to_figure_and_extract() -> None:
     assert "Extract A reports" in question.source_text
     assert "15%" in guidance and "6%" in guidance
     assert "capacity" in guidance and "contracts" in guidance
-    assert "supply is price inelastic" in guidance
-    assert "pes = 6% / 15% = 0.4" in guidance
-    assert "do not require the calculation" in guidance
+    assert "price-inelastic supply" in guidance
+    assert "6%" in guidance and "15%" in guidance
+    assert "qualitative comparison is sufficient" in guidance
     assert "more elastic over time" not in guidance
     assert question.mark_scheme == question.indicative_content
 
@@ -591,7 +585,7 @@ def test_paper_three_healthcare_externality_is_source_bound() -> None:
     assert "market output is 117 million doses" in guidance
     assert "socially efficient output of 100 million doses" in guidance
     assert "£6 external marginal" in guidance
-    assert "marginal social cost exceeds marginal private cost" in guidance
+    assert "Marginal social cost includes marginal private cost plus marginal external cost" in guidance
     assert "deadweight welfare loss" in guidance
     assert "streetlights" not in guidance
     assert question.mark_scheme == question.indicative_content
@@ -607,7 +601,7 @@ def test_paper_three_healthcare_section_remains_case_bound() -> None:
     labour_guidance = " ".join(labour.mark_scheme).casefold()
     assert labour.source_text.startswith("Extract E reports")
     assert "vacancies" in labour.source_text and "14 weeks" in labour.source_text
-    assert len(labour.mark_scheme) == 8
+    assert labour.assessment_contract["scheme_mode"] == "points"
     assert "occupational immobility" in labour_guidance
     assert "annual staff turnover reached 12%" in labour_guidance
 
@@ -623,10 +617,11 @@ def test_paper_three_healthcare_section_remains_case_bound() -> None:
     assert "4% planned-investment" in capacity_guidance
     assert "energy-sector" not in capacity_guidance
     assert "extract e" in capacity_guidance
-    assert capacity_guidance.count("evaluation strand") == 4
-    assert "award 2 only when" in capacity_guidance
+    assert capacity.assessment_contract["evaluation_marks"] == 9
+    assert "stronger assessment develops" in capacity_guidance
     assert "no particular condition is prescribed" in capacity_guidance
-    assert "short-run aggregate supply left" in capacity.source_text
+    assert "Imported component invoices and negotiated wages both rose" in capacity.source_text
+    assert "short-run aggregate supply left" not in capacity.source_text
 
     state_guidance = " ".join(state.mark_scheme).casefold()
     assert "greater state intervention in healthcare and pharmaceuticals" in state.prompt
@@ -634,7 +629,7 @@ def test_paper_three_healthcare_section_remains_case_bound() -> None:
     assert "healthcare" in state_guidance
     assert "extract f" in state_guidance
     assert "energy" not in state_guidance
-    assert state_guidance.count("evaluation strand") == 4
+    assert state.assessment_contract["evaluation_marks"] == 9
     assert "no named instrument or condition is compulsory" in state_guidance
 
 
@@ -647,13 +642,14 @@ def test_paper_three_business_growth_guidance_examines_two_cost_factors() -> Non
     guidance = " ".join(question.mark_scheme).casefold()
 
     assert question.topic_id == "3.1" and question.marks == 8
-    assert len(question.mark_scheme) == 8
+    assert question.assessment_contract["scheme_mode"] == "points"
     assert question.source_text.startswith("Figure 2 shows")
     assert "Extract A reports" in question.source_text
     assert "unit input costs by 4%" in question.source_text
     assert "capital spending increased by 5%" in guidance
-    assert guidance.count("factor 1") == 4
-    assert guidance.count("factor 2") == 4
+    assert guidance.count("ao1 (1 mark)") == 2
+    assert guidance.count("ao3 (1 mark)") == 2
+    assert "two distinct relevant qualifications" in guidance
     assert "long-run average cost (lrac)" in guidance
     assert "cost per unit and lrac" in guidance
     assert guidance.count("examines the limit") == 2
@@ -673,17 +669,18 @@ def test_paper_three_market_failure_discussion_is_welfare_focused() -> None:
 
     assert question.topic_id == "1.3" and question.marks == 12
     assert "significant loss of economic welfare" in question.prompt
-    assert "air-pollution costs" in question.source_text
-    assert "resilient shared networks" in question.source_text
+    assert "respiratory treatment without reimbursement" in question.source_text
+    assert "premises which paid no fee" in question.source_text
     assert "msc > mpc" in guidance
     assert "msb > mpb" in guidance
     assert "deadweight welfare loss" in guidance
-    assert guidance.count("ao3 route a") == 2
-    assert guidance.count("ao3 route b") == 2
+    assert question.assessment_contract["kaa_marks"] == 8
+    assert question.assessment_contract["evaluation_marks"] == 4
     assert "need not be classified as a pure public good" in guidance
     assert "must not replace" in guidance
     assert "contracts, reputation, property rights" in guidance
-    assert "level 3 (9–12)" in guidance
+    assert question.assessment_contract["kaa_bands"][-1] == [6, 8]
+    assert question.assessment_contract["evaluation_bands"][-1] == [3, 4]
     assert "streetlights" not in guidance
     assert question.mark_scheme == question.indicative_content
 
@@ -699,13 +696,14 @@ def test_paper_three_capacity_essay_balances_micro_and_macro_routes() -> None:
     assert question.topic_id == "2.3" and question.marks == 25
     assert "energy-sector productive capacity" in question.prompt
     assert "productive potential, output and price level of the UK economy" in question.prompt
-    assert guidance.count("AO1 Micro") == 2 and guidance.count("AO1 Macro") == 2
-    assert guidance.count("AO2 Micro") == 2 and guidance.count("AO2 Macro") == 2
-    assert guidance.count("AO3 Micro") == 4 and guidance.count("AO3 Macro") == 4
-    assert guidance.count("AO4 Micro") == 4 and guidance.count("AO4 Macro") == 4
-    assert "AO4 Judgement" in guidance
+    assert question.assessment_objectives == {"AO1": 4, "AO2": 4, "AO3": 8, "AO4": 9}
+    assert question.assessment_contract["kaa_marks"] == 16
+    assert question.assessment_contract["evaluation_marks"] == 9
+    assert "microeconomic and macroeconomic" in guidance
+    assert "not additive" in guidance
+    assert "supported conclusion" in guidance
     assert "11%" in guidance and "5%" in guidance
-    assert "cannot reach Level 4" in guidance
+    assert "strongest answer integrates relevant microeconomic and macroeconomic effects" in guidance
     assert "classical view" not in guidance
     assert question.mark_scheme == question.indicative_content
 
@@ -721,13 +719,14 @@ def test_paper_three_state_essay_balances_policy_scopes() -> None:
     assert question.topic_id == "4.5" and question.marks == 25
     assert "greater state intervention" in question.prompt
     assert "public investment, taxation, regulation or trade policy" in question.prompt
-    assert guidance.count("AO1 Micro") == 2 and guidance.count("AO1 Macro") == 2
-    assert guidance.count("AO2 Micro") == 2 and guidance.count("AO2 Macro") == 2
-    assert guidance.count("AO3 Micro") == 4 and guidance.count("AO3 Macro") == 4
-    assert guidance.count("AO4 Micro") == 4 and guidance.count("AO4 Macro") == 4
-    assert "AO4 Judgement" in guidance
+    assert question.assessment_objectives == {"AO1": 4, "AO2": 4, "AO3": 8, "AO4": 9}
+    assert question.assessment_contract["kaa_marks"] == 16
+    assert question.assessment_contract["evaluation_marks"] == 9
+    assert "microeconomic and macroeconomic" in guidance
+    assert "not additive" in guidance
+    assert "supported conclusion" in guidance
     assert "14%" in guidance
-    assert "cannot reach Level 4" in guidance
+    assert "strongest answer integrates relevant microeconomic and macroeconomic effects" in guidance
     assert "defence (6%)" not in guidance and "health care (18%)" not in guidance
     assert question.mark_scheme == question.indicative_content
 
@@ -872,8 +871,9 @@ def test_household_savings_calculation_is_answerable_from_the_chart() -> None:
 
     assert question.stimulus_kind == "household_savings_line_chart"
     assert "range" in calculation.prompt.casefold()
-    assert any("22.8 − 4.8" in point for point in calculation.mark_scheme)
-    assert any("18.0 percentage points" in point for point in calculation.mark_scheme)
+    values = question.source_instance.values
+    assert f"Working: {max(values)} − {min(values)}" in calculation.mark_scheme
+    assert f"Saving rate range: {max(values) - min(values):.1f} percentage points" in calculation.mark_scheme
     assert any("precautionary" in point.casefold() for point in explanation.mark_scheme)
     assert set(calculation.mark_scheme).isdisjoint(explanation.mark_scheme)
 
@@ -915,6 +915,7 @@ def test_pes_calculation_prompt_names_the_market_used():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
     config.sections[0].part_command_words[0] = ["calculate", "mcq"]
+    config.sections[0].stimulus_slots[0] = ["pes_data_table"]
 
     for seed in range(1000):
         blueprint = build_paper_blueprint(config, syllabus, seed=seed)
@@ -1060,7 +1061,7 @@ def test_market_structure_sources_are_specific_not_template_like():
     blueprint = _blueprint_with_section_b_topic(config, syllabus, "3.4")
     section_b_text = " ".join(question.source_text for question in blueprint.questions if question.section == "B")
 
-    assert "video games" in section_b_text or "digital" in section_b_text
+    assert "digital-games" in section_b_text and "development" in section_b_text
     assert "A UK market linked to market structures" not in section_b_text
     assert "average prices changed" not in section_b_text
 
@@ -1088,7 +1089,8 @@ def test_section_b_sources_use_realistic_named_cases_not_generic_templates():
 
     assert "A UK case study on" not in section_b_text
     assert "changed their behaviour over three years" not in section_b_text
-    assert any(name in section_b_text for name in ["Ryanair", "Tesco", "CMA", "Ofgem", "Bank of England"])
+    assert "bakery" in section_b_text and "flour" in section_b_text
+    assert all(q.source_instance.provenance == "illustrative-generated" for q in blueprint.questions)
     assert max(len(source) for source in section_b_sources) - min(len(source) for source in section_b_sources) > 80
     assert sum(any(token in source for token in ["£", "%", "2023", "2024"]) for source in section_b_sources) >= 3
 
@@ -1102,7 +1104,9 @@ def test_paper_2_sources_use_real_world_macro_data_and_varied_lengths():
     section_b_text = " ".join(section_b_sources)
 
     assert "A UK case study on" not in section_b_text
-    assert any(name in section_b_text for name in ["ONS", "Bank of England", "World Bank", "IMF", "UK trade"])
+    assert "monthly orders fall from 120 to 100" in section_b_text
+    assert "capacity is 160" in section_b_text
+    assert all(q.source_instance.provenance == "illustrative-generated" for q in blueprint.questions)
     assert max(len(source) for source in section_b_sources) - min(len(source) for source in section_b_sources) > 80
     assert sum(any(token in source for token in ["£", "%", "$", "2023", "2024"]) for source in section_b_sources) >= 3
 
@@ -1121,7 +1125,7 @@ def test_section_c_extracts_are_short_realistic_and_not_formulaic():
 
     assert all(80 <= len(source) <= 360 for source in section_c_sources)
     assert all("In 2025, a UK report highlighted an issue" not in source for source in section_c_sources)
-    assert any(name in " ".join(section_c_sources) for name in ["HS2", "TikTok", "Ofgem", "Low Pay Commission", "CMA", "ULEZ", "John Lewis"])
+    assert any("bakery" in source or "own-brand" in source for source in section_c_sources)
 
 
 def test_low_level_section_b_supply_sources_are_long_enough_for_extract_pages():
@@ -1132,7 +1136,8 @@ def test_low_level_section_b_supply_sources_are_long_enough_for_extract_pages():
     section_b_sources = [question.source_text for question in blueprint.questions if question.section == "B"]
 
     assert min(len(source) for source in section_b_sources[:4]) >= 300
-    assert any(name in " ".join(section_b_sources) for name in ["semiconductor", "SMMT", "housebuilding", "National Grid"])
+    assert "semiconductor" in " ".join(section_b_sources).casefold()
+    assert "specialist components" in " ".join(section_b_sources)
 
 
 def test_low_level_section_b_supply_questions_are_not_bare_topic_prompts():
@@ -1146,9 +1151,9 @@ def test_low_level_section_b_supply_questions_are_not_bare_topic_prompts():
     assert "effect of supply" not in prompt_text
     assert "likely effects of supply" not in prompt_text
     assert "affecting supply" not in prompt_text
-    assert "semiconductors" in prompt_text
-    assert "price elasticity of supply" in prompt_text
-    assert "production costs" in prompt_text
+    assert "capacity and input constraints" in prompt_text
+    assert "short-run supply response" in prompt_text
+    assert "short-run and long-run" in prompt_text
 
 
 def test_section_a_prompts_and_mcqs_use_topic_specific_language():

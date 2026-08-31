@@ -42,7 +42,8 @@ def test_source_booklet_has_figure_extracts_and_source_attributions(tmp_path):
     assert "Extract B" in text
     assert "Extract C" in text
     assert "Extract D" in text
-    assert "Source: adapted from public reports and economic data" in text
+    assert "Source: fictional illustrative case; not official statistics" in text
+    assert "adapted from public reports" not in text
     assert "constructed economic data" not in text
 
 
@@ -50,6 +51,10 @@ def test_source_booklet_extracts_have_reference_style_line_numbers(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
     blueprint = build_paper_blueprint(config, syllabus, seed=42)
+    # Exercise the tenth-line formatter with a deliberately long extract;
+    # original generated source lengths are content-dependent.
+    sources = [q.source_text for q in blueprint.questions if q.section == "B"]
+    blueprint.questions[5].source_text = " ".join(sources[:2])
     output = tmp_path / "source.pdf"
 
     render_source_booklet(blueprint, syllabus, output)

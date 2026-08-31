@@ -481,6 +481,9 @@ def _evidence_ids(raw: dict[str, Any]) -> list[str]:
 
 
 def _assessment_contract(raw: dict[str, Any]) -> dict[str, Any]:
+    instance_contract = raw.get("assessment_contract")
+    if isinstance(instance_contract, dict) and instance_contract:
+        return instance_contract
     contract = raw.get("contract")
     if isinstance(contract, dict):
         return contract

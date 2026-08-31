@@ -4,6 +4,7 @@ import math
 import random
 import re
 
+from pastpapergen.assessment_contracts import bind_question
 from pastpapergen.models import (
     MultipleChoiceOption,
     PaperBlueprint,
@@ -173,6 +174,7 @@ def build_paper_blueprint(
             )
         absolute_question_number += _section_question_increment(config.id, section.name)
 
+    questions = [bind_question(question, seed or 0) for question in questions]
     return PaperBlueprint(
         seed=seed,
         paper_id=config.id,
@@ -2399,10 +2401,10 @@ def _paper_3_source_text(
     source_reference: str = "",
 ) -> str:
     context = case_title.lower() if case_title else "the case-study market"
-    first = points[0].rstrip(".") if points else topic_title.lower()
-    second = points[1].rstrip(".") if len(points) > 1 else first
     price_change = 8 + (variant + index * 7) % 29
     output_change = 2 + (variant // 7 + index * 5) % 16
+    if _normal_topic_key(topic_title) == "supply" and index == 0:
+        output_change = min(output_change, price_change // 2)
     firm_count = 24 + (variant // 11 + index * 13) % 67
     investment = 3 + (variant // 17 + index * 3) % 18
     year = 2022 + (variant + index) % 4
@@ -2418,8 +2420,17 @@ def _paper_3_source_text(
         "while long-term supply contracts reduced unit input costs by 4%. "
     )
     if _normal_topic_key(topic_title) == "labour market" and index == 1:
+        if "tourism" in context:
+            return (
+                f"{extract_ref} reports that unfilled chef and hospitality-supervisor vacancies in {context} "
+                "rose by 28%, with a median vacancy duration of 14 weeks. Employers increased average pay "
+                "by 9%, but overtime also rose and annual staff turnover reached 12%. Training experienced chefs "
+                "takes several years, while seasonal contracts, late shifts and expensive housing near resorts "
+                "make retention difficult. Hotels are considering apprenticeships, recognition of overseas experience, "
+                "staff accommodation and more predictable schedules. Small operators cannot offer every benefit."
+            )
         return (
-            f"{extract_ref} reports that unfilled clinical and pharmaceutical vacancies in {context} "
+            f"{extract_ref} reports that unfilled specialist vacancies in {context} "
             "rose by 28%, with a median vacancy duration of 14 weeks. Employers increased average pay "
             "by 9%, but overtime also rose and annual staff turnover reached 12%. Training for specialist "
             "roles can take several years, and professional registration limits how quickly suitably "
@@ -2438,8 +2449,8 @@ def _paper_3_source_text(
         )
     templates = (
         (
-            f"{figure_ref} shows that prices in {context} changed by {price_change}% in {year}, while "
-            f"output changed by {output_change}%. {extract_ref} reports that analysts linked the adjustment to {first}. There "
+            f"{figure_ref} shows that prices in {context} increased by {price_change}% in {year}, while "
+            f"quantity supplied increased by {output_change}%, with other supply determinants held constant. {extract_ref} reports differences in producers' ability to respond. There "
             f"were {firm_count} active suppliers, but their ability to alter output differed because "
             "capacity, contracts and access to inputs could not be changed immediately. Consumer "
             "groups said substitution became easier over time, while producers argued that higher "
@@ -2448,39 +2459,38 @@ def _paper_3_source_text(
         (
             investment_intro
             +
-            f"Larger businesses said {first} affected their average costs, while smaller firms reported "
-            "more limited access to finance and skilled labour. Managers warned that rapid expansion "
-            f"could create diseconomies and coordination problems. Evidence concerning {second} suggested "
-            "that the benefits of scale depended on demand remaining strong enough to use the additional capacity."
+            "Larger businesses installed specialist machinery, while smaller firms reported rejected loan "
+            "applications and unfilled skilled posts. One operator combined its purchasing orders across "
+            "three sites; another added a management layer and reported longer approval times. Several "
+            "customers had not renewed contracts beyond the next six months."
         ),
         (
-            f"Policy makers reviewing {context} focused on {first}. Households faced different effects "
-            f"after prices changed by {price_change}%, because the product represented a larger share "
-            "of expenditure for some income groups. Business representatives supported predictable "
-            "rules but said compliance costs could deter entry. Campaigners reported air-pollution costs "
-            "borne by third parties and wider benefits from investment in resilient shared networks that "
-            f"private firms could not fully capture. Evidence on {second} remained contested. The final welfare effect depended on the size "
-            "of any market failure, the responsiveness of consumers and firms, and uncertainty when "
-            "valuing effects on third parties."
+            f"A household survey covered {context} during a later twelve-month period, when prices changed "
+            f"by {price_change}%. Lower-income respondents spent a larger share of their budget on the product. "
+            "Residents near production sites paid for extra cleaning and respiratory treatment without "
+            "reimbursement; pollution measurements came from only two stations. A shared network's backup "
+            "supply prevented outages at neighbouring premises which paid no fee to its operator. "
+            "A proposed permit would require the same annual "
+            "inspection fee from small and large producers. The industry association preferred grants for "
+            "cleaner equipment; residents requested immediate emissions limits and published monitoring results."
         ),
         (
             f"Changes in {context} affected the wider economy in {year}. Output in the sector changed "
-            f"by {output_change}% and planned investment by {investment}%, influencing employment, "
-            "aggregate demand and productive capacity. Economists linked the evidence to capital "
-            "deepening, productivity and the economy's long-run productive potential. "
-            "Higher imported-input and wage costs could shift short-run aggregate supply left and raise inflation, while new capital and infrastructure "
-            "could increase long-run aggregate supply. The scale of the effect depended on spare "
-            "capacity, business confidence, import dependence and whether policy crowded private "
-            "investment in or out."
+            f"by {output_change}% and planned investment by {investment}%. Firms ordered replacement machinery "
+            "and additional production lines; some equipment would be imported and delivery would take "
+            "eighteen months. Plants reported unused shifts, while nearby employers advertised unfilled "
+            "maintenance posts. Imported component invoices and negotiated wages both rose. A local college "
+            "offered technical courses, but enrolment places were limited. Several firms required signed "
+            "customer contracts before committing the remaining funds."
         ),
         (
             f"The government examined the long-run role of the state in {context} after international prices moved "
-            f"by {price_change}% in {year}. Officials considered {first}, alongside taxation, public "
-            "spending, regulation and trade policy. Supporters of intervention argued that investment "
-            "could improve resilience, productivity and regional employment. Critics emphasised the "
-            f"opportunity cost and the possibility of government failure. Evidence on {second} showed "
-            "that the distribution of gains and losses, effects on imports and exports, and the time "
-            "needed for supply to respond were central to the final judgement."
+            f"by {price_change}% in {year}. A proposed infrastructure grant would be funded partly by a "
+            "levy on businesses outside the sector. The project plan listed a three-year construction "
+            "period and imported equipment; local contractors requested a share of the work. A previous "
+            "project exceeded its budget, and the regional audit office requested revised cost estimates. "
+            "Two firms postponed private projects pending the grant decision, while a consumer group "
+            "asked officials to publish which households would receive improved access."
         ),
     )
     return templates[index % len(templates)]

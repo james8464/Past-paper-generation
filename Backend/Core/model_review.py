@@ -145,8 +145,10 @@ def independent_review(
             ensure_ascii=False,
         )
     )
+    if not isinstance(raw, dict) or set(ReviewResult.model_fields) - raw.keys():
+        raise ValueError(f"{item_id} returned an invalid review response: missing checks")
     try:
-        result = ReviewResult.model_validate(raw)
+        result = ReviewResult.model_validate(raw, strict=True)
     except ValidationError as error:
         raise ValueError(f"{item_id} returned an invalid review response") from error
     if result.issues and result.approved:

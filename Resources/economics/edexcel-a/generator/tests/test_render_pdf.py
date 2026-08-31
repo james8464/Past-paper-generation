@@ -516,7 +516,8 @@ def test_market_share_chart_uses_reference_style_labels(tmp_path):
     text = _pdf_text(output)
 
     assert "26.6%" in text
-    assert "Lloyds" in text
+    assert "firm a" in _normalised(text)
+    assert "Illustrative" in text
 
 
 def test_section_a_question_3_not_rotated_or_garbled(tmp_path):
@@ -554,7 +555,7 @@ def test_section_a_draw_question_and_mcq_share_reference_page(tmp_path):
     pages = _pdf_text(output).split("\f")
     draw_page = next(page for page in pages if "draw a" in page.lower())
     assert "draw a" in draw_page.lower()
-    assert "which one of the following" in draw_page.lower()
+    assert "which one of the following" in _normalised(draw_page).lower()
     assert f"Total for Question {draw_question.number} = 5 marks" in draw_page
     assert "TOTAL FOR SECTION A = 25 MARKS" in _pdf_text(output)
     assert "Read the following extracts (A to D) before answering Question 6" in _pdf_text(output)
@@ -619,6 +620,8 @@ def test_section_a_calculate_question_moves_mcq_to_next_page_when_spacing_is_tig
 
 
 def test_section_a_calculate_page_fills_remaining_answer_space(tmp_path):
+    import pymupdf
+
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
     config.sections[0].part_command_words[0] = ["calculate", "mcq"]
@@ -634,7 +637,16 @@ def test_section_a_calculate_page_fills_remaining_answer_space(tmp_path):
     prompt_text = _normalised(question.parts[0].prompt)
     page_number = next(index + 1 for index, page in enumerate(pages) if prompt_text in _normalised(page))
 
-    assert _answer_rule_count(output, page_number) >= 12
+    # The heading now sits inside the frame. Check the available response area
+    # reaches the unchanged safe footer, rather than rewarding a crossed title
+    # merely because that invalid geometry made room for two extra rules.
+    assert _answer_rule_count(output, page_number) >= 10
+    with pymupdf.open(output) as document:
+        page = document[page_number - 1]
+        rules = [item[1].y for path in page.get_drawings() for item in path["items"]
+                 if item[0] == "l" and abs(item[1].y - item[2].y) < .1
+                 and abs(item[1].x - item[2].x) > 350]
+        assert max(rules) >= page.rect.height - 128 - 24
 
 
 def test_paper_two_three_part_page_uses_reference_answer_space(tmp_path) -> None:

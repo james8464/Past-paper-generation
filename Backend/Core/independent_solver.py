@@ -29,6 +29,7 @@ from Backend.Core.subjects.accounting import solve_accounting_calculation
 from Backend.Core.subjects.computer_science_contracts import (
     solve_computer_science_contract,
 )
+from Backend.Core.subjects.economics_contracts import solve_economics_contract
 
 
 class SolverClient(Protocol):
@@ -114,6 +115,8 @@ class IndependentSolver:
         deterministic = solve_accounting_calculation(raw_item)
         if deterministic is None:
             deterministic = solve_computer_science_contract(raw_item)
+        if deterministic is None:
+            deterministic = solve_economics_contract(raw_item)
         expression = context.get("calculation_expression")
         variables = context.get("calculation_variables")
         expressions = context.get("calculation_expressions")

@@ -224,8 +224,8 @@ def generate_questions_with_ollama(
             if stored is not None:
                 try:
                     candidate = QuestionBlueprint.model_validate(stored)
-                    if _uses_review_only_generation(question):
-                        if candidate != question:
+                    if _uses_review_only_generation(question) or candidate.provenance == "reviewed-deterministic-contract":
+                        if candidate.model_copy(update={"provenance": question.provenance}) != question:
                             raise ValueError("stored immutable question changed")
                     else:
                         _validate_ai_question(question, candidate)
@@ -254,17 +254,18 @@ def generate_questions_with_ollama(
                 client,
                 item_id=f"question-{question.number}",
                 subject="Edexcel A-level Economics A",
-                blueprint=question,
-                candidate=question,
+                blueprint=_multipart_review_view(question),
+                candidate=_multipart_review_view(question),
                 specification=_review_specification(topic, question),
             )
+            reviewed = question.model_copy(update={"provenance": "reviewed-deterministic-contract"})
             if checkpoint_store is not None:
                 checkpoint_store.save_payload(
                     checkpoint_key,
-                    question.model_dump(mode="json"),
+                    reviewed.model_dump(mode="json"),
                 )
             with results_lock:
-                results[question_index] = question
+                results[question_index] = reviewed
             return (
                 f"Reviewed immutable question {index}/{total}: "
                 f"{question.number} ({topic.title})"
@@ -313,6 +314,7 @@ def generate_questions_with_ollama(
                     candidate=_multipart_review_view(candidate),
                     specification=_review_specification(topic, candidate),
                 )
+                candidate = candidate.model_copy(update={"provenance": "ai-authored-stem-reviewed-contract"})
                 break
             except ValueError as error:
                 failure = str(error)
@@ -334,14 +336,14 @@ def generate_questions_with_ollama(
                                 client,
                                 item_id=f"question-{question.number}",
                                 subject="Edexcel A-level Economics A",
-                                blueprint=question,
-                                candidate=question,
+                                blueprint=_multipart_review_view(question),
+                                candidate=_multipart_review_view(question),
                                 specification=_review_specification(topic, question),
                             )
                         except ValueError as review_error:
                             failure = str(review_error)
                         else:
-                            candidate = question
+                            candidate = question.model_copy(update={"provenance": "reviewed-deterministic-contract"})
                             break
                     raise ValueError(
                         f"question-{question.number} failed after 3 reviewed attempts: {failure}"
@@ -408,7 +410,7 @@ def review_blueprint_difficulty(
             options = getattr(part, "options", [])
             require_solution_matches_scheme(
                 solution,
-                {"marks": part.marks, "mark_scheme": [*part.mark_scheme, *part.indicative_content]},
+                solver_item,
                 expected_choice=(next((o.text for o in options if o.label == part.correct_option), "")
                                  if options else None),
             )
@@ -453,7 +455,11 @@ def _question_solver_item(
         "authoring_context": {"expected_answer_form": (
             "numeric" if part.command_word.casefold() in {"calculate", "determine"}
             else "constructed_response"
-        )},
+        ), **({"economics_input_contract": {
+            "source": question.source_instance.model_dump(mode="json"),
+            "source_fingerprint": question.source_instance.fingerprint(),
+            "requested_prompt": part.prompt, "marks": part.marks,
+        }} if part.command_word == "calculate" and question.source_instance else {})},
     }
 
 
@@ -471,6 +477,7 @@ def _question_demand_items(question: QuestionBlueprint) -> list[dict[str, object
                 "marks": part.marks,
                 "command_word": part.command_word,
                 "prompt": part.prompt,
+                "assessment_objectives": part.assessment_objectives,
             }
             for part in question.parts
         ]
@@ -481,6 +488,7 @@ def _question_demand_items(question: QuestionBlueprint) -> list[dict[str, object
             "marks": question.marks,
             "command_word": question.command_word,
             "prompt": question.prompt,
+            "assessment_objectives": question.assessment_objectives,
         }
     ]
 
@@ -508,8 +516,8 @@ def _review_specification(
         "rendered_stimulus": {
             **candidate_stimulus_data(question),
             "description": _stimulus_description(question.stimulus_kind),
-            "source_text": question.source_text,
-            "placement": "The complete stimulus/source text is rendered between the question stem and its subparts.",
+            "source_text": question.source_instance.context if question.source_instance else question.source_text,
+            "placement": "Candidate source projection; question stem and part-level responses are reviewed separately.",
         },
     }
 
@@ -618,6 +626,10 @@ def _validate_ai_question(
         original.indicative_content,
         original.parts,
         original.graph_params,
+        original.source_instance,
+        original.assessment_objectives,
+        original.assessment_contract,
+        original.scheme_mode,
     )
     actual_assessment_data = (
         candidate.source_reference,
@@ -628,6 +640,10 @@ def _validate_ai_question(
         candidate.indicative_content,
         candidate.parts,
         candidate.graph_params,
+        candidate.source_instance,
+        candidate.assessment_objectives,
+        candidate.assessment_contract,
+        candidate.scheme_mode,
     )
     if actual_assessment_data != verified_assessment_data:
         raise ValueError(

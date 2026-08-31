@@ -281,7 +281,7 @@ def finalize_generated_documents(
         )
     )
 
-    conform_generated_documents(args.subject, args.paper, paths)
+    pagination_validation = conform_generated_documents(args.subject, args.paper, paths) or {}
     pdf_validation = {
         role: validate_pdf_for_release(
             path,
@@ -292,6 +292,8 @@ def finalize_generated_documents(
         for role, path in paths.items()
         if path.suffix.casefold() == ".pdf"
     }
+    for role, pagination in pagination_validation.items():
+        pdf_validation[role]["pagination_policy"] = pagination
     manifest_path = _write_package_manifest(
         args=args,
         capability=capability,

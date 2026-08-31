@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 
+from Backend.Core.layout_conformance import runtime_page_count_policy
 from tools.build_layout_masters import ROOT, write_layout_master
 
 OUTPUT = ROOT / "Reference Corpus" / "derived" / "layout-masters"
@@ -144,11 +145,7 @@ def main() -> int:
             },
             "mark-scheme": {
                 "page_count": len(scheme_payload["pages"]),
-                "page_count_policy": {
-                    "kind": "exact",
-                    "minimum": len(scheme_payload["pages"]),
-                    "maximum": len(scheme_payload["pages"]),
-                },
+                "page_count_policy": runtime_page_count_policy(family, "mark-scheme", len(scheme_payload["pages"])),
                 "page_boxes": [page["boxes"] for page in scheme_payload["pages"]],
             },
         }

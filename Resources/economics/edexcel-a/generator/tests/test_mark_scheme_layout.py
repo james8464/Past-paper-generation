@@ -5,7 +5,6 @@ import pytest
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.render_pdf import (
-    MARK_SCHEME_MIN_PAGES,
     _mark_scheme_rows,
     _ms_row_height,
     _one_mark_points,
@@ -37,7 +36,7 @@ def test_mark_scheme_uses_reference_style_sections(tmp_path):
     assert "Mark" in text
     assert "Knowledge" in text
     assert "Application" in text
-    assert _pdf_page_count(output) >= MARK_SCHEME_MIN_PAGES["paper_1"]
+    _assert_complete_contract_scheme(output, blueprint)
 
 
 def test_mark_scheme_has_subquestion_tables_mcq_explanations_and_levels(tmp_path):
@@ -55,11 +54,11 @@ def test_mark_scheme_has_subquestion_tables_mcq_explanations_and_levels(tmp_path
     assert "1(b)" in text
     assert "The only correct answer is" in text
     assert "Indicative content" in text
-    assert "Level 1" in text
-    assert "Level 2" in text
-    assert "Level 3" in text
-    assert "Level 4" in text
-    assert "Level 5" in text
+    assert "KAA 1-4 marks:" in text
+    assert "KAA 13-16 marks:" in text
+    assert "Evaluation 7-9 marks:" in text
+    assert "0 for no relevant" in text
+    assert "Level 5" not in text
 
 
 def test_mark_scheme_front_matter_matches_reference_structure(tmp_path):
@@ -149,8 +148,8 @@ def test_mark_scheme_calculation_rows_include_specific_working(tmp_path):
     render_mark_scheme(blueprint, syllabus, output)
 
     text = _pdf_text(output)
-    assert "5% x 1.4 = 7%" in text
-    assert "quantity demanded increases by 7%" in text.lower()
+    assert "Working: -1.4 × (-5)" in text
+    assert "Quantity-demanded percentage change: 7.0%" in text
 
 
 def test_mark_scheme_generic_data_calculation_matches_table_values(tmp_path):
@@ -163,9 +162,8 @@ def test_mark_scheme_generic_data_calculation_matches_table_values(tmp_path):
     render_mark_scheme(blueprint, syllabus, output)
 
     text = " ".join(_pdf_text(output).split())
-    assert "((88.0 - 74.2) / 74.2) x 100 = 18.6%" in text
-    assert "quantity demanded index increased by" in text.lower()
-    assert "18.6%." in text
+    assert "Working: (88.0 − 74.2) ÷ 74.2 × 100" in text
+    assert "Quantity-index percentage increase: 18.6%" in text
     assert "Value A" not in text
 
 
@@ -179,148 +177,29 @@ def test_mark_scheme_rows_fit_within_single_page_after_long_extracts():
     assert max(row_heights) <= 720
 
 
-def test_paper_3_mark_scheme_matches_reference_pagination(tmp_path):
-    import pymupdf as fitz
-
+@pytest.mark.parametrize("paper_id,seed", [("paper_1", 42), ("paper_1", 26080122), ("paper_2", 42), ("paper_3", 42)])
+def test_contract_scheme_pagination_preserves_all_credit_without_filler(tmp_path, paper_id, seed):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
-    blueprint = build_paper_blueprint(
-        load_builtin_paper_config("paper_3"),
-        syllabus,
-        seed=42,
-    )
+    blueprint = build_paper_blueprint(load_builtin_paper_config(paper_id), syllabus, seed=seed)
     output = tmp_path / "ms.pdf"
-
     render_mark_scheme(blueprint, syllabus, output)
-
-    document = fitz.open(output)
-    try:
-        assert document.page_count == 31
-        starts = {
-            "1(a)": 4,
-            "1(b)": 5,
-            "1(c)": 7,
-            "1(d)": 10,
-            "1(e)": 14,
-            "2(a)": 17,
-            "2(b)": 19,
-            "2(c)": 20,
-            "2(d)": 23,
-            "2(e)": 27,
-        }
-        for question, page_number in starts.items():
-            assert question in document[page_number - 1].get_text()
-        assert [document[index - 1].get_text().strip() for index in (6, 11, 24, 28)] == [""] * 4
-        assert all(document[index - 1].get_drawings() for index in (6, 11, 18, 24, 28))
-    finally:
-        document.close()
+    _assert_complete_contract_scheme(output, blueprint)
+    validate_pdf_for_release(output, subject="economics",
+        paper_number=paper_id[-1], role="mark_scheme")
 
 
-def test_paper_1_final_essay_matches_reference_page_rhythm(tmp_path):
+def _assert_complete_contract_scheme(output, blueprint):
     import pymupdf as fitz
-
-    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
-    blueprint = build_paper_blueprint(
-        load_builtin_paper_config("paper_1"),
-        syllabus,
-        seed=42,
-    )
-    output = tmp_path / "ms.pdf"
-
-    render_mark_scheme(blueprint, syllabus, output)
-
-    document = fitz.open(output)
-    try:
-        assert document.page_count == 29
-        starts = {
-            "1(a)": 4,
-            "1(b)": 6,
-            "2(a)": 7,
-            "2(b)": 8,
-            "3(a)": 8,
-            "3(b)": 9,
-            "4(a)": 10,
-            "4(b)": 11,
-            "5(a)": 12,
-            "5(b)": 12,
-            "6(a)": 13,
-            "6(b)": 14,
-            "6(c)": 16,
-            "6(d)": 18,
-            "6(e)": 20,
-            "7": 23,
-            "8": 27,
-        }
-        for question, page_number in starts.items():
-            assert question in document[page_number - 1].get_text()
-        assert "Question" in document[25].get_text()
-        assert "8" in document[26].get_text()
-        assert "8" in document[28].get_text()
-    finally:
-        document.close()
-
-
-def test_live_paper_1_seed_keeps_reference_mark_scheme_page_count(tmp_path):
-    import pymupdf as fitz
-
-    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
-    blueprint = build_paper_blueprint(
-        load_builtin_paper_config("paper_1"),
-        syllabus,
-        seed=26080122,
-    )
-    output = tmp_path / "ms-live-seed.pdf"
-
-    render_mark_scheme(blueprint, syllabus, output)
-
     with fitz.open(output) as document:
-        assert document.page_count == 29
-
-
-def test_paper_2_mark_scheme_matches_reference_pagination(tmp_path):
-    import pymupdf as fitz
-
-    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
-    blueprint = build_paper_blueprint(
-        load_builtin_paper_config("paper_2"),
-        syllabus,
-        seed=42,
-    )
-    output = tmp_path / "ms.pdf"
-
-    render_mark_scheme(blueprint, syllabus, output)
-
-    document = fitz.open(output)
-    try:
-        assert document.page_count == 36
-        starts = {
-            "1(c)": 6,
-            "6(a)": 15,
-            "6(c)": 18,
-            "6(d)": 22,
-            "6(e)": 26,
-            "7": 30,
-            "8": 33,
-        }
-        for question, page_number in starts.items():
-            assert question in document[page_number - 1].get_text()
-        assert document[35].get_text().strip() == ""
-    finally:
-        document.close()
-
-    with pytest.raises(ValueError, match="page 36 has too little content"):
-        validate_pdf_for_release(
-            output,
-            subject="economics",
-            role="mark_scheme",
-        )
-
-    validation = validate_pdf_for_release(
-        output,
-        subject="economics",
-        paper_number="2",
-        role="mark_scheme",
-    )
-    assert validation["layout_metrics"]["pages"][35]["intentional_blank"] is True
+        # Reference publications may contain deliberately empty diagram pages.
+        # These original contracts do not: never pad a new scheme to that count.
+        assert all(page.get_text().strip() for page in document)
+        text = " ".join(" ".join(page.get_text() for page in document).split())
+    for question in blueprint.questions:
+        for item in question.parts or [question]:
+            for point in item.mark_scheme:
+                assert " ".join(point.split()) in text, (question.number, point)
+    assert text.count("Allocation:") == sum(len(q.parts) or 1 for q in blueprint.questions)
 
 
 def test_mark_scheme_mcq_explanations_are_option_specific(tmp_path):
@@ -345,9 +224,10 @@ def test_mark_scheme_includes_question_specific_focus_and_answer_points(tmp_path
 
     text = _pdf_text(output)
     assert "Question focus:" in text
-    assert "Relevant source evidence:" in text
-    assert "Valid points may include:" in text
-    assert "digital games" in text
+    assert "Indicative content:" in text
+    assert "unrecoverable development costs" in text
+    assert "distribution network" in text
+    assert "not additive" in text
 
 
 def test_mark_scheme_valid_points_are_clean_exam_sentences(tmp_path):
@@ -439,6 +319,9 @@ def _blueprint_with_section_b_topic(config, syllabus, topic_id: str):
 
 
 def _blueprint_with_section_a_calculation(config, syllabus, stimulus_kind: str):
+    # Select the requested valid variant directly. Unrelated latent templates
+    # deliberately fail closed rather than supply missing numeric inputs.
+    config.sections[0].stimulus_slots[0] = [stimulus_kind]
     for seed in range(1000):
         blueprint = build_paper_blueprint(config, syllabus, seed=seed)
         for question in blueprint.questions:

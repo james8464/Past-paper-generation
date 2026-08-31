@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import io
+import math
 import os
 import re
 import sys
@@ -47,6 +48,7 @@ from Backend.Core.overlay.graphs import (
     trade_cycle_diagram,
 )
 from Backend.Core.overlay.layouts import EDEXCEL_ECONOMICS as L
+from Backend.Core.subjects.economics_contracts import EconomicsSource
 from pastpapergen.exam_dates import economics_exam_schedule
 from pastpapergen.models import GraphParams, PaperBlueprint, QuestionBlueprint, Syllabus
 from pastpapergen.notes import note_points_for_topic
@@ -641,8 +643,19 @@ def _draw_paper_3_source_page(
         pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
         pdf.drawString(margin, y, f"Question {question_number}")
         y -= 18
-        pdf.drawString(margin, y, case_title)
-        y -= 25
+        for title_line in _wrap(case_title, 66):
+            pdf.drawString(margin, y, title_line)
+            y -= BODY_LEADING_PT
+        y -= 11
+
+        if questions[0].source_instance is not None:
+            if section == "A":
+                y = _draw_case_source_figure(pdf, margin, y, 1, questions[0].source_instance)
+                _draw_case_source_figure(pdf, margin, y - 35, 2, questions[1].source_instance)
+            else:
+                y = _draw_case_source_figure(pdf, margin, y, 3, questions[0].source_instance)
+                _draw_paper_3_extract(pdf, margin, y - 25, "Extract D", "Recent changes in the case-study market", questions[0].source_text)
+            return
 
         if section == "A":
             _draw_paper_3_line_figure(
@@ -694,7 +707,7 @@ def _draw_paper_3_source_page(
             y,
             "Extract A",
             "Prices, incentives and market adjustment",
-            questions[0].source_text,
+            " ".join(dict.fromkeys([questions[0].source_text, questions[1].source_text])),
         )
         _draw_paper_3_extract(
             pdf,
@@ -719,7 +732,7 @@ def _draw_paper_3_source_page(
         return
 
     if source_page == 1:
-        combined = f"{questions[1].source_text} {questions[2].source_text}"
+        combined = " ".join(dict.fromkeys(q.source_text for q in questions[1:4]))
         _draw_paper_3_extract(
             pdf,
             margin,
@@ -740,6 +753,30 @@ def _draw_paper_3_source_page(
     )
 
 
+def _draw_case_source_figure(pdf, x, y, number, source):
+    """A figure is a view of source cells, never a random hash illustration."""
+    pdf.setFont(FONT_BOLD, 10)
+    pdf.drawString(x, y, f"Figure {number}: illustrative case information")
+    y -= 20
+    if source.rows:
+        for row in source.rows:
+            labels = [cell.printed() for cell in row]
+            pdf.setFont(FONT_REGULAR, 9)
+            pdf.rect(x, y - 24, 430, 24, stroke=1, fill=0)
+            pdf.line(x + 310, y, x + 310, y - 24)
+            pdf.drawString(x + 6, y - 16, labels[0])
+            pdf.drawString(x + 318, y - 16, labels[1])
+            y -= 24
+    else:
+        pdf.setFont(FONT_REGULAR, 9)
+        for line in _wrap(source.context, 84):
+            pdf.drawString(x, y, line)
+            y -= 12
+    pdf.setFont(FONT_REGULAR, 8)
+    pdf.drawString(x, y - 15, "Illustrative assumptions; not official statistics.")
+    return y - 25
+
+
 def _draw_paper_3_extract(
     pdf: canvas.Canvas,
     x: float,
@@ -757,7 +794,7 @@ def _draw_paper_3_extract(
     pdf.setFont(FONT_REGULAR, 9)
     for line_number, line in enumerate(_wrap(text, 82), start=1):
         if y < 92:
-            break
+            raise ValueError("Candidate source does not fit its printed page; refusing to truncate it")
         pdf.drawString(x, y, line)
         if line_number % 5 == 0:
             pdf.setFont(FONT_REGULAR, 7.5)
@@ -1164,7 +1201,7 @@ def _draw_section_c_choice_page(pdf: canvas.Canvas, section_c: list, y: float) -
         pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
         pdf.drawString(72, y, question.number)
         pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
-        source_lines = _wrap(question.source_text, 72)[:5]
+        source_lines = _wrap(question.source_text, 72)
         for line_index, line in enumerate(source_lines):
             pdf.drawString(92, y - line_index * BODY_LEADING_PT, line)
         y -= max(1, len(source_lines)) * BODY_LEADING_PT + 8
@@ -1344,6 +1381,9 @@ def _draw_section_intro(
     y: float,
 ) -> float:
     width, _ = A4
+    # Section titles need a full heading inset, not the writing-line origin.
+    # Keep continuation-page writing space and bottom-safe geometry unchanged.
+    y = min(y, ANSWER_FRAME_Y + ANSWER_FRAME_H - 42)
     pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
     pdf.drawCentredString(width / 2, y, f"SECTION {section}")
     y -= 25
@@ -1424,7 +1464,7 @@ def _draw_question(
     y = _draw_question_prompt(pdf, question.number, question.prompt, x, y)
     if question.parts:
         if question.stimulus_kind:
-            y = _draw_stimulus(pdf, question.stimulus_kind, x + 105, y, graph_params=question.graph_params)
+            y = _draw_stimulus(pdf, question.stimulus_kind, x + 105, y, graph_params=question.graph_params, source_instance=question.source_instance)
             y -= 18
         y -= 4
         for part in question.parts:
@@ -1484,6 +1524,9 @@ def _draw_section_a_question(
     y: float,
 ) -> tuple[int, float]:
     width, _ = A4
+    # Source-page stems need clearance from the rounded frame. Do not change
+    # the starting point of blank answer pages or their available writing space.
+    y = min(y, 787.0)
     pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
     pdf.drawString(x, y, question.number)
     pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
@@ -1497,11 +1540,11 @@ def _draw_section_a_question(
     stimulus_kind = question.stimulus_kind
     if first_part and first_part.command_word == "draw":
         stimulus_kind = "context_extract"
-    if _should_draw_inline_context(stimulus_kind):
+    if _should_draw_inline_context(stimulus_kind) and question.source_instance is None:
         y = _draw_inline_context(pdf, question.source_text, x + 20, y)
         y -= 10
     if stimulus_kind:
-        y = _draw_stimulus(pdf, stimulus_kind, x + 110, y, question.source_text, graph_params=question.graph_params)
+        y = _draw_stimulus(pdf, stimulus_kind, x + 110, y, question.source_text, graph_params=question.graph_params, source_instance=question.source_instance)
         y -= 28
 
     if first_part and first_part.command_word == "draw" and second_part and second_part.marks == 1:
@@ -1559,6 +1602,13 @@ def _draw_section_a_question(
         and second_part.command_word == "mcq"
     ):
         y = _draw_written_part_with_line_count(pdf, first_part, x, y, count=11)
+        # The estimate includes an extra 18pt reserve. Here the total is drawn
+        # above the returned baseline, so use the actual MCQ content height.
+        if y - (_estimate_mcq_height(second_part) - 18) < SECTION_A_FOOTER_SAFE_Y:
+            _draw_question_footer(pdf, blueprint, page_number)
+            pdf.showPage()
+            page_number += 1
+            y = min(_prepare_answer_page(pdf, blueprint, page_number), 787.0)
         y = _draw_mcq_part(pdf, second_part, x, y - 2)
         _draw_total_for_question(pdf, question.number, question.marks, x, y)
         _draw_question_footer(pdf, blueprint, page_number)
@@ -1764,7 +1814,7 @@ def _draw_part_prompt(pdf: canvas.Canvas, part, x: float, y: float) -> float:
 
 def _draw_inline_context(pdf: canvas.Canvas, text: str, x: float, y: float) -> float:
     pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
-    for line in _wrap(text, 66)[:3]:
+    for line in _wrap(text, 66):
         pdf.drawString(x, y, line)
         y -= BODY_LEADING_PT
     return y
@@ -1943,6 +1993,18 @@ _GRAPH_FUNCS: dict[str, object] = {
 
 def candidate_stimulus_data(question: QuestionBlueprint) -> dict[str, object]:
     """Expose the same source values and dispatch rules used to draw a figure."""
+    if question.source_instance:
+        source = question.source_instance
+        if question.parts and question.parts[0].command_word == "draw":
+            return {"kind": "context_extract", "source_text": source.context,
+                "rows": [], "values": [], "point_labels": [], "candidate_draws_diagram": True}
+        return {"kind": source.kind, "source_text": source.context,
+            "source_id": source.source_id, "source_fingerprint": source.fingerprint(),
+            "rows": [[cell.printed() for cell in row] for row in source.rows],
+            "values": [float(v) for v in source.values], "point_labels": source.labels,
+            "y_label": source.y_label, "x_label": source.x_label,
+            "unit": source.unit, "givens": {name: cell.printed() for name, cell in source.givens.items()},
+            "graph_params": question.graph_params.to_dict() if question.graph_params.kind else {}}
     kind = question.stimulus_kind
     data: dict[str, object] = {"kind": kind, "source_text": question.source_text}
     if kind in _TABLE_KINDS:
@@ -1967,7 +2029,21 @@ def candidate_stimulus_data(question: QuestionBlueprint) -> dict[str, object]:
     return data
 
 
-def _draw_stimulus(pdf: canvas.Canvas, kind: str, x: float, y: float, context_text: str = "", graph_params: GraphParams | None = None) -> float:
+def _draw_stimulus(pdf: canvas.Canvas, kind: str, x: float, y: float, context_text: str = "", graph_params: GraphParams | None = None, source_instance: EconomicsSource | None = None) -> float:
+    if source_instance and kind == source_instance.kind:
+        if source_instance.rows or source_instance.values:
+            pdf.setFont(FONT_REGULAR, 8)
+            pdf.drawString(104, y, "Illustrative data for this question; not official statistics.")
+            y -= 15
+            if source_instance.context:
+                y = _draw_inline_context(pdf, source_instance.context, 104, y) - 10
+            for name, cell in source_instance.givens.items():
+                y = _draw_inline_context(pdf, f"{name.replace('_', ' ').capitalize()}: {cell.printed()}.", 104, y) - 6
+            if source_instance.rows:
+                return _draw_data_table(pdf, 104, y, kind, rows=[[cell.printed() for cell in row] for row in source_instance.rows])
+            return _draw_instance_chart(pdf, 104, y, source_instance)
+        if kind in _ECONOMICS_GRAPH_KINDS and source_instance.context:
+            y = _draw_inline_context(pdf, source_instance.context, 104, y) - 10
     if kind in _ECONOMICS_GRAPH_KINDS:
         return _draw_economics_graph(pdf, 140, y + 18, kind, graph_params=graph_params)
     if kind in _TABLE_KINDS:
@@ -2073,8 +2149,8 @@ def _draw_economics_graph(pdf: canvas.Canvas, x: float, y: float, kind: str, gra
     return y - graph_h - 8
 
 
-def _draw_data_table(pdf: canvas.Canvas, x: float, y: float, kind: str = "data_table") -> float:
-    rows = _table_rows(kind)
+def _draw_data_table(pdf: canvas.Canvas, x: float, y: float, kind: str = "data_table", rows: list[list[str]] | None = None) -> float:
+    rows = rows if rows is not None else _table_rows(kind)
     col_count = max(len(row) for row in rows)
     col_width = 124 if kind == "data_table" else 92 if col_count >= 4 else 100
     w = col_width * col_count
@@ -2097,6 +2173,54 @@ def _draw_data_table(pdf: canvas.Canvas, x: float, y: float, kind: str = "data_t
 
 def _table_rows(kind: str) -> list[list[str]]:
     return table_rows(kind)
+
+
+def _draw_instance_chart(pdf: canvas.Canvas, x: float, y: float, source: EconomicsSource) -> float:
+    """Actual numeric ordinate mapping, with exact data readings and time labels."""
+    values = [float(value) for value in source.values]
+    width, height = 408, 126
+    bottom = y - height - 20
+    low, high = min(values), max(values)
+    if source.unit != "index" and source.kind != "inequality_line_chart":
+        low, high = min(0.0, low), max(0.0, high)
+    raw_step = (high - low or 1.0) / 5
+    magnitude = 10 ** math.floor(math.log10(raw_step))
+    tick_step = next(multiplier * magnitude for multiplier in (1, 2, 5, 10) if multiplier * magnitude >= raw_step)
+    low, high = math.floor(low / tick_step) * tick_step, math.ceil(high / tick_step) * tick_step
+    span = high - low or tick_step
+    def ordinate(value):
+        return bottom + (value - low) / span * height
+    pdf.setFont(FONT_REGULAR, 8)
+    pdf.drawString(x, y + 3, source.y_label)
+    pdf.line(x, bottom, x, bottom + height)
+    for index in range(round(span / tick_step) + 1):
+        tick = low + tick_step * index
+        ty = ordinate(tick)
+        pdf.setStrokeColor(colors.HexColor("#d2d2d2"))
+        pdf.line(x, ty, x + width, ty)
+        pdf.setFillColor(colors.black)
+        pdf.drawRightString(x - 5, ty - 3, f"{tick:.2f}".rstrip("0").rstrip("."))
+    pdf.setStrokeColor(colors.black)
+    pdf.line(x, ordinate(0) if low <= 0 <= high else bottom, x + width, ordinate(0) if low <= 0 <= high else bottom)
+    step = (width - 32) / max(1, len(values) - 1)
+    points = [(x + 16 + i * step, ordinate(value)) for i, value in enumerate(values)]
+    if "bar_chart" in source.kind:
+        for (px, py) in points:
+            pdf.rect(px - 9, min(py, ordinate(0)), 18, abs(py - ordinate(0)), stroke=1, fill=0)
+    else:
+        for first, second in pairwise(points):
+            pdf.line(*first, *second)
+    pdf.setFont(FONT_REGULAR, 7)
+    for i, (px, py) in enumerate(points):
+        pdf.circle(px, py, 1.5, stroke=1, fill=1)
+        pdf.drawCentredString(px, py + 5, format(source.values[i], "f"))
+        label = source.labels[i]
+        # Full identifiers remain visible, split across two lines if necessary.
+        pieces = label.rsplit(" ", 1)
+        pdf.drawCentredString(px, bottom - 12, pieces[0])
+        if len(pieces) == 2:
+            pdf.drawCentredString(px, bottom - 21, pieces[1])
+    return bottom - 28
 
 
 def _draw_bar_chart(pdf: canvas.Canvas, x: float, y: float, kind: str = "bar_chart") -> float:
@@ -2209,7 +2333,7 @@ def _draw_payoff_matrix(pdf: canvas.Canvas, x: float, y: float) -> float:
 def _draw_context_box(pdf: canvas.Canvas, x: float, y: float, context_text: str = "") -> float:
     pdf.setFont(FONT_REGULAR, 11)
     text = context_text or "A short item of economic context is provided for use with this question."
-    lines = _wrap(text, 74)[:4]
+    lines = _wrap(text, 74)
     for idx, line in enumerate(lines):
         pdf.drawCentredString(x + 170, y - idx * 12, line)
     pdf.setFont(FONT_REGULAR, 8)
@@ -2510,7 +2634,8 @@ def render_mark_scheme(
     if blueprint.paper_id == "paper_3":
         pdf.showPage()
         _draw_mark_scheme_end_page(pdf)
-    _pad_mark_scheme_pages(pdf, MARK_SCHEME_MIN_PAGES.get(blueprint.paper_id, 29))
+    if not any(question.source_instance is not None for question in blueprint.questions):
+        _pad_mark_scheme_pages(pdf, MARK_SCHEME_MIN_PAGES.get(blueprint.paper_id, 29))
     pdf.save()
     _cleanup_graph_cache()
 
@@ -2620,6 +2745,12 @@ def _draw_ms_table_header(pdf: canvas.Canvas, y: float) -> None:
 def _mark_scheme_rows(blueprint: PaperBlueprint, syllabus: Syllabus) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     for question in blueprint.questions:
+        if question.source_instance is not None:
+            for item in question.parts or [question]:
+                number = f"{question.number}({item.label})" if question.parts else question.number
+                rows.extend(_split_mark_scheme_row(number, f"({item.marks})",
+                    ["Question focus: " + item.prompt, "Allocation: " + item.mark_breakdown, *item.mark_scheme]))
+            continue
         topic = syllabus.get_topic(question.topic_id)
         if question.parts:
             for part in question.parts:
@@ -3528,7 +3659,7 @@ def _ms_centered_line(line: str) -> bool:
 
 
 def _ms_italic_line(line: str) -> bool:
-    return " is not correct as " in line.casefold()
+    return line.startswith("Reject ") or " is not correct as " in line.casefold()
 
 
 def _ms_bold_line(line: str) -> bool:

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
+from Backend.Core.subjects.economics_contracts import EconomicsSource
+
 
 class SyllabusTopic(BaseModel):
     id: str
@@ -57,6 +59,10 @@ class QuestionPart(BaseModel):
     mark_scheme: list[str] = Field(default_factory=list)
     indicative_content: list[str] = Field(default_factory=list)
     difficulty_evidence: dict[str, object] = Field(default_factory=dict)
+    assessment_objectives: dict[str, int] = Field(default_factory=dict)
+    assessment_contract: dict[str, object] = Field(default_factory=dict)
+    scheme_mode: str = "points"
+    provenance: str = "deterministic-contract"
 
 
 class MultipleChoiceOption(BaseModel):
@@ -114,6 +120,11 @@ class QuestionBlueprint(BaseModel):
     indicative_content: list[str] = Field(default_factory=list)
     graph_params: GraphParams = Field(default_factory=GraphParams)
     difficulty_evidence: dict[str, object] = Field(default_factory=dict)
+    source_instance: EconomicsSource | None = None
+    assessment_objectives: dict[str, int] = Field(default_factory=dict)
+    assessment_contract: dict[str, object] = Field(default_factory=dict)
+    scheme_mode: str = "points"
+    provenance: str = "deterministic-contract"
 
 
 class PaperBlueprint(BaseModel):

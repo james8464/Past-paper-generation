@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-GENERIC_SOURCE_ATTRIBUTION = "Source: adapted from public reports and economic data"
+GENERIC_SOURCE_ATTRIBUTION = "Source: fictional illustrative case; not official statistics"
 
 
 def data_response_extract(topic_title: str, points: list[str], index: int) -> str:
