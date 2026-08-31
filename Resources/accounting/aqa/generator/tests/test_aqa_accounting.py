@@ -297,7 +297,7 @@ def test_indicative_rows_preserve_explicit_objectives_without_inventing_labels(
         update={
             "mark_scheme": [
                 "AO1: Explain the meaning of dividend yield.",
-                "AO4: Justify the recommendation against the investor's needs.",
+                "AO3: Justify the recommendation against the investor's needs.",
                 "AO2/AO3: Apply and interpret the supplied figures.",
                 "AO2: Use the company's financial evidence.",
                 "Consider another valid approach.",
@@ -307,7 +307,7 @@ def test_indicative_rows_preserve_explicit_objectives_without_inventing_labels(
     flowables = getattr(render_pdf, page_builder)(question, "Question 17")
     expected = {
         "AO1: Explain the meaning of dividend yield.": "AO1",
-        "AO4: Justify the recommendation against the investor's needs.": "AO4",
+        "AO3: Justify the recommendation against the investor's needs.": "AO3",
         "AO2/AO3: Apply and interpret the supplied figures.": "AO2/AO3",
         "AO2: Use the company's financial evidence.": "AO2",
         "Consider another valid approach.": "—",
@@ -522,7 +522,7 @@ def test_asset_scheme_reconciles_with_an_independent_exact_solution() -> None:
             f"motor carrying amount £{case.motor_carrying_amount:,}",
             f"total non-current assets £{case.total_carrying_amount:,}",
         ],
-        assessment_objectives={"AO2": question.marks},
+        assessment_objectives={"AO1": 7},
         mark_points_exhaustive=True,
     )
 
@@ -678,7 +678,7 @@ def test_paper_two_written_items_use_specific_a_level_accounting_tasks() -> None
     required_focus = {
         "frc": "accounting standards",
         "limitation": "special order",
-        "variance_3": "adverse direct materials price variance",
+        "variance_3": "direct-material price variance",
         "variance_4": "investigate",
         "costing_2": "cost driver",
         "costing_4": "activity-based costing",
@@ -688,15 +688,13 @@ def test_paper_two_written_items_use_specific_a_level_accounting_tasks() -> None
         question = questions[rule_id]
         assert focus in question.prompt.casefold()
         assert "treated or interpreted" not in question.prompt.casefold()
-        assert len(
-            [point for point in question.structured_mark_scheme if point.marks > 0]
-        ) == question.marks
+        assert sum(point.marks for point in question.structured_mark_scheme) == question.marks
 
     for rule_id in ("variance_4", "costing_4"):
         developed = [
             point.text.casefold()
             for point in questions[rule_id].structured_mark_scheme
-            if point.marks > 0 and " therefore " in point.text.casefold()
+            if point.text.startswith("AO3:") and " therefore " in point.text.casefold()
         ]
         assert len(developed) >= 2
 

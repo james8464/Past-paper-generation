@@ -6,6 +6,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, Field
 
 from Backend.Core.assessment_contracts import AssessmentContract
+from Backend.Core.assessment_objectives import objective_policy_for
 
 
 class QuestionRule(BaseModel):
@@ -106,6 +107,8 @@ class GeneratedPaper(BaseModel):
 
 
 def validate_rule(rule: PaperRule, syllabus_topic_ids: Iterable[str]) -> None:
+    objective_policy = objective_policy_for(rule.code)
+    objective_policy.validate(rule)
     syllabus_ids = set(syllabus_topic_ids)
     if not rule.sections:
         raise ValueError(f"{rule.id} has no sections")
@@ -133,6 +136,8 @@ def validate_rule(rule: PaperRule, syllabus_topic_ids: Iterable[str]) -> None:
         marks = sum(question.marks for question in section.questions)
         for question in section.questions:
             if not question.assessment_objectives:
+                if objective_policy.explicit_allocations:
+                    raise ValueError(f"{rule.id} {question.id} needs explicit assessment objectives")
                 question.assessment_objectives = _objective_allocation(
                     marks=question.marks,
                     kind=question.kind,
@@ -171,6 +176,7 @@ def validate_generated_paper(
     syllabus_topic_ids: Iterable[str],
 ) -> None:
     validate_rule(rule, syllabus_topic_ids)
+    objective_policy_for(rule.code).validate(paper)
     if (
         paper.paper_id,
         paper.paper_code,

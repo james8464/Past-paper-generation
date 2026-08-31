@@ -4,6 +4,7 @@ import re
 from collections.abc import Iterable
 from typing import Any
 
+from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -178,6 +179,14 @@ def _objective_guidance(
     points: list[str],
     subject: str,
 ) -> list[str]:
+    if subject == "accounting":
+        # Accounting credit is item-specific. Topic revision notes are not extra
+        # award points, and familiar technique marks must not become AO2 by default.
+        policy = objective_policy_for(subject)
+        return [
+            f"{ao}: {policy.meanings[ao]}. Apply only to the work required by this item."
+            for ao in question.assessment_objectives
+        ]
     application = _application_label(subject)
     if question.marks <= 4:
         concise = [

@@ -12,6 +12,7 @@ from pydantic import ValidationError
 
 from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
 from Backend.Core.assessment_contracts import EvidenceRecord, contract_for_question
+from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.assessment_quality import (
     assert_distinct_items,
     content_similarity,
@@ -1340,7 +1341,7 @@ def _generation_prompt(
             "required_awarded_entries": (
                 []
                 if task.question.authoring_context.get("preserve_mark_scheme") is True
-                else _required_awarded_entries(task.question)
+                else _required_awarded_entries(task.question, subject=subject)
             ),
             "intended_demand": task.question.intended_demand,
             "expected_minutes": task.question.expected_minutes,
@@ -1431,7 +1432,7 @@ def _generation_prompt(
         "`mark_scheme` must be an array of objects matching this schema: "
         '{"text":"specific creditworthy answer or guidance","marks":1,'
         '"credit_type":"answer|point|level|guidance",'
-        '"assessment_objective":"AO1|AO2|AO3|AO4 or null",'
+        f'"assessment_objective":"{"|".join(objective_policy_for(subject).meanings)} or null",'
         '"alternatives":[],"allow":[],"do_not_accept":[],"ignore":[],'
         '"depends_on":[]}. Every awarded mark must name an AO and the AO totals '
         "must exactly match the blueprint. Zero-mark level descriptors and marker "
@@ -1451,8 +1452,7 @@ def _generation_prompt(
         "indicative content covering every object in `required_awarded_entries`, "
         "use its exact AO label and mark value wherever possible, and include at "
         "least three zero-mark `level` descriptors with clear band boundaries. "
-        "AO3 content must contain a developed causal chain; AO4 content must "
-        "contain a supported judgement. Every extended levels-based scheme must "
+        f"{objective_policy_for(subject).guidance()} Every extended levels-based scheme must "
         "also state acceptable alternative routes and explicit credit limits or "
         "non-credit guidance in the structured `alternatives`, `allow`, or "
         "`do_not_accept` fields. For multiple choice, supply four plausible "
@@ -1471,15 +1471,12 @@ def _generation_prompt(
     )
 
 
-def _required_awarded_entries(question: GeneratedQuestion) -> list[dict[str, object]]:
+def _required_awarded_entries(
+    question: GeneratedQuestion, *, subject: str = ""
+) -> list[dict[str, object]]:
     """Describe the exact awarded rows a model must author for one item."""
 
-    requirements = {
-        "AO1": "accurate subject knowledge and understanding",
-        "AO2": "explicit application to the supplied source or context",
-        "AO3": "a developed causal link within a complete chain of analysis",
-        "AO4": "a supported comparative judgement or conclusion",
-    }
+    requirements = objective_policy_for(subject, question.topic_id).meanings
     objectives = [
         (objective, marks)
         for objective, marks in question.assessment_objectives.items()
@@ -1656,7 +1653,8 @@ def _review_prompt(
         "and unambiguous task, source/data consistency, correct command-word "
         "demand, complete mark coverage, accurate "
         "AO classification, plausible distractors, and a mark scheme that a second "
-        "examiner could apply consistently. Confirm that the candidate preserves "
+        "examiner could apply consistently. "
+        f"{objective_policy_for(subject).guidance()} Confirm that the candidate preserves "
         "the exact artefact, subject matter, and scope of `semantic_task_contract` "
         "while using materially new wording. Review adversarially: try to disprove "
         "the keyed answer; ensure it directly answers the grammatical subject and "

@@ -7,8 +7,8 @@ SUBJECT_GUIDANCE = {
     "accounting": [
         ("Applying the mark scheme", "Read the complete response before awarding marks. Credit a valid accounting treatment when it is applied consistently and answers the requirement."),
         ("Workings and own figures", "Award method marks where workings make the intended method clear. Apply the own-figure rule to a later result that follows correctly from an earlier error."),
-        ("Narrative responses", "Credit precise accounting terminology, developed consequences and conclusions supported by the figures or circumstances in the question."),
-        ("Levels-based marking", "Choose the level that best describes the response as a whole, then use accuracy, development and judgement to select a mark within that level."),
+        ("Assessment objectives", "AO1 covers knowledge, understanding and familiar accounting techniques; AO2 covers application to the given situation. AO3 covers analysis and evaluation, including supported decisions where required. Each 25-mark decision allocates AO2: 5 marks and AO3: 20 marks."),
+        ("Levels-based marking", "Choose the level that best describes the response as a whole, then use application and developed reasoning to select a mark within that level. Require a judgement where the command asks for one, not for every short explanation."),
         ("Quality of presentation", "Require clear labels, appropriate units and a recognisable accounting format. Do not penalise an alternative layout that communicates the same information."),
         ("Final checks", "Check that distinct marks reward distinct work, totals do not exceed the question maximum and valid alternative routes have received equivalent credit."),
     ],

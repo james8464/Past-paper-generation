@@ -29,6 +29,7 @@ from aqaaccountgen.case_data import (
     SalesLedgerCase,
     ShareholderCase,
 )
+from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.document_dsl import (
     AQAQuestionHeaderFactory,
     DocumentRole,
@@ -87,6 +88,7 @@ def render_mark_scheme(
     *,
     _extension_adjustment: int = 0,
 ) -> None:
+    objective_policy_for("accounting").validate(paper)
     path.parent.mkdir(parents=True, exist_ok=True)
     doc = _document(path, paper, "Mark scheme")
     story: list[Flowable] = mark_scheme_cover(
@@ -334,7 +336,7 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
             Spacer(1, 4 * mm),
             Paragraph("Questions 16 and 17", STYLES["heading"]),
             Paragraph(
-                "The 25-mark questions assess all four objectives. Calculation or ratio "
+                "The 25-mark questions assess AO2: 5 marks and AO3: 20 marks. Calculation or ratio "
                 "evidence should be interpreted, not merely stated. A decision must follow "
                 "from the student's analysis of the alternatives.",
                 STYLES["small"],
@@ -347,8 +349,7 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
                 [
                     ["AO1", "Knowledge and understanding"],
                     ["AO2", "Application"],
-                    ["AO3", "Analysis"],
-                    ["AO4", "Evaluation"],
+                    ["AO3", "Analysis and evaluation"],
                     ["OF", "Own figure"],
                     ["W", "Working mark"],
                     ["CAO", "Correct answer only"],
@@ -386,11 +387,7 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
                     ],
                     [
                         "AO3",
-                        "Analyse accounting information, issues and evidence to support reasoned conclusions.",
-                    ],
-                    [
-                        "AO4",
-                        "Evaluate accounting information to make judgements, decisions and recommendations.",
+                        "Analyse and evaluate accounting data to present information and support judgements, decisions and conclusions.",
                     ],
                 ],
                 [28 * mm, 139 * mm],
@@ -399,10 +396,10 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
             _scheme_grid(
                 ["Response", "Principal objective emphasis"],
                 [
-                    ["Objective test", "AO1 and AO2"],
-                    ["Preparation and calculation", "AO1, AO2 and AO3"],
+                    ["Section A, including calculations", "AO1: 30 marks"],
+                    ["Section B preparation and calculation", "AO2"],
                     ["Six-mark assessment", "AO2 and AO3"],
-                    ["Twenty-five-mark advice", "AO1, AO2, AO3 and AO4"],
+                    ["Twenty-five-mark advice", "AO2: 5 marks; AO3: 20 marks"],
                 ],
                 [54 * mm, 113 * mm],
             ),
@@ -967,10 +964,11 @@ def _levels_scheme_page(
 
 def _indicative_objective(point: str) -> str:
     """Preserve declared objectives; row position is not assessment evidence."""
+    objective_policy_for("accounting").validate(point)
     prefix, separator, _ = point.partition(":")
     objectives = [value.strip().upper() for value in prefix.split("/")]
     if separator and all(
-        value in {"AO1", "AO2", "AO3", "AO4"} for value in objectives
+        value in objective_policy_for("accounting").meanings for value in objectives
     ):
         return "/".join(objectives)
     return "—"
@@ -1422,7 +1420,7 @@ def _assessment_objectives_page(
 ) -> list[Flowable]:
     rows = [["Question", "Marks", "Assessment focus"]]
     for question in questions:
-        focus = "AO1, AO2 and AO3" if question.marks >= 6 else "AO1 and AO2"
+        focus = "; ".join(f"{ao}: {marks}" for ao, marks in question.assessment_objectives.items())
         rows.append([question.number, str(question.marks), focus])
     table = Table(rows, colWidths=[38 * mm, 25 * mm, 104 * mm], repeatRows=1)
     table.setStyle(
@@ -1437,6 +1435,7 @@ def _assessment_objectives_page(
     )
     return [
         Paragraph("Assessment objectives grid", STYLES["heading"]),
+        Paragraph("AO1: Knowledge and understanding; AO2: Application; AO3: Analysis and evaluation.", STYLES["small"]),
         Spacer(1, 4 * mm),
         table,
         Spacer(1, 5 * mm),
@@ -2594,7 +2593,9 @@ def _item_specific_mark_scheme_rows(
 ) -> list[tuple[str, int]]:
     rows: list[tuple[str, int]] = []
     for point in question.structured_mark_scheme:
-        if point.marks <= 0:
+        if point.marks <= 0 and question.scheme_mode != "levels":
+            continue
+        if point.marks <= 0 and point.text.startswith("Marker check:"):
             continue
         rows.append((point.text, point.marks))
         rows.extend((f"Accept: {alternative}", 0) for alternative in point.alternatives)

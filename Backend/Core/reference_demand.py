@@ -9,6 +9,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
+from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.model_review import validate_saved_difficulty_evidence
 from Backend.Core.paths import REPO_ROOT
 
@@ -103,6 +104,7 @@ class ItemDemandTarget(BaseModel):
     expected_minutes_max: float = Field(gt=0)
     reference_comparison_basis: str
     reference_profile_fingerprint: str
+    objective_policy_fingerprint: str = ""
 
 
 @lru_cache(maxsize=1)
@@ -140,6 +142,8 @@ def build_item_demand_target(
     ).casefold()
     kind = str(raw.get("kind") or raw.get("style_id") or "").casefold()
     objectives = assessment_objectives_for_item(raw)
+    objective_policy = objective_policy_for(profile.family_id)
+    objective_policy.validate(raw)
     demand = str(raw.get("intended_demand") or "").casefold()
     if demand not in {"low", "standard", "high"}:
         demand = _infer_demand(marks=marks, command=command, kind=kind)
@@ -179,29 +183,7 @@ def build_item_demand_target(
         # those stages.
         maximum_steps = max(maximum_steps, min(12, marks))
 
-    requires_judgement = objectives.get("AO4", 0) > 0 or command in {
-        "advise",
-        "assess",
-        "discuss",
-        "evaluate",
-        "justify",
-        "recommend",
-    }
-    requires_analysis = objectives.get("AO3", 0) > 0 or command in {
-        "advise",
-        "analyse",
-        "analyze",
-        "assess",
-        "discuss",
-        "evaluate",
-        "examine",
-        "explain",
-        "justify",
-        "prove",
-        "recommend",
-        "show",
-        "verify",
-    }
+    requires_analysis, requires_judgement = objective_policy.operations(objectives, command)
     requires_context = objectives.get("AO2", 0) > 0 or any(
         _has_content(raw.get(key))
         for key in ("context", "evidence_ids", "source_references", "source_reference")
@@ -247,6 +229,7 @@ def build_item_demand_target(
         expected_minutes_max=round(expected_minutes * 1.25, 2),
         reference_comparison_basis=profile.comparison_basis,
         reference_profile_fingerprint=profile.source_fingerprint,
+        objective_policy_fingerprint=objective_policy.fingerprint(objectives, command, kind),
     )
 
 

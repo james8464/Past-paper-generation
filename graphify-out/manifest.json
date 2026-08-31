@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/exam_blueprints.py": {
-    "mtime": 1788046373.321545,
-    "ast_hash": "048a61cce90a60500840b2b5ea257fd0",
+    "mtime": 1788135389.2343407,
+    "ast_hash": "541d44cba4858fc452faf9e8ea616578",
     "semantic_hash": ""
   },
   "Backend/Core/fonts/__init__.py": {
@@ -50,13 +50,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/mark_scheme_enrichment.py": {
-    "mtime": 1788116115.975876,
-    "ast_hash": "bcb886ce8bedaaea83918e85d286e7f8",
+    "mtime": 1788135767.5514853,
+    "ast_hash": "15e405931cca66ae383bcf4b0448675e",
     "semantic_hash": ""
   },
   "Backend/Core/mark_scheme_front_matter.py": {
-    "mtime": 1787755258.1878855,
-    "ast_hash": "a16ab55586c67adea896052c787674a0",
+    "mtime": 1788135671.920694,
+    "ast_hash": "4bf028616ac9299e2112e169a66334e7",
     "semantic_hash": ""
   },
   "Backend/Core/ollama.py": {
@@ -105,18 +105,18 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/configs.py": {
-    "mtime": 1787755258.1890707,
-    "ast_hash": "6a82e52a0f183aaa6a8584527a5ce7b4",
+    "mtime": 1788135840.6455407,
+    "ast_hash": "3f9cb807c4b1664bceba6698e4f9b170",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/generator.py": {
-    "mtime": 1788127371.8515291,
-    "ast_hash": "3a4c8fa539a2664eff51f2885045b779",
+    "mtime": 1788136055.3982313,
+    "ast_hash": "67bcfa54324aeed2ce7789c493333f22",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/render_pdf.py": {
-    "mtime": 1788131918.1671069,
-    "ast_hash": "54efa8e9a23cc2a5656a79a9017ea035",
+    "mtime": 1788135767.5541992,
+    "ast_hash": "43658448a03c4b63f99b08ae62c18995",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/syllabus.py": {
@@ -140,8 +140,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/tests/test_aqa_accounting.py": {
-    "mtime": 1788131918.167477,
-    "ast_hash": "03b339d090eaf785d2e2ca13d57d5ea0",
+    "mtime": 1788135732.6082134,
+    "ast_hash": "244de6a3215d4d358f26fa50d7df358e",
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/__init__.py": {
@@ -1055,13 +1055,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/ai_assessment.py": {
-    "mtime": 1788122943.862397,
-    "ast_hash": "2c9255a3eaa68ab8d4210b08883a9f69",
+    "mtime": 1788135767.5536344,
+    "ast_hash": "30aeb55f6c108aae6bcf595d4cdf1ae2",
     "semantic_hash": ""
   },
   "Backend/Core/assessment_package.py": {
-    "mtime": 1788123930.872604,
-    "ast_hash": "539f0fb6db159b99fa518edf0ea5315c",
+    "mtime": 1788135767.5521915,
+    "ast_hash": "b9c9321b04f6bd80dfef4782fc9869a3",
     "semantic_hash": ""
   },
   "Backend/Core/assessment_quality.py": {
@@ -1070,8 +1070,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/model_review.py": {
-    "mtime": 1788123988.641935,
-    "ast_hash": "ac826839d43e6fe6cacd397d6a84ef0e",
+    "mtime": 1788135767.5518422,
+    "ast_hash": "899b6642355d2a50cd06f2a55eda61e7",
     "semantic_hash": ""
   },
   "Backend/Core/psychometrics.py": {
@@ -1700,8 +1700,8 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1788135033.4178607,
-    "ast_hash": "d858dd956cb5ccd121e235070ad9516d",
+    "mtime": 1788135903.9046888,
+    "ast_hash": "6cf4ec7964ad00754fad55af4c141673",
     "semantic_hash": ""
   },
   "tests/test_repository_hygiene.py": {
@@ -1885,8 +1885,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/reference_demand.py": {
-    "mtime": 1788125477.92116,
-    "ast_hash": "0369c0d230048bdda2e5ce1c729458d3",
+    "mtime": 1788135767.5525362,
+    "ast_hash": "f7f9ed726b98ec6194d221d9880881d7",
     "semantic_hash": ""
   },
   "Resources/reference-demand-profile.schema.json": {
@@ -1940,8 +1940,8 @@
     "semantic_hash": ""
   },
   "docs/quality/difficulty-calibration-v2-report.md": {
-    "mtime": 1788135033.2532914,
-    "ast_hash": "62c104e52dfe0ff43605c7091dfd7809",
+    "mtime": 1788135315.8116622,
+    "ast_hash": "c282d7ec5e02679ab819724381e1a24d",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-30-difficulty-calibration-v2.md": {
@@ -1987,6 +1987,16 @@
   "Resources/computer-science/aqa/generator/tests/test_finite_response_slots.py": {
     "mtime": 1788134803.5960445,
     "ast_hash": "d23afbe01820abe73c80bc2ffb01ebc4",
+    "semantic_hash": ""
+  },
+  "Backend/Core/assessment_objectives.py": {
+    "mtime": 1788135840.7048185,
+    "ast_hash": "64dadd10c9d580350e33a5350bccbd79",
+    "semantic_hash": ""
+  },
+  "tests/test_accounting_objectives.py": {
+    "mtime": 1788136037.2169316,
+    "ast_hash": "c67b2190d015f8459d86860a2c56d11a",
     "semantic_hash": ""
   }
 }

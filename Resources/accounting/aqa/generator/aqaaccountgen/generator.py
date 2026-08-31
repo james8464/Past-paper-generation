@@ -17,9 +17,11 @@ from Backend.Core.exam_blueprints import (
     GeneratedPaper,
     GeneratedQuestion,
     GeneratedSection,
+    MarkSchemePoint,
     PaperRule,
     QuestionRule,
     validate_generated_paper,
+    validate_rule,
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
 
@@ -128,6 +130,7 @@ RULE_TOPIC_IDS = {
 def build_paper(
     rule: PaperRule, syllabus: Syllabus, seed: int | None = None
 ) -> GeneratedPaper:
+    validate_rule(rule, syllabus.topic_ids)
     run_seed = seed if seed is not None else secrets.randbits(64)
     rng = random.Random(run_seed)
     topics = [topic for topic in syllabus.topics if topic.id in rule.allowed_topic_ids]
@@ -154,6 +157,27 @@ def build_paper(
                 question = _written(
                     rule.id, question_rule, number, topic, business, case_id, values, rng
                 )
+            question.assessment_objectives = dict(question_rule.assessment_objectives)
+            references = {
+                "company_adjustment": ("company_statement",),
+                "partnership_3": ("partnership_1", "partnership_2"),
+                "costing_4": ("costing_1",),
+            }.get(question.rule_id, ())
+            if references:
+                question.authoring_context["referenced_question_data"] = {
+                    prior.rule_id: {
+                        key: value for key, value in prior.authoring_context.items()
+                        if key in {"source_data", "adjustment_source_data", "adjustment_policy"}
+                    }
+                    for prior in questions if prior.rule_id in references
+                }
+            if len(question.assessment_objectives) > 1:
+                question.scheme_mode = "levels"
+                if question.marks == 6:
+                    question.mark_scheme.append(
+                        "Levels-based marking: assess application and developed reasoning together; "
+                        "require a judgement only where the command asks for one."
+                    )
             questions.append(question)
         option = GeneratedOption(
             id=f"{section_rule.id}1",
@@ -185,8 +209,32 @@ def build_paper(
         sections=sections,
     )
     paper = enrich_paper(paper, syllabus.topics, subject="accounting")
+    for section in paper.sections:
+        for question in section.options[0].questions:
+            if question.scheme_mode == "levels":
+                question.structured_mark_scheme = _level_credit(question)
     validate_generated_paper(paper, rule, syllabus.topic_ids)
     return paper
+
+
+def _level_credit(question: GeneratedQuestion) -> list[MarkSchemePoint]:
+    """Best-fit AO budgets are not marks awarded repeatedly to indicative examples."""
+    return [
+        *[
+            MarkSchemePoint(
+                text=f"{ao} allocation within the best-fit levels grid; apply the item-specific indicative content.",
+                marks=marks, credit_type="level", assessment_objective=ao,
+            )
+            for ao, marks in question.assessment_objectives.items()
+        ],
+        *[
+            MarkSchemePoint(
+                text=text, marks=0,
+                credit_type="level" if text.lower().startswith("level ") else "guidance",
+            )
+            for text in question.mark_scheme
+        ],
+    ]
 
 
 def _number(paper_id: str, section_id: str, index: int) -> str:
@@ -309,15 +357,16 @@ def _written(
         scheme = case.mark_scheme_points()
         authoring_context = case.authoring_context()
     elif rule.id == "company_adjustment":
+        case = IncomeStatementCase.from_chart_values(business, values)
         prompt = (
             f"Assess the usefulness of the income statement to the employees of {business}."
         )
         scheme = [
-            "Employees can assess profitability and the ability to sustain wages or employment;",
-            "Trends may help employees judge job security and negotiate remuneration;",
-            "The statement is historical and may not show future cash availability;",
-            "Accounting estimates and policies limit comparability;",
-            "A supported conclusion considers other financial and non-financial information.",
+            f"AO2: Use the calculated profit for the year of {_gbp(case.profit_for_year)} when considering the employer's capacity to sustain jobs and pay;",
+            "AO2: Apply the unrecorded supplier invoice and irrecoverable debt adjustments to the reliability of the reported result;",
+            "AO3: Explain why positive profit may support pay negotiations but does not show whether cash is available when wages fall due;",
+            "AO3: Develop how estimates and one-off income could make current profit a poor guide to continuing job security;",
+            "AO3: Reach a supported judgement on usefulness, weighing the corrected profit against missing cash forecasts and employment plans.",
         ]
     elif rule.id == "partnership_1":
         case = PartnershipCase.from_chart_values(values)
@@ -341,11 +390,11 @@ def _written(
             "Assess the view that the formal partnership agreement was unnecessary."
         )
         scheme = [
-            "An agreement clarifies capital, drawings, salaries, interest and profit-sharing;",
-            "It provides a process for admission, retirement and dispute resolution;",
-            "Preparation has legal or professional cost and cannot anticipate every event;",
-            "Default partnership law may apply where no agreement exists;",
-            "A supported conclusion weighs certainty and flexibility against cost.",
+            "AO2: Apply the agreement to Riley's retirement and the reallocation of capital between Alex and Morgan;",
+            "AO2: Use the two profit-sharing periods, partners' interest and Morgan's salary as examples of terms requiring agreement;",
+            "AO3: Explain how agreed retirement and remuneration terms reduce disputes about entitlement and protect the continuing partners' liquidity;",
+            "AO3: Weigh this certainty against professional costs and the inability to anticipate every future change;",
+            "AO3: Reach a supported conclusion on whether relying on default arrangements would meet these partners' particular needs.",
         ]
     elif rule.id == "decision_1":
         prompt = (
@@ -441,11 +490,13 @@ def _written(
         }
     elif rule.id == "variance_3":
         prompt = (
-            "State two possible causes of an adverse direct materials price variance."
+            f"State two possible purchasing decisions that could explain {business}'s "
+            "direct-material price variance calculated above. Link each to the "
+            "difference between its standard and actual price."
         )
         scheme = [
-            "The supplier increased the price paid per unit of material;",
-            "The business ordered a smaller quantity and lost a bulk-purchase discount.",
+            "A larger order may have secured a bulk discount, reducing the actual price below the standard price;",
+            "Switching to a lower-priced supplier may have reduced the actual price below standard, producing the favourable variance.",
         ]
         authoring_context = {
             "preserve_prompt": True,
@@ -453,16 +504,16 @@ def _written(
         }
     elif rule.id == "variance_4":
         prompt = (
-            f"Explain two reasons why {business} should investigate an adverse direct "
-            "materials price variance before taking action."
+            f"Explain two reasons why {business} should investigate the direct-material "
+            "price variance calculated above before changing its purchasing policy."
         )
         scheme = [
-            "An adverse price variance means the actual price paid exceeded the standard price;",
-            "A market-wide supplier price increase may be outside the purchasing manager's control;",
-            f"{business} should therefore avoid blaming staff until it distinguishes an external price change from poor purchasing;",
-            "A smaller order or failure to negotiate may have caused the business to lose a bulk discount;",
-            "That cause is controllable and could recur if purchasing procedures are not corrected;",
-            f"{business} should therefore identify the cause before choosing a proportionate corrective action.",
+            "AO2: The actual material price is below the standard price, producing the calculated favourable price variance;",
+            "AO2: Apply the saving to a possible change of supplier or order size, rather than assuming the budgeted material standard was maintained;",
+            "AO3: Cheaper material could be lower quality, increasing waste or production time and offsetting the price saving;",
+            "AO3: Investigating quality and usage therefore establishes whether the apparent saving improves overall profit;",
+            "AO3: A bulk discount could require larger orders, tying up cash in inventory and increasing storage costs;",
+            "AO3: Investigating order size and stock costs therefore distinguishes a repeatable net saving from a price saving accompanied by extra costs.",
         ]
         authoring_context = {
             "preserve_prompt": True,
@@ -484,12 +535,12 @@ def _written(
             "with activity-based costing when setting product prices."
         )
         scheme = [
-            "Activity-based costing assigns overheads to activities and then to products using cost drivers;",
-            "It can produce more accurate product costs where products consume support activities in different proportions;",
-            f"{business} may therefore set better-informed prices and stop cross-subsidising complex products;",
-            "Identifying activities, measuring cost-driver volumes and maintaining the system creates additional cost;",
-            "The resulting allocations still depend on judgement and may add little where overheads are low or products are similar;",
-            f"{business} should therefore adopt activity-based costing only if the decision benefit from more accurate costs exceeds the implementation cost.",
+            "AO2: Apply the setup and purchase-order activity rates calculated above to this product's overhead cost;",
+            "AO2: Use the supplied setup and purchase-order consumption instead of assuming every unit consumes the same support activities;",
+            f"AO3: The resulting cost may reveal cross-subsidisation; {business} can therefore assess whether its price covers the resources this product consumes;",
+            "AO3: Maintaining activity records has a cost and the allocation still depends on choosing appropriate drivers;",
+            "AO3: Where products consume support activities similarly, greater detail may change costs very little and therefore fail to improve pricing decisions;",
+            "AO3: Reach a conditional judgement based on whether better pricing decisions justify implementation and measurement costs.",
         ]
         authoring_context = {
             "preserve_prompt": True,
@@ -520,6 +571,14 @@ def _written(
             f"{point}, and reach a justified conclusion."
         )
         scheme = _levels(topic, point, case_id)
+    if rule.id in {"variance_3", "variance_4"}:
+        # The candidate sees these same inputs in 14.1, not the adverse labour
+        # variances in 14.2. Carry that dependency into independent review/solving.
+        _, _, price_context = _management_calculation("variance_1", business, values)
+        authoring_context.update({
+            "source_question": "14.1",
+            "source_data": price_context["source_data"],
+        })
     return GeneratedQuestion(
         rule_id=rule.id,
         number=number,
@@ -700,9 +759,9 @@ def _management_calculation(
             "Method: purchase-order driver rate = purchase-order cost pool ÷ total orders;",
             f"Purchase-order driver rate: {_gbp(purchase_order_cost_pool)} ÷ "
             f"{total_purchase_orders:,} = {_gbp_decimal(purchase_order_rate)};",
-            f"Set-up overhead assigned: {_gbp_decimal(setup_rate)} × "
+            f"Set-up overhead assigned: ({_gbp(setup_cost_pool)} ÷ {total_setups:,}) × "
             f"{product_setups:,} = {_gbp_decimal(setup_overhead)};",
-            f"Purchase-order overhead assigned: {_gbp_decimal(purchase_order_rate)} × "
+            f"Purchase-order overhead assigned: ({_gbp(purchase_order_cost_pool)} ÷ {total_purchase_orders:,}) × "
             f"{product_purchase_orders:,} = {_gbp_decimal(purchase_order_overhead)};",
             f"Total activity-based overhead: {_gbp_decimal(setup_overhead)} + "
             f"{_gbp_decimal(purchase_order_overhead)} = {_gbp_decimal(total_overhead)};",

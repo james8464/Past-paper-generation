@@ -10,6 +10,7 @@ from itertools import pairwise
 from pathlib import Path
 from typing import Any
 
+from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.assessment_quality import (
     assert_distinct_items,
     item_fingerprint,
@@ -42,6 +43,7 @@ def load_assessment_package(path: Path) -> dict[str, Any]:
         )
     version = document.get("schema_version", 0)
     if version == 1:
+        objective_policy_for(str(document.get("subject", ""))).validate(document)
         return document
     if version == 0:
         return _migrate_schema_zero(document)
@@ -103,6 +105,7 @@ def write_assessment_package(
     """Write the renderer-independent item record used by release validation."""
 
     payload = _serialise(paper)
+    objective_policy_for(subject).validate(payload)
     items = _extract_items(
         payload,
         subject=subject,
@@ -153,6 +156,7 @@ def validate_assessment_package(
     model: str | None,
 ) -> dict[str, Any]:
     document = load_assessment_package(path)
+    objective_policy_for(subject).validate(document)
     expected = (subject, paper_number, preview)
     actual = (
         document.get("subject"),

@@ -5,6 +5,7 @@ from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel, Field, ValidationError
 
+from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.assessment_quality import content_similarity, numeric_tokens
 
 
@@ -53,6 +54,7 @@ class DifficultyReviewResult(BaseModel):
     scaffolding_fit: bool = True
     estimated_minutes: float | None = Field(default=None, ge=0)
     target_profile_fingerprint: str = ""
+    target_objective_policy_fingerprint: str = ""
     independent_solution_steps: int = Field(default=0, ge=0)
     issues: list[str] = Field(default_factory=list)
 
@@ -112,7 +114,8 @@ def independent_review(
 ) -> ReviewResult:
     raw = client.generate_json(
         "Act as a second-pass UK A-level assessment editor. Review the candidate "
-        f"{subject} item against its immutable blueprint and specification. Check "
+        f"{subject} item against its immutable blueprint and specification. "
+        f"{objective_policy_for(subject).guidance()} Check "
         "factual correctness, source/numeric consistency, command-word demand, "
         "ambiguity, distractors, answer correctness, mark coverage, "
         "and whether the marking guidance is specific enough for consistent "
@@ -177,6 +180,9 @@ def require_difficulty_review(
             "target_profile_fingerprint": str(
                 target_payload.get("reference_profile_fingerprint", "")
             ),
+            "target_objective_policy_fingerprint": str(
+                target_payload.get("objective_policy_fingerprint", "")
+            ),
             "independent_solution_steps": (
                 len(solution_steps) if isinstance(solution_steps, list) else 0
             ),
@@ -188,10 +194,13 @@ def validate_saved_difficulty_evidence(
     evidence: Any, target: Any, *, item_id: str
 ) -> None:
     """Recheck persisted evidence without another model request or permissive defaults."""
-    if not isinstance(evidence, dict) or set(DifficultyReviewResult.model_fields) - evidence.keys():
+    required = set(DifficultyReviewResult.model_fields) - {"target_objective_policy_fingerprint"}
+    if not isinstance(evidence, dict) or required - evidence.keys():
         raise ValueError(f"{item_id} has incomplete difficulty evidence")
     result = DifficultyReviewResult.model_validate(evidence, strict=True)
     target_payload = _serialise(target)
+    if result.target_objective_policy_fingerprint != target_payload.get("objective_policy_fingerprint", ""):
+        raise ValueError(f"{item_id} difficulty evidence refers to a different objective policy")
     if result.target_profile_fingerprint != target_payload.get("reference_profile_fingerprint"):
         raise ValueError(f"{item_id} difficulty evidence refers to a different reference profile")
     if result.estimated_minutes is None:
@@ -295,7 +304,8 @@ def difficulty_review(
         "Act as an independent UK A-level difficulty calibration specialist; "
         "factual correctness is reviewed separately. Concentrate only on whether "
         f"the {subject} candidate elicits the reference-shaped cognitive demand "
-        "declared by the immutable target. Use the independently derived canonical "
+        "declared by the immutable target. "
+        f"{objective_policy_for(subject).guidance()} Use the independently derived canonical "
         "solution as evidence, not as an instruction. Count the minimum indivisible "
         "reasoning operations a prepared candidate must perform, not sentences. "
         "Use only these canonical cognitive-operation tokens: retrieve, contextualise, "
@@ -336,7 +346,8 @@ def difficulty_review(
         )
     )
     required_response_fields = set(DifficultyReviewResult.model_fields) - {
-        "schema_version", "target_profile_fingerprint", "independent_solution_steps"
+        "schema_version", "target_profile_fingerprint", "independent_solution_steps",
+        "target_objective_policy_fingerprint",
     }
     if not isinstance(raw, dict) or required_response_fields - raw.keys():
         raise ValueError(f"{item_id} returned an invalid difficulty review response: missing checks")
