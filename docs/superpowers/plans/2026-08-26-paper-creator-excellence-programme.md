@@ -320,12 +320,15 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 These are bounded corrective units inside Task 7, not replacements for its
 all-paper, two-seed and external-review requirements.
 
+Verified subject meanings, component-normalisation rules and current reference
+totals are recorded in `docs/quality/assessment-objective-reference.md`.
+
 - [x] 7.A: Replace the Accounting investor source assembled only by the renderer
   with one coherent, candidate-visible source contract shared by generation,
   independent solving/review and PDF output; include worked investor ratios.
 - [ ] 7.B: Correct Accounting's objective allocations and all downstream guidance
   to the official AO1–AO3 framework, including analysis/evaluation under AO3.
-- [ ] 7.C: Repair specialist closed-answer reconciliation after the captured CS
+- [x] 7.C: Repair specialist closed-answer reconciliation after the captured CS
   classification false pass; make the figure's evidence sufficient and keep
   the visible figure and solver representation in agreement.
 - [ ] 7.E: Correct AQA/OCR Computer Science objective meaning and component
@@ -334,6 +337,11 @@ all-paper, two-seed and external-review requirements.
   actual application tasks where necessary rather than only changing labels.
 - [ ] Consolidate repeated introductory scheme guidance without replacing it
   with layout padding or weakening fidelity thresholds.
+- [ ] 7.F: Replace irrelevant Edexcel Economics topic-note marking with
+  item-specific credit and visible-source evidence. Reconcile declared objective
+  budgets, actual credit points and printed/exported schemes for every task
+  style; require explicit content-review checks rather than defaulting omitted
+  checks to clear. Preserve the captured live rejection as evidence.
 - [x] Correct the saved-content Accounting QA replay to use the production
   accessible-PDF render transaction; pass scoped 300/600-DPI print audits.
 

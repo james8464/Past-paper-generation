@@ -1,6 +1,6 @@
 # Difficulty Calibration v2 Qualification Report
 
-Date: 30 August 2026
+Initial report: 30 August 2026. Continued qualification: 31 August 2026.
 
 ## Outcome
 
@@ -26,7 +26,7 @@ The Difficulty Calibration v2 framework is implemented across all advertised ass
 - Supported decisions (`Advise`, `Recommend`, `Justify`) require analysis and judgement rather than falling through to generic explanation. Corpus extraction now recognises `Advise`, matching [AQA's Accounting command-word guidance](https://www.aqa.org.uk/resources/accounting/as-and-a-level/accounting/teach/command-words).
 - Accounting indicative-content tables preserve explicitly declared assessment objectives. Unassigned points show an em dash instead of receiving an invented label based on row position.
 
-## Verification
+## Initial 30 August verification
 
 - Python: 851 passed, 2 skipped, 5 third-party deprecation warnings. The skips are pre-existing environment-dependent checks.
 - macOS: 48 tests passed, zero failures, with warnings treated as errors and complete strict-concurrency checking.
@@ -155,3 +155,47 @@ The new Economics Paper 1 live attempt failed on a provider timeout during a
 recorded low-battery hibernation, before accepting its first item; no PDFs were
 released. Preserve `tmp/pdfs/excellence-economics-live-26083031/` as failed
 runtime evidence, not a content-review verdict.
+
+The powered-on retry (`tmp/pdfs/excellence-economics-live-awake-26083031/`)
+reached content review and failed after 47 seconds. Its first four-mark
+contestability part had irrelevant topic-wide revision notes and conflicting
+AO guidance: the declared breakdown was Knowledge2/Application2, whereas the
+scheme claimed AO1/AO2/AO3=1/1/2. The official 2024 Paper 1 contextual
+explain-one-reason examples use Knowledge2/Application1/Analysis1; allocation
+must therefore follow the actual task, not a generic four-mark formula. No
+paper was released. Item-specific Economics marking remains an open correction.
+
+### Closed-response integrity correction
+
+Commits `afece43`, `bdbc7da` and `9999285` add exhaustive, candidate-slot-based
+checking for finite Computer Science answers, preserve private answer keys
+through AI authoring, and prevent missing or contradictory fields from passing.
+The independent solver receives visible source data and blank/output locations,
+not expected answers or computed output lengths. Correct answers can omit a unit
+already printed on the answer line; wrong values and incompatible units fail.
+Source/solver parity now includes the software-classification examples and
+explicit parent/child relationships. Symbolic and program equivalence still
+require semantic review; these literal checks do not solve that wider problem.
+
+The independent first review exposed a dropped-key integration bug and two
+answer-length hints. Their corrections include four failing-then-passing
+regressions, a prompt-version increment to invalidate old reviews, and a final
+backend run of 960 passed / 2 skipped / 5 existing third-party warnings. All five
+affected normal-backend preview routes passed again under
+`tmp/pdfs/task7c-app-preview-matrix-review1/`. Independent scoped re-review
+approved the corrections and passed six focused checks. Whole-paper live and
+empirical qualification remain open.
+
+The preceding final previews passed unchanged 300-DPI print/fidelity checks for
+AQA CS Paper 1 (0.704) and Paper 2 (0.692), with no threshold or print failures;
+the review correction changes neither rendered source nor geometry. Reports:
+`tmp/fidelity/task7c-cs1-300.json` and `tmp/fidelity/task7c-cs2-300.json`.
+Manual comparison against official 2025 Paper 2 page 2 still shows a simpler
+classification diagram with fewer distinctions, smaller diagram text and
+different connectors. Different tariffs prevent a direct difficulty equivalence
+claim. This feeds the outstanding CS task-demand audit, not a visual-gate waiver.
+
+A separate shared content-review probe found that a response containing only
+`{"approved":true}` passes because omitted issue categories default to empty.
+Requiring explicit checks is queued with the Economics content-contract repair;
+the existing strict difficulty-review checks do not close this distinct gap.
