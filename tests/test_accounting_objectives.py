@@ -380,3 +380,68 @@ def test_activity_cost_working_uses_exact_rates_not_rounded_display_values():
     ]
     assert round(context["verified_answers"]["setup_overhead"], 2) == 20764.04
     assert round(context["verified_answers"]["purchase_order_overhead"], 2) == 9921.57
+
+
+@pytest.mark.parametrize(
+    "rule_id,expected_cells",
+    [
+        (
+            "variance_4",
+            {
+                "AO2 allocation": "2",
+                "AO3 allocation": "4",
+                "AO3: Cheaper material could be lower quality": "—",
+                "Level 3 (5–6)": "—",
+                "Level 0 (0): no creditworthy material.": "0",
+            },
+        ),
+        (
+            "decision_2",
+            {
+                "AO2 allocation": "5",
+                "AO3 allocation": "20",
+                "Level 5 (21–25)": "—",
+                "Level 0 (0): no creditworthy material.": "0",
+            },
+        ),
+    ],
+)
+def test_rendered_award_cells_distinguish_guidance_from_zero_level(
+    tmp_path, rule_id, expected_cells
+):
+    import pymupdf
+    from aqaaccountgen.render_pdf import _scheme_block
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate
+
+    question = next(
+        q
+        for section in paper_for("2").sections
+        for q in section.options[0].questions
+        if q.rule_id == rule_id
+    )
+    before = question.model_dump(mode="json")
+    path = tmp_path / "award-cells.pdf"
+    SimpleDocTemplate(str(path), pagesize=A4).build(_scheme_block(question))
+    cells = {}
+    with pymupdf.open(path) as document:
+        for page in document:
+            for text in expected_cells:
+                for rect in page.search_for(text):
+                    # Read the actual PDF's right-hand award cell on this row,
+                    # not a table object's private cells or all occurrences of 0.
+                    words = page.get_text("words")
+                    cell = [
+                        word[4]
+                        for word in words
+                        if word[0] > page.rect.width * 0.83
+                        and rect.y0 <= (word[1] + word[3]) / 2 <= rect.y1
+                    ]
+                    cells[text] = " ".join(cell)
+    assert cells == expected_cells
+    assert question.model_dump(mode="json") == before
+    assert sum(p.marks for p in question.structured_mark_scheme) == question.marks
+    assert any(
+        p.marks == 0 and p.text.startswith("Level 3")
+        for p in question.structured_mark_scheme
+    )

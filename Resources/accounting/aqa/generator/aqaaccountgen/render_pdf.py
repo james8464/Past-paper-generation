@@ -2570,7 +2570,10 @@ def _scheme_block(question: GeneratedQuestion) -> list[Flowable]:
     ]
     rows.extend(
         [
-            [Paragraph(f"• {point}", STYLES["small"]), str(marks)]
+            [
+                Paragraph(f"• {point}", STYLES["small"]),
+                str(marks) if marks or point.casefold().startswith("level 0 ") else "—",
+            ]
             for point, marks in _item_specific_mark_scheme_rows(question)
         ]
     )
