@@ -292,3 +292,18 @@ qualification. Final Paper 2 preview print checks passed at 300 DPI (0.706;
 zero threshold/print failures). Independent review nevertheless found numeric
 suffix/range and accepted-alternative bypasses; Task 7.G remains open while
 those regressions are fixed.
+
+Task 7.G closed after fix `7ea51fa` and a clean scoped independent re-review.
+Complete quantity endings, role-bound numeric alternatives and explicit
+supported output units now reject the reproduced bypasses. Integrity version
+`closed-numeric-v2` invalidates weaker saved evidence. Final tests: 1,112 passed,
+2 skipped, 5 existing SWIG warnings; all 21 preview routes passed. The first
+fix-round full suite caught a stale repository inventory (442 versus 444 tracked
+files); the snapshot was corrected and the complete suite rerun successfully.
+
+Fresh post-fix production checks of Accounting 14.2 and 15.1 also passed,
+including explicit content and difficulty responses, using `gemma4:12b`.
+Their provenance remains `verified-contract-reviewed`; this does not turn
+fixed numerical questions into new AI authorship or qualify a whole paper.
+Current deterministic coverage remains the enumerated contracts: outstanding
+OCR CS and Edexcel closed calculations are assigned to Tasks 7.E and 7.F.
