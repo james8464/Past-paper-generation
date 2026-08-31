@@ -277,7 +277,18 @@ AQA's baseline allocates 40/10/15/15 marks and OCR's 47/11/10/12. Both treat
 all 30 MCQs as AO1, including numerical application, and some stems add
 irrelevant scenario numbers to recall questions. Task 7.H covers actual
 task-demand and candidate-path corrections across the remaining routes.
-Verified component ranges and the usable OCR 2022 item-format evidence are
-recorded in `assessment-objective-reference.md`. The OCR 2023 summary grid has
-internally inconsistent totals, confirmed visually, and is not accepted as
-exact calibration ground truth.
+Verified component ranges and the reconciled OCR 2024 item-format evidence are
+recorded in `assessment-objective-reference.md`. Deeper cross-checks against
+individual items found inconsistencies in both OCR 2022 and 2023 summary grids;
+neither is accepted as exact calibration ground truth. Published but conflicting
+totals remain distinct from verified totals and inferred task operations.
+
+The fresh two-item Accounting probe on `d1dac13` passed both the three-variance
+question (14.2) and activity-based costing question (15.1), with
+`verified-contract-reviewed` provenance. Answers are recomputed from declared
+candidate inputs; the two model calls review content and difficulty. These are
+fixed-contract transactions, not new AI-authored questions or full-paper
+qualification. Final Paper 2 preview print checks passed at 300 DPI (0.706;
+zero threshold/print failures). Independent review nevertheless found numeric
+suffix/range and accepted-alternative bypasses; Task 7.G remains open while
+those regressions are fixed.
