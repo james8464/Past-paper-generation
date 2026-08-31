@@ -168,7 +168,7 @@ def test_pre_policy_saved_difficulty_review_is_not_current_after_relabel():
         observed_cognitive_operations=target.required_cognitive_operations,
         estimated_minutes=question.expected_minutes,
         target_profile_fingerprint=target.reference_profile_fingerprint,
-        solution_integrity_version="closed-numeric-v1",
+        solution_integrity_version="closed-numeric-v2",
     ).model_dump(mode="json")
     old.pop("target_objective_policy_fingerprint", None)
     with pytest.raises(ValueError, match=r"objective|incomplete"):

@@ -257,7 +257,7 @@ def test_saved_difficulty_evidence_does_not_fill_missing_integrity_defaults(fiel
         profile_fit=True,
         target_profile_fingerprint="current",
         estimated_minutes=1,
-        solution_integrity_version="closed-numeric-v1",
+        solution_integrity_version="closed-numeric-v2",
     ).model_dump()
     evidence.pop(field)
     with pytest.raises(ValueError, match="incomplete"):
@@ -301,7 +301,10 @@ def test_checkpoint_resume_rejects_changed_preserved_numeric_prompt():
         _validate_checkpoint_item(task, changed)
 
 
-def test_real_family_adapter_invalidates_pre_numeric_integrity_checkpoint(tmp_path):
+@pytest.mark.parametrize("suffix", ["", ":closed-numeric-v1"])
+def test_real_family_adapter_invalidates_pre_numeric_integrity_checkpoint(
+    tmp_path, suffix
+):
     from dataclasses import replace
 
     from aqaaccountgen.cli import ADAPTER
@@ -320,7 +323,10 @@ def test_real_family_adapter_invalidates_pre_numeric_integrity_checkpoint(tmp_pa
     syllabus = ADAPTER.load_syllabus(syllabus_path)
     paper = ADAPTER.build(ADAPTER.load_rule("paper_2"), syllabus, 26083122)
     identity = identity_for_blueprint(
-        paper, provider="ollama", model="test", prompt_version=ADAPTER.prompt_version
+        paper,
+        provider="ollama",
+        model="test",
+        prompt_version=ADAPTER.prompt_version + suffix,
     )
     checkpoint_path = tmp_path / "old-checkpoint.json"
     AssessmentCheckpointStore(checkpoint_path, identity).save_payload("old", {})
@@ -441,7 +447,20 @@ def test_published_numeric_token_cannot_hide_scale_currency_or_exponent(suffix):
     assert not reconcile_solution(solution, raw).passed
 
 
-@pytest.mark.parametrize("suffix", [".", ";", ",", "", "\n", " per unit.", "/unit."])
+@pytest.mark.parametrize(
+    "suffix",
+    [
+        ".",
+        ";",
+        ",",
+        "",
+        "\n",
+        " per unit.",
+        "/unit.",
+        " (own figure).",
+        " per unit (own figure).",
+    ],
+)
 def test_published_numeric_result_allows_genuine_punctuation_and_declared_unit(suffix):
     from Backend.Core.numeric_integrity import check_published_outputs
 
@@ -450,6 +469,171 @@ def test_published_numeric_result_allows_genuine_punctuation_and_declared_unit(s
     check = next(c for c in solution.numeric_checks if c.role == "overhead_per_unit")
     line = f"Overhead cost per unit: £30,685.61 ÷ 1,100 = £27.90{suffix}"
     assert not check_published_outputs([check], line)
+
+
+@pytest.mark.parametrize(
+    "suffix",
+    [
+        " (own figure) per hour.",
+        " to £50.00 per unit.",
+        " and £50.00 per unit.",
+        ". per hour.",
+        "; million.",
+        ", £50.00 per unit.",
+        ") million.",
+        " (own figure). Accept £97 per unit.",
+        "\nper hour.",
+        "\nAccept £97 per unit.",
+    ],
+)
+def test_shared_boundary_rejects_unchecked_remainder_of_numeric_result(suffix):
+    task = next(t for t in accounting_tasks() if t.question.rule_id == "costing_1")
+    raw = task.question.model_dump(mode="json")
+    raw["mark_scheme"] = [
+        text.replace("£27.90.", f"£27.90{suffix}") for text in raw["mark_scheme"]
+    ]
+    with pytest.raises(ValueError, match="reconciliation"):
+        _independently_validate_candidate(
+            task, task.question.model_validate(raw), client=GivenRateClient()
+        )
+
+
+@pytest.mark.parametrize("field", ["alternatives", "allow"])
+@pytest.mark.parametrize(
+    "alternative",
+    [
+        "Accept £97 per unit.",
+        "Accept £27.90 per hour.",
+        "Accept £27.90 per unit to £50.00 per unit.",
+        "Accept £27.90 per unit (own figure) per hour.",
+        "Accept £0.0279m/unit.",
+    ],
+)
+def test_shared_boundary_rejects_wrong_unconditional_numeric_alternatives(
+    field, alternative
+):
+    task = next(t for t in accounting_tasks() if t.question.rule_id == "costing_1")
+    raw = task.question.model_dump(mode="json")
+    point = next(
+        p
+        for p in raw["structured_mark_scheme"]
+        if p["text"].startswith("Overhead cost per unit:")
+    )
+    point[field] = [alternative]
+    with pytest.raises(ValueError, match="reconciliation"):
+        _independently_validate_candidate(
+            task, task.question.model_validate(raw), client=GivenRateClient()
+        )
+
+
+@pytest.mark.parametrize(
+    "alternative",
+    [
+        "Accept £27.9 per unit.",
+        "Accept £27.90/unit.",
+        "Accept 2790p per unit.",
+        "Accept £0.0000279m/unit.",
+    ],
+)
+def test_equivalent_numeric_alternatives_are_bound_to_the_point_role(alternative):
+    task = next(t for t in accounting_tasks() if t.question.rule_id == "costing_1")
+    raw = task.question.model_dump(mode="json")
+    point = next(
+        p
+        for p in raw["structured_mark_scheme"]
+        if p["text"].startswith("Overhead cost per unit:")
+    )
+    point["alternatives"] = [alternative]
+    solution = _independently_validate_candidate(
+        task, task.question.model_validate(raw), client=GivenRateClient()
+    )
+    assert solution.answer_slots["overhead_per_unit"] == "£27.90/unit"
+
+
+def test_conditional_follow_through_is_not_an_unconditional_numeric_alternative():
+    task = next(t for t in accounting_tasks() if t.question.rule_id == "costing_1")
+    solution = IndependentSolver().solve(task.question, [])
+    raw = task.question.model_dump(mode="json")
+    raw["follow_through_rules"] = [
+        "If own total overhead is £106,700, allow £97 per unit for dividing it consistently by 1,100."
+    ]
+    assert reconcile_solution(solution, raw).passed
+    raw["alternatives"] = ["Accept £97 per unit."]
+    assert not reconcile_solution(solution, raw).passed
+
+
+def test_top_level_numeric_alternative_must_name_and_match_its_output_role():
+    task = next(t for t in accounting_tasks() if t.question.rule_id == "costing_1")
+    solution = IndependentSolver().solve(task.question, [])
+    raw = task.question.model_dump(mode="json")
+    raw["alternatives"] = ["overhead_per_unit: £27.9/unit"]
+    assert reconcile_solution(solution, raw).passed
+    raw["alternatives"] = ["setup_rate: £27.9/setup"]
+    assert not reconcile_solution(solution, raw).passed
+
+
+@pytest.mark.parametrize("unit", ["kg", "GBP/hour", "USD", "unknown"])
+def test_unsupported_numeric_unit_contract_never_becomes_dimensionless(unit):
+    from Backend.Core.numeric_integrity import NUMBER
+
+    item = {
+        "id": "unsupported-unit",
+        "kind": "calculation",
+        "authoring_context": {
+            "calculation_expression": "mass",
+            "calculation_variables": {"mass": 3},
+            "calculation_input_units": {"mass": unit},
+            "calculation_output": {
+                "role": "mass",
+                "unit": unit,
+                "decimal_places": 1,
+                "scheme_pattern": rf"^Mass: (?P<value>{NUMBER})",
+            },
+        },
+    }
+    with pytest.raises(ValueError, match="unit"):
+        IndependentSolver().solve(item, [])
+
+
+def test_pre_round1_numeric_provenance_cannot_replay_weaker_acceptance():
+    task = next(t for t in accounting_tasks() if t.question.rule_id == "costing_1")
+    solution = IndependentSolver().solve(task.question, [])
+    old = solution.model_copy(update={"integrity_version": "closed-numeric-v1"})
+    assert not reconcile_solution(old, task.question).passed
+
+
+@pytest.mark.parametrize(
+    ("unit", "printed"),
+    [
+        ("GBP", "£3.0"),
+        ("GBPm", "£3.0m"),
+        ("GBP/unit", "£3.0/unit"),
+        ("GBP/kg", "£3.0 per kg"),
+        ("GBP/setup", "£3.0/setup"),
+        ("GBP/order", "£3.0/order"),
+        ("GBP/scarce hour", "£3.0 per scarce hour"),
+        ("%", "3.0%"),
+        ("1", "3.0"),
+    ],
+)
+def test_current_supported_units_are_checked_as_complete_quantities(unit, printed):
+    from Backend.Core.numeric_integrity import (
+        MONEY,
+        NUMBER,
+        CheckedNumericOutput,
+        check_published_outputs,
+    )
+
+    number = MONEY if unit.startswith("GBP") else rf"(?P<value>{NUMBER})"
+    check = CheckedNumericOutput(
+        role="result",
+        unit=unit,
+        decimal_places=1,
+        value="3",
+        scheme_pattern=rf"^Result: {number}",
+    )
+    assert not check_published_outputs([check], f"Result: {printed}.")
+    assert check_published_outputs([check], f"Result: {printed} per hour.")
 
 
 def test_incomplete_serialized_numeric_checks_cannot_shrink_required_outputs():

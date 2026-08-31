@@ -19,6 +19,7 @@ from Backend.Core.numeric_integrity import (
     CheckedNumericOutput,
     CheckedTextOutput,
     NumericOutput,
+    check_numeric_alternatives,
     check_published_outputs,
     display,
     numeric_result,
@@ -485,11 +486,39 @@ def reconcile_solution(
                 )
         # Check both representations when supplied: neither a stale structured
         # scheme nor the published prose may hide behind the other.
-        texts = ["\n".join(_semantic_text(point) for point in points)]
+        alternative_groups = [
+            (solution.numeric_checks, raw.get("alternatives", [])),
+            (solution.numeric_checks, raw.get("allow", [])),
+            (solution.numeric_checks, solution.alternatives),
+        ]
+        for point in points:
+            if not isinstance(point, dict):
+                continue
+            associated = [
+                check
+                for check in solution.numeric_checks
+                if re.search(
+                    check.scheme_pattern,
+                    str(point.get("text", "")),
+                    re.IGNORECASE | re.MULTILINE,
+                )
+            ]
+            for field in ("alternatives", "allow"):
+                alternatives = point.get(field, [])
+                if associated or any(
+                    re.search(r"\d|[£%]", value) for value in alternatives
+                ):
+                    alternative_groups.append((associated, alternatives))
+        for checks, alternatives in alternative_groups:
+            issues.extend(
+                ReconciliationIssue(field="alternatives", message=message)
+                for message in check_numeric_alternatives(checks, alternatives)
+            )
+        texts = [[_rubric_text(point) for point in points]]
         if isinstance(raw.get("mark_scheme"), list) and raw.get(
             "structured_mark_scheme"
         ):
-            texts.append("\n".join(raw["mark_scheme"]))
+            texts.append(raw["mark_scheme"])
         for published in texts:
             issues.extend(
                 ReconciliationIssue(field="answer", message=message)
@@ -498,7 +527,9 @@ def reconcile_solution(
                 )
             )
             for check in solution.text_checks:
-                matches = re.findall(check.scheme_pattern, published, re.MULTILINE)
+                matches = re.findall(
+                    check.scheme_pattern, "\n".join(published), re.MULTILINE
+                )
                 if (
                     not matches
                     or any(value != check.value for value in matches)

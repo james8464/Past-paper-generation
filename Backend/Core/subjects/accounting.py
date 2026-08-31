@@ -3,7 +3,7 @@ from __future__ import annotations
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
-from Backend.Core.numeric_integrity import MONEY, NumericOutput, numeric_result
+from Backend.Core.numeric_integrity import MONEY, NUMBER, NumericOutput, numeric_result
 
 
 def solve_accounting_calculation(item: dict[str, Any]) -> dict[str, Any] | None:
@@ -284,10 +284,65 @@ def accounting_outputs(rule: str, context: dict[str, Any]) -> list[NumericOutput
             unit=units.get(role, "GBP"),
             decimal_places=places,
             scheme_pattern=pattern,
+            **(
+                {"scheme_ending": ending}
+                if (ending := _accounting_endings(rule).get(role))
+                else {}
+            ),
             sign="variance" if role in variance_roles else "signed",
         )
         for role, pattern in patterns.items()
     ]
+
+
+def _accounting_endings(rule: str) -> dict[str, str]:
+    """Complete code-owned row continuations; never a free suffix wildcard.
+
+    Other computed quantities on the same row have their own output checks.
+    Given quantities in working remain source inputs, not accepted alternatives.
+    """
+    money = rf"[−+\-]?£{NUMBER}"
+    second = rf"; second period {money}\."
+    if rule == "statement_extract":
+        return {
+            "plant_depreciation_charge": rf"; accumulated depreciation {money} \+ {money} = {money}\.",
+            "motor_cost": rf"; accumulated depreciation {money} − {money} = {money}\.",
+            "motor_accumulated_depreciation": rf"and carrying amount {money}\.",
+        }
+    if rule == "ledger_calculation":
+        return {
+            "account_total": rf"; carry down and bring down closing trade receivables of {money}\."
+        }
+    if rule == "accounting_concept":
+        return {
+            "net_sales_transferred_to_income_statement": r"to the income statement\."
+        }
+    if rule == "company_statement":
+        return {
+            "new_debenture_interest": rf"and {money} × {NUMBER}% × {NUMBER}/{NUMBER} = {money}\.",
+            "insurance_claim": rf"\. The roof repair of {money} is already included in warehouse expenses\.",
+            "taxation": rf"; final profit for the year: {money}\.",
+        }
+    if rule == "partnership_1":
+        return {
+            f"Alex_{role}": rf"; Morgan {money}\."
+            for role in ("goodwill_credit", "goodwill_write_off", "closing_capital")
+        }
+    if rule == "partnership_2":
+        riley = rf"; Riley's first-period share {money}\."
+        return {
+            **{
+                f"first_period_{role}": second
+                for role in ("profit", "salary", "residual_profit", "Alex_profit_share")
+            },
+            "first_period_drawings_interest": rf"; second period Alex {money}, Morgan {money}, total {money}\.",
+            "first_period_Alex_capital_interest": rf"; Morgan {money} gives {money}; Riley {money} gives {money}\.",
+            "first_period_Morgan_capital_interest": rf"; Riley {money} gives {money}\.",
+            "second_period_Alex_capital_interest": rf"; Morgan {money} gives {money}\.",
+            "first_period_Morgan_profit_share": rf"; second period {money}{riley}",
+            "second_period_Morgan_profit_share": riley,
+        }
+    return {}
 
 
 def _management(context: dict[str, Any], rule: str) -> dict[str, Any]:

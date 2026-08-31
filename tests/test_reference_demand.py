@@ -635,7 +635,7 @@ def test_live_form_audit_rechecks_saved_review_against_target(changed) -> None:
         estimated_minutes=target.expected_minutes_min,
         target_profile_fingerprint=profile.source_fingerprint,
         independent_solution_steps=2,
-        solution_integrity_version="closed-numeric-v1",
+        solution_integrity_version="closed-numeric-v2",
     ).model_dump(mode="json")
     item["difficulty_evidence"] = evidence
     good = reference_demand.audit_form_demand(

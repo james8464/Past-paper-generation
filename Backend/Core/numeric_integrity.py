@@ -8,7 +8,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-NUMERIC_INTEGRITY_VERSION = "closed-numeric-v1"
+NUMERIC_INTEGRITY_VERSION = "closed-numeric-v2"
 NUMBER = r"[−+\-]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?"
 MONEY = rf"(?P<value>[−+\-]?£{NUMBER})"
 
@@ -16,9 +16,20 @@ MONEY = rf"(?P<value>[−+\-]?£{NUMBER})"
 class NumericOutput(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
     role: str = Field(min_length=1)
-    unit: str = Field(min_length=1)
+    unit: Literal[
+        "GBP",
+        "GBPm",
+        "GBP/unit",
+        "GBP/kg",
+        "GBP/setup",
+        "GBP/order",
+        "GBP/scarce hour",
+        "%",
+        "1",
+    ]
     decimal_places: int = Field(ge=0, le=12)
     scheme_pattern: str = Field(min_length=1)
+    scheme_ending: str = r"(?:\(own figure\)[ \t]*)?[.,;]?"
     sign: Literal["signed", "variance"] = "signed"
 
 
@@ -113,33 +124,35 @@ def _published_unit_boundary(check: CheckedNumericOutput, suffix: str) -> bool:
         if not direction:
             return False
         suffix = suffix[direction.end() :].lstrip(" \t")
-    return bool(
-        re.match(
-            r"(?:$|[\r\n]|[.,;](?!\d)|\)|\(own figure\)|(?:and|to)\b)",
-            suffix,
-            re.IGNORECASE,
-        )
-    )
+    return re.fullmatch(check.scheme_ending, suffix.strip(), re.IGNORECASE) is not None
 
 
-def check_published_outputs(checks: list[CheckedNumericOutput], text: str) -> list[str]:
+def check_published_outputs(
+    checks: list[CheckedNumericOutput], text: str | list[str]
+) -> list[str]:
     """Bind each asserted result to its role in the published working, never a number bag.
 
     Patterns are code-owned field selectors, not expected answer strings. Some
     printed intermediate units are supplied by their row/column heading; final
     canonical answers always include the full unit.
     """
+    statements = [text] if isinstance(text, str) else text
     errors = []
     for check in checks:
-        matches = list(
-            re.finditer(check.scheme_pattern, text, re.IGNORECASE | re.MULTILINE)
-        )
+        matches = [
+            (statement, match)
+            for statement in statements
+            for match in re.finditer(
+                check.scheme_pattern, statement, re.IGNORECASE | re.MULTILINE
+            )
+        ]
         if not matches:
             errors.append(f"published scheme is missing numeric role {check.role}")
             continue
         expected = rounded(Decimal(check.value), check.decimal_places)
-        for match in matches:
-            if not _published_unit_boundary(check, text[match.end("value") :]):
+        for statement, match in matches:
+            suffix = statement[match.end("value") :]
+            if not _published_unit_boundary(check, suffix):
                 errors.append(
                     f"published scheme has unsupported unit or scale at {check.role}"
                 )
@@ -164,6 +177,80 @@ def check_published_outputs(checks: list[CheckedNumericOutput], text: str) -> li
                     f"published scheme disagrees at numeric role {check.role}"
                 )
     return errors
+
+
+def check_numeric_alternatives(
+    checks: list[CheckedNumericOutput], alternatives: list[str]
+) -> list[str]:
+    """Unconditional alternatives need a unique role and a complete quantity.
+
+    A single selected point can supply the role. Multi-output/general alternatives
+    must name it explicitly. Conditional own-figure credit belongs in its separate
+    follow-through field, never in this unconditional acceptance list.
+    """
+    errors = []
+    for alternative in alternatives:
+        quantity = re.sub(
+            r"^(?:Accept|Allow)\s+", "", alternative.strip(), flags=re.IGNORECASE
+        )
+        selected = checks
+        if ":" in quantity and not re.fullmatch(rf"{NUMBER}:1[.]?", quantity):
+            role, quantity = quantity.split(":", 1)
+            selected = [check for check in checks if check.role == role.strip()]
+            quantity = quantity.strip()
+        if len(selected) != 1 or not _equivalent_quantity(selected[0], quantity):
+            errors.append(
+                "unsupported or incorrect numeric alternative: " + alternative
+            )
+    return errors
+
+
+def _equivalent_quantity(check: CheckedNumericOutput, quantity: str) -> bool:
+    """Small explicit grammar: GBP/pence, declared denominator, percent, ratio."""
+    expected = rounded(Decimal(check.value), check.decimal_places)
+    if check.unit.startswith("GBP"):
+        numerator = rf"(?:(?P<major>[−+\-]?£{NUMBER})(?P<million>m)?|(?P<minor>{NUMBER})\s*(?:p|pence))"
+        denominator = (
+            rf"\s*(?:per\s+|/){re.escape(check.unit[4:])}"
+            if check.unit.startswith("GBP/")
+            else ""
+        )
+        direction = (
+            r"\s+(?P<direction>favourable|adverse|nil)"
+            if check.sign == "variance"
+            else ""
+        )
+        match = re.fullmatch(
+            numerator + denominator + direction + r"[.]?", quantity, re.IGNORECASE
+        )
+        if not match:
+            return False
+        major = match.group("major")
+        token = major.replace("£", "") if major else match.group("minor")
+        actual = Decimal(token.replace(",", "").replace("−", "-"))
+        actual *= (
+            Decimal(1_000_000)
+            if match.group("million")
+            else Decimal(1)
+            if major
+            else Decimal("0.01")
+        )
+        if check.unit == "GBPm":
+            expected *= 1_000_000
+        if check.sign == "variance":
+            if actual < 0:
+                return False
+            sign = match.group("direction").casefold()
+            actual *= -1 if sign == "adverse" else 1
+            if sign == "nil" and actual != 0:
+                return False
+    else:
+        unit = r"(?:%|\s+percent)" if check.unit == "%" else r"(?::1)?"
+        match = re.fullmatch(rf"(?P<value>{NUMBER}){unit}[.]?", quantity, re.IGNORECASE)
+        if not match:
+            return False
+        actual = Decimal(match.group("value").replace(",", "").replace("−", "-"))
+    return actual == expected
 
 
 def percentage_change_context(start: float, end: float) -> dict[str, Any]:

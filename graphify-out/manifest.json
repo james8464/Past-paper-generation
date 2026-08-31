@@ -30,8 +30,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
-    "mtime": 1788137858.6696665,
-    "ast_hash": "3b782f2c355516a8bb7be5d76d7de114",
+    "mtime": 1788140512.8136504,
+    "ast_hash": "e3b43dd64feff747e8be1b243500b524",
     "semantic_hash": ""
   },
   "Backend/Core/generation_date.py": {
@@ -1330,8 +1330,8 @@
     "semantic_hash": ""
   },
   "tests/test_model_review.py": {
-    "mtime": 1788137984.3163526,
-    "ast_hash": "9b53bb4295db7fbd779d59d3eb8ce861",
+    "mtime": 1788140512.8149462,
+    "ast_hash": "8730a6e2f775f43857ef0a8ab787606d",
     "semantic_hash": ""
   },
   "Backend/Core/assessment_checkpoints.py": {
@@ -1470,8 +1470,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/independent_solver.py": {
-    "mtime": 1788138727.7632456,
-    "ast_hash": "a23e8e64ccf3296d780c65644cd237a8",
+    "mtime": 1788140652.5525267,
+    "ast_hash": "e48b5ce444ce0d024ac9649b1d7c9cf1",
     "semantic_hash": ""
   },
   "Backend/Core/level_of_response.py": {
@@ -1700,8 +1700,8 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1788135903.9046888,
-    "ast_hash": "6cf4ec7964ad00754fad55af4c141673",
+    "mtime": 1788140752.3495846,
+    "ast_hash": "ac42f28e77d9167f959d8b10a9d19cb4",
     "semantic_hash": ""
   },
   "tests/test_repository_hygiene.py": {
@@ -1900,8 +1900,8 @@
     "semantic_hash": ""
   },
   "tests/test_reference_demand.py": {
-    "mtime": 1788138258.4850833,
-    "ast_hash": "87db055a909b07e5bcf3d283c00ca5a9",
+    "mtime": 1788140512.814435,
+    "ast_hash": "d0518c8cc90db9bbf7b394ed9bf51d42",
     "semantic_hash": ""
   },
   "tools/reference_demand_profiles.py": {
@@ -1940,8 +1940,8 @@
     "semantic_hash": ""
   },
   "docs/quality/difficulty-calibration-v2-report.md": {
-    "mtime": 1788137544.2925076,
-    "ast_hash": "b4fb2b7bf63a9db22d48ef2665a80c64",
+    "mtime": 1788140199.6113358,
+    "ast_hash": "c3bede973d98360e94a72727a95181f2",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-30-difficulty-calibration-v2.md": {
@@ -1960,8 +1960,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/subjects/accounting.py": {
-    "mtime": 1788138569.020551,
-    "ast_hash": "581e70d27c09f41f420d55f130b5ca1f",
+    "mtime": 1788140512.8784466,
+    "ast_hash": "0114f0370fcf18c06afb11a357dc7be6",
     "semantic_hash": ""
   },
   "tests/test_accounting_solver.py": {
@@ -1980,8 +1980,8 @@
     "semantic_hash": ""
   },
   "docs/quality/assessment-objective-reference.md": {
-    "mtime": 1788137507.4458966,
-    "ast_hash": "20f610522605564efc3de0f5c05fbfcb",
+    "mtime": 1788140582.94599,
+    "ast_hash": "0aad9e50ae6976dad9fbdbd01107d477",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_finite_response_slots.py": {
@@ -1995,18 +1995,18 @@
     "semantic_hash": ""
   },
   "tests/test_accounting_objectives.py": {
-    "mtime": 1788138568.9773526,
-    "ast_hash": "0c48f07fd1ee81f4fdabad2677314566",
+    "mtime": 1788140512.8146899,
+    "ast_hash": "18e4311eef91d2459882d3586be38428",
     "semantic_hash": ""
   },
   "Backend/Core/numeric_integrity.py": {
-    "mtime": 1788139122.7779965,
-    "ast_hash": "0d9488777802b981ea18c5fe8ad59121",
+    "mtime": 1788140652.5519922,
+    "ast_hash": "b6c0696dfea2c5bfbe719eeb85c0eed3",
     "semantic_hash": ""
   },
   "tests/test_shared_numeric_integrity.py": {
-    "mtime": 1788139279.2613015,
-    "ast_hash": "eae8baa777ab5d6c2b1dfd9bf85056a3",
+    "mtime": 1788140652.552231,
+    "ast_hash": "d3b2ef35b78cdece9efc10cd9b8fd5a4",
     "semantic_hash": ""
   }
 }
