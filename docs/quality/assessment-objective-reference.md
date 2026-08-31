@@ -89,6 +89,14 @@ determines demand. Paper 3 combines source-dependent analysis and evaluation:
 its 2024 twenty-five-mark synoptic question allocates 4/4/8/9 and requires both
 microeconomic and macroeconomic reasoning at the highest level (page 10).
 
+The 2024 Papers 1 and 2 use 2/2/2/4 for ten-mark assessment questions and
+3/3/3/6 for fifteen-mark discussion questions. Knowledge/application/analysis
+and evaluation are assessed in separate bands: 6+4 and 9+6, respectively.
+Sources: Paper 1 scheme pages 16–17 and 20–22; Paper 2 pages 18–21 and 26–29.
+Highest-band conditions depend on the actual task, such as addressing both
+specified concepts, multiple requested policies or a designated extract. Do
+not apply those conditions indiscriminately to every question of that tariff.
+
 The locally held Economics A specification, Issue 2, PDF pages 16–18 and 56,
 gives 100 marks and 120 minutes per component. Papers 1–2 each contribute 35%
 of the qualification; Paper 3 contributes 30%. Normalise their component AO
