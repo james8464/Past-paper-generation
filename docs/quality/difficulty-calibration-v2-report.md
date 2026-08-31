@@ -362,12 +362,16 @@ unchanged layout floors: Paper 1 document 0.617 versus 0.650, Paper 2 0.647 vers
 0.659. These cannot be called visually qualified or fixed by removing credit.
 
 A fresh actual SQL transaction on `31cc94c` passed the complete content review
-and its first subpart's solution/difficulty checks. The second subpart exposed
-a further defect: the solver's answer named a nonexistent column while its
-marking points contained a different, valid query. Generic open-response
-reconciliation accepted the contradiction; the later difficulty gate rejected
+and its first subpart's solution/difficulty checks. The second subpart used
+`COUNT(Booking)` in the answer and `COUNT(*)` in its marking points. The initial
+description of the first expression as universally invalid was too strong:
+[PostgreSQL permits table-name row expressions](https://www.postgresql.org/docs/current/rowtypes.html#ROWTYPES-USAGE).
+The app had not validated the dialect, identifiers or query intent. A bounded
+replay confirmed the underlying defect independently: even a non-SQL answer
+passed generic open-response reconciliation. The live difficulty gate rejected
 a missing required programming operation. The transaction failed and did not
-reach later parts. Evidence: `tmp/task7e-review-round1-aqa-sql-live-probe.json`.
+reach later parts. Evidence: `tmp/task7e-review-round1-aqa-sql-live-probe.json`;
+the separate follow-up records the unambiguous negative replay.
 Candidate-grounded SQL validation is an explicit open follow-up. Neither the
 scoped code-review approval nor the first successful subpart is full-paper or
 empirical difficulty qualification.
