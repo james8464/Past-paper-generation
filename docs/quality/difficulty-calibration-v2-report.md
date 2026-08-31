@@ -443,3 +443,11 @@ The earlier 842-test root run preceded the last blind-projection change; its
 affected tests were rerun, rather than claiming the old run covered new code.
 Graphify and the 458-file inventory are current for the implementation. Scoped
 independent re-review is underway; live and visual qualification remain open.
+
+That re-review subsequently passed all four corrections. The first fresh live
+transaction, Paper 1 question 1, nevertheless exposed a source-registration
+mismatch: the independent solver cited the actual supplied table ID, which the
+adapter had not registered in its evidence list. The app rejected the response
+before difficulty scoring. Content review passed, but the transaction did not.
+The evidence was recorded from an immutable `b7ec042` archive with successful
+source/import checks; this is a real integration follow-up, not a passing paper.
