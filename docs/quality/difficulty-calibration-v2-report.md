@@ -307,3 +307,36 @@ Their provenance remains `verified-contract-reviewed`; this does not turn
 fixed numerical questions into new AI authorship or qualify a whole paper.
 Current deterministic coverage remains the enumerated contracts: outstanding
 OCR CS and Edexcel closed calculations are assigned to Tasks 7.E and 7.F.
+
+### Computer Science implementation — corrective review still open
+
+Commit `2e344f7` introduces explicit AQA/OCR CS objectives, source-derived OCR
+numeric/trace contracts, more appropriate actual tasks and complete SQL credit.
+AQA's component budgets now match the inspected 2025 allocations: 20/30/50 and
+56/40/4. OCR uses explicitly inferred allocations consistent with its rounded
+specification shares. Its unadvertised Cambridge placeholder remains unqualified;
+these AQA/OCR policies are not presented as Cambridge rules.
+
+The final core run passed 1,198 backend tests and 48 strict macOS tests. All
+63 previews generated and passed package-contract checks; 57 passed aggregate
+reference checks. The six failures are banks 4.2 and 4.10 across three seeds.
+All full-paper components passed those aggregate checks. Every bank still uses
+a whole-paper proxy at this point, so bank 4.12's passing score does not establish
+topic-matched difficulty. Reviewed topic-specific source metadata is prepared
+for Task 7.H; no tolerance or evidence gate was waived.
+
+Manual PDF checks corrected a constant-output trace, omitted final trace values,
+an SQL primary-key conflict and missing Boolean symbols. AQA CS2's fresh scoped
+300-DPI comparison passed (0.696, no print failures). OCR CS1's scheme document
+score remains below its unchanged 0.650 floor (0.641, then 0.643 after typography
+work); a complete-credit/layout correction remains open. OCR CS2's typography
+snapshot passes at 0.706 but still omits some non-numeric credit criteria and
+must not be accepted on its visual score alone.
+
+Independent review also reproduced incorrect encoded-answer alternatives passing
+validation and an undefined initial state in an AQA recursive trace. A focused
+live SQL run exposed futile self-paraphrase retries caused by restoring the
+source-coupled stem after asking the model to rewrite it; the run stopped before
+solution/difficulty review. These are open corrective findings, not successful
+live qualification. Evidence is retained under `tmp/pdfs/task7e-*`,
+`tmp/fidelity/task7e-*` and `tmp/task7e-aqa-sql-live-probe.json`.
