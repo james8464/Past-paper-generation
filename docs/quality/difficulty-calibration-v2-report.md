@@ -265,3 +265,19 @@ approvals, and regression-test the actual shared path. Earlier universal claims
 about deterministic or independent verification have been reopened in the plan.
 The existing specialist finite-response fixes remain valid but do not cover
 this distinct generic numeric path.
+
+The remaining whole-form audit also counts all printed options, which
+overweights optional sections: Business Paper 1 contains 150 printed marks but
+a candidate answers 100; AQA Economics Papers 1–2 contain 200 but a candidate
+answers 80. Reference and generated distributions need matching candidate-path
+weighting, with every allowed choice checked rather than averaged away.
+
+The Economics Paper 3 objective audit found another substantive demand gap:
+AQA's baseline allocates 40/10/15/15 marks and OCR's 47/11/10/12. Both treat
+all 30 MCQs as AO1, including numerical application, and some stems add
+irrelevant scenario numbers to recall questions. Task 7.H covers actual
+task-demand and candidate-path corrections across the remaining routes.
+Verified component ranges and the usable OCR 2022 item-format evidence are
+recorded in `assessment-objective-reference.md`. The OCR 2023 summary grid has
+internally inconsistent totals, confirmed visually, and is not accepted as
+exact calibration ground truth.

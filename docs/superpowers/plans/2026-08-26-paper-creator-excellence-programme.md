@@ -347,6 +347,11 @@ totals are recorded in `docs/quality/assessment-objective-reference.md`.
   requested result merely because it appears in the scheme. Check every output
   by role, value and unit; extend candidate-source deterministic verification and
   invalidate incompatible saved evidence. This precedes further live qualification.
+- [ ] 7.H: Calibrate every permitted candidate path, not the sum of all printed
+  options. Correct remaining Economics/Business objective and MCQ demand
+  allocation using actual application/analysis tasks and matching reference
+  weighting. Preserve approximate source ranges and exclude inconsistent
+  reference totals rather than copying them into generated forms.
 - [x] Correct the saved-content Accounting QA replay to use the production
   accessible-PDF render transaction; pass scoped 300/600-DPI print audits.
 

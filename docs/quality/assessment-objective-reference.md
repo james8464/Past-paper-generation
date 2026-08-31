@@ -64,6 +64,40 @@ Keep selected-response subparts separate from neighbouring constructed
 responses. Parent summaries must not duplicate marks. Extended choice questions
 must be audited along candidate-answerable paths, not by adding all options.
 
+## Economics and Business component audit
+
+AQA Economics 7136 component shares are percentages of the qualification;
+normalising by each paper's one-third weight gives approximate within-paper
+ranges AO1/AO2/AO3/AO4 of 15–24/21–30/27–33/21–30% for Papers 1–2,
+and 21–30/27–36/18–27/15–24% for Paper 3. All papers carry 80 raw marks.
+The baseline generated Paper 3 allocates 40/10/15/15 marks: its 50% AO1 and
+12.5% AO2 are plainly outside those ranges. MCQ format does not imply recall.
+[AQA Economics assessment scheme](https://www.aqa.org.uk/subjects/economics/a-level/economics-7136/specification/scheme-of-assessment).
+
+OCR H460's approximate within-paper percentages are 24/24/25/27 for Papers
+1–2 and 27/27/25/21 for Paper 3. The local specification is version 3.0,
+©2026, PDF page 28 / printed page 24. Its published decimals are rounded,
+not exact integer item tariffs. Baseline generated Paper 3 allocates
+47/11/10/12 out of 80: 58.75% AO1 and 13.75% AO2. Its six index calculations
+are themselves incorrectly labelled AO1, and other MCQs add irrelevant
+scenario numbers to a factual question. Fix required work, not just labels.
+[OCR H460 specification](https://www.ocr.org.uk/Images/536455-specification-accredited-a-level-gce-economics-h460.pdf).
+
+The locally held June 2022 H460/03 scheme, `676961-mark-scheme-themes-in-economics.pdf`,
+PDF page 38, allocates its 30 MCQs as 16/6/8/0 and the whole form as
+24/20/20/16. This is useful item-format evidence, not proof every year must use
+identical totals. The June 2023 scheme's last grid contains internally
+inconsistent totals, confirmed visually: exclude that grid from exact total
+calibration unless reconciled with its individual item credit.
+
+For AQA Business 7132, normalised approximate ranges are
+27–33/27–33/15–24/15–24% for Paper 1,
+18–24/24–33/24–33/18–27% for Paper 2, and
+15–24/15–21/27–36/27–36% for Paper 3. Paper 1 prints 150 marks of options but
+the candidate answers 100; summing all printed options overweights essays.
+The current programme concerns 7132, not the newly accredited replacement
+specification. [AQA Business 7132 assessment scheme](https://www.aqa.org.uk/subjects/business/a-level/business-7132/specification/scheme-of-assessment).
+
 ## Verification boundary
 
 These reference facts support the pending subject-policy corrections in the
