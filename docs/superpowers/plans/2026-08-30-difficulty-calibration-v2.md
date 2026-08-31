@@ -18,6 +18,28 @@
 - Keep all work on `main`, commit locally, do not push.
 - Preserve compatibility with the current macOS deployment target and App Store sandbox.
 
+## Continued qualification — 31 August
+
+The checked foundation tasks below record implementation, not proof that all
+generated papers are correctly calibrated. Fresh live, adversarial and manual
+checks found the following integration defects. Their bounded implementation
+and review are tracked in the Excellence Programme's Task 7, using its existing
+SDD ledger rather than restarting completed work:
+
+- [x] Candidate-visible Accounting shareholder source and exact worked credit (7.A).
+- [x] Accounting AO1–AO3 meanings, actual 30/42/48 paper allocation and stale-policy rejection (7.B).
+- [x] Exhaustive finite CS answers, retained private keys and candidate/source parity (7.C).
+- [ ] Shared closed-numeric verification without draft-answer substitution; role/value/unit checks and deterministic coverage (7.G, in progress).
+- [ ] AQA/OCR CS actual task demand, objective meanings, answerable trace sources, consistent operations and component-specific timing (7.E).
+- [ ] Edexcel item-specific marking and complete explicit shared content-review responses (7.F).
+- [ ] All permitted candidate paths and remaining Economics/Business application/analysis demand, including MCQs (7.H).
+- [ ] Once-only general marking instructions with all case-specific credit retained (7.D).
+- [ ] Fresh all-route verification and live/manual evidence after these corrections.
+
+Reference facts: `docs/quality/assessment-objective-reference.md`. Current
+failures and verification limits: `docs/quality/difficulty-calibration-v2-report.md`.
+External examiner and learner evidence remains a separate, unpassed gate.
+
 ---
 
 ### Task 1: Reference profile schema v2
