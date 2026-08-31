@@ -80,6 +80,22 @@ Keep selected-response subparts separate from neighbouring constructed
 responses. Parent summaries must not duplicate marks. Extended choice questions
 must be audited along candidate-answerable paths, not by adding all options.
 
+The same Paper 1 scheme gives a four-mark diagram task Knowledge2/Application2
+(page 8). Paper 2's 2024 scheme gives a two-mark chart calculation Application2
+(page 5), but a two-mark linked explanation Knowledge1/Analysis1 (page 6).
+Selected-response keys include computational distractors, without consistently
+publishing their exact AO allocations. Neither tariff nor response format alone
+determines demand. Paper 3 combines source-dependent analysis and evaluation:
+its 2024 twenty-five-mark synoptic question allocates 4/4/8/9 and requires both
+microeconomic and macroeconomic reasoning at the highest level (page 10).
+
+The locally held Economics A specification, Issue 2, PDF pages 16–18 and 56,
+gives 100 marks and 120 minutes per component. Papers 1–2 each contribute 35%
+of the qualification; Paper 3 contributes 30%. Normalise their component AO
+shares accordingly. Papers 1–2 each have two candidate paths (compulsory A+B
+and one of two C essays); Paper 3 has four paths (an essay choice in each of
+two sections). Their printed 125/150 marks are not candidate totals.
+
 ## Economics and Business component audit
 
 AQA Economics 7136 component shares are percentages of the qualification;
