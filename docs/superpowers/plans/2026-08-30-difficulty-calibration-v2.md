@@ -39,6 +39,7 @@ SDD ledger rather than restarting completed work:
   - [ ] H2: candidate-bound saved reviews and truthful saved-package UI/help/diagnostics.
   - [ ] H3: matched candidate-path/reference weighting, topic-bank evidence and integrated verification.
 - [ ] Once-only general marking instructions with all case-specific credit retained (7.D).
+- [ ] Restore visual qualification of the complete-credit OCR/Edexcel schemes after guidance changes; retain all credit and unchanged layout thresholds (7.K).
 - [ ] Fresh all-route verification and live/manual evidence after these corrections.
 
 Reference facts: `docs/quality/assessment-objective-reference.md`. Current

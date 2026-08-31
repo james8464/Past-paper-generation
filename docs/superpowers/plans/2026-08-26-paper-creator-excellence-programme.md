@@ -331,10 +331,12 @@ totals are recorded in `docs/quality/assessment-objective-reference.md`.
 - [x] 7.C: Repair specialist closed-answer reconciliation after the captured CS
   classification false pass; make the figure's evidence sufficient and keep
   the visible figure and solver representation in agreement.
-- [ ] 7.E: Correct AQA/OCR Computer Science objective meaning and component
+- [x] 7.E: Correct AQA/OCR Computer Science objective meaning and component
   distributions; remove unsupported OCR AO4 and enforce subject-specific
   objective policy across prompts, validation and quality reports. Strengthen
   actual application tasks where necessary rather than only changing labels.
+  Scoped implementation review passed through `31cc94c`; full-paper live and
+  complete-credit layout qualification remain separate open checks above.
 - [ ] Consolidate repeated introductory scheme guidance without replacing it
   with layout padding or weakening fidelity thresholds.
 - [ ] 7.F: Replace irrelevant Edexcel Economics topic-note marking with
@@ -352,6 +354,11 @@ totals are recorded in `docs/quality/assessment-objective-reference.md`.
   allocation using actual application/analysis tasks and matching reference
   weighting. Preserve approximate source ranges and exclude inconsistent
   reference totals rather than copying them into generated forms.
+- [ ] 7.J/7.I: Repair declared versus advisory open-credit reconciliation and
+  candidate-grounded SQL verification before the next full live CS attempt.
+- [ ] 7.K: After once-only guidance, correct the complete-credit OCR/Edexcel
+  scheme presentation and rerun unchanged 300/600-DPI layout checks. Preserve
+  all specific marking content and failed evidence; no blank-page padding.
 - [x] Correct the saved-content Accounting QA replay to use the production
   accessible-PDF render transaction; pass scoped 300/600-DPI print audits.
 
