@@ -340,3 +340,34 @@ source-coupled stem after asking the model to rewrite it; the run stopped before
 solution/difficulty review. These are open corrective findings, not successful
 live qualification. Evidence is retained under `tmp/pdfs/task7e-*`,
 `tmp/fidelity/task7e-*` and `tmp/task7e-aqa-sql-live-probe.json`.
+
+### Computer Science reviewed fix — separate live and layout limits
+
+Fix `31cc94c` passed scoped independent re-review: encoded alternatives are
+checked, OCR schemes retain all specific credit, and the AQA recursive trace
+defines and correctly displays its starting state. Source-coupled AQA questions
+now receive actual content review without futile rewriting. Their saved status
+is `reviewed-fixed`, not AI-authored; source/content hashes protect reuse and
+export. Editable source-free scenarios retain authoring and actual content review.
+
+Final backend run: **1,229 passed, 2 known optional-note skips, 5 existing SWIG
+warnings**. Strict macOS build passed; no Swift source changed after the recorded
+48-test run. Graphify: 5,505 nodes, 15,316 edges, 261 communities. Fresh CS previews
+generated all 21 route/seed combinations; the same six pooled-bank proxy failures
+remain assigned to the topic-reference correction. Root manually inspected the
+complete OCR criteria and final AQA trace table; earlier artifacts remain intact.
+
+The complete-credit OCR schemes have no print failures but still miss their
+unchanged layout floors: Paper 1 document 0.617 versus 0.650, Paper 2 0.647 versus
+0.659. These cannot be called visually qualified or fixed by removing credit.
+
+A fresh actual SQL transaction on `31cc94c` passed the complete content review
+and its first subpart's solution/difficulty checks. The second subpart exposed
+a further defect: the solver's answer named a nonexistent column while its
+marking points contained a different, valid query. Generic open-response
+reconciliation accepted the contradiction; the later difficulty gate rejected
+a missing required programming operation. The transaction failed and did not
+reach later parts. Evidence: `tmp/task7e-review-round1-aqa-sql-live-probe.json`.
+Candidate-grounded SQL validation is an explicit open follow-up. Neither the
+scoped code-review approval nor the first successful subpart is full-paper or
+empirical difficulty qualification.

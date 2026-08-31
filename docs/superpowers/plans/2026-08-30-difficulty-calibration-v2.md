@@ -30,8 +30,9 @@ SDD ledger rather than restarting completed work:
 - [x] Accounting AO1–AO3 meanings, actual 30/42/48 paper allocation and stale-policy rejection (7.B).
 - [x] Exhaustive finite CS answers, retained private keys and candidate/source parity (7.C).
 - [x] Shared closed-numeric verification without draft-answer substitution; role/value/unit checks and explicit deterministic coverage (7.G, reviewed through `7ea51fa`; remaining OCR/Edexcel contracts tracked below).
-- [ ] AQA/OCR CS actual task demand, objective meanings, answerable trace sources, consistent operations and component-specific timing (7.E).
+- [x] AQA/OCR CS actual task demand, objective meanings, answerable trace sources, consistent operations and component-specific timing (7.E, scoped independent review clean through `31cc94c`; outstanding live/layout qualification below).
 - [ ] Edexcel item-specific marking and complete explicit shared content-review responses (7.F).
+- [ ] Reject the reproduced contradictory/invalid SQL solver answer using candidate-grounded checks, and rerun the actual SQL transaction.
 - [ ] All permitted candidate paths and remaining Economics/Business application/analysis demand, including MCQs (7.H).
 - [ ] Once-only general marking instructions with all case-specific credit retained (7.D).
 - [ ] Fresh all-route verification and live/manual evidence after these corrections.
