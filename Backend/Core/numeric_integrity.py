@@ -184,7 +184,7 @@ def check_published_outputs(
 
 
 def check_numeric_alternatives(
-    checks: list[CheckedNumericOutput], alternatives: list[str]
+    checks: list[CheckedNumericOutput | CheckedTextOutput], alternatives: list[str]
 ) -> list[str]:
     """Unconditional alternatives need a unique role and a complete quantity.
 
@@ -209,8 +209,12 @@ def check_numeric_alternatives(
     return errors
 
 
-def _equivalent_quantity(check: CheckedNumericOutput, quantity: str) -> bool:
+def _equivalent_quantity(check: CheckedNumericOutput | CheckedTextOutput, quantity: str) -> bool:
     """Small explicit grammar: GBP/pence, declared denominator, percent, ratio."""
+    if isinstance(check, CheckedTextOutput):
+        # Encoded results preserve their complete width/order; only case and
+        # terminal punctuation vary. Never accept a prefix or an extra claim.
+        return quantity.removesuffix(".").strip().casefold() == check.value.casefold()
     expected = rounded(Decimal(check.value), check.decimal_places)
     if check.unit.startswith("GBP"):
         numerator = rf"(?:(?P<major>[−+\-]?£{NUMBER})(?P<million>m)?|(?P<minor>{NUMBER})\s*(?:p|pence))"

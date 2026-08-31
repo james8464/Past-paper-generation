@@ -321,7 +321,7 @@ def test_hosted_question_generation_runs_independent_prompts_concurrently():
     blueprint = build_paper2_blueprint(syllabus, seed=7)
     client = HostedTestClient()
 
-    with pytest.raises(ValueError, match="only a paraphrase"):
+    with pytest.raises(ValueError, match=r"invalid review response|only a paraphrase"):
         improve_questions_with_ollama(client, blueprint, syllabus)
 
     assert client.maximum_active == 4
@@ -382,9 +382,9 @@ def test_blueprint_receives_a_separate_reference_demand_review() -> None:
 
 def test_local_generation_retries_only_the_rejected_question():
     syllabus = load_syllabus()
-    full_blueprint = build_paper2_blueprint(syllabus, seed=7)
+    full_blueprint = build_paper1_blueprint(syllabus, seed=7)[0]
     blueprint = full_blueprint.model_copy(
-        update={"questions": full_blueprint.questions[2:3]}
+        update={"questions": full_blueprint.questions[:1]}
     )
     original = blueprint.questions[0]
 
@@ -409,30 +409,22 @@ def test_local_generation_retries_only_the_rejected_question():
                 return {}
             return {
                 "stem": "A coastal research service is planning a new software system.",
-                "parts": [
-                    {
-                        "label": part.label,
-                        "prompt": f"{part.prompt} Apply the answer to the coastal research service.",
-                        "marking_points": ["One valid model-authored technical point;"],
-                        "accept": [],
-                        "reject": [],
-                    }
-                    for part in original.parts
-                ],
+                "parts": [],
             }
 
     client = FlakyClient()
     improved = improve_questions_with_ollama(client, blueprint, syllabus)
 
-    assert client.authoring_calls == 3
-    assert improved.questions[0] == original
+    assert client.authoring_calls == 2
+    assert improved.questions[0].parts == original.parts
+    assert improved.questions[0].provenance == "ai-authored"
 
 
 def test_local_generation_stops_before_queued_question_after_failure() -> None:
     syllabus = load_syllabus()
-    full_blueprint = build_paper2_blueprint(syllabus, seed=7)
+    full_blueprint = build_paper1_blueprint(syllabus, seed=7)[0]
     blueprint = full_blueprint.model_copy(
-        update={"questions": full_blueprint.questions[2:4]}
+        update={"questions": full_blueprint.questions[:2]}
     )
 
     class RejectingClient:
@@ -454,7 +446,7 @@ def test_local_generation_stops_before_queued_question_after_failure() -> None:
     assert client.authoring_calls == 3
 
 
-def test_local_generation_uses_reviewed_seeded_fallback_after_paraphrases() -> None:
+def test_editable_question_does_not_claim_authorship_after_repeated_paraphrases() -> None:
     syllabus = load_syllabus()
     full_blueprint = build_paper1_blueprint(syllabus, seed=26080115)[0]
     question = full_blueprint.questions[8]
@@ -486,10 +478,9 @@ def test_local_generation_uses_reviewed_seeded_fallback_after_paraphrases() -> N
             }
 
     client = ParaphrasingClient()
-    generated = improve_questions_with_ollama(client, blueprint, syllabus)
-
+    with pytest.raises(ValueError, match="only a paraphrase"):
+        improve_questions_with_ollama(client, blueprint, syllabus)
     assert client.authoring_calls == 3
-    assert generated.questions == [question]
 
 
 def test_paper_one_boundary_test_has_one_mark_of_evidence() -> None:
@@ -560,7 +551,9 @@ def test_skeleton_program_task_is_reviewed_without_rewriting_its_contract() -> N
     generated = improve_questions_with_ollama(client, blueprint, syllabus)
 
     assert client.authoring_calls == 0
-    assert generated.questions == [question]
+    assert generated.questions[0].parts == question.parts
+    assert generated.questions[0].stem == question.stem
+    assert generated.questions[0].provenance == "reviewed-fixed"
 
 
 def test_paper_two_floating_point_convention_and_marks_are_unambiguous() -> None:
@@ -757,13 +750,8 @@ def test_generated_part_with_new_quantity_keeps_verified_prompt() -> None:
 
 def test_numeric_heavy_multipart_prompt_requests_only_a_new_scenario() -> None:
     syllabus = load_syllabus()
-    blueprint = build_paper2_blueprint(syllabus, seed=7)
-    question = next(
-        question
-        for question in blueprint.questions
-        if len(question.parts) >= 4
-        and any(character.isdigit() for part in question.parts for character in part.prompt)
-    )
+    blueprint = build_paper1_blueprint(syllabus, seed=7)[0]
+    question = blueprint.questions[0]
     topic = syllabus.get_topic(question.topic_id)
 
     prompt = _prompt(question, topic.title, "notes", blueprint)
@@ -773,17 +761,10 @@ def test_numeric_heavy_multipart_prompt_requests_only_a_new_scenario() -> None:
 
     paper_one = build_paper1_blueprint(syllabus, seed=26080115)[0]
     finite_state = paper_one.questions[5]
-    finite_state_prompt = _prompt(
-        finite_state,
-        syllabus.get_topic(finite_state.topic_id).title,
-        "notes",
-        paper_one,
-    )
-    assert "Preserve these numeric tokens from the draft stem exactly: 1, 0" in (
-        finite_state_prompt
-    )
+    from cspapergen.ollama_client import _uses_review_only_generation
+    assert _uses_review_only_generation(finite_state)
 
-    optical = blueprint.questions[2]
+    optical = build_paper2_blueprint(syllabus, seed=7).questions[2]
     optical_prompt = _prompt(
         optical,
         syllabus.get_topic(optical.topic_id).title,
@@ -797,7 +778,7 @@ def test_numeric_heavy_multipart_prompt_requests_only_a_new_scenario() -> None:
     assert "Do not substitute another subtopic" in optical_prompt
 
 
-def test_scenario_only_generation_uses_deterministic_subpart_review() -> None:
+def test_source_coupled_graph_uses_explicit_fixed_review() -> None:
     syllabus = load_syllabus()
     full_blueprint = build_paper1_blueprint(syllabus, seed=26080115)[0]
     question = full_blueprint.questions[2]
@@ -837,7 +818,8 @@ def test_scenario_only_generation_uses_deterministic_subpart_review() -> None:
 
     assert generated.questions[0].parts == question.parts
     assert generated.questions[0].stem == question.stem
-    assert client.authoring_calls == 3
+    assert client.authoring_calls == 0
+    assert generated.questions[0].provenance == "reviewed-fixed"
 
 
 def test_scenario_only_generation_restores_immutable_stem_numbers() -> None:

@@ -2305,15 +2305,15 @@ def _draw_adjacency_matrix_answers(pdf: canvas.Canvas, y: float) -> float:
 
 def _draw_recursive_trace_answer(pdf: canvas.Canvas, y: float) -> float:
     rows = [
-        ("reachable(3, 6)", "3", "{3}", ""),
-        ("reachable(2, 6)", "2", "{2, 3}", ""),
-        ("reachable(1, 6)", "1", "{1, 2, 3}", ""),
-        ("reachable(4, 6)", "4", "{1, 2, 3, 4}", ""),
-        ("reachable(5, 6)", "5", "{1, 2, 3, 4, 5}", ""),
-        ("reachable(6, 6)", "6", "{1, 2, 3, 4, 5}", "True"),
+        ("3 / 6", "{}", "{3}", ""),
+        ("2 / 6", "{3}", "{2, 3}", ""),
+        ("1 / 6", "{2, 3}", "{1, 2, 3}", ""),
+        ("4 / 6", "{1, 2, 3}", "{1, 2, 3, 4}", ""),
+        ("5 / 6", "{1, 2, 3, 4}", "{1, 2, 3, 4, 5}", ""),
+        ("6 / 6", "{1, 2, 3, 4, 5}", "{1, 2, 3, 4, 5}", "True"),
     ]
-    widths = [130, 45, 145, 55]
-    headers = ["Call", "Current", "visited", "Result"]
+    widths = [90, 110, 125, 50]
+    headers = ["Current / target", "visited on entry", "visited after step", "Result"]
     row_height = 24
     x = 125
     pdf.setFont(FONT_BOLD, 9)

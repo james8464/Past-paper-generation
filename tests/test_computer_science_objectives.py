@@ -69,6 +69,53 @@ def test_sql_credit_matches_six_mark_query_and_independent_row_analysis():
     validate_blueprint(build_paper2_blueprint(AQA, 26083125), AQA)
 
 
+def test_aqa_reachable_trace_defines_initial_state_and_complete_execution():
+    import ast
+    import re
+    question = build_paper1_blueprint(AQA, 26083125)[0].questions[2]
+    part = question.parts[4]
+    call_text = re.search(r"Trace the call (.*?)\.", part.prompt).group(1)
+    call = ast.parse(call_text, mode="eval").body
+    source = ast.parse(question.stimulus.code)
+    function = source.body[1]
+    assert len(call.args) == len(function.args.args) == 3
+    assert ast.literal_eval(call.args[0]) == 3
+    assert ast.literal_eval(call.args[1]) == 6
+    assert isinstance(call.args[2], ast.Call) and call.args[2].func.id == "set" and not call.args[2].args
+    adjacency = ast.literal_eval(source.body[0].value)
+    # Independent bounded DFS over literal candidate data, not execution of a
+    # generated program or use of the private expected answer.
+    calls, additions = [], []
+    def visit(current):
+        calls.append(current)
+        if current == 6:
+            return True
+        additions.append(current)
+        return any(visit(n) for n in adjacency[current] if n not in additions)
+    assert visit(3) is True
+    assert calls == [3, 2, 1, 4, 5, 6]
+    assert additions == [3, 2, 1, 4, 5]
+    assert part.marking.closed_answers == {
+        "called-current-vertices-in-order": ["3,2,1,4,5,6", "[3,2,1,4,5,6]"],
+        "visited-additions-in-order": ["3,2,1,4,5", "[3,2,1,4,5]"], "result": ["True"]}
+    guidance = " ".join(part.marking.points)
+    assert "{}" in guidance and "{3,2,1,4,5}" in guidance and "6 is not added" in guidance
+
+
+def test_aqa_printed_trace_exemplar_does_not_show_invalid_two_argument_calls(tmp_path):
+    import pymupdf
+    from cspapergen.render_pdf import render_mark_scheme
+    path = tmp_path / "scheme.pdf"
+    render_mark_scheme(build_paper1_blueprint(AQA, 26083125)[0], path)
+    with pymupdf.open(path) as pdf:
+        text = " ".join(page.get_text() for page in pdf)
+    assert "reachable(3, 6)" not in text
+    assert "reachable(6, 6)" not in text
+    assert "visited after step" in text
+    assert "visited on entry" in text
+    assert "Current / target" in text
+
+
 @pytest.mark.parametrize("topic", ["4.2", "4.10", "4.12"])
 def test_aqa_banks_use_declared_45_minute_allowance(topic):
     paper = build_topic_question_bank(AQA, topic_id=topic, seed=26083125)
@@ -124,6 +171,41 @@ def test_cs_closed_templates_recompute_literal_outputs_without_private_key(sourc
     item = {"marks": 4, "kind": "calculation", "authoring_context": {"cs_input_contract": source},
             "mark_scheme": ["deliberately false answer 97"], "correct_answer": "97"}
     assert IndependentSolver().solve(item, []).answer_slots == expected
+
+
+@pytest.mark.parametrize("number,prefix,alternative,valid", [
+    ("4(a)", "Hexadecimal:", "Accept FF.", False),
+    ("4(a)", "Hexadecimal:", "Accept 6c.", True),
+    ("4(e)", "Overflow:", "Accept yes.", False),
+    ("4(e)", "Overflow:", "Allow NO.", True),
+    ("4(e)", "Overflow:", "Accept no or yes.", False),
+    ("4(e)", "Overflow:", "Accept no.\nyes", False),
+])
+def test_encoded_alternatives_are_verified_at_real_candidate_boundary(number, prefix, alternative, valid):
+    from Backend.Core.ai_assessment import _independently_validate_candidate, _tasks
+    paper = build_paper(load_rule("1"), OCR, 26083125)
+    task = next(t for t in _tasks(paper, {topic.id: topic for topic in OCR.topics}) if t.question.number == number)
+    raw = task.question.model_dump(mode="json")
+    point = next(p for p in raw["structured_mark_scheme"] if p["text"].startswith(prefix))
+    point["alternatives"] = [alternative]
+    candidate = task.question.model_validate(raw)
+    solution = IndependentSolver().solve(candidate, [])
+    assert reconcile_solution(solution, candidate).passed is valid
+    if valid:
+        _independently_validate_candidate(task, candidate, client=None)
+    else:
+        with pytest.raises(ValueError, match="reconciliation"):
+            _independently_validate_candidate(task, candidate, client=None)
+
+
+@pytest.mark.parametrize("alternative,valid", [("overflow: NO", True), ("Accept no", False),
+    ("overflow: yes", False), ("8-bit-result: 01111011", True), ("overflow: no bytes", False)])
+def test_multi_output_encoded_alternatives_require_one_named_role(alternative, valid):
+    paper = build_paper(load_rule("1"), OCR, 26083125)
+    question = next(q for s in paper.sections for q in s.options[0].questions if q.number == "4(e)")
+    raw = question.model_dump(mode="json")
+    raw["alternatives"] = [alternative]
+    assert reconcile_solution(IndependentSolver().solve(question, []), raw).passed is valid
 
 
 @pytest.mark.parametrize("seed", [26083125, 26083126, 26083127])
@@ -421,3 +503,210 @@ def test_all_ocr_ao1_explanation_rubrics_credit_concrete_knowledge_features():
                 points = question.authoring_context["observable_mark_points"]
                 assert len(points) == question.marks
                 assert all(not point.startswith(("Accurate knowledge", "A linked technical chain", "Application to the constraints")) for point in points)
+
+
+@pytest.mark.parametrize("paper_id", ["1", "2"])
+@pytest.mark.parametrize("seed", [26083138, 26083139, 26083140])
+def test_ocr_printed_scheme_uses_reference_size_and_fits_every_table_cell(paper_id, seed, tmp_path):
+    import pymupdf
+    from ocrcsgen.render_pdf import (
+        MARK_SCHEME_PAGE_PLANS,
+        _scheme_page_table,
+        render_mark_scheme,
+    )
+    paper = build_paper(load_rule(paper_id), OCR, seed)
+    path = tmp_path / "scheme.pdf"
+    render_mark_scheme(paper, path)
+    with pymupdf.open(path) as pdf:
+        spans = [span for page in pdf for block in page.get_text("dict")["blocks"]
+                 for line in block.get("lines", []) for span in line["spans"]
+                 if "After iteration" in span["text"] or "Credit a" in span["text"]]
+        assert spans and all(span["size"] == pytest.approx(11) for span in spans)
+    for entries in MARK_SCHEME_PAGE_PLANS[paper.paper_id]:
+        items = [(paper.sections[s].options[0].questions[q], segment, count) for s,q,segment,count in entries]
+        table = _scheme_page_table(items, (268 if paper_id == "1" else 260) * 72 / 25.4)
+        table.wrap(800, 500)
+        for row, height in zip(table._cellvalues, table._rowHeights, strict=True):
+            for cell, width in zip(row, table._colWidths, strict=True):
+                assert cell.wrap(width - 8, 1000)[1] + 7 <= height + .1
+
+
+@pytest.mark.parametrize("paper_id", ["1", "2"])
+def test_ocr_scheme_prints_every_owned_specific_credited_feature(paper_id, tmp_path):
+    import pymupdf
+    from ocrcsgen.render_pdf import render_mark_scheme
+    from ocrcsgen.task_calibration import TASKS
+    paper = build_paper(load_rule(paper_id), OCR, 26083125)
+    path = tmp_path / "scheme.pdf"
+    render_mark_scheme(paper, path)
+    with pymupdf.open(path) as pdf:
+        text = " ".join(" ".join(page.get_text() for page in pdf).split())
+    if paper_id == "2":
+        assert "Adding one removes the tested item and makes the interval shrink." in text
+        assert "Copy the remaining items once the other sublist is exhausted." in text
+    for (component, group, index), (_prompt, points) in TASKS.items():
+        if component == int(paper_id):
+            for point in points:
+                assert " ".join(point.split()) in text, (group, index, point)
+
+
+def test_ocr_complete_scheme_overflow_preserves_rows_on_continuation_pages():
+    from ocrcsgen.render_pdf import _scheme_tables
+    paper = build_paper(load_rule("2"), OCR, 26083125)
+    questions = paper.sections[5].options[0].questions
+    items = [(question, 1, 1) for question in questions] * 3
+    tables = _scheme_tables(items, 260 * 72 / 25.4)
+    assert len(tables) > 1
+    assert sum(len(table._cellvalues) - 1 for table in tables) == len(items)
+    for table in tables:
+        assert table.wrap(800, 500)[1] <= 479
+        for row, height in zip(table._cellvalues, table._rowHeights, strict=True):
+            for cell, width in zip(row, table._colWidths, strict=True):
+                assert cell.wrap(width - 8, 1000)[1] + 7 <= height + .1
+
+
+class CSReviewClient:
+    supports_parallel_generation = False
+
+    def __init__(self, payload=None, approved=True):
+        self.payload = payload or {}
+        self.approved = approved
+        self.calls = []
+
+    def generate_json(self, prompt):
+        review = "second-pass UK A-level assessment editor" in prompt
+        self.calls.append("review" if review else "author")
+        return ({"approved": self.approved, "factual_issues": [], "marking_issues": [],
+                 "source_issues": [], "difficulty_issues": [], "ambiguity_issues": []}
+                if review else self.payload)
+
+
+def test_aqa_fixed_source_transaction_reviews_without_authorship_and_resumes(tmp_path):
+    import json
+
+    from cspapergen.cli import ADAPTER
+    from cspapergen.ollama_client import improve_questions_with_ollama
+
+    from Backend.Core.assessment_checkpoints import (
+        AssessmentCheckpointStore,
+        identity_for_blueprint,
+    )
+    full = build_paper2_blueprint(AQA, 26083125)
+    original = full.questions[5]
+    paper = full.model_copy(update={"questions": [original]})
+    store = AssessmentCheckpointStore(tmp_path / "checkpoint.json", identity_for_blueprint(
+        ADAPTER.checkpoint_identity(paper, None, "2"), provider="test", model="test", prompt_version=ADAPTER.prompt_version))
+    client = CSReviewClient()
+    messages = []
+    result = improve_questions_with_ollama(client, paper, AQA, messages.append, store)
+    assert client.calls == ["review"]
+    fixed = result.questions[0]
+    assert fixed.stem == original.stem and fixed.stimulus == original.stimulus and fixed.parts == original.parts
+    assert fixed.provenance == "reviewed-fixed"
+    assert fixed.content_review["approved"] is True
+    assert any("Reviewed fixed" in message for message in messages)
+    resumed = improve_questions_with_ollama(client, paper, AQA, checkpoint_store=store)
+    assert resumed == result and client.calls == ["review"]
+    full.questions[5] = fixed
+    path = tmp_path / "assessment.json"
+    write_assessment_package(full, path, subject="AQA A-level Computer Science", paper_number="2", preview=True, provider=None, model=None)
+    package = json.loads(path.read_text())
+    assert {item["provenance"] for item in package["items"] if ".5.parts." in item["id"]} == {"reviewed-fixed"}
+    validate_assessment_package(path, subject="AQA A-level Computer Science", paper_number="2", preview=True, provider=None, model=None)
+
+
+@pytest.mark.parametrize("mutation", ["stem", "credit", "provenance", "review", "original"])
+def test_aqa_immutable_resume_and_export_reject_stale_reviewed_content(tmp_path, mutation):
+    from cspapergen.cli import ADAPTER
+    from cspapergen.ollama_client import improve_questions_with_ollama
+
+    from Backend.Core.assessment_checkpoints import (
+        AssessmentCheckpointStore,
+        identity_for_blueprint,
+    )
+    full = build_paper2_blueprint(AQA, 26083125)
+    paper = full.model_copy(update={"questions": [full.questions[5]]})
+    store = AssessmentCheckpointStore(tmp_path / "checkpoint.json", identity_for_blueprint(
+        ADAPTER.checkpoint_identity(paper, None, "2"), provider="test", model="test", prompt_version=ADAPTER.prompt_version))
+    client = CSReviewClient()
+    reviewed = improve_questions_with_ollama(client, paper, AQA, checkpoint_store=store)
+    corrupt = reviewed.questions[0].model_copy(deep=True)
+    if mutation == "stem":
+        corrupt.stem += " Another source row exists."
+    elif mutation == "credit":
+        corrupt.parts[3].marking.closed_answers = {"first-booking": ["wrong"]}
+    elif mutation == "provenance":
+        corrupt.provenance = "ai-authored"
+    elif mutation == "review":
+        corrupt.content_review["approved"] = False
+    else:
+        paper = paper.model_copy(deep=True)
+        paper.questions[0].stem += " This is a separately checked source revision."
+    store.save_payload("question-6", corrupt.model_dump(mode="json"))
+    if mutation != "original":
+        full.questions[5] = corrupt
+        with pytest.raises(ValueError, match=r"review|provenance"):
+            write_assessment_package(full, tmp_path / "invalid.json", subject="AQA A-level Computer Science", paper_number="2", preview=True, provider=None, model=None)
+    result = improve_questions_with_ollama(client, paper, AQA, checkpoint_store=store)
+    assert client.calls == ["review", "review"]
+    assert result.questions[0].stem == paper.questions[0].stem
+    assert result.questions[0].provenance == "reviewed-fixed"
+
+
+def test_aqa_editable_scenario_receives_actual_content_review():
+    from cspapergen.ollama_client import improve_questions_with_ollama
+    full = build_paper1_blueprint(AQA, 26083125)[0]
+    question = full.questions[0]
+    assert question.stimulus is None
+    paper = full.model_copy(update={"questions": [question]})
+    payload = {"stem": "A marine archive compares keyed retrieval with sequentially arranged observations.", "parts": []}
+    client = CSReviewClient(payload)
+    result = improve_questions_with_ollama(client, paper, AQA)
+    assert client.calls == ["author", "review"]
+    assert result.questions[0].stem == payload["stem"]
+    assert result.questions[0].parts == question.parts
+    assert result.questions[0].provenance == "ai-authored"
+    rejecting = CSReviewClient(payload, approved=False)
+    with pytest.raises(ValueError, match="second-pass"):
+        improve_questions_with_ollama(rejecting, paper, AQA)
+    assert rejecting.calls == ["author", "review"] * 3
+
+
+def test_aqa_editable_resume_revalidates_original_source_and_review_hash(tmp_path):
+    from cspapergen.cli import ADAPTER
+    from cspapergen.ollama_client import improve_questions_with_ollama
+
+    from Backend.Core.assessment_checkpoints import (
+        AssessmentCheckpointStore,
+        identity_for_blueprint,
+    )
+    full = build_paper1_blueprint(AQA, 26083125)[0]
+    paper = full.model_copy(update={"questions": [full.questions[0]]})
+    store = AssessmentCheckpointStore(tmp_path / "checkpoint.json", identity_for_blueprint(
+        ADAPTER.checkpoint_identity(paper, None, "1"), provider="test", model="test", prompt_version=ADAPTER.prompt_version))
+    client = CSReviewClient({"stem": "A marine archive compares keyed retrieval with sequentially arranged observations.", "parts": []})
+    result = improve_questions_with_ollama(client, paper, AQA, checkpoint_store=store)
+    assert improve_questions_with_ollama(client, paper, AQA, checkpoint_store=store) == result
+    assert client.calls == ["author", "review"]
+    paper.questions[0].stem += " Records are retained for subsequent comparison."
+    improve_questions_with_ollama(client, paper, AQA, checkpoint_store=store)
+    assert client.calls == ["author", "review"] * 2
+
+
+def test_aqa_fixed_content_rejection_never_saves_an_approved_checkpoint(tmp_path):
+    from cspapergen.cli import ADAPTER
+    from cspapergen.ollama_client import improve_questions_with_ollama
+
+    from Backend.Core.assessment_checkpoints import (
+        AssessmentCheckpointStore,
+        identity_for_blueprint,
+    )
+    full = build_paper2_blueprint(AQA, 26083125)
+    paper = full.model_copy(update={"questions": [full.questions[5]]})
+    store = AssessmentCheckpointStore(tmp_path / "checkpoint.json", identity_for_blueprint(
+        ADAPTER.checkpoint_identity(paper, None, "2"), provider="test", model="test", prompt_version=ADAPTER.prompt_version))
+    client = CSReviewClient(approved=False)
+    with pytest.raises(ValueError, match="second-pass"):
+        improve_questions_with_ollama(client, paper, AQA, checkpoint_store=store)
+    assert client.calls == ["review"]
+    assert store.load_payload("question-6") is None

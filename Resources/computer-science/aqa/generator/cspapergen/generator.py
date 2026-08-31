@@ -1018,13 +1018,13 @@ def _align_paper1_structure(
             _paper1_part("2", 2, "Using AL, identify one cycle and explain why it proves that this graph is not a tree.", ["A valid cycle is 1–2–5–4–1;", "A tree is acyclic, whereas that route returns to its start using distinct edges;"], 4, "AO2"),
             _paper1_part("3", 2, "Complete an adjacency matrix for the graph represented by AL. Record only the entries that contain 1.", ["Entries are symmetric for the undirected graph;", "All and only the listed edges are represented;"], 5, "AO2"),
             _paper1_part("4", 1, "Describe the base case in reachable that returns True.", ["The current vertex is the target vertex;"], 2, "AO2"),
-            _paper1_part("5", 6, "Trace the call reachable(3, 6). Record, in order, every recursive call and every change made to visited.", [
-                "The initial call is recorded;",
-                "Vertices are marked before their neighbours are explored;",
-                "Adjacent vertices are considered in list order;",
-                "Already visited vertices are not revisited;",
-                "The target call returns True and the result propagates;",
-                "The call sequence and visited states are complete;",
+            _paper1_part("5", 6, "Trace the call reachable(3, 6, set()). The third argument is an initially empty set. Record, in order, every recursive call and every change made to visited.", [
+                "Initial call reachable(3, 6, set()) begins with visited = {};",
+                "Calls at current vertices 3, then 2: visited becomes {3}, then {3,2};",
+                "Calls at current vertices 1, then 4: visited becomes {3,2,1}, then {3,2,1,4};",
+                "Next call has current vertex 5: visited becomes {3,2,1,4,5}; already visited neighbours are skipped;",
+                "Next call has current vertex 6: it returns True before visited.add, so 6 is not added;",
+                "True propagates through calls 5, 4, 1, 2, 3; final visited is {3,2,1,4,5}. Set element order is immaterial;",
             ], 10, "AO2"),
         ],
         4: [

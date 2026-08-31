@@ -12,7 +12,13 @@ from typing import Protocol
 
 from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
 from Backend.Core.assessment_objectives import objective_policy_for
-from Backend.Core.assessment_quality import NUMBER_PATTERN, numeric_tokens
+from Backend.Core.assessment_quality import numeric_tokens
+from Backend.Core.computer_science_authoring import (
+    authoring_route,
+    question_content_sha256,
+    reviewed_question_metadata,
+    validate_question_review,
+)
 from Backend.Core.independent_solver import (
     IndependentSolver,
     require_solution_matches_scheme,
@@ -113,6 +119,7 @@ def improve_questions_with_ollama(
             if stored is not None:
                 try:
                     candidate = Question.model_validate(stored)
+                    validate_question_review(candidate.model_dump(mode="json"), question.model_dump(mode="json"), required=True)
                     _validate_ai_question(question, candidate)
                 except (ValueError, TypeError):
                     checkpoint_store.discard_item(checkpoint_key)
@@ -124,12 +131,9 @@ def improve_questions_with_ollama(
                             f"0 {question.number:02d}"
                         ),
                     )
-        emit(
-            f"Generating question {display_index}/{total}: "
-            f"0 {question.number:02d} ({topic.title})"
-        )
         if _uses_review_only_generation(question):
-            require_independent_review(
+            emit(f"Reviewing fixed question {display_index}/{total}: 0 {question.number:02d} ({topic.title})")
+            review = require_independent_review(
                 client,
                 item_id=f"question-{question.number}",
                 subject="AQA A-level Computer Science",
@@ -137,25 +141,28 @@ def improve_questions_with_ollama(
                 candidate=question,
                 specification=topic,
             )
+            candidate = question.model_copy(update=reviewed_question_metadata(
+                question.model_dump(mode="json"), question.model_dump(mode="json"), review))
+            validate_question_review(candidate.model_dump(mode="json"), question.model_dump(mode="json"), required=True)
             if checkpoint_store is not None:
                 checkpoint_store.save_payload(
                     checkpoint_key,
-                    question.model_dump(mode="json"),
+                    candidate.model_dump(mode="json"),
                 )
             return (
-                question,
+                candidate,
                 (
-                    f"Reviewed immutable question {display_index}/{total}: "
+                    f"Reviewed fixed question {display_index}/{total}: "
                     f"0 {question.number:02d}"
                 ),
             )
+        emit(f"Generating question {display_index}/{total}: 0 {question.number:02d} ({topic.title})")
         base_prompt = _prompt(
             question,
             topic.title,
             note_context_for_topic(topic.id, topic.title),
             blueprint,
         )
-        scenario_only = _uses_scenario_only_generation(question)
         failure = ""
         for attempt in range(1, 4):
             retry_prompt = (
@@ -167,37 +174,21 @@ def improve_questions_with_ollama(
             try:
                 candidate = _merge_question(question, payload)
                 _validate_ai_question(question, candidate)
-                if not scenario_only:
-                    require_independent_review(
-                        client,
-                        item_id=f"question-{question.number}",
-                        subject="AQA A-level Computer Science",
-                        blueprint=question,
-                        candidate=candidate,
-                        specification=topic,
-                    )
+                review = require_independent_review(
+                    client,
+                    item_id=f"question-{question.number}",
+                    subject="AQA A-level Computer Science",
+                    blueprint=question,
+                    candidate=candidate,
+                    specification=topic,
+                )
+                candidate = candidate.model_copy(update=reviewed_question_metadata(
+                    question.model_dump(mode="json"), candidate.model_dump(mode="json"), review))
+                validate_question_review(candidate.model_dump(mode="json"), question.model_dump(mode="json"), required=True)
                 break
             except ValueError as error:
                 failure = str(error)
                 if attempt == 3:
-                    if (
-                        not supports_parallel
-                        and "only a paraphrase of the draft" in failure
-                    ):
-                        try:
-                            require_independent_review(
-                                client,
-                                item_id=f"question-{question.number}",
-                                subject="AQA A-level Computer Science",
-                                blueprint=question,
-                                candidate=question,
-                                specification=topic,
-                            )
-                        except ValueError as review_error:
-                            failure = str(review_error)
-                        else:
-                            candidate = question
-                            break
                     raise ValueError(
                         f"question-{question.number} failed after 3 reviewed attempts: {failure}"
                     ) from error
@@ -411,37 +402,20 @@ def _part_solver_item(question: Question, part: QuestionPart) -> dict[str, objec
 
 
 def _uses_scenario_only_generation(question: Question) -> bool:
-    original_text = " ".join(
-        [question.stem, *(part.prompt for part in question.parts)]
-    )
-    return len(question.parts) >= 3 and bool(numeric_tokens(original_text))
+    return authoring_route(question.model_dump(mode="json")) == "scenario-only"
 
 
 def _uses_review_only_generation(question: Question) -> bool:
-    """Keep tasks coupled to the supplied executable program immutable."""
-    return question.style_id in {"adapt_program", "extend_program"}
+    """Keep all source-coupled tasks immutable, without claiming authorship."""
+    return authoring_route(question.model_dump(mode="json")) == "reviewed-fixed"
 
 
 def _merge_question(question: Question, payload: dict[str, object]) -> Question:
     stem = _clean(str(payload.get("stem") or question.stem))
     if question.stimulus is not None:
         stem = question.stem
-    scenario_only = _uses_scenario_only_generation(question)
-    if numeric_tokens(stem) != numeric_tokens(question.stem):
-        if scenario_only:
-            scenario = _clean(NUMBER_PATTERN.sub("", stem))
-            stem = f"{scenario} {question.stem}".strip()
-        else:
-            stem = question.stem
-    if (
-        scenario_only
-        and question.stimulus is None
-        and stem.casefold() == question.stem.casefold()
-    ):
-        stem = (
-            "A newly devised fictional case study establishes the following "
-            f"technical condition. {question.stem}"
-        )
+    if not _uses_scenario_only_generation(question) and numeric_tokens(stem) != numeric_tokens(question.stem):
+        stem = question.stem
     raw_parts = payload.get("parts")
     parts = question.parts
     if isinstance(raw_parts, list):
@@ -474,6 +448,10 @@ def _merge_question(question: Question, payload: dict[str, object]) -> Question:
 
 
 def _validate_ai_question(original: Question, candidate: Question) -> None:
+    if _uses_review_only_generation(original):
+        if question_content_sha256(original.model_dump(mode="json")) != question_content_sha256(candidate.model_dump(mode="json")):
+            raise ValueError("immutable source-coupled question was changed")
+        return
     original_text = " ".join(
         [original.stem, *(part.prompt for part in original.parts)]
     )

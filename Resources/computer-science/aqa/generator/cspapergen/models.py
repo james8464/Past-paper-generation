@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -79,6 +81,10 @@ class Question(BaseModel):
     stem: str
     stimulus: Stimulus | None = None
     parts: list[QuestionPart]
+    provenance: Literal["built-in", "reviewed-fixed", "ai-authored"] = "built-in"
+    content_review: dict[str, object] = Field(default_factory=dict)
+    reviewed_content_sha256: str = ""
+    reviewed_blueprint_sha256: str = ""
 
     @property
     def total_marks(self) -> int:

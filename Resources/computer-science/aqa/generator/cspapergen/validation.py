@@ -4,10 +4,12 @@ from collections import Counter
 from math import isclose
 
 from Backend.Core.assessment_objectives import objective_policy_for
+from Backend.Core.computer_science_authoring import validate_aqa_cs_reviews
 from cspapergen.models import PaperBlueprint, Syllabus
 
 
 def validate_blueprint(blueprint: PaperBlueprint, syllabus: Syllabus) -> None:
+    validate_aqa_cs_reviews(blueprint.model_dump(mode="json"))
     objective_policy_for("7517").validate(blueprint)
     if blueprint.assessment_kind not in {"full-paper", "question-bank"}:
         raise ValueError("Unsupported assessment kind")

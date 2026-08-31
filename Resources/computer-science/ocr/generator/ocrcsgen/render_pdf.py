@@ -253,9 +253,7 @@ def _mark_scheme_content_pages(paper: GeneratedPaper) -> list[Flowable]:
     pages: list[Flowable] = []
     plan = MARK_SCHEME_PAGE_PLANS[paper.paper_id]
     content_width = 268 * mm if paper.paper_id == "paper_1" else 260 * mm
-    for page_index, items in enumerate(plan):
-        if page_index:
-            pages.append(PageBreak())
+    for items in plan:
         questions = [
             (
                 paper.sections[section_index].options[0].questions[question_index],
@@ -264,8 +262,25 @@ def _mark_scheme_content_pages(paper: GeneratedPaper) -> list[Flowable]:
             )
             for section_index, question_index, segment, segment_count in items
         ]
-        pages.append(_scheme_page_table(questions, content_width))
+        for table in _scheme_tables(questions, content_width):
+            if pages:
+                pages.append(PageBreak())
+            pages.append(table)
     return pages
+
+
+class _SchemeOverflow(ValueError):
+    pass
+
+
+def _scheme_tables(items: list[tuple[GeneratedQuestion, int, int]], content_width: float) -> list[Table]:
+    try:
+        return [_scheme_page_table(items, content_width)]
+    except _SchemeOverflow:
+        if len(items) == 1:
+            raise
+        split = len(items) // 2
+        return [*_scheme_tables(items[:split], content_width), *_scheme_tables(items[split:], content_width)]
 
 
 def _scheme_page_table(
@@ -294,20 +309,32 @@ def _scheme_page_table(
                     STYLES["scheme_small_centre"],
                 ),
                 Paragraph(
-                    _scheme_guidance(question, segment, segment_count),
+                    "Accept equivalent answers; apply stated follow-through without duplicate credit."
+                    if item_count >= 4
+                    else _scheme_guidance(question, segment, segment_count),
                     STYLES["scheme_small"],
                 ),
             ]
         )
     body_height = 148 * mm
-    row_heights = [8 * mm, *([body_height / item_count] * item_count)]
     question_width = 22 * mm
     mark_width = 16 * mm
     guidance_width = 48 * mm
     answer_width = content_width - question_width - mark_width - guidance_width
+    widths = [question_width, answer_width, mark_width, guidance_width]
+    needed = [max(cell.wrap(width - 8, body_height)[1] + 7
+                  for cell, width in zip(row, widths, strict=True)) for row in rows[1:]]
+    # Use the actual landscape frame, leaving its padding and table header.
+    # When complete credit exceeds it, the caller creates a continuation page.
+    maximum_body = OCR_MARK_SCHEME_LANDSCAPE_SIZE[1] - 37 * mm - 12 - 8 * mm
+    body_height = max(body_height, sum(needed))
+    if body_height > maximum_body:
+        raise _SchemeOverflow("OCR scheme content needs a content-preserving continuation")
+    spare = body_height - sum(needed)
+    row_heights = [8 * mm, *(height + spare / item_count for height in needed)]
     table = Table(
         rows,
-        colWidths=[question_width, answer_width, mark_width, guidance_width],
+        colWidths=widths,
         rowHeights=row_heights,
     )
     table.setStyle(
@@ -343,16 +370,21 @@ def _scheme_answer(
         start = (segment - 1) * chunk_size
         selected = points[start : start + chunk_size]
     else:
-        limit = 2 if item_count >= 4 else 4 if item_count >= 2 else len(points)
-        selected = points[:limit]
+        # Specific credited features are not an indicative sample: a prose or
+        # programming rubric must be as complete as a closed numeric answer.
+        selected = question.authoring_context.get("observable_mark_points") or points
     prompt = (
         escape(question.prompt)
         if segment == 1
         else "<b>Indicative content continued</b>"
     )
+    if item_count > 1 or question.authoring_context.get("cs_input_contract"):
+        # The candidate has the full source. A scheme's closed answer must not
+        # be squeezed out by repeating that source/question in every row.
+        prompt = ""
     bullets = "<br/>".join(f"• {escape(point)}" for point in selected)
     return Paragraph(
-        f"{prompt}<br/><br/>{bullets}",
+        f"{prompt}<br/><br/>{bullets}" if prompt else bullets,
         STYLES["scheme_small"],
     )
 
@@ -1002,22 +1034,22 @@ STYLES = {
         "scheme-header",
         parent=_base["BodyText"],
         fontName=FONT_BOLD,
-        fontSize=9.5,
-        leading=11,
+        fontSize=11,
+        leading=13,
     ),
     "scheme_small": ParagraphStyle(
         "scheme-small",
         parent=_base["BodyText"],
         fontName=FONT,
-        fontSize=9.5,
-        leading=11,
+        fontSize=11,
+        leading=13,
     ),
     "scheme_small_centre": ParagraphStyle(
         "scheme-small-centre",
         parent=_base["BodyText"],
         fontName=FONT,
-        fontSize=9.5,
-        leading=11,
+        fontSize=11,
+        leading=13,
         alignment=TA_CENTER,
     ),
 }

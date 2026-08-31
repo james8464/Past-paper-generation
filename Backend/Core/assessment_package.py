@@ -16,6 +16,7 @@ from Backend.Core.assessment_quality import (
     item_fingerprint,
 )
 from Backend.Core.computer_science_audit import audit_computer_science_blueprint
+from Backend.Core.computer_science_authoring import validate_aqa_cs_reviews
 from Backend.Core.generator_registry import generator_capability
 from Backend.Core.level_of_response import (
     LevelOfResponseEngine,
@@ -106,6 +107,7 @@ def write_assessment_package(
     """Write the renderer-independent item record used by release validation."""
 
     payload = _serialise(paper)
+    validate_aqa_cs_reviews(payload, required=not preview)
     objective_policy_for(subject).validate(payload)
     items = _extract_items(
         payload,
@@ -159,6 +161,7 @@ def validate_assessment_package(
     model: str | None,
 ) -> dict[str, Any]:
     document = load_assessment_package(path)
+    validate_aqa_cs_reviews(document.get("blueprint", {}), required=not preview)
     objective_policy_for(subject).validate(document)
     expected = (subject, paper_number, preview)
     actual = (
@@ -301,8 +304,9 @@ def _extract_items(
 ) -> list[dict[str, Any]]:
     discovered: list[tuple[str, dict[str, Any], list[str], str]] = []
 
-    def walk(value: Any, path: list[str], inherited_stems: list[str], inherited_kind: str = "") -> None:
+    def walk(value: Any, path: list[str], inherited_stems: list[str], inherited_kind: str = "", inherited_provenance: str = "generator-specific") -> None:
         if isinstance(value, dict):
+            provenance = value.get("provenance", inherited_provenance)
             kind = str(value.get("kind") or value.get("style_id") or value.get("stimulus_kind") or inherited_kind)
             stems = inherited_stems
             stem = value.get("stem")
@@ -341,17 +345,17 @@ def _extract_items(
                 and isinstance(marks, int)
                 and not has_marked_parts
             ):
-                discovered.append((".".join(path), value, stems, kind))
+                discovered.append((".".join(path), {**value, "provenance": provenance}, stems, kind))
             child_stems = (
                 [*stems, prompt.strip()]
                 if has_marked_parts and isinstance(prompt, str) and prompt.strip()
                 else stems
             )
             for key, child in value.items():
-                walk(child, [*path, str(key)], child_stems, kind)
+                walk(child, [*path, str(key)], child_stems, kind, provenance)
         elif isinstance(value, list):
             for index, child in enumerate(value):
-                walk(child, [*path, str(index)], inherited_stems, inherited_kind)
+                walk(child, [*path, str(index)], inherited_stems, inherited_kind, inherited_provenance)
 
     walk(blueprint, [], [])
     items: list[dict[str, Any]] = []

@@ -501,17 +501,18 @@ def reconcile_solution(
                 )
         # Check both representations when supplied: neither a stale structured
         # scheme nor the published prose may hide behind the other.
+        checked_outputs = [*solution.numeric_checks, *solution.text_checks]
         alternative_groups = [
-            (solution.numeric_checks, raw.get("alternatives", [])),
-            (solution.numeric_checks, raw.get("allow", [])),
-            (solution.numeric_checks, solution.alternatives),
+            (checked_outputs, raw.get("alternatives", [])),
+            (checked_outputs, raw.get("allow", [])),
+            (checked_outputs, solution.alternatives),
         ]
         for point in points:
             if not isinstance(point, dict):
                 continue
             associated = [
                 check
-                for check in solution.numeric_checks
+                for check in checked_outputs
                 if re.search(
                     check.scheme_pattern,
                     str(point.get("text", "")),
@@ -520,7 +521,7 @@ def reconcile_solution(
             ]
             for field in ("alternatives", "allow"):
                 alternatives = point.get(field, [])
-                if associated or any(
+                if associated or solution.text_checks or any(
                     re.search(r"\d|[£%]", value) for value in alternatives
                 ):
                     alternative_groups.append((associated, alternatives))

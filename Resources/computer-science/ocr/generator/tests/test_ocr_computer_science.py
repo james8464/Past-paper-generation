@@ -19,9 +19,9 @@ SYLLABUS = load_syllabus(ROOT / "data" / "syllabus.json")
 
 
 def test_mark_scheme_typography_matches_reference_scale() -> None:
-    assert STYLES["scheme_header"].fontSize == 9.5
-    assert STYLES["scheme_small"].fontSize == 9.5
-    assert STYLES["scheme_small"].leading == 11
+    assert STYLES["scheme_header"].fontSize == 11
+    assert STYLES["scheme_small"].fontSize == 11
+    assert STYLES["scheme_small"].leading == 13
 
 
 def _flatten(values: list[list[int]]) -> list[int]:
