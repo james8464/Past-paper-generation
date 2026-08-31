@@ -83,12 +83,21 @@ are themselves incorrectly labelled AO1, and other MCQs add irrelevant
 scenario numbers to a factual question. Fix required work, not just labels.
 [OCR H460 specification](https://www.ocr.org.uk/Images/536455-specification-accredited-a-level-gce-economics-h460.pdf).
 
-The locally held June 2022 H460/03 scheme, `676961-mark-scheme-themes-in-economics.pdf`,
-PDF page 38, allocates its 30 MCQs as 16/6/8/0 and the whole form as
-24/20/20/16. This is useful item-format evidence, not proof every year must use
-identical totals. The June 2023 scheme's last grid contains internally
-inconsistent totals, confirmed visually: exclude that grid from exact total
-calibration unless reconciled with its individual item credit.
+The June 2024 H460/03 scheme, `726758-mark-scheme-themes-in-economics.pdf`,
+PDF page 31, reconciles against individual item markings: MCQs 15/7/8/0,
+Section B 9/15/10/16, whole form 24/22/18/16. This is exact-year evidence,
+not a mandatory pattern for every year. The June 2022 and 2023 summary grids
+conflict with their own rows or individual MCQ tags. The 2022 grid's printed
+24/20/20/16 total was initially recorded here before that deeper cross-check;
+it is not a clean calibration anchor. Quarantine both unreconciled aggregates.
+
+OCR Papers 1–2's inspected 2022–2024 AO grids consistently give compulsory
+Section A 6/8/8/8 and each selected essay 6/6/6/7: candidate total 18/20/20/22.
+For exact OCR Paper 3 MCQ assignments, use the verified 2024 tags. The inspected
+AQA Economics and Business schemes do not provide exact MCQ AO allocations;
+keep those unknown and distinguish inferred operations from published tags.
+OCR permits analytical and evaluative MCQs: zero AO4 in one year's MCQ set is
+not a universal prohibition. Format, cognitive operation and AO are separate.
 
 For AQA Business 7132, normalised approximate ranges are
 27–33/27–33/15–24/15–24% for Paper 1,
@@ -97,6 +106,20 @@ For AQA Business 7132, normalised approximate ranges are
 the candidate answers 100; summing all printed options overweights essays.
 The current programme concerns 7132, not the newly accredited replacement
 specification. [AQA Business 7132 assessment scheme](https://www.aqa.org.uk/subjects/business/a-level/business-7132/specification/scheme-of-assessment).
+
+The inspected Business Paper 3 schemes for 2022/2024/2025 sum to 19/19/31/31,
+matching the current blueprint. Paper 2 varies across those years:
+26/29/24/21, 18/29/32/21 and 24/27/28/21. The 2025 pattern already matches
+the current blueprint. Preserve correct allocations; approximate specification
+ranges are not rigid annual compliance bounds. Nine-mark analyses also vary
+between 2/3/4/0 and 3/3/3/0, so tariff alone cannot determine the allocation.
+
+Verified choice topology: AQA Economics Papers 1–2 each have six complete paths
+(one 40-mark context and one 40-mark essay pair); OCR Economics Papers 1–2
+each have four (30 compulsory, then 25+25 from separate choice sections);
+Business Paper 1 has four (15+35 compulsory, then 25+25). The other inspected
+components are compulsory. An essay pair must be selected together. A commercial
+decision inside a question is not an optional examination-question branch.
 
 ## Verification boundary
 
