@@ -375,3 +375,26 @@ the separate follow-up records the unambiguous negative replay.
 Candidate-grounded SQL validation is an explicit open follow-up. Neither the
 scoped code-review approval nor the first successful subpart is full-paper or
 empirical difficulty qualification.
+
+### Further calibration corrections in progress
+
+Manual Edexcel prototype review found incorrect eight-mark levels, duplicated
+assessment-objective credit, missing substituted calculation working and
+unsupported attribution of fictional extracts. These are being corrected using
+the relevant point-based or levels-based official marking style; prototype
+rendering is not a live-quality pass.
+
+Read-only preparation and a baseline Business PDF inspection also found a
+break-even graph whose cost/revenue labels, intersections and keyed movement
+disagree. Some other Business tables are printed without supplying their values
+to the independent solver. Economics checks found retrieval-only targets for
+calculation MCQs, possible duplicate numerical options and a derived diagram
+answer leaking into the solver input. These are explicit H1 corrections, not
+problems solved by assigning higher objective labels alone.
+
+H2 will bind saved approval to actual candidate/source/credit content and report
+the saved package's mode, rather than current UI controls. H3 will complete
+candidate-path weighting and topic-bank reference evidence. Their implementation
+and final qualification remain open. Local long-running probes now support
+verified committed-source archives with before/after integrity checks, preventing
+concurrent development from silently changing the version under test.
