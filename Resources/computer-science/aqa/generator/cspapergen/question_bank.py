@@ -1063,8 +1063,14 @@ def _processor_question(style: QuestionStyle, number: int, total: int, rng: rand
 
 
 def _stored_program_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+    from Backend.Core.open_credit import (
+        CPU_POINTS,
+        cpu_credit_allocations,
+        cpu_credit_contract,
+    )
+
     parts = _parts([
-        ("1", 2, "Explain the stored program concept.", ["Instructions and data are stored in main memory;", "The processor fetches instructions from memory to execute them;"], "", 4),
+        ("1", 2, "Explain the stored program concept.", list(CPU_POINTS), "", 4),
         ("2", 6, "Describe how one instruction is processed during the fetch-decode-execute cycle.", [
             "The program counter value is copied to the memory address register, then the address bus carries that address to memory;",
             "The control unit sends a memory-read signal on the control bus;",
@@ -1076,7 +1082,9 @@ def _stored_program_question(style: QuestionStyle, number: int, total: int, rng:
         ("3", 1, "State the role of the current instruction register.", ["It stores the instruction currently being decoded or executed;"], "", 3),
         ("4", 1, "State one benefit of the stored program concept.", ["Because instructions are held as addressable data in memory, a different instruction sequence can be loaded and run without redesigning the processor's hardware circuits;"], "", 3),
     ])
-    return _question(style, number, "Stored program concept", "A von Neumann architecture computer executes machine code instructions.", None, _fit_parts(parts, total))
+    parts[0].open_credit_contract = cpu_credit_contract()
+    parts[0].marking.credit_allocations = cpu_credit_allocations()
+    return _question(style, number, "Stored program concept", "A computer executes machine-code instructions using the stored program concept.", None, _fit_parts(parts, total))
 
 
 def _packet_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:

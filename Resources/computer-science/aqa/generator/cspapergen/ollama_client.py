@@ -14,6 +14,7 @@ from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
 from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.assessment_quality import numeric_tokens
 from Backend.Core.computer_science_authoring import (
+    aqa_cs_solver_item,
     authoring_route,
     question_content_sha256,
     reviewed_question_metadata,
@@ -28,6 +29,7 @@ from Backend.Core.model_review import (
     require_difficulty_review,
     require_independent_review,
 )
+from Backend.Core.open_credit import review_open_credit
 from Backend.Core.providers import parse_json_object
 from Backend.Core.reference_demand import (
     assessment_objectives_for_item,
@@ -253,13 +255,16 @@ def review_blueprint_difficulty(
                 f"Checking reference demand {item_index}/{item_count}: "
                 f"0 {question.number:02d}({part.label})"
             )
-            solution = IndependentSolver(client).solve(_part_solver_item(question, part), [])
+            solver_item = _part_solver_item(question, part)
+            solution = IndependentSolver(client).solve(solver_item, [])
+            credit_review = review_open_credit(client, solver_item, solution) if part.open_credit_contract else {}
             require_solution_matches_scheme(
                 solution,
                 {"marks": part.marks, "mark_scheme": [*part.marking.points, *part.marking.levels],
                  "assessment_objectives": part.marking.assessment_objectives,
                  "alternatives": part.marking.accept,
-                 "closed_answers": part.marking.closed_answers},
+                 "closed_answers": part.marking.closed_answers,
+                 "credit_review_item": solver_item, "open_credit_review": credit_review},
                 expected_choice=(next((o.text for o in part.options if o.label == part.correct_option), "")
                                  if part.options else None),
             )
@@ -282,7 +287,7 @@ def review_blueprint_difficulty(
             )
             reviewed_parts.append(
                 part.model_copy(
-                    update={"difficulty_evidence": evidence.model_dump(mode="json")}
+                    update={"difficulty_evidence": evidence.model_dump(mode="json"), "open_credit_review": credit_review}
                 )
             )
         reviewed_questions.append(question.model_copy(update={"parts": reviewed_parts}))
@@ -385,20 +390,7 @@ def _part_demand_item(
 
 
 def _part_solver_item(question: Question, part: QuestionPart) -> dict[str, object]:
-    return {
-        **part.model_dump(mode="json"),
-        "subject": "AQA Computer Science",
-        "id": f"question-{question.number}-{part.label}",
-        "context": question.stem,
-        "stimulus": candidate_stimulus_data(question.stimulus),
-        "kind": "multiple_choice" if part.options else question.style_id,
-        "choices": [option.text for option in part.options],
-        "response_slots": ["choice"] if part.options else part.response_slots,
-        "authoring_context": {"expected_answer_form": (
-            "numeric" if part.prompt.split(maxsplit=1)[0].casefold() in {"calculate", "determine"}
-            else "constructed_response"
-        )},
-    }
+    return aqa_cs_solver_item(question.model_dump(mode="json"), part.model_dump(mode="json"), candidate_stimulus_data(question.stimulus))
 
 
 def _uses_scenario_only_generation(question: Question) -> bool:
@@ -493,6 +485,8 @@ def _validate_ai_question(original: Question, candidate: Question) -> None:
             original_part.task_operation,
             original_part.response_slots,
             original_part.marking.closed_answers,
+            original_part.open_credit_contract,
+            original_part.marking.credit_allocations,
         )
         actual = (
             candidate_part.label,
@@ -507,6 +501,8 @@ def _validate_ai_question(original: Question, candidate: Question) -> None:
             candidate_part.task_operation,
             candidate_part.response_slots,
             candidate_part.marking.closed_answers,
+            candidate_part.open_credit_contract,
+            candidate_part.marking.credit_allocations,
         )
         if actual != immutable:
             raise ValueError(

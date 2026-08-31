@@ -15,6 +15,12 @@ from pydantic import BaseModel, ConfigDict, Field
 from Backend.Core.assessment_contracts import EvidenceRecord
 from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.assessment_quality import content_similarity
+from Backend.Core.credit_policy import (
+    CREDIT_POLICY_VERSION,
+    CreditRule,
+    collect_credit_rules,
+    declared_rule_metadata_present,
+)
 from Backend.Core.numeric_integrity import (
     NUMERIC_INTEGRITY_VERSION,
     CheckedNumericOutput,
@@ -25,6 +31,7 @@ from Backend.Core.numeric_integrity import (
     display,
     numeric_result,
 )
+from Backend.Core.open_credit import validate_open_credit_review
 from Backend.Core.subjects.accounting import solve_accounting_calculation
 from Backend.Core.subjects.computer_science_contracts import (
     solve_computer_science_contract,
@@ -61,6 +68,10 @@ class CanonicalSolution(BaseModel):
     text_checks: list[CheckedTextOutput] = Field(default_factory=list)
     is_choice: bool = False
     unverified_model_working: dict[str, Any] = Field(default_factory=dict)
+    credit_policy_version: str = "legacy-unverified"
+    credit_rules: list[CreditRule] = Field(default_factory=list)
+    advisory_issues: list[str] = Field(default_factory=list)
+    open_credit_contract: dict[str, Any] = Field(default_factory=dict)
 
 
 class ReconciliationIssue(BaseModel):
@@ -302,6 +313,10 @@ class IndependentSolver:
                 for token in ("calculation", "numeric", "exact", "choice", "closed")
             )
         )
+        credit_rules, advisory_issues = collect_credit_rules(
+            context, result, closed=fixed_answer, marks=int(raw_item.get("marks", 0)))
+        def mandatory(field: str) -> list[str]:
+            return [rule.text for rule in credit_rules if rule.kind == field and rule.origin != "model-advisory"]
         return CanonicalSolution(
             item_id=item_id,
             answer=answer,
@@ -315,15 +330,13 @@ class IndependentSolver:
                     raw_item.get("assessment_objectives") or {}
                 ).items()
             },
-            alternatives=_string_list(result.get("alternatives")),
-            partial_credit_boundaries=_string_list(
-                context.get("partial_credit_boundaries")
-                or result.get("partial_credit_boundaries")
-            ),
-            follow_through_rules=_string_list(
-                context.get("follow_through_rules")
-                or result.get("follow_through_rules")
-            ),
+            alternatives=mandatory("alternatives"),
+            partial_credit_boundaries=mandatory("partial_credit_boundaries"),
+            follow_through_rules=mandatory("follow_through_rules"),
+            credit_policy_version=CREDIT_POLICY_VERSION,
+            credit_rules=credit_rules,
+            advisory_issues=advisory_issues,
+            open_credit_contract=context.get("open_credit_contract", {}),
             evidence_ids=evidence_ids,
             numeric_results=numeric_results,
             solver_context_fields=sorted(solver_item),
@@ -357,6 +370,10 @@ def _without_answer_key(value: Any) -> Any:
         # Keep candidate input contracts and ordinary source fields (including
         # a source's own "credit" column) intact for independent derivation.
         "assessment_contract",
+        "open_credit_contract",
+        "open_credit_review",
+        "credit_allocations",
+        "credit_review_item",
         "mark_scheme",
         "structured_mark_scheme",
         "marking",
@@ -368,6 +385,8 @@ def _without_answer_key(value: Any) -> Any:
         "canonical_solution",
         "observable_mark_points",
         "valid_alternatives",
+        "alternative_permission_ids",
+        "alternative_permission_version",
         "partial_credit_boundaries",
         "follow_through_rules",
         "difficulty_evidence",
@@ -442,6 +461,19 @@ def reconcile_solution(
     normalised_text = _normalise(text)
     issues: list[ReconciliationIssue] = []
 
+    if solution.open_credit_contract:
+        try:
+            review_item = raw.get("credit_review_item", {})
+            marking = review_item.get("marking", {})
+            if (review_item.get("authoring_context", {}).get("open_credit_contract") != solution.open_credit_contract
+                    or raw.get("mark_scheme") != [*marking.get("points", []), *marking.get("levels", [])]
+                    or raw.get("alternatives", []) != marking.get("accept", [])
+                    or raw.get("marks") != review_item.get("marks")):
+                raise ValueError("semantic credit review does not match the actual scheme")
+            validate_open_credit_review(review_item, raw.get("open_credit_review"), solution=solution)
+        except (ValueError, TypeError, KeyError) as error:
+            issues.append(ReconciliationIssue(field="open_credit_review", message=str(error)))
+
     if (
         _requires_numeric_contract(raw) or solution.numeric_results
     ) and not solution.response_slots:
@@ -512,7 +544,10 @@ def reconcile_solution(
         alternative_groups = [
             (checked_outputs, raw.get("alternatives", [])),
             (checked_outputs, raw.get("allow", [])),
-            (checked_outputs, solution.alternatives),
+            (checked_outputs, [rule.text for rule in solution.credit_rules
+                               if rule.kind == "alternatives" and rule.content_kind == "answer"
+                               and rule.origin != "model-advisory"]
+             if solution.credit_policy_version == CREDIT_POLICY_VERSION else solution.alternatives),
         ]
         for point in points:
             if not isinstance(point, dict):
@@ -645,6 +680,18 @@ def reconcile_solution(
                         )
                     )
 
+            if not solution.numeric_checks and not solution.text_checks:
+                concrete = [rule.text for rule in solution.credit_rules
+                            if rule.kind == "alternatives" and rule.content_kind == "answer"
+                            and rule.origin != "model-advisory"] if solution.credit_policy_version == CREDIT_POLICY_VERSION else solution.alternatives
+                for alternative in concrete:
+                    slot, value = (solution.response_slots[0], alternative) if len(solution.response_slots) == 1 else ("", alternative)
+                    if ":" in alternative:
+                        slot, value = (piece.strip() for piece in alternative.split(":", 1))
+                    allowed = accepted.get(slot, [])
+                    if not isinstance(allowed, list) or _closed_normalise(value) not in {_closed_normalise(str(value)) for value in allowed}:
+                        issues.append(ReconciliationIssue(field="alternatives", message=f"unsupported or incorrect closed alternative: {alternative}"))
+
     expected_numbers = [] if solution.response_slots else _numbers(solution.answer)
     if expected_numbers and solution.mark_points_exhaustive and not solution.is_choice:
         issues.append(
@@ -654,7 +701,8 @@ def reconcile_solution(
             )
         )
     elif (
-        not solution.response_slots
+        not solution.open_credit_contract
+        and not solution.response_slots
         and solution.answer
         and not solution.mark_points
         and content_similarity(solution.answer, text) < 0.2
@@ -688,6 +736,10 @@ def reconcile_solution(
                     message=f"scheme omits: {missing}",
                 )
             )
+
+    for rule in solution.credit_rules:
+        if rule.origin == "source-declared" and not declared_rule_metadata_present(rule, raw, points):
+            issues.append(ReconciliationIssue(field=rule.kind, message=f"scheme omits or changes declared score/cap/dependencies: {rule.raw}"))
 
     allocation: Counter[str] = Counter()
     total_marks = 0

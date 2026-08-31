@@ -24,6 +24,7 @@ from Backend.Core.generation_date import (
     formatted_generation_date,
     generation_date,
 )
+from Backend.Core.open_credit import printed_credit_points
 from cspapergen.models import PaperBlueprint, Question, QuestionPart, Stimulus
 
 FONT = "AQAArial"
@@ -1212,7 +1213,7 @@ def _render_paper2_mark_scheme_pages(
 
 def _mark_scheme_part_height(part: QuestionPart) -> float:
     wrapped_lines = 1
-    wrapped_lines += sum(len(_wrap(point, 62)) for point in part.marking.points)
+    wrapped_lines += sum(len(_wrap(point, 62)) for point in printed_credit_points(part.marking.model_dump(mode="json")))
     wrapped_lines += sum(len(_wrap(item, 59)) for item in part.marking.accept)
     wrapped_lines += sum(len(_wrap(item, 59)) for item in part.marking.reject)
     wrapped_lines += sum(len(_wrap(item, 62)) for item in part.marking.levels)
@@ -2202,7 +2203,7 @@ def _render_mark_scheme_part(
     pdf.drawString(125, y, heading or f"All marks {part.marking.ao}")
     y -= 15
     pdf.setFont(FONT, 11)
-    for point in part.marking.points:
+    for point in printed_credit_points(part.marking.model_dump(mode="json")):
         for line in _wrap(point, 62):
             _draw_scheme_text(pdf, 125, y, line)
             y -= 15

@@ -11,7 +11,13 @@ from copy import deepcopy
 from typing import Any
 
 from Backend.Core.assessment_quality import numeric_tokens
+from Backend.Core.credit_policy import CREDIT_POLICY_VERSION
 from Backend.Core.model_review import ReviewResult
+from Backend.Core.open_credit import (
+    CPU_POINTS,
+    validate_open_credit_contract,
+    validate_open_credit_review,
+)
 
 REVIEW_FIELDS = {"provenance", "content_review", "reviewed_content_sha256", "reviewed_blueprint_sha256"}
 
@@ -29,7 +35,24 @@ def question_content_sha256(question: dict[str, Any]) -> str:
         content.pop(field, None)
     for part in content["parts"]:
         part.pop("difficulty_evidence", None)
-    return hashlib.sha256(json.dumps(content, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
+        part.pop("open_credit_review", None)
+    return hashlib.sha256(json.dumps({"credit_policy": CREDIT_POLICY_VERSION, "content": content}, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
+
+
+def aqa_cs_solver_item(question: dict[str, Any], part: dict[str, Any], stimulus: dict[str, Any]) -> dict[str, Any]:
+    """One adapter/reuse projection; caller supplies candidate-visible figure data.
+
+    The scoped CPU contract has no figure. Its saved review is rebuilt from the
+    same projection here; H can reuse this instead of inventing another identity.
+    Private marking remains available for reconciliation, removed by the solver.
+    """
+    return {**part, "subject": "AQA Computer Science", "id": f"question-{question['number']}-{part['label']}",
+            "context": question["stem"], "stimulus": stimulus,
+            "kind": "multiple_choice" if part.get("options") else question["style_id"],
+            "choices": [option["text"] for option in part.get("options", [])],
+            "response_slots": ["choice"] if part.get("options") else part.get("response_slots", []),
+            "authoring_context": {"open_credit_contract": part.get("open_credit_contract", {}),
+                "expected_answer_form": "numeric" if part["prompt"].split(maxsplit=1)[0].casefold() in {"calculate", "determine"} else "constructed_response"}}
 
 
 def reviewed_question_metadata(original: dict[str, Any], candidate: dict[str, Any], review: ReviewResult) -> dict[str, Any]:
@@ -66,4 +89,15 @@ def validate_question_review(question: dict[str, Any], original: dict[str, Any] 
 def validate_aqa_cs_reviews(blueprint: dict[str, Any], *, required: bool = False) -> None:
     if str(blueprint.get("paper_code", "")).startswith("7517/"):
         for question in blueprint.get("questions", []):
+            for part in question.get("parts", []):
+                if question.get("style_id") == "stored_program" and part.get("label") == "1":
+                    item = aqa_cs_solver_item(question, part, question.get("stimulus") or {})
+                    validate_open_credit_contract(item)
+                    if required or part.get("difficulty_evidence") or part.get("open_credit_review"):
+                        validate_open_credit_review(item, part.get("open_credit_review"))
+                    elif question.get("provenance", "built-in") == "built-in" and part.get("marking", {}).get("points") != CPU_POINTS:
+                        # Exact registered-template integrity only. Paraphrases
+                        # require the later semantic review; equality is not a
+                        # substitute for entailment on model-authored prose.
+                        raise ValueError("built-in CPU credit differs from its registered source template")
             validate_question_review(question, required=required)

@@ -3,6 +3,7 @@ from __future__ import annotations
 import random
 import secrets
 
+from Backend.Core.credit_policy import alternative_permission
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -211,9 +212,7 @@ def _question(
         ),
     }
     if rule.kind != "multiple_choice":
-        authoring_context["valid_alternatives"] = [
-            "Accept an equivalent, technically accurate route."
-        ]
+        authoring_context.update(alternative_permission("equivalent-configured-route"))
     if rule.marks >= 4 and rule.kind != "multiple_choice":
         authoring_context["partial_credit_boundaries"] = [
             "Credit each developed point once only."

@@ -5,6 +5,7 @@ from collections.abc import Iterable
 from typing import Any
 
 from Backend.Core.assessment_objectives import objective_policy_for
+from Backend.Core.credit_policy import alternative_permission
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -94,9 +95,7 @@ def _enrich_question(
             f"confusing {topic.title} with a superficially related concept"
         ],
         "observable_mark_points": list(observable_mark_points),
-        "valid_alternatives": [
-            "Marker check: reward a valid alternative route where it demonstrates the same assessed knowledge or skill."
-        ],
+        **alternative_permission("equivalent-assessed-route"),
         "common_errors": ["repeating an undeveloped point for double credit"],
         "level_policy_id": level_policy_id if _uses_levels(question) else None,
     }
@@ -112,9 +111,7 @@ def _enrich_question(
     scheme = list(question.mark_scheme)
     if compact and subject != "computer science":
         scheme.extend(_compact_technical_guidance(question, topic.title, selected))
-        authoring_context["valid_alternatives"] = [
-            "Accept equivalent pseudocode, terminology or a technically valid alternative method."
-        ]
+        authoring_context.update(alternative_permission("equivalent-technical-method"))
         authoring_context.pop("partial_credit_boundaries", None)
         authoring_context.pop("follow_through_rules", None)
         return question.model_copy(

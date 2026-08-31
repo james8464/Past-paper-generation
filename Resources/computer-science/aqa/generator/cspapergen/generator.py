@@ -203,8 +203,8 @@ PAPER2_STANDARDISATION: dict[str, tuple[Paper2Standardisation, ...]] = {
     "stored_program": (
         (
             (
-                "Accept that machine-code instructions and the data they operate on share addressable main memory and are fetched by the processor.",
-                "The two points may be expressed in either order, but storage and execution must both be present.",
+                "Accept equivalent wording for machine-code instructions in main memory and their sequential fetch and execution by the processor.",
+                "For both marks, include storage and execution in either order; award one mark for either correct point alone.",
             ),
             (
                 "Do not accept only that programs are saved on secondary storage or that the processor itself permanently stores every instruction.",

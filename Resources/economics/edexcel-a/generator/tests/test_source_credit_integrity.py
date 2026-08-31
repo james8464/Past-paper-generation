@@ -17,12 +17,12 @@ from pastpapergen.render_pdf import (
     render_question_paper,
 )
 from pastpapergen.syllabus import load_syllabus
-from test_assessment_contracts import forced_part
 
 from Backend.Core.assessment_package import _extract_items
 from Backend.Core.independent_solver import IndependentSolver
 from Backend.Core.model_review import independent_review
 from Backend.Core.subjects.economics_contracts import SourceCell, calculation_working
+from tests.support.edexcel import forced_part
 
 
 def paper(seed):

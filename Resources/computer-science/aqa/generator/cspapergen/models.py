@@ -50,6 +50,7 @@ class MarkingGuidance(BaseModel):
     reject: list[str] = Field(default_factory=list)
     levels: list[str] = Field(default_factory=list)
     closed_answers: dict[str, list[str]] = Field(default_factory=dict)
+    credit_allocations: list[dict[str, object]] = Field(default_factory=list)
 
 
 class QuestionPart(BaseModel):
@@ -62,6 +63,8 @@ class QuestionPart(BaseModel):
     correct_option: str = ""
     marking: MarkingGuidance
     difficulty_evidence: dict[str, object] = Field(default_factory=dict)
+    open_credit_contract: dict[str, object] = Field(default_factory=dict)
+    open_credit_review: dict[str, object] = Field(default_factory=dict)
     response_slots: list[str] = Field(default_factory=list)
     assessment_objectives: dict[str, int] = Field(default_factory=dict)
     expected_minutes: float | None = Field(default=None, gt=0)
