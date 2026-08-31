@@ -421,3 +421,9 @@ is in Extract A. Other variants retained stale figure labels and case values.
 Source-page headings also cross the top frame. These are under independent
 review and require correction before this slice is accepted. All failed and
 superseded artifacts remain available; the programme is not yet qualified.
+
+Scoped 300-DPI Paper 3 comparison also misses the unchanged mark-scheme layout
+floor: 0.628 versus 0.680, with no detected print failures (overall 0.680).
+Content-complete pagination therefore does not establish visual similarity.
+Further presentation corrections must retain all specific credit and the failed
+comparison, rather than lowering the threshold.
