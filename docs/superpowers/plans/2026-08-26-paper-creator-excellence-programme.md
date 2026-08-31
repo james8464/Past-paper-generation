@@ -339,11 +339,13 @@ totals are recorded in `docs/quality/assessment-objective-reference.md`.
   complete-credit layout qualification remain separate open checks above.
 - [ ] Consolidate repeated introductory scheme guidance without replacing it
   with layout padding or weakening fidelity thresholds.
-- [ ] 7.F: Replace irrelevant Edexcel Economics topic-note marking with
+- [x] 7.F: Replace irrelevant Edexcel Economics topic-note marking with
   item-specific credit and visible-source evidence. Reconcile declared objective
   budgets, actual credit points and printed/exported schemes for every task
   style; require explicit content-review checks rather than defaulting omitted
   checks to clear. Preserve the captured live rejection as evidence.
+  Scoped corrective review passed through `b7ec042`; current scheme visual
+  floors and fresh full-paper live qualification remain open requirements above.
 - [x] 7.G: Repair shared numeric independent-solution false passes. Never copy
   draft observable answers into canonical work or accept an input number as a
   requested result merely because it appears in the scheme. Check every output
