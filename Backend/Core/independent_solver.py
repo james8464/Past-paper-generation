@@ -37,6 +37,18 @@ from Backend.Core.subjects.computer_science_contracts import (
     solve_computer_science_contract,
 )
 from Backend.Core.subjects.economics_contracts import solve_economics_contract
+from Backend.Core.subjects.sql_contracts import SQLValidationResult
+
+
+class SQLProgramAttemptAudit(BaseModel):
+    """Private durable record of one model-presented SQL attempt."""
+
+    model_config = ConfigDict(frozen=True)
+
+    answer: str
+    mark_points: list[str] = Field(default_factory=list)
+    evidence_ids: list[str] = Field(default_factory=list)
+    validation_result: SQLValidationResult
 
 
 class SolverClient(Protocol):
@@ -75,7 +87,7 @@ class CanonicalSolution(BaseModel):
     program_validation_version: str = "legacy-unverified"
     program_validation_scope: str = "none"
     source_intent_sha256: str = ""
-    program_first_failure: list[dict[str, Any]] = Field(default_factory=list)
+    program_first_failure: SQLProgramAttemptAudit | None = None
 
 
 class ReconciliationIssue(BaseModel):

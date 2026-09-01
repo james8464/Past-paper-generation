@@ -65,7 +65,10 @@ def aqa_cs_solver_item(question: dict[str, Any], part: dict[str, Any], stimulus:
     intent_id = str(part.get("sql_intent_id", ""))
     if intent_id:
         raw_contract = stimulus.get("sql_contract")
-        contract = SQLSourceContract.model_validate(raw_contract, strict=True)
+        try:
+            contract = SQLSourceContract.model_validate(raw_contract, strict=True)
+        except ValueError as error:
+            raise ValueError("public SQL contract is invalid or unsupported") from error
         try:
             intent = contract.intents[intent_id]
         except KeyError as error:

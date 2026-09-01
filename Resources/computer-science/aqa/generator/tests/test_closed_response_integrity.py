@@ -155,6 +155,7 @@ def test_specialist_closed_shapes_declare_required_slots(style_id, part_index, s
         "aqa-computer-science-v7",
         "aqa-computer-science-v8-closed-slots",
         "aqa-computer-science-v11-declared-open-credit",
+        "aqa-computer-science-v12-candidate-sql",
     ]
 )
 def test_old_figure_review_is_not_current_evidence(tmp_path, old_version):

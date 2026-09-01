@@ -23,6 +23,7 @@ from Backend.Core.computer_science_authoring import (
 )
 from Backend.Core.independent_solver import (
     IndependentSolver,
+    SQLProgramAttemptAudit,
     require_solution_matches_scheme,
 )
 from Backend.Core.model_review import (
@@ -42,6 +43,7 @@ from Backend.Core.subjects.sql_contracts import (
     SQL_VERIFIED_SCOPE,
     SQLSourceContract,
     SQLValidationFinding,
+    SQLValidationResult,
     render_sql_schema,
     selected_sql_answer_contract,
     sql_source_intent_sha256,
@@ -319,6 +321,7 @@ def _difficulty_solution(solution: object) -> dict[str, object]:
     """Keep independent work for demand review, never its private CPU contract."""
     public_solution = solution.model_dump(mode="json")
     public_solution.pop("open_credit_contract", None)
+    public_solution.pop("program_first_failure", None)
     return public_solution
 
 
@@ -503,31 +506,31 @@ def _solve_part_with_sql_validation(
     first = solver.solve(projection.item, projection.evidence)
     if projection.sql_contract is None:
         return first
-    first_findings = _sql_solution_findings(first, projection)
-    if not first_findings:
-        return _verified_sql_solution(first, projection, [])
-    structured = [finding.model_dump(mode="json") for finding in first_findings]
+    first_validation = _sql_solution_validation(first, projection)
+    if first_validation.passed:
+        return _verified_sql_solution(first, projection, None)
+    first_audit = _sql_attempt_audit(first, first_validation)
+    structured = [
+        finding.model_dump(mode="json")
+        for finding in first_validation.findings
+    ]
     replacement = solver.solve(
         projection.item,
         projection.evidence,
         correction_findings=structured,
     )
-    replacement_findings = _sql_solution_findings(replacement, projection)
-    if replacement_findings:
-        raise ValueError(
-            "failed bounded SQL verification after one correction: first="
-            + json.dumps(structured, ensure_ascii=False, sort_keys=True)
-            + "; replacement="
-            + json.dumps(
-                [finding.model_dump(mode="json") for finding in replacement_findings],
-                ensure_ascii=False,
-                sort_keys=True,
-            )
+    replacement_validation = _sql_solution_validation(replacement, projection)
+    if not replacement_validation.passed:
+        raise SQLProgramValidationError(
+            first_audit,
+            _sql_attempt_audit(replacement, replacement_validation),
         )
-    return _verified_sql_solution(replacement, projection, structured)
+    return _verified_sql_solution(replacement, projection, first_audit)
 
 
-def _sql_solution_findings(solution, projection: _SolverProjection):
+def _sql_solution_validation(
+    solution, projection: _SolverProjection
+) -> SQLValidationResult:
     assert projection.sql_contract is not None
     result = validate_sql_response(
         solution.answer,
@@ -542,10 +545,43 @@ def _sql_solution_findings(solution, projection: _SolverProjection):
             message="The SQL response must cite the one supplied public schema source.",
             location="evidence_ids",
         ))
-    return findings
+    return result.model_copy(update={"passed": not findings, "findings": findings})
 
 
-def _verified_sql_solution(solution, projection: _SolverProjection, first_failure):
+def _sql_attempt_audit(
+    solution, validation_result: SQLValidationResult
+) -> SQLProgramAttemptAudit:
+    return SQLProgramAttemptAudit(
+        answer=solution.answer,
+        mark_points=list(solution.mark_points),
+        evidence_ids=list(solution.evidence_ids),
+        validation_result=validation_result,
+    )
+
+
+class SQLProgramValidationError(ValueError):
+    """A bounded SQL correction failed, retaining both private attempts."""
+
+    def __init__(
+        self,
+        first_attempt: SQLProgramAttemptAudit,
+        replacement_attempt: SQLProgramAttemptAudit,
+    ) -> None:
+        self.first_attempt = first_attempt
+        self.replacement_attempt = replacement_attempt
+        super().__init__(
+            "failed bounded SQL verification after one correction: first="
+            + first_attempt.model_dump_json()
+            + "; replacement="
+            + replacement_attempt.model_dump_json()
+        )
+
+
+def _verified_sql_solution(
+    solution,
+    projection: _SolverProjection,
+    first_failure: SQLProgramAttemptAudit | None,
+):
     assert projection.sql_contract is not None
     digest = sql_source_intent_sha256(
         projection.sql_contract, projection.sql_intent_id

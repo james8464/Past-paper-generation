@@ -10,6 +10,8 @@ import pymupdf
 import pytest
 from cspapergen.generator import build_paper2_blueprint, build_topic_question_bank
 from cspapergen.ollama_client import (
+    SQLProgramValidationError,
+    _difficulty_solution,
     _part_solver_projection,
     _solve_part_with_sql_validation,
 )
@@ -22,6 +24,7 @@ from Backend.Core.model_review import require_difficulty_review
 from Backend.Core.reference_demand import build_item_demand_target, profile_for
 from Backend.Core.subjects.sql_contracts import (
     SQL_VALIDATION_VERSION,
+    SQLSourceContract,
     render_sql_schema,
     sql_source_intent_sha256,
     validate_sql_response,
@@ -107,6 +110,9 @@ def test_public_sql_contract_is_one_render_solver_export_and_hash_source(tmp_pat
     rendered_source = render_sql_schema(contract)
     assert "BOOKING.MemberID -> MEMBER.MemberID" in rendered_source
     assert "BOOKING.SessionID -> SESSION.SessionID" in rendered_source
+    assert "Activity NOT NULL" in rendered_source
+    assert "BookedAt NULL" in rendered_source
+    assert "Attended NOT NULL" in rendered_source
     assert "1842, 27, FALSE" in rendered_source
     assert "1844, 27, TRUE" in rendered_source
     bank_contract = _sql_question(bank=True).stimulus.sql_contract
@@ -119,6 +125,8 @@ def test_public_sql_contract_is_one_render_solver_export_and_hash_source(tmp_pat
         text = " ".join(page.get_text() for page in document)
     for name in ("MEMBER", "SESSION", "BOOKING", "MemberID", "SessionID", "Activity"):
         assert name in text
+    assert "Activity NOT NULL" in text
+    assert "BookedAt NULL" in text
 
     items = _extract_items(paper.model_dump(mode="json"), subject="computer_science", paper_number="2")
     select_item = next(item for item in items if item["prompt"] == question.parts[1].prompt)
@@ -175,6 +183,25 @@ def test_select_accepts_only_supported_alias_join_count_threshold_and_order_vari
     assert result.passed
     assert result.version == SQL_VALIDATION_VERSION
     assert result.source_intent_sha256 == sql_source_intent_sha256(contract, intent)
+
+
+def test_count_credit_uses_candidate_visible_nullability_only():
+    contract, intent = _contract_and_intent("2")
+    visible_non_null = (
+        "SELECT S.Activity, COUNT(B.Attended) FROM SESSION S JOIN BOOKING B "
+        "ON S.SessionID=B.SessionID GROUP BY S.Activity "
+        "HAVING COUNT(B.Attended)>=5 ORDER BY COUNT(B.Attended) DESC"
+    )
+    visible_nullable = visible_non_null.replace("B.Attended", "B.BookedAt")
+
+    assert validate_sql_response(
+        visible_non_null, [visible_non_null], contract, intent
+    ).passed
+    rejected = validate_sql_response(
+        visible_nullable, [visible_nullable], contract, intent
+    )
+    assert not rejected.passed
+    assert {finding.code for finding in rejected.findings} == {"nullable-count"}
 
 
 @pytest.mark.parametrize(
@@ -284,6 +311,115 @@ def test_answer_and_each_full_sql_mark_point_are_validated_without_overwrite():
     assert validate_sql_response(valid, ["Join the declared tables.", valid], contract, intent).passed
 
 
+@pytest.mark.parametrize(
+    "bad_point",
+    [
+        "DELETE FROM MEMBER; {valid}",
+        "DELETE FROM MEMBER",
+        "UPDATE MEMBER SET FullName = 'Other' WHERE MemberID = 1900",
+        "DROP TABLE MEMBER",
+        "WITH ignored AS note {valid}",
+        "{valid}; {valid}",
+    ],
+)
+def test_every_executable_looking_mark_point_is_validated_without_prefix_discard(
+    bad_point,
+):
+    contract, intent = _contract_and_intent("2")
+    valid = (
+        "SELECT S.Activity, COUNT(*) FROM SESSION S JOIN BOOKING B "
+        "ON S.SessionID=B.SessionID GROUP BY S.Activity "
+        "HAVING COUNT(*)>=5 ORDER BY COUNT(*) DESC"
+    )
+
+    result = validate_sql_response(
+        valid, [bad_point.format(valid=valid)], contract, intent
+    )
+
+    assert not result.passed
+    assert {finding.location for finding in result.findings} == {"mark_points[1]"}
+
+
+@pytest.mark.parametrize("wrapper", ["SQL: {valid}", "Query:\n{valid}", "```sql\n{valid}\n```"])
+def test_only_bounded_non_executable_labels_or_fences_may_wrap_a_mark_point(
+    wrapper,
+):
+    contract, intent = _contract_and_intent("2")
+    valid = (
+        "SELECT S.Activity, COUNT(*) FROM SESSION S JOIN BOOKING B "
+        "ON S.SessionID=B.SessionID GROUP BY S.Activity "
+        "HAVING COUNT(*)>=5 ORDER BY COUNT(*) DESC"
+    )
+    assert validate_sql_response(
+        valid, [wrapper.format(valid=valid)], contract, intent
+    ).passed
+
+
+def test_select_rejects_count_alias_collision_with_projected_output_name():
+    contract, intent = _contract_and_intent("2")
+    ambiguous = (
+        "SELECT S.Activity, COUNT(*) AS Activity FROM SESSION S JOIN BOOKING B "
+        "ON S.SessionID=B.SessionID GROUP BY S.Activity "
+        "HAVING COUNT(*)>=5 ORDER BY Activity DESC"
+    )
+    unambiguous = ambiguous.replace("AS Activity", "AS BookingCount").replace(
+        "ORDER BY Activity", "ORDER BY BookingCount"
+    )
+
+    result = validate_sql_response(ambiguous, [ambiguous], contract, intent)
+    assert not result.passed
+    assert {finding.code for finding in result.findings} == {"ambiguous-alias"}
+    assert validate_sql_response(unambiguous, [unambiguous], contract, intent).passed
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    ["projection", "group", "sources", "join"],
+)
+def test_real_solver_projection_rejects_mutated_select_contract_relationships(
+    mutation,
+):
+    question = _sql_question()
+    contract = question.stimulus.sql_contract
+    intent = contract.intents["2"]
+    if mutation == "projection":
+        changed_intent = intent.model_copy(update={"projection_field": "SESSION.StartsAt"})
+        changed_contract = contract.model_copy(
+            update={"intents": {**contract.intents, "2": changed_intent}}
+        )
+    elif mutation == "group":
+        changed_intent = intent.model_copy(update={"group_field": "SESSION.StartsAt"})
+        changed_contract = contract.model_copy(
+            update={"intents": {**contract.intents, "2": changed_intent}}
+        )
+    elif mutation == "sources":
+        changed_intent = intent.model_copy(update={"source_tables": ["SESSION", "MEMBER"]})
+        changed_contract = contract.model_copy(
+            update={"intents": {**contract.intents, "2": changed_intent}}
+        )
+    else:
+        changed_contract = contract.model_copy(update={"joins": []})
+    changed_question = question.model_copy(
+        update={
+            "stimulus": question.stimulus.model_copy(
+                update={"sql_contract": changed_contract}
+            )
+        }
+    )
+
+    with pytest.raises(ValueError, match="public SQL"):
+        _part_solver_projection(changed_question, question.parts[1])
+
+
+def test_raw_select_contract_requires_the_exact_supported_v1_relationship():
+    contract, _ = _contract_and_intent("2")
+    raw = contract.model_dump(mode="json")
+    raw["intents"]["2"]["projection_field"] = "SESSION.StartsAt"
+
+    with pytest.raises(ValueError, match="SELECT intent"):
+        SQLSourceContract.model_validate(raw, strict=True)
+
+
 def test_projection_rejects_source_intent_mutation_and_blind_prompt_has_no_private_query():
     question = _sql_question()
     projection = _part_solver_projection(question, question.parts[1])
@@ -325,15 +461,35 @@ def test_one_structured_solver_correction_preserves_first_failure_and_stops_if_s
     solution = _solve_part_with_sql_validation(client, projection)
 
     assert len(client.prompts) == 2
-    assert solution.program_first_failure
+    assert solution.program_first_failure is not None
+    assert solution.program_first_failure.answer == wrong
+    assert solution.program_first_failure.mark_points == [wrong]
+    assert solution.program_first_failure.evidence_ids == [source_id]
+    assert not solution.program_first_failure.validation_result.passed
+    assert (
+        solution.program_first_failure.validation_result.source_intent_sha256
+        == sql_source_intent_sha256(projection.sql_contract, projection.sql_intent_id)
+    )
+    assert solution.program_first_failure.validation_result.findings
+    assert {
+        finding.location
+        for finding in solution.program_first_failure.validation_result.findings
+    } == {"answer", "mark_points[1]"}
+    assert "program_first_failure" not in _difficulty_solution(solution)
     assert "SQL_VALIDATION_FINDINGS=" in client.prompts[1]
+    assert wrong not in client.prompts[1]
     assert valid not in client.prompts[1].split("SQL_VALIDATION_FINDINGS=", 1)[1].split("\n", 1)[0]
     assert json.loads(client.prompts[0].split("\n", 1)[1])["sources"] == json.loads(client.prompts[1].split("\n", 1)[1])["sources"]
 
     failed = Replay([_response(wrong, source_id), _response("Still not SQL", source_id)])
-    with pytest.raises(ValueError, match="failed bounded SQL verification after one correction"):
+    with pytest.raises(
+        SQLProgramValidationError,
+        match="failed bounded SQL verification after one correction",
+    ) as captured:
         _solve_part_with_sql_validation(failed, projection)
     assert len(failed.prompts) == 2
+    assert captured.value.first_attempt.answer == wrong
+    assert captured.value.replacement_attempt.answer == "Still not SQL"
 
 
 def test_actual_captured_count_table_response_is_unsupported_not_silently_accepted():

@@ -13,7 +13,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-SQL_VALIDATION_VERSION = "aqa-candidate-sql-v1"
+SQL_VALIDATION_VERSION = "aqa-candidate-sql-v2"
 SQL_VERIFIED_SCOPE = "bounded-declarative-sql"
 _MAX_SQL_LENGTH = 2_000
 _MAX_SQL_TOKENS = 256
@@ -149,9 +149,7 @@ class SQLSourceContract(_Frozen):
             raise ValueError("SQL intents require non-empty part labels")
         for intent in self.intents.values():
             if isinstance(intent, SQLSelectIntent):
-                for table in intent.source_tables:
-                    if table.casefold() not in tables:
-                        raise ValueError("SQL SELECT intent uses an unknown table")
+                _validate_supported_select_intent(intent, tables, self.joins)
             else:
                 table = tables.get(intent.target_table.casefold())
                 if table is None:
@@ -175,6 +173,45 @@ class SQLValidationResult(_Frozen):
     verified_scope: Literal[SQL_VERIFIED_SCOPE] = SQL_VERIFIED_SCOPE
     source_intent_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     findings: list[SQLValidationFinding] = Field(default_factory=list)
+
+
+def _validate_supported_select_intent(
+    intent: SQLSelectIntent,
+    tables: dict[str, SQLTableContract],
+    joins: list[SQLJoinContract],
+) -> None:
+    """Fail closed when the public declaration leaves the bounded v2 task."""
+    for field_name in (intent.projection_field, intent.group_field):
+        try:
+            table_name, column_name = field_name.split(".", 1)
+        except ValueError as error:
+            raise ValueError("SQL SELECT intent fields must name table.column") from error
+        _contract_column(tables, table_name, column_name)
+    expected_join = frozenset(
+        {("session", "sessionid"), ("booking", "sessionid")}
+    )
+    declared_joins = {
+        frozenset(
+            {
+                (join.left_table.casefold(), join.left_column.casefold()),
+                (join.right_table.casefold(), join.right_column.casefold()),
+            }
+        )
+        for join in joins
+    }
+    if (
+        [table.casefold() for table in intent.source_tables]
+        != ["session", "booking"]
+        or intent.projection_field.casefold() != "session.activity"
+        or intent.group_field.casefold() != "session.activity"
+        or intent.minimum_count != 5
+        or intent.order != "descending"
+        or declared_joins != {expected_join}
+    ):
+        raise ValueError(
+            "SQL SELECT intent must use the exact supported v2 "
+            "SESSION.Activity grouping and SESSION/BOOKING join"
+        )
 
 
 def fitness_centre_sql_contract() -> SQLSourceContract:
@@ -254,6 +291,17 @@ def render_sql_schema(contract: SQLSourceContract) -> str:
         f"{table.name} primary key: ({', '.join(table.primary_key)})"
         for table in contract.tables
     )
+    lines.append("Column nullability:")
+    for table in contract.tables:
+        declarations = [
+            f"{column.name} {'NULL' if column.nullable else 'NOT NULL'}"
+            for column in table.columns
+        ]
+        while declarations:
+            line = f"{table.name}: {declarations.pop(0)}"
+            while declarations and len(f"{line}; {declarations[0]}") <= 58:
+                line += f"; {declarations.pop(0)}"
+            lines.append(line)
     foreign_keys = [
         f"{table.name}.{column.name} -> {column.foreign_key}"
         for table in contract.tables
@@ -278,8 +326,18 @@ def render_sql_schema(contract: SQLSourceContract) -> str:
 def render_sql_intent_prompt(intent: SQLSelectIntent | SQLInsertIntent) -> str:
     """Render the candidate instruction represented by a supported intent."""
     if isinstance(intent, SQLSelectIntent):
-        if intent.minimum_count != 5 or intent.order != "descending":
-            raise ValueError("the declared SELECT prompt renderer supports the five-row task only")
+        if (
+            [table.casefold() for table in intent.source_tables]
+            != ["session", "booking"]
+            or intent.projection_field.casefold() != "session.activity"
+            or intent.group_field.casefold() != "session.activity"
+            or intent.minimum_count != 5
+            or intent.order != "descending"
+        ):
+            raise ValueError(
+                "the declared SELECT prompt renderer supports only the exact "
+                "Activity/SESSION/BOOKING v2 task"
+            )
         return (
             "Write one SELECT query that lists each Activity and the number of "
             "bookings for it, including only activities with at least five "
@@ -400,19 +458,21 @@ def _purported_statement(text: str) -> str | None:
     candidate = text.strip()
     if candidate.startswith("```") and candidate.endswith("```"):
         candidate = re.sub(r"^```(?:sql)?\s*|\s*```$", "", candidate, flags=re.IGNORECASE)
-    if re.match(r"^(SELECT|INSERT)\b", candidate, re.IGNORECASE):
+    label = re.match(
+        r"^(?:SQL|QUERY|ANSWER)\s*:\s*(.*)$",
+        candidate,
+        re.IGNORECASE | re.DOTALL,
+    )
+    if label:
+        candidate = label.group(1).strip()
+    statement_verbs = {
+        "ALTER", "BEGIN", "CALL", "CREATE", "DELETE", "DROP", "EXEC",
+        "GRANT", "INSERT", "MERGE", "REPLACE", "REVOKE", "SELECT", "TRUNCATE",
+        "UPDATE", "WITH",
+    }
+    first = re.match(r"^([A-Za-z_][A-Za-z0-9_]*)\b", candidate)
+    if first and first.group(1).upper() in statement_verbs:
         return candidate
-    match = re.match(r"^(?:SQL|QUERY|ANSWER)\s*:\s*((?:SELECT|INSERT)\b.*)$", candidate, re.IGNORECASE | re.DOTALL)
-    if match:
-        return match.group(1)
-    match = re.search(r"\b(SELECT|INSERT)\b.*", candidate, re.IGNORECASE | re.DOTALL)
-    if match:
-        statement = match.group()
-        upper = statement.upper()
-        if (upper.startswith("SELECT") and " FROM " in upper) or (
-            upper.startswith("INSERT") and " INTO " in upper and " VALUES " in upper
-        ):
-            return statement
     return None
 
 
@@ -675,6 +735,14 @@ def _validate_select(parsed: _Select, contract: SQLSourceContract, intent: SQLSe
     field = _resolve(parsed.field, aliases)
     if field != _normal_field(intent.projection_field):
         raise _SQLProblem("projection", "SELECT does not project the requested Activity field.")
+    if (
+        parsed.count_alias is not None
+        and parsed.count_alias.casefold() == parsed.field.name.casefold()
+    ):
+        raise _SQLProblem(
+            "ambiguous-alias",
+            "The booking-count alias collides with the projected Activity output.",
+        )
     group = _resolve(parsed.group, aliases)
     if group != _normal_field(intent.group_field):
         raise _SQLProblem("wrong-group", "GROUP BY must combine rows for the requested Activity field.")
