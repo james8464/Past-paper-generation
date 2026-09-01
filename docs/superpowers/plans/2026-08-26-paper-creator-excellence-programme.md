@@ -358,14 +358,16 @@ totals are recorded in `docs/quality/assessment-objective-reference.md`.
   reference totals rather than copying them into generated forms.
 - [ ] 7.J/7.I: Repair declared versus advisory open-credit reconciliation and
   candidate-grounded SQL verification before the next full live CS attempt.
-  J's scoped implementation and privacy correction are independently review-clean
-  through `180bccc`; committed-source CPU live qualification and I remain open.
+  J's schema correction is independently review-clean through `1110dd4`, but
+  manual review of its fresh committed-source CPU transaction found unsupported
+  serial-execution credit; J round 3, another live transaction and I remain open.
 - [x] 7.F2: Register actual Edexcel candidate sources and normalize selected
   answer keys at the independent-solver handoff; retain privacy and rejection
   of unknown sources/wrong answers. Committed-source live probes exposed both
   adapter defects after the scoped F review. Implementation `d4fa73a` passed
-  scoped independent review without findings; frozen-source live follow-up and
-  whole-paper qualification remain open.
+  scoped independent review without findings; selected frozen-source follow-up
+  confirms this boundary, while downstream H/content/difficulty and whole-paper
+  qualification remain open.
 - [ ] 7.K: After once-only guidance, correct the complete-credit OCR/Edexcel
   scheme presentation and rerun unchanged 300/600-DPI layout checks. Preserve
   all specific marking content and failed evidence; no blank-page padding.

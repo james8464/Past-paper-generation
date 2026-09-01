@@ -508,3 +508,50 @@ inventory, strict packaged build and Graphify. Independent source review found
 no Critical, Important or Minor defects. These results close the adapter defect,
 not the pending frozen-source model transactions, visual floors, whole-paper
 quality or external qualification.
+
+J round-2 commit `1110dd4` passed scoped independent review without findings.
+A fresh seed-26083134 Q7 transaction from a verified 252-file archive then
+completed every production gate and recorded `passed: true`, with source and
+import identity verified at the end. Manual content review nevertheless rejects
+it as qualification evidence. The independent answer said only that the CPU can
+“fetch and execute instructions as needed”; the semantic judge quoted that text
+and awarded the distinct point requiring instructions to be executed serially
+or in sequence. Fetching/executing “as needed” does not state ordered execution.
+Artifact `tmp/task7j2-cpu-live-probe-0901.json`, SHA-256
+`510e9e6d1d8cdb3bbd6df7511b728db324ba11bdfc2de7144da41aa17fcef0c9`,
+is preserved unchanged as a technically passing but manually unqualified
+semantic false positive. Round 3 must add bounded deterministic evidence for
+the two fixed CPU meanings without imposing one exact wording or adding another
+model call.
+
+Frozen-source F2 follow-up used that same `1110dd4` archive. Paper 1 question 1
+now passed exact source registration, independent solving, MCQ key reconciliation
+and difficulty review (`tmp/task7f2-p1-live-probe-0901.json`, SHA-256
+`167708c0c171dc2f4c7a33ae24bf29071560965e4722cf1f033ec1dd8f2b80d4`).
+Its table-dependent explanation is coherent, but its MCQ can be answered from
+the generic “lower sunk costs” option without using the table value despite an
+AO2 allocation; H1 retains that source-dependence defect.
+
+Paper 2 confirmed that the formerly rejected Quarter 6 and 16.1% answers now
+cross the F2 boundary. The wider selected questions still fail later: Q1(c)'s
+coherent precautionary-saving explanation was labelled with retrieve,
+contextualise and analyse but omitted the required `explain` operation, while
+Q2(b)'s solver response made incorrect terms-of-trade claims and did not match
+the source-bound scheme. Artifact `tmp/task7f2-p2-live-probe-0901.json`, SHA-256
+`a99f7453b86040cf9cbbb391607d5c02341a55cc2ed0ff0ae48d2e3e521e54e4`,
+failed overall with source identity intact. The first result is a reviewer
+classification inconsistency; the second is a valid fail-closed content result.
+
+Paper 3 likewise crossed source registration on all four selected transactions.
+The 12- and 25-mark items passed their complete live chains. The 5-mark answer
+was rejected because the difficulty judge reported five reasoning steps against
+a maximum of four, which requires calibration review because verbose solver
+working is not automatically candidate demand. The 8-mark solver omitted the
+requested response fields and failed answer-scheme reconciliation; its prose
+contained several relevant source-linked points, so H1 must make the independent
+solver's exact response envelope explicit before deciding substantive mismatch.
+Artifact `tmp/task7f2-p3-live-probe-0901.json`, SHA-256
+`16dc4a4c2bae6efc2f26d21d333359ef93563bc98bd41b38a16c570773366f2b`,
+failed overall with source/import identity intact. These results validate F2's
+adapter boundary, not the downstream question/difficulty quality or visual and
+external qualification.
