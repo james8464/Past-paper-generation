@@ -1,13 +1,16 @@
 """Scoped semantic adjudication for the declared AQA stored-program task.
 
 The preceding solver is blind. This later model review sees private criteria;
-quote/identity checks attest record consistency, never deterministic entailment.
+strict record checks and bounded two-criterion quote rules fail closed without
+claiming a generic essay-entailment capability.
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
+import re
+import unicodedata
 from copy import deepcopy
 from typing import Any, Literal
 
@@ -134,6 +137,122 @@ class CreditJudgement(BaseModel):
     advisory_conflicts: list[str]
 
 
+_CPU_INSTRUCTION = (
+    r"(?:machine code(?: instructions?)?|machine instructions?|"
+    r"program(?:me)?s?(?: code| instructions?)?|instructions?)"
+)
+_CPU_STORAGE = r"(?:stored|held|kept|loaded)"
+_CPU_MAIN_MEMORY = r"(?:main memory|ram)"
+_CPU_EXECUTION = (
+    r"(?:execut(?:e|es|ed|ing)|run(?:s|ning)?|process(?:es|ed|ing)?|"
+    r"carr(?:y|ies|ied|ying) out|complete(?:s|d|ing)?|finish(?:es|ed|ing)?)"
+)
+_CPU_ORDER = (
+    r"(?:serially|sequentially|in sequence|in order(?! to)|one at a time|"
+    r"one after another|one by one|instruction by instruction)"
+)
+_CPU_NEGATOR = (
+    r"(?:not|never|without|cannot|cant|isnt|arent|wasnt|werent|"
+    r"doesnt|dont|didnt|wont|wouldnt|shouldnt)"
+)
+
+
+def _normalise_cpu_quote(value: str) -> str:
+    """Apply only harmless normalization for this fixed English contract."""
+    text = unicodedata.normalize("NFKC", value).casefold()
+    text = re.sub(r"[\u2010-\u2015\u2212-]+", " ", text)
+    text = text.replace("’", "").replace("'", "")
+    return " ".join(re.sub(r"[^a-z0-9]+", " ", text).split())
+
+
+def _cpu_quote_supports_criterion(criterion_id: str, answer_quote: str) -> bool:
+    """Fail-closed evidence rules for the two registered stored-program marks."""
+    text = _normalise_cpu_quote(answer_quote)
+    if not text:
+        return False
+    if criterion_id == "instructions-main-memory":
+        negated_storage = re.search(
+            rf"\bno {_CPU_INSTRUCTION}\b|\b{_CPU_NEGATOR} "
+            rf"(?:(?:be|being) )?(?:{_CPU_STORAGE}|stores|holds|keeps|contains|loads?|places?)\b",
+            text,
+        )
+        passive = re.search(
+            rf"\b{_CPU_INSTRUCTION}\b "
+            rf"(?:(?:is|are|can|may|must|gets?) )?(?:be )?{_CPU_STORAGE} "
+            rf"(?:in|into|within|on) (?:the )?(?:computer s )?{_CPU_MAIN_MEMORY}\b",
+            text,
+        )
+        memory_active = re.search(
+            rf"\b{_CPU_MAIN_MEMORY}\b (?:stores|holds|keeps|contains) "
+            rf"(?:the )?{_CPU_INSTRUCTION}\b",
+            text,
+        )
+        loader_active = re.search(
+            rf"\b(?:loads?|places?) (?:the )?{_CPU_INSTRUCTION}\b "
+            rf"(?:in|into|within) (?:the )?(?:computer s )?{_CPU_MAIN_MEMORY}\b",
+            text,
+        )
+        return bool(not negated_storage and any((passive, memory_active, loader_active)))
+    if criterion_id == "serial-processor-execution":
+        instruction_anchor = re.search(rf"\b{_CPU_INSTRUCTION}\b", text)
+        pronoun_anchor = re.search(
+            r"\b(?:cpu|processor)\b.*\b(?:them|these)\b", text
+        )
+        execution_target = rf"(?:{_CPU_INSTRUCTION}|them|these)"
+        action_subject_order = re.search(
+            rf"\b{_CPU_EXECUTION}\b (?:each |the |an? |one )?"
+            rf"\b{execution_target}\b \b{_CPU_ORDER}\b",
+            text,
+        )
+        subject_action_order = re.search(
+            rf"\b{execution_target}\b "
+            rf"(?:(?:is|are|can|may|be|then|each) ){{0,3}}"
+            rf"\b{_CPU_EXECUTION}\b \b{_CPU_ORDER}\b",
+            text,
+        )
+        order_cpu_action = re.search(
+            rf"\b{_CPU_ORDER}\b (?:the )?(?:cpu|processor) "
+            rf"(?:(?:fetches|retrieves) and )?\b{_CPU_EXECUTION}\b "
+            rf"(?:the )?\b{execution_target}\b",
+            text,
+        )
+        ordered_action = any(
+            (action_subject_order, subject_action_order, order_cpu_action)
+        )
+        before_next = re.search(
+            r"\b(?:complete(?:s|d|ing)?|finish(?:es|ed|ing)?|execut(?:e|es|ed|ing))\b "
+            r"(?:\w+ ){0,3}\b(?:instructions?|it|one)\b (?:\w+ ){0,2}before "
+            r"(?:\w+ ){0,2}\b(?:fetch(?:es|ed|ing)?|start(?:s|ed|ing)?|begins?|"
+            r"execut(?:e|es|ed|ing)|runs?)\b (?:\w+ ){0,2}\b(?:next|another|following)\b",
+            text,
+        )
+        passive_before_next = re.search(
+            r"\b(?:an? |each |one )?instruction\b (?:is )?"
+            r"(?:completed|finished|executed) before (?:the )?"
+            r"(?:next|following|another) (?:instruction |one )?(?:is )?"
+            r"(?:fetched|started|begun|executed)\b",
+            text,
+        )
+        negated_execution = re.search(
+            rf"(?:\b{_CPU_NEGATOR} (?:(?:be|being) )?{_CPU_EXECUTION}\b|"
+            rf"\b{_CPU_EXECUTION}\b {_CPU_NEGATOR} \b{_CPU_ORDER}\b|"
+            rf"\b{_CPU_NEGATOR} {_CPU_ORDER}\b)",
+            text,
+        )
+        contradictory_order = re.search(
+            r"\b(?:in any order|out of sequence)\b|"
+            r"(?<!not )\b(?:simultaneously|at once|in parallel|concurrently)\b",
+            text,
+        )
+        return bool(
+            not negated_execution
+            and not contradictory_order
+            and (instruction_anchor or pronoun_anchor)
+            and (ordered_action or before_next or passive_before_next)
+        )
+    raise ValueError(f"unknown CPU credit criterion: {criterion_id}")
+
+
 def _validate_judgement(
     item: dict[str, Any], solution: dict[str, Any], raw: Any
 ) -> CreditJudgement:
@@ -153,6 +272,7 @@ def _validate_judgement(
     allocations = {
         row["criterion_id"]: row for row in item["marking"]["credit_allocations"]
     }
+    unsupported_quotes: list[str] = []
     for row in result.criteria:
         allocation = allocations[row.criterion_id]
         if row.decision != "supported" or (row.point_index, row.marks) != (
@@ -172,6 +292,17 @@ def _validate_judgement(
             raise ValueError(
                 "semantic review evidence quote is absent from the actual answer or printed point"
             )
+        if not _cpu_quote_supports_criterion(row.criterion_id, row.answer_quote):
+            meaning = (
+                "instructions stored in main memory"
+                if row.criterion_id == "instructions-main-memory"
+                else "explicit ordered execution"
+            )
+            unsupported_quotes.append(
+                f"{row.criterion_id} exact answer quote lacks {meaning}"
+            )
+    if unsupported_quotes:
+        raise ValueError("; ".join(unsupported_quotes))
     return result
 
 
@@ -217,6 +348,8 @@ def review_open_credit(
         "the actual printed marking point and its allocation. Supported requires both to express the criterion without contradiction. "
         "Read whole statements, including negation and qualifications; quotations alone do not establish support. "
         "Accept genuine paraphrase and reordering. Instructions in main memory and serial processor fetch/execution are distinct one-mark features. "
+        "Fetches and executes instructions 'as needed' does not establish ordered execution. "
+        "Naming the fetch-decode-execute cycle or only current/next instructions does not establish it either. "
         "Shared instruction/data RAM is not required by the stored-program concept: that is von Neumann-specific. "
         "Same-address confusion, secondary-storage-only and permanent storage of the entire program in the processor do not establish main-memory storage. "
         "Significance, reprogrammability and hardware rewiring are not required. Do not impose model-advisory alternatives, caps or commentary as extra criteria. "

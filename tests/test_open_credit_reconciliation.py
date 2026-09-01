@@ -56,6 +56,39 @@ FLATTENED_LIVE_SEMANTIC_RESPONSE = {
     "advisory_conflicts": [],
 }
 
+# Verbatim answer and semantic response from the source-verified round-2 live
+# transaction in tmp/task7j2-cpu-live-probe-0901.json. The model's supported
+# decision for the second criterion is the false positive under regression.
+ROUND2_LIVE_ANSWER = (
+    "The stored program concept is the principle where both program instructions "
+    "and data are stored in the same memory space. Because they are stored "
+    "together, the CPU can fetch and execute instructions as needed. This allows "
+    "a computer to switch between different tasks or functions by loading "
+    "different sets of instructions into memory."
+)
+ROUND2_LIVE_SEMANTIC_RESPONSE = {
+    "criteria": [
+        {
+            "criterion_id": "instructions-main-memory",
+            "decision": "supported",
+            "answer_quote": "both program instructions and data are stored in the same memory space",
+            "scheme_quote": "Machine-code instructions are stored in main memory",
+            "point_index": 0,
+            "marks": 1,
+        },
+        {
+            "criterion_id": "serial-processor-execution",
+            "decision": "supported",
+            "answer_quote": "the CPU can fetch and execute instructions as needed",
+            "scheme_quote": "The processor fetches and executes the instructions serially / in sequence",
+            "point_index": 1,
+            "marks": 1,
+        },
+    ],
+    "issues": [],
+    "advisory_conflicts": [],
+}
+
 
 class ReplaySolver:
     def __init__(self, *, exact_response=None, **updates):
@@ -294,6 +327,10 @@ def test_cpu_semantic_prompt_gives_the_exact_ordered_outer_response_envelope():
         "Criterion IDs must be values of criterion_id in that ordered array, never top-level keys."
         in client.prompts[0]
     )
+    assert (
+        "Fetches and executes instructions 'as needed' does not establish ordered execution."
+        in client.prompts[0]
+    )
 
 
 def test_cpu_semantic_review_rejects_the_actual_flattened_live_response():
@@ -314,6 +351,116 @@ def test_cpu_semantic_review_rejects_top_level_criterion_keys_beside_valid_array
     response["instructions-main-memory"] = copy.deepcopy(response["criteria"][0])
     with pytest.raises(ValueError):
         review_open_credit(ReplaySolver(exact_response=response), item, solution)
+
+
+def test_round2_live_semantic_result_rejects_fetch_and_execute_as_needed():
+    from Backend.Core.open_credit import review_open_credit
+
+    _, _, item, _ = cpu_fixture()
+    solution = IndependentSolver(ReplaySolver(answer=ROUND2_LIVE_ANSWER)).solve(
+        item, []
+    )
+    client = ReplaySolver(exact_response=ROUND2_LIVE_SEMANTIC_RESPONSE)
+    with pytest.raises(ValueError, match=r"serial-processor-execution.*ordered"):
+        review_open_credit(client, item, solution)
+    assert len(client.prompts) == 1
+
+
+@pytest.mark.parametrize(
+    "answer_quote,expected",
+    [
+        ("Machine-code instructions are stored in main memory.", True),
+        ("The program is held in RAM.", True),
+        ("Program instructions are kept within main memory.", True),
+        ("The CPU loads machine code into RAM.", True),
+        ("Main memory holds the program instructions.", True),
+        ("Program code is kept in main memory.", True),
+        ("MACHINE‑CODE instructions are loaded into MAIN MEMORY.", True),
+        ("Program instructions are kept in RAM; data may be elsewhere.", True),
+        (
+            "Instructions are stored in main memory, not only on secondary storage.",
+            True,
+        ),
+        ("Data is stored in main memory.", False),
+        ("This is called the stored program concept.", False),
+        ("Program instructions are stored only on secondary storage.", False),
+        ("The program is stored permanently in processor registers.", False),
+        ("Program instructions are not stored in main memory.", False),
+        (
+            "The program instructions are stored in secondary storage; main memory holds only data.",
+            False,
+        ),
+        ("Machine code is loaded from RAM into a processor register.", False),
+    ],
+)
+def test_cpu_storage_quote_requires_instructions_stored_in_main_memory(
+    answer_quote, expected
+):
+    from Backend.Core.open_credit import review_open_credit
+
+    _, part, item, _ = cpu_fixture()
+    serial_quote = "The processor executes machine instructions sequentially."
+    solution = IndependentSolver(
+        ReplaySolver(answer=f"{answer_quote} {serial_quote}")
+    ).solve(item, [])
+    response = adjudication_response(part)
+    response["criteria"][0]["answer_quote"] = answer_quote
+    response["criteria"][1]["answer_quote"] = serial_quote
+    client = ReplaySolver(exact_response=response)
+    if expected:
+        assert review_open_credit(client, item, solution)["judgement"]["criteria"]
+    else:
+        with pytest.raises(ValueError, match="instructions-main-memory"):
+            review_open_credit(client, item, solution)
+
+
+@pytest.mark.parametrize(
+    "answer_quote,expected",
+    [
+        ("The processor executes each instruction serially.", True),
+        ("Machine instructions are processed sequentially.", True),
+        ("The CPU carries out instructions in sequence.", True),
+        ("The processor runs them one at a time.", True),
+        ("The CPU executes instructions one after another.", True),
+        ("The processor processes machine code instruction by instruction.", True),
+        ("The processor executes machine‑code instructions one—by—one.", True),
+        ("The processor completes one instruction before fetching the next.", True),
+        ("An instruction is finished before the following one is started.", True),
+        ("Not in parallel; instructions are executed sequentially.", True),
+        ("the CPU can fetch and execute instructions as needed", False),
+        ("The CPU fetches, decodes and executes instructions.", False),
+        ("The CPU fetches instructions in order to execute them.", False),
+        ("The fetch-decode-execute cycle processes an instruction.", False),
+        ("The current instruction is executed and the next instruction is fetched.", False),
+        ("Instructions are not executed sequentially.", False),
+        ("Instructions are executed, but not sequentially.", False),
+        ("Instructions are stored sequentially in RAM.", False),
+        ("The processor executes instructions in any order.", False),
+        ("The CPU starts the next instruction before completing the current one.", False),
+        ("The processor executes data one at a time.", False),
+        ("The CPU executes data while fetching instructions one at a time.", False),
+        ("The CPU executes instructions; data arrives one at a time.", False),
+        ("The CPU can fetch the next instruction.", False),
+        ("One instruction after another is loaded into RAM.", False),
+    ],
+)
+def test_cpu_serial_quote_requires_explicit_ordered_execution(answer_quote, expected):
+    from Backend.Core.open_credit import review_open_credit
+
+    _, part, item, _ = cpu_fixture()
+    storage_quote = "Machine-code instructions are held in RAM."
+    solution = IndependentSolver(
+        ReplaySolver(answer=f"{storage_quote} {answer_quote}")
+    ).solve(item, [])
+    response = adjudication_response(part)
+    response["criteria"][0]["answer_quote"] = storage_quote
+    response["criteria"][1]["answer_quote"] = answer_quote
+    client = ReplaySolver(exact_response=response)
+    if expected:
+        assert review_open_credit(client, item, solution)["judgement"]["criteria"]
+    else:
+        with pytest.raises(ValueError, match=r"serial-processor-execution.*ordered"):
+            review_open_credit(client, item, solution)
 
 
 @pytest.mark.parametrize(
