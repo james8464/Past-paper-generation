@@ -2584,8 +2584,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_computer_science_authoring",
-      "community": 235,
-      "community_name": "computer_science_authoring.py",
+      "community": 80,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "computer_science_authoring.py"
     },
     {
@@ -2595,8 +2595,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "backend_core_computer_science_authoring_authoring_route",
-      "community": 235,
-      "community_name": "computer_science_authoring.py",
+      "community": 80,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "authoring_route()"
     },
     {
@@ -2606,8 +2606,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_core_computer_science_authoring_py_any",
-      "community": 235,
-      "community_name": "computer_science_authoring.py",
+      "community": 80,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "any"
     },
     {
@@ -2617,8 +2617,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "backend_core_computer_science_authoring_question_content_sha256",
-      "community": 235,
-      "community_name": "computer_science_authoring.py",
+      "community": 80,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "question_content_sha256()"
     },
     {
@@ -2628,8 +2628,8 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "backend_core_computer_science_authoring_aqa_cs_solver_item",
-      "community": 235,
-      "community_name": "computer_science_authoring.py",
+      "community": 80,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "aqa_cs_solver_item()"
     },
     {
@@ -2639,8 +2639,8 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "backend_core_computer_science_authoring_reviewed_question_metadata",
-      "community": 235,
-      "community_name": "computer_science_authoring.py",
+      "community": 80,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "reviewed_question_metadata()"
     },
     {
@@ -2650,8 +2650,8 @@
       "source_location": "L105",
       "_origin": "ast",
       "id": "backend_core_computer_science_authoring_validate_question_review",
-      "community": 235,
-      "community_name": "computer_science_authoring.py",
+      "community": 80,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "validate_question_review()"
     },
     {
@@ -2672,8 +2672,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_computer_science_authoring_rationale_1",
-      "community": 235,
-      "community_name": "computer_science_authoring.py",
+      "community": 80,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "aqa cs source-coupled review identity, shared by authoring/resume/export. this..."
     },
     {
@@ -2683,8 +2683,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "backend_core_computer_science_authoring_rationale_55",
-      "community": 235,
-      "community_name": "computer_science_authoring.py",
+      "community": 80,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "one adapter/reuse projection; caller supplies candidate-visible figure data...."
     },
     {
@@ -4212,8 +4212,8 @@
       "source_location": "L169",
       "_origin": "ast",
       "id": "backend_core_document_dsl_reportlab_flowables_ocrquestionheaderfactory_question_table",
-      "community": 6,
-      "community_name": "Paragraph",
+      "community": 65,
+      "community_name": "aqa_section_intro",
       "norm_label": ".question_table()"
     },
     {
@@ -4234,8 +4234,8 @@
       "source_location": "L219",
       "_origin": "ast",
       "id": "backend_core_document_dsl_reportlab_flowables_singlecellpanelfactory_panel",
-      "community": 6,
-      "community_name": "Paragraph",
+      "community": 65,
+      "community_name": "aqa_section_intro",
       "norm_label": ".panel()"
     },
     {
@@ -5356,8 +5356,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_fonts_init",
-      "community": 246,
-      "community_name": "CoverProfile",
+      "community": 242,
+      "community_name": "register_fonts",
       "norm_label": "fonts/__init__.py"
     },
     {
@@ -5367,8 +5367,8 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "backend_core_fonts_init_standard_fallback",
-      "community": 246,
-      "community_name": "CoverProfile",
+      "community": 242,
+      "community_name": "register_fonts",
       "norm_label": "_standard_fallback()"
     },
     {
@@ -5378,8 +5378,8 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "backend_core_fonts_init_register_font",
-      "community": 246,
-      "community_name": "CoverProfile",
+      "community": 242,
+      "community_name": "register_fonts",
       "norm_label": "register_font()"
     },
     {
@@ -5389,8 +5389,8 @@
       "source_location": "L107",
       "_origin": "ast",
       "id": "backend_core_fonts_init_register_fonts",
-      "community": 246,
-      "community_name": "CoverProfile",
+      "community": 242,
+      "community_name": "register_fonts",
       "norm_label": "register_fonts()"
     },
     {
@@ -11010,8 +11010,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_reportlab_theme",
-      "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community": 153,
+      "community_name": "ocrcsgen/render_pdf.py",
       "norm_label": "reportlab_theme.py"
     },
     {
@@ -11088,7 +11088,7 @@
       "_origin": "ast",
       "id": "backend_core_reportlab_theme_aqaanswerlines",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "aqaanswerlines"
     },
     {
@@ -11132,7 +11132,7 @@
       "_origin": "ast",
       "id": "backend_core_reportlab_theme_ocranswerlines",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "ocranswerlines"
     },
     {
@@ -13408,8 +13408,8 @@
       "source_location": "L281",
       "_origin": "ast",
       "id": "backend_core_subjects_sql_contracts_render_sql_schema",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "render_sql_schema()"
     },
     {
@@ -13441,8 +13441,8 @@
       "source_location": "L379",
       "_origin": "ast",
       "id": "backend_core_subjects_sql_contracts_selected_sql_answer_contract",
-      "community": 235,
-      "community_name": "computer_science_authoring.py",
+      "community": 80,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "selected_sql_answer_contract()"
     },
     {
@@ -13859,8 +13859,8 @@
       "source_location": "L282",
       "_origin": "ast",
       "id": "backend_core_subjects_sql_contracts_rationale_282",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "render only public schema facts; no worked query is present."
     },
     {
@@ -13881,8 +13881,8 @@
       "source_location": "L382",
       "_origin": "ast",
       "id": "backend_core_subjects_sql_contracts_rationale_382",
-      "community": 235,
-      "community_name": "computer_science_authoring.py",
+      "community": 80,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "public solver projection derived from the candidate's one declaration."
     },
     {
@@ -14948,8 +14948,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_cli_artifacts",
-      "community": 246,
-      "community_name": "CoverProfile",
+      "community": 6,
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_artifacts()"
     },
     {
@@ -15224,7 +15224,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "aqaaccountgen/render_pdf.py"
     },
     {
@@ -15234,8 +15234,8 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_render_question_paper",
-      "community": 246,
-      "community_name": "CoverProfile",
+      "community": 6,
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "render_question_paper()"
     },
     {
@@ -15245,8 +15245,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_py_path",
-      "community": 246,
-      "community_name": "CoverProfile",
+      "community": 6,
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "path"
     },
     {
@@ -15256,8 +15256,8 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_render_mark_scheme",
-      "community": 246,
-      "community_name": "CoverProfile",
+      "community": 6,
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "render_mark_scheme()"
     },
     {
@@ -15268,7 +15268,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_paper_one_mark_scheme_pages",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_paper_one_mark_scheme_pages()"
     },
     {
@@ -15279,7 +15279,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_py_flowable",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "flowable"
     },
     {
@@ -15290,7 +15290,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_accounting_marking_guidance_pages",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_accounting_marking_guidance_pages()"
     },
     {
@@ -15301,7 +15301,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_objective_test_answers",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_objective_test_answers()"
     },
     {
@@ -15312,7 +15312,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_short_answer_scheme_page",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_short_answer_scheme_page()"
     },
     {
@@ -15323,7 +15323,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_statement_of_financial_position_scheme",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_statement_of_financial_position_scheme()"
     },
     {
@@ -15334,7 +15334,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_completed_ledger_scheme",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_completed_ledger_scheme()"
     },
     {
@@ -15345,7 +15345,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_completed_sales_account_scheme",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_completed_sales_account_scheme()"
     },
     {
@@ -15356,7 +15356,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_completed_income_statement_scheme",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_completed_income_statement_scheme()"
     },
     {
@@ -15367,7 +15367,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_income_statement_workings_scheme",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_income_statement_workings_scheme()"
     },
     {
@@ -15378,7 +15378,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_income_statement_finishing_scheme",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_income_statement_finishing_scheme()"
     },
     {
@@ -15389,7 +15389,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_levels_scheme_page",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_levels_scheme_page()"
     },
     {
@@ -15400,7 +15400,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_indicative_objective",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_indicative_objective()"
     },
     {
@@ -15411,7 +15411,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_levels_with_indicative_scheme_page",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_levels_with_indicative_scheme_page()"
     },
     {
@@ -15422,7 +15422,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_indicative_content_page",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_indicative_content_page()"
     },
     {
@@ -15433,7 +15433,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_extended_indicative_content_page",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_extended_indicative_content_page()"
     },
     {
@@ -15444,7 +15444,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_extended_judgement_page",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_extended_judgement_page()"
     },
     {
@@ -15455,7 +15455,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_completed_capital_accounts_scheme",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_completed_capital_accounts_scheme()"
     },
     {
@@ -15466,7 +15466,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_completed_appropriation_scheme",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_completed_appropriation_scheme()"
     },
     {
@@ -15477,7 +15477,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_scheme_question_heading",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_scheme_question_heading()"
     },
     {
@@ -15488,7 +15488,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_py_table",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "table"
     },
     {
@@ -15499,7 +15499,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_guidance_table",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_guidance_table()"
     },
     {
@@ -15510,7 +15510,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_scheme_grid",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_scheme_grid()"
     },
     {
@@ -15521,7 +15521,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_mark_scheme_extension_pages",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_mark_scheme_extension_pages()"
     },
     {
@@ -15532,7 +15532,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_continued_marking_guidance",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_continued_marking_guidance()"
     },
     {
@@ -15543,7 +15543,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_assessment_objectives_page",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_assessment_objectives_page()"
     },
     {
@@ -15554,7 +15554,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_paper_pages",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_paper_pages()"
     },
     {
@@ -15565,7 +15565,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_paper_two_section_c_pages",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_paper_two_section_c_pages()"
     },
     {
@@ -15576,7 +15576,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_paper_one_section_c_pages",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_paper_one_section_c_pages()"
     },
     {
@@ -15587,7 +15587,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_accounting_system_case",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_accounting_system_case()"
     },
     {
@@ -15598,7 +15598,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_shareholder_case",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_shareholder_case()"
     },
     {
@@ -15609,7 +15609,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_no_questions_page",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_no_questions_page()"
     },
     {
@@ -15620,7 +15620,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_additional_answer_page",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_additional_answer_page()"
     },
     {
@@ -15631,7 +15631,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_paper_one_section_b_pages",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_paper_one_section_b_pages()"
     },
     {
@@ -15642,7 +15642,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_company_statement_case",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_company_statement_case()"
     },
     {
@@ -15653,7 +15653,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_partnership_case",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_partnership_case()"
     },
     {
@@ -15664,7 +15664,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_partners_capital_table",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_partners_capital_table()"
     },
     {
@@ -15675,7 +15675,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_partnership_drawings_case",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_partnership_drawings_case()"
     },
     {
@@ -15686,7 +15686,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_appropriation_answer_table",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_appropriation_answer_table()"
     },
     {
@@ -15697,7 +15697,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_paper_one_section_a_case_pages",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_paper_one_section_a_case_pages()"
     },
     {
@@ -15708,7 +15708,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_do_not_write_page",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_do_not_write_page()"
     },
     {
@@ -15719,7 +15719,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_non_current_asset_case",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_non_current_asset_case()"
     },
     {
@@ -15730,7 +15730,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_sales_ledger_case",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_sales_ledger_case()"
     },
     {
@@ -15741,7 +15741,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_ledger_answer_table",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_ledger_answer_table()"
     },
     {
@@ -15752,7 +15752,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_question_page",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_question_page()"
     },
     {
@@ -15763,7 +15763,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_response_line_count",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_response_line_count()"
     },
     {
@@ -15774,7 +15774,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_mcq_block",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_mcq_block()"
     },
     {
@@ -15785,7 +15785,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_scheme_block",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_scheme_block()"
     },
     {
@@ -15796,7 +15796,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_item_specific_mark_scheme_rows",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_item_specific_mark_scheme_rows()"
     },
     {
@@ -15806,8 +15806,8 @@
       "source_location": "L2609",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_cover_profile",
-      "community": 246,
-      "community_name": "CoverProfile",
+      "community": 6,
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_cover_profile()"
     },
     {
@@ -15817,8 +15817,8 @@
       "source_location": "L2637",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_document",
-      "community": 246,
-      "community_name": "CoverProfile",
+      "community": 6,
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_document()"
     },
     {
@@ -15828,8 +15828,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_py_basedoctemplate",
-      "community": 246,
-      "community_name": "CoverProfile",
+      "community": 6,
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "basedoctemplate"
     },
     {
@@ -15839,8 +15839,8 @@
       "source_location": "L2660",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_chrome",
-      "community": 246,
-      "community_name": "CoverProfile",
+      "community": 6,
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "_chrome()"
     },
     {
@@ -15851,7 +15851,7 @@
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_render_pdf_rationale_966",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "preserve declared objectives; row position is not assessment evidence."
     },
     {
@@ -16656,8 +16656,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "resources_backend_protocol_schema_properties_event_id",
-      "community": 57,
-      "community_name": "properties",
+      "community": 256,
+      "community_name": "event_id",
       "norm_label": "event_id"
     },
     {
@@ -16667,8 +16667,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "resources_backend_protocol_schema_event_id_type",
-      "community": 57,
-      "community_name": "properties",
+      "community": 256,
+      "community_name": "event_id",
       "norm_label": "type"
     },
     {
@@ -16678,8 +16678,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "resources_backend_protocol_schema_event_id_minimum",
-      "community": 57,
-      "community_name": "properties",
+      "community": 256,
+      "community_name": "event_id",
       "norm_label": "minimum"
     },
     {
@@ -16810,8 +16810,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "resources_backend_protocol_schema_properties_progress",
-      "community": 256,
-      "community_name": "progress",
+      "community": 57,
+      "community_name": "properties",
       "norm_label": "progress"
     },
     {
@@ -16821,8 +16821,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "resources_backend_protocol_schema_progress_type",
-      "community": 256,
-      "community_name": "progress",
+      "community": 57,
+      "community_name": "properties",
       "norm_label": "type"
     },
     {
@@ -16832,8 +16832,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "resources_backend_protocol_schema_progress_minimum",
-      "community": 256,
-      "community_name": "progress",
+      "community": 57,
+      "community_name": "properties",
       "norm_label": "minimum"
     },
     {
@@ -16843,8 +16843,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "resources_backend_protocol_schema_progress_maximum",
-      "community": 256,
-      "community_name": "progress",
+      "community": 57,
+      "community_name": "properties",
       "norm_label": "maximum"
     },
     {
@@ -18452,8 +18452,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "cspapergen/generator.py"
     },
     {
@@ -18507,8 +18507,8 @@
       "source_location": "L490",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_repartition_paper2_question",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "_repartition_paper2_question()"
     },
     {
@@ -18518,8 +18518,8 @@
       "source_location": "L598",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_paper2_sql_task",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "_paper2_sql_task()"
     },
     {
@@ -18540,8 +18540,8 @@
       "source_location": "L684",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_build_paper1_context",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "_build_paper1_context()"
     },
     {
@@ -18551,8 +18551,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_py_random",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "random"
     },
     {
@@ -18562,8 +18562,8 @@
       "source_location": "L803",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_build_paper1_questions",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "_build_paper1_questions()"
     },
     {
@@ -18573,8 +18573,8 @@
       "source_location": "L1005",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_align_paper1_structure",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "_align_paper1_structure()"
     },
     {
@@ -18584,8 +18584,8 @@
       "source_location": "L1236",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_paper1_question",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "_paper1_question()"
     },
     {
@@ -18595,8 +18595,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_py_questionpart",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "questionpart"
     },
     {
@@ -18606,8 +18606,8 @@
       "source_location": "L1256",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_paper1_part",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "_paper1_part()"
     },
     {
@@ -18617,8 +18617,8 @@
       "source_location": "L599",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_rationale_599",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "six marks for the compound query; finite row analysis replaces two writes."
     },
     {
@@ -18628,8 +18628,8 @@
       "source_location": "L1010",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_rationale_1010",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "match the recurring 7517/1 sub-question and mark pattern."
     },
     {
@@ -18639,8 +18639,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "cspapergen/models.py"
     },
     {
@@ -18650,8 +18650,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_syllabustopic",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "syllabustopic"
     },
     {
@@ -18661,8 +18661,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_py_basemodel",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "basemodel"
     },
     {
@@ -18672,8 +18672,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_syllabus",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "syllabus"
     },
     {
@@ -18683,8 +18683,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_syllabus_topic_ids",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": ".topic_ids()"
     },
     {
@@ -18694,8 +18694,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_syllabus_get_topic",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": ".get_topic()"
     },
     {
@@ -18705,8 +18705,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_multiplechoiceoption",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "multiplechoiceoption"
     },
     {
@@ -18782,8 +18782,8 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_question",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "question"
     },
     {
@@ -18793,8 +18793,8 @@
       "source_location": "L105",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_question_total_marks",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": ".total_marks()"
     },
     {
@@ -18815,8 +18815,8 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_paper1context",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "paper1context"
     },
     {
@@ -18925,8 +18925,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_objective_calibration",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "objective_calibration.py"
     },
     {
@@ -18958,8 +18958,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_objective_calibration_rationale_1",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "original task allocations calibrated to aqa 7517, not tariff-based guessing...."
     },
     {
@@ -21147,8 +21147,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_syllabus",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "cspapergen/syllabus.py"
     },
     {
@@ -23218,7 +23218,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "paragraph",
-      "community": 6,
+      "community": 5,
       "community_name": "Paragraph",
       "norm_label": "paragraph"
     },
@@ -23307,7 +23307,7 @@
       "_origin": "ast",
       "id": "tablestyle",
       "community": 6,
-      "community_name": "Paragraph",
+      "community_name": "aqaaccountgen/render_pdf.py",
       "norm_label": "tablestyle"
     },
     {
@@ -26604,8 +26604,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_ollamaclient",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "ollamaclient"
     },
     {
@@ -26615,8 +26615,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_ollamaclient_provider",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": ".provider()"
     },
     {
@@ -26637,8 +26637,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_ollamaclient_generate_json",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": ".generate_json()"
     },
     {
@@ -26648,8 +26648,8 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_ollamaclient_call",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "._call()"
     },
     {
@@ -26769,8 +26769,8 @@
       "source_location": "L453",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_solverprojection",
-      "community": 80,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 235,
+      "community_name": "Question",
       "norm_label": "_solverprojection"
     },
     {
@@ -32306,7 +32306,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "ocregen/render_pdf.py"
     },
     {
@@ -32317,7 +32317,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_render_question_paper",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "render_question_paper()"
     },
     {
@@ -32328,7 +32328,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_py_path",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "path"
     },
     {
@@ -32339,7 +32339,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_render_mark_scheme",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "render_mark_scheme()"
     },
     {
@@ -32350,7 +32350,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_supplementary_marking_pages",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_supplementary_marking_pages()"
     },
     {
@@ -32361,7 +32361,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_py_flowable",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "flowable"
     },
     {
@@ -32372,7 +32372,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_preparation_for_marking_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_preparation_for_marking_page()"
     },
     {
@@ -32383,7 +32383,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_assessment_objectives_guidance_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_assessment_objectives_guidance_page()"
     },
     {
@@ -32394,7 +32394,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_levels_application_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_levels_application_page()"
     },
     {
@@ -32405,7 +32405,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_diagrams_and_calculations_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_diagrams_and_calculations_page()"
     },
     {
@@ -32416,7 +32416,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_annotation_conventions_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_annotation_conventions_page()"
     },
     {
@@ -32427,7 +32427,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_short_answer_guidance_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_short_answer_guidance_page()"
     },
     {
@@ -32438,7 +32438,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_strong_levels_descriptor_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_strong_levels_descriptor_page()"
     },
     {
@@ -32449,7 +32449,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_limited_levels_descriptor_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_limited_levels_descriptor_page()"
     },
     {
@@ -32460,7 +32460,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_levels_descriptor_table",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_levels_descriptor_table()"
     },
     {
@@ -32471,7 +32471,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_guidance_table",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_guidance_table()"
     },
     {
@@ -32481,7 +32481,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_py_table",
-      "community": 6,
+      "community": 5,
       "community_name": "Paragraph",
       "norm_label": "table"
     },
@@ -32493,7 +32493,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_paper_one_two_mark_scheme_content",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_paper_one_two_mark_scheme_content()"
     },
     {
@@ -32504,7 +32504,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_level_descriptor_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_level_descriptor_page()"
     },
     {
@@ -32515,7 +32515,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_choice_level_descriptor_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_choice_level_descriptor_page()"
     },
     {
@@ -32526,7 +32526,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_py_range",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "range"
     },
     {
@@ -32537,7 +32537,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_level_descriptor_table",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_level_descriptor_table()"
     },
     {
@@ -32548,7 +32548,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_level_bands",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_level_bands()"
     },
     {
@@ -32559,7 +32559,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_level_descriptor_text",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_level_descriptor_text()"
     },
     {
@@ -32570,7 +32570,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_question_focus",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_question_focus()"
     },
     {
@@ -32581,7 +32581,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_indicative_guidance_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_indicative_guidance_page()"
     },
     {
@@ -32592,7 +32592,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_compact_indicative_guidance",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_compact_indicative_guidance()"
     },
     {
@@ -32603,7 +32603,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_generated_guidance_points",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_generated_guidance_points()"
     },
     {
@@ -32614,7 +32614,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_diagram_guidance_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_diagram_guidance_page()"
     },
     {
@@ -32625,7 +32625,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_economics_diagram_pair",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_economics_diagram_pair()"
     },
     {
@@ -32636,7 +32636,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_py_drawing",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "drawing"
     },
     {
@@ -32647,7 +32647,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_compact_economics_diagram_pair",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_compact_economics_diagram_pair()"
     },
     {
@@ -32658,7 +32658,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_add_economics_diagram",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_add_economics_diagram()"
     },
     {
@@ -32669,7 +32669,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_add_firm_objectives_diagram",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_add_firm_objectives_diagram()"
     },
     {
@@ -32680,7 +32680,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_add_ppf_diagram",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_add_ppf_diagram()"
     },
     {
@@ -32691,7 +32691,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_mark_scheme_extension_pages",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_mark_scheme_extension_pages()"
     },
     {
@@ -32702,7 +32702,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_overflow_guidance_pages",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_overflow_guidance_pages()"
     },
     {
@@ -32712,7 +32712,7 @@
       "source_location": "L1327",
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_overflow_guidance_page",
-      "community": 6,
+      "community": 5,
       "community_name": "Paragraph",
       "norm_label": "_overflow_guidance_page()"
     },
@@ -32723,7 +32723,7 @@
       "source_location": "L1366",
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_mcq_rationale_page",
-      "community": 6,
+      "community": 5,
       "community_name": "Paragraph",
       "norm_label": "_mcq_rationale_page()"
     },
@@ -32734,7 +32734,7 @@
       "source_location": "L1402",
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_extended_guidance_page",
-      "community": 6,
+      "community": 5,
       "community_name": "Paragraph",
       "norm_label": "_extended_guidance_page()"
     },
@@ -32746,7 +32746,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_extended_diagram_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_extended_diagram_page()"
     },
     {
@@ -32757,7 +32757,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_assessment_objectives_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_assessment_objectives_page()"
     },
     {
@@ -32768,7 +32768,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_assessment_grid_groups",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_assessment_grid_groups()"
     },
     {
@@ -32779,7 +32779,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_assessment_allocation",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_assessment_allocation()"
     },
     {
@@ -32790,7 +32790,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_paper_one_two_pages",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_paper_one_two_pages()"
     },
     {
@@ -32801,7 +32801,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_market_share_chart",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_market_share_chart()"
     },
     {
@@ -32812,7 +32812,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_extra_answer_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_extra_answer_page()"
     },
     {
@@ -32823,7 +32823,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_section_transition_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_section_transition_page()"
     },
     {
@@ -32834,7 +32834,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_end_of_paper_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_end_of_paper_page()"
     },
     {
@@ -32845,7 +32845,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_blank_question_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_blank_question_page()"
     },
     {
@@ -32856,7 +32856,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_continuation_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_continuation_page()"
     },
     {
@@ -32867,7 +32867,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_paper_three_pages",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_paper_three_pages()"
     },
     {
@@ -32878,7 +32878,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_paper_three_figure",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_paper_three_figure()"
     },
     {
@@ -32889,7 +32889,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_question_paper_legal_page",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_question_paper_legal_page()"
     },
     {
@@ -32899,7 +32899,7 @@
       "source_location": "L2055",
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_intro",
-      "community": 6,
+      "community": 5,
       "community_name": "Paragraph",
       "norm_label": "_intro()"
     },
@@ -32911,7 +32911,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_choice_prompts",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_choice_prompts()"
     },
     {
@@ -32922,7 +32922,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_mcq_block",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_mcq_block()"
     },
     {
@@ -32933,7 +32933,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_question_with_answer_lines",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_question_with_answer_lines()"
     },
     {
@@ -32944,7 +32944,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_answer_mark",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_answer_mark()"
     },
     {
@@ -32954,7 +32954,7 @@
       "source_location": "L2125",
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_scheme_block",
-      "community": 6,
+      "community": 5,
       "community_name": "Paragraph",
       "norm_label": "_scheme_block()"
     },
@@ -32966,7 +32966,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_split_scheme_points",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_split_scheme_points()"
     },
     {
@@ -32977,7 +32977,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_scheme_overflow_points",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_scheme_overflow_points()"
     },
     {
@@ -32988,7 +32988,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_partition_scheme_points",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_partition_scheme_points()"
     },
     {
@@ -32999,7 +32999,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_scheme_point_limits",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_scheme_point_limits()"
     },
     {
@@ -33010,7 +33010,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_question_guidance",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_question_guidance()"
     },
     {
@@ -33021,7 +33021,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_chart",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_chart()"
     },
     {
@@ -33032,7 +33032,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_cover_profile",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_cover_profile()"
     },
     {
@@ -33043,7 +33043,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_document",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_document()"
     },
     {
@@ -33054,7 +33054,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_py_basedoctemplate",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "basedoctemplate"
     },
     {
@@ -33065,7 +33065,7 @@
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_chrome",
       "community": 5,
-      "community_name": "ocregen/render_pdf.py",
+      "community_name": "Paragraph",
       "norm_label": "_chrome()"
     },
     {
@@ -35619,8 +35619,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_properties_board",
-      "community": 259,
-      "community_name": "board",
+      "community": 36,
+      "community_name": "properties",
       "norm_label": "board"
     },
     {
@@ -35630,8 +35630,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_board_type",
-      "community": 259,
-      "community_name": "board",
+      "community": 36,
+      "community_name": "properties",
       "norm_label": "type"
     },
     {
@@ -35641,8 +35641,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_board_pattern",
-      "community": 259,
-      "community_name": "board",
+      "community": 36,
+      "community_name": "properties",
       "norm_label": "pattern"
     },
     {
@@ -35916,8 +35916,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_properties_subject_plugin",
-      "community": 36,
-      "community_name": "properties",
+      "community": 261,
+      "community_name": "subject_plugin",
       "norm_label": "subject_plugin"
     },
     {
@@ -35927,8 +35927,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_subject_plugin_type",
-      "community": 36,
-      "community_name": "properties",
+      "community": 261,
+      "community_name": "subject_plugin",
       "norm_label": "type"
     },
     {
@@ -35938,8 +35938,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_subject_plugin_pattern",
-      "community": 36,
-      "community_name": "properties",
+      "community": 261,
+      "community_name": "subject_plugin",
       "norm_label": "pattern"
     },
     {
@@ -35982,8 +35982,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_properties_specification_version",
-      "community": 36,
-      "community_name": "properties",
+      "community": 259,
+      "community_name": "specification_version",
       "norm_label": "specification_version"
     },
     {
@@ -35993,8 +35993,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_specification_version_type",
-      "community": 36,
-      "community_name": "properties",
+      "community": 259,
+      "community_name": "specification_version",
       "norm_label": "type"
     },
     {
@@ -36004,8 +36004,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_specification_version_minlength",
-      "community": 36,
-      "community_name": "properties",
+      "community": 259,
+      "community_name": "specification_version",
       "norm_label": "minlength"
     },
     {
@@ -36070,8 +36070,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_properties_content_mode",
-      "community": 242,
-      "community_name": "enum",
+      "community": 36,
+      "community_name": "properties",
       "norm_label": "content_mode"
     },
     {
@@ -36081,8 +36081,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_content_mode_enum",
-      "community": 242,
-      "community_name": "enum",
+      "community": 36,
+      "community_name": "properties",
       "norm_label": "enum"
     },
     {
@@ -36092,8 +36092,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "ref_deterministic",
-      "community": 242,
-      "community_name": "enum",
+      "community": 36,
+      "community_name": "properties",
       "norm_label": "deterministic"
     },
     {
@@ -36103,8 +36103,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "ref_ai_assisted",
-      "community": 242,
-      "community_name": "enum",
+      "community": 36,
+      "community_name": "properties",
       "norm_label": "ai-assisted"
     },
     {
@@ -39241,8 +39241,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_components_sharedviews",
-      "community": 97,
-      "community_name": "BenchmarkChart",
+      "community": 21,
+      "community_name": "Text",
       "norm_label": "sharedviews.swift"
     },
     {
@@ -39274,8 +39274,8 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "macos_papercreator_components_sharedviews_panelemptystate",
-      "community": 97,
-      "community_name": "BenchmarkChart",
+      "community": 21,
+      "community_name": "Text",
       "norm_label": "panelemptystate"
     },
     {
@@ -39285,8 +39285,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_components_sharedviews_swift_string",
-      "community": 97,
-      "community_name": "BenchmarkChart",
+      "community": 21,
+      "community_name": "Text",
       "norm_label": "string"
     },
     {
@@ -39296,8 +39296,8 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "macos_papercreator_components_sharedviews_panelemptystate_body",
-      "community": 97,
-      "community_name": "BenchmarkChart",
+      "community": 21,
+      "community_name": "Text",
       "norm_label": ".body"
     },
     {
@@ -42179,8 +42179,8 @@
       "source_location": "L110",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkverdictsummary",
-      "community": 21,
-      "community_name": "Text",
+      "community": 97,
+      "community_name": "BenchmarkChart",
       "norm_label": "benchmarkverdictsummary"
     },
     {
@@ -42190,8 +42190,8 @@
       "source_location": "L113",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkverdictsummary_body",
-      "community": 21,
-      "community_name": "Text",
+      "community": 97,
+      "community_name": "BenchmarkChart",
       "norm_label": ".body"
     },
     {
@@ -42201,8 +42201,8 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkverdictsummary_scoregauge",
-      "community": 21,
-      "community_name": "Text",
+      "community": 97,
+      "community_name": "BenchmarkChart",
       "norm_label": ".scoregauge"
     },
     {
@@ -42212,8 +42212,8 @@
       "source_location": "L141",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkverdictsummary_verdicttext",
-      "community": 21,
-      "community_name": "Text",
+      "community": 97,
+      "community_name": "BenchmarkChart",
       "norm_label": ".verdicttext"
     },
     {
@@ -42355,8 +42355,8 @@
       "source_location": "L229",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkchart_body",
-      "community": 97,
-      "community_name": "BenchmarkChart",
+      "community": 21,
+      "community_name": "Text",
       "norm_label": ".body"
     },
     {
@@ -42635,8 +42635,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "nsviewrepresentable",
-      "community": 43,
-      "community_name": "SwiftUI",
+      "community": 154,
+      "community_name": "DocumentPreviewView",
       "norm_label": "nsviewrepresentable"
     },
     {
@@ -52567,8 +52567,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_fonts",
-      "community": 246,
-      "community_name": "CoverProfile",
+      "community": 242,
+      "community_name": "register_fonts",
       "norm_label": "test_fonts.py"
     },
     {
@@ -52578,8 +52578,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "tests_test_fonts_test_missing_font_uses_registered_standard_font_alias",
-      "community": 246,
-      "community_name": "CoverProfile",
+      "community": 242,
+      "community_name": "register_fonts",
       "norm_label": "test_missing_font_uses_registered_standard_font_alias()"
     },
     {
@@ -52589,8 +52589,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "tests_test_fonts_test_fallback_family_supports_bold_paragraph_markup",
-      "community": 246,
-      "community_name": "CoverProfile",
+      "community": 242,
+      "community_name": "register_fonts",
       "norm_label": "test_fallback_family_supports_bold_paragraph_markup()"
     },
     {
@@ -61408,7 +61408,7 @@
       "label": "Further calibration corrections in progress",
       "file_type": "document",
       "source_file": "docs/quality/difficulty-calibration-v2-report.md",
-      "source_location": "L379",
+      "source_location": "L420",
       "_origin": "ast",
       "id": "docs_quality_difficulty_calibration_v2_report_further_calibration_corrections_in_progress",
       "community": 236,
@@ -255864,7 +255864,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/quality/difficulty-calibration-v2-report.md",
-      "source_location": "L379",
+      "source_location": "L420",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_quality_difficulty_calibration_v2_report_31_august_continued_qualification_findings",
@@ -258420,5 +258420,5 @@
       "source_file": "Resources/economics/edexcel-a/generator/data/notes/text/1.1. Nature of Economics.txt"
     }
   ],
-  "built_at_commit": "d577d836f387766e4eac12c24e7bbec8bd86212f"
+  "built_at_commit": "c6f7ef0d49f677f9df4b7154ff09f0105b0f79bb"
 }

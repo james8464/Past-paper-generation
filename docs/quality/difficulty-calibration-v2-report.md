@@ -376,6 +376,47 @@ Candidate-grounded SQL validation is an explicit open follow-up. Neither the
 scoped code-review approval nor the first successful subpart is full-paper or
 empirical difficulty qualification.
 
+Task7.I closes that bounded SQL follow-up at `c6f7ef0`. One typed public contract
+now drives candidate rendering, solver evidence, exported content, checkpoint
+identity and validation for the existing AQA SELECT and INSERT tasks. The pure
+limited parser consumes the complete declared statement, resolves schema and
+aliases, checks the required join/group/count/threshold/order or inserted value
+map, and executes no SQL. It distinguishes unsupported dialect syntax (including
+whole-row `COUNT(table)`) from a proved wrong statement. The final answer and
+every model-presented full SQL marking point are validated independently. One
+privacy-safe solver-only correction is permitted; both attempts and findings are
+retained, and continued failure stops before difficulty review.
+
+After three correction/review rounds, independent review reported no Critical,
+Important or Minor findings. Final implementation evidence was 113 focused SQL
+checks, 695 affected checks with two existing skips, and 1,596 backend tests with
+the same two skips and five known dependency warnings. Ruff, inventory, hygiene,
+the strict packaged build and Graphify passed. Three normal Paper 2 previews
+passed. The three bank-4.10 previews generated complete packages but retained
+their pre-existing response-mode and cognitive-operation distribution failures;
+no threshold or task label was changed. Root manually confirmed the rendered
+NULL/NOT NULL facts, foreign-key targets and supplied booking rows were complete
+and unclipped.
+
+Fresh live evidence came from a verified 254-file `c6f7ef0` archive with manifest
+SHA-256 `6a80d66f9116ba60368c5ac214dfd19954f2176ff34da4affa12471b4b97bf9d`.
+The whole Q6 run failed at part 1 because a factually correct NULL answer returned
+`mark_points` as an object and generic reconciliation rejected the response
+(`tmp/task7i-sql-live-probe-0901.json`, SHA-256
+`90549739f74c3297d35b3e6bd4071b545a9e10576317ad49fdec18d75014ade9`).
+A transparent part-2-only production-adapter probe produced a correct grouped
+SELECT; it crossed bounded SQL verification without correction, then failed the
+same downstream envelope/reconciliation boundary
+(`tmp/task7i-sql-part2-live-probe-0901.json`, SHA-256
+`d9cfc9fe60a7a237a4e4dc649293ef129a135400d8ec43dfd01fc275c933eb80`).
+The part-3 probe produced the correct INSERT and crossed SQL verification and
+scheme reconciliation, then the demand judge omitted the required `program`
+operation and correctly stopped release (`tmp/task7i-sql-part3-live-probe-0901.json`,
+SHA-256 `29610c9886a690e2422b173a4e57deae1f617ad2fd6a440aacf068096bfda5cf`).
+All end-of-run source/import checks passed. These results qualify Task7.I's SQL
+boundary, not the downstream H1 response envelope, demand classification,
+whole-paper quality or external psychometric equivalence.
+
 ### Further calibration corrections in progress
 
 Manual Edexcel prototype review found incorrect eight-mark levels, duplicated
