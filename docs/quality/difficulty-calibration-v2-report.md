@@ -493,3 +493,18 @@ The response is retained as a failed live case, not normalized after the fact or
 called a semantic/difficulty pass. A bounded prompt-schema correction must make
 the required array shape explicit, retain strict unknown/missing/duplicate
 rejection and pass independent review before a fresh transaction.
+
+Task7.F2 commit `d4fa73a` now constructs one atomic Edexcel solver projection
+from the selected candidate-public stimulus, registers an `EvidenceRecord` with
+the exact same item-specific ID and serialized content, and resolves labelled
+multiple-choice keys to their current ordered integer index. The blind prompt
+continues to remove marking contracts and keys while retaining ordinary public
+source fields. Captured P1, both P2 and P3 solver responses cross the real
+solve-and-reconcile boundary in tests with only the later difficulty call
+stubbed; mutated, stale, foreign, duplicate and private evidence, invented
+citations and wrong keys still fail. Reported checks were 305 Edexcel tests,
+276 affected shared/inventory tests, nine passing dry-run previews, Ruff,
+inventory, strict packaged build and Graphify. Independent source review found
+no Critical, Important or Minor defects. These results close the adapter defect,
+not the pending frozen-source model transactions, visual floors, whole-paper
+quality or external qualification.
