@@ -65,9 +65,9 @@ class SolverResponseEnvelope(BaseModel):
     answer: str | dict[str, str]
     mark_points: list[str] | dict[str, str]
     evidence_ids: list[str]
-    alternatives: list[Any]
-    partial_credit_boundaries: list[Any]
-    follow_through_rules: list[Any]
+    alternatives: list[str]
+    partial_credit_boundaries: list[str]
+    follow_through_rules: list[str]
 
 
 class CanonicalSolution(BaseModel):

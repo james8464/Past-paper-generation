@@ -337,9 +337,9 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
             "answer": {"type": "string", "minLength": 1, "maxLength": 2400},
             "mark_points": {"type": "array", "items": short_text, "maxItems": 16},
             "evidence_ids": text_list,
-            "alternatives": {"type": "array", "maxItems": 8},
-            "partial_credit_boundaries": {"type": "array", "maxItems": 8},
-            "follow_through_rules": {"type": "array", "maxItems": 8},
+            "alternatives": {**text_list, "maxItems": 8},
+            "partial_credit_boundaries": {**text_list, "maxItems": 8},
+            "follow_through_rules": {**text_list, "maxItems": 8},
         }
         required = list(properties)
     elif "`questions` array" in prompt or "a `questions` array" in prompt:

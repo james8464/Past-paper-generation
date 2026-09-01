@@ -17,6 +17,7 @@ from Backend.Core.exam_blueprints import (
     validate_generated_paper,
 )
 from Backend.Core.independent_solver import IndependentSolver
+from Backend.Core.providers import _ollama_json_schema
 from Backend.Core.reference_demand import (
     ReferenceDemandProfile,
     build_item_demand_target,
@@ -342,6 +343,303 @@ def test_open_solver_requires_the_literal_raw_response_envelope(mutation) -> Non
         IndependentSolver(_SolverClient(response)).solve(
             {"id": "open", "marks": 2, "prompt": "Explain the effect."}, []
         )
+
+
+@pytest.mark.parametrize(
+    ("field", "member"),
+    [
+        (field, member)
+        for field in (
+            "alternatives",
+            "partial_credit_boundaries",
+            "follow_through_rules",
+        )
+        for member in ({"text": "structured"}, 7, None)
+    ],
+)
+def test_open_solver_rejects_non_string_array_members_at_raw_boundary(
+    field: str,
+    member: object,
+) -> None:
+    response = _complete_solver_response()
+    response[field] = [member]
+
+    with pytest.raises(ValueError, match="invalid solver response envelope"):
+        IndependentSolver(_SolverClient(response)).solve(
+            {"id": "open", "marks": 2, "prompt": "Explain the effect."}, []
+        )
+
+
+def test_provider_solver_schema_requires_string_array_members() -> None:
+    schema = _ollama_json_schema(
+        "Independently solve this item without seeing its draft mark scheme.\n{}"
+    )
+
+    for field in (
+        "alternatives",
+        "partial_credit_boundaries",
+        "follow_through_rules",
+    ):
+        assert schema["properties"][field]["items"]["type"] == "string"
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        {"correct_effect": "PRIVATE"},
+        {"unexpected": "residue"},
+    ],
+)
+def test_economic_shift_rejects_unknown_or_private_public_inputs(
+    mutation: dict[str, str],
+) -> None:
+    item = {
+        "id": "shift",
+        "marks": 1,
+        "kind": "multiple_choice",
+        "choices": [
+            "Equilibrium price rises and equilibrium quantity rises",
+            "Equilibrium price rises and equilibrium quantity falls",
+            "Equilibrium price falls and equilibrium quantity rises",
+            "Equilibrium price falls and equilibrium quantity falls",
+        ],
+        "authoring_context": {
+            "selected_response_contract": {
+                "version": "selected-response-v1",
+                "operation": "economic_shift",
+                "inputs": {
+                    "curve": "D",
+                    "direction": "right",
+                    "scope": "market",
+                    "x_axis": "Quantity",
+                    "y_axis": "Price",
+                    **mutation,
+                },
+                "unit": "effect",
+                "decimal_places": 0,
+            }
+        },
+    }
+
+    with pytest.raises(ValueError, match="invalid public inputs"):
+        solve_selected_response(item)
+
+
+def test_selected_response_rejects_normalized_duplicate_choices() -> None:
+    item = {
+        "id": "classification",
+        "marks": 1,
+        "kind": "multiple_choice",
+        "choices": [
+            "Strategic drift",
+            "Strategic fit",
+            " strategic FIT ",
+            "Retrenchment",
+        ],
+        "authoring_context": {
+            "selected_response_contract": {
+                "version": "selected-response-v1",
+                "operation": "strategic_drift",
+                "inputs": {"external_change": "high", "strategic_change": "low"},
+                "unit": "classification",
+                "decimal_places": 0,
+            }
+        },
+    }
+
+    with pytest.raises(ValueError, match="four distinct choices"):
+        solve_selected_response(item)
+
+
+@pytest.mark.parametrize("operation", ["highest_productivity", "performance_statements"])
+def test_selected_response_rejects_duplicate_normalized_row_labels(
+    operation: str,
+) -> None:
+    rows = (
+        [
+            {"label": "Factory A", "output": "900", "employees": "60"},
+            {"label": " factory a ", "output": "840", "employees": "40"},
+        ]
+        if operation == "highest_productivity"
+        else [
+            {
+                "label": "Labour turnover",
+                "target": "12",
+                "actual": "17",
+                "better_when": "lower",
+            },
+            {
+                "label": " labour turnover ",
+                "target": "90",
+                "actual": "88",
+                "better_when": "higher",
+            },
+        ]
+    )
+    item = {
+        "id": "rows",
+        "marks": 1,
+        "kind": "multiple_choice",
+        "choices": ["Factory A", "Factory B", "Factory C", "Factory D"]
+        if operation == "highest_productivity"
+        else [
+            "Both statements are true",
+            "Both statements are false",
+            "Statement 1 is true, Statement 2 is false",
+            "Statement 1 is false, Statement 2 is true",
+        ],
+        "authoring_context": {
+            "selected_response_contract": {
+                "version": "selected-response-v1",
+                "operation": operation,
+                "inputs": {},
+                "rows": rows,
+                "unit": "ratio",
+                "decimal_places": 0,
+            }
+        },
+    }
+
+    with pytest.raises(ValueError, match="distinct row labels"):
+        solve_selected_response(item)
+
+
+@pytest.mark.parametrize(
+    ("operation", "inputs", "choices"),
+    [
+        (
+            "opportunity_cost_change",
+            {
+                "primary_before": "-20",
+                "secondary_before": "80",
+                "primary_after": "30",
+                "secondary_after": "68",
+            },
+            ["12 units of product Y", "20 units of product Y", "10 units of product Y", "68 units of product Y"],
+        ),
+        (
+            "elastic_revenue_change",
+            {"price_before": "0", "quantity_before": "100", "price_after": "12", "quantity_after": "88"},
+            ["Total expenditure rises", "Total expenditure falls", "Total expenditure is unchanged", "The effect cannot be calculated"],
+        ),
+        (
+            "income_distribution_change",
+            {"poorest_share_before": "120", "richest_share_before": "45", "poorest_share_after": "25", "richest_share_after": "38"},
+            ["Income inequality falls", "Income inequality rises", "Income inequality is unchanged", "Nominal GDP must fall"],
+        ),
+        (
+            "interest_rate_demand_change",
+            {"interest_rate_before": "4", "interest_rate_after": "6", "credit_share_percent": "101"},
+            ["Credit-financed consumption and investment weaken", "Credit-financed consumption and investment strengthen", "Credit-financed consumption and investment are unchanged", "All saving must cease"],
+        ),
+        (
+            "trade_elasticity_effect",
+            {"exchange_rate_direction": "depreciation", "export_elasticity": "-0.1", "import_elasticity": "0.6"},
+            ["The trade balance is more likely to improve", "The trade balance is more likely to worsen", "The trade balance must be unchanged", "Domestic output must become zero"],
+        ),
+    ],
+)
+def test_new_economic_selected_responses_reject_invalid_public_domains(
+    operation: str,
+    inputs: dict[str, str],
+    choices: list[str],
+) -> None:
+    item = {
+        "id": operation,
+        "marks": 1,
+        "kind": "multiple_choice",
+        "choices": choices,
+        "authoring_context": {
+            "selected_response_contract": {
+                "version": "selected-response-v1",
+                "operation": operation,
+                "inputs": inputs,
+                "unit": "effect",
+                "decimal_places": 1,
+            }
+        },
+    }
+
+    with pytest.raises(ValueError, match="invalid public"):
+        solve_selected_response(item)
+
+
+@pytest.mark.parametrize(
+    ("operation", "row", "choices"),
+    [
+        (
+            "highest_productivity",
+            {"label": "Factory A", "output": "900", "employees": "60", "target": "10"},
+            ["Factory A", "Factory B", "Factory C", "Factory D"],
+        ),
+        (
+            "performance_statements",
+            {"label": "Labour turnover", "target": "12", "actual": "17", "better_when": "lower", "output": "900"},
+            ["Both statements are true", "Both statements are false", "Statement 1 is true, Statement 2 is false", "Statement 1 is false, Statement 2 is true"],
+        ),
+    ],
+)
+def test_row_selected_responses_reject_fields_from_other_operations(
+    operation: str,
+    row: dict[str, str],
+    choices: list[str],
+) -> None:
+    rows = [row]
+    if operation == "highest_productivity":
+        rows.append({"label": "Factory B", "output": "840", "employees": "40"})
+    else:
+        rows.append({"label": "Capacity utilisation", "target": "90", "actual": "88", "better_when": "higher"})
+    item = {
+        "id": operation,
+        "marks": 1,
+        "kind": "multiple_choice",
+        "choices": choices,
+        "authoring_context": {
+            "selected_response_contract": {
+                "version": "selected-response-v1",
+                "operation": operation,
+                "inputs": {},
+                "rows": rows,
+                "unit": "ratio",
+                "decimal_places": 1,
+            }
+        },
+    }
+
+    with pytest.raises(ValueError, match="invalid public rows"):
+        solve_selected_response(item)
+
+
+def test_economic_shift_rejects_axes_that_conflict_with_scope() -> None:
+    item = {
+        "id": "shift",
+        "marks": 1,
+        "kind": "multiple_choice",
+        "choices": [
+            "The price level rises and real output rises",
+            "The price level rises and real output falls",
+            "The price level falls and real output rises",
+            "The price level falls and real output falls",
+        ],
+        "authoring_context": {
+            "selected_response_contract": {
+                "version": "selected-response-v1",
+                "operation": "economic_shift",
+                "inputs": {
+                    "curve": "AD",
+                    "direction": "right",
+                    "scope": "aggregate",
+                    "x_axis": "Quantity",
+                    "y_axis": "Price",
+                },
+                "unit": "effect",
+                "decimal_places": 0,
+            }
+        },
+    }
+
+    with pytest.raises(ValueError, match="invalid public axes"):
+        solve_selected_response(item)
 
 
 def test_solver_prompt_declares_all_raw_fields_and_blind_payload() -> None:

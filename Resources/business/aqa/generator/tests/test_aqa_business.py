@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from pathlib import Path
 
 import pymupdf as fitz
@@ -11,12 +12,14 @@ from aqabizgen.generator import build_paper
 from aqabizgen.syllabus import load_syllabus
 from pypdf import PdfReader
 
+from Backend.Core.assessment_package import _extract_items
 from Backend.Core.exam_blueprints import (
     resolve_question_rules,
     validate_generated_paper,
     validate_rule,
 )
 from Backend.Core.independent_solver import IndependentSolver
+from Backend.Core.subjects.selected_response import solve_selected_response
 
 ROOT = Path(__file__).resolve().parents[1]
 SYLLABUS = load_syllabus(ROOT / "data" / "syllabus.json")
@@ -178,6 +181,86 @@ def test_business_one_varies_mcq_work_and_preserves_other_paper_budgets() -> Non
     }
 
 
+def test_written_routes_export_actual_task_and_source_dependencies() -> None:
+    expected = {
+        "paper_1": {
+            "16": ("transform", "figure"),
+            "17": ("transform", "figure"),
+            "18": ("analyse", "figure"),
+            "19": ("analyse", "none"),
+            "20": ("analyse", "none"),
+            "21": ("judge", "none"),
+            "22": ("judge", "none"),
+            "23": ("judge", "none"),
+            "24": ("judge", "none"),
+        },
+        "paper_2": {
+            "01.1": ("transform", "figure"),
+            "01.2": ("explain", "external"),
+            "01.3": ("analyse", "external"),
+            "01.4": ("judge", "external"),
+            "02.1": ("transform", "figure"),
+            "02.2": ("explain", "external"),
+            "02.3": ("analyse", "external"),
+            "02.4": ("judge", "external"),
+            "03.1": ("analyse", "external"),
+            "03.2": ("analyse", "external"),
+            "03.3": ("judge", "external"),
+        },
+        "paper_3": {
+            "01": ("analyse", "external"),
+            "02": ("analyse", "external"),
+            "03": ("judge", "external"),
+            "04": ("judge", "external"),
+            "05": ("judge", "external"),
+            "06": ("judge", "external"),
+        },
+    }
+
+    for paper_id, expected_items in expected.items():
+        paper = build_paper(RULES[paper_id], SYLLABUS, 26090101)
+        validate_generated_paper(paper, RULES[paper_id], SYLLABUS.topic_ids)
+        generated = {
+            question.number: (question.task_operation, question.source_dependency)
+            for section in paper.sections
+            for option in section.options
+            for question in option.questions
+            if question.kind != "multiple_choice"
+        }
+        assert generated == expected_items
+
+        for section in paper.sections:
+            for option in section.options:
+                for question in option.questions:
+                    if question.kind != "multiple_choice":
+                        question.task_operation = None
+                        question.source_dependency = None
+        validate_generated_paper(paper, RULES[paper_id], SYLLABUS.topic_ids)
+        hydrated = {
+            question.number: (question.task_operation, question.source_dependency)
+            for section in paper.sections
+            for option in section.options
+            for question in option.questions
+            if question.kind != "multiple_choice"
+        }
+        assert hydrated == expected_items
+
+        exported = _extract_items(
+            paper.model_dump(mode="json"),
+            subject="Business",
+            paper_number=paper_id[-1],
+        )
+        exported_metadata = {
+            str(item["id"]).split("@", 1)[0]: (
+                item["task_operation"],
+                item["source_dependency"],
+            )
+            for item in exported
+            if item["kind"] != "multiple_choice"
+        }
+        assert exported_metadata == expected_items
+
+
 def test_fixed_business_mcqs_have_one_typed_source_for_task_key_and_renderer() -> None:
     paper = build_paper(RULES["paper_1"], SYLLABUS, 123)
     questions = {
@@ -198,8 +281,27 @@ def test_fixed_business_mcqs_have_one_typed_source_for_task_key_and_renderer() -
         assert question.source_dependency in {"stem", "figure"}
 
     assert "strategic drift" not in questions[12].prompt.casefold()
-    assert "widening mismatch" in questions[12].prompt.casefold()
+    assert "relationship shown" in questions[12].prompt.casefold()
     assert all(not option.chart_title and not option.chart_values for option in paper.sections[0].options)
+
+
+def test_question_12_requires_the_candidate_visible_table() -> None:
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 123)
+    question = paper.sections[0].options[11].questions[0]
+    prompt = question.prompt.casefold()
+    assert all(word not in prompt for word in ("rapid", "slow", "high", "low"))
+
+    without_source = question.model_dump(mode="json")
+    without_source["authoring_context"].pop("selected_response_contract")
+    assert solve_selected_response(without_source) is None
+
+    changed_source = deepcopy(question.model_dump(mode="json"))
+    changed_source["authoring_context"]["selected_response_contract"]["inputs"].update(
+        {"external_change": "high", "strategic_change": "high"}
+    )
+    changed_solution = solve_selected_response(changed_source)
+    assert changed_solution is not None
+    assert changed_solution["answer"] == "Strategic fit"
 
 
 def test_business_selected_responses_are_independently_derived_and_fail_closed() -> None:
@@ -232,6 +334,15 @@ def test_business_selected_responses_are_independently_derived_and_fail_closed()
     with pytest.raises(ValueError, match="one highest row"):
         IndependentSolver().solve(tied, [])
     assert "high external change and low strategic change" not in questions[12].prompt.casefold()
+
+
+def test_generated_validation_rejects_normalized_duplicate_mcq_choices() -> None:
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 123)
+    question = paper.sections[0].options[4].questions[0]
+    question.choices[1] = f" {question.choices[0].upper()} "
+
+    with pytest.raises(ValueError, match="four distinct choices"):
+        validate_generated_paper(paper, RULES["paper_1"], SYLLABUS.topic_ids)
 
 
 def test_packages_render_current_page_geometry(tmp_path: Path) -> None:

@@ -1079,12 +1079,23 @@ def _mcq_visual(question: GeneratedQuestion) -> Flowable:
     contract = SelectedResponseContract.model_validate(
         question.authoring_context.get("selected_response_contract")
     )
-    base = float(contract.inputs["base"])
-    change = float(contract.inputs["rate_percent"])
+    if contract.operation == "index_percentage_change":
+        row = [
+            "Selected economic index",
+            f"{float(contract.inputs['initial']):.1f}",
+            f"{float(contract.inputs['final']):.1f}",
+        ]
+        headings = ["Indicator", "Initial value", "Final value"]
+    else:
+        base = float(contract.inputs["base"])
+        change = float(contract.inputs["rate_percent"])
+        sign = "+" if contract.operation == "index_percentage_increase" else "−"
+        row = ["Selected economic index", f"{base:.0f}", f"{sign}{change:.0f}%"]
+        headings = ["Indicator", "Base value", "Percentage change"]
     table = Table(
         [
-            ["Indicator", "Base value", "Percentage change"],
-            ["Selected economic index", f"{base:.0f}", f"+{change:.0f}%"],
+            headings,
+            row,
         ],
         colWidths=[78 * mm, 38 * mm, 45 * mm],
         rowHeights=[10 * mm, 12 * mm],
@@ -1153,7 +1164,35 @@ def _economic_diagram(
     demand_name = "AD" if aggregate else "D"
     supply_name = "SRAS" if aggregate else "S"
 
-    if curve in {demand_name, supply_name} and direction in {"left", "right"}:
+    if curve == "LRAS" and aggregate and direction in {"left", "right"}:
+        original_x = x0 + 210
+        shifted_x = original_x + (35 if direction == "right" else -35)
+        drawing.add(PolyLine(demand, strokeColor=BLACK, strokeWidth=1.1))
+        drawing.add(
+            Line(
+                original_x,
+                y0 + 5,
+                original_x,
+                y0 + height,
+                strokeColor=MID_GREY,
+                strokeWidth=1.0,
+                strokeDashArray=[4, 3],
+            )
+        )
+        drawing.add(
+            Line(
+                shifted_x,
+                y0 + 5,
+                shifted_x,
+                y0 + height,
+                strokeColor=BLACK,
+                strokeWidth=1.2,
+            )
+        )
+        drawing.add(String(demand[-2] - 5, demand[-1] - 10, "AD", fontName=FONT, fontSize=8))
+        drawing.add(String(original_x - 12, y0 + height + 2, "LRAS1", fontName=FONT, fontSize=8))
+        drawing.add(String(shifted_x - 12, y0 + height + 2, "LRAS2", fontName=FONT_BOLD, fontSize=8))
+    elif curve in {demand_name, supply_name} and direction in {"left", "right"}:
         shifting = demand if curve == demand_name else supply
         fixed = supply if curve == demand_name else demand
         offset = 35 if direction == "right" else -35

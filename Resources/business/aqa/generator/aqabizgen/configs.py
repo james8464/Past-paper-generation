@@ -11,8 +11,8 @@ def q(
     kind: str,
     command: str,
     ao: dict[str, int],
-    operation: str | None = None,
-    source: str = "none",
+    operation: str,
+    source: str,
 ) -> QuestionRule:
     return QuestionRule(
         id=id,
@@ -20,15 +20,7 @@ def q(
         kind=kind,
         command_word=command,
         assessment_objectives=ao,
-        task_operation=operation or (
-            "transform"
-            if kind == "calculation"
-            else "judge"
-            if command.casefold() in {"evaluate", "assess", "discuss", "recommend"}
-            else "analyse"
-            if kind == "analysis"
-            else "retrieve"
-        ),
+        task_operation=operation,
         source_dependency=source,
     )
 
@@ -80,6 +72,8 @@ RULES = {
                         "calculation",
                         "Calculate",
                         {"AO1": 1, "AO2": 3},
+                        "transform",
+                        "figure",
                     ),
                     q(
                         "roce_calculation",
@@ -87,6 +81,8 @@ RULES = {
                         "calculation",
                         "Calculate",
                         {"AO1": 1, "AO2": 3},
+                        "transform",
+                        "figure",
                     ),
                     q(
                         "analysis_1",
@@ -94,6 +90,8 @@ RULES = {
                         "analysis",
                         "Analyse",
                         {"AO1": 2, "AO2": 3, "AO3": 4},
+                        "analyse",
+                        "figure",
                     ),
                     q(
                         "analysis_2",
@@ -101,6 +99,8 @@ RULES = {
                         "analysis",
                         "Analyse",
                         {"AO1": 2, "AO2": 3, "AO3": 4},
+                        "analyse",
+                        "none",
                     ),
                     q(
                         "analysis_3",
@@ -108,6 +108,8 @@ RULES = {
                         "analysis",
                         "Analyse",
                         {"AO1": 2, "AO2": 3, "AO3": 4},
+                        "analyse",
+                        "none",
                     ),
                 ],
             ),
@@ -121,6 +123,8 @@ RULES = {
                         "essay",
                         "Evaluate",
                         {"AO1": 5, "AO2": 4, "AO3": 6, "AO4": 10},
+                        "judge",
+                        "none",
                     )
                 ],
             ),
@@ -134,6 +138,8 @@ RULES = {
                         "essay",
                         "Evaluate",
                         {"AO1": 5, "AO2": 4, "AO3": 6, "AO4": 10},
+                        "judge",
+                        "none",
                     )
                 ],
             ),
@@ -151,15 +157,17 @@ RULES = {
                 id="1", title="Case study 1", option_count=1,
                 answer_options=1, option_marks=32,
                 questions=[
-                    q("calculate", 3, "calculation", "Calculate", {"AO1": 2, "AO2": 1}),
-                    q("explain", 4, "analysis", "Explain", {"AO1": 2, "AO2": 2}),
-                    q("analyse", 9, "analysis", "Analyse", {"AO1": 2, "AO2": 3, "AO3": 4}),
+                    q("calculate", 3, "calculation", "Calculate", {"AO1": 2, "AO2": 1}, "transform", "figure"),
+                    q("explain", 4, "analysis", "Explain", {"AO1": 2, "AO2": 2}, "explain", "external"),
+                    q("analyse", 9, "analysis", "Analyse", {"AO1": 2, "AO2": 3, "AO3": 4}, "analyse", "external"),
                     q(
                         "evaluate",
                         16,
                         "extended_response",
                         "Evaluate",
                         {"AO1": 2, "AO2": 3, "AO3": 4, "AO4": 7},
+                        "judge",
+                        "external",
                     ),
                 ],
             ),
@@ -167,15 +175,17 @@ RULES = {
                 id="2", title="Case study 2", option_count=1,
                 answer_options=1, option_marks=34,
                 questions=[
-                    q("calculate", 3, "calculation", "Calculate", {"AO1": 3}),
-                    q("explain", 6, "analysis", "Explain", {"AO1": 3, "AO2": 3}),
-                    q("analyse", 9, "analysis", "Analyse", {"AO1": 2, "AO2": 3, "AO3": 4}),
+                    q("calculate", 3, "calculation", "Calculate", {"AO1": 3}, "transform", "figure"),
+                    q("explain", 6, "analysis", "Explain", {"AO1": 3, "AO2": 3}, "explain", "external"),
+                    q("analyse", 9, "analysis", "Analyse", {"AO1": 2, "AO2": 3, "AO3": 4}, "analyse", "external"),
                     q(
                         "evaluate",
                         16,
                         "extended_response",
                         "Evaluate",
                         {"AO1": 2, "AO2": 3, "AO3": 4, "AO4": 7},
+                        "judge",
+                        "external",
                     ),
                 ],
             ),
@@ -183,14 +193,16 @@ RULES = {
                 id="3", title="Case study 3", option_count=1,
                 answer_options=1, option_marks=34,
                 questions=[
-                    q("analyse_1", 9, "analysis", "Analyse", {"AO1": 2, "AO2": 3, "AO3": 4}),
-                    q("analyse_2", 9, "analysis", "Analyse", {"AO1": 2, "AO2": 3, "AO3": 4}),
+                    q("analyse_1", 9, "analysis", "Analyse", {"AO1": 2, "AO2": 3, "AO3": 4}, "analyse", "external"),
+                    q("analyse_2", 9, "analysis", "Analyse", {"AO1": 2, "AO2": 3, "AO3": 4}, "analyse", "external"),
                     q(
                         "evaluate",
                         16,
                         "extended_response",
                         "Evaluate",
                         {"AO1": 2, "AO2": 3, "AO3": 4, "AO4": 7},
+                        "judge",
+                        "external",
                     ),
                 ],
             ),
@@ -208,14 +220,16 @@ RULES = {
                 id="A", title="Synoptic case study", option_count=1,
                 answer_options=1, option_marks=100,
                 questions=[
-                    q("analyse_1", 12, "analysis", "Analyse", {"AO1": 3, "AO2": 3, "AO3": 6}),
-                    q("analyse_2", 12, "analysis", "Analyse", {"AO1": 3, "AO2": 3, "AO3": 6}),
+                    q("analyse_1", 12, "analysis", "Analyse", {"AO1": 3, "AO2": 3, "AO3": 6}, "analyse", "external"),
+                    q("analyse_2", 12, "analysis", "Analyse", {"AO1": 3, "AO2": 3, "AO3": 6}, "analyse", "external"),
                     q(
                         "evaluate_1",
                         16,
                         "extended_response",
                         "Evaluate",
                         {"AO1": 2, "AO2": 3, "AO3": 4, "AO4": 7},
+                        "judge",
+                        "external",
                     ),
                     q(
                         "evaluate_2",
@@ -223,6 +237,8 @@ RULES = {
                         "extended_response",
                         "Evaluate",
                         {"AO1": 2, "AO2": 3, "AO3": 4, "AO4": 7},
+                        "judge",
+                        "external",
                     ),
                     q(
                         "evaluate_3",
@@ -230,6 +246,8 @@ RULES = {
                         "extended_response",
                         "Evaluate",
                         {"AO1": 4, "AO2": 3, "AO3": 5, "AO4": 8},
+                        "judge",
+                        "external",
                     ),
                     q(
                         "evaluate_4",
@@ -237,6 +255,8 @@ RULES = {
                         "extended_response",
                         "Evaluate",
                         {"AO1": 5, "AO2": 4, "AO3": 6, "AO4": 9},
+                        "judge",
+                        "external",
                     ),
                 ],
             )

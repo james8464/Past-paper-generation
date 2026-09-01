@@ -9,6 +9,7 @@ ADVICE = {
     "score": 1,
     "description": "Mentioning memory but failing to explain why this is significant.",
 }
+ADVICE_TEXT = ADVICE["description"]
 # Verbatim solver response from the exploratory (not commit-qualified)
 # tmp/task7e-cpu-live-probe.json. Frozen here so tests need no private QA files.
 CAPTURED_CPU_RESPONSE = {
@@ -105,7 +106,7 @@ class ReplaySolver:
                 ],
                 "evidence_ids": [],
                 "alternatives": [],
-                "partial_credit_boundaries": [ADVICE],
+                "partial_credit_boundaries": [ADVICE_TEXT],
                 "follow_through_rules": [],
                 **updates,
             }
@@ -138,9 +139,9 @@ def test_model_partial_commentary_is_not_a_compulsory_extra_obligation():
     rule = solution.credit_rules[0]
     assert (rule.origin, rule.score, rule.text, rule.raw) == (
         "model-advisory",
-        1,
-        ADVICE["description"],
-        ADVICE,
+        None,
+        ADVICE_TEXT,
+        ADVICE_TEXT,
     )
     assert solution.partial_credit_boundaries == []
 
@@ -188,19 +189,19 @@ def test_declared_method_only_cap_and_dependencies_are_retained_and_mandatory():
 
 
 def test_contradictory_advisory_cap_is_flagged_without_replacing_declared_cap():
-    solution = IndependentSolver(
-        ReplaySolver(
-            partial_credit_boundaries=[
-                {"score": 3, "description": "Award three marks."}
-            ]
+    with pytest.raises(ValueError, match="invalid solver response envelope"):
+        IndependentSolver(
+            ReplaySolver(
+                partial_credit_boundaries=[
+                    {"score": 3, "description": "Award three marks."}
+                ]
+            )
+        ).solve(
+            open_item(
+                partial_credit_boundaries=[{"condition": "Method only", "cap": 1}]
+            ),
+            [],
         )
-    ).solve(
-        open_item(partial_credit_boundaries=[{"condition": "Method only", "cap": 1}]),
-        [],
-    )
-    assert solution.advisory_issues
-    assert solution.credit_rules[0].cap == 1
-    assert solution.credit_rules[1].score == 3
 
 
 def test_actual_blind_prompt_excludes_private_cpu_contract_and_review_at_any_depth():
@@ -739,23 +740,10 @@ def test_saved_cpu_difficulty_without_credit_review_is_not_export_eligible():
 
 
 def test_real_captured_cpu_advisory_boundary_is_not_promoted_to_declared_credit():
-    solution = IndependentSolver(ReplaySolver(**CAPTURED_CPU_RESPONSE)).solve(
-        open_item(partial_credit_boundaries=[]), []
-    )
-    original_scheme = {
-        "marks": 2,
-        "mark_scheme": [
-            "Instructions and data are stored in main memory;",
-            "The processor fetches instructions from memory to execute them;",
-        ],
-    }
-    # This tests the original false lexical obligation only, not the semantic
-    # correctness of the capture's overspecific shared-memory answer.
-    assert reconcile_solution(solution, original_scheme).passed
-    assert (
-        solution.credit_rules[0].raw
-        == CAPTURED_CPU_RESPONSE["partial_credit_boundaries"][0]
-    )
+    with pytest.raises(ValueError, match="invalid solver response envelope"):
+        IndependentSolver(ReplaySolver(**CAPTURED_CPU_RESPONSE)).solve(
+            open_item(partial_credit_boundaries=[]), []
+        )
 
 
 @pytest.mark.parametrize(
@@ -913,25 +901,20 @@ def test_host_permission_typing_rejects_unknown_or_legacy_metadata(mutation):
 
 
 def test_model_cannot_claim_host_permission_origin_for_a_concrete_closed_alternative():
-    solution = IndependentSolver(
-        ReplaySolver(
-            answer={"result": "True"},
-            mark_points={"result": "True"},
-            alternatives=[
-                {
-                    "text": "False",
-                    "origin": "source-declared",
-                    "content_kind": "permission",
-                }
-            ],
-        )
-    ).solve({**open_item(), "response_slots": ["result"]}, [])
-    rule = next(rule for rule in solution.credit_rules if rule.kind == "alternatives")
-    assert (rule.origin, rule.content_kind) == ("closed-answer-validation", "answer")
-    assert not reconcile_solution(
-        solution,
-        {"marks": 2, "mark_scheme": ["True"], "closed_answers": {"result": ["True"]}},
-    ).passed
+    with pytest.raises(ValueError, match="invalid solver response envelope"):
+        IndependentSolver(
+            ReplaySolver(
+                answer={"result": "True"},
+                mark_points={"result": "True"},
+                alternatives=[
+                    {
+                        "text": "False",
+                        "origin": "source-declared",
+                        "content_kind": "permission",
+                    }
+                ],
+            )
+        ).solve({**open_item(), "response_slots": ["result"]}, [])
 
 
 def test_paraphrased_cpu_credit_still_prints_its_actual_typed_one_mark_allocations(
@@ -962,13 +945,7 @@ def test_wrong_model_closed_alternative_fails_even_if_also_printed_as_guidance()
         ReplaySolver(
             answer={"result": "True"},
             mark_points={"result": "True"},
-            alternatives=[
-                {
-                    "text": "False",
-                    "origin": "source-declared",
-                    "content_kind": "permission",
-                }
-            ],
+            alternatives=["False"],
         )
     ).solve({**open_item(), "response_slots": ["result"]}, [])
     result = reconcile_solution(

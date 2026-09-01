@@ -306,6 +306,14 @@ def validate_generated_paper(
                         solve_selected_response,
                     )
 
+                    normalized_choices = {
+                        " ".join(choice.casefold().split())
+                        for choice in question.choices
+                    }
+                    if len(normalized_choices) != 4:
+                        raise ValueError(
+                            f"question {question.number} must have four distinct choices"
+                        )
                     selected = solve_selected_response(question.model_dump(mode="json"))
                     if (
                         selected is None

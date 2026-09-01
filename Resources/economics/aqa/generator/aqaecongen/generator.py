@@ -132,6 +132,40 @@ MCQ_CONTEXTS = {
     "4.2.6": "A country's exchange rate falls while exporters and importers can adjust quantities over time.",
 }
 
+APPLIED_TOPIC_BY_NUMBER = {
+    1: "4.1.1",
+    3: "4.1.3",
+    7: "4.1.7",
+    11: "4.2.4",
+    17: "4.2.6",
+}
+VISUAL_SPECS = {
+    2: ("4.1.3", "D", "right", "market"),
+    4: ("4.1.3", "D", "left", "market"),
+    9: ("4.1.8", "S", "right", "market"),
+    10: ("4.1.8", "S", "left", "market"),
+    13: ("4.2.2", "AD", "right", "aggregate"),
+    14: ("4.2.4", "AD", "left", "aggregate"),
+    19: ("4.2.3", "SRAS", "right", "aggregate"),
+    20: ("4.2.3", "SRAS", "left", "aggregate"),
+    24: ("4.2.5", "LRAS", "right", "aggregate"),
+    25: ("4.2.5", "LRAS", "left", "aggregate"),
+}
+INDEX_TOPIC_BY_NUMBER = {5: "4.2.1", 15: "4.2.1", 30: "4.2.1"}
+FACTUAL_TOPIC_BY_NUMBER = dict(
+    zip(
+        (6, 8, 12, 16, 18, 21, 22, 23, 26, 27, 28, 29),
+        tuple(MCQ_FACTS)[:12],
+        strict=True,
+    )
+)
+PAPER3_TOPIC_BY_NUMBER = {
+    **APPLIED_TOPIC_BY_NUMBER,
+    **{number: spec[0] for number, spec in VISUAL_SPECS.items()},
+    **INDEX_TOPIC_BY_NUMBER,
+    **FACTUAL_TOPIC_BY_NUMBER,
+}
+
 
 def build_paper(rule: PaperRule, syllabus: Syllabus, seed: int | None = None) -> GeneratedPaper:
     run_seed = seed if seed is not None else secrets.randbits(64)
@@ -154,6 +188,8 @@ def build_paper(rule: PaperRule, syllabus: Syllabus, seed: int | None = None) ->
             topic = shuffled_topics[topic_cursor % len(shuffled_topics)]
             topic_cursor += 1
             if section_rule.id == "A" and rule.id == "paper_3":
+                topic_id = PAPER3_TOPIC_BY_NUMBER[option_index + 1]
+                topic = next(candidate for candidate in topics if candidate.id == topic_id)
                 option = _build_mcq_option(option_index + 1, topic, rng, question_rules[0])
             else:
                 option, question_number = _build_written_option(
@@ -477,25 +513,54 @@ def _build_mcq_option(
             rng,
         )
         source_references = [f"Figure {number}"]
-    elif number % 5 == 0:
+    elif number in {5, 15, 30}:
         base = rng.randint(55, 180)
         change = rng.choice([5, 8, 10, 12, 15, 20])
         quantum = Decimal("0.1")
         base_value = Decimal(base)
         change_rate = Decimal(change) / Decimal(100)
-        correct = (base_value * (Decimal(1) + change_rate)).quantize(
-            quantum, rounding=ROUND_HALF_UP
-        )
-        values = [
-            (base_value * (Decimal(1) - change_rate)).quantize(
+        if number == 5:
+            operation = "index_percentage_increase"
+            correct = (base_value * (Decimal(1) + change_rate)).quantize(
                 quantum, rounding=ROUND_HALF_UP
-            ),
-            correct,
-        ]
+            )
+            prompt = (
+                f"An economic activity index is {base} and rises by {change}%. "
+                "What is its new value?"
+            )
+            inputs = {"base": str(base), "rate_percent": str(change)}
+            unit = "index"
+        elif number == 15:
+            operation = "index_percentage_decrease"
+            correct = (base_value * (Decimal(1) - change_rate)).quantize(
+                quantum, rounding=ROUND_HALF_UP
+            )
+            prompt = (
+                f"An economic activity index is {base} and falls by {change}%. "
+                "What is its new value?"
+            )
+            inputs = {"base": str(base), "rate_percent": str(change)}
+            unit = "index"
+        else:
+            operation = "index_percentage_change"
+            final = (base_value * (Decimal(1) + change_rate)).quantize(
+                quantum, rounding=ROUND_HALF_UP
+            )
+            correct = ((final - base_value) / base_value * Decimal(100)).quantize(
+                quantum, rounding=ROUND_HALF_UP
+            )
+            prompt = (
+                f"An economic activity index rises from {base_value:.1f} to {final:.1f}. "
+                "What is the percentage change?"
+            )
+            inputs = {"initial": str(base_value), "final": str(final)}
+            unit = "percent"
+        values = [correct]
         for raw_candidate in (
-            Decimal(base + change),
-            base_value * (Decimal(1) + Decimal(change + 5) / Decimal(100)),
-            base_value / (Decimal(1) + change_rate),
+            correct + Decimal("5.0"),
+            correct - Decimal("5.0"),
+            correct + Decimal("10.0"),
+            correct - Decimal("10.0"),
         ):
             candidate = raw_candidate.quantize(quantum, rounding=ROUND_HALF_UP)
             if candidate not in values:
@@ -503,34 +568,26 @@ def _build_mcq_option(
             if len(values) == 4:
                 break
         while len(values) < 4:
-            candidate = (
-                base_value
-                * (
-                    Decimal(1)
-                    + Decimal(change + len(values) * 3) / Decimal(100)
-                )
-            ).quantize(quantum, rounding=ROUND_HALF_UP)
+            candidate = correct + Decimal(len(values) * 3)
             if candidate not in values:
                 values.append(candidate)
-        raw_choices = [f"{value:.1f}" for value in values]
-        prompt = (
-            f"In economy {rng.choice(ECONOMIES)}, an index linked to {rng.choice(topic.points)} "
-            f"is {base}. It rises by {change}%. What is the new index value?"
-        )
-        correct_text = f"{correct:.1f}"
+        suffix = "%" if operation == "index_percentage_change" else ""
+        raw_choices = [f"{value:.1f}{suffix}" for value in values]
+        correct_text = f"{correct:.1f}{suffix}"
         authoring_context = {
             "selected_response_contract": {
                 "version": "selected-response-v1",
-                "operation": "index_percentage_increase",
-                "inputs": {"base": str(base), "rate_percent": str(change)},
-                "unit": "index",
+                "operation": operation,
+                "inputs": inputs,
+                "unit": unit,
                 "decimal_places": 1,
             }
         }
+    elif number in APPLIED_TOPIC_BY_NUMBER:
+        prompt, correct_text, raw_choices, authoring_context = _applied_mcq(number)
     else:
         stem, correct_text, distractors = MCQ_FACTS[topic.id]
-        context = MCQ_CONTEXTS[topic.id]
-        prompt = f"In {1995 + number}, {context[0].lower()}{context[1:]} {stem}"
+        prompt = stem
         raw_choices = [correct_text, *distractors]
     rng.shuffle(raw_choices)
     choices = raw_choices
@@ -562,13 +619,18 @@ def _visual_mcq(
     topic: Topic,
     rng: random.Random,
 ) -> tuple[str, str, list[str], dict[str, object]]:
-    is_aggregate = topic.id.startswith("4.2")
+    topic_id, curve, direction, scope_id = VISUAL_SPECS[number]
+    if topic.id != topic_id:
+        raise ValueError("visual topic does not match its declared task")
+    is_aggregate = scope_id == "aggregate"
     if is_aggregate:
         outcomes = {
             ("AD", "right"): "The price level rises and real output rises",
             ("AD", "left"): "The price level falls and real output falls",
             ("SRAS", "right"): "The price level falls and real output rises",
             ("SRAS", "left"): "The price level rises and real output falls",
+            ("LRAS", "right"): "The price level falls and real output rises",
+            ("LRAS", "left"): "The price level rises and real output falls",
         }
         choices = [
             "The price level rises and real output rises",
@@ -578,8 +640,11 @@ def _visual_mcq(
         ]
         x_axis = "Real output"
         y_axis = "Price level"
-        scope = "aggregate demand and short-run aggregate supply"
-        curve, direction = rng.choice(list(outcomes))
+        scope = (
+            "aggregate demand and long-run aggregate supply"
+            if curve == "LRAS"
+            else "aggregate demand and short-run aggregate supply"
+        )
     else:
         outcomes = {
             ("D", "right"): "Equilibrium price rises and equilibrium quantity rises",
@@ -596,13 +661,11 @@ def _visual_mcq(
         x_axis = "Quantity"
         y_axis = "Price"
         scope = f"demand and supply in the market for {rng.choice(INDUSTRIES)}"
-        curve, direction = rng.choice(list(outcomes))
 
     correct_text = outcomes[(curve, direction)]
     prompt = (
-        f"Figure {number} shows {scope}. The {curve} curve shifts to the "
-        f"{direction}. Which combination describes the change from the initial "
-        "equilibrium to the new equilibrium?"
+        f"Use Figure {number}, which shows {scope}. Which combination describes "
+        "the change from the initial equilibrium to the new equilibrium?"
     )
     return (
         prompt,
@@ -623,6 +686,74 @@ def _visual_mcq(
                 "unit": "effect",
                 "decimal_places": 0,
             },
+        },
+    )
+
+
+def _applied_mcq(
+    number: int,
+) -> tuple[str, str, list[str], dict[str, object]]:
+    tasks: dict[int, tuple[str, str, list[str], str, dict[str, str], str]] = {
+        1: (
+            "Production of product X rises from 20 to 30 units while production of "
+            "product Y falls from 80 to 68 units. What is the opportunity cost of "
+            "the extra 10 units of product X?",
+            "12 units of product Y",
+            ["12 units of product Y", "20 units of product Y", "10 units of product Y", "68 units of product Y"],
+            "opportunity_cost_change",
+            {"primary_before": "20", "secondary_before": "80", "primary_after": "30", "secondary_after": "68"},
+            "ratio",
+        ),
+        3: (
+            "A product's price rises from £10 to £12 and quantity demanded falls "
+            "from 100 to 88 units. What happens to total expenditure?",
+            "Total expenditure rises",
+            ["Total expenditure rises", "Total expenditure falls", "Total expenditure is unchanged", "The effect cannot be calculated"],
+            "elastic_revenue_change",
+            {"price_before": "10", "quantity_before": "100", "price_after": "12", "quantity_after": "88"},
+            "GBPm",
+        ),
+        7: (
+            "The poorest group's income share rises from 20% to 25%, while the "
+            "richest group's share falls from 45% to 38%. What does this evidence suggest?",
+            "Income inequality falls",
+            ["Income inequality falls", "Income inequality rises", "Income inequality is unchanged", "Nominal GDP must fall"],
+            "income_distribution_change",
+            {"poorest_share_before": "20", "richest_share_before": "45", "poorest_share_after": "25", "richest_share_after": "38"},
+            "percent",
+        ),
+        11: (
+            "The policy interest rate rises from 4% to 6%; 60% of the reported "
+            "household and business spending is credit-financed. What is the most likely effect?",
+            "Credit-financed consumption and investment weaken",
+            ["Credit-financed consumption and investment weaken", "Credit-financed consumption and investment strengthen", "Credit-financed consumption and investment are unchanged", "All saving must cease"],
+            "interest_rate_demand_change",
+            {"interest_rate_before": "4", "interest_rate_after": "6", "credit_share_percent": "60"},
+            "percent",
+        ),
+        17: (
+            "After a currency depreciation, the estimated export-demand elasticity "
+            "is 0.9 and the import-demand elasticity is 0.6. Which outcome is more likely?",
+            "The trade balance is more likely to improve",
+            ["The trade balance is more likely to improve", "The trade balance is more likely to worsen", "The trade balance must be unchanged", "Domestic output must become zero"],
+            "trade_elasticity_effect",
+            {"exchange_rate_direction": "depreciation", "export_elasticity": "0.9", "import_elasticity": "0.6"},
+            "effect",
+        ),
+    }
+    prompt, answer, choices, operation, inputs, unit = tasks[number]
+    return (
+        prompt,
+        answer,
+        choices,
+        {
+            "selected_response_contract": {
+                "version": "selected-response-v1",
+                "operation": operation,
+                "inputs": inputs,
+                "unit": unit,
+                "decimal_places": 1,
+            }
         },
     )
 

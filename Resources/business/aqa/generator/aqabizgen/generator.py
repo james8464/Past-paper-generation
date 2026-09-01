@@ -286,9 +286,9 @@ def _mcq(
         correct = "Strategic drift"
         choices = [correct, "Strategic fit", "Market penetration", "Retrenchment"]
         prompt = (
-            "The evidence table shows rapid external change but only slow change in "
-            "the business's strategy. Which concept best describes the resulting "
-            "widening mismatch?"
+            "Use the evidence table to compare change in the external environment "
+            "with change in the business's strategy. Which concept best describes "
+            "the relationship shown?"
         )
         authoring_context = {
             "preserve_prompt": True,

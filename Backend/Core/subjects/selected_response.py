@@ -15,7 +15,7 @@ _NUMBER = re.compile(r"^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$")
 class SelectedResponseRow(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    label: str
+    label: str = Field(min_length=1)
     target: Decimal | None = None
     actual: Decimal | None = None
     output: Decimal | None = None
@@ -29,7 +29,14 @@ class SelectedResponseContract(BaseModel):
     version: Literal["selected-response-v1"] = SELECTED_RESPONSE_VERSION
     operation: Literal[
         "index_percentage_increase",
+        "index_percentage_decrease",
+        "index_percentage_change",
         "economic_shift",
+        "opportunity_cost_change",
+        "elastic_revenue_change",
+        "income_distribution_change",
+        "interest_rate_demand_change",
+        "trade_elasticity_effect",
         "gross_profit",
         "after_tax_profit",
         "highest_productivity",
@@ -39,7 +46,7 @@ class SelectedResponseContract(BaseModel):
     ]
     inputs: dict[str, Decimal | str] = Field(default_factory=dict)
     rows: list[SelectedResponseRow] = Field(default_factory=list)
-    unit: Literal["index", "effect", "GBPm", "ratio", "classification"]
+    unit: Literal["index", "percent", "effect", "GBPm", "ratio", "classification"]
     decimal_places: int = Field(ge=0, le=4)
 
 
@@ -61,11 +68,19 @@ def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
         not isinstance(choice, str) or not choice.strip() for choice in choices
     ):
         raise ValueError("selected-response contract requires four choices")
+    normalized_choices = [" ".join(choice.casefold().split()) for choice in choices]
+    if len(set(normalized_choices)) != 4:
+        raise ValueError("selected-response contract requires four distinct choices")
+    if contract.rows:
+        normalized_labels = [
+            " ".join(row.label.casefold().split()) for row in contract.rows
+        ]
+        if len(set(normalized_labels)) != len(normalized_labels):
+            raise ValueError("selected response requires distinct row labels")
 
     numeric_results: dict[str, float] = {}
     if contract.operation == "index_percentage_increase":
-        if set(contract.inputs) != {"base", "rate_percent"}:
-            raise ValueError("index selected response has incomplete public inputs")
+        _require_contract_shape(contract, {"base", "rate_percent"})
         base = _decimal(contract.inputs["base"])
         rate = _decimal(contract.inputs["rate_percent"])
         if not base.is_finite() or not rate.is_finite() or base <= 0:
@@ -83,8 +98,53 @@ def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
         expected_text = choices[parsed.index(expected)].strip()
         steps = ["Multiply the candidate-visible base index by one plus the percentage rate."]
         numeric_results = {"selected_value": float(expected)}
+    elif contract.operation == "index_percentage_decrease":
+        _require_contract_shape(contract, {"base", "rate_percent"})
+        base = _decimal(contract.inputs["base"])
+        rate = _decimal(contract.inputs["rate_percent"])
+        if base <= 0 or rate <= 0 or rate >= 100:
+            raise ValueError("index selected response inputs must be finite and positive")
+        quantum = Decimal(1).scaleb(-contract.decimal_places)
+        expected = (base * (Decimal(1) - rate / Decimal(100))).quantize(
+            quantum,
+            rounding=ROUND_HALF_UP,
+        )
+        expected_text = _numeric_choice(choices, expected)
+        steps = ["Multiply the candidate-visible base index by one minus the percentage rate."]
+        numeric_results = {"selected_value": float(expected)}
+    elif contract.operation == "index_percentage_change":
+        _require_contract_shape(contract, {"initial", "final"})
+        if contract.unit != "percent":
+            raise ValueError("percentage-change selected response requires percent units")
+        initial = _decimal(contract.inputs["initial"])
+        final = _decimal(contract.inputs["final"])
+        if initial <= 0:
+            raise ValueError("index selected response inputs must be finite and positive")
+        quantum = Decimal(1).scaleb(-contract.decimal_places)
+        expected = ((final - initial) / initial * Decimal(100)).quantize(
+            quantum,
+            rounding=ROUND_HALF_UP,
+        )
+        expected_text = _percent_choice(choices, expected)
+        steps = ["Divide the change in the candidate-visible index by its initial value."]
+        numeric_results = {"selected_value": float(expected)}
     elif contract.operation == "economic_shift":
+        _require_contract_shape(
+            contract,
+            {"curve", "direction", "scope", "x_axis", "y_axis"},
+        )
         values = {key: str(value) for key, value in contract.inputs.items()}
+        expected_axes = (
+            ("Real output", "Price level")
+            if values["scope"] == "aggregate"
+            else ("Quantity", "Price")
+            if values["scope"] == "market"
+            else None
+        )
+        if expected_axes is None or (
+            values["x_axis"], values["y_axis"]
+        ) != expected_axes:
+            raise ValueError("economic shift has invalid public axes")
         try:
             curve, direction, scope = values["curve"], values["direction"], values["scope"]
             expected_text = {
@@ -96,18 +156,114 @@ def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
                 ("AD", "left", "aggregate"): "The price level falls and real output falls",
                 ("SRAS", "right", "aggregate"): "The price level falls and real output rises",
                 ("SRAS", "left", "aggregate"): "The price level rises and real output falls",
+                ("LRAS", "right", "aggregate"): "The price level falls and real output rises",
+                ("LRAS", "left", "aggregate"): "The price level rises and real output falls",
             }[(curve, direction, scope)]
         except KeyError as error:
             raise ValueError("economic shift has invalid public inputs") from error
         steps = ["Infer the new equilibrium from the candidate-visible curve shift."]
+    elif contract.operation == "opportunity_cost_change":
+        _require_contract_shape(
+            contract,
+            {"primary_before", "secondary_before", "primary_after", "secondary_after"},
+        )
+        values = {key: _decimal(value) for key, value in contract.inputs.items()}
+        primary_gain = values["primary_after"] - values["primary_before"]
+        secondary_loss = values["secondary_before"] - values["secondary_after"]
+        if any(value < 0 for value in values.values()) or primary_gain <= 0 or secondary_loss <= 0:
+            raise ValueError("opportunity-cost source has invalid public values")
+        expected_text = f"{_format_decimal(secondary_loss)} units of product Y"
+        steps = ["Read the candidate-visible fall in product Y as the opportunity cost."]
+        numeric_results = {"opportunity_cost": float(secondary_loss)}
+    elif contract.operation == "elastic_revenue_change":
+        _require_contract_shape(
+            contract,
+            {"price_before", "quantity_before", "price_after", "quantity_after"},
+        )
+        values = {key: _decimal(value) for key, value in contract.inputs.items()}
+        if any(value <= 0 for value in values.values()):
+            raise ValueError("revenue source has invalid public values")
+        before = values["price_before"] * values["quantity_before"]
+        after = values["price_after"] * values["quantity_after"]
+        expected_text = (
+            "Total expenditure rises"
+            if after > before
+            else "Total expenditure falls"
+            if after < before
+            else "Total expenditure is unchanged"
+        )
+        steps = ["Compare price multiplied by quantity before and after the change."]
+        numeric_results = {"expenditure_before": float(before), "expenditure_after": float(after)}
+    elif contract.operation == "income_distribution_change":
+        _require_contract_shape(
+            contract,
+            {
+                "poorest_share_before", "richest_share_before",
+                "poorest_share_after", "richest_share_after",
+            },
+        )
+        values = {key: _decimal(value) for key, value in contract.inputs.items()}
+        if any(value < 0 or value > 100 for value in values.values()) or (
+            values["poorest_share_before"] > values["richest_share_before"]
+            or values["poorest_share_after"] > values["richest_share_after"]
+        ):
+            raise ValueError("income-distribution source has invalid public shares")
+        before = values["richest_share_before"] - values["poorest_share_before"]
+        after = values["richest_share_after"] - values["poorest_share_after"]
+        expected_text = (
+            "Income inequality falls"
+            if after < before
+            else "Income inequality rises"
+            if after > before
+            else "Income inequality is unchanged"
+        )
+        steps = ["Compare the candidate-visible gap between the richest and poorest shares."]
+    elif contract.operation == "interest_rate_demand_change":
+        _require_contract_shape(
+            contract,
+            {"interest_rate_before", "interest_rate_after", "credit_share_percent"},
+        )
+        before = _decimal(contract.inputs["interest_rate_before"])
+        after = _decimal(contract.inputs["interest_rate_after"])
+        share = _decimal(contract.inputs["credit_share_percent"])
+        if share <= 0 or share > 100:
+            raise ValueError("interest-rate source has an invalid public credit share")
+        expected_text = (
+            "Credit-financed consumption and investment weaken"
+            if after > before
+            else "Credit-financed consumption and investment strengthen"
+            if after < before
+            else "Credit-financed consumption and investment are unchanged"
+        )
+        steps = ["Relate the candidate-visible interest-rate movement to borrowing costs."]
+    elif contract.operation == "trade_elasticity_effect":
+        _require_contract_shape(
+            contract,
+            {"exchange_rate_direction", "export_elasticity", "import_elasticity"},
+        )
+        direction = str(contract.inputs["exchange_rate_direction"]).casefold()
+        if direction != "depreciation":
+            raise ValueError("trade-elasticity source requires a depreciation")
+        export_elasticity = _decimal(contract.inputs["export_elasticity"])
+        import_elasticity = _decimal(contract.inputs["import_elasticity"])
+        if export_elasticity < 0 or import_elasticity < 0:
+            raise ValueError("trade-elasticity source has invalid public elasticities")
+        total = export_elasticity + import_elasticity
+        expected_text = (
+            "The trade balance is more likely to improve"
+            if total > 1
+            else "The trade balance is more likely to worsen"
+            if total < 1
+            else "The trade balance is unlikely to change from the elasticity condition alone"
+        )
+        steps = ["Add the candidate-visible export and import elasticities and compare with one."]
     elif contract.operation in {"gross_profit", "after_tax_profit"}:
         names = (
             {"revenue", "cost_of_sales"}
             if contract.operation == "gross_profit"
             else {"revenue", "cost_of_sales", "operating_expenses", "taxation"}
         )
-        if set(contract.inputs) != names:
-            raise ValueError("profit selected response has incomplete public inputs")
+        _require_contract_shape(contract, names)
         numbers = {key: _decimal(value) for key, value in contract.inputs.items()}
         expected = numbers["revenue"] - numbers["cost_of_sales"]
         if contract.operation == "after_tax_profit":
@@ -116,11 +272,17 @@ def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
         numeric_results = {"selected_value": float(expected)}
         steps = ["Subtract the candidate-visible costs from revenue in the requested order."]
     elif contract.operation == "highest_productivity":
+        _require_contract_shape(contract, set(), rows=True)
         if len(contract.rows) < 2 or any(
-            row.output is None or row.employees is None or row.employees <= 0
+            row.output is None
+            or row.employees is None
+            or row.employees <= 0
+            or row.target is not None
+            or row.actual is not None
+            or row.better_when is not None
             for row in contract.rows
         ):
-            raise ValueError("productivity selected response has incomplete public rows")
+            raise ValueError("productivity selected response has invalid public rows")
         ratios = {row.label: row.output / row.employees for row in contract.rows}
         highest = max(ratios.values())
         winners = [label for label, value in ratios.items() if value == highest]
@@ -130,6 +292,16 @@ def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
         numeric_results = {label: float(value) for label, value in ratios.items()}
         steps = ["Divide each candidate-visible output by its employee count and compare."]
     elif contract.operation == "performance_statements":
+        _require_contract_shape(contract, set(), rows=True)
+        if any(
+            row.target is None
+            or row.actual is None
+            or row.better_when is None
+            or row.output is not None
+            or row.employees is not None
+            for row in contract.rows
+        ):
+            raise ValueError("performance selected response has invalid public rows")
         by_label = {row.label.casefold(): row for row in contract.rows}
         try:
             turnover = by_label["labour turnover"]
@@ -150,8 +322,7 @@ def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
             "fixed_cost_before", "price_before", "variable_cost_before",
             "fixed_cost_after", "price_after", "variable_cost_after",
         }
-        if set(contract.inputs) != names:
-            raise ValueError("break-even selected response has incomplete public inputs")
+        _require_contract_shape(contract, names)
         values = {key: _decimal(value) for key, value in contract.inputs.items()}
         before_contribution = values["price_before"] - values["variable_cost_before"]
         after_contribution = values["price_after"] - values["variable_cost_after"]
@@ -170,10 +341,14 @@ def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
         numeric_results = {"before_output": float(before), "after_output": float(after)}
         steps = ["Compute fixed cost divided by contribution before and after the changes."]
     elif contract.operation == "strategic_drift":
+        _require_contract_shape(contract, {"external_change", "strategic_change"})
         values = {key: str(value).casefold() for key, value in contract.inputs.items()}
-        if values != {"external_change": "high", "strategic_change": "low"}:
+        if values == {"external_change": "high", "strategic_change": "low"}:
+            expected_text = "Strategic drift"
+        elif values["external_change"] == values["strategic_change"]:
+            expected_text = "Strategic fit"
+        else:
             raise ValueError("unsupported strategic-change classification")
-        expected_text = "Strategic drift"
         steps = ["Identify the concept where strategy changes more slowly than the environment."]
     else:
         raise ValueError("unsupported selected-response operation")
@@ -203,6 +378,46 @@ def _plain_decimal(value: str) -> Decimal | None:
     except InvalidOperation:
         return None
     return number if number.is_finite() else None
+
+
+def _require_contract_shape(
+    contract: SelectedResponseContract,
+    input_names: set[str],
+    *,
+    rows: bool = False,
+) -> None:
+    if set(contract.inputs) != input_names or bool(contract.rows) is not rows:
+        raise ValueError(f"{contract.operation} has invalid public inputs")
+
+
+def _numeric_choice(choices: list[str], expected: Decimal) -> str:
+    parsed = [_plain_decimal(choice) for choice in choices]
+    if (
+        any(value is None for value in parsed)
+        or len(set(parsed)) != 4
+        or sum(value == expected for value in parsed) != 1
+    ):
+        raise ValueError("selected response must have exactly one semantic option")
+    return choices[parsed.index(expected)].strip()
+
+
+def _percent_choice(choices: list[str], expected: Decimal) -> str:
+    pattern = re.compile(r"^([+-]?(?:\d+(?:\.\d*)?|\.\d+))%$")
+    parsed: list[Decimal | None] = []
+    for choice in choices:
+        match = pattern.fullmatch(choice.strip())
+        parsed.append(Decimal(match.group(1)) if match else None)
+    if (
+        any(value is None for value in parsed)
+        or len(set(parsed)) != 4
+        or sum(value == expected for value in parsed) != 1
+    ):
+        raise ValueError("percentage-change selected response requires percent units")
+    return choices[parsed.index(expected)].strip()
+
+
+def _format_decimal(value: Decimal) -> str:
+    return format(value.normalize(), "f")
 
 
 def _decimal(value: Decimal | str) -> Decimal:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from copy import deepcopy
 from pathlib import Path
 
 import pymupdf as fitz
@@ -22,6 +23,7 @@ from Backend.Core.exam_blueprints import (
 )
 from Backend.Core.independent_solver import IndependentSolver
 from Backend.Core.pdf_validation import extract_pdf_evidence
+from Backend.Core.subjects.selected_response import solve_selected_response
 
 ROOT = Path(__file__).resolve().parents[1]
 SYLLABUS = load_syllabus(ROOT / "data" / "syllabus.json")
@@ -74,13 +76,20 @@ def test_paper_three_visual_questions_have_data_bound_diagrams() -> None:
         assert "correct_effect" not in context
         contract = context["selected_response_contract"]
         assert contract["operation"] == "economic_shift"
-        assert contract["inputs"]["curve"] in {"D", "S", "AD", "SRAS"}
+        assert contract["inputs"]["curve"] in {"D", "S", "AD", "SRAS", "LRAS"}
         assert contract["inputs"]["direction"] in {"left", "right"}
         assert set(context) == {"visual_kind", "selected_response_contract"}
-        assert all(
-            term.casefold() in question.prompt.casefold()
-            for term in (contract["inputs"]["curve"], contract["inputs"]["direction"])
+        assert f"{contract['inputs']['curve']} curve".casefold() not in question.prompt.casefold()
+        assert f"to the {contract['inputs']['direction']}" not in question.prompt.casefold()
+
+        changed = deepcopy(question.model_dump(mode="json"))
+        changed_inputs = changed["authoring_context"]["selected_response_contract"]["inputs"]
+        changed_inputs["direction"] = (
+            "left" if changed_inputs["direction"] == "right" else "right"
         )
+        changed_solution = solve_selected_response(changed)
+        assert changed_solution is not None
+        assert changed_solution["answer"] != question.choices[question.correct_choice]
 
 
 def test_visual_renderer_consumes_only_the_public_selected_response_contract(monkeypatch) -> None:
@@ -180,10 +189,89 @@ def test_index_mcqs_have_public_numeric_contract_and_semantically_unique_choices
         questions = [option.questions[0] for option in paper.sections[0].options]
         numeric = [question for question in questions if question.task_operation == "transform"]
         assert len(numeric) == 3
+        assert {
+            question.authoring_context["selected_response_contract"]["operation"]
+            for question in numeric
+        } == {
+            "index_percentage_increase",
+            "index_percentage_decrease",
+            "index_percentage_change",
+        }
         for question in numeric:
-            contract = question.authoring_context["selected_response_contract"]
-            assert contract["operation"] == "index_percentage_increase"
             assert len(set(question.choices)) == 4
+            operation = question.authoring_context["selected_response_contract"]["operation"]
+            if operation == "index_percentage_change":
+                assert all(choice.endswith("%") for choice in question.choices)
+                malformed = question.model_dump(mode="json")
+                malformed["choices"][0] = malformed["choices"][0].removesuffix("%")
+                with pytest.raises(ValueError, match="percent units"):
+                    solve_selected_response(malformed)
+                wrong_unit = question.model_dump(mode="json")
+                wrong_unit["authoring_context"]["selected_response_contract"]["unit"] = "index"
+                with pytest.raises(ValueError, match="percent units"):
+                    solve_selected_response(wrong_unit)
+
+
+def test_applied_mcqs_require_and_respond_to_candidate_visible_scenario_data() -> None:
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26090101)
+    questions = {
+        int(option.questions[0].number): option.questions[0]
+        for option in paper.sections[0].options
+    }
+    mutations = {
+        1: ("secondary_after", "60", "20 units of product Y"),
+        3: ("quantity_after", "75", "Total expenditure falls"),
+        7: ("poorest_share_after", "10", "Income inequality rises"),
+        11: (
+            "interest_rate_after",
+            "2",
+            "Credit-financed consumption and investment strengthen",
+        ),
+        17: (
+            "export_elasticity",
+            "0.1",
+            "The trade balance is more likely to worsen",
+        ),
+    }
+
+    for number, (field, value, expected) in mutations.items():
+        question = questions[number]
+        raw = question.model_dump(mode="json")
+        contract = raw["authoring_context"]["selected_response_contract"]
+        assert question.source_dependency == "stem"
+        assert all(str(source_value) in question.prompt for source_value in contract["inputs"].values())
+
+        without_source = deepcopy(raw)
+        without_source["authoring_context"].pop("selected_response_contract")
+        assert solve_selected_response(without_source) is None
+
+        changed = deepcopy(raw)
+        changed["authoring_context"]["selected_response_contract"]["inputs"][field] = value
+        changed_solution = solve_selected_response(changed)
+        assert changed_solution is not None
+        assert changed_solution["answer"] == expected
+        assert changed_solution["answer"] != question.choices[question.correct_choice]
+
+
+def _semantic_mcq_signature(question: GeneratedQuestion) -> tuple[object, ...]:
+    contract = question.authoring_context.get("selected_response_contract")
+    if contract:
+        inputs = contract["inputs"]
+        operation = contract["operation"]
+        if operation == "economic_shift":
+            return (operation, inputs["curve"], inputs["direction"], inputs["scope"])
+        return (operation,)
+    normalized = re.sub(r"\b(?:19|20)\d{2}\b", "", question.prompt.casefold())
+    normalized = re.sub(r"\b\d+(?:\.\d+)?\b", "", normalized)
+    return ("prompt", " ".join(normalized.split()))
+
+
+def test_paper_three_has_no_semantically_repeated_mcq_tasks_across_seeds() -> None:
+    for seed in (123, 26090101, 26090102, 26090103):
+        paper = build_paper(RULES["paper_3"], SYLLABUS, seed=seed)
+        questions = [option.questions[0] for option in paper.sections[0].options]
+        signatures = [_semantic_mcq_signature(question) for question in questions]
+        assert len(signatures) == len(set(signatures)) == 30
 
 
 def test_each_paper_is_valid_and_seed_changes_content() -> None:
