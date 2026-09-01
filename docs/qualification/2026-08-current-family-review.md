@@ -211,6 +211,40 @@ failures. Evidence: `tmp/pdfs/excellence-shareholder-round2-<seed>/` and
 suite passed 857 tests, with 2 skips. Objective calibration and repetitive
 general guidance remain unresolved; the family is still not finalised.
 
+### 1 September H1 task/source/demand qualification
+
+H1's bounded Economics, Business and shared review-contract scope is accepted
+through `ff16a3f`; this is not whole-paper or product qualification. The final
+backend suite passed 1,722 tests with two expected skips, the warning-strict
+macOS build passed, and Graphify was updated. The nine affected routes produced
+27 deterministic three-seed builds containing 60 PDFs and 27 JSON packages;
+the controller manually checked the changed AQA/OCR Economics and AQA Business
+question pages after measured tariff, choice-gutter and margin-note regressions.
+
+The independent source review completed all bounded repair rounds with no
+remaining Critical, Important or Minor findings. Candidate text, selected-answer
+contracts, figures and keys now project from shared typed sources; all 15
+supported selected operations have explicit unit, precision and domain policy.
+Raw model cognitive-operation observations remain distinct from versioned,
+candidate-hashed public-task evidence, which is recomputed at resume and export.
+
+Fresh committed-source live controls passed without editing or normalising model
+responses:
+
+- Edexcel Economics Papers 1, 2 and 3 selected transactions:
+  `f3b8b05e31d221debc4ff30cdf14cfa4aa65e7fd92c187bcbf3c19c07888ba5c`,
+  `01d733fc82bf74f4c93c7f887621012c009dbc5fd73643d06ed73fe8d0e57ce8`,
+  and `d964d440a27df7cbdc9e3ba0432b69270e58d47c76afa02f216047bdb6aed295`.
+- AQA Computer Science SQL SELECT and INSERT transactions at `ff16a3f`:
+  `018ad1946605b35f70c596734a2ffd6c6775d9558bfeb1368787de5096d76383`
+  and `85b6eaf0582e6ae056e83b2c0c6fc0d53d0b7edacd5b9965c9d1523fb3072bb1`.
+
+The earlier SQL failures at `f386af4`, `de977c9` and `266f912` remain retained
+as failed evidence. They exposed a provider schema that omitted the canonical
+`program`, `design` and `trace` tokens and a raw-boundary `null` loophole; both
+were corrected fail-closed. H2/H3, complete two-seed paper qualification and
+external examiner/learner evidence remain required before finalisation.
+
 ### Computer Science Paper 2
 
 The fresh live AQA run at base seed 26083031 stopped safely at its first final

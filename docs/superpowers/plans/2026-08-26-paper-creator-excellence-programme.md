@@ -355,12 +355,16 @@ totals are recorded in `docs/quality/assessment-objective-reference.md`.
   options. Correct remaining Economics/Business objective and MCQ demand
   allocation using actual application/analysis tasks and matching reference
   weighting. Preserve approximate source ranges and exclude inconsistent
-  reference totals rather than copying them into generated forms.
-- [ ] 7.J/7.I: Repair declared versus advisory open-credit reconciliation and
+  reference totals rather than copying them into generated forms. H1 task,
+  source, objective, selected-answer and strict review-envelope work is scoped,
+  independently review-clean and live-qualified through `ff16a3f`; H2 saved
+  review identity/presentation and H3 candidate-path/bank evidence remain open.
+- [x] 7.J/7.I: Repair declared versus advisory open-credit reconciliation and
   candidate-grounded SQL verification before the next full live CS attempt.
-  J's schema correction is independently review-clean through `1110dd4`, but
-  manual review of its fresh committed-source CPU transaction found unsupported
-  serial-execution credit; J round 3, another live transaction and I remain open.
+  J's schema correction is independently review-clean through `1110dd4`; I's
+  bounded SELECT/INSERT verification is independently review-clean through
+  `c6f7ef0`. H1's immutable committed-source replays subsequently crossed both
+  boundaries without accepting the earlier failures or weakening validation.
 - [x] 7.F2: Register actual Edexcel candidate sources and normalize selected
   answer keys at the independent-solver handoff; retain privacy and rejection
   of unknown sources/wrong answers. Committed-source live probes exposed both
