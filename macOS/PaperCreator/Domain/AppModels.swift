@@ -642,21 +642,92 @@ struct GeneratedFile: Identifiable, Codable, Equatable {
     }
 }
 
+enum SavedGenerationMode: String, Equatable {
+    case preview = "Preview"
+    case live = "Live"
+    case unknown = "Unknown"
+}
+
+struct SavedPackageIdentity: Equatable {
+    let subject: String?
+    let paper: String?
+    let seed: Int?
+    let jobID: String?
+    let generatorID: String?
+    let generatorVersion: String?
+    let formID: String?
+}
+
+enum AuthoringProvenanceKind: Equatable {
+    case reviewedFixedOnly
+    case aiAuthoredOnly
+    case mixed
+    case unreviewed
+    case unknown
+}
+
+struct AuthoringProvenanceSummary: Equatable {
+    let kind: AuthoringProvenanceKind
+    let reviewedFixedItems: Int?
+    let aiAuthoredItems: Int?
+    let aiAuthoredStemItems: Int?
+    let unreviewedItems: Int?
+    let unknownItems: Int?
+
+    static let unknown = AuthoringProvenanceSummary(
+        kind: .unknown,
+        reviewedFixedItems: nil,
+        aiAuthoredItems: nil,
+        aiAuthoredStemItems: nil,
+        unreviewedItems: nil,
+        unknownItems: nil
+    )
+}
+
+enum GenerationQualityState: Equatable {
+    case passed
+    case pending
+    case preview
+    case atCreation
+    case unknown
+}
+
+struct GenerationQualityPresentation: Equatable {
+    let originalityState: GenerationQualityState
+    let originalityDetail: String
+    let referenceDemandState: GenerationQualityState
+    let referenceDemandDetail: String
+    let pathEvidenceState: GenerationQualityState
+    let pathEvidenceDetail: String
+    let diagnosticLines: [String]
+}
+
 struct GenerationQualityReport: Equatable {
+    let identity: SavedPackageIdentity
+    let savedMode: SavedGenerationMode
     let itemCount: Int
     let fingerprintsVerified: Bool
     let historicComparisons: Int
+    let noveltyPassed: Bool?
     let nearestSimilarity: Double?
     let pdfCount: Int
+    let engineeringValidated: Bool?
+    let visuallyCalibrated: Bool?
+    let empiricallyCalibrated: Bool?
     let referenceDemandPassed: Bool?
     let referenceDemandItems: Int
     let referenceDemandDocuments: Int
     let referenceDemandMaxDistance: Double?
     let referenceDemandExtractionCoverage: Double?
+    let referenceDemandFailedChecks: [String]?
     let difficultyReviewedItems: Int
+    let difficultyApprovedItems: Int?
+    let difficultyReviewCoverage: Double?
     let difficultyReasoningFitItems: Int
     let difficultyContextFitItems: Int
     let difficultyShortcutFitItems: Int
+    let candidatePathEvidencePassed: Bool?
+    let authoringProvenance: AuthoringProvenanceSummary
 
     static func load(from url: URL) -> GenerationQualityReport? {
         guard let data = try? Data(contentsOf: url),
@@ -668,28 +739,240 @@ struct GenerationQualityReport: Equatable {
             return nil
         }
         let nearest = novelty["nearest_match"] as? [String: Any]
+        let request = root["request"] as? [String: Any]
+        let generator = root["generator"] as? [String: Any]
+        let qualification = evidence["qualification_levels"] as? [String: Any]
         let referenceDemand = assessment["reference_demand"] as? [String: Any]
         let distances = referenceDemand?["gated_distances"] as? [String: Double]
         let itemReview = referenceDemand?["item_review_evidence"] as? [String: Any]
+        let pathEvidence = assessment["path_evidence"] as? [String: Any]
+        let assessmentItemCount = assessment["item_count"] as? Int ?? 0
+        let mode: SavedGenerationMode
+        if let preview = request?["preview_mode"] as? Bool {
+            mode = preview ? .preview : .live
+        } else {
+            mode = .unknown
+        }
         let pdfCount = outputs.values.compactMap { value -> [String: Any]? in
             value as? [String: Any]
         }.filter { $0["pdf_validation"] is [String: Any] }.count
         return GenerationQualityReport(
-            itemCount: assessment["item_count"] as? Int ?? 0,
+            identity: SavedPackageIdentity(
+                subject: Self.nonEmpty(request?["subject"] as? String),
+                paper: Self.nonEmpty(request?["paper"] as? String),
+                seed: request?["seed"] as? Int,
+                jobID: Self.nonEmpty(root["job_id"] as? String),
+                generatorID: Self.nonEmpty(generator?["id"] as? String),
+                generatorVersion: Self.nonEmpty(generator?["version"] as? String),
+                formID: Self.nonEmpty(assessment["form_id"] as? String)
+            ),
+            savedMode: mode,
+            itemCount: assessmentItemCount,
             fingerprintsVerified: assessment["fingerprints_verified"] as? Bool ?? false,
             historicComparisons: novelty["historic_comparisons"] as? Int ?? 0,
+            noveltyPassed: novelty["passed"] as? Bool,
             nearestSimilarity: nearest?["similarity"] as? Double,
             pdfCount: pdfCount,
+            engineeringValidated: qualification?["engineering_validated"] as? Bool,
+            visuallyCalibrated: qualification?["visually_calibrated"] as? Bool,
+            empiricallyCalibrated: qualification?["empirically_calibrated"] as? Bool,
             referenceDemandPassed: referenceDemand?["passed"] as? Bool,
             referenceDemandItems: referenceDemand?["items_checked"] as? Int ?? 0,
             referenceDemandDocuments: referenceDemand?["source_document_count"] as? Int ?? 0,
             referenceDemandMaxDistance: distances?.values.max(),
             referenceDemandExtractionCoverage: referenceDemand?["extraction_coverage"] as? Double,
+            referenceDemandFailedChecks: referenceDemand?["failed_checks"] as? [String],
             difficultyReviewedItems: itemReview?["reviewed_items"] as? Int ?? 0,
+            difficultyApprovedItems: itemReview?["approved_items"] as? Int,
+            difficultyReviewCoverage: itemReview?["coverage"] as? Double,
             difficultyReasoningFitItems: itemReview?["reasoning_range_fit"] as? Int ?? 0,
             difficultyContextFitItems: itemReview?["context_fit"] as? Int ?? 0,
-            difficultyShortcutFitItems: itemReview?["shortcut_resistant"] as? Int ?? 0
+            difficultyShortcutFitItems: itemReview?["shortcut_resistant"] as? Int ?? 0,
+            candidatePathEvidencePassed: pathEvidence?["passed"] as? Bool,
+            authoringProvenance: Self.decodeAuthoringProvenance(
+                assessment["authoring_provenance"] as? [String: Any],
+                expectedItems: assessmentItemCount
+            )
         )
+    }
+
+    private static func decodeAuthoringProvenance(
+        _ value: [String: Any]?,
+        expectedItems: Int
+    ) -> AuthoringProvenanceSummary {
+        guard let value,
+              value["schema_version"] as? Int == 1,
+              let items = value["items"] as? Int,
+              let fixed = value["reviewed_fixed_items"] as? Int,
+              let authored = value["ai_authored_items"] as? Int,
+              let stems = value["ai_authored_stem_items"] as? Int,
+              let unreviewed = value["unreviewed_or_builtin_items"] as? Int,
+              let unknown = value["unknown_items"] as? Int,
+              items >= 0,
+              items == expectedItems,
+              [fixed, authored, stems, unreviewed, unknown].allSatisfy({ $0 >= 0 }),
+              fixed + authored + stems + unreviewed + unknown == items
+        else { return .unknown }
+        let kind: AuthoringProvenanceKind
+        if unknown > 0 {
+            kind = .unknown
+        } else if fixed == items {
+            kind = .reviewedFixedOnly
+        } else if authored + stems == items {
+            kind = .aiAuthoredOnly
+        } else if unreviewed == items {
+            kind = .unreviewed
+        } else {
+            kind = .mixed
+        }
+        return AuthoringProvenanceSummary(
+            kind: kind,
+            reviewedFixedItems: fixed,
+            aiAuthoredItems: authored,
+            aiAuthoredStemItems: stems,
+            unreviewedItems: unreviewed,
+            unknownItems: unknown
+        )
+    }
+
+    private static func nonEmpty(_ value: String?) -> String? {
+        guard let value = value?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !value.isEmpty else { return nil }
+        return value
+    }
+}
+
+enum GenerationQualityPolicy {
+    static func presentation(
+        for report: GenerationQualityReport?
+    ) -> GenerationQualityPresentation {
+        guard let report else {
+            return GenerationQualityPresentation(
+                originalityState: .atCreation,
+                originalityDetail: "Originality evidence is created with a saved package.",
+                referenceDemandState: .atCreation,
+                referenceDemandDetail: "Reference-demand evidence is created with a saved package.",
+                pathEvidenceState: .unknown,
+                pathEvidenceDetail: "Candidate-path evidence is not available.",
+                diagnosticLines: ["Saved package evidence: None"]
+            )
+        }
+        let originalityState: GenerationQualityState
+        let originalityDetail: String
+        switch report.savedMode {
+        case .preview:
+            originalityState = .preview
+            originalityDetail = "Preview history comparison is skipped; authorship and originality are not reviewed."
+        case .live where report.noveltyPassed == true:
+            originalityState = .passed
+            originalityDetail = "Saved-package similarity checks passed. " + provenanceDetail(report)
+        case .live where report.noveltyPassed == false:
+            originalityState = .pending
+            originalityDetail = "Saved-package similarity checks did not pass. " + provenanceDetail(report)
+        case .live, .unknown:
+            originalityState = .unknown
+            originalityDetail = "Saved-package originality evidence is incomplete. " + provenanceDetail(report)
+        }
+
+        let coverageText = report.difficultyReviewCoverage.map {
+            "\(report.difficultyReviewedItems) of \(report.referenceDemandItems) items (\($0.formatted(.percent.precision(.fractionLength(0)))))"
+        } ?? "unknown item coverage"
+        let validItemReview = validatedItemReview(report)
+        let completeLiveReview = report.savedMode == .live
+            && validItemReview
+            && report.referenceDemandPassed == true
+            && report.difficultyReviewCoverage == 1.0
+            && report.difficultyApprovedItems == report.referenceDemandItems
+            && report.referenceDemandFailedChecks?.isEmpty == true
+        let referenceState: GenerationQualityState
+        let referenceDetail: String
+        if report.savedMode == .preview {
+            referenceState = .preview
+            referenceDetail = "Aggregate profile fit is preview-only; validated item depth covers \(coverageText)."
+        } else if completeLiveReview {
+            referenceState = .passed
+            referenceDetail = "Aggregate profile fit passed and validated item depth covers \(coverageText)."
+        } else if report.savedMode == .unknown
+                    || report.referenceDemandPassed == nil
+                    || !validItemReview {
+            referenceState = .unknown
+            referenceDetail = "Saved profile or item-review coverage is missing; item depth is unknown."
+        } else {
+            referenceState = .pending
+            referenceDetail = "Profile fit or validated item coverage is incomplete: \(coverageText)."
+        }
+        let pathState: GenerationQualityState = switch report.candidatePathEvidencePassed {
+        case true: .passed
+        case false: .pending
+        case nil: .unknown
+        }
+        let pathDetail = report.candidatePathEvidencePassed.map {
+            $0 ? "Candidate-path evidence passed." : "Candidate-path evidence needs review."
+        } ?? "Candidate-path and focused-bank evidence is not present in this package."
+        let identity = [report.identity.subject, report.identity.paper]
+            .compactMap { $0 }
+            .joined(separator: " / ")
+        return GenerationQualityPresentation(
+            originalityState: originalityState,
+            originalityDetail: originalityDetail,
+            referenceDemandState: referenceState,
+            referenceDemandDetail: referenceDetail,
+            pathEvidenceState: pathState,
+            pathEvidenceDetail: pathDetail,
+            diagnosticLines: [
+                "Saved package: \(identity.isEmpty ? "Unknown" : identity)",
+                "Saved seed: \(report.identity.seed.map(String.init) ?? "Unknown")",
+                "Saved job: \(report.identity.jobID ?? "Unknown")",
+                "Saved mode: \(report.savedMode.rawValue)",
+                "Saved form: \(report.identity.formID ?? "Unknown")",
+                "Saved generator: \(report.identity.generatorID ?? "Unknown") \(report.identity.generatorVersion ?? "")".trimmingCharacters(in: .whitespaces),
+                "Originality: \(originalityDetail)",
+                "Reference demand: \(referenceDetail)",
+                "Candidate paths: \(pathDetail)",
+            ]
+        )
+    }
+
+    private static func provenanceDetail(_ report: GenerationQualityReport) -> String {
+        let provenance = report.authoringProvenance
+        switch provenance.kind {
+        case .reviewedFixedOnly:
+            return "All content follows reviewed fixed contracts; no AI-authored wording is recorded."
+        case .aiAuthoredOnly:
+            return "The package records AI-authored content; review coverage remains a separate check."
+        case .mixed:
+            if let stems = provenance.aiAuthoredStemItems, stems > 0 {
+                return "Mixed provenance includes \(stems) stem edit(s) and reviewed fixed contracts; a stem edit is not full-question authorship."
+            }
+            return "The package records mixed authored and reviewed fixed content."
+        case .unreviewed:
+            return "The package records built-in or unreviewed content, not reviewed originality."
+        case .unknown:
+            return "Authoring provenance is unknown."
+        }
+    }
+
+    private static func validatedItemReview(_ report: GenerationQualityReport) -> Bool {
+        guard report.itemCount > 0,
+              report.referenceDemandItems == report.itemCount,
+              let approved = report.difficultyApprovedItems,
+              let coverage = report.difficultyReviewCoverage,
+              report.referenceDemandFailedChecks != nil,
+              report.difficultyReviewedItems >= 0,
+              approved >= 0,
+              approved <= report.difficultyReviewedItems,
+              report.difficultyReviewedItems <= report.referenceDemandItems,
+              (0.0 ... 1.0).contains(coverage),
+              report.difficultyReasoningFitItems >= 0,
+              report.difficultyReasoningFitItems <= report.difficultyReviewedItems,
+              report.difficultyContextFitItems >= 0,
+              report.difficultyContextFitItems <= report.difficultyReviewedItems,
+              report.difficultyShortcutFitItems >= 0,
+              report.difficultyShortcutFitItems <= report.difficultyReviewedItems
+        else { return false }
+        let expectedCoverage = Double(report.difficultyReviewedItems)
+            / Double(report.referenceDemandItems)
+        return abs(coverage - expectedCoverage) < 0.000_001
     }
 }
 

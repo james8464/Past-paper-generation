@@ -134,6 +134,117 @@ final class PaperCreatorTests: XCTestCase {
         XCTAssertEqual(report.difficultyShortcutFitItems, 11)
     }
 
+    func testPreviewQualityPolicyKeepsAggregateFitSeparateFromItemReview() throws {
+        let report = try loadQualityReport(
+            #"{"job_id":"job-7","generator":{"id":"economics-aqa","version":"1.2.3"},"request":{"subject":"economics_aqa","paper":"1","seed":42,"preview_mode":true},"evidence":{"qualification_levels":{"engineering_validated":true,"visually_calibrated":false,"empirically_calibrated":false},"assessment_validation":{"form_id":"form-42","item_count":12,"fingerprints_verified":true,"authoring_provenance":{"schema_version":1,"items":12,"counts":{"built-in":12},"reviewed_fixed_items":0,"ai_authored_items":0,"ai_authored_stem_items":0,"unreviewed_or_builtin_items":12,"unknown_items":0},"reference_demand":{"passed":true,"items_checked":12,"source_document_count":4,"failed_checks":[],"item_review_evidence":{"reviewed_items":0,"approved_items":0,"coverage":0.0,"reasoning_range_fit":0,"context_fit":0,"shortcut_resistant":0}}},"novelty_validation":{"passed":true,"historic_comparisons":0,"preview_skipped_history":true}},"outputs":{}}"#
+        )
+        let presentation = GenerationQualityPolicy.presentation(for: report)
+
+        XCTAssertEqual(report.identity.subject, "economics_aqa")
+        XCTAssertEqual(report.identity.paper, "1")
+        XCTAssertEqual(report.identity.seed, 42)
+        XCTAssertEqual(report.identity.jobID, "job-7")
+        XCTAssertEqual(report.identity.generatorID, "economics-aqa")
+        XCTAssertEqual(report.identity.formID, "form-42")
+        XCTAssertEqual(report.savedMode, .preview)
+        XCTAssertTrue(presentation.diagnosticLines.contains("Saved job: job-7"))
+        XCTAssertEqual(presentation.originalityState, .preview)
+        XCTAssertEqual(presentation.referenceDemandState, .preview)
+        XCTAssertTrue(presentation.referenceDemandDetail.contains("0 of 12"))
+        XCTAssertEqual(presentation.pathEvidenceState, .unknown)
+    }
+
+    func testLiveQualityPolicyDistinguishesFixedAndMixedProvenance() throws {
+        let fixed = try loadQualityReport(
+            #"{"generator":{"id":"edexcel","version":"1"},"request":{"subject":"economics_edexcel_a","paper":"3","seed":51,"preview_mode":false},"evidence":{"qualification_levels":{"engineering_validated":true,"visually_calibrated":true,"empirically_calibrated":false},"assessment_validation":{"form_id":"fixed","item_count":4,"fingerprints_verified":true,"authoring_provenance":{"schema_version":1,"items":4,"counts":{"reviewed-deterministic-contract":4},"reviewed_fixed_items":4,"ai_authored_items":0,"ai_authored_stem_items":0,"unreviewed_or_builtin_items":0,"unknown_items":0},"reference_demand":{"passed":true,"items_checked":4,"source_document_count":4,"failed_checks":[],"item_review_evidence":{"reviewed_items":4,"approved_items":4,"coverage":1.0,"reasoning_range_fit":4,"context_fit":4,"shortcut_resistant":4}}},"novelty_validation":{"passed":true,"historic_comparisons":10}},"outputs":{}}"#
+        )
+        let mixed = try loadQualityReport(
+            #"{"request":{"subject":"economics_edexcel_a","paper":"3","seed":51,"preview_mode":false},"evidence":{"assessment_validation":{"form_id":"mixed","item_count":4,"fingerprints_verified":true,"authoring_provenance":{"schema_version":1,"items":4,"counts":{"ai-authored-stem-reviewed-contract":1,"reviewed-deterministic-contract":3},"reviewed_fixed_items":3,"ai_authored_items":0,"ai_authored_stem_items":1,"unreviewed_or_builtin_items":0,"unknown_items":0},"reference_demand":{"passed":true,"items_checked":4,"failed_checks":[],"item_review_evidence":{"reviewed_items":4,"approved_items":4,"coverage":1.0,"reasoning_range_fit":4,"context_fit":4,"shortcut_resistant":4}}},"novelty_validation":{"passed":true,"historic_comparisons":10}},"outputs":{}}"#
+        )
+
+        XCTAssertEqual(fixed.authoringProvenance.kind, .reviewedFixedOnly)
+        XCTAssertEqual(mixed.authoringProvenance.kind, .mixed)
+        XCTAssertFalse(
+            GenerationQualityPolicy.presentation(for: fixed).originalityDetail
+                .contains("newly AI-authored")
+        )
+        XCTAssertTrue(
+            GenerationQualityPolicy.presentation(for: mixed).originalityDetail
+                .contains("1 stem")
+        )
+        XCTAssertEqual(
+            GenerationQualityPolicy.presentation(for: mixed).referenceDemandState,
+            .passed
+        )
+    }
+
+    func testLegacyManifestDoesNotInventModeCoverageOrPathEvidence() throws {
+        let report = try loadQualityReport(
+            #"{"job_id":"","generator":{"id":"","version":""},"evidence":{"assessment_validation":{"item_count":4,"fingerprints_verified":true,"reference_demand":{"passed":true,"items_checked":4}},"novelty_validation":{"historic_comparisons":0}},"outputs":{}}"#
+        )
+        let presentation = GenerationQualityPolicy.presentation(for: report)
+
+        XCTAssertEqual(report.savedMode, .unknown)
+        XCTAssertNil(report.difficultyReviewCoverage)
+        XCTAssertEqual(report.authoringProvenance.kind, .unknown)
+        XCTAssertNil(report.identity.jobID)
+        XCTAssertNil(report.identity.generatorID)
+        XCTAssertNil(report.identity.generatorVersion)
+        XCTAssertEqual(presentation.referenceDemandState, .unknown)
+        XCTAssertEqual(presentation.pathEvidenceState, .unknown)
+        XCTAssertTrue(
+            presentation.diagnosticLines.contains {
+                $0.contains("Saved mode: Unknown")
+            }
+        )
+    }
+
+    func testMalformedSavedReviewCountsCannotProduceAPass() throws {
+        let malformed = try loadQualityReport(
+            #"{"request":{"subject":"economics_aqa","paper":"1","seed":7,"preview_mode":false},"evidence":{"assessment_validation":{"form_id":"bad-counts","item_count":4,"fingerprints_verified":true,"reference_demand":{"passed":true,"items_checked":4,"failed_checks":[],"item_review_evidence":{"reviewed_items":-1,"approved_items":4,"coverage":1.0,"reasoning_range_fit":4,"context_fit":4,"shortcut_resistant":4}}},"novelty_validation":{"passed":true,"historic_comparisons":10}},"outputs":{}}"#
+        )
+        let mismatched = try loadQualityReport(
+            #"{"request":{"subject":"economics_aqa","paper":"1","seed":7,"preview_mode":false},"evidence":{"assessment_validation":{"form_id":"bad-total","item_count":3,"fingerprints_verified":true,"reference_demand":{"passed":true,"items_checked":4,"failed_checks":[],"item_review_evidence":{"reviewed_items":4,"approved_items":4,"coverage":1.0,"reasoning_range_fit":4,"context_fit":4,"shortcut_resistant":4}}},"novelty_validation":{"passed":true,"historic_comparisons":10}},"outputs":{}}"#
+        )
+        let malformedFailures = try loadQualityReport(
+            #"{"request":{"subject":"economics_aqa","paper":"1","seed":7,"preview_mode":false},"evidence":{"assessment_validation":{"form_id":"bad-failures","item_count":4,"fingerprints_verified":true,"reference_demand":{"passed":true,"items_checked":4,"failed_checks":{"unexpected":true},"item_review_evidence":{"reviewed_items":4,"approved_items":4,"coverage":1.0,"reasoning_range_fit":4,"context_fit":4,"shortcut_resistant":4}}},"novelty_validation":{"passed":true,"historic_comparisons":10}},"outputs":{}}"#
+        )
+        let malformedProvenance = try loadQualityReport(
+            #"{"request":{"subject":"economics_aqa","paper":"1","seed":7,"preview_mode":false},"evidence":{"assessment_validation":{"form_id":"bad-provenance","item_count":4,"fingerprints_verified":true,"authoring_provenance":{"schema_version":1,"items":1,"counts":{"reviewed-fixed":1},"reviewed_fixed_items":1,"ai_authored_items":0,"ai_authored_stem_items":0,"unreviewed_or_builtin_items":0,"unknown_items":0},"reference_demand":{"passed":true,"items_checked":4,"failed_checks":[],"item_review_evidence":{"reviewed_items":4,"approved_items":4,"coverage":1.0,"reasoning_range_fit":4,"context_fit":4,"shortcut_resistant":4}}},"novelty_validation":{"passed":true,"historic_comparisons":10}},"outputs":{}}"#
+        )
+
+        XCTAssertEqual(GenerationQualityPolicy.presentation(for: malformed).referenceDemandState, .unknown)
+        XCTAssertEqual(GenerationQualityPolicy.presentation(for: mismatched).referenceDemandState, .unknown)
+        XCTAssertEqual(GenerationQualityPolicy.presentation(for: malformedFailures).referenceDemandState, .unknown)
+        XCTAssertEqual(malformedProvenance.authoringProvenance.kind, .unknown)
+    }
+
+    func testPartialReviewAndRecordedCandidatePathRemainSeparateStates() throws {
+        let partial = try loadQualityReport(
+            #"{"request":{"subject":"economics_aqa","paper":"1","seed":8,"preview_mode":false},"evidence":{"assessment_validation":{"form_id":"partial","item_count":4,"fingerprints_verified":true,"path_evidence":{"passed":false},"reference_demand":{"passed":false,"items_checked":4,"failed_checks":["item_difficulty_review"],"item_review_evidence":{"reviewed_items":2,"approved_items":1,"coverage":0.5,"reasoning_range_fit":2,"context_fit":1,"shortcut_resistant":1}}},"novelty_validation":{"passed":true,"historic_comparisons":10}},"outputs":{}}"#
+        )
+        let completePath = try loadQualityReport(
+            #"{"request":{"subject":"economics_aqa","paper":"1","seed":8,"preview_mode":false},"evidence":{"assessment_validation":{"form_id":"complete","item_count":1,"fingerprints_verified":true,"path_evidence":{"passed":true},"reference_demand":{"passed":true,"items_checked":1,"failed_checks":[],"item_review_evidence":{"reviewed_items":1,"approved_items":1,"coverage":1.0,"reasoning_range_fit":1,"context_fit":1,"shortcut_resistant":1}}},"novelty_validation":{"passed":true,"historic_comparisons":10}},"outputs":{}}"#
+        )
+
+        let partialPresentation = GenerationQualityPolicy.presentation(for: partial)
+        XCTAssertEqual(partialPresentation.referenceDemandState, .pending)
+        XCTAssertEqual(partialPresentation.pathEvidenceState, .pending)
+        XCTAssertEqual(
+            GenerationQualityPolicy.presentation(for: completePath).pathEvidenceState,
+            .passed
+        )
+    }
+
+    private func loadQualityReport(_ manifest: String) throws -> GenerationQualityReport {
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+            .appendingPathExtension("json")
+        defer { try? FileManager.default.removeItem(at: url) }
+        try Data(manifest.utf8).write(to: url)
+        return try XCTUnwrap(GenerationQualityReport.load(from: url))
+    }
+
     func testBenchmarkSampleEventDecodes() throws {
         let event = try BackendEvent(jsonLine: #"{"type":"benchmark_sample","elapsed":2,"cpu_load":18.5,"cpu_mb_s":720,"memory_available_gb":9.25,"memory_pressure_percent":42,"swap_used_gb":0.5,"disk_write_mb_s":420,"disk_read_mb_s":900,"disk_free_gb":128,"small_file_ms":3.2,"network_latency_ms":42,"network_download_mb_s":34,"ollama_latency_ms":12,"thermal_speed_limit_percent":100,"pdf_pages_per_s":22}"#)
         if case let .benchmarkSample(sample) = event {

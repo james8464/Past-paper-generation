@@ -16,6 +16,7 @@ from Backend.Core.assessment_contracts import EvidenceRecord
 from Backend.Core.assessment_quality import (
     validate_economics_causal_direction,
 )
+from Backend.Core.candidate_identity import edexcel_difficulty_candidate_projection
 from Backend.Core.independent_solver import (
     IndependentSolver,
     require_solution_matches_scheme,
@@ -420,7 +421,11 @@ def review_blueprint_difficulty(
                 client,
                 item_id=f"question-{question.number}-{label}",
                 subject="Edexcel A-level Economics A",
-                candidate=solver_item,
+                candidate=_difficulty_candidate(
+                    question,
+                    part,
+                    solver_item=solver_item,
+                ),
                 target=build_item_demand_target(item, profile),
                 specification=_review_specification(topic, question),
                 canonical_solution=solution,
@@ -447,6 +452,23 @@ def _question_solver_item(
     question: QuestionBlueprint, part: QuestionPart | QuestionBlueprint
 ) -> dict[str, object]:
     return _question_solver_projection(question, part).item
+
+
+def _difficulty_candidate(
+    question: QuestionBlueprint,
+    part: QuestionPart | QuestionBlueprint,
+    *,
+    solver_item: dict[str, object] | None = None,
+) -> object:
+    return edexcel_difficulty_candidate_projection(
+        question=question,
+        part=part,
+        review_content=(
+            solver_item
+            if solver_item is not None
+            else _question_solver_projection(question, part).item
+        ),
+    )
 
 
 @dataclass(frozen=True)

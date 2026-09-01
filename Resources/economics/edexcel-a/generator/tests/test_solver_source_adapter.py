@@ -14,6 +14,8 @@ from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.syllabus import load_syllabus
 
 from Backend.Core.assessment_contracts import EvidenceRecord
+from Backend.Core.assessment_package import _extract_items
+from Backend.Core.candidate_identity import candidate_content_identity
 from Backend.Core.independent_solver import (
     IndependentSolver,
     require_solution_matches_scheme,
@@ -56,6 +58,84 @@ def test_actual_paper_three_partial_solver_shape_is_rejected_before_review() -> 
     with pytest.raises(ValueError, match="invalid solver response envelope"):
         IndependentSolver(client).solve(projection.item, projection.evidence)
     assert len(client.prompts) == 1
+
+
+def test_edexcel_identity_binds_selected_source_key_credit_and_contract() -> None:
+    multipart = _paper("paper_1", 26083049).questions[0]
+    mcq = next(part for part in multipart.parts if part.options)
+    baseline = candidate_content_identity(subject._difficulty_candidate(multipart, mcq))
+
+    source = multipart.source_instance.model_copy(deep=True)
+    rows = copy.deepcopy(source.rows)
+    rows[0][0] = rows[0][0].model_copy(update={"text": "Changed public value"})
+    changed_source = multipart.model_copy(
+        update={"source_instance": source.model_copy(update={"rows": rows})}
+    )
+    changed_options = mcq.model_copy(
+        update={
+            "options": [
+                *mcq.options[:-1],
+                mcq.options[-1].model_copy(update={"text": "Changed distractor"}),
+            ]
+        }
+    )
+    changed_key = mcq.model_copy(update={"correct_option": mcq.options[-1].label})
+    changed_credit = mcq.model_copy(
+        update={"mark_scheme": [*mcq.mark_scheme, "Complete alternative"]}
+    )
+    changed_contract = mcq.model_copy(
+        update={"assessment_contract": {"operation": "changed-contract"}}
+    )
+
+    changed_source_part = next(
+        part for part in changed_source.parts if part.label == mcq.label
+    )
+    assert candidate_content_identity(
+        subject._difficulty_candidate(changed_source, changed_source_part)
+    ) != baseline
+    for changed_part in [changed_options, changed_key, changed_credit, changed_contract]:
+        assert candidate_content_identity(
+            subject._difficulty_candidate(multipart, changed_part)
+        ) != baseline
+
+
+def test_edexcel_multipart_parent_credit_is_not_duplicated_in_part_identity() -> None:
+    multipart = _paper("paper_1", 26083049).questions[0]
+    part = multipart.parts[0]
+    baseline = candidate_content_identity(subject._difficulty_candidate(multipart, part))
+    changed_parent = multipart.model_copy(
+        update={
+            "mark_scheme": ["Duplicate parent guidance must not be part credit"],
+            "mark_breakdown": "duplicate",
+            "indicative_content": ["duplicate"],
+            "assessment_contract": {"duplicate": True},
+        }
+    )
+
+    assert candidate_content_identity(
+        subject._difficulty_candidate(changed_parent, part)
+    ) == baseline
+
+
+@pytest.mark.parametrize("paper_id", ["paper_1", "paper_3"])
+def test_edexcel_export_recomputes_standalone_and_multipart_identity(paper_id) -> None:
+    blueprint = _paper(paper_id, 26083049)
+    items = _extract_items(
+        blueprint.model_dump(mode="json"),
+        subject="economics_edexcel_a",
+        paper_number=paper_id.removeprefix("paper_"),
+    )
+    live_candidates = [
+        subject._difficulty_candidate(question, part)
+        for question in blueprint.questions
+        for part in (question.parts or [question])
+    ]
+
+    assert len(items) == len(live_candidates)
+    assert [
+        candidate_content_identity(item["difficulty_candidate_projection"])
+        for item in items
+    ] == [candidate_content_identity(candidate) for candidate in live_candidates]
 
 
 @pytest.mark.parametrize(

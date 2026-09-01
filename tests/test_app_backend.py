@@ -197,6 +197,12 @@ def test_economics_dry_run_generates_expected_files(tmp_path: Path) -> None:
         manifest["evidence"]["assessment_validation"]["form_id"]
         == assessment["form_id"]
     )
+    provenance = manifest["evidence"]["assessment_validation"][
+        "authoring_provenance"
+    ]
+    assert provenance["items"] == len(assessment["items"])
+    assert sum(provenance["counts"].values()) == provenance["items"]
+    assert provenance["unknown_items"] == 0
     reference_demand = manifest["evidence"]["reference_demand"]
     assert reference_demand == assessment["reference_demand"]
     assert reference_demand["passed"] is True

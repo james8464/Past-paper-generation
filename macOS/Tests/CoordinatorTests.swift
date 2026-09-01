@@ -20,6 +20,13 @@ final class CoordinatorTests: XCTestCase {
         }
     }
 
+    private func qualityReport() throws -> GenerationQualityReport {
+        let url = temporaryDirectory.appendingPathComponent("quality.json")
+        let manifest = #"{"request":{"subject":"economics_aqa","paper":"1","seed":42,"preview_mode":false},"evidence":{"assessment_validation":{"form_id":"form","item_count":1,"fingerprints_verified":true,"authoring_provenance":{"schema_version":1,"items":1,"counts":{"reviewed-fixed":1},"reviewed_fixed_items":1,"ai_authored_items":0,"ai_authored_stem_items":0,"unreviewed_or_builtin_items":0,"unknown_items":0},"reference_demand":{"passed":true,"items_checked":1,"failed_checks":[],"item_review_evidence":{"reviewed_items":1,"approved_items":1,"coverage":1.0,"reasoning_range_fit":1,"context_fit":1,"shortcut_resistant":1}}},"novelty_validation":{"passed":true,"historic_comparisons":1}},"outputs":{}}"#
+        try Data(manifest.utf8).write(to: url)
+        return try XCTUnwrap(GenerationQualityReport.load(from: url))
+    }
+
     @MainActor
     func testHistoryPersistsVersionedJobAndRestoresAfterRelaunch() throws {
         let original = RecentDocumentStore(directory: temporaryDirectory, retentionLimit: 10)
@@ -234,6 +241,64 @@ final class CoordinatorTests: XCTestCase {
     }
 
     @MainActor
+    func testSavedReportClearsOnlyForAcceptedTargetChanges() throws {
+        let model = ApplicationCoordinator()
+        let board = try XCTUnwrap(
+            ExamCatalog.readyBoards.first { $0.papers.count > 1 }
+        )
+        model.selectBoard(board)
+        let original = model.selectedPaperID
+        let changed = try XCTUnwrap(board.papers.first { $0.id != original })
+        let report = try qualityReport()
+
+        model.lastQualityReport = report
+        model.selectPaperID(original)
+        XCTAssertEqual(model.lastQualityReport, report)
+        model.selectPaperID("not-a-paper")
+        XCTAssertEqual(model.lastQualityReport, report)
+        model.isRunning = true
+        model.selectPaperID(changed.id)
+        XCTAssertEqual(model.lastQualityReport, report)
+        model.isRunning = false
+        model.selectPaperID(changed.id)
+        XCTAssertNil(model.lastQualityReport)
+    }
+
+    @MainActor
+    func testModeToggleAndArtifactOnlyRelaunchDoNotInventOrChangeSavedFacts() throws {
+        let model = ApplicationCoordinator()
+        let report = try qualityReport()
+        model.lastQualityReport = report
+
+        model.setDryRun(!model.dryRun)
+
+        XCTAssertEqual(model.lastQualityReport, report)
+        XCTAssertEqual(model.lastQualityReport?.savedMode, .live)
+        XCTAssertEqual(
+            model.qualityDiagnosticLines,
+            GenerationQualityPolicy.presentation(for: report).diagnosticLines
+        )
+        XCTAssertNil(ApplicationCoordinator().lastQualityReport)
+    }
+
+    @MainActor
+    func testAssessmentKindChangeClearsSavedReportOnAcceptedNewTarget() throws {
+        let model = ApplicationCoordinator()
+        let board = try XCTUnwrap(
+            ExamCatalog.readyBoards.first {
+                !$0.fullPapers.isEmpty && !$0.questionBanks.isEmpty
+            }
+        )
+        model.selectBoard(board)
+        model.lastQualityReport = try qualityReport()
+
+        model.selectAssessmentKind(.questionBank)
+
+        XCTAssertEqual(model.selectedPaper.assessmentKind, .questionBank)
+        XCTAssertNil(model.lastQualityReport)
+    }
+
+    @MainActor
     func testDuplicateConfigurationRestoresSelectionsAndSeed() throws {
         let model = ApplicationCoordinator()
         let record = GenerationJobRecord.fixture(state: .completed)
@@ -245,6 +310,75 @@ final class CoordinatorTests: XCTestCase {
         XCTAssertEqual(model.aiProvider.backendID, record.configuration.provider)
         XCTAssertEqual(model.pendingGenerationSeed, record.configuration.seed)
         XCTAssertEqual(model.sidebarSelection, .board(record.configuration.boardID))
+    }
+
+    @MainActor
+    func testInvalidConfigurationDoesNotClearSavedReportOrChangeTarget() throws {
+        let model = ApplicationCoordinator()
+        let report = try qualityReport()
+        model.lastQualityReport = report
+        let originalBoard = model.selectedBoardID
+        let originalPaper = model.selectedPaperID
+        let differentBoard = try XCTUnwrap(
+            ExamCatalog.readyBoards.first { $0.id != originalBoard }
+        )
+        let fixture = GenerationJobRecord.fixture(state: .completed)
+        let invalid = GenerationJobRecord(
+            configuration: GenerationConfiguration(
+                boardID: differentBoard.id,
+                paperID: "not-a-paper",
+                provider: fixture.configuration.provider,
+                model: fixture.configuration.model,
+                seed: fixture.configuration.seed,
+                dryRun: fixture.configuration.dryRun
+            ),
+            provenance: fixture.provenance,
+            state: fixture.state,
+            artifacts: fixture.artifacts,
+            qualification: fixture.qualification
+        )
+
+        model.duplicateConfiguration(invalid)
+
+        XCTAssertEqual(model.selectedBoardID, originalBoard)
+        XCTAssertEqual(model.selectedPaperID, originalPaper)
+        XCTAssertEqual(model.lastQualityReport, report)
+    }
+
+    @MainActor
+    func testApplyingHistoryConfigurationUsesAcceptedTargetChangePolicy() throws {
+        let model = ApplicationCoordinator()
+        let fixture = GenerationJobRecord.fixture(state: .completed)
+        let board = try XCTUnwrap(ExamCatalog.board(id: fixture.configuration.boardID))
+        model.selectBoard(board)
+        model.selectPaperID(fixture.configuration.paperID)
+        let report = try qualityReport()
+        model.lastQualityReport = report
+
+        model.duplicateConfiguration(fixture)
+        XCTAssertEqual(model.lastQualityReport, report)
+
+        let otherPaper = try XCTUnwrap(
+            board.papers.first { $0.id != fixture.configuration.paperID }
+        )
+        let changed = GenerationJobRecord(
+            configuration: GenerationConfiguration(
+                boardID: board.id,
+                paperID: otherPaper.id,
+                provider: fixture.configuration.provider,
+                model: fixture.configuration.model,
+                seed: fixture.configuration.seed,
+                dryRun: fixture.configuration.dryRun
+            ),
+            provenance: fixture.provenance,
+            state: fixture.state,
+            artifacts: fixture.artifacts,
+            qualification: fixture.qualification
+        )
+        model.duplicateConfiguration(changed)
+
+        XCTAssertEqual(model.selectedPaperID, otherPaper.id)
+        XCTAssertNil(model.lastQualityReport)
     }
 
     @MainActor

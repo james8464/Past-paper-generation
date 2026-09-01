@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from copy import deepcopy
+
 import pytest
 
 from Backend.Core import model_review
+from Backend.Core.candidate_identity import difficulty_candidate_projection
 from Backend.Core.model_review import (
     ReviewResult,
     independent_review,
@@ -66,7 +69,10 @@ def test_live_difficulty_response_must_explicitly_include_every_check(missing) -
         approved=True, estimated_demand="low", reasoning_steps=1,
         tariff_fit=True, command_word_fit=True, context_fit=True, profile_fit=True,
         observed_cognitive_operations=["retrieve"], estimated_minutes=1.5,
-    ).model_dump(mode="json", exclude={"public_task_operation_evidence"})
+    ).model_dump(
+        mode="json",
+        exclude={"public_task_operation_evidence", "candidate_content_identity"},
+    )
     del response[missing]
     with pytest.raises(ValueError, match="invalid difficulty review response"):
         model_review.difficulty_review(
@@ -80,12 +86,34 @@ def test_live_difficulty_response_rejects_extra_raw_fields() -> None:
         approved=True, estimated_demand="low", reasoning_steps=1,
         tariff_fit=True, command_word_fit=True, context_fit=True, profile_fit=True,
         observed_cognitive_operations=["retrieve"], estimated_minutes=1.5,
-    ).model_dump(mode="json", exclude={"public_task_operation_evidence"})
+    ).model_dump(
+        mode="json",
+        exclude={"public_task_operation_evidence", "candidate_content_identity"},
+    )
     response["confidence"] = 0.9
     with pytest.raises(ValueError, match="invalid difficulty review response"):
         model_review.difficulty_review(
             ReviewClient(response), item_id="q1", subject="Economics",
             target={}, candidate={}, specification={},
+        )
+
+
+@pytest.mark.parametrize(
+    "provider_value",
+    [None, {"schema_version": 1, "projection_version": "difficulty-candidate-v1"}],
+)
+def test_live_difficulty_response_rejects_host_candidate_identity(provider_value) -> None:
+    response = _difficulty_raw_with_operations(["retrieve"])
+    response["candidate_content_identity"] = provider_value
+
+    with pytest.raises(ValueError, match="invalid difficulty review response"):
+        model_review.difficulty_review(
+            ReviewClient(response),
+            item_id="q1",
+            subject="Economics",
+            target={},
+            candidate={"prompt": "Identify one reason."},
+            specification={},
         )
 
 
@@ -339,7 +367,7 @@ def test_difficulty_review_receives_independent_solution_and_operation_contract(
         canonical_solution={"answer": "Judgement", "steps": ["a", "b", "c", "d"], "integrity_version": "closed-numeric-v2"},
     )
 
-    assert result.schema_version == 3
+    assert result.schema_version == 4
     assert result.target_profile_fingerprint == "a" * 64
     assert result.independent_solution_steps == 4
     assert "canonical_solution" in client.prompt
@@ -507,7 +535,10 @@ def test_difficulty_prompt_distinguishes_authored_sql_from_supplied_sql_analysis
         profile_fit=True,
         observed_cognitive_operations=["program"],
         estimated_minutes=3.0,
-    ).model_dump(mode="json", exclude={"public_task_operation_evidence"})
+    ).model_dump(
+        mode="json",
+        exclude={"public_task_operation_evidence", "candidate_content_identity"},
+    )
     client = ReviewClient(response)
     model_review.difficulty_review(
         client,
@@ -559,7 +590,10 @@ def test_difficulty_prompt_limits_declarative_sql_fact_to_authored_select_or_ins
         profile_fit=True,
         observed_cognitive_operations=[observed_operation],
         estimated_minutes=1.5,
-    ).model_dump(mode="json", exclude={"public_task_operation_evidence"})
+    ).model_dump(
+        mode="json",
+        exclude={"public_task_operation_evidence", "candidate_content_identity"},
+    )
     client = ReviewClient(response)
 
     model_review.difficulty_review(
@@ -604,7 +638,10 @@ def test_sql_literal_fact_does_not_mirror_a_program_target_for_supplied_analysis
         profile_fit=True,
         observed_cognitive_operations=["analyse"],
         estimated_minutes=1.5,
-    ).model_dump(mode="json", exclude={"public_task_operation_evidence"})
+    ).model_dump(
+        mode="json",
+        exclude={"public_task_operation_evidence", "candidate_content_identity"},
+    )
     client = ReviewClient(response)
 
     with pytest.raises(ValueError, match="missing required cognitive operations: program"):
@@ -694,7 +731,7 @@ def test_public_task_evidence_covers_authored_sql_without_mutating_model_observa
         },
     )
 
-    assert result.schema_version == 3
+    assert result.schema_version == 4
     assert result.observed_cognitive_operations == captured_model_operations
     assert result.public_task_operation_evidence.model_dump(mode="json") == {
         "schema_version": 1,
@@ -879,7 +916,135 @@ def test_saved_public_task_evidence_rejects_candidate_drift_and_missing_candidat
         )
 
 
-def test_saved_v2_difficulty_evidence_requires_regeneration() -> None:
+@pytest.mark.parametrize(
+    ("path", "replacement"),
+    [
+        (("part", "prompt"), "Changed public prompt."),
+        (("parent_source", "rows", 0, 1), "changed source value"),
+        (("part", "options", 1, "text"), "changed option"),
+        (("part", "correct_option"), "B"),
+        (("part", "response_slots", 0), "changed-slot"),
+        (("part", "marking", "points", 0), "changed full credit"),
+        (("part", "marking", "accept", 0), "changed complete alternative"),
+        (("part", "assessment_contract", "operation"), "changed-contract"),
+    ],
+)
+def test_saved_difficulty_evidence_binds_all_candidate_content(
+    path: tuple[object, ...], replacement: object
+) -> None:
+    candidate = {
+        "parent_source": {
+            "title": "Booking data",
+            "rows": [["Activity", "Count"], ["Swimming", "5"]],
+        },
+        "part": {
+            "prompt": "Select the activity with five bookings.",
+            "task_operation": "analyse",
+            "options": [
+                {"label": "A", "text": "Swimming"},
+                {"label": "B", "text": "Running"},
+            ],
+            "correct_option": "A",
+            "response_slots": ["choice"],
+            "marking": {
+                "points": ["Swimming"],
+                "accept": ["Option A"],
+            },
+            "assessment_contract": {
+                "operation": "selected-response-v1",
+                "inputs": {"required_count": 5},
+            },
+        },
+    }
+    target = {
+        "demand_band": "standard",
+        "minimum_reasoning_steps": 1,
+        "maximum_reasoning_steps": 5,
+        "required_cognitive_operations": ["analyse"],
+        "reference_profile_fingerprint": "profile",
+        "objective_policy_fingerprint": "policy",
+    }
+    evidence = model_review.require_difficulty_review(
+        ReviewClient(_difficulty_raw_with_operations(["analyse"])),
+        item_id="candidate-content",
+        subject="Economics",
+        target=target,
+        candidate=candidate,
+        specification={},
+    ).model_dump(mode="json")
+    changed = deepcopy(candidate)
+    current: object = changed
+    for component in path[:-1]:
+        current = current[component]  # type: ignore[index]
+    current[path[-1]] = replacement  # type: ignore[index]
+
+    with pytest.raises(
+        ValueError,
+        match=r"public-task operation evidence|candidate content identity",
+    ):
+        model_review.validate_saved_difficulty_evidence(
+            evidence,
+            target,
+            candidate=changed,
+            item_id="candidate-content",
+        )
+
+
+def test_candidate_projection_excludes_only_declared_evidence_and_preserves_contracts() -> None:
+    projection = difficulty_candidate_projection(
+        route="shared",
+        review_content={
+            "prompt": "Use the source value.",
+            "options": ["B", "A", "C", "D"],
+            "authoring_context": {
+                "typed_source_contract": {"value": 10.5, "units": "percent"},
+                "difficulty_evidence": {"approved": True},
+                "content_review": {"approved": True},
+            },
+        },
+    )
+
+    assert projection.review_content == {
+        "prompt": "Use the source value.",
+        "options": ["B", "A", "C", "D"],
+        "authoring_context": {
+            "typed_source_contract": {"value": 10.5, "units": "percent"}
+        },
+    }
+    assert projection.identity_content == projection.review_content
+
+
+@pytest.mark.parametrize("identity_value", [None, {"schema_version": 1, "projection_version": "difficulty-candidate-v0", "route": "shared-generic", "sha256": "0" * 64}])
+def test_saved_evidence_requires_current_candidate_identity_version(identity_value) -> None:
+    candidate = {"prompt": "Explain the relationship.", "task_operation": "explain"}
+    target = {
+        "demand_band": "standard",
+        "minimum_reasoning_steps": 1,
+        "maximum_reasoning_steps": 5,
+        "required_cognitive_operations": ["explain"],
+        "reference_profile_fingerprint": "profile",
+        "objective_policy_fingerprint": "policy",
+    }
+    evidence = model_review.require_difficulty_review(
+        ReviewClient(_difficulty_raw_with_operations(["explain"])),
+        item_id="identity-version",
+        subject="Economics",
+        target=target,
+        candidate=candidate,
+        specification={},
+    ).model_dump(mode="json")
+    evidence["candidate_content_identity"] = identity_value
+
+    with pytest.raises(ValueError, match=r"candidate content identity.*regenerate"):
+        model_review.validate_saved_difficulty_evidence(
+            evidence,
+            target,
+            candidate=candidate,
+            item_id="identity-version",
+        )
+
+
+def test_saved_v3_difficulty_evidence_requires_regeneration() -> None:
     evidence = model_review.DifficultyReviewResult(
         approved=True,
         estimated_demand="standard",
@@ -891,10 +1056,10 @@ def test_saved_v2_difficulty_evidence_requires_regeneration() -> None:
         observed_cognitive_operations=["program"],
         estimated_minutes=9.0,
     ).model_dump(mode="json")
-    evidence["schema_version"] = 2
+    evidence["schema_version"] = 3
     evidence.pop("public_task_operation_evidence", None)
 
-    with pytest.raises(ValueError, match=r"schema version 2.*regenerate"):
+    with pytest.raises(ValueError, match=r"schema version 3.*regenerate"):
         model_review.validate_saved_difficulty_evidence(
             evidence,
             _sql_difficulty_target(),

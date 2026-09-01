@@ -779,7 +779,7 @@ def test_real_pipeline_persists_model_and_public_task_operation_sources(
         evidence,
         target,
         item_id=f"question-{question.number}-{part.label}",
-        candidate=subject._difficulty_candidate(question, part),
+        candidate=subject._difficulty_candidate(one_part, part),
     )
     assert len(client.prompts) == 2
     difficulty_prompt = client.prompts[1]

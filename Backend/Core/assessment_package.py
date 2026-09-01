@@ -15,8 +15,16 @@ from Backend.Core.assessment_quality import (
     assert_distinct_items,
     item_fingerprint,
 )
+from Backend.Core.candidate_identity import (
+    difficulty_candidate_projection,
+    edexcel_difficulty_candidate_projection,
+    shared_difficulty_candidate_projection,
+)
 from Backend.Core.computer_science_audit import audit_computer_science_blueprint
-from Backend.Core.computer_science_authoring import validate_aqa_cs_reviews
+from Backend.Core.computer_science_authoring import (
+    aqa_cs_difficulty_candidate,
+    validate_aqa_cs_reviews,
+)
 from Backend.Core.generator_registry import generator_capability
 from Backend.Core.level_of_response import (
     LevelOfResponseEngine,
@@ -187,13 +195,18 @@ def validate_assessment_package(
     items = document.get("items")
     if not isinstance(items, list) or not items:
         raise ValueError("assessment package has no items")
+    expected_items = _extract_items(
+        document["blueprint"],
+        subject=subject,
+        paper_number=paper_number,
+    )
+    if items != expected_items:
+        raise ValueError("assessment package exported items differ from the blueprint")
     mark_scheme_reports = []
     if objective_policy_for(subject).computational:
         audit = audit_computer_science_blueprint(document.get("blueprint", {}))
         if document.get("assessment_policy") != audit:
             raise ValueError("CS assessment policy evidence is stale or inconsistent")
-        if items != _extract_items(document["blueprint"], subject=subject, paper_number=paper_number):
-            raise ValueError("CS exported item allocations or timing differ from the blueprint")
     response_simulation_reports = []
     for item in items:
         if not isinstance(item, dict):
@@ -246,6 +259,7 @@ def validate_assessment_package(
         "form_id": expected_form_id,
         "item_count": len(items),
         "fingerprints_verified": True,
+        "authoring_provenance": _authoring_provenance(items),
         "mark_schemes_present": True,
         "mark_scheme_quality": {
             "items_verified": len(mark_scheme_reports),
@@ -271,6 +285,43 @@ def validate_assessment_package(
             "items_verified": len(response_simulation_reports),
             "results": response_simulation_reports,
         },
+    }
+
+
+def _authoring_provenance(items: list[dict[str, Any]]) -> dict[str, Any]:
+    values = [str(item.get("provenance", "")).strip() for item in items]
+    counts = dict(sorted(Counter(values).items()))
+    reviewed_fixed = sum(
+        value in {"reviewed-fixed", "reviewed-deterministic-contract"}
+        or value == "verified-contract-reviewed"
+        or value.startswith("reviewed-seeded-fallback:")
+        for value in values
+    )
+    ai_authored_stem = sum(
+        value == "ai-authored-stem-reviewed-contract" for value in values
+    )
+    ai_authored = sum(
+        value == "ai-authored" or value.startswith("ai:") for value in values
+    )
+    unreviewed = sum(
+        value in {
+            "built-in",
+            "deterministic-contract",
+            "generator-specific",
+            "verified-contract",
+        }
+        for value in values
+    )
+    classified = reviewed_fixed + ai_authored_stem + ai_authored + unreviewed
+    return {
+        "schema_version": 1,
+        "items": len(items),
+        "counts": counts,
+        "reviewed_fixed_items": reviewed_fixed,
+        "ai_authored_items": ai_authored,
+        "ai_authored_stem_items": ai_authored_stem,
+        "unreviewed_or_builtin_items": unreviewed,
+        "unknown_items": len(items) - classified,
     }
 
 
@@ -307,7 +358,9 @@ def _extract_items(
     subject: str,
     paper_number: str,
 ) -> list[dict[str, Any]]:
-    discovered: list[tuple[str, dict[str, Any], list[str], str]] = []
+    discovered: list[
+        tuple[str, dict[str, Any], list[str], str, dict[str, Any] | None]
+    ] = []
 
     def walk(
         value: Any,
@@ -316,6 +369,7 @@ def _extract_items(
         inherited_kind: str = "",
         inherited_provenance: str = "generator-specific",
         inherited_sql_contract: dict[str, Any] | None = None,
+        inherited_candidate_parent: dict[str, Any] | None = None,
     ) -> None:
         if isinstance(value, dict):
             provenance = value.get("provenance", inherited_provenance)
@@ -381,13 +435,26 @@ def _extract_items(
                             "_answer_intent": intent.model_dump(mode="json"),
                             "_source_intent_sha256": sql_source_intent_sha256(contract, intent_id),
                         })
-                discovered.append((".".join(path), discovered_value, stems, kind))
+                discovered.append(
+                    (
+                        ".".join(path),
+                        discovered_value,
+                        stems,
+                        kind,
+                        inherited_candidate_parent,
+                    )
+                )
             child_stems = (
                 [*stems, prompt.strip()]
                 if has_marked_parts and isinstance(prompt, str) and prompt.strip()
                 else stems
             )
             for key, child in value.items():
+                child_candidate_parent = (
+                    value
+                    if key in {"parts", "questions"}
+                    else inherited_candidate_parent
+                )
                 walk(
                     child,
                     [*path, str(key)],
@@ -395,6 +462,7 @@ def _extract_items(
                     kind,
                     provenance,
                     inherited_sql_contract,
+                    child_candidate_parent,
                 )
         elif isinstance(value, list):
             for index, child in enumerate(value):
@@ -405,11 +473,14 @@ def _extract_items(
                     inherited_kind,
                     inherited_provenance,
                     inherited_sql_contract,
+                    inherited_candidate_parent,
                 )
 
     walk(blueprint, [], [])
     items: list[dict[str, Any]] = []
-    for index, (path, raw, stems, kind) in enumerate(discovered, start=1):
+    for index, (path, raw, stems, kind, candidate_parent) in enumerate(
+        discovered, start=1
+    ):
         prompt = str(raw["prompt"]).strip()
         item_id = str(
             raw.get("number")
@@ -458,10 +529,52 @@ def _extract_items(
         if raw.get("_answer_intent"):
             item["answer_intent"] = raw["_answer_intent"]
             item["source_intent_sha256"] = raw["_source_intent_sha256"]
+        item["difficulty_candidate_projection"] = (
+            _export_difficulty_candidate_projection(
+                raw=raw,
+                parent=candidate_parent,
+                item=item,
+                subject=subject,
+            ).model_dump(mode="json")
+        )
         items.append(item)
     if not items:
         raise ValueError("assessment blueprint contains no marked question items")
     return items
+
+
+def _export_difficulty_candidate_projection(
+    *,
+    raw: dict[str, Any],
+    parent: dict[str, Any] | None,
+    item: dict[str, Any],
+    subject: str,
+) -> object:
+    if isinstance(parent, dict) and parent.get("style_id") and parent.get("parts"):
+        return aqa_cs_difficulty_candidate(parent, raw)
+    edexcel_parent = (
+        parent
+        if isinstance(parent, dict) and "section" in parent
+        else raw if "section" in raw else None
+    )
+    if isinstance(edexcel_parent, dict) and (
+        "source_instance" in edexcel_parent or "source_reference" in edexcel_parent
+    ):
+        return edexcel_difficulty_candidate_projection(
+            question=edexcel_parent,
+            part=raw,
+            review_content=item,
+        )
+    if isinstance(parent, dict) and isinstance(parent.get("questions"), list):
+        return shared_difficulty_candidate_projection(
+            question=raw,
+            option=parent,
+        )
+    return difficulty_candidate_projection(
+        route=f"export-{subject.casefold().replace(' ', '-')}",
+        review_content=item,
+        identity_content=raw,
+    )
 
 
 def _scheme_text(raw: dict[str, Any]) -> list[str]:

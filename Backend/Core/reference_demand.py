@@ -382,7 +382,7 @@ def audit_form_demand(
                     value,
                     target,
                     item_id=str(item.get("id", "unknown")),
-                    candidate=item,
+                    candidate=item.get("difficulty_candidate_projection", item),
                 )
             except ValueError:
                 evidence_failures.append("item_difficulty_review")

@@ -11,6 +11,10 @@ from copy import deepcopy
 from typing import Any
 
 from Backend.Core.assessment_quality import numeric_tokens
+from Backend.Core.candidate_identity import (
+    DifficultyCandidateProjection,
+    difficulty_candidate_projection,
+)
 from Backend.Core.credit_policy import CREDIT_POLICY_VERSION
 from Backend.Core.model_review import ReviewResult
 from Backend.Core.open_credit import (
@@ -49,6 +53,34 @@ def question_content_sha256(question: dict[str, Any]) -> str:
         else "none"
     )
     return hashlib.sha256(json.dumps({"credit_policy": CREDIT_POLICY_VERSION, "sql_validation": sql_version, "content": content}, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
+
+
+def aqa_cs_difficulty_candidate(
+    question: dict[str, Any],
+    part: dict[str, Any],
+) -> DifficultyCandidateProjection:
+    """Bind one AQA part review to the complete evidence-free parent question."""
+
+    public_part = deepcopy(part)
+    public_part.pop("open_credit_contract", None)
+    public_part.pop("open_credit_review", None)
+    marking = public_part.get("marking")
+    if isinstance(marking, dict):
+        marking.pop("credit_allocations", None)
+    public_question = deepcopy(question)
+    return difficulty_candidate_projection(
+        route="aqa-computer-science",
+        review_content={
+            "stem": public_question.get("stem", ""),
+            "stimulus": public_question.get("stimulus"),
+            "part": public_part,
+        },
+        identity_content={
+            "question_content_sha256": question_content_sha256(public_question),
+            "part_label": str(part.get("label", "")),
+            "question": public_question,
+        },
+    )
 
 
 def aqa_cs_solver_item(question: dict[str, Any], part: dict[str, Any], stimulus: dict[str, Any]) -> dict[str, Any]:

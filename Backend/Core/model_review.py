@@ -16,6 +16,11 @@ from pydantic import (
 
 from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.assessment_quality import content_similarity, numeric_tokens
+from Backend.Core.candidate_identity import (
+    CandidateContentIdentity,
+    candidate_content_identity,
+    candidate_review_content,
+)
 from Backend.Core.numeric_integrity import NUMERIC_INTEGRITY_VERSION
 
 
@@ -106,7 +111,7 @@ class PublicTaskOperationEvidence(BaseModel):
 class DifficultyReviewResult(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
 
-    schema_version: Literal[3] = 3
+    schema_version: Literal[4] = 4
     approved: bool
     estimated_demand: Literal["low", "standard", "high"]
     reasoning_steps: int = Field(ge=0, le=12)
@@ -118,6 +123,7 @@ class DifficultyReviewResult(BaseModel):
         default_factory=list
     )
     public_task_operation_evidence: PublicTaskOperationEvidence | None = None
+    candidate_content_identity: CandidateContentIdentity | None = None
     cognitive_operations_fit: bool = True
     reasoning_range_fit: bool = True
     shortcut_resistant: bool = True
@@ -260,7 +266,8 @@ def require_difficulty_review(
         update={
             "public_task_operation_evidence": _public_task_operation_evidence(
                 candidate
-            )
+            ),
+            "candidate_content_identity": candidate_content_identity(candidate),
         }
     )
     target_payload = _serialise(target)
@@ -294,7 +301,7 @@ def validate_saved_difficulty_evidence(
     if not isinstance(evidence, dict):
         raise ValueError(f"{item_id} has incomplete difficulty evidence; regenerate it")
     schema_version = evidence.get("schema_version")
-    if schema_version != 3:
+    if schema_version != 4:
         raise ValueError(
             f"{item_id} difficulty evidence schema version {schema_version!r} is stale; "
             "regenerate it"
@@ -318,6 +325,19 @@ def validate_saved_difficulty_evidence(
     if stored_public_evidence != expected_public_evidence:
         raise ValueError(
             f"{item_id} public-task operation evidence does not match the current candidate"
+        )
+    try:
+        stored_candidate_identity = CandidateContentIdentity.model_validate(
+            evidence.get("candidate_content_identity"), strict=True
+        )
+    except ValidationError as error:
+        raise ValueError(
+            f"{item_id} has invalid candidate content identity; regenerate it"
+        ) from error
+    expected_candidate_identity = candidate_content_identity(candidate)
+    if stored_candidate_identity != expected_candidate_identity:
+        raise ValueError(
+            f"{item_id} candidate content identity does not match the current candidate"
         )
     try:
         result = DifficultyReviewResult.model_validate(evidence, strict=True)
@@ -437,7 +457,7 @@ def difficulty_review(
         {
             "item_id": item_id,
             "target": target_payload,
-            "candidate": _serialise(candidate),
+            "candidate": candidate_review_content(candidate),
             "canonical_solution": _serialise(canonical_solution),
             "specification": _serialise(specification),
         },
@@ -510,12 +530,14 @@ def difficulty_review(
         "schema_version", "target_profile_fingerprint", "independent_solution_steps",
         "target_objective_policy_fingerprint",
         "public_task_operation_evidence",
+        "candidate_content_identity",
         "solution_integrity_version",
     }
     if (
         not isinstance(raw, dict)
         or required_response_fields - raw.keys()
         or "public_task_operation_evidence" in raw
+        or "candidate_content_identity" in raw
     ):
         raise ValueError(f"{item_id} returned an invalid difficulty review response: missing checks")
     try:
@@ -554,7 +576,7 @@ def _candidate_task_facts(candidate: Any) -> dict[str, object]:
 
 def _public_task_operation_evidence(candidate: Any) -> PublicTaskOperationEvidence:
     """Bind bounded verified operations to the exact public task projection."""
-    payload = _serialise(candidate)
+    payload = candidate_review_content(candidate)
     task = payload.get("part", payload) if isinstance(payload, dict) else {}
     raw_prompt = task.get("prompt", "") if isinstance(task, dict) else ""
     raw_operation = task.get("task_operation", "") if isinstance(task, dict) else ""

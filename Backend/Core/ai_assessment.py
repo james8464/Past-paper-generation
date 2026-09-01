@@ -20,6 +20,7 @@ from Backend.Core.assessment_quality import (
     validate_candidate_contract,
     validate_economics_causal_direction,
 )
+from Backend.Core.candidate_identity import shared_difficulty_candidate_projection
 from Backend.Core.events import GenerationUpdate
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
@@ -386,7 +387,7 @@ def _review_verified_contract(
             item_id=task.id,
             subject=subject,
             target=build_item_demand_target(_demand_item(task), demand_profile),
-            candidate=candidate,
+            candidate=_difficulty_candidate(task, candidate),
             specification=_difficulty_specification(task),
             canonical_solution=canonical_solution,
         )
@@ -458,7 +459,7 @@ def _validate_checkpoint_item(
             candidate.authoring_context.get("difficulty_evidence", {}),
             build_item_demand_target(_demand_item(task), demand_profile),
             item_id=task.id,
-            candidate=candidate,
+            candidate=_difficulty_candidate(task, candidate),
         )
 
 
@@ -577,7 +578,7 @@ def _generate_item_transaction(
                                 _demand_item(task),
                                 demand_profile,
                             ),
-                            candidate=candidate,
+                            candidate=_difficulty_candidate(task, candidate),
                             specification=_difficulty_specification(task),
                             canonical_solution=canonical_solution,
                         )
@@ -654,7 +655,7 @@ def _generate_item_transaction(
                         _demand_item(task),
                         demand_profile,
                     ),
-                    candidate=fallback,
+                    candidate=_difficulty_candidate(task, fallback),
                     specification=_difficulty_specification(task),
                     canonical_solution=canonical_solution,
                 )
@@ -1731,6 +1732,16 @@ def _demand_item(task: _Task) -> dict[str, object]:
     ]
     value["evidence_ids"] = list(task.question.source_references)
     return value
+
+
+def _difficulty_candidate(
+    task: _Task,
+    candidate: GeneratedQuestion,
+) -> object:
+    return shared_difficulty_candidate_projection(
+        question=candidate,
+        option=task.option,
+    )
 
 
 def _difficulty_specification(task: _Task) -> dict[str, object]:

@@ -16,8 +16,14 @@ from ocrcsgen.render_pdf import _question_group_pages, _response_space
 from ocrcsgen.syllabus import load_syllabus as ocr_syllabus
 
 from Backend.Core.assessment_package import (
+    _extract_items,
     validate_assessment_package,
     write_assessment_package,
+)
+from Backend.Core.candidate_identity import candidate_content_identity
+from Backend.Core.computer_science_authoring import (
+    aqa_cs_difficulty_candidate,
+    question_content_sha256,
 )
 from Backend.Core.independent_solver import IndependentSolver, reconcile_solution
 from Backend.Core.reference_demand import build_item_demand_target, profile_for
@@ -40,6 +46,82 @@ def test_aqa_cs_explicit_component_budgets_and_allotted_time(paper_id, expected)
             minutes += item.get("expected_minutes") or 0
     assert dict(totals) == expected
     assert minutes == 150
+
+
+def test_aqa_difficulty_identity_binds_parent_source_key_credit_and_contract() -> None:
+    import copy
+
+    paper = build_paper2_blueprint(AQA, 26083125)
+    question = paper.questions[0].model_dump(mode="json")
+    part_index = 0
+    question["parts"][part_index]["options"] = [
+        {"label": label, "text": text}
+        for label, text in zip("ABCD", ["One", "Two", "Three", "Four"], strict=True)
+    ]
+    question["parts"][part_index]["correct_option"] = "A"
+    baseline = candidate_content_identity(
+        aqa_cs_difficulty_candidate(question, question["parts"][part_index])
+    )
+    mutations = []
+    changed = copy.deepcopy(question)
+    changed["stem"] += " Candidate-visible source detail."
+    mutations.append(changed)
+    changed = copy.deepcopy(question)
+    changed["parts"][part_index]["options"][0]["text"] += " changed"
+    mutations.append(changed)
+    changed = copy.deepcopy(question)
+    changed["parts"][part_index]["correct_option"] = "B"
+    mutations.append(changed)
+    changed = copy.deepcopy(question)
+    changed["parts"][part_index]["marking"]["accept"].append("Alternative")
+    mutations.append(changed)
+    changed = copy.deepcopy(question)
+    changed["parts"][part_index]["response_slots"].append("working")
+    mutations.append(changed)
+
+    assert all(
+        candidate_content_identity(
+            aqa_cs_difficulty_candidate(
+                changed,
+                changed["parts"][part_index],
+            )
+        )
+        != baseline
+        for changed in mutations
+    )
+
+    evidence_only = copy.deepcopy(question)
+    evidence_only["parts"][-1]["difficulty_evidence"] = {"approved": True}
+    assert question_content_sha256(evidence_only) == question_content_sha256(question)
+    assert candidate_content_identity(
+        aqa_cs_difficulty_candidate(
+            evidence_only,
+            evidence_only["parts"][part_index],
+        )
+    ) == baseline
+
+
+def test_aqa_export_recomputes_the_same_part_and_parent_identity() -> None:
+    paper = build_paper2_blueprint(AQA, 26083125)
+    items = _extract_items(
+        paper.model_dump(mode="json"),
+        subject="AQA A-level Computer Science",
+        paper_number="2",
+    )
+    live_candidates = [
+        aqa_cs_difficulty_candidate(
+            question.model_dump(mode="json"),
+            part.model_dump(mode="json"),
+        )
+        for question in paper.questions
+        for part in question.parts
+    ]
+
+    assert len(items) == len(live_candidates)
+    assert [
+        candidate_content_identity(item["difficulty_candidate_projection"])
+        for item in items
+    ] == [candidate_content_identity(candidate) for candidate in live_candidates]
 
 
 @pytest.mark.parametrize("mutation", ["ao4", "missing-objectives", "missing-time", "wrong-time"])
@@ -292,7 +374,7 @@ def test_export_binds_cs_budget_and_timing_to_current_blueprint(tmp_path):
     }]
     data["blueprint"]["questions"][0]["parts"][0]["expected_minutes"] = 2.4
     path.write_text(json.dumps(data))
-    with pytest.raises(ValueError, match=r"timing|time"):
+    with pytest.raises(ValueError, match=r"timing|time|exported items differ"):
         validate_assessment_package(path, subject="computer_science", paper_number="2",
                                     preview=True, provider=None, model=None)
 
@@ -327,7 +409,13 @@ def test_cs_review_identity_changes_with_same_band_but_changed_task_or_time():
                 profile_fit=True,
                 observed_cognitive_operations=first.required_cognitive_operations,
                 estimated_minutes=first.expected_minutes_min,
-            ).model_dump(mode="json", exclude={"public_task_operation_evidence"})
+            ).model_dump(
+                mode="json",
+                exclude={
+                    "public_task_operation_evidence",
+                    "candidate_content_identity",
+                },
+            )
 
     old = require_difficulty_review(
         Client(),

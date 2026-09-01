@@ -182,7 +182,7 @@ def test_generate_unique_paper_resumes_without_another_model_call(
     )
 
 
-def test_v3_operation_evidence_survives_authoring_save_and_resume(
+def test_v4_operation_and_candidate_evidence_survives_authoring_save_and_resume(
     tmp_path: Path,
 ) -> None:
     store = AssessmentCheckpointStore(tmp_path / "job.json", identity())
@@ -235,12 +235,92 @@ def test_v3_operation_evidence_survives_authoring_save_and_resume(
     evidence = resumed.sections[0].options[0].questions[0].authoring_context[
         "difficulty_evidence"
     ]
-    assert evidence["schema_version"] == 3
+    assert evidence["schema_version"] == 4
     assert evidence["observed_cognitive_operations"] == ["explain", "analyse"]
     assert evidence["public_task_operation_evidence"]["source"] == (
         "deterministic-public-task-v1"
     )
     assert evidence["public_task_operation_evidence"]["verified_operations"] == []
+
+
+def test_checkpoint_rejects_source_drift_outside_the_question(
+    tmp_path: Path,
+) -> None:
+    store = AssessmentCheckpointStore(tmp_path / "job.json", identity())
+    paper, rule, topics = paper_fixture()
+    option = paper.sections[0].options[0]
+    paper = paper.model_copy(
+        update={
+            "sections": [
+                paper.sections[0].model_copy(
+                    update={
+                        "options": [
+                            option.model_copy(
+                                update={"stimulus": ["Source revenue: £10 million"]}
+                            )
+                        ]
+                    }
+                )
+            ]
+        }
+    )
+    profile = ReferenceDemandProfile(
+        family_id="aqa/economics",
+        paper_id="1",
+        comparison_basis="Aggregate features from official A-level papers.",
+        source_document_count=4,
+        source_fingerprint="b" * 64,
+        mark_band_distribution={"short": 1.0},
+        command_word_distribution={"explain": 1.0},
+        demand_distribution={"standard": 1.0},
+        mark_weighted_demand_distribution={"standard": 1.0},
+        response_mode_distribution={"structured-reasoning": 1.0},
+        cognitive_operation_distribution={"explain": 1.0},
+        extraction_coverage=1.0,
+        metric_tolerances={
+            "mark_band_distribution": 0.5,
+            "command_family_distribution": 0.5,
+            "mark_weighted_demand_distribution": 0.5,
+            "response_mode_distribution": 0.5,
+            "cognitive_operation_distribution": 0.5,
+        },
+    )
+    generate_unique_paper(
+        paper,
+        rule=rule,
+        syllabus_topics=topics,
+        syllabus_topic_ids={"topic"},
+        client=FirstPassDifficultyClient(
+            operations=["explain", "analyse", "contextualise"]
+        ),
+        subject="Economics",
+        policy=GenerationPolicy(attempts=1, require_difficulty_review=True),
+        checkpoint_store=store,
+        demand_profile=profile,
+    )
+    changed_option = paper.sections[0].options[0].model_copy(
+        update={"stimulus": ["Source revenue: £12 million"]}
+    )
+    changed_paper = paper.model_copy(
+        update={
+            "sections": [
+                paper.sections[0].model_copy(update={"options": [changed_option]})
+            ]
+        }
+    )
+
+    with pytest.raises(AssertionError, match="valid checkpoint"):
+        generate_unique_paper(
+            changed_paper,
+            rule=rule,
+            syllabus_topics=topics,
+            syllabus_topic_ids={"topic"},
+            client=NoCallsClient(),
+            subject="Economics",
+            policy=GenerationPolicy(attempts=1, require_difficulty_review=True),
+            checkpoint_store=store,
+            demand_profile=profile,
+        )
 
 
 def paper_fixture() -> tuple[GeneratedPaper, PaperRule, list[object]]:
@@ -350,7 +430,7 @@ class FirstPassClient:
 
 
 class FirstPassDifficultyClient(FirstPassClient):
-    def __init__(self) -> None:
+    def __init__(self, operations: list[str] | None = None) -> None:
         super().__init__()
         self.responses = iter(
             [
@@ -363,7 +443,8 @@ class FirstPassDifficultyClient(FirstPassClient):
                     "command_word_fit": True,
                     "context_fit": True,
                     "profile_fit": True,
-                    "observed_cognitive_operations": ["explain", "analyse"],
+                    "observed_cognitive_operations": operations
+                    or ["explain", "analyse"],
                     "cognitive_operations_fit": True,
                     "reasoning_range_fit": True,
                     "shortcut_resistant": True,

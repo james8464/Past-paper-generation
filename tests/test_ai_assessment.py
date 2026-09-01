@@ -517,7 +517,7 @@ def test_content_approval_cannot_bypass_separate_difficulty_rejection() -> None:
 
     assert result.prompt.startswith("Explain how higher costs")
     assert result.authoring_context["difficulty_evidence"]["approved"] is True
-    assert result.authoring_context["difficulty_evidence"]["schema_version"] == 3
+    assert result.authoring_context["difficulty_evidence"]["schema_version"] == 4
     assert len(client.prompts) == 6
     assert "one recalled statement" in client.prompts[3]
 

@@ -269,7 +269,9 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func selectPaperID(_ paperID: String) {
-        _ = catalogStore.selectPaperID(paperID, isLocked: isRunning)
+        guard catalogStore.selectPaperID(paperID, isLocked: isRunning) else { return }
+        progressEntries.removeAll()
+        lastQualityReport = nil
     }
 
     func selectAssessmentKind(_ kind: AssessmentKind) {
@@ -349,6 +351,9 @@ final class ApplicationCoordinator: ObservableObject {
     private func applyConfiguration(_ record: GenerationJobRecord, seed: Int?) {
         guard !isRunning,
               let board = ExamCatalog.board(id: record.configuration.boardID),
+              board.papers.contains(where: {
+                  $0.id == record.configuration.paperID
+              }),
               let provider = AIProvider(backendID: record.configuration.provider)
         else { return }
         selectBoard(board)
@@ -688,14 +693,13 @@ final class ApplicationCoordinator: ObservableObject {
         let generationMode = selectedBoard.usesAI
             ? "\(selectedBoard.contentMode.title), \(aiProvider.title), \(activeModelName)"
             : selectedBoard.contentMode.title
-        let summary = [
+        let summary = ([
             "Paper creator Diagnostics",
             "Distribution: \(distributionMode.title)",
             "Selected board: \(selectedBoard.subjectTitle) \(selectedBoard.title)",
             "Selected paper: \(selectedPaper.title) - \(selectedPaper.detail)",
             "Generation mode: \(generationMode)",
             "Visual profile: \(selectedPaper.readiness.visuallyCalibrated ? "Reviewed" : "Not reviewed")",
-            "Reference demand: \(lastQualityReport?.referenceDemandPassed == true ? "Passed" : "Not yet passed")",
             "Empirical calibration: \(selectedPaper.readiness.empiricallyCalibrated ? "Passed" : "Not independently verified")",
             "Hosted AI consent: \(hasHostedAIConsent ? "Accepted" : "Not accepted")",
             "Ollama: \(ollamaState.message)",
@@ -704,12 +708,16 @@ final class ApplicationCoordinator: ObservableObject {
             "Latest ETA: \(generationEstimate?.remainingText ?? "None")",
             "Benchmark: \(benchmarkCoordinator.verdict.map { "\($0.verdict) (\(Int($0.score * 100))%)" } ?? "Not run")",
             "Generated files: \(generatedFiles.map { $0.url.lastPathComponent }.joined(separator: ", "))",
-        ].joined(separator: "\n")
+        ] + qualityDiagnosticLines).joined(separator: "\n")
 
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         pasteboard.setString(summary, forType: .string)
         status = "Diagnostics copied"
+    }
+
+    var qualityDiagnosticLines: [String] {
+        GenerationQualityPolicy.presentation(for: lastQualityReport).diagnosticLines
     }
 
     func setNotificationsEnabled(_ enabled: Bool) {

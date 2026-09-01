@@ -289,7 +289,13 @@ def test_current_difficulty_evidence_is_bound_to_the_accounting_budget():
                 profile_fit=True,
                 observed_cognitive_operations=target.required_cognitive_operations,
                 estimated_minutes=question.expected_minutes,
-            ).model_dump(mode="json", exclude={"public_task_operation_evidence"})
+            ).model_dump(
+                mode="json",
+                exclude={
+                    "public_task_operation_evidence",
+                    "candidate_content_identity",
+                },
+            )
 
     client = Client()
     result = require_difficulty_review(

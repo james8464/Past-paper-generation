@@ -10,7 +10,12 @@ from pathlib import Path
 
 import pytest
 
-from Backend.Core.assessment_package import write_assessment_package
+from Backend.Core.assessment_package import (
+    _extract_items,
+    _form_id,
+    validate_assessment_package,
+    write_assessment_package,
+)
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -541,7 +546,13 @@ def test_assessment_package_records_the_exact_reference_demand_audit(
                 profile_fit=True,
                 observed_cognitive_operations=target.required_cognitive_operations,
                 estimated_minutes=target.expected_minutes_min,
-            ).model_dump(mode="json", exclude={"public_task_operation_evidence"})
+            ).model_dump(
+                mode="json",
+                exclude={
+                    "public_task_operation_evidence",
+                    "candidate_content_identity",
+                },
+            )
 
     from Backend.Core.model_review import require_difficulty_review
 
@@ -610,6 +621,32 @@ def test_assessment_package_records_the_exact_reference_demand_audit(
     ] == []
     assert audit["item_review_evidence"]["coverage"] == 1.0
 
+    document["items"][0]["mark_scheme"] = [
+        "Identify the relevant change shown in the extract.",
+        "Explain a developed effect using the supplied context.",
+    ]
+    document["form_id"] = _form_id(
+        subject="economics_aqa",
+        paper_number="1",
+        items=document["items"],
+    )
+    path.write_text(json.dumps(document), encoding="utf-8")
+    persisted = json.loads(path.read_text(encoding="utf-8"))
+    assert len(
+        _extract_items(
+            persisted["blueprint"], subject="economics_aqa", paper_number="1"
+        )
+    ) == 1
+    with pytest.raises(ValueError, match="exported items differ from the blueprint"):
+        validate_assessment_package(
+            path,
+            subject="economics_aqa",
+            paper_number="1",
+            preview=True,
+            provider=None,
+            model=None,
+        )
+
 
 def test_live_form_audit_fails_closed_without_item_review_evidence() -> None:
     reference_demand = module()
@@ -662,6 +699,7 @@ def test_live_form_audit_fails_closed_without_item_review_evidence() -> None:
     ],
 )
 def test_live_form_audit_rechecks_saved_review_against_target(changed) -> None:
+    from Backend.Core.candidate_identity import candidate_content_identity
     from Backend.Core.model_review import (
         DifficultyReviewResult,
         PublicTaskOperationEvidence,
@@ -706,6 +744,7 @@ def test_live_form_audit_rechecks_saved_review_against_target(changed) -> None:
             declarative_sql_statement_kind=None,
             verified_operations=[],
         ),
+        candidate_content_identity=candidate_content_identity(item),
     ).model_dump(mode="json")
     item["difficulty_evidence"] = evidence
     good = reference_demand.audit_form_demand(

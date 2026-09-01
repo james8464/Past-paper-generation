@@ -205,8 +205,9 @@ private struct HelpTopicPage: View {
                     "It follows the app’s exact JSON schemas and immutable marks, command words, topics, and assessment-objective totals.",
                     "It has enough reasoning capacity for source-based questions and detailed level-of-response mark schemes while remaining practical on a Mac.",
                     "Ollama keeps prompts and generated content on this Mac.",
-                    "The app uses separate content and difficulty review passes. Copyright-safe targets are measured from relevant papers by mark weighting, response mode, command family and cognitive operation. An independent solution is then checked for reasoning depth, context dependence, timing, scaffolding and shortcut resistance.",
-                    "Every completed form is checked again for distribution drift. This is strong reference calibration, but it is not independent examiner or student-response calibration.",
+                    "The intended cognitive demand is measured from relevant papers by mark weighting, response mode, command family and the work a candidate must perform.",
+                    "Content review, independent solution checking, and difficulty review use separate prompts and evidence. They may use the same selected model, but one check never stands in for another.",
+                    "Every completed form is checked again for distribution drift. These engineering tolerances are not empirically learned confidence intervals, and external examiner and learner evidence is still needed for qualification.",
                 ]
             )
 
@@ -246,13 +247,13 @@ private struct HelpTopicPage: View {
 
             HelpCallout(
                 title: "Preview mode is not a finished paper",
-                message: "Create a layout preview only when checking document geometry. Its placeholder questions are deliberately not release-ready.",
+                message: "Create a layout preview only when checking document geometry. Preview content has no live item-review or originality evidence, and missing saved evidence is reported as unknown rather than passed.",
                 systemImage: "doc.text.magnifyingglass"
             )
 
             HelpCallout(
                 title: "Use Topic Practice for focused revision",
-                message: "A topic question bank contains original questions and its own mark scheme for one syllabus section. Data structures, databases, and functional programming are currently available for AQA Computer Science.",
+                message: "A topic question bank covers one focused syllabus section. Candidate choices and optional paths can change what is assessed, so a bank or path is not treated as a full-paper difficulty claim. Data structures, databases, and functional programming are currently available for AQA Computer Science.",
                 systemImage: "square.stack.3d.up"
             )
         }
@@ -278,7 +279,7 @@ private struct HelpTopicPage: View {
                 rows: [
                     "Check page size, cover hierarchy, fonts, margins, question numbering, mark placement, continuation space, tables, diagrams, and page breaks.",
                     "Use Recent Documents to open both PDFs. The Quality inspector reports blueprint, originality, visual, and difficulty evidence separately.",
-                    "Difficulty is intended demand until the exact form has enough independently reviewed student-response and timing evidence; the app does not claim psychometric equivalence.",
+                    "Difficulty is intended demand until the exact form has enough independently reviewed examiner, learner-response, and timing evidence; the app does not claim psychometric equivalence.",
                 ]
             )
         }

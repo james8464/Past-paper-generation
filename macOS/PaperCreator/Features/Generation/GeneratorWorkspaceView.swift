@@ -347,10 +347,16 @@ private struct QualityInspector: View {
             Section("Qualification") {
                 qualityRow(
                     "Engineering",
-                    detail: application.selectedPaper.readiness.engineeringValidated
-                        ? "Generation, validation, rendering, and packaging checks pass."
-                        : "Engineering validation is incomplete for this paper.",
-                    state: application.selectedPaper.readiness.engineeringValidated ? .passed : .pending
+                    detail: qualificationDetail(
+                        saved: application.lastQualityReport?.engineeringValidated,
+                        current: application.selectedPaper.readiness.engineeringValidated,
+                        passed: "Generation, validation, rendering, and packaging checks pass.",
+                        pending: "Engineering validation is incomplete for this paper."
+                    ),
+                    state: qualificationState(
+                        saved: application.lastQualityReport?.engineeringValidated,
+                        current: application.selectedPaper.readiness.engineeringValidated
+                    )
                 )
                 qualityRow(
                     "Originality",
@@ -359,10 +365,16 @@ private struct QualityInspector: View {
                 )
                 qualityRow(
                     "Visual profile",
-                    detail: application.selectedPaper.readiness.visuallyCalibrated
-                        ? "Reference geometry has been reviewed."
-                        : "This paper still needs a completed visual calibration.",
-                    state: application.selectedPaper.readiness.visuallyCalibrated ? .passed : .pending
+                    detail: qualificationDetail(
+                        saved: application.lastQualityReport?.visuallyCalibrated,
+                        current: application.selectedPaper.readiness.visuallyCalibrated,
+                        passed: "Reference geometry has been reviewed.",
+                        pending: "This paper still needs a completed visual calibration."
+                    ),
+                    state: qualificationState(
+                        saved: application.lastQualityReport?.visuallyCalibrated,
+                        current: application.selectedPaper.readiness.visuallyCalibrated
+                    )
                 )
                 qualityRow(
                     "Reference demand",
@@ -371,16 +383,47 @@ private struct QualityInspector: View {
                 )
                 qualityRow(
                     "Empirical demand",
-                    detail: application.selectedPaper.readiness.empiricallyCalibrated
-                        ? "Independent student and marker calibration is complete."
-                        : "The paper targets the board demand profile; equivalent difficulty is not claimed.",
-                    state: application.selectedPaper.readiness.empiricallyCalibrated ? .passed : .pending
+                    detail: qualificationDetail(
+                        saved: application.lastQualityReport?.empiricallyCalibrated,
+                        current: application.selectedPaper.readiness.empiricallyCalibrated,
+                        passed: "Independent student and marker calibration is complete.",
+                        pending: "The paper targets the board demand profile; equivalent difficulty is not claimed."
+                    ),
+                    state: qualificationState(
+                        saved: application.lastQualityReport?.empiricallyCalibrated,
+                        current: application.selectedPaper.readiness.empiricallyCalibrated
+                    )
+                )
+                qualityRow(
+                    "Candidate paths",
+                    detail: presentation.pathEvidenceDetail,
+                    state: presentation.pathEvidenceState
                 )
             }
 
             if let report = application.lastQualityReport {
                 Section("Latest package") {
                     LabeledContent("Items", value: "\(report.itemCount)")
+                    LabeledContent("Saved mode", value: report.savedMode.rawValue)
+                    if let subject = report.identity.subject,
+                       let paper = report.identity.paper {
+                        LabeledContent("Saved target", value: "\(subject) · \(paper)")
+                    }
+                    if let seed = report.identity.seed {
+                        LabeledContent("Saved seed", value: "\(seed)")
+                    }
+                    if let jobID = report.identity.jobID {
+                        LabeledContent("Saved job", value: jobID)
+                    }
+                    if let formID = report.identity.formID {
+                        LabeledContent("Saved form", value: formID)
+                    }
+                    if let generatorID = report.identity.generatorID {
+                        let value = [generatorID, report.identity.generatorVersion]
+                            .compactMap { $0 }
+                            .joined(separator: " · ")
+                        LabeledContent("Saved generator", value: value)
+                    }
                     LabeledContent(
                         "Fingerprints",
                         value: report.fingerprintsVerified ? "Verified" : "Failed"
@@ -461,7 +504,7 @@ private struct QualityInspector: View {
     private func qualityRow(
         _ title: String,
         detail: String,
-        state: QualityState
+        state: GenerationQualityState
     ) -> some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: state.systemImage)
@@ -484,51 +527,57 @@ private struct QualityInspector: View {
         .accessibilityElement(children: .combine)
     }
 
-    private var originalityState: QualityState {
-        if application.dryRun {
-            return .preview
-        }
-        return application.lastQualityReport == nil ? .atCreation : .passed
+    private var presentation: GenerationQualityPresentation {
+        GenerationQualityPolicy.presentation(for: application.lastQualityReport)
+    }
+
+    private var originalityState: GenerationQualityState {
+        presentation.originalityState
     }
 
     private var originalityDetail: String {
-        if application.dryRun {
-            return "History comparison is skipped for preview drafts."
-        }
-        if application.lastQualityReport == nil {
-            return "Draft and history similarity are checked before files are published."
-        }
-        return "Draft and historic-item similarity passed the release threshold."
+        presentation.originalityDetail
     }
 
-    private var referenceDemandState: QualityState {
-        guard let report = application.lastQualityReport else { return .atCreation }
-        return report.referenceDemandPassed == true ? .passed : .pending
+    private var referenceDemandState: GenerationQualityState {
+        presentation.referenceDemandState
     }
 
     private var referenceDemandDetail: String {
-        guard let report = application.lastQualityReport else {
-            return "Every generated item and the complete form are checked against aggregate patterns from relevant papers."
+        presentation.referenceDemandDetail
+    }
+
+    private func qualificationState(
+        saved: Bool?,
+        current: Bool
+    ) -> GenerationQualityState {
+        if application.lastQualityReport != nil {
+            return saved.map { $0 ? .passed : .pending } ?? .unknown
         }
-        if report.referenceDemandPassed == true {
-            return "Item depth and whole-paper mark, command-word, and demand distributions match the configured reference envelope."
+        return current ? .passed : .pending
+    }
+
+    private func qualificationDetail(
+        saved: Bool?,
+        current: Bool,
+        passed: String,
+        pending: String
+    ) -> String {
+        if application.lastQualityReport != nil, saved == nil {
+            return "This evidence is not recorded in the saved package."
         }
-        return "The latest package moved outside its reference-demand envelope and needs review."
+        return (saved ?? current) ? passed : pending
     }
 }
 
-private enum QualityState {
-    case passed
-    case pending
-    case preview
-    case atCreation
-
+private extension GenerationQualityState {
     var title: String {
         switch self {
         case .passed: "Passed"
         case .pending: "Pending"
         case .preview: "Preview"
         case .atCreation: "At creation"
+        case .unknown: "Unknown"
         }
     }
 
@@ -538,6 +587,7 @@ private enum QualityState {
         case .pending: "clock"
         case .preview: "eye"
         case .atCreation: "checkmark.shield"
+        case .unknown: "questionmark.circle"
         }
     }
 
@@ -547,6 +597,7 @@ private enum QualityState {
         case .pending: .orange
         case .preview: .secondary
         case .atCreation: .secondary
+        case .unknown: .secondary
         }
     }
 }

@@ -4,7 +4,10 @@ import math
 
 import pytest
 
-from Backend.Core.assessment_package import validate_cross_paper_quality
+from Backend.Core.assessment_package import (
+    _authoring_provenance,
+    validate_cross_paper_quality,
+)
 
 
 def _item(identifier: str, prompt: str) -> dict:
@@ -66,3 +69,20 @@ def test_cross_paper_quality_fails_closed_on_unintended_clues_and_impossible_dat
 ) -> None:
     with pytest.raises(ValueError, match=message):
         validate_cross_paper_quality([item])
+
+
+def test_package_provenance_keeps_stem_edits_distinct_from_authored_questions() -> None:
+    report = _authoring_provenance(
+        [
+            {"provenance": "ai-authored-stem-reviewed-contract"},
+            *[
+                {"provenance": "reviewed-deterministic-contract"}
+                for _ in range(3)
+            ],
+        ]
+    )
+
+    assert report["ai_authored_stem_items"] == 1
+    assert report["ai_authored_items"] == 0
+    assert report["reviewed_fixed_items"] == 3
+    assert report["unknown_items"] == 0

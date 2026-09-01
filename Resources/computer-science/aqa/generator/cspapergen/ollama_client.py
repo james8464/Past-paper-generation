@@ -15,6 +15,7 @@ from Backend.Core.assessment_contracts import EvidenceRecord
 from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.assessment_quality import numeric_tokens
 from Backend.Core.computer_science_authoring import (
+    aqa_cs_difficulty_candidate,
     aqa_cs_solver_item,
     authoring_route,
     question_content_sha256,
@@ -300,21 +301,11 @@ def review_blueprint_difficulty(
     return blueprint.model_copy(update={"questions": reviewed_questions})
 
 
-def _difficulty_candidate(question: Question, part: QuestionPart) -> dict[str, object]:
-    """Expose the established task/scheme view without J-private review metadata."""
-    public_part = part.model_dump(mode="json")
-    public_part.pop("open_credit_contract", None)
-    public_part.pop("open_credit_review", None)
-    public_part["marking"].pop("credit_allocations", None)
-    return {
-        "stem": question.stem,
-        "stimulus": (
-            question.stimulus.model_dump(mode="json")
-            if question.stimulus is not None
-            else None
-        ),
-        "part": public_part,
-    }
+def _difficulty_candidate(question: Question, part: QuestionPart) -> object:
+    return aqa_cs_difficulty_candidate(
+        question.model_dump(mode="json"),
+        part.model_dump(mode="json"),
+    )
 
 
 def _difficulty_solution(solution: object) -> dict[str, object]:
