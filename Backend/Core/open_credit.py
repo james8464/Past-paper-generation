@@ -145,7 +145,8 @@ _CPU_STORAGE = r"(?:stored|held|kept|loaded)"
 _CPU_MAIN_MEMORY = r"(?:main memory|ram)"
 _CPU_EXECUTION = (
     r"(?:execut(?:e|es|ed|ing)|run(?:s|ning)?|process(?:es|ed|ing)?|"
-    r"carr(?:y|ies|ied|ying) out|complete(?:s|d|ing)?|finish(?:es|ed|ing)?)"
+    r"perform(?:s|ed|ing)?|carr(?:y|ies|ied|ying) out|"
+    r"complete(?:s|d|ing)?|finish(?:es|ed|ing)?)"
 )
 _CPU_ORDER = (
     r"(?:serially|sequentially|in sequence|in order(?! to)|one at a time|"
@@ -165,20 +166,33 @@ def _normalise_cpu_quote(value: str) -> str:
     return " ".join(re.sub(r"[^a-z0-9]+", " ", text).split())
 
 
+def _relation_is_qualified(text: str, match: re.Match[str] | None) -> bool:
+    """Detect a restricting qualifier attached immediately to one proposition."""
+    if match is None:
+        return False
+    return bool(
+        re.match(
+            r" (?:but |and |though )?(?:not always|only sometimes)\b",
+            text[match.end() :],
+        )
+    )
+
+
 def _cpu_quote_supports_criterion(criterion_id: str, answer_quote: str) -> bool:
     """Fail-closed evidence rules for the two registered stored-program marks."""
     text = _normalise_cpu_quote(answer_quote)
     if not text:
         return False
     if criterion_id == "instructions-main-memory":
-        negated_storage = re.search(
-            rf"\bno {_CPU_INSTRUCTION}\b|\b{_CPU_NEGATOR} "
-            rf"(?:(?:be|being) )?(?:{_CPU_STORAGE}|stores|holds|keeps|contains|loads?|places?)\b",
+        negated_passive = re.search(
+            rf"\b{_CPU_INSTRUCTION}\b (?:(?:is|are|can|may|must|gets?) )?"
+            rf"(?:{_CPU_NEGATOR} )(?:necessarily )?(?:be )?{_CPU_STORAGE} "
+            rf"(?:in|into|within|on) (?:the )?(?:computer s )?{_CPU_MAIN_MEMORY}\b",
             text,
         )
         passive = re.search(
             rf"\b{_CPU_INSTRUCTION}\b "
-            rf"(?:(?:is|are|can|may|must|gets?) )?(?:be )?{_CPU_STORAGE} "
+            rf"(?:(?:is|are|must|gets?) )?(?:be )?{_CPU_STORAGE} "
             rf"(?:in|into|within|on) (?:the )?(?:computer s )?{_CPU_MAIN_MEMORY}\b",
             text,
         )
@@ -192,13 +206,34 @@ def _cpu_quote_supports_criterion(criterion_id: str, answer_quote: str) -> bool:
             rf"(?:in|into|within) (?:the )?(?:computer s )?{_CPU_MAIN_MEMORY}\b",
             text,
         )
-        return bool(not negated_storage and any((passive, memory_active, loader_active)))
+        negated_active = re.search(
+            rf"\b{_CPU_MAIN_MEMORY}\b (?:does |can |may |must )?{_CPU_NEGATOR} "
+            rf"(?:necessarily )?(?:stores|holds|keeps|contains) (?:the )?{_CPU_INSTRUCTION}\b|"
+            rf"\b(?:cpu|processor)\b (?:does |can |may |must )?{_CPU_NEGATOR} "
+            rf"(?:necessarily )?(?:loads?|places?) (?:the )?{_CPU_INSTRUCTION}\b "
+            rf"(?:in|into|within) (?:the )?(?:computer s )?{_CPU_MAIN_MEMORY}\b",
+            text,
+        )
+        no_instructions = re.search(
+            rf"\bno {_CPU_INSTRUCTION}\b (?:\w+ ){{0,3}}\b{_CPU_MAIN_MEMORY}\b",
+            text,
+        )
+        storage_assertions = (passive, memory_active, loader_active)
+        return bool(
+            not negated_passive
+            and not negated_active
+            and not no_instructions
+            and any(
+                match and not _relation_is_qualified(text, match)
+                for match in storage_assertions
+            )
+        )
     if criterion_id == "serial-processor-execution":
         instruction_anchor = re.search(rf"\b{_CPU_INSTRUCTION}\b", text)
         pronoun_anchor = re.search(
             r"\b(?:cpu|processor)\b.*\b(?:them|these)\b", text
         )
-        execution_target = rf"(?:{_CPU_INSTRUCTION}|them|these)"
+        execution_target = rf"(?:{_CPU_INSTRUCTION}|them|these|they)"
         action_subject_order = re.search(
             rf"\b{_CPU_EXECUTION}\b (?:each |the |an? |one )?"
             rf"\b{execution_target}\b \b{_CPU_ORDER}\b",
@@ -206,7 +241,7 @@ def _cpu_quote_supports_criterion(criterion_id: str, answer_quote: str) -> bool:
         )
         subject_action_order = re.search(
             rf"\b{execution_target}\b "
-            rf"(?:(?:is|are|can|may|be|then|each) ){{0,3}}"
+            rf"(?:(?:is|are|be|then|each) ){{0,3}}"
             rf"\b{_CPU_EXECUTION}\b \b{_CPU_ORDER}\b",
             text,
         )
@@ -216,8 +251,10 @@ def _cpu_quote_supports_criterion(criterion_id: str, answer_quote: str) -> bool:
             rf"(?:the )?\b{execution_target}\b",
             text,
         )
-        ordered_action = any(
-            (action_subject_order, subject_action_order, order_cpu_action)
+        ordered_matches = (
+            action_subject_order,
+            subject_action_order,
+            order_cpu_action,
         )
         before_next = re.search(
             r"\b(?:complete(?:s|d|ing)?|finish(?:es|ed|ing)?|execut(?:e|es|ed|ing))\b "
@@ -233,22 +270,68 @@ def _cpu_quote_supports_criterion(criterion_id: str, answer_quote: str) -> bool:
             r"(?:fetched|started|begun|executed)\b",
             text,
         )
-        negated_execution = re.search(
-            rf"(?:\b{_CPU_NEGATOR} (?:(?:be|being) )?{_CPU_EXECUTION}\b|"
-            rf"\b{_CPU_EXECUTION}\b {_CPU_NEGATOR} \b{_CPU_ORDER}\b|"
-            rf"\b{_CPU_NEGATOR} {_CPU_ORDER}\b)",
+        passive_one_at_time = re.search(
+            r"\b(?:one|each|an?) instruction\b (?:is )?"
+            rf"\b{_CPU_EXECUTION}\b at a time\b",
             text,
         )
-        contradictory_order = re.search(
-            r"\b(?:in any order|out of sequence)\b|"
-            r"(?<!not )\b(?:simultaneously|at once|in parallel|concurrently)\b",
+        negated_credited_relation = re.search(
+            rf"(?:\b{execution_target}\b (?:\w+ ){{0,3}}\b{_CPU_NEGATOR}\b "
+            rf"(?:necessarily )?(?:be |being )?\b{_CPU_EXECUTION}\b "
+            rf"(?:\w+ ){{0,2}}\b{_CPU_ORDER}\b|"
+            rf"\b(?:cpu|processor)\b (?:does |do |can |may |must |will |would |should )?"
+            rf"\b{_CPU_NEGATOR}\b (?:necessarily |always )?\b{_CPU_EXECUTION}\b "
+            rf"(?:each |the )?\b{execution_target}\b \b{_CPU_ORDER}\b|"
+            rf"\b{_CPU_EXECUTION}\b (?:each |the |an? |one )?\b{execution_target}\b "
+            rf"(?:\w+ ){{0,2}}\b{_CPU_NEGATOR}\b \b{_CPU_ORDER}\b)",
             text,
+        )
+        possible_or_intermittent_relation = re.search(
+            rf"(?:\b{execution_target}\b (?:is |are )?"
+            rf"(?:may|might|could|can|only sometimes) (?:be )?\b{_CPU_EXECUTION}\b "
+            rf"(?:\w+ ){{0,2}}\b{_CPU_ORDER}\b|"
+            rf"\b(?:cpu|processor)\b (?:may|might|could|can|only sometimes) "
+            rf"\b{_CPU_EXECUTION}\b (?:each |the )?\b{execution_target}\b "
+            rf"\b{_CPU_ORDER}\b)",
+            text,
+        )
+        incompatible_modes = list(
+            re.finditer(
+                r"\b(?:in any order|out of sequence|simultaneously|at once|"
+                r"in parallel|concurrently)\b",
+                text,
+            )
+        )
+        contradictory_order = any(
+            not re.search(
+                rf"\b{_CPU_NEGATOR}\b (?:\w+ ){{0,3}}$",
+                text[: match.start()],
+            )
+            for match in incompatible_modes
         )
         return bool(
-            not negated_execution
+            not negated_credited_relation
+            and not possible_or_intermittent_relation
             and not contradictory_order
             and (instruction_anchor or pronoun_anchor)
-            and (ordered_action or before_next or passive_before_next)
+            and (
+                any(
+                    match and not _relation_is_qualified(text, match)
+                    for match in ordered_matches
+                )
+                or (
+                    before_next
+                    and not _relation_is_qualified(text, before_next)
+                )
+                or (
+                    passive_before_next
+                    and not _relation_is_qualified(text, passive_before_next)
+                )
+                or (
+                    passive_one_at_time
+                    and not _relation_is_qualified(text, passive_one_at_time)
+                )
+            )
         )
     raise ValueError(f"unknown CPU credit criterion: {criterion_id}")
 
