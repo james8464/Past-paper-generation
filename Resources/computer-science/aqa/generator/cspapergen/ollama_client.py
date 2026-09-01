@@ -273,17 +273,9 @@ def review_blueprint_difficulty(
                 item_id=f"question-{question.number}-{part.label}",
                 subject="AQA A-level Computer Science",
                 target=build_item_demand_target(item, profile),
-                candidate={
-                    "stem": question.stem,
-                    "stimulus": (
-                        question.stimulus.model_dump(mode="json")
-                        if question.stimulus is not None
-                        else None
-                    ),
-                    "part": part.model_dump(mode="json"),
-                },
+                candidate=_difficulty_candidate(question, part),
                 specification=topic,
-                canonical_solution=solution,
+                canonical_solution=_difficulty_solution(solution),
             )
             reviewed_parts.append(
                 part.model_copy(
@@ -292,6 +284,30 @@ def review_blueprint_difficulty(
             )
         reviewed_questions.append(question.model_copy(update={"parts": reviewed_parts}))
     return blueprint.model_copy(update={"questions": reviewed_questions})
+
+
+def _difficulty_candidate(question: Question, part: QuestionPart) -> dict[str, object]:
+    """Expose the established task/scheme view without J-private review metadata."""
+    public_part = part.model_dump(mode="json")
+    public_part.pop("open_credit_contract", None)
+    public_part.pop("open_credit_review", None)
+    public_part["marking"].pop("credit_allocations", None)
+    return {
+        "stem": question.stem,
+        "stimulus": (
+            question.stimulus.model_dump(mode="json")
+            if question.stimulus is not None
+            else None
+        ),
+        "part": public_part,
+    }
+
+
+def _difficulty_solution(solution: object) -> dict[str, object]:
+    """Keep independent work for demand review, never its private CPU contract."""
+    public_solution = solution.model_dump(mode="json")
+    public_solution.pop("open_credit_contract", None)
+    return public_solution
 
 
 def _prompt(

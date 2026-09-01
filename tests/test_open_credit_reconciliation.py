@@ -375,6 +375,26 @@ def test_actual_cpu_pipeline_orders_blind_solver_semantic_review_then_difficulty
     assert "4.7.2.1" not in prompts[0]
     assert prompts[1].startswith("Act as a scoped semantic")
     assert prompts[2].startswith("Act as an independent UK A-level difficulty")
+    semantic_only = (
+        "instructions-main-memory",
+        "serial-processor-execution",
+        "4.7.2.1",
+        "open_credit_contract",
+        "credit_allocations",
+    )
+    for token in semantic_only:
+        assert token in prompts[1]
+        assert token not in prompts[0]
+        assert token not in prompts[2]
+    assert "open_credit_review" not in prompts[0]
+    assert "open_credit_review" not in prompts[2]
+    assert "A computer executes machine-code instructions" in prompts[2]
+    assert "Explain the stored program concept." in prompts[2]
+    assert '"marks": 2' in prompts[2]
+    assert "Machine-code instructions are stored in main memory;" in prompts[2]
+    solution_answer = ReplaySolver().response["answer"]
+    assert solution_answer in prompts[2]
+    assert "Recall storage and execution." in prompts[2]
     assert (
         reviewed.questions[0].parts[0].open_credit_review["provenance"]
         == "model-semantic-adjudication"
