@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from threading import Lock
 
 from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
+from Backend.Core.assessment_contracts import EvidenceRecord
 from Backend.Core.assessment_quality import (
     validate_economics_causal_direction,
 )
@@ -405,14 +406,15 @@ def review_blueprint_difficulty(
             item_index += 1
             label = str(item.get("label") or question.number)
             emit(f"Calibrating difficulty {item_index}/{item_count}: {question.number}{label}")
-            solver_item = _question_solver_item(question, part)
-            solution = IndependentSolver(client).solve(solver_item, [])
-            options = getattr(part, "options", [])
+            projection = _question_solver_projection(question, part)
+            solver_item = projection.item
+            solution = IndependentSolver(client).solve(
+                solver_item, projection.evidence
+            )
             require_solution_matches_scheme(
                 solution,
                 solver_item,
-                expected_choice=(next((o.text for o in options if o.label == part.correct_option), "")
-                                 if options else None),
+                expected_choice=projection.expected_choice,
             )
             evidence = require_difficulty_review(
                 client,
@@ -444,12 +446,94 @@ def _normalise_profile_paper_id(paper_id: str) -> str:
 def _question_solver_item(
     question: QuestionBlueprint, part: QuestionPart | QuestionBlueprint
 ) -> dict[str, object]:
+    return _question_solver_projection(question, part).item
+
+
+@dataclass(frozen=True)
+class _SolverProjection:
+    item: dict[str, object]
+    evidence: tuple[EvidenceRecord, ...]
+    expected_choice: str | None
+
+
+_PRIVATE_STIMULUS_KEYS = {
+    "assessment_contract",
+    "correct_choice",
+    "correct_option",
+    "difficulty_evidence",
+    "indicative_content",
+    "mark_breakdown",
+    "mark_scheme",
+    "structured_mark_scheme",
+}
+
+
+def _assert_public_stimulus(value: object) -> None:
+    if isinstance(value, dict):
+        private = _PRIVATE_STIMULUS_KEYS.intersection(value)
+        if private:
+            raise ValueError(
+                "solver evidence contains private assessment fields: "
+                f"{sorted(private)}"
+            )
+        for child in value.values():
+            _assert_public_stimulus(child)
+    elif isinstance(value, list):
+        for child in value:
+            _assert_public_stimulus(child)
+
+
+def _validate_solver_projection(
+    item: dict[str, object],
+    evidence: list[EvidenceRecord] | tuple[EvidenceRecord, ...],
+) -> None:
+    stimulus = item.get("stimulus")
+    if not isinstance(stimulus, dict):
+        raise ValueError("Edexcel solver stimulus must be a public mapping")
+    _assert_public_stimulus(stimulus)
+    source_id = stimulus.get("source_id")
+    if source_id is None:
+        if evidence:
+            raise ValueError("source-free Edexcel item cannot register evidence")
+        return
+    if not isinstance(source_id, str) or not source_id.strip():
+        raise ValueError("Edexcel source identity must be non-empty")
+    identities = [record.id for record in evidence]
+    if len(evidence) != 1 or len(set(identities)) != len(identities):
+        raise ValueError("Edexcel item requires one unique selected source")
+    if identities != [source_id]:
+        raise ValueError("Edexcel evidence identity differs from selected source")
+    try:
+        public_source = json.loads(evidence[0].text)
+    except json.JSONDecodeError as error:
+        raise ValueError("Edexcel evidence must contain the public source JSON") from error
+    _assert_public_stimulus(public_source)
+    if public_source != stimulus:
+        raise ValueError("Edexcel evidence differs from selected public source")
+
+
+def _question_solver_projection(
+    question: QuestionBlueprint, part: QuestionPart | QuestionBlueprint
+) -> _SolverProjection:
     options = getattr(part, "options", [])
-    return {
+    expected_choice = None
+    correct_choice = None
+    if options:
+        labels = [option.label.strip().casefold() for option in options]
+        if any(not label for label in labels) or len(set(labels)) != len(labels):
+            raise ValueError("Edexcel choice labels must be non-empty and unique")
+        key = str(getattr(part, "correct_option", "")).strip().casefold()
+        matches = [index for index, label in enumerate(labels) if label == key]
+        if len(matches) != 1:
+            raise ValueError("Edexcel correct option must select one labelled choice")
+        correct_choice = matches[0]
+        expected_choice = options[correct_choice].text
+    stimulus = candidate_stimulus_data(question)
+    item = {
         **part.model_dump(mode="json"),
         "id": f"question-{question.number}-{getattr(part, 'label', question.number)}",
         "context": [question.prompt, question.source_text] if question.parts else question.source_text,
-        "stimulus": candidate_stimulus_data(question),
+        "stimulus": stimulus,
         "kind": "multiple_choice" if options else question.stimulus_kind,
         "choices": [option.text for option in options],
         "authoring_context": {"expected_answer_form": (
@@ -461,6 +545,24 @@ def _question_solver_item(
             "requested_prompt": part.prompt, "marks": part.marks,
         }} if part.command_word == "calculate" and question.source_instance else {})},
     }
+    if correct_choice is not None:
+        item["correct_choice"] = correct_choice
+    evidence = (
+        (
+            EvidenceRecord(
+                id=str(stimulus.get("source_id", "")),
+                text=json.dumps(stimulus, ensure_ascii=False, sort_keys=True),
+            ),
+        )
+        if question.source_instance is not None
+        else ()
+    )
+    _validate_solver_projection(item, evidence)
+    return _SolverProjection(
+        item=item,
+        evidence=evidence,
+        expected_choice=expected_choice,
+    )
 
 
 def _question_demand_items(question: QuestionBlueprint) -> list[dict[str, object]]:

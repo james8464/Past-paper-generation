@@ -1998,9 +1998,12 @@ def candidate_stimulus_data(question: QuestionBlueprint) -> dict[str, object]:
         source = question.source_instance
         if question.parts and question.parts[0].command_word == "draw":
             return {"kind": "context_extract", "source_text": source.context,
-                "rows": [], "values": [], "point_labels": [], "candidate_draws_diagram": True}
+                "source_id": source.source_id, "source_fingerprint": source.fingerprint(),
+                "provenance": source.provenance, "rows": [], "values": [],
+                "point_labels": [], "candidate_draws_diagram": True}
         return {"kind": source.kind, "source_text": source.context,
             "source_id": source.source_id, "source_fingerprint": source.fingerprint(),
+            "provenance": source.provenance,
             "rows": [[cell.printed() for cell in row] for row in source.rows],
             "values": [float(v) for v in source.values], "point_labels": source.labels,
             "y_label": source.y_label, "x_label": source.x_label,

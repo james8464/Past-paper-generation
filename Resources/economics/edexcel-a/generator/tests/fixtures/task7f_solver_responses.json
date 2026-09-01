@@ -1,0 +1,78 @@
+{
+  "p1": {
+    "steps": [
+      "Identify the relevant data from the stimulus: The table lists 'Sunk costs' as 'High', 'Switching costs' as 'Medium', and 'Legal barriers' as 'Low'.",
+      "Define contestability: A market is contestable if new and existing firms can enter, exit, or expand their share of the market easily.",
+      "Select one factor to explain: High sunk costs are a significant barrier to entry. Sunk costs are costs incurred that cannot be recovered if a firm leaves the market (e.g., specialized machinery).",
+      "Explain the impact on contestability: Because sunk costs are high in this specific market, potential entrants face a high financial risk. If they fail, they cannot recover these costs, which discourages new competitors from entering, thereby reducing the contestability of the market.",
+      "Alternative analysis (Switching costs): Medium switching costs mean it takes some effort/cost for consumers to move between brands. This reduces but does not eliminate contestability compared to high switching costs."
+    ],
+    "answer": "One factor affecting the contestability of this market is the high level of sunk costs. Sunk costs are investments that cannot be recovered if a business fails; because these are high, the risk for new entrants is significant, making it harder for new firms to enter the market and thus reducing its contestability.",
+    "mark_points": [
+      "High sunk costs"
+    ],
+    "evidence_ids": [
+      "26083049-A-1"
+    ],
+    "alternatives": [
+      "Medium switching costs make it somewhat difficult for customers to change providers, which limits the ease with which new entrants can gain market share, though less severely than high sunk costs."
+    ],
+    "partial_credit_boundaries": [],
+    "follow_through_rules": []
+  },
+  "p2_1": {
+    "steps": [
+      "Identify the data points for each quarter from the provided list: Q1=9.1, Q2=9.9, Q3=7.6, Q4=5.1, Q5=5.4, Q6=23.4, Q7=13.7, Q8=17.2, Q9=10.4.",
+      "Compare these values to find the highest percentage (maximum saving rate).",
+      "Comparing 9.1, 9.9, 7.6, 5.1, 5.4, 23.4, 13.7, 17.2, and 10.4 shows that 23.4 is the largest value.",
+      "Locate which quarter corresponds to the value 23.4. This is Quarter 6.",
+      "Match this finding with the available options."
+    ],
+    "answer": "The saving rate reached its maximum in Quarter 6",
+    "mark_points": [
+      "The saving rate reached its maximum in Quarter 6"
+    ],
+    "evidence_ids": [],
+    "alternatives": [],
+    "partial_credit_boundaries": [],
+    "follow_through_rules": []
+  },
+  "p2_2": {
+    "steps": [
+      "Identify the terms-of-trade index value for Year 1 from the provided data: 87.0.",
+      "Identify the terms-of-trade index value for Year 11 from the provided data: 101.0.",
+      "Calculate the absolute increase in the index: $101.0 - 87.0 = 14.0$.",
+      "Calculate the percentage increase relative to the initial value (Year 1): $\\frac{14.0}{87.0} \\times 100$.",
+      "Perform the calculation: $14 / 87 \times 100 \fallingdotseq 16.09195...$%",
+      "Round the result to one decimal place as requested by the prompt: $16.1\\%$.",
+      "Compare the calculated result with the given options."
+    ],
+    "answer": "16.1%",
+    "mark_points": [
+      "16.1%"
+    ],
+    "evidence_ids": [],
+    "alternatives": [],
+    "partial_credit_boundaries": [],
+    "follow_through_rules": []
+  },
+  "p3": {
+    "steps": [
+      "Identify the market failure: The production of pharmaceuticals generates a negative externality because producers discharge untreated chemical waste, causing costs to water-treatment providers and households.",
+      "Explain the discrepancy between private and social costs: Producers only consider their 'marginal private cost' (MPC). However, because they do not pay for the external costs (£6 per dose), the 'marginal social cost' (MSC) is higher than the MPC. Specifically, MSC = MPC + External Cost.",
+      "Analyze the impact on quantity: Because firms ignore the £6 external cost, they believe it is cheaper to produce each unit than it actually is for society. This leads them to produce where Marginal Benefit equals Marginal Private Cost ($MB = MPC$), which occurs at 117 million doses.",
+      "Compare with socially optimal levels: Social efficiency is achieved where $MSB = MSC$. Since these are ignored by the firm, the market overproduces relative to the socially efficient level of 100 million doses.",
+      "Explain the loss of economic welfare: Overproduction means that for the units produced between 100 and 117 million (the 'overproduced' range), the marginal social cost exceeds the marginal social benefit. These resources are wasted on producing goods whose cost to society outweighs their benefit, resulting in a deadweight loss (loss of economic welfare)."
+    ],
+    "answer": "The production of pharmaceuticals creates a negative externality as producers discharge chemical waste, imposing an external cost of £6 per dose on third parties. Because this cost is not internalized into the market price or accounted for by producers, they base decisions on marginal private costs rather than higher marginal social costs. Consequently, the market produces 117 million doses instead of the socially efficient 100 million doses. This overproduction results in a loss of economic welfare because, for the extra 17 million doses, the cost to society exceeds the benefit provided by those doses.",
+    "mark_points": [
+      "An unpriced negative externality exists because firms do not pay for the damage caused by chemical waste."
+    ],
+    "evidence_ids": [
+      "26083051-A-1(a)"
+    ],
+    "alternatives": [],
+    "partial_credit_boundaries": [],
+    "follow_through_rules": []
+  }
+}

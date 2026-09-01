@@ -430,8 +430,8 @@
     "semantic_hash": "b9e6ae432a75667203d8046ab699cba3"
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/cli.py": {
-    "mtime": 1788154204.9959755,
-    "ast_hash": "9b7247a0f92377055f94042fe55ed6ec",
+    "mtime": 1788272072.8937967,
+    "ast_hash": "ba062cdb709712792a18d30ca4fd389a",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/exam_dates.py": {
@@ -455,8 +455,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/ollama_client.py": {
-    "mtime": 1788150228.8663878,
-    "ast_hash": "0b7ef4a53fe16c47f2cd5d0503378468",
+    "mtime": 1788272201.1988196,
+    "ast_hash": "5a3d0734f92220787b4d64ad4c271138",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/paper_configs.py": {
@@ -465,8 +465,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/render_pdf.py": {
-    "mtime": 1788153908.9241707,
-    "ast_hash": "a54dee68ccfa9fef71a914c1e1a3fe0b",
+    "mtime": 1788272201.1994917,
+    "ast_hash": "10e1afa0c4a1cbcd8e2c832fca3a207e",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/source_cases.py": {
@@ -1425,8 +1425,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-26-paper-creator-excellence-programme.md": {
-    "mtime": 1788156298.9492285,
-    "ast_hash": "09a2ac2c27e34c54444b7833dde3bd03",
+    "mtime": 1788271716.8165846,
+    "ast_hash": "b4c59b307d7e269b001d52496a450eeb",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md": {
@@ -1700,8 +1700,8 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1788271454.8787854,
-    "ast_hash": "3804689a56c8f4982b9a0649a7c1f99b",
+    "mtime": 1788272517.284105,
+    "ast_hash": "dbbd82666b92e63e7b1c2f12abdd001d",
     "semantic_hash": ""
   },
   "tests/test_repository_hygiene.py": {
@@ -1940,13 +1940,13 @@
     "semantic_hash": ""
   },
   "docs/quality/difficulty-calibration-v2-report.md": {
-    "mtime": 1788156987.9385886,
-    "ast_hash": "79f70980b55ccf9269489c06f74ad306",
+    "mtime": 1788272010.446292,
+    "ast_hash": "36319796dc5d2c7855dd11a52e1be7dc",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-30-difficulty-calibration-v2.md": {
-    "mtime": 1788156270.4462929,
-    "ast_hash": "dcc47b631a275a90ff5eeeeb72aff228",
+    "mtime": 1788271716.816173,
+    "ast_hash": "f12cf8509e7a344aebbc80dc2bdcf340",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-30-difficulty-calibration-v2-design.md": {
@@ -2097,6 +2097,16 @@
   "tests/support/edexcel.py": {
     "mtime": 1788157560.0062168,
     "ast_hash": "1f4d0e054b492a466cf5bfbba1b5df38",
+    "semantic_hash": ""
+  },
+  "Resources/economics/edexcel-a/generator/tests/test_solver_source_adapter.py": {
+    "mtime": 1788272505.3144672,
+    "ast_hash": "b8dd9267e86672f3f5dc753adc3e7aca",
+    "semantic_hash": ""
+  },
+  "Resources/economics/edexcel-a/generator/tests/fixtures/task7f_solver_responses.json": {
+    "mtime": 1788272479.2003713,
+    "ast_hash": "221a9d4b04b2c66bad8957bd592a3a62",
     "semantic_hash": ""
   }
 }
