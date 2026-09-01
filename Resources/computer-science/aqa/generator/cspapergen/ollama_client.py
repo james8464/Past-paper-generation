@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from typing import Protocol
 
 from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
+from Backend.Core.assessment_contracts import EvidenceRecord
 from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.assessment_quality import numeric_tokens
 from Backend.Core.computer_science_authoring import (
@@ -35,6 +36,16 @@ from Backend.Core.reference_demand import (
     assessment_objectives_for_item,
     build_item_demand_target,
     profile_for,
+)
+from Backend.Core.subjects.sql_contracts import (
+    SQL_VALIDATION_VERSION,
+    SQL_VERIFIED_SCOPE,
+    SQLSourceContract,
+    SQLValidationFinding,
+    render_sql_schema,
+    selected_sql_answer_contract,
+    sql_source_intent_sha256,
+    validate_sql_response,
 )
 from cspapergen.models import (
     PaperBlueprint,
@@ -255,8 +266,9 @@ def review_blueprint_difficulty(
                 f"Checking reference demand {item_index}/{item_count}: "
                 f"0 {question.number:02d}({part.label})"
             )
-            solver_item = _part_solver_item(question, part)
-            solution = IndependentSolver(client).solve(solver_item, [])
+            projection = _part_solver_projection(question, part)
+            solver_item = projection.item
+            solution = _solve_part_with_sql_validation(client, projection)
             credit_review = review_open_credit(client, solver_item, solution) if part.open_credit_contract else {}
             require_solution_matches_scheme(
                 solution,
@@ -406,7 +418,145 @@ def _part_demand_item(
 
 
 def _part_solver_item(question: Question, part: QuestionPart) -> dict[str, object]:
-    return aqa_cs_solver_item(question.model_dump(mode="json"), part.model_dump(mode="json"), candidate_stimulus_data(question.stimulus))
+    return _part_solver_projection(question, part).item
+
+
+@dataclass(frozen=True)
+class _SolverProjection:
+    item: dict[str, object]
+    evidence: tuple[EvidenceRecord, ...]
+    sql_contract: SQLSourceContract | None = None
+    sql_intent_id: str = ""
+
+
+def _part_solver_projection(
+    question: Question, part: QuestionPart
+) -> _SolverProjection:
+    stimulus = candidate_stimulus_data(question.stimulus)
+    item = aqa_cs_solver_item(
+        question.model_dump(mode="json"), part.model_dump(mode="json"), stimulus
+    )
+    if question.stimulus is None or question.stimulus.sql_contract is None:
+        if part.sql_intent_id:
+            raise ValueError("SQL part has no candidate-visible public SQL contract")
+        return _SolverProjection(item=item, evidence=())
+    contract = question.stimulus.sql_contract
+    evidence = (
+        EvidenceRecord(
+            id=contract.source_id,
+            text=json.dumps(stimulus, ensure_ascii=False, sort_keys=True),
+        ),
+    )
+    if json.loads(evidence[0].text) != item.get("stimulus"):
+        raise ValueError("public SQL evidence differs from the solver stimulus")
+    if not part.sql_intent_id:
+        return _SolverProjection(item=item, evidence=evidence)
+    if question.style_id != "sql_normalisation":
+        raise ValueError("SQL part has no candidate-visible public SQL contract")
+    _validate_sql_solver_projection(item, evidence, contract, part.sql_intent_id)
+    return _SolverProjection(
+        item=item,
+        evidence=evidence,
+        sql_contract=contract,
+        sql_intent_id=part.sql_intent_id,
+    )
+
+
+def _validate_sql_solver_projection(
+    item: dict[str, object],
+    evidence: tuple[EvidenceRecord, ...],
+    contract: SQLSourceContract,
+    intent_id: str,
+) -> None:
+    if len(evidence) != 1 or evidence[0].id != contract.source_id:
+        raise ValueError("SQL solver requires one exact public SQL source")
+    try:
+        source = json.loads(evidence[0].text)
+    except json.JSONDecodeError as error:
+        raise ValueError("public SQL evidence is not valid JSON") from error
+    if source != item.get("stimulus"):
+        raise ValueError("public SQL evidence differs from the solver stimulus")
+    if source.get("source_id") != contract.source_id:
+        raise ValueError("public SQL source identity differs from its contract")
+    if source.get("sql_contract") != contract.model_dump(mode="json"):
+        raise ValueError("public SQL source differs from its typed contract")
+    if source.get("code") != render_sql_schema(contract):
+        raise ValueError("public SQL rendered schema differs from its typed contract")
+    context = item.get("authoring_context")
+    if not isinstance(context, dict):
+        raise ValueError("SQL solver item has no authoring context")
+    digest = sql_source_intent_sha256(contract, intent_id)
+    if context.get("sql_source_intent_sha256") != digest:
+        raise ValueError("public SQL source/intent digest is stale")
+    public_contract = context.get("sql_answer_contract")
+    if public_contract != selected_sql_answer_contract(contract, intent_id):
+        raise ValueError("SQL solver item has no selected public intent")
+    forbidden = {"marking", "mark_scheme", "worked_query", "canonical_solution"}
+    if forbidden & set(public_contract):
+        raise ValueError("public SQL solver contract contains private answer material")
+
+
+def _solve_part_with_sql_validation(
+    client: JSONGenerationClient, projection: _SolverProjection
+):
+    solver = IndependentSolver(client)
+    first = solver.solve(projection.item, projection.evidence)
+    if projection.sql_contract is None:
+        return first
+    first_findings = _sql_solution_findings(first, projection)
+    if not first_findings:
+        return _verified_sql_solution(first, projection, [])
+    structured = [finding.model_dump(mode="json") for finding in first_findings]
+    replacement = solver.solve(
+        projection.item,
+        projection.evidence,
+        correction_findings=structured,
+    )
+    replacement_findings = _sql_solution_findings(replacement, projection)
+    if replacement_findings:
+        raise ValueError(
+            "failed bounded SQL verification after one correction: first="
+            + json.dumps(structured, ensure_ascii=False, sort_keys=True)
+            + "; replacement="
+            + json.dumps(
+                [finding.model_dump(mode="json") for finding in replacement_findings],
+                ensure_ascii=False,
+                sort_keys=True,
+            )
+        )
+    return _verified_sql_solution(replacement, projection, structured)
+
+
+def _sql_solution_findings(solution, projection: _SolverProjection):
+    assert projection.sql_contract is not None
+    result = validate_sql_response(
+        solution.answer,
+        solution.mark_points,
+        projection.sql_contract,
+        projection.sql_intent_id,
+    )
+    findings = list(result.findings)
+    if solution.evidence_ids != [projection.sql_contract.source_id]:
+        findings.append(SQLValidationFinding(
+            code="source-citation",
+            message="The SQL response must cite the one supplied public schema source.",
+            location="evidence_ids",
+        ))
+    return findings
+
+
+def _verified_sql_solution(solution, projection: _SolverProjection, first_failure):
+    assert projection.sql_contract is not None
+    digest = sql_source_intent_sha256(
+        projection.sql_contract, projection.sql_intent_id
+    )
+    return solution.model_copy(update={
+        "verified_scope": SQL_VERIFIED_SCOPE,
+        "program_validation_version": SQL_VALIDATION_VERSION,
+        "program_validation_scope": SQL_VERIFIED_SCOPE,
+        "source_intent_sha256": digest,
+        "program_first_failure": first_failure,
+    })
 
 
 def _uses_scenario_only_generation(question: Question) -> bool:

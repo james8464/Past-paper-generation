@@ -72,6 +72,10 @@ class CanonicalSolution(BaseModel):
     credit_rules: list[CreditRule] = Field(default_factory=list)
     advisory_issues: list[str] = Field(default_factory=list)
     open_credit_contract: dict[str, Any] = Field(default_factory=dict)
+    program_validation_version: str = "legacy-unverified"
+    program_validation_scope: str = "none"
+    source_intent_sha256: str = ""
+    program_first_failure: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class ReconciliationIssue(BaseModel):
@@ -98,6 +102,8 @@ class IndependentSolver:
         self,
         item: Any,
         sources: Sequence[EvidenceRecord],
+        *,
+        correction_findings: Sequence[dict[str, Any]] | None = None,
     ) -> CanonicalSolution:
         raw_item = _as_mapping(item)
         item_id = str(
@@ -196,6 +202,17 @@ class IndependentSolver:
             "the same selected option as answer. Put reasoning in steps."
         )
         if deterministic is None and self.client is not None:
+            correction = ""
+            if correction_findings:
+                if context.get("sql_answer_contract") is None:
+                    raise ValueError("solver correction findings require a public SQL contract")
+                correction = (
+                    " This is the single permitted correction of a prior SQL response. "
+                    "Correct every structured verifier finding using only the same public "
+                    "schema, intent and supported syntax. Do not ask for or infer a private "
+                    "worked query. SQL_VALIDATION_FINDINGS="
+                    + json.dumps(list(correction_findings), ensure_ascii=False, sort_keys=True)
+                )
             result = dict(
                 self.client.generate_json(
                     "Independently solve this UK A-level assessment item. Do not "
@@ -207,6 +224,7 @@ class IndependentSolver:
                     "steps, answer, mark_points, evidence_ids, alternatives, "
                     "partial_credit_boundaries and follow_through_rules."
                     + response_instructions
+                    + correction
                     + "\n"
                     + json.dumps(
                         {

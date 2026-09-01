@@ -25,6 +25,7 @@ from Backend.Core.generation_date import (
     generation_date,
 )
 from Backend.Core.open_credit import printed_credit_points
+from Backend.Core.subjects.sql_contracts import render_sql_schema
 from cspapergen.models import PaperBlueprint, Question, QuestionPart, Stimulus
 
 FONT = "AQAArial"
@@ -1578,6 +1579,9 @@ def candidate_stimulus_data(stimulus: Stimulus | None) -> dict[str, object]:
     if stimulus is None:
         return {}
     data = stimulus.model_dump(mode="json")
+    if stimulus.sql_contract is not None:
+        data["source_id"] = stimulus.sql_contract.source_id
+        data["code"] = render_sql_schema(stimulus.sql_contract)
     if stimulus.kind == "classification":
         if not stimulus.lines:
             raise ValueError("classification figure lacks candidate-visible maintenance examples")
@@ -1619,7 +1623,12 @@ def _render_stimulus(pdf: canvas.Canvas, stimulus: Stimulus, state: _QuestionRen
     if stimulus.kind in {"table", "bitgrid", "packet", "truth_table"}:
         state.y = _draw_table(pdf, stimulus, 118, state.y)
     elif stimulus.kind == "code":
-        state.y = _draw_code_box(pdf, stimulus.code, 118, state.y)
+        code = (
+            render_sql_schema(stimulus.sql_contract)
+            if stimulus.sql_contract is not None
+            else stimulus.code
+        )
+        state.y = _draw_code_box(pdf, code, 118, state.y)
     elif stimulus.kind == "logic":
         state.y = _draw_logic_box(pdf, stimulus.diagram, 118, state.y)
     elif stimulus.kind == "erd":

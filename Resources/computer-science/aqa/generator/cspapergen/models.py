@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
+
+from Backend.Core.subjects.sql_contracts import SQLSourceContract, render_sql_schema
 
 
 class SyllabusTopic(BaseModel):
@@ -40,6 +42,15 @@ class Stimulus(BaseModel):
     lines: list[str] = Field(default_factory=list)
     code: str = ""
     diagram: str = ""
+    sql_contract: SQLSourceContract | None = None
+
+    @model_validator(mode="after")
+    def sql_source_is_derived_from_contract(self) -> Stimulus:
+        if self.sql_contract is not None and self.code != render_sql_schema(
+            self.sql_contract
+        ):
+            raise ValueError("SQL source text differs from its typed public contract")
+        return self
 
 
 class MarkingGuidance(BaseModel):
@@ -69,6 +80,7 @@ class QuestionPart(BaseModel):
     assessment_objectives: dict[str, int] = Field(default_factory=dict)
     expected_minutes: float | None = Field(default=None, gt=0)
     task_operation: str = ""
+    sql_intent_id: str = ""
 
     def set_closed_answers(self, answers: dict[str, list[str]]) -> None:
         """Attach the immutable marking key separately from candidate slot IDs."""

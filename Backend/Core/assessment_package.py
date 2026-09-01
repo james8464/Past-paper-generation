@@ -31,6 +31,11 @@ from Backend.Core.reference_demand import (
     profile_for,
 )
 from Backend.Core.response_simulation import ResponseSimulator
+from Backend.Core.subjects.sql_contracts import (
+    SQLSourceContract,
+    render_sql_schema,
+    sql_source_intent_sha256,
+)
 
 
 class AssessmentPackageCompatibilityError(ValueError):
@@ -304,7 +309,14 @@ def _extract_items(
 ) -> list[dict[str, Any]]:
     discovered: list[tuple[str, dict[str, Any], list[str], str]] = []
 
-    def walk(value: Any, path: list[str], inherited_stems: list[str], inherited_kind: str = "", inherited_provenance: str = "generator-specific") -> None:
+    def walk(
+        value: Any,
+        path: list[str],
+        inherited_stems: list[str],
+        inherited_kind: str = "",
+        inherited_provenance: str = "generator-specific",
+        inherited_sql_contract: dict[str, Any] | None = None,
+    ) -> None:
         if isinstance(value, dict):
             provenance = value.get("provenance", inherited_provenance)
             kind = str(value.get("kind") or value.get("style_id") or value.get("stimulus_kind") or inherited_kind)
@@ -317,10 +329,18 @@ def _extract_items(
                 stems = [*stems, source_text.strip()]
             stimulus = value.get("stimulus")
             if isinstance(stimulus, dict):
+                sql_contract = stimulus.get("sql_contract")
+                if isinstance(sql_contract, dict):
+                    inherited_sql_contract = sql_contract
+                stimulus_code = (
+                    render_sql_schema(SQLSourceContract.model_validate(sql_contract, strict=True))
+                    if isinstance(sql_contract, dict)
+                    else stimulus.get("code", "")
+                )
                 source_parts = [
                     *stimulus.get("lines", []),
                     *(cell for row in stimulus.get("rows", []) for cell in row),
-                    stimulus.get("code", ""),
+                    stimulus_code,
                 ]
                 stems = [*stems, *(str(part).strip() for part in source_parts if str(part).strip())]
             if isinstance(stimulus, list):
@@ -345,17 +365,47 @@ def _extract_items(
                 and isinstance(marks, int)
                 and not has_marked_parts
             ):
-                discovered.append((".".join(path), {**value, "provenance": provenance}, stems, kind))
+                discovered_value = {**value, "provenance": provenance}
+                intent_id = str(value.get("sql_intent_id", ""))
+                if inherited_sql_contract is not None:
+                    contract = SQLSourceContract.model_validate(
+                        inherited_sql_contract, strict=True
+                    )
+                    discovered_value["_candidate_source_contract"] = contract.model_dump(mode="json")
+                    if intent_id:
+                        try:
+                            intent = contract.intents[intent_id]
+                        except KeyError as error:
+                            raise ValueError("exported SQL part refers to an unknown intent") from error
+                        discovered_value.update({
+                            "_answer_intent": intent.model_dump(mode="json"),
+                            "_source_intent_sha256": sql_source_intent_sha256(contract, intent_id),
+                        })
+                discovered.append((".".join(path), discovered_value, stems, kind))
             child_stems = (
                 [*stems, prompt.strip()]
                 if has_marked_parts and isinstance(prompt, str) and prompt.strip()
                 else stems
             )
             for key, child in value.items():
-                walk(child, [*path, str(key)], child_stems, kind, provenance)
+                walk(
+                    child,
+                    [*path, str(key)],
+                    child_stems,
+                    kind,
+                    provenance,
+                    inherited_sql_contract,
+                )
         elif isinstance(value, list):
             for index, child in enumerate(value):
-                walk(child, [*path, str(index)], inherited_stems, inherited_kind, inherited_provenance)
+                walk(
+                    child,
+                    [*path, str(index)],
+                    inherited_stems,
+                    inherited_kind,
+                    inherited_provenance,
+                    inherited_sql_contract,
+                )
 
     walk(blueprint, [], [])
     items: list[dict[str, Any]] = []
@@ -368,8 +418,7 @@ def _extract_items(
             or f"item-{index}"
         )
         scheme = _scheme_text(raw)
-        items.append(
-            {
+        item = {
                 "id": f"{item_id}@{path}",
                 "subject": subject,
                 "paper": paper_number,
@@ -403,7 +452,12 @@ def _extract_items(
                     )
                 ),
             }
-        )
+        if raw.get("_candidate_source_contract"):
+            item["candidate_source_contract"] = raw["_candidate_source_contract"]
+        if raw.get("_answer_intent"):
+            item["answer_intent"] = raw["_answer_intent"]
+            item["source_intent_sha256"] = raw["_source_intent_sha256"]
+        items.append(item)
     if not items:
         raise ValueError("assessment blueprint contains no marked question items")
     return items

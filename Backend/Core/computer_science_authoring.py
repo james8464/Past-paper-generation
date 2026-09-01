@@ -18,6 +18,13 @@ from Backend.Core.open_credit import (
     validate_open_credit_contract,
     validate_open_credit_review,
 )
+from Backend.Core.subjects.sql_contracts import (
+    SQL_VALIDATION_VERSION,
+    SQLSourceContract,
+    render_sql_intent_prompt,
+    selected_sql_answer_contract,
+    sql_source_intent_sha256,
+)
 
 REVIEW_FIELDS = {"provenance", "content_review", "reviewed_content_sha256", "reviewed_blueprint_sha256"}
 
@@ -36,7 +43,12 @@ def question_content_sha256(question: dict[str, Any]) -> str:
     for part in content["parts"]:
         part.pop("difficulty_evidence", None)
         part.pop("open_credit_review", None)
-    return hashlib.sha256(json.dumps({"credit_policy": CREDIT_POLICY_VERSION, "content": content}, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
+    sql_version = (
+        SQL_VALIDATION_VERSION
+        if isinstance((content.get("stimulus") or {}).get("sql_contract"), dict)
+        else "none"
+    )
+    return hashlib.sha256(json.dumps({"credit_policy": CREDIT_POLICY_VERSION, "sql_validation": sql_version, "content": content}, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
 
 
 def aqa_cs_solver_item(question: dict[str, Any], part: dict[str, Any], stimulus: dict[str, Any]) -> dict[str, Any]:
@@ -46,13 +58,36 @@ def aqa_cs_solver_item(question: dict[str, Any], part: dict[str, Any], stimulus:
     same projection here; H can reuse this instead of inventing another identity.
     Private marking remains available for reconciliation, removed by the solver.
     """
+    authoring_context: dict[str, Any] = {
+        "open_credit_contract": part.get("open_credit_contract", {}),
+        "expected_answer_form": "numeric" if part["prompt"].split(maxsplit=1)[0].casefold() in {"calculate", "determine"} else "constructed_response",
+    }
+    intent_id = str(part.get("sql_intent_id", ""))
+    if intent_id:
+        raw_contract = stimulus.get("sql_contract")
+        contract = SQLSourceContract.model_validate(raw_contract, strict=True)
+        try:
+            intent = contract.intents[intent_id]
+        except KeyError as error:
+            raise ValueError("SQL part refers to an unknown public intent") from error
+        try:
+            expected_prompt = render_sql_intent_prompt(intent)
+        except ValueError as error:
+            raise ValueError("public SQL intent cannot be rendered as the candidate prompt") from error
+        if part.get("prompt") != expected_prompt:
+            raise ValueError("SQL part prompt differs from its public SQL intent")
+        if stimulus.get("source_id") != contract.source_id:
+            raise ValueError("SQL stimulus source identity differs from its public contract")
+        authoring_context.update({
+            "sql_answer_contract": selected_sql_answer_contract(contract, intent_id),
+            "sql_source_intent_sha256": sql_source_intent_sha256(contract, intent_id),
+        })
     return {**part, "subject": "AQA Computer Science", "id": f"question-{question['number']}-{part['label']}",
             "context": question["stem"], "stimulus": stimulus,
             "kind": "multiple_choice" if part.get("options") else question["style_id"],
             "choices": [option["text"] for option in part.get("options", [])],
             "response_slots": ["choice"] if part.get("options") else part.get("response_slots", []),
-            "authoring_context": {"open_credit_contract": part.get("open_credit_contract", {}),
-                "expected_answer_form": "numeric" if part["prompt"].split(maxsplit=1)[0].casefold() in {"calculate", "determine"} else "constructed_response"}}
+            "authoring_context": authoring_context}
 
 
 def reviewed_question_metadata(original: dict[str, Any], candidate: dict[str, Any], review: ReviewResult) -> dict[str, Any]:

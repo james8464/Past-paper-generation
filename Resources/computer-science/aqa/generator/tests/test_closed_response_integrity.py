@@ -151,7 +151,11 @@ def test_specialist_closed_shapes_declare_required_slots(style_id, part_index, s
 
 
 @pytest.mark.parametrize(
-    "old_version", ["aqa-computer-science-v7", "aqa-computer-science-v8-closed-slots"]
+    "old_version", [
+        "aqa-computer-science-v7",
+        "aqa-computer-science-v8-closed-slots",
+        "aqa-computer-science-v11-declared-open-credit",
+    ]
 )
 def test_old_figure_review_is_not_current_evidence(tmp_path, old_version):
     from cspapergen.cli import ADAPTER

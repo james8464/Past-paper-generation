@@ -3,6 +3,10 @@ from __future__ import annotations
 import random
 import secrets
 
+from Backend.Core.subjects.sql_contracts import (
+    SQLSampleTableContract,
+    render_sql_schema,
+)
 from cspapergen.models import (
     MarkingGuidance,
     Paper1Context,
@@ -595,15 +599,28 @@ def _paper2_sql_task(question: Question) -> Question:
     """Six marks for the compound query; finite row analysis replaces two writes."""
     assert question.stimulus is not None
     stimulus = question.stimulus.model_copy(deep=True)
-    stimulus.code += (
-        "\nBOOKING rows: MemberID, SessionID, Attended"
-        "\n1842, 27, FALSE\n1842, 28, FALSE"
-        "\n1843, 27, FALSE\n1844, 27, TRUE"
-    )
+    assert stimulus.sql_contract is not None
+    sql_contract = stimulus.sql_contract.model_copy(update={
+        "source_id": "aqa-7517-fitness-centre-paper2-source-v1",
+        "sample_tables": [SQLSampleTableContract(
+            table="BOOKING",
+            columns=["MemberID", "SessionID", "Attended"],
+            rows=[
+                [1842, 27, False],
+                [1842, 28, False],
+                [1843, 27, False],
+                [1844, 27, True],
+            ],
+        )],
+    })
+    stimulus = stimulus.model_copy(update={
+        "sql_contract": sql_contract,
+        "code": render_sql_schema(sql_contract),
+    })
     prompts = [
         "Identify the error in this SQL condition: Email = NULL.",
         question.parts[1].prompt,
-        question.parts[2].prompt.replace("1842", "1900"),
+        question.parts[2].prompt,
         "Identify both bookings affected by UPDATE BOOKING SET Attended = TRUE WHERE MemberID = 1842. Give each (MemberID, SessionID) pair in ascending SessionID order.",
         "Identify the booking removed by DELETE FROM BOOKING WHERE SessionID = 27 AND Attended = TRUE. Give its (MemberID, SessionID) pair.",
     ]
@@ -622,7 +639,8 @@ def _paper2_sql_task(question: Question) -> Question:
     parts = [
         QuestionPart(label=str(i + 1), prompt=prompt, marks=marks,
                      answer_lines=8 if i == 1 else 4,
-                     marking=MarkingGuidance(ao="pending", points=points[i]))
+                     marking=MarkingGuidance(ao="pending", points=points[i]),
+                     sql_intent_id={1: "2", 2: "3"}.get(i, ""))
         for i, (prompt, marks) in enumerate(zip(prompts, (1, 6, 2, 2, 1), strict=True))
     ]
     parts[1].marking.accept = [

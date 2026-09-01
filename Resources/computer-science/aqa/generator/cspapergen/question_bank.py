@@ -4,6 +4,11 @@ import random
 from dataclasses import dataclass
 from itertools import groupby
 
+from Backend.Core.subjects.sql_contracts import (
+    fitness_centre_sql_contract,
+    render_sql_intent_prompt,
+    render_sql_schema,
+)
 from cspapergen.models import MarkingGuidance, Question, QuestionPart, Stimulus
 
 
@@ -1121,22 +1126,17 @@ def _tcpip_question(style: QuestionStyle, number: int, total: int, rng: random.R
 
 
 def _sql_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+    sql_contract = fitness_centre_sql_contract()
     stimulus = Stimulus(
         kind="code",
         title="Database schema",
-        code=(
-            "MEMBER(MemberID, FullName, Email)\n"
-            "SESSION(SessionID, Activity, StartsAt, Capacity)\n"
-            "BOOKING(MemberID*, SessionID*, BookedAt, Attended)\n"
-            "Primary keys: MEMBER.MemberID; SESSION.SessionID\n"
-            "BOOKING primary key: (MemberID, SessionID)\n"
-            "Foreign keys: BOOKING.MemberID; BOOKING.SessionID"
-        ),
+        code=render_sql_schema(sql_contract),
+        sql_contract=sql_contract,
     )
     parts = _parts([
         ("1", 2, "The following SQL contains an error. Identify the error and write the corrected condition.\nSELECT FullName FROM MEMBER WHERE Email = NULL;", ["The error is comparing NULL using =;", "Use WHERE Email IS NULL;"], "", 5),
-        ("2", 3, "Write one SELECT query that lists each Activity and the number of bookings for it, including only activities with at least five bookings. Sort the result from most to fewest bookings.", ["JOIN SESSION to BOOKING using SessionID;", "GROUP BY Activity and use HAVING COUNT(*) >= 5;", "ORDER BY COUNT(*) DESC;"], "", 8),
-        ("3", 2, "Write one INSERT statement to add member 1842, named 'Amira Khan', with email 'amira@example.org' to MEMBER.", ["INSERT INTO MEMBER (MemberID, FullName, Email) used;", "VALUES (1842, 'Amira Khan', 'amira@example.org') used in matching order;"], "", 5),
+        ("2", 3, render_sql_intent_prompt(sql_contract.intents["2"]), ["JOIN SESSION to BOOKING using SessionID;", "GROUP BY Activity and use HAVING COUNT(*) >= 5;", "ORDER BY COUNT(*) DESC;"], "", 8),
+        ("3", 2, render_sql_intent_prompt(sql_contract.intents["3"]), ["INSERT INTO MEMBER (MemberID, FullName, Email) used;", "VALUES (1900, 'Amira Khan', 'amira@example.org') used in matching order;"], "", 5),
         ("4", 3, "Write one UPDATE statement that marks member 1842 as having attended session 27. Your statement must not change any other booking.", ["UPDATE BOOKING SET Attended = TRUE (or an equivalent valid Boolean value);", "WHERE MemberID = 1842 used;", "AND SessionID = 27 used in the same WHERE condition;"], "", 7),
         ("5", 2, "Write one DELETE statement that removes bookings for session 27 only where Attended is FALSE.", ["DELETE FROM BOOKING used;", "WHERE SessionID = 27 AND Attended = FALSE, or an equivalent valid Boolean comparison;"], "", 5),
     ])
@@ -1148,6 +1148,8 @@ def _sql_question(style: QuestionStyle, number: int, total: int, rng: random.Ran
         )
         for part in parts
     ]
+    parts[1].sql_intent_id = "2"
+    parts[2].sql_intent_id = "3"
     return _question(
         style,
         number,
