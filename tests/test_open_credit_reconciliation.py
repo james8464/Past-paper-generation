@@ -410,6 +410,14 @@ def test_round2_live_semantic_result_rejects_fetch_and_execute_as_needed():
             False,
         ),
         (
+            "The CPU loads instructions into RAM. The CPU does not load instructions into RAM.",
+            False,
+        ),
+        (
+            "Instructions are stored in RAM. Instructions must not be stored in RAM.",
+            False,
+        ),
+        (
             "The program instructions are stored in secondary storage; main memory holds only data.",
             False,
         ),
@@ -463,6 +471,7 @@ def test_cpu_storage_quote_requires_instructions_stored_in_main_memory(
         ("The CPU executes one instruction at a time.", True),
         ("Instructions are fetched and executed sequentially.", True),
         ("The CPU executes these instructions sequentially.", True),
+        ("The CPU fetches instructions and executes them sequentially.", True),
         (
             "Instructions are executed sequentially; data are processed in parallel.",
             True,
@@ -484,6 +493,11 @@ def test_cpu_storage_quote_requires_instructions_stored_in_main_memory(
             False,
         ),
         ("Only sometimes the CPU executes instructions sequentially.", False),
+        ("Only sometimes are instructions executed sequentially.", False),
+        (
+            "Instructions are executed sequentially. The CPU cannot execute instructions sequentially.",
+            False,
+        ),
         ("The CPU could execute instructions sequentially.", False),
         ("Instructions might be executed sequentially.", False),
         ("Instructions are stored sequentially in RAM.", False),
@@ -507,6 +521,7 @@ def test_cpu_storage_quote_requires_instructions_stored_in_main_memory(
             False,
         ),
         ("The CPU processes these sequentially.", False),
+        ("The CPU fetches data and executes them sequentially.", False),
     ],
 )
 def test_cpu_serial_quote_requires_explicit_ordered_execution(answer_quote, expected):

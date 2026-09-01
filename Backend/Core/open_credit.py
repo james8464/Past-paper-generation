@@ -182,7 +182,7 @@ def _relation_is_qualified(text: str, match: re.Match[str] | None) -> bool:
     if match is None:
         return False
     leading = re.search(
-        r"(?:^| )(?:not always|only sometimes)(?: the)? $",
+        r"(?:^| )(?:not always|only sometimes)(?: the)? (?:(?:is|are) )?$",
         text[: match.start()],
     )
     trailing = re.match(
@@ -223,16 +223,39 @@ def _storage_clause_supports(clause: str) -> bool:
 
 
 def _storage_clause_contradicts(clause: str) -> bool:
-    explicit_negation = re.search(
-            rf"\b{_CPU_INSTRUCTION}\b (?:(?:is|are) )?"
-            rf"(?:not|never) (?:necessarily |always )?(?:be )?{_CPU_STORAGE} "
-            rf"(?:in|into|within|on) (?:the )?(?:computer s )?{_CPU_MAIN_MEMORY}\b|"
-            rf"\bno {_CPU_INSTRUCTION}\b (?:\w+ ){{0,3}}\b{_CPU_MAIN_MEMORY}\b|"
-            rf"\b{_CPU_MAIN_MEMORY}\b (?:does|do) (?:not|never) "
-            rf"(?:necessarily |always )?(?:store|hold|keep|contain) "
-            rf"(?:the )?{_CPU_INSTRUCTION}\b",
-            clause,
+    passive_negation = (
+        rf"\b{_CPU_INSTRUCTION}\b "
+        rf"(?:(?:is|are) (?:not|never)|must not|cannot) "
+        rf"(?:necessarily |always )?(?:be )?{_CPU_STORAGE} "
+        rf"(?:in|into|within|on) (?:the )?(?:computer s )?{_CPU_MAIN_MEMORY}\b"
+    )
+    memory_active_negation = (
+        rf"\b{_CPU_MAIN_MEMORY}\b "
+        rf"(?:(?:does|do) not|cannot|must not) "
+        rf"(?:necessarily |always )?(?:store|hold|keep|contain) "
+        rf"(?:the )?{_CPU_INSTRUCTION}\b|"
+        rf"\b{_CPU_MAIN_MEMORY}\b never (?:stores|holds|keeps|contains) "
+        rf"(?:the )?{_CPU_INSTRUCTION}\b"
+    )
+    processor_active_negation = (
+        rf"\b(?:the )?(?:cpu|processor) "
+        rf"(?:(?:does|do) not|cannot|must not) "
+        rf"(?:necessarily |always )?(?:load|place) "
+        rf"(?:the )?{_CPU_INSTRUCTION}\b (?:in|into|within) "
+        rf"(?:the )?(?:computer s )?{_CPU_MAIN_MEMORY}\b|"
+        rf"\b(?:the )?(?:cpu|processor) never (?:loads|places) "
+        rf"(?:the )?{_CPU_INSTRUCTION}\b (?:in|into|within) "
+        rf"(?:the )?(?:computer s )?{_CPU_MAIN_MEMORY}\b"
+    )
+    explicit_negation = any(
+        re.search(pattern, clause)
+        for pattern in (
+            passive_negation,
+            memory_active_negation,
+            processor_active_negation,
+            rf"\bno {_CPU_INSTRUCTION}\b (?:\w+ ){{0,3}}\b{_CPU_MAIN_MEMORY}\b",
         )
+    )
     qualified_assertion = any(
         _relation_is_qualified(clause, match)
         for pattern in _storage_assertion_patterns()
@@ -260,6 +283,9 @@ def _serial_clause_evidence(
     object_target += r")"
     subject_target += r")"
     asserted_patterns = (
+        rf"\b(?:the )?(?:cpu|processor) (?:must )?"
+        rf"(?:fetches|retrieves) (?:each |the |an? )?{explicit_target}\b "
+        rf"(?:and|then) {_CPU_EXECUTION} (?:it|them|these) {_CPU_ORDER}\b",
         rf"\b(?:the )?(?:cpu|processor) (?:must )?"
         rf"(?:(?:fetches|retrieves) and )?{_CPU_EXECUTION} "
         rf"(?:each |the |an? )?{object_target}\b {_CPU_ORDER}\b",
@@ -303,10 +329,12 @@ def _serial_clause_evidence(
         rf"{_CPU_INCOMPATIBLE_ORDER}\b",
     )
     direct_negation_patterns = (
-        rf"\b(?:the )?(?:cpu|processor) (?:(?:does|do) )?"
-        rf"(?:not|never) (?:necessarily |always )?{_CPU_EXECUTION} "
+        rf"\b(?:the )?(?:cpu|processor) "
+        rf"(?:(?:does|do) not|cannot|must not|never) "
+        rf"(?:necessarily |always )?{_CPU_EXECUTION} "
         rf"(?:each |the |an? )?{object_target}\b {_CPU_ORDER}\b",
-        rf"\b{subject_target}\b (?:(?:is|are) )?(?:not|never) "
+        rf"\b{subject_target}\b "
+        rf"(?:(?:is|are) (?:not|never)|must not|cannot) "
         rf"(?:necessarily |always )?(?:be )?{_CPU_EXECUTION} {_CPU_ORDER}\b",
         rf"\b{subject_target}\b (?:(?:is|are) )?{_CPU_EXECUTION} "
         rf"(?:but )?(?:not|never) {_CPU_ORDER}\b",
