@@ -1425,8 +1425,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-26-paper-creator-excellence-programme.md": {
-    "mtime": 1788271716.8165846,
-    "ast_hash": "b4c59b307d7e269b001d52496a450eeb",
+    "mtime": 1788273179.5067961,
+    "ast_hash": "8695d24f3f0c7b4216652901616ab8bd",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md": {
@@ -1700,7 +1700,7 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1788272517.284105,
+    "mtime": 1788273611.1739066,
     "ast_hash": "dbbd82666b92e63e7b1c2f12abdd001d",
     "semantic_hash": ""
   },
@@ -1940,13 +1940,13 @@
     "semantic_hash": ""
   },
   "docs/quality/difficulty-calibration-v2-report.md": {
-    "mtime": 1788272010.446292,
-    "ast_hash": "36319796dc5d2c7855dd11a52e1be7dc",
+    "mtime": 1788273186.860231,
+    "ast_hash": "899e876a54c28b2f3f35b04a9840716b",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-30-difficulty-calibration-v2.md": {
-    "mtime": 1788271716.816173,
-    "ast_hash": "f12cf8509e7a344aebbc80dc2bdcf340",
+    "mtime": 1788273179.5058887,
+    "ast_hash": "4dfaa1df23109e775d498ef0ba6c1475",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-30-difficulty-calibration-v2-design.md": {
@@ -2085,13 +2085,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/open_credit.py": {
-    "mtime": 1788157045.0272849,
-    "ast_hash": "dafc1aed190d57170d57efe5c4cb135c",
+    "mtime": 1788273489.0434742,
+    "ast_hash": "9220bf3f9317513edfc577a8ba87e4f6",
     "semantic_hash": ""
   },
   "tests/test_open_credit_reconciliation.py": {
-    "mtime": 1788271376.3370273,
-    "ast_hash": "e693e8d466ea3e1e39219eab98ae04b2",
+    "mtime": 1788273577.607929,
+    "ast_hash": "6d5ccd694a8acab7720de45c6bd73986",
     "semantic_hash": ""
   },
   "tests/support/edexcel.py": {

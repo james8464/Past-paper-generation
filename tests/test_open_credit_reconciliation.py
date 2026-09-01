@@ -34,20 +34,49 @@ CAPTURED_CPU_RESPONSE = {
     "follow_through_rules": [],
 }
 
+# Verbatim semantic response shape from the frozen seed-26083134 live capture.
+# The semantic content is retained as evidence, but the missing ordered
+# ``criteria`` envelope must remain invalid rather than being repaired.
+FLATTENED_LIVE_SEMANTIC_RESPONSE = {
+    "instructions-main-memory": {
+        "decision": "supported",
+        "answer_quote": "both program instructions and data are stored in the same memory space.",
+        "scheme_quote": "Machine-code instructions are stored in main memory",
+        "point_index": 0,
+        "marks": 1,
+    },
+    "serial-processor-execution": {
+        "decision": "supported",
+        "answer_quote": "the CPU can fetch and execute instructions as needed.",
+        "scheme_quote": "The processor fetches and executes the instructions serially / in sequence",
+        "point_index": 1,
+        "marks": 1,
+    },
+    "issues": [],
+    "advisory_conflicts": [],
+}
+
 
 class ReplaySolver:
-    def __init__(self, **updates):
+    def __init__(self, *, exact_response=None, **updates):
         self.prompts = []
-        self.response = {
-            "answer": ANSWER,
-            "steps": ["Recall storage and execution."],
-            "mark_points": ["Instructions in memory", "Processor fetches instructions"],
-            "evidence_ids": [],
-            "alternatives": [],
-            "partial_credit_boundaries": [ADVICE],
-            "follow_through_rules": [],
-            **updates,
-        }
+        self.response = (
+            copy.deepcopy(exact_response)
+            if exact_response is not None
+            else {
+                "answer": ANSWER,
+                "steps": ["Recall storage and execution."],
+                "mark_points": [
+                    "Instructions in memory",
+                    "Processor fetches instructions",
+                ],
+                "evidence_ids": [],
+                "alternatives": [],
+                "partial_credit_boundaries": [ADVICE],
+                "follow_through_rules": [],
+                **updates,
+            }
+        )
 
     def generate_json(self, prompt):
         self.prompts.append(prompt)
@@ -226,7 +255,7 @@ def test_cpu_adjudication_is_separate_model_evidence_bound_to_the_actual_answer_
     from Backend.Core.open_credit import review_open_credit, validate_open_credit_review
 
     _, part, item, solution = cpu_fixture()
-    client = ReplaySolver(**adjudication_response(part))
+    client = ReplaySolver(exact_response=adjudication_response(part))
     evidence = review_open_credit(client, item, solution)
     validate_open_credit_review(item, evidence, solution=solution)
     assert evidence["provenance"] == "model-semantic-adjudication"
@@ -237,6 +266,54 @@ def test_cpu_adjudication_is_separate_model_evidence_bound_to_the_actual_answer_
         "Instructions in memory",
         "Processor fetches instructions",
     ]
+
+
+def test_cpu_semantic_prompt_gives_the_exact_ordered_outer_response_envelope():
+    from Backend.Core.open_credit import review_open_credit
+
+    _, part, item, solution = cpu_fixture()
+    client = ReplaySolver(exact_response=adjudication_response(part))
+    review_open_credit(client, item, solution)
+    expected = (
+        'Exact response envelope (replace every angle-bracket placeholder; use [] when an array is empty):\n'
+        '{"criteria": [{"criterion_id": "instructions-main-memory", '
+        '"decision": "<supported|unsupported|uncertain>", '
+        '"answer_quote": "<exact final-answer substring or empty string>", '
+        '"scheme_quote": "<exact printed-point substring or empty string>", '
+        '"point_index": 0, "marks": 1}, '
+        '{"criterion_id": "serial-processor-execution", '
+        '"decision": "<supported|unsupported|uncertain>", '
+        '"answer_quote": "<exact final-answer substring or empty string>", '
+        '"scheme_quote": "<exact printed-point substring or empty string>", '
+        '"point_index": 1, "marks": 1}], '
+        '"issues": ["<zero or more issue strings>"], '
+        '"advisory_conflicts": ["<zero or more advisory-conflict strings>"]}'
+    )
+    assert expected in client.prompts[0]
+    assert (
+        "Criterion IDs must be values of criterion_id in that ordered array, never top-level keys."
+        in client.prompts[0]
+    )
+
+
+def test_cpu_semantic_review_rejects_the_actual_flattened_live_response():
+    from Backend.Core.open_credit import review_open_credit
+
+    _, _, item, solution = cpu_fixture()
+    client = ReplaySolver(exact_response=FLATTENED_LIVE_SEMANTIC_RESPONSE)
+    with pytest.raises(ValueError):
+        review_open_credit(client, item, solution)
+    assert len(client.prompts) == 1
+
+
+def test_cpu_semantic_review_rejects_top_level_criterion_keys_beside_valid_array():
+    from Backend.Core.open_credit import review_open_credit
+
+    _, part, item, solution = cpu_fixture()
+    response = adjudication_response(part)
+    response["instructions-main-memory"] = copy.deepcopy(response["criteria"][0])
+    with pytest.raises(ValueError):
+        review_open_credit(ReplaySolver(exact_response=response), item, solution)
 
 
 @pytest.mark.parametrize(
@@ -281,7 +358,7 @@ def test_cpu_semantic_review_fails_closed_on_incomplete_or_unsubstantiated_decis
     else:
         del response["issues"]
     with pytest.raises(ValueError):
-        review_open_credit(ReplaySolver(**response), item, solution)
+        review_open_credit(ReplaySolver(exact_response=response), item, solution)
 
 
 @pytest.mark.parametrize(
@@ -292,7 +369,7 @@ def test_cpu_saved_evidence_rejects_mutated_identity_or_untyped_history(mutation
 
     _, part, item, solution = cpu_fixture()
     evidence = review_open_credit(
-        ReplaySolver(**adjudication_response(part)), item, solution
+        ReplaySolver(exact_response=adjudication_response(part)), item, solution
     )
     if mutation == "source":
         item["context"] += " Different source."
@@ -484,11 +561,13 @@ def test_source_distinction_uses_explicit_semantic_decisions_not_keyword_overlap
     for row in response["criteria"]:
         row.update(answer_quote=answer, decision=decision)
     if decision == "supported":
-        evidence = review_open_credit(ReplaySolver(**response), item, solution)
+        evidence = review_open_credit(
+            ReplaySolver(exact_response=response), item, solution
+        )
         assert evidence["provenance"] == "model-semantic-adjudication"
     else:
         with pytest.raises(ValueError, match="does not support"):
-            review_open_credit(ReplaySolver(**response), item, solution)
+            review_open_credit(ReplaySolver(exact_response=response), item, solution)
 
 
 def test_genuine_paraphrase_and_reordered_allocations_are_eligible_after_semantic_review():
@@ -508,7 +587,9 @@ def test_genuine_paraphrase_and_reordered_allocations_are_eligible_after_semanti
     # Re-solve after the candidate scheme mutation: the blind answer is unchanged.
     solution = IndependentSolver(ReplaySolver()).solve(item, [])
     assert (
-        review_open_credit(ReplaySolver(**response), item, solution)["judgement"][
+        review_open_credit(ReplaySolver(exact_response=response), item, solution)[
+            "judgement"
+        ][
             "criteria"
         ][0]["point_index"]
         == 1

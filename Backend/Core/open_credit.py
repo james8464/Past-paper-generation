@@ -128,7 +128,7 @@ class CriterionDecision(BaseModel):
 
 
 class CreditJudgement(BaseModel):
-    model_config = ConfigDict(strict=True)
+    model_config = ConfigDict(strict=True, extra="forbid")
     criteria: list[CriterionDecision]
     issues: list[str]
     advisory_conflicts: list[str]
@@ -175,6 +175,29 @@ def _validate_judgement(
     return result
 
 
+def _semantic_response_envelope(item: dict[str, Any]) -> dict[str, Any]:
+    """Describe the exact response shape without supplying semantic answers."""
+    contract = validate_open_credit_contract(item)
+    allocations = {
+        row["criterion_id"]: row for row in item["marking"]["credit_allocations"]
+    }
+    return {
+        "criteria": [
+            {
+                "criterion_id": criterion["id"],
+                "decision": "<supported|unsupported|uncertain>",
+                "answer_quote": "<exact final-answer substring or empty string>",
+                "scheme_quote": "<exact printed-point substring or empty string>",
+                "point_index": allocations[criterion["id"]]["point_index"],
+                "marks": allocations[criterion["id"]]["marks"],
+            }
+            for criterion in contract["criteria"]
+        ],
+        "issues": ["<zero or more issue strings>"],
+        "advisory_conflicts": ["<zero or more advisory-conflict strings>"],
+    }
+
+
 def review_open_credit(
     client: Any, item: dict[str, Any], solution: Any
 ) -> dict[str, Any]:
@@ -199,9 +222,13 @@ def review_open_credit(
         "Significance, reprogrammability and hardware rewiring are not required. Do not impose model-advisory alternatives, caps or commentary as extra criteria. "
         "Flag contradictory advisory rules in advisory_conflicts, without changing the declared tariff or demanding that advice be printed. "
         "Reject missing, duplicated, extra or contradictory credited meaning; two repetitions of storage cannot earn both marks. "
-        "Return JSON with required criteria (one object per declared ID: criterion_id, decision, answer_quote, scheme_quote, point_index, marks), "
-        "issues and advisory_conflicts. Use exact substrings of the final answer and actual_printed_points[point_index] as evidence quotes. "
+        "Return only the exact JSON envelope below. Keep criteria in the shown order. "
+        "Criterion IDs must be values of criterion_id in that ordered array, never top-level keys. "
+        "Do not add keys or omit keys. Use exact substrings of the final answer and actual_printed_points[point_index] as evidence quotes. "
         "Use unsupported/uncertain if either side lacks support; do not fabricate quotations. All lists must be explicit, including empty ones.\n"
+        "Exact response envelope (replace every angle-bracket placeholder; use [] when an array is empty):\n"
+        + json.dumps(_semantic_response_envelope(item), ensure_ascii=False)
+        + "\nReview inputs:\n"
         + json.dumps(
             {
                 "item": credit_item_projection(item),
