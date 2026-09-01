@@ -379,7 +379,10 @@ def audit_form_demand(
                 continue
             try:
                 validate_saved_difficulty_evidence(
-                    value, target, item_id=str(item.get("id", "unknown"))
+                    value,
+                    target,
+                    item_id=str(item.get("id", "unknown")),
+                    candidate=item,
                 )
             except ValueError:
                 evidence_failures.append("item_difficulty_review")

@@ -201,9 +201,13 @@ def test_ollama_schema_constrains_the_separate_difficulty_judge() -> None:
                 "analyse",
                 "integrate",
                 "judge",
+                "design",
+                "program",
+                "trace",
             ],
         },
-        "maxItems": 9,
+        "maxItems": 12,
+        "uniqueItems": True,
     }
 
 

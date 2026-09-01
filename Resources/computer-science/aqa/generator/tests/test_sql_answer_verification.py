@@ -21,7 +21,10 @@ from cspapergen.syllabus import load_syllabus
 from Backend.Core.assessment_package import _extract_items
 from Backend.Core.computer_science_authoring import question_content_sha256
 from Backend.Core.independent_solver import IndependentSolver
-from Backend.Core.model_review import require_difficulty_review
+from Backend.Core.model_review import (
+    require_difficulty_review,
+    validate_saved_difficulty_evidence,
+)
 from Backend.Core.reference_demand import build_item_demand_target, profile_for
 from Backend.Core.subjects.sql_contracts import (
     SQL_VALIDATION_VERSION,
@@ -689,29 +692,30 @@ def _difficulty_payload(target, *, operations):
     }
 
 
-class LiteralTaskFactAwareClient:
-    def __init__(self, solver_response, target, statement_kind: str):
+class TaxonomyLimitedDifficultyClient:
+    def __init__(self, solver_response, target):
         self.solver_response = solver_response
         self.target = target
-        self.statement_kind = statement_kind
         self.prompts: list[str] = []
 
     def generate_json(self, prompt: str):
         self.prompts.append(prompt)
         if "difficulty calibration specialist" not in prompt:
             return copy.deepcopy(self.solver_response)
-        has_literal_fact = (
-            '"candidate_authors_declarative_sql": true' in prompt
-            and (
-                '"declarative_sql_statement_kind": '
-                f'"{self.statement_kind}"'
-            )
-            in prompt
+        return _difficulty_payload(
+            self.target,
+            operations=[
+                "retrieve",
+                "contextualise",
+                "apply",
+                "transform",
+                "integrate",
+                "explain",
+                "analyse",
+                "describe",
+                "judge",
+            ],
         )
-        operations = list(self.target.required_cognitive_operations)
-        if not has_literal_fact:
-            operations.remove("program")
-        return _difficulty_payload(self.target, operations=operations)
 
 
 @pytest.mark.parametrize(
@@ -732,7 +736,7 @@ class LiteralTaskFactAwareClient:
         ),
     ],
 )
-def test_real_pipeline_exposes_literal_declarative_sql_construction_to_judge(
+def test_real_pipeline_persists_model_and_public_task_operation_sources(
     part_index, statement_kind, answer
 ):
     question = _sql_question()
@@ -742,10 +746,9 @@ def test_real_pipeline_exposes_literal_declarative_sql_construction_to_judge(
         profile_for("aqa/computer-science", "2"),
     )
     projection = _part_solver_projection(question, part)
-    client = LiteralTaskFactAwareClient(
+    client = TaxonomyLimitedDifficultyClient(
         _response(answer, projection.evidence[0].id),
         target,
-        statement_kind,
     )
     one_part = question.model_copy(update={"parts": [part]})
     blueprint = build_paper2_blueprint(load_syllabus(), seed=26083134).model_copy(
@@ -755,7 +758,29 @@ def test_real_pipeline_exposes_literal_declarative_sql_construction_to_judge(
     reviewed = subject.review_blueprint_difficulty(client, blueprint, load_syllabus())
 
     evidence = reviewed.questions[0].parts[0].difficulty_evidence
-    assert "program" in evidence["observed_cognitive_operations"]
+    assert evidence["observed_cognitive_operations"] == [
+        "retrieve",
+        "contextualise",
+        "apply",
+        "transform",
+        "integrate",
+        "explain",
+        "analyse",
+        "describe",
+        "judge",
+    ]
+    assert evidence["public_task_operation_evidence"]["verified_operations"] == [
+        "program"
+    ]
+    assert evidence["public_task_operation_evidence"][
+        "declarative_sql_statement_kind"
+    ] == statement_kind
+    validate_saved_difficulty_evidence(
+        evidence,
+        target,
+        item_id=f"question-{question.number}-{part.label}",
+        candidate=subject._difficulty_candidate(question, part),
+    )
     assert len(client.prompts) == 2
     difficulty_prompt = client.prompts[1]
     assert "LITERAL_CANDIDATE_TASK_FACTS=" in difficulty_prompt

@@ -1,10 +1,18 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from typing import Any, Literal, Protocol
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    ValidationError,
+    field_validator,
+    model_validator,
+)
 
 from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.assessment_quality import content_similarity, numeric_tokens
@@ -41,10 +49,64 @@ class ReviewResult(BaseModel):
         ]
 
 
+CanonicalCognitiveOperation = Literal[
+    "retrieve",
+    "contextualise",
+    "apply",
+    "transform",
+    "describe",
+    "explain",
+    "analyse",
+    "integrate",
+    "judge",
+    "design",
+    "program",
+    "trace",
+]
+
+CANONICAL_COGNITIVE_OPERATIONS: tuple[CanonicalCognitiveOperation, ...] = (
+    "retrieve",
+    "contextualise",
+    "apply",
+    "transform",
+    "describe",
+    "explain",
+    "analyse",
+    "integrate",
+    "judge",
+    "design",
+    "program",
+    "trace",
+)
+
+
+class PublicTaskOperationEvidence(BaseModel):
+    """Deterministic operation evidence bound only to the public candidate task."""
+
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    schema_version: Literal[1] = 1
+    source: Literal["deterministic-public-task-v1"] = "deterministic-public-task-v1"
+    candidate_task_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    candidate_authors_declarative_sql: bool
+    declarative_sql_statement_kind: Literal["SELECT", "INSERT"] | None
+    verified_operations: list[CanonicalCognitiveOperation]
+
+    @model_validator(mode="after")
+    def validate_sql_operation_evidence(self) -> PublicTaskOperationEvidence:
+        expected_kind = self.declarative_sql_statement_kind is not None
+        if self.candidate_authors_declarative_sql != expected_kind:
+            raise ValueError("SQL authorship and statement kind must agree")
+        expected_operations = ["program"] if expected_kind else []
+        if self.verified_operations != expected_operations:
+            raise ValueError("verified operations must match the public SQL task")
+        return self
+
+
 class DifficultyReviewResult(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
 
-    schema_version: Literal[2] = 2
+    schema_version: Literal[3] = 3
     approved: bool
     estimated_demand: Literal["low", "standard", "high"]
     reasoning_steps: int = Field(ge=0, le=12)
@@ -52,7 +114,10 @@ class DifficultyReviewResult(BaseModel):
     command_word_fit: bool
     context_fit: bool
     profile_fit: bool
-    observed_cognitive_operations: list[str] = Field(default_factory=list)
+    observed_cognitive_operations: list[CanonicalCognitiveOperation] = Field(
+        default_factory=list
+    )
+    public_task_operation_evidence: PublicTaskOperationEvidence | None = None
     cognitive_operations_fit: bool = True
     reasoning_range_fit: bool = True
     shortcut_resistant: bool = True
@@ -64,6 +129,15 @@ class DifficultyReviewResult(BaseModel):
     independent_solution_steps: int = Field(default=0, ge=0)
     solution_integrity_version: str = "legacy-unverified"
     issues: list[str] = Field(default_factory=list)
+
+    @field_validator("observed_cognitive_operations")
+    @classmethod
+    def model_operations_must_be_unique(
+        cls, value: list[CanonicalCognitiveOperation]
+    ) -> list[CanonicalCognitiveOperation]:
+        if len(value) != len(set(value)):
+            raise ValueError("model-observed cognitive operations must be unique")
+        return value
 
 
 def assert_materially_new(
@@ -182,6 +256,13 @@ def require_difficulty_review(
         specification=specification,
         canonical_solution=canonical_solution,
     )
+    result = result.model_copy(
+        update={
+            "public_task_operation_evidence": _public_task_operation_evidence(
+                candidate
+            )
+        }
+    )
     target_payload = _serialise(target)
     _validate_difficulty_result(result, target_payload, item_id=item_id)
     solution_payload = _serialise(canonical_solution) if canonical_solution is not None else {}
@@ -203,13 +284,45 @@ def require_difficulty_review(
 
 
 def validate_saved_difficulty_evidence(
-    evidence: Any, target: Any, *, item_id: str
+    evidence: Any,
+    target: Any,
+    *,
+    item_id: str,
+    candidate: Any | None = None,
 ) -> None:
     """Recheck persisted evidence without another model request or permissive defaults."""
-    required = set(DifficultyReviewResult.model_fields) - {"target_objective_policy_fingerprint"}
-    if not isinstance(evidence, dict) or required - evidence.keys():
-        raise ValueError(f"{item_id} has incomplete difficulty evidence")
-    result = DifficultyReviewResult.model_validate(evidence, strict=True)
+    if not isinstance(evidence, dict):
+        raise ValueError(f"{item_id} has incomplete difficulty evidence; regenerate it")
+    schema_version = evidence.get("schema_version")
+    if schema_version != 3:
+        raise ValueError(
+            f"{item_id} difficulty evidence schema version {schema_version!r} is stale; "
+            "regenerate it"
+        )
+    required = set(DifficultyReviewResult.model_fields)
+    if required - evidence.keys():
+        raise ValueError(f"{item_id} has incomplete difficulty evidence; regenerate it")
+    if candidate is None:
+        raise ValueError(
+            f"{item_id} difficulty evidence requires the current candidate for revalidation"
+        )
+    try:
+        stored_public_evidence = PublicTaskOperationEvidence.model_validate(
+            evidence.get("public_task_operation_evidence"), strict=True
+        )
+    except ValidationError as error:
+        raise ValueError(
+            f"{item_id} has invalid public-task operation evidence; regenerate it"
+        ) from error
+    expected_public_evidence = _public_task_operation_evidence(candidate)
+    if stored_public_evidence != expected_public_evidence:
+        raise ValueError(
+            f"{item_id} public-task operation evidence does not match the current candidate"
+        )
+    try:
+        result = DifficultyReviewResult.model_validate(evidence, strict=True)
+    except ValidationError as error:
+        raise ValueError(f"{item_id} has invalid difficulty evidence; regenerate it") from error
     if result.solution_integrity_version != NUMERIC_INTEGRITY_VERSION:
         raise ValueError(f"{item_id} difficulty evidence has incompatible solution integrity")
     target_payload = _serialise(target)
@@ -248,10 +361,15 @@ def _validate_difficulty_result(
         str(value).casefold()
         for value in target_payload.get("required_cognitive_operations", [])
     }
-    observed_operations = {
-        value.casefold() for value in result.observed_cognitive_operations
-    }
-    missing_operations = sorted(required_operations - observed_operations)
+    observed_operations = set(result.observed_cognitive_operations)
+    verified_operations = set(
+        result.public_task_operation_evidence.verified_operations
+        if result.public_task_operation_evidence is not None
+        else []
+    )
+    missing_operations = sorted(
+        required_operations - observed_operations - verified_operations
+    )
     if missing_operations:
         failures.append(
             "missing required cognitive operations: " + ", ".join(missing_operations)
@@ -391,9 +509,14 @@ def difficulty_review(
     required_response_fields = set(DifficultyReviewResult.model_fields) - {
         "schema_version", "target_profile_fingerprint", "independent_solution_steps",
         "target_objective_policy_fingerprint",
+        "public_task_operation_evidence",
         "solution_integrity_version",
     }
-    if not isinstance(raw, dict) or required_response_fields - raw.keys():
+    if (
+        not isinstance(raw, dict)
+        or required_response_fields - raw.keys()
+        or raw.get("public_task_operation_evidence") is not None
+    ):
         raise ValueError(f"{item_id} returned an invalid difficulty review response: missing checks")
     try:
         result = DifficultyReviewResult.model_validate(raw, strict=True)
@@ -420,22 +543,45 @@ def difficulty_review(
 
 def _candidate_task_facts(candidate: Any) -> dict[str, object]:
     """Classify only the bounded public SQL-construction instruction."""
+    evidence = _public_task_operation_evidence(candidate)
+    return {
+        "candidate_authors_declarative_sql": (
+            evidence.candidate_authors_declarative_sql
+        ),
+        "declarative_sql_statement_kind": evidence.declarative_sql_statement_kind,
+    }
+
+
+def _public_task_operation_evidence(candidate: Any) -> PublicTaskOperationEvidence:
+    """Bind bounded verified operations to the exact public task projection."""
     payload = _serialise(candidate)
     task = payload.get("part", payload) if isinstance(payload, dict) else {}
-    prompt = str(task.get("prompt", "")) if isinstance(task, dict) else ""
-    operation = str(task.get("task_operation", "")) if isinstance(task, dict) else ""
+    raw_prompt = task.get("prompt", "") if isinstance(task, dict) else ""
+    raw_operation = task.get("task_operation", "") if isinstance(task, dict) else ""
+    prompt = raw_prompt if isinstance(raw_prompt, str) else ""
+    operation = raw_operation if isinstance(raw_operation, str) else ""
     statement = re.match(
         r"^\s*Write\s+(?:one\s+)?(SELECT|INSERT)\b",
         prompt,
         flags=re.IGNORECASE,
     )
     authors_declarative_sql = operation.casefold() == "program" and statement is not None
-    return {
-        "candidate_authors_declarative_sql": authors_declarative_sql,
-        "declarative_sql_statement_kind": (
+    projection_sha256 = hashlib.sha256(
+        json.dumps(
+            {"prompt": prompt, "task_operation": operation},
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        ).encode("utf-8")
+    ).hexdigest()
+    return PublicTaskOperationEvidence(
+        candidate_task_sha256=projection_sha256,
+        candidate_authors_declarative_sql=authors_declarative_sql,
+        declarative_sql_statement_kind=(
             statement.group(1).upper() if authors_declarative_sql else None
         ),
-    }
+        verified_operations=["program"] if authors_declarative_sql else [],
+    )
 
 
 def _serialise(value: Any) -> Any:

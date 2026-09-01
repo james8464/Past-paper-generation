@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 
 from Backend.Core.events import emit_progress
 from Backend.Core.mlx_setup import resolve_local_mlx_model
+from Backend.Core.model_review import CANONICAL_COGNITIVE_OPERATIONS
 
 
 class HostedLLMClient:
@@ -456,17 +457,7 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
     elif '"estimated_demand":"low|standard|high"' in prompt:
         cognitive_operation = {
             "type": "string",
-            "enum": [
-                "retrieve",
-                "contextualise",
-                "apply",
-                "transform",
-                "describe",
-                "explain",
-                "analyse",
-                "integrate",
-                "judge",
-            ],
+            "enum": list(CANONICAL_COGNITIVE_OPERATIONS),
         }
         properties = {
             "approved": {"type": "boolean"},
@@ -482,7 +473,8 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
             "observed_cognitive_operations": {
                 "type": "array",
                 "items": cognitive_operation,
-                "maxItems": 9,
+                "maxItems": 12,
+                "uniqueItems": True,
             },
             "cognitive_operations_fit": {"type": "boolean"},
             "reasoning_range_fit": {"type": "boolean"},

@@ -23,6 +23,7 @@ from Backend.Core.exam_blueprints import (
     QuestionRule,
     SectionRule,
 )
+from Backend.Core.reference_demand import ReferenceDemandProfile
 
 
 def identity(*, model: str = "gemma4:12b") -> CheckpointIdentity:
@@ -181,6 +182,67 @@ def test_generate_unique_paper_resumes_without_another_model_call(
     )
 
 
+def test_v3_operation_evidence_survives_authoring_save_and_resume(
+    tmp_path: Path,
+) -> None:
+    store = AssessmentCheckpointStore(tmp_path / "job.json", identity())
+    paper, rule, topics = paper_fixture()
+    profile = ReferenceDemandProfile(
+        family_id="aqa/economics",
+        paper_id="1",
+        comparison_basis="Aggregate features from official A-level papers.",
+        source_document_count=4,
+        source_fingerprint="b" * 64,
+        mark_band_distribution={"short": 1.0},
+        command_word_distribution={"explain": 1.0},
+        demand_distribution={"standard": 1.0},
+        mark_weighted_demand_distribution={"standard": 1.0},
+        response_mode_distribution={"structured-reasoning": 1.0},
+        cognitive_operation_distribution={"explain": 1.0},
+        extraction_coverage=1.0,
+        metric_tolerances={
+            "mark_band_distribution": 0.5,
+            "command_family_distribution": 0.5,
+            "mark_weighted_demand_distribution": 0.5,
+            "response_mode_distribution": 0.5,
+            "cognitive_operation_distribution": 0.5,
+        },
+    )
+    first = generate_unique_paper(
+        paper,
+        rule=rule,
+        syllabus_topics=topics,
+        syllabus_topic_ids={"topic"},
+        client=FirstPassDifficultyClient(),
+        subject="Economics",
+        policy=GenerationPolicy(attempts=1, require_difficulty_review=True),
+        checkpoint_store=store,
+        demand_profile=profile,
+    )
+    resumed = generate_unique_paper(
+        paper,
+        rule=rule,
+        syllabus_topics=topics,
+        syllabus_topic_ids={"topic"},
+        client=NoCallsClient(),
+        subject="Economics",
+        policy=GenerationPolicy(attempts=1, require_difficulty_review=True),
+        checkpoint_store=store,
+        demand_profile=profile,
+    )
+
+    assert resumed == first
+    evidence = resumed.sections[0].options[0].questions[0].authoring_context[
+        "difficulty_evidence"
+    ]
+    assert evidence["schema_version"] == 3
+    assert evidence["observed_cognitive_operations"] == ["explain", "analyse"]
+    assert evidence["public_task_operation_evidence"]["source"] == (
+        "deterministic-public-task-v1"
+    )
+    assert evidence["public_task_operation_evidence"]["verified_operations"] == []
+
+
 def paper_fixture() -> tuple[GeneratedPaper, PaperRule, list[object]]:
     draft = question().model_copy(
         update={
@@ -285,6 +347,33 @@ class FirstPassClient:
 
     def generate_json(self, _prompt: str) -> dict[str, object]:
         return next(self.responses)
+
+
+class FirstPassDifficultyClient(FirstPassClient):
+    def __init__(self) -> None:
+        super().__init__()
+        self.responses = iter(
+            [
+                *list(self.responses),
+                {
+                    "approved": True,
+                    "estimated_demand": "standard",
+                    "reasoning_steps": 2,
+                    "tariff_fit": True,
+                    "command_word_fit": True,
+                    "context_fit": True,
+                    "profile_fit": True,
+                    "observed_cognitive_operations": ["explain", "analyse"],
+                    "cognitive_operations_fit": True,
+                    "reasoning_range_fit": True,
+                    "shortcut_resistant": True,
+                    "timing_fit": True,
+                    "scaffolding_fit": True,
+                    "estimated_minutes": 1.2,
+                    "issues": [],
+                },
+            ]
+        )
 
 
 class NoCallsClient:

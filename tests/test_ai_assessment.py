@@ -517,7 +517,7 @@ def test_content_approval_cannot_bypass_separate_difficulty_rejection() -> None:
 
     assert result.prompt.startswith("Explain how higher costs")
     assert result.authoring_context["difficulty_evidence"]["approved"] is True
-    assert result.authoring_context["difficulty_evidence"]["schema_version"] == 2
+    assert result.authoring_context["difficulty_evidence"]["schema_version"] == 3
     assert len(client.prompts) == 6
     assert "one recalled statement" in client.prompts[3]
 
@@ -1178,7 +1178,7 @@ def test_checkpoint_requires_complete_evidence_when_difficulty_review_is_enabled
     )
 
     _validate_checkpoint_item(task, checkpoint)
-    with pytest.raises(ValueError, match="incomplete difficulty evidence"):
+    with pytest.raises(ValueError, match=r"incomplete difficulty evidence|stale; regenerate"):
         _validate_checkpoint_item(
             task, checkpoint, demand_profile=profile_for("aqa/economics", "1")
         )

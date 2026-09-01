@@ -301,14 +301,19 @@ def test_current_difficulty_evidence_is_bound_to_the_accounting_budget():
         specification={},
     )
     evidence = result.model_dump(mode="json")
-    validate_saved_difficulty_evidence(evidence, target, item_id="17")
+    validate_saved_difficulty_evidence(
+        evidence, target, item_id="17", candidate=question
+    )
     assert "AO3" in client.prompt and "evaluation" in client.prompt
     changed = question.model_copy(
         update={"assessment_objectives": {"AO2": 6, "AO3": 19}}
     )
     with pytest.raises(ValueError, match="objective policy"):
         validate_saved_difficulty_evidence(
-            evidence, build_item_demand_target(changed, profile), item_id="17"
+            evidence,
+            build_item_demand_target(changed, profile),
+            item_id="17",
+            candidate=question,
         )
 
 

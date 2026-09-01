@@ -458,6 +458,7 @@ def _validate_checkpoint_item(
             candidate.authoring_context.get("difficulty_evidence", {}),
             build_item_demand_target(_demand_item(task), demand_profile),
             item_id=task.id,
+            candidate=candidate,
         )
 
 

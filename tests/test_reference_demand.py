@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import importlib
 import json
 import os
@@ -521,16 +522,38 @@ def test_assessment_package_records_the_exact_reference_demand_audit(
         mark_scheme=["One developed effect using the extract."],
         assessment_objectives={"AO1": 1, "AO2": 1, "AO3": 2},
         source_references=["Extract A"],
-        authoring_context={
-            "difficulty_evidence": {
-                "schema_version": 2,
-                "approved": True,
-                "reasoning_range_fit": True,
-                "context_fit": True,
-                "shortcut_resistant": True,
-            }
-        },
     )
+    reference_demand = module()
+    profile = reference_demand.profile_for("aqa/economics", "1")
+    target = reference_demand.build_item_demand_target(question, profile)
+
+    class Client:
+        def generate_json(self, _prompt):
+            from Backend.Core.model_review import DifficultyReviewResult
+
+            return DifficultyReviewResult(
+                approved=True,
+                estimated_demand=target.demand_band,
+                reasoning_steps=target.minimum_reasoning_steps,
+                tariff_fit=True,
+                command_word_fit=True,
+                context_fit=True,
+                profile_fit=True,
+                observed_cognitive_operations=target.required_cognitive_operations,
+                estimated_minutes=target.expected_minutes_min,
+            ).model_dump(mode="json")
+
+    from Backend.Core.model_review import require_difficulty_review
+
+    difficulty_evidence = require_difficulty_review(
+        Client(),
+        item_id="q1",
+        subject="Economics",
+        target=target,
+        candidate=question,
+        specification={},
+    ).model_dump(mode="json")
+    question.authoring_context["difficulty_evidence"] = difficulty_evidence
     paper = GeneratedPaper(
         paper_id="paper_1",
         paper_code="7136/1",
@@ -574,7 +597,17 @@ def test_assessment_package_records_the_exact_reference_demand_audit(
         == module().profile_for("aqa/economics", "1").source_fingerprint
     )
     assert audit["empirical_equivalence_claimed"] is False
-    assert document["items"][0]["difficulty_evidence"]["approved"] is True
+    exported_evidence = document["items"][0]["difficulty_evidence"]
+    assert exported_evidence["approved"] is True
+    assert exported_evidence["observed_cognitive_operations"] == (
+        target.required_cognitive_operations
+    )
+    assert exported_evidence["public_task_operation_evidence"]["source"] == (
+        "deterministic-public-task-v1"
+    )
+    assert exported_evidence["public_task_operation_evidence"][
+        "verified_operations"
+    ] == []
     assert audit["item_review_evidence"]["coverage"] == 1.0
 
 
@@ -612,17 +645,47 @@ def test_live_form_audit_fails_closed_without_item_review_evidence() -> None:
         {"estimated_demand": "high"},
         {"estimated_minutes": 500.0},
         {"observed_cognitive_operations": []},
+        {"observed_cognitive_operations": ["explain", "explain"]},
+        {"observed_cognitive_operations": ["sql_statement_construction"]},
         {"estimated_minutes": None},
         {"solution_integrity_version": "legacy-unverified"},
+        {
+            "public_task_operation_evidence": {
+                "schema_version": 1,
+                "source": "deterministic-public-task-v1",
+                "candidate_task_sha256": "0" * 64,
+                "candidate_authors_declarative_sql": False,
+                "declarative_sql_statement_kind": None,
+                "verified_operations": [],
+            }
+        },
     ],
 )
 def test_live_form_audit_rechecks_saved_review_against_target(changed) -> None:
-    from Backend.Core.model_review import DifficultyReviewResult
+    from Backend.Core.model_review import (
+        DifficultyReviewResult,
+        PublicTaskOperationEvidence,
+    )
 
     reference_demand = module()
     profile = reference_demand.ReferenceDemandProfile.model_validate(profile_payload())
-    item = {"id": "q1", "marks": 4, "command_word": "Explain"}
+    item = {
+        "id": "q1",
+        "marks": 4,
+        "command_word": "Explain",
+        "prompt": "Explain the relationship.",
+        "task_operation": "explain",
+    }
     target = reference_demand.build_item_demand_target(item, profile)
+    projection = json.dumps(
+        {
+            "prompt": item["prompt"],
+            "task_operation": item["task_operation"],
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    )
     evidence = DifficultyReviewResult(
         approved=True,
         estimated_demand=target.demand_band,
@@ -634,8 +697,15 @@ def test_live_form_audit_rechecks_saved_review_against_target(changed) -> None:
         observed_cognitive_operations=target.required_cognitive_operations,
         estimated_minutes=target.expected_minutes_min,
         target_profile_fingerprint=profile.source_fingerprint,
+        target_objective_policy_fingerprint=target.objective_policy_fingerprint,
         independent_solution_steps=2,
         solution_integrity_version="closed-numeric-v2",
+        public_task_operation_evidence=PublicTaskOperationEvidence(
+            candidate_task_sha256=hashlib.sha256(projection.encode("utf-8")).hexdigest(),
+            candidate_authors_declarative_sql=False,
+            declarative_sql_statement_kind=None,
+            verified_operations=[],
+        ),
     ).model_dump(mode="json")
     item["difficulty_evidence"] = evidence
     good = reference_demand.audit_form_demand(

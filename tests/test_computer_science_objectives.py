@@ -300,22 +300,50 @@ def test_export_binds_cs_budget_and_timing_to_current_blueprint(tmp_path):
 def test_cs_review_identity_changes_with_same_band_but_changed_task_or_time():
     from Backend.Core.model_review import (
         DifficultyReviewResult,
+        require_difficulty_review,
         validate_saved_difficulty_evidence,
     )
     profile = profile_for("aqa/computer-science", "1")
     item = {"marks": 4, "prompt": "Write a function.", "assessment_objectives": {"AO3": 4},
             "task_operation": "program", "expected_minutes": 6}
     first = build_item_demand_target(item, profile)
+    altered_targets = []
     for altered in ({**item, "task_operation": "design"}, {**item, "expected_minutes": 6.1},
                     {**item, "assessment_objectives": {"AO2": 1, "AO3": 3}}):
         target = build_item_demand_target(altered, profile)
+        altered_targets.append(target)
         assert target.demand_band == first.demand_band
         assert target.objective_policy_fingerprint != first.objective_policy_fingerprint
-    old = DifficultyReviewResult(approved=True, estimated_demand="standard", reasoning_steps=2,
-        tariff_fit=True, command_word_fit=True, context_fit=True, profile_fit=True,
-        solution_integrity_version="closed-numeric-v2")
+
+    class Client:
+        def generate_json(self, _prompt):
+            return DifficultyReviewResult(
+                approved=True,
+                estimated_demand=first.demand_band,
+                reasoning_steps=first.minimum_reasoning_steps,
+                tariff_fit=True,
+                command_word_fit=True,
+                context_fit=True,
+                profile_fit=True,
+                observed_cognitive_operations=first.required_cognitive_operations,
+                estimated_minutes=first.expected_minutes_min,
+            ).model_dump(mode="json")
+
+    old = require_difficulty_review(
+        Client(),
+        item_id="old",
+        subject="Computer Science",
+        target=first,
+        candidate=item,
+        specification={},
+    )
     with pytest.raises(ValueError, match="objective policy"):
-        validate_saved_difficulty_evidence(old.model_dump(), first, item_id="old")
+        validate_saved_difficulty_evidence(
+            old.model_dump(),
+            altered_targets[0],
+            item_id="old",
+            candidate=item,
+        )
 
 
 @pytest.mark.parametrize("number", ["4(a)", "4(e)", "4(f)", "1(d)"])
