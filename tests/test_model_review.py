@@ -579,6 +579,12 @@ def test_difficulty_prompt_limits_declarative_sql_fact_to_authored_select_or_ins
     assert "LITERAL_CANDIDATE_TASK_FACTS=" in client.prompt
     assert '"candidate_authors_declarative_sql": false' in client.prompt
     assert '"declarative_sql_statement_kind": null' in client.prompt
+    assert client.prompt.index("END_UNTRUSTED_REVIEW_PAYLOAD") < client.prompt.rindex(
+        "LITERAL_CANDIDATE_TASK_FACTS="
+    )
+    assert client.prompt.rindex("FINAL_SEMANTIC_RESPONSE_CHECK=") < client.prompt.rindex(
+        "Return JSON only:"
+    )
 
 
 def test_sql_literal_fact_does_not_mirror_a_program_target_for_supplied_analysis() -> None:
