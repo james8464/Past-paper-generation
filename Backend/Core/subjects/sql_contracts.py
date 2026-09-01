@@ -13,7 +13,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-SQL_VALIDATION_VERSION = "aqa-candidate-sql-v2"
+SQL_VALIDATION_VERSION = "aqa-candidate-sql-v3"
 SQL_VERIFIED_SCOPE = "bounded-declarative-sql"
 _MAX_SQL_LENGTH = 2_000
 _MAX_SQL_TOKENS = 256
@@ -456,8 +456,6 @@ def _validate_one(
 
 def _purported_statement(text: str) -> str | None:
     candidate = text.strip()
-    if candidate.startswith("```") and candidate.endswith("```"):
-        candidate = re.sub(r"^```(?:sql)?\s*|\s*```$", "", candidate, flags=re.IGNORECASE)
     label = re.match(
         r"^(?:SQL|QUERY|ANSWER)\s*:\s*(.*)$",
         candidate,
@@ -465,15 +463,42 @@ def _purported_statement(text: str) -> str | None:
     )
     if label:
         candidate = label.group(1).strip()
-    statement_verbs = {
-        "ALTER", "BEGIN", "CALL", "CREATE", "DELETE", "DROP", "EXEC",
-        "GRANT", "INSERT", "MERGE", "REPLACE", "REVOKE", "SELECT", "TRUNCATE",
-        "UPDATE", "WITH",
-    }
-    first = re.match(r"^([A-Za-z_][A-Za-z0-9_]*)\b", candidate)
-    if first and first.group(1).upper() in statement_verbs:
+        if re.match(r"^(?:SQL|QUERY|ANSWER)\s*:", candidate, re.IGNORECASE):
+            return text.strip() if _has_sql_statement_shape(candidate) else None
+    if "```" in candidate:
+        fence = re.fullmatch(
+            r"```(?:sql)?[ \t]*(?:\r?\n)?(.*?)(?:\r?\n)?```",
+            candidate,
+            re.IGNORECASE | re.DOTALL,
+        )
+        if fence is None:
+            return text.strip() if _has_sql_statement_shape(candidate) else None
+        candidate = fence.group(1).strip()
+        if "```" in candidate or re.match(
+            r"^(?:SQL|QUERY|ANSWER)\s*:", candidate, re.IGNORECASE
+        ):
+            return text.strip() if _has_sql_statement_shape(candidate) else None
+    if _has_sql_statement_shape(candidate):
         return candidate
     return None
+
+
+_SQL_STATEMENT_SHAPES = (
+    r"\bSELECT\b(?=[\s\S]*\bFROM\b)",
+    r"\bINSERT\s+INTO\b(?=[\s\S]*\bVALUES\s*\()",
+    r"\bDELETE\s+FROM\s+[A-Za-z_]",
+    r"\bUPDATE\s+[A-Za-z_][A-Za-z0-9_]*(?:\s+(?:AS\s+)?[A-Za-z_][A-Za-z0-9_]*)?\s+SET\b",
+    r"\bDROP\s+(?:TABLE|VIEW|DATABASE|INDEX)\b",
+    r"\bWITH\b(?=[\s\S]*\b(?:SELECT|INSERT|UPDATE|DELETE)\b)",
+    r"\b(?:ALTER|CREATE|TRUNCATE)\s+(?:TABLE|VIEW|DATABASE|INDEX)\b",
+    r"\b(?:MERGE|REPLACE)\s+INTO\b",
+    r"\b(?:CALL|EXEC|GRANT|REVOKE|BEGIN)\b",
+)
+
+
+def _has_sql_statement_shape(text: str) -> bool:
+    """Recognise executable shapes without extracting a statement substring."""
+    return any(re.search(pattern, text, re.IGNORECASE) for pattern in _SQL_STATEMENT_SHAPES)
 
 
 @dataclass(frozen=True)

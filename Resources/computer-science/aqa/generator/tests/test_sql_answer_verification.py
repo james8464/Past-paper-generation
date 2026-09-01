@@ -355,6 +355,51 @@ def test_only_bounded_non_executable_labels_or_fences_may_wrap_a_mark_point(
     ).passed
 
 
+@pytest.mark.parametrize(
+    "bad_point",
+    [
+        "Answer:\n```sql\nDELETE FROM MEMBER\n```",
+        "SQL: ```sql\nDELETE FROM MEMBER\n```",
+        "Query:\n```sql\nUPDATE MEMBER SET FullName = 'Other' WHERE MemberID = 1900\n```",
+        "ANSWER: ```sql\nDROP TABLE MEMBER\n```",
+        "SQL:\n```sql\nWITH ignored AS note {valid}\n```",
+        "QUERY: ```sql\n{valid}; DELETE FROM MEMBER\n```",
+    ],
+)
+def test_label_plus_one_fence_never_hides_wrong_or_multiple_sql(bad_point):
+    contract, intent = _contract_and_intent("2")
+    valid = (
+        "SELECT S.Activity, COUNT(*) FROM SESSION S JOIN BOOKING B "
+        "ON S.SessionID=B.SessionID GROUP BY S.Activity "
+        "HAVING COUNT(*)>=5 ORDER BY COUNT(*) DESC"
+    )
+
+    result = validate_sql_response(
+        valid, [bad_point.format(valid=valid)], contract, intent
+    )
+
+    assert not result.passed
+    assert {finding.location for finding in result.findings} == {"mark_points[1]"}
+
+
+@pytest.mark.parametrize(
+    "prose",
+    [
+        "Select the Activity and number of bookings.",
+        "Insert the supplied member values into MEMBER.",
+    ],
+)
+def test_natural_language_sql_imperatives_remain_semantic_prose(prose):
+    contract, intent = _contract_and_intent("2")
+    valid = (
+        "SELECT S.Activity, COUNT(*) FROM SESSION S JOIN BOOKING B "
+        "ON S.SessionID=B.SessionID GROUP BY S.Activity "
+        "HAVING COUNT(*)>=5 ORDER BY COUNT(*) DESC"
+    )
+
+    assert validate_sql_response(valid, [prose], contract, intent).passed
+
+
 def test_select_rejects_count_alias_collision_with_projected_output_name():
     contract, intent = _contract_and_intent("2")
     ambiguous = (
