@@ -469,3 +469,14 @@ used reviewed deterministic fallback after unsuccessful wording attempts, while
 one retained an AI-authored stem. Reporting must preserve that provenance and
 cannot infer newly AI-authored questions from live mode alone. Further Edexcel
 model runs wait for the source/key correction rather than repeating this gate.
+
+Task7.J now separates declared open-credit obligations from model-created advice,
+keeps concrete closed/numeric alternatives strict, and gives the stored-program
+task two source-supported one-mark criteria. A CPU-only semantic comparison runs
+after blind solving; private criteria appear only in that comparison, not in the
+blind-solver or general difficulty prompts. The default suite passed1403tests
+with2existing skips/5dependency warnings, three previews and the strict build
+passed, and the privacy fix added352+79 focused passes. Independent review found
+one private-difficulty-prompt leak; fix`180bccc` addressed it with clean scoped
+re-review. This is engineering/review evidence, not a live semantic pass or
+empirical learner-difficulty equivalence.

@@ -358,6 +358,8 @@ totals are recorded in `docs/quality/assessment-objective-reference.md`.
   reference totals rather than copying them into generated forms.
 - [ ] 7.J/7.I: Repair declared versus advisory open-credit reconciliation and
   candidate-grounded SQL verification before the next full live CS attempt.
+  J's scoped implementation and privacy correction are independently review-clean
+  through `180bccc`; committed-source CPU live qualification and I remain open.
 - [ ] 7.F2: Register actual Edexcel candidate sources and normalize selected
   answer keys at the independent-solver handoff; retain privacy and rejection
   of unknown sources/wrong answers. Committed-source live probes exposed both
