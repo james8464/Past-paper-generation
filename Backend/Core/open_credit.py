@@ -201,11 +201,31 @@ def _unqualified_matches(clause: str, patterns: tuple[str, ...]) -> tuple[re.Mat
     )
 
 
-def _storage_assertion_patterns() -> tuple[str, ...]:
-    passive = (
-        rf"\b{_CPU_INSTRUCTION}\b (?:(?:is|are|must be|gets?) )?{_CPU_STORAGE} "
-        rf"(?:in|into|within|on) (?:the )?(?:computer s )?{_CPU_MAIN_MEMORY}\b"
+def _passive_relation_patterns(
+    subject: str, action: str, suffix: str
+) -> tuple[str, str]:
+    """Return paired asserted/denied forms for one bounded passive relation."""
+    assertion = (
+        rf"{subject} (?:(?:is|are|must be|gets?) )?{action}{suffix}"
     )
+    denial = (
+        rf"{subject} "
+        rf"(?:(?:is|are) (?:not|never)|(?:does|do) not get|must not|cannot) "
+        rf"(?:necessarily |always )?(?:be )?{action}{suffix}"
+    )
+    return assertion, denial
+
+
+def _storage_passive_relation_patterns() -> tuple[str, str]:
+    return _passive_relation_patterns(
+        rf"\b{_CPU_INSTRUCTION}\b",
+        _CPU_STORAGE,
+        rf" (?:in|into|within|on) (?:the )?(?:computer s )?{_CPU_MAIN_MEMORY}\b",
+    )
+
+
+def _storage_assertion_patterns() -> tuple[str, ...]:
+    passive, _ = _storage_passive_relation_patterns()
     memory_active = (
         rf"\b{_CPU_MAIN_MEMORY}\b (?:stores|holds|keeps|contains) "
         rf"(?:the )?{_CPU_INSTRUCTION}\b"
@@ -223,12 +243,7 @@ def _storage_clause_supports(clause: str) -> bool:
 
 
 def _storage_clause_contradicts(clause: str) -> bool:
-    passive_negation = (
-        rf"\b{_CPU_INSTRUCTION}\b "
-        rf"(?:(?:is|are) (?:not|never)|must not|cannot) "
-        rf"(?:necessarily |always )?(?:be )?{_CPU_STORAGE} "
-        rf"(?:in|into|within|on) (?:the )?(?:computer s )?{_CPU_MAIN_MEMORY}\b"
-    )
+    _, passive_negation = _storage_passive_relation_patterns()
     memory_active_negation = (
         rf"\b{_CPU_MAIN_MEMORY}\b "
         rf"(?:(?:does|do) not|cannot|must not) "
@@ -282,16 +297,30 @@ def _serial_clause_evidence(
         subject_target += r"|they|these"
     object_target += r")"
     subject_target += r")"
-    asserted_patterns = (
+    passive_assertion, passive_negation = _passive_relation_patterns(
+        rf"\b{subject_target}\b",
+        rf"(?:(?:fetched|retrieved) and )?{_CPU_EXECUTION}",
+        rf" {_CPU_ORDER}\b",
+    )
+    local_fetch = (
         rf"\b(?:the )?(?:cpu|processor) (?:must )?"
-        rf"(?:fetches|retrieves) (?:each |the |an? )?{explicit_target}\b "
-        rf"(?:and|then) {_CPU_EXECUTION} (?:it|them|these) {_CPU_ORDER}\b",
+        rf"(?:fetches|retrieves) (?:each |the |an? )?{explicit_target}\b"
+    )
+    local_assertion = (
+        rf"{local_fetch} (?:and|then) {_CPU_EXECUTION} "
+        rf"(?:it|them|these) {_CPU_ORDER}\b"
+    )
+    local_denial = (
+        rf"{local_fetch} (?:but|and) "
+        rf"(?:(?:does|do) not|cannot|must not|never) {_CPU_EXECUTION} "
+        rf"(?:it|them|these) {_CPU_ORDER}\b"
+    )
+    asserted_patterns = (
+        local_assertion,
         rf"\b(?:the )?(?:cpu|processor) (?:must )?"
         rf"(?:(?:fetches|retrieves) and )?{_CPU_EXECUTION} "
         rf"(?:each |the |an? )?{object_target}\b {_CPU_ORDER}\b",
-        rf"\b{subject_target}\b (?:(?:is|are|must be|gets?) )?"
-        rf"(?:(?:fetched|retrieved) and )?{_CPU_EXECUTION} "
-        rf"{_CPU_ORDER}\b",
+        passive_assertion,
         rf"\b{_CPU_ORDER}\b (?:the )?(?:cpu|processor) (?:must )?"
         rf"(?:(?:fetches|retrieves) and )?{_CPU_EXECUTION} "
         rf"(?:the )?{object_target}\b",
@@ -329,13 +358,12 @@ def _serial_clause_evidence(
         rf"{_CPU_INCOMPATIBLE_ORDER}\b",
     )
     direct_negation_patterns = (
+        local_denial,
         rf"\b(?:the )?(?:cpu|processor) "
         rf"(?:(?:does|do) not|cannot|must not|never) "
         rf"(?:necessarily |always )?{_CPU_EXECUTION} "
         rf"(?:each |the |an? )?{object_target}\b {_CPU_ORDER}\b",
-        rf"\b{subject_target}\b "
-        rf"(?:(?:is|are) (?:not|never)|must not|cannot) "
-        rf"(?:necessarily |always )?(?:be )?{_CPU_EXECUTION} {_CPU_ORDER}\b",
+        passive_negation,
         rf"\b{subject_target}\b (?:(?:is|are) )?{_CPU_EXECUTION} "
         rf"(?:but )?(?:not|never) {_CPU_ORDER}\b",
     )

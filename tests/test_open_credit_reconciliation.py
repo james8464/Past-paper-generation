@@ -418,6 +418,10 @@ def test_round2_live_semantic_result_rejects_fetch_and_execute_as_needed():
             False,
         ),
         (
+            "Instructions get stored in RAM. Instructions do not get stored in RAM.",
+            False,
+        ),
+        (
             "The program instructions are stored in secondary storage; main memory holds only data.",
             False,
         ),
@@ -496,6 +500,14 @@ def test_cpu_storage_quote_requires_instructions_stored_in_main_memory(
         ("Only sometimes are instructions executed sequentially.", False),
         (
             "Instructions are executed sequentially. The CPU cannot execute instructions sequentially.",
+            False,
+        ),
+        (
+            "Instructions get executed sequentially. Instructions do not get executed sequentially.",
+            False,
+        ),
+        (
+            "The CPU executes instructions sequentially. The CPU fetches instructions but does not execute them sequentially.",
             False,
         ),
         ("The CPU could execute instructions sequentially.", False),
