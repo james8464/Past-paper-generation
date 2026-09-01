@@ -519,3 +519,101 @@ def test_difficulty_prompt_distinguishes_authored_sql_from_supplied_sql_analysis
     )
     assert "candidate-authored declarative SQL SELECT or INSERT" in client.prompt
     assert "analysis of SQL already supplied" in client.prompt
+
+
+@pytest.mark.parametrize(
+    ("prompt", "task_operation", "observed_operation"),
+    [
+        (
+            "Identify the result produced by the supplied SELECT query.",
+            "analyse",
+            "analyse",
+        ),
+        (
+            "Identify the rows affected by the supplied UPDATE statement.",
+            "analyse",
+            "analyse",
+        ),
+        (
+            "Identify the row removed by the supplied DELETE statement.",
+            "analyse",
+            "analyse",
+        ),
+        (
+            "Write a Python function that returns the larger argument.",
+            "program",
+            "program",
+        ),
+    ],
+)
+def test_difficulty_prompt_limits_declarative_sql_fact_to_authored_select_or_insert(
+    prompt, task_operation, observed_operation
+) -> None:
+    response = model_review.DifficultyReviewResult(
+        approved=True,
+        estimated_demand="low",
+        reasoning_steps=1,
+        tariff_fit=True,
+        command_word_fit=True,
+        context_fit=True,
+        profile_fit=True,
+        observed_cognitive_operations=[observed_operation],
+        estimated_minutes=1.5,
+    ).model_dump(mode="json")
+    client = ReviewClient(response)
+
+    model_review.difficulty_review(
+        client,
+        item_id="sql-analysis",
+        subject="Computer Science",
+        target={"required_cognitive_operations": [observed_operation]},
+        candidate={
+            "part": {
+                "prompt": prompt,
+                "task_operation": task_operation,
+            }
+        },
+        specification={},
+    )
+
+    assert "LITERAL_CANDIDATE_TASK_FACTS=" in client.prompt
+    assert '"candidate_authors_declarative_sql": false' in client.prompt
+    assert '"declarative_sql_statement_kind": null' in client.prompt
+
+
+def test_sql_literal_fact_does_not_mirror_a_program_target_for_supplied_analysis() -> None:
+    target = {
+        "demand_band": "low",
+        "minimum_reasoning_steps": 1,
+        "maximum_reasoning_steps": 2,
+        "required_cognitive_operations": ["program"],
+    }
+    response = model_review.DifficultyReviewResult(
+        approved=True,
+        estimated_demand="low",
+        reasoning_steps=1,
+        tariff_fit=True,
+        command_word_fit=True,
+        context_fit=True,
+        profile_fit=True,
+        observed_cognitive_operations=["analyse"],
+        estimated_minutes=1.5,
+    ).model_dump(mode="json")
+    client = ReviewClient(response)
+
+    with pytest.raises(ValueError, match="missing required cognitive operations: program"):
+        model_review.require_difficulty_review(
+            client,
+            item_id="supplied-select",
+            subject="Computer Science",
+            target=target,
+            candidate={
+                "part": {
+                    "prompt": "Identify the result produced by this supplied SELECT query.",
+                    "task_operation": "analyse",
+                }
+            },
+            specification={},
+        )
+
+    assert '"candidate_authors_declarative_sql": false' in client.prompt

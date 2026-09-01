@@ -689,6 +689,80 @@ def _difficulty_payload(target, *, operations):
     }
 
 
+class LiteralTaskFactAwareClient:
+    def __init__(self, solver_response, target, statement_kind: str):
+        self.solver_response = solver_response
+        self.target = target
+        self.statement_kind = statement_kind
+        self.prompts: list[str] = []
+
+    def generate_json(self, prompt: str):
+        self.prompts.append(prompt)
+        if "difficulty calibration specialist" not in prompt:
+            return copy.deepcopy(self.solver_response)
+        has_literal_fact = (
+            '"candidate_authors_declarative_sql": true' in prompt
+            and (
+                '"declarative_sql_statement_kind": '
+                f'"{self.statement_kind}"'
+            )
+            in prompt
+        )
+        operations = list(self.target.required_cognitive_operations)
+        if not has_literal_fact:
+            operations.remove("program")
+        return _difficulty_payload(self.target, operations=operations)
+
+
+@pytest.mark.parametrize(
+    ("part_index", "statement_kind", "answer"),
+    [
+        (
+            1,
+            "SELECT",
+            "SELECT S.Activity, COUNT(*) FROM SESSION S JOIN BOOKING B "
+            "ON S.SessionID=B.SessionID GROUP BY S.Activity "
+            "HAVING COUNT(*)>=5 ORDER BY COUNT(*) DESC",
+        ),
+        (
+            2,
+            "INSERT",
+            "INSERT INTO MEMBER (MemberID, FullName, Email) "
+            "VALUES (1900, 'Amira Khan', 'amira@example.org')",
+        ),
+    ],
+)
+def test_real_pipeline_exposes_literal_declarative_sql_construction_to_judge(
+    part_index, statement_kind, answer
+):
+    question = _sql_question()
+    part = question.parts[part_index]
+    target = build_item_demand_target(
+        subject._part_demand_item(question, part),
+        profile_for("aqa/computer-science", "2"),
+    )
+    projection = _part_solver_projection(question, part)
+    client = LiteralTaskFactAwareClient(
+        _response(answer, projection.evidence[0].id),
+        target,
+        statement_kind,
+    )
+    one_part = question.model_copy(update={"parts": [part]})
+    blueprint = build_paper2_blueprint(load_syllabus(), seed=26083134).model_copy(
+        update={"questions": [one_part]}
+    )
+
+    reviewed = subject.review_blueprint_difficulty(client, blueprint, load_syllabus())
+
+    evidence = reviewed.questions[0].parts[0].difficulty_evidence
+    assert "program" in evidence["observed_cognitive_operations"]
+    assert len(client.prompts) == 2
+    difficulty_prompt = client.prompts[1]
+    assert "LITERAL_CANDIDATE_TASK_FACTS=" in difficulty_prompt
+    assert '"candidate_authors_declarative_sql": true' in difficulty_prompt
+    assert f'"declarative_sql_statement_kind": "{statement_kind}"' in difficulty_prompt
+
+
 def test_demand_guidance_balances_declarative_construction_and_supplied_query_analysis():
     question = _sql_question()
     select_part = question.parts[1]

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
@@ -299,6 +300,7 @@ def difficulty_review(
     canonical_solution: Any | None = None,
 ) -> DifficultyReviewResult:
     target_payload = _serialise(target)
+    candidate_task_facts = _candidate_task_facts(candidate)
     required_operations = target_payload.get("required_cognitive_operations", [])
     minimum_minutes = target_payload.get("expected_minutes_min")
     maximum_minutes = target_payload.get("expected_minutes_max")
@@ -327,7 +329,11 @@ def difficulty_review(
         "and design need executable/construction decisions, not invented prose judgement. "
         "Constructing a declarative SQL SELECT or INSERT statement is programming even "
         "without a loop; analysing an already supplied SQL statement is not automatically "
-        "programming. In "
+        "programming. LITERAL_CANDIDATE_TASK_FACTS is a deterministic classification "
+        "of the public candidate instruction, not an answer and not a copy of the target. "
+        "When candidate_authors_declarative_sql is true, the candidate must construct "
+        "the named statement and observed_cognitive_operations must include program. "
+        "When it is false, do not infer program merely because supplied SQL appears. In "
         "observed_cognitive_operations, copy every required cognitive-operation token "
         "verbatim when the candidate must perform it; retrieval and contextualisation "
         "still count in low-demand and multiple-choice items. Do not omit a required "
@@ -356,6 +362,9 @@ def difficulty_review(
         '"shortcut_resistant":true|false,"timing_fit":true|false,'
         '"scaffolding_fit":true|false,"estimated_minutes":0,"issues":[]}.\n'
         + checklist
+        + "LITERAL_CANDIDATE_TASK_FACTS="
+        + json.dumps(candidate_task_facts, ensure_ascii=False)
+        + "\n"
         + json.dumps(
             {
                 "item_id": item_id,
@@ -395,6 +404,26 @@ def difficulty_review(
     if result.issues or not all(checks):
         result = result.model_copy(update={"approved": False})
     return result
+
+
+def _candidate_task_facts(candidate: Any) -> dict[str, object]:
+    """Classify only the bounded public SQL-construction instruction."""
+    payload = _serialise(candidate)
+    task = payload.get("part", payload) if isinstance(payload, dict) else {}
+    prompt = str(task.get("prompt", "")) if isinstance(task, dict) else ""
+    operation = str(task.get("task_operation", "")) if isinstance(task, dict) else ""
+    statement = re.match(
+        r"^\s*Write\s+(?:one\s+)?(SELECT|INSERT)\b",
+        prompt,
+        flags=re.IGNORECASE,
+    )
+    authors_declarative_sql = operation.casefold() == "program" and statement is not None
+    return {
+        "candidate_authors_declarative_sql": authors_declarative_sql,
+        "declarative_sql_statement_kind": (
+            statement.group(1).upper() if authors_declarative_sql else None
+        ),
+    }
 
 
 def _serialise(value: Any) -> Any:
