@@ -524,6 +524,35 @@ semantic false positive. Round 3 must add bounded deterministic evidence for
 the two fixed CPU meanings without imposing one exact wording or adding another
 model call.
 
+J round 3 and its bounded closure are complete at `630f204`. The deterministic
+evidence gate now requires each awarded quotation to contain its own declared
+CPU proposition: instructions in main memory/RAM, or processor-owned serial /
+in-sequence instruction execution. It binds pronouns to an explicit local or
+adjacent instruction antecedent, records later direct and modal contradictions,
+handles the declared intermittency qualifiers on either side of the relation,
+and keeps unrelated data clauses from supplying or vetoing credit. Positive and
+negative passive forms, plus the local fetch/execute form, share bounded relation
+fragments to reduce future drift. Novel wording outside this finite grammar
+fails closed and no model call, retry, repair, privacy boundary or allocation
+threshold was added.
+
+The final writer evidence was 87 focused CPU propositions, 136 complete J tests
+and 567 affected J/G/closed/AQA checks passing, with two existing skips and five
+known dependency warnings. Ruff, hygiene, inventory and Graphify passed.
+Independent source review of the post-loop closure reported no Critical,
+Important or Minor findings. A fresh seed-26083134 Q7 transaction then ran from
+the reviewed 252-file `630f204` archive, with source/import identity verified at
+the end, and failed safely before difficulty review. The independent answer again
+said the CPU could fetch and execute instructions “as needed”; the semantic stage
+now rejected that quotation because it does not explicitly establish serial or
+sequential execution. Artifact
+`tmp/task7j3-cpu-live-probe-postclosure-0901.json`, SHA-256
+`d57f705f0594535bf1b9483bd443eb2c5098ccc7645ad6f0b158e398a7a27444`;
+source-manifest SHA-256
+`8e742048a09bf3c37021c5c38a8f85427a71a10ebc134be3971a45fcee0a93cc`.
+This is a qualified fail-closed reconciliation result, not a passing paper or
+evidence of psychometric equivalence.
+
 Frozen-source F2 follow-up used that same `1110dd4` archive. Paper 1 question 1
 now passed exact source registration, independent solving, MCQ key reconciliation
 and difficulty review (`tmp/task7f2-p1-live-probe-0901.json`, SHA-256
