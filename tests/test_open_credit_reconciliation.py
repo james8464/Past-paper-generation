@@ -510,6 +510,14 @@ def test_cpu_storage_quote_requires_instructions_stored_in_main_memory(
             "The CPU executes instructions sequentially. The CPU fetches instructions but does not execute them sequentially.",
             False,
         ),
+        (
+            "The CPU executes instructions sequentially. The CPU fetches instructions but does not always execute them sequentially.",
+            False,
+        ),
+        (
+            "The CPU executes instructions sequentially. The CPU fetches instructions but does not necessarily execute them sequentially.",
+            False,
+        ),
         ("The CPU could execute instructions sequentially.", False),
         ("Instructions might be executed sequentially.", False),
         ("Instructions are stored sequentially in RAM.", False),

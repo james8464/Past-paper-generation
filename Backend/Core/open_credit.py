@@ -156,6 +156,7 @@ _CPU_INCOMPATIBLE_ORDER = (
     r"(?:in any order|out of sequence|simultaneously|at once|"
     r"in parallel|concurrently)"
 )
+_CPU_NEGATION_QUALIFIER = r"(?:necessarily |always )?"
 
 
 def _normalise_cpu_clauses(value: str) -> tuple[str, ...]:
@@ -211,7 +212,7 @@ def _passive_relation_patterns(
     denial = (
         rf"{subject} "
         rf"(?:(?:is|are) (?:not|never)|(?:does|do) not get|must not|cannot) "
-        rf"(?:necessarily |always )?(?:be )?{action}{suffix}"
+        rf"{_CPU_NEGATION_QUALIFIER}(?:be )?{action}{suffix}"
     )
     return assertion, denial
 
@@ -247,7 +248,7 @@ def _storage_clause_contradicts(clause: str) -> bool:
     memory_active_negation = (
         rf"\b{_CPU_MAIN_MEMORY}\b "
         rf"(?:(?:does|do) not|cannot|must not) "
-        rf"(?:necessarily |always )?(?:store|hold|keep|contain) "
+        rf"{_CPU_NEGATION_QUALIFIER}(?:store|hold|keep|contain) "
         rf"(?:the )?{_CPU_INSTRUCTION}\b|"
         rf"\b{_CPU_MAIN_MEMORY}\b never (?:stores|holds|keeps|contains) "
         rf"(?:the )?{_CPU_INSTRUCTION}\b"
@@ -255,7 +256,7 @@ def _storage_clause_contradicts(clause: str) -> bool:
     processor_active_negation = (
         rf"\b(?:the )?(?:cpu|processor) "
         rf"(?:(?:does|do) not|cannot|must not) "
-        rf"(?:necessarily |always )?(?:load|place) "
+        rf"{_CPU_NEGATION_QUALIFIER}(?:load|place) "
         rf"(?:the )?{_CPU_INSTRUCTION}\b (?:in|into|within) "
         rf"(?:the )?(?:computer s )?{_CPU_MAIN_MEMORY}\b|"
         rf"\b(?:the )?(?:cpu|processor) never (?:loads|places) "
@@ -312,7 +313,8 @@ def _serial_clause_evidence(
     )
     local_denial = (
         rf"{local_fetch} (?:but|and) "
-        rf"(?:(?:does|do) not|cannot|must not|never) {_CPU_EXECUTION} "
+        rf"(?:(?:does|do) not|cannot|must not|never) "
+        rf"{_CPU_NEGATION_QUALIFIER}{_CPU_EXECUTION} "
         rf"(?:it|them|these) {_CPU_ORDER}\b"
     )
     asserted_patterns = (
@@ -361,7 +363,7 @@ def _serial_clause_evidence(
         local_denial,
         rf"\b(?:the )?(?:cpu|processor) "
         rf"(?:(?:does|do) not|cannot|must not|never) "
-        rf"(?:necessarily |always )?{_CPU_EXECUTION} "
+        rf"{_CPU_NEGATION_QUALIFIER}{_CPU_EXECUTION} "
         rf"(?:each |the |an? )?{object_target}\b {_CPU_ORDER}\b",
         passive_negation,
         rf"\b{subject_target}\b (?:(?:is|are) )?{_CPU_EXECUTION} "

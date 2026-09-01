@@ -7982,7 +7982,7 @@
       "label": "_normalise_cpu_clauses()",
       "file_type": "code",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L161",
+      "source_location": "L162",
       "_origin": "ast",
       "id": "backend_core_open_credit_normalise_cpu_clauses",
       "community": 27,
@@ -7993,7 +7993,7 @@
       "label": "_relation_is_qualified()",
       "file_type": "code",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L180",
+      "source_location": "L181",
       "_origin": "ast",
       "id": "backend_core_open_credit_relation_is_qualified",
       "community": 27,
@@ -8015,7 +8015,7 @@
       "label": "_unqualified_matches()",
       "file_type": "code",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L195",
+      "source_location": "L196",
       "_origin": "ast",
       "id": "backend_core_open_credit_unqualified_matches",
       "community": 27,
@@ -8026,7 +8026,7 @@
       "label": "_passive_relation_patterns()",
       "file_type": "code",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L204",
+      "source_location": "L205",
       "_origin": "ast",
       "id": "backend_core_open_credit_passive_relation_patterns",
       "community": 27,
@@ -8037,7 +8037,7 @@
       "label": "_storage_passive_relation_patterns()",
       "file_type": "code",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L219",
+      "source_location": "L220",
       "_origin": "ast",
       "id": "backend_core_open_credit_storage_passive_relation_patterns",
       "community": 27,
@@ -8048,7 +8048,7 @@
       "label": "_storage_assertion_patterns()",
       "file_type": "code",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L227",
+      "source_location": "L228",
       "_origin": "ast",
       "id": "backend_core_open_credit_storage_assertion_patterns",
       "community": 27,
@@ -8059,7 +8059,7 @@
       "label": "_storage_clause_supports()",
       "file_type": "code",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L241",
+      "source_location": "L242",
       "_origin": "ast",
       "id": "backend_core_open_credit_storage_clause_supports",
       "community": 27,
@@ -8070,7 +8070,7 @@
       "label": "_storage_clause_contradicts()",
       "file_type": "code",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L245",
+      "source_location": "L246",
       "_origin": "ast",
       "id": "backend_core_open_credit_storage_clause_contradicts",
       "community": 27,
@@ -8081,7 +8081,7 @@
       "label": "_has_unambiguous_instruction_antecedent()",
       "file_type": "code",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L282",
+      "source_location": "L283",
       "_origin": "ast",
       "id": "backend_core_open_credit_has_unambiguous_instruction_antecedent",
       "community": 27,
@@ -8092,7 +8092,7 @@
       "label": "_serial_clause_evidence()",
       "file_type": "code",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L289",
+      "source_location": "L290",
       "_origin": "ast",
       "id": "backend_core_open_credit_serial_clause_evidence",
       "community": 27,
@@ -8103,7 +8103,7 @@
       "label": "_cpu_quote_supports_criterion()",
       "file_type": "code",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L379",
+      "source_location": "L381",
       "_origin": "ast",
       "id": "backend_core_open_credit_cpu_quote_supports_criterion",
       "community": 27,
@@ -8114,7 +8114,7 @@
       "label": "_validate_judgement()",
       "file_type": "code",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L405",
+      "source_location": "L407",
       "_origin": "ast",
       "id": "backend_core_open_credit_validate_judgement",
       "community": 27,
@@ -8125,7 +8125,7 @@
       "label": "_semantic_response_envelope()",
       "file_type": "code",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L458",
+      "source_location": "L460",
       "_origin": "ast",
       "id": "backend_core_open_credit_semantic_response_envelope",
       "community": 27,
@@ -8136,7 +8136,7 @@
       "label": "review_open_credit()",
       "file_type": "code",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L481",
+      "source_location": "L483",
       "_origin": "ast",
       "id": "backend_core_open_credit_review_open_credit",
       "community": 42,
@@ -8147,7 +8147,7 @@
       "label": "validate_open_credit_review()",
       "file_type": "code",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L533",
+      "source_location": "L535",
       "_origin": "ast",
       "id": "backend_core_open_credit_validate_open_credit_review",
       "community": 27,
@@ -8180,9 +8180,9 @@
       "label": "Normalize wording while retaining strong clause boundaries.",
       "file_type": "rationale",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L162",
+      "source_location": "L163",
       "_origin": "ast",
-      "id": "backend_core_open_credit_rationale_162",
+      "id": "backend_core_open_credit_rationale_163",
       "community": 27,
       "community_name": "open_credit.py",
       "norm_label": "normalize wording while retaining strong clause boundaries."
@@ -8191,9 +8191,9 @@
       "label": "Detect a restricting qualifier attached immediately to one proposition.",
       "file_type": "rationale",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L181",
+      "source_location": "L182",
       "_origin": "ast",
-      "id": "backend_core_open_credit_rationale_181",
+      "id": "backend_core_open_credit_rationale_182",
       "community": 27,
       "community_name": "open_credit.py",
       "norm_label": "detect a restricting qualifier attached immediately to one proposition."
@@ -8202,9 +8202,9 @@
       "label": "Return paired asserted/denied forms for one bounded passive relation.",
       "file_type": "rationale",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L207",
+      "source_location": "L208",
       "_origin": "ast",
-      "id": "backend_core_open_credit_rationale_207",
+      "id": "backend_core_open_credit_rationale_208",
       "community": 27,
       "community_name": "open_credit.py",
       "norm_label": "return paired asserted/denied forms for one bounded passive relation."
@@ -8213,9 +8213,9 @@
       "label": "Allow an adjacent pronoun only after an instruction-only referent.",
       "file_type": "rationale",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L283",
+      "source_location": "L284",
       "_origin": "ast",
-      "id": "backend_core_open_credit_rationale_283",
+      "id": "backend_core_open_credit_rationale_284",
       "community": 27,
       "community_name": "open_credit.py",
       "norm_label": "allow an adjacent pronoun only after an instruction-only referent."
@@ -8224,9 +8224,9 @@
       "label": "Fail-closed evidence rules for the two registered stored-program marks.",
       "file_type": "rationale",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L380",
+      "source_location": "L382",
       "_origin": "ast",
-      "id": "backend_core_open_credit_rationale_380",
+      "id": "backend_core_open_credit_rationale_382",
       "community": 27,
       "community_name": "open_credit.py",
       "norm_label": "fail-closed evidence rules for the two registered stored-program marks."
@@ -8235,9 +8235,9 @@
       "label": "Describe the exact response shape without supplying semantic answers.",
       "file_type": "rationale",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L459",
+      "source_location": "L461",
       "_origin": "ast",
-      "id": "backend_core_open_credit_rationale_459",
+      "id": "backend_core_open_credit_rationale_461",
       "community": 27,
       "community_name": "open_credit.py",
       "norm_label": "describe the exact response shape without supplying semantic answers."
@@ -15875,8 +15875,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "resources_backend_protocol_schema_properties_event_id",
-      "community": 57,
-      "community_name": "properties",
+      "community": 239,
+      "community_name": "event_id",
       "norm_label": "event_id"
     },
     {
@@ -15886,8 +15886,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "resources_backend_protocol_schema_event_id_type",
-      "community": 57,
-      "community_name": "properties",
+      "community": 239,
+      "community_name": "event_id",
       "norm_label": "type"
     },
     {
@@ -15897,8 +15897,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "resources_backend_protocol_schema_event_id_minimum",
-      "community": 57,
-      "community_name": "properties",
+      "community": 239,
+      "community_name": "event_id",
       "norm_label": "minimum"
     },
     {
@@ -16029,8 +16029,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "resources_backend_protocol_schema_properties_progress",
-      "community": 210,
-      "community_name": "progress",
+      "community": 57,
+      "community_name": "properties",
       "norm_label": "progress"
     },
     {
@@ -16040,8 +16040,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "resources_backend_protocol_schema_progress_type",
-      "community": 210,
-      "community_name": "progress",
+      "community": 57,
+      "community_name": "properties",
       "norm_label": "type"
     },
     {
@@ -16051,8 +16051,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "resources_backend_protocol_schema_progress_minimum",
-      "community": 210,
-      "community_name": "progress",
+      "community": 57,
+      "community_name": "properties",
       "norm_label": "minimum"
     },
     {
@@ -16062,8 +16062,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "resources_backend_protocol_schema_progress_maximum",
-      "community": 210,
-      "community_name": "progress",
+      "community": 57,
+      "community_name": "properties",
       "norm_label": "maximum"
     },
     {
@@ -32066,8 +32066,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema",
-      "community": 166,
-      "community_name": "required",
+      "community": 238,
+      "community_name": "empirical-calibration.schema.json",
       "norm_label": "empirical-calibration.schema.json"
     },
     {
@@ -32077,8 +32077,8 @@
       "source_location": "L2",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_schema",
-      "community": 166,
-      "community_name": "required",
+      "community": 238,
+      "community_name": "empirical-calibration.schema.json",
       "norm_label": "$schema"
     },
     {
@@ -32088,8 +32088,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_id",
-      "community": 166,
-      "community_name": "required",
+      "community": 238,
+      "community_name": "empirical-calibration.schema.json",
       "norm_label": "$id"
     },
     {
@@ -32099,8 +32099,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_title",
-      "community": 166,
-      "community_name": "required",
+      "community": 238,
+      "community_name": "empirical-calibration.schema.json",
       "norm_label": "title"
     },
     {
@@ -32110,8 +32110,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_type",
-      "community": 166,
-      "community_name": "required",
+      "community": 238,
+      "community_name": "empirical-calibration.schema.json",
       "norm_label": "type"
     },
     {
@@ -32121,8 +32121,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_additionalproperties",
-      "community": 166,
-      "community_name": "required",
+      "community": 238,
+      "community_name": "empirical-calibration.schema.json",
       "norm_label": "additionalproperties"
     },
     {
@@ -33045,8 +33045,8 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_properties_policy",
-      "community": 120,
-      "community_name": "properties",
+      "community": 210,
+      "community_name": "required",
       "norm_label": "policy"
     },
     {
@@ -33056,8 +33056,8 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_policy_type",
-      "community": 120,
-      "community_name": "properties",
+      "community": 210,
+      "community_name": "required",
       "norm_label": "type"
     },
     {
@@ -33067,8 +33067,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_policy_required",
-      "community": 120,
-      "community_name": "properties",
+      "community": 210,
+      "community_name": "required",
       "norm_label": "required"
     },
     {
@@ -33078,8 +33078,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "ref_policy_id",
-      "community": 120,
-      "community_name": "properties",
+      "community": 210,
+      "community_name": "required",
       "norm_label": "policy_id"
     },
     {
@@ -33089,8 +33089,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "ref_status",
-      "community": 120,
-      "community_name": "properties",
+      "community": 210,
+      "community_name": "required",
       "norm_label": "status"
     },
     {
@@ -33100,8 +33100,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "ref_approved_by_identity_class",
-      "community": 120,
-      "community_name": "properties",
+      "community": 210,
+      "community_name": "required",
       "norm_label": "approved_by_identity_class"
     },
     {
@@ -33111,8 +33111,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "ref_approval_evidence",
-      "community": 120,
-      "community_name": "properties",
+      "community": 210,
+      "community_name": "required",
       "norm_label": "approval_evidence"
     },
     {
@@ -33287,8 +33287,8 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_policy_additionalproperties",
-      "community": 120,
-      "community_name": "properties",
+      "community": 210,
+      "community_name": "required",
       "norm_label": "additionalproperties"
     },
     {
@@ -33870,8 +33870,8 @@
       "source_location": "L139",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_not",
-      "community": 166,
-      "community_name": "required",
+      "community": 238,
+      "community_name": "empirical-calibration.schema.json",
       "norm_label": "not"
     },
     {
@@ -33881,8 +33881,8 @@
       "source_location": "L140",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_not_anyof",
-      "community": 166,
-      "community_name": "required",
+      "community": 238,
+      "community_name": "empirical-calibration.schema.json",
       "norm_label": "anyof"
     },
     {
@@ -34266,8 +34266,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_properties_board",
-      "community": 238,
-      "community_name": "board",
+      "community": 36,
+      "community_name": "properties",
       "norm_label": "board"
     },
     {
@@ -34277,8 +34277,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_board_type",
-      "community": 238,
-      "community_name": "board",
+      "community": 36,
+      "community_name": "properties",
       "norm_label": "type"
     },
     {
@@ -34288,8 +34288,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_board_pattern",
-      "community": 238,
-      "community_name": "board",
+      "community": 36,
+      "community_name": "properties",
       "norm_label": "pattern"
     },
     {
@@ -34563,8 +34563,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_properties_subject_plugin",
-      "community": 36,
-      "community_name": "properties",
+      "community": 250,
+      "community_name": "subject_plugin",
       "norm_label": "subject_plugin"
     },
     {
@@ -34574,8 +34574,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_subject_plugin_type",
-      "community": 36,
-      "community_name": "properties",
+      "community": 250,
+      "community_name": "subject_plugin",
       "norm_label": "type"
     },
     {
@@ -34585,8 +34585,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_subject_plugin_pattern",
-      "community": 36,
-      "community_name": "properties",
+      "community": 250,
+      "community_name": "subject_plugin",
       "norm_label": "pattern"
     },
     {
@@ -34629,8 +34629,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_properties_specification_version",
-      "community": 36,
-      "community_name": "properties",
+      "community": 240,
+      "community_name": "specification_version",
       "norm_label": "specification_version"
     },
     {
@@ -34640,8 +34640,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_specification_version_type",
-      "community": 36,
-      "community_name": "properties",
+      "community": 240,
+      "community_name": "specification_version",
       "norm_label": "type"
     },
     {
@@ -34651,8 +34651,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_specification_version_minlength",
-      "community": 36,
-      "community_name": "properties",
+      "community": 240,
+      "community_name": "specification_version",
       "norm_label": "minlength"
     },
     {
@@ -34717,8 +34717,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_properties_content_mode",
-      "community": 209,
-      "community_name": "enum",
+      "community": 36,
+      "community_name": "properties",
       "norm_label": "content_mode"
     },
     {
@@ -34728,8 +34728,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "resources_generator_capability_schema_content_mode_enum",
-      "community": 209,
-      "community_name": "enum",
+      "community": 36,
+      "community_name": "properties",
       "norm_label": "enum"
     },
     {
@@ -34739,8 +34739,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "ref_deterministic",
-      "community": 209,
-      "community_name": "enum",
+      "community": 36,
+      "community_name": "properties",
       "norm_label": "deterministic"
     },
     {
@@ -34750,8 +34750,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "ref_ai_assisted",
-      "community": 209,
-      "community_name": "enum",
+      "community": 36,
+      "community_name": "properties",
       "norm_label": "ai-assisted"
     },
     {
@@ -37479,8 +37479,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration",
-      "community": 91,
-      "community_name": "ModelCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "appconfiguration.swift"
     },
     {
@@ -37502,8 +37502,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration_appdefaults",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "appdefaults"
     },
     {
@@ -37513,8 +37513,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration_appdefaults_defaultoutputfolder",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".defaultoutputfolder()"
     },
     {
@@ -37524,8 +37524,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration_swift_url",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "url"
     },
     {
@@ -37535,8 +37535,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration_appdefaults_appstoreworkingfolder",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".appstoreworkingfolder()"
     },
     {
@@ -37546,8 +37546,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration_appdefaults_mlxcachefolder",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".mlxcachefolder()"
     },
     {
@@ -37557,8 +37557,8 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration_appdefaults_jobhistoryfolder",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".jobhistoryfolder()"
     },
     {
@@ -37568,8 +37568,8 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration_appdefaults_issandboxdownloadspath",
-      "community": 91,
-      "community_name": "ModelCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".issandboxdownloadspath()"
     },
     {
@@ -37579,8 +37579,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration_swift_string",
-      "community": 91,
-      "community_name": "ModelCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "string"
     },
     {
@@ -37590,8 +37590,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration_swift_bool",
-      "community": 91,
-      "community_name": "ModelCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "bool"
     },
     {
@@ -37601,8 +37601,8 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration_appdefaults_displaypath",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".displaypath()"
     },
     {
@@ -37612,8 +37612,8 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration_appstoragekey",
-      "community": 91,
-      "community_name": "ModelCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "appstoragekey"
     },
     {
@@ -37623,8 +37623,8 @@
       "source_location": "L111",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration_secretaccount",
-      "community": 91,
-      "community_name": "ModelCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "secretaccount"
     },
     {
@@ -37634,8 +37634,8 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration_applinks",
-      "community": 91,
-      "community_name": "ModelCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "applinks"
     },
     {
@@ -37645,8 +37645,8 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration_applinks_weburl",
-      "community": 91,
-      "community_name": "ModelCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".weburl()"
     },
     {
@@ -38218,8 +38218,8 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_examboardoption",
-      "community": 29,
-      "community_name": "ExamBoardOption",
+      "community": 187,
+      "community_name": "String",
       "norm_label": "examboardoption"
     },
     {
@@ -38229,8 +38229,8 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_examboardoption_isready",
-      "community": 29,
-      "community_name": "ExamBoardOption",
+      "community": 187,
+      "community_name": "String",
       "norm_label": ".isready"
     },
     {
@@ -38240,8 +38240,8 @@
       "source_location": "L107",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_examboardoption_usesai",
-      "community": 29,
-      "community_name": "ExamBoardOption",
+      "community": 187,
+      "community_name": "String",
       "norm_label": ".usesai"
     },
     {
@@ -38251,8 +38251,8 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_examboardoption_fullpapers",
-      "community": 29,
-      "community_name": "ExamBoardOption",
+      "community": 187,
+      "community_name": "String",
       "norm_label": ".fullpapers"
     },
     {
@@ -38262,8 +38262,8 @@
       "source_location": "L111",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_examboardoption_questionbanks",
-      "community": 29,
-      "community_name": "ExamBoardOption",
+      "community": 187,
+      "community_name": "String",
       "norm_label": ".questionbanks"
     },
     {
@@ -38273,8 +38273,8 @@
       "source_location": "L115",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_examboardoption_supports",
-      "community": 29,
-      "community_name": "ExamBoardOption",
+      "community": 187,
+      "community_name": "String",
       "norm_label": ".supports()"
     },
     {
@@ -38285,7 +38285,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_catalogsubject",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "catalogsubject"
     },
     {
@@ -38295,8 +38295,8 @@
       "source_location": "L127",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_examcatalog",
-      "community": 29,
-      "community_name": "ExamBoardOption",
+      "community": 187,
+      "community_name": "String",
       "norm_label": "examcatalog"
     },
     {
@@ -38306,8 +38306,8 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_examcatalog_readyboards",
-      "community": 29,
-      "community_name": "ExamBoardOption",
+      "community": 187,
+      "community_name": "String",
       "norm_label": ".readyboards"
     },
     {
@@ -38317,8 +38317,8 @@
       "source_location": "L134",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_examcatalog_defaultboard",
-      "community": 29,
-      "community_name": "ExamBoardOption",
+      "community": 187,
+      "community_name": "String",
       "norm_label": ".defaultboard"
     },
     {
@@ -38329,7 +38329,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_examcatalog_board",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".board()"
     },
     {
@@ -38747,7 +38747,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_sidebaritem",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "sidebaritem"
     },
     {
@@ -38757,8 +38757,8 @@
       "source_location": "L377",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_sidebaritem_board",
-      "community": 29,
-      "community_name": "ExamBoardOption",
+      "community": 187,
+      "community_name": "String",
       "norm_label": "board"
     },
     {
@@ -38769,7 +38769,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_sidebaritem_benchmark",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "benchmark"
     },
     {
@@ -38780,7 +38780,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_sidebaritem_documents",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "documents"
     },
     {
@@ -38791,7 +38791,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_sidebaritem_history",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "history"
     },
     {
@@ -38802,7 +38802,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_helptopic",
       "community": 2,
-      "community_name": "AIProvider",
+      "community_name": "HelpTopic",
       "norm_label": "helptopic"
     },
     {
@@ -38813,7 +38813,7 @@
       "_origin": "ast",
       "id": "caseiterable",
       "community": 2,
-      "community_name": "AIProvider",
+      "community_name": "HelpTopic",
       "norm_label": "caseiterable"
     },
     {
@@ -38824,7 +38824,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_helptopic_gettingstarted",
       "community": 2,
-      "community_name": "AIProvider",
+      "community_name": "HelpTopic",
       "norm_label": "gettingstarted"
     },
     {
@@ -38835,7 +38835,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_helptopic_choosingamodel",
       "community": 2,
-      "community_name": "AIProvider",
+      "community_name": "HelpTopic",
       "norm_label": "choosingamodel"
     },
     {
@@ -38846,7 +38846,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_helptopic_creatingapaper",
       "community": 2,
-      "community_name": "AIProvider",
+      "community_name": "HelpTopic",
       "norm_label": "creatingapaper"
     },
     {
@@ -38857,7 +38857,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_helptopic_checkingquality",
       "community": 2,
-      "community_name": "AIProvider",
+      "community_name": "HelpTopic",
       "norm_label": "checkingquality"
     },
     {
@@ -38868,7 +38868,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_helptopic_privacy",
       "community": 2,
-      "community_name": "AIProvider",
+      "community_name": "HelpTopic",
       "norm_label": "privacy"
     },
     {
@@ -38879,7 +38879,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_helptopic_troubleshooting",
       "community": 2,
-      "community_name": "AIProvider",
+      "community_name": "HelpTopic",
       "norm_label": "troubleshooting"
     },
     {
@@ -38890,7 +38890,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_helptopic_shortcuts",
       "community": 2,
-      "community_name": "AIProvider",
+      "community_name": "HelpTopic",
       "norm_label": "shortcuts"
     },
     {
@@ -38901,7 +38901,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_helptopic_id",
       "community": 2,
-      "community_name": "AIProvider",
+      "community_name": "HelpTopic",
       "norm_label": ".id"
     },
     {
@@ -38912,7 +38912,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_helptopic_title",
       "community": 2,
-      "community_name": "AIProvider",
+      "community_name": "HelpTopic",
       "norm_label": ".title"
     },
     {
@@ -38923,7 +38923,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_helptopic_systemimage",
       "community": 2,
-      "community_name": "AIProvider",
+      "community_name": "HelpTopic",
       "norm_label": ".systemimage"
     },
     {
@@ -38933,8 +38933,8 @@
       "source_location": "L419",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_aiprovider",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 187,
+      "community_name": "String",
       "norm_label": "aiprovider"
     },
     {
@@ -38944,8 +38944,8 @@
       "source_location": "L420",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_aiprovider_ollama",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 187,
+      "community_name": "String",
       "norm_label": "ollama"
     },
     {
@@ -38955,8 +38955,8 @@
       "source_location": "L421",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_aiprovider_openai",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 187,
+      "community_name": "String",
       "norm_label": "openai"
     },
     {
@@ -38966,8 +38966,8 @@
       "source_location": "L422",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_aiprovider_anthropic",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 187,
+      "community_name": "String",
       "norm_label": "anthropic"
     },
     {
@@ -38977,8 +38977,8 @@
       "source_location": "L423",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_aiprovider_apple",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 187,
+      "community_name": "String",
       "norm_label": "apple"
     },
     {
@@ -38988,8 +38988,8 @@
       "source_location": "L425",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_aiprovider_id",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 187,
+      "community_name": "String",
       "norm_label": ".id"
     },
     {
@@ -38999,8 +38999,8 @@
       "source_location": "L427",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_aiprovider_title",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 187,
+      "community_name": "String",
       "norm_label": ".title"
     },
     {
@@ -39010,8 +39010,8 @@
       "source_location": "L436",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_aiprovider_subtitle",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 187,
+      "community_name": "String",
       "norm_label": ".subtitle"
     },
     {
@@ -39021,8 +39021,8 @@
       "source_location": "L445",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_aiprovider_sendspromptsoffdevice",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 187,
+      "community_name": "String",
       "norm_label": ".sendspromptsoffdevice"
     },
     {
@@ -39032,8 +39032,8 @@
       "source_location": "L449",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_aiprovider_systemimage",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 187,
+      "community_name": "String",
       "norm_label": ".systemimage"
     },
     {
@@ -39043,8 +39043,8 @@
       "source_location": "L458",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_aiprovider_backendid",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 187,
+      "community_name": "String",
       "norm_label": ".backendid"
     },
     {
@@ -39054,8 +39054,8 @@
       "source_location": "L467",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_aiprovider_init",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 187,
+      "community_name": "String",
       "norm_label": ".init()"
     },
     {
@@ -39142,8 +39142,8 @@
       "source_location": "L504",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_progressentry",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "progressentry"
     },
     {
@@ -39582,8 +39582,8 @@
       "source_location": "L797",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_mlxrecoverystate",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "mlxrecoverystate"
     },
     {
@@ -39593,8 +39593,8 @@
       "source_location": "L800",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_mlxrecoverystate_begingeneration",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".begingeneration()"
     },
     {
@@ -39604,8 +39604,8 @@
       "source_location": "L804",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_mlxrecoverystate_requestsetup",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".requestsetup()"
     },
     {
@@ -39615,8 +39615,8 @@
       "source_location": "L808",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_mlxrecoverystate_cancel",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".cancel()"
     },
     {
@@ -39626,8 +39626,8 @@
       "source_location": "L812",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_mlxrecoverystate_consumesetuprequest",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".consumesetuprequest()"
     },
     {
@@ -42801,7 +42801,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_sidebarview",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "sidebarview.swift"
     },
     {
@@ -42812,7 +42812,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_sidebarview_sidebar",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "sidebar"
     },
     {
@@ -42823,7 +42823,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_sidebarview_sidebar_body",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".body"
     },
     {
@@ -42834,7 +42834,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_sidebarview_swift_set",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "set"
     },
     {
@@ -42845,7 +42845,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_sidebarview_swift_string",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "string"
     },
     {
@@ -42856,7 +42856,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_sidebarview_sidebar_expandedsubjects",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".expandedsubjects"
     },
     {
@@ -42867,7 +42867,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_sidebarview_sidebar_expandselectedsubject",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".expandselectedsubject()"
     },
     {
@@ -42878,7 +42878,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_sidebarview_catalogsidebarsections",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "catalogsidebarsections"
     },
     {
@@ -42889,7 +42889,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_sidebarview_catalogsidebarsections_body",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".body"
     },
     {
@@ -42900,7 +42900,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_sidebarview_catalogsidebarsections_expansionbinding",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".expansionbinding()"
     },
     {
@@ -42911,7 +42911,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_sidebarview_swift_binding",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "binding"
     },
     {
@@ -42922,7 +42922,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_sidebarview_swift_bool",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "bool"
     },
     {
@@ -42933,7 +42933,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_sidebarview_catalogsidebarsections_expandedsubjects",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".expandedsubjects"
     },
     {
@@ -42944,7 +42944,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_sidebarview_catalogsidebarsections_favouriteboards",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".favouriteboards"
     },
     {
@@ -42955,7 +42955,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_sidebarview_catalogsidebarsections_recentboards",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".recentboards"
     },
     {
@@ -42966,7 +42966,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_sidebarview_catalogsidebarsections_boardlink",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".boardlink()"
     },
     {
@@ -42977,7 +42977,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_sidebarview_boardrow",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "boardrow"
     },
     {
@@ -42988,7 +42988,7 @@
       "_origin": "ast",
       "id": "void",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "void"
     },
     {
@@ -42999,7 +42999,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_sidebarview_boardrow_body",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".body"
     },
     {
@@ -43660,8 +43660,8 @@
       "source_location": "L156",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_outputfolderdisplaypath",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".outputfolderdisplaypath"
     },
     {
@@ -43671,8 +43671,8 @@
       "source_location": "L160",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_mlxsetupexplanation",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".mlxsetupexplanation"
     },
     {
@@ -43693,8 +43693,8 @@
       "source_location": "L218",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_refreshollama",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".refreshollama()"
     },
     {
@@ -43924,8 +43924,8 @@
       "source_location": "L373",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_generate",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".generate()"
     },
     {
@@ -43935,8 +43935,8 @@
       "source_location": "L500",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_confirmmlxsetup",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".confirmmlxsetup()"
     },
     {
@@ -43957,8 +43957,8 @@
       "source_location": "L540",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_cancelgeneration",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".cancelgeneration()"
     },
     {
@@ -43990,8 +43990,8 @@
       "source_location": "L573",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_confirmpullmodel",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".confirmpullmodel()"
     },
     {
@@ -44166,8 +44166,8 @@
       "source_location": "L731",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_startbenchmark",
-      "community": 187,
-      "community_name": "String",
+      "community": 172,
+      "community_name": "BackendClient",
       "norm_label": ".startbenchmark()"
     },
     {
@@ -44177,8 +44177,8 @@
       "source_location": "L738",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_cancelbenchmark",
-      "community": 187,
-      "community_name": "String",
+      "community": 172,
+      "community_name": "BackendClient",
       "norm_label": ".cancelbenchmark()"
     },
     {
@@ -44254,8 +44254,8 @@
       "source_location": "L814",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_apply",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".apply()"
     },
     {
@@ -44265,8 +44265,8 @@
       "source_location": "L875",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_finishgeneration",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".finishgeneration()"
     },
     {
@@ -44276,8 +44276,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_swift_result",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "result"
     },
     {
@@ -44287,8 +44287,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_swift_int32",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "int32"
     },
     {
@@ -44298,8 +44298,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_swift_error",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "error"
     },
     {
@@ -44309,8 +44309,8 @@
       "source_location": "L935",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_finishmlxsetup",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".finishmlxsetup()"
     },
     {
@@ -44320,8 +44320,8 @@
       "source_location": "L969",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_movegeneratedfilestooutputfolderifneeded",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".movegeneratedfilestooutputfolderifneeded()"
     },
     {
@@ -44353,8 +44353,8 @@
       "source_location": "L1021",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_seterror",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".seterror()"
     },
     {
@@ -44364,8 +44364,8 @@
       "source_location": "L1034",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_begingenerationestimate",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 97,
+      "community_name": ".initialEstimate",
       "norm_label": ".begingenerationestimate()"
     },
     {
@@ -44375,8 +44375,8 @@
       "source_location": "L1051",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_updategenerationestimate",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 97,
+      "community_name": ".initialEstimate",
       "norm_label": ".updategenerationestimate()"
     },
     {
@@ -44386,8 +44386,8 @@
       "source_location": "L1056",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_notifysuccess",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".notifysuccess()"
     },
     {
@@ -44397,8 +44397,8 @@
       "source_location": "L1069",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_notifystarted",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".notifystarted()"
     },
     {
@@ -44408,8 +44408,8 @@
       "source_location": "L1085",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_notifyfailure",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".notifyfailure()"
     },
     {
@@ -44430,8 +44430,8 @@
       "source_location": "L1104",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_sendnotification",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".sendnotification()"
     },
     {
@@ -44518,8 +44518,8 @@
       "source_location": "L1145",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_runningoperation",
-      "community": 91,
-      "community_name": "ModelCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "runningoperation"
     },
     {
@@ -44529,8 +44529,8 @@
       "source_location": "L1146",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_runningoperation_none",
-      "community": 91,
-      "community_name": "ModelCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "none"
     },
     {
@@ -44540,8 +44540,8 @@
       "source_location": "L1147",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_runningoperation_generation",
-      "community": 91,
-      "community_name": "ModelCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "generation"
     },
     {
@@ -44551,8 +44551,8 @@
       "source_location": "L1148",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_runningoperation_modelpull",
-      "community": 91,
-      "community_name": "ModelCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "modelpull"
     },
     {
@@ -44562,8 +44562,8 @@
       "source_location": "L1149",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_runningoperation_mlxsetup",
-      "community": 91,
-      "community_name": "ModelCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "mlxsetup"
     },
     {
@@ -44596,8 +44596,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator",
-      "community": 187,
-      "community_name": "String",
+      "community": 172,
+      "community_name": "BackendClient",
       "norm_label": "benchmarkcoordinator"
     },
     {
@@ -44607,8 +44607,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_double",
-      "community": 187,
-      "community_name": "String",
+      "community": 172,
+      "community_name": "BackendClient",
       "norm_label": "double"
     },
     {
@@ -44618,8 +44618,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_string",
-      "community": 187,
-      "community_name": "String",
+      "community": 172,
+      "community_name": "BackendClient",
       "norm_label": "string"
     },
     {
@@ -44629,8 +44629,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_process",
-      "community": 187,
-      "community_name": "String",
+      "community": 172,
+      "community_name": "BackendClient",
       "norm_label": "process"
     },
     {
@@ -44640,8 +44640,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator_init",
-      "community": 187,
-      "community_name": "String",
+      "community": 172,
+      "community_name": "BackendClient",
       "norm_label": ".init()"
     },
     {
@@ -44651,8 +44651,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator_start",
-      "community": 187,
-      "community_name": "String",
+      "community": 172,
+      "community_name": "BackendClient",
       "norm_label": ".start()"
     },
     {
@@ -44662,8 +44662,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_bool",
-      "community": 187,
-      "community_name": "String",
+      "community": 172,
+      "community_name": "BackendClient",
       "norm_label": "bool"
     },
     {
@@ -44695,8 +44695,8 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator_cancel",
-      "community": 187,
-      "community_name": "String",
+      "community": 172,
+      "community_name": "BackendClient",
       "norm_label": ".cancel()"
     },
     {
@@ -44706,8 +44706,8 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator_finish",
-      "community": 187,
-      "community_name": "String",
+      "community": 172,
+      "community_name": "BackendClient",
       "norm_label": ".finish()"
     },
     {
@@ -44717,8 +44717,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_result",
-      "community": 187,
-      "community_name": "String",
+      "community": 172,
+      "community_name": "BackendClient",
       "norm_label": "result"
     },
     {
@@ -44728,8 +44728,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_int32",
-      "community": 187,
-      "community_name": "String",
+      "community": 172,
+      "community_name": "BackendClient",
       "norm_label": "int32"
     },
     {
@@ -44739,8 +44739,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_error",
-      "community": 187,
-      "community_name": "String",
+      "community": 172,
+      "community_name": "BackendClient",
       "norm_label": "error"
     },
     {
@@ -44762,7 +44762,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_catalogstore",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "catalogstore"
     },
     {
@@ -44773,7 +44773,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_swift_string",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "string"
     },
     {
@@ -44784,7 +44784,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_catalogstore_sidebarselection",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".sidebarselection"
     },
     {
@@ -44795,7 +44795,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_swift_set",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "set"
     },
     {
@@ -44806,7 +44806,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_swift_userdefaults",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "userdefaults"
     },
     {
@@ -44817,7 +44817,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_swift_int",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "int"
     },
     {
@@ -44828,7 +44828,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_catalogstore_init",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".init()"
     },
     {
@@ -44839,7 +44839,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_catalogstore_filteredsubjects",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".filteredsubjects"
     },
     {
@@ -44850,7 +44850,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_catalogstore_selectedboard",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".selectedboard"
     },
     {
@@ -44872,7 +44872,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_catalogstore_selectboard",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".selectboard()"
     },
     {
@@ -44883,7 +44883,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_swift_bool",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": "bool"
     },
     {
@@ -44894,7 +44894,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_catalogstore_selectpaperid",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".selectpaperid()"
     },
     {
@@ -44916,7 +44916,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_catalogstore_persistnavigation",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".persistnavigation()"
     },
     {
@@ -44927,7 +44927,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_catalogstore_restorednavigation",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".restorednavigation()"
     },
     {
@@ -44938,7 +44938,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_catalogstore_persistselection",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".persistselection()"
     },
     {
@@ -44949,7 +44949,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_catalogstore_togglefavourite",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".togglefavourite()"
     },
     {
@@ -44960,7 +44960,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_catalogstore_recordrecentconfiguration",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".recordrecentconfiguration()"
     },
     {
@@ -45080,8 +45080,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "macos_papercreator_state_coordinatordependencies_secretstoring",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 91,
+      "community_name": "ModelCoordinator",
       "norm_label": "secretstoring"
     },
     {
@@ -45091,8 +45091,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "macos_papercreator_state_coordinatordependencies_keychainsecretstore",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 91,
+      "community_name": "ModelCoordinator",
       "norm_label": "keychainsecretstore"
     },
     {
@@ -45102,8 +45102,8 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "macos_papercreator_state_coordinatordependencies_keychainsecretstore_read",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 91,
+      "community_name": "ModelCoordinator",
       "norm_label": ".read()"
     },
     {
@@ -45113,8 +45113,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_coordinatordependencies_swift_string",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 91,
+      "community_name": "ModelCoordinator",
       "norm_label": "string"
     },
     {
@@ -45124,8 +45124,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "macos_papercreator_state_coordinatordependencies_keychainsecretstore_save",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 91,
+      "community_name": "ModelCoordinator",
       "norm_label": ".save()"
     },
     {
@@ -45146,8 +45146,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_generationcoordinator",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "generationcoordinator"
     },
     {
@@ -45157,8 +45157,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_swift_generationjobrecord",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "generationjobrecord"
     },
     {
@@ -45168,8 +45168,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_swift_double",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "double"
     },
     {
@@ -45190,8 +45190,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_generationcoordinator_begin",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".begin()"
     },
     {
@@ -45201,8 +45201,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_generationcoordinator_receive",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".receive()"
     },
     {
@@ -45212,8 +45212,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_generationcoordinator_complete",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".complete()"
     },
     {
@@ -45223,8 +45223,8 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_generationcoordinator_cancel",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".cancel()"
     },
     {
@@ -45234,8 +45234,8 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_generationcoordinator_fail",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".fail()"
     },
     {
@@ -45245,8 +45245,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_swift_string",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": "string"
     },
     {
@@ -45718,8 +45718,8 @@
       "source_location": "L99",
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_generationjobrecord_provenancesummary",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 187,
+      "community_name": "String",
       "norm_label": ".provenancesummary"
     },
     {
@@ -45971,8 +45971,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "macos_papercreator_state_settingsstore_settingsstore",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 91,
+      "community_name": "ModelCoordinator",
       "norm_label": "settingsstore"
     },
     {
@@ -45982,8 +45982,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_settingsstore_swift_string",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 91,
+      "community_name": "ModelCoordinator",
       "norm_label": "string"
     },
     {
@@ -45993,8 +45993,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_settingsstore_swift_bool",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 91,
+      "community_name": "ModelCoordinator",
       "norm_label": "bool"
     },
     {
@@ -46004,8 +46004,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_settingsstore_swift_int",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 91,
+      "community_name": "ModelCoordinator",
       "norm_label": "int"
     },
     {
@@ -46015,8 +46015,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_settingsstore_swift_userdefaults",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 91,
+      "community_name": "ModelCoordinator",
       "norm_label": "userdefaults"
     },
     {
@@ -46026,8 +46026,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "macos_papercreator_state_settingsstore_settingsstore_init",
-      "community": 2,
-      "community_name": "AIProvider",
+      "community": 91,
+      "community_name": "ModelCoordinator",
       "norm_label": ".init()"
     },
     {
@@ -46304,7 +46304,7 @@
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testgenerationestimateusesmodelsize",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".testgenerationestimateusesmodelsize()"
     },
     {
@@ -46336,8 +46336,8 @@
       "source_location": "L204",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testdisplaypathabbreviatesonlythehomefolder",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".testdisplaypathabbreviatesonlythehomefolder()"
     },
     {
@@ -46358,8 +46358,8 @@
       "source_location": "L222",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testappstoreworkspaceisprivateandnotdownloads",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".testappstoreworkspaceisprivateandnotdownloads()"
     },
     {
@@ -46402,8 +46402,8 @@
       "source_location": "L296",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testcancelledmlxcacherecoverydoesnotleakintosuccessfulretry",
-      "community": 164,
-      "community_name": "ApplicationCoordinator",
+      "community": 209,
+      "community_name": ".generate",
       "norm_label": ".testcancelledmlxcacherecoverydoesnotleakintosuccessfulretry()"
     },
     {
@@ -46425,7 +46425,7 @@
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testcatalogreadyboardsusecorrectresourcefolders",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".testcatalogreadyboardsusecorrectresourcefolders()"
     },
     {
@@ -46447,7 +46447,7 @@
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testcatalogexposesaiforeverygenerator",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".testcatalogexposesaiforeverygenerator()"
     },
     {
@@ -46634,7 +46634,7 @@
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testcatalogstoreownsandrestoresvalidselection",
       "community": 29,
-      "community_name": "ExamBoardOption",
+      "community_name": "CatalogStore",
       "norm_label": ".testcatalogstoreownsandrestoresvalidselection()"
     },
     {
@@ -53114,7 +53114,7 @@
       "label": "test_cpu_serial_quote_requires_explicit_ordered_execution()",
       "file_type": "code",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L539",
+      "source_location": "L547",
       "_origin": "ast",
       "id": "tests_test_open_credit_reconciliation_test_cpu_serial_quote_requires_explicit_ordered_execution",
       "community": 42,
@@ -53125,7 +53125,7 @@
       "label": "test_cpu_semantic_review_fails_closed_on_incomplete_or_unsubstantiated_decisions()",
       "file_type": "code",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L573",
+      "source_location": "L581",
       "_origin": "ast",
       "id": "tests_test_open_credit_reconciliation_test_cpu_semantic_review_fails_closed_on_incomplete_or_unsubstantiated_decisions",
       "community": 42,
@@ -53136,7 +53136,7 @@
       "label": "test_cpu_saved_evidence_rejects_mutated_identity_or_untyped_history()",
       "file_type": "code",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L606",
+      "source_location": "L614",
       "_origin": "ast",
       "id": "tests_test_open_credit_reconciliation_test_cpu_saved_evidence_rejects_mutated_identity_or_untyped_history",
       "community": 42,
@@ -53147,7 +53147,7 @@
       "label": "test_cpu_reconciliation_cannot_accept_nonempty_model_points_without_semantic_credit_evidence()",
       "file_type": "code",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L631",
+      "source_location": "L639",
       "_origin": "ast",
       "id": "tests_test_open_credit_reconciliation_test_cpu_reconciliation_cannot_accept_nonempty_model_points_without_semantic_credit_evidence",
       "community": 42,
@@ -53158,7 +53158,7 @@
       "label": "test_actual_cpu_pipeline_orders_blind_solver_semantic_review_then_difficulty()",
       "file_type": "code",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L645",
+      "source_location": "L653",
       "_origin": "ast",
       "id": "tests_test_open_credit_reconciliation_test_actual_cpu_pipeline_orders_blind_solver_semantic_review_then_difficulty",
       "community": 42,
@@ -53169,7 +53169,7 @@
       "label": "test_saved_cpu_difficulty_without_credit_review_is_not_export_eligible()",
       "file_type": "code",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L722",
+      "source_location": "L730",
       "_origin": "ast",
       "id": "tests_test_open_credit_reconciliation_test_saved_cpu_difficulty_without_credit_review_is_not_export_eligible",
       "community": 42,
@@ -53180,7 +53180,7 @@
       "label": "test_real_captured_cpu_advisory_boundary_is_not_promoted_to_declared_credit()",
       "file_type": "code",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L733",
+      "source_location": "L741",
       "_origin": "ast",
       "id": "tests_test_open_credit_reconciliation_test_real_captured_cpu_advisory_boundary_is_not_promoted_to_declared_credit",
       "community": 42,
@@ -53191,7 +53191,7 @@
       "label": "test_builtin_cpu_preview_rejects_missing_or_duplicate_actual_credit()",
       "file_type": "code",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L757",
+      "source_location": "L765",
       "_origin": "ast",
       "id": "tests_test_open_credit_reconciliation_test_builtin_cpu_preview_rejects_missing_or_duplicate_actual_credit",
       "community": 42,
@@ -53202,7 +53202,7 @@
       "label": "test_source_distinction_uses_explicit_semantic_decisions_not_keyword_overlap()",
       "file_type": "code",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L792",
+      "source_location": "L800",
       "_origin": "ast",
       "id": "tests_test_open_credit_reconciliation_test_source_distinction_uses_explicit_semantic_decisions_not_keyword_overlap",
       "community": 42,
@@ -53213,7 +53213,7 @@
       "label": "test_genuine_paraphrase_and_reordered_allocations_are_eligible_after_semantic_review()",
       "file_type": "code",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L812",
+      "source_location": "L820",
       "_origin": "ast",
       "id": "tests_test_open_credit_reconciliation_test_genuine_paraphrase_and_reordered_allocations_are_eligible_after_semantic_review",
       "community": 42,
@@ -53224,7 +53224,7 @@
       "label": "test_declared_numeric_own_figure_credit_stays_conditional_and_required()",
       "file_type": "code",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L838",
+      "source_location": "L846",
       "_origin": "ast",
       "id": "tests_test_open_credit_reconciliation_test_declared_numeric_own_figure_credit_stays_conditional_and_required",
       "community": 251,
@@ -53235,7 +53235,7 @@
       "label": "test_source_declared_closed_numeric_alternative_cannot_evade_numeric_validation()",
       "file_type": "code",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L859",
+      "source_location": "L867",
       "_origin": "ast",
       "id": "tests_test_open_credit_reconciliation_test_source_declared_closed_numeric_alternative_cannot_evade_numeric_validation",
       "community": 251,
@@ -53246,7 +53246,7 @@
       "label": "test_host_permission_typing_does_not_reclassify_a_concrete_numeric_answer()",
       "file_type": "code",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L876",
+      "source_location": "L884",
       "_origin": "ast",
       "id": "tests_test_open_credit_reconciliation_test_host_permission_typing_does_not_reclassify_a_concrete_numeric_answer",
       "community": 42,
@@ -53257,7 +53257,7 @@
       "label": "test_host_permission_typing_rejects_unknown_or_legacy_metadata()",
       "file_type": "code",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L890",
+      "source_location": "L898",
       "_origin": "ast",
       "id": "tests_test_open_credit_reconciliation_test_host_permission_typing_rejects_unknown_or_legacy_metadata",
       "community": 42,
@@ -53268,7 +53268,7 @@
       "label": "test_model_cannot_claim_host_permission_origin_for_a_concrete_closed_alternative()",
       "file_type": "code",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L907",
+      "source_location": "L915",
       "_origin": "ast",
       "id": "tests_test_open_credit_reconciliation_test_model_cannot_claim_host_permission_origin_for_a_concrete_closed_alternative",
       "community": 42,
@@ -53279,7 +53279,7 @@
       "label": "test_paraphrased_cpu_credit_still_prints_its_actual_typed_one_mark_allocations()",
       "file_type": "code",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L929",
+      "source_location": "L937",
       "_origin": "ast",
       "id": "tests_test_open_credit_reconciliation_test_paraphrased_cpu_credit_still_prints_its_actual_typed_one_mark_allocations",
       "community": 42,
@@ -53290,7 +53290,7 @@
       "label": "test_wrong_model_closed_alternative_fails_even_if_also_printed_as_guidance()",
       "file_type": "code",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L952",
+      "source_location": "L960",
       "_origin": "ast",
       "id": "tests_test_open_credit_reconciliation_test_wrong_model_closed_alternative_fails_even_if_also_printed_as_guidance",
       "community": 42,
@@ -78178,7 +78178,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L649",
+      "source_location": "L657",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -78190,7 +78190,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L718",
+      "source_location": "L726",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_actual_cpu_pipeline_orders_blind_solver_semantic_review_then_difficulty",
@@ -78203,7 +78203,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L769",
+      "source_location": "L777",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_builtin_cpu_preview_rejects_missing_or_duplicate_actual_credit",
@@ -78214,7 +78214,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L728",
+      "source_location": "L736",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_saved_cpu_difficulty_without_credit_review_is_not_export_eligible",
@@ -78411,7 +78411,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L877",
+      "source_location": "L885",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -78423,7 +78423,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L882",
+      "source_location": "L890",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_host_permission_typing_does_not_reclassify_a_concrete_numeric_answer",
@@ -78436,7 +78436,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L896",
+      "source_location": "L904",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_host_permission_typing_rejects_unknown_or_legacy_metadata",
@@ -103547,7 +103547,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L544",
+      "source_location": "L552",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_cpu_serial_quote_requires_explicit_ordered_execution",
@@ -103582,7 +103582,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L844",
+      "source_location": "L852",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_declared_numeric_own_figure_credit_stays_conditional_and_required",
@@ -103594,7 +103594,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L827",
+      "source_location": "L835",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_genuine_paraphrase_and_reordered_allocations_are_eligible_after_semantic_review",
@@ -103606,7 +103606,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L886",
+      "source_location": "L894",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_host_permission_typing_does_not_reclassify_a_concrete_numeric_answer",
@@ -103619,7 +103619,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L904",
+      "source_location": "L912",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_host_permission_typing_rejects_unknown_or_legacy_metadata",
@@ -103630,7 +103630,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L908",
+      "source_location": "L916",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_model_cannot_claim_host_permission_origin_for_a_concrete_closed_alternative",
@@ -103666,7 +103666,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L734",
+      "source_location": "L742",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_real_captured_cpu_advisory_boundary_is_not_promoted_to_declared_credit",
@@ -103690,7 +103690,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L864",
+      "source_location": "L872",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_source_declared_closed_numeric_alternative_cannot_evade_numeric_validation",
@@ -103703,7 +103703,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L798",
+      "source_location": "L806",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_source_distinction_uses_explicit_semantic_decisions_not_keyword_overlap",
@@ -103714,7 +103714,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L953",
+      "source_location": "L961",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_wrong_model_closed_alternative_fails_even_if_also_printed_as_guidance",
@@ -105165,7 +105165,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L633",
+      "source_location": "L641",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_cpu_reconciliation_cannot_accept_nonempty_model_points_without_semantic_credit_evidence",
@@ -105189,7 +105189,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L853",
+      "source_location": "L861",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_declared_numeric_own_figure_credit_stays_conditional_and_required",
@@ -105201,7 +105201,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L923",
+      "source_location": "L931",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_model_cannot_claim_host_permission_origin_for_a_concrete_closed_alternative",
@@ -105237,7 +105237,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L746",
+      "source_location": "L754",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_real_captured_cpu_advisory_boundary_is_not_promoted_to_declared_credit",
@@ -105249,7 +105249,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L873",
+      "source_location": "L881",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_source_declared_closed_numeric_alternative_cannot_evade_numeric_validation",
@@ -105261,7 +105261,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L966",
+      "source_location": "L974",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_wrong_model_closed_alternative_fails_even_if_also_printed_as_guidance",
@@ -112643,7 +112643,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L379",
+      "source_location": "L381",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit",
@@ -112698,7 +112698,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L282",
+      "source_location": "L283",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit",
@@ -112709,7 +112709,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L161",
+      "source_location": "L162",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit",
@@ -112720,7 +112720,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L204",
+      "source_location": "L205",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit",
@@ -112742,7 +112742,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L180",
+      "source_location": "L181",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit",
@@ -112753,7 +112753,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L481",
+      "source_location": "L483",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit",
@@ -112764,7 +112764,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L458",
+      "source_location": "L460",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit",
@@ -112775,7 +112775,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L289",
+      "source_location": "L290",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit",
@@ -112786,7 +112786,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L227",
+      "source_location": "L228",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit",
@@ -112797,7 +112797,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L245",
+      "source_location": "L246",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit",
@@ -112808,7 +112808,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L241",
+      "source_location": "L242",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit",
@@ -112819,7 +112819,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L219",
+      "source_location": "L220",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit",
@@ -112830,7 +112830,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L195",
+      "source_location": "L196",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit",
@@ -112841,7 +112841,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L405",
+      "source_location": "L407",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit",
@@ -112863,7 +112863,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L533",
+      "source_location": "L535",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit",
@@ -113018,7 +113018,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L481",
+      "source_location": "L483",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_review_open_credit",
@@ -113030,7 +113030,7 @@
       "context": "generic_arg",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L458",
+      "source_location": "L460",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_semantic_response_envelope",
@@ -113042,7 +113042,7 @@
       "context": "generic_arg",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L405",
+      "source_location": "L407",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_validate_judgement",
@@ -113066,7 +113066,7 @@
       "context": "generic_arg",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L533",
+      "source_location": "L535",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_validate_open_credit_review",
@@ -113125,7 +113125,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L517",
+      "source_location": "L519",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_review_open_credit",
@@ -113137,7 +113137,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L434",
+      "source_location": "L436",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_validate_judgement",
@@ -113185,7 +113185,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L484",
+      "source_location": "L486",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_review_open_credit",
@@ -113197,7 +113197,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L460",
+      "source_location": "L462",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_semantic_response_envelope",
@@ -113209,7 +113209,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L408",
+      "source_location": "L410",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_validate_judgement",
@@ -113233,7 +113233,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L516",
+      "source_location": "L518",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_review_open_credit",
@@ -113245,7 +113245,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L527",
+      "source_location": "L529",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_review_open_credit",
@@ -113257,7 +113257,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L552",
+      "source_location": "L554",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_validate_open_credit_review",
@@ -113291,7 +113291,7 @@
       "context": "return_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L405",
+      "source_location": "L407",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_validate_judgement",
@@ -113303,7 +113303,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L381",
+      "source_location": "L383",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_cpu_quote_supports_criterion",
@@ -113314,10 +113314,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L162",
+      "source_location": "L163",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_open_credit_rationale_162",
+      "source": "backend_core_open_credit_rationale_163",
       "target": "backend_core_open_credit_normalise_cpu_clauses",
       "confidence_score": 1.0
     },
@@ -113325,10 +113325,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L181",
+      "source_location": "L182",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_open_credit_rationale_181",
+      "source": "backend_core_open_credit_rationale_182",
       "target": "backend_core_open_credit_relation_is_qualified",
       "confidence_score": 1.0
     },
@@ -113337,7 +113337,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L180",
+      "source_location": "L181",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_relation_is_qualified",
@@ -113349,118 +113349,11 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L345",
+      "source_location": "L347",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_serial_clause_evidence",
       "target": "backend_core_open_credit_relation_is_qualified",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L275",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "backend_core_open_credit_storage_clause_contradicts",
-      "target": "backend_core_open_credit_relation_is_qualified",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L200",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "backend_core_open_credit_unqualified_matches",
-      "target": "backend_core_open_credit_relation_is_qualified",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "context": "generic_arg",
-      "confidence": "EXTRACTED",
-      "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L195",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "backend_core_open_credit_unqualified_matches",
-      "target": "match",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L242",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "backend_core_open_credit_storage_clause_supports",
-      "target": "backend_core_open_credit_unqualified_matches",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L207",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "backend_core_open_credit_rationale_207",
-      "target": "backend_core_open_credit_passive_relation_patterns",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L300",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "backend_core_open_credit_serial_clause_evidence",
-      "target": "backend_core_open_credit_passive_relation_patterns",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L220",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "backend_core_open_credit_storage_passive_relation_patterns",
-      "target": "backend_core_open_credit_passive_relation_patterns",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L228",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "backend_core_open_credit_storage_assertion_patterns",
-      "target": "backend_core_open_credit_storage_passive_relation_patterns",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L246",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "backend_core_open_credit_storage_clause_contradicts",
-      "target": "backend_core_open_credit_storage_passive_relation_patterns",
       "confidence_score": 1.0
     },
     {
@@ -113472,6 +113365,113 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_storage_clause_contradicts",
+      "target": "backend_core_open_credit_relation_is_qualified",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Backend/Core/open_credit.py",
+      "source_location": "L201",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_core_open_credit_unqualified_matches",
+      "target": "backend_core_open_credit_relation_is_qualified",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "Backend/Core/open_credit.py",
+      "source_location": "L196",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_core_open_credit_unqualified_matches",
+      "target": "match",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Backend/Core/open_credit.py",
+      "source_location": "L243",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_core_open_credit_storage_clause_supports",
+      "target": "backend_core_open_credit_unqualified_matches",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "Backend/Core/open_credit.py",
+      "source_location": "L208",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_core_open_credit_rationale_208",
+      "target": "backend_core_open_credit_passive_relation_patterns",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Backend/Core/open_credit.py",
+      "source_location": "L301",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_core_open_credit_serial_clause_evidence",
+      "target": "backend_core_open_credit_passive_relation_patterns",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Backend/Core/open_credit.py",
+      "source_location": "L221",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_core_open_credit_storage_passive_relation_patterns",
+      "target": "backend_core_open_credit_passive_relation_patterns",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Backend/Core/open_credit.py",
+      "source_location": "L229",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_core_open_credit_storage_assertion_patterns",
+      "target": "backend_core_open_credit_storage_passive_relation_patterns",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Backend/Core/open_credit.py",
+      "source_location": "L247",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_core_open_credit_storage_clause_contradicts",
+      "target": "backend_core_open_credit_storage_passive_relation_patterns",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Backend/Core/open_credit.py",
+      "source_location": "L277",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_core_open_credit_storage_clause_contradicts",
       "target": "backend_core_open_credit_storage_assertion_patterns",
       "confidence_score": 1.0
     },
@@ -113480,7 +113480,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L242",
+      "source_location": "L243",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_storage_clause_supports",
@@ -113492,7 +113492,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L385",
+      "source_location": "L387",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_cpu_quote_supports_criterion",
@@ -113504,7 +113504,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L386",
+      "source_location": "L388",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_cpu_quote_supports_criterion",
@@ -113516,7 +113516,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L398",
+      "source_location": "L400",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_cpu_quote_supports_criterion",
@@ -113527,10 +113527,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L283",
+      "source_location": "L284",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_open_credit_rationale_283",
+      "source": "backend_core_open_credit_rationale_284",
       "target": "backend_core_open_credit_has_unambiguous_instruction_antecedent",
       "confidence_score": 1.0
     },
@@ -113539,7 +113539,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L393",
+      "source_location": "L395",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_cpu_quote_supports_criterion",
@@ -113550,10 +113550,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L380",
+      "source_location": "L382",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_open_credit_rationale_380",
+      "source": "backend_core_open_credit_rationale_382",
       "target": "backend_core_open_credit_cpu_quote_supports_criterion",
       "confidence_score": 1.0
     },
@@ -113562,7 +113562,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L444",
+      "source_location": "L446",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_validate_judgement",
@@ -113574,7 +113574,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L523",
+      "source_location": "L525",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_review_open_credit",
@@ -113586,7 +113586,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L556",
+      "source_location": "L558",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_validate_open_credit_review",
@@ -113597,10 +113597,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L459",
+      "source_location": "L461",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_open_credit_rationale_459",
+      "source": "backend_core_open_credit_rationale_461",
       "target": "backend_core_open_credit_semantic_response_envelope",
       "confidence_score": 1.0
     },
@@ -113609,7 +113609,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/open_credit.py",
-      "source_location": "L512",
+      "source_location": "L514",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_open_credit_review_open_credit",
@@ -113670,7 +113670,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L610",
+      "source_location": "L618",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_cpu_saved_evidence_rejects_mutated_identity_or_untyped_history",
@@ -113694,7 +113694,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L600",
+      "source_location": "L608",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_cpu_semantic_review_fails_closed_on_incomplete_or_unsubstantiated_decisions",
@@ -113730,7 +113730,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L552",
+      "source_location": "L560",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_cpu_serial_quote_requires_explicit_ordered_execution",
@@ -113753,7 +113753,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L829",
+      "source_location": "L837",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_genuine_paraphrase_and_reordered_allocations_are_eligible_after_semantic_review",
@@ -113778,7 +113778,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L803",
+      "source_location": "L811",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_source_distinction_uses_explicit_semantic_decisions_not_keyword_overlap",
@@ -113814,7 +113814,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L628",
+      "source_location": "L636",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_cpu_saved_evidence_rejects_mutated_identity_or_untyped_history",
@@ -143967,7 +143967,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L653",
+      "source_location": "L661",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_actual_cpu_pipeline_orders_blind_solver_semantic_review_then_difficulty",
@@ -143991,7 +143991,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L938",
+      "source_location": "L946",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_paraphrased_cpu_credit_still_prints_its_actual_typed_one_mark_allocations",
@@ -230511,7 +230511,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L839",
+      "source_location": "L847",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -230523,7 +230523,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L841",
+      "source_location": "L849",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_declared_numeric_own_figure_credit_stays_conditional_and_required",
@@ -230535,7 +230535,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L880",
+      "source_location": "L888",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_host_permission_typing_does_not_reclassify_a_concrete_numeric_answer",
@@ -230548,7 +230548,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L894",
+      "source_location": "L902",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_host_permission_typing_rejects_unknown_or_legacy_metadata",
@@ -230559,7 +230559,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L862",
+      "source_location": "L870",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_source_declared_closed_numeric_alternative_cannot_evade_numeric_validation",
@@ -232564,7 +232564,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L645",
+      "source_location": "L653",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -232575,7 +232575,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L757",
+      "source_location": "L765",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -232619,7 +232619,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L631",
+      "source_location": "L639",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -232630,7 +232630,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L606",
+      "source_location": "L614",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -232652,7 +232652,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L573",
+      "source_location": "L581",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -232685,7 +232685,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L539",
+      "source_location": "L547",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -232718,7 +232718,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L838",
+      "source_location": "L846",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -232729,7 +232729,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L812",
+      "source_location": "L820",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -232740,7 +232740,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L876",
+      "source_location": "L884",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -232751,7 +232751,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L890",
+      "source_location": "L898",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -232762,7 +232762,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L907",
+      "source_location": "L915",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -232795,7 +232795,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L929",
+      "source_location": "L937",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -232806,7 +232806,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L733",
+      "source_location": "L741",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -232828,7 +232828,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L722",
+      "source_location": "L730",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -232839,7 +232839,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L859",
+      "source_location": "L867",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -232850,7 +232850,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L792",
+      "source_location": "L800",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -232861,7 +232861,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L952",
+      "source_location": "L960",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation",
@@ -232919,7 +232919,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L711",
+      "source_location": "L719",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_actual_cpu_pipeline_orders_blind_solver_semantic_review_then_difficulty",
@@ -232955,7 +232955,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L611",
+      "source_location": "L619",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_cpu_saved_evidence_rejects_mutated_identity_or_untyped_history",
@@ -232979,7 +232979,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L600",
+      "source_location": "L608",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_cpu_semantic_review_fails_closed_on_incomplete_or_unsubstantiated_decisions",
@@ -233015,7 +233015,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L545",
+      "source_location": "L553",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_cpu_serial_quote_requires_explicit_ordered_execution",
@@ -233051,7 +233051,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L827",
+      "source_location": "L835",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_genuine_paraphrase_and_reordered_allocations_are_eligible_after_semantic_review",
@@ -233063,7 +233063,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L909",
+      "source_location": "L917",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_model_cannot_claim_host_permission_origin_for_a_concrete_closed_alternative",
@@ -233099,7 +233099,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L734",
+      "source_location": "L742",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_real_captured_cpu_advisory_boundary_is_not_promoted_to_declared_credit",
@@ -233123,7 +233123,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L798",
+      "source_location": "L806",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_source_distinction_uses_explicit_semantic_decisions_not_keyword_overlap",
@@ -233135,7 +233135,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L954",
+      "source_location": "L962",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_wrong_model_closed_alternative_fails_even_if_also_printed_as_guidance",
@@ -233183,7 +233183,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L920",
+      "source_location": "L928",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_model_cannot_claim_host_permission_origin_for_a_concrete_closed_alternative",
@@ -233219,7 +233219,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L735",
+      "source_location": "L743",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_real_captured_cpu_advisory_boundary_is_not_promoted_to_declared_credit",
@@ -233231,7 +233231,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L965",
+      "source_location": "L973",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_wrong_model_closed_alternative_fails_even_if_also_printed_as_guidance",
@@ -233279,7 +233279,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L652",
+      "source_location": "L660",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_actual_cpu_pipeline_orders_blind_solver_semantic_review_then_difficulty",
@@ -233291,7 +233291,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L760",
+      "source_location": "L768",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_builtin_cpu_preview_rejects_missing_or_duplicate_actual_credit",
@@ -233327,7 +233327,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L632",
+      "source_location": "L640",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_cpu_reconciliation_cannot_accept_nonempty_model_points_without_semantic_credit_evidence",
@@ -233339,7 +233339,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L609",
+      "source_location": "L617",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_cpu_saved_evidence_rejects_mutated_identity_or_untyped_history",
@@ -233363,7 +233363,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L578",
+      "source_location": "L586",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_cpu_semantic_review_fails_closed_on_incomplete_or_unsubstantiated_decisions",
@@ -233399,7 +233399,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L542",
+      "source_location": "L550",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_cpu_serial_quote_requires_explicit_ordered_execution",
@@ -233423,7 +233423,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L815",
+      "source_location": "L823",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_genuine_paraphrase_and_reordered_allocations_are_eligible_after_semantic_review",
@@ -233447,7 +233447,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L725",
+      "source_location": "L733",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_saved_cpu_difficulty_without_credit_review_is_not_export_eligible",
@@ -233459,7 +233459,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L797",
+      "source_location": "L805",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_source_distinction_uses_explicit_semantic_decisions_not_keyword_overlap",
@@ -233483,7 +233483,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L611",
+      "source_location": "L619",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_cpu_saved_evidence_rejects_mutated_identity_or_untyped_history",
@@ -233507,7 +233507,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L579",
+      "source_location": "L587",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_cpu_semantic_review_fails_closed_on_incomplete_or_unsubstantiated_decisions",
@@ -233531,7 +233531,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L547",
+      "source_location": "L555",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_cpu_serial_quote_requires_explicit_ordered_execution",
@@ -233555,7 +233555,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L822",
+      "source_location": "L830",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_genuine_paraphrase_and_reordered_allocations_are_eligible_after_semantic_review",
@@ -233567,7 +233567,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L799",
+      "source_location": "L807",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_open_credit_reconciliation_test_source_distinction_uses_explicit_semantic_decisions_not_keyword_overlap",
@@ -233578,7 +233578,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L753",
+      "source_location": "L761",
       "weight": 1.0,
       "context": "decorator",
       "_origin": "ast",
@@ -233590,7 +233590,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L603",
+      "source_location": "L611",
       "weight": 1.0,
       "context": "decorator",
       "_origin": "ast",
@@ -233602,7 +233602,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L558",
+      "source_location": "L566",
       "weight": 1.0,
       "context": "decorator",
       "_origin": "ast",
@@ -233638,7 +233638,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L889",
+      "source_location": "L897",
       "weight": 1.0,
       "context": "decorator",
       "_origin": "ast",
@@ -233650,7 +233650,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_open_credit_reconciliation.py",
-      "source_location": "L774",
+      "source_location": "L782",
       "weight": 1.0,
       "context": "decorator",
       "_origin": "ast",
@@ -251156,5 +251156,5 @@
       "source_file": "Resources/economics/edexcel-a/generator/data/notes/text/1.1. Nature of Economics.txt"
     }
   ],
-  "built_at_commit": "0296a97d0057e8d7a3b63ba42c4cd042ef6aa4e1"
+  "built_at_commit": "0a114d5a5675b1cd485b7bc4da3924442b713bae"
 }
