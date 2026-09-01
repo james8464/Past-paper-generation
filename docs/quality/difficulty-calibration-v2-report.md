@@ -480,3 +480,16 @@ passed, and the privacy fix added352+79 focused passes. Independent review found
 one private-difficulty-prompt leak; fix`180bccc` addressed it with clean scoped
 re-review. This is engineering/review evidence, not a live semantic pass or
 empirical learner-difficulty equivalence.
+
+The first committed-source J CPU transaction from verified archive`0af3f70`
+failed safely in the new semantic stage before general difficulty review. The
+model supplied both expected supported decisions, exact answer/scheme quotes,
+point indices and one-mark allocations, but placed them under top-level criterion
+IDs rather than the required `criteria` list; strict validation rejected the
+missing field. Source/import identity verified at the end. Artifact:
+`tmp/task7j-cpu-live-probe-0901.json`, SHA-256
+`f5a0bb7b51f4b8193612eabc992179da26ee64e755330142d4ead442f422e5b4`.
+The response is retained as a failed live case, not normalized after the fact or
+called a semantic/difficulty pass. A bounded prompt-schema correction must make
+the required array shape explicit, retain strict unknown/missing/duplicate
+rejection and pass independent review before a fresh transaction.
