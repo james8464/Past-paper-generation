@@ -11,6 +11,45 @@ from pydantic import BaseModel, ConfigDict, Field
 SELECTED_RESPONSE_VERSION = "selected-response-v1"
 _NUMBER = re.compile(r"^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$")
 
+SelectedOperation = Literal[
+    "index_percentage_increase",
+    "index_percentage_decrease",
+    "index_percentage_change",
+    "economic_shift",
+    "opportunity_cost_change",
+    "elastic_revenue_change",
+    "income_distribution_change",
+    "interest_rate_demand_change",
+    "trade_elasticity_effect",
+    "gross_profit",
+    "after_tax_profit",
+    "highest_productivity",
+    "performance_statements",
+    "break_even_change",
+    "strategic_drift",
+]
+SelectedUnit = Literal[
+    "index", "percent", "effect", "GBPm", "quantity", "classification"
+]
+
+_OPERATION_FORMAT_POLICY: dict[str, tuple[str, int]] = {
+    "index_percentage_increase": ("index", 1),
+    "index_percentage_decrease": ("index", 1),
+    "index_percentage_change": ("percent", 1),
+    "economic_shift": ("effect", 0),
+    "opportunity_cost_change": ("quantity", 0),
+    "elastic_revenue_change": ("effect", 0),
+    "income_distribution_change": ("effect", 0),
+    "interest_rate_demand_change": ("effect", 0),
+    "trade_elasticity_effect": ("effect", 0),
+    "gross_profit": ("GBPm", 0),
+    "after_tax_profit": ("GBPm", 0),
+    "highest_productivity": ("classification", 0),
+    "performance_statements": ("classification", 0),
+    "break_even_change": ("effect", 0),
+    "strategic_drift": ("classification", 0),
+}
+
 
 class SelectedResponseRow(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -27,27 +66,28 @@ class SelectedResponseContract(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     version: Literal["selected-response-v1"] = SELECTED_RESPONSE_VERSION
-    operation: Literal[
-        "index_percentage_increase",
-        "index_percentage_decrease",
-        "index_percentage_change",
-        "economic_shift",
-        "opportunity_cost_change",
-        "elastic_revenue_change",
-        "income_distribution_change",
-        "interest_rate_demand_change",
-        "trade_elasticity_effect",
-        "gross_profit",
-        "after_tax_profit",
-        "highest_productivity",
-        "performance_statements",
-        "break_even_change",
-        "strategic_drift",
-    ]
+    operation: SelectedOperation
     inputs: dict[str, Decimal | str] = Field(default_factory=dict)
     rows: list[SelectedResponseRow] = Field(default_factory=list)
-    unit: Literal["index", "percent", "effect", "GBPm", "ratio", "classification"]
+    unit: SelectedUnit
     decimal_places: int = Field(ge=0, le=4)
+
+
+def selected_response_contract(
+    operation: SelectedOperation,
+    *,
+    inputs: dict[str, Decimal | str] | None = None,
+    rows: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Build a contract from the one operation-owned output format policy."""
+    unit, decimal_places = _OPERATION_FORMAT_POLICY[operation]
+    return SelectedResponseContract(
+        operation=operation,
+        inputs=inputs or {},
+        rows=rows or [],
+        unit=unit,
+        decimal_places=decimal_places,
+    ).model_dump(mode="json")
 
 
 def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
@@ -63,6 +103,12 @@ def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
     if item.get("kind") != "multiple_choice" or item.get("marks") != 1:
         raise ValueError("selected-response contract requires a one-mark choice item")
     contract = SelectedResponseContract.model_validate(raw_contract)
+    if (contract.unit, contract.decimal_places) != _OPERATION_FORMAT_POLICY[
+        contract.operation
+    ]:
+        raise ValueError(
+            f"{contract.operation} violates selected response format policy"
+        )
     choices = item.get("choices")
     if not isinstance(choices, list) or len(choices) != 4 or any(
         not isinstance(choice, str) or not choice.strip() for choice in choices
@@ -83,19 +129,16 @@ def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
         _require_contract_shape(contract, {"base", "rate_percent"})
         base = _decimal(contract.inputs["base"])
         rate = _decimal(contract.inputs["rate_percent"])
-        if not base.is_finite() or not rate.is_finite() or base <= 0:
+        if base <= 0 or rate <= 0:
             raise ValueError("index selected response inputs must be finite and positive")
         quantum = Decimal(1).scaleb(-contract.decimal_places)
         expected = (base * (Decimal(1) + rate / Decimal(100))).quantize(
             quantum,
             rounding=ROUND_HALF_UP,
         )
-        parsed = [_plain_decimal(choice) for choice in choices]
-        if any(value is None for value in parsed):
-            raise ValueError("index selected-response options must be plain index values")
-        if len(set(parsed)) != 4 or sum(value == expected for value in parsed) != 1:
-            raise ValueError("selected response must have exactly one semantic option")
-        expected_text = choices[parsed.index(expected)].strip()
+        expected_text = _numeric_choice(
+            choices, expected, contract.decimal_places
+        )
         steps = ["Multiply the candidate-visible base index by one plus the percentage rate."]
         numeric_results = {"selected_value": float(expected)}
     elif contract.operation == "index_percentage_decrease":
@@ -109,23 +152,21 @@ def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
             quantum,
             rounding=ROUND_HALF_UP,
         )
-        expected_text = _numeric_choice(choices, expected)
+        expected_text = _numeric_choice(choices, expected, contract.decimal_places)
         steps = ["Multiply the candidate-visible base index by one minus the percentage rate."]
         numeric_results = {"selected_value": float(expected)}
     elif contract.operation == "index_percentage_change":
         _require_contract_shape(contract, {"initial", "final"})
-        if contract.unit != "percent":
-            raise ValueError("percentage-change selected response requires percent units")
         initial = _decimal(contract.inputs["initial"])
         final = _decimal(contract.inputs["final"])
-        if initial <= 0:
+        if initial <= 0 or final < 0:
             raise ValueError("index selected response inputs must be finite and positive")
         quantum = Decimal(1).scaleb(-contract.decimal_places)
         expected = ((final - initial) / initial * Decimal(100)).quantize(
             quantum,
             rounding=ROUND_HALF_UP,
         )
-        expected_text = _percent_choice(choices, expected)
+        expected_text = _percent_choice(choices, expected, contract.decimal_places)
         steps = ["Divide the change in the candidate-visible index by its initial value."]
         numeric_results = {"selected_value": float(expected)}
     elif contract.operation == "economic_shift":
@@ -172,7 +213,9 @@ def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
         secondary_loss = values["secondary_before"] - values["secondary_after"]
         if any(value < 0 for value in values.values()) or primary_gain <= 0 or secondary_loss <= 0:
             raise ValueError("opportunity-cost source has invalid public values")
-        expected_text = f"{_format_decimal(secondary_loss)} units of product Y"
+        expected_text = _quantity_choice(
+            choices, secondary_loss, contract.decimal_places
+        )
         steps = ["Read the candidate-visible fall in product Y as the opportunity cost."]
         numeric_results = {"opportunity_cost": float(secondary_loss)}
     elif contract.operation == "elastic_revenue_change":
@@ -226,7 +269,7 @@ def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
         before = _decimal(contract.inputs["interest_rate_before"])
         after = _decimal(contract.inputs["interest_rate_after"])
         share = _decimal(contract.inputs["credit_share_percent"])
-        if share <= 0 or share > 100:
+        if before < 0 or after < 0 or share <= 0 or share > 100:
             raise ValueError("interest-rate source has an invalid public credit share")
         expected_text = (
             "Credit-financed consumption and investment weaken"
@@ -268,6 +311,8 @@ def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
         expected = numbers["revenue"] - numbers["cost_of_sales"]
         if contract.operation == "after_tax_profit":
             expected -= numbers["operating_expenses"] + numbers["taxation"]
+        if any(number < 0 for number in numbers.values()) or expected < 0:
+            raise ValueError("profit source has an invalid public numeric domain")
         expected_text = _money_choice(choices, expected, contract.decimal_places)
         numeric_results = {"selected_value": float(expected)}
         steps = ["Subtract the candidate-visible costs from revenue in the requested order."]
@@ -276,6 +321,9 @@ def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
         if len(contract.rows) < 2 or any(
             row.output is None
             or row.employees is None
+            or not row.output.is_finite()
+            or not row.employees.is_finite()
+            or row.output < 0
             or row.employees <= 0
             or row.target is not None
             or row.actual is not None
@@ -296,6 +344,10 @@ def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
         if any(
             row.target is None
             or row.actual is None
+            or not row.target.is_finite()
+            or not row.actual.is_finite()
+            or row.target < 0
+            or row.actual < 0
             or row.better_when is None
             or row.output is not None
             or row.employees is not None
@@ -324,6 +376,15 @@ def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
         }
         _require_contract_shape(contract, names)
         values = {key: _decimal(value) for key, value in contract.inputs.items()}
+        if (
+            values["fixed_cost_before"] <= 0
+            or values["fixed_cost_after"] <= 0
+            or values["price_before"] <= 0
+            or values["price_after"] <= 0
+            or values["variable_cost_before"] < 0
+            or values["variable_cost_after"] < 0
+        ):
+            raise ValueError("break-even source has invalid public values")
         before_contribution = values["price_before"] - values["variable_cost_before"]
         after_contribution = values["price_after"] - values["variable_cost_after"]
         if before_contribution <= 0 or after_contribution <= 0:
@@ -390,34 +451,66 @@ def _require_contract_shape(
         raise ValueError(f"{contract.operation} has invalid public inputs")
 
 
-def _numeric_choice(choices: list[str], expected: Decimal) -> str:
-    parsed = [_plain_decimal(choice) for choice in choices]
+def _display_decimal(value: str, places: int) -> Decimal | None:
+    text = value.strip()
+    pattern = (
+        re.compile(r"^[+-]?\d+$")
+        if places == 0
+        else re.compile(rf"^[+-]?\d+\.\d{{{places}}}$")
+    )
+    if not pattern.fullmatch(text):
+        return None
+    return _plain_decimal(text)
+
+
+def _numeric_choice(choices: list[str], expected: Decimal, places: int) -> str:
+    parsed = [_display_decimal(choice, places) for choice in choices]
     if (
         any(value is None for value in parsed)
         or len(set(parsed)) != 4
         or sum(value == expected for value in parsed) != 1
     ):
-        raise ValueError("selected response must have exactly one semantic option")
+        raise ValueError(
+            "selected response requires exact precision and exactly one semantic option"
+        )
     return choices[parsed.index(expected)].strip()
 
 
-def _percent_choice(choices: list[str], expected: Decimal) -> str:
-    pattern = re.compile(r"^([+-]?(?:\d+(?:\.\d*)?|\.\d+))%$")
+def _percent_choice(choices: list[str], expected: Decimal, places: int) -> str:
     parsed: list[Decimal | None] = []
     for choice in choices:
-        match = pattern.fullmatch(choice.strip())
-        parsed.append(Decimal(match.group(1)) if match else None)
+        text = choice.strip()
+        parsed.append(
+            _display_decimal(text[:-1], places) if text.endswith("%") else None
+        )
     if (
         any(value is None for value in parsed)
         or len(set(parsed)) != 4
         or sum(value == expected for value in parsed) != 1
     ):
-        raise ValueError("percentage-change selected response requires percent units")
+        raise ValueError(
+            "percentage-change selected response requires percent units and exact precision"
+        )
     return choices[parsed.index(expected)].strip()
 
 
-def _format_decimal(value: Decimal) -> str:
-    return format(value.normalize(), "f")
+def _quantity_choice(choices: list[str], expected: Decimal, places: int) -> str:
+    suffix = " units of product Y"
+    parsed = [
+        _display_decimal(choice.strip()[: -len(suffix)], places)
+        if choice.strip().endswith(suffix)
+        else None
+        for choice in choices
+    ]
+    if (
+        any(value is None for value in parsed)
+        or len(set(parsed)) != 4
+        or sum(value == expected for value in parsed) != 1
+    ):
+        raise ValueError(
+            "quantity selected response requires quantity units and exact precision"
+        )
+    return choices[parsed.index(expected)].strip()
 
 
 def _decimal(value: Decimal | str) -> Decimal:
@@ -433,17 +526,22 @@ def _decimal(value: Decimal | str) -> Decimal:
 def _money_choice(choices: list[str], expected: Decimal, places: int) -> str:
     quantum = Decimal(1).scaleb(-places)
     expected = expected.quantize(quantum, rounding=ROUND_HALF_UP)
-    pattern = re.compile(r"^£([+-]?(?:\d+(?:\.\d*)?|\.\d+))m$")
     parsed = []
     for choice in choices:
-        match = pattern.fullmatch(choice.strip())
-        parsed.append(Decimal(match.group(1)) if match else None)
+        text = choice.strip()
+        parsed.append(
+            _display_decimal(text[1:-1], places)
+            if text.startswith("£") and text.endswith("m")
+            else None
+        )
     if (
         any(value is None for value in parsed)
         or len(set(parsed)) != 4
         or sum(value == expected for value in parsed) != 1
     ):
-        raise ValueError("selected response must have exactly one semantic option")
+        raise ValueError(
+            "money selected response requires exact precision and exactly one semantic option"
+        )
     return choices[parsed.index(expected)].strip()
 
 

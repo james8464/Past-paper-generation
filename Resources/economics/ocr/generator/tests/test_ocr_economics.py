@@ -299,6 +299,26 @@ def test_paper_three_finishes_on_the_reference_page_roles(tmp_path: Path) -> Non
     )
 
 
+def test_paper_three_numeric_mcq_reserves_a_clear_tariff_gutter(tmp_path: Path) -> None:
+    paths = generate_package(
+        paper="3",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=26090108,
+    )
+
+    with fitz.open(paths["question_paper"]) as document:
+        page = next(
+            page
+            for page in document
+            if "Analysts in Arden use an index" in page.get_text()
+        )
+        words = page.get_text("words")
+        value = next(word for word in words if word[4] == "129")
+        tariff = next(word for word in words if word[4] == "[1]")
+        assert tariff[0] - value[2] >= 15 * 72 / 25.4
+
+
 def test_extra_answer_page_uses_open_ocr_rule_grammar(tmp_path: Path) -> None:
     paths = generate_package(
         paper="1",

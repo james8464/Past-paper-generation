@@ -3,6 +3,9 @@ from __future__ import annotations
 import random
 import secrets
 from decimal import ROUND_HALF_UP, Decimal
+from typing import Literal
+
+from pydantic import BaseModel, ConfigDict
 
 from aqaecongen.configs import PAPER3_VISUAL_QUESTION_NUMBERS
 from aqaecongen.syllabus import Syllabus, Topic
@@ -18,6 +21,98 @@ from Backend.Core.exam_blueprints import (
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
 from Backend.Core.numeric_integrity import percentage_change_context
+from Backend.Core.subjects.selected_response import (
+    selected_response_contract,
+    solve_selected_response,
+)
+
+
+class _AppliedSource(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+
+class OpportunityCostSource(_AppliedSource):
+    operation: Literal["opportunity_cost_change"] = "opportunity_cost_change"
+    primary_before: Decimal
+    secondary_before: Decimal
+    primary_after: Decimal
+    secondary_after: Decimal
+
+
+class ElasticRevenueSource(_AppliedSource):
+    operation: Literal["elastic_revenue_change"] = "elastic_revenue_change"
+    price_before: Decimal
+    quantity_before: Decimal
+    price_after: Decimal
+    quantity_after: Decimal
+
+
+class IncomeDistributionSource(_AppliedSource):
+    operation: Literal["income_distribution_change"] = "income_distribution_change"
+    poorest_share_before: Decimal
+    richest_share_before: Decimal
+    poorest_share_after: Decimal
+    richest_share_after: Decimal
+
+
+class InterestRateSource(_AppliedSource):
+    operation: Literal["interest_rate_demand_change"] = "interest_rate_demand_change"
+    interest_rate_before: Decimal
+    interest_rate_after: Decimal
+    credit_share_percent: Decimal
+
+
+class TradeElasticitySource(_AppliedSource):
+    operation: Literal["trade_elasticity_effect"] = "trade_elasticity_effect"
+    exchange_rate_direction: Literal["depreciation"] = "depreciation"
+    export_elasticity: Decimal
+    import_elasticity: Decimal
+
+
+AppliedMCQSource = (
+    OpportunityCostSource
+    | ElasticRevenueSource
+    | IncomeDistributionSource
+    | InterestRateSource
+    | TradeElasticitySource
+)
+
+
+class AppliedMCQProjection(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    prompt: str
+    choices: list[str]
+    correct_choice: int
+    authoring_context: dict[str, object]
+
+
+APPLIED_SOURCE_BY_NUMBER: dict[int, AppliedMCQSource] = {
+    1: OpportunityCostSource(
+        primary_before=20,
+        secondary_before=80,
+        primary_after=30,
+        secondary_after=68,
+    ),
+    3: ElasticRevenueSource(
+        price_before=10,
+        quantity_before=100,
+        price_after=12,
+        quantity_after=88,
+    ),
+    7: IncomeDistributionSource(
+        poorest_share_before=20,
+        richest_share_before=45,
+        poorest_share_after=25,
+        richest_share_after=38,
+    ),
+    11: InterestRateSource(
+        interest_rate_before=4,
+        interest_rate_after=6,
+        credit_share_percent=60,
+    ),
+    17: TradeElasticitySource(export_elasticity=Decimal("0.9"), import_elasticity=Decimal("0.6")),
+}
 
 INDUSTRIES = [
     "urban bus services",
@@ -693,69 +788,117 @@ def _visual_mcq(
 def _applied_mcq(
     number: int,
 ) -> tuple[str, str, list[str], dict[str, object]]:
-    tasks: dict[int, tuple[str, str, list[str], str, dict[str, str], str]] = {
-        1: (
-            "Production of product X rises from 20 to 30 units while production of "
-            "product Y falls from 80 to 68 units. What is the opportunity cost of "
-            "the extra 10 units of product X?",
-            "12 units of product Y",
-            ["12 units of product Y", "20 units of product Y", "10 units of product Y", "68 units of product Y"],
-            "opportunity_cost_change",
-            {"primary_before": "20", "secondary_before": "80", "primary_after": "30", "secondary_after": "68"},
-            "ratio",
-        ),
-        3: (
-            "A product's price rises from £10 to £12 and quantity demanded falls "
-            "from 100 to 88 units. What happens to total expenditure?",
-            "Total expenditure rises",
-            ["Total expenditure rises", "Total expenditure falls", "Total expenditure is unchanged", "The effect cannot be calculated"],
-            "elastic_revenue_change",
-            {"price_before": "10", "quantity_before": "100", "price_after": "12", "quantity_after": "88"},
-            "GBPm",
-        ),
-        7: (
-            "The poorest group's income share rises from 20% to 25%, while the "
-            "richest group's share falls from 45% to 38%. What does this evidence suggest?",
-            "Income inequality falls",
-            ["Income inequality falls", "Income inequality rises", "Income inequality is unchanged", "Nominal GDP must fall"],
-            "income_distribution_change",
-            {"poorest_share_before": "20", "richest_share_before": "45", "poorest_share_after": "25", "richest_share_after": "38"},
-            "percent",
-        ),
-        11: (
-            "The policy interest rate rises from 4% to 6%; 60% of the reported "
-            "household and business spending is credit-financed. What is the most likely effect?",
-            "Credit-financed consumption and investment weaken",
-            ["Credit-financed consumption and investment weaken", "Credit-financed consumption and investment strengthen", "Credit-financed consumption and investment are unchanged", "All saving must cease"],
-            "interest_rate_demand_change",
-            {"interest_rate_before": "4", "interest_rate_after": "6", "credit_share_percent": "60"},
-            "percent",
-        ),
-        17: (
-            "After a currency depreciation, the estimated export-demand elasticity "
-            "is 0.9 and the import-demand elasticity is 0.6. Which outcome is more likely?",
-            "The trade balance is more likely to improve",
-            ["The trade balance is more likely to improve", "The trade balance is more likely to worsen", "The trade balance must be unchanged", "Domestic output must become zero"],
-            "trade_elasticity_effect",
-            {"exchange_rate_direction": "depreciation", "export_elasticity": "0.9", "import_elasticity": "0.6"},
-            "effect",
-        ),
-    }
-    prompt, answer, choices, operation, inputs, unit = tasks[number]
+    try:
+        source = APPLIED_SOURCE_BY_NUMBER[number]
+    except KeyError as error:
+        raise ValueError(f"missing applied candidate source for question {number}") from error
+    projection = project_applied_mcq(source)
     return (
-        prompt,
-        answer,
-        choices,
-        {
-            "selected_response_contract": {
-                "version": "selected-response-v1",
-                "operation": operation,
-                "inputs": inputs,
-                "unit": unit,
-                "decimal_places": 1,
-            }
-        },
+        projection.prompt,
+        projection.choices[projection.correct_choice],
+        list(projection.choices),
+        dict(projection.authoring_context),
     )
+
+
+def project_applied_mcq(source: AppliedMCQSource) -> AppliedMCQProjection:
+    """Project one typed source into candidate text, options and checked key."""
+    values = source.model_dump(mode="json", exclude={"operation"})
+    contract = selected_response_contract(source.operation, inputs=values)
+
+    if isinstance(source, OpportunityCostSource):
+        gain = source.primary_after - source.primary_before
+        loss = source.secondary_before - source.secondary_after
+        prompt = (
+            f"Production of product X rises from {_source_number(source.primary_before)} "
+            f"to {_source_number(source.primary_after)} units while production of product "
+            f"Y falls from {_source_number(source.secondary_before)} to "
+            f"{_source_number(source.secondary_after)} units. What is the opportunity "
+            f"cost of the extra {_source_number(gain)} units of product X?"
+        )
+        candidates = [loss, gain, source.secondary_after, source.primary_after]
+        choices = [f"{_source_number(value)} units of product Y" for value in candidates]
+    elif isinstance(source, ElasticRevenueSource):
+        prompt = (
+            f"A product's price changes from £{_source_number(source.price_before)} "
+            f"to £{_source_number(source.price_after)} and quantity demanded changes "
+            f"from {_source_number(source.quantity_before)} to "
+            f"{_source_number(source.quantity_after)} units. What happens to total "
+            "expenditure?"
+        )
+        choices = [
+            "Total expenditure rises",
+            "Total expenditure falls",
+            "Total expenditure is unchanged",
+            "The effect cannot be calculated",
+        ]
+    elif isinstance(source, IncomeDistributionSource):
+        prompt = (
+            "The poorest group's income share changes from "
+            f"{_source_number(source.poorest_share_before)}% to "
+            f"{_source_number(source.poorest_share_after)}%, while the richest group's "
+            f"share changes from {_source_number(source.richest_share_before)}% to "
+            f"{_source_number(source.richest_share_after)}%. What does this evidence "
+            "suggest?"
+        )
+        choices = [
+            "Income inequality falls",
+            "Income inequality rises",
+            "Income inequality is unchanged",
+            "Nominal GDP must fall",
+        ]
+    elif isinstance(source, InterestRateSource):
+        prompt = (
+            f"The policy interest rate changes from "
+            f"{_source_number(source.interest_rate_before)}% to "
+            f"{_source_number(source.interest_rate_after)}%; "
+            f"{_source_number(source.credit_share_percent)}% of the reported household "
+            "and business spending is credit-financed. What is the most likely effect?"
+        )
+        choices = [
+            "Credit-financed consumption and investment weaken",
+            "Credit-financed consumption and investment strengthen",
+            "Credit-financed consumption and investment are unchanged",
+            "All saving must cease",
+        ]
+    elif isinstance(source, TradeElasticitySource):
+        prompt = (
+            f"After a currency {source.exchange_rate_direction}, the estimated "
+            f"export-demand elasticity is {_source_number(source.export_elasticity)} "
+            "and the import-demand elasticity is "
+            f"{_source_number(source.import_elasticity)}. Which outcome is more likely?"
+        )
+        choices = [
+            "The trade balance is more likely to improve",
+            "The trade balance is more likely to worsen",
+            "The trade balance is unlikely to change from the elasticity condition alone",
+            "Domestic output must become zero",
+        ]
+    else:  # pragma: no cover - the union is closed above
+        raise TypeError("unsupported applied candidate source")
+
+    if len(set(choices)) != 4:
+        raise ValueError("applied source projection produced duplicate choices")
+    item = {
+        "id": f"applied-{source.operation}",
+        "marks": 1,
+        "kind": "multiple_choice",
+        "choices": choices,
+        "authoring_context": {"selected_response_contract": contract},
+    }
+    solution = solve_selected_response(item)
+    if solution is None or solution["answer"] not in choices:
+        raise ValueError("applied source projection could not derive one checked key")
+    return AppliedMCQProjection(
+        prompt=prompt,
+        choices=choices,
+        correct_choice=choices.index(solution["answer"]),
+        authoring_context=item["authoring_context"],
+    )
+
+
+def _source_number(value: Decimal) -> str:
+    return format(value.normalize(), "f")
 
 
 def _stimulus(

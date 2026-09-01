@@ -2492,6 +2492,7 @@ _question_table = OCRQuestionHeaderFactory(
     body_style=STYLES["body"],
     marks_style=STYLES["marks"],
     extended_response_threshold=15,
+    mark_column_width=20 * mm,
     table_class=Table,
 ).question_table
 _banner = SingleCellPanelFactory(

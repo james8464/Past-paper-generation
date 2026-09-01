@@ -231,8 +231,8 @@ def _mcq(
                     "price_after": "6",
                     "variable_cost_after": "2",
                 },
-                "unit": "ratio",
-                "decimal_places": 1,
+                "unit": "effect",
+                "decimal_places": 0,
             },
         }
     elif number == 7:
@@ -278,8 +278,8 @@ def _mcq(
                     {"label": "Factory C", "output": "800", "employees": "50"},
                     {"label": "Factory D", "output": "750", "employees": "50"},
                 ],
-                "unit": "ratio",
-                "decimal_places": 2,
+                "unit": "classification",
+                "decimal_places": 0,
             },
         }
     elif number == 12:
@@ -327,7 +327,7 @@ def _mcq(
                     {"label": "Market share", "target": "13", "actual": "15", "better_when": "higher"},
                     {"label": "ROCE", "target": "16", "actual": "12", "better_when": "higher"},
                 ],
-                "unit": "ratio",
+                "unit": "classification",
                 "decimal_places": 0,
             },
         }

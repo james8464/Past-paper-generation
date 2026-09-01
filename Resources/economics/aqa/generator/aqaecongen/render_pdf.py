@@ -1029,7 +1029,7 @@ def _mcq_block(
     question = option.questions[0]
     contents: list[Flowable] = [
         _question_table(question),
-        Spacer(1, 3 * mm),
+        Spacer(1, 4 * mm),
     ]
     if include_visual:
         contents.extend([_mcq_visual(question), Spacer(1, 3 * mm)])
@@ -1046,15 +1046,16 @@ def _mcq_choice_table(question: GeneratedQuestion) -> Table:
         ]
         for letter, choice in zip("ABCD", question.choices, strict=True)
     ]
-    table = Table(rows, colWidths=[10 * mm, 142 * mm, 9 * mm], rowHeights=[9 * mm] * 4)
+    table = Table(rows, colWidths=[10 * mm, 142 * mm, 9 * mm])
     table.setStyle(
         TableStyle(
             [
                 ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
                 ("LEFTPADDING", (0, 0), (-1, -1), 2),
                 ("RIGHTPADDING", (0, 0), (-1, -1), 2),
-                ("TOPPADDING", (0, 0), (-1, -1), 1),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 1),
+                ("RIGHTPADDING", (1, 0), (1, -1), 12 * mm),
+                ("TOPPADDING", (0, 0), (-1, -1), 5.5),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 5.5),
                 ("BOX", (2, 0), (2, -1), 0.45, BLACK),
                 ("INNERGRID", (2, 0), (2, -1), 0.45, BLACK),
                 ("ALIGN", (2, 0), (2, -1), "CENTER"),
@@ -1273,15 +1274,15 @@ def _page_chrome(canvas, doc, paper_code: str, document_type: str) -> None:
                 canvas.setStrokeColor(colors.HexColor("#777777"))
                 canvas.setLineWidth(0.45)
                 canvas.rect(frame_x, frame_y, frame_width, frame_height)
-                canvas.setFont(FONT, 5.8)
+                canvas.setFont(FONT, 5.2)
                 canvas.drawString(
-                    frame_x + frame_width + 2.5 * mm,
-                    frame_y + frame_height - 2 * mm,
+                    frame_x + frame_width + 1 * mm,
+                    frame_y + frame_height + 4 * mm,
                     "Do not write",
                 )
                 canvas.drawString(
-                    frame_x + frame_width + 2.5 * mm,
-                    frame_y + frame_height - 5 * mm,
+                    frame_x + frame_width + 1 * mm,
+                    frame_y + frame_height + 1 * mm,
                     "outside the box",
                 )
                 if doc.page % 2 == 1 and doc.page < 44:

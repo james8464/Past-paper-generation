@@ -164,6 +164,7 @@ class OCRQuestionHeaderFactory:
     body_style: ParagraphStyle
     marks_style: ParagraphStyle
     extended_response_threshold: int | None = None
+    mark_column_width: float = 12 * mm
     table_class: type[Table] = Table
 
     def question_table(
@@ -191,7 +192,7 @@ class OCRQuestionHeaderFactory:
                     ),
                 ]
             ],
-            colWidths=[155 * mm, 12 * mm],
+            colWidths=[167 * mm - self.mark_column_width, self.mark_column_width],
             style=TableStyle(
                 [
                     ("VALIGN", (0, 0), (-1, -1), "TOP"),

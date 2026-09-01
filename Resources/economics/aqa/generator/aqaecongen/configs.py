@@ -41,6 +41,13 @@ _AQA_VISUAL = {2, 4, 9, 10, 13, 14, 19, 20, 24, 25}
 _AQA_VISUAL_ANALYSIS = {9, 14, 20, 25}
 _AQA_INDEX = {5, 15, 30}
 _AQA_APPLIED = {1, 3, 7, 11, 17}
+_AQA_APPLIED_OPERATIONS = {
+    1: "transform",
+    3: "transform",
+    7: "analyse",
+    11: "analyse",
+    17: "transform",
+}
 _AQA_MCQ_OVERRIDES = {
     number: [
         _mcq_rule(
@@ -52,7 +59,7 @@ _AQA_MCQ_OVERRIDES = {
     if number in _AQA_VISUAL
     else [_mcq_rule("AO2", "transform", "stem")]
     if number in _AQA_INDEX
-    else [_mcq_rule("AO2", "analyse", "stem")]
+    else [_mcq_rule("AO2", _AQA_APPLIED_OPERATIONS[number], "stem")]
     if number in _AQA_APPLIED
     else [_mcq_rule("AO1", "retrieve", "none")]
     for number in range(1, 31)

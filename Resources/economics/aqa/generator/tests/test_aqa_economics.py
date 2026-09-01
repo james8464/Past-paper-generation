@@ -2,18 +2,21 @@ from __future__ import annotations
 
 import re
 from copy import deepcopy
+from decimal import Decimal
 from pathlib import Path
 
 import pymupdf as fitz
 import pytest
+from aqaecongen import generator as aqa_generator
 from aqaecongen import render_pdf
 from aqaecongen.cli import generate_package
 from aqaecongen.configs import PAPER3_VISUAL_QUESTION_NUMBERS, RULES
 from aqaecongen.generator import build_paper
-from aqaecongen.render_pdf import _visible_scheme_points
+from aqaecongen.render_pdf import _visible_scheme_points, render_question_paper
 from aqaecongen.syllabus import load_syllabus
 from pypdf import PdfReader
 
+from Backend.Core.assessment_package import _extract_items
 from Backend.Core.exam_blueprints import (
     GeneratedQuestion,
     MarkSchemePoint,
@@ -179,15 +182,48 @@ def test_actual_tasks_have_explicit_candidate_objective_vectors() -> None:
         for objective, marks in question.assessment_objectives.items():
             mcq_totals[objective] += marks
     assert mcq_totals == {"AO1": 12, "AO2": 14, "AO3": 4, "AO4": 0}
-    assert operations.count("transform") == 3
-    assert operations.count("analyse") == 15
+    assert operations.count("transform") == 6
+    assert operations.count("analyse") == 12
+
+    exact_operations = {
+        number: resolve_question_rules(mcq, number)[0].task_operation
+        for number in (1, 3, 7, 11, 17)
+    }
+    assert exact_operations == {
+        1: "transform",
+        3: "transform",
+        7: "analyse",
+        11: "analyse",
+        17: "transform",
+    }
+
+    generated = build_paper(RULES["paper_3"], SYLLABUS, seed=26090101)
+    exported = {
+        int(item["id"].split("@", 1)[0]): item["task_operation"]
+        for item in _extract_items(
+            generated.model_dump(mode="json"), subject="Economics", paper_number="3"
+        )
+            if int(item["id"].split("@", 1)[0]) in exact_operations
+        }
+    assert exported == exact_operations
 
 
 def test_index_mcqs_have_public_numeric_contract_and_semantically_unique_choices() -> None:
     for seed in (100, 26083134, 26090101):
         paper = build_paper(RULES["paper_3"], SYLLABUS, seed=seed)
         questions = [option.questions[0] for option in paper.sections[0].options]
-        numeric = [question for question in questions if question.task_operation == "transform"]
+        numeric = [
+            question
+            for question in questions
+            if question.authoring_context.get("selected_response_contract", {}).get(
+                "operation"
+            )
+            in {
+                "index_percentage_increase",
+                "index_percentage_decrease",
+                "index_percentage_change",
+            }
+        ]
         assert len(numeric) == 3
         assert {
             question.authoring_context["selected_response_contract"]["operation"]
@@ -208,11 +244,11 @@ def test_index_mcqs_have_public_numeric_contract_and_semantically_unique_choices
                     solve_selected_response(malformed)
                 wrong_unit = question.model_dump(mode="json")
                 wrong_unit["authoring_context"]["selected_response_contract"]["unit"] = "index"
-                with pytest.raises(ValueError, match="percent units"):
+                with pytest.raises(ValueError, match="format policy"):
                     solve_selected_response(wrong_unit)
 
 
-def test_applied_mcqs_require_and_respond_to_candidate_visible_scenario_data() -> None:
+def test_applied_mcqs_project_one_typed_source_into_prompt_key_and_solver() -> None:
     paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26090101)
     questions = {
         int(option.questions[0].number): option.questions[0]
@@ -241,16 +277,90 @@ def test_applied_mcqs_require_and_respond_to_candidate_visible_scenario_data() -
         assert question.source_dependency == "stem"
         assert all(str(source_value) in question.prompt for source_value in contract["inputs"].values())
 
-        without_source = deepcopy(raw)
-        without_source["authoring_context"].pop("selected_response_contract")
-        assert solve_selected_response(without_source) is None
-
-        changed = deepcopy(raw)
-        changed["authoring_context"]["selected_response_contract"]["inputs"][field] = value
+        source = aqa_generator.APPLIED_SOURCE_BY_NUMBER[number]
+        changed_source = source.model_copy(update={field: Decimal(value)})
+        projection = aqa_generator.project_applied_mcq(changed_source)
+        changed = {
+            **raw,
+            "prompt": projection.prompt,
+            "choices": projection.choices,
+            "correct_choice": projection.correct_choice,
+            "authoring_context": projection.authoring_context,
+        }
         changed_solution = solve_selected_response(changed)
         assert changed_solution is not None
         assert changed_solution["answer"] == expected
-        assert changed_solution["answer"] != question.choices[question.correct_choice]
+        assert projection.choices[projection.correct_choice] == expected
+        assert projection.prompt != question.prompt
+        assert str(value) in projection.prompt
+
+
+def test_applied_source_mutation_reaches_rendered_candidate_text_and_key(
+    monkeypatch, tmp_path: Path
+) -> None:
+    source = aqa_generator.APPLIED_SOURCE_BY_NUMBER[1]
+    changed = source.model_copy(update={"secondary_after": Decimal("60")})
+    monkeypatch.setitem(aqa_generator.APPLIED_SOURCE_BY_NUMBER, 1, changed)
+
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26090101)
+    question = paper.sections[0].options[0].questions[0]
+    assert "falls from 80 to 60 units" in question.prompt
+    assert question.choices[question.correct_choice] == "20 units of product Y"
+    assert solve_selected_response(question.model_dump(mode="json"))["answer"] == (
+        "20 units of product Y"
+    )
+
+    output = tmp_path / "mutated-applied-source.pdf"
+    render_question_paper(paper, output)
+    with fitz.open(output) as document:
+        text = " ".join(page.get_text() for page in document)
+    assert "falls from 80 to 60 units" in text
+    assert "falls from 80 to 68 units" not in text
+
+
+def test_missing_typed_applied_source_prevents_candidate_artifact(monkeypatch) -> None:
+    monkeypatch.delitem(aqa_generator.APPLIED_SOURCE_BY_NUMBER, 1)
+    with pytest.raises(ValueError, match="missing applied candidate source"):
+        build_paper(RULES["paper_3"], SYLLABUS, seed=26090101)
+
+
+def test_paper_three_mcq_tariffs_and_long_choices_have_clear_geometry(
+    tmp_path: Path,
+) -> None:
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26090108)
+    output = tmp_path / "paper-three-layout.pdf"
+    render_question_paper(paper, output)
+
+    with fitz.open(output) as document:
+        page_six = document[5]
+        blocks = page_six.get_text("blocks")
+        note = next(block for block in blocks if "Do not write" in block[4])
+        first_tariff = next(block for block in blocks if "[1 mark]" in block[4])
+        first_choice = next(block for block in blocks if block[4].startswith("A\n83.2"))
+        frame_top = min(
+            drawing["rect"].y0
+            for drawing in page_six.get_drawings()
+            if drawing["rect"].width > 480 and drawing["rect"].height > 600
+        )
+        assert note[3] <= frame_top - 2
+        assert page_six.rect.width - note[2] >= 8 * 72 / 25.4
+        assert first_choice[1] - first_tariff[3] >= 18
+
+        words = page_six.get_text("words")
+        another = next(word for word in words if word[4] == "another")
+        answer_boundary = min(
+            drawing["rect"].x0
+            for drawing in page_six.get_drawings()
+            if drawing["rect"].x0 > 480 and drawing["rect"].height > 80
+        )
+        assert answer_boundary - another[2] >= 12 * 72 / 25.4
+
+        page_thirty = document[24]
+        blocks = page_thirty.get_text("blocks")
+        prompt = next(block for block in blocks if "percentage\nchange" in block[4])
+        tariff = next(block for block in blocks if "[1 mark]" in block[4])
+        choice = next(block for block in blocks if block[4].startswith("A\n5.0%"))
+        assert choice[1] - max(prompt[3], tariff[3]) >= 18
 
 
 def _semantic_mcq_signature(question: GeneratedQuestion) -> tuple[object, ...]:

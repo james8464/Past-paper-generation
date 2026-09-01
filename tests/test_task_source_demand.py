@@ -74,6 +74,105 @@ def _profile() -> ReferenceDemandProfile:
     )
 
 
+SELECTED_OPERATION_EXAMPLES = {
+    "index_percentage_increase": {
+        "inputs": {"base": "100", "rate_percent": "8"},
+        "choices": ["108.0", "92.0", "113.0", "8.0"],
+        "unit": "index", "decimal_places": 1,
+    },
+    "index_percentage_decrease": {
+        "inputs": {"base": "100", "rate_percent": "8"},
+        "choices": ["92.0", "108.0", "87.0", "8.0"],
+        "unit": "index", "decimal_places": 1,
+    },
+    "index_percentage_change": {
+        "inputs": {"initial": "100", "final": "120"},
+        "choices": ["20.0%", "16.7%", "120.0%", "-20.0%"],
+        "unit": "percent", "decimal_places": 1,
+    },
+    "economic_shift": {
+        "inputs": {"curve": "D", "direction": "right", "scope": "market", "x_axis": "Quantity", "y_axis": "Price"},
+        "choices": ["Equilibrium price rises and equilibrium quantity rises", "Equilibrium price rises and equilibrium quantity falls", "Equilibrium price falls and equilibrium quantity rises", "Equilibrium price falls and equilibrium quantity falls"],
+        "unit": "effect", "decimal_places": 0,
+    },
+    "opportunity_cost_change": {
+        "inputs": {"primary_before": "20", "secondary_before": "80", "primary_after": "30", "secondary_after": "68"},
+        "choices": ["12 units of product Y", "20 units of product Y", "10 units of product Y", "68 units of product Y"],
+        "unit": "quantity", "decimal_places": 0,
+    },
+    "elastic_revenue_change": {
+        "inputs": {"price_before": "10", "quantity_before": "100", "price_after": "12", "quantity_after": "88"},
+        "choices": ["Total expenditure rises", "Total expenditure falls", "Total expenditure is unchanged", "The effect cannot be calculated"],
+        "unit": "effect", "decimal_places": 0,
+    },
+    "income_distribution_change": {
+        "inputs": {"poorest_share_before": "20", "richest_share_before": "45", "poorest_share_after": "25", "richest_share_after": "38"},
+        "choices": ["Income inequality falls", "Income inequality rises", "Income inequality is unchanged", "Nominal GDP must fall"],
+        "unit": "effect", "decimal_places": 0,
+    },
+    "interest_rate_demand_change": {
+        "inputs": {"interest_rate_before": "4", "interest_rate_after": "6", "credit_share_percent": "60"},
+        "choices": ["Credit-financed consumption and investment weaken", "Credit-financed consumption and investment strengthen", "Credit-financed consumption and investment are unchanged", "All saving must cease"],
+        "unit": "effect", "decimal_places": 0,
+    },
+    "trade_elasticity_effect": {
+        "inputs": {"exchange_rate_direction": "depreciation", "export_elasticity": "0.9", "import_elasticity": "0.6"},
+        "choices": ["The trade balance is more likely to improve", "The trade balance is more likely to worsen", "The trade balance is unlikely to change from the elasticity condition alone", "Domestic output must become zero"],
+        "unit": "effect", "decimal_places": 0,
+    },
+    "gross_profit": {
+        "inputs": {"revenue": "20", "cost_of_sales": "6"},
+        "choices": ["£14m", "£20m", "£6m", "£10m"],
+        "unit": "GBPm", "decimal_places": 0,
+    },
+    "after_tax_profit": {
+        "inputs": {"revenue": "20", "cost_of_sales": "6", "operating_expenses": "4", "taxation": "7"},
+        "choices": ["£3m", "£7m", "£10m", "£14m"],
+        "unit": "GBPm", "decimal_places": 0,
+    },
+    "highest_productivity": {
+        "inputs": {},
+        "rows": [{"label": "Factory A", "output": "900", "employees": "60"}, {"label": "Factory B", "output": "840", "employees": "40"}],
+        "choices": ["Factory B", "Factory A", "Factory C", "Factory D"],
+        "unit": "classification", "decimal_places": 0,
+    },
+    "performance_statements": {
+        "inputs": {},
+        "rows": [{"label": "Capacity utilisation", "target": "90", "actual": "88", "better_when": "higher"}, {"label": "Labour turnover", "target": "12", "actual": "17", "better_when": "lower"}],
+        "choices": ["Statement 1 is true, Statement 2 is false", "Statement 1 is false, Statement 2 is true", "Both statements are true", "Both statements are false"],
+        "unit": "classification", "decimal_places": 0,
+    },
+    "break_even_change": {
+        "inputs": {"fixed_cost_before": "60", "price_before": "5", "variable_cost_before": "3", "fixed_cost_after": "60", "price_after": "6", "variable_cost_after": "2"},
+        "choices": ["A rise in selling price and a fall in variable cost per unit", "A fall in selling price and a rise in variable cost per unit", "A rise in fixed costs and a fall in output", "A fall in capacity and a rise in fixed costs"],
+        "unit": "effect", "decimal_places": 0,
+    },
+    "strategic_drift": {
+        "inputs": {"external_change": "high", "strategic_change": "low"},
+        "choices": ["Strategic drift", "Strategic fit", "Market penetration", "Retrenchment"],
+        "unit": "classification", "decimal_places": 0,
+    },
+}
+
+
+def _selected_operation_item(operation: str) -> dict[str, object]:
+    example = deepcopy(SELECTED_OPERATION_EXAMPLES[operation])
+    choices = example.pop("choices")
+    return {
+        "id": operation,
+        "marks": 1,
+        "kind": "multiple_choice",
+        "choices": choices,
+        "authoring_context": {
+            "selected_response_contract": {
+                "version": "selected-response-v1",
+                "operation": operation,
+                **example,
+            }
+        },
+    }
+
+
 def test_per_option_rule_resolver_hydrates_task_source_and_objectives() -> None:
     default = QuestionRule(
         id="mcq",
@@ -272,6 +371,129 @@ def test_selected_response_index_is_derived_from_public_inputs_not_key() -> None
     mutated = deepcopy(item)
     mutated["correct_choice"] = 0
     assert solve_selected_response(mutated)["answer"] == "108.0"
+
+
+@pytest.mark.parametrize("operation", sorted(SELECTED_OPERATION_EXAMPLES))
+def test_every_selected_response_operation_enforces_its_unit_and_precision_policy(
+    operation: str,
+) -> None:
+    item = _selected_operation_item(operation)
+    assert solve_selected_response(item) is not None
+
+    contract = item["authoring_context"]["selected_response_contract"]
+    wrong_unit = deepcopy(item)
+    wrong_unit_contract = wrong_unit["authoring_context"]["selected_response_contract"]
+    wrong_unit_contract["unit"] = (
+        "effect" if contract["unit"] != "effect" else "classification"
+    )
+    with pytest.raises(ValueError, match="format policy"):
+        solve_selected_response(wrong_unit)
+
+    wrong_precision = deepcopy(item)
+    wrong_precision_contract = wrong_precision["authoring_context"][
+        "selected_response_contract"
+    ]
+    wrong_precision_contract["decimal_places"] = (
+        1 if contract["decimal_places"] == 0 else 0
+    )
+    with pytest.raises(ValueError, match="format policy"):
+        solve_selected_response(wrong_precision)
+
+
+@pytest.mark.parametrize(
+    ("operation", "bad_choice"),
+    [
+        ("index_percentage_increase", "108"),
+        ("index_percentage_decrease", "92"),
+        ("index_percentage_change", "20%"),
+        ("opportunity_cost_change", "12.0 units of product Y"),
+        ("gross_profit", "£14.0m"),
+        ("after_tax_profit", "£3.0m"),
+    ],
+)
+def test_numeric_selected_responses_require_exact_displayed_precision(
+    operation: str, bad_choice: str
+) -> None:
+    item = _selected_operation_item(operation)
+    expected = solve_selected_response(item)["answer"]
+    item["choices"][item["choices"].index(expected)] = bad_choice
+
+    with pytest.raises(ValueError, match=r"precision|units|semantic option"):
+        solve_selected_response(item)
+
+
+@pytest.mark.parametrize(
+    ("operation", "field", "value"),
+    [
+        ("index_percentage_increase", "rate_percent", "-8"),
+        ("index_percentage_increase", "rate_percent", "0"),
+        ("index_percentage_decrease", "rate_percent", "0"),
+        ("index_percentage_decrease", "rate_percent", "100"),
+        ("index_percentage_change", "final", "-50"),
+    ],
+)
+def test_index_operations_reject_wrong_direction_or_invalid_endpoints(
+    operation: str, field: str, value: str
+) -> None:
+    item = _selected_operation_item(operation)
+    item["authoring_context"]["selected_response_contract"]["inputs"][field] = value
+    with pytest.raises(ValueError, match="index selected response"):
+        solve_selected_response(item)
+
+
+@pytest.mark.parametrize(
+    ("operation", "updates"),
+    [
+        ("gross_profit", {"revenue": "5", "cost_of_sales": "10"}),
+        (
+            "after_tax_profit",
+            {
+                "revenue": "5",
+                "cost_of_sales": "4",
+                "operating_expenses": "3",
+                "taxation": "2",
+            },
+        ),
+    ],
+)
+def test_profit_operations_reject_negative_numeric_outputs(
+    operation: str, updates: dict[str, str]
+) -> None:
+    item = _selected_operation_item(operation)
+    item["authoring_context"]["selected_response_contract"]["inputs"].update(updates)
+    with pytest.raises(ValueError, match="profit source"):
+        solve_selected_response(item)
+
+
+def test_interest_rate_operation_rejects_negative_public_rates() -> None:
+    item = _selected_operation_item("interest_rate_demand_change")
+    item["authoring_context"]["selected_response_contract"]["inputs"][
+        "interest_rate_before"
+    ] = "-1"
+    with pytest.raises(ValueError, match="invalid public credit share"):
+        solve_selected_response(item)
+
+
+@pytest.mark.parametrize(
+    ("operation", "field"),
+    [("highest_productivity", "output"), ("performance_statements", "actual")],
+)
+def test_row_operations_reject_negative_public_measurements(
+    operation: str, field: str
+) -> None:
+    item = _selected_operation_item(operation)
+    item["authoring_context"]["selected_response_contract"]["rows"][0][field] = "-1"
+    with pytest.raises(ValueError, match="invalid public rows"):
+        solve_selected_response(item)
+
+
+def test_break_even_operation_rejects_negative_public_costs() -> None:
+    item = _selected_operation_item("break_even_change")
+    item["authoring_context"]["selected_response_contract"]["inputs"][
+        "fixed_cost_before"
+    ] = "-60"
+    with pytest.raises(ValueError, match="invalid public values"):
+        solve_selected_response(item)
 
 
 def test_selected_response_rejects_semantically_duplicate_numeric_options() -> None:
@@ -494,7 +716,7 @@ def test_selected_response_rejects_duplicate_normalized_row_labels(
                 "operation": operation,
                 "inputs": {},
                 "rows": rows,
-                "unit": "ratio",
+                "unit": "classification",
                 "decimal_places": 0,
             }
         },
@@ -544,6 +766,14 @@ def test_new_economic_selected_responses_reject_invalid_public_domains(
     inputs: dict[str, str],
     choices: list[str],
 ) -> None:
+    units = {
+        "opportunity_cost_change": ("quantity", 0),
+        "elastic_revenue_change": ("effect", 0),
+        "income_distribution_change": ("effect", 0),
+        "interest_rate_demand_change": ("effect", 0),
+        "trade_elasticity_effect": ("effect", 0),
+    }
+    unit, decimal_places = units[operation]
     item = {
         "id": operation,
         "marks": 1,
@@ -554,8 +784,8 @@ def test_new_economic_selected_responses_reject_invalid_public_domains(
                 "version": "selected-response-v1",
                 "operation": operation,
                 "inputs": inputs,
-                "unit": "effect",
-                "decimal_places": 1,
+                "unit": unit,
+                "decimal_places": decimal_places,
             }
         },
     }
@@ -600,8 +830,8 @@ def test_row_selected_responses_reject_fields_from_other_operations(
                 "operation": operation,
                 "inputs": {},
                 "rows": rows,
-                "unit": "ratio",
-                "decimal_places": 1,
+                "unit": "classification",
+                "decimal_places": 0,
             }
         },
     }
