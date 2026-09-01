@@ -13,7 +13,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-SQL_VALIDATION_VERSION = "aqa-candidate-sql-v3"
+SQL_VALIDATION_VERSION = "aqa-candidate-sql-v4"
 SQL_VERIFIED_SCOPE = "bounded-declarative-sql"
 _MAX_SQL_LENGTH = 2_000
 _MAX_SQL_TOKENS = 256
@@ -455,30 +455,44 @@ def _validate_one(
 
 
 def _purported_statement(text: str) -> str | None:
-    candidate = text.strip()
+    original = text.strip()
+    candidate = original
+    declared_sql = False
     label = re.match(
         r"^(?:SQL|QUERY|ANSWER)\s*:\s*(.*)$",
         candidate,
         re.IGNORECASE | re.DOTALL,
     )
     if label:
+        declared_sql = True
         candidate = label.group(1).strip()
         if re.match(r"^(?:SQL|QUERY|ANSWER)\s*:", candidate, re.IGNORECASE):
-            return text.strip() if _has_sql_statement_shape(candidate) else None
+            return original
     if "```" in candidate:
+        explicit_sql_fence = bool(
+            re.match(r"^```sql(?=[ \t\r\n])", candidate, re.IGNORECASE)
+        )
+        fence_pattern = (
+            r"```sql[ \t]*(?:\r?\n)?(.*?)(?:\r?\n)?```"
+            if explicit_sql_fence
+            else r"```[ \t]*(?:\r?\n)?(.*?)(?:\r?\n)?```"
+        )
         fence = re.fullmatch(
-            r"```(?:sql)?[ \t]*(?:\r?\n)?(.*?)(?:\r?\n)?```",
+            fence_pattern,
             candidate,
             re.IGNORECASE | re.DOTALL,
         )
         if fence is None:
-            return text.strip() if _has_sql_statement_shape(candidate) else None
+            if declared_sql or explicit_sql_fence or _has_sql_statement_shape(candidate):
+                return original
+            return None
+        declared_sql = declared_sql or explicit_sql_fence
         candidate = fence.group(1).strip()
         if "```" in candidate or re.match(
             r"^(?:SQL|QUERY|ANSWER)\s*:", candidate, re.IGNORECASE
         ):
-            return text.strip() if _has_sql_statement_shape(candidate) else None
-    if _has_sql_statement_shape(candidate):
+            return original if declared_sql or _has_sql_statement_shape(candidate) else None
+    if declared_sql or _has_sql_statement_shape(candidate):
         return candidate
     return None
 

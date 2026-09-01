@@ -383,6 +383,30 @@ def test_label_plus_one_fence_never_hides_wrong_or_multiple_sql(bad_point):
 
 
 @pytest.mark.parametrize(
+    "bad_point",
+    [
+        "SQL: SELECT Activity",
+        "```sql\nSELECT Activity\n```",
+        "Answer:\n```sql\nSELECT Activity\n```",
+        "Query: INSERT INTO MEMBER",
+        "```sql\nWITH x AS (VALUES (1))\n```",
+    ],
+)
+def test_explicit_sql_wrapper_never_hides_an_incomplete_statement(bad_point):
+    contract, intent = _contract_and_intent("2")
+    valid = (
+        "SELECT S.Activity, COUNT(*) FROM SESSION S JOIN BOOKING B "
+        "ON S.SessionID=B.SessionID GROUP BY S.Activity "
+        "HAVING COUNT(*)>=5 ORDER BY COUNT(*) DESC"
+    )
+
+    result = validate_sql_response(valid, [bad_point], contract, intent)
+
+    assert not result.passed
+    assert {finding.location for finding in result.findings} == {"mark_points[1]"}
+
+
+@pytest.mark.parametrize(
     "prose",
     [
         "Select the Activity and number of bookings.",
