@@ -181,12 +181,15 @@ def _relation_is_qualified(text: str, match: re.Match[str] | None) -> bool:
     """Detect a restricting qualifier attached immediately to one proposition."""
     if match is None:
         return False
-    return bool(
-        re.match(
-            r" (?:but |and |though |although )?(?:not always|only sometimes)\b",
-            text[match.end() :],
-        )
+    leading = re.search(
+        r"(?:^| )(?:not always|only sometimes)(?: the)? $",
+        text[: match.start()],
     )
+    trailing = re.match(
+        r" (?:but |and |though |although )?(?:not always|only sometimes)\b",
+        text[match.end() :],
+    )
+    return bool(leading or trailing)
 
 
 def _unqualified_matches(clause: str, patterns: tuple[str, ...]) -> tuple[re.Match[str], ...]:
@@ -198,7 +201,7 @@ def _unqualified_matches(clause: str, patterns: tuple[str, ...]) -> tuple[re.Mat
     )
 
 
-def _storage_clause_supports(clause: str) -> bool:
+def _storage_assertion_patterns() -> tuple[str, ...]:
     passive = (
         rf"\b{_CPU_INSTRUCTION}\b (?:(?:is|are|must be|gets?) )?{_CPU_STORAGE} "
         rf"(?:in|into|within|on) (?:the )?(?:computer s )?{_CPU_MAIN_MEMORY}\b"
@@ -212,42 +215,56 @@ def _storage_clause_supports(clause: str) -> bool:
         rf"(?:the )?{_CPU_INSTRUCTION}\b (?:in|into|within) "
         rf"(?:the )?(?:computer s )?{_CPU_MAIN_MEMORY}\b"
     )
-    return bool(_unqualified_matches(clause, (passive, memory_active, processor_active)))
+    return passive, memory_active, processor_active
+
+
+def _storage_clause_supports(clause: str) -> bool:
+    return bool(_unqualified_matches(clause, _storage_assertion_patterns()))
 
 
 def _storage_clause_contradicts(clause: str) -> bool:
-    return bool(
-        re.search(
+    explicit_negation = re.search(
             rf"\b{_CPU_INSTRUCTION}\b (?:(?:is|are) )?"
             rf"(?:not|never) (?:necessarily |always )?(?:be )?{_CPU_STORAGE} "
             rf"(?:in|into|within|on) (?:the )?(?:computer s )?{_CPU_MAIN_MEMORY}\b|"
-            rf"\bno {_CPU_INSTRUCTION}\b (?:\w+ ){{0,3}}\b{_CPU_MAIN_MEMORY}\b",
+            rf"\bno {_CPU_INSTRUCTION}\b (?:\w+ ){{0,3}}\b{_CPU_MAIN_MEMORY}\b|"
+            rf"\b{_CPU_MAIN_MEMORY}\b (?:does|do) (?:not|never) "
+            rf"(?:necessarily |always )?(?:store|hold|keep|contain) "
+            rf"(?:the )?{_CPU_INSTRUCTION}\b",
             clause,
         )
+    qualified_assertion = any(
+        _relation_is_qualified(clause, match)
+        for pattern in _storage_assertion_patterns()
+        for match in re.finditer(pattern, clause)
     )
+    return bool(explicit_negation or qualified_assertion)
 
 
-def _clause_subject(clause: str) -> str | None:
-    if re.match(rf"^(?:the )?(?:one |each |an? )?{_CPU_INSTRUCTION}\b", clause):
-        return "instructions"
-    if re.match(r"^(?:the )?data\b", clause):
-        return "data"
-    return None
+def _has_unambiguous_instruction_antecedent(clause: str) -> bool:
+    """Allow an adjacent pronoun only after an instruction-only referent."""
+    return bool(re.search(rf"\b{_CPU_INSTRUCTION}\b", clause)) and not bool(
+        re.search(r"\bdata\b", clause)
+    )
 
 
 def _serial_clause_evidence(
     clause: str, *, instruction_antecedent: bool
 ) -> tuple[bool, bool]:
-    object_target = rf"(?:{_CPU_INSTRUCTION}|them|these)"
-    subject_target = rf"(?:{_CPU_INSTRUCTION}"
+    explicit_target = rf"(?:(?:these|those) )?{_CPU_INSTRUCTION}"
+    object_target = rf"(?:{explicit_target}"
+    subject_target = rf"(?:{explicit_target}"
     if instruction_antecedent:
+        object_target += r"|them|these"
         subject_target += r"|they|these"
+    object_target += r")"
     subject_target += r")"
     asserted_patterns = (
         rf"\b(?:the )?(?:cpu|processor) (?:must )?"
         rf"(?:(?:fetches|retrieves) and )?{_CPU_EXECUTION} "
         rf"(?:each |the |an? )?{object_target}\b {_CPU_ORDER}\b",
-        rf"\b{subject_target}\b (?:(?:is|are|must be|gets?) )?{_CPU_EXECUTION} "
+        rf"\b{subject_target}\b (?:(?:is|are|must be|gets?) )?"
+        rf"(?:(?:fetched|retrieved) and )?{_CPU_EXECUTION} "
         rf"{_CPU_ORDER}\b",
         rf"\b{_CPU_ORDER}\b (?:the )?(?:cpu|processor) (?:must )?"
         rf"(?:(?:fetches|retrieves) and )?{_CPU_EXECUTION} "
@@ -266,7 +283,12 @@ def _serial_clause_evidence(
         r"(?:next|following|another) (?:instruction |one )?(?:is )?"
         r"(?:fetched|started|begun|executed)\b",
     )
-    matches = _unqualified_matches(clause, asserted_patterns)
+    raw_matches = tuple(
+        match for pattern in asserted_patterns for match in re.finditer(pattern, clause)
+    )
+    matches = tuple(
+        match for match in raw_matches if not _relation_is_qualified(clause, match)
+    )
     attached_contradiction = any(
         re.match(
             rf" (?:but |and |yet )?{_CPU_INCOMPATIBLE_ORDER}\b",
@@ -280,8 +302,20 @@ def _serial_clause_evidence(
         rf"\b{subject_target}\b (?:(?:is|are|must be|gets?) )?{_CPU_EXECUTION} "
         rf"{_CPU_INCOMPATIBLE_ORDER}\b",
     )
-    contradiction = attached_contradiction or any(
-        re.search(pattern, clause) for pattern in incompatible_patterns
+    direct_negation_patterns = (
+        rf"\b(?:the )?(?:cpu|processor) (?:(?:does|do) )?"
+        rf"(?:not|never) (?:necessarily |always )?{_CPU_EXECUTION} "
+        rf"(?:each |the |an? )?{object_target}\b {_CPU_ORDER}\b",
+        rf"\b{subject_target}\b (?:(?:is|are) )?(?:not|never) "
+        rf"(?:necessarily |always )?(?:be )?{_CPU_EXECUTION} {_CPU_ORDER}\b",
+        rf"\b{subject_target}\b (?:(?:is|are) )?{_CPU_EXECUTION} "
+        rf"(?:but )?(?:not|never) {_CPU_ORDER}\b",
+    )
+    contradiction = (
+        attached_contradiction
+        or any(_relation_is_qualified(clause, match) for match in raw_matches)
+        or any(re.search(pattern, clause) for pattern in incompatible_patterns)
+        or any(re.search(pattern, clause) for pattern in direct_negation_patterns)
     )
     return bool(matches and not contradiction), contradiction
 
@@ -298,14 +332,16 @@ def _cpu_quote_supports_criterion(criterion_id: str, answer_quote: str) -> bool:
     if criterion_id == "serial-processor-execution":
         supports = False
         contradicts = False
-        previous_subject = None
+        previous_instruction_antecedent = False
         for clause in clauses:
             clause_supports, clause_contradicts = _serial_clause_evidence(
-                clause, instruction_antecedent=previous_subject == "instructions"
+                clause, instruction_antecedent=previous_instruction_antecedent
             )
             supports = supports or clause_supports
             contradicts = contradicts or clause_contradicts
-            previous_subject = _clause_subject(clause)
+            previous_instruction_antecedent = _has_unambiguous_instruction_antecedent(
+                clause
+            )
         return supports and not contradicts
     raise ValueError(f"unknown CPU credit criterion: {criterion_id}")
 

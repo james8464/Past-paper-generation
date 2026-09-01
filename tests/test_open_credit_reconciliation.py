@@ -250,7 +250,7 @@ def adjudication_response(part):
             {
                 "criterion_id": "serial-processor-execution",
                 "decision": "supported",
-                "answer_quote": "The CPU fetches and executes them in sequence.",
+                "answer_quote": ANSWER,
                 "scheme_quote": "The processor fetches and executes the instructions serially / in sequence (1 mark);",
                 "point_index": 1,
                 "marks": 1,
@@ -406,6 +406,10 @@ def test_round2_live_semantic_result_rejects_fetch_and_execute_as_needed():
             False,
         ),
         (
+            "Main memory stores program instructions. Main memory does not store program instructions.",
+            False,
+        ),
+        (
             "The program instructions are stored in secondary storage; main memory holds only data.",
             False,
         ),
@@ -439,7 +443,10 @@ def test_cpu_storage_quote_requires_instructions_stored_in_main_memory(
         ("The processor executes each instruction serially.", True),
         ("Machine instructions are processed sequentially.", True),
         ("The CPU carries out instructions in sequence.", True),
-        ("The processor runs them one at a time.", True),
+        (
+            "Machine instructions are ready; the processor runs them one at a time.",
+            True,
+        ),
         ("The CPU executes instructions one after another.", True),
         ("The processor processes machine code instruction by instruction.", True),
         ("The processor executes machine‑code instructions one—by—one.", True),
@@ -454,6 +461,8 @@ def test_cpu_storage_quote_requires_instructions_stored_in_main_memory(
         ("The processor performs each instruction sequentially.", True),
         ("Instructions must be executed sequentially.", True),
         ("The CPU executes one instruction at a time.", True),
+        ("Instructions are fetched and executed sequentially.", True),
+        ("The CPU executes these instructions sequentially.", True),
         (
             "Instructions are executed sequentially; data are processed in parallel.",
             True,
@@ -470,6 +479,11 @@ def test_cpu_storage_quote_requires_instructions_stored_in_main_memory(
         ("The processor executes instructions sequentially only sometimes.", False),
         ("Instructions may be executed sequentially.", False),
         ("Instructions are executed sequentially. But not always.", False),
+        (
+            "Instructions are executed sequentially. Instructions are not executed sequentially.",
+            False,
+        ),
+        ("Only sometimes the CPU executes instructions sequentially.", False),
         ("The CPU could execute instructions sequentially.", False),
         ("Instructions might be executed sequentially.", False),
         ("Instructions are stored sequentially in RAM.", False),
@@ -488,6 +502,11 @@ def test_cpu_storage_quote_requires_instructions_stored_in_main_memory(
             "Program instructions are stored in RAM. Data arrive from memory; these are processed sequentially.",
             False,
         ),
+        (
+            "Program instructions are stored in RAM. Data arrive from memory; the CPU processes them sequentially.",
+            False,
+        ),
+        ("The CPU processes these sequentially.", False),
     ],
 )
 def test_cpu_serial_quote_requires_explicit_ordered_execution(answer_quote, expected):
