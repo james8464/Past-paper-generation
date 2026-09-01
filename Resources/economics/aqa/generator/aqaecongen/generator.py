@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import random
 import secrets
+from decimal import ROUND_HALF_UP, Decimal
 
 from aqaecongen.configs import PAPER3_VISUAL_QUESTION_NUMBERS
 from aqaecongen.syllabus import Syllabus, Topic
@@ -12,6 +13,7 @@ from Backend.Core.exam_blueprints import (
     GeneratedSection,
     PaperRule,
     QuestionRule,
+    resolve_question_rules,
     validate_generated_paper,
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
@@ -148,14 +150,15 @@ def build_paper(rule: PaperRule, syllabus: Syllabus, seed: int | None = None) ->
             question_number = 31
         options: list[GeneratedOption] = []
         for option_index in range(section_rule.option_count):
+            question_rules = resolve_question_rules(section_rule, option_index + 1)
             topic = shuffled_topics[topic_cursor % len(shuffled_topics)]
             topic_cursor += 1
             if section_rule.id == "A" and rule.id == "paper_3":
-                option = _build_mcq_option(option_index + 1, topic, rng)
+                option = _build_mcq_option(option_index + 1, topic, rng, question_rules[0])
             else:
                 option, question_number = _build_written_option(
                     rule,
-                    section_rule.questions,
+                    question_rules,
                     section_rule.id,
                     option_index + 1,
                     question_number,
@@ -378,6 +381,11 @@ def _written_question(
             percentage_change_context(values[0], values[-1])
             if rule.kind == "calculation" else {}
         ),
+        assessment_objectives=dict(rule.assessment_objectives),
+        intended_demand=rule.intended_demand or "standard",
+        expected_minutes=rule.expected_minutes,
+        task_operation=rule.task_operation,
+        source_dependency=rule.source_dependency,
     )
 
 
@@ -454,7 +462,12 @@ def policy_name(topic: Topic, rng: random.Random) -> str:
     )
 
 
-def _build_mcq_option(number: int, topic: Topic, rng: random.Random) -> GeneratedOption:
+def _build_mcq_option(
+    number: int,
+    topic: Topic,
+    rng: random.Random,
+    rule: QuestionRule,
+) -> GeneratedOption:
     authoring_context: dict[str, object] = {}
     source_references: list[str] = []
     if number in PAPER3_VISUAL_QUESTION_NUMBERS:
@@ -467,19 +480,53 @@ def _build_mcq_option(number: int, topic: Topic, rng: random.Random) -> Generate
     elif number % 5 == 0:
         base = rng.randint(55, 180)
         change = rng.choice([5, 8, 10, 12, 15, 20])
-        correct = round(base * (1 + change / 100), 1)
+        quantum = Decimal("0.1")
+        base_value = Decimal(base)
+        change_rate = Decimal(change) / Decimal(100)
+        correct = (base_value * (Decimal(1) + change_rate)).quantize(
+            quantum, rounding=ROUND_HALF_UP
+        )
         values = [
-            round(base * (1 - change / 100), 1),
-            round(base + change, 1),
+            (base_value * (Decimal(1) - change_rate)).quantize(
+                quantum, rounding=ROUND_HALF_UP
+            ),
             correct,
-            round(base * (1 + (change + 5) / 100), 1),
         ]
+        for raw_candidate in (
+            Decimal(base + change),
+            base_value * (Decimal(1) + Decimal(change + 5) / Decimal(100)),
+            base_value / (Decimal(1) + change_rate),
+        ):
+            candidate = raw_candidate.quantize(quantum, rounding=ROUND_HALF_UP)
+            if candidate not in values:
+                values.append(candidate)
+            if len(values) == 4:
+                break
+        while len(values) < 4:
+            candidate = (
+                base_value
+                * (
+                    Decimal(1)
+                    + Decimal(change + len(values) * 3) / Decimal(100)
+                )
+            ).quantize(quantum, rounding=ROUND_HALF_UP)
+            if candidate not in values:
+                values.append(candidate)
         raw_choices = [f"{value:.1f}" for value in values]
         prompt = (
             f"In economy {rng.choice(ECONOMIES)}, an index linked to {rng.choice(topic.points)} "
             f"is {base}. It rises by {change}%. What is the new index value?"
         )
         correct_text = f"{correct:.1f}"
+        authoring_context = {
+            "selected_response_contract": {
+                "version": "selected-response-v1",
+                "operation": "index_percentage_increase",
+                "inputs": {"base": str(base), "rate_percent": str(change)},
+                "unit": "index",
+                "decimal_places": 1,
+            }
+        }
     else:
         stem, correct_text, distractors = MCQ_FACTS[topic.id]
         context = MCQ_CONTEXTS[topic.id]
@@ -501,6 +548,11 @@ def _build_mcq_option(number: int, topic: Topic, rng: random.Random) -> Generate
         mark_scheme=[f"Option {'ABCD'[correct_choice]}: {correct_text}."],
         source_references=source_references,
         authoring_context=authoring_context,
+        assessment_objectives=dict(rule.assessment_objectives),
+        intended_demand=rule.intended_demand or "low",
+        expected_minutes=rule.expected_minutes,
+        task_operation=rule.task_operation,
+        source_dependency=rule.source_dependency,
     )
     return GeneratedOption(id=f"A{number}", title=f"Question {number}", questions=[question])
 
@@ -558,12 +610,19 @@ def _visual_mcq(
         list(choices),
         {
             "visual_kind": "economic_shift_diagram",
-            "curve": curve,
-            "direction": direction,
-            "x_axis": x_axis,
-            "y_axis": y_axis,
-            "correct_effect": correct_text,
-            "required_prompt_terms": [f"Figure {number}", curve, direction],
+            "selected_response_contract": {
+                "version": "selected-response-v1",
+                "operation": "economic_shift",
+                "inputs": {
+                    "curve": curve,
+                    "direction": direction,
+                    "scope": "aggregate" if is_aggregate else "market",
+                    "x_axis": x_axis,
+                    "y_axis": y_axis,
+                },
+                "unit": "effect",
+                "decimal_places": 0,
+            },
         },
     )
 

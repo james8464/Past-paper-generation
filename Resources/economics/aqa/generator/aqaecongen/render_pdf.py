@@ -49,6 +49,7 @@ from Backend.Core.fonts import register_fonts
 from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.reportlab_theme import AQACompactAnswerLines as AnswerLines
 from Backend.Core.reportlab_theme import themed_table_class
+from Backend.Core.subjects.selected_response import SelectedResponseContract
 
 BLACK = colors.HexColor("#171717")
 GREY = colors.HexColor("#ececec")
@@ -1065,16 +1066,21 @@ def _mcq_choice_table(question: GeneratedQuestion) -> Table:
 
 def _mcq_visual(question: GeneratedQuestion) -> Flowable:
     if question.authoring_context.get("visual_kind") == "economic_shift_diagram":
+        contract = SelectedResponseContract.model_validate(
+            question.authoring_context.get("selected_response_contract")
+        )
         return _economic_diagram(
             question.topic_id,
             question.number,
-            question.authoring_context,
+            dict(contract.inputs),
         )
     if int(question.number) % 5:
         return _economic_diagram(question.topic_id, question.number)
-    values = [float(value) for value in re.findall(r"\d+(?:\.\d+)?", question.prompt)]
-    base = values[-2] if len(values) >= 2 else 100.0
-    change = values[-1] if values else 10.0
+    contract = SelectedResponseContract.model_validate(
+        question.authoring_context.get("selected_response_contract")
+    )
+    base = float(contract.inputs["base"])
+    change = float(contract.inputs["rate_percent"])
     table = Table(
         [
             ["Indicator", "Base value", "Percentage change"],

@@ -4,6 +4,8 @@ import re
 from pathlib import Path
 
 import pymupdf as fitz
+import pytest
+from aqaecongen import render_pdf
 from aqaecongen.cli import generate_package
 from aqaecongen.configs import PAPER3_VISUAL_QUESTION_NUMBERS, RULES
 from aqaecongen.generator import build_paper
@@ -14,9 +16,11 @@ from pypdf import PdfReader
 from Backend.Core.exam_blueprints import (
     GeneratedQuestion,
     MarkSchemePoint,
+    resolve_question_rules,
     validate_generated_paper,
     validate_rule,
 )
+from Backend.Core.independent_solver import IndependentSolver
 from Backend.Core.pdf_validation import extract_pdf_evidence
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -67,13 +71,119 @@ def test_paper_three_visual_questions_have_data_bound_diagrams() -> None:
         context = question.authoring_context
         assert question.source_references == [f"Figure {number}"]
         assert context["visual_kind"] == "economic_shift_diagram"
-        assert context["curve"] in {"D", "S", "AD", "SRAS"}
-        assert context["direction"] in {"left", "right"}
-        assert context["correct_effect"] == question.choices[question.correct_choice]
+        assert "correct_effect" not in context
+        contract = context["selected_response_contract"]
+        assert contract["operation"] == "economic_shift"
+        assert contract["inputs"]["curve"] in {"D", "S", "AD", "SRAS"}
+        assert contract["inputs"]["direction"] in {"left", "right"}
+        assert set(context) == {"visual_kind", "selected_response_contract"}
         assert all(
             term.casefold() in question.prompt.casefold()
-            for term in context["required_prompt_terms"]
+            for term in (contract["inputs"]["curve"], contract["inputs"]["direction"])
         )
+
+
+def test_visual_renderer_consumes_only_the_public_selected_response_contract(monkeypatch) -> None:
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=123)
+    question = next(
+        option.questions[0]
+        for option in paper.sections[0].options
+        if int(option.questions[0].number) in PAPER3_VISUAL_QUESTION_NUMBERS
+    )
+    captured: dict[str, object] = {}
+
+    def capture(topic_id: str, number: str, visual: dict[str, object] | None = None):
+        captured.update(visual or {})
+        return object()
+
+    monkeypatch.setattr(render_pdf, "_economic_diagram", capture)
+    render_pdf._mcq_visual(question)
+    assert captured == question.authoring_context["selected_response_contract"]["inputs"]
+
+
+def test_visual_key_is_derived_from_public_shift_not_private_choice() -> None:
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=123)
+    question = next(
+        option.questions[0]
+        for option in paper.sections[0].options
+        if int(option.questions[0].number) in PAPER3_VISUAL_QUESTION_NUMBERS
+    )
+    raw = question.model_dump(mode="json")
+    raw["correct_choice"] = (question.correct_choice + 1) % 4
+    solution = IndependentSolver().solve(raw, [])
+    assert solution.answer == question.choices[question.correct_choice]
+    assert solution.solution_source == "deterministic-candidate-inputs"
+
+
+def test_generated_validation_rejects_private_key_drift_from_public_contract() -> None:
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=123)
+    question = next(
+        option.questions[0]
+        for option in paper.sections[0].options
+        if option.questions[0].authoring_context.get("selected_response_contract")
+    )
+    question.correct_choice = (question.correct_choice + 1) % 4
+    question.mark_scheme = [
+        f"Option {'ABCD'[question.correct_choice]}: {question.choices[question.correct_choice]}."
+    ]
+    with pytest.raises(ValueError, match="selected-response key"):
+        validate_generated_paper(paper, RULES["paper_3"], SYLLABUS.topic_ids)
+
+
+def _candidate_objectives(paper_id: str) -> dict[str, int]:
+    totals = {f"AO{index}": 0 for index in range(1, 5)}
+    rule = RULES[paper_id]
+    for section in rule.sections:
+        for option_index in range(1, section.answer_options + 1):
+            for question in resolve_question_rules(section, option_index):
+                for objective, marks in question.assessment_objectives.items():
+                    totals[objective] += marks
+    return totals
+
+
+def test_actual_tasks_have_explicit_candidate_objective_vectors() -> None:
+    assert _candidate_objectives("paper_1") == {
+        "AO1": 15,
+        "AO2": 22,
+        "AO3": 25,
+        "AO4": 18,
+    }
+    assert _candidate_objectives("paper_2") == {
+        "AO1": 15,
+        "AO2": 22,
+        "AO3": 25,
+        "AO4": 18,
+    }
+    assert _candidate_objectives("paper_3") == {
+        "AO1": 22,
+        "AO2": 24,
+        "AO3": 19,
+        "AO4": 15,
+    }
+
+    mcq = RULES["paper_3"].sections[0]
+    mcq_totals = {f"AO{index}": 0 for index in range(1, 5)}
+    operations = []
+    for option_index in range(1, 31):
+        question = resolve_question_rules(mcq, option_index)[0]
+        operations.append(question.task_operation)
+        for objective, marks in question.assessment_objectives.items():
+            mcq_totals[objective] += marks
+    assert mcq_totals == {"AO1": 12, "AO2": 14, "AO3": 4, "AO4": 0}
+    assert operations.count("transform") == 3
+    assert operations.count("analyse") == 15
+
+
+def test_index_mcqs_have_public_numeric_contract_and_semantically_unique_choices() -> None:
+    for seed in (100, 26083134, 26090101):
+        paper = build_paper(RULES["paper_3"], SYLLABUS, seed=seed)
+        questions = [option.questions[0] for option in paper.sections[0].options]
+        numeric = [question for question in questions if question.task_operation == "transform"]
+        assert len(numeric) == 3
+        for question in numeric:
+            contract = question.authoring_context["selected_response_contract"]
+            assert contract["operation"] == "index_percentage_increase"
+            assert len(set(question.choices)) == 4
 
 
 def test_each_paper_is_valid_and_seed_changes_content() -> None:

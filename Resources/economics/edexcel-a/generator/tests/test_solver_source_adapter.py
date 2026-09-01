@@ -19,6 +19,7 @@ from Backend.Core.independent_solver import (
     require_solution_matches_scheme,
 )
 from tests.support.edexcel import forced_part
+from tests.support.solver_responses import complete_solver_response
 
 DATA = Path(__file__).parents[1] / "data" / "syllabus_seed.json"
 CAPTURED = json.loads(
@@ -40,6 +41,21 @@ class Replay:
     def generate_json(self, prompt):
         self.prompts.append(prompt)
         return copy.deepcopy(self.response)
+
+
+def test_actual_paper_three_partial_solver_shape_is_rejected_before_review() -> None:
+    question = _paper("paper_3", 26083051).questions[0]
+    projection = subject._question_solver_projection(question, question)
+    client = Replay(
+        {
+            "steps": ["Use Extract A and explain the labour-market factors."],
+            "answer": "A source-based analysis without the other envelope fields.",
+        }
+    )
+
+    with pytest.raises(ValueError, match="invalid solver response envelope"):
+        IndependentSolver(client).solve(projection.item, projection.evidence)
+    assert len(client.prompts) == 1
 
 
 @pytest.mark.parametrize(
@@ -105,12 +121,12 @@ def test_blind_projection_uses_one_public_source_without_private_credit_or_key(r
     private = "PRIVATE_F2_CREDIT"
     projection.item["assessment_contract"]["credit"] = [private]
     answer = projection.expected_choice or "A source-based explanation."
-    response = {
+    response = complete_solver_response({
         "steps": ["Use the public source."],
         "answer": answer,
         "mark_points": [answer],
         "evidence_ids": [projection.evidence[0].id],
-    }
+    })
     client = Replay(response)
 
     IndependentSolver(client).solve(projection.item, projection.evidence)
@@ -151,9 +167,9 @@ def test_genuinely_source_free_item_keeps_empty_evidence_and_empty_citations(
         stimulus_kind="written",
     )
     projection = subject._question_solver_projection(question, question)
-    client = Replay(
+    client = Replay(complete_solver_response(
         {"answer": "A household", "mark_points": ["A household"], "evidence_ids": []}
-    )
+    ))
 
     class Reviewed:
         def model_dump(self, **_kwargs):
@@ -261,7 +277,9 @@ def test_reordered_choice_resolves_one_key_and_wrong_key_still_fails_reconciliat
         if option.label == reordered.correct_option
     )
     solution = IndependentSolver(
-        Replay({"answer": answer, "mark_points": [answer], "evidence_ids": []})
+        Replay(complete_solver_response(
+            {"answer": answer, "mark_points": [answer], "evidence_ids": []}
+        ))
     ).solve(projection.item, projection.evidence)
 
     require_solution_matches_scheme(

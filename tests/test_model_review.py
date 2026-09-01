@@ -46,6 +46,16 @@ def test_live_content_review_rejects_invalid_issue_members(bad):
                            blueprint={}, candidate={}, specification={})
 
 
+def test_live_content_review_rejects_extra_raw_fields() -> None:
+    response = ReviewResult(approved=True).model_dump()
+    response["confidence"] = 0.9
+    with pytest.raises(ValueError, match="invalid review response"):
+        independent_review(
+            ReviewClient(response), item_id="q", subject="Economics",
+            blueprint={}, candidate={}, specification={},
+        )
+
+
 @pytest.mark.parametrize(
     "missing",
     ["observed_cognitive_operations", "cognitive_operations_fit", "reasoning_range_fit",
@@ -61,6 +71,20 @@ def test_live_difficulty_response_must_explicitly_include_every_check(missing) -
     with pytest.raises(ValueError, match="invalid difficulty review response"):
         model_review.difficulty_review(
             ReviewClient(response), item_id="q1", subject="Accounting",
+            target={}, candidate={}, specification={},
+        )
+
+
+def test_live_difficulty_response_rejects_extra_raw_fields() -> None:
+    response = model_review.DifficultyReviewResult(
+        approved=True, estimated_demand="low", reasoning_steps=1,
+        tariff_fit=True, command_word_fit=True, context_fit=True, profile_fit=True,
+        observed_cognitive_operations=["retrieve"], estimated_minutes=1.5,
+    ).model_dump(mode="json")
+    response["confidence"] = 0.9
+    with pytest.raises(ValueError, match="invalid difficulty review response"):
+        model_review.difficulty_review(
+            ReviewClient(response), item_id="q1", subject="Economics",
             target={}, candidate={}, specification={},
         )
 
@@ -470,3 +494,28 @@ def test_difficulty_review_surfaces_exact_target_checklist_before_payload() -> N
     )
 
     assert result.approved is True
+
+
+def test_difficulty_prompt_distinguishes_authored_sql_from_supplied_sql_analysis() -> None:
+    response = model_review.DifficultyReviewResult(
+        approved=True,
+        estimated_demand="standard",
+        reasoning_steps=2,
+        tariff_fit=True,
+        command_word_fit=True,
+        context_fit=True,
+        profile_fit=True,
+        observed_cognitive_operations=["program"],
+        estimated_minutes=3.0,
+    ).model_dump(mode="json")
+    client = ReviewClient(response)
+    model_review.difficulty_review(
+        client,
+        item_id="sql",
+        subject="Computer Science",
+        target={"required_cognitive_operations": ["program"]},
+        candidate={"prompt": "Write the SELECT statement."},
+        specification={},
+    )
+    assert "candidate-authored declarative SQL SELECT or INSERT" in client.prompt
+    assert "analysis of SQL already supplied" in client.prompt

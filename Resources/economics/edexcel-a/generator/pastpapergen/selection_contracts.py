@@ -91,6 +91,22 @@ def selection_contract(part, source):
             "More qualified workers increase labour supply.",
             "Greater non-wage attractiveness increases labour supply.",
         ]
+    elif kind == "contestability_barrier_table":
+        prompt = (
+            "Based on the table, which change directly reduces the barrier currently "
+            "classified as High?"
+        )
+        answers = [
+            "Lower sunk costs",
+            "Higher legal barriers to entry",
+            "Exclusive access to key inputs",
+            "Stronger brand loyalty for incumbents",
+        ]
+        reasons = [
+            "The table classifies legal barriers as Low, and raising them increases rather than reduces a barrier.",
+            "Exclusive input access creates a barrier but is not the High row identified in the table.",
+            "Brand loyalty creates a barrier but is not the High row identified in the table.",
+        ]
     elif kind == "multiplier_context":
         prompt = "Which phase of the economic cycle is associated with output near a peak and strong demand pressure?"
         answers = ["Boom", "Trough", "Recession", "Early recovery from a trough"]

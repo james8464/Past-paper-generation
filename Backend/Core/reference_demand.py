@@ -184,9 +184,22 @@ def build_item_demand_target(
         maximum_steps = max(maximum_steps, min(12, marks))
 
     requires_analysis, requires_judgement = objective_policy.operations(objectives, command)
-    requires_context = objectives.get("AO2", 0) > 0 or any(
-        _has_content(raw.get(key))
-        for key in ("context", "evidence_ids", "source_references", "source_reference")
+    source_dependency = raw.get("source_dependency")
+    if source_dependency not in {None, "none", "stem", "figure", "external"}:
+        raise ValueError("demand item has an invalid source dependency")
+    requires_context = (
+        source_dependency != "none"
+        if source_dependency is not None
+        else objectives.get("AO2", 0) > 0
+        or any(
+            _has_content(raw.get(key))
+            for key in (
+                "context",
+                "evidence_ids",
+                "source_references",
+                "source_reference",
+            )
+        )
     )
     response_mode = _response_mode(
         marks=marks,
@@ -202,9 +215,33 @@ def build_item_demand_target(
         requires_judgement=requires_judgement,
         multiple_concepts=(demand == "high" or marks >= 8),
     )
-    task_operation = None
+    task_operation = raw.get("task_operation")
+    if task_operation is not None:
+        task_operation = str(task_operation).casefold()
+        allowed_operations = {
+            "retrieve", "describe", "explain", "contextualise", "transform",
+            "analyse", "judge", "design", "program", "trace",
+        }
+        if task_operation not in allowed_operations:
+            raise ValueError("demand item has an invalid task operation")
+        response_mode = (
+            "selected-response"
+            if kind in {"multiple_choice", "multiple-choice", "mcq"}
+            else objective_policy.response_mode(task_operation, command, marks)
+        )
+        calculation = task_operation in {"transform", "trace"}
+        requires_analysis = (
+            task_operation == "analyse" and response_mode != "selected-response"
+        )
+        requires_judgement = task_operation == "judge"
+        operations = [task_operation]
+        if requires_context and task_operation != "contextualise":
+            operations.append("contextualise")
+        if task_operation in {"analyse", "judge"} and response_mode != "selected-response":
+            minimum_steps = max(minimum_steps, 2)
+        maximum_steps = max(maximum_steps, len(operations))
     if objective_policy.computational:
-        task_operation = objective_policy.task_operation(raw, command, kind)
+        task_operation = task_operation or objective_policy.task_operation(raw, command, kind)
         response_mode = objective_policy.response_mode(task_operation, command, marks)
         requires_context = bool(objectives.get("AO2")) or task_operation in {"design", "program", "trace"}
         requires_analysis = False  # computational analysis is not a prose causal chain

@@ -50,6 +50,7 @@ from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.mark_scheme_front_matter import aqa_front_matter_pages
 from Backend.Core.reportlab_theme import AQAAnswerLines as AnswerLines
 from Backend.Core.reportlab_theme import themed_table_class
+from Backend.Core.subjects.selected_response import SelectedResponseContract
 
 AQA_A4 = (595.32, 841.92)
 PAGE_WIDTH, PAGE_HEIGHT = AQA_A4
@@ -932,17 +933,22 @@ def _mcq_context(question: GeneratedQuestion) -> list[Flowable]:
     number = int(
         "".join(character for character in question.number if character.isdigit())
     )
+    raw_contract = question.authoring_context.get("selected_response_contract")
+    if not isinstance(raw_contract, dict):
+        return []
+    contract = SelectedResponseContract.model_validate(raw_contract)
     if number == 6:
-        return [_break_even_diagram(), Spacer(1, 3 * mm)]
+        return [_break_even_diagram(contract), Spacer(1, 3 * mm)]
     if number == 7:
+        values = contract.inputs
         return [
             _compact_data_table(
                 [
                     ["Financial data", "£m"],
-                    ["Sales revenue", "20"],
-                    ["Cost of sales", "6"],
-                    ["Operating expenses", "4"],
-                    ["Taxation", "7"],
+                    ["Sales revenue", str(values["revenue"])],
+                    ["Cost of sales", str(values["cost_of_sales"])],
+                    ["Operating expenses", str(values["operating_expenses"])],
+                    ["Taxation", str(values["taxation"])],
                 ],
                 [72 * mm, 28 * mm],
             ),
@@ -953,10 +959,10 @@ def _mcq_context(question: GeneratedQuestion) -> list[Flowable]:
             _compact_data_table(
                 [
                     ["Factory", "Output", "Employees"],
-                    ["Factory A", "900", "60"],
-                    ["Factory B", "840", "40"],
-                    ["Factory C", "800", "50"],
-                    ["Factory D", "750", "50"],
+                    *[
+                        [row.label, str(row.output), str(row.employees)]
+                        for row in contract.rows
+                    ],
                 ],
                 [48 * mm, 35 * mm, 35 * mm],
             ),
@@ -966,13 +972,11 @@ def _mcq_context(question: GeneratedQuestion) -> list[Flowable]:
         return [
             _compact_data_table(
                 [
-                    ["Option", "External change", "Strategic change"],
-                    ["A", "High", "High"],
-                    ["B", "High", "Low"],
-                    ["C", "Low", "High"],
-                    ["D", "Low", "Low"],
+                    ["Evidence", "Observed rate of change"],
+                    ["External environment", str(contract.inputs["external_change"]).title()],
+                    ["Business strategy", str(contract.inputs["strategic_change"]).title()],
                 ],
-                [30 * mm, 48 * mm, 48 * mm],
+                [70 * mm, 58 * mm],
             ),
             Spacer(1, 3 * mm),
         ]
@@ -981,10 +985,10 @@ def _mcq_context(question: GeneratedQuestion) -> list[Flowable]:
             _compact_data_table(
                 [
                     ["Measure of performance", "Target", "Actual"],
-                    ["Capacity utilisation", "90%", "88%"],
-                    ["Labour turnover", "12%", "17%"],
-                    ["Market share", "13%", "15%"],
-                    ["ROCE", "16%", "12%"],
+                    *[
+                        [row.label, f"{row.target}%", f"{row.actual}%"]
+                        for row in contract.rows
+                    ],
                 ],
                 [70 * mm, 30 * mm, 30 * mm],
             ),
@@ -1010,9 +1014,39 @@ def _compact_data_table(rows: list[list[str]], widths: list[float]) -> Table:
     return table
 
 
-def _break_even_diagram() -> Drawing:
+def _break_even_diagram(contract: SelectedResponseContract) -> Drawing:
     drawing = Drawing(155 * mm, 62 * mm)
     x0, y0, width, height = 75, 25, 330, 120
+    values = {key: float(value) for key, value in contract.inputs.items()}
+    before_break_even = values["fixed_cost_before"] / (
+        values["price_before"] - values["variable_cost_before"]
+    )
+    after_break_even = values["fixed_cost_after"] / (
+        values["price_after"] - values["variable_cost_after"]
+    )
+    maximum_output = max(before_break_even, after_break_even) * 1.35
+    maximum_value = max(
+        values["price_before"] * maximum_output,
+        values["price_after"] * maximum_output,
+        values["fixed_cost_before"]
+        + values["variable_cost_before"] * maximum_output,
+        values["fixed_cost_after"]
+        + values["variable_cost_after"] * maximum_output,
+    )
+
+    def point(output: float, amount: float) -> tuple[float, float]:
+        return (
+            x0 + width * output / maximum_output,
+            y0 + height * amount / maximum_value,
+        )
+
+    def add_line(start_amount: float, rate: float, label: str) -> None:
+        start = point(0, start_amount)
+        end = point(maximum_output, start_amount + rate * maximum_output)
+        drawing.add(Line(*start, *end, strokeColor=INK))
+        drawing.add(
+            String(end[0] + 3, end[1] - 2, label, fontName=FONT, fontSize=7)
+        )
     drawing.add(
         String(
             x0,
@@ -1027,16 +1061,34 @@ def _break_even_diagram() -> Drawing:
     drawing.add(String(x0 - 50, y0 + height - 4, "Costs /", fontName=FONT, fontSize=8))
     drawing.add(String(x0 - 50, y0 + height - 14, "revenue", fontName=FONT, fontSize=8))
     drawing.add(String(x0 + width - 30, y0 - 18, "Output", fontName=FONT, fontSize=8))
-    drawing.add(Line(x0, y0 + 35, x0 + width, y0 + 105, strokeColor=INK))
-    drawing.add(Line(x0, y0 + 35, x0 + width, y0 + 82, strokeColor=INK))
-    drawing.add(Line(x0, y0, x0 + width, y0 + 115, strokeColor=INK))
-    drawing.add(Line(x0, y0, x0 + width, y0 + 92, strokeColor=INK))
-    drawing.add(String(x0 + width - 8, y0 + 106, "TR1", fontName=FONT, fontSize=7))
-    drawing.add(String(x0 + width - 8, y0 + 83, "TR2", fontName=FONT, fontSize=7))
-    drawing.add(String(x0 + width - 8, y0 + 116, "TC1", fontName=FONT, fontSize=7))
-    drawing.add(String(x0 + width - 8, y0 + 93, "TC2", fontName=FONT, fontSize=7))
-    drawing.add(String(x0 + 150, y0 + 53, "M", fontName=FONT_BOLD, fontSize=8))
-    drawing.add(String(x0 + 220, y0 + 70, "N", fontName=FONT_BOLD, fontSize=8))
+    add_line(0, values["price_before"], "TR1")
+    add_line(
+        values["fixed_cost_before"], values["variable_cost_before"], "TC1"
+    )
+    add_line(0, values["price_after"], "TR2")
+    add_line(values["fixed_cost_after"], values["variable_cost_after"], "TC2")
+    before_xy = point(
+        before_break_even, values["price_before"] * before_break_even
+    )
+    after_xy = point(after_break_even, values["price_after"] * after_break_even)
+    drawing.add(
+        String(
+            before_xy[0] + 4,
+            before_xy[1] + 4,
+            "M",
+            fontName=FONT_BOLD,
+            fontSize=8,
+        )
+    )
+    drawing.add(
+        String(
+            after_xy[0] + 4,
+            after_xy[1] + 4,
+            "N",
+            fontName=FONT_BOLD,
+            fontSize=8,
+        )
+    )
     return drawing
 
 
@@ -1113,7 +1165,7 @@ def _mcq_block(question: GeneratedQuestion) -> list[Flowable]:
     choices = Table(
         [
             [
-                Paragraph(f"<b>{'ABCD'[index]}</b>", STYLES["choices"]),
+                Paragraph(f"<b>{'ABCD'[index]}</b>", STYLES["choice_label"]),
                 Paragraph(text, STYLES["choices"]),
                 _lozenge(),
             ]
@@ -1127,6 +1179,7 @@ def _mcq_block(question: GeneratedQuestion) -> list[Flowable]:
                 ("RIGHTPADDING", (0, 0), (-1, -1), 0),
                 ("TOPPADDING", (0, 0), (-1, -1), 2),
                 ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+                ("RIGHTPADDING", (0, 0), (0, -1), 2 * mm),
             ]
         ),
     )
@@ -1505,6 +1558,14 @@ STYLES = {
         fontSize=11,
         leading=17,
         leftIndent=22,
+    ),
+    "choice_label": ParagraphStyle(
+        "choice_label",
+        parent=_base["BodyText"],
+        fontName=FONT_BOLD,
+        fontSize=11,
+        leading=17,
+        alignment=TA_RIGHT,
     ),
     "answer": ParagraphStyle(
         "answer",

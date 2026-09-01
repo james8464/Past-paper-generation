@@ -3,10 +3,24 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from Backend.Core.assessment_contracts import AssessmentContract
 from Backend.Core.assessment_objectives import objective_policy_for
+
+TaskOperation = Literal[
+    "retrieve",
+    "describe",
+    "explain",
+    "contextualise",
+    "transform",
+    "analyse",
+    "judge",
+    "design",
+    "program",
+    "trace",
+]
+SourceDependency = Literal["none", "stem", "figure", "external"]
 
 
 class QuestionRule(BaseModel):
@@ -17,6 +31,8 @@ class QuestionRule(BaseModel):
     assessment_objectives: dict[str, int] = Field(default_factory=dict)
     intended_demand: Literal["low", "standard", "high"] | None = None
     expected_minutes: float | None = Field(default=None, gt=0)
+    task_operation: TaskOperation | None = None
+    source_dependency: SourceDependency | None = None
 
 
 class SectionRule(BaseModel):
@@ -28,6 +44,31 @@ class SectionRule(BaseModel):
     questions: list[QuestionRule]
     allowed_topic_ids: set[str] = Field(default_factory=set)
     stimulus_required: bool = False
+    question_overrides: dict[int, list[QuestionRule]] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def valid_question_overrides(self) -> SectionRule:
+        for option_index, override in self.question_overrides.items():
+            if option_index < 1 or option_index > self.option_count:
+                raise ValueError("question override option index is out of range")
+            if len(override) != len(self.questions):
+                raise ValueError("question override must cover the complete option")
+            for base, replacement in zip(self.questions, override, strict=True):
+                if (
+                    replacement.id,
+                    replacement.marks,
+                    replacement.kind,
+                    replacement.command_word.casefold(),
+                ) != (
+                    base.id,
+                    base.marks,
+                    base.kind,
+                    base.command_word.casefold(),
+                ):
+                    raise ValueError(
+                        "question override must preserve slot identity and tariff"
+                    )
+        return self
 
     @property
     def candidate_marks(self) -> int:
@@ -77,6 +118,8 @@ class GeneratedQuestion(BaseModel):
     authoring_context: dict[str, Any] = Field(default_factory=dict)
     contract: AssessmentContract | None = None
     provenance: str = "built-in"
+    task_operation: TaskOperation | None = None
+    source_dependency: SourceDependency | None = None
 
 
 class GeneratedOption(BaseModel):
@@ -134,7 +177,12 @@ def validate_rule(rule: PaperRule, syllabus_topic_ids: Iterable[str]) -> None:
         if section.answer_options > section.option_count:
             raise ValueError(f"{rule.id} section {section.id} answers more options than printed")
         marks = sum(question.marks for question in section.questions)
-        for question in section.questions:
+        resolved_rules = [
+            question
+            for option_index in range(1, section.option_count + 1)
+            for question in resolve_question_rules(section, option_index)
+        ]
+        for question in resolved_rules:
             if not question.assessment_objectives:
                 if objective_policy.explicit_allocations:
                     raise ValueError(f"{rule.id} {question.id} needs explicit assessment objectives")
@@ -196,13 +244,14 @@ def validate_generated_paper(
                 f"section {section_rule.id} has {len(generated_section.options)} options, "
                 f"expected {section_rule.option_count}"
             )
-        for option in generated_section.options:
+        for option_index, option in enumerate(generated_section.options, start=1):
+            resolved_rules = resolve_question_rules(section_rule, option_index)
             if len(option.questions) != len(section_rule.questions):
                 raise ValueError(f"section {section_rule.id} option {option.id} has wrong question count")
             if option.chart_values and len(option.chart_labels) != len(option.chart_values):
                 raise ValueError(f"section {section_rule.id} option {option.id} has invalid chart data")
             for question, question_rule in zip(
-                option.questions, section_rule.questions, strict=True
+                option.questions, resolved_rules, strict=True
             ):
                 if objective_policy_for(rule.code).computational and (
                     not question.assessment_objectives or question.expected_minutes is None
@@ -245,11 +294,28 @@ def validate_generated_paper(
                     != question_rule.assessment_objectives
                     or question.intended_demand != question_rule.intended_demand
                     or question.expected_minutes != question_rule.expected_minutes
+                    or question.task_operation != question_rule.task_operation
+                    or question.source_dependency != question_rule.source_dependency
                 ):
                     raise ValueError(
                         f"question {question.number} assessment metadata does not "
                         f"match rule {question_rule.id}"
                     )
+                if question.authoring_context.get("selected_response_contract") is not None:
+                    from Backend.Core.subjects.selected_response import (
+                        solve_selected_response,
+                    )
+
+                    selected = solve_selected_response(question.model_dump(mode="json"))
+                    if (
+                        selected is None
+                        or question.correct_choice is None
+                        or selected["answer"].casefold()
+                        != question.choices[question.correct_choice].strip().casefold()
+                    ):
+                        raise ValueError(
+                            f"question {question.number} selected-response key differs from public inputs"
+                        )
                 section_topics = (
                     section_rule.allowed_topic_ids or rule.allowed_topic_ids
                 )
@@ -355,6 +421,10 @@ def _hydrate_assessment_metadata(
     question.intended_demand = (
         question_rule.intended_demand or question.intended_demand
     )
+    if question.task_operation is None:
+        question.task_operation = question_rule.task_operation
+    if question.source_dependency is None:
+        question.source_dependency = question_rule.source_dependency
     if any(
         point.casefold().startswith(("level ", "levels-based"))
         for point in question.mark_scheme
@@ -362,6 +432,16 @@ def _hydrate_assessment_metadata(
         question.scheme_mode = "levels"
     if not question.structured_mark_scheme:
         question.structured_mark_scheme = _structured_scheme(question)
+
+
+def resolve_question_rules(
+    section: SectionRule,
+    option_index: int,
+) -> list[QuestionRule]:
+    """Return the immutable rules for one printed option (one-based)."""
+    if option_index < 1 or option_index > section.option_count:
+        raise ValueError("question option index is out of range")
+    return section.question_overrides.get(option_index, section.questions)
 
 
 def _prompt_uses_command_word(prompt: str, command_word: str) -> bool:

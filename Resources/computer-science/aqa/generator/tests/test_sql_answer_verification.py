@@ -20,6 +20,7 @@ from cspapergen.syllabus import load_syllabus
 
 from Backend.Core.assessment_package import _extract_items
 from Backend.Core.computer_science_authoring import question_content_sha256
+from Backend.Core.independent_solver import IndependentSolver
 from Backend.Core.model_review import require_difficulty_review
 from Backend.Core.reference_demand import build_item_demand_target, profile_for
 from Backend.Core.subjects.sql_contracts import (
@@ -29,6 +30,7 @@ from Backend.Core.subjects.sql_contracts import (
     sql_source_intent_sha256,
     validate_sql_response,
 )
+from tests.support.solver_responses import complete_solver_response
 
 
 def _sql_question(*, bank: bool = False):
@@ -83,12 +85,61 @@ CAPTURED_COUNT_BOOKING_RESPONSE = {
 
 
 def _response(answer: str, source_id: str, *, points: list[str] | None = None):
-    return {
+    return complete_solver_response({
         "steps": ["Use the supplied schema and requested relational operation."],
         "answer": answer,
         "mark_points": points if points is not None else [answer],
         "evidence_ids": [source_id],
-    }
+    })
+
+
+@pytest.mark.parametrize(
+    ("part_index", "answer", "mark_points"),
+    [
+        (
+            0,
+            "The use of the equal sign (=) with NULL.",
+            {"the use of the equal sign (=) with NULL": 1},
+        ),
+        (
+            1,
+            (
+                "SELECT Activity, COUNT(*) FROM SESSION JOIN BOOKING ON "
+                "SESSION.SessionID = BOOKING.SessionID GROUP BY Activity "
+                "HAVING COUNT(*) >= 5 ORDER BY COUNT(*) DESC;"
+            ),
+            {
+                "selection": (
+                    "SELECT Activity, COUNT(*) FROM SESSION JOIN BOOKING ON "
+                    "SESSION.SessionID = BOOKING.SessionID GROUP BY Activity "
+                    "HAVING COUNT(*) >= 5 ORDER BY COUNT(*) DESC;"
+                )
+            },
+        ),
+    ],
+)
+def test_actual_object_mark_point_shapes_fail_the_raw_solver_envelope(
+    part_index, answer, mark_points
+):
+    question = _sql_question()
+    projection = _part_solver_projection(question, question.parts[part_index])
+    client = Replay(
+        [
+            {
+                "steps": ["Use the supplied schema and rows."],
+                "answer": answer,
+                "mark_points": mark_points,
+                "evidence_ids": [projection.evidence[0].id],
+                "alternatives": [],
+                "partial_credit_boundaries": [],
+                "follow_through_rules": [],
+            }
+        ]
+    )
+
+    with pytest.raises(ValueError, match="invalid solver response envelope"):
+        IndependentSolver(client).solve(projection.item, projection.evidence)
+    assert len(client.prompts) == 1
 
 
 def test_public_sql_contract_is_one_render_solver_export_and_hash_source(tmp_path):

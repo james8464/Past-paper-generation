@@ -7,12 +7,15 @@ from cspapergen.question_bank import QUESTION_STYLES, build_question
 from cspapergen.syllabus import load_syllabus
 
 from Backend.Core.independent_solver import IndependentSolver, reconcile_solution
+from tests.support.solver_responses import complete_solver_response
 
 
 def solve(question, part, answers):
     class Client:
         def generate_json(self, _prompt):
-            return {"answer": answers, "mark_points": answers}
+            return complete_solver_response(
+                {"answer": answers, "mark_points": answers}
+            )
 
     return IndependentSolver(Client()).solve(_part_solver_item(question, part), [])
 
@@ -256,7 +259,9 @@ def test_solver_sequence_slots_do_not_disclose_computed_length(
     class Client:
         def generate_json(self, prompt):
             prompts.append(prompt)
-            return {"steps": [], "answer": answers, "mark_points": answers}
+            return complete_solver_response(
+                {"steps": [], "answer": answers, "mark_points": answers}
+            )
 
     solution = IndependentSolver(Client()).solve(_part_solver_item(question, part), [])
     payload = json.JSONDecoder().raw_decode(prompts[0].split("\n", 1)[1])[0]

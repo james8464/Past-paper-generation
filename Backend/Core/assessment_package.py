@@ -428,6 +428,7 @@ def _extract_items(
                 "intended_demand": raw.get("intended_demand"),
                 "expected_minutes": raw.get("expected_minutes"),
                 "task_operation": raw.get("task_operation") or (raw.get("authoring_context") or {}).get("task_operation"),
+                "source_dependency": raw.get("source_dependency") or (raw.get("authoring_context") or {}).get("source_dependency"),
                 "kind": kind,
                 "prompt": prompt,
                 "context": stems,

@@ -5,11 +5,12 @@ import json
 import pytest
 
 from Backend.Core.independent_solver import IndependentSolver, reconcile_solution
+from tests.support.solver_responses import complete_solver_response
 
 
 class ResponseClient:
     def __init__(self, response):
-        self.response = response
+        self.response = complete_solver_response(response)
         self.prompt = ""
 
     def generate_json(self, prompt):
@@ -57,7 +58,7 @@ def test_captured_duplicate_partial_points_cannot_pass_closed_classification():
             "alternatives": [],
         }
     )
-    with pytest.raises(ValueError, match="closed response"):
+    with pytest.raises(ValueError, match="solver response envelope"):
         IndependentSolver(client).solve(closed_item(), [])
 
 
@@ -104,7 +105,7 @@ def test_closed_reconciliation_rejects_wrong_duplicate_swapped_and_ambiguous_val
     ],
 )
 def test_closed_solver_rejects_missing_extra_and_contradictory_fields(response):
-    with pytest.raises(ValueError, match="closed response"):
+    with pytest.raises(ValueError, match=r"closed response|solver response envelope"):
         IndependentSolver(ResponseClient(response)).solve(closed_item(), [])
 
 
@@ -176,7 +177,7 @@ def test_multiple_choice_never_discards_wrong_duplicate_or_missing_response_fiel
             "General journal",
         ],
     }
-    with pytest.raises(ValueError, match="closed response"):
+    with pytest.raises(ValueError, match=r"closed response|solver response envelope"):
         IndependentSolver(ResponseClient(response)).solve(item, [])
 
 
@@ -212,7 +213,11 @@ def test_production_hosted_chat_preserves_closed_answer_objects(monkeypatch):
             json.dumps(
                 {
                     "message": {
-                        "content": json.dumps({"answer": answer, "mark_points": answer})
+                            "content": json.dumps(
+                                complete_solver_response(
+                                    {"answer": answer, "mark_points": answer}
+                                )
+                            )
                     }
                 }
             ).encode()
@@ -224,7 +229,10 @@ def test_production_hosted_chat_preserves_closed_answer_objects(monkeypatch):
     assert reconcile_solution(solution, scheme()).passed
     assert calls[0][0].endswith("/api/chat")
     schema = calls[0][1]["format"]
-    assert schema["required"] == ["steps", "answer", "mark_points"]
+    assert schema["required"] == [
+        "steps", "answer", "mark_points", "evidence_ids", "alternatives",
+        "partial_credit_boundaries", "follow_through_rules",
+    ]
     assert next(iter(schema["properties"])) == "steps"
     for field in ("answer", "mark_points"):
         slots = schema["properties"][field]
@@ -387,7 +395,7 @@ def test_closed_prompt_requires_independent_slot_reasoning_without_leaking_keys(
     ],
 )
 def test_live_app_probe_malformed_or_contradictory_answers_remain_rejected(response):
-    with pytest.raises(ValueError, match="closed response"):
+    with pytest.raises(ValueError, match=r"closed response|solver response envelope"):
         IndependentSolver(ResponseClient(response)).solve(
             closed_item(tuple(response["answer"])), []
         )

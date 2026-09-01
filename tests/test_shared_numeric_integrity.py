@@ -358,11 +358,10 @@ def test_raw_model_numbers_are_not_described_as_verified_results():
                 "calculation_details": {"rate": 999},
             }
 
-    solution = IndependentSolver(WorkingClient()).solve(
-        {"id": "explanation", "prompt": "Explain a possible decision."}, []
-    )
-    assert solution.numeric_results == {}
-    assert solution.verified_scope == "semantic-review-only"
+    with pytest.raises(ValueError, match="invalid solver response envelope"):
+        IndependentSolver(WorkingClient()).solve(
+            {"id": "explanation", "prompt": "Explain a possible decision."}, []
+        )
 
 
 def test_abc_checks_every_asserted_intermediate_without_rounding_into_final():

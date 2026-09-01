@@ -23,6 +23,7 @@ from Backend.Core.independent_solver import IndependentSolver
 from Backend.Core.model_review import independent_review
 from Backend.Core.subjects.economics_contracts import SourceCell, calculation_working
 from tests.support.edexcel import forced_part
+from tests.support.solver_responses import complete_solver_response
 
 
 def paper(seed):
@@ -60,12 +61,12 @@ def test_blind_solver_never_receives_private_credit_but_reviews_keep_it(kind):
                 if item["choices"]
                 else "Independent explanation from candidate evidence."
             )
-            return {
+            return complete_solver_response({
                 "answer": answer,
                 "mark_points": [answer],
                 "steps": ["Use the candidate source."],
                 "evidence_ids": [],
-            }
+            })
 
     IndependentSolver(Client()).solve(item, [])
     blind = json.loads(prompts[0].split("\n", 1)[1])["item"]

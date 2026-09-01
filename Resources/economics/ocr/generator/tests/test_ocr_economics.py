@@ -11,7 +11,11 @@ from ocregen.render_pdf import STYLES, _compact_indicative_guidance, render_mark
 from ocregen.syllabus import load_syllabus
 from pypdf import PdfReader
 
-from Backend.Core.exam_blueprints import validate_generated_paper, validate_rule
+from Backend.Core.exam_blueprints import (
+    resolve_question_rules,
+    validate_generated_paper,
+    validate_rule,
+)
 from Backend.Core.render_transaction import render_pdf_atomically
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -75,17 +79,60 @@ def test_multi_seed_validity_and_uniqueness() -> None:
 
 
 def test_mcq_choices_are_distinct_and_contextual() -> None:
-    paper = build_paper(RULES["paper_3"], SYLLABUS, 123)
-    questions = [option.questions[0] for option in paper.sections[0].options]
-    assert all(len(set(question.choices)) == 4 for question in questions)
-    assert all(len(question.prompt.split()) >= 20 for question in questions)
-    numeric = [question for index, question in enumerate(questions, start=1) if index % 5 == 0]
-    assert numeric
-    assert all(
-        question.authoring_context
-        == {"preserve_prompt": True, "preserve_mark_scheme": True}
-        for question in numeric
-    )
+    for seed in (123, 26090101, 26090103):
+        paper = build_paper(RULES["paper_3"], SYLLABUS, seed)
+        questions = [option.questions[0] for option in paper.sections[0].options]
+        assert all(len(set(question.choices)) == 4 for question in questions)
+        assert all("estimated costs and benefits by" not in question.prompt for question in questions)
+        numeric = [question for index, question in enumerate(questions, start=1) if index % 5 == 0]
+        assert numeric
+        assert all(
+            question.authoring_context["selected_response_contract"]["operation"]
+            == "index_percentage_increase"
+            for question in numeric
+        )
+
+
+def _candidate_objectives(paper_id: str) -> dict[str, int]:
+    totals = {f"AO{index}": 0 for index in range(1, 5)}
+    rule = RULES[paper_id]
+    for section in rule.sections:
+        for option_index in range(1, section.answer_options + 1):
+            for question in resolve_question_rules(section, option_index):
+                for objective, marks in question.assessment_objectives.items():
+                    totals[objective] += marks
+    return totals
+
+
+def test_clean_ocr_objective_anchors_follow_actual_tasks() -> None:
+    assert _candidate_objectives("paper_1") == {
+        "AO1": 18,
+        "AO2": 20,
+        "AO3": 20,
+        "AO4": 22,
+    }
+    assert _candidate_objectives("paper_2") == {
+        "AO1": 18,
+        "AO2": 20,
+        "AO3": 20,
+        "AO4": 22,
+    }
+    assert _candidate_objectives("paper_3") == {
+        "AO1": 24,
+        "AO2": 22,
+        "AO3": 18,
+        "AO4": 16,
+    }
+    mcq = RULES["paper_3"].sections[0]
+    totals = {f"AO{index}": 0 for index in range(1, 5)}
+    operations = []
+    for option_index in range(1, 31):
+        question = resolve_question_rules(mcq, option_index)[0]
+        operations.append(question.task_operation)
+        for objective, marks in question.assessment_objectives.items():
+            totals[objective] += marks
+    assert totals == {"AO1": 15, "AO2": 7, "AO3": 8, "AO4": 0}
+    assert operations.count("transform") == 6
 
 
 def test_source_calculation_keeps_verified_figures_and_mark_scheme() -> None:
@@ -128,7 +175,7 @@ def test_relationship_questions_align_knowledge_and_application_marks() -> None:
     awarded_three = [point for point in three_mark.structured_mark_scheme if point.marks]
     assert [point.assessment_objective for point in awarded_three] == [
         "AO1",
-        "AO1",
+        "AO2",
         "AO2",
     ]
     assert "expected relationship" in awarded_three[0].text.casefold()
@@ -140,7 +187,7 @@ def test_relationship_questions_align_knowledge_and_application_marks() -> None:
     awarded_four = [point for point in four_mark.structured_mark_scheme if point.marks]
     assert [point.assessment_objective for point in awarded_four] == [
         "AO1",
-        "AO1",
+        "AO2",
         "AO2",
         "AO2",
     ]

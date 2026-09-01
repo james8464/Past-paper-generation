@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from typing import Any, Literal, Protocol
 
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.assessment_quality import content_similarity, numeric_tokens
@@ -15,6 +15,8 @@ class JSONClient(Protocol):
 
 
 class ReviewResult(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+
     approved: bool
     factual_issues: list[str] = Field(default_factory=list)
     marking_issues: list[str] = Field(default_factory=list)
@@ -39,6 +41,8 @@ class ReviewResult(BaseModel):
 
 
 class DifficultyReviewResult(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+
     schema_version: Literal[2] = 2
     approved: bool
     estimated_demand: Literal["low", "standard", "high"]
@@ -328,6 +332,10 @@ def difficulty_review(
         "verbatim when the candidate must perform it; retrieval and contextualisation "
         "still count in low-demand and multiple-choice items. Do not omit a required "
         "token merely because the operation is simple. "
+        "Before returning, compare observed_cognitive_operations directly with "
+        "REQUIRED_COGNITIVE_OPERATIONS and do not omit an operation the candidate "
+        "must perform. A candidate-authored declarative SQL SELECT or INSERT requires "
+        "the program token; analysis of SQL already supplied in the question does not. "
         "estimated_minutes is minutes for this one item, never seconds, marks, a "
         "whole-paper duration, or a value with the decimal point removed: 9.0 means "
         "nine minutes and 1.5 means ninety seconds. Compare that value directly with "

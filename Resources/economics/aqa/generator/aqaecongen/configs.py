@@ -13,8 +13,50 @@ PAPER3_VISUAL_QUESTION_NUMBERS = frozenset(
 )
 
 
-def _q(id: str, marks: int, kind: str, command: str) -> QuestionRule:
-    return QuestionRule(id=id, marks=marks, kind=kind, command_word=command)
+def _q(
+    id: str,
+    marks: int,
+    kind: str,
+    command: str,
+    ao: dict[str, int],
+    operation: str,
+    source: str,
+) -> QuestionRule:
+    return QuestionRule(
+        id=id,
+        marks=marks,
+        kind=kind,
+        command_word=command,
+        assessment_objectives=ao,
+        task_operation=operation,
+        source_dependency=source,
+    )
+
+
+def _mcq_rule(ao: str, operation: str, source: str) -> QuestionRule:
+    return _q("mcq", 1, "multiple_choice", "Select", {ao: 1}, operation, source)
+
+
+_AQA_VISUAL = {2, 4, 9, 10, 13, 14, 19, 20, 24, 25}
+_AQA_VISUAL_ANALYSIS = {9, 14, 20, 25}
+_AQA_INDEX = {5, 15, 30}
+_AQA_APPLIED = {1, 3, 7, 11, 17}
+_AQA_MCQ_OVERRIDES = {
+    number: [
+        _mcq_rule(
+            "AO3" if number in _AQA_VISUAL_ANALYSIS else "AO2",
+            "analyse",
+            "figure",
+        )
+    ]
+    if number in _AQA_VISUAL
+    else [_mcq_rule("AO2", "transform", "stem")]
+    if number in _AQA_INDEX
+    else [_mcq_rule("AO2", "analyse", "stem")]
+    if number in _AQA_APPLIED
+    else [_mcq_rule("AO1", "retrieve", "none")]
+    for number in range(1, 31)
+}
 
 
 RULES = {
@@ -33,10 +75,10 @@ RULES = {
                 answer_options=1,
                 option_marks=40,
                 questions=[
-                    _q("calculation", 2, "calculation", "Calculate"),
-                    _q("data_analysis", 4, "data_response", "Explain"),
-                    _q("diagram_analysis", 9, "diagram_analysis", "Explain"),
-                    _q("evaluation", 25, "extended_response", "Discuss"),
+                    _q("calculation", 2, "calculation", "Calculate", {"AO2": 2}, "transform", "external"),
+                    _q("data_analysis", 4, "data_response", "Explain", {"AO1": 2, "AO2": 2}, "explain", "external"),
+                    _q("diagram_analysis", 9, "diagram_analysis", "Explain", {"AO1": 2, "AO2": 3, "AO3": 4}, "analyse", "external"),
+                    _q("evaluation", 25, "extended_response", "Discuss", {"AO1": 4, "AO2": 5, "AO3": 7, "AO4": 9}, "judge", "external"),
                 ],
             ),
             SectionRule(
@@ -46,8 +88,8 @@ RULES = {
                 answer_options=1,
                 option_marks=40,
                 questions=[
-                    _q("analysis", 15, "essay", "Explain"),
-                    _q("evaluation", 25, "essay", "Evaluate"),
+                    _q("analysis", 15, "essay", "Explain", {"AO1": 3, "AO2": 5, "AO3": 7}, "analyse", "none"),
+                    _q("evaluation", 25, "essay", "Evaluate", {"AO1": 4, "AO2": 5, "AO3": 7, "AO4": 9}, "judge", "none"),
                 ],
             ),
         ],
@@ -67,10 +109,10 @@ RULES = {
                 answer_options=1,
                 option_marks=40,
                 questions=[
-                    _q("calculation", 2, "calculation", "Calculate"),
-                    _q("data_analysis", 4, "data_response", "Explain"),
-                    _q("diagram_analysis", 9, "diagram_analysis", "Explain"),
-                    _q("evaluation", 25, "extended_response", "Discuss"),
+                    _q("calculation", 2, "calculation", "Calculate", {"AO2": 2}, "transform", "external"),
+                    _q("data_analysis", 4, "data_response", "Explain", {"AO1": 2, "AO2": 2}, "explain", "external"),
+                    _q("diagram_analysis", 9, "diagram_analysis", "Explain", {"AO1": 2, "AO2": 3, "AO3": 4}, "analyse", "external"),
+                    _q("evaluation", 25, "extended_response", "Discuss", {"AO1": 4, "AO2": 5, "AO3": 7, "AO4": 9}, "judge", "external"),
                 ],
             ),
             SectionRule(
@@ -80,8 +122,8 @@ RULES = {
                 answer_options=1,
                 option_marks=40,
                 questions=[
-                    _q("analysis", 15, "essay", "Explain"),
-                    _q("evaluation", 25, "essay", "Evaluate"),
+                    _q("analysis", 15, "essay", "Explain", {"AO1": 3, "AO2": 5, "AO3": 7}, "analyse", "none"),
+                    _q("evaluation", 25, "essay", "Evaluate", {"AO1": 4, "AO2": 5, "AO3": 7, "AO4": 9}, "judge", "none"),
                 ],
             ),
         ],
@@ -100,7 +142,8 @@ RULES = {
                 option_count=30,
                 answer_options=30,
                 option_marks=1,
-                questions=[_q("mcq", 1, "multiple_choice", "Select")],
+                questions=[_mcq_rule("AO1", "retrieve", "none")],
+                question_overrides=_AQA_MCQ_OVERRIDES,
             ),
             SectionRule(
                 id="B",
@@ -109,9 +152,9 @@ RULES = {
                 answer_options=1,
                 option_marks=50,
                 questions=[
-                    _q("data_judgement", 10, "data_interpretation", "Assess"),
-                    _q("analysis", 15, "essay", "Explain"),
-                    _q("recommendation", 25, "extended_response", "Recommend"),
+                    _q("data_judgement", 10, "data_interpretation", "Assess", {"AO1": 2, "AO2": 2, "AO3": 3, "AO4": 3}, "judge", "external"),
+                    _q("analysis", 15, "essay", "Explain", {"AO1": 3, "AO2": 3, "AO3": 9}, "analyse", "external"),
+                    _q("recommendation", 25, "extended_response", "Recommend", {"AO1": 5, "AO2": 5, "AO3": 3, "AO4": 12}, "judge", "external"),
                 ],
             ),
         ],

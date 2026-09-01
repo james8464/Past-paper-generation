@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import random
 import secrets
+from decimal import ROUND_HALF_UP, Decimal
 
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
@@ -10,6 +11,7 @@ from Backend.Core.exam_blueprints import (
     GeneratedSection,
     PaperRule,
     QuestionRule,
+    resolve_question_rules,
     validate_generated_paper,
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
@@ -74,6 +76,38 @@ FACTS = {
     "macro-4": ("When is depreciation more likely to improve net trade?", "When trade elasticities are sufficiently high", ["When all quantities are fixed", "When imports have no price", "When domestic output is zero"]),
     "macro-5": ("What is a likely short-run effect of higher interest rates?", "Weaker credit-financed spending", ["Cheaper borrowing", "An infinite money multiplier", "A guaranteed rise in asset prices"]),
 }
+ANALYTICAL_FACTS = {
+    "micro-1": ("A region moves skilled workers from clinics to housebuilding. Which chain best explains the opportunity cost?", "Clinic output falls because the same scarce workers cannot produce both services", ["Both outputs rise because scarcity has ended", "Only money wages are an opportunity cost", "The forgone clinic output is irrelevant once houses are built"]),
+    "micro-2": ("A firm raises price by 6% and quantity demanded falls by 2%. Which conclusion is supported?", "Demand is price inelastic, so total spending rises", ["Demand is price elastic, so total spending rises", "Supply must have shifted left by 4%", "Total spending falls because quantity demanded falls"]),
+    "micro-3": ("A firm's marginal cost is below its average cost. Which effect follows while that remains true?", "The next units pull average cost down", ["Average cost must rise", "Fixed cost rises with each unit", "Revenue must equal zero"]),
+    "micro-4": ("New firms can enter without large unrecoverable expenditure. Which chain best explains the effect?", "Low sunk costs make entry and exit more credible, increasing contestability", ["Low sunk costs create a legal monopoly", "Entry becomes impossible because fixed costs are low", "Contestability falls because customers have more choice"]),
+    "micro-5": ("One employer buys most local specialist labour. Which chain is most likely?", "Employer buying power can hold wages and employment below competitive levels", ["Workers necessarily receive higher wages", "Labour demand becomes perfectly elastic", "Employer bargaining power disappears"]),
+    "micro-6": ("A producer ignores pollution damage. Which rule identifies the efficient output?", "Choose output where social marginal benefit equals social marginal cost", ["Choose maximum output because private cost is lower", "Choose output where pollution is unpriced", "Choose zero private marginal cost"]),
+    "macro-1": ("Firms increase planned investment while other AD components are unchanged. Which chain follows first?", "Aggregate demand rises, increasing real output in the short run when spare capacity exists", ["Aggregate demand falls because investment is an injection", "Long-run aggregate supply must fall immediately", "Imports fall to zero"]),
+    "macro-2": ("Nominal GDP rises while prices and population also rise. Which measure best tests whether average material living standards improved?", "Real GDP per head", ["Nominal GDP alone", "The price index alone", "The money supply alone"]),
+    "macro-3": ("Government funds vocational training for workers lacking relevant skills. Which chain is most plausible?", "Skills and productivity can rise, shifting productive capacity right over time", ["Aggregate supply must fall immediately", "Training is a contractionary monetary policy", "Productive capacity is unchanged by skills"]),
+    "macro-4": ("A currency depreciates and export and import demand are price elastic. Which chain is most plausible after adjustment?", "Trade volumes respond sufficiently for net trade to improve", ["Quantities remain fixed by definition", "Import prices fall in domestic currency", "Depreciation guarantees an immediate improvement regardless of elasticities"]),
+    "macro-5": ("A central bank raises interest rates. Which transmission chain is most plausible?", "Borrowing costs rise, weakening credit-financed consumption and investment", ["Borrowing becomes cheaper and spending rises", "The money multiplier becomes infinite", "Every asset price must rise"]),
+}
+ALTERNATE_FACTS = {
+    "micro-1": ("Which statement distinguishes a free good from an economic good?", "A free good has no opportunity cost at the point of use", ["A free good must have a money price", "An economic good is unlimited", "Scarcity is irrelevant to economic goods"]),
+    "micro-2": ("What causes a movement along a demand curve?", "A change in the product's own price", ["A change in consumer income", "A change in the price of a substitute", "A change in tastes"]),
+    "micro-3": ("Which expression defines profit?", "Total revenue minus total cost", ["Total cost minus fixed cost", "Average revenue plus marginal cost", "Fixed cost minus variable cost"]),
+    "micro-4": ("Which feature is a barrier to entry?", "A legally protected patent", ["Low sunk costs", "Easy access to distribution", "Perfect information for entrants"]),
+}
+_OCR_TOPIC_IDS = [
+    "micro-1", "micro-2", "micro-3", "micro-4", "micro-5", "micro-6",
+    "macro-1", "macro-2", "macro-3", "macro-4", "macro-5",
+]
+_OCR_RETRIEVAL_TOPICS = {
+    number: _OCR_TOPIC_IDS[index % len(_OCR_TOPIC_IDS)]
+    for index, number in enumerate((2, 4, 6, 8, 11, 12, 14, 16, 18, 21, 22, 24, 26, 27, 29))
+}
+_OCR_ALTERNATE_NUMBERS = {24, 26, 27, 29}
+_OCR_ANALYTICAL_TOPICS = {
+    number: _OCR_TOPIC_IDS[index]
+    for index, number in enumerate((1, 3, 7, 9, 13, 17, 19, 23, 28))
+}
 
 
 def build_paper(rule: PaperRule, syllabus: Syllabus, seed: int | None = None) -> GeneratedPaper:
@@ -86,12 +120,17 @@ def build_paper(rule: PaperRule, syllabus: Syllabus, seed: int | None = None) ->
     for section_rule in rule.sections:
         options: list[GeneratedOption] = []
         for option_index in range(section_rule.option_count):
+            question_rules = resolve_question_rules(section_rule, option_index + 1)
             topic = topics[topic_cursor % len(topics)]
             topic_cursor += 1
             if rule.id == "paper_3" and section_rule.id == "A":
-                option = _mcq(option_index + 1, topic, rng)
+                number = option_index + 1
+                topic_id = _OCR_RETRIEVAL_TOPICS.get(number) or _OCR_ANALYTICAL_TOPICS.get(number)
+                if topic_id:
+                    topic = next(item for item in topics if item.id == topic_id)
+                option = _mcq(option_index + 1, topic, rng, question_rules[0])
             else:
-                option = _written_option(rule, section_rule.id, option_index, topic, section_rule.questions, rng)
+                option = _written_option(rule, section_rule.id, option_index, topic, question_rules, rng)
             options.append(option)
         instructions = _instructions(rule.id, section_rule.id)
         sections.append(GeneratedSection(id=section_rule.id, title=section_rule.title, instructions=instructions, options=options))
@@ -417,6 +456,11 @@ def _question(
         mark_scheme=scheme,
         source_references=source_references,
         authoring_context=authoring_context,
+        assessment_objectives=dict(rule.assessment_objectives),
+        intended_demand=rule.intended_demand or "standard",
+        expected_minutes=rule.expected_minutes,
+        task_operation=rule.task_operation,
+        source_dependency=rule.source_dependency,
     )
 
 
@@ -502,21 +546,33 @@ def _evaluation_scheme(topic: Topic, point: str, marks: int) -> list[str]:
     ]
 
 
-def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedOption:
+def _mcq(
+    number: int,
+    topic: Topic,
+    rng: random.Random,
+    rule: QuestionRule,
+) -> GeneratedOption:
     authoring_context: dict[str, object] = {}
     if number % 5 == 0:
         base = rng.randint(60, 180)
         rate = rng.choice([5, 8, 10, 12, 15])
-        correct = f"{base * (1 + rate / 100):.1f}"
+        quantum = Decimal("0.1")
+        base_value = Decimal(base)
+        rate_value = Decimal(rate) / Decimal(100)
+        correct = str(
+            (base_value * (Decimal(1) + rate_value)).quantize(
+                quantum, rounding=ROUND_HALF_UP
+            )
+        )
         distractor_values = [
-            base + rate,
-            base * (1 - rate / 100),
-            base * (1 + (rate + 5) / 100),
-            base / (1 + rate / 100),
+            Decimal(base + rate),
+            base_value * (Decimal(1) - rate_value),
+            base_value * (Decimal(1) + Decimal(rate + 5) / Decimal(100)),
+            base_value / (Decimal(1) + rate_value),
         ]
         distractors: list[str] = []
         for value in distractor_values:
-            rendered = f"{value:.1f}"
+            rendered = str(value.quantize(quantum, rounding=ROUND_HALF_UP))
             if rendered != correct and rendered not in distractors:
                 distractors.append(rendered)
         while len(distractors) < 3:
@@ -532,16 +588,26 @@ def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedOption:
         authoring_context = {
             "preserve_prompt": True,
             "preserve_mark_scheme": True,
+            "selected_response_contract": {
+                "version": "selected-response-v1",
+                "operation": "index_percentage_increase",
+                "inputs": {"base": str(base), "rate_percent": str(rate)},
+                "unit": "index",
+                "decimal_places": 1,
+            },
         }
     else:
-        stem, correct, distractors = FACTS[topic.id]
+        if rule.task_operation == "analyse":
+            stem, correct, distractors = ANALYTICAL_FACTS[topic.id]
+        else:
+            source = (
+                ALTERNATE_FACTS
+                if number in _OCR_ALTERNATE_NUMBERS
+                else FACTS
+            )
+            stem, correct, distractors = source[topic.id]
         choices = [correct, *distractors]
-        context = rng.choice(CONTEXTS if topic.component == 1 else ECONOMIES)
-        prompt = (
-            f"The following scenario concerns {context}, where decision-makers "
-            f"are assessing {rng.choice(topic.points)} after new evidence changed expected costs and "
-            f"benefits by an estimated {number + 2}%. {stem}"
-        )
+        prompt = stem
     rng.shuffle(choices)
     answer = choices.index(correct)
     question = GeneratedQuestion(
@@ -549,6 +615,11 @@ def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedOption:
         command_word="Select", topic_id=topic.id, prompt=prompt, choices=choices,
         correct_choice=answer, mark_scheme=[f"Option {'ABCD'[answer]}: {correct}."],
         authoring_context=authoring_context,
+        assessment_objectives=dict(rule.assessment_objectives),
+        intended_demand=rule.intended_demand or "low",
+        expected_minutes=rule.expected_minutes,
+        task_operation=rule.task_operation,
+        source_dependency=rule.source_dependency,
     )
     return GeneratedOption(id=f"A{number}", title=f"Question {number}", questions=[question])
 

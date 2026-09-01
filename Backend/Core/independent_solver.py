@@ -10,7 +10,7 @@ from collections.abc import Sequence
 from decimal import Decimal
 from typing import Any, Protocol
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from Backend.Core.assessment_contracts import EvidenceRecord
 from Backend.Core.assessment_objectives import objective_policy_for
@@ -37,6 +37,7 @@ from Backend.Core.subjects.computer_science_contracts import (
     solve_computer_science_contract,
 )
 from Backend.Core.subjects.economics_contracts import solve_economics_contract
+from Backend.Core.subjects.selected_response import solve_selected_response
 from Backend.Core.subjects.sql_contracts import SQLValidationResult
 
 
@@ -53,6 +54,20 @@ class SQLProgramAttemptAudit(BaseModel):
 
 class SolverClient(Protocol):
     def generate_json(self, prompt: str) -> dict[str, object]: ...
+
+
+class SolverResponseEnvelope(BaseModel):
+    """Exact raw-provider shape; semantic validation remains item-specific below."""
+
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    steps: list[str]
+    answer: str | dict[str, str]
+    mark_points: list[str] | dict[str, str]
+    evidence_ids: list[str]
+    alternatives: list[Any]
+    partial_credit_boundaries: list[Any]
+    follow_through_rules: list[Any]
 
 
 class CanonicalSolution(BaseModel):
@@ -146,6 +161,8 @@ class IndependentSolver:
             deterministic = solve_computer_science_contract(raw_item)
         if deterministic is None:
             deterministic = solve_economics_contract(raw_item)
+        if deterministic is None:
+            deterministic = solve_selected_response(raw_item)
         expression = context.get("calculation_expression")
         variables = context.get("calculation_variables")
         expressions = context.get("calculation_expressions")
@@ -191,7 +208,7 @@ class IndependentSolver:
                 outputs,
                 steps,
             )
-        if deterministic:
+        if deterministic and isinstance(deterministic.get("answer"), dict):
             response_slots = list(deterministic["answer"])
         elif not response_slots and _requires_numeric_contract(raw_item):
             raise ValueError(f"{item_id} unsupported closed numeric output contract")
@@ -225,16 +242,20 @@ class IndependentSolver:
                     "worked query. SQL_VALIDATION_FINDINGS="
                     + json.dumps(list(correction_findings), ensure_ascii=False, sort_keys=True)
                 )
-            result = dict(
-                self.client.generate_json(
+            raw_result = self.client.generate_json(
                     "Independently solve this UK A-level assessment item. Do not "
                     "infer or reproduce a draft mark scheme. Recompute every numeric "
                     "result and cite only the supplied evidence IDs; when sources is "
                     "empty, evidence_ids must be an empty array. For multiple choice, "
                     "return the complete option text rather than its number or letter. "
-                    "Return JSON with "
-                    "steps, answer, mark_points, evidence_ids, alternatives, "
-                    "partial_credit_boundaries and follow_through_rules."
+                    "Return exactly one JSON object with these seven top-level fields, "
+                    "and no others: steps, answer, mark_points, evidence_ids, alternatives, "
+                    "partial_credit_boundaries, follow_through_rules. Every field is required; "
+                    "every array must be present explicitly even when empty; do not return null. "
+                    'For an open response the literal envelope is: {"steps":["reasoning step"],'
+                    '"answer":"complete answer","mark_points":["creditable point"],'
+                    '"evidence_ids":[],"alternatives":[],"partial_credit_boundaries":[],'
+                    '"follow_through_rules":[]}. '
                     + response_instructions
                     + correction
                     + "\n"
@@ -246,7 +267,25 @@ class IndependentSolver:
                         ensure_ascii=False,
                     )
                 )
-            )
+            try:
+                envelope = SolverResponseEnvelope.model_validate(raw_result, strict=True)
+            except ValidationError as error:
+                raise ValueError(
+                    f"{item_id} returned an invalid solver response envelope"
+                ) from error
+            if response_slots:
+                valid_shape = isinstance(envelope.answer, dict) and isinstance(
+                    envelope.mark_points, dict
+                )
+            else:
+                valid_shape = isinstance(envelope.answer, str) and isinstance(
+                    envelope.mark_points, list
+                )
+            if not valid_shape:
+                raise ValueError(
+                    f"{item_id} returned an invalid solver response envelope"
+                )
+            result = envelope.model_dump()
 
         numeric_results: dict[str, float] = (
             dict(result.get("numeric_results") or {}) if deterministic else {}

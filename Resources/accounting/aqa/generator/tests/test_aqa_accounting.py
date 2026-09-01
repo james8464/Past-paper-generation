@@ -23,7 +23,8 @@ from aqaaccountgen.generator import build_paper
 from aqaaccountgen.syllabus import load_syllabus
 from pypdf import PdfReader
 
-from Backend.Core.independent_solver import reconcile_solution
+from Backend.Core.independent_solver import IndependentSolver, reconcile_solution
+from tests.support.solver_responses import complete_solver_response
 
 ROOT = Path(__file__).resolve().parents[1]
 SYLLABUS = load_syllabus(ROOT / "data" / "syllabus.json")
@@ -87,14 +88,18 @@ def test_shareholder_question_uses_the_same_visible_case_for_generator_context()
 
 def test_shareholder_visible_source_reaches_reviewer_and_solver_without_answer_keys() -> None:
     from Backend.Core.ai_assessment import _Task, _task_source
-    from Backend.Core.independent_solver import IndependentSolver
 
     class CapturingSolver:
         payload: dict[str, object]
 
         def generate_json(self, prompt: str) -> dict[str, object]:
             self.payload = json.loads(prompt.rsplit("\n", 1)[-1])
-            return {"answer": "A conditional retain-or-sell judgement.", "evidence_ids": []}
+            return complete_solver_response(
+                {
+                    "answer": "A conditional retain-or-sell judgement.",
+                    "mark_points": ["A conditional retain-or-sell judgement."],
+                }
+            )
 
     paper = build_paper(RULES["paper_1"], SYLLABUS, 26083108)
     option = paper.sections[-1].options[0]

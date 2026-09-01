@@ -11,6 +11,8 @@ def q(
     kind: str,
     command: str,
     ao: dict[str, int],
+    operation: str | None = None,
+    source: str = "none",
 ) -> QuestionRule:
     return QuestionRule(
         id=id,
@@ -18,7 +20,37 @@ def q(
         kind=kind,
         command_word=command,
         assessment_objectives=ao,
+        task_operation=operation or (
+            "transform"
+            if kind == "calculation"
+            else "judge"
+            if command.casefold() in {"evaluate", "assess", "discuss", "recommend"}
+            else "analyse"
+            if kind == "analysis"
+            else "retrieve"
+        ),
+        source_dependency=source,
     )
+
+
+def mcq(ao: str, operation: str, source: str) -> QuestionRule:
+    return q("mcq", 1, "multiple_choice", "Select", {ao: 1}, operation, source)
+
+
+_BUSINESS_APPLIED = {
+    5: ("transform", "stem"),
+    6: ("analyse", "figure"),
+    7: ("transform", "figure"),
+    10: ("transform", "figure"),
+    12: ("analyse", "figure"),
+    13: ("analyse", "figure"),
+}
+_BUSINESS_MCQ_OVERRIDES = {
+    number: [mcq("AO2", *(_BUSINESS_APPLIED[number]))]
+    if number in _BUSINESS_APPLIED
+    else [mcq("AO1", "retrieve", "none")]
+    for number in range(1, 16)
+}
 
 
 RULES = {
@@ -34,8 +66,9 @@ RULES = {
                 id="A", title="Multiple choice", option_count=15,
                 answer_options=15, option_marks=1,
                 questions=[
-                    q("mcq", 1, "multiple_choice", "Select", {"AO1": 1})
+                    mcq("AO1", "retrieve", "none")
                 ],
+                question_overrides=_BUSINESS_MCQ_OVERRIDES,
             ),
             SectionRule(
                 id="B", title="Short and extended response", option_count=1,

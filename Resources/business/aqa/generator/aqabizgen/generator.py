@@ -13,6 +13,7 @@ from Backend.Core.exam_blueprints import (
     MarkSchemePoint,
     PaperRule,
     QuestionRule,
+    resolve_question_rules,
     validate_generated_paper,
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
@@ -35,6 +36,23 @@ MARKETS = [
     "accessible tourism",
     "repairable electronics",
 ]
+MCQ_TOPIC_IDS = {
+    1: "business-1",
+    2: "business-2",
+    3: "business-3",
+    4: "business-4",
+    5: "business-5",
+    6: "business-4",
+    7: "business-5",
+    8: "business-8",
+    9: "business-9",
+    10: "business-4",
+    11: "business-6",
+    12: "business-10",
+    13: "business-7",
+    14: "business-2",
+    15: "business-10",
+}
 FACTS = {
     "business-1": ("Which objective is most directly concerned with owners' return?", "Profit", ["Market mapping", "Capacity utilisation", "Labour turnover"]),
     "business-2": ("Which leadership style gives employees the greatest role in decisions?", "Democratic", ["Autocratic", "Paternalistic only", "Scientific"]),
@@ -46,6 +64,13 @@ FACTS = {
     "business-8": ("Which Ansoff option combines new products with new markets?", "Diversification", ["Market penetration", "Market development", "Product development"]),
     "business-9": ("Which method joins two businesses into one ownership structure?", "Merger", ["Organic growth", "Delegation", "Benchmarking"]),
     "business-10": ("Which concept describes a strategy becoming misaligned gradually?", "Strategic drift", ["Economies of scale", "Market mapping", "Job enrichment"]),
+}
+ALTERNATE_FACTS = {
+    14: (
+        "Which leadership style gives a manager sole authority over decisions?",
+        "Autocratic",
+        ["Democratic", "Laissez-faire", "Paternalistic only"],
+    ),
 }
 
 
@@ -61,17 +86,21 @@ def build_paper(
     for section_rule in rule.sections:
         options: list[GeneratedOption] = []
         for option_index in range(section_rule.option_count):
+            question_rules = resolve_question_rules(section_rule, option_index + 1)
             business = rng.choice(BUSINESSES)
             market = rng.choice(MARKETS)
             case_id = rng.randint(1000, 9999)
             values = _values(rng)
             questions: list[GeneratedQuestion] = []
-            for question_index, question_rule in enumerate(section_rule.questions):
+            for question_index, question_rule in enumerate(question_rules):
                 topic = topics[topic_cursor % len(topics)]
                 topic_cursor += 1
                 if question_rule.kind == "multiple_choice":
+                    required_topic = MCQ_TOPIC_IDS.get(option_index + 1)
+                    if required_topic:
+                        topic = next(item for item in topics if item.id == required_topic)
                     question = _mcq(
-                        option_index + 1, topic, rng
+                        option_index + 1, topic, rng, question_rule
                     )
                 else:
                     question = _written_question(
@@ -85,22 +114,10 @@ def build_paper(
                     )
                 questions.append(question)
             stimulus_count = _stimulus_count(rule.id, section_rule.id)
-            chart_title = f"Performance index for {business}"
-            chart_labels = ["2021", "2022", "2023", "2024", "2025"]
-            chart_values = values
-            if (
-                rule.id == "paper_1"
-                and section_rule.id == "A"
-                and option_index + 1 == 13
-            ):
-                chart_title = f"Performance against target for {business}"
-                chart_labels = [
-                    "Capacity utilisation",
-                    "Labour turnover",
-                    "Market share",
-                    "ROCE",
-                ]
-                chart_values = [88, 17, 15, 12]
+            has_shared_chart = not (rule.id == "paper_1" and section_rule.id == "A")
+            chart_title = f"Performance index for {business}" if has_shared_chart else ""
+            chart_labels = ["2021", "2022", "2023", "2024", "2025"] if has_shared_chart else []
+            chart_values = values if has_shared_chart else []
             options.append(
                 GeneratedOption(
                     id=f"{section_rule.id}{option_index + 1}",
@@ -180,7 +197,12 @@ def _stimulus_count(paper_id: str, section_id: str) -> int:
     return 0
 
 
-def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedQuestion:
+def _mcq(
+    number: int,
+    topic: Topic,
+    rng: random.Random,
+    rule: QuestionRule,
+) -> GeneratedQuestion:
     business = rng.choice(BUSINESSES)
     authoring_context: dict[str, object] = {}
     if number == 6:
@@ -195,6 +217,24 @@ def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedQuestion:
             "Figure 1 shows a change in the break-even point of a product from M to N. "
             "Which combination of changes is most likely to explain the movement?"
         )
+        authoring_context = {
+            "preserve_prompt": True,
+            "preserve_mark_scheme": True,
+            "selected_response_contract": {
+                "version": "selected-response-v1",
+                "operation": "break_even_change",
+                "inputs": {
+                    "fixed_cost_before": "60",
+                    "price_before": "5",
+                    "variable_cost_before": "3",
+                    "fixed_cost_after": "60",
+                    "price_after": "6",
+                    "variable_cost_after": "2",
+                },
+                "unit": "ratio",
+                "decimal_places": 1,
+            },
+        }
     elif number == 7:
         correct = "£3m"
         choices = [correct, "£7m", "£10m", "£14m"]
@@ -202,6 +242,22 @@ def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedQuestion:
             f"The financial data shown apply to {business}. What was its profit for "
             "the year after taxation?"
         )
+        authoring_context = {
+            "preserve_prompt": True,
+            "preserve_mark_scheme": True,
+            "selected_response_contract": {
+                "version": "selected-response-v1",
+                "operation": "after_tax_profit",
+                "inputs": {
+                    "revenue": "20",
+                    "cost_of_sales": "6",
+                    "operating_expenses": "4",
+                    "taxation": "7",
+                },
+                "unit": "GBPm",
+                "decimal_places": 0,
+            },
+        }
     elif number == 10:
         correct = "Factory B"
         choices = [correct, "Factory A", "Factory C", "Factory D"]
@@ -209,13 +265,42 @@ def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedQuestion:
             f"{business} compares four factories. Which factory has the highest labour "
             "productivity?"
         )
+        authoring_context = {
+            "preserve_prompt": True,
+            "preserve_mark_scheme": True,
+            "selected_response_contract": {
+                "version": "selected-response-v1",
+                "operation": "highest_productivity",
+                "inputs": {},
+                "rows": [
+                    {"label": "Factory A", "output": "900", "employees": "60"},
+                    {"label": "Factory B", "output": "840", "employees": "40"},
+                    {"label": "Factory C", "output": "800", "employees": "50"},
+                    {"label": "Factory D", "output": "750", "employees": "50"},
+                ],
+                "unit": "ratio",
+                "decimal_places": 2,
+            },
+        }
     elif number == 12:
-        correct = "Option B"
-        choices = [correct, "Option A", "Option C", "Option D"]
+        correct = "Strategic drift"
+        choices = [correct, "Strategic fit", "Market penetration", "Retrenchment"]
         prompt = (
-            "Which option in the matrix represents high external change and low "
-            "strategic change?"
+            "The evidence table shows rapid external change but only slow change in "
+            "the business's strategy. Which concept best describes the resulting "
+            "widening mismatch?"
         )
+        authoring_context = {
+            "preserve_prompt": True,
+            "preserve_mark_scheme": True,
+            "selected_response_contract": {
+                "version": "selected-response-v1",
+                "operation": "strategic_drift",
+                "inputs": {"external_change": "high", "strategic_change": "low"},
+                "unit": "classification",
+                "decimal_places": 0,
+            },
+        }
     elif number == 13:
         correct = "Statement 1 is true, Statement 2 is false"
         choices = [
@@ -232,22 +317,21 @@ def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedQuestion:
         authoring_context = {
             "preserve_prompt": True,
             "preserve_mark_scheme": True,
-            "source_data": {
-                "measures": [
-                    "Capacity utilisation",
-                    "Labour turnover",
-                    "Market share",
-                    "ROCE",
+            "selected_response_contract": {
+                "version": "selected-response-v1",
+                "operation": "performance_statements",
+                "inputs": {},
+                "rows": [
+                    {"label": "Capacity utilisation", "target": "90", "actual": "88", "better_when": "higher"},
+                    {"label": "Labour turnover", "target": "12", "actual": "17", "better_when": "lower"},
+                    {"label": "Market share", "target": "13", "actual": "15", "better_when": "higher"},
+                    {"label": "ROCE", "target": "16", "actual": "12", "better_when": "higher"},
                 ],
-                "targets": [90, 12, 13, 16],
-                "actuals": [88, 17, 15, 12],
-            },
-            "verified_answers": {
-                "statement_1": True,
-                "statement_2": False,
+                "unit": "ratio",
+                "decimal_places": 0,
             },
         }
-    elif number % 5 == 0:
+    elif number == 5:
         revenue = rng.randint(14, 48)
         cost = rng.randint(4, revenue - 3)
         correct = f"£{revenue - cost}m"
@@ -264,15 +348,19 @@ def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedQuestion:
             f"{business} has revenue of £{revenue}m and cost of sales of "
             f"£{cost}m. What is its gross profit?"
         )
+        authoring_context = {
+            "selected_response_contract": {
+                "version": "selected-response-v1",
+                "operation": "gross_profit",
+                "inputs": {"revenue": str(revenue), "cost_of_sales": str(cost)},
+                "unit": "GBPm",
+                "decimal_places": 0,
+            }
+        }
     else:
-        stem, correct, distractors = FACTS[topic.id]
+        stem, correct, distractors = ALTERNATE_FACTS.get(number, FACTS[topic.id])
         choices = [correct, *distractors]
-        leads = [
-            f"After {number + 1} years of trading, {business} is reviewing its decisions.",
-            f"The {number + 2}-person management team at {business} is preparing a business plan.",
-            f"{business} has operated in the {rng.choice(MARKETS)} market for {number + 1} years.",
-        ]
-        prompt = f"{rng.choice(leads)} {stem}"
+        prompt = stem
     rng.shuffle(choices)
     answer = choices.index(correct)
     return GeneratedQuestion(
@@ -287,6 +375,11 @@ def _mcq(number: int, topic: Topic, rng: random.Random) -> GeneratedQuestion:
         correct_choice=answer,
         mark_scheme=[f"Option {'ABCD'[answer]}: {correct}."],
         authoring_context=authoring_context,
+        assessment_objectives=dict(rule.assessment_objectives),
+        intended_demand=rule.intended_demand or "low",
+        expected_minutes=rule.expected_minutes,
+        task_operation=rule.task_operation,
+        source_dependency=rule.source_dependency,
     )
 
 
@@ -497,6 +590,11 @@ def _written_question(
         mark_scheme=scheme,
         structured_mark_scheme=structured_scheme,
         authoring_context=authoring_context,
+        assessment_objectives=dict(rule.assessment_objectives),
+        intended_demand=rule.intended_demand or "standard",
+        expected_minutes=rule.expected_minutes,
+        task_operation=rule.task_operation,
+        source_dependency=rule.source_dependency,
     )
 
 

@@ -20,6 +20,9 @@ from cspapergen.ollama_client import (
 from cspapergen.question_bank import QUESTION_STYLES, STYLE_IDS, build_question
 from cspapergen.syllabus import load_syllabus
 
+from Backend.Core.independent_solver import IndependentSolver
+from tests.support.solver_responses import complete_solver_response
+
 
 def test_blueprint_is_deterministic_for_seed():
     syllabus = load_syllabus()
@@ -232,8 +235,6 @@ def test_generation_and_package_use_identical_demand_targets(paper_id) -> None:
 def test_solver_view_includes_candidate_visible_stimulus_and_hides_answers() -> None:
     from cspapergen.ollama_client import _part_solver_item
 
-    from Backend.Core.independent_solver import IndependentSolver
-
     blueprint = build_paper2_blueprint(load_syllabus(), seed=7)
     question = next(q for q in blueprint.questions if q.style_id == "software_classification")
     part = question.parts[0]
@@ -243,7 +244,9 @@ def test_solver_view_includes_candidate_visible_stimulus_and_hides_answers() -> 
         def generate_json(self, prompt):
             captured.append(prompt)
             answer = {"1": "Application software", "2": "Utility software"}
-            return {"answer": answer, "mark_points": answer, "steps": ["Use the diagram"]}
+            return complete_solver_response(
+                {"answer": answer, "mark_points": answer, "steps": ["Use the diagram"]}
+            )
 
     item = _part_solver_item(question, part)
     IndependentSolver(Client()).solve(item, [])

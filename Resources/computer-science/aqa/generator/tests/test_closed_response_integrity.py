@@ -20,6 +20,7 @@ from Backend.Core.independent_solver import (
     require_solution_matches_scheme,
 )
 from Backend.Core.providers import _ollama_json_schema
+from tests.support.solver_responses import complete_solver_response
 
 
 def classification():
@@ -58,7 +59,7 @@ def test_classification_slot_contract_reaches_solver_without_answers():
         def generate_json(self, prompt):
             captured.append(prompt)
             answer = {"1": "applications", "2": "Utility software"}
-            return {"answer": answer, "mark_points": answer}
+            return complete_solver_response({"answer": answer, "mark_points": answer})
 
     solution = IndependentSolver(Client()).solve(item, [])
     assert "Application software" not in captured[0]
@@ -76,7 +77,7 @@ def test_classification_final_review_rejects_swapped_slots_before_demand_review(
         def generate_json(self, prompt):
             calls.append(prompt)
             answer = {"1": "Utility software", "2": "Application software"}
-            return {"answer": answer, "mark_points": answer}
+            return complete_solver_response({"answer": answer, "mark_points": answer})
 
     with pytest.raises(ValueError, match="slot"):
         review_blueprint_difficulty(
@@ -118,7 +119,9 @@ def test_authoring_merge_preserves_closed_key_through_final_solver(raw_parts):
             assert "Application software" not in prompt
             assert "Utility software" not in prompt
             values = {"1": "Application software", "2": "Utility software"}
-            return {"steps": [], "answer": values, "mark_points": values}
+            return complete_solver_response(
+                {"steps": [], "answer": values, "mark_points": values}
+            )
 
     # Exercise the real final-review solver and reconciliation before the unrelated
     # demand-model call; losing the key makes this raise ValueError instead.
@@ -205,7 +208,7 @@ def test_sound_slot_accepts_documented_exact_and_rounded_results(answer):
     class Client:
         def generate_json(self, prompt):
             values = {"result": answer}
-            return {"answer": values, "mark_points": values}
+            return complete_solver_response({"answer": values, "mark_points": values})
 
     part = question.parts[0]
     solution = IndependentSolver(Client()).solve(_part_solver_item(question, part), [])
@@ -219,7 +222,7 @@ def test_sound_slot_rejects_wrong_units_and_incorrect_exact_or_rounded_result(an
     class Client:
         def generate_json(self, prompt):
             values = {"result": answer}
-            return {"answer": values, "mark_points": values}
+            return complete_solver_response({"answer": values, "mark_points": values})
 
     part = question.parts[0]
     solution = IndependentSolver(Client()).solve(_part_solver_item(question, part), [])
@@ -248,7 +251,7 @@ def test_prefilled_hz_slot_requires_the_correct_unit_scale(answer, valid):
     class Client:
         def generate_json(self, prompt):
             values = {"result": answer}
-            return {"answer": values, "mark_points": values}
+            return complete_solver_response({"answer": values, "mark_points": values})
 
     solution = IndependentSolver(Client()).solve(item, [])
     assert reconcile_solution(solution, part.marking.model_dump()).passed is valid

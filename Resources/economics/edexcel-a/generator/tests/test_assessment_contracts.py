@@ -41,6 +41,18 @@ def test_contestability_credit_is_specific_and_has_one_consistent_budget():
     assert "sunk" in text and "entry" in text
     assert "tesco" not in text and "defines market structures" not in text
     assert q.parts[1].marks == 1
+    assert q.parts[1].prompt == (
+        "Based on the table, which change directly reduces the barrier currently "
+        "classified as High?"
+    )
+    assert any(
+        cell.text == "High" for row in q.source_instance.rows for cell in row
+    )
+    keyed = next(
+        option.text for option in q.parts[1].options
+        if option.label == q.parts[1].correct_option
+    )
+    assert keyed == "Lower sunk costs"
     assert q.mark_scheme == []  # parent summaries cannot create duplicate credit
 
 

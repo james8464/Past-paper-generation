@@ -18,6 +18,7 @@ from Backend.Core.assessment_checkpoints import (
     AssessmentCheckpointStore,
     identity_for_blueprint,
 )
+from tests.support.solver_responses import complete_solver_response
 
 GUIDANCE = [
     "AO1: Defines the exact syllabus concept used in the question.",
@@ -115,7 +116,9 @@ def test_solver_view_includes_chart_values_and_all_choices_without_answer_key() 
     class Client:
         def generate_json(self, prompt):
             captured.append(prompt)
-            return {"answer": part.options[0].text, "mark_points": [part.options[0].text], "steps": ["Read the chart"]}
+            return complete_solver_response(
+                {"answer": part.options[0].text, "mark_points": [part.options[0].text], "steps": ["Read the chart"]}
+            )
 
     item = _question_solver_item(question, part)
     IndependentSolver(Client()).solve(item, [])
