@@ -327,7 +327,7 @@ def test_cs_review_identity_changes_with_same_band_but_changed_task_or_time():
                 profile_fit=True,
                 observed_cognitive_operations=first.required_cognitive_operations,
                 estimated_minutes=first.expected_minutes_min,
-            ).model_dump(mode="json")
+            ).model_dump(mode="json", exclude={"public_task_operation_evidence"})
 
     old = require_difficulty_review(
         Client(),

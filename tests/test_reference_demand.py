@@ -541,7 +541,7 @@ def test_assessment_package_records_the_exact_reference_demand_audit(
                 profile_fit=True,
                 observed_cognitive_operations=target.required_cognitive_operations,
                 estimated_minutes=target.expected_minutes_min,
-            ).model_dump(mode="json")
+            ).model_dump(mode="json", exclude={"public_task_operation_evidence"})
 
     from Backend.Core.model_review import require_difficulty_review
 

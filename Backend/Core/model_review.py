@@ -515,7 +515,7 @@ def difficulty_review(
     if (
         not isinstance(raw, dict)
         or required_response_fields - raw.keys()
-        or raw.get("public_task_operation_evidence") is not None
+        or "public_task_operation_evidence" in raw
     ):
         raise ValueError(f"{item_id} returned an invalid difficulty review response: missing checks")
     try:

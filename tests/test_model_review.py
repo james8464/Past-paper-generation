@@ -66,7 +66,7 @@ def test_live_difficulty_response_must_explicitly_include_every_check(missing) -
         approved=True, estimated_demand="low", reasoning_steps=1,
         tariff_fit=True, command_word_fit=True, context_fit=True, profile_fit=True,
         observed_cognitive_operations=["retrieve"], estimated_minutes=1.5,
-    ).model_dump(mode="json")
+    ).model_dump(mode="json", exclude={"public_task_operation_evidence"})
     del response[missing]
     with pytest.raises(ValueError, match="invalid difficulty review response"):
         model_review.difficulty_review(
@@ -80,7 +80,7 @@ def test_live_difficulty_response_rejects_extra_raw_fields() -> None:
         approved=True, estimated_demand="low", reasoning_steps=1,
         tariff_fit=True, command_word_fit=True, context_fit=True, profile_fit=True,
         observed_cognitive_operations=["retrieve"], estimated_minutes=1.5,
-    ).model_dump(mode="json")
+    ).model_dump(mode="json", exclude={"public_task_operation_evidence"})
     response["confidence"] = 0.9
     with pytest.raises(ValueError, match="invalid difficulty review response"):
         model_review.difficulty_review(
@@ -507,7 +507,7 @@ def test_difficulty_prompt_distinguishes_authored_sql_from_supplied_sql_analysis
         profile_fit=True,
         observed_cognitive_operations=["program"],
         estimated_minutes=3.0,
-    ).model_dump(mode="json")
+    ).model_dump(mode="json", exclude={"public_task_operation_evidence"})
     client = ReviewClient(response)
     model_review.difficulty_review(
         client,
@@ -559,7 +559,7 @@ def test_difficulty_prompt_limits_declarative_sql_fact_to_authored_select_or_ins
         profile_fit=True,
         observed_cognitive_operations=[observed_operation],
         estimated_minutes=1.5,
-    ).model_dump(mode="json")
+    ).model_dump(mode="json", exclude={"public_task_operation_evidence"})
     client = ReviewClient(response)
 
     model_review.difficulty_review(
@@ -604,7 +604,7 @@ def test_sql_literal_fact_does_not_mirror_a_program_target_for_supplied_analysis
         profile_fit=True,
         observed_cognitive_operations=["analyse"],
         estimated_minutes=1.5,
-    ).model_dump(mode="json")
+    ).model_dump(mode="json", exclude={"public_task_operation_evidence"})
     client = ReviewClient(response)
 
     with pytest.raises(ValueError, match="missing required cognitive operations: program"):
@@ -728,16 +728,25 @@ def test_raw_model_operations_reject_duplicates_unknowns_and_normalisation(
         )
 
 
-def test_raw_model_response_cannot_supply_deterministic_operation_evidence() -> None:
+@pytest.mark.parametrize(
+    "provider_value",
+    [
+        None,
+        {
+            "schema_version": 1,
+            "source": "deterministic-public-task-v1",
+            "candidate_task_sha256": "0" * 64,
+            "candidate_authors_declarative_sql": True,
+            "declarative_sql_statement_kind": "SELECT",
+            "verified_operations": ["program"],
+        },
+    ],
+)
+def test_raw_model_response_cannot_supply_deterministic_operation_evidence(
+    provider_value: object,
+) -> None:
     response = _difficulty_raw_with_operations(["analyse"])
-    response["public_task_operation_evidence"] = {
-        "schema_version": 1,
-        "source": "deterministic-public-task-v1",
-        "candidate_task_sha256": "0" * 64,
-        "candidate_authors_declarative_sql": True,
-        "declarative_sql_statement_kind": "SELECT",
-        "verified_operations": ["program"],
-    }
+    response["public_task_operation_evidence"] = provider_value
 
     with pytest.raises(ValueError, match="invalid difficulty review response"):
         model_review.difficulty_review(
