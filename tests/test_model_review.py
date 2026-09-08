@@ -996,7 +996,12 @@ def test_candidate_projection_excludes_only_declared_evidence_and_preserves_cont
         review_content={
             "prompt": "Use the source value.",
             "options": ["B", "A", "C", "D"],
+            "source_instance": {
+                "provenance": "reviewed-public-source",
+                "value": 10.5,
+            },
             "authoring_context": {
+                "provenance": "ai-authored",
                 "typed_source_contract": {"value": 10.5, "units": "percent"},
                 "difficulty_evidence": {"approved": True},
                 "content_review": {"approved": True},
@@ -1007,6 +1012,10 @@ def test_candidate_projection_excludes_only_declared_evidence_and_preserves_cont
     assert projection.review_content == {
         "prompt": "Use the source value.",
         "options": ["B", "A", "C", "D"],
+        "source_instance": {
+            "provenance": "reviewed-public-source",
+            "value": 10.5,
+        },
         "authoring_context": {
             "typed_source_contract": {"value": 10.5, "units": "percent"}
         },

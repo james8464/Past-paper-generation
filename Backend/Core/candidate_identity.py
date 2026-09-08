@@ -13,17 +13,23 @@ CANDIDATE_PROJECTION_VERSION = "difficulty-candidate-v1"
 
 # Review results and host-computed identities are evidence about content, not
 # candidate content. Every other field, including authoring_context contracts,
-# remains identity-bearing.
+# remains identity-bearing. The overloaded ``provenance`` key is handled by its
+# candidate-source role below.
 EVIDENCE_FREE_EXCLUDED_FIELDS = frozenset(
     {
         "candidate_content_identity",
         "content_review",
         "difficulty_evidence",
         "open_credit_review",
-        "provenance",
         "reviewed_blueprint_sha256",
         "reviewed_content_sha256",
     }
+)
+
+# ``provenance`` is overloaded: question/authoring provenance is review metadata,
+# while these typed candidate-source containers use it as public source content.
+_SOURCE_PROVENANCE_ROLES = frozenset(
+    {"rendered_stimulus", "source_instance", "stimulus"}
 )
 
 
@@ -161,15 +167,19 @@ def _mapping(value: Any) -> dict[str, Any]:
     return deepcopy(value)
 
 
-def _without_evidence(value: Any) -> Any:
+def _without_evidence(value: Any, *, path: tuple[str, ...] = ()) -> Any:
     if isinstance(value, dict):
         return {
-            str(key): _without_evidence(child)
+            str(key): _without_evidence(child, path=(*path, str(key)))
             for key, child in value.items()
             if str(key) not in EVIDENCE_FREE_EXCLUDED_FIELDS
+            and not (
+                str(key) == "provenance"
+                and (not path or path[-1] not in _SOURCE_PROVENANCE_ROLES)
+            )
         }
     if isinstance(value, list):
-        return [_without_evidence(child) for child in value]
+        return [_without_evidence(child, path=path) for child in value]
     if isinstance(value, tuple):
-        return [_without_evidence(child) for child in value]
+        return [_without_evidence(child, path=path) for child in value]
     return value

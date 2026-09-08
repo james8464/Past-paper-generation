@@ -462,15 +462,27 @@ private struct QualityInspector: View {
                         )
                         LabeledContent(
                             "Reasoning range",
-                            value: "\(report.difficultyReasoningFitItems) of \(report.difficultyReviewedItems) fit"
+                            value: fitCount(
+                                report.difficultyReasoningFitItems,
+                                reviewed: report.difficultyReviewedItems,
+                                suffix: "fit"
+                            )
                         )
                         LabeledContent(
                             "Context use",
-                            value: "\(report.difficultyContextFitItems) of \(report.difficultyReviewedItems) fit"
+                            value: fitCount(
+                                report.difficultyContextFitItems,
+                                reviewed: report.difficultyReviewedItems,
+                                suffix: "fit"
+                            )
                         )
                         LabeledContent(
                             "Shortcut resistance",
-                            value: "\(report.difficultyShortcutFitItems) of \(report.difficultyReviewedItems) pass"
+                            value: fitCount(
+                                report.difficultyShortcutFitItems,
+                                reviewed: report.difficultyReviewedItems,
+                                suffix: "pass"
+                            )
                         )
                     }
                     if let coverage = report.referenceDemandExtractionCoverage {
@@ -547,6 +559,10 @@ private struct QualityInspector: View {
         presentation.referenceDemandDetail
     }
 
+    private func fitCount(_ count: Int?, reviewed: Int, suffix: String) -> String {
+        count.map { "\($0) of \(reviewed) \(suffix)" } ?? "Unknown"
+    }
+
     private func qualificationState(
         saved: Bool?,
         current: Bool
@@ -571,16 +587,6 @@ private struct QualityInspector: View {
 }
 
 private extension GenerationQualityState {
-    var title: String {
-        switch self {
-        case .passed: "Passed"
-        case .pending: "Pending"
-        case .preview: "Preview"
-        case .atCreation: "At creation"
-        case .unknown: "Unknown"
-        }
-    }
-
     var systemImage: String {
         switch self {
         case .passed: "checkmark.circle.fill"

@@ -178,6 +178,30 @@ final class PaperCreatorTests: XCTestCase {
         )
     }
 
+    func testLiveSimilarityPassDoesNotBecomeOriginalityPassWithoutReviewedProvenance() throws {
+        let unknown = try loadQualityReport(
+            #"{"request":{"subject":"economics_aqa","paper":"1","seed":9,"preview_mode":false},"evidence":{"assessment_validation":{"form_id":"unknown-provenance","item_count":1,"fingerprints_verified":true,"reference_demand":{"passed":true,"items_checked":1,"failed_checks":[],"item_review_evidence":{"reviewed_items":1,"approved_items":1,"coverage":1.0,"reasoning_range_fit":1,"context_fit":1,"shortcut_resistant":1}}},"novelty_validation":{"passed":true,"historic_comparisons":10}},"outputs":{}}"#
+        )
+        let unreviewed = try loadQualityReport(
+            #"{"request":{"subject":"economics_aqa","paper":"1","seed":9,"preview_mode":false},"evidence":{"assessment_validation":{"form_id":"unreviewed-provenance","item_count":1,"fingerprints_verified":true,"authoring_provenance":{"schema_version":1,"items":1,"counts":{"built-in":1},"reviewed_fixed_items":0,"ai_authored_items":0,"ai_authored_stem_items":0,"unreviewed_or_builtin_items":1,"unknown_items":0},"reference_demand":{"passed":true,"items_checked":1,"failed_checks":[],"item_review_evidence":{"reviewed_items":1,"approved_items":1,"coverage":1.0,"reasoning_range_fit":1,"context_fit":1,"shortcut_resistant":1}}},"novelty_validation":{"passed":true,"historic_comparisons":10}},"outputs":{}}"#
+        )
+
+        for report in [unknown, unreviewed] {
+            let presentation = GenerationQualityPolicy.presentation(for: report)
+            XCTAssertEqual(presentation.originalityState, .unknown)
+            XCTAssertTrue(presentation.originalityDetail.contains("similarity checks passed"))
+            XCTAssertTrue(
+                presentation.originalityDetail.contains("unknown")
+                    || presentation.originalityDetail.contains("not reviewed originality")
+            )
+            XCTAssertTrue(
+                presentation.diagnosticLines.contains(
+                    "Originality (Unknown): \(presentation.originalityDetail)"
+                )
+            )
+        }
+    }
+
     func testLegacyManifestDoesNotInventModeCoverageOrPathEvidence() throws {
         let report = try loadQualityReport(
             #"{"job_id":"","generator":{"id":"","version":""},"evidence":{"assessment_validation":{"item_count":4,"fingerprints_verified":true,"reference_demand":{"passed":true,"items_checked":4}},"novelty_validation":{"historic_comparisons":0}},"outputs":{}}"#
@@ -217,6 +241,30 @@ final class PaperCreatorTests: XCTestCase {
         XCTAssertEqual(GenerationQualityPolicy.presentation(for: mismatched).referenceDemandState, .unknown)
         XCTAssertEqual(GenerationQualityPolicy.presentation(for: malformedFailures).referenceDemandState, .unknown)
         XCTAssertEqual(malformedProvenance.authoringProvenance.kind, .unknown)
+    }
+
+    func testMissingOrContradictoryFitCountersCannotPassReferenceDemand() throws {
+        let missing = try loadQualityReport(
+            #"{"request":{"subject":"economics_aqa","paper":"1","seed":7,"preview_mode":false},"evidence":{"assessment_validation":{"form_id":"missing-fits","item_count":4,"fingerprints_verified":true,"reference_demand":{"passed":true,"items_checked":4,"failed_checks":[],"item_review_evidence":{"reviewed_items":4,"approved_items":4,"coverage":1.0}}},"novelty_validation":{"passed":true,"historic_comparisons":10}},"outputs":{}}"#
+        )
+        let zero = try loadQualityReport(
+            #"{"request":{"subject":"economics_aqa","paper":"1","seed":7,"preview_mode":false},"evidence":{"assessment_validation":{"form_id":"zero-fits","item_count":4,"fingerprints_verified":true,"reference_demand":{"passed":true,"items_checked":4,"failed_checks":[],"item_review_evidence":{"reviewed_items":4,"approved_items":4,"coverage":1.0,"reasoning_range_fit":0,"context_fit":0,"shortcut_resistant":0}}},"novelty_validation":{"passed":true,"historic_comparisons":10}},"outputs":{}}"#
+        )
+
+        XCTAssertNil(missing.difficultyReasoningFitItems)
+        XCTAssertNil(missing.difficultyContextFitItems)
+        XCTAssertNil(missing.difficultyShortcutFitItems)
+        XCTAssertEqual(
+            GenerationQualityPolicy.presentation(for: missing).referenceDemandState,
+            .unknown
+        )
+        XCTAssertEqual(zero.difficultyReasoningFitItems, 0)
+        XCTAssertEqual(zero.difficultyContextFitItems, 0)
+        XCTAssertEqual(zero.difficultyShortcutFitItems, 0)
+        XCTAssertNotEqual(
+            GenerationQualityPolicy.presentation(for: zero).referenceDemandState,
+            .passed
+        )
     }
 
     func testPartialReviewAndRecordedCandidatePathRemainSeparateStates() throws {

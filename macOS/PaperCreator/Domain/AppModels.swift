@@ -690,6 +690,16 @@ enum GenerationQualityState: Equatable {
     case preview
     case atCreation
     case unknown
+
+    var title: String {
+        switch self {
+        case .passed: "Passed"
+        case .pending: "Pending"
+        case .preview: "Preview"
+        case .atCreation: "At creation"
+        case .unknown: "Unknown"
+        }
+    }
 }
 
 struct GenerationQualityPresentation: Equatable {
@@ -723,9 +733,9 @@ struct GenerationQualityReport: Equatable {
     let difficultyReviewedItems: Int
     let difficultyApprovedItems: Int?
     let difficultyReviewCoverage: Double?
-    let difficultyReasoningFitItems: Int
-    let difficultyContextFitItems: Int
-    let difficultyShortcutFitItems: Int
+    let difficultyReasoningFitItems: Int?
+    let difficultyContextFitItems: Int?
+    let difficultyShortcutFitItems: Int?
     let candidatePathEvidencePassed: Bool?
     let authoringProvenance: AuthoringProvenanceSummary
 
@@ -785,9 +795,9 @@ struct GenerationQualityReport: Equatable {
             difficultyReviewedItems: itemReview?["reviewed_items"] as? Int ?? 0,
             difficultyApprovedItems: itemReview?["approved_items"] as? Int,
             difficultyReviewCoverage: itemReview?["coverage"] as? Double,
-            difficultyReasoningFitItems: itemReview?["reasoning_range_fit"] as? Int ?? 0,
-            difficultyContextFitItems: itemReview?["context_fit"] as? Int ?? 0,
-            difficultyShortcutFitItems: itemReview?["shortcut_resistant"] as? Int ?? 0,
+            difficultyReasoningFitItems: itemReview?["reasoning_range_fit"] as? Int,
+            difficultyContextFitItems: itemReview?["context_fit"] as? Int,
+            difficultyShortcutFitItems: itemReview?["shortcut_resistant"] as? Int,
             candidatePathEvidencePassed: pathEvidence?["passed"] as? Bool,
             authoringProvenance: Self.decodeAuthoringProvenance(
                 assessment["authoring_provenance"] as? [String: Any],
@@ -864,7 +874,10 @@ enum GenerationQualityPolicy {
             originalityState = .preview
             originalityDetail = "Preview history comparison is skipped; authorship and originality are not reviewed."
         case .live where report.noveltyPassed == true:
-            originalityState = .passed
+            originalityState = switch report.authoringProvenance.kind {
+            case .unreviewed, .unknown: .unknown
+            case .reviewedFixedOnly, .aiAuthoredOnly, .mixed: .passed
+            }
             originalityDetail = "Saved-package similarity checks passed. " + provenanceDetail(report)
         case .live where report.noveltyPassed == false:
             originalityState = .pending
@@ -883,6 +896,9 @@ enum GenerationQualityPolicy {
             && report.referenceDemandPassed == true
             && report.difficultyReviewCoverage == 1.0
             && report.difficultyApprovedItems == report.referenceDemandItems
+            && report.difficultyReasoningFitItems == report.difficultyReviewedItems
+            && report.difficultyContextFitItems == report.difficultyReviewedItems
+            && report.difficultyShortcutFitItems == report.difficultyReviewedItems
             && report.referenceDemandFailedChecks?.isEmpty == true
         let referenceState: GenerationQualityState
         let referenceDetail: String
@@ -926,7 +942,7 @@ enum GenerationQualityPolicy {
                 "Saved mode: \(report.savedMode.rawValue)",
                 "Saved form: \(report.identity.formID ?? "Unknown")",
                 "Saved generator: \(report.identity.generatorID ?? "Unknown") \(report.identity.generatorVersion ?? "")".trimmingCharacters(in: .whitespaces),
-                "Originality: \(originalityDetail)",
+                "Originality (\(originalityState.title)): \(originalityDetail)",
                 "Reference demand: \(referenceDetail)",
                 "Candidate paths: \(pathDetail)",
             ]
@@ -963,12 +979,15 @@ enum GenerationQualityPolicy {
               approved <= report.difficultyReviewedItems,
               report.difficultyReviewedItems <= report.referenceDemandItems,
               (0.0 ... 1.0).contains(coverage),
-              report.difficultyReasoningFitItems >= 0,
-              report.difficultyReasoningFitItems <= report.difficultyReviewedItems,
-              report.difficultyContextFitItems >= 0,
-              report.difficultyContextFitItems <= report.difficultyReviewedItems,
-              report.difficultyShortcutFitItems >= 0,
-              report.difficultyShortcutFitItems <= report.difficultyReviewedItems
+              let reasoningFit = report.difficultyReasoningFitItems,
+              reasoningFit >= 0,
+              reasoningFit <= report.difficultyReviewedItems,
+              let contextFit = report.difficultyContextFitItems,
+              contextFit >= 0,
+              contextFit <= report.difficultyReviewedItems,
+              let shortcutFit = report.difficultyShortcutFitItems,
+              shortcutFit >= 0,
+              shortcutFit <= report.difficultyReviewedItems
         else { return false }
         let expectedCoverage = Double(report.difficultyReviewedItems)
             / Double(report.referenceDemandItems)

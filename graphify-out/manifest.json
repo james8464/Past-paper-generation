@@ -645,8 +645,8 @@
     "semantic_hash": "9deb2ada1cc834bbebf8bbad9c8978a1"
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1788302348.083101,
-    "ast_hash": "f183ff40672adf576fe5d6732c8e091b",
+    "mtime": 1788887695.881876,
+    "ast_hash": "e134142558a59191ef7c862d2ebb2ee7",
     "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
@@ -1105,8 +1105,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Domain/AppModels.swift": {
-    "mtime": 1788302387.1910431,
-    "ast_hash": "b2c890f7c66089079a73cc297f3fa564",
+    "mtime": 1788887695.8805785,
+    "ast_hash": "26fd193586dd5706d28b2523d586cd0f",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Domain/GenerationEstimator.swift": {
@@ -1120,8 +1120,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Generation/GeneratorWorkspaceView.swift": {
-    "mtime": 1788301899.1709995,
-    "ast_hash": "33a0e71755b2d5e6783bd0313368fd8d",
+    "mtime": 1788887695.881437,
+    "ast_hash": "c545b4742f6e3d7a124cbc01c449768f",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Onboarding/WelcomeHelpViews.swift": {
@@ -1330,8 +1330,8 @@
     "semantic_hash": ""
   },
   "tests/test_model_review.py": {
-    "mtime": 1788302114.6674924,
-    "ast_hash": "2adf830c145be1f149912d0d1ca199e8",
+    "mtime": 1788887718.8971841,
+    "ast_hash": "248449f6aabd502dc802118071813a95",
     "semantic_hash": ""
   },
   "Backend/Core/assessment_checkpoints.py": {
@@ -2100,8 +2100,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/tests/test_solver_source_adapter.py": {
-    "mtime": 1788300676.606208,
-    "ast_hash": "6aa4c381fd4e95c51a23cf33a254b9ca",
+    "mtime": 1788887635.6731305,
+    "ast_hash": "02eea70063c9c06b79804a72067a2230",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/tests/fixtures/task7f_solver_responses.json": {
@@ -2135,8 +2135,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/candidate_identity.py": {
-    "mtime": 1788300648.9630206,
-    "ast_hash": "009920a571632df92208eeff37de57d5",
+    "mtime": 1788887635.6736522,
+    "ast_hash": "c4998ee13f71d35e231d7abe82777052",
     "semantic_hash": ""
   }
 }

@@ -15,11 +15,19 @@ from pastpapergen.syllabus import load_syllabus
 
 from Backend.Core.assessment_contracts import EvidenceRecord
 from Backend.Core.assessment_package import _extract_items
-from Backend.Core.candidate_identity import candidate_content_identity
+from Backend.Core.candidate_identity import (
+    candidate_content_identity,
+    candidate_review_content,
+)
 from Backend.Core.independent_solver import (
     IndependentSolver,
     require_solution_matches_scheme,
 )
+from Backend.Core.model_review import (
+    require_difficulty_review,
+    validate_saved_difficulty_evidence,
+)
+from Backend.Core.reference_demand import build_item_demand_target, profile_for
 from tests.support.edexcel import forced_part
 from tests.support.solver_responses import complete_solver_response
 
@@ -99,6 +107,90 @@ def test_edexcel_identity_binds_selected_source_key_credit_and_contract() -> Non
         ) != baseline
 
 
+def test_edexcel_typed_source_provenance_is_live_visible_and_identity_bearing() -> None:
+    question = _paper("paper_1", 26083049).questions[0]
+    part = question.parts[0]
+    baseline = subject._difficulty_candidate(question, part)
+    changed_source = question.source_instance.model_copy(
+        update={"provenance": "reviewed-public-source"}
+    )
+    changed_question = question.model_copy(
+        update={"source_instance": changed_source}
+    )
+    changed_part = changed_question.parts[0]
+    changed = subject._difficulty_candidate(changed_question, changed_part)
+
+    assert candidate_review_content(baseline)["stimulus"]["provenance"] == (
+        "illustrative-generated"
+    )
+    assert candidate_review_content(changed)["stimulus"]["provenance"] == (
+        "reviewed-public-source"
+    )
+    assert baseline.identity_content["parent_source"]["source_instance"][
+        "provenance"
+    ] == "illustrative-generated"
+    assert "provenance" not in baseline.identity_content["parent_source"]
+    assert changed.identity_content["parent_source"]["source_instance"][
+        "provenance"
+    ] == "reviewed-public-source"
+    assert candidate_content_identity(changed) != candidate_content_identity(baseline)
+
+
+def test_edexcel_saved_review_rejects_changed_typed_source_provenance() -> None:
+    question = _paper("paper_1", 26083049).questions[0]
+    part = question.parts[0]
+    candidate = subject._difficulty_candidate(question, part)
+    target = build_item_demand_target(
+        subject._question_demand_items(question)[0],
+        profile_for("pearson-edexcel/economics-a-2015", "1"),
+    )
+    response = {
+        "approved": True,
+        "estimated_demand": target.demand_band,
+        "reasoning_steps": target.minimum_reasoning_steps,
+        "tariff_fit": True,
+        "command_word_fit": True,
+        "context_fit": True,
+        "profile_fit": True,
+        "observed_cognitive_operations": target.required_cognitive_operations,
+        "cognitive_operations_fit": True,
+        "reasoning_range_fit": True,
+        "shortcut_resistant": True,
+        "timing_fit": True,
+        "scaffolding_fit": True,
+        "estimated_minutes": target.expected_minutes_min,
+        "issues": [],
+    }
+    saved = require_difficulty_review(
+        Replay(response),
+        item_id="question-1-a",
+        subject="Edexcel A-level Economics A",
+        target=target,
+        candidate=candidate,
+        specification={},
+    ).model_dump(mode="json")
+    changed_question = question.model_copy(
+        update={
+            "source_instance": question.source_instance.model_copy(
+                update={"provenance": "reviewed-public-source"}
+            )
+        }
+    )
+
+    validate_saved_difficulty_evidence(
+        saved, target, item_id="question-1-a", candidate=candidate
+    )
+    with pytest.raises(ValueError, match="candidate content identity"):
+        validate_saved_difficulty_evidence(
+            saved,
+            target,
+            item_id="question-1-a",
+            candidate=subject._difficulty_candidate(
+                changed_question, changed_question.parts[0]
+            ),
+        )
+
+
 def test_edexcel_multipart_parent_credit_is_not_duplicated_in_part_identity() -> None:
     multipart = _paper("paper_1", 26083049).questions[0]
     part = multipart.parts[0]
@@ -136,6 +228,40 @@ def test_edexcel_export_recomputes_standalone_and_multipart_identity(paper_id) -
         candidate_content_identity(item["difficulty_candidate_projection"])
         for item in items
     ] == [candidate_content_identity(candidate) for candidate in live_candidates]
+
+
+def test_edexcel_export_identity_binds_typed_source_provenance() -> None:
+    blueprint = _paper("paper_1", 26083049)
+    question = blueprint.questions[0]
+    baseline = _extract_items(
+        blueprint.model_dump(mode="json"),
+        subject="economics_edexcel_a",
+        paper_number="1",
+    )[0]["difficulty_candidate_projection"]
+    changed_question = question.model_copy(
+        update={
+            "source_instance": question.source_instance.model_copy(
+                update={"provenance": "reviewed-public-source"}
+            )
+        }
+    )
+    changed_blueprint = blueprint.model_copy(
+        update={
+            "questions": [changed_question, *blueprint.questions[1:]],
+        }
+    )
+    changed = _extract_items(
+        changed_blueprint.model_dump(mode="json"),
+        subject="economics_edexcel_a",
+        paper_number="1",
+    )[0]["difficulty_candidate_projection"]
+
+    assert changed["identity_content"]["parent_source"]["source_instance"][
+        "provenance"
+    ] == (
+        "reviewed-public-source"
+    )
+    assert candidate_content_identity(changed) != candidate_content_identity(baseline)
 
 
 @pytest.mark.parametrize(
@@ -181,6 +307,9 @@ def test_actual_recorded_responses_cross_the_real_source_and_choice_boundary(
     )
     assert evidence == {"approved": True, "reached": "difficulty"}
     assert len(reached) == 1
+    assert candidate_review_content(reached[0]["candidate"])["stimulus"][
+        "provenance"
+    ] == "illustrative-generated"
 
 
 @pytest.mark.parametrize("route", ["multipart", "standalone", "mcq"])
