@@ -130,6 +130,7 @@ class GeneratedOption(BaseModel):
     chart_labels: list[str] = Field(default_factory=list)
     chart_values: list[float] = Field(default_factory=list)
     questions: list[GeneratedQuestion]
+    selection_context: dict[str, Any] = Field(default_factory=dict)
 
 
 class GeneratedSection(BaseModel):
@@ -137,6 +138,26 @@ class GeneratedSection(BaseModel):
     title: str
     instructions: str
     options: list[GeneratedOption]
+    answer_options: int | None = Field(default=None, gt=0, strict=True)
+    candidate_marks: int | None = Field(default=None, gt=0, strict=True)
+
+    @model_validator(mode="after")
+    def bind_selection_context(self) -> GeneratedSection:
+        if self.answer_options is not None and self.candidate_marks is not None:
+            for option in self.options:
+                expected = {
+                    "policy_id": "candidate-paths-v1",
+                    "section_id": self.id,
+                    "answer_options": self.answer_options,
+                    "candidate_marks": self.candidate_marks,
+                    "option_ids": [o.id for o in self.options],
+                    "bundle_id": option.id,
+                    "question_ids": [q.number for q in option.questions],
+                }
+                if option.selection_context and option.selection_context != expected:
+                    raise ValueError("saved option selection context is stale")
+                option.selection_context = expected
+        return self
 
 
 class GeneratedPaper(BaseModel):
@@ -175,7 +196,9 @@ def validate_rule(rule: PaperRule, syllabus_topic_ids: Iterable[str]) -> None:
                 f"{sorted(outside_paper)}"
             )
         if section.answer_options > section.option_count:
-            raise ValueError(f"{rule.id} section {section.id} answers more options than printed")
+            raise ValueError(
+                f"{rule.id} section {section.id} answers more options than printed"
+            )
         marks = sum(question.marks for question in section.questions)
         resolved_rules = [
             question
@@ -185,7 +208,9 @@ def validate_rule(rule: PaperRule, syllabus_topic_ids: Iterable[str]) -> None:
         for question in resolved_rules:
             if not question.assessment_objectives:
                 if objective_policy.explicit_allocations:
-                    raise ValueError(f"{rule.id} {question.id} needs explicit assessment objectives")
+                    raise ValueError(
+                        f"{rule.id} {question.id} needs explicit assessment objectives"
+                    )
                 question.assessment_objectives = _objective_allocation(
                     marks=question.marks,
                     kind=question.kind,
@@ -236,9 +261,20 @@ def validate_generated_paper(
         raise ValueError("generated paper has the wrong section count")
 
     seen_prompts: set[tuple[str, str]] = set()
-    for generated_section, section_rule in zip(paper.sections, rule.sections, strict=True):
+    for generated_section, section_rule in zip(
+        paper.sections, rule.sections, strict=True
+    ):
         if generated_section.id != section_rule.id:
-            raise ValueError(f"expected section {section_rule.id}, got {generated_section.id}")
+            raise ValueError(
+                f"expected section {section_rule.id}, got {generated_section.id}"
+            )
+        if (generated_section.answer_options, generated_section.candidate_marks) != (
+            section_rule.answer_options,
+            section_rule.candidate_marks,
+        ):
+            raise ValueError(
+                "generated section selection topology differs from its rule"
+            )
         if len(generated_section.options) != section_rule.option_count:
             raise ValueError(
                 f"section {section_rule.id} has {len(generated_section.options)} options, "
@@ -247,16 +283,25 @@ def validate_generated_paper(
         for option_index, option in enumerate(generated_section.options, start=1):
             resolved_rules = resolve_question_rules(section_rule, option_index)
             if len(option.questions) != len(section_rule.questions):
-                raise ValueError(f"section {section_rule.id} option {option.id} has wrong question count")
-            if option.chart_values and len(option.chart_labels) != len(option.chart_values):
-                raise ValueError(f"section {section_rule.id} option {option.id} has invalid chart data")
+                raise ValueError(
+                    f"section {section_rule.id} option {option.id} has wrong question count"
+                )
+            if option.chart_values and len(option.chart_labels) != len(
+                option.chart_values
+            ):
+                raise ValueError(
+                    f"section {section_rule.id} option {option.id} has invalid chart data"
+                )
             for question, question_rule in zip(
                 option.questions, resolved_rules, strict=True
             ):
                 if objective_policy_for(rule.code).computational and (
-                    not question.assessment_objectives or question.expected_minutes is None
+                    not question.assessment_objectives
+                    or question.expected_minutes is None
                 ):
-                    raise ValueError("explicit CS objectives and timing are required; saved metadata is stale")
+                    raise ValueError(
+                        "explicit CS objectives and timing are required; saved metadata is stale"
+                    )
                 _hydrate_assessment_metadata(
                     question,
                     question_rule=question_rule,
@@ -274,7 +319,9 @@ def validate_generated_paper(
                     question.command_word,
                 )
                 if actual != expected:
-                    raise ValueError(f"question {question.number} does not match rule {question_rule.id}")
+                    raise ValueError(
+                        f"question {question.number} does not match rule {question_rule.id}"
+                    )
                 if question.contract is not None and (
                     question.contract.item_id != question_rule.id
                     or question.contract.marks != question_rule.marks
@@ -286,9 +333,7 @@ def validate_generated_paper(
                         f"not match rule {question_rule.id}"
                     )
                 if question.contract is not None:
-                    question.contract.validate_evidence_ids(
-                        question.source_references
-                    )
+                    question.contract.validate_evidence_ids(question.source_references)
                 if (
                     question.assessment_objectives
                     != question_rule.assessment_objectives
@@ -301,7 +346,10 @@ def validate_generated_paper(
                         f"question {question.number} assessment metadata does not "
                         f"match rule {question_rule.id}"
                     )
-                if question.authoring_context.get("selected_response_contract") is not None:
+                if (
+                    question.authoring_context.get("selected_response_contract")
+                    is not None
+                ):
                     from Backend.Core.subjects.selected_response import (
                         solve_selected_response,
                     )
@@ -332,28 +380,23 @@ def validate_generated_paper(
                         f"question {question.number} uses an out-of-scope topic "
                         f"for section {section_rule.id}"
                     )
-                unknown_outcomes = (
-                    set(question.syllabus_outcomes) - section_topics
-                )
+                unknown_outcomes = set(question.syllabus_outcomes) - section_topics
                 if unknown_outcomes:
                     raise ValueError(
                         f"question {question.number} uses out-of-scope syllabus "
                         f"outcomes: {sorted(unknown_outcomes)}"
                     )
                 prompt_key = " ".join(question.prompt.casefold().split())
-                stimulus_key = " ".join(
-                    " ".join(option.stimulus).casefold().split()
-                )
+                stimulus_key = " ".join(" ".join(option.stimulus).casefold().split())
                 uniqueness_key = (prompt_key, stimulus_key)
                 if not prompt_key or uniqueness_key in seen_prompts:
-                    raise ValueError(f"question {question.number} is empty or duplicated")
-                seen_prompts.add(uniqueness_key)
-                if (
-                    question.kind != "multiple_choice"
-                    and not _prompt_uses_command_word(
-                        question.prompt,
-                        question_rule.command_word,
+                    raise ValueError(
+                        f"question {question.number} is empty or duplicated"
                     )
+                seen_prompts.add(uniqueness_key)
+                if question.kind != "multiple_choice" and not _prompt_uses_command_word(
+                    question.prompt,
+                    question_rule.command_word,
                 ):
                     raise ValueError(
                         f"question {question.number} prompt does not use command "
@@ -402,8 +445,12 @@ def validate_generated_paper(
                         f"question {question.number} repeats a mark-scheme point"
                     )
                 if question.kind == "multiple_choice":
-                    if len(question.choices) != 4 or question.correct_choice not in range(4):
-                        raise ValueError(f"question {question.number} has invalid multiple-choice data")
+                    if len(
+                        question.choices
+                    ) != 4 or question.correct_choice not in range(4):
+                        raise ValueError(
+                            f"question {question.number} has invalid multiple-choice data"
+                        )
                     correct = question.choices[question.correct_choice].casefold()
                     scheme = " ".join(question.mark_scheme).casefold()
                     if correct not in scheme:
@@ -421,14 +468,10 @@ def _hydrate_assessment_metadata(
     if not question.syllabus_outcomes:
         question.syllabus_outcomes = [question.topic_id]
     if not question.assessment_objectives:
-        question.assessment_objectives = dict(
-            question_rule.assessment_objectives
-        )
+        question.assessment_objectives = dict(question_rule.assessment_objectives)
     if question.expected_minutes is None:
         question.expected_minutes = question_rule.expected_minutes
-    question.intended_demand = (
-        question_rule.intended_demand or question.intended_demand
-    )
+    question.intended_demand = question_rule.intended_demand or question.intended_demand
     if question.task_operation is None:
         question.task_operation = question_rule.task_operation
     if question.source_dependency is None:
@@ -458,10 +501,7 @@ def _prompt_uses_command_word(prompt: str, command_word: str) -> bool:
         "analyze": {"analyse", "analyze"},
     }
     expected = aliases.get(command_word.casefold(), {command_word.casefold()})
-    words = {
-        word.strip(".,:;!?()[]{}'\"").casefold()
-        for word in prompt.split()
-    }
+    words = {word.strip(".,:;!?()[]{}'\"").casefold() for word in prompt.split()}
     return bool(words & expected)
 
 
@@ -582,9 +622,7 @@ def _structured_scheme(question: GeneratedQuestion) -> list[MarkSchemePoint]:
             result.append(
                 MarkSchemePoint(
                     text=(
-                        text
-                        if len(entries) == 1
-                        else f"{text} [{objective} credit]"
+                        text if len(entries) == 1 else f"{text} [{objective} credit]"
                     ),
                     marks=marks,
                     credit_type=credit_type,

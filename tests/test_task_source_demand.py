@@ -241,7 +241,7 @@ def test_per_option_rule_resolver_hydrates_task_source_and_objectives() -> None:
         duration_minutes=2,
         total_marks=2,
         seed=1,
-        sections=[GeneratedSection(id="A", title="Selected response", instructions="Answer all.", options=options)],
+        sections=[GeneratedSection(id="A", title="Selected response", instructions="Answer all.", options=options, answer_options=2, candidate_marks=2)],
     )
 
     validate_generated_paper(paper, rule, {"topic"})

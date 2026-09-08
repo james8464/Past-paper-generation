@@ -133,7 +133,7 @@ def build_paper(rule: PaperRule, syllabus: Syllabus, seed: int | None = None) ->
                 option = _written_option(rule, section_rule.id, option_index, topic, question_rules, rng)
             options.append(option)
         instructions = _instructions(rule.id, section_rule.id)
-        sections.append(GeneratedSection(id=section_rule.id, title=section_rule.title, instructions=instructions, options=options))
+        sections.append(GeneratedSection(id=section_rule.id, title=section_rule.title, instructions=instructions, options=options, answer_options=section_rule.answer_options, candidate_marks=section_rule.candidate_marks))
     paper = GeneratedPaper(
         paper_id=rule.id,
         paper_code=rule.code,

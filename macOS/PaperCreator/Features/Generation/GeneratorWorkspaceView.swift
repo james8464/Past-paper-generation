@@ -441,8 +441,17 @@ private struct QualityInspector: View {
                     LabeledContent("Validated PDFs", value: "\(report.pdfCount)")
                     LabeledContent(
                         "Demand profile",
-                        value: report.referenceDemandPassed == true ? "Passed" : "Review needed"
+                        value: GenerationQualityPolicy.presentation(for: report).referenceDemandState.title
                     )
+                    if let count = report.candidatePathCount {
+                        LabeledContent("Legal candidate paths", value: "\(count)")
+                    }
+                    if let marks = report.candidateMarkRange, marks.count == 2 {
+                        LabeledContent("Candidate marks", value: "\(marks[0])–\(marks[1])")
+                    }
+                    if let marks = report.printedMarks {
+                        LabeledContent("Printed marks (all alternatives)", value: "\(marks)")
+                    }
                     if report.referenceDemandItems > 0 {
                         LabeledContent(
                             "Demand evidence",
@@ -594,6 +603,7 @@ private extension GenerationQualityState {
         case .preview: "eye"
         case .atCreation: "checkmark.shield"
         case .unknown: "questionmark.circle"
+        case .insufficient: "exclamationmark.circle"
         }
     }
 
@@ -604,6 +614,7 @@ private extension GenerationQualityState {
         case .preview: .secondary
         case .atCreation: .secondary
         case .unknown: .secondary
+        case .insufficient: .orange
         }
     }
 }

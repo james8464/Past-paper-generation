@@ -205,7 +205,7 @@ private struct HelpTopicPage: View {
                     "It follows the app’s exact JSON schemas and immutable marks, command words, topics, and assessment-objective totals.",
                     "It has enough reasoning capacity for source-based questions and detailed level-of-response mark schemes while remaining practical on a Mac.",
                     "Ollama keeps prompts and generated content on this Mac.",
-                    "The intended cognitive demand is measured from relevant papers by mark weighting, response mode, command family and the work a candidate must perform.",
+                    "Intended cognitive demand is compared with source-derived feature proxies, not measured learner difficulty. Every legal candidate path is checked separately; every printed alternative still needs item review. Times are allocated, not observed.",
                     "Content review, independent solution checking, and difficulty review use separate prompts and evidence. They may use the same selected model, but one check never stands in for another.",
                     "Every completed form is checked again for distribution drift. These engineering tolerances are not empirically learned confidence intervals, and external examiner and learner evidence is still needed for qualification.",
                 ]
@@ -253,7 +253,7 @@ private struct HelpTopicPage: View {
 
             HelpCallout(
                 title: "Use Topic Practice for focused revision",
-                message: "A topic question bank covers one focused syllabus section. Candidate choices and optional paths can change what is assessed, so a bank or path is not treated as a full-paper difficulty claim. Data structures, databases, and functional programming are currently available for AQA Computer Science.",
+                message: "A topic bank is matched to reviewed topic and task-operation records, not full-paper AO percentages. Sparse, mixed or missing source evidence is shown as Insufficient. A bank may be built after structural, correctness, source-content and item-review checks pass while calibration remains insufficient; this is not a calibration pass or external qualification. Data structures, databases, and functional programming are available for AQA Computer Science.",
                 systemImage: "square.stack.3d.up"
             )
         }

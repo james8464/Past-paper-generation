@@ -154,6 +154,20 @@ final class PaperCreatorTests: XCTestCase {
         XCTAssertEqual(presentation.pathEvidenceState, .unknown)
     }
 
+    func testSparseBankEvidenceNeverBecomesPassedInInspectorOrDiagnostics() throws {
+        for preview in [true, false] {
+            let report = try loadQualityReport("""
+            {"request":{"subject":"computer_science","paper":"bank-4.2","preview_mode":\(preview)},"evidence":{"assessment_validation":{"item_count":1,"reference_demand":{"passed":true,"evidence_state":"insufficient","build_eligible":true,"items_checked":1,"topic_evidence":{"coverage":{"matched_items":0},"gaps":["Missing programme context"]}},"path_evidence":{"passed":true,"evidence_state":"insufficient","path_count":1,"candidate_mark_range":[30,30],"printed_marks":30}},"novelty_validation":{}},"outputs":{}}
+            """)
+            let presentation = GenerationQualityPolicy.presentation(for: report)
+            XCTAssertEqual(presentation.referenceDemandState.title, "Insufficient")
+            XCTAssertEqual(presentation.pathEvidenceState.title, "Insufficient")
+            XCTAssertTrue(presentation.referenceDemandDetail.contains("Missing programme context"))
+            XCTAssertTrue(presentation.diagnosticLines.joined(separator: " ").contains("insufficient"))
+            XCTAssertFalse(presentation.pathEvidenceDetail.contains("passed"))
+        }
+    }
+
     func testLiveQualityPolicyDistinguishesFixedAndMixedProvenance() throws {
         let fixed = try loadQualityReport(
             #"{"generator":{"id":"edexcel","version":"1"},"request":{"subject":"economics_edexcel_a","paper":"3","seed":51,"preview_mode":false},"evidence":{"qualification_levels":{"engineering_validated":true,"visually_calibrated":true,"empirically_calibrated":false},"assessment_validation":{"form_id":"fixed","item_count":4,"fingerprints_verified":true,"authoring_provenance":{"schema_version":1,"items":4,"counts":{"reviewed-deterministic-contract":4},"reviewed_fixed_items":4,"ai_authored_items":0,"ai_authored_stem_items":0,"unreviewed_or_builtin_items":0,"unknown_items":0},"reference_demand":{"passed":true,"items_checked":4,"source_document_count":4,"failed_checks":[],"item_review_evidence":{"reviewed_items":4,"approved_items":4,"coverage":1.0,"reasoning_range_fit":4,"context_fit":4,"shortcut_resistant":4}}},"novelty_validation":{"passed":true,"historic_comparisons":10}},"outputs":{}}"#

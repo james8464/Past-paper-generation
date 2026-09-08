@@ -33,6 +33,18 @@ class ReferenceDemandProfile(BaseModel):
     cognitive_operation_distribution: dict[str, float]
     extraction_coverage: float = Field(ge=0.6, le=1)
     metric_tolerances: dict[str, float]
+    evidence_policy_id: str | None = None
+    reference_forms: list[dict[str, Any]] = Field(default_factory=list)
+    topic_records: list[dict[str, Any]] = Field(default_factory=list)
+    evidence_gaps: list[str] = Field(default_factory=list)
+
+    @property
+    def comparison_fingerprint(self) -> str:
+        if self.evidence_policy_id is None:
+            return self.source_fingerprint
+        from Backend.Core.candidate_paths import identity
+
+        return identity(self.model_dump(mode="json"))
 
     @field_validator(
         "mark_band_distribution",
@@ -73,7 +85,7 @@ class ReferenceDemandProfile(BaseModel):
 
 
 class ReferenceDemandDocument(BaseModel):
-    schema_version: Literal[2]
+    schema_version: Literal[2, 3]
     purpose: str = Field(min_length=20)
     derived_aggregate_only: Literal[True]
     retains_source_text: Literal[False]
@@ -183,7 +195,9 @@ def build_item_demand_target(
         # those stages.
         maximum_steps = max(maximum_steps, min(12, marks))
 
-    requires_analysis, requires_judgement = objective_policy.operations(objectives, command)
+    requires_analysis, requires_judgement = objective_policy.operations(
+        objectives, command
+    )
     source_dependency = raw.get("source_dependency")
     if source_dependency not in {None, "none", "stem", "figure", "external"}:
         raise ValueError("demand item has an invalid source dependency")
@@ -219,8 +233,16 @@ def build_item_demand_target(
     if task_operation is not None:
         task_operation = str(task_operation).casefold()
         allowed_operations = {
-            "retrieve", "describe", "explain", "contextualise", "transform",
-            "analyse", "judge", "design", "program", "trace",
+            "retrieve",
+            "describe",
+            "explain",
+            "contextualise",
+            "transform",
+            "analyse",
+            "judge",
+            "design",
+            "program",
+            "trace",
         }
         if task_operation not in allowed_operations:
             raise ValueError("demand item has an invalid task operation")
@@ -228,6 +250,8 @@ def build_item_demand_target(
             "selected-response"
             if kind in {"multiple_choice", "multiple-choice", "mcq"}
             else objective_policy.response_mode(task_operation, command, marks)
+            if objective_policy.computational
+            else operation_response_mode(task_operation, marks)
         )
         calculation = task_operation in {"transform", "trace"}
         requires_analysis = (
@@ -237,13 +261,22 @@ def build_item_demand_target(
         operations = [task_operation]
         if requires_context and task_operation != "contextualise":
             operations.append("contextualise")
-        if task_operation in {"analyse", "judge"} and response_mode != "selected-response":
+        if (
+            task_operation in {"analyse", "judge"}
+            and response_mode != "selected-response"
+        ):
             minimum_steps = max(minimum_steps, 2)
         maximum_steps = max(maximum_steps, len(operations))
     if objective_policy.computational:
-        task_operation = task_operation or objective_policy.task_operation(raw, command, kind)
+        task_operation = task_operation or objective_policy.task_operation(
+            raw, command, kind
+        )
         response_mode = objective_policy.response_mode(task_operation, command, marks)
-        requires_context = bool(objectives.get("AO2")) or task_operation in {"design", "program", "trace"}
+        requires_context = bool(objectives.get("AO2")) or task_operation in {
+            "design",
+            "program",
+            "trace",
+        }
         requires_analysis = False  # computational analysis is not a prose causal chain
         requires_judgement = task_operation == "judge"
         calculation = task_operation in {"transform", "trace"}
@@ -270,6 +303,7 @@ def build_item_demand_target(
         # Time and task operation are review obligations even if the demand band
         # and broad reasoning bounds happen to remain unchanged.
         import hashlib
+
         policy_fingerprint = hashlib.sha256(
             f"{policy_fingerprint}|{task_operation}|{expected_minutes}".encode()
         ).hexdigest()
@@ -293,7 +327,7 @@ def build_item_demand_target(
         expected_minutes_min=round(max(0.5, expected_minutes * 0.75), 2),
         expected_minutes_max=round(expected_minutes * 1.25, 2),
         reference_comparison_basis=profile.comparison_basis,
-        reference_profile_fingerprint=profile.source_fingerprint,
+        reference_profile_fingerprint=profile.comparison_fingerprint,
         objective_policy_fingerprint=policy_fingerprint,
     )
 
@@ -328,7 +362,9 @@ def audit_form_demand(
         ),
         "cognitive_operation_distribution": _distribution(
             target.required_cognitive_operations[0]
-            if objective_policy_for(profile.family_id).computational else _primary_cognitive_operation(
+            if objective_policy_for(profile.family_id).computational
+            or item.get("task_operation")
+            else _primary_cognitive_operation(
                 command=str(
                     item.get("command_word") or _leading_command(item.get("prompt"))
                 ).casefold(),
@@ -391,7 +427,7 @@ def audit_form_demand(
     return {
         "schema_version": 2,
         "passed": not failed,
-        "profile_fingerprint": profile.source_fingerprint,
+        "profile_fingerprint": profile.comparison_fingerprint,
         "comparison_basis": profile.comparison_basis,
         "source_document_count": profile.source_document_count,
         "items_checked": len(items),
@@ -513,6 +549,18 @@ def _response_mode(*, marks: int, command: str, kind: str, calculation: bool) ->
     if command in {"analyse", "analyze", "examine", "explain"}:
         return "structured-reasoning"
     return "constructed-response"
+
+
+def operation_response_mode(operation: str, marks: int) -> str:
+    """Shared generated/source semantics for non-computational written tasks."""
+    return {
+        "retrieve": "recall",
+        "explain": "structured-reasoning",
+        "analyse": "structured-reasoning",
+        "judge": "extended-evaluation",
+        "transform": "multi-stage-calculation" if marks >= 4 else "calculation",
+        "describe": "constructed-response",
+    }.get(operation, "constructed-response")
 
 
 def _cognitive_operations(

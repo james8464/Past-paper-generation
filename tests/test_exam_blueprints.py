@@ -62,6 +62,8 @@ def paper() -> GeneratedPaper:
                 id="A",
                 title="Section A",
                 instructions="Answer one option.",
+                answer_options=1,
+                candidate_marks=10,
                 options=[
                     GeneratedOption(id="1", title="Option 1", questions=[question("1")]),
                     GeneratedOption(id="2", title="Option 2", questions=[question("2")]),

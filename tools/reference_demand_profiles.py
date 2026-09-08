@@ -74,7 +74,13 @@ COMMAND_PATTERN = re.compile(
     flags=re.IGNORECASE,
 )
 GENERAL_COMMAND_PATTERN = re.compile(
-    r"\b(" + "|".join(word for word in COMMAND_WORDS if word not in {"design", "develop", "trace", "convert", "simplify"}) + r")\b",
+    r"\b("
+    + "|".join(
+        word
+        for word in COMMAND_WORDS
+        if word not in {"design", "develop", "trace", "convert", "simplify"}
+    )
+    + r")\b",
     flags=re.IGNORECASE,
 )
 IGNORED_LINES = (
@@ -233,7 +239,11 @@ def extract_reference_features(
         if "to what extent" in lowered:
             commands.append("evaluate")
             continue
-        pattern = COMMAND_PATTERN if objective_policy_for(family_id or "").computational else GENERAL_COMMAND_PATTERN
+        pattern = (
+            COMMAND_PATTERN
+            if objective_policy_for(family_id or "").computational
+            else GENERAL_COMMAND_PATTERN
+        )
         match = pattern.search(line)
         if match is None:
             continue
@@ -270,8 +280,12 @@ def extract_reference_items(
     items: list[dict[str, Any]] = []
     for index, match in enumerate(matches):
         marks = int(match.group(1))
-        window = text[max(matches[index - 1].end() if index and policy.computational else 0,
-                          match.start() - 12000 if policy.computational else match.start() - 3000):match.start()]
+        window = text[
+            max(
+                matches[index - 1].end() if index and policy.computational else 0,
+                match.start() - 12000 if policy.computational else match.start() - 3000,
+            ) : match.start()
+        ]
         command = (
             "select"
             if index < mcq_count
@@ -282,16 +296,25 @@ def extract_reference_items(
         if policy.computational:
             # Prefer the actual imperative at a part boundary, not incidental
             # verbs in the scenario, table rows or 'show your working' reminders.
-            task_matches = list(re.finditer(
-                r"(?im)^(?:\([a-zivx]+\)[ \t]+){0,2}(?:\d(?:[ \t]+\d)?(?:[ \t]*\.[ \t]*\d+)?[ \t]+)?"
-                r"(" + "|".join(COMMAND_WORDS) + r")\b", window))
-            task_matches = [candidate for candidate in task_matches
-                            if not window[candidate.start():].lower().startswith("show your working")]
+            task_matches = list(
+                re.finditer(
+                    r"(?im)^(?:\([a-zivx]+\)[ \t]+){0,2}(?:\d(?:[ \t]+\d)?(?:[ \t]*\.[ \t]*\d+)?[ \t]+)?"
+                    r"(" + "|".join(COMMAND_WORDS) + r")\b",
+                    window,
+                )
+            )
+            task_matches = [
+                candidate
+                for candidate in task_matches
+                if not window[candidate.start() :]
+                .lower()
+                .startswith("show your working")
+            ]
             task_text = window
             if task_matches:
                 first = task_matches[0]
                 command = first.group(1).lower()
-                task_text = window[first.start():]
+                task_text = window[first.start() :]
             operation = policy.task_operation({"prompt": task_text}, command, "")
             if "program source code" in " ".join(window.lower().split()):
                 command = "write"
@@ -310,7 +333,11 @@ def extract_reference_items(
     if source_name == "AQA-75171-QP-JUN25.PDF" and family_id == "aqa/computer-science":
         # June 2025 MS PDF14 explicitly discounts Q06.4. Preserve its tariff in
         # structural totals, but never use it as positive cognitive-demand evidence.
-        if len(items) != 39 or sum(item["marks"] for item in items) != 100 or items[22]["marks"] != 1:
+        if (
+            len(items) != 39
+            or sum(item["marks"] for item in items) != 100
+            or items[22]["marks"] != 1
+        ):
             raise ValueError("discounted AQA item inventory no longer aligns")
         items[22]["demand_eligible"] = False
     return items
@@ -339,7 +366,9 @@ def _nearest_command(window: str, *, computational: bool = False) -> str:
         if "to what extent" in lowered:
             commands.append((window.rfind(raw_line), "evaluate"))
             continue
-        match = (COMMAND_PATTERN if computational else GENERAL_COMMAND_PATTERN).search(line)
+        match = (COMMAND_PATTERN if computational else GENERAL_COMMAND_PATTERN).search(
+            line
+        )
         if match is None:
             continue
         value = match.group(1).casefold()
@@ -483,13 +512,24 @@ def build_document() -> ReferenceDemandDocument:
                     "operations from "
                     f"{len(paths)} official {family.board.upper()} A-level question "
                     "papers; no source wording retained."
-                    + (" Discounted June 2025 Q06.4 excluded from cognitive-demand evidence."
-                       if family.family_id == "aqa/computer-science" and paper_id == "1" else "")
+                    + (
+                        " Discounted June 2025 Q06.4 excluded from cognitive-demand evidence."
+                        if family.family_id == "aqa/computer-science"
+                        and paper_id == "1"
+                        else ""
+                    )
                 ),
                 source_document_count=len(paths),
-                source_fingerprint=(hashlib.sha256(
-                    (_fingerprint(paths) + "|cs-task-operations-v1-discount-exclusion").encode()
-                ).hexdigest() if "computer-science" in family.family_id else _fingerprint(paths)),
+                source_fingerprint=(
+                    hashlib.sha256(
+                        (
+                            _fingerprint(paths)
+                            + "|cs-task-operations-v1-discount-exclusion"
+                        ).encode()
+                    ).hexdigest()
+                    if "computer-science" in family.family_id
+                    else _fingerprint(paths)
+                ),
                 mark_band_distribution=_distribution(
                     _mark_band(mark) for mark in marks
                 ),
@@ -513,8 +553,78 @@ def build_document() -> ReferenceDemandDocument:
             family_profiles.append(profile)
         if family.family_id == "aqa/computer-science":
             profiles.extend(_question_bank_profiles(family_profiles))
+    from Backend.Core.topic_reference_evidence import (
+        GAPS,
+        TOPIC_POLICY_ID,
+        reviewed_topic_records,
+    )
+    from tools.source_candidate_paths import EXTRACTION_POLICY, source_forms
+
+    for profile in profiles:
+        if profile.family_id == "aqa/mathematics":
+            continue  # not an advertised H3 route; preserve its existing profile
+        if profile.assessment_kind == "question-bank":
+            topic = profile.paper_id.removeprefix("bank-")
+            records = reviewed_topic_records(topic)
+            profile.topic_records = records
+            profile.evidence_policy_id = TOPIC_POLICY_ID
+            profile.evidence_gaps = GAPS[topic]
+            profile.comparison_basis = "Reviewed topic-and-actual-operation feature subset; insufficient whole-topic calibration; not a scaled full-paper AO distribution."
+            profile.source_fingerprint = hashlib.sha256(
+                json.dumps(records, sort_keys=True).encode()
+            ).hexdigest()
+            profile.source_document_count = len({r["question_sha256"] for r in records})
+            core = [r for r in records if r["stratum"] == "core"]
+            profile.mark_band_distribution = _distribution(
+                _mark_band(r["marks"]) for r in core
+            )
+            profile.command_word_distribution = _distribution(
+                r["operation"] for r in core
+            )
+            profile.response_mode_distribution = _distribution(r["mode"] for r in core)
+            profile.cognitive_operation_distribution = _distribution(
+                r["operation"] for r in core
+            )
+            profile.demand_distribution = {"unknown": 1.0}
+            profile.mark_weighted_demand_distribution = {"unknown": 1.0}
+            continue
+        profile.evidence_policy_id = EXTRACTION_POLICY
+        profile.reference_forms = source_forms(profile.family_id, profile.paper_id)
+        eligible = [
+            form for form in profile.reference_forms if form["status"] == "eligible"
+        ]
+        if eligible:
+            # Identical convention on both sides: each path has one feature
+            # vector. Within a year paths are equally weighted descriptively;
+            # years then receive equal weight (not extra candidate samples).
+            for name in (
+                "mark_band_distribution",
+                "command_word_distribution",
+                "demand_distribution",
+                "mark_weighted_demand_distribution",
+                "response_mode_distribution",
+                "cognitive_operation_distribution",
+            ):
+                setattr(
+                    profile,
+                    name,
+                    _mean_distribution(
+                        [
+                            _mean_distribution(
+                                [path["observed"][name] for path in form["paths"]]
+                            )
+                            for form in eligible
+                        ]
+                    ),
+                )
+            profile.comparison_basis = "Correlated candidate-answerable paths from edition-specific official sources; equal-path/year descriptive means, not candidate choice frequency. Intended-demand bands are engineering proxies; source time/steps/learner demand unknown."
+            profile.source_document_count = len(eligible)
+        else:
+            profile.evidence_gaps = [
+                "No complete reconciled edition-specific reference path available."
+            ]
     return ReferenceDemandDocument(
-        schema_version=2,
+        schema_version=3,
         purpose=(
             "Copyright-safe aggregate demand fingerprints for reference-shaped "
             "authoring and automated form checks; not psychometric evidence."

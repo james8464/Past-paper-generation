@@ -577,6 +577,8 @@ def test_assessment_package_records_the_exact_reference_demand_audit(
                 id="A",
                 title="Section A",
                 instructions="Answer the question.",
+                answer_options=1,
+                candidate_marks=4,
                 options=[
                     GeneratedOption(
                         id="A1",
@@ -605,7 +607,7 @@ def test_assessment_package_records_the_exact_reference_demand_audit(
     assert audit["items_checked"] == 1
     assert (
         audit["profile_fingerprint"]
-        == module().profile_for("aqa/economics", "1").source_fingerprint
+        == module().profile_for("aqa/economics", "1").comparison_fingerprint
     )
     assert audit["empirical_equivalence_claimed"] is False
     exported_evidence = document["items"][0]["difficulty_evidence"]

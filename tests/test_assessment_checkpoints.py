@@ -342,6 +342,8 @@ def paper_fixture() -> tuple[GeneratedPaper, PaperRule, list[object]]:
                 id="A",
                 title="Section A",
                 instructions="Answer the question.",
+                answer_options=1,
+                candidate_marks=1,
                 options=[
                     GeneratedOption(
                         id="option",

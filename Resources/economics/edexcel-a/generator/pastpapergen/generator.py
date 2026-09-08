@@ -175,6 +175,24 @@ def build_paper_blueprint(
         absolute_question_number += _section_question_increment(config.id, section.name)
 
     questions = [bind_question(question, seed or 0) for question in questions]
+    path_rules = []
+    for section in config.sections:
+        section_questions = [q for q in questions if q.section == section.name]
+        groups = {}
+        for group_index, group in enumerate(section.choice_groups, start=1):
+            name = _choice_group_name(config.id, section.name, group_index)
+            options = [q for q in section_questions if q.choice_group == name]
+            if len(options) != len(group) or len({q.marks for q in options}) != 1:
+                raise ValueError("Edexcel configured choice bundle mismatch")
+            groups[name] = {"answer_options": 1, "candidate_marks": options[0].marks,
+                            "option_ids": [q.number for q in options]}
+        path_rules.append({"id": section.name, "choice_groups": groups})
+        for question in section_questions:
+            question.choice_selection_context = {"section_id": section.name, "groups": groups,
+                                                  "question_ids": [q.number for q in section_questions]}
+            question.expected_minutes = round(config.duration_minutes * question.marks / config.total_marks, 2)
+            for part in question.parts:
+                part.expected_minutes = round(config.duration_minutes * part.marks / config.total_marks, 2)
     return PaperBlueprint(
         seed=seed,
         paper_id=config.id,
@@ -183,6 +201,7 @@ def build_paper_blueprint(
         duration_minutes=config.duration_minutes,
         total_marks=config.total_marks,
         questions=questions,
+        candidate_path_rules=path_rules,
     )
 
 

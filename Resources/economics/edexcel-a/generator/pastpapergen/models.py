@@ -63,6 +63,7 @@ class QuestionPart(BaseModel):
     assessment_contract: dict[str, object] = Field(default_factory=dict)
     scheme_mode: str = "points"
     provenance: str = "deterministic-contract"
+    expected_minutes: float | None = Field(default=None, gt=0)
 
 
 class MultipleChoiceOption(BaseModel):
@@ -125,6 +126,19 @@ class QuestionBlueprint(BaseModel):
     assessment_contract: dict[str, object] = Field(default_factory=dict)
     scheme_mode: str = "points"
     provenance: str = "deterministic-contract"
+    expected_minutes: float | None = Field(default=None, gt=0)
+    choice_selection_context: dict[str, object] = Field(default_factory=dict)
+
+
+class ChoiceSelection(BaseModel):
+    answer_options: int = Field(default=1, gt=0, strict=True)
+    candidate_marks: int = Field(gt=0, strict=True)
+    option_ids: list[str]
+
+
+class CandidateSectionRule(BaseModel):
+    id: str
+    choice_groups: dict[str, ChoiceSelection]
 
 
 class PaperBlueprint(BaseModel):
@@ -135,3 +149,4 @@ class PaperBlueprint(BaseModel):
     duration_minutes: int
     total_marks: int
     questions: list[QuestionBlueprint]
+    candidate_path_rules: list[CandidateSectionRule] = Field(default_factory=list)

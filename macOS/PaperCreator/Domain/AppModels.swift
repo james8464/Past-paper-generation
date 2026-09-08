@@ -690,6 +690,7 @@ enum GenerationQualityState: Equatable {
     case preview
     case atCreation
     case unknown
+    case insufficient
 
     var title: String {
         switch self {
@@ -698,6 +699,7 @@ enum GenerationQualityState: Equatable {
         case .preview: "Preview"
         case .atCreation: "At creation"
         case .unknown: "Unknown"
+        case .insufficient: "Insufficient"
         }
     }
 }
@@ -737,6 +739,12 @@ struct GenerationQualityReport: Equatable {
     let difficultyContextFitItems: Int?
     let difficultyShortcutFitItems: Int?
     let candidatePathEvidencePassed: Bool?
+    let referenceEvidenceState: String?
+    let pathEvidenceState: String?
+    let candidatePathCount: Int?
+    let candidateMarkRange: [Int]?
+    let printedMarks: Int?
+    let evidenceGaps: [String]
     let authoringProvenance: AuthoringProvenanceSummary
 
     static func load(from url: URL) -> GenerationQualityReport? {
@@ -756,6 +764,8 @@ struct GenerationQualityReport: Equatable {
         let distances = referenceDemand?["gated_distances"] as? [String: Double]
         let itemReview = referenceDemand?["item_review_evidence"] as? [String: Any]
         let pathEvidence = assessment["path_evidence"] as? [String: Any]
+            ?? referenceDemand?["path_evidence"] as? [String: Any]
+        let topicEvidence = referenceDemand?["topic_evidence"] as? [String: Any]
         let assessmentItemCount = assessment["item_count"] as? Int ?? 0
         let mode: SavedGenerationMode
         if let preview = request?["preview_mode"] as? Bool {
@@ -799,6 +809,12 @@ struct GenerationQualityReport: Equatable {
             difficultyContextFitItems: itemReview?["context_fit"] as? Int,
             difficultyShortcutFitItems: itemReview?["shortcut_resistant"] as? Int,
             candidatePathEvidencePassed: pathEvidence?["passed"] as? Bool,
+            referenceEvidenceState: referenceDemand?["evidence_state"] as? String,
+            pathEvidenceState: pathEvidence?["evidence_state"] as? String,
+            candidatePathCount: pathEvidence?["path_count"] as? Int,
+            candidateMarkRange: pathEvidence?["candidate_mark_range"] as? [Int],
+            printedMarks: pathEvidence?["printed_marks"] as? Int,
+            evidenceGaps: topicEvidence?["gaps"] as? [String] ?? [],
             authoringProvenance: Self.decodeAuthoringProvenance(
                 assessment["authoring_provenance"] as? [String: Any],
                 expectedItems: assessmentItemCount
@@ -902,7 +918,11 @@ enum GenerationQualityPolicy {
             && report.referenceDemandFailedChecks?.isEmpty == true
         let referenceState: GenerationQualityState
         let referenceDetail: String
-        if report.savedMode == .preview {
+        if report.referenceEvidenceState == "insufficient" {
+            referenceState = .insufficient
+            referenceDetail = "Reference calibration is insufficient; item review covers \(coverageText). "
+                + report.evidenceGaps.joined(separator: " ")
+        } else if report.savedMode == .preview {
             referenceState = .preview
             referenceDetail = "Aggregate profile fit is preview-only; validated item depth covers \(coverageText)."
         } else if completeLiveReview {
@@ -917,14 +937,21 @@ enum GenerationQualityPolicy {
             referenceState = .pending
             referenceDetail = "Profile fit or validated item coverage is incomplete: \(coverageText)."
         }
-        let pathState: GenerationQualityState = switch report.candidatePathEvidencePassed {
-        case true: .passed
-        case false: .pending
-        case nil: .unknown
+        let pathState: GenerationQualityState
+        if report.pathEvidenceState == "insufficient" {
+            pathState = .insufficient
+        } else {
+            pathState = switch report.candidatePathEvidencePassed {
+            case true: .passed
+            case false: .pending
+            case nil: .unknown
+            }
         }
-        let pathDetail = report.candidatePathEvidencePassed.map {
+        let pathDetail = report.pathEvidenceState == "insufficient"
+            ? "Candidate-path reference qualification is insufficient. A structurally valid practice bank is not calibrated or externally qualified."
+            : (report.candidatePathEvidencePassed.map {
             $0 ? "Candidate-path evidence passed." : "Candidate-path evidence needs review."
-        } ?? "Candidate-path and focused-bank evidence is not present in this package."
+        } ?? "Candidate-path and focused-bank evidence is not present in this package.")
         let identity = [report.identity.subject, report.identity.paper]
             .compactMap { $0 }
             .joined(separator: " / ")
@@ -945,6 +972,7 @@ enum GenerationQualityPolicy {
                 "Originality (\(originalityState.title)): \(originalityDetail)",
                 "Reference demand: \(referenceDetail)",
                 "Candidate paths: \(pathDetail)",
+                "Legal paths: \(report.candidatePathCount.map(String.init) ?? "Unknown"); candidate marks: \(report.candidateMarkRange.map { $0.map(String.init).joined(separator: "–") } ?? "Unknown"); printed marks: \(report.printedMarks.map(String.init) ?? "Unknown"). Timing is allocated, not observed.",
             ]
         )
     }

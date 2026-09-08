@@ -160,6 +160,8 @@ def build_paper(
         sections.append(
             GeneratedSection(
                 id=section_rule.id,
+                answer_options=section_rule.answer_options,
+                candidate_marks=section_rule.candidate_marks,
                 title=section_rule.title,
                 instructions="Answer all parts of this question.",
                 options=[option],

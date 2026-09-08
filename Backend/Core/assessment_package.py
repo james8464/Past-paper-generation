@@ -139,6 +139,7 @@ def write_assessment_package(
         paper_number=paper_number,
         items=items,
         preview=preview,
+        blueprint=payload,
     )
     document = {
         "schema_version": 1,
@@ -235,15 +236,17 @@ def validate_assessment_package(
         paper_number=paper_number,
         items=items,
         preview=preview,
+        blueprint=document["blueprint"],
     )
     if reference_demand is not None:
         if document.get("reference_demand") != reference_demand:
             raise ValueError("assessment package reference-demand evidence is invalid")
-        if not preview and not reference_demand["passed"]:
+        if not preview and not reference_demand.get(
+            "build_eligible", reference_demand["passed"]
+        ):
             failed = ", ".join(reference_demand["failed_checks"])
             raise ValueError(
-                "assessment form is outside its reference-demand tolerance: "
-                + failed
+                "assessment form is outside its reference-demand tolerance: " + failed
             )
     if not preview:
         assert_distinct_items(items)
@@ -281,6 +284,9 @@ def validate_assessment_package(
         },
         "cross_paper_quality": cross_paper_quality,
         "reference_demand": reference_demand,
+        "path_evidence": reference_demand.get("path_evidence")
+        if reference_demand
+        else None,
         "response_simulation": {
             "items_verified": len(response_simulation_reports),
             "results": response_simulation_reports,
@@ -304,7 +310,8 @@ def _authoring_provenance(items: list[dict[str, Any]]) -> dict[str, Any]:
         value == "ai-authored" or value.startswith("ai:") for value in values
     )
     unreviewed = sum(
-        value in {
+        value
+        in {
             "built-in",
             "deterministic-contract",
             "generator-specific",
@@ -331,13 +338,87 @@ def _reference_demand_audit(
     paper_number: str,
     items: list[dict[str, Any]],
     preview: bool,
+    blueprint: dict[str, Any] | None = None,
 ) -> dict[str, Any] | None:
     try:
         capability = generator_capability(subject)
     except ValueError:
         return None
     profile = profile_for(capability.id, paper_number)
-    return audit_form_demand(items, profile, require_item_evidence=not preview)
+    report = audit_form_demand(items, profile, require_item_evidence=not preview)
+    if blueprint is None:
+        return report
+    from Backend.Core.candidate_paths import (
+        audit_candidate_paths,
+        topology_from_blueprint,
+    )
+    from Backend.Core.topic_reference_evidence import audit_topic_bank
+
+    topology = topology_from_blueprint(blueprint, items, capability.id)
+    paths = audit_candidate_paths(items, topology, profile)
+    # Whole printed-item review is separate from candidate selection. Never
+    # remove a failed/unreviewed alternative from the review denominator.
+    review_failed = [
+        name for name in report["failed_checks"] if name.startswith("item_")
+    ]
+    report["printed_inventory_proxy"] = {
+        key: report[key] for key in ("passed", "observed", "distances", "failed_checks")
+    }
+    report["path_evidence"] = paths
+    metric_names = report["observed"].keys()
+    report["observed"] = {
+        name: {
+            key: round(
+                sum(row["observed"][name].get(key, 0) for row in paths["paths"])
+                / len(paths["paths"]),
+                6,
+            )
+            for key in sorted(
+                {key for row in paths["paths"] for key in row["observed"][name]}
+            )
+        }
+        for name in metric_names
+    }
+    report["observed_weighting_basis"] = (
+        "equal-legal-path-descriptive-not-choice-frequency"
+    )
+    report["gated_distances"] = paths["worst_deviations"]
+    report["profile_fit_passed"] = paths["passed"]
+    report["evidence_state"] = paths["evidence_state"]
+    report["failed_checks"] = review_failed + (
+        ["candidate_paths"] if not paths["passed"] else []
+    )
+    report["passed"] = paths["passed"] and not review_failed
+    report["build_eligible"] = not preview and report["passed"]
+    if profile.assessment_kind == "question-bank":
+        topic = audit_topic_bank(
+            items, profile.paper_id.removeprefix("bank-"), profile.topic_records
+        )
+        report["topic_evidence"] = topic
+        report["evidence_state"] = "insufficient"
+        report["profile_fit_passed"] = False
+        report["passed"] = False
+        paths["passed"] = False
+        paths["evidence_state"] = "insufficient"
+        report["failed_checks"] = [
+            *review_failed,
+            "topic_reference_evidence_insufficient",
+        ]
+        # Controller ruling: insufficiency is not a calibration pass nor an
+        # exemption from structural, source/content, correctness or review gates.
+        structural_failures = [
+            failure
+            for row in paths["paths"]
+            for failure in row["failed_checks"]
+            if failure.startswith(("allocated_", "objective_", "section_"))
+        ]
+        report["build_eligible"] = (
+            not preview and not review_failed and not structural_failures
+        )
+        report["build_gate_basis"] = (
+            "Structure/correctness/source-content identity/item review required; topic calibration remains insufficient."
+        )
+    return report
 
 
 def _serialise(value: Any) -> dict[str, Any]:
@@ -373,7 +454,12 @@ def _extract_items(
     ) -> None:
         if isinstance(value, dict):
             provenance = value.get("provenance", inherited_provenance)
-            kind = str(value.get("kind") or value.get("style_id") or value.get("stimulus_kind") or inherited_kind)
+            kind = str(
+                value.get("kind")
+                or value.get("style_id")
+                or value.get("stimulus_kind")
+                or inherited_kind
+            )
             stems = inherited_stems
             stem = value.get("stem")
             if isinstance(stem, str) and stem.strip():
@@ -387,7 +473,9 @@ def _extract_items(
                 if isinstance(sql_contract, dict):
                     inherited_sql_contract = sql_contract
                 stimulus_code = (
-                    render_sql_schema(SQLSourceContract.model_validate(sql_contract, strict=True))
+                    render_sql_schema(
+                        SQLSourceContract.model_validate(sql_contract, strict=True)
+                    )
                     if isinstance(sql_contract, dict)
                     else stimulus.get("code", "")
                 )
@@ -396,7 +484,10 @@ def _extract_items(
                     *(cell for row in stimulus.get("rows", []) for cell in row),
                     stimulus_code,
                 ]
-                stems = [*stems, *(str(part).strip() for part in source_parts if str(part).strip())]
+                stems = [
+                    *stems,
+                    *(str(part).strip() for part in source_parts if str(part).strip()),
+                ]
             if isinstance(stimulus, list):
                 stimulus_text = " ".join(
                     str(item).strip() for item in stimulus if str(item).strip()
@@ -425,16 +516,24 @@ def _extract_items(
                     contract = SQLSourceContract.model_validate(
                         inherited_sql_contract, strict=True
                     )
-                    discovered_value["_candidate_source_contract"] = contract.model_dump(mode="json")
+                    discovered_value["_candidate_source_contract"] = (
+                        contract.model_dump(mode="json")
+                    )
                     if intent_id:
                         try:
                             intent = contract.intents[intent_id]
                         except KeyError as error:
-                            raise ValueError("exported SQL part refers to an unknown intent") from error
-                        discovered_value.update({
-                            "_answer_intent": intent.model_dump(mode="json"),
-                            "_source_intent_sha256": sql_source_intent_sha256(contract, intent_id),
-                        })
+                            raise ValueError(
+                                "exported SQL part refers to an unknown intent"
+                            ) from error
+                        discovered_value.update(
+                            {
+                                "_answer_intent": intent.model_dump(mode="json"),
+                                "_source_intent_sha256": sql_source_intent_sha256(
+                                    contract, intent_id
+                                ),
+                            }
+                        )
                 discovered.append(
                     (
                         ".".join(path),
@@ -490,40 +589,44 @@ def _extract_items(
         )
         scheme = _scheme_text(raw)
         item = {
-                "id": f"{item_id}@{path}",
-                "subject": subject,
-                "paper": paper_number,
-                "topic_id": raw.get("topic_id"),
-                "marks": raw["marks"],
-                "command_word": raw.get("command_word"),
-                "intended_demand": raw.get("intended_demand"),
-                "expected_minutes": raw.get("expected_minutes"),
-                "task_operation": raw.get("task_operation") or (raw.get("authoring_context") or {}).get("task_operation"),
-                "source_dependency": raw.get("source_dependency") or (raw.get("authoring_context") or {}).get("source_dependency"),
-                "kind": kind,
-                "prompt": prompt,
-                "context": stems,
-                "mark_scheme": scheme,
-                "assessment_objectives": assessment_objectives_for_item(raw),
-                "scheme_mode": raw.get("scheme_mode") or "points",
-                "structured_mark_scheme": _structured_scheme(raw),
-                "evidence_ids": _evidence_ids(raw),
-                "assessment_contract": _assessment_contract(raw),
-                "fingerprint": item_fingerprint(prompt),
-                "provenance": raw.get("provenance", "generator-specific"),
-                "choices": raw.get("choices") or [],
-                "correct_choice": raw.get("correct_choice"),
-                "chart_values": raw.get("chart_values") or [],
-                "difficulty_evidence": (
-                    raw.get("difficulty_evidence")
-                    if isinstance(raw.get("difficulty_evidence"), dict)
-                    else (
-                        raw.get("authoring_context", {}).get("difficulty_evidence", {})
-                        if isinstance(raw.get("authoring_context"), dict)
-                        else {}
-                    )
-                ),
-            }
+            "id": f"{item_id}@{path}",
+            "subject": subject,
+            "paper": paper_number,
+            "topic_id": raw.get("topic_id") or (candidate_parent or {}).get("topic_id"),
+            "marks": raw["marks"],
+            "command_word": raw.get("command_word"),
+            "intended_demand": raw.get("intended_demand"),
+            "expected_minutes": raw.get("expected_minutes"),
+            "task_operation": raw.get("task_operation")
+            or (raw.get("authoring_context") or {}).get("task_operation"),
+            "source_dependency": raw.get("source_dependency")
+            or (raw.get("authoring_context") or {}).get("source_dependency"),
+            "kind": kind,
+            "prompt": prompt,
+            "context": stems,
+            "mark_scheme": scheme,
+            "assessment_objectives": assessment_objectives_for_item(raw),
+            "scheme_mode": raw.get("scheme_mode") or "points",
+            "structured_mark_scheme": _structured_scheme(raw),
+            "evidence_ids": _evidence_ids(raw),
+            "assessment_contract": _assessment_contract(raw),
+            "fingerprint": item_fingerprint(prompt),
+            "provenance": raw.get("provenance", "generator-specific"),
+            "choices": raw.get("choices") or [],
+            "options": raw.get("options") or [],
+            "response_slots": raw.get("response_slots") or [],
+            "correct_choice": raw.get("correct_choice"),
+            "chart_values": raw.get("chart_values") or [],
+            "difficulty_evidence": (
+                raw.get("difficulty_evidence")
+                if isinstance(raw.get("difficulty_evidence"), dict)
+                else (
+                    raw.get("authoring_context", {}).get("difficulty_evidence", {})
+                    if isinstance(raw.get("authoring_context"), dict)
+                    else {}
+                )
+            ),
+        }
         if raw.get("_candidate_source_contract"):
             item["candidate_source_contract"] = raw["_candidate_source_contract"]
         if raw.get("_answer_intent"):
@@ -555,7 +658,9 @@ def _export_difficulty_candidate_projection(
     edexcel_parent = (
         parent
         if isinstance(parent, dict) and "section" in parent
-        else raw if "section" in raw else None
+        else raw
+        if "section" in raw
+        else None
     )
     if isinstance(edexcel_parent, dict) and (
         "source_instance" in edexcel_parent or "source_reference" in edexcel_parent
