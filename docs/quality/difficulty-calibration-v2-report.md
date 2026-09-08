@@ -442,10 +442,15 @@ calculation MCQs, possible duplicate numerical options and a derived diagram
 answer leaking into the solver input. These are explicit H1 corrections, not
 problems solved by assigning higher objective labels alone.
 
-H2 will bind saved approval to actual candidate/source/credit content and report
-the saved package's mode, rather than current UI controls. H3 will complete
-candidate-path weighting and topic-bank reference evidence. Their implementation
-and final qualification remain open. Local long-running probes now support
+H2 now binds saved approval to actual candidate/source/credit content and reports
+the saved package's mode, rather than current UI controls. Its initial review
+found three truthfulness defects; the repair at `0878b3f` preserves typed source
+provenance in the candidate identity, prevents an originality pass for unknown
+or unreviewed provenance, and requires complete item-fit counters before a
+reference-demand pass. Independent re-review found no remaining Critical,
+Important or Minor findings. H3 must still complete candidate-path weighting
+and topic-bank reference evidence, and no new live, visual or empirical pass is
+claimed by H2. Local long-running probes now support
 verified committed-source archives with before/after integrity checks, preventing
 concurrent development from silently changing the version under test.
 

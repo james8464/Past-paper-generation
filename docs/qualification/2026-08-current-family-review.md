@@ -242,8 +242,11 @@ responses:
 The earlier SQL failures at `f386af4`, `de977c9` and `266f912` remain retained
 as failed evidence. They exposed a provider schema that omitted the canonical
 `program`, `design` and `trace` tokens and a raw-boundary `null` loophole; both
-were corrected fail-closed. H2/H3, complete two-seed paper qualification and
-external examiner/learner evidence remain required before finalisation.
+were corrected fail-closed. H2's content-bound review identity and saved-package
+presentation are independently review-clean through `0878b3f`; this is a bounded
+implementation acceptance, not a new live or whole-family qualification. H3,
+complete two-seed paper qualification and external examiner/learner evidence
+remain required before finalisation.
 
 ### Computer Science Paper 2
 

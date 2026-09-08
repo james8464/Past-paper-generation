@@ -36,8 +36,8 @@ SDD ledger rather than restarting completed work:
 - [x] Repair live Edexcel source registration and multiple-choice key handoff after J; retain fabricated-source/wrong-answer rejection and blind-solver privacy (7.F2, independently review-clean at `d4fa73a`; selected frozen-source follow-up confirms the adapter while downstream H/content/difficulty failures remain open).
 - [x] Reject reproduced non-SQL/unknown-field solver answers using candidate-grounded, explicitly bounded SQL validation; preserve dialect distinctions and rerun the actual SQL transaction (7.I; independently review-clean at `c6f7ef0`, with fresh SELECT and INSERT live answers crossing the bounded SQL gate before separate H1 reconciliation/difficulty failures).
 - [ ] All permitted candidate paths and remaining Economics/Business application/analysis demand, including MCQs (7.H).
-  - [ ] H1: task-specific objectives, source/key/diagram parity and meaningful MCQ demand.
-  - [ ] H2: candidate-bound saved reviews and truthful saved-package UI/help/diagnostics.
+  - [x] H1: task-specific objectives, source/key/diagram parity and meaningful MCQ demand; independently review-clean and selected live controls qualified through `ff16a3f`.
+  - [x] H2: candidate-bound saved reviews and truthful saved-package UI/help/diagnostics; independently review-clean through `0878b3f` with no new live, visual or empirical claim.
   - [ ] H3: matched candidate-path/reference weighting, topic-bank evidence and integrated verification.
 - [ ] Once-only general marking instructions with all case-specific credit retained (7.D).
 - [ ] Restore visual qualification of the complete-credit OCR/Edexcel schemes after guidance changes; retain all credit and unchanged layout thresholds (7.K).

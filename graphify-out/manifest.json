@@ -1425,8 +1425,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-26-paper-creator-excellence-programme.md": {
-    "mtime": 1788299556.4679856,
-    "ast_hash": "bad2dfcf57a545234414ae6a930ee0bb",
+    "mtime": 1788889312.8716073,
+    "ast_hash": "5684eec07a82a75d4a7cddb39b5c2e97",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md": {
@@ -1735,8 +1735,8 @@
     "semantic_hash": ""
   },
   "docs/qualification/2026-08-current-family-review.md": {
-    "mtime": 1788299556.46894,
-    "ast_hash": "a0189b0d7f1aaf2de9812399d5311235",
+    "mtime": 1788889354.334522,
+    "ast_hash": "e880f2a10ae57c05473b6833cf21cb7f",
     "semantic_hash": ""
   },
   "tests/test_release_compliance.py": {
@@ -1940,13 +1940,13 @@
     "semantic_hash": ""
   },
   "docs/quality/difficulty-calibration-v2-report.md": {
-    "mtime": 1788285559.991919,
-    "ast_hash": "fb9e6c06332905a9d2adc186b837012a",
+    "mtime": 1788889326.9524872,
+    "ast_hash": "5010e753bdee390a4f311565e1d45636",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-30-difficulty-calibration-v2.md": {
-    "mtime": 1788285559.991392,
-    "ast_hash": "30a7b5d820e1308862fc3f6d04738c6b",
+    "mtime": 1788889312.8721895,
+    "ast_hash": "a683a0ce37f68d555db05687e9d9cea0",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-30-difficulty-calibration-v2-design.md": {

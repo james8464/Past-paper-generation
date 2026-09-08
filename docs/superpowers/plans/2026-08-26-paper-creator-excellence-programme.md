@@ -357,8 +357,11 @@ totals are recorded in `docs/quality/assessment-objective-reference.md`.
   weighting. Preserve approximate source ranges and exclude inconsistent
   reference totals rather than copying them into generated forms. H1 task,
   source, objective, selected-answer and strict review-envelope work is scoped,
-  independently review-clean and live-qualified through `ff16a3f`; H2 saved
-  review identity/presentation and H3 candidate-path/bank evidence remain open.
+  independently review-clean and live-qualified through `ff16a3f`. H2 saved
+  review identity/presentation is independently review-clean through `0878b3f`;
+  this proves content-bound persistence and truthful saved-package reporting,
+  not a new live-paper, visual or empirical pass. H3 candidate-path/bank
+  evidence remains open.
 - [x] 7.J/7.I: Repair declared versus advisory open-credit reconciliation and
   candidate-grounded SQL verification before the next full live CS attempt.
   J's schema correction is independently review-clean through `1110dd4`; I's
