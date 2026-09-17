@@ -1700,8 +1700,8 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1789668593.0729923,
-    "ast_hash": "25e18fb5f7383b770faa8429f99c1b9d",
+    "mtime": 1789669844.3214052,
+    "ast_hash": "7a74cbebfbbdc524be891f3895226afe",
     "semantic_hash": ""
   },
   "tests/test_repository_hygiene.py": {
@@ -1885,8 +1885,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/reference_demand.py": {
-    "mtime": 1789669086.510216,
-    "ast_hash": "801b255de0894c5fef2bccf0d3d0e0bd",
+    "mtime": 1789669743.5385985,
+    "ast_hash": "5c28f147943ff810eedcac80ace69769",
     "semantic_hash": ""
   },
   "Resources/reference-demand-profile.schema.json": {
@@ -2170,13 +2170,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/reference_evidence.py": {
-    "mtime": 1789669086.5104382,
-    "ast_hash": "2aa8e6d498e33b7afba314173dfdf1d6",
+    "mtime": 1789669743.5382402,
+    "ast_hash": "278168e9431219009e70eb987809c6ca",
     "semantic_hash": ""
   },
   "tests/test_reference_evidence_validation.py": {
-    "mtime": 1789669131.3127596,
-    "ast_hash": "02ddfb5dd9d6aeebb00d5c36ba2b84cc",
+    "mtime": 1789669680.517084,
+    "ast_hash": "00876028430cdb88b5bec33d794e101c",
     "semantic_hash": ""
   },
   "Backend/Core/topic_task_contract.py": {

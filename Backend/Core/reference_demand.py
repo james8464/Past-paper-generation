@@ -135,10 +135,18 @@ class ReferenceDemandDocument(BaseModel):
         ):
             raise ValueError("schema-2 profiles cannot carry H3 evidence")
         if self.schema_version == 3:
-            from Backend.Core.reference_evidence import validate_profile_evidence
+            from Backend.Core.reference_evidence import (
+                attest_validated_document,
+                validate_profile_evidence,
+            )
 
             for profile in self.profiles:
-                validate_profile_evidence(profile, document=self)
+                validate_profile_evidence(
+                    profile,
+                    document=self,
+                    require_attestation=False,
+                )
+            attest_validated_document(self)
         return self
 
 
