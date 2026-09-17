@@ -840,8 +840,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/assessment_contracts.py": {
-    "mtime": 1788154448.9520137,
-    "ast_hash": "368c2d1d1ee072d1377187e16e735d8c",
+    "mtime": 1789677276.2632973,
+    "ast_hash": "80c54fa4ab732d2711fafbc891f9f10c",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/cli.py": {
@@ -935,8 +935,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/tests/test_assessment_contracts.py": {
-    "mtime": 1788287353.9537406,
-    "ast_hash": "c8f0d32f981456b7fdfda60822af3722",
+    "mtime": 1789677254.1658976,
+    "ast_hash": "33511b336cf33411c108fb81b97767dd",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/tests/test_blueprint.py": {
@@ -2015,8 +2015,8 @@
     "semantic_hash": ""
   },
   "docs/quality/difficulty-calibration-v2-report.md": {
-    "mtime": 1789676992.4347565,
-    "ast_hash": "7375b6a2f68a516516acc3e51a1d24d6",
+    "mtime": 1789677318.1925142,
+    "ast_hash": "0d61f150c3af779df63fcda1d38e2059",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-23-assessment-reliability-core.md": {
@@ -2157,6 +2157,36 @@
   "macOS/PaperCreator/Assets.xcassets/TutorialWorkspace.imageset/TutorialWorkspace.png": {
     "mtime": 1787412598.0003638,
     "ast_hash": "b7b67305703a2e1104b10c8ae5cd8f5a",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260729_191654_where_should_performance_and_generated_paper_accur.md": {
+    "mtime": 1785603986.1502821,
+    "ast_hash": "1cc4055bf76a03f481b4737b0d908bf9",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260729_215735_how_can_we_make_even_more_improvements_to_get_the.md": {
+    "mtime": 1785603986.1507137,
+    "ast_hash": "5bf508f0518fc0b7e3ca7606a5924eca",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260801_164531_how_does_the_generation_quality_pipeline_connect.md": {
+    "mtime": 1785603986.1511612,
+    "ast_hash": "f719c20f8c3c4150414d6dbc8aef75a6",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260801_164531_how_is_the_macos_backend_bundle_kept_complete.md": {
+    "mtime": 1785603986.1519227,
+    "ast_hash": "86b470884e92f62726040d9070a86d59",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260823_163246_how_does_the_paper_fidelity_audit_produce_per_docu.md": {
+    "mtime": 1787502766.0399861,
+    "ast_hash": "1373b2a45aa028da31a50c9d22dc300a",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260823_164146_which_ollama_model_and_live_validation_path_does_t.md": {
+    "mtime": 1787503306.6686506,
+    "ast_hash": "5df7cf4c8ebb2e043fa3e35782c1eab2",
     "semantic_hash": ""
   }
 }

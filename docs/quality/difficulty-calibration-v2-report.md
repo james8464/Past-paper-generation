@@ -660,3 +660,17 @@ seeded fallback remains available after three local attempts. The focused
 authoring suite passed 28 tests and Ruff after this change. A fresh live
 transaction is still required; this is a fail-closed integrity repair, not a
 qualified paper.
+
+The identical-seed rerun then reached the immutable Section A review and failed
+safely in 80.61 seconds at Question 2(a), again before creating a PDF. The
+review correctly identified that the old stem permitted any unspecified demand
+change although its scheme assumed an income increase, and that the table's
+Fuel row was an equally valid positive-YED normal-good example but was not
+named in the printed application guidance. The source contract now asks the
+candidate to use a YED value to explain why higher income raises demand for one
+named good; its AO1 defines positive YED/normal goods, AO2 accepts Bus travel,
+Cinema or Fuel with the printed value, and AO3 states the demand-curve and
+equilibrium mechanism. The test suite records this exact contract, and the
+full Edexcel family suite passed 316 tests after the repair. A new live
+transaction remains necessary; neither rejected attempt is qualification
+evidence.

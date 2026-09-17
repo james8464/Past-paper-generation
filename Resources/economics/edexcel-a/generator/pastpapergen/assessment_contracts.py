@@ -381,6 +381,20 @@ def bind_question(question, seed: int):
                     "AO3 (1 mark): Explain that the risk of unrecoverable losses deters entry, weakening the competitive threat to incumbent firms.",
                     "Accept a developed alternative using the table's switching-cost or legal-barrier evidence; award the same four-mark budget, not extra marks.",
                 ]
+            elif (
+                source.kind == "elasticity_data_table"
+                and part.command_word == "explain"
+            ):
+                prompt = (
+                    "Using the YED figures in the table, explain why an increase in "
+                    "consumer income is likely to raise demand for one of the goods shown."
+                )
+                scheme = [
+                    "AO1 (2 marks): Define income elasticity of demand as the responsiveness of demand to a change in income, and explain that a positive YED identifies a normal good.",
+                    "AO2 (1 mark): Apply one positive YED from the table: Bus travel (0.2), Cinema (1.8) or Fuel (0.1).",
+                    "AO3 (1 mark): Higher income increases demand for the selected normal good, so its demand curve shifts right; ceteris paribus this raises equilibrium price and quantity.",
+                    "Accept any one correctly identified positive-YED good and its developed demand link; do not award extra credit for naming more than one good.",
+                ]
             elif part.command_word == "draw":
                 prompt, scheme = drawing_contract(question, part)
             elif part.command_word != "mcq":

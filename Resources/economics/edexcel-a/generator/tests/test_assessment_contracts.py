@@ -56,6 +56,21 @@ def test_contestability_credit_is_specific_and_has_one_consistent_budget():
     assert q.mark_scheme == []  # parent summaries cannot create duplicate credit
 
 
+def test_elasticity_table_explanation_has_one_explicit_income_task_and_all_valid_rows():
+    q = paper(1, 26091719).questions[1]
+    part = q.parts[0]
+
+    assert q.stimulus_kind == "elasticity_data_table"
+    assert part.prompt == (
+        "Using the YED figures in the table, explain why an increase in consumer "
+        "income is likely to raise demand for one of the goods shown."
+    )
+    scheme = " ".join(part.mark_scheme)
+    assert "Bus travel (0.2), Cinema (1.8) or Fuel (0.1)" in scheme
+    assert "positive YED identifies a normal good" in scheme
+    assert "demand curve shifts right" in scheme
+
+
 @pytest.mark.parametrize("seed", [26083122, 26083123, 26083124, 26083159])
 def test_live_calculation_has_source_bound_independent_solution(seed):
     q = paper(2, seed).questions[0]
