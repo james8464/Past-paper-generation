@@ -709,6 +709,7 @@ def _clean_prompt(prompt: str) -> str:
     cleaned = re.sub(r"\bexplore\s+both\s+(?:sides\s+of\s+the\s+)?argument", "", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r"\bbring\s+in\s+relevant\s+economic\s+concepts\b", "", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r",?\s*both\s+in\s+the\s+short\s+run\s+and\s+the\s+long\s+run\.?", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bon\s+firm's\b", "on a firm's", cleaned, flags=re.IGNORECASE)
     return " ".join(cleaned.split())
 
 

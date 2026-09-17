@@ -446,6 +446,19 @@ def test_generated_stem_preserves_scenario_event_and_outcome_scope() -> None:
         _validate_ai_question(question, narrowed)
 
 
+def test_generated_stem_repairs_singular_possessive_article() -> None:
+    _, blueprint = _paper(seed=26091719)
+    question = next(item for item in blueprint.questions if item.number == "6(b)")
+
+    merged = _merge_question_text(
+        question,
+        "Examine two factors influencing the effects of business expansion on "
+        "firm's average costs and consumers.",
+    )
+
+    assert merged.endswith("on a firm's average costs and consumers.")
+
+
 def test_generation_rejects_unchanged_template_fallback() -> None:
     syllabus, full_blueprint = _paper()
     question = next(question for question in full_blueprint.questions if not question.parts)

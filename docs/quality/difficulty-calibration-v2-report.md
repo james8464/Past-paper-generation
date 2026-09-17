@@ -688,3 +688,16 @@ also normalises equivalent singular/plural possessive wording while retaining
 the event and affected-group anchors. Focused assessment and authoring tests
 passed after the correction. A further live transaction is required; the
 rejected run remains fail-closed evidence, not a qualified paper.
+
+The subsequent fresh identical-seed transaction completed on 17 September
+using Ollama `gemma4:12b` (paper seed `26091719`). It passed generation, PDF
+and reference-demand gates in 1,972.67 seconds and emitted all required paper,
+source-booklet and mark-scheme roles. Its manifest deliberately still records
+expert review, student calibration and visual comparison as not run. Manual
+inspection of the exported Question 6 prompts also found an otherwise
+undetected grammatical defect: several generated stems said `on firm's average
+costs` rather than `on a firm's average costs`. The prompt normaliser and a
+regression test now repair that singular possessive article, but this artifact
+is retained as content-pipeline evidence only. A new rendered transaction is
+required before treating it as a language-qualified candidate, and it does not
+alter the outstanding visual or external-review gates.

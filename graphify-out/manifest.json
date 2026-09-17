@@ -880,8 +880,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/ollama_client.py": {
-    "mtime": 1789677737.0066574,
-    "ast_hash": "3afb65d447a3678340a20b19e34fc7a9",
+    "mtime": 1789679836.396454,
+    "ast_hash": "316acbee675c35898ea134f70132fe6c",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/paper_configs.py": {
@@ -965,8 +965,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/tests/test_ollama_generation.py": {
-    "mtime": 1789677701.3903146,
-    "ast_hash": "4fa57808fadcce7229d7342252f052d3",
+    "mtime": 1789679943.7946484,
+    "ast_hash": "5918ce18892624c27335c8320e9f5414",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/tests/test_ollama_prompt.py": {
@@ -2015,8 +2015,8 @@
     "semantic_hash": ""
   },
   "docs/quality/difficulty-calibration-v2-report.md": {
-    "mtime": 1789677755.603431,
-    "ast_hash": "5566d9f747889f0761f76e07f5bd84f8",
+    "mtime": 1789679986.6769662,
+    "ast_hash": "20072c320f2d415d732c0b35711da8eb",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-23-assessment-reliability-core.md": {
