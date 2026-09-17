@@ -60,7 +60,20 @@ def aqa_front_matter_pages(
     heading_style,
     body_style,
 ) -> list[Flowable]:
-    pages: list[Flowable] = []
+    pages: list[Flowable] = [
+        Paragraph("General marking guidance", heading_style),
+        Spacer(1, 6 * mm),
+        *[
+            flowable
+            for subtitle, text in COMMON_PAGE_GUIDANCE
+            for flowable in (
+                Paragraph(subtitle, heading_style),
+                Spacer(1, 2 * mm),
+                Paragraph(text, body_style),
+                Spacer(1, 5 * mm),
+            )
+        ],
+    ]
     for title, guidance in SUBJECT_GUIDANCE[subject]:
         pages.extend(
             [
@@ -74,16 +87,6 @@ def aqa_front_matter_pages(
                     body_style,
                 ),
                 Spacer(1, 7 * mm),
-                *[
-                    flowable
-                    for subtitle, text in COMMON_PAGE_GUIDANCE
-                    for flowable in (
-                        Paragraph(subtitle, heading_style),
-                        Spacer(1, 2 * mm),
-                        Paragraph(text, body_style),
-                        Spacer(1, 5 * mm),
-                    )
-                ],
                 PageBreak(),
             ]
         )

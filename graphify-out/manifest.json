@@ -55,8 +55,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/mark_scheme_front_matter.py": {
-    "mtime": 1788135671.920694,
-    "ast_hash": "4bf028616ac9299e2112e169a66334e7",
+    "mtime": 1789672045.8511262,
+    "ast_hash": "6ceb165ca9c655b90ec5c451b58280d9",
     "semantic_hash": ""
   },
   "Backend/Core/ollama.py": {
@@ -1425,8 +1425,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-26-paper-creator-excellence-programme.md": {
-    "mtime": 1788889312.8716073,
-    "ast_hash": "5684eec07a82a75d4a7cddb39b5c2e97",
+    "mtime": 1789671936.438022,
+    "ast_hash": "888111258d06cb4fb96b80d06b07faf0",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md": {
@@ -2182,6 +2182,11 @@
   "Backend/Core/topic_task_contract.py": {
     "mtime": 1789669150.0491645,
     "ast_hash": "0aa376ce83516b8f9d1ef3d7fec86e31",
+    "semantic_hash": ""
+  },
+  "tests/test_mark_scheme_front_matter.py": {
+    "mtime": 1789672003.497664,
+    "ast_hash": "13e4a9a17215c6310dace4a0467de13d",
     "semantic_hash": ""
   }
 }
