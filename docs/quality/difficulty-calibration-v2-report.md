@@ -641,3 +641,22 @@ failures. Its scheme score improved from 0.584 to 0.594 at 300 DPI and from
 pages against the measured 29–30-page reference range and below the unchanged
 0.654 overall floor. It is retained as partial 7.K evidence, not visual
 qualification.
+
+The first recommended-model live Paper 1 transaction on 17 September used
+Ollama `gemma4:12b`, base seed `26091701` (paper seed `26091719`) and failed
+safely after 276.94 seconds before rendering any package. Its second-pass
+editor rejected Question 6(a): the generated stem narrowed the immutable
+`business expansion` task to `organic growth` and omitted the required effect
+on consumers while retaining the original 5-mark scheme. The failed
+qualification manifest and event log are preserved under
+`tmp/pdfs/task7-live-edexcel-p1-26091701`; its matrix result records the exact
+rejection and no output role is falsely qualified. Root-cause tracing showed
+that the first-pass validator protected only two exceptional hard-coded scope
+phrases, leaving the scenario contract's event and outcome to the later model
+review. The corrective contract guard now derives these anchors from the
+existing immutable scenario record when they occur in the original stem;
+`organic growth` therefore fails before review, while the already-reviewed
+seeded fallback remains available after three local attempts. The focused
+authoring suite passed 28 tests and Ruff after this change. A fresh live
+transaction is still required; this is a fail-closed integrity repair, not a
+qualified paper.

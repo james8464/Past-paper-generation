@@ -172,6 +172,7 @@ class BlueprintAwareClient:
             command=command,
             marks=marks,
             reference=reference,
+            draft=draft,
         )
         draw = "4 marks, draw:" in _line(prompt, "Parts")
         part_a = (
@@ -244,8 +245,29 @@ def _line(prompt: str, label: str) -> str:
     return match.group(1).strip()
 
 
-def _new_question(*, command: str, marks: int, reference: str) -> str:
+def _new_question(*, command: str, marks: int, reference: str, draft: str) -> str:
     prefix = f"With reference to {reference}, " if reference else ""
+    if "business expansion" in draft.casefold() and command == "explain":
+        return (
+            f"{prefix}explain how business expansion may affect firms' average "
+            "costs and consumers."
+        )
+    if "business expansion" in draft.casefold() and command == "examine":
+        return "Examine how business expansion may affect firms' average costs and consumers."
+    if "business expansion" in draft.casefold() and command == "assess":
+        return (
+            f"{prefix}assess whether business expansion may affect firms' average "
+            "costs and consumers."
+        )
+    if "business expansion" in draft.casefold() and command == "discuss":
+        return (
+            f"{prefix}discuss whether business expansion may affect firms' average "
+            "costs and consumers."
+        )
+    if command == "evaluate" and draft.casefold().startswith(
+        "evaluate the likely effects of "
+    ):
+        return "Evaluate how " + draft[len("Evaluate the likely effects of ") :]
     if marks == 5:
         return (
             f"{prefix}explain how changing production technology could alter "
@@ -398,6 +420,30 @@ def test_generated_stem_preserves_required_specification_scope() -> None:
     )
     with pytest.raises(ValueError, match="training, childcare and infrastructure"):
         _validate_ai_question(policy_question, broadened)
+
+
+def test_generated_stem_preserves_scenario_event_and_outcome_scope() -> None:
+    """An authored stem cannot narrow the immutable expansion task to one route."""
+
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_1"), syllabus, seed=26091719
+    )
+    question = next(item for item in blueprint.questions if item.number == "6(a)")
+    narrowed = question.model_copy(
+        update={
+            "prompt": (
+                "With reference to Extract A, explain one likely effect of organic "
+                "growth on a firm's average costs."
+            )
+        }
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="business expansion, firms' average costs and consumers",
+    ):
+        _validate_ai_question(question, narrowed)
 
 
 def test_generation_rejects_unchanged_template_fallback() -> None:

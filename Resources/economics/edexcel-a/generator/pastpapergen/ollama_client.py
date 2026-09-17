@@ -27,6 +27,7 @@ from Backend.Core.model_review import (
     require_independent_review,
 )
 from Backend.Core.reference_demand import build_item_demand_target, profile_for
+from pastpapergen.extended_scenarios import SCENARIOS
 from pastpapergen.models import (
     MultipleChoiceOption,
     PaperBlueprint,
@@ -930,11 +931,14 @@ def _strip_part_label(prompt: str, label: str) -> str:
 
 def _required_scope_terms(question: QuestionBlueprint) -> tuple[str, ...]:
     prompt = question.prompt.casefold()
-    terms = (
+    terms = [
         "non-profit objectives",
         "training, childcare and infrastructure",
-    )
-    return tuple(term for term in terms if term in prompt)
+    ]
+    scenario = SCENARIOS.get(question.topic_id)
+    if scenario is not None:
+        terms.extend((scenario.event, scenario.outcome))
+    return tuple(dict.fromkeys(term for term in terms if term in prompt))
 
 
 def _merge_question_text(question: QuestionBlueprint, generated: str) -> str:
