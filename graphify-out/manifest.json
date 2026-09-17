@@ -340,8 +340,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/ocr/generator/ocrcsgen/render_pdf.py": {
-    "mtime": 1788145865.224831,
-    "ast_hash": "c5cce12b1b8a3c868dd1cd4deebe3a74",
+    "mtime": 1789675193.4712808,
+    "ast_hash": "f20229f202f703eb1a3fdb6cfb248209",
     "semantic_hash": ""
   },
   "Resources/computer-science/ocr/generator/ocrcsgen/syllabus.py": {
@@ -355,8 +355,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/ocr/generator/tests/test_ocr_computer_science.py": {
-    "mtime": 1788144872.5991194,
-    "ast_hash": "6b59b353a13fe33229639467eec2e2e1",
+    "mtime": 1789674590.7038906,
+    "ast_hash": "4eacda49974644f078531da3dfc294e0",
     "semantic_hash": ""
   },
   "Resources/coverage-matrix.json": {
@@ -1425,8 +1425,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-26-paper-creator-excellence-programme.md": {
-    "mtime": 1789671936.438022,
-    "ast_hash": "888111258d06cb4fb96b80d06b07faf0",
+    "mtime": 1789672090.8752344,
+    "ast_hash": "e5e2f9843615204db65248f08ca44a84",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md": {
@@ -1700,8 +1700,8 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1789669844.3214052,
-    "ast_hash": "7a74cbebfbbdc524be891f3895226afe",
+    "mtime": 1789674656.7989237,
+    "ast_hash": "200e41399a608f27360d4d45df499d6f",
     "semantic_hash": ""
   },
   "tests/test_repository_hygiene.py": {

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from collections import Counter
 from pathlib import Path
 
 import pymupdf as fitz
@@ -8,11 +9,17 @@ import pytest
 from ocrcsgen.cli import generate_package
 from ocrcsgen.configs import PAPER_1_MARKS, PAPER_2_MARKS, RULES
 from ocrcsgen.generator import build_paper
-from ocrcsgen.render_pdf import MARK_SCHEME_PAGE_PLANS, STYLES, render_question_paper
+from ocrcsgen.render_pdf import (
+    MARK_SCHEME_PAGE_PLANS,
+    STYLES,
+    render_mark_scheme,
+    render_question_paper,
+)
 from ocrcsgen.syllabus import load_syllabus
 from pypdf import PdfReader
 
 from Backend.Core.exam_blueprints import validate_generated_paper, validate_rule
+from Backend.Core.pdf_text import extract_pdf_text
 
 ROOT = Path(__file__).resolve().parents[1]
 SYLLABUS = load_syllabus(ROOT / "data" / "syllabus.json")
@@ -22,6 +29,58 @@ def test_mark_scheme_typography_matches_reference_scale() -> None:
     assert STYLES["scheme_header"].fontSize == 11
     assert STYLES["scheme_small"].fontSize == 11
     assert STYLES["scheme_small"].leading == 13
+
+
+def test_mark_scheme_prints_shared_credit_rules_once(tmp_path: Path) -> None:
+    """Generic examiner rules belong in front matter, not every table row."""
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 42)
+    output = tmp_path / "mark-scheme.pdf"
+
+    render_mark_scheme(paper, output)
+
+    text = " ".join(extract_pdf_text(output).split())
+    assert text.count(
+        "Accept equivalent answers; apply stated follow-through without duplicate credit."
+    ) == 1
+    assert text.count(
+        "Do not award the same developed point twice. Where an early numerical error is "
+        "carried through consistently, award the later method marks."
+    ) == 1
+    assert text.count(
+        "Credit a technically correct equivalent method. Apply follow-through where "
+        "the stated working remains coherent."
+    ) == 1
+    assert text.count(
+        "Marker check: reward a valid alternative route where it demonstrates the "
+        "same assessed knowledge or skill."
+    ) == 1
+    assert text.count(
+        "Accept a technically equivalent answer applied to the wildlife monitoring network."
+    ) == 1
+
+
+def test_mark_scheme_retains_question_assessment_guidance(tmp_path: Path) -> None:
+    """Consolidation must not erase per-question AO or marker instructions."""
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 42)
+    output = tmp_path / "mark-scheme.pdf"
+
+    render_mark_scheme(paper, output)
+
+    text = " ".join(extract_pdf_text(output).split())
+    expected = Counter(
+        point.text.partition(":")[0]
+        for section in paper.sections
+        for option in section.options
+        for question in option.questions
+        for point in question.structured_mark_scheme
+        if point.credit_type == "guidance" and point.text.casefold().startswith("ao")
+    )
+    for objective, count in expected.items():
+        assert text.count(objective) >= count
+    assert text.count(
+        "Marker check: reward a valid alternative route where it demonstrates the "
+        "same assessed knowledge or skill."
+    ) == 1
 
 
 def _flatten(values: list[list[int]]) -> list[int]:

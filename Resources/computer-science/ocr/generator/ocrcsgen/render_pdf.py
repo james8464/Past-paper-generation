@@ -212,6 +212,8 @@ def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
 def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     doc = _document(path, paper, "Mark scheme")
+    shared_case_guidance = _repeated_case_guidance(paper)
+    assessment_objectives = _assessment_objective_guidance(paper)
     story: list[Flowable] = [
         *mark_scheme_cover(_cover_profile(paper), FONT, FONT_BOLD),
         PageBreak(),
@@ -227,12 +229,49 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
             "Indicative content is not exhaustive. Equivalent valid algorithms, "
             "explanations and terminology should be rewarded."
         ),
+        Spacer(1, 5 * mm),
+        Paragraph("Shared credit rules", STYLES["heading"]),
+        Spacer(1, 3 * mm),
+        Paragraph(
+            "Accept equivalent answers; apply stated follow-through without duplicate "
+            "credit. Credit an equivalent precise answer. Do not award the same technical "
+            "point twice. Do not award the same developed point twice. Where an early "
+            "numerical error is carried through consistently, award the later method marks. "
+            "Credit a technically correct equivalent method. Apply "
+            "follow-through where the stated working remains coherent. Marker check: "
+            "reward a valid alternative route where it demonstrates the same assessed "
+            "knowledge or skill.",
+            STYLES["body"],
+        ),
+        *(
+            [
+                Spacer(1, 5 * mm),
+                Paragraph("Assessment objectives", STYLES["heading"]),
+                Spacer(1, 3 * mm),
+                Paragraph("<br/>".join(escape(point) for point in assessment_objectives), STYLES["body"]),
+            ]
+            if assessment_objectives
+            else []
+        ),
+        *(
+            [
+                Spacer(1, 5 * mm),
+                Paragraph("Case-specific guidance", STYLES["heading"]),
+                Spacer(1, 3 * mm),
+                Paragraph(
+                    "<br/>".join(f"• {escape(point)}" for point in shared_case_guidance),
+                    STYLES["body"],
+                ),
+            ]
+            if shared_case_guidance
+            else []
+        ),
         NextPageTemplate("ocr-cs-mark-scheme-landscape"),
         PageBreak(),
         *_supplementary_marking_pages(6 if paper.paper_id == "paper_1" else 4),
         PageBreak(),
     ]
-    story.extend(_mark_scheme_content_pages(paper))
+    story.extend(_mark_scheme_content_pages(paper, shared_case_guidance))
     story.extend(
         [
             NextPageTemplate("ocr-cs-mark-scheme-final"),
@@ -249,7 +288,10 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
     doc.build(story)
 
 
-def _mark_scheme_content_pages(paper: GeneratedPaper) -> list[Flowable]:
+def _mark_scheme_content_pages(
+    paper: GeneratedPaper,
+    shared_case_guidance: tuple[str, ...],
+) -> list[Flowable]:
     pages: list[Flowable] = []
     plan = MARK_SCHEME_PAGE_PLANS[paper.paper_id]
     content_width = 268 * mm if paper.paper_id == "paper_1" else 260 * mm
@@ -262,7 +304,7 @@ def _mark_scheme_content_pages(paper: GeneratedPaper) -> list[Flowable]:
             )
             for section_index, question_index, segment, segment_count in items
         ]
-        for table in _scheme_tables(questions, content_width):
+        for table in _scheme_tables(questions, content_width, shared_case_guidance):
             if pages:
                 pages.append(PageBreak())
             pages.append(table)
@@ -273,20 +315,30 @@ class _SchemeOverflow(ValueError):
     pass
 
 
-def _scheme_tables(items: list[tuple[GeneratedQuestion, int, int]], content_width: float) -> list[Table]:
+def _scheme_tables(
+    items: list[tuple[GeneratedQuestion, int, int]],
+    content_width: float,
+    shared_case_guidance: tuple[str, ...] | None = None,
+) -> list[Table]:
     try:
-        return [_scheme_page_table(items, content_width)]
+        return [_scheme_page_table(items, content_width, shared_case_guidance)]
     except _SchemeOverflow:
         if len(items) == 1:
             raise
         split = len(items) // 2
-        return [*_scheme_tables(items[:split], content_width), *_scheme_tables(items[split:], content_width)]
+        return [
+            *_scheme_tables(items[:split], content_width, shared_case_guidance),
+            *_scheme_tables(items[split:], content_width, shared_case_guidance),
+        ]
 
 
 def _scheme_page_table(
     items: list[tuple[GeneratedQuestion, int, int]],
     content_width: float,
+    shared_case_guidance: tuple[str, ...] | None = None,
 ) -> Table:
+    if shared_case_guidance is None:
+        shared_case_guidance = _repeated_guidance_from_items(items)
     rows: list[list[object]] = [
         [
             Paragraph("Question", STYLES["scheme_header"]),
@@ -309,9 +361,12 @@ def _scheme_page_table(
                     STYLES["scheme_small_centre"],
                 ),
                 Paragraph(
-                    "Accept equivalent answers; apply stated follow-through without duplicate credit."
-                    if item_count >= 4
-                    else _scheme_guidance(question, segment, segment_count),
+                    _scheme_guidance(
+                        question,
+                        segment,
+                        segment_count,
+                        shared_case_guidance,
+                    ),
                     STYLES["scheme_small"],
                 ),
             ]
@@ -360,11 +415,11 @@ def _scheme_answer(
     segment_count: int,
     item_count: int,
 ) -> Paragraph:
-    points = question.mark_scheme
+    points = _credited_scheme_points(question)
     if question.authoring_context.get("cs_input_contract"):
         # Closed outputs are exhaustive, not illustrative bullets: truncating a
         # trace or conversion can remove the only published final answer.
-        selected = question.authoring_context.get("observable_mark_points") or points
+        selected = _observable_credit_points(question) or points
     elif segment_count > 1:
         chunk_size = max(1, math.ceil(len(points) / segment_count))
         start = (segment - 1) * chunk_size
@@ -372,7 +427,7 @@ def _scheme_answer(
     else:
         # Specific credited features are not an indicative sample: a prose or
         # programming rubric must be as complete as a closed numeric answer.
-        selected = question.authoring_context.get("observable_mark_points") or points
+        selected = _observable_credit_points(question) or points
     prompt = (
         escape(question.prompt)
         if segment == 1
@@ -393,25 +448,109 @@ def _scheme_guidance(
     question: GeneratedQuestion,
     segment: int,
     segment_count: int,
+    shared_case_guidance: tuple[str, ...],
 ) -> str:
-    if question.marks >= 9:
-        text = (
-            "Use the whole response. Start at the highest level and work down. "
-            "Reward a supported technical judgement."
-        )
-    elif question.kind in {"programming", "trace", "calculation"}:
-        text = (
-            "Credit a technically correct equivalent method. Apply follow-through "
-            "where the stated working remains coherent."
-        )
-    else:
-        text = (
-            "Credit an equivalent precise answer. Do not award the same technical "
-            "point twice."
-        )
+    guidance = [
+        _assessment_objective_label(point.text)
+        for point in question.structured_mark_scheme
+        if point.credit_type == "guidance"
+        and not _is_shared_guidance(point.text)
+        and point.text not in shared_case_guidance
+    ]
     if segment_count > 1:
-        text += f" Guidance segment {segment} of {segment_count}."
-    return escape(text)
+        guidance.append(f"Indicative content segment {segment} of {segment_count}.")
+    return "<br/>".join(escape(point) for point in guidance)
+
+
+def _credited_scheme_points(question: GeneratedQuestion) -> list[str]:
+    """Keep credit-bearing content in the answer column, once and in full."""
+    points = [
+        point.text
+        for point in question.structured_mark_scheme
+        if point.credit_type != "guidance"
+    ]
+    return points or question.mark_scheme
+
+
+def _observable_credit_points(question: GeneratedQuestion) -> list[str]:
+    """Keep a closed answer exhaustive while excluding examiner-only notes."""
+    observed = question.authoring_context.get("observable_mark_points") or []
+    guidance = {
+        point.text
+        for point in question.structured_mark_scheme
+        if point.credit_type == "guidance"
+    }
+    return [point for point in observed if point not in guidance]
+
+
+def _is_shared_guidance(text: str) -> bool:
+    value = text.casefold()
+    return value.startswith(("marker check:", "do not award the same developed point twice"))
+
+
+def _assessment_objective_label(text: str) -> str:
+    """Keep an AO allocation beside its question while defining it once up front."""
+    return text.partition(":")[0] if text.casefold().startswith("ao") else text
+
+
+def _assessment_objective_guidance(paper: GeneratedPaper) -> tuple[str, ...]:
+    """Collect the authoritative AO definitions used by this paper in first-use order."""
+    seen: set[str] = set()
+    definitions: list[str] = []
+    for section in paper.sections:
+        for option in section.options:
+            for question in option.questions:
+                for point in question.structured_mark_scheme:
+                    if (
+                        point.credit_type == "guidance"
+                        and point.text.casefold().startswith("ao")
+                        and point.text not in seen
+                    ):
+                        seen.add(point.text)
+                        definitions.append(point.text)
+    return tuple(definitions)
+
+
+def _repeated_case_guidance(paper: GeneratedPaper) -> tuple[str, ...]:
+    """Move repeated scenario-specific instructions to the scheme introduction."""
+    counts: dict[str, int] = {}
+    order: list[str] = []
+    for section in paper.sections:
+        for option in section.options:
+            for question in option.questions:
+                for point in question.structured_mark_scheme:
+                    if (
+                        point.credit_type != "guidance"
+                        or _is_shared_guidance(point.text)
+                        or point.text.casefold().startswith("ao")
+                    ):
+                        continue
+                    if point.text not in counts:
+                        order.append(point.text)
+                        counts[point.text] = 0
+                    counts[point.text] += 1
+    return tuple(point for point in order if counts[point] > 1)
+
+
+def _repeated_guidance_from_items(
+    items: list[tuple[GeneratedQuestion, int, int]],
+) -> tuple[str, ...]:
+    """Provide the same compact fallback for direct table-level consumers."""
+    counts: dict[str, int] = {}
+    order: list[str] = []
+    for question, _segment, _segment_count in items:
+        for point in question.structured_mark_scheme:
+            if (
+                point.credit_type != "guidance"
+                or _is_shared_guidance(point.text)
+                or point.text.casefold().startswith("ao")
+            ):
+                continue
+            if point.text not in counts:
+                order.append(point.text)
+                counts[point.text] = 0
+            counts[point.text] += 1
+    return tuple(point for point in order if counts[point] > 1)
 
 
 def _supplementary_marking_pages(count: int) -> list[Flowable]:
