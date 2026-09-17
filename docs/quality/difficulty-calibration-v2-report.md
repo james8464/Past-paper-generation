@@ -752,3 +752,19 @@ unbranded mark-scheme cover and pre-correction table placement remain visibly
 less dense than the public reference. This package is qualified content and
 print evidence, not visual qualification; a fresh package using the committed
 renderer geometry and guidance changes is required.
+
+The following fresh transaction, generated from the current introductory-page
+geometry fix, again passed the generation, PDF and reference-demand gates in
+1,651.43 seconds. Both the 300- and 600-DPI audits had no print failures and
+measured 73.0% for the question paper, 64.1% for the mark scheme and 68.5%
+overall. The aggregate score therefore did not yet move beyond the 65.4%
+mark-scheme floor. Direct visual comparison nevertheless confirmed that the
+unbranded introductory page now shares the reference page's text inset and
+baseline. It also exposed a remaining substantive layout gap: the generated
+general-marking-guidance page was materially less complete than the reference.
+That page now contains fuller, original examiner directions exactly once and
+uses the measured 84-point text column. The focused regression test, manual
+render and lint pass, but another fresh live export and fidelity audit are
+required before this latest guidance refinement can be claimed as visual
+evidence. The package continues to leave visual comparison, expert review and
+student calibration correctly unqualified.

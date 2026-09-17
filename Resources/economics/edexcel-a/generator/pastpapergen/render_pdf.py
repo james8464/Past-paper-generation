@@ -2602,21 +2602,23 @@ def render_mark_scheme(
     _draw_mark_scheme_qualification_page(pdf, blueprint, 57, height)
     pdf.showPage()
 
-    guidance_margin = 64
+    # This follows the left text column in the published reference material,
+    # while keeping the content and identity unmistakably independent.
+    guidance_margin = 84
     pdf.setFont(MS_FONT_BOLD, 14)
     pdf.drawString(guidance_margin, height - 155, "General Marking Guidance")
     pdf.setFont(MS_FONT, 11)
     y = height - 200
     guidance = [
-        "All candidates must receive the same treatment.",
-        "Apply the question-specific criteria positively and award every mark that is evidenced.",
-        "Credit valid alternative wording where it communicates the required economic idea.",
-        "Do not award the same analytical link more than once, even when it is repeated.",
-        "Use levels descriptors as a best-fit judgement of the response as a whole.",
-        "Accept a clearly labelled diagram, calculation or chain of reasoning when it meets the criterion.",
-        "Crossed out work should be marked unless the candidate has replaced it with an alternative response.",
-        "Give no credit for an assertion that is inaccurate, irrelevant or unsupported by the response.",
-        "Record a consistent mark where a response uses a different but equally valid context.",
+        "All candidates must receive the same treatment: apply the same interpretation of each criterion to every response.",
+        "Mark only against the published criteria, not an assumed grade boundary or a comparison with other candidates.",
+        "Apply the question-specific criteria positively. Award full credit when the response meets the criterion; do not withhold a mark merely because the answer is concise.",
+        "Use a best-fit judgement for levels-based responses, considering the quality of the response as a whole rather than adding isolated statements mechanically.",
+        "Credit valid alternative wording where it communicates the required economic idea. Accept a clearly labelled diagram, calculation or chain of reasoning when it meets the criterion.",
+        "Do not award the same analytical link more than once, even when it is repeated. Keep knowledge, application, analysis and evaluation distinct where the mark scheme requires them.",
+        "Crossed out work should be marked unless the candidate has clearly replaced it with an alternative response.",
+        "Give no credit for an assertion that is inaccurate, irrelevant or unsupported by the response. Credit a different but equally valid context consistently.",
+        "Where the application of a criterion is genuinely unclear, retain the evidence in the response and seek a consistent interpretation before finalising the mark.",
     ]
     for item in guidance:
         for idx, line in enumerate(_wrap(item, 62)):

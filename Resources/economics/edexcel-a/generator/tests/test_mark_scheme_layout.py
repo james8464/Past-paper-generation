@@ -53,15 +53,18 @@ def test_mark_scheme_guidance_explains_consistent_awarding(tmp_path):
     render_mark_scheme(blueprint, syllabus, output)
 
     text = _pdf_text(output)
+    normalized_text = " ".join(text.split())
     assert "valid alternative wording" in text
     assert "same analytical link more than once" in text
+    assert "Mark only against the published criteria" in text
+    assert "full credit when the response meets the criterion" in normalized_text
 
     import pymupdf as fitz
 
     with fitz.open(output) as document:
         for x0, y0, _x1, _y1, block, *_rest in document[2].get_text("blocks"):
             if "General Marking Guidance" in block:
-                assert x0 == pytest.approx(64, abs=1)
+                assert x0 == pytest.approx(84, abs=1)
                 assert y0 == pytest.approx(144, abs=3)
                 break
         else:
