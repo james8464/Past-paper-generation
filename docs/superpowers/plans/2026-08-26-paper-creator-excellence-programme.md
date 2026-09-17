@@ -337,8 +337,10 @@ totals are recorded in `docs/quality/assessment-objective-reference.md`.
   actual application tasks where necessary rather than only changing labels.
   Scoped implementation review passed through `31cc94c`; full-paper live and
   complete-credit layout qualification remain separate open checks above.
-- [ ] Consolidate repeated introductory scheme guidance without replacing it
-  with layout padding or weakening fidelity thresholds.
+- [x] Consolidate repeated introductory scheme guidance without replacing it
+  with layout padding or weakening fidelity thresholds. Shared AQA guidance is
+  now emitted once before subject-specific sections; measured page plans remain
+  unchanged (`da0dc54`).
 - [x] 7.F: Replace irrelevant Edexcel Economics topic-note marking with
   item-specific credit and visible-source evidence. Reconcile declared objective
   budgets, actual credit points and printed/exported schemes for every task
