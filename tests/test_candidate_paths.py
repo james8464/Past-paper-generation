@@ -322,47 +322,82 @@ def test_explicit_selected_operation_is_not_relabelled_retrieval_in_audit():
 
 
 def test_correlated_source_vectors_cannot_pass_by_coordinatewise_bounds():
-    from Backend.Core.reference_demand import ReferenceDemandProfile, audit_form_demand
-    from tests.test_reference_demand import profile_payload
+    from Backend.Core.reference_demand import profile_for
+    from tools.source_candidate_paths import form_from_items
 
-    payload = profile_payload()
-    profile = ReferenceDemandProfile.model_validate(payload)
+    profile = profile_for("aqa/economics", "3").model_copy(deep=True)
+    allocations = [
+        {"AO1": 10},
+        {"AO1": 5, "AO2": 5},
+        {"AO2": 10},
+        {"AO2": 7, "AO3": 3},
+        {"AO3": 10},
+        {"AO3": 6, "AO4": 4},
+        {"AO4": 10},
+        {"AO1": 7, "AO2": 2, "AO4": 1},
+    ]
+    # P3 target 22/24/19/15, with each ten-mark leaf reconciled.
     data = [
         {
-            "id": "x",
-            "marks": 4,
-            "expected_minutes": 6,
+            "id": str(n),
+            "marks": 10,
+            "expected_minutes": 15,
             "command_word": "Explain",
-            "assessment_objectives": {"AO1": 4},
+            "task_operation": "explain",
+            "assessment_objectives": ao,
             "intended_demand": "standard",
         }
+        for n, ao in enumerate(allocations)
     ]
-    observed = audit_form_demand(data, profile)["observed"]
-    first, second = deepcopy(observed), deepcopy(observed)
-    first["mark_band_distribution"] = {"extended": 1}
-    second["response_mode_distribution"] = {"recall": 1}
-    profile.reference_forms = [
-        {
-            "id": "source",
-            "status": "eligible",
-            "paths": [{"id": "a", "observed": first}, {"id": "b", "observed": second}],
-        }
-    ]
+    profile.reference_forms = []
+    for year, count, marks, mode in [
+        (2024, 20, 4, "structured-reasoning"),
+        (2025, 8, 10, "recall"),
+    ]:
+        rows = [
+            {
+                "id": str(n),
+                "marks": marks,
+                "command_word": "explain",
+                "cognitive_operation": "explain",
+                "response_mode": mode,
+                "demand_band": "unknown",
+                "demand_basis": "unknown-no-learner-measurement",
+                "historical_engineering_demand_proxy": "standard",
+                "assessment_objectives": None,
+                "objective_basis": "unknown",
+                "learner_demand": None,
+                "reasoning_steps": None,
+                "observed_minutes": None,
+            }
+            for n in range(count)
+        ]
+        profile.reference_forms.append(
+            form_from_items(
+                rows,
+                family="aqa/economics",
+                paper="3",
+                year=year,
+                source_id=str(year),
+                source_sha256="a" * 64,
+            )
+        )
     topology = {
         "policy_id": "test",
-        "total_marks": 4,
-        "duration_minutes": 6,
+        "total_marks": 80,
+        "duration_minutes": 120,
         "sections": [
             {
                 "id": "A",
                 "answer_options": 1,
-                "candidate_marks": 4,
-                "options": [{"id": "a", "item_ids": ["x"]}],
+                "candidate_marks": 80,
+                "options": [{"id": "a", "item_ids": [i["id"] for i in data]}],
             }
         ],
     }
     report = paths_module().audit_candidate_paths(data, topology, profile)
     assert report["passed"] is False
+    assert report["evidence_validation_passed"] is True
     assert report["paths"][0]["failed_checks"] == ["correlated_reference_path_fit"]
 
 

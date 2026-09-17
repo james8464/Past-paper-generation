@@ -562,7 +562,11 @@ def build_document() -> ReferenceDemandDocument:
 
     for profile in profiles:
         if profile.family_id == "aqa/mathematics":
-            continue  # not an advertised H3 route; preserve its existing profile
+            profile.evidence_policy_id = "unqualified-reference-v1"
+            profile.evidence_gaps = [
+                "Unadvertised legacy aggregate profile; no H3 path qualification."
+            ]
+            continue
         if profile.assessment_kind == "question-bank":
             topic = profile.paper_id.removeprefix("bank-")
             records = reviewed_topic_records(topic)

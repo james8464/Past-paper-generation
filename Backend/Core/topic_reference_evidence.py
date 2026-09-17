@@ -7,12 +7,13 @@ Source audit: Task 7.H bank preflight, 31 August 2026. No source prose retained.
 
 from __future__ import annotations
 
+import re
 from collections import Counter
 from typing import Any
 
 from Backend.Core.candidate_paths import identity
 
-TOPIC_POLICY_ID = "aqa-topic-operation-records-v1"
+TOPIC_POLICY_ID = "aqa-topic-operation-records-v2"
 # QP/MS SHA256; all are June releases; 2023 P1 QP is the CR edition.
 DOCUMENT_HASHES = {
     (2025, 1): (
@@ -263,44 +264,91 @@ def reviewed_topic_records(topic: str) -> list[dict[str, Any]]:
 
 
 def task_features(item: dict[str, Any]) -> dict[str, Any]:
-    """Conservative task classifier; labels alone never admit keyword neighbours."""
+    """Require task/context membership and an evidenced response form.
+
+    A stimulus table is not an answer table; multiple answer slots are not a
+    trace table. Broad authoring operations may be refined only by an actual
+    response instruction/contract, never an incidental noun in prose.
+    """
     topic = item.get("topic_id")
     prompt = str(item.get("prompt", "")).casefold()
-    style = str(item.get("kind", "")).casefold()
+    context = item.get("context") or []
+    text = (
+        prompt
+        + " "
+        + (
+            " ".join(map(str, context)) if isinstance(context, list) else str(context)
+        ).casefold()
+    )
     operation = item.get("task_operation") or "unknown"
+    membership = {
+        "4.2": r"\b(stack|queue|tree|graph|adjacency|linked list|hash|array|vector)\b",
+        "4.10": r"\b(database|relational|sql|primary key|foreign key|normalisation|normalization)\b",
+        "4.12": r"\b(functional|higher-order|lambda|immutability|head and tail|co-domain)\b|\w+\s*\(x:xs\)",
+    }
+    excluded = {
+        "4.2": r"\bcompression\b",
+        "4.10": r"\b(rest(?:ful)?|xml|json|https?|floating-point)\b",
+        "4.12": r"\b(imperative|graph|vertex|vertices|visited|while|for loop)\b",
+    }
     if (
-        (
-            topic == "4.10"
-            and any(
-                word in prompt
-                for word in ("rest resource", "json", "http", "floating-point")
-            )
-        )
-        or (topic == "4.2" and "compression" in prompt)
-        or (topic == "4.12" and ("imperative" in prompt or "graph_traversal" in style))
+        topic not in membership
+        or not re.search(membership[topic], text)
+        or re.search(excluded[topic], text)
     ):
         topic = None
-    mode = "prose"
+    mode = "unknown"
+    slots = item.get("response_slots") or []
+    contract = item.get("response_contract") or item.get("assessment_contract") or {}
+    explicit_mode = (
+        contract.get("response_mode") if isinstance(contract, dict) else None
+    )
     if item.get("choices") or item.get("options"):
         mode = (
-            "multi-selected" if "two" in prompt or "all that" in prompt else "selected"
+            "multi-selected"
+            if re.search(
+                r"(?:select|choose|tick|identify)\s+(?:the\s+)?(?:two|all)\b", prompt
+            )
+            else "selected"
         )
-    elif operation == "program":
-        mode = "query" if "select" in prompt and topic == "4.10" else "code"
-        if "complete" in prompt and "write" not in prompt:
-            operation = "complete-code"
-    elif operation == "trace":
-        mode = (
-            "table"
-            if "table" in prompt or len(item.get("response_slots") or []) > 1
-            else "result"
-        )
-    elif "adjacency matrix" in prompt:
-        operation, mode = "represent", "table"
-    elif "relationship" in prompt and any(
-        word in prompt for word in ("draw", "diagram", "complete")
+    elif re.match(r"\s*(draw|construct|complete)\b", prompt) and re.search(
+        r"\b(tree|diagram|relationship)\b", prompt
     ):
         operation, mode = "represent", "diagram"
+    elif (
+        re.match(r"\s*(draw|construct|complete)\b", prompt)
+        and "adjacency matrix" in prompt
+    ):
+        operation, mode = "represent", "table"
+    elif operation == "program":
+        mode = (
+            "query" if re.search(r"\bselect\b", prompt) and topic == "4.10" else "code"
+        )
+        if re.match(r"\s*complete\b", prompt):
+            operation = "complete-code"
+    elif operation == "trace" and re.search(
+        r"\b(?:complet\w*|trace\w*)\b.*\btable\b", prompt
+    ):
+        mode = "table"
+    elif slots:
+        mode = (
+            "sequence"
+            if len(slots) > 1 or any("order" in str(slot) for slot in slots)
+            else "result"
+        )
+    elif operation in {
+        "retrieve",
+        "describe",
+        "explain",
+        "analyse",
+        "judge",
+    } and re.match(
+        r"\s*(state|identify|name|give|describe|outline|explain|analyse|compare|discuss|evaluate)\b",
+        prompt,
+    ):
+        mode = "prose"
+    if explicit_mode is not None and explicit_mode != mode:
+        mode = "unknown"  # contradictory answer contract cannot establish a match
     return {"topic_id": topic, "operation": operation, "mode": mode}
 
 

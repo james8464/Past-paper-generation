@@ -130,3 +130,30 @@ def test_source_and_generated_response_modes_use_same_operation_definition():
         profile_for("aqa/economics", "1"),
     )
     assert target.response_mode == "structured-reasoning"
+
+
+def test_edexcel_2024_selected_subparts_use_actual_operations_without_command_leakage():
+    form = next(
+        f
+        for f in module().source_forms("pearson-edexcel/economics-a-2015", "1")
+        if f["status"] == "eligible"
+    )
+    expected = {
+        "2": ("1(b)", 3, "transform"),
+        "4": ("2(b)", 5, "transform"),
+        "6": ("3(b)", 6, "analyse"),
+    }
+    for row in form["items"]:
+        if row["id"] in expected:
+            subpart, page, operation = expected[row["id"]]
+            assert row["cognitive_operation"] == operation
+            assert row["command_word"] == "select"
+            assert row["response_mode"] == "selected-response"
+            assert row["source_subpart"] == subpart and row["source_page"] == page
+            assert row["assessment_objectives"] is None
+            assert (
+                row["learner_demand"]
+                is row["observed_minutes"]
+                is row["reasoning_steps"]
+                is None
+            )

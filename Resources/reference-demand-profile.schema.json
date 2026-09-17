@@ -12,10 +12,19 @@
     "profiles"
   ],
   "properties": {
-    "schema_version": { "const": 3 },
-    "purpose": { "type": "string", "minLength": 20 },
-    "derived_aggregate_only": { "const": true },
-    "retains_source_text": { "const": false },
+    "schema_version": {
+      "const": 3
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 20
+    },
+    "derived_aggregate_only": {
+      "const": true
+    },
+    "retains_source_text": {
+      "const": false
+    },
     "profiles": {
       "type": "array",
       "minItems": 1,
@@ -36,30 +45,96 @@
           "response_mode_distribution",
           "cognitive_operation_distribution",
           "extraction_coverage",
-          "metric_tolerances"
+          "metric_tolerances",
+          "evidence_policy_id",
+          "reference_forms",
+          "topic_records",
+          "evidence_gaps"
         ],
         "properties": {
-          "evidence_policy_id": { "type": ["string", "null"] },
-          "reference_forms": { "type": "array", "items": { "type": "object" } },
-          "topic_records": { "type": "array", "items": { "type": "object" } },
-          "evidence_gaps": { "type": "array", "items": { "type": "string" } },
-          "family_id": { "type": "string", "minLength": 3 },
-          "paper_id": { "type": "string", "minLength": 1 },
-          "assessment_kind": {
-            "enum": ["full-paper", "question-bank"]
+          "evidence_policy_id": {
+            "enum": [
+              "edition-leaf-path-features-v2",
+              "aqa-topic-operation-records-v2",
+              "unqualified-reference-v1"
+            ]
           },
-          "comparison_basis": { "type": "string", "minLength": 12 },
-          "source_document_count": { "type": "integer", "minimum": 1 },
+          "reference_forms": {
+            "type": "array",
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "eligible": "#/$defs/SourceForm",
+                  "quarantined": "#/$defs/QuarantinedForm"
+                },
+                "propertyName": "status"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/SourceForm"
+                },
+                {
+                  "$ref": "#/$defs/QuarantinedForm"
+                }
+              ]
+            }
+          },
+          "topic_records": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/TopicRecord"
+            }
+          },
+          "evidence_gaps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "family_id": {
+            "type": "string",
+            "minLength": 3
+          },
+          "paper_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "assessment_kind": {
+            "enum": [
+              "full-paper",
+              "question-bank"
+            ]
+          },
+          "comparison_basis": {
+            "type": "string",
+            "minLength": 12
+          },
+          "source_document_count": {
+            "type": "integer",
+            "minimum": 1
+          },
           "source_fingerprint": {
             "type": "string",
             "pattern": "^[a-f0-9]{64}$"
           },
-          "mark_band_distribution": { "$ref": "#/$defs/distribution" },
-          "command_word_distribution": { "$ref": "#/$defs/distribution" },
-          "demand_distribution": { "$ref": "#/$defs/distribution" },
-          "mark_weighted_demand_distribution": { "$ref": "#/$defs/distribution" },
-          "response_mode_distribution": { "$ref": "#/$defs/distribution" },
-          "cognitive_operation_distribution": { "$ref": "#/$defs/distribution" },
+          "mark_band_distribution": {
+            "$ref": "#/$defs/distribution"
+          },
+          "command_word_distribution": {
+            "$ref": "#/$defs/distribution"
+          },
+          "demand_distribution": {
+            "$ref": "#/$defs/distribution"
+          },
+          "mark_weighted_demand_distribution": {
+            "$ref": "#/$defs/distribution"
+          },
+          "response_mode_distribution": {
+            "$ref": "#/$defs/distribution"
+          },
+          "cognitive_operation_distribution": {
+            "$ref": "#/$defs/distribution"
+          },
           "extraction_coverage": {
             "type": "number",
             "minimum": 0.6,
@@ -76,14 +151,98 @@
               "cognitive_operation_distribution"
             ],
             "properties": {
-              "mark_band_distribution": { "$ref": "#/$defs/tolerance" },
-              "command_family_distribution": { "$ref": "#/$defs/tolerance" },
-              "mark_weighted_demand_distribution": { "$ref": "#/$defs/tolerance" },
-              "response_mode_distribution": { "$ref": "#/$defs/tolerance" },
-              "cognitive_operation_distribution": { "$ref": "#/$defs/tolerance" }
+              "mark_band_distribution": {
+                "$ref": "#/$defs/tolerance"
+              },
+              "command_family_distribution": {
+                "$ref": "#/$defs/tolerance"
+              },
+              "mark_weighted_demand_distribution": {
+                "$ref": "#/$defs/tolerance"
+              },
+              "response_mode_distribution": {
+                "$ref": "#/$defs/tolerance"
+              },
+              "cognitive_operation_distribution": {
+                "$ref": "#/$defs/tolerance"
+              }
             }
           }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "evidence_policy_id": {
+                  "const": "edition-leaf-path-features-v2"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "assessment_kind": {
+                  "const": "full-paper"
+                },
+                "reference_forms": {
+                  "minItems": 1
+                },
+                "topic_records": {
+                  "maxItems": 0
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "evidence_policy_id": {
+                  "const": "aqa-topic-operation-records-v2"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "assessment_kind": {
+                  "const": "question-bank"
+                },
+                "reference_forms": {
+                  "maxItems": 0
+                },
+                "topic_records": {
+                  "minItems": 1
+                },
+                "evidence_gaps": {
+                  "minItems": 1
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "evidence_policy_id": {
+                  "const": "unqualified-reference-v1"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "assessment_kind": {
+                  "const": "full-paper"
+                },
+                "reference_forms": {
+                  "maxItems": 0
+                },
+                "topic_records": {
+                  "maxItems": 0
+                },
+                "evidence_gaps": {
+                  "minItems": 1
+                }
+              }
+            }
+          }
+        ]
       }
     }
   },
@@ -101,6 +260,964 @@
         "minimum": 0,
         "maximum": 1
       }
+    },
+    "CandidateTopology": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "policy_id": {
+          "minLength": 1,
+          "title": "Policy Id",
+          "type": "string"
+        },
+        "total_marks": {
+          "exclusiveMinimum": 0,
+          "title": "Total Marks",
+          "type": "integer"
+        },
+        "duration_minutes": {
+          "exclusiveMinimum": 0,
+          "title": "Duration Minutes",
+          "type": "integer"
+        },
+        "sections": {
+          "items": {
+            "$ref": "#/$defs/PathSection"
+          },
+          "minItems": 1,
+          "title": "Sections",
+          "type": "array"
+        }
+      },
+      "required": [
+        "policy_id",
+        "total_marks",
+        "duration_minutes",
+        "sections"
+      ],
+      "title": "CandidateTopology",
+      "type": "object"
+    },
+    "Observations": {
+      "additionalProperties": false,
+      "properties": {
+        "mark_band_distribution": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Mark Band Distribution",
+          "type": "object"
+        },
+        "command_word_distribution": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Command Word Distribution",
+          "type": "object"
+        },
+        "command_family_distribution": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Command Family Distribution",
+          "type": "object"
+        },
+        "response_mode_distribution": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Response Mode Distribution",
+          "type": "object"
+        },
+        "cognitive_operation_distribution": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Cognitive Operation Distribution",
+          "type": "object"
+        },
+        "demand_distribution": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Demand Distribution",
+          "type": "object"
+        },
+        "mark_weighted_demand_distribution": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "title": "Mark Weighted Demand Distribution",
+          "type": "object"
+        }
+      },
+      "required": [
+        "mark_band_distribution",
+        "command_word_distribution",
+        "command_family_distribution",
+        "response_mode_distribution",
+        "cognitive_operation_distribution",
+        "demand_distribution",
+        "mark_weighted_demand_distribution"
+      ],
+      "title": "Observations",
+      "type": "object"
+    },
+    "PathOption": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "item_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Item Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "item_ids"
+      ],
+      "title": "PathOption",
+      "type": "object"
+    },
+    "PathSection": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "answer_options": {
+          "exclusiveMinimum": 0,
+          "title": "Answer Options",
+          "type": "integer"
+        },
+        "candidate_marks": {
+          "exclusiveMinimum": 0,
+          "title": "Candidate Marks",
+          "type": "integer"
+        },
+        "options": {
+          "items": {
+            "$ref": "#/$defs/PathOption"
+          },
+          "minItems": 1,
+          "title": "Options",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "answer_options",
+        "candidate_marks",
+        "options"
+      ],
+      "title": "PathSection",
+      "type": "object"
+    },
+    "QuarantinedForm": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "year": {
+          "maximum": 2100,
+          "minimum": 2000,
+          "title": "Year",
+          "type": "integer"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "scheme_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scheme File"
+        },
+        "scheme_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scheme Sha256"
+        },
+        "status": {
+          "const": "quarantined",
+          "title": "Status",
+          "type": "string"
+        },
+        "objective_basis": {
+          "enum": [
+            "unknown",
+            "printed-conflicting"
+          ],
+          "title": "Objective Basis",
+          "type": "string"
+        },
+        "paths": {
+          "items": {},
+          "maxItems": 0,
+          "title": "Paths",
+          "type": "array"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "conflicting_evidence": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Conflicting Evidence"
+        },
+        "qualitative_examiner_evidence": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualitativeExaminerEvidence"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "year",
+        "source_sha256",
+        "status",
+        "objective_basis",
+        "paths"
+      ],
+      "title": "QuarantinedForm",
+      "type": "object"
+    },
+    "SourceForm": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "year": {
+          "maximum": 2100,
+          "minimum": 2000,
+          "title": "Year",
+          "type": "integer"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "scheme_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scheme File"
+        },
+        "scheme_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scheme Sha256"
+        },
+        "status": {
+          "const": "eligible",
+          "title": "Status",
+          "type": "string"
+        },
+        "extraction_policy": {
+          "const": "edition-leaf-path-features-v2",
+          "title": "Extraction Policy",
+          "type": "string"
+        },
+        "feature_basis": {
+          "minLength": 1,
+          "title": "Feature Basis",
+          "type": "string"
+        },
+        "objective_basis": {
+          "enum": [
+            "unknown",
+            "reconciled-published-aggregate"
+          ],
+          "title": "Objective Basis",
+          "type": "string"
+        },
+        "weighting_basis": {
+          "const": "equal-path-within-year-equal-year-descriptive",
+          "title": "Weighting Basis",
+          "type": "string"
+        },
+        "comparable_metrics": {
+          "const": [
+            "mark_band_distribution",
+            "command_family_distribution",
+            "response_mode_distribution",
+            "cognitive_operation_distribution"
+          ]
+        },
+        "non_comparable_features": {
+          "additionalProperties": {
+            "const": "unknown",
+            "type": "string"
+          },
+          "propertyNames": {
+            "enum": [
+              "learner_demand",
+              "reasoning_steps",
+              "observed_minutes"
+            ]
+          },
+          "title": "Non Comparable Features",
+          "type": "object"
+        },
+        "topology": {
+          "$ref": "#/$defs/CandidateTopology"
+        },
+        "topology_fingerprint": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Topology Fingerprint",
+          "type": "string"
+        },
+        "printed_marks": {
+          "exclusiveMinimum": 0,
+          "title": "Printed Marks",
+          "type": "integer"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/SourceItem"
+          },
+          "minItems": 1,
+          "title": "Items",
+          "type": "array"
+        },
+        "paths": {
+          "items": {
+            "$ref": "#/$defs/SourcePath"
+          },
+          "minItems": 1,
+          "title": "Paths",
+          "type": "array"
+        },
+        "qualitative_examiner_evidence": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QualitativeExaminerEvidence"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "year",
+        "source_sha256",
+        "status",
+        "extraction_policy",
+        "feature_basis",
+        "objective_basis",
+        "weighting_basis",
+        "comparable_metrics",
+        "non_comparable_features",
+        "topology",
+        "topology_fingerprint",
+        "printed_marks",
+        "items",
+        "paths"
+      ],
+      "title": "SourceForm",
+      "type": "object"
+    },
+    "SourceItem": {
+      "additionalProperties": false,
+      "properties": {
+        "learner_demand": {
+          "title": "Learner Demand",
+          "type": "null"
+        },
+        "observed_minutes": {
+          "title": "Observed Minutes",
+          "type": "null"
+        },
+        "reasoning_steps": {
+          "title": "Reasoning Steps",
+          "type": "null"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "marks": {
+          "exclusiveMinimum": 0,
+          "title": "Marks",
+          "type": "integer"
+        },
+        "assessment_objectives": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "propertyNames": {
+                "enum": [
+                  "AO1",
+                  "AO2",
+                  "AO3",
+                  "AO4"
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Assessment Objectives"
+        },
+        "objective_basis": {
+          "enum": [
+            "unknown",
+            "published-item-allocation"
+          ],
+          "title": "Objective Basis",
+          "type": "string"
+        },
+        "cognitive_operation": {
+          "enum": [
+            "retrieve",
+            "describe",
+            "explain",
+            "contextualise",
+            "transform",
+            "analyse",
+            "judge",
+            "design",
+            "program",
+            "trace"
+          ],
+          "title": "Cognitive Operation",
+          "type": "string"
+        },
+        "command_word": {
+          "minLength": 1,
+          "title": "Command Word",
+          "type": "string"
+        },
+        "response_mode": {
+          "enum": [
+            "programming",
+            "algorithm-trace",
+            "computational-design",
+            "calculation",
+            "mathematical-argument",
+            "selected-response",
+            "structured-reasoning",
+            "constructed-response",
+            "extended-evaluation",
+            "recall",
+            "multi-stage-calculation",
+            "computational-analysis"
+          ],
+          "title": "Response Mode",
+          "type": "string"
+        },
+        "demand_band": {
+          "const": "unknown",
+          "title": "Demand Band",
+          "type": "string"
+        },
+        "demand_basis": {
+          "const": "unknown-no-learner-measurement",
+          "title": "Demand Basis",
+          "type": "string"
+        },
+        "historical_engineering_demand_proxy": {
+          "enum": [
+            "low",
+            "standard",
+            "high"
+          ],
+          "title": "Historical Engineering Demand Proxy",
+          "type": "string"
+        },
+        "demand_eligible": {
+          "default": true,
+          "title": "Demand Eligible",
+          "type": "boolean"
+        },
+        "operation_basis": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Operation Basis"
+        },
+        "source_subpart": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Subpart"
+        },
+        "source_page": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Page"
+        }
+      },
+      "required": [
+        "learner_demand",
+        "observed_minutes",
+        "reasoning_steps",
+        "id",
+        "marks",
+        "assessment_objectives",
+        "objective_basis",
+        "cognitive_operation",
+        "command_word",
+        "response_mode",
+        "demand_band",
+        "demand_basis",
+        "historical_engineering_demand_proxy"
+      ],
+      "title": "SourceItem",
+      "type": "object"
+    },
+    "SourcePath": {
+      "additionalProperties": false,
+      "properties": {
+        "learner_demand": {
+          "title": "Learner Demand",
+          "type": "null"
+        },
+        "observed_minutes": {
+          "title": "Observed Minutes",
+          "type": "null"
+        },
+        "reasoning_steps": {
+          "title": "Reasoning Steps",
+          "type": "null"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "item_ids": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Item Ids",
+          "type": "array"
+        },
+        "marks": {
+          "exclusiveMinimum": 0,
+          "title": "Marks",
+          "type": "integer"
+        },
+        "assessment_objectives": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "propertyNames": {
+                "enum": [
+                  "AO1",
+                  "AO2",
+                  "AO3",
+                  "AO4"
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Assessment Objectives"
+        },
+        "observed": {
+          "$ref": "#/$defs/Observations"
+        },
+        "section_features": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Observations"
+          },
+          "title": "Section Features",
+          "type": "object"
+        }
+      },
+      "required": [
+        "learner_demand",
+        "observed_minutes",
+        "reasoning_steps",
+        "id",
+        "item_ids",
+        "marks",
+        "assessment_objectives",
+        "observed",
+        "section_features"
+      ],
+      "title": "SourcePath",
+      "type": "object"
+    },
+    "TopicRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "learner_demand": {
+          "title": "Learner Demand",
+          "type": "null"
+        },
+        "observed_minutes": {
+          "title": "Observed Minutes",
+          "type": "null"
+        },
+        "reasoning_steps": {
+          "title": "Reasoning Steps",
+          "type": "null"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "year": {
+          "maximum": 2100,
+          "minimum": 2000,
+          "title": "Year",
+          "type": "integer"
+        },
+        "paper": {
+          "enum": [
+            "1",
+            "2"
+          ],
+          "title": "Paper",
+          "type": "string"
+        },
+        "item": {
+          "minLength": 1,
+          "title": "Item",
+          "type": "string"
+        },
+        "question_cluster": {
+          "minLength": 1,
+          "title": "Question Cluster",
+          "type": "string"
+        },
+        "topic_id": {
+          "enum": [
+            "4.2",
+            "4.10",
+            "4.12"
+          ],
+          "title": "Topic Id",
+          "type": "string"
+        },
+        "topic_basis": {
+          "minLength": 1,
+          "title": "Topic Basis",
+          "type": "string"
+        },
+        "stratum": {
+          "enum": [
+            "core",
+            "mixed",
+            "context-incomplete"
+          ],
+          "title": "Stratum",
+          "type": "string"
+        },
+        "context_complete": {
+          "title": "Context Complete",
+          "type": "boolean"
+        },
+        "marks": {
+          "exclusiveMinimum": 0,
+          "title": "Marks",
+          "type": "integer"
+        },
+        "assessment_objectives": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "propertyNames": {
+                "enum": [
+                  "AO1",
+                  "AO2",
+                  "AO3",
+                  "AO4"
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Assessment Objectives"
+        },
+        "objective_basis": {
+          "enum": [
+            "unknown",
+            "published-item-allocation"
+          ],
+          "title": "Objective Basis",
+          "type": "string"
+        },
+        "operation": {
+          "enum": [
+            "explain",
+            "describe",
+            "analyse",
+            "represent",
+            "retrieve",
+            "trace",
+            "program",
+            "complete-code",
+            "analyse-complexity",
+            "unknown"
+          ],
+          "title": "Operation",
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "prose",
+            "table",
+            "result",
+            "diagram",
+            "code",
+            "query",
+            "selected",
+            "relations",
+            "multi-selected",
+            "unknown"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "feature_basis": {
+          "const": "reviewed-task-inference",
+          "title": "Feature Basis",
+          "type": "string"
+        },
+        "source_dependency": {
+          "enum": [
+            "unknown",
+            "task-context",
+            "self-contained"
+          ],
+          "title": "Source Dependency",
+          "type": "string"
+        },
+        "question_pages": {
+          "minLength": 1,
+          "title": "Question Pages",
+          "type": "string"
+        },
+        "scheme_pages": {
+          "minLength": 1,
+          "title": "Scheme Pages",
+          "type": "string"
+        },
+        "question_file": {
+          "minLength": 1,
+          "title": "Question File",
+          "type": "string"
+        },
+        "scheme_file": {
+          "minLength": 1,
+          "title": "Scheme File",
+          "type": "string"
+        },
+        "question_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Question Sha256",
+          "type": "string"
+        },
+        "scheme_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Scheme Sha256",
+          "type": "string"
+        },
+        "specification_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Specification Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "learner_demand",
+        "observed_minutes",
+        "reasoning_steps",
+        "id",
+        "year",
+        "paper",
+        "item",
+        "question_cluster",
+        "topic_id",
+        "topic_basis",
+        "stratum",
+        "context_complete",
+        "marks",
+        "assessment_objectives",
+        "objective_basis",
+        "operation",
+        "mode",
+        "feature_basis",
+        "source_dependency",
+        "question_pages",
+        "scheme_pages",
+        "question_file",
+        "scheme_file",
+        "question_sha256",
+        "scheme_sha256",
+        "specification_sha256"
+      ],
+      "title": "TopicRecord",
+      "type": "object"
+    },
+    "QualitativeExaminerEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "pages": {
+          "items": {
+            "exclusiveMinimum": 0,
+            "type": "integer"
+          },
+          "minItems": 1,
+          "title": "Pages",
+          "type": "array"
+        },
+        "challenging_mcq_ids": {
+          "items": {
+            "exclusiveMinimum": 0,
+            "type": "integer"
+          },
+          "minItems": 1,
+          "title": "Challenging Mcq Ids",
+          "type": "array"
+        },
+        "basis": {
+          "const": "qualitative-cohort-commentary",
+          "title": "Basis",
+          "type": "string"
+        },
+        "facility": {
+          "title": "Facility",
+          "type": "null"
+        }
+      },
+      "required": [
+        "source_sha256",
+        "pages",
+        "challenging_mcq_ids",
+        "basis",
+        "facility"
+      ],
+      "title": "QualitativeExaminerEvidence",
+      "type": "object"
     }
   }
 }

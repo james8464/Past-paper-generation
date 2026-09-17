@@ -413,7 +413,10 @@ def _reference_demand_audit(
             if failure.startswith(("allocated_", "objective_", "section_"))
         ]
         report["build_eligible"] = (
-            not preview and not review_failed and not structural_failures
+            not preview
+            and not review_failed
+            and not structural_failures
+            and paths["evidence_validation_passed"]
         )
         report["build_gate_basis"] = (
             "Structure/correctness/source-content identity/item review required; topic calibration remains insufficient."

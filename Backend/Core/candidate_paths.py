@@ -335,6 +335,14 @@ def audit_candidate_paths(
 
     topology = CandidateTopology.model_validate(topology)
     paths = enumerate_candidate_paths(topology, items)
+    from Backend.Core.reference_evidence import validate_profile_evidence
+
+    evidence_error = None
+    try:
+        qualified_source = validate_profile_evidence(profile)
+    except ValueError:
+        qualified_source = False
+        evidence_error = "reference_evidence_invalid"
     by_id = {i["id"]: i for i in items}
     results = []
     for path in paths:
@@ -346,7 +354,7 @@ def audit_candidate_paths(
         # different reference for each coordinate. Equal-path averaging below
         # is descriptive only and is never used as a rescue gate.
         comparisons = []
-        if profile.reference_forms:
+        if qualified_source:
             for form in profile.reference_forms:
                 if form.get("status") != "eligible":
                     continue
@@ -379,8 +387,8 @@ def audit_candidate_paths(
                 if any(c["passed"] for c in comparisons)
                 else ["correlated_reference_path_fit"]
             )
-        elif profile.evidence_policy_id:
-            failed.append("reference_paths_insufficient")
+        else:
+            failed.append(evidence_error or "reference_paths_insufficient")
         if metrics["allocated_minutes"] is None:
             failed.append("allocated_timing_unknown")
         elif abs(metrics["allocated_minutes"] - topology.duration_minutes) > 0.02 * len(
@@ -474,11 +482,10 @@ def audit_candidate_paths(
     return {
         "schema_version": 1,
         "policy_id": PATH_POLICY_ID,
+        "evidence_validation_passed": evidence_error is None,
         "passed": all(row["passed"] for row in results),
         "path_count": len(paths),
-        "evidence_state": "checked"
-        if any(f.get("status") == "eligible" for f in profile.reference_forms)
-        else "insufficient",
+        "evidence_state": "checked" if qualified_source else "insufficient",
         "topology": topology.model_dump(mode="json"),
         "topology_fingerprint": topology.fingerprint,
         "comparison_identity": identity(

@@ -23,7 +23,7 @@
         "unknown": 1.0
       },
       "evidence_gaps": [],
-      "evidence_policy_id": "edition-leaf-path-features-v1",
+      "evidence_policy_id": "edition-leaf-path-features-v2",
       "extraction_coverage": 0.973684,
       "family_id": "aqa/accounting",
       "mark_band_distribution": {
@@ -50,7 +50,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71271-QP-JUN22.PDF",
           "items": [
@@ -480,7 +480,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 180,
-            "policy_id": "edition-leaf-path-features-v1:aqa/accounting:1:2022",
+            "policy_id": "edition-leaf-path-features-v2:aqa/accounting:1:2022",
             "schema_version": 1,
             "sections": [
               {
@@ -518,7 +518,7 @@
             ],
             "total_marks": 120
           },
-          "topology_fingerprint": "4bcce5ad6cc3ccd972dca7e386ac08d33412569eb33f7103643293b4d1c7291c",
+          "topology_fingerprint": "17d940f81a45202c38c7469873cddf9bd6d8a89ef3d08a5a0db8e1c94a20ad93",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2022
         },
@@ -529,7 +529,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71271-QP-JUN24.PDF",
           "items": [
@@ -959,7 +959,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 180,
-            "policy_id": "edition-leaf-path-features-v1:aqa/accounting:1:2024",
+            "policy_id": "edition-leaf-path-features-v2:aqa/accounting:1:2024",
             "schema_version": 1,
             "sections": [
               {
@@ -997,7 +997,7 @@
             ],
             "total_marks": 120
           },
-          "topology_fingerprint": "ff2d1826fdc85dbb19806d3d83f3d7fd713f953b555244043576db6813521cfd",
+          "topology_fingerprint": "f8cfe90cfae2e77f33346235fc12d63906d0752654586bf1813492cf8c062865",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2024
         },
@@ -1008,7 +1008,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71271-QP-JUN25.PDF",
           "items": [
@@ -1454,7 +1454,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 180,
-            "policy_id": "edition-leaf-path-features-v1:aqa/accounting:1:2025",
+            "policy_id": "edition-leaf-path-features-v2:aqa/accounting:1:2025",
             "schema_version": 1,
             "sections": [
               {
@@ -1493,7 +1493,7 @@
             ],
             "total_marks": 120
           },
-          "topology_fingerprint": "57657358b82e39100bf611de692cf40fe329b5e9f59a8d2c6e81d6a064504bfb",
+          "topology_fingerprint": "1545243bbc1469d667a64c3986efede25b4870c253525fab8c19e80ac933d41a",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2025
         }
@@ -1531,7 +1531,7 @@
         "unknown": 1.0
       },
       "evidence_gaps": [],
-      "evidence_policy_id": "edition-leaf-path-features-v1",
+      "evidence_policy_id": "edition-leaf-path-features-v2",
       "extraction_coverage": 0.988636,
       "family_id": "aqa/accounting",
       "mark_band_distribution": {
@@ -1558,7 +1558,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71272-QP-JUN22.PDF",
           "items": [
@@ -2008,7 +2008,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 180,
-            "policy_id": "edition-leaf-path-features-v1:aqa/accounting:2:2022",
+            "policy_id": "edition-leaf-path-features-v2:aqa/accounting:2:2022",
             "schema_version": 1,
             "sections": [
               {
@@ -2047,7 +2047,7 @@
             ],
             "total_marks": 120
           },
-          "topology_fingerprint": "6bb10a84862a630a0b9598fc2c52157b2d834894cc3796ed86563cd3ba091dae",
+          "topology_fingerprint": "11503da1b6b0bd6b11e66071c2cb93a752678222117193f383371f87c9fc3aff",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2022
         },
@@ -2058,7 +2058,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71272-QP-JUN24.PDF",
           "items": [
@@ -2504,7 +2504,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 180,
-            "policy_id": "edition-leaf-path-features-v1:aqa/accounting:2:2024",
+            "policy_id": "edition-leaf-path-features-v2:aqa/accounting:2:2024",
             "schema_version": 1,
             "sections": [
               {
@@ -2543,7 +2543,7 @@
             ],
             "total_marks": 120
           },
-          "topology_fingerprint": "d81f7105fad96d719ac72e3bf55b42d55c70b6dbb6ea9ba412ea52bbe715bca5",
+          "topology_fingerprint": "3ace76c5536e885dd1fc66b03affb48334be491514607c93fc7ba7018565c00d",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2024
         },
@@ -2554,7 +2554,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71272-QP-JUN25.PDF",
           "items": [
@@ -3050,7 +3050,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 180,
-            "policy_id": "edition-leaf-path-features-v1:aqa/accounting:2:2025",
+            "policy_id": "edition-leaf-path-features-v2:aqa/accounting:2:2025",
             "schema_version": 1,
             "sections": [
               {
@@ -3092,7 +3092,7 @@
             ],
             "total_marks": 120
           },
-          "topology_fingerprint": "b24f30070a7aac676276e6aaf4677d7f48d2e1dd04b508a153de469015d29dbf",
+          "topology_fingerprint": "a07253bf286fed1605f66adbdfa28215325f91f57bda8c1f7ee365fbb46222be",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2025
         }
@@ -3130,7 +3130,7 @@
         "unknown": 1.0
       },
       "evidence_gaps": [],
-      "evidence_policy_id": "edition-leaf-path-features-v1",
+      "evidence_policy_id": "edition-leaf-path-features-v2",
       "extraction_coverage": 0.894737,
       "family_id": "aqa/business",
       "mark_band_distribution": {
@@ -3157,7 +3157,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71321-QP-JUN22.PDF",
           "items": [
@@ -4253,7 +4253,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:aqa/business:1:2022",
+            "policy_id": "edition-leaf-path-features-v2:aqa/business:1:2022",
             "schema_version": 1,
             "sections": [
               {
@@ -4342,7 +4342,7 @@
             ],
             "total_marks": 100
           },
-          "topology_fingerprint": "e9318945a0661c4a965dddefffa2d96dcc7a8ac0511484a18791e8be20731c67",
+          "topology_fingerprint": "0ef01369c74f07bbff134f8f80542aec67a83c5626378358168bdc8785513968",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2022
         },
@@ -4353,7 +4353,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71321-QP-JUN24.PDF",
           "items": [
@@ -5430,7 +5430,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:aqa/business:1:2024",
+            "policy_id": "edition-leaf-path-features-v2:aqa/business:1:2024",
             "schema_version": 1,
             "sections": [
               {
@@ -5518,7 +5518,7 @@
             ],
             "total_marks": 100
           },
-          "topology_fingerprint": "2311aa6b95b8f5b8655caf65ff78cf382b270b67329377fa8e76a0d1586e5470",
+          "topology_fingerprint": "d8719c53af22ef36648c4ef92c44541e01189d32d420ea0211f68b9a9d545fd1",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2024
         },
@@ -5529,7 +5529,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71321-QP-JUN25.PDF",
           "items": [
@@ -6608,7 +6608,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:aqa/business:1:2025",
+            "policy_id": "edition-leaf-path-features-v2:aqa/business:1:2025",
             "schema_version": 1,
             "sections": [
               {
@@ -6696,7 +6696,7 @@
             ],
             "total_marks": 100
           },
-          "topology_fingerprint": "b8213c9560ed71385cff952db798c687847027a0dd4fc4f5c66ea448d15dffc2",
+          "topology_fingerprint": "2c43094a13cfe4c6699f418c4155c78ab961d2595ea29cccec4da1f24b626367",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2025
         }
@@ -6733,7 +6733,7 @@
         "unknown": 1.0
       },
       "evidence_gaps": [],
-      "evidence_policy_id": "edition-leaf-path-features-v1",
+      "evidence_policy_id": "edition-leaf-path-features-v2",
       "extraction_coverage": 0.95122,
       "family_id": "aqa/business",
       "mark_band_distribution": {
@@ -6760,7 +6760,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71322-QP-JUN22.PDF",
           "items": [
@@ -7113,7 +7113,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:aqa/business:2:2022",
+            "policy_id": "edition-leaf-path-features-v2:aqa/business:2:2022",
             "schema_version": 1,
             "sections": [
               {
@@ -7146,7 +7146,7 @@
             ],
             "total_marks": 100
           },
-          "topology_fingerprint": "f1dbdaa8501ebf190e7d695c5c7a6fffc0d99c9c50d1a62e8168848400f7266e",
+          "topology_fingerprint": "8a25c6dd57f4f921939bd32e5a6624bc065b198648d4da1e75646c6c77eeb7e9",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2022
         },
@@ -7157,7 +7157,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71322-QP-JUN24.PDF",
           "items": [
@@ -7424,7 +7424,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:aqa/business:2:2024",
+            "policy_id": "edition-leaf-path-features-v2:aqa/business:2:2024",
             "schema_version": 1,
             "sections": [
               {
@@ -7452,7 +7452,7 @@
             ],
             "total_marks": 100
           },
-          "topology_fingerprint": "1dd941773d253fa5de77d0c750ba15023d54baf7fbe48c7b5cd912120fcbd34e",
+          "topology_fingerprint": "f1535f6d10d20ec319e85f49ae9e329f9e865053064ad213164cae95f7f276fc",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2024
         },
@@ -7463,7 +7463,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71322-QP-JUN25.PDF",
           "items": [
@@ -7748,7 +7748,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:aqa/business:2:2025",
+            "policy_id": "edition-leaf-path-features-v2:aqa/business:2:2025",
             "schema_version": 1,
             "sections": [
               {
@@ -7777,7 +7777,7 @@
             ],
             "total_marks": 100
           },
-          "topology_fingerprint": "89ddd2e6e5d07d80bd9c490a574ac7822b30617a9c0339213bf00d69ed1f3bae",
+          "topology_fingerprint": "391a7da74f67ad0f287412a619605fcbae9fb2c1aa098cb1e7daf8995e314ce8",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2025
         }
@@ -7809,7 +7809,7 @@
         "unknown": 1.0
       },
       "evidence_gaps": [],
-      "evidence_policy_id": "edition-leaf-path-features-v1",
+      "evidence_policy_id": "edition-leaf-path-features-v2",
       "extraction_coverage": 0.958333,
       "family_id": "aqa/business",
       "mark_band_distribution": {
@@ -7834,7 +7834,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71323-QP-JUN22.PDF",
           "items": [
@@ -8023,7 +8023,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:aqa/business:3:2022",
+            "policy_id": "edition-leaf-path-features-v2:aqa/business:3:2022",
             "schema_version": 1,
             "sections": [
               {
@@ -8047,7 +8047,7 @@
             ],
             "total_marks": 100
           },
-          "topology_fingerprint": "64e807be9352cbf5e6c90ae3aefc7fce6f0bc903a36a8be6fde55cdaf16fd7cf",
+          "topology_fingerprint": "9764965f3efce97999cca22114b26346b762c5ac99ae3f975743be15f4aff0fb",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2022
         },
@@ -8058,7 +8058,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71323-QP-JUN24.PDF",
           "items": [
@@ -8247,7 +8247,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:aqa/business:3:2024",
+            "policy_id": "edition-leaf-path-features-v2:aqa/business:3:2024",
             "schema_version": 1,
             "sections": [
               {
@@ -8271,7 +8271,7 @@
             ],
             "total_marks": 100
           },
-          "topology_fingerprint": "18c77ef91f156115e66a58ef80a2e7ad45787685bdb9eefe96550752b7a22675",
+          "topology_fingerprint": "aace53d9dafc6c1e1e8cd0f087c2ef7383691ed6ab5644f2bbb5912979fc9718",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2024
         },
@@ -8282,7 +8282,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71323-QP-JUN25.PDF",
           "items": [
@@ -8471,7 +8471,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:aqa/business:3:2025",
+            "policy_id": "edition-leaf-path-features-v2:aqa/business:3:2025",
             "schema_version": 1,
             "sections": [
               {
@@ -8495,7 +8495,7 @@
             ],
             "total_marks": 100
           },
-          "topology_fingerprint": "396b8f48602a9b6d27de0b048b37e12edc5b37c846111fadc1fd9109842d0a6c",
+          "topology_fingerprint": "5767124905dcd03660963e19b0a5d5ea86be5a278ef8422d918800437d623a52",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2025
         }
@@ -8539,7 +8539,7 @@
         "unknown": 1.0
       },
       "evidence_gaps": [],
-      "evidence_policy_id": "edition-leaf-path-features-v1",
+      "evidence_policy_id": "edition-leaf-path-features-v2",
       "extraction_coverage": 0.875862,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
@@ -8566,7 +8566,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-75171-QP-JUN22.PDF",
           "items": [
@@ -9354,7 +9354,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 150,
-            "policy_id": "edition-leaf-path-features-v1:aqa/computer-science:1:2022",
+            "policy_id": "edition-leaf-path-features-v2:aqa/computer-science:1:2022",
             "schema_version": 1,
             "sections": [
               {
@@ -9413,7 +9413,7 @@
             ],
             "total_marks": 100
           },
-          "topology_fingerprint": "16258be7ceb8bb25e3fb1aad410a8f502888c0e570d245437b5a8a0153594fbf",
+          "topology_fingerprint": "bb7da17dc45ff8e0553a03a023359ce72246117acbfcc1d48449eafcf7ddb65b",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2022
         },
@@ -9424,7 +9424,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-75171-QP-JUN24.PDF",
           "items": [
@@ -10174,7 +10174,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 150,
-            "policy_id": "edition-leaf-path-features-v1:aqa/computer-science:1:2024",
+            "policy_id": "edition-leaf-path-features-v2:aqa/computer-science:1:2024",
             "schema_version": 1,
             "sections": [
               {
@@ -10231,7 +10231,7 @@
             ],
             "total_marks": 100
           },
-          "topology_fingerprint": "b96b7e8afbcc8af2e3407b3fa27cb81ce5284a4c91688991bb7c8f6d7dd4b351",
+          "topology_fingerprint": "8552b5a05e631bdb2e2efa18eaf945d2b08118a4c42a9b2d8dbfd6a5abdde5e1",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2024
         },
@@ -10242,7 +10242,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-75171-QP-JUN25.PDF",
           "items": [
@@ -10991,7 +10991,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 150,
-            "policy_id": "edition-leaf-path-features-v1:aqa/computer-science:1:2025",
+            "policy_id": "edition-leaf-path-features-v2:aqa/computer-science:1:2025",
             "schema_version": 1,
             "sections": [
               {
@@ -11048,7 +11048,7 @@
             ],
             "total_marks": 100
           },
-          "topology_fingerprint": "0c1addba91999f5a4d39cb0b5258be6df7aa2fc61d7af4e2187db0360b3f25bd",
+          "topology_fingerprint": "0bff374d571b5cc9674a0b70cec7b963f3d0353ff06787e57276595464711e77",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2025
         }
@@ -11100,7 +11100,7 @@
         "unknown": 1.0
       },
       "evidence_gaps": [],
-      "evidence_policy_id": "edition-leaf-path-features-v1",
+      "evidence_policy_id": "edition-leaf-path-features-v2",
       "extraction_coverage": 0.871166,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
@@ -11127,7 +11127,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-75172-QP-JUN22.PDF",
           "items": [
@@ -11953,7 +11953,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 150,
-            "policy_id": "edition-leaf-path-features-v1:aqa/computer-science:2:2022",
+            "policy_id": "edition-leaf-path-features-v2:aqa/computer-science:2:2022",
             "schema_version": 1,
             "sections": [
               {
@@ -12014,7 +12014,7 @@
             ],
             "total_marks": 100
           },
-          "topology_fingerprint": "816b55be114b3ac53ce1aa82882cb0ad476ca60ca39806c1f6f8355a25e4c81d",
+          "topology_fingerprint": "1aee4a5e5ff11b7422f21f2c29a6e8f18ef1e229b975c6f4be39bc4740087404",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2022
         },
@@ -12025,7 +12025,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-75172-QP-JUN24.PDF",
           "items": [
@@ -12837,7 +12837,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 150,
-            "policy_id": "edition-leaf-path-features-v1:aqa/computer-science:2:2024",
+            "policy_id": "edition-leaf-path-features-v2:aqa/computer-science:2:2024",
             "schema_version": 1,
             "sections": [
               {
@@ -12897,7 +12897,7 @@
             ],
             "total_marks": 100
           },
-          "topology_fingerprint": "8b74468c1206325c4aab9d6109bd53b0bd247913d2991e33be56698b3df97b50",
+          "topology_fingerprint": "a144c29d311f8f354d259928488134ddc1b943872875f5a4828d8655f89d05da",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2024
         },
@@ -12908,7 +12908,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-75172-QP-JUN25.PDF",
           "items": [
@@ -13642,7 +13642,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 150,
-            "policy_id": "edition-leaf-path-features-v1:aqa/computer-science:2:2025",
+            "policy_id": "edition-leaf-path-features-v2:aqa/computer-science:2:2025",
             "schema_version": 1,
             "sections": [
               {
@@ -13698,7 +13698,7 @@
             ],
             "total_marks": 100
           },
-          "topology_fingerprint": "29e56737ba3fbe5c337bb83c2eaf6b57b538c3f8ad769d39651b15fd9136dbee",
+          "topology_fingerprint": "83a16866ed9ad940230f398223c95c4917b7d0627640dd3e81555bd68a03e35a",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2025
         }
@@ -13743,7 +13743,7 @@
         "Four annual schema/scenario clusters, not independent student samples.",
         "REST/HTTP/JSON and floating-point normalisation are excluded."
       ],
-      "evidence_policy_id": "aqa-topic-operation-records-v1",
+      "evidence_policy_id": "aqa-topic-operation-records-v2",
       "extraction_coverage": 0.871166,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
@@ -14338,7 +14338,7 @@
         "No audited functional code-construction item; broader composition/filter/fold coverage missing.",
         "Imperative recursion does not establish functional-paradigm membership."
       ],
-      "evidence_policy_id": "aqa-topic-operation-records-v1",
+      "evidence_policy_id": "aqa-topic-operation-records-v2",
       "extraction_coverage": 0.871166,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
@@ -14783,7 +14783,7 @@
         "Incomplete vectors, arrays/files and executable structure/program construction coverage.",
         "Skeleton/source-context tasks remain ineligible."
       ],
-      "evidence_policy_id": "aqa-topic-operation-records-v1",
+      "evidence_policy_id": "aqa-topic-operation-records-v2",
       "extraction_coverage": 0.871166,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
@@ -15732,7 +15732,7 @@
         "unknown": 1.0
       },
       "evidence_gaps": [],
-      "evidence_policy_id": "edition-leaf-path-features-v1",
+      "evidence_policy_id": "edition-leaf-path-features-v2",
       "extraction_coverage": 1.0,
       "family_id": "aqa/economics",
       "mark_band_distribution": {
@@ -15759,7 +15759,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71361-QP-JUN22.PDF",
           "items": [
@@ -16685,7 +16685,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:aqa/economics:1:2022",
+            "policy_id": "edition-leaf-path-features-v2:aqa/economics:1:2022",
             "schema_version": 1,
             "sections": [
               {
@@ -16744,7 +16744,7 @@
             ],
             "total_marks": 80
           },
-          "topology_fingerprint": "8edbe194c9804f4c4918c3bc08555deb2218706ff154750844a7236d11a08ceb",
+          "topology_fingerprint": "22971ac2916fec5d685bc4ec9378850bea43e4f923fee4177f9dc665d4d2be12",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2022
         },
@@ -16755,7 +16755,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71361-QP-JUN24.PDF",
           "items": [
@@ -17668,7 +17668,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:aqa/economics:1:2024",
+            "policy_id": "edition-leaf-path-features-v2:aqa/economics:1:2024",
             "schema_version": 1,
             "sections": [
               {
@@ -17727,7 +17727,7 @@
             ],
             "total_marks": 80
           },
-          "topology_fingerprint": "0f604553b34b965368832f4941b1b25961ec91a8b8c91d60c3d420079dc6268f",
+          "topology_fingerprint": "a4fbd5e9ae68bff293e3542aca938af58564d7763da55ed2407a2e84acc614ce",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2024
         },
@@ -17738,7 +17738,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71361-QP-JUN25.PDF",
           "items": [
@@ -18654,7 +18654,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:aqa/economics:1:2025",
+            "policy_id": "edition-leaf-path-features-v2:aqa/economics:1:2025",
             "schema_version": 1,
             "sections": [
               {
@@ -18713,7 +18713,7 @@
             ],
             "total_marks": 80
           },
-          "topology_fingerprint": "c602c8a4f588e91023ed66b5d857e5b924f9f2becbe6d306f6c331c1abba1810",
+          "topology_fingerprint": "b4183828c500ab0ec1f760222e2ec175a0c00d7760d81a374e8991e3598a365a",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2025
         }
@@ -18748,7 +18748,7 @@
         "unknown": 1.0
       },
       "evidence_gaps": [],
-      "evidence_policy_id": "edition-leaf-path-features-v1",
+      "evidence_policy_id": "edition-leaf-path-features-v2",
       "extraction_coverage": 1.0,
       "family_id": "aqa/economics",
       "mark_band_distribution": {
@@ -18775,7 +18775,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71362-QP-JUN22-CR.PDF",
           "items": [
@@ -19691,7 +19691,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:aqa/economics:2:2022",
+            "policy_id": "edition-leaf-path-features-v2:aqa/economics:2:2022",
             "schema_version": 1,
             "sections": [
               {
@@ -19750,7 +19750,7 @@
             ],
             "total_marks": 80
           },
-          "topology_fingerprint": "c79f5a38e0c340c1102abc3e9a6a0bc81ea94db6f76515fa56bd357593e73fb7",
+          "topology_fingerprint": "a390d7b6562124ca5fb3cb2ee91f78fe90e03cf404f09490ac550e30126d7779",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2022
         },
@@ -19761,7 +19761,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71362-QP-JUN24.PDF",
           "items": [
@@ -20678,7 +20678,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:aqa/economics:2:2024",
+            "policy_id": "edition-leaf-path-features-v2:aqa/economics:2:2024",
             "schema_version": 1,
             "sections": [
               {
@@ -20737,7 +20737,7 @@
             ],
             "total_marks": 80
           },
-          "topology_fingerprint": "013714f9dbe015bfc0347afa780a0bbaff4b68a0d05dc9d03de480cf97ceb00b",
+          "topology_fingerprint": "f2c3a72ab82c73e0d73df04c7b7ecebf872056c6cba14b93aa01c32b4d1f81e4",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2024
         },
@@ -20748,7 +20748,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71362-QP-JUN25.PDF",
           "items": [
@@ -21663,7 +21663,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:aqa/economics:2:2025",
+            "policy_id": "edition-leaf-path-features-v2:aqa/economics:2:2025",
             "schema_version": 1,
             "sections": [
               {
@@ -21722,7 +21722,7 @@
             ],
             "total_marks": 80
           },
-          "topology_fingerprint": "6dcd2360f3abd3e40522b0b41a9f83e7f6c5c7a341defef35e57a5eb2cd240b6",
+          "topology_fingerprint": "8a3b82f2381018af3dd50f7550299643dc183ecef9f1afc179ac8cf1409017f0",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2025
         }
@@ -21755,7 +21755,7 @@
         "unknown": 1.0
       },
       "evidence_gaps": [],
-      "evidence_policy_id": "edition-leaf-path-features-v1",
+      "evidence_policy_id": "edition-leaf-path-features-v2",
       "extraction_coverage": 1.0,
       "family_id": "aqa/economics",
       "mark_band_distribution": {
@@ -21781,7 +21781,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71363-QP-JUN22.PDF",
           "items": [
@@ -22440,7 +22440,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:aqa/economics:3:2022",
+            "policy_id": "edition-leaf-path-features-v2:aqa/economics:3:2022",
             "schema_version": 1,
             "sections": [
               {
@@ -22491,7 +22491,7 @@
             ],
             "total_marks": 80
           },
-          "topology_fingerprint": "239058d65a09217c5510e36067e888213892f805947bb51a9ed627daa9e8d8ce",
+          "topology_fingerprint": "79eaa15bf43e80782114173ca764730eabf6382bd6aa9554c1386983825d73fd",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2022
         },
@@ -22502,7 +22502,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71363-QP-JUN24.PDF",
           "items": [
@@ -23161,7 +23161,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:aqa/economics:3:2024",
+            "policy_id": "edition-leaf-path-features-v2:aqa/economics:3:2024",
             "schema_version": 1,
             "sections": [
               {
@@ -23212,7 +23212,7 @@
             ],
             "total_marks": 80
           },
-          "topology_fingerprint": "327e29c3dda19eb74e4684e089e2ed9151e5cc88b28b95407bd6db47eef9cca5",
+          "topology_fingerprint": "d5897efee7c31547064f17d540a03dd69730cdc65db3a617dfd680ad0aa44cbf",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2024
         },
@@ -23223,7 +23223,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "AQA-71363-QP-JUN25.PDF",
           "items": [
@@ -23882,7 +23882,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:aqa/economics:3:2025",
+            "policy_id": "edition-leaf-path-features-v2:aqa/economics:3:2025",
             "schema_version": 1,
             "sections": [
               {
@@ -23933,7 +23933,7 @@
             ],
             "total_marks": 80
           },
-          "topology_fingerprint": "ab4b45090e0e103c7fd330d96a99db6d3258fc9735b15c72fadfa3312f9dd0d3",
+          "topology_fingerprint": "ad6afcddecaf6ccd37d764849ab58f44bbcb5263e40a9fd937dc9272d9e85a51",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2025
         }
@@ -23980,8 +23980,10 @@
         "low": 0.784314,
         "standard": 0.215686
       },
-      "evidence_gaps": [],
-      "evidence_policy_id": null,
+      "evidence_gaps": [
+        "Unadvertised legacy aggregate profile; no H3 path qualification."
+      ],
+      "evidence_policy_id": "unqualified-reference-v1",
       "extraction_coverage": 0.974522,
       "family_id": "aqa/mathematics",
       "mark_band_distribution": {
@@ -24047,8 +24049,10 @@
         "low": 0.781818,
         "standard": 0.218182
       },
-      "evidence_gaps": [],
-      "evidence_policy_id": null,
+      "evidence_gaps": [
+        "Unadvertised legacy aggregate profile; no H3 path qualification."
+      ],
+      "evidence_policy_id": "unqualified-reference-v1",
       "extraction_coverage": 0.993976,
       "family_id": "aqa/mathematics",
       "mark_band_distribution": {
@@ -24119,8 +24123,10 @@
         "low": 0.895954,
         "standard": 0.098266
       },
-      "evidence_gaps": [],
-      "evidence_policy_id": null,
+      "evidence_gaps": [
+        "Unadvertised legacy aggregate profile; no H3 path qualification."
+      ],
+      "evidence_policy_id": "unqualified-reference-v1",
       "extraction_coverage": 0.935135,
       "family_id": "aqa/mathematics",
       "mark_band_distribution": {
@@ -24194,7 +24200,7 @@
         "unknown": 1.0
       },
       "evidence_gaps": [],
-      "evidence_policy_id": "edition-leaf-path-features-v1",
+      "evidence_policy_id": "edition-leaf-path-features-v2",
       "extraction_coverage": 0.994318,
       "family_id": "ocr/computer-science",
       "mark_band_distribution": {
@@ -24221,7 +24227,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "666846-question-paper-computer-systems.pdf",
           "items": [
@@ -25011,7 +25017,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 150,
-            "policy_id": "edition-leaf-path-features-v1:ocr/computer-science:1:2021",
+            "policy_id": "edition-leaf-path-features-v2:ocr/computer-science:1:2021",
             "schema_version": 1,
             "sections": [
               {
@@ -25070,7 +25076,7 @@
             ],
             "total_marks": 140
           },
-          "topology_fingerprint": "4a544e681e4d05d31c8421e3a5dd1d652e91f7f97b1b0be82f92731350e2b3f0",
+          "topology_fingerprint": "392f59867a5c6bd8b9b0ae975b2d40fa4b949936f2b3f0214f1d4b52941403e6",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2021
         },
@@ -25081,7 +25087,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "676742-question-paper-computer-systems.pdf",
           "items": [
@@ -25983,7 +25989,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 150,
-            "policy_id": "edition-leaf-path-features-v1:ocr/computer-science:1:2022",
+            "policy_id": "edition-leaf-path-features-v2:ocr/computer-science:1:2022",
             "schema_version": 1,
             "sections": [
               {
@@ -26049,7 +26055,7 @@
             ],
             "total_marks": 140
           },
-          "topology_fingerprint": "75a0f625c7412f060382dc0e8abf2bf8d7120878d107d355297d5d3c2c059448",
+          "topology_fingerprint": "21964c9e284a0615d4083c62a392db1643cf74d8c2753a87aef281d107e98b74",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2022
         },
@@ -26060,7 +26066,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "703780-question-paper-computer-systems.pdf",
           "items": [
@@ -26930,7 +26936,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 150,
-            "policy_id": "edition-leaf-path-features-v1:ocr/computer-science:1:2023",
+            "policy_id": "edition-leaf-path-features-v2:ocr/computer-science:1:2023",
             "schema_version": 1,
             "sections": [
               {
@@ -26994,7 +27000,7 @@
             ],
             "total_marks": 140
           },
-          "topology_fingerprint": "2265ec5fb1b8a3b7507b27e2ec46e79928239b3cbf58196b1c0b1f9098b90e90",
+          "topology_fingerprint": "c5b144c25d4be48628f699472b8e2091676fd750a3bfd4cf2db4dd5904161f76",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2023
         },
@@ -27005,7 +27011,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "726571-question-paper-computer-systems.pdf",
           "items": [
@@ -27801,7 +27807,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 150,
-            "policy_id": "edition-leaf-path-features-v1:ocr/computer-science:1:2024",
+            "policy_id": "edition-leaf-path-features-v2:ocr/computer-science:1:2024",
             "schema_version": 1,
             "sections": [
               {
@@ -27860,7 +27866,7 @@
             ],
             "total_marks": 140
           },
-          "topology_fingerprint": "3ecda7fc31ecd7503db899be8b9df602678cfaea4ceaf169bfe28b539ad03143",
+          "topology_fingerprint": "75984dc57ec1e4e300301522194167ac190c733c6c5c4cc6713bdb2ec9beb737",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2024
         }
@@ -27914,7 +27920,7 @@
         "unknown": 1.0
       },
       "evidence_gaps": [],
-      "evidence_policy_id": "edition-leaf-path-features-v1",
+      "evidence_policy_id": "edition-leaf-path-features-v2",
       "extraction_coverage": 0.981013,
       "family_id": "ocr/computer-science",
       "mark_band_distribution": {
@@ -27941,7 +27947,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "666847-question-paper-algorithms-and-programming.pdf",
           "items": [
@@ -28615,7 +28621,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 150,
-            "policy_id": "edition-leaf-path-features-v1:ocr/computer-science:2:2021",
+            "policy_id": "edition-leaf-path-features-v2:ocr/computer-science:2:2021",
             "schema_version": 1,
             "sections": [
               {
@@ -28667,7 +28673,7 @@
             ],
             "total_marks": 140
           },
-          "topology_fingerprint": "7674a086941b19fff568dc0ad600c4e5f74a75a0a3723daa9e3eef605257f77a",
+          "topology_fingerprint": "7f35d0bfd2f8fe967992b4883317be2c83b4f9c9eb6b3d3395d46b832f8d3d3d",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2021
         },
@@ -28678,7 +28684,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "676743-question-paper-algorithms-and-programming.pdf",
           "items": [
@@ -29510,7 +29516,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 150,
-            "policy_id": "edition-leaf-path-features-v1:ocr/computer-science:2:2022",
+            "policy_id": "edition-leaf-path-features-v2:ocr/computer-science:2:2022",
             "schema_version": 1,
             "sections": [
               {
@@ -29572,7 +29578,7 @@
             ],
             "total_marks": 140
           },
-          "topology_fingerprint": "09084963f4bba78c838d086f035c63dda878cc2e5d02324bc7fc479c161fe616",
+          "topology_fingerprint": "751c77d47c6cb7fd308cdbf9d0008d314c2f89e4cedf413f31985339a9902c47",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2022
         },
@@ -29592,7 +29598,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "726572-question-paper-algorithms-and-programming.pdf",
           "items": [
@@ -30364,7 +30370,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 150,
-            "policy_id": "edition-leaf-path-features-v1:ocr/computer-science:2:2024",
+            "policy_id": "edition-leaf-path-features-v2:ocr/computer-science:2:2024",
             "schema_version": 1,
             "sections": [
               {
@@ -30422,7 +30428,7 @@
             ],
             "total_marks": 140
           },
-          "topology_fingerprint": "abbe450d57755de0f4c0ba45b4b98d7965108ec44502d916b14911f0fe95e4ac",
+          "topology_fingerprint": "185a14b7c4119fe0960ea83408763c63b3cb29c5a50ed1f0ca05d152f10e0d8a",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2024
         }
@@ -30464,7 +30470,7 @@
         "unknown": 1.0
       },
       "evidence_gaps": [],
-      "evidence_policy_id": "edition-leaf-path-features-v1",
+      "evidence_policy_id": "edition-leaf-path-features-v2",
       "extraction_coverage": 0.975,
       "family_id": "ocr/economics",
       "mark_band_distribution": {
@@ -30491,7 +30497,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "676764-question-paper-microeconomics.pdf",
           "items": [
@@ -31209,7 +31215,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:ocr/economics:1:2022",
+            "policy_id": "edition-leaf-path-features-v2:ocr/economics:1:2022",
             "schema_version": 1,
             "sections": [
               {
@@ -31271,7 +31277,7 @@
             ],
             "total_marks": 80
           },
-          "topology_fingerprint": "e4fdaa4139db940f219c96356b7e7b6e95d52dd15e7b8d917d620fe83fc8b763",
+          "topology_fingerprint": "33827b19df925ebacfbb0a9f5e319e2ad5c9ba4e92239718be82dfeb7ddbf6eb",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2022
         },
@@ -31282,7 +31288,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "703800-question-paper-microeconomics.pdf",
           "items": [
@@ -31992,7 +31998,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:ocr/economics:1:2023",
+            "policy_id": "edition-leaf-path-features-v2:ocr/economics:1:2023",
             "schema_version": 1,
             "sections": [
               {
@@ -32054,7 +32060,7 @@
             ],
             "total_marks": 80
           },
-          "topology_fingerprint": "89e5167042cc8744064640f48f3a579094851aefdb33b79224a7bb722efe8be7",
+          "topology_fingerprint": "12b88af67a6a0b89a868cd2e079421a71c117723ddca965ab1b4d63590ad0840",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2023
         },
@@ -32065,7 +32071,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "726591-question-paper-microeconomics.pdf",
           "items": [
@@ -32815,7 +32821,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:ocr/economics:1:2024",
+            "policy_id": "edition-leaf-path-features-v2:ocr/economics:1:2024",
             "schema_version": 1,
             "sections": [
               {
@@ -32877,7 +32883,7 @@
             ],
             "total_marks": 80
           },
-          "topology_fingerprint": "60b5d891b055fbc45b2537c175fefbde538b15ae53b6ecf51ed7b37412e59d6d",
+          "topology_fingerprint": "7ecc8893d5df930f09c5362f0dac2a57a35da3ff28fdb8d9e8cae832b9899e9a",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2024
         }
@@ -32912,7 +32918,7 @@
         "unknown": 1.0
       },
       "evidence_gaps": [],
-      "evidence_policy_id": "edition-leaf-path-features-v1",
+      "evidence_policy_id": "edition-leaf-path-features-v2",
       "extraction_coverage": 0.95,
       "family_id": "ocr/economics",
       "mark_band_distribution": {
@@ -32939,7 +32945,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "676765-question-paper-macroeconomics.pdf",
           "items": [
@@ -33689,7 +33695,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:ocr/economics:2:2022",
+            "policy_id": "edition-leaf-path-features-v2:ocr/economics:2:2022",
             "schema_version": 1,
             "sections": [
               {
@@ -33751,7 +33757,7 @@
             ],
             "total_marks": 80
           },
-          "topology_fingerprint": "dc948aad221c703f9f2e50a61371bdef3d500db66f8f4a323f9f502e45376074",
+          "topology_fingerprint": "cb12d175bce1380db3d7bcd467fbfe67c19a1cd435988e4407ecd9c1c53159e5",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2022
         },
@@ -33762,7 +33768,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "703801-question-paper-macroeconomics.pdf",
           "items": [
@@ -34528,7 +34534,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:ocr/economics:2:2023",
+            "policy_id": "edition-leaf-path-features-v2:ocr/economics:2:2023",
             "schema_version": 1,
             "sections": [
               {
@@ -34590,7 +34596,7 @@
             ],
             "total_marks": 80
           },
-          "topology_fingerprint": "a0cae473dec7d7e4bf4f213cc44d3f691cce9da51256cd9f79703373ce9c3fd2",
+          "topology_fingerprint": "b71b311dd32a2765a7c02e01959391d5a79ce46a59a31ad27d7b6acf89d008f1",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2023
         },
@@ -34601,7 +34607,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "726592-question-paper-macroeconomics.pdf",
           "items": [
@@ -35367,7 +35373,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:ocr/economics:2:2024",
+            "policy_id": "edition-leaf-path-features-v2:ocr/economics:2:2024",
             "schema_version": 1,
             "sections": [
               {
@@ -35429,7 +35435,7 @@
             ],
             "total_marks": 80
           },
-          "topology_fingerprint": "e2de0ea93aa38f7683f3c5e6f040cf8cebcb8d3509cef1f7c8480261ef7ecd8d",
+          "topology_fingerprint": "541b1d6f3fa1b10db87c44606a47df7b5decaa03fd939983673ffd9349adbbfd",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2024
         }
@@ -35468,7 +35474,7 @@
         "unknown": 1.0
       },
       "evidence_gaps": [],
-      "evidence_policy_id": "edition-leaf-path-features-v1",
+      "evidence_policy_id": "edition-leaf-path-features-v2",
       "extraction_coverage": 0.97351,
       "family_id": "ocr/economics",
       "mark_band_distribution": {
@@ -35566,7 +35572,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "726593-question-paper-themes-in-economics.pdf",
           "items": [
@@ -36407,7 +36413,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:ocr/economics:3:2024",
+            "policy_id": "edition-leaf-path-features-v2:ocr/economics:3:2024",
             "schema_version": 1,
             "sections": [
               {
@@ -36463,7 +36469,7 @@
             ],
             "total_marks": 80
           },
-          "topology_fingerprint": "10724ec07c7ca94793e44196ac79bbe84c7f7620aac0fada0bb24f9f0978b971",
+          "topology_fingerprint": "df41bdc5b6138c7101dd7a670caec20d652d54052563e04f28a75972ea32b7e4",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2024
         }
@@ -36482,27 +36488,26 @@
     {
       "assessment_kind": "full-paper",
       "cognitive_operation_distribution": {
-        "analyse": 0.0625,
+        "analyse": 0.1875,
         "explain": 0.3125,
         "judge": 0.25,
-        "retrieve": 0.25,
-        "transform": 0.125
+        "transform": 0.25
       },
       "command_word_distribution": {
         "assess": 0.0625,
         "discuss": 0.125,
-        "draw": 0.125,
+        "draw": 0.0625,
         "evaluate": 0.0625,
         "examine": 0.0625,
         "explain": 0.3125,
-        "select": 0.25
+        "select": 0.3125
       },
       "comparison_basis": "Correlated candidate-answerable paths from edition-specific official sources; equal-path/year descriptive means, not candidate choice frequency. Intended-demand bands are engineering proxies; source time/steps/learner demand unknown.",
       "demand_distribution": {
         "unknown": 1.0
       },
       "evidence_gaps": [],
-      "evidence_policy_id": "edition-leaf-path-features-v1",
+      "evidence_policy_id": "edition-leaf-path-features-v2",
       "extraction_coverage": 0.984127,
       "family_id": "pearson-edexcel/economics-a-2015",
       "mark_band_distribution": {
@@ -36529,7 +36534,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "9ec0-01-que-20240516.pdf",
           "items": [
@@ -36550,7 +36555,7 @@
             },
             {
               "assessment_objectives": null,
-              "cognitive_operation": "retrieve",
+              "cognitive_operation": "transform",
               "command_word": "select",
               "demand_band": "unknown",
               "demand_basis": "unknown-no-learner-measurement",
@@ -36560,8 +36565,11 @@
               "marks": 1,
               "objective_basis": "unknown",
               "observed_minutes": null,
+              "operation_basis": "reviewed-2024-edition-subpart-task-inference-not-published-AO",
               "reasoning_steps": null,
-              "response_mode": "selected-response"
+              "response_mode": "selected-response",
+              "source_page": 3,
+              "source_subpart": "1(b)"
             },
             {
               "assessment_objectives": null,
@@ -36580,7 +36588,7 @@
             },
             {
               "assessment_objectives": null,
-              "cognitive_operation": "retrieve",
+              "cognitive_operation": "transform",
               "command_word": "select",
               "demand_band": "unknown",
               "demand_basis": "unknown-no-learner-measurement",
@@ -36590,8 +36598,11 @@
               "marks": 1,
               "objective_basis": "unknown",
               "observed_minutes": null,
+              "operation_basis": "reviewed-2024-edition-subpart-task-inference-not-published-AO",
               "reasoning_steps": null,
-              "response_mode": "selected-response"
+              "response_mode": "selected-response",
+              "source_page": 5,
+              "source_subpart": "2(b)"
             },
             {
               "assessment_objectives": null,
@@ -36610,8 +36621,8 @@
             },
             {
               "assessment_objectives": null,
-              "cognitive_operation": "transform",
-              "command_word": "draw",
+              "cognitive_operation": "analyse",
+              "command_word": "select",
               "demand_band": "unknown",
               "demand_basis": "unknown-no-learner-measurement",
               "historical_engineering_demand_proxy": "low",
@@ -36620,8 +36631,11 @@
               "marks": 1,
               "objective_basis": "unknown",
               "observed_minutes": null,
+              "operation_basis": "reviewed-2024-edition-subpart-task-inference-not-published-AO",
               "reasoning_steps": null,
-              "response_mode": "calculation"
+              "response_mode": "selected-response",
+              "source_page": 6,
+              "source_subpart": "3(b)"
             },
             {
               "assessment_objectives": null,
@@ -36640,7 +36654,7 @@
             },
             {
               "assessment_objectives": null,
-              "cognitive_operation": "retrieve",
+              "cognitive_operation": "analyse",
               "command_word": "select",
               "demand_band": "unknown",
               "demand_basis": "unknown-no-learner-measurement",
@@ -36650,8 +36664,11 @@
               "marks": 1,
               "objective_basis": "unknown",
               "observed_minutes": null,
+              "operation_basis": "reviewed-2024-edition-subpart-task-inference-not-published-AO",
               "reasoning_steps": null,
-              "response_mode": "selected-response"
+              "response_mode": "selected-response",
+              "source_page": 7,
+              "source_subpart": "4(b)"
             },
             {
               "assessment_objectives": null,
@@ -36670,7 +36687,7 @@
             },
             {
               "assessment_objectives": null,
-              "cognitive_operation": "retrieve",
+              "cognitive_operation": "transform",
               "command_word": "select",
               "demand_band": "unknown",
               "demand_basis": "unknown-no-learner-measurement",
@@ -36680,8 +36697,11 @@
               "marks": 1,
               "objective_basis": "unknown",
               "observed_minutes": null,
+              "operation_basis": "reviewed-2024-edition-subpart-task-inference-not-published-AO",
               "reasoning_steps": null,
-              "response_mode": "selected-response"
+              "response_mode": "selected-response",
+              "source_page": 9,
+              "source_subpart": "5(b)"
             },
             {
               "assessment_objectives": null,
@@ -36821,26 +36841,25 @@
               "marks": 100,
               "observed": {
                 "cognitive_operation_distribution": {
-                  "analyse": 0.0625,
+                  "analyse": 0.1875,
                   "explain": 0.3125,
                   "judge": 0.25,
-                  "retrieve": 0.25,
-                  "transform": 0.125
+                  "transform": 0.25
                 },
                 "command_family_distribution": {
                   "evaluation": 0.25,
-                  "procedural": 0.125,
+                  "procedural": 0.0625,
                   "reasoned-response": 0.375,
-                  "selected-response": 0.25
+                  "selected-response": 0.3125
                 },
                 "command_word_distribution": {
                   "assess": 0.0625,
                   "discuss": 0.125,
-                  "draw": 0.125,
+                  "draw": 0.0625,
                   "evaluate": 0.0625,
                   "examine": 0.0625,
                   "explain": 0.3125,
-                  "select": 0.25
+                  "select": 0.3125
                 },
                 "demand_distribution": {
                   "unknown": 1.0
@@ -36854,10 +36873,9 @@
                   "unknown": 1.0
                 },
                 "response_mode_distribution": {
-                  "calculation": 0.0625,
                   "extended-evaluation": 0.25,
                   "multi-stage-calculation": 0.0625,
-                  "selected-response": 0.25,
+                  "selected-response": 0.3125,
                   "structured-reasoning": 0.375
                 }
               },
@@ -36866,19 +36884,19 @@
               "section_features": {
                 "A": {
                   "cognitive_operation_distribution": {
+                    "analyse": 0.2,
                     "explain": 0.4,
-                    "retrieve": 0.4,
-                    "transform": 0.2
+                    "transform": 0.4
                   },
                   "command_family_distribution": {
-                    "procedural": 0.2,
+                    "procedural": 0.1,
                     "reasoned-response": 0.4,
-                    "selected-response": 0.4
+                    "selected-response": 0.5
                   },
                   "command_word_distribution": {
-                    "draw": 0.2,
+                    "draw": 0.1,
                     "explain": 0.4,
-                    "select": 0.4
+                    "select": 0.5
                   },
                   "demand_distribution": {
                     "unknown": 1.0
@@ -36890,9 +36908,8 @@
                     "unknown": 1.0
                   },
                   "response_mode_distribution": {
-                    "calculation": 0.1,
                     "multi-stage-calculation": 0.1,
-                    "selected-response": 0.4,
+                    "selected-response": 0.5,
                     "structured-reasoning": 0.4
                   }
                 },
@@ -36977,26 +36994,25 @@
               "marks": 100,
               "observed": {
                 "cognitive_operation_distribution": {
-                  "analyse": 0.0625,
+                  "analyse": 0.1875,
                   "explain": 0.3125,
                   "judge": 0.25,
-                  "retrieve": 0.25,
-                  "transform": 0.125
+                  "transform": 0.25
                 },
                 "command_family_distribution": {
                   "evaluation": 0.25,
-                  "procedural": 0.125,
+                  "procedural": 0.0625,
                   "reasoned-response": 0.375,
-                  "selected-response": 0.25
+                  "selected-response": 0.3125
                 },
                 "command_word_distribution": {
                   "assess": 0.0625,
                   "discuss": 0.125,
-                  "draw": 0.125,
+                  "draw": 0.0625,
                   "evaluate": 0.0625,
                   "examine": 0.0625,
                   "explain": 0.3125,
-                  "select": 0.25
+                  "select": 0.3125
                 },
                 "demand_distribution": {
                   "unknown": 1.0
@@ -37010,10 +37026,9 @@
                   "unknown": 1.0
                 },
                 "response_mode_distribution": {
-                  "calculation": 0.0625,
                   "extended-evaluation": 0.25,
                   "multi-stage-calculation": 0.0625,
-                  "selected-response": 0.25,
+                  "selected-response": 0.3125,
                   "structured-reasoning": 0.375
                 }
               },
@@ -37022,19 +37037,19 @@
               "section_features": {
                 "A": {
                   "cognitive_operation_distribution": {
+                    "analyse": 0.2,
                     "explain": 0.4,
-                    "retrieve": 0.4,
-                    "transform": 0.2
+                    "transform": 0.4
                   },
                   "command_family_distribution": {
-                    "procedural": 0.2,
+                    "procedural": 0.1,
                     "reasoned-response": 0.4,
-                    "selected-response": 0.4
+                    "selected-response": 0.5
                   },
                   "command_word_distribution": {
-                    "draw": 0.2,
+                    "draw": 0.1,
                     "explain": 0.4,
-                    "select": 0.4
+                    "select": 0.5
                   },
                   "demand_distribution": {
                     "unknown": 1.0
@@ -37046,9 +37061,8 @@
                     "unknown": 1.0
                   },
                   "response_mode_distribution": {
-                    "calculation": 0.1,
                     "multi-stage-calculation": 0.1,
-                    "selected-response": 0.4,
+                    "selected-response": 0.5,
                     "structured-reasoning": 0.4
                   }
                 },
@@ -37116,7 +37130,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:pearson-edexcel/economics-a-2015:1:2024",
+            "policy_id": "edition-leaf-path-features-v2:pearson-edexcel/economics-a-2015:1:2024",
             "schema_version": 1,
             "sections": [
               {
@@ -37180,16 +37194,15 @@
             ],
             "total_marks": 100
           },
-          "topology_fingerprint": "436ae25cc4cdf59001aae531098e04d82715f7419d0878b28f1b4edbbca90e37",
+          "topology_fingerprint": "2405ed2650f469a471dbe61007078c1978b7789b19a4e77ae921112c6609811e",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2024
         }
       ],
       "response_mode_distribution": {
-        "calculation": 0.0625,
         "extended-evaluation": 0.25,
         "multi-stage-calculation": 0.0625,
-        "selected-response": 0.25,
+        "selected-response": 0.3125,
         "structured-reasoning": 0.375
       },
       "source_document_count": 1,
@@ -37199,11 +37212,11 @@
     {
       "assessment_kind": "full-paper",
       "cognitive_operation_distribution": {
-        "analyse": 0.058824,
+        "analyse": 0.235294,
         "explain": 0.294117,
         "judge": 0.235294,
-        "retrieve": 0.294118,
-        "transform": 0.117647
+        "retrieve": 0.058824,
+        "transform": 0.176471
       },
       "command_word_distribution": {
         "assess": 0.058824,
@@ -37219,7 +37232,7 @@
         "unknown": 1.0
       },
       "evidence_gaps": [],
-      "evidence_policy_id": "edition-leaf-path-features-v1",
+      "evidence_policy_id": "edition-leaf-path-features-v2",
       "extraction_coverage": 0.983333,
       "family_id": "pearson-edexcel/economics-a-2015",
       "mark_band_distribution": {
@@ -37246,13 +37259,13 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "9ec0-02-que-20240521.pdf",
           "items": [
             {
               "assessment_objectives": null,
-              "cognitive_operation": "retrieve",
+              "cognitive_operation": "analyse",
               "command_word": "select",
               "demand_band": "unknown",
               "demand_basis": "unknown-no-learner-measurement",
@@ -37262,8 +37275,11 @@
               "marks": 1,
               "objective_basis": "unknown",
               "observed_minutes": null,
+              "operation_basis": "reviewed-2024-edition-subpart-task-inference-not-published-AO",
               "reasoning_steps": null,
-              "response_mode": "selected-response"
+              "response_mode": "selected-response",
+              "source_page": 2,
+              "source_subpart": "1(a)"
             },
             {
               "assessment_objectives": null,
@@ -37297,7 +37313,7 @@
             },
             {
               "assessment_objectives": null,
-              "cognitive_operation": "retrieve",
+              "cognitive_operation": "transform",
               "command_word": "select",
               "demand_band": "unknown",
               "demand_basis": "unknown-no-learner-measurement",
@@ -37307,8 +37323,11 @@
               "marks": 1,
               "objective_basis": "unknown",
               "observed_minutes": null,
+              "operation_basis": "reviewed-2024-edition-subpart-task-inference-not-published-AO",
               "reasoning_steps": null,
-              "response_mode": "selected-response"
+              "response_mode": "selected-response",
+              "source_page": 4,
+              "source_subpart": "2(a)"
             },
             {
               "assessment_objectives": null,
@@ -37352,12 +37371,15 @@
               "marks": 1,
               "objective_basis": "unknown",
               "observed_minutes": null,
+              "operation_basis": "reviewed-2024-edition-subpart-task-inference-not-published-AO",
               "reasoning_steps": null,
-              "response_mode": "selected-response"
+              "response_mode": "selected-response",
+              "source_page": 7,
+              "source_subpart": "3(b)"
             },
             {
               "assessment_objectives": null,
-              "cognitive_operation": "retrieve",
+              "cognitive_operation": "analyse",
               "command_word": "select",
               "demand_band": "unknown",
               "demand_basis": "unknown-no-learner-measurement",
@@ -37367,8 +37389,11 @@
               "marks": 1,
               "objective_basis": "unknown",
               "observed_minutes": null,
+              "operation_basis": "reviewed-2024-edition-subpart-task-inference-not-published-AO",
               "reasoning_steps": null,
-              "response_mode": "selected-response"
+              "response_mode": "selected-response",
+              "source_page": 8,
+              "source_subpart": "4(a)"
             },
             {
               "assessment_objectives": null,
@@ -37402,7 +37427,7 @@
             },
             {
               "assessment_objectives": null,
-              "cognitive_operation": "retrieve",
+              "cognitive_operation": "analyse",
               "command_word": "select",
               "demand_band": "unknown",
               "demand_basis": "unknown-no-learner-measurement",
@@ -37412,8 +37437,11 @@
               "marks": 1,
               "objective_basis": "unknown",
               "observed_minutes": null,
+              "operation_basis": "reviewed-2024-edition-subpart-task-inference-not-published-AO",
               "reasoning_steps": null,
-              "response_mode": "selected-response"
+              "response_mode": "selected-response",
+              "source_page": 11,
+              "source_subpart": "5(b)"
             },
             {
               "assessment_objectives": null,
@@ -37554,11 +37582,11 @@
               "marks": 100,
               "observed": {
                 "cognitive_operation_distribution": {
-                  "analyse": 0.058824,
+                  "analyse": 0.235294,
                   "explain": 0.294117,
                   "judge": 0.235294,
-                  "retrieve": 0.294118,
-                  "transform": 0.117647
+                  "retrieve": 0.058824,
+                  "transform": 0.176471
                 },
                 "command_family_distribution": {
                   "evaluation": 0.235295,
@@ -37599,9 +37627,10 @@
               "section_features": {
                 "A": {
                   "cognitive_operation_distribution": {
-                    "explain": 0.363636,
-                    "retrieve": 0.454546,
-                    "transform": 0.181818
+                    "analyse": 0.272727,
+                    "explain": 0.363637,
+                    "retrieve": 0.090909,
+                    "transform": 0.272727
                   },
                   "command_family_distribution": {
                     "procedural": 0.181818,
@@ -37711,11 +37740,11 @@
               "marks": 100,
               "observed": {
                 "cognitive_operation_distribution": {
-                  "analyse": 0.058824,
+                  "analyse": 0.235294,
                   "explain": 0.294117,
                   "judge": 0.235294,
-                  "retrieve": 0.294118,
-                  "transform": 0.117647
+                  "retrieve": 0.058824,
+                  "transform": 0.176471
                 },
                 "command_family_distribution": {
                   "evaluation": 0.235295,
@@ -37756,9 +37785,10 @@
               "section_features": {
                 "A": {
                   "cognitive_operation_distribution": {
-                    "explain": 0.363636,
-                    "retrieve": 0.454546,
-                    "transform": 0.181818
+                    "analyse": 0.272727,
+                    "explain": 0.363637,
+                    "retrieve": 0.090909,
+                    "transform": 0.272727
                   },
                   "command_family_distribution": {
                     "procedural": 0.181818,
@@ -37850,7 +37880,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:pearson-edexcel/economics-a-2015:2:2024",
+            "policy_id": "edition-leaf-path-features-v2:pearson-edexcel/economics-a-2015:2:2024",
             "schema_version": 1,
             "sections": [
               {
@@ -37915,7 +37945,7 @@
             ],
             "total_marks": 100
           },
-          "topology_fingerprint": "494f9170e43046462b2d030528548f60254870cd2de6ec4edf962c30c70b0282",
+          "topology_fingerprint": "4e27da5dab9e86efa3963471e3a66f0a804aebe2139b7882552760da919af190",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2024
         }
@@ -37951,7 +37981,7 @@
         "unknown": 1.0
       },
       "evidence_gaps": [],
-      "evidence_policy_id": "edition-leaf-path-features-v1",
+      "evidence_policy_id": "edition-leaf-path-features-v2",
       "extraction_coverage": 1.0,
       "family_id": "pearson-edexcel/economics-a-2015",
       "mark_band_distribution": {
@@ -37977,7 +38007,7 @@
             "response_mode_distribution",
             "cognitive_operation_distribution"
           ],
-          "extraction_policy": "edition-leaf-path-features-v1",
+          "extraction_policy": "edition-leaf-path-features-v2",
           "feature_basis": "published-tariff-and-inferred-task-operation-mode; learner demand unknown",
           "id": "9ec0-03-que-20240608.pdf",
           "items": [
@@ -38799,7 +38829,7 @@
           "status": "eligible",
           "topology": {
             "duration_minutes": 120,
-            "policy_id": "edition-leaf-path-features-v1:pearson-edexcel/economics-a-2015:3:2024",
+            "policy_id": "edition-leaf-path-features-v2:pearson-edexcel/economics-a-2015:3:2024",
             "schema_version": 1,
             "sections": [
               {
@@ -38873,7 +38903,7 @@
             ],
             "total_marks": 100
           },
-          "topology_fingerprint": "4ef15ee05d7aedd00deb716d55dea321273aaac23e710ca86b327052e6dbbdfe",
+          "topology_fingerprint": "36b32e05e8386c515b24aa1f11d927ac5f9a965d2196d7390d92c74d2447bd87",
           "weighting_basis": "equal-path-within-year-equal-year-descriptive",
           "year": 2024
         }

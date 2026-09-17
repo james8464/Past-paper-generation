@@ -1,4 +1,5 @@
 import importlib
+from pathlib import Path
 
 import pytest
 
@@ -108,3 +109,75 @@ def test_sparse_bank_is_insufficient_with_cluster_sensitivity_not_calibrated():
     sensitivity = report["cluster_sensitivity"]
     assert len(sensitivity["admitted_mixed_ids"]) == 3
     assert "complete-code:code" not in sensitivity["pooled_parts"]
+
+
+def test_real_bank_explanation_drawing_and_stack_are_not_false_table_matches():
+    from cspapergen.generator import build_topic_question_bank
+    from cspapergen.syllabus import load_syllabus
+
+    from Backend.Core.assessment_package import _extract_items
+
+    syllabus = load_syllabus(
+        Path("Resources/computer-science/aqa/generator/data/syllabus_seed.json")
+    )
+    paper = build_topic_question_bank(syllabus, topic_id="4.2", seed=111)
+    items = _extract_items(
+        paper.model_dump(mode="json"),
+        subject="computer_science",
+        paper_number="bank-4.2",
+    )
+    by_id = {item["id"]: item for item in items}
+    explanation = module().task_features(by_id["3@questions.3.parts.2"])
+    assert explanation == {"topic_id": "4.2", "operation": "analyse", "mode": "prose"}
+    drawing = module().task_features(by_id["1@questions.2.parts.0"])
+    assert drawing == {"topic_id": "4.2", "operation": "represent", "mode": "diagram"}
+    stack = module().task_features(by_id["1@questions.0.parts.0"])
+    assert stack["mode"] == "sequence"
+    assert not module().matching_records(
+        module().reviewed_topic_records("4.2"), drawing
+    )
+    assert not module().matching_records(module().reviewed_topic_records("4.2"), stack)
+
+
+@pytest.mark.parametrize(
+    "item",
+    [
+        {
+            "topic_id": "4.12",
+            "task_operation": "trace",
+            "kind": "recursion",
+            "prompt": "Trace this function by completing the table.",
+            "context": [
+                "An imperative graph traversal visits each vertex, adding neighbours to a visited set."
+            ],
+        },
+        {
+            "topic_id": "4.10",
+            "task_operation": "explain",
+            "kind": "sql_normalisation",
+            "prompt": "Explain the format used by this service.",
+            "context": ["A RESTful web service returns XML documents."],
+        },
+        {
+            "topic_id": "4.12",
+            "task_operation": "trace",
+            "prompt": "Trace this function by completing the table.",
+        },
+    ],
+)
+def test_task_and_context_must_establish_topic_membership(item):
+    assert not module().matching_records(
+        module().reviewed_topic_records(item["topic_id"]), module().task_features(item)
+    )
+
+
+def test_actual_same_topic_operation_and_mode_still_matches():
+    item = {
+        "topic_id": "4.10",
+        "task_operation": "program",
+        "prompt": "Write one SELECT query for this relational database.",
+        "context": ["A relational database stores bookings."],
+    }
+    assert module().matching_records(
+        module().reviewed_topic_records("4.10"), module().task_features(item)
+    )

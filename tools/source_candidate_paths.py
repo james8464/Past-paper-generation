@@ -20,8 +20,8 @@ from Backend.Core.reference_demand import (
     _collapse_command_distribution,
     operation_response_mode,
 )
+from Backend.Core.reference_evidence import EXTRACTION_POLICY
 
-EXTRACTION_POLICY = "edition-leaf-path-features-v1"
 OCR_EDITIONS = {
     "676764": 2022,
     "676765": 2022,
@@ -240,6 +240,69 @@ def _source_text(path: Path, *, family: str, paper: str) -> str:
         return "\n".join(p.get_text(sort=True) for p in document)
 
 
+def _edexcel_selected_features(rows, path: Path, paper: str):
+    """Audited 2024 subparts, bounded by their own stem/tariff/options.
+
+    Operations are task inferences (numerical transformation, conceptual/data
+    application or recall), not AO or learner-difficulty classifications.
+    """
+    if paper not in {"1", "2"}:
+        return
+    editions = {
+        "1": (
+            "9ec0-01-que-20240516.pdf",
+            [
+                (1, "1(b)", 3, "transform"),
+                (3, "2(b)", 5, "transform"),
+                (5, "3(b)", 6, "analyse"),
+                (7, "4(b)", 7, "analyse"),
+                (9, "5(b)", 9, "transform"),
+            ],
+        ),
+        "2": (
+            "9ec0-02-que-20240521.pdf",
+            [
+                (0, "1(a)", 2, "analyse"),
+                (3, "2(a)", 4, "transform"),
+                (6, "3(b)", 7, "retrieve"),
+                (7, "4(a)", 8, "analyse"),
+                (10, "5(b)", 11, "analyse"),
+            ],
+        ),
+    }
+    filename, subparts = editions[paper]
+    if path.name != filename:
+        raise ValueError("unsupported Edexcel selected-response edition")
+    with pymupdf.open(path) as document:
+        for index, subpart, page, operation in subparts:
+            text = document[page - 1].get_text()
+            label = subpart[-2]
+            match = re.search(
+                r"\(" + label + r"\)(.*?)\(1\)(.*?)(?:Total for Question|\Z)",
+                text,
+                re.S,
+            )
+            if (
+                not match
+                or not all(
+                    re.search(r"(?m)^\s*" + option + r"\s", match[2])
+                    for option in "ABCD"
+                )
+                or rows[index]["marks"] != 1
+            ):
+                raise ValueError(
+                    f"Edexcel {subpart} selected-response contract no longer reconciles"
+                )
+            rows[index].update(
+                command_word="select",
+                cognitive_operation=operation,
+                response_mode="selected-response",
+                source_subpart=subpart,
+                source_page=page,
+                operation_basis="reviewed-2024-edition-subpart-task-inference-not-published-AO",
+            )
+
+
 def _selected_features(rows, text, *, family, paper, year, root):
     from tools.reference_demand_profiles import _mark_pattern
 
@@ -386,6 +449,8 @@ def source_forms(family_id: str, paper: str) -> list[dict[str, Any]]:
         _selected_features(
             rows, text, family=family_id, paper=paper, year=year, root=family.root
         )
+        if family.board == "pearson-edexcel":
+            _edexcel_selected_features(rows, path, paper)
         if family_id in {
             "aqa/economics",
             "ocr/economics",

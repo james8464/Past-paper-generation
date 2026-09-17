@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 from collections import Counter
 from functools import lru_cache
@@ -57,7 +58,8 @@ class ReferenceDemandProfile(BaseModel):
     @classmethod
     def validate_distribution(cls, value: dict[str, float]) -> dict[str, float]:
         if not value or any(
-            not key.strip() or amount < 0 for key, amount in value.items()
+            not key.strip() or not math.isfinite(amount) or amount < 0
+            for key, amount in value.items()
         ):
             raise ValueError("reference distributions must contain non-negative values")
         total = sum(value.values())
@@ -79,7 +81,10 @@ class ReferenceDemandProfile(BaseModel):
         }
         if set(value) != required:
             raise ValueError("metric tolerances must cover every gated distribution")
-        if any(amount <= 0 or amount > 2 for amount in value.values()):
+        if any(
+            not math.isfinite(amount) or amount <= 0 or amount > 2
+            for amount in value.values()
+        ):
             raise ValueError("metric tolerances must be within (0, 2]")
         return {key: round(float(amount), 6) for key, amount in value.items()}
 
@@ -91,11 +96,33 @@ class ReferenceDemandDocument(BaseModel):
     retains_source_text: Literal[False]
     profiles: list[ReferenceDemandProfile] = Field(min_length=1)
 
+    @model_validator(mode="before")
+    @classmethod
+    def version_specific_fields(cls, value):
+        if isinstance(value, dict) and value.get("schema_version") == 3:
+            required = {
+                "evidence_policy_id",
+                "reference_forms",
+                "topic_records",
+                "evidence_gaps",
+            }
+            for profile in value.get("profiles", []):
+                if isinstance(profile, dict) and not required <= profile.keys():
+                    raise ValueError(
+                        "schema-3 profile requires complete H3 evidence fields"
+                    )
+        return value
+
     @model_validator(mode="after")
     def unique_profiles(self) -> ReferenceDemandDocument:
         keys = [(profile.family_id, profile.paper_id) for profile in self.profiles]
         if len(keys) != len(set(keys)):
             raise ValueError("reference demand profiles must be unique")
+        if self.schema_version == 3:
+            from Backend.Core.reference_evidence import validate_profile_evidence
+
+            for profile in self.profiles:
+                validate_profile_evidence(profile)
         return self
 
 
