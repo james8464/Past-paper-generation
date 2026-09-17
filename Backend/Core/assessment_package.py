@@ -345,8 +345,8 @@ def _reference_demand_audit(
         capability = generator_capability(subject)
     except ValueError:
         return None
-    evidence_context = verified_reference_profile(capability.id, paper_number)
-    profile = profile_for_verified_context(evidence_context)
+    profile = verified_reference_profile(capability.id, paper_number)
+    evidence_context = profile_for_verified_context(profile)
     report = audit_form_demand(items, profile, require_item_evidence=not preview)
     if blueprint is None:
         return report

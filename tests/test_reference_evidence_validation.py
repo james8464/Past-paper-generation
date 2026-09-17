@@ -353,8 +353,17 @@ def test_canonical_evidence_context_cannot_be_retargeted_to_a_copied_profile():
     context = verified_reference_profile("aqa/economics", "3")
     copied = profile_for_verified_context(context).model_copy(deep=True)
 
-    with pytest.raises(AttributeError):
+    with pytest.raises((AttributeError, ValueError)):
         context.profile = copied
+
+
+def test_public_context_accessors_cannot_be_used_to_inject_a_forged_profile():
+    """Public accessors cannot qualify content absent from the source record."""
+    forged = verified_reference_profile("aqa/economics", "3").model_copy(deep=True)
+    forged.reference_forms[0]["source_sha256"] = "f" * 64
+
+    with pytest.raises(ValueError):
+        validate_profile_evidence(forged, evidence_context=forged)
 
 
 def test_profile_list_mutation_invalidates_a_schema_three_document_attestation():

@@ -1060,8 +1060,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/assessment_package.py": {
-    "mtime": 1789671097.7973332,
-    "ast_hash": "72139dd0fe1ff6355ca38da8a7e9e530",
+    "mtime": 1789671590.3008137,
+    "ast_hash": "b14142a8c8518deaa61428b21190b1d7",
     "semantic_hash": ""
   },
   "Backend/Core/assessment_quality.py": {
@@ -1885,8 +1885,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/reference_demand.py": {
-    "mtime": 1789671097.796609,
-    "ast_hash": "d7fa0be79f30a268d310b26baf19108b",
+    "mtime": 1789671590.3004322,
+    "ast_hash": "5eb9c5529a6ce7e0caabf4b73cf747b6",
     "semantic_hash": ""
   },
   "Resources/reference-demand-profile.schema.json": {
@@ -2175,8 +2175,8 @@
     "semantic_hash": ""
   },
   "tests/test_reference_evidence_validation.py": {
-    "mtime": 1789671072.555145,
-    "ast_hash": "d4c9d60ee7ce467c1d03119fd058cdfb",
+    "mtime": 1789671600.1159256,
+    "ast_hash": "87eb2c7ce3169b8cb4736aac0289aee8",
     "semantic_hash": ""
   },
   "Backend/Core/topic_task_contract.py": {

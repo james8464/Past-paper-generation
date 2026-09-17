@@ -8,7 +8,6 @@ from collections import Counter
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Literal
-from weakref import WeakKeyDictionary
 
 from pydantic import (
     BaseModel,
@@ -188,55 +187,66 @@ def profile_for(
     raise ValueError(f"no reference demand profile for {family_id} paper {paper_id}")
 
 
-def _verified_context_api():
-    issued: WeakKeyDictionary[Any, tuple[Any, ...]] = WeakKeyDictionary()
+def _profile_fingerprint(payload: Any) -> str:
+    """Return the stable content identity used by the checked-in source record."""
+    canonical = json.dumps(
+        payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    )
+    return hashlib.sha256(canonical.encode()).hexdigest()
 
-    def fingerprint(profile: ReferenceDemandProfile) -> str:
-        payload = json.dumps(
-            profile.model_dump(mode="json"),
-            sort_keys=True,
-            separators=(",", ":"),
-            ensure_ascii=False,
-            allow_nan=False,
+
+def _checked_in_profile_fingerprint(family_id: str, paper_id: str) -> str:
+    """Read the authoritative profile record without retaining mutable authority."""
+    try:
+        payload = json.loads(PROFILES_PATH.read_text(encoding="utf-8"))
+        record = next(
+            profile
+            for profile in payload["profiles"]
+            if (profile["family_id"], profile["paper_id"])
+            == (family_id, str(paper_id))
         )
-        return hashlib.sha256(payload.encode()).hexdigest()
-
-    class VerifiedReferenceProfile:
-        __slots__ = ("__weakref__",)
-        __hash__ = object.__hash__
-
-    def issue(family_id: str, paper_id: str) -> Any:
-        document = load_reference_demand_document()
-        profile = profile_for(family_id, paper_id, document=document)
-        context = VerifiedReferenceProfile()
-        issued[context] = (document, profile, fingerprint(profile))
-        return context
-
-    def profile_for_context(context: Any) -> ReferenceDemandProfile:
-        try:
-            return issued[context][1]
-        except (KeyError, TypeError) as error:
-            raise ValueError("canonical reference evidence context is required") from error
-
-    def accepts(context: Any, profile: Any) -> bool:
-        try:
-            document, issued_profile, issued_fingerprint = issued[context]
-            return (
-                issued_profile is profile
-                and document is load_reference_demand_document()
-                and issued_fingerprint == fingerprint(profile)
-            )
-        except (KeyError, TypeError):
-            return False
-
-    return issue, profile_for_context, accepts
+    except (FileNotFoundError, KeyError, StopIteration, TypeError) as error:
+        raise ValueError("checked-in reference evidence is unavailable") from error
+    return _profile_fingerprint(record)
 
 
-(
-    verified_reference_profile,
-    profile_for_verified_context,
-    _is_verified_reference_profile,
-) = _verified_context_api()
+def _is_checked_in_reference_profile(profile: Any) -> bool:
+    """Accept only content that exactly matches the checked-in source record."""
+    if not isinstance(profile, ReferenceDemandProfile):
+        return False
+    try:
+        return _profile_fingerprint(profile.model_dump(mode="json")) == _checked_in_profile_fingerprint(
+            profile.family_id,
+            profile.paper_id,
+        )
+    except (TypeError, ValueError):
+        return False
+
+
+def verified_reference_profile(
+    family_id: str,
+    paper_id: str,
+) -> ReferenceDemandProfile:
+    """Load a source-backed profile for the internal generation path."""
+    profile = profile_for(family_id, paper_id)
+    if not _is_checked_in_reference_profile(profile):
+        raise ValueError("loaded reference evidence no longer matches its source record")
+    return profile
+
+
+def profile_for_verified_context(context: Any) -> ReferenceDemandProfile:
+    """Validate a profile context against its current checked-in source record."""
+    if not _is_checked_in_reference_profile(context):
+        raise ValueError("canonical reference evidence context is required")
+    return context
+
+
+def _is_verified_reference_profile(context: Any, profile: Any) -> bool:
+    return context is profile and _is_checked_in_reference_profile(profile)
 
 
 def build_item_demand_target(
