@@ -274,9 +274,11 @@ def test_model_copied_document_cannot_promote_a_valid_profile_to_schema_three():
 
 def test_public_evidence_api_cannot_attest_a_forged_document():
     """Only ReferenceDemandDocument validation may create an H3 attestation."""
+    import Backend.Core.reference_demand as demand
     import Backend.Core.reference_evidence as evidence
 
     assert not hasattr(evidence, "attest_validated_document")
+    assert not hasattr(demand, "_attest_validated_document")
 
 
 def test_profile_list_mutation_invalidates_a_schema_three_document_attestation():

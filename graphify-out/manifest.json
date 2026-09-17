@@ -1885,8 +1885,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/reference_demand.py": {
-    "mtime": 1789670084.2037292,
-    "ast_hash": "3b4d890079a7a7137f07068b61f8fea7",
+    "mtime": 1789670353.5281115,
+    "ast_hash": "232666f3c47171b51fa217568afbc04a",
     "semantic_hash": ""
   },
   "Resources/reference-demand-profile.schema.json": {
@@ -2175,8 +2175,8 @@
     "semantic_hash": ""
   },
   "tests/test_reference_evidence_validation.py": {
-    "mtime": 1789670081.005556,
-    "ast_hash": "4e8da0fe2b67a67e5203371d0a3b000e",
+    "mtime": 1789670363.705701,
+    "ast_hash": "96e95506b490b9b699132a5bb858a254",
     "semantic_hash": ""
   },
   "Backend/Core/topic_task_contract.py": {

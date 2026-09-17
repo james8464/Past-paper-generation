@@ -49,20 +49,6 @@ def _document_fingerprint(document: Any) -> str:
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
-def _attest_validated_document(document: Any) -> None:
-    """Record the exact schema-3 object graph that completed model validation."""
-    document_id = id(document)
-
-    def discard(_released: ReferenceType[Any]) -> None:
-        _VALIDATED_DOCUMENTS.pop(document_id, None)
-
-    _VALIDATED_DOCUMENTS[document_id] = _DocumentAttestation(
-        document=ref(document, discard),
-        profile_ids=tuple(id(profile) for profile in document.profiles),
-        content_fingerprint=_document_fingerprint(document),
-    )
-
-
 def _has_valid_document_attestation(document: Any, profile: Any) -> bool:
     attestation = _VALIDATED_DOCUMENTS.get(id(document))
     if attestation is None or attestation.document() is not document:
@@ -197,7 +183,16 @@ class ReferenceDemandDocument(BaseModel):
                     document=self,
                     require_attestation=False,
                 )
-            _attest_validated_document(self)
+            document_id = id(self)
+
+            def discard(_released: ReferenceType[Any]) -> None:
+                _VALIDATED_DOCUMENTS.pop(document_id, None)
+
+            _VALIDATED_DOCUMENTS[document_id] = _DocumentAttestation(
+                document=ref(self, discard),
+                profile_ids=tuple(id(profile) for profile in self.profiles),
+                content_fingerprint=_document_fingerprint(self),
+            )
         return self
 
 

@@ -1,24 +1,24 @@
 # Graph Report - Past Paper Creation  (2026-09-17)
 
 ## Corpus Check
-- 391 files · ~729,638 words
+- 391 files · ~729,630 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 6589 nodes · 18415 edges · 285 communities (233 shown, 52 thin omitted)
+- 6587 nodes · 18411 edges · 276 communities (223 shown, 53 thin omitted)
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 1096 edges (avg confidence: 0.63)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f4bd7b1b`
+- Built from commit: `e1c2648b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - cspapergen/render_pdf.py
 - reference_demand_profiles.py
-- .generate
-- test_solver_source_adapter.py
+- BackendEvent
+- require_difficulty_review
 - CandidateResponse
 - ocregen/render_pdf.py
 - Paragraph
@@ -29,11 +29,11 @@
 - properties
 - paper_fidelity_audit.py
 - reference_corpus.py
-- GeneratedPaper
+- aqaecongen/render_pdf.py
 - test_coverage_matrix.py
 - CodingKeys
-- ai_assessment.py
-- pdf_validation.py
+- Canvas
+- Rect
 - AssessmentCheckpointStore
 - live_generation_matrix.py
 - Text
@@ -52,9 +52,9 @@
 - generation.py
 - pastpapergen/notes.py
 - properties
-- test_shared_numeric_integrity.py
+- reconcile_solution
 - test_mark_scheme_layout.py
-- QuestionRule
+- GeneratedPaper
 - Approved-Improvement Traceability
 - test_app_backend.py
 - test_open_credit_reconciliation.py
@@ -71,14 +71,14 @@
 - Contract-First Paper Generation and Release Qualification
 - PaperCreatorTests
 - build_item_demand_target
-- generator_registry.py
+- test_generator_registry.py
 - properties
 - _mark_scheme_rows
-- pastpapergen/ollama_client.py
+- test_ollama_generation.py
 - Q: How is the macOS backend bundle kept complete?
 - File Structure
-- paths.py
-- test_aqa_economics.py
+- validate_generator_migration.py
+- exam_blueprints.py
 - document_dsl/__init__.py
 - aqa_section_intro
 - Rendering and Mark-Scheme Reliability Implementation Plan
@@ -91,7 +91,7 @@
 - Assessment quality and originality
 - IndependentSolver
 - macOS interaction and HIG compliance
-- Rect
+- layout_master.py
 - test_pdf_validation.py
 - Q: how can we make even more improvements to get the highest similarity in terms of structure and layout and quality of questions etc. and maybe all of the files in the project can be better organised. and the UI can be made to be much better and more geometrically apple-like by strictly following every single rule they outline in their HIG
 - Paper creator
@@ -110,9 +110,9 @@
 - ObjectivePolicy
 - diagnose.sh
 - move_to_trash.sh
-- configuredgen/generator.py
+- .applyConfiguration
 - run_app_macos.sh
-- pastpapergen/cli.py
+- pastpapergen/ollama_client.py
 - Core/__init__.py
 - properties
 - bootstrap_backend.sh
@@ -120,12 +120,12 @@
 - clean.sh
 - resolve_agent_name.sh
 - test_generator_migration.py
-- generate_package
+- cspapergen/cli.py
 - test_science_subjects.py
 - aqabizgen/__init__.py
 - cspapergen/__init__.py
 - ocrcsgen/__init__.py
-- build_paper
+- test_computer_science_objectives.py
 - pastpapergen/__init__.py
 - ocregen/__init__.py
 - tools/__init__.py
@@ -169,8 +169,8 @@
 - ocrcsgen/render_pdf.py
 - DocumentPreviewView
 - GeneratedQuestion
-- test_computer_science_objectives.py
-- Canvas
+- computer_science_authoring.py
+- PaperBlueprint
 - properties
 - _call_name
 - Q: How does the paper fidelity audit produce per-document and per-role scores, and where should release thresholds integrate?
@@ -178,16 +178,16 @@
 - NonCurrentAssetCase
 - qualification_levels
 - ApplicationCoordinator
-- SettingsPane.swift
+- SwiftUI
 - required
 - properties
-- exam_blueprints.py
+- candidate_content_identity
 - required
 - ComputerSciencePlugin
 - sample
-- ReferenceDemandDocument
+- inspect_release_compliance
 - properties
-- render_source_booklet
+- pastpapergen/cli.py
 - required
 - qualification-schema.json
 - properties
@@ -208,21 +208,21 @@
 - app_board
 - app_subject
 - emit
-- OllamaModelGuideDocument
+- test_finite_response_slots.py
 - IncomeStatementCase
 - validate_mark_scheme_item
 - _BooleanParser
 - test_repository_hygiene.py
 - test_accounting_objectives.py
 - required
-- discover_subject_plugin
+- subject_plugins.py
 - ocr_computer_science_calibration.py
 - mark_scheme_enrichment.py
 - Current-family visual qualification — 26 August 2026
 - _written
-- SalesLedgerCase
+- BiologyPlugin
 - BackendClient
-- PathSection
+- id
 - pastpapergen/render_pdf.py
 - _draw_cover
 - Reference-Demand Calibration Design
@@ -247,57 +247,48 @@
 - package
 - PhysicsPlugin
 - Continued qualification — 31 August
-- cspapergen/generator.py
+- cspapergen/ollama_client.py
 - BenchmarkChart
 - 31 August continued qualification findings
 - test_task_source_demand.py
 - accounting.py
 - SubjectValidation
-- reconcile_solution
+- test_solver_source_adapter.py
 - AIProvider
 - required
 - family_adapter.py
 - enum
-- CodingKeys
+- topic_reference_evidence.py
 - formatted_generation_date
-- id
+- topic_id
 - empirical-calibration.schema.json
 - Assessment-objective calibration reference
 - aqa_accounting_calibration.py
-- OllamaModelRecommendation
+- stratum
 - test_topic_reference_evidence.py
 - enum
-- paper1_assets.py
+- paper
 - entry_point
 - register_fonts
 - specification_version
 - subject_plugin
 - add_page_structure_tree
 - difficulty_calibration.py
-- enum
+- .model_operations_must_be_unique
 - build_layout_masters.py
 - test_source_candidate_paths.py
-- required
-- properties
 - required
 - subject
 - test_aqa_accounting_calibration.py
 - progress
-- section_features
 - test_difficulty_calibration.py
 - test_ocr_computer_science_calibration.py
-- _normalise_command_word
-- type
 - enum
 - .initialEstimate
 - test_science_overlay.py
-- generate_package
 - test_humanities_overlay.py
-- event_id
-- timestamp
 - CostingCase
 - test_aqa_business_calibration.py
-- _visible_scheme_points
 
 ## God Nodes (most connected - your core abstractions)
 1. `GeneratedQuestion` - 213 edges
@@ -329,35 +320,35 @@
 ## Hyperedges (group relationships)
 - **Edexcel A Economics Knowledge Corpus** — resources_economics_edexcel_a_generator_data_notes_text_1_1_nature_of_economics_nature_of_economics, resources_economics_edexcel_a_generator_data_notes_text_1_2_how_markets_work_how_markets_work, resources_economics_edexcel_a_generator_data_notes_text_1_3_market_failure_market_failure, resources_economics_edexcel_a_generator_data_notes_text_1_4_government_intervention_government_intervention, resources_economics_edexcel_a_generator_data_notes_text_2_1_measures_of_economic_performance_measures_of_economic_performance, resources_economics_edexcel_a_generator_data_notes_text_2_2_aggregate_demand_aggregate_demand, resources_economics_edexcel_a_generator_data_notes_text_2_3_aggregate_supply_aggregate_supply, resources_economics_edexcel_a_generator_data_notes_text_2_4_national_income_national_income, resources_economics_edexcel_a_generator_data_notes_text_2_5_economic_growth_economic_growth, resources_economics_edexcel_a_generator_data_notes_text_2_6_macroeconomic_objectives_and_policies_macroeconomic_objectives_and_policies, resources_economics_edexcel_a_generator_data_notes_text_3_1_business_growth_business_growth, resources_economics_edexcel_a_generator_data_notes_text_3_2_business_objectives_business_objectives, resources_economics_edexcel_a_generator_data_notes_text_3_3_revenues_costs_and_profits_revenues_costs_and_profits, resources_economics_edexcel_a_generator_data_notes_text_3_4_market_structures_market_structures, resources_economics_edexcel_a_generator_data_notes_text_3_5_labour_markets_labour_markets, resources_economics_edexcel_a_generator_data_notes_text_4_1_international_economics_international_economics, resources_economics_edexcel_a_generator_data_notes_text_4_2_poverty_and_inequality_poverty_and_inequality, resources_economics_edexcel_a_generator_data_notes_text_4_3_emerging_and_developing_economies_emerging_and_developing_economies, resources_economics_edexcel_a_generator_data_notes_text_4_4_the_financial_sector_the_financial_sector, resources_economics_edexcel_a_generator_data_notes_text_4_5_role_of_the_state_in_the_macroeconomy_role_of_the_state_in_the_macroeconomy [EXTRACTED 1.00]
 
-## Communities (285 total, 52 thin omitted)
+## Communities (276 total, 53 thin omitted)
 
 ### Community 0 - "cspapergen/render_pdf.py"
 Cohesion: 0.07
 Nodes (101): CanvasBarcodeStyle, draw_barcode(), draw_glyph_answer_rules(), draw_solid_answer_rules(), GlyphRuleStyle, Canvas, Draw a fixed number of solid response rules and return the next baseline., Draw selectable glyph-based response rules and return the next baseline. (+93 more)
 
 ### Community 1 - "reference_demand_profiles.py"
-Cohesion: 0.12
-Nodes (36): Pattern, test_discounted_2025_item_is_not_reference_demand_evidence(), build_document(), CorpusFamily, _distribution(), extract_reference_features(), extract_reference_items(), _fingerprint() (+28 more)
+Cohesion: 0.11
+Nodes (38): operation_response_mode(), Shared generated/source semantics for non-computational written tasks., Pattern, test_discounted_2025_item_is_not_reference_demand_evidence(), build_document(), CorpusFamily, _distribution(), extract_reference_features() (+30 more)
 
-### Community 2 - ".generate"
-Cohesion: 0.07
-Nodes (20): AppDefaults, AppLinks, AppStorageKey, SecretAccount, Bool, String, URL, MLXRecoveryState (+12 more)
+### Community 2 - "BackendEvent"
+Cohesion: 0.06
+Nodes (31): BackendEvent, benchmarkDone, benchmarkMetric, benchmarkSample, done, error, file, hello (+23 more)
 
-### Community 3 - "test_solver_source_adapter.py"
-Cohesion: 0.05
-Nodes (103): _export_difficulty_candidate_projection(), candidate_content_identity(), candidate_review_content(), CandidateContentIdentity, difficulty_candidate_projection(), DifficultyCandidateProjection, edexcel_difficulty_candidate_projection(), ensure_difficulty_candidate_projection() (+95 more)
+### Community 3 - "require_difficulty_review"
+Cohesion: 0.10
+Nodes (60): CandidateContentIdentity, _candidate_task_facts(), difficulty_review(), DifficultyReviewResult, independent_review(), JSONClient, _public_task_operation_evidence(), PublicTaskOperationEvidence (+52 more)
 
 ### Community 4 - "CandidateResponse"
 Cohesion: 0.12
-Nodes (25): BoardLevelPolicy, LevelDescriptor, LevelOfResponseEngine, load_level_policies(), MarkAnnotation, MarkDecision, BaseModel, model_validator (+17 more)
+Nodes (24): BoardLevelPolicy, LevelDescriptor, LevelOfResponseEngine, load_level_policies(), MarkAnnotation, MarkDecision, BaseModel, model_validator (+16 more)
 
 ### Community 5 - "ocregen/render_pdf.py"
-Cohesion: 0.09
-Nodes (69): OCRAnswerLines, _add_economics_diagram(), _add_firm_objectives_diagram(), _add_ppf_diagram(), _annotation_conventions_page(), _answer_mark(), _assessment_allocation(), _assessment_grid_groups() (+61 more)
+Cohesion: 0.08
+Nodes (71): OCRAnswerLines, _artifacts(), _add_economics_diagram(), _add_firm_objectives_diagram(), _add_ppf_diagram(), _annotation_conventions_page(), _answer_mark(), _assessment_allocation() (+63 more)
 
 ### Community 6 - "Paragraph"
-Cohesion: 0.12
-Nodes (62): aqa_front_matter_pages(), Flowable, AQAAnswerLines, Paragraph, _accounting_marking_guidance_pages(), _accounting_system_case(), _additional_answer_page(), _appropriation_answer_table() (+54 more)
+Cohesion: 0.11
+Nodes (66): objective_policy_for(), Subject meaning for AO labels, independent of item tariffs and renderers., Resolve family IDs, subject names or qualification codes., CS component policy audit over candidate-answerable paths, not printed totals., aqa_front_matter_pages(), Flowable, AQAAnswerLines, Paragraph (+58 more)
 
 ### Community 7 - "test_render_pdf.py"
 Cohesion: 0.13
@@ -369,15 +360,15 @@ Nodes (43): generate_package(), Path, FinancialPosition, format_number(), Format
 
 ### Community 9 - "pastpapergen/generator.py"
 Cohesion: 0.06
-Nodes (72): MultipleChoiceOption, _adapt_paper_three_case_guidance(), _best_section_a_context_point(), _build_part(), _build_parts(), _choice_group_name(), _choice_lookup(), _choose_topic() (+64 more)
+Nodes (71): MultipleChoiceOption, _adapt_paper_three_case_guidance(), _best_section_a_context_point(), _build_part(), _build_parts(), _choice_group_name(), _choice_lookup(), _choose_topic() (+63 more)
 
 ### Community 10 - "build_paper_blueprint"
 Cohesion: 0.08
-Nodes (91): build_paper_blueprint(), PaperBlueprint, Syllabus, load_builtin_paper_config(), review_table_rows(), load_syllabus(), Path, Syllabus (+83 more)
+Nodes (80): build_paper_blueprint(), PaperBlueprint, Syllabus, load_builtin_paper_config(), review_table_rows(), load_syllabus(), Path, Syllabus (+72 more)
 
 ### Community 11 - "properties"
 Cohesion: 0.04
-Nodes (60): printed-conflicting, published-item-allocation, reconciled-published-aggregate, unknown, anyOf, default, title, const (+52 more)
+Nodes (59): printed-conflicting, published-item-allocation, reconciled-published-aggregate, unknown, anyOf, default, title, const (+51 more)
 
 ### Community 12 - "paper_fidelity_audit.py"
 Cohesion: 0.05
@@ -387,9 +378,9 @@ Nodes (103): Pixmap, parametrize, Path, test_compact_profile_omits_raster_geomet
 Cohesion: 0.13
 Nodes (45): MonkeyPatch, Path, test_document_path_requires_filename(), test_document_path_stays_inside_corpus(), test_download_manifest_records_failure_and_continues(), test_parse_aqa_resources_filters_modified_papers(), test_parse_ocr_resources_uses_a_level_tab_only(), test_parse_ocr_specifications_keeps_a_level_not_as_level() (+37 more)
 
-### Community 14 - "GeneratedPaper"
-Cohesion: 0.16
-Nodes (38): GeneratedPaper, _artifacts(), _assessment_objectives_table(), _context_data_table(), _context_first_page(), _context_second_page(), _cover_profile(), _document() (+30 more)
+### Community 14 - "aqaecongen/render_pdf.py"
+Cohesion: 0.14
+Nodes (39): _artifacts(), _assessment_objectives_table(), _context_data_table(), _context_first_page(), _context_second_page(), _cover_profile(), _document(), _economic_diagram() (+31 more)
 
 ### Community 15 - "test_coverage_matrix.py"
 Cohesion: 0.20
@@ -397,59 +388,59 @@ Nodes (24): family(), matrix(), Path, test_catalog_availability_is_owned_only_by
 
 ### Community 16 - "CodingKeys"
 Cohesion: 0.04
-Nodes (46): CodingKeys, assessmentKind, backendVersion, capabilities, checks, code, command, cpuLoad (+38 more)
+Nodes (57): CodingKey, CodingKeys, assessmentKind, backendVersion, capabilities, checks, code, command (+49 more)
 
-### Community 17 - "ai_assessment.py"
-Cohesion: 0.13
-Nodes (33): AssessmentLLMClient, _batches_for_client(), _bounded_text(), _canonical_objective_allocation(), _demand_item(), _difficulty_candidate(), _difficulty_specification(), _effective_batch_size() (+25 more)
+### Community 17 - "Canvas"
+Cohesion: 0.14
+Nodes (29): GraphParams, _draw_answer_lines(), _draw_axis_arrow(), _draw_bar_chart(), _draw_blank_answer_axes(), _draw_calculate_part_with_working_lines(), _draw_compact_part(), _draw_context_box() (+21 more)
 
-### Community 18 - "pdf_validation.py"
-Cohesion: 0.15
-Nodes (28): compare_page_evidence(), _contrast_against_white(), _contrast_ratio(), _count_score(), _font_embedding(), _font_evidence(), _is_decorative_bleed(), _is_margin_furniture() (+20 more)
+### Community 18 - "Rect"
+Cohesion: 0.10
+Nodes (38): Rect, compare_page_evidence(), _contrast_against_white(), _contrast_ratio(), _count_score(), _font_embedding(), _font_evidence(), _is_decorative_bleed() (+30 more)
 
 ### Community 19 - "AssessmentCheckpointStore"
-Cohesion: 0.12
-Nodes (34): AssessmentCheckpointStore, CheckpointCorrupt, CheckpointIdentity, CheckpointMismatch, identity_for_blueprint(), Any, BaseModel, Path (+26 more)
+Cohesion: 0.14
+Nodes (28): AssessmentCheckpointStore, CheckpointCorrupt, CheckpointIdentity, CheckpointMismatch, identity_for_blueprint(), Any, BaseModel, Path (+20 more)
 
 ### Community 20 - "live_generation_matrix.py"
 Cohesion: 0.08
 Nodes (50): Release qualification evidence and policy models., ArtifactEvidence, EvidenceRecord, GateState, ModelIdentity, BaseModel, field_validator, Path (+42 more)
 
 ### Community 21 - "Text"
-Cohesion: 0.03
-Nodes (107): Charts, GenerationQualityState, View, PanelEmptyState, .body, String, BenchmarkAccessibility, .body (+99 more)
+Cohesion: 0.05
+Nodes (79): GenerationQualityState, View, PanelEmptyState, .body, String, .body, .body, GenerationProgress (+71 more)
 
 ### Community 22 - "benchmark.py"
-Cohesion: 0.12
-Nodes (33): apple_cpu_core_split(), available_memory_gb(), avg(), clamp(), cpu_brand(), cpu_load_percent(), cpu_probe(), disk_probe() (+25 more)
+Cohesion: 0.14
+Nodes (30): apple_cpu_core_split(), available_memory_gb(), avg(), clamp(), cpu_brand(), cpu_load_percent(), cpu_probe(), disk_probe() (+22 more)
 
 ### Community 23 - "CodingKeys"
-Cohesion: 0.12
-Nodes (17): CodingKeys, appContextWindow, contextWindow, defaultModel, detail, downloadSizeGB, id, maximumMemoryGB (+9 more)
+Cohesion: 0.07
+Nodes (36): CodingKeys, appContextWindow, contextWindow, defaultModel, detail, downloadSizeGB, id, maximumMemoryGB (+28 more)
 
 ### Community 24 - "render_pdf_atomically"
 Cohesion: 0.15
 Nodes (23): InvalidRenderOutput, Path, RuntimeError, A document role could not be rendered safely., Rendering exceeded its bounded qualification window., A renderer returned without producing a readable PDF., Render one PDF role under a deadline and promote it atomically., _readable_page_count() (+15 more)
 
 ### Community 25 - "EconomicsSource"
-Cohesion: 0.09
-Nodes (35): calculation(), calculation_label(), calculation_prompt(), calculation_working(), EconomicsSource, BaseModel, Decimal, model_validator (+27 more)
+Cohesion: 0.10
+Nodes (34): calculation(), calculation_label(), calculation_prompt(), calculation_working(), EconomicsSource, BaseModel, Decimal, model_validator (+26 more)
 
 ### Community 26 - "AssessmentContract"
 Cohesion: 0.07
-Nodes (51): AssessmentContract, contract_for_question(), GeneratedNumericField, GraphContract, _numeric_contracts(), NumericRole, NumericValueContract, Any (+43 more)
+Nodes (54): AssessmentContract, contract_for_question(), GeneratedNumericField, GraphContract, _numeric_contracts(), NumericRole, NumericValueContract, Any (+46 more)
 
 ### Community 27 - "sql_contracts.py"
 Cohesion: 0.10
 Nodes (42): _contract_column(), _Count, _equality(), _Field, _finding(), fitness_centre_sql_contract(), _Frozen, _has_sql_statement_shape() (+34 more)
 
 ### Community 28 - "assessment_package.py"
-Cohesion: 0.10
-Nodes (46): objective_policy_for(), Subject meaning for AO labels, independent of item tariffs and renderers., Resolve family IDs, subject names or qualification codes., _assessment_contract(), AssessmentPackageCompatibilityError, _authoring_provenance(), _contains_non_finite(), _evidence_ids() (+38 more)
+Cohesion: 0.13
+Nodes (36): _assessment_contract(), AssessmentPackageCompatibilityError, _authoring_provenance(), _contains_non_finite(), _evidence_ids(), _extract_items(), _form_id(), _level_policies() (+28 more)
 
 ### Community 29 - "ExamBoardOption"
-Cohesion: 0.06
-Nodes (48): Hashable, Identifiable, AssessmentKind, fullPaper, questionBank, .title, CatalogSubject, ExamBoardOption (+40 more)
+Cohesion: 0.07
+Nodes (38): Identifiable, CatalogSubject, ExamBoardOption, .fullPapers, .isReady, .questionBanks, .usesAI, .defaultBoard (+30 more)
 
 ### Community 30 - "Paper creator: deep project analysis"
 Cohesion: 0.05
@@ -464,60 +455,60 @@ Cohesion: 0.30
 Nodes (26): Axes, ad_as_diagram(), _arrow_axes(), _ax(), circular_flow_diagram(), consumer_producer_surplus(), demand_supply_diagram(), _ensure_style() (+18 more)
 
 ### Community 33 - "mathematics.py"
-Cohesion: 0.16
-Nodes (20): AnswerComparison, compare_mathematical_answers(), MarkAward, _marking_rules(), MarkingRule, MathematicalAnswer, MathematicsPlugin, _normalise_unit() (+12 more)
+Cohesion: 0.15
+Nodes (21): AnswerComparison, compare_mathematical_answers(), FurtherMathematicsPlugin, MarkAward, _marking_rules(), MarkingRule, MathematicalAnswer, MathematicsPlugin (+13 more)
 
 ### Community 34 - "generation.py"
-Cohesion: 0.24
-Nodes (19): progress_emitter(), _atomic_publish(), _cancel_generation(), checkpoint_path_for_job(), emit_generated_files(), finalize_generated_documents(), _generator_version(), handle_generate() (+11 more)
+Cohesion: 0.16
+Nodes (25): _atomic_publish(), _cancel_generation(), checkpoint_path_for_job(), emit_generated_files(), finalize_generated_documents(), GenerationCancelled, _generator_version(), handle_generate() (+17 more)
 
 ### Community 35 - "pastpapergen/notes.py"
-Cohesion: 0.11
-Nodes (33): _clean_chunk(), essay_capable_topic_ids(), _flush_note_chunk(), _is_exam_point(), _is_note_noise(), _looks_like_heading(), _note_chunks(), note_context_for_topic() (+25 more)
+Cohesion: 0.20
+Nodes (19): _clean_chunk(), essay_capable_topic_ids(), _flush_note_chunk(), _is_exam_point(), _is_note_noise(), _looks_like_heading(), _note_chunks(), note_context_for_topic() (+11 more)
 
 ### Community 36 - "properties"
 Cohesion: 0.08
 Nodes (25): type, pattern, type, pattern, pattern, type, type, pattern (+17 more)
 
-### Community 37 - "test_shared_numeric_integrity.py"
-Cohesion: 0.14
-Nodes (37): _independently_validate_candidate(), _tasks(), test_encoded_alternatives_are_verified_at_real_candidate_boundary(), accounting_tasks(), GivenRateClient, parametrize, test_abc_checks_every_asserted_intermediate_without_rounding_into_final(), test_all_p2_closed_calculations_are_source_derived_and_exhaustively_reconciled() (+29 more)
+### Community 37 - "reconcile_solution"
+Cohesion: 0.15
+Nodes (38): _independently_validate_candidate(), reconcile_solution(), percentage_change_context(), Candidate chart endpoints and the requested one-decimal percentage output., accounting_tasks(), GivenRateClient, parametrize, test_abc_checks_every_asserted_intermediate_without_rounding_into_final() (+30 more)
 
 ### Community 38 - "test_mark_scheme_layout.py"
-Cohesion: 0.17
-Nodes (30): extract_pdf_text(), pdf_font_names(), Path, Extract stable reading-order text without a Poppler CLI dependency., Return the font families actually used by visible text spans., _cleanup_graph_cache(), render_mark_scheme(), _assert_complete_contract_scheme() (+22 more)
+Cohesion: 0.19
+Nodes (28): pdf_font_names(), Path, Return the font families actually used by visible text spans., _cleanup_graph_cache(), render_mark_scheme(), _assert_complete_contract_scheme(), _blueprint_with_section_a_calculation(), _blueprint_with_section_b_topic() (+20 more)
 
-### Community 39 - "QuestionRule"
+### Community 39 - "GeneratedPaper"
 Cohesion: 0.07
-Nodes (58): AppliedMCQSource, GeneratedSection, PaperRule, BaseModel, model_validator, QuestionRule, SectionRule, mcqs() (+50 more)
+Nodes (66): AppliedMCQSource, GeneratedPaper, GeneratedSection, PaperRule, BaseModel, model_validator, QuestionRule, SectionRule (+58 more)
 
 ### Community 40 - "Approved-Improvement Traceability"
 Cohesion: 0.07
 Nodes (27): 31 August qualification corrections, Approved-Improvement Traceability, Current-Paper Gate, Expansion Gate, Foundation Gate, Global Constraints, Paper Creator Excellence Programme Implementation Plan, Phase Completion Gates (+19 more)
 
 ### Community 41 - "test_app_backend.py"
-Cohesion: 0.16
-Nodes (28): _safe_provider_detail(), CaptureFixture, CompletedProcess, Path, run_bridge(), run_bridge_raw(), test_aqa_accounting_all_papers_generate_expected_files(), test_aqa_business_all_papers_generate_expected_files() (+20 more)
+Cohesion: 0.15
+Nodes (29): progress_emitter(), _safe_provider_detail(), CaptureFixture, CompletedProcess, Path, run_bridge(), run_bridge_raw(), test_aqa_accounting_all_papers_generate_expected_files() (+21 more)
 
 ### Community 42 - "test_open_credit_reconciliation.py"
-Cohesion: 0.13
-Nodes (41): alternative_permission(), Any, Only known host-authored permissions can bypass answer-value checking., review_open_credit(), _calculation_item(), test_independent_solver_recomputes_arithmetic_without_the_draft_scheme(), adjudication_response(), cpu_fixture() (+33 more)
+Cohesion: 0.12
+Nodes (44): alternative_permission(), Any, Only known host-authored permissions can bypass answer-value checking., credit_identity(), credit_item_projection(), review_open_credit(), validate_open_credit_review(), _calculation_item() (+36 more)
 
 ### Community 43 - "properties"
-Cohesion: 0.05
-Nodes (43): 1, 2, 4.10, 4.12, 4.2, context-incomplete, core, mixed (+35 more)
+Cohesion: 0.04
+Nodes (48): $ref, title, type, SourcePath, TopicRecord, minLength, title, type (+40 more)
 
 ### Community 44 - "Global Constraints"
 Cohesion: 0.25
 Nodes (7): Global Constraints, Measured Paper Fidelity Implementation Plan, Task 1: Page-role-aware fidelity evidence, Task 2: Shared board answer-page geometry, Task 3: OCR response and blank-page grammar, Task 4: Shared mark-scheme cover calibration, Task 5: Full visual qualification and regression gate
 
 ### Community 45 - "load_syllabus"
-Cohesion: 0.06
-Nodes (80): BuildResult, _build(), _improve(), build_paper1_blueprint(), build_paper2_blueprint(), build_topic_question_bank(), PaperBlueprint, Syllabus (+72 more)
+Cohesion: 0.05
+Nodes (96): build_paper1_blueprint(), build_paper2_blueprint(), build_topic_question_bank(), PaperBlueprint, Syllabus, calibrate_blueprint(), PaperBlueprint, _clean() (+88 more)
 
 ### Community 46 - "test_mlx_setup.py"
-Cohesion: 0.08
-Nodes (45): GenerationCancelled, _available_cache_bytes(), ensure_mlx_ready(), handle_mlx_status(), handle_setup_mlx(), install_mlx_runtime(), is_managed_development_environment(), load_mlx_model() (+37 more)
+Cohesion: 0.09
+Nodes (41): _available_cache_bytes(), ensure_mlx_ready(), handle_mlx_status(), handle_setup_mlx(), install_mlx_runtime(), is_managed_development_environment(), load_mlx_model(), mlx_runtime_available() (+33 more)
 
 ### Community 47 - "Paper Creator Excellence Programme Design"
 Cohesion: 0.08
@@ -548,28 +539,28 @@ Cohesion: 0.06
 Nodes (31): 1. Assessment Contract, 2. Deterministic Assessment Data, 3. Item-Level AI Workflow, 4. Evidence Binding and Factual Quality, 5. Mark-Scheme Quality, 6. Board Layout Adapters, 7. Bounded Rendering, 8. Progress, Cancellation, and Resume (+23 more)
 
 ### Community 54 - "PaperCreatorTests"
-Cohesion: 0.06
-Nodes (26): BackendEvent, benchmarkDone, benchmarkMetric, benchmarkSample, done, error, file, hello (+18 more)
+Cohesion: 0.09
+Nodes (15): CatalogLoader, CatalogLoadError, duplicateBoard, duplicateImplementation, emptyImplementation, .errorDescription, implementationMissingFromCatalog, missingResource (+7 more)
 
 ### Community 55 - "build_item_demand_target"
-Cohesion: 0.14
-Nodes (31): assessment_objectives_for_item(), _attest_validated_document(), audit_form_demand(), build_item_demand_target(), _cognitive_operations(), _collapse_command_distribution(), _command_family(), _difficulty_evidence() (+23 more)
+Cohesion: 0.07
+Nodes (58): audit_candidate_paths(), CandidatePath, enumerate_candidate_paths(), identity(), path_metrics(), PathOption, PathSection, Any (+50 more)
 
-### Community 56 - "generator_registry.py"
-Cohesion: 0.24
+### Community 56 - "test_generator_registry.py"
+Cohesion: 0.22
 Nodes (15): _capability(), generator_capabilities(), generator_subjects(), _paper_qualification(), PaperQualification, Any, _relative_path(), test_backend_bundle_script_is_registry_driven() (+7 more)
 
 ### Community 57 - "properties"
-Cohesion: 0.14
-Nodes (14): type, type, type, type, properties, backend_version, code, job_id (+6 more)
+Cohesion: 0.08
+Nodes (24): type, type, minimum, type, type, null, string, type (+16 more)
 
 ### Community 58 - "_mark_scheme_rows"
 Cohesion: 0.14
 Nodes (27): _brief_source_evidence(), _calculation_answer_lines(), _mark_point_relevance(), _mark_scheme_rows(), _normalise_mark_point(), _one_mark_points(), _paper_one_fifteen_mark_scheme_lines(), _paper_one_five_mark_diagram_lines() (+19 more)
 
-### Community 59 - "pastpapergen/ollama_client.py"
-Cohesion: 0.07
-Nodes (69): QuestionBlueprint, SyllabusTopic, build_question_prompt(), _clean_prompt(), generate_questions_with_ollama(), _has_word_starts(), _matches_expected_question_style(), _merge_part_prompt() (+61 more)
+### Community 59 - "test_ollama_generation.py"
+Cohesion: 0.09
+Nodes (40): generate_questions_with_ollama(), _merge_source_text(), PaperBlueprint, Syllabus, _bar_chart_data(), candidate_stimulus_data(), Expose the same source values and dispatch rules used to draw a figure., _table_rows() (+32 more)
 
 ### Community 60 - "Q: How is the macOS backend bundle kept complete?"
 Cohesion: 0.40
@@ -579,17 +570,17 @@ Nodes (4): Answer, Outcome, Q: How is the macOS backend bundle kept complete?, S
 Cohesion: 0.17
 Nodes (11): Assessment Reliability Core Implementation Plan, File Structure, Global Constraints, Subsequent Phase Plans, Task 1: Typed Item Contracts, Task 2: Role-Aware Numeric and Evidence Validation, Task 3: Item-Scoped Draft, Review, and Repair, Task 4: Atomic Checkpoints and Resume (+3 more)
 
-### Community 62 - "paths.py"
-Cohesion: 0.18
-Nodes (13): board_profile(), BoardProfile, _normalise_identifier(), build_parser(), _layout_board(), main(), MigrationIssue, MigrationReport (+5 more)
+### Community 62 - "validate_generator_migration.py"
+Cohesion: 0.24
+Nodes (10): build_parser(), _layout_board(), main(), MigrationIssue, MigrationReport, MigrationValidator, Any, ArgumentParser (+2 more)
 
-### Community 63 - "test_aqa_economics.py"
+### Community 63 - "exam_blueprints.py"
 Cohesion: 0.09
-Nodes (32): Return the immutable rules for one printed option (one-based)., resolve_question_rules(), generate_package(), main(), Path, build_paper(), Syllabus, _section_instructions() (+24 more)
+Nodes (47): _demand_band(), _objective_allocation(), _prompt_uses_command_word(), Return the immutable rules for one printed option (one-based)., resolve_question_rules(), validate_generated_paper(), validate_rule(), generate_package() (+39 more)
 
 ### Community 64 - "document_dsl/__init__.py"
-Cohesion: 0.06
-Nodes (91): AnswerSpace, BaseComponent, BlankPage, Component, ContinuationPage, Cover, Diagram, Graph (+83 more)
+Cohesion: 0.05
+Nodes (93): AnswerSpace, BaseComponent, BlankPage, Component, ContinuationPage, Cover, Diagram, Graph (+85 more)
 
 ### Community 65 - "aqa_section_intro"
 Cohesion: 0.10
@@ -605,7 +596,7 @@ Nodes (11): Architecture, Canonical registry, Extension contract, Failure contai
 
 ### Community 68 - "generator/tests/test_assessment_contracts.py"
 Cohesion: 0.10
-Nodes (44): _question_solver_item(), paper(), parametrize, test_actual_level_tariffs_have_distinct_usable_band_descriptors(), test_all_seeded_styles_have_contract_credit_not_topic_note_filler(), test_complete_declared_numeric_operations_have_literal_answers(), test_content_driven_scheme_policy_rejects_missing_printed_assessment(), test_contestability_credit_is_specific_and_has_one_consistent_budget() (+36 more)
+Nodes (45): conform_generated_documents(), _question_solver_item(), paper(), parametrize, test_actual_level_tariffs_have_distinct_usable_band_descriptors(), test_all_seeded_styles_have_contract_credit_not_topic_note_filler(), test_complete_declared_numeric_operations_have_literal_answers(), test_content_driven_scheme_policy_rejects_missing_printed_assessment() (+37 more)
 
 ### Community 69 - "ShareholderCase"
 Cohesion: 0.09
@@ -616,8 +607,8 @@ Cohesion: 0.18
 Nodes (11): Glossy Black Fountain Pen App Icon Master, Paper Creator App Icon AppIcon-128x128@1x, Paper Creator App Icon AppIcon-128x128@2x, Paper Creator App Icon AppIcon-16x16@1x, Paper Creator App Icon AppIcon-16x16@2x, Paper Creator App Icon AppIcon-256x256@1x, Paper Creator App Icon AppIcon-256x256@2x, Paper Creator App Icon AppIcon-32x32@1x (+3 more)
 
 ### Community 71 - "open_credit.py"
-Cohesion: 0.12
-Nodes (33): cpu_credit_allocations(), cpu_credit_contract(), _cpu_quote_supports_criterion(), credit_identity(), credit_item_projection(), CreditJudgement, CriterionDecision, _has_unambiguous_instruction_antecedent() (+25 more)
+Cohesion: 0.13
+Nodes (30): cpu_credit_allocations(), cpu_credit_contract(), _cpu_quote_supports_criterion(), CreditJudgement, CriterionDecision, _has_unambiguous_instruction_antecedent(), _normalise_cpu_clauses(), _passive_relation_patterns() (+22 more)
 
 ### Community 72 - "enum"
 Cohesion: 0.18
@@ -628,20 +619,20 @@ Cohesion: 0.14
 Nodes (13): AQA Computer Science examiner-feedback contract, Assessment quality and originality, Difficulty claims, Human release review, Independent solution and response-band qualification, Item transactions and two-pass generation, Mark-scheme quality, Measured visual qualification (+5 more)
 
 ### Community 74 - "IndependentSolver"
-Cohesion: 0.20
-Nodes (28): IndependentSolver, Solve an item in a context that deliberately excludes its draft scheme., NoModelArithmetic, parametrize, test_closed_accounting_solutions_ignore_the_draft_answer_key(), closed_item(), parametrize, ResponseClient (+20 more)
+Cohesion: 0.19
+Nodes (29): IndependentSolver, Solve an item in a context that deliberately excludes its draft scheme., NoModelArithmetic, parametrize, test_closed_accounting_solutions_ignore_the_draft_answer_key(), closed_item(), parametrize, ResponseClient (+21 more)
 
 ### Community 75 - "macOS interaction and HIG compliance"
 Cohesion: 0.22
 Nodes (8): Accessibility verification, Commands and state, File workflow, Geometry and visual language, Information architecture, macOS interaction and HIG compliance, Onboarding and help, Settings
 
-### Community 76 - "Rect"
+### Community 76 - "layout_master.py"
 Cohesion: 0.10
-Nodes (35): conform_generated_documents(), _edexcel_printed_credit(), Path, _clamp_fitz_rect(), conform_pdf_page_boxes(), conform_pdf_to_box_template(), draw_text_slot(), _fitz_rect_close() (+27 more)
+Nodes (31): _edexcel_printed_credit(), Path, _clamp_fitz_rect(), conform_pdf_page_boxes(), conform_pdf_to_box_template(), draw_text_slot(), _fitz_rect_close(), LayoutConformanceError (+23 more)
 
 ### Community 77 - "test_pdf_validation.py"
-Cohesion: 0.17
-Nodes (27): extract_pdf_evidence(), GlyphMetric, Counter, Path, Fail closed on malformed, substituted, annotated, or low-resolution PDFs., A compact, serialisable sample of one rendered PDF glyph., Extract print and accessibility evidence without retaining source prose. Glyph…, validate_pdf_for_release() (+19 more)
+Cohesion: 0.25
+Nodes (20): extract_pdf_evidence(), GlyphMetric, A compact, serialisable sample of one rendered PDF glyph., Extract print and accessibility evidence without retaining source prose. Glyph…, Canvas, Path, _release_canvas(), test_duplicate_text_at_the_same_position_is_rejected() (+12 more)
 
 ### Community 78 - "Q: how can we make even more improvements to get the highest similarity in terms of structure and layout and quality of questions etc. and maybe all of the files in the project can be better organised. and the UI can be made to be much better and more geometrically apple-like by strictly following every single rule they outline in their HIG"
 Cohesion: 0.40
@@ -668,8 +659,8 @@ Cohesion: 0.09
 Nodes (22): advertised, app_board, app_subject, backend_subject, blueprint_version, board, board_profile, content_mode (+14 more)
 
 ### Community 84 - "backend-protocol.schema.json"
-Cohesion: 0.29
-Nodes (6): additionalProperties, allOf, $id, $schema, title, type
+Cohesion: 0.15
+Nodes (12): event_id, job_id, protocol, timestamp, type, additionalProperties, allOf, $id (+4 more)
 
 ### Community 85 - "properties"
 Cohesion: 0.12
@@ -677,7 +668,7 @@ Nodes (17): type, pattern, type, minLength, type, minLength, type, minLength (+9
 
 ### Community 86 - "aqabizgen/render_pdf.py"
 Cohesion: 0.14
-Nodes (45): _artifacts(), _additional_answer_page(), _ao_summary(), _assessment_objectives_page(), _break_even_diagram(), _calculation_marking_page(), _chart(), _choice_prompts() (+37 more)
+Nodes (46): SelectedResponseContract, _artifacts(), _additional_answer_page(), _ao_summary(), _assessment_objectives_page(), _break_even_diagram(), _calculation_marking_page(), _chart() (+38 more)
 
 ### Community 87 - "generator_working_directory"
 Cohesion: 0.40
@@ -703,13 +694,13 @@ Nodes (4): SecretStore, Any, String, Security
 Cohesion: 0.22
 Nodes (4): ObjectivePolicy, Any, Reject unsupported labels in new or persisted qualified contracts., CS tasks are not classified from their tariff or AO3 label alone.
 
-### Community 95 - "configuredgen/generator.py"
-Cohesion: 0.17
-Nodes (25): generate_package(), Path, _answer_form(), build_paper(), _mathematics_question(), _prompt(), Random, Topic (+17 more)
+### Community 95 - ".applyConfiguration"
+Cohesion: 0.11
+Nodes (14): ExamCatalog, .readyBoards, GenerationJobState, .systemImage, .title, JobHistoryView, .body, .selectedRecord (+6 more)
 
-### Community 97 - "pastpapergen/cli.py"
+### Community 97 - "pastpapergen/ollama_client.py"
 Cohesion: 0.08
-Nodes (30): type, path, validate_assessment_contract(), _artifacts(), _build(), default_output_dir(), generate_package(), _improve() (+22 more)
+Nodes (48): validate_assessment_contract(), CandidateSectionRule, ChoiceSelection, MultipleChoiceOption, PaperBlueprint, PaperConfig, BaseModel, QuestionBlueprint (+40 more)
 
 ### Community 99 - "properties"
 Cohesion: 0.12
@@ -723,25 +714,25 @@ Nodes (5): MPLCONFIGDIR, PYINSTALLER_CONFIG_DIR, PYTHONPATH, build_backend.sh sc
 Cohesion: 0.23
 Nodes (13): Path, test_all_current_families_pass_declarative_migration_validation(), test_broken_fixture_reports_every_onboarding_surface(), test_scaffold_emits_complete_unadvertised_family_and_refuses_overwrite(), build_parser(), _cli_template(), main(), ArgumentParser (+5 more)
 
-### Community 105 - "generate_package"
-Cohesion: 0.11
-Nodes (26): default_output_dir(), generate_package(), main(), Path, cache_notes(), discover_note_pdfs(), _extract_text(), note_context_for_topic() (+18 more)
+### Community 105 - "cspapergen/cli.py"
+Cohesion: 0.07
+Nodes (49): BuildResult, extract_pdf_text(), Extract stable reading-order text without a Poppler CLI dependency., _build(), default_output_dir(), generate_package(), _improve(), main() (+41 more)
 
 ### Community 106 - "test_science_subjects.py"
 Cohesion: 0.13
-Nodes (19): ChemistryPlugin, equation_is_balanced(), _equation_side(), Formula, _multiplier(), _parse_group(), Any, Counter (+11 more)
+Nodes (18): ChemistryPlugin, equation_is_balanced(), _equation_side(), Formula, _multiplier(), _parse_group(), Any, Counter (+10 more)
 
-### Community 110 - "build_paper"
-Cohesion: 0.08
-Nodes (41): generate_package(), Path, _analysis_prompt(), build_paper(), _levels(), _programming_prompt(), _programming_scheme(), Random (+33 more)
+### Community 110 - "test_computer_science_objectives.py"
+Cohesion: 0.06
+Nodes (71): SumTrace, generate_package(), Path, load_rule(), _analysis_prompt(), build_paper(), _levels(), _programming_prompt() (+63 more)
 
 ### Community 115 - "required"
 Cohesion: 0.10
 Nodes (22): differential_item_functioning, discrimination, facility, item_id, median_time_seconds, responses, minimum, type (+14 more)
 
 ### Community 116 - "properties"
-Cohesion: 0.04
-Nodes (52): anyOf, title, minLength, title, type, SourcePath, const, title (+44 more)
+Cohesion: 0.05
+Nodes (39): high, low, standard, anyOf, title, minLength, title, type (+31 more)
 
 ### Community 117 - "ExamPageProfile"
 Cohesion: 0.20
@@ -761,23 +752,23 @@ Nodes (15): maximum_acceptable_facility, maximum_dif_gap, minimum_acceptable_fac
 
 ### Community 153 - "ocrcsgen/render_pdf.py"
 Cohesion: 0.08
-Nodes (41): ExamPage, Flowable, A full-page shell that can also live inside a Platypus story., AnswerLineFlowable, AQACompactAnswerLines, OCRComputerScienceAnswerLines, Flowable, Return a Table subclass whose raw string cells use the controlled font.… (+33 more)
+Nodes (40): ExamPage, Flowable, A full-page shell that can also live inside a Platypus story., AnswerLineFlowable, AQACompactAnswerLines, OCRComputerScienceAnswerLines, Flowable, Return a Table subclass whose raw string cells use the controlled font.… (+32 more)
 
 ### Community 154 - "DocumentPreviewView"
 Cohesion: 0.06
 Nodes (33): AppKit, Combine, DocumentPreviewView, .body, .exportAlertBinding, .provenanceRecord, .selectedBinding, .selectedFile (+25 more)
 
 ### Community 155 - "GeneratedQuestion"
-Cohesion: 0.10
-Nodes (72): _candidate_question(), _clean_generated_prompt(), GenerationPolicy, _normalise_calculation_guidance(), _normalise_level_allocations(), _normalise_multiple_choice_answer(), _question_uses_option_source(), Make the selected answer explicit when a model uses only a shorthand label. (+64 more)
+Cohesion: 0.07
+Nodes (112): AssessmentLLMClient, _batches_for_client(), _bounded_text(), _candidate_question(), _canonical_objective_allocation(), _clean_generated_prompt(), _contains_command_word(), _demand_item() (+104 more)
 
-### Community 156 - "test_computer_science_objectives.py"
-Cohesion: 0.08
-Nodes (53): numeric_tokens(), Extract quantities exactly enough to catch broken data/source rewrites., aqa_cs_difficulty_candidate(), aqa_cs_solver_item(), authoring_route(), Any, question_content_sha256(), AQA CS source-coupled review identity, shared by authoring/resume/export. This… (+45 more)
+### Community 156 - "computer_science_authoring.py"
+Cohesion: 0.16
+Nodes (23): numeric_tokens(), Extract quantities exactly enough to catch broken data/source rewrites., aqa_cs_difficulty_candidate(), aqa_cs_solver_item(), authoring_route(), Any, question_content_sha256(), AQA CS source-coupled review identity, shared by authoring/resume/export. This… (+15 more)
 
-### Community 157 - "Canvas"
-Cohesion: 0.12
-Nodes (44): _answer_line_count(), _count_pages(), _draw_answer_lines(), _draw_answer_lines_until(), _draw_answer_page_header(), _draw_calculate_part_with_working_lines(), _draw_centred_instruction_line(), _draw_compact_part() (+36 more)
+### Community 157 - "PaperBlueprint"
+Cohesion: 0.18
+Nodes (23): _answer_line_count(), _count_pages(), _draw_answer_lines_until(), _draw_answer_page_header(), _draw_centred_instruction_line(), _draw_continuation_lines(), _draw_paper_3_choice_header(), _draw_paper_3_pages() (+15 more)
 
 ### Community 158 - "properties"
 Cohesion: 0.11
@@ -796,16 +787,16 @@ Cohesion: 0.18
 Nodes (11): collected_at, collector_role, consent_basis, dataset_id, row_level_data, source, specification_version, provenance (+3 more)
 
 ### Community 163 - "qualification_levels"
-Cohesion: 0.29
-Nodes (7): empirically_calibrated, engineering_validated, visually_calibrated, qualification_levels, additionalProperties, required, type
+Cohesion: 0.14
+Nodes (14): empirically_calibrated, engineering_validated, visually_calibrated, type, type, empirically_calibrated, engineering_validated, qualification_levels (+6 more)
 
 ### Community 164 - "ApplicationCoordinator"
-Cohesion: 0.04
-Nodes (43): AnyCancellable, DateFormatter, .body, GeneratedFilesTable, .body, GeneratedFile, .exists, .paperDescription (+35 more)
+Cohesion: 0.03
+Nodes (65): AnyCancellable, DateFormatter, .body, AppDefaults, AppLinks, AppStorageKey, SecretAccount, Bool (+57 more)
 
-### Community 165 - "SettingsPane.swift"
+### Community 165 - "SwiftUI"
 Cohesion: 0.10
-Nodes (19): App, Commands, AppCommands, PaperCreator, .body, PrivacySettingsTab, .body, SettingsPane (+11 more)
+Nodes (20): App, Commands, AppCommands, PaperCreator, .body, PrivacySettingsTab, .body, SettingsPane (+12 more)
 
 ### Community 166 - "required"
 Cohesion: 0.17
@@ -815,9 +806,9 @@ Nodes (12): difficulty_independently_verified, evidence_fingerprint, family, for
 Cohesion: 0.12
 Nodes (16): minLength, type, minLength, type, minLength, type, blueprint, contract (+8 more)
 
-### Community 168 - "exam_blueprints.py"
-Cohesion: 0.22
-Nodes (22): _demand_band(), _hydrate_assessment_metadata(), _objective_allocation(), _prompt_uses_command_word(), _structured_scheme(), validate_generated_paper(), validate_rule(), test_all_paper_rules_have_exact_candidate_marks_and_syllabus_scope() (+14 more)
+### Community 168 - "candidate_content_identity"
+Cohesion: 0.17
+Nodes (24): _export_difficulty_candidate_projection(), candidate_content_identity(), candidate_review_content(), difficulty_candidate_projection(), DifficultyCandidateProjection, edexcel_difficulty_candidate_projection(), ensure_difficulty_candidate_projection(), _mapping() (+16 more)
 
 ### Community 169 - "required"
 Cohesion: 0.15
@@ -831,17 +822,17 @@ Nodes (11): ComputerSciencePlugin, _evaluate_boolean(), normalise_pseudocode(), 
 Cohesion: 0.25
 Nodes (8): candidates, groups, response_rows, items, sample, additionalProperties, required, type
 
-### Community 172 - "ReferenceDemandDocument"
-Cohesion: 0.15
-Nodes (21): audit_candidate_paths(), BaseModel, model_validator, ReferenceDemandDocument, document(), parametrize, Only membership in a validated schema-3 document may qualify H3 evidence., `model_copy(update=...)` does not re-run schema-three evidence validation. (+13 more)
+### Community 172 - "inspect_release_compliance"
+Cohesion: 0.27
+Nodes (14): Path, test_release_compliance_detects_a_tracked_secret_signature(), test_release_compliance_passes_for_the_repository(), test_release_compliance_rejects_unbounded_runtime_dependencies(), _check_dependencies(), _check_entitlements(), _check_font_licences(), _check_privacy_manifest() (+6 more)
 
 ### Community 173 - "properties"
 Cohesion: 0.06
 Nodes (36): aqa-topic-operation-records-v2, edition-leaf-path-features-v2, full-paper, question-bank, unqualified-reference-v1, enum, minLength, type (+28 more)
 
-### Community 174 - "render_source_booklet"
-Cohesion: 0.31
-Nodes (9): _draw_crop_marks(), _draw_source_content_page(), _extract_source_questions(), _pad_pdf_pages(), Syllabus, render_source_booklet(), _source_reading_prompt(), _source_sections() (+1 more)
+### Community 174 - "pastpapergen/cli.py"
+Cohesion: 0.15
+Nodes (23): _artifacts(), _build(), default_output_dir(), generate_package(), _improve(), _load_rule(), main(), _normalise_paper_id() (+15 more)
 
 ### Community 175 - "required"
 Cohesion: 0.22
@@ -868,8 +859,8 @@ Cohesion: 0.29
 Nodes (7): digest, name, provider, additionalProperties, required, type, model
 
 ### Community 181 - "profile_for"
-Cohesion: 0.27
-Nodes (17): profile_for(), items(), paths_module(), parametrize, test_complete_pairs_produce_six_eighty_mark_paths_not_cross_pairs(), test_correlated_source_vectors_cannot_pass_by_coordinatewise_bounds(), test_edexcel_leaf_only_marks_and_choice_groups(), test_explicit_selected_operation_is_not_relabelled_retrieval_in_audit() (+9 more)
+Cohesion: 0.21
+Nodes (21): _reference_demand_audit(), load_reference_demand_document(), profile_for(), Path, items(), paths_module(), parametrize, test_bank_manifest_keeps_insufficiency_separate_from_printed_review() (+13 more)
 
 ### Community 182 - "additionalProperties"
 Cohesion: 0.13
@@ -880,24 +871,24 @@ Cohesion: 0.17
 Nodes (11): additionalProperties, $defs, safePath, $id, pattern, minLength, not, type (+3 more)
 
 ### Community 184 - "RecentDocumentStore"
-Cohesion: 0.04
-Nodes (51): Codable, FileManager, GenerationJobState, LocalizedError, AppClock, GenerationCoordinator, Double, GenerationJobRecord (+43 more)
+Cohesion: 0.06
+Nodes (37): Codable, Equatable, FileManager, GenerationJobState, LocalizedError, GenerationConfiguration, GenerationJobRecord, .missingArtifactCount (+29 more)
 
 ### Community 185 - "tool_versions"
 Cohesion: 0.50
 Nodes (4): type, tool_versions, additionalProperties, type
 
 ### Community 186 - "test_ocr_economics.py"
-Cohesion: 0.09
-Nodes (43): percentage_change_context(), Candidate chart endpoints and the requested one-decimal percentage output., generate_package(), Path, build_paper(), _evaluation_scheme(), _extract(), _extract_number() (+35 more)
+Cohesion: 0.10
+Nodes (40): generate_package(), Path, build_paper(), _evaluation_scheme(), _extract(), _extract_number(), _instructions(), _mcq() (+32 more)
 
 ### Community 187 - "String"
 Cohesion: 0.05
-Nodes (68): Decodable, Equatable, AuthoringProvenanceKind, aiAuthoredOnly, mixed, reviewedFixedOnly, unknown, unreviewed (+60 more)
+Nodes (66): Decodable, Hashable, AssessmentKind, fullPaper, questionBank, .title, AuthoringProvenanceKind, aiAuthoredOnly (+58 more)
 
 ### Community 188 - "test_aqa_accounting.py"
-Cohesion: 0.11
-Nodes (27): build_paper(), _extract(), _number(), Random, Syllabus, _values(), Independent AQA 7127 practice-paper generator., parametrize (+19 more)
+Cohesion: 0.10
+Nodes (39): generate_package(), Path, build_paper(), _extract(), _number(), Random, Syllabus, _values() (+31 more)
 
 ### Community 189 - "enum"
 Cohesion: 0.22
@@ -908,8 +899,8 @@ Cohesion: 0.22
 Nodes (9): detail, qualification, title, required, checks, id, items, type (+1 more)
 
 ### Community 191 - "reference_evidence.py"
-Cohesion: 0.09
-Nodes (32): CandidatePath, CandidateTopology, enumerate_candidate_paths(), identity(), path_metrics(), PathOption, PathSection, Any (+24 more)
+Cohesion: 0.18
+Nodes (15): CandidateTopology, model_validator, Observations, BaseModel, model_validator, QualitativeExaminerEvidence, QuarantinedForm, Strict H3 source evidence boundaries; aggregate-v2 is not path qualification. (+7 more)
 
 ### Community 192 - "app_board"
 Cohesion: 0.67
@@ -923,33 +914,33 @@ Nodes (3): minLength, type, app_subject
 Cohesion: 0.26
 Nodes (16): build_parser(), handle_bundle_check(), main(), ArgumentParser, Namespace, Fail fast when a packaged backend is missing a dynamic generator., emit(), emit_progress() (+8 more)
 
-### Community 195 - "OllamaModelGuideDocument"
-Cohesion: 0.16
-Nodes (12): OllamaModelGuide, OllamaModelGuideDocument, OllamaModelGuideError, .errorDescription, invalidDefault, missingResource, unsupportedSchema, Bundle (+4 more)
+### Community 195 - "test_finite_response_slots.py"
+Cohesion: 0.36
+Nodes (10): parametrize, solve(), test_assembly_trace_checks_every_register_series_and_stored_value(), test_finite_outputs_are_keyed_and_reject_a_changed_value(), test_full_truth_table_requires_every_input_combination(), test_paper1_finite_outputs_are_checked_exhaustively(), test_paper1_matrix_keys_do_not_reveal_which_cells_contain_one(), test_rle_encoding_checks_both_ordered_sequences_without_fixing_pair_notation() (+2 more)
 
 ### Community 196 - "IncomeStatementCase"
-Cohesion: 0.17
-Nodes (4): IncomeStatementCase, Decimal, Complete, internally consistent source for the Paper 1 company statement., _round_pounds()
+Cohesion: 0.10
+Nodes (8): _gbp(), IncomeStatementCase, Decimal, Single source of truth for the Paper 1 sales-ledger case. The question paper,…, Complete, internally consistent source for the Paper 1 company statement., Return one exact, independently checkable award point per mark., _round_pounds(), SalesLedgerCase
 
 ### Community 197 - "validate_mark_scheme_item"
 Cohesion: 0.25
 Nodes (17): _contains_any(), MarkSchemeQuality, _normalise(), Any, validate_mark_scheme_item(), _item(), test_accounting_follow_through_metadata_counts_as_method_guidance(), test_calculation_requires_method_or_working() (+9 more)
 
 ### Community 199 - "test_repository_hygiene.py"
-Cohesion: 0.28
-Nodes (10): test_committed_inventory_matches_the_current_repository(), test_every_tracked_file_has_a_durable_classification(), test_generated_and_binary_outputs_are_rejected(), test_maintained_visual_assets_are_classified_without_allowing_arbitrary_pngs(), test_root_lint_configuration_is_release_configuration(), Classification, classify_path(), inspect_repository() (+2 more)
+Cohesion: 0.23
+Nodes (12): type, path, test_committed_inventory_matches_the_current_repository(), test_every_tracked_file_has_a_durable_classification(), test_generated_and_binary_outputs_are_rejected(), test_maintained_visual_assets_are_classified_without_allowing_arbitrary_pngs(), test_root_lint_configuration_is_release_configuration(), Classification (+4 more)
 
 ### Community 200 - "test_accounting_objectives.py"
-Cohesion: 0.22
-Nodes (19): load_rule(), paper_for(), parametrize, test_accounting_ao3_short_analysis_does_not_imply_judgement(), test_accounting_does_not_offer_unallocated_objectives_in_guidance(), test_accounting_rejects_invalid_ao_even_if_marks_still_add_up(), test_accounting_rule_cannot_fall_back_to_generic_allocation(), test_accounting_uses_official_item_budgets_and_component_totals() (+11 more)
+Cohesion: 0.24
+Nodes (17): load_rule(), paper_for(), parametrize, test_accounting_ao3_short_analysis_does_not_imply_judgement(), test_accounting_does_not_offer_unallocated_objectives_in_guidance(), test_accounting_rejects_invalid_ao_even_if_marks_still_add_up(), test_accounting_rule_cannot_fall_back_to_generic_allocation(), test_accounting_uses_official_item_budgets_and_component_totals() (+9 more)
 
 ### Community 201 - "required"
 Cohesion: 0.13
-Nodes (23): assessment_kind, cognitive_operation_distribution, command_family_distribution, command_word_distribution, comparison_basis, demand_distribution, evidence_gaps, evidence_policy_id (+15 more)
+Nodes (24): assessment_kind, cognitive_operation_distribution, command_family_distribution, command_word_distribution, comparison_basis, demand_distribution, evidence_gaps, evidence_policy_id (+16 more)
 
-### Community 202 - "discover_subject_plugin"
-Cohesion: 0.24
-Nodes (13): board_profile_ids(), discover_subject_plugin(), subject_plugin_ids(), parametrize, test_authorised_extract_with_option_route_and_level_policy_passes(), test_essay_subjects_reject_unprovenanced_evidence(), test_history_rejects_an_inverted_chronology(), test_later_wave_subject_plugins_are_discoverable() (+5 more)
+### Community 202 - "subject_plugins.py"
+Cohesion: 0.19
+Nodes (18): board_profile(), board_profile_ids(), BoardProfile, _normalise_identifier(), discover_subject_plugin(), _normalise_identifier(), register_subject_plugin(), subject_plugin_ids() (+10 more)
 
 ### Community 203 - "ocr_computer_science_calibration.py"
 Cohesion: 0.34
@@ -964,28 +955,28 @@ Cohesion: 0.15
 Nodes (12): 1 September H1 task/source/demand qualification, 30 August Paper 2 mark-scheme regression check, 30 August shared-renderer and economics-scheme qualification, 31 August continued qualification, Accounting Paper 1, Automated evidence, Computer Science Paper 2, Current-family visual qualification — 26 August 2026 (+4 more)
 
 ### Community 206 - "_written"
-Cohesion: 0.32
-Nodes (8): _nearest_hundred(), _levels(), Topic, _written(), test_company_and_partnership_schemes_expose_complete_working_data(), test_locked_calculation_schemes_are_exactly_derived_from_the_case_data(), test_locked_calculation_schemes_include_final_answers_and_all_case_numbers(), test_seeded_partnership_allocations_balance_without_rounding_losses()
+Cohesion: 0.18
+Nodes (14): _nearest_hundred(), _gbp(), _gbp_decimal(), _levels(), _management_calculation(), Topic, Build a complete, internally solved data contract for each numeric task., Format whole-pound values in the style used by AQA accounting papers. (+6 more)
 
-### Community 207 - "SalesLedgerCase"
-Cohesion: 0.24
-Nodes (4): _gbp(), Single source of truth for the Paper 1 sales-ledger case. The question paper,…, Return one exact, independently checkable award point per mark., SalesLedgerCase
+### Community 207 - "BiologyPlugin"
+Cohesion: 0.43
+Nodes (3): BiologyPlugin, Any, test_biology_requires_practical_and_data_provenance_when_declared()
 
 ### Community 208 - "BackendClient"
-Cohesion: 0.08
-Nodes (25): BenchmarkSample, .networkLatencyDisplayMS, .thermalSpeedLimitDisplayPercent, BackendClient, BackendClientError, backendMissing, .errorDescription, pythonMissing (+17 more)
+Cohesion: 0.17
+Nodes (14): BackendClient, BackendClientError, backendMissing, .errorDescription, pythonMissing, pythonVenvUnreadable, BackendFile, LaunchConfiguration (+6 more)
 
-### Community 209 - "PathSection"
-Cohesion: 0.09
-Nodes (22): answer_options, candidate_marks, options, exclusiveMinimum, title, type, exclusiveMinimum, title (+14 more)
+### Community 209 - "id"
+Cohesion: 0.06
+Nodes (31): answer_options, candidate_marks, options, exclusiveMinimum, title, type, exclusiveMinimum, title (+23 more)
 
 ### Community 210 - "pastpapergen/render_pdf.py"
-Cohesion: 0.08
-Nodes (48): BoardLayout, GraphParams, _axis_labels_for_draw_prompt(), _bar_label(), _draw_axis_arrow(), _draw_bar_chart(), _draw_blank_answer_axes(), _draw_case_source_figure() (+40 more)
+Cohesion: 0.09
+Nodes (44): BoardLayout, _axis_labels_for_draw_prompt(), _bar_label(), _draw_case_source_figure(), _draw_mark_scheme_end_page(), _draw_ms_blank_page(), _draw_ms_header_box(), _draw_ms_row() (+36 more)
 
 ### Community 211 - "_draw_cover"
-Cohesion: 0.18
-Nodes (16): economics_exam_schedule(), ExamSchedule, formatted_economics_exam_date(), date, _draw_boxes(), _draw_cover(), _draw_fake_barcode(), _draw_front_section() (+8 more)
+Cohesion: 0.16
+Nodes (18): economics_exam_schedule(), ExamSchedule, formatted_economics_exam_date(), date, _draw_boxes(), _draw_cover(), _draw_crop_marks(), _draw_fake_barcode() (+10 more)
 
 ### Community 212 - "Reference-Demand Calibration Design"
 Cohesion: 0.15
@@ -1013,11 +1004,11 @@ Nodes (14): _band(), build_generated_profile(), build_reference_profile(), build
 
 ### Community 223 - "paths"
 Cohesion: 0.07
-Nodes (27): items, additionalProperties, allOf, items, minItems, $ref, title, type (+19 more)
+Nodes (27): items, items, minItems, title, type, items, minItems, minLength (+19 more)
 
 ### Community 224 - "reference-demand-profile.schema.json"
-Cohesion: 0.08
-Nodes (24): derived_aggregate_only, profiles, purpose, retains_source_text, additionalProperties, const, $id, schema_version (+16 more)
+Cohesion: 0.06
+Nodes (30): derived_aggregate_only, profiles, purpose, retains_source_text, additionalProperties, const, $id, additionalProperties (+22 more)
 
 ### Community 225 - "Reference-Demand Calibration Implementation Plan"
 Cohesion: 0.22
@@ -1028,12 +1019,12 @@ Cohesion: 0.09
 Nodes (23): maximum, minimum, $defs, distribution, Observations, QuarantinedForm, SourceItem, tolerance (+15 more)
 
 ### Community 227 - "independent_solver.py"
-Cohesion: 0.09
-Nodes (40): EvidenceRecord, content_similarity(), Weighted token-shingle Jaccard similarity in the closed interval 0...1., collect_credit_rules(), credit_rule(), CreditRule, declared_rule_metadata_present(), BaseModel (+32 more)
+Cohesion: 0.10
+Nodes (35): collect_credit_rules(), credit_rule(), CreditRule, declared_rule_metadata_present(), BaseModel, Origin-preserving open credit rules; never promote model advice to authority., Preserve numerical caps/dependencies, not just their descriptive prose.…, _as_mapping() (+27 more)
 
 ### Community 228 - "test_sql_answer_verification.py"
-Cohesion: 0.10
-Nodes (52): Render only public schema facts; no worked query is present., Validate the answer and every model-presented full statement separately., render_sql_schema(), sql_source_intent_sha256(), validate_sql_response(), model_validator, _difficulty_solution(), _part_solver_projection() (+44 more)
+Cohesion: 0.12
+Nodes (43): Validate the answer and every model-presented full statement separately., sql_source_intent_sha256(), validate_sql_response(), _difficulty_solution(), _part_solver_projection(), EvidenceRecord, Keep independent work for demand review, never its private CPU contract., candidate_stimulus_data() (+35 more)
 
 ### Community 229 - "Architecture"
 Cohesion: 0.18
@@ -1055,13 +1046,13 @@ Nodes (3): PhysicsPlugin, Any, test_physics_requires_uncertainty_for_uncertainty
 Cohesion: 0.13
 Nodes (14): Continued qualification — 31 August, Difficulty Calibration v2 Implementation Plan, Global Constraints, Task 10: Supported-decision command calibration, Task 11: Visual review correction, Task 1: Reference profile schema v2, Task 2: Observable item demand contracts, Task 3: Solver-grounded difficulty judge (+6 more)
 
-### Community 234 - "cspapergen/generator.py"
-Cohesion: 0.09
-Nodes (40): SQLSourceContract, derive_task_semantics(), Any, BaseModel, Strict, deterministic task contracts for AQA CS topic-reference evidence., The serialised summary is valid only when it agrees with the question., Derive the comparison form from printed question data, never its hint., ReferenceTaskContract (+32 more)
+### Community 234 - "cspapergen/ollama_client.py"
+Cohesion: 0.07
+Nodes (52): Render only public schema facts; no worked query is present., Public solver projection derived from the candidate's one declaration., render_sql_schema(), selected_sql_answer_contract(), SQLSourceContract, derive_task_semantics(), Any, BaseModel (+44 more)
 
 ### Community 235 - "BenchmarkChart"
-Cohesion: 0.07
-Nodes (27): CGFloat, KeyPath, Bool, WorkspaceLayoutMode, compact, expanded, .showsInspector, .showsSidebar (+19 more)
+Cohesion: 0.05
+Nodes (40): CGFloat, Charts, KeyPath, Bool, WorkspaceLayoutMode, compact, expanded, .showsInspector (+32 more)
 
 ### Community 236 - "31 August continued qualification findings"
 Cohesion: 0.13
@@ -1069,47 +1060,47 @@ Nodes (14): 31 August continued qualification findings, Accounting objective and
 
 ### Community 237 - "test_task_source_demand.py"
 Cohesion: 0.09
-Nodes (47): _better_than_target(), _decimal(), _display_decimal(), _money_choice(), _numeric_choice(), _percent_choice(), _plain_decimal(), Any (+39 more)
+Nodes (46): _better_than_target(), _decimal(), _display_decimal(), _money_choice(), _numeric_choice(), _percent_choice(), _plain_decimal(), Any (+38 more)
 
 ### Community 238 - "accounting.py"
 Cohesion: 0.31
 Nodes (20): _accounting_endings(), accounting_outputs(), _appropriation(), _assets(), _exact(), _income(), _ledger(), _management() (+12 more)
 
 ### Community 239 - "SubjectValidation"
-Cohesion: 0.12
-Nodes (14): ContractSubjectPlugin, _normalise_identifier(), Any, Protocol, Safe baseline plugin for families with validation in their own contracts., register_subject_plugin(), SubjectPlugin, SubjectValidation (+6 more)
+Cohesion: 0.16
+Nodes (9): ContractSubjectPlugin, Any, Protocol, Safe baseline plugin for families with validation in their own contracts., SubjectPlugin, SubjectValidation, EssaySubjectPlugin, Any (+1 more)
 
-### Community 240 - "reconcile_solution"
+### Community 240 - "test_solver_source_adapter.py"
 Cohesion: 0.10
-Nodes (44): CanonicalSolution, _numbers(), reconcile_solution(), require_solution_matches_scheme(), _part_solver_item(), test_solver_view_includes_candidate_visible_stimulus_and_hides_answers(), classification(), parametrize (+36 more)
+Nodes (40): EvidenceRecord, CanonicalSolution, require_solution_matches_scheme(), _assert_public_stimulus(), EvidenceRecord, _question_solver_projection(), Run an independent demand-only gate over every rendered question item., review_blueprint_difficulty() (+32 more)
 
 ### Community 241 - "AIProvider"
 Cohesion: 0.04
-Nodes (43): CaseIterable, Foundation, AIProvider, anthropic, apple, .backendID, .id, ollama (+35 more)
+Nodes (54): CaseIterable, Foundation, AIProvider, anthropic, apple, .backendID, .id, ollama (+46 more)
 
 ### Community 242 - "required"
 Cohesion: 0.07
 Nodes (39): assessment_objectives, cognitive_operation, command_word, comparable_metrics, demand_band, demand_basis, extraction_policy, feature_basis (+31 more)
 
 ### Community 243 - "family_adapter.py"
-Cohesion: 0.18
-Nodes (20): ArtifactSpec, FamilyAdapter, Path, run_family_adapter(), default_ollama_model(), model_recommendations(), OllamaModelRecommendations, OllamaModelTier (+12 more)
+Cohesion: 0.11
+Nodes (33): ArtifactSpec, FamilyAdapter, Path, run_family_adapter(), default_ollama_model(), model_recommendations(), OllamaModelRecommendations, OllamaModelTier (+25 more)
 
 ### Community 244 - "enum"
 Cohesion: 0.12
 Nodes (16): algorithm-trace, calculation, computational-analysis, computational-design, constructed-response, extended-evaluation, mathematical-argument, multi-stage-calculation (+8 more)
 
-### Community 245 - "CodingKeys"
-Cohesion: 0.18
-Nodes (11): CodingKey, CodingKeys, artifacts, configuration, createdAt, id, provenance, qualification (+3 more)
+### Community 245 - "topic_reference_evidence.py"
+Cohesion: 0.43
+Nodes (7): audit_topic_bank(), matching_records(), Any, Reviewed feature-only AQA 2022-25 topic subsets, never topic AO targets.…, Require task/context membership and an evidenced response form. A stimulus…, reviewed_topic_records(), task_features()
 
 ### Community 246 - "formatted_generation_date"
 Cohesion: 0.10
 Nodes (28): aqa_question_cover(), CoverProfile, _draw_aqa_mark_scheme_cover(), _draw_cover_barcode(), draw_mark_scheme_cover(), _draw_ocr_mark_scheme_cover(), mark_scheme_cover(), MarkSchemeCover (+20 more)
 
-### Community 247 - "id"
-Cohesion: 0.13
-Nodes (15): PathOption, minLength, title, type, items, minItems, title, type (+7 more)
+### Community 247 - "topic_id"
+Cohesion: 0.29
+Nodes (7): 4.10, 4.12, 4.2, topic_id, enum, title, type
 
 ### Community 248 - "empirical-calibration.schema.json"
 Cohesion: 0.25
@@ -1123,9 +1114,9 @@ Nodes (8): Assessment-objective calibration reference, Component versus qualific
 Cohesion: 0.34
 Nodes (14): _band(), build_generated_profile(), build_reference_profile(), build_report(), _command(), _fingerprint(), _inventory(), main() (+6 more)
 
-### Community 251 - "OllamaModelRecommendation"
-Cohesion: 0.31
-Nodes (7): tiers, .currentRecommendation, OllamaModelRecommendation, .downloadDescription, Bool, Double, UInt64
+### Community 251 - "stratum"
+Cohesion: 0.29
+Nodes (7): context-incomplete, core, mixed, stratum, enum, title, type
 
 ### Community 252 - "test_topic_reference_evidence.py"
 Cohesion: 0.23
@@ -1135,9 +1126,9 @@ Nodes (15): module(), parametrize, A serialised hint must never override the que
 Cohesion: 0.14
 Nodes (14): analyse, contextualise, describe, design, explain, judge, program, retrieve (+6 more)
 
-### Community 254 - "paper1_assets.py"
-Cohesion: 0.44
-Nodes (12): _supporting(), _page_footer(), _paragraph(), _practice_header(), Canvas, PaperBlueprint, Path, render_electronic_answer_document() (+4 more)
+### Community 254 - "paper"
+Cohesion: 0.33
+Nodes (6): 1, 2, enum, title, type, paper
 
 ### Community 255 - "entry_point"
 Cohesion: 0.67
@@ -1163,10 +1154,6 @@ Nodes (9): add_page_structure_tree(), has_logical_page_order(), _has_structure_t
 Cohesion: 0.40
 Nodes (12): build_generated_profile(), build_reference_profile(), build_report(), _command(), _fingerprint(), main(), _page_count(), _pdf_text() (+4 more)
 
-### Community 261 - "enum"
-Cohesion: 0.29
-Nodes (7): high, low, standard, enum, title, type, historical_engineering_demand_proxy
-
 ### Community 262 - "build_layout_masters.py"
 Cohesion: 0.21
 Nodes (22): Generated-content policy is not an observed reference-count range., runtime_page_count_policy(), test_content_driven_policy_is_reproducible_and_does_not_reclassify_other_documents(), _box(), _colour(), _content_box(), _drawing_kind(), _drawings() (+14 more)
@@ -1178,14 +1165,6 @@ Nodes (9): module(), test_aqa_selected_source_operations_do_not_manufacture_obje
 ### Community 264 - "required"
 Cohesion: 0.25
 Nodes (8): approval_evidence, approved_by_identity_class, policy_id, status, additionalProperties, required, type, policy
-
-### Community 265 - "properties"
-Cohesion: 0.29
-Nodes (7): type, type, empirically_calibrated, engineering_validated, visually_calibrated, properties, type
-
-### Community 266 - "required"
-Cohesion: 0.33
-Nodes (6): event_id, job_id, protocol, timestamp, type, required
 
 ### Community 267 - "subject"
 Cohesion: 0.67
@@ -1199,10 +1178,6 @@ Nodes (4): report(), test_both_papers_pass_multi_seed_automated_checks(), test_e
 Cohesion: 0.50
 Nodes (4): maximum, minimum, type, progress
 
-### Community 270 - "section_features"
-Cohesion: 0.40
-Nodes (5): $ref, section_features, additionalProperties, title, type
-
 ### Community 271 - "test_difficulty_calibration.py"
 Cohesion: 0.53
 Nodes (4): report(), test_calibration_retains_no_official_text_or_paths(), test_difficulty_is_not_promoted_without_human_and_psychometric_evidence(), test_every_paper_has_multi_seed_structural_evidence()
@@ -1211,54 +1186,30 @@ Nodes (4): report(), test_calibration_retains_no_official_text_or_paths(), test_
 Cohesion: 0.53
 Nodes (4): report(), test_difficulty_remains_external_evidence_gated(), test_multi_seed_structural_demand_passes(), test_reference_evidence_is_aggregate_only()
 
-### Community 273 - "_normalise_command_word"
-Cohesion: 0.50
-Nodes (4): _contains_command_word(), _normalise_command_word(), Replace only a leading alternative exam command with the blueprint command., test_equivalent_leading_command_is_normalised_to_blueprint_word()
-
-### Community 274 - "type"
-Cohesion: 0.50
-Nodes (4): null, string, stage, type
-
 ### Community 275 - "enum"
 Cohesion: 0.50
 Nodes (4): ai-assisted, deterministic, enum, content_mode
 
 ### Community 276 - ".initialEstimate"
-Cohesion: 0.25
-Nodes (7): EstimateFactor, GenerationEstimator, Bool, Date, Double, String, ProcessInfo
+Cohesion: 0.19
+Nodes (11): EstimateFactor, GenerationEstimate, .etaDate, .remainingText, TimeInterval, GenerationEstimator, Bool, Date (+3 more)
 
 ### Community 277 - "test_science_overlay.py"
 Cohesion: 0.35
 Nodes (16): apparatus_diagram(), ApparatusSpec, Atom, Bond, circuit_diagram(), CircuitComponent, CircuitSpec, molecule_diagram() (+8 more)
 
-### Community 278 - "generate_package"
-Cohesion: 0.29
-Nodes (12): generate_package(), Path, page_count(), Path, test_both_packages_render_36_page_question_papers(), test_invalid_paper_is_rejected(), test_paper_one_mark_scheme_matches_reference_question_sequence(), test_paper_one_section_a_matches_measured_case_and_account_pages() (+4 more)
-
 ### Community 279 - "test_humanities_overlay.py"
 Cohesion: 0.55
 Nodes (9): map_diagram(), MapFeature, MapSpec, Drawing, timeline_diagram(), TimelineEvent, TimelineSpec, test_humanities_diagrams_reject_misleading_or_invalid_inputs() (+1 more)
-
-### Community 280 - "event_id"
-Cohesion: 0.67
-Nodes (3): minimum, type, event_id
-
-### Community 281 - "timestamp"
-Cohesion: 0.67
-Nodes (3): timestamp, format, type
 
 ### Community 283 - "test_aqa_business_calibration.py"
 Cohesion: 0.53
 Nodes (4): report(), test_calibration_retains_only_aggregate_reference_evidence(), test_difficulty_is_not_promoted_without_external_evidence(), test_every_paper_has_multi_seed_structural_evidence()
 
-### Community 284 - "_visible_scheme_points"
-Cohesion: 0.67
-Nodes (3): Keep awarded and item-specific rows; common guidance is printed once up front., _visible_scheme_points(), test_mark_scheme_prints_item_specific_guidance_once_per_question()
-
 ## Knowledge Gaps
 - **1141 isolated node(s):** `BoardLayout`, `examforge-aqa-accounting`, `$schema`, `$id`, `title` (+1136 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **52 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **53 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Work-memory lessons
 
@@ -1271,12 +1222,12 @@ Nodes (3): Keep awarded and item-specific rows; common guidance is printed once 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `IndependentSolver` connect `IndependentSolver` to `test_solver_source_adapter.py`, `test_aqa_business.py`, `ai_assessment.py`, `AssessmentCheckpointStore`, `GeneratedQuestion`, `test_computer_science_objectives.py`, `test_shared_numeric_integrity.py`, `test_open_credit_reconciliation.py`, `load_syllabus`, `pastpapergen/ollama_client.py`, `test_aqa_accounting.py`, `test_aqa_economics.py`, `generator/tests/test_assessment_contracts.py`, `NumericOutput`, `independent_solver.py`, `test_sql_answer_verification.py`, `cspapergen/generator.py`, `test_task_source_demand.py`, `reconcile_solution`?**
-  _High betweenness centrality (0.031) - this node is a cross-community bridge._
-- **Why does `GeneratedQuestion` connect `GeneratedQuestion` to `ocregen/render_pdf.py`, `Paragraph`, `test_aqa_business.py`, `GeneratedPaper`, `ai_assessment.py`, `AssessmentCheckpointStore`, `ocrcsgen/render_pdf.py`, `AssessmentContract`, `_visible_scheme_points`, `assessment_package.py`, `test_shared_numeric_integrity.py`, `QuestionRule`, `exam_blueprints.py`, `profile_for`, `test_ocr_economics.py`, `test_aqa_economics.py`, `mark_scheme_enrichment.py`, `_written`, `test_reference_demand.py`, `aqabizgen/render_pdf.py`, `configuredgen/generator.py`, `test_task_source_demand.py`, `build_paper`?**
-  _High betweenness centrality (0.023) - this node is a cross-community bridge._
-- **Why does `Rect` connect `Rect` to `aqa_section_intro`, `ocregen/render_pdf.py`, `paper_fidelity_audit.py`, `test_pdf_validation.py`, `GeneratedPaper`, `pdf_validation.py`, `test_science_overlay.py`, `aqabizgen/render_pdf.py`, `test_humanities_overlay.py`, `formatted_generation_date`, `ExamPageProfile`?**
-  _High betweenness centrality (0.022) - this node is a cross-community bridge._
+- **Why does `GeneratedQuestion` connect `GeneratedQuestion` to `ocregen/render_pdf.py`, `Paragraph`, `test_aqa_business.py`, `aqaecongen/render_pdf.py`, `AssessmentCheckpointStore`, `ocrcsgen/render_pdf.py`, `AssessmentContract`, `assessment_package.py`, `reconcile_solution`, `GeneratedPaper`, `candidate_content_identity`, `profile_for`, `test_ocr_economics.py`, `exam_blueprints.py`, `mark_scheme_enrichment.py`, `_written`, `test_reference_demand.py`, `aqabizgen/render_pdf.py`, `test_task_source_demand.py`, `test_computer_science_objectives.py`?**
+  _High betweenness centrality (0.028) - this node is a cross-community bridge._
+- **Why does `IndependentSolver` connect `IndependentSolver` to `pastpapergen/ollama_client.py`, `independent_solver.py`, `test_finite_response_slots.py`, `reconcile_solution`, `test_sql_answer_verification.py`, `generator/tests/test_assessment_contracts.py`, `test_aqa_business.py`, `test_ollama_generation.py`, `cspapergen/ollama_client.py`, `test_open_credit_reconciliation.py`, `load_syllabus`, `test_computer_science_objectives.py`, `test_task_source_demand.py`, `test_solver_source_adapter.py`, `NumericOutput`, `GeneratedQuestion`, `test_aqa_accounting.py`, `exam_blueprints.py`?**
+  _High betweenness centrality (0.027) - this node is a cross-community bridge._
+- **Why does `GeneratedOption` connect `GeneratedQuestion` to `ocregen/render_pdf.py`, `Paragraph`, `test_aqa_business.py`, `aqaecongen/render_pdf.py`, `AssessmentCheckpointStore`, `ocrcsgen/render_pdf.py`, `AssessmentContract`, `assessment_package.py`, `GeneratedPaper`, `candidate_content_identity`, `profile_for`, `test_ocr_economics.py`, `test_aqa_accounting.py`, `exam_blueprints.py`, `mark_scheme_enrichment.py`, `test_reference_demand.py`, `aqabizgen/render_pdf.py`, `test_task_source_demand.py`, `test_computer_science_objectives.py`?**
+  _High betweenness centrality (0.021) - this node is a cross-community bridge._
 - **Are the 21 inferred relationships involving `GeneratedQuestion` (e.g. with `AssessmentLLMClient` and `GenerationPolicy`) actually correct?**
   _`GeneratedQuestion` has 21 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 27 inferred relationships involving `IndependentSolver` (e.g. with `AssessmentLLMClient` and `GenerationPolicy`) actually correct?**
