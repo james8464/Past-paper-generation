@@ -36,8 +36,7 @@ from Backend.Core.paths import REPO_ROOT
 from Backend.Core.reference_demand import (
     assessment_objectives_for_item,
     audit_form_demand,
-    load_reference_demand_document,
-    profile_for,
+    verified_reference_profile,
 )
 from Backend.Core.response_simulation import ResponseSimulator
 from Backend.Core.subjects.sql_contracts import (
@@ -345,12 +344,8 @@ def _reference_demand_audit(
         capability = generator_capability(subject)
     except ValueError:
         return None
-    evidence_document = load_reference_demand_document()
-    profile = profile_for(
-        capability.id,
-        paper_number,
-        document=evidence_document,
-    )
+    evidence_context = verified_reference_profile(capability.id, paper_number)
+    profile = evidence_context.profile
     report = audit_form_demand(items, profile, require_item_evidence=not preview)
     if blueprint is None:
         return report
@@ -365,7 +360,7 @@ def _reference_demand_audit(
         items,
         topology,
         profile,
-        evidence_document=evidence_document,
+        evidence_context=evidence_context,
     )
     # Whole printed-item review is separate from candidate selection. Never
     # remove a failed/unreviewed alternative from the review denominator.

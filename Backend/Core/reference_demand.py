@@ -5,11 +5,10 @@ import json
 import math
 import re
 from collections import Counter
-from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Literal
-from weakref import ReferenceType, ref
+from weakref import WeakSet
 
 from pydantic import (
     BaseModel,
@@ -26,41 +25,6 @@ from Backend.Core.paths import REPO_ROOT
 PROFILES_PATH = REPO_ROOT / "Resources" / "reference-demand-profiles.json"
 
 DemandBand = Literal["low", "standard", "high"]
-
-
-@dataclass(frozen=True)
-class _DocumentAttestation:
-    document: ReferenceType[Any]
-    profile_ids: tuple[int, ...]
-    content_fingerprint: str
-
-
-_VALIDATED_DOCUMENTS: dict[int, _DocumentAttestation] = {}
-
-
-def _document_fingerprint(document: Any) -> str:
-    payload = json.dumps(
-        document.model_dump(mode="json"),
-        sort_keys=True,
-        separators=(",", ":"),
-        ensure_ascii=False,
-        allow_nan=False,
-    )
-    return hashlib.sha256(payload.encode()).hexdigest()
-
-
-def _has_valid_document_attestation(document: Any, profile: Any) -> bool:
-    attestation = _VALIDATED_DOCUMENTS.get(id(document))
-    if attestation is None or attestation.document() is not document:
-        return False
-    if tuple(id(candidate) for candidate in document.profiles) != attestation.profile_ids:
-        return False
-    if not any(profile is candidate for candidate in document.profiles):
-        return False
-    try:
-        return _document_fingerprint(document) == attestation.content_fingerprint
-    except (TypeError, ValueError):
-        return False
 
 
 class ReferenceDemandProfile(BaseModel):
@@ -173,26 +137,10 @@ class ReferenceDemandDocument(BaseModel):
         ):
             raise ValueError("schema-2 profiles cannot carry H3 evidence")
         if self.schema_version == 3:
-            from Backend.Core.reference_evidence import (
-                validate_profile_evidence,
-            )
+            from Backend.Core.reference_evidence import validate_profile_payload
 
             for profile in self.profiles:
-                validate_profile_evidence(
-                    profile,
-                    document=self,
-                    require_attestation=False,
-                )
-            document_id = id(self)
-
-            def discard(_released: ReferenceType[Any]) -> None:
-                _VALIDATED_DOCUMENTS.pop(document_id, None)
-
-            _VALIDATED_DOCUMENTS[document_id] = _DocumentAttestation(
-                document=ref(self, discard),
-                profile_ids=tuple(id(profile) for profile in self.profiles),
-                content_fingerprint=_document_fingerprint(self),
-            )
+                validate_profile_payload(profile)
         return self
 
 
@@ -238,6 +186,58 @@ def profile_for(
         if (profile.family_id, profile.paper_id) == (family_id, str(paper_id)):
             return profile
     raise ValueError(f"no reference demand profile for {family_id} paper {paper_id}")
+
+
+def _verified_context_api():
+    issued: WeakSet[Any] = WeakSet()
+
+    def fingerprint(profile: ReferenceDemandProfile) -> str:
+        payload = json.dumps(
+            profile.model_dump(mode="json"),
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        )
+        return hashlib.sha256(payload.encode()).hexdigest()
+
+    class VerifiedReferenceProfile:
+        __slots__ = ("__weakref__", "document", "fingerprint", "profile")
+        __hash__ = object.__hash__
+
+        def __init__(
+            self,
+            document: ReferenceDemandDocument,
+            profile: ReferenceDemandProfile,
+        ) -> None:
+            self.document = document
+            self.profile = profile
+            self.fingerprint = fingerprint(profile)
+
+    def issue(family_id: str, paper_id: str) -> Any:
+        document = load_reference_demand_document()
+        context = VerifiedReferenceProfile(
+            document,
+            profile_for(family_id, paper_id, document=document),
+        )
+        issued.add(context)
+        return context
+
+    def accepts(context: Any, profile: Any) -> bool:
+        try:
+            return (
+                context in issued
+                and context.profile is profile
+                and context.document is load_reference_demand_document()
+                and context.fingerprint == fingerprint(profile)
+            )
+        except TypeError:
+            return False
+
+    return issue, accepts
+
+
+verified_reference_profile, _is_verified_reference_profile = _verified_context_api()
 
 
 def build_item_demand_target(

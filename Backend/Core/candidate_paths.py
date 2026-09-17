@@ -327,7 +327,7 @@ def audit_candidate_paths(
     topology: CandidateTopology | dict[str, Any],
     profile: Any,
     *,
-    evidence_document: Any | None = None,
+    evidence_context: Any | None = None,
 ) -> dict[str, Any]:
     from Backend.Core.reference_demand import (
         _distribution_distance,
@@ -342,7 +342,7 @@ def audit_candidate_paths(
     evidence_error = None
     try:
         qualified_source = validate_profile_evidence(
-            profile, document=evidence_document
+            profile, evidence_context=evidence_context
         )
     except ValueError:
         qualified_source = False

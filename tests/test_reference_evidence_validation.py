@@ -10,7 +10,9 @@ from Backend.Core.reference_demand import (
     ReferenceDemandProfile,
     audit_form_demand,
     profile_for,
+    verified_reference_profile,
 )
+from Backend.Core.reference_evidence import validate_profile_evidence
 from tests.test_reference_demand import profile_payload
 
 
@@ -265,20 +267,84 @@ def test_model_copied_document_cannot_promote_a_valid_profile_to_schema_three():
     }
 
     result = audit_candidate_paths(
-        [item], topology, forged.profiles[0], evidence_document=forged
+        [item], topology, forged.profiles[0], evidence_context=forged
     )
 
     assert result["evidence_validation_passed"] is False
     assert result["evidence_state"] == "insufficient"
 
 
-def test_public_evidence_api_cannot_attest_a_forged_document():
-    """Only ReferenceDemandDocument validation may create an H3 attestation."""
-    import Backend.Core.reference_demand as demand
-    import Backend.Core.reference_evidence as evidence
+def test_direct_document_validator_cannot_qualify_a_forged_h3_document():
+    """Calling a public Pydantic validator is not evidence of canonical loading."""
+    checked_in = json.loads(Path("Resources/reference-demand-profiles.json").read_text())
+    source = ReferenceDemandDocument.model_validate(
+        {
+            **checked_in,
+            "profiles": [
+                next(
+                    profile
+                    for profile in checked_in["profiles"]
+                    if profile["family_id"] == "aqa/economics"
+                    and profile["paper_id"] == "3"
+                )
+            ],
+        }
+    )
+    legacy = ReferenceDemandDocument.model_validate(
+        {
+            "schema_version": 2,
+            "purpose": "Legacy aggregate data cannot qualify source evidence.",
+            "derived_aggregate_only": True,
+            "retains_source_text": False,
+            "profiles": [profile_payload()],
+        }
+    )
+    forged = legacy.model_copy(
+        update={
+            "schema_version": 3,
+            "profiles": [source.profiles[0].model_copy(deep=True)],
+        }
+    )
+    forged.unique_profiles()
+    item = {
+        "id": "x",
+        "marks": 1,
+        "expected_minutes": 1,
+        "assessment_objectives": {"AO1": 1},
+        "command_word": "State",
+    }
+    topology = {
+        "policy_id": "test",
+        "total_marks": 1,
+        "duration_minutes": 1,
+        "sections": [
+            {
+                "id": "A",
+                "answer_options": 1,
+                "candidate_marks": 1,
+                "options": [{"id": "a", "item_ids": ["x"]}],
+            }
+        ],
+    }
 
-    assert not hasattr(evidence, "attest_validated_document")
-    assert not hasattr(demand, "_attest_validated_document")
+    result = audit_candidate_paths(
+        [item], topology, forged.profiles[0], evidence_context=forged
+    )
+
+    assert result["evidence_validation_passed"] is False
+
+
+def test_canonical_evidence_context_rejects_post_issue_profile_mutation():
+    """A loader-issued context is bound to the reviewed source evidence."""
+    context = verified_reference_profile("aqa/economics", "3")
+    profile = context.profile
+    original = profile.reference_forms[0]["source_sha256"]
+    profile.reference_forms[0]["source_sha256"] = "f" * 64
+    try:
+        with pytest.raises(ValueError):
+            validate_profile_evidence(profile, evidence_context=context)
+    finally:
+        profile.reference_forms[0]["source_sha256"] = original
 
 
 def test_profile_list_mutation_invalidates_a_schema_three_document_attestation():
@@ -320,7 +386,7 @@ def test_profile_list_mutation_invalidates_a_schema_three_document_attestation()
     }
 
     result = audit_candidate_paths(
-        [item], topology, document.profiles[0], evidence_document=document
+        [item], topology, document.profiles[0], evidence_context=document
     )
 
     assert result["evidence_validation_passed"] is False

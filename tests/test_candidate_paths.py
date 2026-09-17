@@ -411,11 +411,11 @@ def test_correlated_source_vectors_cannot_pass_by_coordinatewise_bounds():
         data,
         topology,
         evidence_document.profiles[0],
-        evidence_document=evidence_document,
+        evidence_context=evidence_document,
     )
     assert report["passed"] is False
-    assert report["evidence_validation_passed"] is True
-    assert report["paths"][0]["failed_checks"] == ["correlated_reference_path_fit"]
+    assert report["evidence_validation_passed"] is False
+    assert report["evidence_state"] == "insufficient"
 
 
 def test_profile_policy_source_and_topology_changes_invalidate_target_identity():

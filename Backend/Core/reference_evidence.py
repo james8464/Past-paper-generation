@@ -369,22 +369,15 @@ def source_observations(items):
     return result
 
 
-def validate_profile_evidence(profile, *, document=None, require_attestation=True):
-    from Backend.Core.reference_demand import _has_valid_document_attestation
+def validate_profile_evidence(profile, *, evidence_context=None):
+    from Backend.Core.reference_demand import _is_verified_reference_profile
 
-    if (
-        document is None
-        or document.schema_version != 3
-        or (
-            require_attestation
-            and not _has_valid_document_attestation(document, profile)
-        )
-        or (
-            not require_attestation
-            and not any(profile is candidate for candidate in document.profiles)
-        )
-    ):
-        raise ValueError("validated schema-3 reference demand document is required")
+    if not _is_verified_reference_profile(evidence_context, profile):
+        raise ValueError("canonical reference evidence context is required")
+    return validate_profile_payload(profile)
+
+
+def validate_profile_payload(profile):
     if profile.evidence_policy_id == EXTRACTION_POLICY:
         if (
             profile.assessment_kind != "full-paper"
