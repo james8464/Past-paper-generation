@@ -2556,7 +2556,6 @@ def render_mark_scheme(
     pdf = canvas.Canvas(str(output_path), pagesize=page_size, pageCompression=0)
     _set_pdf_metadata(pdf, blueprint, "Mark scheme")
     width, height = page_size
-    margin = MS_LEFT
     cover_layout = MARK_SCHEME_COVER_LAYOUTS[blueprint.paper_id]
     cover_margin = cover_layout["margin"]
     accent = colors.HexColor(MARK_SCHEME_ACCENT_COLOR)
@@ -2600,7 +2599,7 @@ def render_mark_scheme(
     pdf.setFillColor(colors.black)
     pdf.showPage()
 
-    _draw_mark_scheme_qualification_page(pdf, blueprint, margin, height)
+    _draw_mark_scheme_qualification_page(pdf, blueprint, 57, height)
     pdf.showPage()
 
     guidance_margin = 64
@@ -2700,7 +2699,7 @@ def _draw_ms_blank_page(pdf: canvas.Canvas, kind: str) -> None:
 
 
 def _draw_mark_scheme_qualification_page(pdf: canvas.Canvas, blueprint: PaperBlueprint, margin: float, height: float) -> None:
-    y = height - 155
+    y = height - 107
     pdf.setFont(MS_FONT_BOLD, 14)
     pdf.drawString(margin, y, "Unofficial practice qualification material")
     y -= 28

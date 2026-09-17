@@ -138,6 +138,27 @@ def test_mark_scheme_front_matter_matches_reference_structure(tmp_path):
     assert "Pearson or any exam board" in normalised
 
 
+def test_mark_scheme_qualification_page_uses_reference_text_inset(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_1"), syllabus, seed=42
+    )
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, syllabus, output)
+
+    import pymupdf as fitz
+
+    with fitz.open(output) as document:
+        for x0, y0, _x1, _y1, block, *_rest in document[1].get_text("blocks"):
+            if "Unofficial practice qualification material" in block:
+                assert x0 == pytest.approx(57, abs=1)
+                assert y0 == pytest.approx(96, abs=3)
+                break
+        else:
+            raise AssertionError("qualification heading not found")
+
+
 def test_mark_scheme_cover_uses_reference_serif_face(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")

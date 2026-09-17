@@ -726,6 +726,19 @@ authoring suite passed 321 tests after the addition; the updated page was
 rendered and visually inspected. It remains pending fresh live-package and
 fidelity evidence.
 
+The subsequent current-renderer transaction passed the same live generation,
+PDF and reference-demand gates in 1,649.70 seconds; it contains no instances of
+the prior possessive defect. Both 300- and 600-DPI print audits again had no
+failures. The mark-scheme score improved from 60.4% to 64.1% (aggregate 66.7%
+to 68.5%), confirming the table and guidance work materially improved the
+render. It is nevertheless 1.3 percentage points below the 65.4% scheme floor,
+with 26 pages against the 29–30 reference range. Direct review of the lowest
+scoring introductory page found the independent-material text block was 23
+points too far right and about 48 points too low. The renderer now uses the
+measured reference-relative inset and baseline for that legally necessary,
+unbranded page; the full Edexcel suite passed 322 tests. A further fresh live
+package is required to measure this final geometry adjustment.
+
 The next fresh live transaction (`gemma4:12b`, paper seed `26091719`) passed
 generation, PDF and reference-demand gates in 1,684.34 seconds. Its 32-page
 question paper and 26-page mark scheme are tagged A4 PDFs with every required
