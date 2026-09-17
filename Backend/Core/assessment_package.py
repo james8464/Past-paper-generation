@@ -36,6 +36,7 @@ from Backend.Core.paths import REPO_ROOT
 from Backend.Core.reference_demand import (
     assessment_objectives_for_item,
     audit_form_demand,
+    profile_for_verified_context,
     verified_reference_profile,
 )
 from Backend.Core.response_simulation import ResponseSimulator
@@ -345,7 +346,7 @@ def _reference_demand_audit(
     except ValueError:
         return None
     evidence_context = verified_reference_profile(capability.id, paper_number)
-    profile = evidence_context.profile
+    profile = profile_for_verified_context(evidence_context)
     report = audit_form_demand(items, profile, require_item_evidence=not preview)
     if blueprint is None:
         return report

@@ -10,6 +10,7 @@ from Backend.Core.reference_demand import (
     ReferenceDemandProfile,
     audit_form_demand,
     profile_for,
+    profile_for_verified_context,
     verified_reference_profile,
 )
 from Backend.Core.reference_evidence import validate_profile_evidence
@@ -337,7 +338,7 @@ def test_direct_document_validator_cannot_qualify_a_forged_h3_document():
 def test_canonical_evidence_context_rejects_post_issue_profile_mutation():
     """A loader-issued context is bound to the reviewed source evidence."""
     context = verified_reference_profile("aqa/economics", "3")
-    profile = context.profile
+    profile = profile_for_verified_context(context)
     original = profile.reference_forms[0]["source_sha256"]
     profile.reference_forms[0]["source_sha256"] = "f" * 64
     try:
@@ -345,6 +346,15 @@ def test_canonical_evidence_context_rejects_post_issue_profile_mutation():
             validate_profile_evidence(profile, evidence_context=context)
     finally:
         profile.reference_forms[0]["source_sha256"] = original
+
+
+def test_canonical_evidence_context_cannot_be_retargeted_to_a_copied_profile():
+    """The caller receives a capability, not writable qualification state."""
+    context = verified_reference_profile("aqa/economics", "3")
+    copied = profile_for_verified_context(context).model_copy(deep=True)
+
+    with pytest.raises(AttributeError):
+        context.profile = copied
 
 
 def test_profile_list_mutation_invalidates_a_schema_three_document_attestation():

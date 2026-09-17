@@ -8,7 +8,7 @@ from collections import Counter
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Literal
-from weakref import WeakSet
+from weakref import WeakKeyDictionary
 
 from pydantic import (
     BaseModel,
@@ -189,7 +189,7 @@ def profile_for(
 
 
 def _verified_context_api():
-    issued: WeakSet[Any] = WeakSet()
+    issued: WeakKeyDictionary[Any, tuple[Any, ...]] = WeakKeyDictionary()
 
     def fingerprint(profile: ReferenceDemandProfile) -> str:
         payload = json.dumps(
@@ -202,42 +202,41 @@ def _verified_context_api():
         return hashlib.sha256(payload.encode()).hexdigest()
 
     class VerifiedReferenceProfile:
-        __slots__ = ("__weakref__", "document", "fingerprint", "profile")
+        __slots__ = ("__weakref__",)
         __hash__ = object.__hash__
-
-        def __init__(
-            self,
-            document: ReferenceDemandDocument,
-            profile: ReferenceDemandProfile,
-        ) -> None:
-            self.document = document
-            self.profile = profile
-            self.fingerprint = fingerprint(profile)
 
     def issue(family_id: str, paper_id: str) -> Any:
         document = load_reference_demand_document()
-        context = VerifiedReferenceProfile(
-            document,
-            profile_for(family_id, paper_id, document=document),
-        )
-        issued.add(context)
+        profile = profile_for(family_id, paper_id, document=document)
+        context = VerifiedReferenceProfile()
+        issued[context] = (document, profile, fingerprint(profile))
         return context
+
+    def profile_for_context(context: Any) -> ReferenceDemandProfile:
+        try:
+            return issued[context][1]
+        except (KeyError, TypeError) as error:
+            raise ValueError("canonical reference evidence context is required") from error
 
     def accepts(context: Any, profile: Any) -> bool:
         try:
+            document, issued_profile, issued_fingerprint = issued[context]
             return (
-                context in issued
-                and context.profile is profile
-                and context.document is load_reference_demand_document()
-                and context.fingerprint == fingerprint(profile)
+                issued_profile is profile
+                and document is load_reference_demand_document()
+                and issued_fingerprint == fingerprint(profile)
             )
-        except TypeError:
+        except (KeyError, TypeError):
             return False
 
-    return issue, accepts
+    return issue, profile_for_context, accepts
 
 
-verified_reference_profile, _is_verified_reference_profile = _verified_context_api()
+(
+    verified_reference_profile,
+    profile_for_verified_context,
+    _is_verified_reference_profile,
+) = _verified_context_api()
 
 
 def build_item_demand_target(
