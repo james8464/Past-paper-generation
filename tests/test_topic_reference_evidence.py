@@ -93,9 +93,17 @@ def test_sparse_bank_is_insufficient_with_cluster_sensitivity_not_calibrated():
             "topic_id": "4.2",
             "marks": 6,
             "task_operation": "trace",
-            "kind": "data_structures_tree",
-            "prompt": "Trace the tree traversal in the table",
-            "response_slots": ["state"],
+                "kind": "data_structures_tree",
+                "prompt": "Trace the tree traversal in the table",
+                "response_slots": ["state"],
+                "reference_task_contract": {
+                    "policy_id": "aqa-cs-topic-evidence-v1",
+                    "topic_id": "4.2",
+                    "style_id": "data_structures_tree",
+                    "operation": "trace",
+                    "response_mode": "table",
+                    "source_dependency": "self-contained",
+                },
         }
     ]
     report = module().audit_topic_bank(
@@ -175,9 +183,59 @@ def test_actual_same_topic_operation_and_mode_still_matches():
     item = {
         "topic_id": "4.10",
         "task_operation": "program",
+        "kind": "sql_normalisation",
         "prompt": "Write one SELECT query for this relational database.",
         "context": ["A relational database stores bookings."],
+        "reference_task_contract": {
+            "policy_id": "aqa-cs-topic-evidence-v1",
+            "topic_id": "4.10",
+            "style_id": "sql_normalisation",
+            "operation": "program",
+            "response_mode": "query",
+            "source_dependency": "task-context",
+        },
     }
     assert module().matching_records(
         module().reviewed_topic_records("4.10"), module().task_features(item)
     )
+
+
+@pytest.mark.parametrize(
+    "item",
+    [
+        {
+            "topic_id": "4.2",
+            "task_operation": "analyse",
+            "kind": "data_structures_graph",
+            "prompt": "Explain why a relational database normalisation procedure should not use an adjacency matrix.",
+        },
+        {
+            "topic_id": "4.12",
+            "task_operation": "explain",
+            "kind": "functional_programming",
+            "prompt": "Explain how a relational database can store the result of a lambda expression.",
+        },
+    ],
+)
+def test_inherited_metadata_and_incidental_keywords_never_establish_topic_membership(item):
+    task = module().task_features(item)
+    assert task["topic_id"] is None
+    assert not module().matching_records(module().reviewed_topic_records(item["topic_id"]), task)
+
+
+def test_topic_contract_rejects_cross_topic_prompt_even_when_metadata_agrees():
+    item = {
+        "topic_id": "4.2",
+        "task_operation": "analyse",
+        "kind": "data_structures_graph",
+        "prompt": "Explain why a relational database normalisation procedure should not use an adjacency matrix.",
+        "reference_task_contract": {
+            "policy_id": "aqa-cs-topic-evidence-v1",
+            "topic_id": "4.2",
+            "style_id": "data_structures_graph",
+            "operation": "analyse",
+            "response_mode": "prose",
+            "source_dependency": "self-contained",
+        },
+    }
+    assert module().task_features(item)["topic_id"] is None

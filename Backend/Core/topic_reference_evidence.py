@@ -14,6 +14,23 @@ from typing import Any
 from Backend.Core.candidate_paths import identity
 
 TOPIC_POLICY_ID = "aqa-topic-operation-records-v2"
+TOPIC_CONTRACT_POLICY_ID = "aqa-cs-topic-evidence-v1"
+TOPIC_STYLE_IDS = {
+    "4.2": {
+        "data_structures_stack_queue",
+        "data_structures_hash",
+        "data_structures_tree",
+        "data_structures_graph",
+        "data_structures_choice",
+    },
+    "4.10": {"sql_normalisation", "erd_keys", "database_extended"},
+    "4.12": {
+        "functional_programming",
+        "functional_recursion",
+        "functional_type_short",
+        "functional_extended",
+    },
+}
 # QP/MS SHA256; all are June releases; 2023 P1 QP is the CR edition.
 DOCUMENT_HASHES = {
     (2025, 1): (
@@ -270,7 +287,10 @@ def task_features(item: dict[str, Any]) -> dict[str, Any]:
     trace table. Broad authoring operations may be refined only by an actual
     response instruction/contract, never an incidental noun in prose.
     """
-    topic = item.get("topic_id")
+    contract = item.get("reference_task_contract")
+    if not isinstance(contract, dict):
+        return {"topic_id": None, "operation": "unknown", "mode": "unknown"}
+    topic = contract.get("topic_id")
     prompt = str(item.get("prompt", "")).casefold()
     context = item.get("context") or []
     text = (
@@ -280,75 +300,24 @@ def task_features(item: dict[str, Any]) -> dict[str, Any]:
             " ".join(map(str, context)) if isinstance(context, list) else str(context)
         ).casefold()
     )
-    operation = item.get("task_operation") or "unknown"
-    membership = {
-        "4.2": r"\b(stack|queue|tree|graph|adjacency|linked list|hash|array|vector)\b",
-        "4.10": r"\b(database|relational|sql|primary key|foreign key|normalisation|normalization)\b",
-        "4.12": r"\b(functional|higher-order|lambda|immutability|head and tail|co-domain)\b|\w+\s*\(x:xs\)",
-    }
+    operation = contract.get("operation")
+    mode = contract.get("response_mode")
     excluded = {
-        "4.2": r"\bcompression\b",
-        "4.10": r"\b(rest(?:ful)?|xml|json|https?|floating-point)\b",
-        "4.12": r"\b(imperative|graph|vertex|vertices|visited|while|for loop)\b",
+        "4.2": r"\b(database|relational|sql|primary key|foreign key|normalisation|normalization|compression)\b",
+        "4.10": r"\b(rest(?:ful)?|xml|json|https?|floating-point|functional|lambda|immutable|adjacency|stack|queue|tree|graph)\b",
+        "4.12": r"\b(imperative|graph|vertex|vertices|visited|while|for loop|database|relational|sql|normalisation|normalization)\b",
     }
     if (
-        topic not in membership
-        or not re.search(membership[topic], text)
+        contract.get("policy_id") != TOPIC_CONTRACT_POLICY_ID
+        or topic not in TOPIC_STYLE_IDS
+        or contract.get("style_id") not in TOPIC_STYLE_IDS[topic]
+        or item.get("topic_id") != topic
+        or item.get("kind") != contract.get("style_id")
+        or contract.get("source_dependency") not in {"self-contained", "task-context"}
+        or mode not in {"prose", "table", "diagram", "code", "query", "selected", "multi-selected", "result", "sequence"}
         or re.search(excluded[topic], text)
     ):
-        topic = None
-    mode = "unknown"
-    slots = item.get("response_slots") or []
-    contract = item.get("response_contract") or item.get("assessment_contract") or {}
-    explicit_mode = (
-        contract.get("response_mode") if isinstance(contract, dict) else None
-    )
-    if item.get("choices") or item.get("options"):
-        mode = (
-            "multi-selected"
-            if re.search(
-                r"(?:select|choose|tick|identify)\s+(?:the\s+)?(?:two|all)\b", prompt
-            )
-            else "selected"
-        )
-    elif re.match(r"\s*(draw|construct|complete)\b", prompt) and re.search(
-        r"\b(tree|diagram|relationship)\b", prompt
-    ):
-        operation, mode = "represent", "diagram"
-    elif (
-        re.match(r"\s*(draw|construct|complete)\b", prompt)
-        and "adjacency matrix" in prompt
-    ):
-        operation, mode = "represent", "table"
-    elif operation == "program":
-        mode = (
-            "query" if re.search(r"\bselect\b", prompt) and topic == "4.10" else "code"
-        )
-        if re.match(r"\s*complete\b", prompt):
-            operation = "complete-code"
-    elif operation == "trace" and re.search(
-        r"\b(?:complet\w*|trace\w*)\b.*\btable\b", prompt
-    ):
-        mode = "table"
-    elif slots:
-        mode = (
-            "sequence"
-            if len(slots) > 1 or any("order" in str(slot) for slot in slots)
-            else "result"
-        )
-    elif operation in {
-        "retrieve",
-        "describe",
-        "explain",
-        "analyse",
-        "judge",
-    } and re.match(
-        r"\s*(state|identify|name|give|describe|outline|explain|analyse|compare|discuss|evaluate)\b",
-        prompt,
-    ):
-        mode = "prose"
-    if explicit_mode is not None and explicit_mode != mode:
-        mode = "unknown"  # contradictory answer contract cannot establish a match
+        return {"topic_id": None, "operation": "unknown", "mode": "unknown"}
     return {"topic_id": topic, "operation": operation, "mode": mode}
 
 

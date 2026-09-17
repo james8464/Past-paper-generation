@@ -8,7 +8,14 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    PrivateAttr,
+    field_validator,
+    model_validator,
+)
 
 from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.model_review import validate_saved_difficulty_evidence
@@ -20,6 +27,8 @@ DemandBand = Literal["low", "standard", "high"]
 
 
 class ReferenceDemandProfile(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    _document_schema_version: int = PrivateAttr(default=2)
     family_id: str = Field(min_length=3)
     paper_id: str = Field(min_length=1)
     assessment_kind: Literal["full-paper", "question-bank"] = "full-paper"
@@ -90,6 +99,7 @@ class ReferenceDemandProfile(BaseModel):
 
 
 class ReferenceDemandDocument(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
     schema_version: Literal[2, 3]
     purpose: str = Field(min_length=20)
     derived_aggregate_only: Literal[True]
@@ -118,6 +128,8 @@ class ReferenceDemandDocument(BaseModel):
         keys = [(profile.family_id, profile.paper_id) for profile in self.profiles]
         if len(keys) != len(set(keys)):
             raise ValueError("reference demand profiles must be unique")
+        for profile in self.profiles:
+            profile._document_schema_version = self.schema_version
         if self.schema_version == 3:
             from Backend.Core.reference_evidence import validate_profile_evidence
 

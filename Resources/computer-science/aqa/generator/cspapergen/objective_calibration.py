@@ -7,7 +7,12 @@ difficulty anchor. Focused banks deliberately have their own task-led budgets.
 from __future__ import annotations
 
 from Backend.Core.assessment_objectives import objective_policy_for
-from cspapergen.models import PaperBlueprint
+from cspapergen.models import (
+    PaperBlueprint,
+    Question,
+    QuestionPart,
+    ReferenceTaskContract,
+)
 
 # Each tuple gives AO1/AO2/AO3 marks for one actual part, not qualification shares.
 PAPER2 = {
@@ -40,6 +45,48 @@ BANKS = {
     "functional_type_short": [(0,1,0),(3,0,0)],
     "functional_extended": [(4,3,3)],
 }
+
+
+def _reference_task_semantics(part: QuestionPart) -> tuple[str, str] | None:
+    prompt = part.prompt.casefold().strip()
+    if part.options:
+        return (
+            part.task_operation,
+            "multi-selected"
+            if " all " in f" {prompt} " or " two " in f" {prompt} "
+            else "selected",
+        )
+    if prompt.startswith(("draw ", "construct ", "complete ")):
+        if "adjacency matrix" in prompt:
+            return "represent", "table"
+        if any(word in prompt for word in ("tree", "diagram", "relationship")):
+            return "represent", "diagram"
+    if part.response_slots:
+        return part.task_operation, "sequence" if len(part.response_slots) > 1 else "result"
+    if part.task_operation == "program":
+        return "program", "query" if "select" in prompt else "code"
+    if part.task_operation == "trace" and "table" in prompt:
+        return "trace", "table"
+    if part.task_operation in {"retrieve", "describe", "explain", "analyse", "judge"}:
+        return part.task_operation, "prose"
+    return None
+
+
+def _reference_task_contract(question: Question, part: QuestionPart) -> ReferenceTaskContract | None:
+    if question.topic_id not in {"4.2", "4.10", "4.12"}:
+        return None
+    semantics = _reference_task_semantics(part)
+    if semantics is None:
+        return None
+    operation, mode = semantics
+    return ReferenceTaskContract(
+        policy_id="aqa-cs-topic-evidence-v1",
+        topic_id=question.topic_id,
+        style_id=question.style_id,
+        operation=operation,
+        response_mode=mode,
+        source_dependency="task-context" if question.stimulus else "self-contained",
+    )
 
 
 def calibrate_blueprint(paper: PaperBlueprint) -> PaperBlueprint:
@@ -83,6 +130,7 @@ def calibrate_blueprint(paper: PaperBlueprint) -> PaperBlueprint:
             if paper.paper_number == "1" and question.number == 4 and part.label == "2":
                 operation = "judge"
             part.task_operation = operation
+            part.reference_task_contract = _reference_task_contract(question, part)
             if paper.assessment_kind == "question-bank" and part.marking.levels:
                 high = part.marks
                 part.marking.levels = [

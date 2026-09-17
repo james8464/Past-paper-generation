@@ -1,9 +1,13 @@
+import copy
 import json
 from pathlib import Path
 
 import pytest
 
-from Backend.Core.candidate_paths import audit_candidate_paths
+from Backend.Core.candidate_paths import (
+    GENERATED_OBJECTIVE_POLICIES,
+    audit_candidate_paths,
+)
 from Backend.Core.reference_demand import (
     ReferenceDemandDocument,
     ReferenceDemandProfile,
@@ -177,3 +181,65 @@ def test_mutated_unknown_policy_cannot_bypass_direct_audit():
     assert result["evidence_validation_passed"] is False
     assert result["passed"] is False and result["evidence_state"] == "insufficient"
     assert result["failed_paths"]
+
+
+def test_legacy_container_with_copied_h3_source_evidence_never_qualifies_paths():
+    raw = json.loads(Path("Resources/reference-demand-profiles.json").read_text())
+    profile_raw = next(
+        profile
+        for profile in raw["profiles"]
+        if profile["family_id"] == "aqa/economics" and profile["paper_id"] == "3"
+    )
+    document = ReferenceDemandDocument.model_validate(
+        {
+            "schema_version": 2,
+            "purpose": raw["purpose"],
+            "derived_aggregate_only": True,
+            "retains_source_text": False,
+            "profiles": [copy.deepcopy(profile_raw)],
+        }
+    )
+    profile = document.profiles[0]
+    form = next(form for form in profile.reference_forms if form["status"] == "eligible")
+    by_id = {row["id"]: row for row in form["items"]}
+    remaining = dict(
+        zip(
+            ("AO1", "AO2", "AO3", "AO4"),
+            GENERATED_OBJECTIVE_POLICIES[(profile.family_id, profile.paper_id)],
+            strict=True,
+        )
+    )
+    items = []
+    for item_id in form["paths"][0]["item_ids"]:
+        row = copy.deepcopy(by_id[item_id])
+        row.update(
+            expected_minutes=row["marks"] * 1.5,
+            task_operation=row["cognitive_operation"],
+            assessment_objectives={},
+        )
+        if row["command_word"] == "select":
+            row["kind"] = "mcq"
+        unallocated = row["marks"]
+        for objective in remaining:
+            awarded = min(unallocated, remaining[objective])
+            if awarded:
+                row["assessment_objectives"][objective] = awarded
+                remaining[objective] -= awarded
+                unallocated -= awarded
+            if not unallocated:
+                break
+        items.append(row)
+    topology = copy.deepcopy(form["topology"])
+    topology["duration_minutes"] = 120
+    result = audit_candidate_paths(items, topology, profile)
+    assert result["evidence_validation_passed"] is False
+    assert result["evidence_state"] == "insufficient"
+    assert result["passed"] is False
+    assert result["failed_paths"]
+
+
+def test_outer_reference_document_rejects_unknown_fields():
+    payload = document(profile_payload())
+    payload["unexpected"] = True
+    with pytest.raises(ValueError):
+        ReferenceDemandDocument.model_validate(payload)

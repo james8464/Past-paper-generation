@@ -367,6 +367,8 @@ def source_observations(items):
 
 
 def validate_profile_evidence(profile):
+    if getattr(profile, "_document_schema_version", 2) != 3:
+        raise ValueError("legacy reference demand documents cannot qualify H3 paths")
     if profile.evidence_policy_id == EXTRACTION_POLICY:
         if (
             profile.assessment_kind != "full-paper"

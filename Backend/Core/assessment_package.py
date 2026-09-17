@@ -613,6 +613,7 @@ def _extract_items(
             "structured_mark_scheme": _structured_scheme(raw),
             "evidence_ids": _evidence_ids(raw),
             "assessment_contract": _assessment_contract(raw),
+            "reference_task_contract": raw.get("reference_task_contract"),
             "fingerprint": item_fingerprint(prompt),
             "provenance": raw.get("provenance", "generator-specific"),
             "choices": raw.get("choices") or [],
