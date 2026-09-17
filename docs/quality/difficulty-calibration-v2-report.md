@@ -714,3 +714,14 @@ renderer’s existing bold and italic examiner emphasis. The full Edexcel suite
 passed 320 tests after the change. This is renderer evidence only; it still
 requires a fresh live export and fidelity audit before it can raise the visual
 qualification state.
+
+The same direct review found that the generated general-marking-guidance page
+was much sparser and began materially higher than the measured reference page.
+The guidance heading now uses the reference-relative inset and vertical rhythm,
+and the page provides original, practical directions on alternative wording,
+best-fit levels, valid diagrams/calculations, repeated analysis and consistent
+contexts. This replaces terse repeated prose with useful top-level guidance
+without reproducing Pearson corporate or copyrighted text. The renderer and
+authoring suite passed 321 tests after the addition; the updated page was
+rendered and visually inspected. It remains pending fresh live-package and
+fidelity evidence.

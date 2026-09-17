@@ -43,6 +43,31 @@ def test_mark_scheme_uses_reference_style_sections(tmp_path):
     _assert_complete_contract_scheme(output, blueprint)
 
 
+def test_mark_scheme_guidance_explains_consistent_awarding(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_1"), syllabus, seed=42
+    )
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, syllabus, output)
+
+    text = _pdf_text(output)
+    assert "valid alternative wording" in text
+    assert "same analytical link more than once" in text
+
+    import pymupdf as fitz
+
+    with fitz.open(output) as document:
+        for x0, y0, _x1, _y1, block, *_rest in document[2].get_text("blocks"):
+            if "General Marking Guidance" in block:
+                assert x0 == pytest.approx(64, abs=1)
+                assert y0 == pytest.approx(144, abs=3)
+                break
+        else:
+            raise AssertionError("general marking guidance heading not found")
+
+
 def test_mark_scheme_has_subquestion_tables_mcq_explanations_and_levels(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")

@@ -2556,7 +2556,7 @@ def render_mark_scheme(
     pdf = canvas.Canvas(str(output_path), pagesize=page_size, pageCompression=0)
     _set_pdf_metadata(pdf, blueprint, "Mark scheme")
     width, height = page_size
-    margin = 49
+    margin = MS_LEFT
     cover_layout = MARK_SCHEME_COVER_LAYOUTS[blueprint.paper_id]
     cover_margin = cover_layout["margin"]
     accent = colors.HexColor(MARK_SCHEME_ACCENT_COLOR)
@@ -2603,21 +2603,29 @@ def render_mark_scheme(
     _draw_mark_scheme_qualification_page(pdf, blueprint, margin, height)
     pdf.showPage()
 
+    guidance_margin = 64
     pdf.setFont(MS_FONT_BOLD, 14)
-    pdf.drawString(margin, height - 70, "General Marking Guidance")
+    pdf.drawString(guidance_margin, height - 155, "General Marking Guidance")
     pdf.setFont(MS_FONT, 11)
-    y = height - 105
+    y = height - 200
     guidance = [
         "All candidates must receive the same treatment.",
-        "Mark schemes should be applied positively.",
-        "Examiners should mark according to the mark scheme.",
-        "All the marks on the mark scheme are designed to be awarded.",
-        "Where some judgement is required, levels-based descriptors should be used.",
-        "Crossed out work should be marked unless replaced with an alternative response.",
+        "Apply the question-specific criteria positively and award every mark that is evidenced.",
+        "Credit valid alternative wording where it communicates the required economic idea.",
+        "Do not award the same analytical link more than once, even when it is repeated.",
+        "Use levels descriptors as a best-fit judgement of the response as a whole.",
+        "Accept a clearly labelled diagram, calculation or chain of reasoning when it meets the criterion.",
+        "Crossed out work should be marked unless the candidate has replaced it with an alternative response.",
+        "Give no credit for an assertion that is inaccurate, irrelevant or unsupported by the response.",
+        "Record a consistent mark where a response uses a different but equally valid context.",
     ]
     for item in guidance:
-        for idx, line in enumerate(_wrap(item, 78)):
-            pdf.drawString(margin + (0 if idx else 12), y, ("• " if idx == 0 else "  ") + line)
+        for idx, line in enumerate(_wrap(item, 62)):
+            pdf.drawString(
+                guidance_margin + (0 if idx else 12),
+                y,
+                ("• " if idx == 0 else "  ") + line,
+            )
             y -= 15
     pdf.showPage()
 
