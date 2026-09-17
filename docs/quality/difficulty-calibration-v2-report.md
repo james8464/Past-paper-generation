@@ -725,3 +725,17 @@ without reproducing Pearson corporate or copyrighted text. The renderer and
 authoring suite passed 321 tests after the addition; the updated page was
 rendered and visually inspected. It remains pending fresh live-package and
 fidelity evidence.
+
+The next fresh live transaction (`gemma4:12b`, paper seed `26091719`) passed
+generation, PDF and reference-demand gates in 1,684.34 seconds. Its 32-page
+question paper and 26-page mark scheme are tagged A4 PDFs with every required
+role present, and manual text inspection confirms that all Question 6 prompts
+now use `a firm's average costs`. The 300- and 600-DPI print audits reported no
+print failures. They measured 73.0% for the question paper and 60.4% for the
+mark scheme, however, which remains below the mark-scheme visual floor; the
+manifest therefore correctly retains visual, expert review and student
+calibration as not run. Contact-sheet inspection corroborated that result: the
+unbranded mark-scheme cover and pre-correction table placement remain visibly
+less dense than the public reference. This package is qualified content and
+print evidence, not visual qualification; a fresh package using the committed
+renderer geometry and guidance changes is required.
