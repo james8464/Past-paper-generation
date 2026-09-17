@@ -5,9 +5,11 @@ import pytest
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.paper_configs import load_builtin_paper_config
 from pastpapergen.render_pdf import (
+    MS_MAX_ROW_HEIGHT,
     _mark_scheme_rows,
     _ms_row_height,
     _one_mark_points,
+    _source_backed_mark_scheme_lines,
     render_mark_scheme,
 )
 from pastpapergen.syllabus import load_syllabus
@@ -75,6 +77,24 @@ def test_source_backed_credit_criteria_render_as_examiner_point_entries():
     assert any(line.startswith("● AO1 (2 marks):") for line in first_answer_lines)
 
 
+def test_source_backed_mcq_criteria_keep_reference_bold_and_italic_markers():
+    item = SimpleNamespace(
+        prompt="Which response is correct?",
+        mark_breakdown="AO1 1",
+        mark_scheme=[
+            "The only correct answer is B",
+            "Reject A: the stated condition is not sufficient.",
+            "AO1 (1 mark): selects B.",
+        ],
+    )
+
+    lines = _source_backed_mark_scheme_lines(item)
+
+    assert "The only correct answer is B" in lines
+    assert "Reject A: the stated condition is not sufficient." in lines
+    assert "● AO1 (1 mark): selects B." in lines
+
+
 def test_mark_scheme_front_matter_matches_reference_structure(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
@@ -101,6 +121,27 @@ def test_mark_scheme_cover_uses_reference_serif_face(tmp_path):
 
     render_mark_scheme(blueprint, syllabus, output)
     assert any("Tinos" in name for name in pdf_font_names(output))
+
+
+def test_mark_scheme_table_uses_reference_content_inset(tmp_path):
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_1"), syllabus, seed=42
+    )
+    output = tmp_path / "ms.pdf"
+
+    render_mark_scheme(blueprint, syllabus, output)
+
+    import pymupdf as fitz
+
+    with fitz.open(output) as document:
+        for page in document:
+            for x0, y0, _x1, _y1, text, *_rest in page.get_text("blocks"):
+                if "Question\nNumber" in text:
+                    assert x0 == pytest.approx(86, abs=1)
+                    assert y0 == pytest.approx(90, abs=2)
+                    return
+    raise AssertionError("mark-scheme table header not found")
 
 
 def test_mark_scheme_uses_reference_italic_face_for_mcq_distractors(tmp_path):
@@ -188,7 +229,7 @@ def test_mark_scheme_rows_fit_within_single_page_after_long_extracts():
 
     row_heights = [_ms_row_height(row["answer_lines"]) for row in _mark_scheme_rows(blueprint, syllabus)]
 
-    assert max(row_heights) <= 720
+    assert max(row_heights) <= MS_MAX_ROW_HEIGHT
 
 
 @pytest.mark.parametrize("paper_id,seed", [("paper_1", 42), ("paper_1", 26080122), ("paper_2", 42), ("paper_3", 42)])

@@ -95,12 +95,14 @@ MS_PAGE_SIZES = {
     "paper_2": (595.56, 842.04),
     "paper_3": MS_PAGE_SIZE,
 }
-MS_LEFT = 44
-MS_RIGHT = 530
+MS_LEFT = 80
+MS_RIGHT = 560
 MS_NUMBER_W = 73
 MS_MARK_W = 54
 MS_HEADER_H = 38
-MS_CONTENT_TOP = 40
+MS_CONTENT_TOP = 85
+MS_CONTENT_BOTTOM = 54
+MS_MAX_ROW_HEIGHT = int(MS_PAGE_SIZE[1] - MS_CONTENT_TOP - MS_CONTENT_BOTTOM)
 MS_BODY_LEADING = 14
 EDEXCEL_MEDIA_BOX = L.media_box or (0.0, 0.0, 651.97, 898.58)
 EDEXCEL_CROP_BOX = L.crop_box or (28.35, 28.35, 623.62, 870.24)
@@ -2630,7 +2632,7 @@ def render_mark_scheme(
             pdf.showPage()
             y = height - MS_CONTENT_TOP
         row_height = _ms_row_height(row["answer_lines"])
-        if y - row_height < 54:
+        if y - row_height < MS_CONTENT_BOTTOM:
             pdf.showPage()
             y = height - MS_CONTENT_TOP
         y = _draw_ms_row(pdf, y, row["number"], row["answer_lines"], row["mark"])
@@ -2889,10 +2891,19 @@ def _mark_scheme_rows(blueprint: PaperBlueprint, syllabus: Syllabus) -> list[dic
 
 def _source_backed_mark_scheme_lines(item) -> list[str]:
     """Render each contract criterion as a discrete, visible examiner point."""
+    criteria = []
+    for point in item.mark_scheme:
+        stripped = point.strip()
+        if not stripped:
+            continue
+        if stripped.startswith(("The only correct answer", "Reject ")):
+            criteria.append(stripped)
+        else:
+            criteria.append(f"● {stripped}")
     return [
         "Question focus: " + item.prompt,
         "Allocation: " + item.mark_breakdown,
-        *(f"● {point}" for point in item.mark_scheme if point.strip()),
+        *criteria,
     ]
 
 
@@ -3063,7 +3074,7 @@ def _split_mark_scheme_row(number: str, mark: str, answer_lines: list[str]) -> l
                 current = []
             continue
         candidate = [*current, line]
-        if current and _ms_row_height(candidate) > 720:
+        if current and _ms_row_height(candidate) > MS_MAX_ROW_HEIGHT:
             chunks.append(current)
             current = [line]
         else:

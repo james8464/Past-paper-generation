@@ -701,3 +701,16 @@ regression test now repair that singular possessive article, but this artifact
 is retained as content-pipeline evidence only. A new rendered transaction is
 required before treating it as a language-qualified candidate, and it does not
 alter the outstanding visual or external-review gates.
+
+Manual page-by-page comparison of the retained Edexcel Paper 1 mark scheme
+against the August 2024 reference identified a measurable table-placement
+mismatch: generated tables began at 44 points from the left edge and 40 points
+from the top, whereas the matched reference row began at approximately 80 and
+85 points respectively. The renderer now uses that measured content inset and
+derives its maximum row height from the remaining safe page area, preventing a
+near-full row from creating an empty trailing page. Source-backed MCQ criteria
+also keep their unbulleted correct-answer and rejection lines, restoring the
+renderer’s existing bold and italic examiner emphasis. The full Edexcel suite
+passed 320 tests after the change. This is renderer evidence only; it still
+requires a fresh live export and fidelity audit before it can raise the visual
+qualification state.

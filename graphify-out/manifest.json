@@ -890,8 +890,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/render_pdf.py": {
-    "mtime": 1789676228.7490892,
-    "ast_hash": "920548fc2d37dab4bc6ff0ded3bd9e2e",
+    "mtime": 1789680712.5895977,
+    "ast_hash": "04248192cbf1e22be38a1b45af8af0a0",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/selection_contracts.py": {
@@ -955,8 +955,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/tests/test_mark_scheme_layout.py": {
-    "mtime": 1789676248.0007722,
-    "ast_hash": "c347bb49d8f577f6a3c1f02034d57a08",
+    "mtime": 1789680724.2107427,
+    "ast_hash": "7641849ef28a141a9f9048e2af7d40cd",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/tests/test_notes.py": {
@@ -2015,8 +2015,8 @@
     "semantic_hash": ""
   },
   "docs/quality/difficulty-calibration-v2-report.md": {
-    "mtime": 1789679986.6769662,
-    "ast_hash": "20072c320f2d415d732c0b35711da8eb",
+    "mtime": 1789680760.1109686,
+    "ast_hash": "2841a6b06b0674a70bd042bb2643d587",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-23-assessment-reliability-core.md": {
