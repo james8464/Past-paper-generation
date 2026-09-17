@@ -2752,8 +2752,13 @@ def _mark_scheme_rows(blueprint: PaperBlueprint, syllabus: Syllabus) -> list[dic
         if question.source_instance is not None:
             for item in question.parts or [question]:
                 number = f"{question.number}({item.label})" if question.parts else question.number
-                rows.extend(_split_mark_scheme_row(number, f"({item.marks})",
-                    ["Question focus: " + item.prompt, "Allocation: " + item.mark_breakdown, *item.mark_scheme]))
+                rows.extend(
+                    _split_mark_scheme_row(
+                        number,
+                        f"({item.marks})",
+                        _source_backed_mark_scheme_lines(item),
+                    )
+                )
             continue
         topic = syllabus.get_topic(question.topic_id)
         if question.parts:
@@ -2880,6 +2885,15 @@ def _mark_scheme_rows(blueprint: PaperBlueprint, syllabus: Syllabus) -> list[dic
                 question_rows[0]["blank_page_before"] = "header"
             rows.extend(question_rows)
     return rows
+
+
+def _source_backed_mark_scheme_lines(item) -> list[str]:
+    """Render each contract criterion as a discrete, visible examiner point."""
+    return [
+        "Question focus: " + item.prompt,
+        "Allocation: " + item.mark_breakdown,
+        *(f"● {point}" for point in item.mark_scheme if point.strip()),
+    ]
 
 
 def _paper_two_short_calculation_lines(question, part, topic) -> list[str]:
@@ -3663,7 +3677,8 @@ def _ms_centered_line(line: str) -> bool:
 
 
 def _ms_italic_line(line: str) -> bool:
-    return line.startswith("Reject ") or " is not correct as " in line.casefold()
+    content = line.removeprefix("● ")
+    return content.startswith("Reject ") or " is not correct as " in content.casefold()
 
 
 def _ms_bold_line(line: str) -> bool:

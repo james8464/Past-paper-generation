@@ -16,6 +16,8 @@ from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.pdf_text import extract_pdf_text, pdf_font_names
 from Backend.Core.pdf_validation import validate_pdf_for_release
 
+ROOT = Path(__file__).resolve().parents[1]
+
 
 def test_mark_scheme_uses_reference_style_sections(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
@@ -59,6 +61,18 @@ def test_mark_scheme_has_subquestion_tables_mcq_explanations_and_levels(tmp_path
     assert "Evaluation 7-9 marks:" in text
     assert "0 for no relevant" in text
     assert "Level 5" not in text
+
+
+def test_source_backed_credit_criteria_render_as_examiner_point_entries():
+    syllabus = load_syllabus(ROOT / "data" / "syllabus_seed.json")
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_1"), syllabus, seed=42
+    )
+
+    rows = _mark_scheme_rows(blueprint, syllabus)
+    first_answer_lines = next(row["answer_lines"] for row in rows if row["number"] == "1(a)")
+
+    assert any(line.startswith("● AO1 (2 marks):") for line in first_answer_lines)
 
 
 def test_mark_scheme_front_matter_matches_reference_structure(tmp_path):

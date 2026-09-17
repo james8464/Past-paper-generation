@@ -630,3 +630,14 @@ Artifact `tmp/task7f2-p3-live-probe-0901.json`, SHA-256
 failed overall with source/import identity intact. These results validate F2's
 adapter boundary, not the downstream question/difficulty quality or visual and
 external qualification.
+
+The 17 September Edexcel Paper 1 scheme presentation probe changed each
+source-backed contract criterion from a dense prose line to an examiner-style
+point entry, without changing the source text, allocation or total mark. The
+same tagged package passed both 300-DPI and 600-DPI print checks with no print
+failures. Its scheme score improved from 0.584 to 0.594 at 300 DPI and from
+0.584 to 0.593 at 600 DPI; the content-role score improved from 0.5865 to
+0.6048 (300 DPI) and 0.5861 to 0.604 (600 DPI). The document remains at 25
+pages against the measured 29–30-page reference range and below the unchanged
+0.654 overall floor. It is retained as partial 7.K evidence, not visual
+qualification.
