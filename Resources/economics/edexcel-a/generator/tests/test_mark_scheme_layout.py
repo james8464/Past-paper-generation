@@ -102,7 +102,10 @@ def test_source_backed_credit_criteria_render_as_examiner_point_entries():
     rows = _mark_scheme_rows(blueprint, syllabus)
     first_answer_lines = next(row["answer_lines"] for row in rows if row["number"] == "1(a)")
 
-    assert any(line.startswith("● AO1 (2 marks):") for line in first_answer_lines)
+    assert any(
+        line.startswith("● AO1 (2 marks):") and line.endswith("(2)")
+        for line in first_answer_lines
+    )
 
 
 def test_source_backed_mcq_criteria_keep_reference_bold_and_italic_markers():
@@ -120,7 +123,7 @@ def test_source_backed_mcq_criteria_keep_reference_bold_and_italic_markers():
 
     assert "The only correct answer is B" in lines
     assert "Reject A: the stated condition is not sufficient." in lines
-    assert "● AO1 (1 mark): selects B." in lines
+    assert "● AO1 (1 mark): selects B. (1)" in lines
 
 
 def test_mark_scheme_front_matter_matches_reference_structure(tmp_path):

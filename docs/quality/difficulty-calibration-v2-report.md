@@ -768,3 +768,28 @@ render and lint pass, but another fresh live export and fidelity audit are
 required before this latest guidance refinement can be claimed as visual
 evidence. The package continues to leave visual comparison, expert review and
 student calibration correctly unqualified.
+
+The next same-seed export, incorporating the complete guidance page and its
+84-point inset, passed generation, PDF and reference-demand gates in 1,660.37
+seconds. The 300- and 600-DPI audits were identical: no print failures, 73.0%
+question-paper fidelity, 64.6% mark-scheme fidelity and 68.8% overall. This is
+a 0.5-point mark-scheme improvement over the preceding 64.1% result, but it
+remains 0.8 points below the 65.4% floor, so the visual gate must remain
+unqualified. Page inspection confirms that the guidance is now substantive and
+uses the reference text column. It also identifies the next authentic target:
+the practice scheme begins a fresh header table for compact subsequent parts
+where the reference carries dense rows across a continuation table. Together
+with the remaining per-point mark notation and examiner emphasis gap, that is
+a renderer/marking-guidance design task rather than a reason to loosen the
+quality threshold. No expert or student calibration evidence has been
+substituted for the outstanding gates.
+
+The next renderer refinement preserves every source-contract criterion verbatim
+and appends compact notation to an explicit allocation: `AO1 (2 marks):
+criterion (2)`. This gives the assessor the compact point tally used in
+table-based mark schemes while retaining the original AO and total exactly; it
+does not create extra credit or alter the blueprint. A full-suite integrity
+failure caught and rejected an earlier wording-replacement variant, so the
+regression test now specifically guards verbatim printed credit. A fresh live
+transaction is required before assigning any fidelity improvement to this
+change.

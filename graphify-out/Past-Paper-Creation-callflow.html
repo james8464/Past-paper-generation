@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>Past Paper Creation — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 6608 nodes, 18544 edges, 269 communities. Commit: af221ec</p>
+<p class="subtitle">Generated from graphify knowledge graph: 6608 nodes, 18544 edges, 271 communities. Commit: 72a3ea0</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -69,15 +69,15 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#analysis-clustering">Analysis &amp; Clustering</a>
     <a href="#outputs-docs">Outputs &amp; Docs</a>
     <a href="#cli-skills">CLI &amp; Skill Installers</a>
-    <a href="#ingest-cache-update">Ingestion &amp; Updates</a>
     <a href="#serve-api">Serving API</a>
     <a href="#security-global">Security &amp; Global Graph</a>
     <a href="#tests-fixtures">Tests &amp; Fixtures</a>
     <a href="#document-dsl-init-py">document_dsl/__init__.py</a>
     <a href="#string">String</a>
+    <a href="#applicationcoordinator">ApplicationCoordinator</a>
     <a href="#codingkeys">CodingKeys</a>
     <a href="#codingkeys-dfef23">CodingKeys</a>
-    <a href="#helptopic">HelpTopic</a>
+    <a href="#independent-solver-py">independent_solver.py</a>
     <a href="#other">Other</a>
 </div>
 
@@ -90,46 +90,46 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 flowchart LR
     EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>10 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
-    BUILD_GRAPH_321CBB04("Graph Build<br/><small>1129 nodes</small>")
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>1143 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
-    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>807 nodes</small>")
+    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>799 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
     OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>39 nodes</small>")
     class OUTPUTS_DOCS_ED82387C module;
     CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>34 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
-    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>145 nodes</small>")
-    class INGEST_CACHE_UPDATE_FF457338 module;
     SERVE_API_35EC8E86("Serving API<br/><small>91 nodes</small>")
     class SERVE_API_35EC8E86 module;
     SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>8 nodes</small>")
     class SECURITY_GLOBAL_5B9C6A04 module;
-    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>3349 nodes</small>")
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>3437 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
     DOCUMENT_DSL_INIT_PY_34020C9A("document_dsl/__init__.py<br/><small>146 nodes</small>")
     class DOCUMENT_DSL_INIT_PY_34020C9A module;
     STRING_ECB25204("String<br/><small>118 nodes</small>")
     class STRING_ECB25204 module;
+    APPLICATIONCOORDINATOR_1AF9545D("ApplicationCoordinator<br/><small>110 nodes</small>")
+    class APPLICATIONCOORDINATOR_1AF9545D module;
     CODINGKEYS_2CCF71B7("CodingKeys<br/><small>57 nodes</small>")
     class CODINGKEYS_2CCF71B7 module;
     CODINGKEYS_DFEF23_FF5CBE38("CodingKeys<br/><small>42 nodes</small>")
     class CODINGKEYS_DFEF23_FF5CBE38 module;
-    HELPTOPIC_189A8965("HelpTopic<br/><small>39 nodes</small>")
-    class HELPTOPIC_189A8965 module;
-    OTHER_D0941E68("Other<br/><small>594 nodes</small>")
+    INDEPENDENT_SOLVER_PY_157AA9CD("independent_solver.py<br/><small>37 nodes</small>")
+    class INDEPENDENT_SOLVER_PY_157AA9CD module;
+    OTHER_D0941E68("Other<br/><small>537 nodes</small>")
     class OTHER_D0941E68 module;
-    TESTS_FIXTURES_B84B1DCC -->|references x528| ANALYSIS_CLUSTERING_C79796DA
-    ANALYSIS_CLUSTERING_C79796DA -->|calls x311| TESTS_FIXTURES_B84B1DCC
-    OTHER_D0941E68 -->|imports x131| TESTS_FIXTURES_B84B1DCC
-    BUILD_GRAPH_321CBB04 -->|contains x84| TESTS_FIXTURES_B84B1DCC
-    BUILD_GRAPH_321CBB04 -->|contains x76| ANALYSIS_CLUSTERING_C79796DA
-    TESTS_FIXTURES_B84B1DCC -->|calls x74| OTHER_D0941E68
+    TESTS_FIXTURES_B84B1DCC -->|references x519| ANALYSIS_CLUSTERING_C79796DA
+    ANALYSIS_CLUSTERING_C79796DA -->|calls x288| TESTS_FIXTURES_B84B1DCC
+    BUILD_GRAPH_321CBB04 -->|contains x97| TESTS_FIXTURES_B84B1DCC
+    BUILD_GRAPH_321CBB04 -->|contains x77| ANALYSIS_CLUSTERING_C79796DA
+    OTHER_D0941E68 -->|references x76| TESTS_FIXTURES_B84B1DCC
+    STRING_ECB25204 -->|references x70| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|calls x66| BUILD_GRAPH_321CBB04
     CLI_SKILLS_9964CBB8 -->|calls x59| TESTS_FIXTURES_B84B1DCC
-    TESTS_FIXTURES_B84B1DCC -->|calls x58| BUILD_GRAPH_321CBB04
+    INDEPENDENT_SOLVER_PY_157AA9CD -->|imports x53| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|calls x51| OTHER_D0941E68
     SERVE_API_35EC8E86 -->|calls x49| TESTS_FIXTURES_B84B1DCC
-    STRING_ECB25204 -->|references x46| TESTS_FIXTURES_B84B1DCC
-    TESTS_FIXTURES_B84B1DCC -->|imports x34| DOCUMENT_DSL_INIT_PY_34020C9A
-    TESTS_FIXTURES_B84B1DCC -->|method x31| INGEST_CACHE_UPDATE_FF457338
+    APPLICATIONCOORDINATOR_1AF9545D -->|method x48| TESTS_FIXTURES_B84B1DCC
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -146,19 +146,19 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>10</td><td><code>165</code></td></tr><tr><td>Graph Build</td><td>1129</td><td><code>24, 33, 43, 56, 58, 65, 9, 150, 32, 92, 94, 102, 69, 100, 106, 108, 110, 111, 86, 115, 118, 120, 129, 130, 131, 109, 135, 138, 116, 145, 146, 149, 151, 152, 155, 156, 162, 163, 166, 168, 169, 172, 178, 179, 189, 190, 191, 192, 197, 198, 199, 200, 105, 113, 203, 205, 207, 147, 213, 268, 223, 224, 225, 226, 230, 231, 232, 233, 234, 235, 236, 237</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>807</td><td><code>6, 12, 11, 21, 50, 48, 34, 29, 51, 54, 68, 7, 204, 96, 74, 216, 88, 154, 157, 158, 164, 170, 171</code></td></tr><tr><td>Outputs &amp; Docs</td><td>39</td><td><code>133, 143, 194</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>34</td><td><code>57, 244</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>145</td><td><code>5</code></td></tr><tr><td>Serving API</td><td>91</td><td><code>71, 124, 117, 221</code></td></tr><tr><td>Security &amp; Global Graph</td><td>8</td><td><code>195</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>3349</td><td><code>1, 14, 2, 8, 19, 4, 16, 10, 17, 13, 77, 22, 98, 23, 31, 0, 55, 37, 25, 59, 3, 36, 38, 30, 42, 84, 18, 41, 46, 47, 49, 35, 40, 53, 62, 60, 44, 73, 20, 61, 70, 72, 64, 78, 27, 75, 76, 80, 104, 26, 79, 82, 182, 89, 103, 101, 134, 93, 95, 183, 114, 153, 208, 107, 119, 211, 121, 122, 85, 126, 132, 139, 140, 97, 137, 209, 125, 148, 123, 217, 90, 262, 263, 128, 193, 264, 265, 202, 266, 180, 212, 215, 267</code></td></tr><tr><td>document_dsl/__init__.py</td><td>146</td><td><code>67</code></td></tr><tr><td>String</td><td>118</td><td><code>15</code></td></tr><tr><td>CodingKeys</td><td>57</td><td><code>28</code></td></tr><tr><td>CodingKeys</td><td>42</td><td><code>52</code></td></tr><tr><td>HelpTopic</td><td>39</td><td><code>127</code></td></tr><tr><td>Other</td><td>594</td><td><code>66, 39, 63, 81, 83, 87, 99, 206, 112, 142, 136, 144, 214, 159, 160, 161, 45, 167, 201, 141, 173, 174, 175, 176, 177, 181, 184, 185, 186, 187, 188, 196, 91, 210, 218, 219, 220, 222, 227, 228, 229, 238, 239, 240, 241, 242, 243, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>10</td><td><code>165</code></td></tr><tr><td>Graph Build</td><td>1143</td><td><code>24, 33, 43, 56, 58, 65, 9, 109, 32, 92, 94, 102, 69, 100, 106, 108, 110, 111, 270, 86, 115, 118, 120, 129, 130, 131, 135, 138, 116, 145, 146, 149, 150, 151, 152, 155, 156, 162, 163, 166, 168, 169, 172, 178, 179, 189, 190, 191, 192, 197, 198, 199, 200, 105, 113, 203, 205, 207, 147, 213, 268, 223, 224, 225, 226, 230, 231, 232, 233, 234, 235, 236, 237</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>799</td><td><code>6, 12, 11, 21, 48, 34, 29, 51, 54, 50, 68, 7, 204, 96, 74, 216, 88, 154, 157, 158, 164, 170, 171</code></td></tr><tr><td>Outputs &amp; Docs</td><td>39</td><td><code>133, 143, 194</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>34</td><td><code>57, 244</code></td></tr><tr><td>Serving API</td><td>91</td><td><code>71, 124, 117, 221</code></td></tr><tr><td>Security &amp; Global Graph</td><td>8</td><td><code>195</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>3437</td><td><code>1, 14, 2, 8, 4, 16, 17, 10, 13, 19, 77, 18, 22, 23, 31, 55, 0, 37, 127, 25, 59, 3, 36, 38, 39, 30, 42, 84, 98, 41, 46, 47, 49, 35, 40, 53, 62, 60, 44, 73, 20, 61, 70, 72, 64, 78, 27, 75, 76, 80, 104, 79, 82, 182, 269, 89, 103, 101, 134, 93, 95, 183, 114, 153, 208, 107, 119, 211, 121, 122, 85, 126, 132, 139, 140, 97, 137, 209, 125, 148, 123, 217, 90, 262, 263, 128, 193, 264, 265, 202, 266, 180, 212, 215, 267</code></td></tr><tr><td>document_dsl/__init__.py</td><td>146</td><td><code>67</code></td></tr><tr><td>String</td><td>118</td><td><code>15</code></td></tr><tr><td>ApplicationCoordinator</td><td>110</td><td><code>5</code></td></tr><tr><td>CodingKeys</td><td>57</td><td><code>28</code></td></tr><tr><td>CodingKeys</td><td>42</td><td><code>52</code></td></tr><tr><td>independent_solver.py</td><td>37</td><td><code>66</code></td></tr><tr><td>Other</td><td>537</td><td><code>63, 81, 83, 206, 87, 99, 112, 142, 136, 144, 214, 159, 160, 161, 45, 167, 201, 141, 173, 174, 175, 176, 177, 26, 181, 184, 185, 186, 187, 188, 196, 91, 210, 218, 219, 220, 222, 227, 228, 229, 238, 239, 240, 241, 242, 243, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261</code></td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Core Flow</h4>
-    <div class="arrow-chain">Extraction Pipeline -&gt; Tests &amp; Fixtures -&gt; Analysis &amp; Clustering -&gt; Graph Build -&gt; Outputs &amp; Docs -&gt; CLI &amp; Skill Installers -&gt; Ingestion &amp; Updates</div>
+    <div class="arrow-chain">Extraction Pipeline -&gt; Tests &amp; Fixtures -&gt; Analysis &amp; Clustering -&gt; Graph Build -&gt; independent_solver.py -&gt; Serving API -&gt; Outputs &amp; Docs</div>
   </div>
 </div>
 <div class="grid">
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>6608 nodes · 18544 edges · 269 communities (243 shown, 26 thin omitted)</li>
+      <li>6608 nodes · 18544 edges · 271 communities (245 shown, 26 thin omitted)</li>
       <li>Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 1097 edges (avg confidence: 0.63)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `GeneratedQuestion` - 216 edges</li>
@@ -323,12 +323,12 @@ flowchart LR
 
 <!-- ====== 3. Graph Build ====== -->
 <h2 id="build-graph">3. Graph Build</h2>
-<p>Graph Build groups implementation around resources, demand, reference, profileschemajson, mostly in Resources/reference-demand-profile.schema.json, Resources/empirical-calibration.schema.json, Resources/generator-capability.schema.json. This section covers 1129 nodes and 1508 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Graph Build groups implementation around resources, demand, reference, profileschemajson, mostly in Resources/reference-demand-profile.schema.json, Resources/empirical-calibration.schema.json, Resources/generator-capability.schema.json. This section covers 1143 nodes and 1536 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Graph Build (1129 nodes, 1508 edges)
+    %% Section: Graph Build (1143 nodes, 1536 edges)
     subgraph build_graph_Core_subjects_sql_contracts_py_8ef62bf4["Core/subjects/sql_contracts.py"]
         backend_core_subjects_sql_contracts_sqlproblem_550d5cb0("_SQLProblem<br/><small>Core/subjects/sql_contracts.py</small>")
         backend_core_subjects_sql_contracts_tokenstream_9fa6719c("_TokenStream<br/><small>Core/subjects/sql_contracts.py</small>")
@@ -360,7 +360,7 @@ flowchart LR
     backend_core_subjects_sql_contracts_sqlliteralco_d07bc6a6 -->|calls| backend_core_subjects_sql_contracts_py_valueerro_7cd90908
     backend_core_subjects_sql_contracts_validate_one_141c4fab -->|calls| backend_core_subjects_sql_contracts_tokenstream_9fa6719c
     backend_core_subjects_sql_contracts_tokenstream_9fa6719c -->|method| backend_core_subjects_sql_contracts_tokenstream_84414784
-    %% Omitted for readability: 1111 nodes, 0 edges
+    %% Omitted for readability: 1125 nodes, 0 edges
     class backend_core_subjects_sql_contracts_sqlproblem_550d5cb0 function;
     class backend_core_subjects_sql_contracts_tokenstream_9fa6719c async;
     class backend_core_subjects_sql_contracts_tokenstream_84414784 function;
@@ -652,26 +652,26 @@ flowchart LR
 <tr><td><code>Resources/generator-capability.schema.json</code></td><td>120 nodes</td></tr>
 <tr><td><code>Resources/qualification-schema.json</code></td><td>97 nodes</td></tr>
 <tr><td><code>Resources/backend-protocol.schema.json</code></td><td>70 nodes</td></tr>
-<tr><td><code>Core/subjects/sql_contracts.py</code></td><td>57 nodes</td></tr>
+<tr><td><code>Core/subjects/sql_contracts.py</code></td><td>53 nodes</td></tr>
 <tr><td><code>generator/pastpapergen/render_pdf.py</code></td><td>26 nodes</td></tr>
 <tr><td><code>tools/validate_generator_migration.py</code></td><td>17 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x867, extends x284, calls x186, references x122. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x865, extends x284, calls x190, references x124. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 4. Analysis & Clustering ====== -->
 <h2 id="analysis-clustering">4. Analysis &amp; Clustering</h2>
-<p>Analysis &amp; Clustering groups implementation around generator, resources, render, aqa, mostly in generator/ocregen/render_pdf.py, generator/pastpapergen/generator.py, generator/cspapergen/question_bank.py. This section covers 807 nodes and 2170 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Analysis &amp; Clustering groups implementation around generator, resources, render, pdfpy, mostly in generator/ocregen/render_pdf.py, generator/pastpapergen/generator.py, generator/cspapergen/question_bank.py. This section covers 799 nodes and 2137 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Analysis &amp; Clustering (807 nodes, 2170 edges)
+    %% Section: Analysis &amp; Clustering (799 nodes, 2137 edges)
     subgraph analysis_clustering_Backend_Core_benchmark_py_ad20c69e["Backend/Core/benchmark.py"]
         backend_core_benchmark_handle_benchmark_303eb156("handle_benchmark()<br/><small>Backend/Core/benchmark.py</small>")
         backend_core_benchmark_cpu_load_percent_a21569b0("cpu_load_percent()<br/><small>Backend/Core/benchmark.py</small>")
@@ -709,7 +709,7 @@ flowchart LR
     backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_benchmark_memory_snapshot_028e5cae
     backend_core_model_review_assert_materially_new_27bf02e6 -->|calls| resources_computer_science_aqa_generator_cspaper_3591620c
     resources_computer_science_aqa_generator_cspaper_e688065e -->|imports| resources_computer_science_aqa_generator_cspaper_93d2977e
-    %% Omitted for readability: 789 nodes, 0 edges
+    %% Omitted for readability: 781 nodes, 0 edges
     class backend_core_benchmark_handle_benchmark_303eb156 function;
     class backend_core_benchmark_cpu_load_percent_a21569b0 function;
     class backend_core_benchmark_cpu_probe_6744e47e function;
@@ -762,7 +762,7 @@ flowchart LR
   <td><code>SwiftUI</code><br><small style="color:var(--muted)">PaperCreator/Navigation/SidebarView.swift</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td><code>AppCommands.swift</code><br><small style="color:var(--muted)">PaperCreator/Application/AppCommands.swift</small></td>
-  <td><code>BenchmarkView.swift</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small><br><code>ContentView.swift</code><br><small style="color:var(--muted)">PaperCreator/Navigation/ContentView.swift</small><br><code>GeneratorWorkspaceView.swift</code><br><small style="color:var(--muted)">Features/Generation/GeneratorWorkspaceView.swift</small><br>+4 more</td>
+  <td><code>BenchmarkView.swift</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small><br><code>ContentView.swift</code><br><small style="color:var(--muted)">PaperCreator/Navigation/ContentView.swift</small><br><code>GeneratorWorkspaceView.swift</code><br><small style="color:var(--muted)">Features/Generation/GeneratorWorkspaceView.swift</small><br>+5 more</td>
   <td>SwiftUI node in PaperCreator/Navigation/SidebarView.swift.</td>
 </tr>
 <tr>
@@ -770,7 +770,7 @@ flowchart LR
   <td><code>AppCommands</code><br><small style="color:var(--muted)">PaperCreator/Application/AppCommands.swift</small></td>
   <td><span class="tag tag-cmd">Entry</span></td>
   <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small></td>
   <td>AppCommands node in PaperCreator/Application/AppCommands.swift.</td>
 </tr>
 <tr>
@@ -783,14 +783,62 @@ flowchart LR
 </tr>
 <tr>
   <td>5</td>
+  <td><code>PaperCreatorApp.swift</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>SwiftUI</code><br><small style="color:var(--muted)">PaperCreator/Navigation/SidebarView.swift</small></td>
+  <td><code>TipKit</code><br><small style="color:var(--muted)">Features/Onboarding/PaperCreationTips.swift</small></td>
+  <td>PaperCreatorApp.swift node in PaperCreator/Application/PaperCreatorApp.swift.</td>
+</tr>
+<tr>
+  <td>6</td>
   <td><code>TipKit</code><br><small style="color:var(--muted)">Features/Onboarding/PaperCreationTips.swift</small></td>
   <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>PaperCreatorApp.swift</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small></td>
   <td><code>GeneratorWorkspaceView.swift</code><br><small style="color:var(--muted)">Features/Generation/GeneratorWorkspaceView.swift</small><br><code>PaperCreationTips.swift</code><br><small style="color:var(--muted)">Features/Onboarding/PaperCreationTips.swift</small></td>
   <td>TipKit node in Features/Onboarding/PaperCreationTips.swift.</td>
 </tr>
 <tr>
-  <td>6</td>
+  <td>7</td>
+  <td><code>PaperCreator</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small><br><code>init()</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small></td>
+  <td>PaperCreator node in PaperCreator/Application/PaperCreatorApp.swift.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>App</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>App node in project.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>.init()</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>PaperCreator</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>.init() node in PaperCreator/Application/PaperCreatorApp.swift.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Scene</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Scene node in project.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AppCommands</code><br><small style="color:var(--muted)">PaperCreator/Application/AppCommands.swift</small><br><code>PaperCreator</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small></td>
+  <td><code>ContentView</code><br><small style="color:var(--muted)">PaperCreator/Navigation/ContentView.swift</small><br><code>SettingsPane</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>.body node in PaperCreator/Application/PaperCreatorApp.swift.</td>
+</tr>
+<tr>
+  <td>12</td>
   <td><code>NativeVisualStyle.swift</code><br><small style="color:var(--muted)">PaperCreator/Components/NativeVisualStyle.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>SwiftUI</code><br><small style="color:var(--muted)">PaperCreator/Navigation/SidebarView.swift</small></td>
@@ -798,7 +846,7 @@ flowchart LR
   <td>NativeVisualStyle.swift node in PaperCreator/Components/NativeVisualStyle.swift.</td>
 </tr>
 <tr>
-  <td>7</td>
+  <td>13</td>
   <td><code>WorkspaceLayoutMode</code><br><small style="color:var(--muted)">PaperCreator/Components/NativeVisualStyle.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -806,7 +854,7 @@ flowchart LR
   <td>WorkspaceLayoutMode node in PaperCreator/Components/NativeVisualStyle.swift.</td>
 </tr>
 <tr>
-  <td>8</td>
+  <td>14</td>
   <td><code>compact</code><br><small style="color:var(--muted)">PaperCreator/Components/NativeVisualStyle.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -814,7 +862,7 @@ flowchart LR
   <td>compact node in PaperCreator/Components/NativeVisualStyle.swift.</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>15</td>
   <td><code>standard</code><br><small style="color:var(--muted)">PaperCreator/Components/NativeVisualStyle.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -822,7 +870,7 @@ flowchart LR
   <td>standard node in PaperCreator/Components/NativeVisualStyle.swift.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>16</td>
   <td><code>expanded</code><br><small style="color:var(--muted)">PaperCreator/Components/NativeVisualStyle.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -830,7 +878,7 @@ flowchart LR
   <td>expanded node in PaperCreator/Components/NativeVisualStyle.swift.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>17</td>
   <td><code>Bool</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -838,7 +886,7 @@ flowchart LR
   <td>Bool node in project.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>18</td>
   <td><code>.showsSidebar</code><br><small style="color:var(--muted)">PaperCreator/Components/NativeVisualStyle.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>WorkspaceLayoutMode</code><br><small style="color:var(--muted)">PaperCreator/Components/NativeVisualStyle.swift</small></td>
@@ -846,7 +894,7 @@ flowchart LR
   <td>Organizes documentation pages, navigation, or content lookup.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>19</td>
   <td><code>.showsInspector</code><br><small style="color:var(--muted)">PaperCreator/Components/NativeVisualStyle.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>WorkspaceLayoutMode</code><br><small style="color:var(--muted)">PaperCreator/Components/NativeVisualStyle.swift</small></td>
@@ -854,7 +902,7 @@ flowchart LR
   <td>.showsInspector node in PaperCreator/Components/NativeVisualStyle.swift.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>20</td>
   <td><code>WorkspaceLayoutPolicy</code><br><small style="color:var(--muted)">PaperCreator/Components/NativeVisualStyle.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -862,7 +910,7 @@ flowchart LR
   <td>WorkspaceLayoutPolicy node in PaperCreator/Components/NativeVisualStyle.swift.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>21</td>
   <td><code>.mode()</code><br><small style="color:var(--muted)">PaperCreator/Components/NativeVisualStyle.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>WorkspaceLayoutPolicy</code><br><small style="color:var(--muted)">PaperCreator/Components/NativeVisualStyle.swift</small></td>
@@ -870,7 +918,7 @@ flowchart LR
   <td>.mode() node in PaperCreator/Components/NativeVisualStyle.swift.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>22</td>
   <td><code>CGFloat</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -878,7 +926,7 @@ flowchart LR
   <td>CGFloat node in project.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>23</td>
   <td><code>View</code><br><small style="color:var(--muted)">PaperCreator/Components/NativeVisualStyle.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -886,7 +934,7 @@ flowchart LR
   <td>View node in PaperCreator/Components/NativeVisualStyle.swift.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>24</td>
   <td><code>.nativePrimaryActionStyle()</code><br><small style="color:var(--muted)">PaperCreator/Components/NativeVisualStyle.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -894,7 +942,7 @@ flowchart LR
   <td>.nativePrimaryActionStyle() node in PaperCreator/Components/NativeVisualStyle.swift.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>25</td>
   <td><code>SharedViews.swift</code><br><small style="color:var(--muted)">PaperCreator/Components/SharedViews.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>SwiftUI</code><br><small style="color:var(--muted)">PaperCreator/Navigation/SidebarView.swift</small></td>
@@ -902,7 +950,7 @@ flowchart LR
   <td>SharedViews.swift node in PaperCreator/Components/SharedViews.swift.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>26</td>
   <td><code>GeneratedFilesTable</code><br><small style="color:var(--muted)">PaperCreator/Components/SharedViews.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -910,7 +958,7 @@ flowchart LR
   <td>GeneratedFilesTable node in PaperCreator/Components/SharedViews.swift.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>27</td>
   <td><code>PanelEmptyState</code><br><small style="color:var(--muted)">PaperCreator/Components/SharedViews.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -918,7 +966,7 @@ flowchart LR
   <td>PanelEmptyState node in PaperCreator/Components/SharedViews.swift.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>28</td>
   <td><code>String</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -926,7 +974,7 @@ flowchart LR
   <td>String node in project.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>29</td>
   <td><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Components/SharedViews.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>PanelEmptyState</code><br><small style="color:var(--muted)">PaperCreator/Components/SharedViews.swift</small></td>
@@ -934,60 +982,12 @@ flowchart LR
   <td>.body node in PaperCreator/Components/SharedViews.swift.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>30</td>
   <td><code>BenchmarkView.swift</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>SwiftUI</code><br><small style="color:var(--muted)">PaperCreator/Navigation/SidebarView.swift</small></td>
   <td><code>Charts</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
   <td>BenchmarkView.swift node in Features/Benchmark/BenchmarkView.swift.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>Charts</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td><code>BenchmarkView.swift</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>Charts node in Features/Benchmark/BenchmarkView.swift.</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>BenchmarkAccessibility</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>chartSummary()</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
-  <td>BenchmarkAccessibility node in Features/Benchmark/BenchmarkView.swift.</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>BenchmarkWorkspace</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small><br><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Navigation/ContentView.swift</small></td>
-  <td>BenchmarkWorkspace node in Features/Benchmark/BenchmarkView.swift.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>BenchmarkWorkspace</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
-  <td><code>BenchmarkLiveCharts</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small><br><code>BenchmarkMetricGrid</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small><br><code>BenchmarkOverviewPanel</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
-  <td>.body node in Features/Benchmark/BenchmarkView.swift.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>BenchmarkOverviewPanel</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
-  <td>BenchmarkOverviewPanel node in Features/Benchmark/BenchmarkView.swift.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>BenchmarkOverviewPanel</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
-  <td><code>BenchmarkVerdictSummary</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small><br><code>Text</code></td>
-  <td>.body node in Features/Benchmark/BenchmarkView.swift.</td>
 </tr>
 </table>
 
@@ -1008,7 +1008,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x769, references x577, contains x435, method x91. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x767, references x572, contains x428, method x88. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -1707,368 +1707,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 7. Ingestion & Updates ====== -->
-<h2 id="ingest-cache-update">7. Ingestion &amp; Updates</h2>
-<p>Ingestion &amp; Updates groups implementation around macos, papercreator, state, applicationcoordinatorswift, mostly in PaperCreator/State/ApplicationCoordinator.swift, PaperCreator/Application/AppConfiguration.swift, PaperCreator/Domain/AppModels.swift. This section covers 145 nodes and 297 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: Ingestion &amp; Updates (145 nodes, 297 edges)
-    subgraph ingest_cache_update_PaperCreator_Application_App_0746390d["PaperCreator/Application/AppConfiguration.swift"]
-        macos_papercreator_application_appconfiguration_27b7d5c3("AppDefaults<br/><small>PaperCreator/Application/AppConfiguration.swift</small>")
-        macos_papercreator_application_appconfiguration_bf14ae4c("appStoreWorkingFolder()<br/><small>PaperCreator/Application/AppConfiguration.swift</small>")
-        macos_papercreator_application_appconfiguration_dfdf963d("defaultOutputFolder()<br/><small>PaperCreator/Application/AppConfiguration.swift</small>")
-        macos_papercreator_application_appconfiguration_8dc25cb4("displayPath()<br/><small>PaperCreator/Application/AppConfiguration.swift</small>")
-        macos_papercreator_application_appconfiguration_17c5c57d("isSandboxDownloadsPath()<br/><small>PaperCreator/Application/AppConfiguration.swift</small>")
-        macos_papercreator_application_appconfiguration_224d8ad3("jobHistoryFolder()<br/><small>PaperCreator/Application/AppConfiguration.swift</small>")
-        macos_papercreator_application_appconfiguration_901a82af("mlxCacheFolder()<br/><small>PaperCreator/Application/AppConfiguration.swift</small>")
-    end
-    subgraph ingest_cache_update_PaperCreator_State_Applicati_1e579283["PaperCreator/State/ApplicationCoordinator.swift"]
-        macos_papercreator_state_applicationcoordinator_ad9c77ae("ApplicationCoordinator<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
-        macos_papercreator_state_applicationcoordinator_46e3fcab("generate()<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
-        macos_papercreator_state_applicationcoordinator_80d6bdfb("restoreOutputFolder()<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
-        macos_papercreator_state_applicationcoordinator_18f50178("moveGeneratedFilesToOutputFolderIfNeeded()<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
-        macos_papercreator_state_applicationcoordinator_c29f5141("confirmMLXSetup()<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
-        macos_papercreator_state_applicationcoordinator_e46982ee("init()<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
-        macos_papercreator_state_applicationcoordinator_6da700d8(".outputFolderDisplayPath<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
-    end
-    subgraph ingest_cache_update_PaperCreator_Domain_AppModel_422d4c29["PaperCreator/Domain/AppModels.swift"]
-        macos_papercreator_domain_appmodels_generatedfil_f4935377("GeneratedFile<br/><small>PaperCreator/Domain/AppModels.swift</small>")
-        macos_papercreator_domain_appmodels_progressentr_0333d4c2("ProgressEntry<br/><small>PaperCreator/Domain/AppModels.swift</small>")
-    end
-    macos_papercreator_state_generationcoordinator_g_43f09001("GenerationCoordinator<br/><small>PaperCreator/State/GenerationCoordinator.swift</small>")
-    macos_tests_apptests_papercreatortests_testappst_f36cbfee("testAppStoreWorkspaceIsPrivateAndNotDownloads()<br/><small>macOS/Tests/AppTests.swift</small>")
-    macos_papercreator_application_appconfiguration_27b7d5c3 -->|method| macos_papercreator_application_appconfiguration_bf14ae4c
-    macos_papercreator_application_appconfiguration_27b7d5c3 -->|method| macos_papercreator_application_appconfiguration_dfdf963d
-    macos_papercreator_application_appconfiguration_27b7d5c3 -->|method| macos_papercreator_application_appconfiguration_8dc25cb4
-    macos_papercreator_application_appconfiguration_27b7d5c3 -->|method| macos_papercreator_application_appconfiguration_17c5c57d
-    macos_papercreator_application_appconfiguration_27b7d5c3 -->|method| macos_papercreator_application_appconfiguration_224d8ad3
-    macos_papercreator_application_appconfiguration_27b7d5c3 -->|method| macos_papercreator_application_appconfiguration_901a82af
-    macos_papercreator_application_appconfiguration_dfdf963d -->|calls| macos_papercreator_application_appconfiguration_bf14ae4c
-    macos_papercreator_application_appconfiguration_dfdf963d -->|calls| macos_papercreator_state_applicationcoordinator_ad9c77ae
-    macos_papercreator_application_appconfiguration_dfdf963d -->|calls| macos_papercreator_state_applicationcoordinator_80d6bdfb
-    macos_papercreator_application_appconfiguration_bf14ae4c -->|calls| macos_papercreator_state_applicationcoordinator_46e3fcab
-    macos_papercreator_application_appconfiguration_bf14ae4c -->|calls| macos_papercreator_state_applicationcoordinator_18f50178
-    macos_papercreator_application_appconfiguration_bf14ae4c -->|calls| macos_tests_apptests_papercreatortests_testappst_f36cbfee
-    macos_papercreator_application_appconfiguration_901a82af -->|calls| macos_papercreator_state_applicationcoordinator_c29f5141
-    macos_papercreator_application_appconfiguration_901a82af -->|calls| macos_papercreator_state_applicationcoordinator_46e3fcab
-    macos_papercreator_application_appconfiguration_224d8ad3 -->|calls| macos_papercreator_state_applicationcoordinator_e46982ee
-    macos_papercreator_application_appconfiguration_17c5c57d -->|calls| macos_papercreator_state_applicationcoordinator_e46982ee
-    macos_papercreator_application_appconfiguration_8dc25cb4 -->|calls| macos_papercreator_state_applicationcoordinator_6da700d8
-    macos_papercreator_domain_appmodels_generatedfil_f4935377 -->|calls| macos_papercreator_state_applicationcoordinator_18f50178
-    macos_papercreator_state_applicationcoordinator_ad9c77ae -->|method| macos_papercreator_state_applicationcoordinator_c29f5141
-    macos_papercreator_state_applicationcoordinator_ad9c77ae -->|method| macos_papercreator_state_applicationcoordinator_46e3fcab
-    macos_papercreator_state_applicationcoordinator_ad9c77ae -->|method| macos_papercreator_state_applicationcoordinator_e46982ee
-    macos_papercreator_state_applicationcoordinator_ad9c77ae -->|method| macos_papercreator_state_applicationcoordinator_18f50178
-    macos_papercreator_state_applicationcoordinator_ad9c77ae -->|method| macos_papercreator_state_applicationcoordinator_6da700d8
-    macos_papercreator_state_applicationcoordinator_ad9c77ae -->|method| macos_papercreator_state_applicationcoordinator_80d6bdfb
-    %% Omitted for readability: 127 nodes, 2 edges
-    class macos_papercreator_application_appconfiguration_27b7d5c3 klass;
-    class macos_papercreator_application_appconfiguration_bf14ae4c ui;
-    class macos_papercreator_application_appconfiguration_dfdf963d function;
-    class macos_papercreator_application_appconfiguration_8dc25cb4 function;
-    class macos_papercreator_application_appconfiguration_17c5c57d function;
-    class macos_papercreator_application_appconfiguration_224d8ad3 function;
-    class macos_papercreator_application_appconfiguration_901a82af function;
-    class macos_papercreator_state_applicationcoordinator_ad9c77ae klass;
-    class macos_papercreator_state_applicationcoordinator_46e3fcab function;
-    class macos_papercreator_state_applicationcoordinator_80d6bdfb ui;
-    class macos_papercreator_state_applicationcoordinator_18f50178 function;
-    class macos_papercreator_state_applicationcoordinator_c29f5141 function;
-    class macos_papercreator_state_applicationcoordinator_e46982ee function;
-    class macos_papercreator_state_applicationcoordinator_6da700d8 function;
-    class macos_papercreator_domain_appmodels_generatedfil_f4935377 klass;
-    class macos_papercreator_domain_appmodels_progressentr_0333d4c2 async;
-    class macos_papercreator_state_generationcoordinator_g_43f09001 klass;
-    class macos_tests_apptests_papercreatortests_testappst_f36cbfee test;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Application/AppCommands.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>previewGeneratedFile()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>revealGeneratedFile()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>showBenchmarkPage()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
-  <td>.body node in PaperCreator/Application/AppCommands.swift.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>AppConfiguration.swift</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Reads, resolves, or persists project configuration.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>AppDefaults</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>appStoreWorkingFolder()</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small><br><code>defaultOutputFolder()</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small><br><code>displayPath()</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small><br>+3 more</td>
-  <td>AppDefaults node in PaperCreator/Application/AppConfiguration.swift.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>.defaultOutputFolder()</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AppDefaults</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td><code>ApplicationCoordinator</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>appStoreWorkingFolder()</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small><br><code>restoreOutputFolder()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
-  <td>.defaultOutputFolder() node in PaperCreator/Application/AppConfiguration.swift.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>URL</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>URL node in project.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>.appStoreWorkingFolder()</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td><code>AppDefaults</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small><br><code>defaultOutputFolder()</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td><code>generate()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>moveGeneratedFilesToOutputFolderIfNeeded()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>testAppStoreWorkspaceIsPrivateAndNotDownloads()</code><br><small style="color:var(--muted)">macOS/Tests/AppTests.swift</small></td>
-  <td>.appStoreWorkingFolder() node in PaperCreator/Application/AppConfiguration.swift.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>.mlxCacheFolder()</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AppDefaults</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td><code>confirmMLXSetup()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>generate()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
-  <td>Caches analysis results or computes cache keys.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>.jobHistoryFolder()</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AppDefaults</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td><code>init()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
-  <td>.jobHistoryFolder() node in PaperCreator/Application/AppConfiguration.swift.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>.isSandboxDownloadsPath()</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AppDefaults</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td><code>init()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
-  <td>.isSandboxDownloadsPath() node in PaperCreator/Application/AppConfiguration.swift.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>String</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>String node in project.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>Bool</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Bool node in project.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>.displayPath()</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AppDefaults</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td><code>.outputFolderDisplayPath</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>testDisplayPathAbbreviatesOnlyTheHomeFolder()</code><br><small style="color:var(--muted)">macOS/Tests/AppTests.swift</small></td>
-  <td>.displayPath() node in PaperCreator/Application/AppConfiguration.swift.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>AppStorageKey</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Supports retrieval-augmented Q&amp;A or streaming chat.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>SecretAccount</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>SecretAccount node in PaperCreator/Application/AppConfiguration.swift.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>AppLinks</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>webURL()</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td>AppLinks node in PaperCreator/Application/AppConfiguration.swift.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>.webURL()</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AppLinks</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.webURL() node in PaperCreator/Application/AppConfiguration.swift.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Components/SharedViews.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>previewGeneratedFile()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>removeGeneratedFile()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>revealGeneratedFile()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
-  <td>.body node in PaperCreator/Components/SharedViews.swift.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>OllamaState</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>ApplicationCoordinator</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>apply()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>testAIGeneratorRequiresOllamaCheck()</code><br><small style="color:var(--muted)">macOS/Tests/AppTests.swift</small></td>
-  <td>OllamaState node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>ProgressEntry</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-async">Async</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>apply()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>cancelGeneration()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>finishMLXSetup()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br>+2 more</td>
-  <td>ProgressEntry node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>Date</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Date node in project.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>GeneratedFile</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>.exists</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small><br><code>.paperDescription</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small><br><code>.title</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small><br>+6 more</td>
-  <td>GeneratedFile node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>UUID</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>UUID node in project.</td>
-</tr>
-<tr>
-  <td>23</td>
-  <td><code>URL</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>URL node in project.</td>
-</tr>
-<tr>
-  <td>24</td>
-  <td><code>.init()</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>GeneratedFile</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.init() node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>.exists</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>GeneratedFile</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.exists node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>.title</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>GeneratedFile</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.title node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>.paperDescription</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>GeneratedFile</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.paperDescription node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>MLXRecoveryState</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>ApplicationCoordinator</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>beginGeneration()</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small><br><code>cancel()</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small><br>+3 more</td>
-  <td>MLXRecoveryState node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>.beginGeneration()</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>MLXRecoveryState</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><code>generate()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>testCancelledMLXCacheRecoveryDoesNotLeakIntoSuccessfulRetry()</code><br><small style="color:var(--muted)">macOS/Tests/AppTests.swift</small></td>
-  <td>.beginGeneration() node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>.requestSetup()</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>MLXRecoveryState</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><code>apply()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>testCancelledMLXCacheRecoveryDoesNotLeakIntoSuccessfulRetry()</code><br><small style="color:var(--muted)">macOS/Tests/AppTests.swift</small></td>
-  <td>.requestSetup() node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>PaperCreator/State/ApplicationCoordinator.swift</code></td><td>76 nodes</td></tr>
-<tr><td><code>PaperCreator/Application/AppConfiguration.swift</code></td><td>12 nodes</td></tr>
-<tr><td><code>PaperCreator/Domain/AppModels.swift</code></td><td>12 nodes</td></tr>
-<tr><td><code>PaperCreator/State/GenerationCoordinator.swift</code></td><td>6 nodes</td></tr>
-<tr><td><code>macOS/Tests/AppTests.swift</code></td><td>6 nodes</td></tr>
-<tr><td><code>Features/Settings/SettingsPane.swift</code></td><td>2 nodes</td></tr>
-<tr><td><code>PaperCreator/State/RecentDocumentStore.swift</code></td><td>2 nodes</td></tr>
-<tr><td><code>macOS/Tests/CoordinatorTests.swift</code></td><td>2 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: method x90, calls x74, references x63, contains x4. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 8. Serving API ====== -->
-<h2 id="serve-api">8. Serving API</h2>
+<!-- ====== 7. Serving API ====== -->
+<h2 id="serve-api">7. Serving API</h2>
 <p>Serving API groups implementation around backend, open, creditpy, response, mostly in Backend/Core/open_credit.py, Backend/Core/response_simulation.py, Backend/Core/level_of_response.py. This section covers 91 nodes and 188 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -2427,8 +2067,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 9. Security & Global Graph ====== -->
-<h2 id="security-global">9. Security &amp; Global Graph</h2>
+<!-- ====== 8. Security & Global Graph ====== -->
+<h2 id="security-global">8. Security &amp; Global Graph</h2>
 <p>Security &amp; Global Graph groups implementation around measured, paper, 2026, fidelitymd, mostly in superpowers/plans/2026-08-23-measured-paper-fidelity.md. This section covers 8 nodes and 7 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -2560,14 +2200,14 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 10. Tests & Fixtures ====== -->
-<h2 id="tests-fixtures">10. Tests &amp; Fixtures</h2>
-<p>Tests &amp; Fixtures groups implementation around test, tests, generator, resources, mostly in tools/paper_fidelity_audit.py, generator/tests/test_question_styles.py, generator/aqaaccountgen/case_data.py. This section covers 3349 nodes and 10183 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 9. Tests & Fixtures ====== -->
+<h2 id="tests-fixtures">9. Tests &amp; Fixtures</h2>
+<p>Tests &amp; Fixtures groups implementation around test, tests, generator, resources, mostly in tools/paper_fidelity_audit.py, generator/tests/test_question_styles.py, generator/aqaaccountgen/case_data.py. This section covers 3437 nodes and 10344 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Tests &amp; Fixtures (3349 nodes, 10183 edges)
+    %% Section: Tests &amp; Fixtures (3437 nodes, 10344 edges)
     subgraph tests_fixtures_Backend_Core_ai_assessment_py_93891410["Backend/Core/ai_assessment.py"]
         backend_core_ai_assessment_assessmentllmclient_af77fd0e("AssessmentLLMClient<br/><small>Backend/Core/ai_assessment.py</small>")
         backend_core_ai_assessment_assessmentllmclient_g_314242c3("generate_json()<br/><small>Backend/Core/ai_assessment.py</small>")
@@ -2607,7 +2247,7 @@ flowchart LR
     backend_core_exam_blueprints_generatedquestion_51da0e26 -->|calls| tests_test_ai_assessment_test_generated_extended_173d9621
     backend_core_exam_blueprints_generatedquestion_51da0e26 -->|calls| tests_test_ai_assessment_test_generated_mark_sch_f0a32a7c
     backend_core_exam_blueprints_generatedquestion_51da0e26 -->|calls| tests_test_ai_assessment_test_generated_mark_sch_5c9fa441
-    %% Omitted for readability: 3331 nodes, 0 edges
+    %% Omitted for readability: 3419 nodes, 0 edges
     class backend_core_ai_assessment_assessmentllmclient_af77fd0e entry;
     class backend_core_ai_assessment_assessmentllmclient_g_314242c3 function;
     class backend_core_ai_assessment_assessmentllmclient_s_2b7acbd9 function;
@@ -2897,22 +2537,22 @@ flowchart LR
       <tr><td><code>tools/paper_fidelity_audit.py</code></td><td>69 nodes</td></tr>
 <tr><td><code>generator/aqaaccountgen/case_data.py</code></td><td>63 nodes</td></tr>
 <tr><td><code>generator/tests/test_question_styles.py</code></td><td>63 nodes</td></tr>
+<tr><td><code>PaperCreator/Domain/AppModels.swift</code></td><td>62 nodes</td></tr>
 <tr><td><code>generator/pastpapergen/render_pdf.py</code></td><td>61 nodes</td></tr>
 <tr><td><code>Backend/Core/ai_assessment.py</code></td><td>55 nodes</td></tr>
 <tr><td><code>generator/aqaaccountgen/render_pdf.py</code></td><td>54 nodes</td></tr>
 <tr><td><code>generator/tests/test_render_pdf.py</code></td><td>50 nodes</td></tr>
-<tr><td><code>tests/test_ai_assessment.py</code></td><td>50 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x4108, contains x2153, references x1501, imports x972. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x4149, contains x2163, references x1543, imports x975. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
-<!-- ====== 11. document_dsl/__init__.py ====== -->
-<h2 id="document-dsl-init-py">11. document_dsl/__init__.py</h2>
+<!-- ====== 10. document_dsl/__init__.py ====== -->
+<h2 id="document-dsl-init-py">10. document_dsl/__init__.py</h2>
 <p>document_dsl/__init__.py groups implementation around document, dsl, backend, componentspy, mostly in Core/document_dsl/components.py, Core/document_dsl/model.py, tests/test_document_dsl.py. This section covers 146 nodes and 617 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -3264,8 +2904,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 12. String ====== -->
-<h2 id="string">12. String</h2>
+<!-- ====== 11. String ====== -->
+<h2 id="string">11. String</h2>
 <p>String groups implementation around macos, papercreator, appmodelsswift, domain, mostly in PaperCreator/Domain/AppModels.swift, macOS/Tests/AppTests.swift, PaperCreator/State/BenchmarkCoordinator.swift. This section covers 118 nodes and 228 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -3599,6 +3239,357 @@ flowchart LR
   <div class="card">
     <h4>Design Notes</h4>
     <p>This section comes from graphify community clustering. Relationship summary: references x88, case of x32, implements x28, method x28. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 12. ApplicationCoordinator ====== -->
+<h2 id="applicationcoordinator">12. ApplicationCoordinator</h2>
+<p>ApplicationCoordinator groups implementation around macos, papercreator, state, applicationcoordinatorswift, mostly in PaperCreator/State/ApplicationCoordinator.swift, macOS/Tests/CoordinatorTests.swift, Features/Settings/SettingsPane.swift. This section covers 110 nodes and 200 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: ApplicationCoordinator (110 nodes, 200 edges)
+    subgraph applicationcoordinator_Features_Settings_Setting_fcaeb132["Features/Settings/SettingsPane.swift"]
+        macos_papercreator_features_settings_settingspan_412cacd5(".body<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_papercreator_features_settings_settingspan_4704dfea("AISettingsTab<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_papercreator_features_settings_settingspan_29c797aa("OutputSettingsTab<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_papercreator_features_settings_settingspan_4d0f20ac("PrivacySettingsTab<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_papercreator_features_settings_settingspan_cfb94e04("SettingsPaneID<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_papercreator_features_settings_settingspan_0779b40f(".title<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_papercreator_features_settings_settingspan_a5f16899(".body<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_papercreator_features_settings_settingspan_fa2d3736(".providerSettings<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_papercreator_features_settings_settingspan_b547edb3(".body<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_papercreator_features_settings_settingspan_5944c093(".body<br/><small>Features/Settings/SettingsPane.swift</small>")
+    end
+    subgraph applicationcoordinator_PaperCreator_State_Applic_10736baf["PaperCreator/State/ApplicationCoordinator.swift"]
+        macos_papercreator_state_applicationcoordinator_ad9c77ae("ApplicationCoordinator<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
+        macos_papercreator_state_applicationcoordinator_e052e603("saveAISettings()<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
+        macos_papercreator_state_applicationcoordinator_3f961478("acceptHostedAIConsent()<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
+        macos_papercreator_state_applicationcoordinator_c1294c7b(".activeModelName<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
+    end
+    subgraph applicationcoordinator_PaperCreator_Domain_AppMo_c2bf2c86["PaperCreator/Domain/AppModels.swift"]
+        macos_papercreator_domain_appmodels_examcatalog_e8cc2336("ExamCatalog<br/><small>PaperCreator/Domain/AppModels.swift</small>")
+        macos_papercreator_domain_appmodels_examcatalog_3f8bc185(".readyBoards<br/><small>PaperCreator/Domain/AppModels.swift</small>")
+    end
+    subgraph applicationcoordinator_macOS_Tests_CoordinatorTe_3fbcddf2["macOS/Tests/CoordinatorTests.swift"]
+        macos_tests_coordinatortests_coordinatortests_d10bb982("CoordinatorTests<br/><small>macOS/Tests/CoordinatorTests.swift</small>")
+        macos_tests_coordinatortests_coordinatortests_qu_1117a89c("qualityReport()<br/><small>macOS/Tests/CoordinatorTests.swift</small>")
+    end
+    macos_papercreator_domain_appmodels_examcatalog_e8cc2336 -->|method| macos_papercreator_domain_appmodels_examcatalog_3f8bc185
+    macos_papercreator_features_settings_settingspan_412cacd5 -->|calls| macos_papercreator_features_settings_settingspan_4704dfea
+    macos_papercreator_features_settings_settingspan_412cacd5 -->|calls| macos_papercreator_features_settings_settingspan_29c797aa
+    macos_papercreator_features_settings_settingspan_412cacd5 -->|calls| macos_papercreator_features_settings_settingspan_4d0f20ac
+    macos_papercreator_features_settings_settingspan_cfb94e04 -->|method| macos_papercreator_features_settings_settingspan_0779b40f
+    macos_papercreator_features_settings_settingspan_4704dfea -->|method| macos_papercreator_features_settings_settingspan_a5f16899
+    macos_papercreator_features_settings_settingspan_4704dfea -->|method| macos_papercreator_features_settings_settingspan_fa2d3736
+    macos_papercreator_features_settings_settingspan_29c797aa -->|method| macos_papercreator_features_settings_settingspan_b547edb3
+    macos_papercreator_features_settings_settingspan_4d0f20ac -->|method| macos_papercreator_features_settings_settingspan_5944c093
+    macos_papercreator_state_applicationcoordinator_ad9c77ae -->|method| macos_papercreator_state_applicationcoordinator_3f961478
+    macos_papercreator_state_applicationcoordinator_ad9c77ae -->|method| macos_papercreator_state_applicationcoordinator_c1294c7b
+    macos_papercreator_state_applicationcoordinator_ad9c77ae -->|method| macos_papercreator_state_applicationcoordinator_e052e603
+    macos_tests_coordinatortests_coordinatortests_d10bb982 -->|method| macos_tests_coordinatortests_coordinatortests_qu_1117a89c
+    %% Omitted for readability: 92 nodes, 0 edges
+    class macos_papercreator_features_settings_settingspan_412cacd5 function;
+    class macos_papercreator_features_settings_settingspan_4704dfea klass;
+    class macos_papercreator_features_settings_settingspan_29c797aa klass;
+    class macos_papercreator_features_settings_settingspan_4d0f20ac klass;
+    class macos_papercreator_features_settings_settingspan_cfb94e04 klass;
+    class macos_papercreator_features_settings_settingspan_0779b40f function;
+    class macos_papercreator_features_settings_settingspan_a5f16899 function;
+    class macos_papercreator_features_settings_settingspan_fa2d3736 function;
+    class macos_papercreator_features_settings_settingspan_b547edb3 function;
+    class macos_papercreator_features_settings_settingspan_5944c093 function;
+    class macos_papercreator_state_applicationcoordinator_ad9c77ae klass;
+    class macos_papercreator_state_applicationcoordinator_e052e603 function;
+    class macos_papercreator_state_applicationcoordinator_3f961478 function;
+    class macos_papercreator_state_applicationcoordinator_c1294c7b function;
+    class macos_papercreator_domain_appmodels_examcatalog_e8cc2336 klass;
+    class macos_papercreator_domain_appmodels_examcatalog_3f8bc185 function;
+    class macos_tests_coordinatortests_coordinatortests_d10bb982 test;
+    class macos_tests_coordinatortests_coordinatortests_qu_1117a89c test;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Application/AppCommands.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>previewGeneratedFile()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>revealGeneratedFile()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>showBenchmarkPage()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br>+1 more</td>
+  <td>.body node in PaperCreator/Application/AppCommands.swift.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Components/SharedViews.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>previewGeneratedFile()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>removeGeneratedFile()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>revealGeneratedFile()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
+  <td>.body node in PaperCreator/Components/SharedViews.swift.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>ExamCatalog</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>.readyBoards</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td>ExamCatalog node in PaperCreator/Domain/AppModels.swift.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>.readyBoards</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ExamCatalog</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>.readyBoards node in PaperCreator/Domain/AppModels.swift.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Generation/GeneratorWorkspaceView.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>selectAIProvider()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>selectAssessmentKind()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>selectPaperID()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br>+1 more</td>
+  <td>.body node in Features/Generation/GeneratorWorkspaceView.swift.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>SettingsPane.swift</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>SettingsPane.swift node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>AISettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>OutputSettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>PrivacySettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>.body node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>SettingsPaneID</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>.title</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>SettingsPaneID node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>ai</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ai node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>output</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>output node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>privacy</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>privacy node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>.title</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>SettingsPaneID</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>.title node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>AISettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>.providerSettings</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>AISettingsTab node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AISettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><code>saveAISettings()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>selectAIProvider()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
+  <td>.body node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>.providerSettings</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AISettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><code>showHelpGuide()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
+  <td>.providerSettings node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>OutputSettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>OutputSettingsTab node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>OutputSettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><code>setDryRun()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>setNotificationsEnabled()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
+  <td>.body node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>PrivacySettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>PrivacySettingsTab node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>PrivacySettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>.body node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>ApplicationCoordinator</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>.activeModelName</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>.canGenerate</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>.generationBlocker</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br>+62 more</td>
+  <td>ApplicationCoordinator node in PaperCreator/State/ApplicationCoordinator.swift.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>Double</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Double node in project.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>String</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>String node in project.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>UUID</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>UUID node in project.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>Int</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Int node in project.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>Process</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Process node in project.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>AnyCancellable</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>AnyCancellable node in project.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>Set</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Set node in project.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>URL</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>URL node in project.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>.selectedBoard</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ApplicationCoordinator</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>.selectedBoard node in PaperCreator/State/ApplicationCoordinator.swift.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>.selectedPaper</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ApplicationCoordinator</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>.selectedPaper node in PaperCreator/State/ApplicationCoordinator.swift.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>PaperCreator/State/ApplicationCoordinator.swift</code></td><td>57 nodes</td></tr>
+<tr><td><code>macOS/Tests/CoordinatorTests.swift</code></td><td>18 nodes</td></tr>
+<tr><td><code>Features/Settings/SettingsPane.swift</code></td><td>14 nodes</td></tr>
+<tr><td><code>PaperCreator/Domain/AppModels.swift</code></td><td>2 nodes</td></tr>
+<tr><td><code>PaperCreator/Application/AppCommands.swift</code></td><td>1 nodes</td></tr>
+<tr><td><code>PaperCreator/Components/SharedViews.swift</code></td><td>1 nodes</td></tr>
+<tr><td><code>Features/Generation/GeneratorWorkspaceView.swift</code></td><td>1 nodes</td></tr>
+<tr><td><code>PaperCreator/State/CatalogStore.swift</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: method x77, calls x35, references x33, contains x4. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4286,417 +4277,70 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 15. HelpTopic ====== -->
-<h2 id="helptopic">15. HelpTopic</h2>
-<p>HelpTopic groups implementation around papercreator, macos, settingspaneswift, features, mostly in Features/Settings/SettingsPane.swift, PaperCreator/Domain/AppModels.swift, PaperCreator/Application/PaperCreatorApp.swift. This section covers 39 nodes and 46 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 15. independent_solver.py ====== -->
+<h2 id="independent-solver-py">15. independent_solver.py</h2>
+<p>independent_solver.py groups implementation around backend, independent, solverpy, credit, mostly in Backend/Core/independent_solver.py, Backend/Core/credit_policy.py. This section covers 37 nodes and 73 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: HelpTopic (39 nodes, 46 edges)
-    subgraph helptopic_Features_Settings_SettingsPane_swift_b87d8e81["Features/Settings/SettingsPane.swift"]
-        macos_papercreator_features_settings_settingspan_412cacd5(".body<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_papercreator_features_settings_settingspan_41e1793f("SettingsWindowConfiguration<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_papercreator_features_settings_settingspan_f2832d40("SettingsPane<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_papercreator_features_settings_settingspan_cfb94e04("SettingsPaneID<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_papercreator_features_settings_settingspan_4704dfea("AISettingsTab<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_papercreator_features_settings_settingspan_29c797aa("OutputSettingsTab<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_papercreator_features_settings_settingspan_4d0f20ac("PrivacySettingsTab<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_papercreator_features_settings_settingspan_0779b40f(".title<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_papercreator_features_settings_settingspan_b6c3aaa4("configure()<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_papercreator_features_settings_settingspan_97c006d4("makeNSView()<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_papercreator_features_settings_settingspan_b1653bcb("updateNSView()<br/><small>Features/Settings/SettingsPane.swift</small>")
+    %% Section: independent_solver.py (37 nodes, 73 edges)
+    subgraph independent_solver_py_Backend_Core_independent_s_d0bdc00b["Backend/Core/independent_solver.py"]
+        backend_core_independent_solver_independentsolve_f534d564("solve()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_requirement_pres_21907df8("_requirement_present()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_solverclient_ba94437d("SolverClient<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_solverclient_gen_071b3fdd("generate_json()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_as_mapping_839fdcb8("_as_mapping()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_closed_normalise_76ee9c0c("_closed_normalise()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_normalise_choice_0e90ba7c("_normalise_choice_answer()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_requires_numeric_180d0c17("_requires_numeric_contract()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_safe_calculate_890691fd("_safe_calculate()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_string_list_2af93960("_string_list()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_without_answer_k_fcedb294("_without_answer_key()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_rubric_text_93ea30ea("_rubric_text()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_concept_coverage_dff8904c("_concept_coverage()<br/><small>Backend/Core/independent_solver.py</small>")
     end
-    subgraph helptopic_PaperCreator_Domain_AppModels_swift_80add861["PaperCreator/Domain/AppModels.swift"]
-        macos_papercreator_domain_appmodels_helptopic_7258261e("HelpTopic<br/><small>PaperCreator/Domain/AppModels.swift</small>")
-        macos_papercreator_domain_appmodels_helptopic_id_ffbc6535(".id<br/><small>PaperCreator/Domain/AppModels.swift</small>")
-        macos_papercreator_domain_appmodels_helptopic_sy_d69c416b(".systemImage<br/><small>PaperCreator/Domain/AppModels.swift</small>")
-        macos_papercreator_domain_appmodels_helptopic_ti_51289ceb(".title<br/><small>PaperCreator/Domain/AppModels.swift</small>")
-    end
-    subgraph helptopic_PaperCreator_Application_PaperCreatorA_0ff6fd59["PaperCreator/Application/PaperCreatorApp.swift"]
-        macos_papercreator_application_papercreatorapp_p_b14a114c("PaperCreator<br/><small>PaperCreator/Application/PaperCreatorApp.swift</small>")
-        macos_papercreator_application_papercreatorapp_p_b046cce8(".body<br/><small>PaperCreator/Application/PaperCreatorApp.swift</small>")
-        macos_papercreator_application_papercreatorapp_p_75a5dde2("init()<br/><small>PaperCreator/Application/PaperCreatorApp.swift</small>")
-    end
-    macos_papercreator_application_papercreatorapp_p_b14a114c -->|method| macos_papercreator_application_papercreatorapp_p_b046cce8
-    macos_papercreator_application_papercreatorapp_p_b14a114c -->|method| macos_papercreator_application_papercreatorapp_p_75a5dde2
-    macos_papercreator_domain_appmodels_helptopic_7258261e -->|method| macos_papercreator_domain_appmodels_helptopic_id_ffbc6535
-    macos_papercreator_domain_appmodels_helptopic_7258261e -->|method| macos_papercreator_domain_appmodels_helptopic_sy_d69c416b
-    macos_papercreator_domain_appmodels_helptopic_7258261e -->|method| macos_papercreator_domain_appmodels_helptopic_ti_51289ceb
-    macos_papercreator_features_settings_settingspan_f2832d40 -->|method| macos_papercreator_features_settings_settingspan_412cacd5
-    macos_papercreator_features_settings_settingspan_412cacd5 -->|calls| macos_papercreator_features_settings_settingspan_4704dfea
-    macos_papercreator_features_settings_settingspan_412cacd5 -->|calls| macos_papercreator_features_settings_settingspan_29c797aa
-    macos_papercreator_features_settings_settingspan_412cacd5 -->|calls| macos_papercreator_features_settings_settingspan_4d0f20ac
-    macos_papercreator_features_settings_settingspan_412cacd5 -->|calls| macos_papercreator_features_settings_settingspan_41e1793f
-    macos_papercreator_features_settings_settingspan_cfb94e04 -->|method| macos_papercreator_features_settings_settingspan_0779b40f
-    macos_papercreator_features_settings_settingspan_41e1793f -->|method| macos_papercreator_features_settings_settingspan_b6c3aaa4
-    macos_papercreator_features_settings_settingspan_41e1793f -->|method| macos_papercreator_features_settings_settingspan_97c006d4
-    macos_papercreator_features_settings_settingspan_41e1793f -->|method| macos_papercreator_features_settings_settingspan_b1653bcb
-    macos_papercreator_features_settings_settingspan_97c006d4 -->|calls| macos_papercreator_features_settings_settingspan_b6c3aaa4
-    macos_papercreator_features_settings_settingspan_b1653bcb -->|calls| macos_papercreator_features_settings_settingspan_b6c3aaa4
-    %% Omitted for readability: 21 nodes, 0 edges
-    class macos_papercreator_features_settings_settingspan_412cacd5 function;
-    class macos_papercreator_features_settings_settingspan_41e1793f klass;
-    class macos_papercreator_features_settings_settingspan_f2832d40 klass;
-    class macos_papercreator_features_settings_settingspan_cfb94e04 klass;
-    class macos_papercreator_features_settings_settingspan_4704dfea klass;
-    class macos_papercreator_features_settings_settingspan_29c797aa klass;
-    class macos_papercreator_features_settings_settingspan_4d0f20ac klass;
-    class macos_papercreator_features_settings_settingspan_0779b40f function;
-    class macos_papercreator_features_settings_settingspan_b6c3aaa4 function;
-    class macos_papercreator_features_settings_settingspan_97c006d4 function;
-    class macos_papercreator_features_settings_settingspan_b1653bcb function;
-    class macos_papercreator_domain_appmodels_helptopic_7258261e klass;
-    class macos_papercreator_domain_appmodels_helptopic_id_ffbc6535 function;
-    class macos_papercreator_domain_appmodels_helptopic_sy_d69c416b function;
-    class macos_papercreator_domain_appmodels_helptopic_ti_51289ceb function;
-    class macos_papercreator_application_papercreatorapp_p_b14a114c klass;
-    class macos_papercreator_application_papercreatorapp_p_b046cce8 function;
-    class macos_papercreator_application_papercreatorapp_p_75a5dde2 function;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>PaperCreatorApp.swift</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>PaperCreatorApp.swift node in PaperCreator/Application/PaperCreatorApp.swift.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>PaperCreator</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small><br><code>init()</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small></td>
-  <td>PaperCreator node in PaperCreator/Application/PaperCreatorApp.swift.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>App</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>App node in project.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>.init()</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>PaperCreator</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.init() node in PaperCreator/Application/PaperCreatorApp.swift.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>Scene</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Scene node in project.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>PaperCreator</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small></td>
-  <td><code>SettingsPane</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>.body node in PaperCreator/Application/PaperCreatorApp.swift.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>HelpTopic</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>.id</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small><br><code>.systemImage</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small><br><code>.title</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td>HelpTopic node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>CaseIterable</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>CaseIterable node in project.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>gettingStarted</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>gettingStarted node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>choosingAModel</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>choosingAModel node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>creatingAPaper</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>creatingAPaper node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>checkingQuality</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>checkingQuality node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>privacy</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>privacy node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>troubleshooting</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>troubleshooting node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>shortcuts</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>shortcuts node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>.id</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>HelpTopic</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.id node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>.title</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>HelpTopic</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.title node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>.systemImage</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>HelpTopic</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.systemImage node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>SettingsPane.swift</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>SettingsPane.swift node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>SettingsPane</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Application/PaperCreatorApp.swift</small></td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>SettingsPane node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>SettingsPane</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><code>AISettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>OutputSettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>PrivacySettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br>+1 more</td>
-  <td>.body node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>SettingsPaneID</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>.title</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>SettingsPaneID node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>23</td>
-  <td><code>ai</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>ai node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>24</td>
-  <td><code>output</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>output node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>privacy</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>privacy node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>.title</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>SettingsPaneID</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.title node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>SettingsWindowConfiguration</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><code>configure()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>makeNSView()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>updateNSView()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>Reads, resolves, or persists project configuration.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>.makeNSView()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>SettingsWindowConfiguration</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><code>configure()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>.makeNSView() node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>Context</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Context node in project.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>NSView</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>NSView node in project.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>Features/Settings/SettingsPane.swift</code></td><td>17 nodes</td></tr>
-<tr><td><code>PaperCreator/Domain/AppModels.swift</code></td><td>11 nodes</td></tr>
-<tr><td><code>PaperCreator/Application/PaperCreatorApp.swift</code></td><td>4 nodes</td></tr>
-<tr><td><code>PaperCreator/State/ApplicationCoordinator.swift</code></td><td>1 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: method x12, case of x10, contains x7, references x7. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 16. Other ====== -->
-<h2 id="other">16. Other</h2>
-<p>Other groups implementation around docs, backend, 2026, superpowers, mostly in docs/project-analysis/PROJECT_ANALYSIS.md, superpowers/plans/2026-08-26-paper-creator-excellence-programme.md, Backend/Core/pdf_validation.py. This section covers 594 nodes and 905 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: Other (594 nodes, 905 edges)
-    subgraph other_Backend_Core_assessment_objectives_py_a04dd05e["Backend/Core/assessment_objectives.py"]
-        backend_core_assessment_objectives_objectivepoli_0a06578f("ObjectivePolicy<br/><small>Backend/Core/assessment_objectives.py</small>")
-        backend_core_assessment_objectives_objectivepoli_f7ee7e42("fingerprint()<br/><small>Backend/Core/assessment_objectives.py</small>")
-        backend_core_assessment_objectives_objectivepoli_09765bf0("guidance()<br/><small>Backend/Core/assessment_objectives.py</small>")
-        backend_core_assessment_objectives_objectivepoli_369fbe2e("operations()<br/><small>Backend/Core/assessment_objectives.py</small>")
-        backend_core_assessment_objectives_objectivepoli_fe91c1d1("response_mode()<br/><small>Backend/Core/assessment_objectives.py</small>")
-        backend_core_assessment_objectives_objectivepoli_c6da37d7("task_operation()<br/><small>Backend/Core/assessment_objectives.py</small>")
-        backend_core_assessment_objectives_objectivepoli_742f1231("validate()<br/><small>Backend/Core/assessment_objectives.py</small>")
-    end
-    subgraph other_Core_overlay_graphs_py_e43e7d49["Core/overlay/graphs.py"]
-        backend_core_overlay_graphs_save_21119de2("_save()<br/><small>Core/overlay/graphs.py</small>")
-        backend_core_overlay_graphs_ax_23f43dcb("_ax()<br/><small>Core/overlay/graphs.py</small>")
-        backend_core_overlay_graphs_arrow_axes_abe5018b("_arrow_axes()<br/><small>Core/overlay/graphs.py</small>")
-        backend_core_overlay_graphs_gp_dfa943ef("_gp()<br/><small>Core/overlay/graphs.py</small>")
-    end
-    subgraph other_Backend_Core_credit_policy_py_031cd362["Backend/Core/credit_policy.py"]
+    subgraph independent_solver_py_Backend_Core_credit_policy_478fdb08["Backend/Core/credit_policy.py"]
         backend_core_credit_policy_credit_rule_62ce1b3e("credit_rule()<br/><small>Backend/Core/credit_policy.py</small>")
         backend_core_credit_policy_collect_credit_rules_534a03a4("collect_credit_rules()<br/><small>Backend/Core/credit_policy.py</small>")
+        backend_core_credit_policy_ce8e4022("credit_policy.py")
+        backend_core_credit_policy_creditrule_e1c51493("CreditRule<br/><small>Backend/Core/credit_policy.py</small>")
         backend_core_credit_policy_declared_rule_metadat_b1fc85f1("rule metadata present()<br/><small>Backend/Core/credit_policy.py</small>")
     end
-    subgraph other_Backend_Core_exam_cover_py_ff19f3f2["Backend/Core/exam_cover.py"]
-        backend_core_exam_cover_questionpapercover_eadc817d("QuestionPaperCover<br/><small>Backend/Core/exam_cover.py</small>")
-        backend_core_exam_cover_questionpapercover_barco_5148470d("_barcode()<br/><small>Backend/Core/exam_cover.py</small>")
-    end
-    backend_core_independent_solver_independentsolve_f534d564("solve()<br/><small>Backend/Core/independent_solver.py</small>")
-    resources_accounting_aqa_generator_aqaaccountgen_1305a8f2("IncomeStatementCase<br/><small>generator/aqaaccountgen/case_data.py</small>")
-    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_f7ee7e42
-    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_09765bf0
-    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_369fbe2e
-    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_fe91c1d1
-    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_c6da37d7
-    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_742f1231
     backend_core_credit_policy_credit_rule_62ce1b3e -->|calls| backend_core_credit_policy_collect_credit_rules_534a03a4
     backend_core_credit_policy_credit_rule_62ce1b3e -->|calls| backend_core_credit_policy_declared_rule_metadat_b1fc85f1
     backend_core_credit_policy_collect_credit_rules_534a03a4 -->|calls| backend_core_independent_solver_independentsolve_f534d564
-    backend_core_exam_cover_questionpapercover_eadc817d -->|method| backend_core_exam_cover_questionpapercover_barco_5148470d
-    %% Omitted for readability: 576 nodes, 0 edges
-    class backend_core_assessment_objectives_objectivepoli_0a06578f klass;
-    class backend_core_assessment_objectives_objectivepoli_f7ee7e42 function;
-    class backend_core_assessment_objectives_objectivepoli_09765bf0 function;
-    class backend_core_assessment_objectives_objectivepoli_369fbe2e function;
-    class backend_core_assessment_objectives_objectivepoli_fe91c1d1 function;
-    class backend_core_assessment_objectives_objectivepoli_c6da37d7 function;
-    class backend_core_assessment_objectives_objectivepoli_742f1231 function;
-    class backend_core_overlay_graphs_save_21119de2 function;
-    class backend_core_overlay_graphs_ax_23f43dcb function;
-    class backend_core_overlay_graphs_arrow_axes_abe5018b function;
-    class backend_core_overlay_graphs_gp_dfa943ef function;
+    backend_core_independent_solver_solverclient_ba94437d -->|method| backend_core_independent_solver_solverclient_gen_071b3fdd
+    backend_core_independent_solver_solverclient_gen_071b3fdd -->|calls| backend_core_independent_solver_independentsolve_f534d564
+    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_as_mapping_839fdcb8
+    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_closed_normalise_76ee9c0c
+    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_normalise_choice_0e90ba7c
+    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_requires_numeric_180d0c17
+    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_safe_calculate_890691fd
+    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_string_list_2af93960
+    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_without_answer_k_fcedb294
+    backend_core_independent_solver_closed_normalise_76ee9c0c -->|calls| backend_core_independent_solver_normalise_choice_0e90ba7c
+    backend_core_independent_solver_string_list_2af93960 -->|calls| backend_core_independent_solver_rubric_text_93ea30ea
+    backend_core_independent_solver_requirement_pres_21907df8 -->|calls| backend_core_independent_solver_concept_coverage_dff8904c
+    %% Omitted for readability: 19 nodes, 0 edges
+    class backend_core_independent_solver_independentsolve_f534d564 function;
+    class backend_core_independent_solver_requirement_pres_21907df8 function;
+    class backend_core_independent_solver_solverclient_ba94437d entry;
+    class backend_core_independent_solver_solverclient_gen_071b3fdd function;
+    class backend_core_independent_solver_as_mapping_839fdcb8 function;
+    class backend_core_independent_solver_closed_normalise_76ee9c0c function;
+    class backend_core_independent_solver_normalise_choice_0e90ba7c function;
+    class backend_core_independent_solver_requires_numeric_180d0c17 function;
+    class backend_core_independent_solver_safe_calculate_890691fd function;
+    class backend_core_independent_solver_string_list_2af93960 function;
+    class backend_core_independent_solver_without_answer_k_fcedb294 function;
+    class backend_core_independent_solver_rubric_text_93ea30ea function;
+    class backend_core_independent_solver_concept_coverage_dff8904c function;
     class backend_core_credit_policy_credit_rule_62ce1b3e function;
     class backend_core_credit_policy_collect_credit_rules_534a03a4 function;
+    class backend_core_credit_policy_ce8e4022 module;
+    class backend_core_credit_policy_creditrule_e1c51493 klass;
     class backend_core_credit_policy_declared_rule_metadat_b1fc85f1 function;
-    class backend_core_exam_cover_questionpapercover_eadc817d klass;
-    class backend_core_exam_cover_questionpapercover_barco_5148470d function;
-    class backend_core_independent_solver_independentsolve_f534d564 function;
-    class resources_accounting_aqa_generator_aqaaccountgen_1305a8f2 klass;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -4795,7 +4439,7 @@ flowchart LR
   <td><code>independent_solver.py</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td><code>collect_credit_rules()</code><br><small style="color:var(--muted)">Backend/Core/credit_policy.py</small><br><code>credit_policy.py</code><br><small style="color:var(--muted)">Backend/Core/credit_policy.py</small><br><code>CreditRule</code><br><small style="color:var(--muted)">Backend/Core/credit_policy.py</small><br>+1 more</td>
-  <td><code>accounting.py</code><br><small style="color:var(--muted)">Core/subjects/accounting.py</small><br><code>Decimal</code><br><code>solve accounting calculation()</code><br><small style="color:var(--muted)">Core/subjects/accounting.py</small></td>
+  <td><code>Decimal</code></td>
   <td>Module file in Backend/Core/independent_solver.py.</td>
 </tr>
 <tr>
@@ -4867,7 +4511,7 @@ flowchart LR
   <td><code>.solve()</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>collect_credit_rules()</code><br><small style="color:var(--muted)">Backend/Core/credit_policy.py</small><br><code>generate_json()</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small></td>
-  <td><code>_as_mapping()</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small><br><code>_closed_normalise()</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small><br><code>_normalise_choice_answer()</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small><br>+5 more</td>
+  <td><code>_as_mapping()</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small><br><code>_closed_normalise()</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small><br><code>_normalise_choice_answer()</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small><br>+4 more</td>
   <td>.solve() node in Backend/Core/independent_solver.py.</td>
 </tr>
 <tr>
@@ -4965,19 +4609,361 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>Backend/Core/independent_solver.py</code></td><td>23 nodes</td></tr>
+<tr><td><code>Backend/Core/credit_policy.py</code></td><td>7 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x22, references x17, calls x16, inherits x5. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 16. Other ====== -->
+<h2 id="other">16. Other</h2>
+<p>Other groups implementation around docs, 2026, backend, superpowers, mostly in docs/project-analysis/PROJECT_ANALYSIS.md, superpowers/plans/2026-08-26-paper-creator-excellence-programme.md, Backend/Core/pdf_validation.py. This section covers 537 nodes and 805 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Other (537 nodes, 805 edges)
+    subgraph other_Backend_Core_assessment_objectives_py_a04dd05e["Backend/Core/assessment_objectives.py"]
+        backend_core_assessment_objectives_objectivepoli_0a06578f("ObjectivePolicy<br/><small>Backend/Core/assessment_objectives.py</small>")
+        backend_core_assessment_objectives_objectivepoli_f7ee7e42("fingerprint()<br/><small>Backend/Core/assessment_objectives.py</small>")
+        backend_core_assessment_objectives_objectivepoli_09765bf0("guidance()<br/><small>Backend/Core/assessment_objectives.py</small>")
+        backend_core_assessment_objectives_objectivepoli_369fbe2e("operations()<br/><small>Backend/Core/assessment_objectives.py</small>")
+        backend_core_assessment_objectives_objectivepoli_fe91c1d1("response_mode()<br/><small>Backend/Core/assessment_objectives.py</small>")
+        backend_core_assessment_objectives_objectivepoli_c6da37d7("task_operation()<br/><small>Backend/Core/assessment_objectives.py</small>")
+        backend_core_assessment_objectives_objectivepoli_742f1231("validate()<br/><small>Backend/Core/assessment_objectives.py</small>")
+    end
+    subgraph other_Backend_Core_exam_cover_py_ff19f3f2["Backend/Core/exam_cover.py"]
+        backend_core_exam_cover_questionpapercover_eadc817d("QuestionPaperCover<br/><small>Backend/Core/exam_cover.py</small>")
+        backend_core_exam_cover_questionpapercover_barco_5148470d("_barcode()<br/><small>Backend/Core/exam_cover.py</small>")
+        backend_core_exam_cover_questionpapercover_candi_7f644209("_candidate_box()<br/><small>Backend/Core/exam_cover.py</small>")
+        backend_core_exam_cover_questionpapercover_compo_7f3a523e("component()<br/><small>Backend/Core/exam_cover.py</small>")
+        backend_core_exam_cover_questionpapercover_digit_6d9719ed("_digit_boxes()<br/><small>Backend/Core/exam_cover.py</small>")
+        backend_core_exam_cover_questionpapercover_draw_660bfe5f("draw()<br/><small>Backend/Core/exam_cover.py</small>")
+    end
+    subgraph other_Core_overlay_graphs_py_e43e7d49["Core/overlay/graphs.py"]
+        backend_core_overlay_graphs_save_21119de2("_save()<br/><small>Core/overlay/graphs.py</small>")
+        backend_core_overlay_graphs_ax_23f43dcb("_ax()<br/><small>Core/overlay/graphs.py</small>")
+        backend_core_overlay_graphs_arrow_axes_abe5018b("_arrow_axes()<br/><small>Core/overlay/graphs.py</small>")
+        backend_core_overlay_graphs_gp_dfa943ef("_gp()<br/><small>Core/overlay/graphs.py</small>")
+    end
+    resources_accounting_aqa_generator_aqaaccountgen_1305a8f2("IncomeStatementCase<br/><small>generator/aqaaccountgen/case_data.py</small>")
+    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_f7ee7e42
+    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_09765bf0
+    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_369fbe2e
+    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_fe91c1d1
+    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_c6da37d7
+    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_742f1231
+    backend_core_exam_cover_questionpapercover_eadc817d -->|method| backend_core_exam_cover_questionpapercover_barco_5148470d
+    backend_core_exam_cover_questionpapercover_eadc817d -->|method| backend_core_exam_cover_questionpapercover_candi_7f644209
+    backend_core_exam_cover_questionpapercover_eadc817d -->|method| backend_core_exam_cover_questionpapercover_compo_7f3a523e
+    backend_core_exam_cover_questionpapercover_eadc817d -->|method| backend_core_exam_cover_questionpapercover_digit_6d9719ed
+    backend_core_exam_cover_questionpapercover_eadc817d -->|method| backend_core_exam_cover_questionpapercover_draw_660bfe5f
+    backend_core_exam_cover_questionpapercover_candi_7f644209 -->|calls| backend_core_exam_cover_questionpapercover_digit_6d9719ed
+    %% Omitted for readability: 519 nodes, 0 edges
+    class backend_core_assessment_objectives_objectivepoli_0a06578f klass;
+    class backend_core_assessment_objectives_objectivepoli_f7ee7e42 function;
+    class backend_core_assessment_objectives_objectivepoli_09765bf0 function;
+    class backend_core_assessment_objectives_objectivepoli_369fbe2e function;
+    class backend_core_assessment_objectives_objectivepoli_fe91c1d1 function;
+    class backend_core_assessment_objectives_objectivepoli_c6da37d7 function;
+    class backend_core_assessment_objectives_objectivepoli_742f1231 function;
+    class backend_core_exam_cover_questionpapercover_eadc817d klass;
+    class backend_core_exam_cover_questionpapercover_barco_5148470d function;
+    class backend_core_exam_cover_questionpapercover_candi_7f644209 function;
+    class backend_core_exam_cover_questionpapercover_compo_7f3a523e ui;
+    class backend_core_exam_cover_questionpapercover_digit_6d9719ed function;
+    class backend_core_exam_cover_questionpapercover_draw_660bfe5f function;
+    class backend_core_overlay_graphs_save_21119de2 function;
+    class backend_core_overlay_graphs_ax_23f43dcb function;
+    class backend_core_overlay_graphs_arrow_axes_abe5018b function;
+    class backend_core_overlay_graphs_gp_dfa943ef function;
+    class resources_accounting_aqa_generator_aqaaccountgen_1305a8f2 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>pdf_validation.py</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Module file in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Any</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Any node in project.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>compare_page_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>_count_score()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small><br><code>_normalise_font()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small><br><code>_point_sequence_score()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small><br>+3 more</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>_font_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>_font_embedding()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small><br><code>_normalise_font()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>_font_evidence() node in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Document</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Document node in project.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>_font_embedding()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_font_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_font_embedding() node in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>_page_print_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>_is_decorative_bleed()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small><br><code>_is_margin_furniture()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small><br><code>_leading()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small><br>+6 more</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>Page</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>_union_rects()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_page_print_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_union_rects() node in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>_is_decorative_bleed()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_page_print_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_is_decorative_bleed() node in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>_is_margin_furniture()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_page_print_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><code>_page_text_contrasts()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>_is_margin_furniture() node in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>_table_geometry()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_page_print_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_table_geometry() node in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>_reading_order_score()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_page_print_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_reading_order_score() node in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>_contrast_against_white()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>_contrast_ratio()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>_contrast_against_white() node in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>_page_text_contrasts()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_is_margin_furniture()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small><br><code>_page_print_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><code>_contrast_ratio()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>_contrast_ratio()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_contrast_against_white()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small><br><code>_page_text_contrasts()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_contrast_ratio() node in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>_representative_values()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_page_print_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_representative_values() node in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>_leading()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_page_print_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_leading() node in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>_set_score()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>compare_page_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_set_score() node in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>_scalar_closeness()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>compare_page_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_scalar_closeness() node in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>_sequence_closeness()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>compare_page_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_sequence_closeness() node in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>_point_sequence_score()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>compare_page_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_point_sequence_score() node in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>_count_score()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>compare_page_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_count_score() node in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>_validate_typography_profile()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>_layout_profiles()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small><br><code>_normalise_font()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>_layout_profiles()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>validate typography profile()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_layout_profiles() node in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>_normalise_font()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_font_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small><br><code>_page_print_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small><br><code>compare_page_evidence()</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>_normalise_font() node in Backend/Core/pdf_validation.py.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>Compare typography and print geometry on a stable zero-to-one scale.</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Compare typography and print geometry on a stable zero-to-one scale..</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>Return whether an image is a full-bleed background rather than content.</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Return whether an image is a full-bleed background rather than content..</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>Exclude repeated non-answerable printer furniture from the safety box.</code><br><small style="color:var(--muted)">Backend/Core/pdf_validation.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Exclude repeated non-answerable printer furniture from the safety box..</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>2026-08-26-paper-creator-excellence-programme.md</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-paper-creator-excellence-programme.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2026-08-26-paper-creator-excellence-programme.md.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>docs/project-analysis/PROJECT_ANALYSIS.md</code></td><td>29 nodes</td></tr>
 <tr><td><code>superpowers/plans/2026-08-26-paper-creator-excellence-programme.md</code></td><td>28 nodes</td></tr>
 <tr><td><code>Core/overlay/graphs.py</code></td><td>26 nodes</td></tr>
 <tr><td><code>Backend/Core/pdf_validation.py</code></td><td>26 nodes</td></tr>
 <tr><td><code>generator/aqaaccountgen/case_data.py</code></td><td>26 nodes</td></tr>
 <tr><td><code>superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md</code></td><td>24 nodes</td></tr>
-<tr><td><code>Backend/Core/independent_solver.py</code></td><td>23 nodes</td></tr>
 <tr><td><code>Core/subjects/accounting.py</code></td><td>19 nodes</td></tr>
+<tr><td><code>PaperCreator/Services/BackendClient.swift</code></td><td>18 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x334, calls x221, references x170, method x102. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x309, calls x208, references x143, method x93. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4991,7 +4977,7 @@ flowchart LR
       <tr><td>Nodes</td><td>6608</td></tr>
       <tr><td>Edges</td><td>18544</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
-      <tr><td>Communities</td><td>269</td></tr>
+      <tr><td>Communities</td><td>271</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
@@ -5007,7 +4993,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>Past Paper Creation — Architecture Documentation</p>
-  <p>Generated: 2026-09-17 23:09 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-09-17 23:48 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

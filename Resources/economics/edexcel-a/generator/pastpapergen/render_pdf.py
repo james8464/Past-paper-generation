@@ -2908,7 +2908,15 @@ def _source_backed_mark_scheme_lines(item) -> list[str]:
         if stripped.startswith(("The only correct answer", "Reject ")):
             criteria.append(stripped)
         else:
-            criteria.append(f"● {stripped}")
+            allocation = re.match(
+                r"^(AO[1-4]) \((\d+) marks?\):\s*(.+)$",
+                stripped,
+            )
+            if allocation:
+                _objective, marks, _content = allocation.groups()
+                criteria.append(f"● {stripped} ({marks})")
+            else:
+                criteria.append(f"● {stripped}")
     return [
         "Question focus: " + item.prompt,
         "Allocation: " + item.mark_breakdown,
