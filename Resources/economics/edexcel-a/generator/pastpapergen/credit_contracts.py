@@ -543,6 +543,16 @@ def extended_credit(
             "Test the mechanism against the assumptions, affected groups and time period in the source.",
         ]
     if question.marks < 8:
+        if question.topic_id == "3.1" and question.marks == 5:
+            scheme = [
+                "AO1 (1 mark): Economies of scale arise when expansion lowers long-run average cost.",
+                "AO1 (1 mark): The long run permits all factors of production to vary; short-run spare-capacity use alone is not an economy of scale.",
+                "AO2 (1 mark): From Extract A: An expanding manufacturer negotiates bulk-input discounts.",
+                "AO2 (1 mark): From Extract A: Specialist production lines can reduce unit labour costs.",
+                "AO3 (1 mark): These cost savings lower long-run average cost and, if passed on, can lower prices for consumers.",
+                "Alternatively, accept one coherent source-linked diseconomy route to higher average costs and higher consumer prices within the same five-mark tariff.",
+            ]
+            return scheme, {"scheme_mode": "points", "credit": scheme}
         if question.topic_id == "2.6" and "higher Bank Rate" in question.prompt:
             points = [
                 points[0],

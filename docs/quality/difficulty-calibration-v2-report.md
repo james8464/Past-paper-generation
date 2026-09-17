@@ -674,3 +674,17 @@ equilibrium mechanism. The test suite records this exact contract, and the
 full Edexcel family suite passed 316 tests after the repair. A new live
 transaction remains necessary; neither rejected attempt is qualification
 evidence.
+
+The next identical-seed transaction passed all five Section A reviews and then
+failed safely at Question 6(a) after 182.00 seconds. The reviewer correctly
+found that the old five one-mark cells combined a positive economies-of-scale
+route with a negative diseconomy route although the stem requested one likely
+effect. Question 6(a) now asks for one way expansion may affect a firm's
+average costs and consequently consumers. Its five marks form one complete
+positive route (definition, long-run condition, two distinct Extract A facts,
+and a cost-to-consumer causal link); one coherent source-linked diseconomy
+route is explicitly an alternative within the same tariff. Scope comparison
+also normalises equivalent singular/plural possessive wording while retaining
+the event and affected-group anchors. Focused assessment and authoring tests
+passed after the correction. A further live transaction is required; the
+rejected run remains fail-closed evidence, not a qualified paper.

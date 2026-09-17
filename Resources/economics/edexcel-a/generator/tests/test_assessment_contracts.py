@@ -71,6 +71,23 @@ def test_elasticity_table_explanation_has_one_explicit_income_task_and_all_valid
     assert "demand curve shifts right" in scheme
 
 
+def test_business_expansion_short_credit_marks_one_complete_route():
+    q = next(item for item in paper(1, 26091719).questions if item.number == "6(a)")
+
+    assert q.prompt == (
+        "With reference to Extract A, explain one way in which business expansion "
+        "may affect a firm's average costs and, consequently, its consumers."
+    )
+    assert q.mark_scheme == [
+        "AO1 (1 mark): Economies of scale arise when expansion lowers long-run average cost.",
+        "AO1 (1 mark): The long run permits all factors of production to vary; short-run spare-capacity use alone is not an economy of scale.",
+        "AO2 (1 mark): From Extract A: An expanding manufacturer negotiates bulk-input discounts.",
+        "AO2 (1 mark): From Extract A: Specialist production lines can reduce unit labour costs.",
+        "AO3 (1 mark): These cost savings lower long-run average cost and, if passed on, can lower prices for consumers.",
+        "Alternatively, accept one coherent source-linked diseconomy route to higher average costs and higher consumer prices within the same five-mark tariff.",
+    ]
+
+
 @pytest.mark.parametrize("seed", [26083122, 26083123, 26083124, 26083159])
 def test_live_calculation_has_source_bound_independent_solution(seed):
     q = paper(2, seed).questions[0]

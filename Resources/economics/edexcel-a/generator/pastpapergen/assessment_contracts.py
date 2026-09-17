@@ -454,6 +454,11 @@ def bind_question(question, seed: int):
             scheme_mode=credit["scheme_mode"],
             mark_breakdown=", ".join(f"{key} {value}" for key, value in budget.items()),
         )
+        if question.topic_id == "3.1" and question.marks == 5:
+            updates["prompt"] = (
+                "With reference to Extract A, explain one way in which business expansion "
+                "may affect a firm's average costs and, consequently, its consumers."
+            )
     return question.model_copy(update=updates)
 
 

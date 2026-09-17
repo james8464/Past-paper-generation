@@ -779,10 +779,11 @@ def _validate_ai_question(
         raise ValueError(
             f"question-{original.number} exceeds the {maximum_stem_words}-word stem word budget"
         )
+    candidate_scope_text = candidate.prompt.casefold().replace("firms'", "firm's")
     missing_scope_terms = [
         term
         for term in _required_scope_terms(original)
-        if term not in candidate.prompt.casefold()
+        if term not in candidate_scope_text
     ]
     if missing_scope_terms:
         raise ValueError(
@@ -930,14 +931,17 @@ def _strip_part_label(prompt: str, label: str) -> str:
 
 
 def _required_scope_terms(question: QuestionBlueprint) -> tuple[str, ...]:
-    prompt = question.prompt.casefold()
+    prompt = question.prompt.casefold().replace("firms'", "firm's")
     terms = [
         "non-profit objectives",
         "training, childcare and infrastructure",
     ]
     scenario = SCENARIOS.get(question.topic_id)
     if scenario is not None:
-        terms.extend((scenario.event, scenario.outcome))
+        for scope in (scenario.event, scenario.outcome, *scenario.outcome.split(" and ")):
+            normalised = scope.replace("firms'", "firm's")
+            if normalised in prompt:
+                terms.append(normalised)
     return tuple(dict.fromkeys(term for term in terms if term in prompt))
 
 

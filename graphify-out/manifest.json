@@ -840,8 +840,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/assessment_contracts.py": {
-    "mtime": 1789677276.2632973,
-    "ast_hash": "80c54fa4ab732d2711fafbc891f9f10c",
+    "mtime": 1789677598.7759118,
+    "ast_hash": "8f440580cca6e680afc8fafcc521ebd8",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/cli.py": {
@@ -850,8 +850,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/credit_contracts.py": {
-    "mtime": 1788154204.9956243,
-    "ast_hash": "8bae933e6c8da441bf104e6963814435",
+    "mtime": 1789677585.9624712,
+    "ast_hash": "29edf1de464f99f0c17bbe42d2337bd6",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/exam_dates.py": {
@@ -880,8 +880,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/ollama_client.py": {
-    "mtime": 1789676903.8720925,
-    "ast_hash": "f939459723d44ee95c9eea0516f8b8d2",
+    "mtime": 1789677737.0066574,
+    "ast_hash": "3afb65d447a3678340a20b19e34fc7a9",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/paper_configs.py": {
@@ -935,8 +935,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/tests/test_assessment_contracts.py": {
-    "mtime": 1789677254.1658976,
-    "ast_hash": "33511b336cf33411c108fb81b97767dd",
+    "mtime": 1789677571.182828,
+    "ast_hash": "a76d810e55f908f79ad6cd640064dbac",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/tests/test_blueprint.py": {
@@ -965,8 +965,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/tests/test_ollama_generation.py": {
-    "mtime": 1789676970.6136055,
-    "ast_hash": "6244f5c21f8ec720b5040088ff4f1ac8",
+    "mtime": 1789677701.3903146,
+    "ast_hash": "4fa57808fadcce7229d7342252f052d3",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/tests/test_ollama_prompt.py": {
@@ -2015,8 +2015,8 @@
     "semantic_hash": ""
   },
   "docs/quality/difficulty-calibration-v2-report.md": {
-    "mtime": 1789677318.1925142,
-    "ast_hash": "0d61f150c3af779df63fcda1d38e2059",
+    "mtime": 1789677755.603431,
+    "ast_hash": "5566d9f747889f0761f76e07f5bd84f8",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-23-assessment-reliability-core.md": {

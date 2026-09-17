@@ -441,7 +441,7 @@ def test_generated_stem_preserves_scenario_event_and_outcome_scope() -> None:
 
     with pytest.raises(
         ValueError,
-        match="business expansion, firms' average costs and consumers",
+        match="business expansion, consumers",
     ):
         _validate_ai_question(question, narrowed)
 
