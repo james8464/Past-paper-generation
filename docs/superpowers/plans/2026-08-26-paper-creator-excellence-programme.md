@@ -351,7 +351,7 @@ totals are recorded in `docs/quality/assessment-objective-reference.md`.
   requested result merely because it appears in the scheme. Check every output
   by role, value and unit; extend candidate-source deterministic verification and
   invalidate incompatible saved evidence. This precedes further live qualification.
-- [ ] 7.H: Calibrate every permitted candidate path, not the sum of all printed
+- [x] 7.H: Calibrate every permitted candidate path, not the sum of all printed
   options. Correct remaining Economics/Business objective and MCQ demand
   allocation using actual application/analysis tasks and matching reference
   weighting. Preserve approximate source ranges and exclude inconsistent
@@ -361,7 +361,8 @@ totals are recorded in `docs/quality/assessment-objective-reference.md`.
   review identity/presentation is independently review-clean through `0878b3f`;
   this proves content-bound persistence and truthful saved-package reporting,
   not a new live-paper, visual or empirical pass. H3 candidate-path/bank
-  evidence remains open.
+  source evidence is independently review-clean through `db6e0fd`; it validates
+  complete source-record content rather than mutable in-process attestations.
 - [x] 7.J/7.I: Repair declared versus advisory open-credit reconciliation and
   candidate-grounded SQL verification before the next full live CS attempt.
   J's schema correction is independently review-clean through `1110dd4`; I's
