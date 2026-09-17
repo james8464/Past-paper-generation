@@ -272,6 +272,13 @@ def test_model_copied_document_cannot_promote_a_valid_profile_to_schema_three():
     assert result["evidence_state"] == "insufficient"
 
 
+def test_public_evidence_api_cannot_attest_a_forged_document():
+    """Only ReferenceDemandDocument validation may create an H3 attestation."""
+    import Backend.Core.reference_evidence as evidence
+
+    assert not hasattr(evidence, "attest_validated_document")
+
+
 def test_profile_list_mutation_invalidates_a_schema_three_document_attestation():
     """Qualification cannot survive a post-validation profile-list mutation."""
     checked_in = json.loads(Path("Resources/reference-demand-profiles.json").read_text())

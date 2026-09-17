@@ -4,16 +4,13 @@ from __future__ import annotations
 
 import math
 from collections import Counter
-from dataclasses import dataclass
 from typing import Annotated, Any, Literal
-from weakref import ReferenceType, ref
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, model_validator
 
 from Backend.Core.candidate_paths import (
     CandidateTopology,
     enumerate_candidate_paths,
-    identity,
 )
 
 EXTRACTION_POLICY = "edition-leaf-path-features-v2"
@@ -31,44 +28,6 @@ Marks = Annotated[int, Field(gt=0, strict=True)]
 Objectives = dict[
     Literal["AO1", "AO2", "AO3", "AO4"], Annotated[int, Field(ge=0, strict=True)]
 ]
-
-
-@dataclass(frozen=True)
-class _DocumentAttestation:
-    document: ReferenceType[Any]
-    profile_ids: tuple[int, ...]
-    content_fingerprint: str
-
-
-_VALIDATED_DOCUMENTS: dict[int, _DocumentAttestation] = {}
-
-
-def attest_validated_document(document: Any) -> None:
-    """Record the exact schema-3 object graph that completed validation."""
-    document_id = id(document)
-
-    def discard(_released: ReferenceType[Any]) -> None:
-        _VALIDATED_DOCUMENTS.pop(document_id, None)
-
-    _VALIDATED_DOCUMENTS[document_id] = _DocumentAttestation(
-        document=ref(document, discard),
-        profile_ids=tuple(id(profile) for profile in document.profiles),
-        content_fingerprint=identity(document.model_dump(mode="json")),
-    )
-
-
-def _has_valid_document_attestation(document: Any, profile: Any) -> bool:
-    attestation = _VALIDATED_DOCUMENTS.get(id(document))
-    if attestation is None or attestation.document() is not document:
-        return False
-    if tuple(id(candidate) for candidate in document.profiles) != attestation.profile_ids:
-        return False
-    if not any(profile is candidate for candidate in document.profiles):
-        return False
-    try:
-        return identity(document.model_dump(mode="json")) == attestation.content_fingerprint
-    except (TypeError, ValueError):
-        return False
 
 
 class StrictEvidence(BaseModel):
@@ -411,6 +370,8 @@ def source_observations(items):
 
 
 def validate_profile_evidence(profile, *, document=None, require_attestation=True):
+    from Backend.Core.reference_demand import _has_valid_document_attestation
+
     if (
         document is None
         or document.schema_version != 3

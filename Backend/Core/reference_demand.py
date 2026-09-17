@@ -1,12 +1,15 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import re
 from collections import Counter
+from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Literal
+from weakref import ReferenceType, ref
 
 from pydantic import (
     BaseModel,
@@ -23,6 +26,55 @@ from Backend.Core.paths import REPO_ROOT
 PROFILES_PATH = REPO_ROOT / "Resources" / "reference-demand-profiles.json"
 
 DemandBand = Literal["low", "standard", "high"]
+
+
+@dataclass(frozen=True)
+class _DocumentAttestation:
+    document: ReferenceType[Any]
+    profile_ids: tuple[int, ...]
+    content_fingerprint: str
+
+
+_VALIDATED_DOCUMENTS: dict[int, _DocumentAttestation] = {}
+
+
+def _document_fingerprint(document: Any) -> str:
+    payload = json.dumps(
+        document.model_dump(mode="json"),
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    )
+    return hashlib.sha256(payload.encode()).hexdigest()
+
+
+def _attest_validated_document(document: Any) -> None:
+    """Record the exact schema-3 object graph that completed model validation."""
+    document_id = id(document)
+
+    def discard(_released: ReferenceType[Any]) -> None:
+        _VALIDATED_DOCUMENTS.pop(document_id, None)
+
+    _VALIDATED_DOCUMENTS[document_id] = _DocumentAttestation(
+        document=ref(document, discard),
+        profile_ids=tuple(id(profile) for profile in document.profiles),
+        content_fingerprint=_document_fingerprint(document),
+    )
+
+
+def _has_valid_document_attestation(document: Any, profile: Any) -> bool:
+    attestation = _VALIDATED_DOCUMENTS.get(id(document))
+    if attestation is None or attestation.document() is not document:
+        return False
+    if tuple(id(candidate) for candidate in document.profiles) != attestation.profile_ids:
+        return False
+    if not any(profile is candidate for candidate in document.profiles):
+        return False
+    try:
+        return _document_fingerprint(document) == attestation.content_fingerprint
+    except (TypeError, ValueError):
+        return False
 
 
 class ReferenceDemandProfile(BaseModel):
@@ -136,7 +188,6 @@ class ReferenceDemandDocument(BaseModel):
             raise ValueError("schema-2 profiles cannot carry H3 evidence")
         if self.schema_version == 3:
             from Backend.Core.reference_evidence import (
-                attest_validated_document,
                 validate_profile_evidence,
             )
 
@@ -146,7 +197,7 @@ class ReferenceDemandDocument(BaseModel):
                     document=self,
                     require_attestation=False,
                 )
-            attest_validated_document(self)
+            _attest_validated_document(self)
         return self
 
 
