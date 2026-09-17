@@ -5,6 +5,7 @@ from typing import Literal
 from pydantic import BaseModel, Field, model_validator
 
 from Backend.Core.subjects.sql_contracts import SQLSourceContract, render_sql_schema
+from Backend.Core.topic_task_contract import ReferenceTaskContract
 
 
 class SyllabusTopic(BaseModel):
@@ -64,37 +65,6 @@ class MarkingGuidance(BaseModel):
     credit_allocations: list[dict[str, object]] = Field(default_factory=list)
 
 
-class ReferenceTaskContract(BaseModel):
-    """Generator-owned task semantics used only for cautious source comparison."""
-
-    policy_id: Literal["aqa-cs-topic-evidence-v1"]
-    topic_id: Literal["4.2", "4.10", "4.12"]
-    style_id: str = Field(min_length=1)
-    operation: Literal[
-        "retrieve",
-        "describe",
-        "explain",
-        "analyse",
-        "represent",
-        "trace",
-        "program",
-        "complete-code",
-        "judge",
-    ]
-    response_mode: Literal[
-        "prose",
-        "table",
-        "diagram",
-        "code",
-        "query",
-        "selected",
-        "multi-selected",
-        "result",
-        "sequence",
-    ]
-    source_dependency: Literal["self-contained", "task-context"]
-
-
 class QuestionPart(BaseModel):
     label: str
     prompt: str
@@ -111,6 +81,9 @@ class QuestionPart(BaseModel):
     assessment_objectives: dict[str, int] = Field(default_factory=dict)
     expected_minutes: float | None = Field(default=None, gt=0)
     task_operation: str = ""
+    reference_source_dependency: Literal["self-contained", "task-context"] = (
+        "self-contained"
+    )
     reference_task_contract: ReferenceTaskContract | None = None
     sql_intent_id: str = ""
 

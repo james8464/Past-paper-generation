@@ -4,14 +4,12 @@ from pathlib import Path
 
 import pytest
 
-from Backend.Core.candidate_paths import (
-    GENERATED_OBJECTIVE_POLICIES,
-    audit_candidate_paths,
-)
+from Backend.Core.candidate_paths import audit_candidate_paths
 from Backend.Core.reference_demand import (
     ReferenceDemandDocument,
     ReferenceDemandProfile,
     audit_form_demand,
+    profile_for,
 )
 from tests.test_reference_demand import profile_payload
 
@@ -183,59 +181,54 @@ def test_mutated_unknown_policy_cannot_bypass_direct_audit():
     assert result["failed_paths"]
 
 
-def test_legacy_container_with_copied_h3_source_evidence_never_qualifies_paths():
+def test_direct_profile_cannot_qualify_after_private_version_marker_mutation():
+    """Only membership in a validated schema-3 document may qualify H3 evidence."""
+    profile = profile_for("aqa/economics", "3").model_copy(deep=True)
+    profile._document_schema_version = 3
+    item = {
+        "id": "x",
+        "marks": 1,
+        "expected_minutes": 1,
+        "assessment_objectives": {"AO1": 1},
+        "command_word": "State",
+    }
+    topology = {
+        "policy_id": "test",
+        "total_marks": 1,
+        "duration_minutes": 1,
+        "sections": [
+            {
+                "id": "A",
+                "answer_options": 1,
+                "candidate_marks": 1,
+                "options": [{"id": "a", "item_ids": ["x"]}],
+            }
+        ],
+    }
+
+    result = audit_candidate_paths([item], topology, profile)
+
+    assert result["evidence_validation_passed"] is False
+    assert result["evidence_state"] == "insufficient"
+
+
+def test_schema_two_document_rejects_copied_h3_source_evidence():
     raw = json.loads(Path("Resources/reference-demand-profiles.json").read_text())
     profile_raw = next(
         profile
         for profile in raw["profiles"]
         if profile["family_id"] == "aqa/economics" and profile["paper_id"] == "3"
     )
-    document = ReferenceDemandDocument.model_validate(
-        {
-            "schema_version": 2,
-            "purpose": raw["purpose"],
-            "derived_aggregate_only": True,
-            "retains_source_text": False,
-            "profiles": [copy.deepcopy(profile_raw)],
-        }
-    )
-    profile = document.profiles[0]
-    form = next(form for form in profile.reference_forms if form["status"] == "eligible")
-    by_id = {row["id"]: row for row in form["items"]}
-    remaining = dict(
-        zip(
-            ("AO1", "AO2", "AO3", "AO4"),
-            GENERATED_OBJECTIVE_POLICIES[(profile.family_id, profile.paper_id)],
-            strict=True,
+    with pytest.raises(ValueError):
+        ReferenceDemandDocument.model_validate(
+            {
+                "schema_version": 2,
+                "purpose": raw["purpose"],
+                "derived_aggregate_only": True,
+                "retains_source_text": False,
+                "profiles": [copy.deepcopy(profile_raw)],
+            }
         )
-    )
-    items = []
-    for item_id in form["paths"][0]["item_ids"]:
-        row = copy.deepcopy(by_id[item_id])
-        row.update(
-            expected_minutes=row["marks"] * 1.5,
-            task_operation=row["cognitive_operation"],
-            assessment_objectives={},
-        )
-        if row["command_word"] == "select":
-            row["kind"] = "mcq"
-        unallocated = row["marks"]
-        for objective in remaining:
-            awarded = min(unallocated, remaining[objective])
-            if awarded:
-                row["assessment_objectives"][objective] = awarded
-                remaining[objective] -= awarded
-                unallocated -= awarded
-            if not unallocated:
-                break
-        items.append(row)
-    topology = copy.deepcopy(form["topology"])
-    topology["duration_minutes"] = 120
-    result = audit_candidate_paths(items, topology, profile)
-    assert result["evidence_validation_passed"] is False
-    assert result["evidence_state"] == "insufficient"
-    assert result["passed"] is False
-    assert result["failed_paths"]
 
 
 def test_outer_reference_document_rejects_unknown_fields():

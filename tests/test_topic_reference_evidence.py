@@ -239,3 +239,48 @@ def test_topic_contract_rejects_cross_topic_prompt_even_when_metadata_agrees():
         },
     }
     assert module().task_features(item)["topic_id"] is None
+
+
+def test_topic_contract_cannot_relabel_the_question_operation_or_response_form():
+    """A serialised hint must never override the question that will be printed."""
+    item = {
+        "topic_id": "4.2",
+        "task_operation": "analyse",
+        "kind": "data_structures_tree",
+        "prompt": "Explain why the binary search tree remains balanced.",
+        "reference_task_contract": {
+            "policy_id": "aqa-cs-topic-evidence-v1",
+            "topic_id": "4.2",
+            "style_id": "data_structures_tree",
+            "operation": "trace",
+            "response_mode": "table",
+            "source_dependency": "self-contained",
+        },
+    }
+
+    assert module().task_features(item) == {
+        "topic_id": None,
+        "operation": "unknown",
+        "mode": "unknown",
+    }
+
+
+def test_topic_contract_rejects_unknown_serialised_fields():
+    """Only the versioned contract may establish a reference comparison."""
+    item = {
+        "topic_id": "4.2",
+        "task_operation": "explain",
+        "kind": "data_structures_tree",
+        "prompt": "Explain why a binary search tree remains balanced.",
+        "reference_task_contract": {
+            "policy_id": "aqa-cs-topic-evidence-v1",
+            "topic_id": "4.2",
+            "style_id": "data_structures_tree",
+            "operation": "explain",
+            "response_mode": "prose",
+            "source_dependency": "self-contained",
+            "unreviewed_override": "trace:table",
+        },
+    }
+
+    assert module().task_features(item)["topic_id"] is None

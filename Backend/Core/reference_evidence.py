@@ -366,9 +366,13 @@ def source_observations(items):
     return result
 
 
-def validate_profile_evidence(profile):
-    if getattr(profile, "_document_schema_version", 2) != 3:
-        raise ValueError("legacy reference demand documents cannot qualify H3 paths")
+def validate_profile_evidence(profile, *, document=None):
+    if (
+        document is None
+        or document.schema_version != 3
+        or not any(profile is candidate for candidate in document.profiles)
+    ):
+        raise ValueError("validated schema-3 reference demand document is required")
     if profile.evidence_policy_id == EXTRACTION_POLICY:
         if (
             profile.assessment_kind != "full-paper"

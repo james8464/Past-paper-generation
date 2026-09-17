@@ -7,6 +7,10 @@ difficulty anchor. Focused banks deliberately have their own task-led budgets.
 from __future__ import annotations
 
 from Backend.Core.assessment_objectives import objective_policy_for
+from Backend.Core.topic_task_contract import (
+    TOPIC_CONTRACT_POLICY_ID,
+    derive_task_semantics,
+)
 from cspapergen.models import (
     PaperBlueprint,
     Question,
@@ -47,45 +51,25 @@ BANKS = {
 }
 
 
-def _reference_task_semantics(part: QuestionPart) -> tuple[str, str] | None:
-    prompt = part.prompt.casefold().strip()
-    if part.options:
-        return (
-            part.task_operation,
-            "multi-selected"
-            if " all " in f" {prompt} " or " two " in f" {prompt} "
-            else "selected",
-        )
-    if prompt.startswith(("draw ", "construct ", "complete ")):
-        if "adjacency matrix" in prompt:
-            return "represent", "table"
-        if any(word in prompt for word in ("tree", "diagram", "relationship")):
-            return "represent", "diagram"
-    if part.response_slots:
-        return part.task_operation, "sequence" if len(part.response_slots) > 1 else "result"
-    if part.task_operation == "program":
-        return "program", "query" if "select" in prompt else "code"
-    if part.task_operation == "trace" and "table" in prompt:
-        return "trace", "table"
-    if part.task_operation in {"retrieve", "describe", "explain", "analyse", "judge"}:
-        return part.task_operation, "prose"
-    return None
-
-
 def _reference_task_contract(question: Question, part: QuestionPart) -> ReferenceTaskContract | None:
     if question.topic_id not in {"4.2", "4.10", "4.12"}:
         return None
-    semantics = _reference_task_semantics(part)
+    semantics = derive_task_semantics(
+        task_operation=part.task_operation,
+        prompt=part.prompt,
+        options=part.options,
+        response_slots=part.response_slots,
+    )
     if semantics is None:
         return None
     operation, mode = semantics
     return ReferenceTaskContract(
-        policy_id="aqa-cs-topic-evidence-v1",
+        policy_id=TOPIC_CONTRACT_POLICY_ID,
         topic_id=question.topic_id,
         style_id=question.style_id,
         operation=operation,
         response_mode=mode,
-        source_dependency="task-context" if question.stimulus else "self-contained",
+        source_dependency=part.reference_source_dependency,
     )
 
 
@@ -130,6 +114,9 @@ def calibrate_blueprint(paper: PaperBlueprint) -> PaperBlueprint:
             if paper.paper_number == "1" and question.number == 4 and part.label == "2":
                 operation = "judge"
             part.task_operation = operation
+            part.reference_source_dependency = (
+                "task-context" if question.stimulus else "self-contained"
+            )
             part.reference_task_contract = _reference_task_contract(question, part)
             if paper.assessment_kind == "question-bank" and part.marking.levels:
                 high = part.marks

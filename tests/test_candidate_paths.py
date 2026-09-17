@@ -322,7 +322,10 @@ def test_explicit_selected_operation_is_not_relabelled_retrieval_in_audit():
 
 
 def test_correlated_source_vectors_cannot_pass_by_coordinatewise_bounds():
-    from Backend.Core.reference_demand import profile_for
+    from Backend.Core.reference_demand import (
+        ReferenceDemandDocument,
+        profile_for,
+    )
     from tools.source_candidate_paths import form_from_items
 
     profile = profile_for("aqa/economics", "3").model_copy(deep=True)
@@ -395,7 +398,21 @@ def test_correlated_source_vectors_cannot_pass_by_coordinatewise_bounds():
             }
         ],
     }
-    report = paths_module().audit_candidate_paths(data, topology, profile)
+    evidence_document = ReferenceDemandDocument.model_validate(
+        {
+            "schema_version": 3,
+            "purpose": "Synthetic source vectors exercise correlated path bounds.",
+            "derived_aggregate_only": True,
+            "retains_source_text": False,
+            "profiles": [profile.model_dump(mode="json")],
+        }
+    )
+    report = paths_module().audit_candidate_paths(
+        data,
+        topology,
+        evidence_document.profiles[0],
+        evidence_document=evidence_document,
+    )
     assert report["passed"] is False
     assert report["evidence_validation_passed"] is True
     assert report["paths"][0]["failed_checks"] == ["correlated_reference_path_fit"]

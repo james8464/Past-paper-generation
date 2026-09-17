@@ -12,7 +12,6 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
-    PrivateAttr,
     field_validator,
     model_validator,
 )
@@ -28,7 +27,6 @@ DemandBand = Literal["low", "standard", "high"]
 
 class ReferenceDemandProfile(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
-    _document_schema_version: int = PrivateAttr(default=2)
     family_id: str = Field(min_length=3)
     paper_id: str = Field(min_length=1)
     assessment_kind: Literal["full-paper", "question-bank"] = "full-paper"
@@ -128,13 +126,19 @@ class ReferenceDemandDocument(BaseModel):
         keys = [(profile.family_id, profile.paper_id) for profile in self.profiles]
         if len(keys) != len(set(keys)):
             raise ValueError("reference demand profiles must be unique")
-        for profile in self.profiles:
-            profile._document_schema_version = self.schema_version
+        if self.schema_version == 2 and any(
+            profile.evidence_policy_id is not None
+            or profile.reference_forms
+            or profile.topic_records
+            or profile.evidence_gaps
+            for profile in self.profiles
+        ):
+            raise ValueError("schema-2 profiles cannot carry H3 evidence")
         if self.schema_version == 3:
             from Backend.Core.reference_evidence import validate_profile_evidence
 
             for profile in self.profiles:
-                validate_profile_evidence(profile)
+                validate_profile_evidence(profile, document=self)
         return self
 
 

@@ -12,9 +12,13 @@ from collections import Counter
 from typing import Any
 
 from Backend.Core.candidate_paths import identity
+from Backend.Core.topic_task_contract import (
+    TOPIC_CONTRACT_POLICY_ID,
+    ReferenceTaskContract,
+    derive_task_semantics,
+)
 
 TOPIC_POLICY_ID = "aqa-topic-operation-records-v2"
-TOPIC_CONTRACT_POLICY_ID = "aqa-cs-topic-evidence-v1"
 TOPIC_STYLE_IDS = {
     "4.2": {
         "data_structures_stack_queue",
@@ -287,10 +291,14 @@ def task_features(item: dict[str, Any]) -> dict[str, Any]:
     trace table. Broad authoring operations may be refined only by an actual
     response instruction/contract, never an incidental noun in prose.
     """
-    contract = item.get("reference_task_contract")
-    if not isinstance(contract, dict):
+    raw_contract = item.get("reference_task_contract")
+    if not isinstance(raw_contract, dict):
         return {"topic_id": None, "operation": "unknown", "mode": "unknown"}
-    topic = contract.get("topic_id")
+    try:
+        contract = ReferenceTaskContract.model_validate(raw_contract)
+    except ValueError:
+        return {"topic_id": None, "operation": "unknown", "mode": "unknown"}
+    topic = contract.topic_id
     prompt = str(item.get("prompt", "")).casefold()
     context = item.get("context") or []
     text = (
@@ -300,25 +308,36 @@ def task_features(item: dict[str, Any]) -> dict[str, Any]:
             " ".join(map(str, context)) if isinstance(context, list) else str(context)
         ).casefold()
     )
-    operation = contract.get("operation")
-    mode = contract.get("response_mode")
+    semantics = derive_task_semantics(
+        task_operation=item.get("task_operation"),
+        prompt=item.get("prompt"),
+        options=item.get("options") or item.get("choices") or [],
+        response_slots=item.get("response_slots") or [],
+    )
+    source_dependency = item.get("reference_source_dependency")
+    if source_dependency not in {"self-contained", "task-context"}:
+        source_dependency = "task-context" if context else "self-contained"
     excluded = {
         "4.2": r"\b(database|relational|sql|primary key|foreign key|normalisation|normalization|compression)\b",
         "4.10": r"\b(rest(?:ful)?|xml|json|https?|floating-point|functional|lambda|immutable|adjacency|stack|queue|tree|graph)\b",
         "4.12": r"\b(imperative|graph|vertex|vertices|visited|while|for loop|database|relational|sql|normalisation|normalization)\b",
     }
     if (
-        contract.get("policy_id") != TOPIC_CONTRACT_POLICY_ID
+        contract.policy_id != TOPIC_CONTRACT_POLICY_ID
         or topic not in TOPIC_STYLE_IDS
-        or contract.get("style_id") not in TOPIC_STYLE_IDS[topic]
+        or contract.style_id not in TOPIC_STYLE_IDS[topic]
         or item.get("topic_id") != topic
-        or item.get("kind") != contract.get("style_id")
-        or contract.get("source_dependency") not in {"self-contained", "task-context"}
-        or mode not in {"prose", "table", "diagram", "code", "query", "selected", "multi-selected", "result", "sequence"}
+        or item.get("kind") != contract.style_id
+        or semantics != (contract.operation, contract.response_mode)
+        or source_dependency != contract.source_dependency
         or re.search(excluded[topic], text)
     ):
         return {"topic_id": None, "operation": "unknown", "mode": "unknown"}
-    return {"topic_id": topic, "operation": operation, "mode": mode}
+    return {
+        "topic_id": topic,
+        "operation": contract.operation,
+        "mode": contract.response_mode,
+    }
 
 
 def matching_records(

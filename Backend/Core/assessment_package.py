@@ -36,6 +36,7 @@ from Backend.Core.paths import REPO_ROOT
 from Backend.Core.reference_demand import (
     assessment_objectives_for_item,
     audit_form_demand,
+    load_reference_demand_document,
     profile_for,
 )
 from Backend.Core.response_simulation import ResponseSimulator
@@ -344,7 +345,12 @@ def _reference_demand_audit(
         capability = generator_capability(subject)
     except ValueError:
         return None
-    profile = profile_for(capability.id, paper_number)
+    evidence_document = load_reference_demand_document()
+    profile = profile_for(
+        capability.id,
+        paper_number,
+        document=evidence_document,
+    )
     report = audit_form_demand(items, profile, require_item_evidence=not preview)
     if blueprint is None:
         return report
@@ -355,7 +361,12 @@ def _reference_demand_audit(
     from Backend.Core.topic_reference_evidence import audit_topic_bank
 
     topology = topology_from_blueprint(blueprint, items, capability.id)
-    paths = audit_candidate_paths(items, topology, profile)
+    paths = audit_candidate_paths(
+        items,
+        topology,
+        profile,
+        evidence_document=evidence_document,
+    )
     # Whole printed-item review is separate from candidate selection. Never
     # remove a failed/unreviewed alternative from the review denominator.
     review_failed = [
@@ -604,6 +615,7 @@ def _extract_items(
             or (raw.get("authoring_context") or {}).get("task_operation"),
             "source_dependency": raw.get("source_dependency")
             or (raw.get("authoring_context") or {}).get("source_dependency"),
+            "reference_source_dependency": raw.get("reference_source_dependency"),
             "kind": kind,
             "prompt": prompt,
             "context": stems,
