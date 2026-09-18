@@ -2916,7 +2916,9 @@ def _source_backed_mark_scheme_lines(item) -> list[str]:
                 _objective, marks, _content = allocation.groups()
                 criteria.append(f"● {stripped} ({marks})")
             else:
-                criteria.append(f"● {stripped}")
+                discrete_mark = re.match(r"^(\d+) marks?\s+for\b", stripped)
+                suffix = f" ({discrete_mark.group(1)})" if discrete_mark else ""
+                criteria.append(f"● {stripped}{suffix}")
     return [
         "Question focus: " + item.prompt,
         "Allocation: " + item.mark_breakdown,

@@ -126,6 +126,18 @@ def test_source_backed_mcq_criteria_keep_reference_bold_and_italic_markers():
     assert "● AO1 (1 mark): selects B. (1)" in lines
 
 
+def test_source_backed_one_mark_criteria_keep_credit_and_add_tally():
+    item = SimpleNamespace(
+        prompt="Calculate the change.",
+        mark_breakdown="AO2 2",
+        mark_scheme=["1 mark for the correct source substitution."],
+    )
+
+    lines = _source_backed_mark_scheme_lines(item)
+
+    assert "● 1 mark for the correct source substitution. (1)" in lines
+
+
 def test_mark_scheme_front_matter_matches_reference_structure(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
