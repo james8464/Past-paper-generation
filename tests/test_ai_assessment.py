@@ -18,6 +18,7 @@ from Backend.Core.ai_assessment import (
     _repair_prompt,
     _required_awarded_entries,
     _review_prompt,
+    _requires_model_review,
     _seeded_fallback_allowed,
     _Task,
     _task_source,
@@ -1791,6 +1792,28 @@ def test_review_prompt_labels_multiple_choice_keys_without_index_ambiguity() -> 
     assert '"correct_choice_index_convention": "zero-based"' in prompt
     assert '"protected_numeric_tokens": []' in prompt
     assert "do not compare the candidate against withheld draft prose" in prompt
+
+
+def test_deterministic_selected_response_uses_the_independent_solver_review_path() -> None:
+    question = GeneratedQuestion(
+        rule_id="q1",
+        number="1",
+        marks=1,
+        kind="multiple_choice",
+        command_word="Select",
+        topic_id="economics",
+        prompt="Select the checked result.",
+        mark_scheme=["12"],
+        choices=["12", "10", "8", "6"],
+        correct_choice=0,
+        assessment_objectives={"AO1": 1},
+        authoring_context={"selected_response_contract": {}},
+    )
+
+    assert not _requires_model_review(question, GenerationPolicy())
+    assert _requires_model_review(
+        question.model_copy(update={"authoring_context": {}}), GenerationPolicy()
+    )
 
 
 def test_points_scheme_prompt_requires_enough_distinct_awarded_rows() -> None:

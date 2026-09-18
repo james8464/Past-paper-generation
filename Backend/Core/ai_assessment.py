@@ -72,6 +72,17 @@ class GenerationPolicy:
     require_difficulty_review: bool = False
 
 
+def _requires_model_review(
+    question: GeneratedQuestion,
+    policy: GenerationPolicy,
+) -> bool:
+    """Use deterministic validation for source-locked selected responses."""
+
+    return policy.require_model_review and not isinstance(
+        question.authoring_context.get("selected_response_contract"), dict
+    )
+
+
 @dataclass(frozen=True)
 class _Task:
     key: tuple[int, int, int]
@@ -360,7 +371,7 @@ def _review_verified_contract(
             client=client,
             subject=subject,
         )[task.id]
-        if policy.require_model_review
+        if _requires_model_review(candidate, policy)
         else ReviewResult(approved=True)
     )
     if not review.approved or review.issues:
@@ -549,7 +560,7 @@ def _generate_item_transaction(
                     client=client,
                     subject=subject,
                 )[task.id]
-                if policy.require_model_review
+                if _requires_model_review(candidate, policy)
                 else ReviewResult(approved=True)
             )
             if review.approved and not review.issues:
@@ -633,7 +644,7 @@ def _generate_item_transaction(
                 client=client,
                 subject=subject,
             )[task.id]
-            if policy.require_model_review
+            if _requires_model_review(fallback, policy)
             else ReviewResult(approved=True)
         )
         if fallback_review.approved and not fallback_review.issues:
