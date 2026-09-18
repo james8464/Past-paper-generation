@@ -779,7 +779,7 @@ def test_candidate_question_accepts_unordered_contract_values() -> None:
         key=(0, 0, 0),
         question=question,
         option=GeneratedOption(id="option", title="Option", questions=[question]),
-        topic=object(),
+        topic=type("Topic", (), {"title": "Economics", "points": []})(),
     )
     raw = {
         "prompt": "Calculate the outcome after applying 5% to 55.",
@@ -1761,6 +1761,34 @@ def test_review_prompt_uses_structured_semantics_not_withheld_draft_prose() -> N
 
     assert '"required_task_terms": [' in prompt
     assert "forbidden planning sentence about contestability" not in prompt.casefold()
+
+
+def test_review_prompt_labels_multiple_choice_keys_without_index_ambiguity() -> None:
+    choices = ["First", "Second", "Third", "Fourth"]
+    question = GeneratedQuestion(
+        rule_id="q1",
+        number="1",
+        marks=1,
+        kind="multiple_choice",
+        command_word="Select",
+        topic_id="economics",
+        prompt="Select the correct outcome.",
+        mark_scheme=[choices[3]],
+        choices=choices,
+        correct_choice=3,
+        assessment_objectives={"AO1": 1},
+    )
+    task = _Task(
+        key=(0, 0, 0),
+        question=question,
+        option=GeneratedOption(id="option", title="Option", questions=[question]),
+        topic=type("Topic", (), {"title": "Economics", "points": []})(),
+    )
+
+    prompt = _review_prompt([task], [question], subject="Economics")
+
+    assert '"correct_choice_label": "D: Fourth"' in prompt
+    assert '"correct_choice_index_convention": "zero-based"' in prompt
     assert '"protected_numeric_tokens": []' in prompt
     assert "do not compare the candidate against withheld draft prose" in prompt
 

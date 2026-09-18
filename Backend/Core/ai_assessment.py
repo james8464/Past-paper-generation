@@ -1669,7 +1669,7 @@ def _review_prompt(
                 "points": [str(point) for point in getattr(task.topic, "points", [])],
             },
             "source": _task_source(task),
-            "question": candidate.model_dump(mode="json"),
+            "question": _review_question_payload(candidate),
         }
         for task, candidate in zip(tasks, candidates, strict=True)
     ]
@@ -1679,7 +1679,9 @@ def _review_prompt(
         "and unambiguous task, source/data consistency, correct command-word "
         "demand, complete mark coverage, accurate "
         "AO classification, plausible distractors, and a mark scheme that a second "
-        "examiner could apply consistently. "
+        "examiner could apply consistently. For multiple-choice items, "
+        "`correct_choice` is a zero-based storage index; use the explicit "
+        "`correct_choice_label` when judging the keyed option. "
         f"{objective_policy_for(subject).guidance()} Confirm that the candidate preserves "
         "the exact artefact, subject matter, and scope of `semantic_task_contract` "
         "while using materially new wording. Review adversarially: try to disprove "
@@ -1701,6 +1703,23 @@ def _review_prompt(
         '"ambiguity_issues":[]}. Approval must be false if any '
         "issue exists.\nREVIEW_DATA=" + json.dumps(data, ensure_ascii=False)
     )
+
+
+def _review_question_payload(candidate: GeneratedQuestion) -> dict[str, object]:
+    """Add an unambiguous human-facing key without changing stored item data."""
+
+    payload = candidate.model_dump(mode="json")
+    if (
+        candidate.kind == "multiple_choice"
+        and isinstance(candidate.correct_choice, int)
+        and candidate.correct_choice in range(len(candidate.choices))
+    ):
+        label = "ABCD"[candidate.correct_choice]
+        payload["correct_choice_index_convention"] = "zero-based"
+        payload["correct_choice_label"] = (
+            f"{label}: {candidate.choices[candidate.correct_choice]}"
+        )
+    return payload
 
 
 def _bounded_text(value: Any, *, name: str, limit: int) -> str:
