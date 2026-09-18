@@ -826,3 +826,14 @@ improvement. The audit identifies the substantive remaining cause: 26 generated
 mark-scheme pages against 36 in the reference and a 77.8% word-count score.
 The next work must add genuinely useful, question-specific marking depth and
 reference-like continuation pagination, never blank or synthetic filler.
+
+The current-account source contract was then completed with deterministic
+rejection reasons for every incorrect chart-reading option. A fresh same-seed
+Paper 2 export passed generation, PDF and reference-demand gates in 1,696
+seconds. The 300-DPI audit measured 72.5% for the question paper, 66.2% for
+the mark scheme and 69.4% overall; the 600-DPI profile measured 72.4%, 66.1%
+and 69.3%. Both had zero print failures. This clears the 65.4% mark-scheme
+floor with genuine examiner guidance, improving word count, content envelope,
+table boxes and typography match. It is visual and print evidence for this
+Paper 2 candidate only; expert review and student calibration remain
+unqualified and no other family inherits the result.
