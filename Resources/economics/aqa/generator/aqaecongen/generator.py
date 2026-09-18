@@ -246,6 +246,18 @@ VISUAL_SPECS = {
     24: ("4.2.5", "LRAS", "right", "aggregate"),
     25: ("4.2.5", "LRAS", "left", "aggregate"),
 }
+VISUAL_CONTEXTS = {
+    2: "stronger consumer confidence raises spending in a product market",
+    4: "a close substitute reduces demand for an industry's output",
+    9: "a productivity improvement lowers firms' unit costs in a product market",
+    10: "a rise in imported-material costs raises firms' unit costs in a product market",
+    13: "higher household and business expenditure expands economy-wide spending",
+    14: "tighter credit conditions reduce household and business expenditure",
+    19: "lower energy costs reduce economy-wide production costs in the short run",
+    20: "a supply disruption raises economy-wide production costs in the short run",
+    24: "investment in skills and infrastructure raises the economy's productive capacity",
+    25: "storm damage reduces the economy's productive capacity",
+}
 INDEX_TOPIC_BY_NUMBER = {5: "4.2.1", 15: "4.2.1", 30: "4.2.1"}
 FACTUAL_TOPIC_BY_NUMBER = dict(
     zip(
@@ -717,6 +729,7 @@ def _visual_mcq(
     rng: random.Random,
 ) -> tuple[str, str, list[str], dict[str, object]]:
     topic_id, curve, direction, scope_id = VISUAL_SPECS[number]
+    context = VISUAL_CONTEXTS[number]
     if topic.id != topic_id:
         raise ValueError("visual topic does not match its declared task")
     is_aggregate = scope_id == "aggregate"
@@ -761,8 +774,8 @@ def _visual_mcq(
 
     correct_text = outcomes[(curve, direction)]
     prompt = (
-        f"Use Figure {number}, which shows {scope}. Which combination describes "
-        "the change from the initial equilibrium to the new equilibrium?"
+        f"Figure {number} shows {context} in {scope}. Using the diagram, which "
+        "combination describes the movement from the initial to the new equilibrium?"
     )
     return (
         prompt,

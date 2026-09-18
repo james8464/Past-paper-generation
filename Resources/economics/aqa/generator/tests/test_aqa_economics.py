@@ -17,6 +17,7 @@ from aqaecongen.syllabus import load_syllabus
 from pypdf import PdfReader
 
 from Backend.Core.assessment_package import _extract_items
+from Backend.Core.assessment_quality import assert_distinct_items
 from Backend.Core.exam_blueprints import (
     GeneratedQuestion,
     MarkSchemePoint,
@@ -93,6 +94,24 @@ def test_paper_three_visual_questions_have_data_bound_diagrams() -> None:
         changed_solution = solve_selected_response(changed)
         assert changed_solution is not None
         assert changed_solution["answer"] != question.choices[question.correct_choice]
+
+
+def test_paper_three_visual_questions_have_distinct_candidate_visible_stems() -> None:
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=123)
+    visual_questions = [
+        option.questions[0]
+        for option in paper.sections[0].options
+        if int(option.questions[0].number) in PAPER3_VISUAL_QUESTION_NUMBERS
+    ]
+
+    assert_distinct_items(
+        [
+            {"id": question.number, "prompt": question.prompt}
+            for question in visual_questions
+        ],
+        threshold=0.84,
+        context="paper three visual MCQs",
+    )
 
 
 def test_visual_renderer_consumes_only_the_public_selected_response_contract(monkeypatch) -> None:
