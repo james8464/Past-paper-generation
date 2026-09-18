@@ -918,6 +918,7 @@ def _candidate_question(
 
     preserve_mark_scheme = (
         original.authoring_context.get("preserve_mark_scheme") is True
+        or has_selected_response_contract
     )
     if preserve_mark_scheme:
         points = list(original.structured_mark_scheme)

@@ -344,7 +344,6 @@ def test_candidate_question_preserves_selected_response_choices_owned_by_contrac
         correct_choice=0,
         assessment_objectives={"AO2": 1},
         authoring_context={
-            "preserve_mark_scheme": True,
             "selected_response_contract": selected_response_contract(
                 "opportunity_cost_change",
                 inputs={
@@ -373,6 +372,13 @@ def test_candidate_question_preserves_selected_response_choices_owned_by_contrac
             ),
             "choices": ["12", "10", "68", "30"],
             "correct_choice": 1,
+            "mark_scheme": [
+                {
+                    "text": "10 units of product Y",
+                    "marks": 1,
+                    "assessment_objective": "AO2",
+                }
+            ],
         },
         client=type("Client", (), {"provider": "test", "model": "test"})(),
         policy=GenerationPolicy(),
@@ -381,6 +387,8 @@ def test_candidate_question_preserves_selected_response_choices_owned_by_contrac
     assert candidate.choices == choices
     assert candidate.correct_choice == 0
     assert candidate.prompt == question.prompt
+    assert candidate.mark_scheme == question.mark_scheme
+    assert candidate.structured_mark_scheme == question.structured_mark_scheme
     assert solve_selected_response(candidate.model_dump(mode="json"))["answer"] == choices[0]
 
 

@@ -1,7 +1,7 @@
 # Graph Report - Past Paper Creation  (2026-09-18)
 
 ## Corpus Check
-- 392 files · ~735,327 words
+- 392 files · ~735,350 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3dbfb455`
+- Built from commit: `834d86cf`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -469,8 +469,8 @@ Cohesion: 0.07
 Nodes (30): CaseIterable, AIProvider, anthropic, apple, .backendID, .id, ollama, openAI (+22 more)
 
 ### Community 40 - "AssessmentCheckpointStore"
-Cohesion: 0.10
-Nodes (38): generate_unique_paper(), Replace draft items while keeping the authoritative assessment blueprint frozen., AssessmentCheckpointStore, CheckpointCorrupt, CheckpointIdentity, CheckpointMismatch, identity_for_blueprint(), Any (+30 more)
+Cohesion: 0.09
+Nodes (41): generate_unique_paper(), Replace draft items while keeping the authoritative assessment blueprint frozen., AssessmentCheckpointStore, CheckpointCorrupt, CheckpointIdentity, CheckpointMismatch, identity_for_blueprint(), Any (+33 more)
 
 ### Community 41 - "assessment_package.py"
 Cohesion: 0.11
@@ -693,8 +693,8 @@ Cohesion: 0.24
 Nodes (19): progress_emitter(), _atomic_publish(), _cancel_generation(), checkpoint_path_for_job(), emit_generated_files(), finalize_generated_documents(), _generator_version(), handle_generate() (+11 more)
 
 ### Community 98 - "exam_blueprints.py"
-Cohesion: 0.13
-Nodes (36): _demand_band(), _hydrate_assessment_metadata(), _objective_allocation(), _prompt_uses_command_word(), _structured_scheme(), validate_generated_paper(), validate_rule(), _answer_form() (+28 more)
+Cohesion: 0.16
+Nodes (33): _demand_band(), _hydrate_assessment_metadata(), _objective_allocation(), _prompt_uses_command_word(), _structured_scheme(), validate_generated_paper(), validate_rule(), _answer_form() (+25 more)
 
 ### Community 99 - "Paper Creator Excellence Programme Design"
 Cohesion: 0.08
