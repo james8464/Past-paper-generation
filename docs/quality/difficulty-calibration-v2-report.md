@@ -806,3 +806,12 @@ tally is legible. This is valid visual and print evidence for that Edexcel
 Paper 1 candidate only; the export-time manifest still correctly records
 expert review and student calibration as not run, and no other advertised
 family inherits this result.
+
+The first independent Paper 2 transaction passed generation, PDF and
+reference-demand gates in 1,706 seconds. Both audit profiles reported zero
+print failures and 68.9% overall fidelity, with 72.5%/72.4% question-paper and
+65.3% mark-scheme fidelity respectively. This is 0.1 point below the 65.4%
+mark-scheme floor and therefore remains unqualified; the result is not rounded
+up. The remaining quantitative gaps are Paper 2 page count/content density and
+mark notation. They require a Paper 2-specific renderer/marking-guidance
+improvement followed by another fresh transaction.
