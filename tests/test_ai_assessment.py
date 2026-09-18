@@ -379,6 +379,7 @@ def test_candidate_question_preserves_selected_response_choices_owned_by_contrac
 
     assert candidate.choices == choices
     assert candidate.correct_choice == 0
+    assert candidate.prompt == question.prompt
     assert solve_selected_response(candidate.model_dump(mode="json"))["answer"] == choices[0]
 
 

@@ -828,6 +828,10 @@ def _candidate_question(
     policy: GenerationPolicy,
 ) -> GeneratedQuestion:
     original = task.question
+    selected_response_contract = original.authoring_context.get(
+        "selected_response_contract"
+    )
+    has_selected_response_contract = isinstance(selected_response_contract, dict)
     generated_prompt = _clean_generated_prompt(
         _bounded_text(raw.get("prompt"), name="prompt", limit=5000),
         question=original,
@@ -836,7 +840,10 @@ def _candidate_question(
         generated_prompt,
         original.command_word,
     )
-    preserve_prompt = original.authoring_context.get("preserve_prompt") is True
+    preserve_prompt = (
+        original.authoring_context.get("preserve_prompt") is True
+        or has_selected_response_contract
+    )
     prompt = original.prompt if preserve_prompt else generated_prompt
     _validate_prompt_length(original, prompt)
     generated_values = raw.get("generated_numeric_values")
@@ -947,8 +954,7 @@ def _candidate_question(
         )
 
     if original.kind == "multiple_choice":
-        selected_response = original.authoring_context.get("selected_response_contract")
-        if isinstance(selected_response, dict):
+        if has_selected_response_contract:
             # The choices and answer key are projections of public, deterministic
             # source data. A language model may improve the stem, but must not
             # alter a unit, precision, distractor or key owned by that contract.

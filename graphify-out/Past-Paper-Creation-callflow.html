@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>Past Paper Creation — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 6614 nodes, 18569 edges, 269 communities. Commit: 3938e29</p>
+<p class="subtitle">Generated from graphify knowledge graph: 6614 nodes, 18569 edges, 269 communities. Commit: 7993e2e</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -92,44 +92,44 @@ flowchart LR
     class EXTRACT_PIPELINE_5F350230 module;
     BUILD_GRAPH_321CBB04("Graph Build<br/><small>1092 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
-    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>776 nodes</small>")
+    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>779 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
     OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>39 nodes</small>")
     class OUTPUTS_DOCS_ED82387C module;
     CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>2 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
-    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>139 nodes</small>")
+    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>144 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
     SERVE_API_35EC8E86("Serving API<br/><small>88 nodes</small>")
     class SERVE_API_35EC8E86 module;
     SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>8 nodes</small>")
     class SECURITY_GLOBAL_5B9C6A04 module;
-    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>3325 nodes</small>")
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>3311 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
     DOCUMENT_DSL_INIT_PY_34020C9A("document_dsl/__init__.py<br/><small>144 nodes</small>")
     class DOCUMENT_DSL_INIT_PY_34020C9A module;
-    STRING_ECB25204("String<br/><small>133 nodes</small>")
+    STRING_ECB25204("String<br/><small>142 nodes</small>")
     class STRING_ECB25204 module;
     CODINGKEYS_2CCF71B7("CodingKeys<br/><small>57 nodes</small>")
     class CODINGKEYS_2CCF71B7 module;
-    DOCUMENTPREVIEWVIEW_3BBFFC64("DocumentPreviewView<br/><small>50 nodes</small>")
+    DOCUMENTPREVIEWVIEW_3BBFFC64("DocumentPreviewView<br/><small>46 nodes</small>")
     class DOCUMENTPREVIEWVIEW_3BBFFC64 module;
     CODINGKEYS_DFEF23_FF5CBE38("CodingKeys<br/><small>42 nodes</small>")
     class CODINGKEYS_DFEF23_FF5CBE38 module;
-    OTHER_D0941E68("Other<br/><small>709 nodes</small>")
+    OTHER_D0941E68("Other<br/><small>710 nodes</small>")
     class OTHER_D0941E68 module;
-    TESTS_FIXTURES_B84B1DCC -->|references x465| ANALYSIS_CLUSTERING_C79796DA
-    ANALYSIS_CLUSTERING_C79796DA -->|calls x236| TESTS_FIXTURES_B84B1DCC
-    OTHER_D0941E68 -->|contains x218| TESTS_FIXTURES_B84B1DCC
-    TESTS_FIXTURES_B84B1DCC -->|calls x116| OTHER_D0941E68
+    TESTS_FIXTURES_B84B1DCC -->|references x469| ANALYSIS_CLUSTERING_C79796DA
+    ANALYSIS_CLUSTERING_C79796DA -->|calls x238| TESTS_FIXTURES_B84B1DCC
+    OTHER_D0941E68 -->|contains x216| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|calls x113| OTHER_D0941E68
     ANALYSIS_CLUSTERING_C79796DA -->|references x62| OTHER_D0941E68
-    OTHER_D0941E68 -->|contains x59| ANALYSIS_CLUSTERING_C79796DA
+    OTHER_D0941E68 -->|contains x58| ANALYSIS_CLUSTERING_C79796DA
     SERVE_API_35EC8E86 -->|calls x49| TESTS_FIXTURES_B84B1DCC
     STRING_ECB25204 -->|references x47| TESTS_FIXTURES_B84B1DCC
     TESTS_FIXTURES_B84B1DCC -->|imports x36| BUILD_GRAPH_321CBB04
     TESTS_FIXTURES_B84B1DCC -->|imports x30| DOCUMENT_DSL_INIT_PY_34020C9A
-    TESTS_FIXTURES_B84B1DCC -->|method x26| STRING_ECB25204
-    STRING_ECB25204 -->|references x25| OTHER_D0941E68
+    STRING_ECB25204 -->|references x28| OTHER_D0941E68
+    INGEST_CACHE_UPDATE_FF457338 -->|method x24| TESTS_FIXTURES_B84B1DCC
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -146,7 +146,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>10</td><td><code>262</code></td></tr><tr><td>Graph Build</td><td>1092</td><td><code>24, 33, 43, 56, 58, 65, 92, 74, 94, 102, 69, 100, 106, 109, 108, 110, 111, 86, 115, 118, 120, 129, 130, 131, 135, 138, 116, 145, 146, 149, 150, 151, 152, 155, 156, 162, 163, 166, 168, 169, 172, 178, 179, 189, 190, 191, 192, 197, 198, 199, 200, 105, 113, 203, 205, 207, 147, 213, 182, 223, 224, 225, 226, 230, 231, 232, 233, 234, 235, 236, 237</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>776</td><td><code>6, 12, 21, 11, 22, 7, 34, 51, 84, 54, 29, 68, 96, 91, 181, 201, 154, 157, 158, 164, 170, 171</code></td></tr><tr><td>Outputs &amp; Docs</td><td>39</td><td><code>134, 143, 194</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>2</td><td><code>244</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>139</td><td><code>5</code></td></tr><tr><td>Serving API</td><td>88</td><td><code>124, 35, 117, 221</code></td></tr><tr><td>Security &amp; Global Graph</td><td>8</td><td><code>195</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>3325</td><td><code>1, 2, 8, 14, 20, 4, 77, 10, 98, 13, 19, 0, 17, 25, 23, 48, 31, 38, 37, 36, 42, 3, 125, 30, 45, 46, 47, 32, 44, 217, 49, 40, 41, 57, 66, 59, 55, 60, 70, 27, 72, 16, 73, 78, 76, 50, 75, 80, 104, 107, 211, 61, 79, 82, 89, 101, 103, 122, 165, 183, 64, 114, 153, 119, 121, 126, 128, 269, 85, 132, 204, 95, 139, 140, 208, 93, 148, 127, 123, 209, 53, 90, 263, 142, 193, 180, 202, 141, 212, 215, 266, 267</code></td></tr><tr><td>document_dsl/__init__.py</td><td>144</td><td><code>67</code></td></tr><tr><td>String</td><td>133</td><td><code>15</code></td></tr><tr><td>CodingKeys</td><td>57</td><td><code>28</code></td></tr><tr><td>DocumentPreviewView</td><td>50</td><td><code>18</code></td></tr><tr><td>CodingKeys</td><td>42</td><td><code>52</code></td></tr><tr><td>Other</td><td>709</td><td><code>9, 26, 39, 137, 62, 63, 81, 83, 87, 88, 99, 112, 206, 136, 144, 97, 159, 160, 161, 214, 167, 216, 133, 173, 174, 175, 176, 177, 184, 185, 186, 187, 188, 264, 196, 265, 210, 71, 218, 219, 220, 222, 227, 228, 229, 238, 239, 240, 241, 242, 243, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>10</td><td><code>262</code></td></tr><tr><td>Graph Build</td><td>1092</td><td><code>24, 33, 43, 56, 58, 65, 109, 74, 92, 94, 102, 69, 100, 106, 108, 110, 111, 86, 115, 118, 120, 129, 130, 131, 135, 138, 116, 145, 146, 149, 150, 151, 152, 155, 156, 162, 163, 166, 168, 169, 172, 178, 179, 189, 190, 191, 192, 197, 198, 199, 200, 105, 113, 203, 205, 207, 147, 213, 182, 223, 224, 225, 226, 230, 231, 232, 233, 234, 235, 236, 237</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>779</td><td><code>6, 12, 21, 11, 22, 7, 34, 51, 84, 54, 29, 68, 96, 91, 181, 201, 154, 157, 158, 164, 170, 171</code></td></tr><tr><td>Outputs &amp; Docs</td><td>39</td><td><code>134, 143, 194</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>2</td><td><code>244</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>144</td><td><code>5</code></td></tr><tr><td>Serving API</td><td>88</td><td><code>124, 35, 117, 221</code></td></tr><tr><td>Security &amp; Global Graph</td><td>8</td><td><code>195</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>3311</td><td><code>1, 2, 8, 14, 4, 77, 10, 98, 13, 19, 17, 25, 23, 48, 31, 16, 38, 0, 37, 36, 42, 3, 125, 20, 30, 45, 46, 47, 32, 44, 217, 40, 41, 49, 57, 66, 59, 55, 60, 70, 50, 27, 72, 73, 78, 76, 75, 80, 104, 107, 211, 61, 79, 82, 89, 101, 103, 122, 165, 183, 64, 114, 153, 119, 121, 126, 128, 269, 85, 132, 204, 95, 139, 140, 208, 93, 148, 127, 123, 209, 53, 90, 263, 142, 193, 180, 202, 141, 212, 215, 266, 267</code></td></tr><tr><td>document_dsl/__init__.py</td><td>144</td><td><code>67</code></td></tr><tr><td>String</td><td>142</td><td><code>15</code></td></tr><tr><td>CodingKeys</td><td>57</td><td><code>28</code></td></tr><tr><td>DocumentPreviewView</td><td>46</td><td><code>18</code></td></tr><tr><td>CodingKeys</td><td>42</td><td><code>52</code></td></tr><tr><td>Other</td><td>710</td><td><code>9, 26, 39, 137, 62, 63, 81, 83, 87, 88, 99, 206, 112, 136, 144, 97, 159, 160, 161, 214, 167, 216, 133, 173, 174, 175, 176, 177, 184, 185, 186, 187, 188, 264, 196, 265, 210, 71, 218, 219, 220, 222, 227, 228, 229, 238, 239, 240, 241, 242, 243, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -666,12 +666,12 @@ flowchart LR
 
 <!-- ====== 4. Analysis & Clustering ====== -->
 <h2 id="analysis-clustering">4. Analysis &amp; Clustering</h2>
-<p>Analysis &amp; Clustering groups implementation around generator, resources, render, pdfpy, mostly in generator/cspapergen/render_pdf.py, generator/ocregen/render_pdf.py, generator/pastpapergen/generator.py. This section covers 776 nodes and 2455 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Analysis &amp; Clustering groups implementation around generator, resources, render, pdfpy, mostly in generator/cspapergen/render_pdf.py, generator/ocregen/render_pdf.py, generator/pastpapergen/generator.py. This section covers 779 nodes and 2459 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Analysis &amp; Clustering (776 nodes, 2455 edges)
+    %% Section: Analysis &amp; Clustering (779 nodes, 2459 edges)
     subgraph analysis_clustering_Backend_Core_benchmark_py_ad20c69e["Backend/Core/benchmark.py"]
         backend_core_benchmark_handle_benchmark_303eb156("handle_benchmark()<br/><small>Backend/Core/benchmark.py</small>")
         backend_core_benchmark_cpu_load_percent_a21569b0("cpu_load_percent()<br/><small>Backend/Core/benchmark.py</small>")
@@ -706,7 +706,7 @@ flowchart LR
     backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_benchmark_thermal_speed_limit_perce_0dc698c9
     backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_paths_absolute_user_path_a4a9742d
     backend_core_benchmark_emit_static_metrics_c43bbe70 -->|calls| backend_core_benchmark_apple_cpu_core_split_fcd9b541
-    %% Omitted for readability: 758 nodes, 0 edges
+    %% Omitted for readability: 761 nodes, 0 edges
     class backend_core_benchmark_handle_benchmark_303eb156 function;
     class backend_core_benchmark_cpu_load_percent_a21569b0 function;
     class backend_core_benchmark_cpu_probe_6744e47e function;
@@ -767,7 +767,7 @@ flowchart LR
   <td><code>PanelEmptyState</code><br><small style="color:var(--muted)">PaperCreator/Components/SharedViews.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small><br><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Components/SharedViews.swift</small><br><code>.body</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Components/SharedViews.swift</small><br><code>.body</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small><br><code>.body</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
   <td>PanelEmptyState node in PaperCreator/Components/SharedViews.swift.</td>
 </tr>
 <tr>
@@ -847,7 +847,7 @@ flowchart LR
   <td><code>BenchmarkWorkspace</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small><br><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Navigation/ContentView.swift</small></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Navigation/ContentView.swift</small><br><code>.body</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
   <td>BenchmarkWorkspace node in Features/Benchmark/BenchmarkView.swift.</td>
 </tr>
 <tr>
@@ -1005,7 +1005,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x839, references x641, contains x530, method x63. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x840, references x641, contains x530, method x63. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -1429,12 +1429,12 @@ flowchart LR
 
 <!-- ====== 7. Ingestion & Updates ====== -->
 <h2 id="ingest-cache-update">7. Ingestion &amp; Updates</h2>
-<p>Ingestion &amp; Updates groups implementation around macos, papercreator, state, applicationcoordinatorswift, mostly in PaperCreator/State/ApplicationCoordinator.swift, PaperCreator/Application/AppConfiguration.swift, PaperCreator/Domain/AppModels.swift. This section covers 139 nodes and 285 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Ingestion &amp; Updates groups implementation around macos, papercreator, state, applicationcoordinatorswift, mostly in PaperCreator/State/ApplicationCoordinator.swift, PaperCreator/Application/AppConfiguration.swift, PaperCreator/Domain/AppModels.swift. This section covers 144 nodes and 289 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Ingestion &amp; Updates (139 nodes, 285 edges)
+    %% Section: Ingestion &amp; Updates (144 nodes, 289 edges)
     subgraph ingest_cache_update_PaperCreator_Application_App_0746390d["PaperCreator/Application/AppConfiguration.swift"]
         macos_papercreator_application_appconfiguration_27b7d5c3("AppDefaults<br/><small>PaperCreator/Application/AppConfiguration.swift</small>")
         macos_papercreator_application_appconfiguration_bf14ae4c("appStoreWorkingFolder()<br/><small>PaperCreator/Application/AppConfiguration.swift</small>")
@@ -1446,8 +1446,8 @@ flowchart LR
     end
     subgraph ingest_cache_update_PaperCreator_State_Applicati_1e579283["PaperCreator/State/ApplicationCoordinator.swift"]
         macos_papercreator_state_applicationcoordinator_ad9c77ae("ApplicationCoordinator<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
-        macos_papercreator_state_applicationcoordinator_46e3fcab("generate()<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
         macos_papercreator_state_applicationcoordinator_80d6bdfb("restoreOutputFolder()<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
+        macos_papercreator_state_applicationcoordinator_46e3fcab("generate()<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
         macos_papercreator_state_applicationcoordinator_18f50178("moveGeneratedFilesToOutputFolderIfNeeded()<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
         macos_papercreator_state_applicationcoordinator_c29f5141("confirmMLXSetup()<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
         macos_papercreator_state_applicationcoordinator_6da700d8(".outputFolderDisplayPath<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
@@ -1455,12 +1455,10 @@ flowchart LR
     subgraph ingest_cache_update_PaperCreator_Domain_AppModel_422d4c29["PaperCreator/Domain/AppModels.swift"]
         macos_papercreator_domain_appmodels_generatedfil_f4935377("GeneratedFile<br/><small>PaperCreator/Domain/AppModels.swift</small>")
         macos_papercreator_domain_appmodels_progressentr_0333d4c2("ProgressEntry<br/><small>PaperCreator/Domain/AppModels.swift</small>")
-    end
-    subgraph ingest_cache_update_macOS_Tests_AppTests_swift_5836c6bc["macOS/Tests/AppTests.swift"]
-        macos_tests_apptests_papercreatortests_testappst_f36cbfee("testAppStoreWorkspaceIsPrivateAndNotDownloads()<br/><small>macOS/Tests/AppTests.swift</small>")
-        macos_tests_apptests_papercreatortests_testdispl_a2f7e90b("testDisplayPathAbbreviatesOnlyTheHomeFolder()<br/><small>macOS/Tests/AppTests.swift</small>")
+        macos_papercreator_domain_appmodels_mlxrecoverys_c5b18b0f("MLXRecoveryState<br/><small>PaperCreator/Domain/AppModels.swift</small>")
     end
     macos_papercreator_state_generationcoordinator_g_43f09001("GenerationCoordinator<br/><small>PaperCreator/State/GenerationCoordinator.swift</small>")
+    macos_tests_apptests_papercreatortests_testappst_f36cbfee("testAppStoreWorkspaceIsPrivateAndNotDownloads()<br/><small>macOS/Tests/AppTests.swift</small>")
     macos_papercreator_application_appconfiguration_27b7d5c3 -->|method| macos_papercreator_application_appconfiguration_bf14ae4c
     macos_papercreator_application_appconfiguration_27b7d5c3 -->|method| macos_papercreator_application_appconfiguration_dfdf963d
     macos_papercreator_application_appconfiguration_27b7d5c3 -->|method| macos_papercreator_application_appconfiguration_8dc25cb4
@@ -1476,14 +1474,13 @@ flowchart LR
     macos_papercreator_application_appconfiguration_901a82af -->|calls| macos_papercreator_state_applicationcoordinator_c29f5141
     macos_papercreator_application_appconfiguration_901a82af -->|calls| macos_papercreator_state_applicationcoordinator_46e3fcab
     macos_papercreator_application_appconfiguration_8dc25cb4 -->|calls| macos_papercreator_state_applicationcoordinator_6da700d8
-    macos_papercreator_application_appconfiguration_8dc25cb4 -->|calls| macos_tests_apptests_papercreatortests_testdispl_a2f7e90b
     macos_papercreator_domain_appmodels_generatedfil_f4935377 -->|calls| macos_papercreator_state_applicationcoordinator_18f50178
     macos_papercreator_state_applicationcoordinator_ad9c77ae -->|method| macos_papercreator_state_applicationcoordinator_c29f5141
     macos_papercreator_state_applicationcoordinator_ad9c77ae -->|method| macos_papercreator_state_applicationcoordinator_46e3fcab
     macos_papercreator_state_applicationcoordinator_ad9c77ae -->|method| macos_papercreator_state_applicationcoordinator_18f50178
     macos_papercreator_state_applicationcoordinator_ad9c77ae -->|method| macos_papercreator_state_applicationcoordinator_6da700d8
     macos_papercreator_state_applicationcoordinator_ad9c77ae -->|method| macos_papercreator_state_applicationcoordinator_80d6bdfb
-    %% Omitted for readability: 121 nodes, 0 edges
+    %% Omitted for readability: 126 nodes, 0 edges
     class macos_papercreator_application_appconfiguration_27b7d5c3 klass;
     class macos_papercreator_application_appconfiguration_bf14ae4c ui;
     class macos_papercreator_application_appconfiguration_dfdf963d function;
@@ -1492,16 +1489,16 @@ flowchart LR
     class macos_papercreator_application_appconfiguration_224d8ad3 function;
     class macos_papercreator_application_appconfiguration_901a82af function;
     class macos_papercreator_state_applicationcoordinator_ad9c77ae klass;
-    class macos_papercreator_state_applicationcoordinator_46e3fcab function;
     class macos_papercreator_state_applicationcoordinator_80d6bdfb ui;
+    class macos_papercreator_state_applicationcoordinator_46e3fcab function;
     class macos_papercreator_state_applicationcoordinator_18f50178 function;
     class macos_papercreator_state_applicationcoordinator_c29f5141 function;
     class macos_papercreator_state_applicationcoordinator_6da700d8 function;
     class macos_papercreator_domain_appmodels_generatedfil_f4935377 klass;
     class macos_papercreator_domain_appmodels_progressentr_0333d4c2 async;
-    class macos_tests_apptests_papercreatortests_testappst_f36cbfee test;
-    class macos_tests_apptests_papercreatortests_testdispl_a2f7e90b test;
+    class macos_papercreator_domain_appmodels_mlxrecoverys_c5b18b0f klass;
     class macos_papercreator_state_generationcoordinator_g_43f09001 klass;
+    class macos_tests_apptests_papercreatortests_testappst_f36cbfee test;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -1770,7 +1767,7 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>PaperCreator/State/ApplicationCoordinator.swift</code></td><td>71 nodes</td></tr>
+      <tr><td><code>PaperCreator/State/ApplicationCoordinator.swift</code></td><td>75 nodes</td></tr>
 <tr><td><code>PaperCreator/Application/AppConfiguration.swift</code></td><td>12 nodes</td></tr>
 <tr><td><code>PaperCreator/Domain/AppModels.swift</code></td><td>11 nodes</td></tr>
 <tr><td><code>PaperCreator/State/GenerationCoordinator.swift</code></td><td>6 nodes</td></tr>
@@ -1782,7 +1779,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: method x92, calls x68, references x62, contains x4. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: method x91, calls x65, references x65, contains x4. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -2282,12 +2279,12 @@ flowchart LR
 
 <!-- ====== 10. Tests & Fixtures ====== -->
 <h2 id="tests-fixtures">10. Tests &amp; Fixtures</h2>
-<p>Tests &amp; Fixtures groups implementation around test, tests, generator, resources, mostly in tools/paper_fidelity_audit.py, generator/tests/test_question_styles.py, generator/pastpapergen/render_pdf.py. This section covers 3325 nodes and 10173 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Tests &amp; Fixtures groups implementation around test, tests, generator, resources, mostly in tools/paper_fidelity_audit.py, generator/tests/test_question_styles.py, generator/pastpapergen/render_pdf.py. This section covers 3311 nodes and 10138 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Tests &amp; Fixtures (3325 nodes, 10173 edges)
+    %% Section: Tests &amp; Fixtures (3311 nodes, 10138 edges)
     subgraph tests_fixtures_Backend_Core_ai_assessment_py_93891410["Backend/Core/ai_assessment.py"]
         backend_core_ai_assessment_assessmentllmclient_af77fd0e("AssessmentLLMClient<br/><small>Backend/Core/ai_assessment.py</small>")
         backend_core_ai_assessment_assessmentllmclient_g_314242c3("generate_json()<br/><small>Backend/Core/ai_assessment.py</small>")
@@ -2327,7 +2324,7 @@ flowchart LR
     backend_core_exam_blueprints_generatedquestion_51da0e26 -->|calls| tests_test_ai_assessment_test_content_approval_c_22a3fa7b
     backend_core_exam_blueprints_generatedquestion_51da0e26 -->|calls| tests_test_ai_assessment_test_generated_extended_173d9621
     backend_core_exam_blueprints_generatedquestion_51da0e26 -->|calls| tests_test_ai_assessment_test_generated_mark_sch_f0a32a7c
-    %% Omitted for readability: 3307 nodes, 0 edges
+    %% Omitted for readability: 3293 nodes, 0 edges
     class backend_core_ai_assessment_assessmentllmclient_af77fd0e entry;
     class backend_core_ai_assessment_assessmentllmclient_g_314242c3 function;
     class backend_core_ai_assessment_assessmentllmclient_s_2b7acbd9 function;
@@ -2615,7 +2612,7 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>tools/paper_fidelity_audit.py</code></td><td>69 nodes</td></tr>
-<tr><td><code>generator/tests/test_question_styles.py</code></td><td>63 nodes</td></tr>
+<tr><td><code>generator/tests/test_question_styles.py</code></td><td>62 nodes</td></tr>
 <tr><td><code>generator/pastpapergen/render_pdf.py</code></td><td>61 nodes</td></tr>
 <tr><td><code>Backend/Core/ai_assessment.py</code></td><td>55 nodes</td></tr>
 <tr><td><code>tests/test_ai_assessment.py</code></td><td>52 nodes</td></tr>
@@ -2626,7 +2623,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x4124, contains x2122, references x1414, imports x1027. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x4119, contains x2120, references x1407, imports x1025. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -2986,12 +2983,12 @@ flowchart LR
 
 <!-- ====== 12. String ====== -->
 <h2 id="string">12. String</h2>
-<p>String groups implementation around macos, papercreator, appmodelsswift, domain, mostly in PaperCreator/Domain/AppModels.swift, PaperCreator/State/RecentDocumentStore.swift, PaperCreator/State/BenchmarkCoordinator.swift. This section covers 133 nodes and 253 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>String groups implementation around macos, papercreator, appmodelsswift, domain, mostly in PaperCreator/Domain/AppModels.swift, PaperCreator/State/RecentDocumentStore.swift, macOS/Tests/AppTests.swift. This section covers 142 nodes and 281 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: String (133 nodes, 253 edges)
+    %% Section: String (142 nodes, 281 edges)
     subgraph string_PaperCreator_Domain_AppModels_swift_efb5b8c1["PaperCreator/Domain/AppModels.swift"]
         macos_papercreator_domain_appmodels_benchmarksam_6a36f8ea("BenchmarkSample<br/><small>PaperCreator/Domain/AppModels.swift</small>")
         macos_papercreator_domain_appmodels_distribution_65256457("DistributionMode<br/><small>PaperCreator/Domain/AppModels.swift</small>")
@@ -2999,50 +2996,49 @@ flowchart LR
         macos_papercreator_domain_appmodels_benchmarkmet_b85bebab("BenchmarkMetric<br/><small>PaperCreator/Domain/AppModels.swift</small>")
         macos_papercreator_domain_appmodels_boardstatus_d9dcf3d1("BoardStatus<br/><small>PaperCreator/Domain/AppModels.swift</small>")
         macos_papercreator_domain_appmodels_boardstatus_7f409f7c(".title<br/><small>PaperCreator/Domain/AppModels.swift</small>")
+        macos_papercreator_domain_appmodels_assessmentki_1a5f0f8e("AssessmentKind<br/><small>PaperCreator/Domain/AppModels.swift</small>")
+        macos_papercreator_domain_appmodels_assessmentki_fb2f3a01(".title<br/><small>PaperCreator/Domain/AppModels.swift</small>")
+        macos_papercreator_domain_appmodels_paperoption_cdd5ae58("PaperOption<br/><small>PaperCreator/Domain/AppModels.swift</small>")
+        macos_papercreator_domain_appmodels_paperoption_4ac98ede("init()<br/><small>PaperCreator/Domain/AppModels.swift</small>")
+        macos_papercreator_domain_appmodels_qualificatio_e3af0146("QualificationReadiness<br/><small>PaperCreator/Domain/AppModels.swift</small>")
+        macos_papercreator_domain_appmodels_generatorpap_127dd1ce(".readiness<br/><small>PaperCreator/Domain/AppModels.swift</small>")
+        macos_papercreator_domain_appmodels_qualificatio_3b950141(".highestLevelTitle<br/><small>PaperCreator/Domain/AppModels.swift</small>")
         macos_papercreator_domain_appmodels_generatorcon_930a891b(".systemImage<br/><small>PaperCreator/Domain/AppModels.swift</small>")
         macos_papercreator_domain_appmodels_generatorcon_da10daf6(".title<br/><small>PaperCreator/Domain/AppModels.swift</small>")
-        macos_papercreator_domain_appmodels_generatorcon_7fc75500(".usesAI<br/><small>PaperCreator/Domain/AppModels.swift</small>")
-        macos_papercreator_domain_appmodels_generatorpap_0a0a3eef("GeneratorPaperDocument<br/><small>PaperCreator/Domain/AppModels.swift</small>")
-        macos_papercreator_domain_appmodels_generatorpap_83ae1ade("init()<br/><small>PaperCreator/Domain/AppModels.swift</small>")
-        macos_papercreator_domain_appmodels_generatorpap_127dd1ce(".readiness<br/><small>PaperCreator/Domain/AppModels.swift</small>")
-        macos_papercreator_domain_appmodels_codingkeys_q_9323bc8d("qualification<br/><small>PaperCreator/Domain/AppModels.swift</small>")
-        macos_papercreator_domain_appmodels_generationqu_18f88075("load()<br/><small>PaperCreator/Domain/AppModels.swift</small>")
-        macos_papercreator_domain_appmodels_qualificatio_b3fb721f("QualificationLevelDocument<br/><small>PaperCreator/Domain/AppModels.swift</small>")
-        macos_papercreator_domain_appmodels_qualificatio_5aa3928a(".isPassed<br/><small>PaperCreator/Domain/AppModels.swift</small>")
     end
     subgraph string_PaperCreator_State_BenchmarkCoordinator_s_a704e188["PaperCreator/State/BenchmarkCoordinator.swift"]
         macos_papercreator_state_benchmarkcoordinator_be_b3e32779("BenchmarkCoordinator<br/><small>PaperCreator/State/BenchmarkCoordinator.swift</small>")
         macos_papercreator_state_benchmarkcoordinator_be_0f3a6af0("start()<br/><small>PaperCreator/State/BenchmarkCoordinator.swift</small>")
     end
+    macos_papercreator_state_catalogstore_catalogsto_0397abf8(".selectedPaper<br/><small>PaperCreator/State/CatalogStore.swift</small>")
     macos_papercreator_domain_appmodels_boardstatus_d9dcf3d1 -->|method| macos_papercreator_domain_appmodels_boardstatus_7f409f7c
+    macos_papercreator_domain_appmodels_assessmentki_1a5f0f8e -->|method| macos_papercreator_domain_appmodels_assessmentki_fb2f3a01
+    macos_papercreator_domain_appmodels_paperoption_cdd5ae58 -->|method| macos_papercreator_domain_appmodels_paperoption_4ac98ede
+    macos_papercreator_domain_appmodels_paperoption_cdd5ae58 -->|calls| macos_papercreator_state_catalogstore_catalogsto_0397abf8
+    macos_papercreator_domain_appmodels_qualificatio_e3af0146 -->|calls| macos_papercreator_domain_appmodels_generatorpap_127dd1ce
+    macos_papercreator_domain_appmodels_qualificatio_e3af0146 -->|method| macos_papercreator_domain_appmodels_qualificatio_3b950141
     macos_papercreator_domain_appmodels_generatorcon_77b39f8f -->|method| macos_papercreator_domain_appmodels_generatorcon_930a891b
     macos_papercreator_domain_appmodels_generatorcon_77b39f8f -->|method| macos_papercreator_domain_appmodels_generatorcon_da10daf6
-    macos_papercreator_domain_appmodels_generatorcon_77b39f8f -->|method| macos_papercreator_domain_appmodels_generatorcon_7fc75500
-    macos_papercreator_domain_appmodels_generatorpap_0a0a3eef -->|method| macos_papercreator_domain_appmodels_generatorpap_83ae1ade
-    macos_papercreator_domain_appmodels_generatorpap_0a0a3eef -->|method| macos_papercreator_domain_appmodels_generatorpap_127dd1ce
-    macos_papercreator_domain_appmodels_generatorpap_127dd1ce -->|calls| macos_papercreator_domain_appmodels_codingkeys_q_9323bc8d
-    macos_papercreator_domain_appmodels_codingkeys_q_9323bc8d -->|calls| macos_papercreator_domain_appmodels_generationqu_18f88075
-    macos_papercreator_domain_appmodels_qualificatio_b3fb721f -->|method| macos_papercreator_domain_appmodels_qualificatio_5aa3928a
     macos_papercreator_state_benchmarkcoordinator_be_b3e32779 -->|method| macos_papercreator_state_benchmarkcoordinator_be_0f3a6af0
-    %% Omitted for readability: 115 nodes, 0 edges
+    %% Omitted for readability: 124 nodes, 0 edges
     class macos_papercreator_domain_appmodels_benchmarksam_6a36f8ea klass;
     class macos_papercreator_domain_appmodels_distribution_65256457 klass;
     class macos_papercreator_domain_appmodels_generatorcon_77b39f8f klass;
     class macos_papercreator_domain_appmodels_benchmarkmet_b85bebab klass;
     class macos_papercreator_domain_appmodels_boardstatus_d9dcf3d1 klass;
     class macos_papercreator_domain_appmodels_boardstatus_7f409f7c function;
+    class macos_papercreator_domain_appmodels_assessmentki_1a5f0f8e async;
+    class macos_papercreator_domain_appmodels_assessmentki_fb2f3a01 function;
+    class macos_papercreator_domain_appmodels_paperoption_cdd5ae58 klass;
+    class macos_papercreator_domain_appmodels_paperoption_4ac98ede function;
+    class macos_papercreator_domain_appmodels_qualificatio_e3af0146 klass;
+    class macos_papercreator_domain_appmodels_generatorpap_127dd1ce function;
+    class macos_papercreator_domain_appmodels_qualificatio_3b950141 function;
     class macos_papercreator_domain_appmodels_generatorcon_930a891b function;
     class macos_papercreator_domain_appmodels_generatorcon_da10daf6 function;
-    class macos_papercreator_domain_appmodels_generatorcon_7fc75500 function;
-    class macos_papercreator_domain_appmodels_generatorpap_0a0a3eef klass;
-    class macos_papercreator_domain_appmodels_generatorpap_83ae1ade function;
-    class macos_papercreator_domain_appmodels_generatorpap_127dd1ce function;
-    class macos_papercreator_domain_appmodels_codingkeys_q_9323bc8d function;
-    class macos_papercreator_domain_appmodels_generationqu_18f88075 function;
-    class macos_papercreator_domain_appmodels_qualificatio_b3fb721f klass;
-    class macos_papercreator_domain_appmodels_qualificatio_5aa3928a async;
     class macos_papercreator_state_benchmarkcoordinator_be_b3e32779 klass;
     class macos_papercreator_state_benchmarkcoordinator_be_0f3a6af0 function;
+    class macos_papercreator_state_catalogstore_catalogsto_0397abf8 function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -3122,6 +3118,14 @@ flowchart LR
 </tr>
 <tr>
   <td>8</td>
+  <td><code>AssessmentKind</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td><span class="tag tag-async">Async</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>.title</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td>AssessmentKind node in PaperCreator/Domain/AppModels.swift.</td>
+</tr>
+<tr>
+  <td>9</td>
   <td><code>Codable</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3129,7 +3133,47 @@ flowchart LR
   <td>Codable node in project.</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>10</td>
+  <td><code>Hashable</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Caches analysis results or computes cache keys.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>fullPaper</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>fullPaper node in PaperCreator/Domain/AppModels.swift.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>questionBank</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>questionBank node in PaperCreator/Domain/AppModels.swift.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>.title</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AssessmentKind</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>.title node in PaperCreator/Domain/AppModels.swift.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>PaperOption</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>.selectedPaper</code><br><small style="color:var(--muted)">PaperCreator/State/CatalogStore.swift</small><br><code>init()</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td>PaperOption node in PaperCreator/Domain/AppModels.swift.</td>
+</tr>
+<tr>
+  <td>15</td>
   <td><code>Identifiable</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3137,7 +3181,23 @@ flowchart LR
   <td>Identifiable node in project.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>16</td>
+  <td><code>.init()</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>PaperOption</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>.init() node in PaperCreator/Domain/AppModels.swift.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>QualificationReadiness</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>.highestLevelTitle</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small><br><code>.readiness</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small><br><code>.selectedPaper</code><br><small style="color:var(--muted)">PaperCreator/State/CatalogStore.swift</small><br>+1 more</td>
+  <td>QualificationReadiness node in PaperCreator/Domain/AppModels.swift.</td>
+</tr>
+<tr>
+  <td>18</td>
   <td><code>Bool</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3145,7 +3205,15 @@ flowchart LR
   <td>Bool node in project.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>19</td>
+  <td><code>.highestLevelTitle</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>QualificationReadiness</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>.highestLevelTitle node in PaperCreator/Domain/AppModels.swift.</td>
+</tr>
+<tr>
+  <td>20</td>
   <td><code>GeneratorContentMode</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3153,7 +3221,7 @@ flowchart LR
   <td>GeneratorContentMode node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>21</td>
   <td><code>deterministic</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3161,7 +3229,7 @@ flowchart LR
   <td>deterministic node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>22</td>
   <td><code>aiAssisted</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3169,7 +3237,7 @@ flowchart LR
   <td>aiAssisted node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>23</td>
   <td><code>.usesAI</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>GeneratorContentMode</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
@@ -3177,7 +3245,7 @@ flowchart LR
   <td>.usesAI node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>24</td>
   <td><code>.title</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>GeneratorContentMode</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
@@ -3185,7 +3253,7 @@ flowchart LR
   <td>.title node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>25</td>
   <td><code>.systemImage</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>GeneratorContentMode</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
@@ -3193,7 +3261,7 @@ flowchart LR
   <td>.systemImage node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>26</td>
   <td><code>.readyBoards</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3201,7 +3269,7 @@ flowchart LR
   <td>.readyBoards node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>27</td>
   <td><code>CatalogDocument</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3209,7 +3277,7 @@ flowchart LR
   <td>CatalogDocument node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>28</td>
   <td><code>Decodable</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3217,7 +3285,7 @@ flowchart LR
   <td>Decodable node in project.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>29</td>
   <td><code>CatalogSubjectDocument</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3225,84 +3293,12 @@ flowchart LR
   <td>CatalogSubjectDocument node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>30</td>
   <td><code>CatalogBoardDocument</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>CatalogBoardDocument node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>GeneratorRegistryDocument</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>GeneratorRegistryDocument node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>23</td>
-  <td><code>GeneratorFamilyDocument</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>GeneratorFamilyDocument node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>24</td>
-  <td><code>GeneratorPaperDocument</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>.readiness</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small><br><code>init()</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td>GeneratorPaperDocument node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>.readiness</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>GeneratorPaperDocument</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><code>qualification</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td>.readiness node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>qualification</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>.readiness</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><code>load()</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td>qualification node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>.init()</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>GeneratorPaperDocument</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.init() node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>Decoder</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Decoder node in project.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>QualificationLevelDocument</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>.isPassed</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td>QualificationLevelDocument node in PaperCreator/Domain/AppModels.swift.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>.isPassed</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><span class="tag tag-async">Async</span></td>
-  <td><code>QualificationLevelDocument</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.isPassed node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 </table>
 
@@ -3311,16 +3307,16 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>PaperCreator/Domain/AppModels.swift</code></td><td>78 nodes</td></tr>
+      <tr><td><code>PaperCreator/Domain/AppModels.swift</code></td><td>86 nodes</td></tr>
 <tr><td><code>PaperCreator/State/RecentDocumentStore.swift</code></td><td>20 nodes</td></tr>
-<tr><td><code>PaperCreator/State/BenchmarkCoordinator.swift</code></td><td>6 nodes</td></tr>
-<tr><td><code>macOS/Tests/AppTests.swift</code></td><td>6 nodes</td></tr>
-<tr><td><code>PaperCreator/State/ApplicationCoordinator.swift</code></td><td>1 nodes</td></tr>
+<tr><td><code>macOS/Tests/AppTests.swift</code></td><td>7 nodes</td></tr>
+<tr><td><code>PaperCreator/State/BenchmarkCoordinator.swift</code></td><td>5 nodes</td></tr>
+<tr><td><code>PaperCreator/State/CatalogStore.swift</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x97, case of x37, implements x36, contains x31. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x108, implements x43, case of x39, contains x34. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -3670,12 +3666,12 @@ flowchart LR
 
 <!-- ====== 14. DocumentPreviewView ====== -->
 <h2 id="documentpreviewview">14. DocumentPreviewView</h2>
-<p>DocumentPreviewView groups implementation around macos, papercreator, documentpreviewviewswift, features, mostly in Features/Documents/DocumentPreviewView.swift, PaperCreator/State/ApplicationCoordinator.swift. This section covers 50 nodes and 62 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>DocumentPreviewView groups implementation around macos, papercreator, documentpreviewviewswift, features, mostly in Features/Documents/DocumentPreviewView.swift, PaperCreator/State/ApplicationCoordinator.swift, macOS/Tests/AppTests.swift. This section covers 46 nodes and 59 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: DocumentPreviewView (50 nodes, 62 edges)
+    %% Section: DocumentPreviewView (46 nodes, 59 edges)
     subgraph documentpreviewview_Features_Documents_DocumentP_9ad73b48["Features/Documents/DocumentPreviewView.swift"]
         macos_papercreator_features_documents_documentpr_86ca450b("DocumentPreviewView<br/><small>Features/Documents/DocumentPreviewView.swift</small>")
         macos_papercreator_features_documents_documentpr_632be693("DocumentPreviewView.swift")
@@ -3715,7 +3711,7 @@ flowchart LR
     macos_papercreator_features_documents_documentpr_1d89f23e -->|calls| pdfview_be985266
     macos_papercreator_features_documents_documentpr_d4aaf65a -->|method| macos_papercreator_features_documents_documentpr_f7a1f6db
     macos_papercreator_features_documents_documentpr_c16d26df -->|method| macos_papercreator_features_documents_documentpr_155722c7
-    %% Omitted for readability: 32 nodes, 0 edges
+    %% Omitted for readability: 28 nodes, 0 edges
     class macos_papercreator_features_documents_documentpr_86ca450b klass;
     class macos_papercreator_features_documents_documentpr_632be693 klass;
     class macos_papercreator_features_documents_documentpr_c16d26df klass;
@@ -3760,11 +3756,19 @@ flowchart LR
   <td><code>DocumentPreviewView.swift</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>Combine</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>PDFKit</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small><br><code>Quartz</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small><br>+1 more</td>
+  <td><code>AppKit</code><br><small style="color:var(--muted)">macOS/Tests/AppTests.swift</small><br><code>Combine</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>PDFKit</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small><br>+2 more</td>
   <td>DocumentPreviewView.swift node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
   <td>2</td>
+  <td><code>AppKit</code><br><small style="color:var(--muted)">macOS/Tests/AppTests.swift</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>DocumentPreviewView.swift</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
+  <td><code>ApplicationCoordinator.swift</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
+  <td>AppKit node in macOS/Tests/AppTests.swift.</td>
+</tr>
+<tr>
+  <td>3</td>
   <td><code>Combine</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td><code>DocumentPreviewView.swift</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -3772,7 +3776,7 @@ flowchart LR
   <td>Combine node in PaperCreator/State/ApplicationCoordinator.swift.</td>
 </tr>
 <tr>
-  <td>3</td>
+  <td>4</td>
   <td><code>PDFKit</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td><code>DocumentPreviewView.swift</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -3780,7 +3784,7 @@ flowchart LR
   <td>PDFKit node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>4</td>
+  <td>5</td>
   <td><code>Quartz</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td><code>DocumentPreviewView.swift</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -3788,7 +3792,7 @@ flowchart LR
   <td>Quartz node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>5</td>
+  <td>6</td>
   <td><code>UniformTypeIdentifiers</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td><code>DocumentPreviewView.swift</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -3796,7 +3800,7 @@ flowchart LR
   <td>UniformTypeIdentifiers node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>6</td>
+  <td>7</td>
   <td><code>DocumentPreviewView</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3804,7 +3808,7 @@ flowchart LR
   <td>DocumentPreviewView node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>7</td>
+  <td>8</td>
   <td><code>String</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3812,7 +3816,7 @@ flowchart LR
   <td>String node in project.</td>
 </tr>
 <tr>
-  <td>8</td>
+  <td>9</td>
   <td><code>.init()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>DocumentPreviewView</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -3820,7 +3824,7 @@ flowchart LR
   <td>.init() node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>10</td>
   <td><code>.body</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>DocumentPreviewView</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -3828,7 +3832,7 @@ flowchart LR
   <td>.body node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>11</td>
   <td><code>Binding</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3836,7 +3840,7 @@ flowchart LR
   <td>Binding node in project.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>12</td>
   <td><code>.selectedBinding</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>Binding</code><br><code>DocumentPreviewView</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -3844,7 +3848,7 @@ flowchart LR
   <td>.selectedBinding node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>13</td>
   <td><code>.selectedFile</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>DocumentPreviewView</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -3852,7 +3856,7 @@ flowchart LR
   <td>.selectedFile node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>14</td>
   <td><code>GenerationJobRecord</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3860,7 +3864,7 @@ flowchart LR
   <td>GenerationJobRecord node in project.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>15</td>
   <td><code>.provenanceRecord</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>DocumentPreviewView</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -3868,7 +3872,7 @@ flowchart LR
   <td>.provenanceRecord node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>16</td>
   <td><code>Bool</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3876,7 +3880,7 @@ flowchart LR
   <td>Bool node in project.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>17</td>
   <td><code>.exportAlertBinding</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>Binding</code><br><code>DocumentPreviewView</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -3884,7 +3888,7 @@ flowchart LR
   <td>Exports documentation data to a target format.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>18</td>
   <td><code>.printSelected()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>DocumentPreviewView</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -3892,7 +3896,7 @@ flowchart LR
   <td>.printSelected() node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>19</td>
   <td><code>.exportSelected()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>DocumentPreviewView</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -3900,7 +3904,7 @@ flowchart LR
   <td>Exports documentation data to a target format.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>20</td>
   <td><code>.copyProvenance()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>DocumentPreviewView</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -3908,7 +3912,7 @@ flowchart LR
   <td>.copyProvenance() node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>21</td>
   <td><code>PDFDocumentView</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>.body</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -3916,7 +3920,7 @@ flowchart LR
   <td>PDFDocumentView node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>22</td>
   <td><code>NSViewRepresentable</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3924,7 +3928,7 @@ flowchart LR
   <td>NSViewRepresentable node in project.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>23</td>
   <td><code>URL</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3932,7 +3936,7 @@ flowchart LR
   <td>URL node in project.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>24</td>
   <td><code>.makeNSView()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>PDFDocumentView</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -3940,7 +3944,7 @@ flowchart LR
   <td>.makeNSView() node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>25</td>
   <td><code>Context</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3948,7 +3952,7 @@ flowchart LR
   <td>Context node in project.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>26</td>
   <td><code>PDFView</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>printSelected()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -3956,7 +3960,7 @@ flowchart LR
   <td>PDFView node in project.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>27</td>
   <td><code>.updateNSView()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>PDFDocumentView</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -3964,7 +3968,7 @@ flowchart LR
   <td>.updateNSView() node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>28</td>
   <td><code>QuickLookCoordinator</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>DocumentPreviewView</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -3972,7 +3976,7 @@ flowchart LR
   <td>QuickLookCoordinator node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>29</td>
   <td><code>NSObject</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3980,20 +3984,12 @@ flowchart LR
   <td>NSObject node in project.</td>
 </tr>
 <tr>
-  <td>29</td>
+  <td>30</td>
   <td><code>ObservableObject</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>ObservableObject node in project.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>QLPreviewPanelDataSource</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>QLPreviewPanelDataSource node in project.</td>
 </tr>
 </table>
 
@@ -4003,12 +3999,13 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>Features/Documents/DocumentPreviewView.swift</code></td><td>21 nodes</td></tr>
-<tr><td><code>PaperCreator/State/ApplicationCoordinator.swift</code></td><td>11 nodes</td></tr>
+<tr><td><code>PaperCreator/State/ApplicationCoordinator.swift</code></td><td>6 nodes</td></tr>
+<tr><td><code>macOS/Tests/AppTests.swift</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x19, method x16, imports x6, calls x6. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x19, method x16, imports x8, calls x6. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4355,12 +4352,12 @@ flowchart LR
 
 <!-- ====== 16. Other ====== -->
 <h2 id="other">16. Other</h2>
-<p>Other groups implementation around docs, backend, 2026, macos, mostly in generator/pastpapergen/render_pdf.py, generator/aqaaccountgen/case_data.py, Features/Generation/GeneratorWorkspaceView.swift. This section covers 709 nodes and 1103 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Other groups implementation around docs, backend, 2026, macos, mostly in generator/pastpapergen/render_pdf.py, generator/aqaaccountgen/case_data.py, Features/Generation/GeneratorWorkspaceView.swift. This section covers 710 nodes and 1105 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Other (709 nodes, 1103 edges)
+    %% Section: Other (710 nodes, 1105 edges)
     subgraph other_Backend_Core_exam_cover_py_ff19f3f2["Backend/Core/exam_cover.py"]
         backend_core_exam_cover_questionpapercover_eadc817d("QuestionPaperCover<br/><small>Backend/Core/exam_cover.py</small>")
         backend_core_exam_cover_questionpapercover_barco_5148470d("_barcode()<br/><small>Backend/Core/exam_cover.py</small>")
@@ -4404,7 +4401,7 @@ flowchart LR
     backend_core_exam_cover_questionpapercover_draw_0a941fac -->|calls| backend_core_exam_cover_questionpapercover_barco_5148470d
     backend_core_exam_cover_questionpapercover_draw_0a941fac -->|calls| backend_core_exam_cover_questionpapercover_candi_7f644209
     backend_core_exam_cover_questionpapercover_candi_7f644209 -->|calls| backend_core_exam_cover_questionpapercover_digit_6d9719ed
-    %% Omitted for readability: 691 nodes, 0 edges
+    %% Omitted for readability: 692 nodes, 0 edges
     class backend_core_exam_cover_questionpapercover_eadc817d klass;
     class backend_core_exam_cover_questionpapercover_barco_5148470d function;
     class backend_core_exam_cover_questionpapercover_candi_7f644209 function;
@@ -4703,7 +4700,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x388, calls x290, references x183, method x134. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x388, calls x293, references x183, method x134. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4733,7 +4730,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>Past Paper Creation — Architecture Documentation</p>
-  <p>Generated: 2026-09-18 03:56 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-09-18 03:59 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->
