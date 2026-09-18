@@ -815,3 +815,14 @@ mark-scheme floor and therefore remains unqualified; the result is not rounded
 up. The remaining quantitative gaps are Paper 2 page count/content density and
 mark notation. They require a Paper 2-specific renderer/marking-guidance
 improvement followed by another fresh transaction.
+
+An additive compact tally was then applied to source-backed calculation
+criteria that begin `1 mark for`, preserving their full contract text. The
+fresh same-seed Paper 2 transaction passed generation, PDF and reference-demand
+gates in 1,681 seconds, but both audits remained unchanged at 65.3% for the
+mark scheme and 68.9% overall with no print failures. The change is therefore
+retained as a readable marking aid but is not claimed as a visual qualification
+improvement. The audit identifies the substantive remaining cause: 26 generated
+mark-scheme pages against 36 in the reference and a 77.8% word-count score.
+The next work must add genuinely useful, question-specific marking depth and
+reference-like continuation pagination, never blank or synthetic filler.
