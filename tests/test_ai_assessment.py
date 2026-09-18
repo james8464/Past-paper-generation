@@ -38,6 +38,10 @@ from Backend.Core.exam_blueprints import (
 from Backend.Core.independent_solver import CanonicalSolution
 from Backend.Core.model_review import DifficultyReviewResult, ReviewResult
 from Backend.Core.reference_demand import ReferenceDemandProfile
+from Backend.Core.subjects.selected_response import (
+    selected_response_contract,
+    solve_selected_response,
+)
 
 
 def _demand_profile() -> ReferenceDemandProfile:
@@ -305,6 +309,77 @@ def test_multiple_choice_answer_shorthand_is_normalised_to_the_full_choice() -> 
         "1. Which document is evidence of a credit purchase?",
         question=question,
     ) == "Which document is evidence of a credit purchase?"
+
+
+def test_candidate_question_preserves_selected_response_choices_owned_by_contract() -> None:
+    """A model must not corrupt units or precision in deterministic MCQ options."""
+
+    choices = [
+        "12 units of product Y",
+        "10 units of product Y",
+        "68 units of product Y",
+        "30 units of product Y",
+    ]
+    point = MarkSchemePoint(
+        text=choices[0],
+        marks=1,
+        assessment_objective="AO2",
+    )
+    question = GeneratedQuestion(
+        rule_id="opportunity_cost",
+        number="1",
+        marks=1,
+        kind="multiple_choice",
+        command_word="Select",
+        topic_id="opportunity_cost",
+        prompt=(
+            "A producer raises output of product X from 20 to 30 units, while "
+            "output of product Y falls from 80 to 68 units. What is the "
+            "opportunity cost?"
+        ),
+        mark_scheme=[point.text],
+        structured_mark_scheme=[point],
+        choices=choices,
+        correct_choice=0,
+        assessment_objectives={"AO2": 1},
+        authoring_context={
+            "preserve_mark_scheme": True,
+            "selected_response_contract": selected_response_contract(
+                "opportunity_cost_change",
+                inputs={
+                    "primary_before": 20,
+                    "secondary_before": 80,
+                    "primary_after": 30,
+                    "secondary_after": 68,
+                },
+            ),
+        },
+    )
+    task = _Task(
+        key=(0, 0, 0),
+        question=question,
+        option=GeneratedOption(id="option", title="Opportunity cost", questions=[question]),
+        topic=object(),
+    )
+
+    candidate = _candidate_question(
+        task,
+        {
+            "prompt": (
+                "A producer moves output of product X from 20 to 30 units and "
+                "product Y from 80 to 68 units. Select the quantity of product "
+                "Y forgone."
+            ),
+            "choices": ["12", "10", "68", "30"],
+            "correct_choice": 1,
+        },
+        client=type("Client", (), {"provider": "test", "model": "test"})(),
+        policy=GenerationPolicy(),
+    )
+
+    assert candidate.choices == choices
+    assert candidate.correct_choice == 0
+    assert solve_selected_response(candidate.model_dump(mode="json"))["answer"] == choices[0]
 
 
 def test_local_batches_separate_high_mark_items() -> None:

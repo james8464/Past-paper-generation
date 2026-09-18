@@ -947,27 +947,35 @@ def _candidate_question(
         )
 
     if original.kind == "multiple_choice":
-        choices = raw.get("choices")
-        correct_choice = raw.get("correct_choice")
-        if (
-            not isinstance(choices, list)
-            or len(choices) != 4
-            or not all(isinstance(choice, str) and choice.strip() for choice in choices)
-            or len({" ".join(choice.casefold().split()) for choice in choices}) != 4
-            or not isinstance(correct_choice, int)
-            or correct_choice not in range(4)
-        ):
-            raise ValueError(
-                f"question {original.number} requires four unique choices and a valid answer"
-            )
-        rendered_choices = [str(choice).strip() for choice in choices]
-        answer = rendered_choices[correct_choice].casefold()
-        if answer not in " ".join(point.text for point in points).casefold():
-            points = _normalise_multiple_choice_answer(
-                original,
-                points,
-                rendered_choices[correct_choice],
-            )
+        selected_response = original.authoring_context.get("selected_response_contract")
+        if isinstance(selected_response, dict):
+            # The choices and answer key are projections of public, deterministic
+            # source data. A language model may improve the stem, but must not
+            # alter a unit, precision, distractor or key owned by that contract.
+            rendered_choices = list(original.choices)
+            correct_choice = original.correct_choice
+        else:
+            choices = raw.get("choices")
+            correct_choice = raw.get("correct_choice")
+            if (
+                not isinstance(choices, list)
+                or len(choices) != 4
+                or not all(isinstance(choice, str) and choice.strip() for choice in choices)
+                or len({" ".join(choice.casefold().split()) for choice in choices}) != 4
+                or not isinstance(correct_choice, int)
+                or correct_choice not in range(4)
+            ):
+                raise ValueError(
+                    f"question {original.number} requires four unique choices and a valid answer"
+                )
+            rendered_choices = [str(choice).strip() for choice in choices]
+            answer = rendered_choices[correct_choice].casefold()
+            if answer not in " ".join(point.text for point in points).casefold():
+                points = _normalise_multiple_choice_answer(
+                    original,
+                    points,
+                    rendered_choices[correct_choice],
+                )
     else:
         rendered_choices = []
         correct_choice = None
