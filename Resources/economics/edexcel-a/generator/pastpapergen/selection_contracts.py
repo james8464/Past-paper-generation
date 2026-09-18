@@ -12,6 +12,32 @@ def selection_contract(part, source):
         ranked = sorted(source.values, reverse=True)
         answers = [f"{value:.1f}%" for value in ranked[:4]]
         reasons = ["This is a smaller firm's share, not the largest share."] * 3
+    elif kind == "current_account_line_chart":
+        if not source.values or not all(value < 0 for value in source.values):
+            raise ValueError("current-account source must show a deficit in every year")
+        narrowing_index = next(
+            (
+                index
+                for index in range(1, len(source.values))
+                if source.values[index] > source.values[index - 1]
+            ),
+            None,
+        )
+        if narrowing_index is None:
+            raise ValueError("current-account source needs a non-widening interval")
+        answers = [
+            "The current account was in deficit in every year shown",
+            "The current account deficit widened in every year shown",
+            "The current account was in surplus in the final year shown",
+            "The current account balance was positive in every year shown",
+        ]
+        reasons = [
+            "The deficit narrows between "
+            f"{source.labels[narrowing_index - 1]} and {source.labels[narrowing_index]}; "
+            "the line moves towards zero rather than widening throughout.",
+            f"The final reading is {source.values[-1]}, which is below zero and therefore a deficit.",
+            "Every plotted reading is below zero, so the balance is never positive.",
+        ]
     elif kind == "opportunity_cost_ppc_table":
         # Read the transposed table by the requested capital-output labels.
         initial = next(i for i, c in enumerate(source.rows[1]) if c.number == 20)
@@ -136,6 +162,10 @@ def selection_contract(part, source):
         [
             f"The only correct answer is {part.correct_option}: {answers[0]}",
             *rejected,
-            "Award one mark for the keyed response only; explanations do not create extra credit.",
+            (
+                "Do not award a mark for any other option."
+                if kind == "current_account_line_chart"
+                else "Award one mark for the keyed response only; explanations do not create extra credit."
+            ),
         ],
     )

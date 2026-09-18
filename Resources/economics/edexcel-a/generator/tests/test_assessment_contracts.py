@@ -109,6 +109,18 @@ def test_seeded_sources_are_instances_not_style_constants():
     assert a.source_instance == paper(2, 26083122).questions[0].source_instance
 
 
+def test_current_account_mcq_explains_each_rejected_chart_reading():
+    part = paper(2, 26091701).questions[0].parts[0]
+
+    assert part.correct_option == "D"
+    assert part.mark_scheme[0] == (
+        "The only correct answer is D: The current account was in deficit in every year shown"
+    )
+    assert any(line.startswith("Reject A:") for line in part.mark_scheme)
+    assert any(line.startswith("Reject B:") for line in part.mark_scheme)
+    assert any(line.startswith("Reject C:") for line in part.mark_scheme)
+
+
 def test_line_source_numbers_and_time_labels_are_printed():
     q = paper(2, 26083122).questions[0]
     source = q.source_instance.model_copy(
