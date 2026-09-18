@@ -8,6 +8,7 @@ from Backend.Core.independent_solver import (
     IndependentSolver,
     reconcile_solution,
 )
+from Backend.Core.subjects.selected_response import selected_response_contract
 from tests.support.solver_responses import complete_solver_response
 
 
@@ -53,6 +54,51 @@ def test_independent_solver_recomputes_arithmetic_without_the_draft_scheme() -> 
     )
     assert not reconciliation.passed
     assert any(issue.field == "answer" for issue in reconciliation.issues)
+
+
+def test_numeric_selected_response_does_not_require_free_entry_output_slots() -> None:
+    """Numeric workings support an MCQ key; they do not make it a free response."""
+
+    choices = [
+        "12 units of product Y",
+        "10 units of product Y",
+        "68 units of product Y",
+        "30 units of product Y",
+    ]
+    item = {
+        "id": "opportunity-cost",
+        "kind": "multiple_choice",
+        "marks": 1,
+        "prompt": (
+            "A producer raises output of product X from 20 to 30 units, while "
+            "output of product Y falls from 80 to 68 units. What is the "
+            "opportunity cost?"
+        ),
+        "choices": choices,
+        "correct_choice": 0,
+        "mark_scheme": [choices[0]],
+        "structured_mark_scheme": [
+            {"text": choices[0], "marks": 1, "assessment_objective": "AO2"}
+        ],
+        "assessment_objectives": {"AO2": 1},
+        "authoring_context": {
+            "selected_response_contract": selected_response_contract(
+                "opportunity_cost_change",
+                inputs={
+                    "primary_before": 20,
+                    "secondary_before": 80,
+                    "primary_after": 30,
+                    "secondary_after": 68,
+                },
+            )
+        },
+    }
+
+    solution = IndependentSolver().solve(item, [])
+
+    assert solution.numeric_results == {"opportunity_cost": 12.0}
+    assert solution.response_slots == []
+    assert reconcile_solution(solution, item).passed
 
 
 def test_model_solver_prompt_excludes_nested_answer_key_and_marking_guidance() -> None:

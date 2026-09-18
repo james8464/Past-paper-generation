@@ -543,9 +543,10 @@ def reconcile_solution(
         except (ValueError, TypeError, KeyError) as error:
             issues.append(ReconciliationIssue(field="open_credit_review", message=str(error)))
 
-    if (
-        _requires_numeric_contract(raw) or solution.numeric_results
-    ) and not solution.response_slots:
+    requires_free_entry_numeric_contract = raw.get("kind") != "multiple_choice" and (
+        _requires_numeric_contract(raw) or bool(solution.numeric_results)
+    )
+    if requires_free_entry_numeric_contract and not solution.response_slots:
         issues.append(
             ReconciliationIssue(
                 field="answer",
