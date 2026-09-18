@@ -845,3 +845,11 @@ measured 73.7%, 70.0% and 71.8%. Both profiles report zero print failures.
 This is qualified visual and print evidence for the Paper 3 candidate only.
 Expert review and student calibration remain separate, unqualified gates, and
 the result does not transfer to other advertised families.
+
+The independent AQA Economics Paper 1 transaction passed generation, PDF and
+reference-demand gates in 1,694 seconds. Its 300-DPI audit measured 75.0% for
+the question paper, 73.4% for the mark scheme and 74.2% overall; the 600-DPI
+print profile measured 74.9%, 73.3% and 74.1%. Both profiles report zero print
+failures. This is qualified visual and print evidence for the AQA Economics
+Paper 1 candidate only; expert review and student calibration remain separate,
+unqualified gates.
