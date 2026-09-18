@@ -837,3 +837,11 @@ floor with genuine examiner guidance, improving word count, content envelope,
 table boxes and typography match. It is visual and print evidence for this
 Paper 2 candidate only; expert review and student calibration remain
 unqualified and no other family inherits the result.
+
+The independent Paper 3 transaction passed generation, PDF and reference-demand
+gates in 1,623 seconds. Its 300-DPI audit measured 73.8% for the question
+paper, 70.1% for the mark scheme and 72.0% overall; the 600-DPI print profile
+measured 73.7%, 70.0% and 71.8%. Both profiles report zero print failures.
+This is qualified visual and print evidence for the Paper 3 candidate only.
+Expert review and student calibration remain separate, unqualified gates, and
+the result does not transfer to other advertised families.
