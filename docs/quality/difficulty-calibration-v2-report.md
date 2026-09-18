@@ -793,3 +793,16 @@ failure caught and rejected an earlier wording-replacement variant, so the
 regression test now specifically guards verbatim printed credit. A fresh live
 transaction is required before assigning any fidelity improvement to this
 change.
+
+That fresh same-seed transaction completed in 1,655 seconds and passed its
+generation, PDF and reference-demand gates. The 300-DPI audit measured 73.0%
+for the question paper, 67.7% for the mark scheme and 70.4% overall; the
+600-DPI print audit measured 73.0%, 67.6% and 70.3% respectively. Both report
+zero print failures. The mark-scheme score therefore clears the 65.4% visual
+floor by 2.2 points, and its mark-pattern component rose from 18.9% to 48.6%
+without changing any contract credit. Manual inspection of the rendered first
+table confirms that each original AO criterion remains visible and its compact
+tally is legible. This is valid visual and print evidence for that Edexcel
+Paper 1 candidate only; the export-time manifest still correctly records
+expert review and student calibration as not run, and no other advertised
+family inherits this result.
