@@ -36,7 +36,7 @@ PAPER2_QUESTION_PLAN = [
     ("truth_table_completion", (4, 2, 1)),
     ("compression_short", (2, 2)),
     ("fibonacci_recursion", (1, 1, 2, 2)),
-    ("floating_point", (1, 1, 1, 2, 3, 1)),
+    ("floating_point", (1, 3, 1, 1, 2, 1)),
     ("boolean_simplification", (4,)),
     ("assembly_program", (6,)),
 ]
@@ -347,10 +347,10 @@ PAPER2_STANDARDISATION: dict[str, tuple[Paper2Standardisation, ...]] = {
         ),
         (
             (
-                "Accept an exact fraction or equivalent denary value; award the mark only when both two's-complement mantissa and exponent are interpreted correctly.",
+                "Award separate marks for the signed mantissa, signed exponent, and correctly scaled denary result. Accept equivalent exact fractions or decimals.",
             ),
             (
-                "Do not read either field as unsigned, and do not place the binary point before the mantissa sign bit.",
+                "Do not read either field as unsigned, place the binary point before the sign bit, or award the final-result mark for an unscaled mantissa.",
             ),
         ),
         (
@@ -363,7 +363,7 @@ PAPER2_STANDARDISATION: dict[str, tuple[Paper2Standardisation, ...]] = {
         ),
         (
             (
-                "Accept smaller representable steps, more significant fractional bits, reduced quantisation error or increased precision as linked statements.",
+                "Accept increased precision, smaller representable steps or reduced quantisation error as the effect of the extra mantissa bits.",
             ),
             (
                 "Do not credit increased range because the exponent field is explicitly unchanged.",
@@ -371,7 +371,7 @@ PAPER2_STANDARDISATION: dict[str, tuple[Paper2Standardisation, ...]] = {
         ),
         (
             (
-                "Credit wider exponent range and therefore wider magnitude range separately from the loss of mantissa precision.",
+                "Credit wider exponent/magnitude range separately from the loss of mantissa precision; one mark for each side of the trade-off.",
                 "Accept increased rounding or quantisation error as the consequence of fewer mantissa bits.",
             ),
             (
@@ -666,6 +666,7 @@ def build_paper1_blueprint(
     blueprint = PaperBlueprint(
         paper_code="7517/1",
         title="A-level COMPUTER SCIENCE Paper 1",
+        program_record_name=context.record_name,
         paper_number="1",
         delivery_mode="on-screen",
         session="Afternoon",
@@ -935,8 +936,8 @@ def _build_paper1_questions(context: Paper1Context, rng: random.Random) -> list[
         ),
         _paper1_question(
             10, "4.1", "skeleton_analysis", "Skeleton Program analysis",
-            "The supplied program reads raw value fields from a data file. THRESHOLD and MULTIPLIER are defined constants.",
-            Stimulus(kind="code", title="Function to complete", code="def adjusted_value(raw_value):\n    # Return None if raw_value is malformed.\n    pass"),
+            "This separate raw-value function does not replace adjusted_value(record) in the Skeleton Program. THRESHOLD and MULTIPLIER are defined constants.",
+            Stimulus(kind="code", title="Separate function to complete", code="def parse_adjusted_value(raw_value):\n    # Return None if raw_value is malformed.\n    pass"),
             [_paper1_part("1", 10, "Using the supplied constants and data file, explain how adjusted values and category totals are produced. Identify two robustness weaknesses in the supplied program.", [
                 "Threshold comparison is described correctly;",
                 "Multiplier is applied only at or above threshold;",
@@ -1109,7 +1110,7 @@ def _align_paper1_structure(
             ], 3, "AO3"),
         ],
         10: [
-            _paper1_part("1", 7, "Complete adjusted_value. Convert raw_value to an integer, return None if conversion fails, return the converted value multiplied by MULTIPLIER when it is at least THRESHOLD, and otherwise return the converted integer value.", [
+            _paper1_part("1", 7, "Complete parse_adjusted_value. Convert raw_value to an integer, return None if conversion fails, return the converted value multiplied by MULTIPLIER when it is at least THRESHOLD, and otherwise return the converted integer value.", [
                 "1 mark: int(raw_value) or an equivalent conversion is attempted;",
                 "1 mark: ValueError and/or TypeError is caught without terminating the program;",
                 "1 mark: None is returned from the exception path;",

@@ -1604,10 +1604,21 @@ def _draw_section_a_question(
         and second_part
         and second_part.command_word == "mcq"
     ):
-        y = _draw_written_part_with_line_count(pdf, first_part, x, y, count=11)
+        written_count = 11
+        prompt_rows = len(_wrap(f"({first_part.label}) {_part_prompt_text(first_part)}", 66))
+        mcq_height = _estimate_mcq_height(second_part) - 18
+        # Longer generated source text and MCQ options can otherwise force a
+        # whole extra page. Preserve eleven rules when possible, with nine as
+        # the minimum on-page response space for this four-mark part.
+        for candidate_count in (11, 10, 9):
+            projected_y = y - prompt_rows * BODY_LEADING_PT - 24 - candidate_count * ANSWER_LINE_GAP_PT - 10
+            if projected_y - 2 - mcq_height >= SECTION_A_FOOTER_SAFE_Y:
+                written_count = candidate_count
+                break
+        y = _draw_written_part_with_line_count(pdf, first_part, x, y, count=written_count)
         # The estimate includes an extra 18pt reserve. Here the total is drawn
         # above the returned baseline, so use the actual MCQ content height.
-        if y - (_estimate_mcq_height(second_part) - 18) < SECTION_A_FOOTER_SAFE_Y:
+        if y - 2 - mcq_height < SECTION_A_FOOTER_SAFE_Y:
             _draw_question_footer(pdf, blueprint, page_number)
             pdf.showPage()
             page_number += 1
@@ -1827,6 +1838,7 @@ def _draw_mcq_part(pdf: canvas.Canvas, part, x: float, y: float) -> float:
     width, _ = A4
     question_text, choices = _mcq_choices(part)
     pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
+    pdf.setFillColor(colors.black)
     lines = _wrap(f"({part.label}) {question_text}", 66)
     for line in lines:
         pdf.drawString(x + 18, y, line)

@@ -31,7 +31,7 @@ PAPER2 = {
     "truth_table_completion": [(0,4,0),(0,2,0),(1,0,0)],
     "compression_short": [(2,0,0),(2,0,0)],
     "fibonacci_recursion": [(0,1,0),(0,1,0),(2,0,0),(2,0,0)],
-    "floating_point": [(0,1,0),(0,1,0),(0,1,0),(2,0,0),(3,0,0),(1,0,0)],
+    "floating_point": [(1,0,0),(0,3,0),(1,0,0),(1,0,0),(2,0,0),(1,0,0)],
     "boolean_simplification": [(0,4,0)],
     "assembly_program": [(0,6,0)],
 }

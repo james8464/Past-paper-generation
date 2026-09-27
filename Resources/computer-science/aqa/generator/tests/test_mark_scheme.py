@@ -109,7 +109,7 @@ def test_paper_2_mark_scheme_keeps_reference_like_specific_content_density(
         document.close()
 
 
-def test_paper_1_mark_scheme_includes_measured_question_and_solution_pages(tmp_path):
+def test_paper_1_mark_scheme_has_content_driven_rows_without_repeated_padding(tmp_path):
     import pymupdf as fitz
 
     blueprint, _context = build_paper1_blueprint(load_syllabus(), seed=42)
@@ -119,42 +119,16 @@ def test_paper_1_mark_scheme_includes_measured_question_and_solution_pages(tmp_p
 
     document = fitz.open(output)
     try:
-        assert document.page_count == 41
-        starts = {
-            1: 6,
-            2: 7,
-            3: 7,
-            4: 10,
-            5: 13,
-            6: 14,
-            7: 16,
-            8: 16,
-            9: 17,
-            10: 20,
-            11: 22,
-            12: 24,
-        }
-        for question, page_number in starts.items():
-            assert f"{question:02d}" in document[page_number - 1].get_text()
-        for page_index in (17, 18):
-            continuation = document[page_index].get_text()
-            assert "09" in continuation
-            assert len(continuation.split()) > 20
-        assert "VALIDATION TEST EVIDENCE" in document[17].get_text()
-        assert "LOWER BOUNDARY" in document[17].get_text()
-        assert "DUPLICATE IDENTIFIER" in document[18].get_text()
-        assert "8 passed" in document[18].get_text()
-        for page_index in (17, 18):
-            fills = [
-                drawing.get("fill")
-                for drawing in document[page_index].get_drawings()
-            ]
-            assert any(
-                fill is not None and max(fill) < 0.08
-                for fill in fills
-            )
-        assert "Example Python 3 solution" in document[25].get_text()
-        assert "Question 12" in document[40].get_text()
+        assert document.page_count < 41
+        text = "\n".join(page.get_text() for page in document)
+        assert "Indicative content continued" not in text
+        assert "Example solution guidance continued" not in text
+        assert text.count("Example Python 3 solution") == 5
+        for question in blueprint.questions:
+            assert f"{question.number:02d}" in text
+        for page in list(document)[5:]:
+            body = page.get_text().replace("MARK SCHEME", "").strip()
+            assert len(body.split()) > 10
     finally:
         document.close()
 
@@ -169,9 +143,17 @@ def test_paper_1_mark_scheme_renders_question_specific_answer_artifacts(tmp_path
 
     document = fitz.open(output)
     try:
-        assert "Alternative valid matrix" in document[7].get_text()
-        assert "Call" in document[8].get_text()
-        assert "Mark range" in document[9].get_text()
-        assert "Example evidence" in document[11].get_text()
+        text = "\n".join(page.get_text() for page in document)
+        assert "Alternative valid matrix" in text
+        assert "Call" in text
+        assert "Mark range" in text
+        assert "Expected: requirement satisfied" not in text
+        solution_heading = next(
+            page.search_for("Question 04: Example Python 3 solution")[0]
+            for page in document
+            if page.search_for("Question 04: Example Python 3 solution")
+        )
+        assert solution_heading.x0 <= 50
+        assert solution_heading.y0 <= 110
     finally:
         document.close()

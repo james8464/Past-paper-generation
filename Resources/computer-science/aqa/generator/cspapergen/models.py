@@ -124,6 +124,7 @@ class PaperBlueprint(BaseModel):
     total_marks: int = 100
     seed: int
     questions: list[Question]
+    program_record_name: str = ""
 
 
 class Paper1Context(BaseModel):

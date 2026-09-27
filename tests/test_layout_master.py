@@ -61,6 +61,49 @@ def test_content_driven_cs_scheme_requires_complete_credit(tmp_path, mutation):
         assert result["actual_page_count"] < result["reference_page_count"]
 
 
+def test_content_driven_cs_paper1_scheme_checks_every_assessed_part(tmp_path):
+    from cspapergen.cli import generate_package
+
+    from Backend.Core.layout_conformance import (
+        _aqa_cs_printed_credit,
+        runtime_page_count_policy,
+    )
+
+    paths = generate_package(output_dir=tmp_path, paper="1", seed=42, dry_run=True)
+    result = _aqa_cs_printed_credit(
+        paths["mark_scheme"], paths["assessment_package"], reference_count=41,
+        paper="1",
+    )
+    assert runtime_page_count_policy("aqa-computer-science", "mark-scheme", 41, paper="1")["kind"] == result["policy"]
+    assert result["checked_parts"] > 12
+    assert result["checked_credit_statements"] > result["checked_parts"]
+    assert result["actual_page_count"] < 41
+
+
+@pytest.mark.parametrize("mutation", ["filler", "changed-code"])
+def test_cs_paper1_reference_solution_cannot_be_replaced(tmp_path, mutation):
+    import pymupdf
+    from cspapergen.cli import generate_package
+
+    from Backend.Core.layout_conformance import conform_generated_documents
+
+    paths = generate_package(output_dir=tmp_path, paper="1", seed=42, dry_run=True)
+    with pymupdf.open(paths["mark_scheme"]) as document:
+        page = next(page for page in document if "Question 04: Example Python 3 solution" in page.get_text())
+        if mutation == "filler":
+            page.add_redact_annot(page.rect)
+            page.apply_redactions()
+            page.insert_text((43, 95), "Question 04: Example Python 3 solution\n" + "Unrelated filler\n" * 11)
+        else:
+            rect = page.search_for("return sum(results) / len(results)")[0]
+            page.add_redact_annot(rect)
+            page.apply_redactions()
+            page.insert_text((rect.x0, rect.y1), "return 0")
+        document.saveIncr()
+    with pytest.raises(LayoutConformanceError, match="reference solution"):
+        conform_generated_documents("computer_science", "1", paths)
+
+
 @pytest.mark.parametrize(
     "mutation",
     [None, "missing-short-credit", "embedded-short-credit", "signed-short-credit",

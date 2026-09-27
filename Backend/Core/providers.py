@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import threading
@@ -8,6 +9,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from Backend.Core.events import emit_progress
+from Backend.Core.generation_diagnostics import GenerationEvidenceError
 from Backend.Core.mlx_setup import resolve_local_mlx_model
 from Backend.Core.model_review import CANONICAL_COGNITIVE_OPERATIONS
 
@@ -35,10 +37,12 @@ class HostedLLMClient:
 
         return self.provider in {"openai", "anthropic"}
 
-    def generate_json(self, prompt: str) -> dict[str, object]:
+    def generate_json(self, prompt: str, retries: int = 2) -> dict[str, object]:
+        if not 1 <= retries <= 3:
+            raise ValueError("Structured-output attempts must be between 1 and 3.")
         current_prompt = prompt
         last_error: ValueError | None = None
-        for attempt in range(2):
+        for attempt in range(retries):
             try:
                 if self.provider == "ollama":
                     return self._ollama(current_prompt)
@@ -51,7 +55,7 @@ class HostedLLMClient:
                 raise RuntimeError(f"Unsupported provider: {self.provider}")
             except ValueError as error:
                 last_error = error
-                if attempt:
+                if attempt == retries - 1:
                     raise
                 emit_progress(
                     "Provider returned invalid structured output; requesting a "
@@ -59,13 +63,14 @@ class HostedLLMClient:
                     stage="provider_retry",
                 )
                 current_prompt = (
-                    prompt
-                    + "\n\nREPAIR INSTRUCTION: Your previous response was not a "
+                    prompt + "\n\nREPAIR INSTRUCTION: Your previous response was not a "
                     "complete valid JSON object. Return the same requested object "
                     "again, with concise string fields, no Markdown, no commentary, "
                     "and no omitted closing brackets."
                 )
-        raise ValueError("Provider could not return valid structured output.") from last_error
+        raise ValueError(
+            "Provider could not return valid structured output."
+        ) from last_error
 
     def _ollama(self, prompt: str) -> dict[str, object]:
         schema = _ollama_json_schema(prompt)
@@ -96,16 +101,31 @@ class HostedLLMClient:
         with request as response:
             raw = _read_json_response(response)
         raw_dict = raw if isinstance(raw, dict) else {}
+        diagnostic = {
+            "kind": "provider_structure",
+            "provider": "ollama",
+            "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
+            "stop_reason": raw_dict.get("done_reason"),
+            "done": raw_dict.get("done"),
+            "output_tokens": raw_dict.get("eval_count"),
+        }
+        if raw_dict.get("done") is not True or raw_dict.get("done_reason") not in {None, "stop"}:
+            raise GenerationEvidenceError(
+                "Ollama returned incomplete structured output.", details=diagnostic
+            )
         message = raw_dict.get("message")
         response_text = message.get("content") if isinstance(message, dict) else None
         if not isinstance(response_text, str):
-            raise RuntimeError("Ollama returned no generated JSON text.")
+            raise GenerationEvidenceError(
+                "Ollama returned no generated JSON text.", details=diagnostic
+            )
         try:
             return parse_json_object(response_text)
         except ValueError as error:
             reason = str(raw_dict.get("done_reason") or "unknown")
-            raise ValueError(
-                f"Ollama returned invalid structured output (stop reason: {reason})."
+            raise GenerationEvidenceError(
+                f"Ollama returned invalid structured output (stop reason: {reason}).",
+                details=diagnostic,
             ) from error
 
     def _apple(self, prompt: str) -> dict[str, object]:
@@ -153,6 +173,16 @@ class HostedLLMClient:
             raw = _read_json_response(response)
         raw_dict = raw if isinstance(raw, dict) else {}
         text = raw_dict.get("output_text") or _openai_output_text(raw_dict)
+        if raw_dict.get("status") != "completed":
+            raise GenerationEvidenceError(
+                "OpenAI returned incomplete structured output.",
+                details={
+                    "kind": "provider_structure",
+                    "provider": "openai",
+                    "status": raw_dict.get("status"),
+                    "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
+                },
+            )
         return parse_json_object(str(text))
 
     def _anthropic(self, prompt: str) -> dict[str, object]:
@@ -180,12 +210,29 @@ class HostedLLMClient:
         with request as response:
             raw = _read_json_response(response)
         raw_dict = raw if isinstance(raw, dict) else {}
+        if raw_dict.get("stop_reason") not in {"end_turn", "stop_sequence"}:
+            raise GenerationEvidenceError(
+                "Anthropic returned incomplete structured output.",
+                details={
+                    "kind": "provider_structure",
+                    "provider": "anthropic",
+                    "stop_reason": raw_dict.get("stop_reason"),
+                    "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
+                },
+            )
         text = "".join(
             item.get("text", "")
             for item in raw_dict.get("content", [])
             if isinstance(item, dict) and item.get("type") == "text"
         )
         return parse_json_object(text)
+
+
+class OllamaClient(HostedLLMClient):
+    """Standalone subject generators use the same transport as the app."""
+
+    def __init__(self, base_url: str, model: str) -> None:
+        super().__init__(provider="ollama", model=model, api_key="", base_url=base_url)
 
 
 def hosted_client(
@@ -198,7 +245,11 @@ def hosted_client(
 ) -> HostedLLMClient | None:
     if dry_run:
         return None
-    emit_progress(f"Using {provider_title(provider)} model {model}", stage="provider", progress=0.04)
+    emit_progress(
+        f"Using {provider_title(provider)} model {model}",
+        stage="provider",
+        progress=0.04,
+    )
     return HostedLLMClient(
         provider=provider,
         model=model,
@@ -208,7 +259,12 @@ def hosted_client(
 
 
 def provider_title(provider: str) -> str:
-    return {"openai": "OpenAI", "anthropic": "Anthropic", "ollama": "Ollama", "apple": "Apple MLX"}.get(provider, provider.title())
+    return {
+        "openai": "OpenAI",
+        "anthropic": "Anthropic",
+        "ollama": "Ollama",
+        "apple": "Apple MLX",
+    }.get(provider, provider.title())
 
 
 def urllib_request(
@@ -236,9 +292,7 @@ def urllib_request(
                     f"{_safe_provider_detail(detail)}"
                 ) from error
             retry_after = (
-                error.headers.get("Retry-After")
-                if error.headers is not None
-                else None
+                error.headers.get("Retry-After") if error.headers is not None else None
             )
             delay = _retry_delay(attempt, retry_after)
             emit_progress(
@@ -250,8 +304,7 @@ def urllib_request(
             last_error = error
             if attempt == attempts - 1:
                 raise RuntimeError(
-                    "Could not reach the provider API after "
-                    f"{attempts} attempts."
+                    f"Could not reach the provider API after {attempts} attempts."
                 ) from error
             delay = _retry_delay(attempt, None)
             emit_progress(
@@ -277,9 +330,13 @@ def parse_json_object(text: str) -> dict[str, object]:
         if start == -1 or end == -1 or end <= start:
             raise ValueError("Model returned response with no JSON object.") from None
         try:
-            value = json.loads(raw[start : end + 1], object_pairs_hook=_unique_json_fields)
+            value = json.loads(
+                raw[start : end + 1], object_pairs_hook=_unique_json_fields
+            )
         except json.JSONDecodeError:
-            raise ValueError("Model returned response that could not be parsed as JSON.") from None
+            raise ValueError(
+                "Model returned response that could not be parsed as JSON."
+            ) from None
     if not isinstance(value, dict):
         raise ValueError("Model returned JSON, but not an object.")
     return value
@@ -310,7 +367,10 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
         if slots:
             answers = {
                 "type": "object",
-                "properties": {slot: {"type": "string", "minLength": 1, "maxLength": 240} for slot in slots},
+                "properties": {
+                    slot: {"type": "string", "minLength": 1, "maxLength": 240}
+                    for slot in slots
+                },
                 "required": slots,
                 "additionalProperties": False,
             }
@@ -326,8 +386,12 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
                     "follow_through_rules": text_list,
                 },
                 "required": [
-                    "steps", "answer", "mark_points", "evidence_ids",
-                    "alternatives", "partial_credit_boundaries",
+                    "steps",
+                    "answer",
+                    "mark_points",
+                    "evidence_ids",
+                    "alternatives",
+                    "partial_credit_boundaries",
                     "follow_through_rules",
                 ],
                 "additionalProperties": False,
@@ -693,9 +757,7 @@ def _ollama_output_budget(schema: dict[str, object]) -> int:
             properties.get("questions") if isinstance(properties, dict) else None
         )
         items = questions.get("items") if isinstance(questions, dict) else None
-        item_properties = (
-            items.get("properties") if isinstance(items, dict) else None
-        )
+        item_properties = items.get("properties") if isinstance(items, dict) else None
         mark_scheme = (
             item_properties.get("mark_scheme")
             if isinstance(item_properties, dict)
@@ -718,8 +780,13 @@ def _ollama_output_budget(schema: dict[str, object]) -> int:
             return 96
         if isinstance(parts, dict):
             items = parts.get("items")
-            item_properties = items.get("properties") if isinstance(items, dict) else None
-            if isinstance(item_properties, dict) and "marking_points" not in item_properties:
+            item_properties = (
+                items.get("properties") if isinstance(items, dict) else None
+            )
+            if (
+                isinstance(item_properties, dict)
+                and "marking_points" not in item_properties
+            ):
                 return 384
         return 1024
     if "approved" in required:
@@ -767,7 +834,9 @@ def _read_json_response(response: Any) -> object:
     try:
         return json.loads(payload.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as error:
-        raise RuntimeError("Provider returned an invalid JSON response envelope.") from error
+        raise RuntimeError(
+            "Provider returned an invalid JSON response envelope."
+        ) from error
 
 
 def _retry_delay(attempt: int, retry_after: str | None) -> float:
@@ -816,5 +885,7 @@ def _normalise_base_url(value: str) -> str:
     if parsed.scheme not in {"http", "https"} or not parsed.netloc:
         raise ValueError("Provider base URL must be an http or https URL.")
     if parsed.username or parsed.password or parsed.query or parsed.fragment:
-        raise ValueError("Provider base URL must not contain credentials, a query, or a fragment.")
+        raise ValueError(
+            "Provider base URL must not contain credentials, a query, or a fragment."
+        )
     return raw

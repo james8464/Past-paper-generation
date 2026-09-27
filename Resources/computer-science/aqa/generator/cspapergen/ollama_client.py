@@ -2,9 +2,6 @@ from __future__ import annotations
 
 import json
 import re
-import time
-import urllib.error
-import urllib.request
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
@@ -33,7 +30,7 @@ from Backend.Core.model_review import (
     require_independent_review,
 )
 from Backend.Core.open_credit import review_open_credit
-from Backend.Core.providers import parse_json_object
+from Backend.Core.providers import OllamaClient
 from Backend.Core.reference_demand import (
     assessment_objectives_for_item,
     build_item_demand_target,
@@ -58,51 +55,6 @@ from cspapergen.models import (
 )
 from cspapergen.notes import note_context_for_topic
 from cspapergen.render_pdf import candidate_stimulus_data
-
-
-@dataclass(frozen=True)
-class OllamaClient:
-    base_url: str
-    model: str
-
-    @property
-    def provider(self) -> str:
-        return "ollama"
-
-    @property
-    def supports_parallel_generation(self) -> bool:
-        return False
-
-    def generate_json(self, prompt: str, retries: int = 2) -> dict[str, object]:
-        last_error: Exception | None = None
-        for attempt in range(retries):
-            payload = json.dumps(
-                {"model": self.model, "prompt": prompt, "stream": False, "format": "json"}
-            ).encode("utf-8")
-            request = urllib.request.Request(
-                f"{self.base_url.rstrip('/')}/api/generate",
-                data=payload,
-                headers={"Content-Type": "application/json"},
-                method="POST",
-            )
-            try:
-                with urllib.request.urlopen(request, timeout=160) as response:
-                    response_payload = response.read(2_097_153)
-                    if len(response_payload) > 2_097_152:
-                        raise ValueError("Ollama response exceeded the 2 MB limit")
-                    raw = json.loads(response_payload.decode("utf-8"))
-                parsed = parse_json_object(str(raw.get("response", "{}")))
-                return parsed
-            except (
-                urllib.error.URLError,
-                TimeoutError,
-                json.JSONDecodeError,
-                ValueError,
-            ) as error:
-                last_error = error
-                if attempt < retries - 1:
-                    time.sleep(min(8, 2**attempt))
-        raise RuntimeError(f"Ollama generation failed after {retries} attempts") from last_error
 
 
 class JSONGenerationClient(Protocol):

@@ -1,6 +1,10 @@
 from cspapergen.cli import generate_package
 from cspapergen.generator import build_paper2_blueprint
-from cspapergen.render_pdf import _logic_gate_names, render_question_paper
+from cspapergen.render_pdf import (
+    _logic_gate_names,
+    render_mark_scheme,
+    render_question_paper,
+)
 from cspapergen.syllabus import load_syllabus
 
 from Backend.Core.pdf_text import extract_pdf_text
@@ -28,6 +32,52 @@ def test_mark_scheme_contains_aqa_style_table_headings(tmp_path):
     assert "Marking guidance" in data
     assert "Total" in data
     assert "marks" in data
+
+
+def test_mark_scheme_uses_reference_header_and_table_insets(tmp_path):
+    import pymupdf as fitz
+
+    blueprint = build_paper2_blueprint(load_syllabus(), seed=42)
+    output = tmp_path / "scheme.pdf"
+    render_mark_scheme(blueprint, output)
+
+    with fitz.open(output) as document:
+        page = document[5]
+        header = page.search_for("MARK SCHEME")[0]
+        guidance = page.search_for("Marking guidance")[0]
+        question = page.search_for("01")[0]
+        assert 175 <= header.x0 <= 185
+        assert 37 <= header.y0 <= 42
+        assert 85 <= guidance.y0 <= 102
+        assert 43 <= question.x0 <= 53
+        assert 110 <= question.y0 <= 130
+        assert any(
+            drawing["rect"].x0 <= 44 and drawing["rect"].x1 >= 555
+            for drawing in page.get_drawings()
+        )
+
+
+def test_mark_scheme_guidance_uses_available_column_width_without_spilling(tmp_path):
+    import pymupdf as fitz
+
+    blueprint = build_paper2_blueprint(load_syllabus(), seed=42)
+    output = tmp_path / "scheme.pdf"
+    render_mark_scheme(blueprint, output)
+
+    with fitz.open(output) as document:
+        lines = [
+            (line["bbox"], "".join(span["text"] for span in line["spans"]))
+            for page in list(document)[5:]
+            for block in page.get_text("dict")["blocks"]
+            if "lines" in block
+            for line in block["lines"]
+        ]
+    assert any(
+        "A. Blank 1 must name application software; blank 2 must name utility software."
+        in text
+        for _bbox, text in lines
+    )
+    assert all(bbox[2] <= 511 for bbox, text in lines if text.startswith(("A.", "R.")))
 
 
 def test_single_part_questions_do_not_render_duplicate_subquestion_number(tmp_path):

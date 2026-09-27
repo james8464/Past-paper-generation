@@ -205,15 +205,32 @@ def _data_structures_hash_question(
 ) -> Question:
     size = rng.choice([7, 11])
     start = rng.randint(2, size - 2)
-    keys = [start, start + size, start + 2 * size]
-    final_slots = [start, (start + 1) % size, (start + 2) % size]
+    variant = rng.randrange(3)
+    if variant == 0:
+        keys = [size - 1, 2 * size - 1, 3 * size - 1]
+    elif variant == 1:
+        keys = [start, start + size, start + 2 * size]
+    else:
+        keys = [start, start + 1, start + size]
+    occupied: set[int] = set()
+    final_slots: list[int] = []
+    probe_counts: list[int] = []
+    for key in keys:
+        slot = key % size
+        probes = 0
+        while slot in occupied:
+            slot = (slot + 1) % size
+            probes += 1
+        occupied.add(slot)
+        final_slots.append(slot)
+        probe_counts.append(probes)
     stimulus = Stimulus(
         kind="code",
         title="Hash table rule",
         code=f"index = key MOD {size}\nCollision handling: linear probing\nKeys inserted: {keys[0]}, {keys[1]}, {keys[2]}",
     )
     parts = _parts([
-        ("1", 3, "State the table index occupied by each key after all three insertions.", [f"Key {keys[0]} is stored at index {final_slots[0]};", f"Key {keys[1]} is stored at index {final_slots[1]} after one probe;", f"Key {keys[2]} is stored at index {final_slots[2]} after two probes;"], "", 6),
+        ("1", 3, "State the table index occupied by each key after all three insertions.", [f"Key {key} is stored at index {slot} after {probes} probe{'s' if probes != 1 else ''};" for key, slot, probes in zip(keys, final_slots, probe_counts, strict=True)], "", 6),
         ("2", 1, "State what is meant by a collision in a hash table.", ["Two different keys produce the same initial table index;"], "", 3),
         ("3", 2, "Explain one reason why the table should not be allowed to become almost full.", ["Linear probing may need to inspect many occupied slots because clusters become longer;", "Insertion and retrieval therefore become slower and may approach a linear search;"], "", 5),
     ])
@@ -228,23 +245,52 @@ def _data_structures_tree_question(
     rng: random.Random,
 ) -> Question:
     root = rng.choice([40, 50, 60])
-    values = [root, root - 20, root + 20, root - 30, root - 10, root + 10]
+    variant = rng.randrange(3)
+    values = [
+        [root, root - 20, root + 20, root - 30, root - 10, root + 10],
+        [root, root - 20, root + 20, root + 10, root + 30, root + 40],
+        [root, root - 20, root + 20, root - 30, root - 40, root + 10],
+    ][variant]
+    traversal_kind = ("in-order", "pre-order", "post-order")[variant]
     stimulus = Stimulus(kind="code", title="Insertion order", code=", ".join(map(str, values)))
-    sorted_values = sorted(values)
+    links: dict[int, tuple[int | None, str]] = {root: (None, "root")}
+    children: dict[int, dict[str, int]] = {root: {}}
+    for value in values[1:]:
+        node = root
+        while True:
+            side = "left" if value < node else "right"
+            if side not in children[node]:
+                children[node][side] = value
+                children[value] = {}
+                links[value] = (node, side)
+                break
+            node = children[node][side]
+
+    def traverse(node: int) -> list[int]:
+        left = traverse(children[node]["left"]) if "left" in children[node] else []
+        right = traverse(children[node]["right"]) if "right" in children[node] else []
+        if traversal_kind == "pre-order":
+            return [node, *left, *right]
+        if traversal_kind == "post-order":
+            return [*left, *right, node]
+        return [*left, node, *right]
+
+    traversal_values = traverse(root)
+    def describe(value: int) -> str:
+        parent, side = links[value]
+        return f"{value} is the {side} child of {parent}"
     parts = _parts([
-        ("1", 3, "Draw the binary search tree produced by inserting the values in the stated order.", [f"{root} is the root with {root - 20} as its left child and {root + 20} as its right child;", f"{root - 30} and {root - 10} are respectively the left and right children of {root - 20};", f"{root + 10} is the left child of {root + 20};"], "", 8),
-        ("2", 1, "State the in-order traversal of the completed tree.", [f"{', '.join(map(str, sorted_values))};"], "", 3),
+        ("1", 3, "Draw the binary search tree produced by inserting the values in the stated order.", [f"{root} is the root; {describe(values[1])}; {describe(values[2])};", f"{describe(values[3])}; {describe(values[4])};", f"{describe(values[5])};"], "", 8),
+        ("2", 1, f"State the {traversal_kind} traversal of the completed tree.", [f"{', '.join(map(str, traversal_values))};"], "", 3),
         ("3", 2, "Explain why an unbalanced binary search tree can make searching less efficient.", ["Many nodes can lie on one long branch so each comparison removes little of the remaining search space;", "In the worst case the search visits a number of nodes proportional to the number stored, like a linear search;"], "", 5),
     ])
-    parents = [None, root, root, root - 20, root - 20, root + 20]
-    sides = ["root", "left", "right", "left", "right", "left"]
     tree_answers = {}
-    for value, parent, side in zip(values, parents, sides, strict=True):
+    for value, (parent, side) in links.items():
         tree_answers[f"node-{value}-parent"] = [str(parent)] if parent is not None else ["none", "no parent"]
         tree_answers[f"node-{value}-side"] = [side]
     parts[0].set_closed_answers(tree_answers)
     # Slot IDs refer only to supplied values, never to the answer's tree shape.
-    parts[1].set_closed_answers({f"visit-{i}": [str(value)] for i, value in enumerate(sorted_values, 1)})
+    parts[1].set_closed_answers({f"visit-{i}": [str(value)] for i, value in enumerate(traversal_values, 1)})
     return _question(style, number, "Binary search trees", "The values shown are inserted into an initially empty binary search tree.", stimulus, _fit_parts(parts, total))
 
 
@@ -254,15 +300,32 @@ def _data_structures_graph_question(
     total: int,
     rng: random.Random,
 ) -> Question:
-    adjacency = "A: B, C\nB: A, D, E\nC: A, F\nD: B\nE: B, F\nF: C, E"
-    stimulus = Stimulus(kind="code", title="Adjacency list", code=adjacency)
+    adjacency, start, target = rng.choice([
+        ({"A": ["B", "D"], "B": ["A", "C"], "C": ["B", "E", "F"], "D": ["A", "E"], "E": ["C", "D"], "F": ["C"]}, "A", "F"),
+        ({"A": ["B", "C"], "B": ["A", "D", "E"], "C": ["A", "F"], "D": ["B"], "E": ["B", "F"], "F": ["C", "E"]}, "A", "F"),
+        ({"A": ["B", "C"], "B": ["A", "D"], "C": ["A", "E"], "D": ["B", "F"], "E": ["C", "F"], "F": ["D", "E"]}, "C", "F"),
+    ])
+    stimulus = Stimulus(kind="code", title="Adjacency list", code="\n".join(
+        f"{vertex}: {', '.join(neighbours)}" for vertex, neighbours in adjacency.items()
+    ))
+    paths = [[start]]
+    seen = {start}
+    for path in paths:
+        for neighbour in sorted(adjacency[path[-1]]):
+            if neighbour not in seen:
+                seen.add(neighbour)
+                paths.append([*path, neighbour])
+    traversal = [path[-1] for path in paths]
+    route = next(path for path in paths if path[-1] == target)
+    route_text = ", ".join(route)
+    edge_count = len(route) - 1
     parts = _parts([
-        ("1", 2, "Starting at A, state the breadth-first traversal when adjacent vertices are considered alphabetically.", ["A, B, C are visited first;", "The complete traversal is A, B, C, D, E, F;"], "", 5),
-        ("2", 2, "State one shortest route from A to F and give its number of edges.", ["A, C, F;", "The route contains 2 edges;"], "", 4),
+        ("1", 2, f"Starting at {start}, state the breadth-first traversal when adjacent vertices are considered alphabetically.", [f"{', '.join(traversal[:3])} are visited first;", f"The complete traversal is {', '.join(traversal)};"], "", 5),
+        ("2", 2, f"State one shortest route from {start} to {target} and give its number of edges.", [f"{route_text};", f"The route contains {edge_count} edges;"], "", 4),
         ("3", 2, "Explain one advantage of an adjacency list over an adjacency matrix for this graph.", ["Only existing edges and their endpoint references need to be stored;", "Because the graph is sparse, this normally uses less memory than storing a cell for every possible pair of vertices;"], "", 5),
     ])
-    parts[0].set_closed_answers({f"visit-{i}": [value] for i, value in enumerate("ABCDEF", 1)})
-    parts[1].set_closed_answers({"route-in-order": ["A,C,F", "[A,C,F]"], "edges": ["2", "2 edges"]})
+    parts[0].set_closed_answers({f"visit-{i}": [value] for i, value in enumerate(traversal, 1)})
+    parts[1].set_closed_answers({"route-in-order": [",".join(route), f"[{','.join(route)}]"], "edges": [str(edge_count), f"{edge_count} edges"]})
     return _question(style, number, "Graphs", "An undirected graph is represented by the adjacency list shown.", stimulus, _fit_parts(parts, total))
 
 
@@ -640,14 +703,43 @@ def _boolean_simplification_question(
     total: int,
     rng: random.Random,
 ) -> Question:
-    extra_term, answer = rng.choice(
-        [
+    cases = [
+        (
+            f"(A + B)·(A + C) + {extra_term}",
+            [
+                f"1 mark: distributivity gives A·A + A·C + A·B + B·C + {extra_term};",
+                f"1 mark: idempotence gives A + A·C + A·B + B·C + {extra_term};",
+                f"1 mark: absorption gives A + B·C + {extra_term};",
+            ],
+            answer,
+        )
+        for extra_term, answer in [
             ("A̅·B·C", "A + B·C"),
             ("A̅·B", "A + B"),
             ("B̅·C", "A + C"),
         ]
-    )
-    expression = f"(A + B)·(A + C) + {extra_term}"
+    ]
+    cases.extend([
+        (
+            "(A + B)·(A̅ + C) + B·C",
+            [
+                "1 mark: distributivity gives A·A̅ + A·C + A̅·B + B·C;",
+                "1 mark: complement gives A·C + A̅·B + B·C;",
+                "1 mark: distributivity gives A·C + A̅·B + A·B·C + A̅·B·C;",
+            ],
+            "A·C + A̅·B",
+        ),
+        (
+            "(A + B)·(A̅ + B) + B·C",
+            [
+                "1 mark: distributivity gives A·A̅ + A·B + A̅·B + B·B + B·C;",
+                "1 mark: complement and idempotence gives A·B + A̅·B + B + B·C;",
+                "1 mark: absorption gives B + B·C;",
+            ],
+            "B",
+        ),
+    ])
+    expression, working, answer = rng.choice(cases)
     stimulus = Stimulus(kind="code", title="Expression", code=expression)
     parts = _parts(
         [
@@ -655,12 +747,7 @@ def _boolean_simplification_question(
                 "1",
                 4,
                 "Using the rules of Boolean algebra, simplify the expression as far as possible. Show each step.",
-                [
-                    f"1 mark: distributivity gives A·A + A·C + A·B + B·C + {extra_term};",
-                    f"1 mark: idempotence gives A + A·C + A·B + B·C + {extra_term};",
-                    f"1 mark: absorption gives A + B·C + {extra_term};",
-                    f"Final answer is {answer};",
-                ],
+                [*working, f"Final answer is {answer};"],
                 "",
                 10,
             )
@@ -940,28 +1027,26 @@ def _rle_question(style: QuestionStyle, number: int, total: int, rng: random.Ran
 
 def _floating_point_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
     value = rng.choice(["010110 0011", "101010 0010", "011001 1101"])
-    conversion = {
-        "010110 0011": "0.10110₂ = 0.6875 and 0011₂ = 3, so 0.6875 × 2³ = 5.5",
-        "101010 0010": "1.01010₂ = -1 + 1/4 + 1/16 = -0.6875 and 0010₂ = 2, so -0.6875 × 2² = -2.75",
-        "011001 1101": "0.11001₂ = 0.78125 and 1101₂ = -3, so 0.78125 × 2⁻³ = 0.09765625",
+    mantissa, exponent, scaled, result = {
+        "010110 0011": ("0.10110₂ = 0.6875", "0011₂ = 3", "0.6875 × 2³ = 5.5", "5.5"),
+        "101010 0010": ("1.01010₂ = -1 + 1/4 + 1/16 = -0.6875", "0010₂ = 2", "-0.6875 × 2² = -2.75", "-2.75"),
+        "011001 1101": ("0.11001₂ = 0.78125", "1101₂ = -3", "0.78125 × 2⁻³ = 0.09765625", "0.09765625"),
     }[value]
     shift = "right" if value.split()[1].startswith("0") else "left"
     stimulus = Stimulus(kind="bitgrid", title="Figure 1", headers=["Mantissa", "Exponent"], rows=[value.split()])
     parts = _parts([
         ("1", 1, "State whether the binary point is shifted left or right when the exponent in Figure 1 is applied.", [f"1 mark: the binary point is shifted {shift};"], "", 2),
-        ("2", 1, "Convert the floating point number into denary. The mantissa and exponent are both stored in two's complement, the binary point is immediately after the mantissa sign bit, and value = mantissa × 2^exponent.", [f"1 mark: {conversion};"], "", 3),
+        ("2", 3, "Convert the floating point number into denary. The mantissa and exponent are both stored in two's complement, the binary point is immediately after the mantissa sign bit, and value = mantissa × 2^exponent. Show your working.", [f"1 mark: interpret the signed mantissa as {mantissa};", f"1 mark: interpret the signed exponent as {exponent};", f"1 mark: apply the exponent and give the denary result: {scaled};"], "", 5),
         ("3", 1, "State whether the floating point number in Figure 1 is normalised. Give a reason for your answer.", ["1 mark: it is normalised because a two's-complement fractional mantissa starts 01 when positive or 10 when negative; equivalently, its first two bits differ;"], "", 2),
-        ("4", 2, "Explain the effect of adding two bits to the mantissa while leaving the exponent unchanged.", ["1 mark: two additional fractional binary place values can be stored in the mantissa;", "1 mark: the smaller interval between adjacent representable values reduces quantisation / rounding error and therefore increases precision;"], "", 3),
-        ("5", 3, "Explain the trade-off if a fixed-length floating point format assigns more bits to the exponent and fewer bits to the mantissa.", ["1 mark: the exponent can represent a wider set of powers of two;", "1 mark: the range of magnitudes that can be represented increases;", "1 mark: fewer mantissa bits reduce precision / increase rounding error;"], "", 4),
+        ("4", 1, "State how adding two bits to the mantissa while leaving the exponent unchanged affects precision.", ["1 mark: more mantissa bits give smaller gaps between representable values, increasing precision / reducing rounding error;"], "", 3),
+        ("5", 2, "Explain the trade-off if a fixed-length floating point format assigns more bits to the exponent and fewer bits to the mantissa.", ["1 mark: more exponent bits permit a wider set of powers of two, increasing the magnitude range;", "1 mark: fewer mantissa bits reduce precision / increase rounding error;"], "", 4),
         ("6", 1, "Name the error that occurs when a non-zero value is too close to zero to be represented.", ["1 mark: underflow;"], "", 2),
     ])
     parts[0].set_closed_answers({"direction": [shift, f"to the {shift}"]})
     parts[2].set_closed_answers({"normalised": ["yes", "normalised", "normalized"], "leading-mantissa-bits": [value[:2]]})
     parts[5].set_closed_answers({"error": ["underflow"]})
     parts[1].response_slots = ["result"]
-    parts[1].marking.closed_answers = {"result": [{
-        "010110 0011": "5.5", "101010 0010": "-2.75", "011001 1101": "0.09765625",
-    }[value]]}
+    parts[1].marking.closed_answers = {"result": [result]}
     return _question(style, number, "Floating point representation", "A scientific sensor stores readings using the fixed-length floating point format shown.", stimulus, _fit_parts(parts, total))
 
 

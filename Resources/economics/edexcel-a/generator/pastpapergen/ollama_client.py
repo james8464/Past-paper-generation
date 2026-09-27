@@ -1,11 +1,7 @@
 from __future__ import annotations
 
 import json
-import logging
 import re
-import time
-import urllib.error
-import urllib.request
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
@@ -26,6 +22,7 @@ from Backend.Core.model_review import (
     require_difficulty_review,
     require_independent_review,
 )
+from Backend.Core.providers import OllamaClient
 from Backend.Core.reference_demand import build_item_demand_target, profile_for
 from pastpapergen.extended_scenarios import SCENARIOS
 from pastpapergen.models import (
@@ -38,67 +35,6 @@ from pastpapergen.models import (
 )
 from pastpapergen.notes import note_context_for_topic
 from pastpapergen.render_pdf import candidate_stimulus_data
-
-_logger = logging.getLogger(__name__)
-
-
-@dataclass(frozen=True)
-class OllamaClient:
-    base_url: str
-    model: str
-
-    @property
-    def provider(self) -> str:
-        return "ollama"
-
-    @property
-    def supports_parallel_generation(self) -> bool:
-        return False
-
-    def generate_json(self, prompt: str, retries: int = 2) -> dict[str, object]:
-        last_error: Exception | None = None
-        for attempt in range(retries):
-            try:
-                return self._call(prompt)
-            except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, KeyError) as error:
-                last_error = error
-                if attempt < retries - 1:
-                    delay = 2 ** attempt * 5
-                    _logger.warning("Ollama call failed (attempt %d/%d), retrying in %ds: %s", attempt + 1, retries, delay, error)
-                    time.sleep(delay)
-        raise RuntimeError(f"Ollama request failed after {retries} retries") from last_error
-
-    def _call(self, prompt: str) -> dict[str, object]:
-        payload = json.dumps(
-            {
-                "model": self.model,
-                "prompt": prompt,
-                "stream": False,
-                "format": "json",
-                "think": False,
-                "options": {
-                    "temperature": 0.45,
-                    "num_predict": 1600,
-                },
-            }
-        ).encode("utf-8")
-        request = urllib.request.Request(
-            f"{self.base_url.rstrip('/')}/api/generate",
-            data=payload,
-            headers={"Content-Type": "application/json"},
-            method="POST",
-        )
-        with urllib.request.urlopen(request, timeout=240) as response:
-            payload = response.read(2_097_153)
-            if len(payload) > 2_097_152:
-                raise ValueError("Ollama response exceeded the 2 MB limit")
-            raw = json.loads(payload.decode("utf-8"))
-        raw_dict = raw if isinstance(raw, dict) else {}
-        text = str(raw_dict.get("response", "{}"))
-        parsed = json.loads(text)
-        if not isinstance(parsed, dict):
-            raise json.JSONDecodeError("Expected dict", text, 0)
-        return parsed
 
 
 def build_question_prompt(

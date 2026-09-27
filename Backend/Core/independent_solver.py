@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 import math
 import operator
@@ -21,6 +22,7 @@ from Backend.Core.credit_policy import (
     collect_credit_rules,
     declared_rule_metadata_present,
 )
+from Backend.Core.generation_diagnostics import GenerationEvidenceError
 from Backend.Core.numeric_integrity import (
     NUMERIC_INTEGRITY_VERSION,
     CheckedNumericOutput,
@@ -475,6 +477,39 @@ def _without_answer_key(value: Any) -> Any:
     return value
 
 
+def solution_failure_evidence(
+    solution: CanonicalSolution, issues: Sequence[ReconciliationIssue]
+) -> dict[str, Any]:
+    """Retain finite route evidence, but fingerprint open text instead of logging it."""
+    safe_slots = {}
+    for slot, value in solution.answer_slots.items():
+        is_route = slot == "route-in-order" and re.fullmatch(
+            r"[A-Z](?:\s*(?:,|->|→|-)\s*[A-Z]){1,25}", value
+        )
+        is_edge_count = slot == "edges" and re.fullmatch(r"\d{1,3}", value)
+        is_tree_parent = re.fullmatch(r"node-\d{1,3}-parent", slot) and (
+            re.fullmatch(r"\d{1,3}", value) or value.casefold() in {"none", "no parent", "null"}
+        )
+        is_tree_side = re.fullmatch(r"node-\d{1,3}-side", slot) and value.casefold() in {
+            "left", "right", "root", "none", "neither", "null", "n/a"
+        }
+        if is_route or is_edge_count or is_tree_parent or is_tree_side:
+            safe_slots[slot] = value
+    return {
+        "kind": "solution_reconciliation",
+        "item_id": solution.item_id,
+        "answer_sha256": hashlib.sha256(solution.answer.encode()).hexdigest(),
+        "answer_slots": safe_slots,
+        "issues": [
+            {
+                "field": issue.field,
+                "detail_sha256": hashlib.sha256(issue.message.encode()).hexdigest(),
+            }
+            for issue in issues
+        ],
+    }
+
+
 def require_solution_matches_scheme(
     solution: CanonicalSolution,
     scheme: dict[str, Any],
@@ -487,8 +522,14 @@ def require_solution_matches_scheme(
     if expected_choice is not None and _closed_normalise(
         solution.answer
     ) != _closed_normalise(expected_choice):
-        raise ValueError(
-            f"{solution.item_id} independent answer disagrees with the keyed option"
+        raise GenerationEvidenceError(
+            f"{solution.item_id} independent answer disagrees with the keyed option",
+            details=solution_failure_evidence(
+                solution,
+                [ReconciliationIssue(
+                    field="choice", message="independent answer disagrees with keyed option"
+                )],
+            ),
         )
     if expected_choice is not None:
         scheme = {
@@ -497,9 +538,10 @@ def require_solution_matches_scheme(
         }
     result = reconcile_solution(solution, scheme)
     if not result.passed:
-        raise ValueError(
+        raise GenerationEvidenceError(
             f"{solution.item_id} failed independent solution reconciliation: "
-            + "; ".join(issue.message for issue in result.issues)
+            + "; ".join(issue.message for issue in result.issues),
+            details=solution_failure_evidence(solution, result.issues),
         )
 
 
@@ -910,6 +952,12 @@ def _closed_slot_equal(slot: str, left: str, right: str) -> bool:
     if slot == "route-in-order":
         vertices = _route_vertices(left)
         return vertices is not None and vertices == _route_vertices(right)
+    if re.fullmatch(r"node--?\d+-side", slot):
+        # The root is neither a left nor a right child. Both encodings describe
+        # that same absence of a parent edge; other child sides stay exact.
+        root_sides = {"root", "none", "no side", "neither", "n/a"}
+        if _closed_normalise(left) in root_sides and _closed_normalise(right) in root_sides:
+            return True
     return _closed_normalise(left) == _closed_normalise(right)
 
 
