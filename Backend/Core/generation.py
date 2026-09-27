@@ -28,6 +28,7 @@ from Backend.Core.events import (
     emit_progress,
     progress_emitter,
 )
+from Backend.Core.generation_diagnostics import save_failure_diagnostic
 from Backend.Core.generator_registry import GeneratorCapability, generator_capability
 from Backend.Core.layout_conformance import conform_generated_documents
 from Backend.Core.mlx_setup import MLXModelSetupRequired
@@ -101,10 +102,25 @@ def handle_generate(args: argparse.Namespace) -> int:
         emit("error", message=str(error), code="mlx_setup_required")
         return 1
     except Exception as error:
+        diagnostic_path = save_failure_diagnostic(
+            output_dir,
+            error,
+            secrets=(args.api_key,),
+            context={
+                "subject": args.subject,
+                "paper": args.paper,
+                "seed": args.seed,
+                "provider": args.provider,
+                "model": args.model,
+            },
+        )
+        diagnostic_fields = {"diagnostic_path": str(diagnostic_path)} if diagnostic_path else {}
+        message = str(error)
+        if diagnostic_path:
+            message += f"\nA private diagnostic report was saved to {diagnostic_path}"
         if os.environ.get("PAPER_CREATOR_DEBUG") == "1":
-            emit("error", message=f"{error}\n{traceback.format_exc()}", code="generation_failed")
-        else:
-            emit("error", message=str(error), code="generation_failed")
+            message += f"\n{traceback.format_exc()}"
+        emit("error", message=message, code="generation_failed", **diagnostic_fields)
         return 1
     finally:
         signal.signal(signal.SIGTERM, previous_signal_handler)

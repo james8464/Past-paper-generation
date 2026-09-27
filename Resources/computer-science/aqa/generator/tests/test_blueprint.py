@@ -52,8 +52,94 @@ def test_four_mark_boolean_tasks_have_equivalent_explicit_working():
         expected = truth_table(expression, variables=("A", "B", "C"))
         for step in [*steps, answer]:
             assert truth_table(step, variables=("A", "B", "C")) == expected
-    assert len(expressions) >= 3
-    assert len(answers) >= 3
+    assert len(expressions) >= 5
+    assert len(answers) >= 5
+    assert any("A̅" in expression for expression in expressions)
+    assert any("B̅" in expression or "B·C" in expression for expression in expressions)
+
+
+def test_data_structure_templates_vary_tasks_and_keep_source_derived_keys() -> None:
+    styles = {style.id: style for style in QUESTION_STYLES}
+    hash_patterns: set[tuple[int, ...]] = set()
+    hash_wraps = False
+    tree_shapes: set[tuple[tuple[int, int | None, str], ...]] = set()
+    tree_traversals: set[str] = set()
+    graph_sources: set[str] = set()
+    graph_start_targets: set[tuple[str, str]] = set()
+
+    for seed in range(80):
+        rng = random.Random(seed)
+        hash_question = build_question(styles["data_structures_hash"], 1, 6, rng)
+        hash_source = hash_question.stimulus.code
+        size = int(re.search(r"key MOD (\d+)", hash_source).group(1))
+        keys = [int(value) for value in re.search(r"Keys inserted: ([\d, ]+)", hash_source).group(1).split(", ")]
+        occupied: set[int] = set()
+        expected_slots = {}
+        for key in keys:
+            slot = key % size
+            while slot in occupied:
+                slot = (slot + 1) % size
+            occupied.add(slot)
+            expected_slots[f"key-{key}"] = [str(slot)]
+        assert hash_question.parts[0].marking.closed_answers == expected_slots
+        hash_patterns.add(tuple(key % size for key in keys))
+        hash_wraps |= any(slot == "0" for values in expected_slots.values() for slot in values)
+
+        tree_question = build_question(styles["data_structures_tree"], 1, 6, rng)
+        values = [int(value) for value in tree_question.stimulus.code.split(", ")]
+        links: dict[int, tuple[int | None, str]] = {values[0]: (None, "root")}
+        for value in values[1:]:
+            cursor = values[0]
+            while True:
+                side = "left" if value < cursor else "right"
+                child = next((node for node, (parent, branch) in links.items() if parent == cursor and branch == side), None)
+                if child is None:
+                    links[value] = (cursor, side)
+                    break
+                cursor = child
+        expected_tree = {}
+        for value, (parent, side) in links.items():
+            expected_tree[f"node-{value}-parent"] = [str(parent)] if parent is not None else ["none", "no parent"]
+            expected_tree[f"node-{value}-side"] = [side]
+        assert tree_question.parts[0].marking.closed_answers == expected_tree
+        tree_shapes.add(tuple((values.index(value), values.index(parent) if parent is not None else None, side) for value, (parent, side) in links.items()))
+        traversal = next(name for name in ("in-order", "pre-order", "post-order") if name in tree_question.parts[1].prompt)
+        tree_traversals.add(traversal)
+
+        graph_question = build_question(styles["data_structures_graph"], 1, 6, rng)
+        graph_sources.add(graph_question.stimulus.code)
+        adjacency = {}
+        for line in graph_question.stimulus.code.splitlines():
+            vertex, neighbours = line.split(": ")
+            adjacency[vertex] = neighbours.split(", ")
+        start = re.search(r"Starting at ([A-F])", graph_question.parts[0].prompt).group(1)
+        target = re.search(r"from ([A-F]) to ([A-F])", graph_question.parts[1].prompt).group(2)
+        graph_start_targets.add((start, target))
+        paths = [[start]]
+        seen = {start}
+        traversal_order = []
+        for path in paths:
+            vertex = path[-1]
+            traversal_order.append(vertex)
+            for neighbour in sorted(adjacency[vertex]):
+                if neighbour not in seen:
+                    seen.add(neighbour)
+                    paths.append([*path, neighbour])
+        assert graph_question.parts[0].marking.closed_answers == {
+            f"visit-{index}": [vertex] for index, vertex in enumerate(traversal_order, 1)
+        }
+        route = next(path for path in paths if path[-1] == target)
+        assert graph_question.parts[1].marking.closed_answers == {
+            "route-in-order": [",".join(route), f"[{','.join(route)}]"],
+            "edges": [str(len(route) - 1), f"{len(route) - 1} edges"],
+        }
+
+    assert len(hash_patterns) >= 2
+    assert hash_wraps
+    assert len(tree_shapes) >= 3
+    assert len(tree_traversals) >= 2
+    assert len(graph_sources) >= 3
+    assert len(graph_start_targets) >= 2
 
 
 def test_all_supported_assessments_keep_code_inside_the_renderable_width() -> None:
@@ -525,7 +611,8 @@ def test_paper_one_safe_value_function_matches_displayed_code() -> None:
     part = question.parts[0]
 
     assert question.stimulus is not None
-    assert "def adjusted_value(raw_value):" in question.stimulus.code
+    assert "def parse_adjusted_value(raw_value):" in question.stimulus.code
+    assert "does not replace adjusted_value(record)" in question.stem
     assert "Return None" in question.stimulus.code
     assert "Convert raw_value to an integer" in part.prompt
     assert "converted integer value" in part.prompt
@@ -586,16 +673,20 @@ def test_paper_two_floating_point_convention_and_marks_are_unambiguous() -> None
     blueprint = build_paper2_blueprint(load_syllabus(), seed=26080116)
     question = blueprint.questions[11]
 
-    assert [part.marks for part in question.parts] == [1, 1, 1, 2, 3, 1]
+    assert [part.marks for part in question.parts] == [1, 3, 1, 1, 2, 1]
     assert "State whether the binary point" in question.parts[0].prompt
     assert "copied" not in " ".join(question.parts[0].marking.points).casefold()
     assert "binary point is immediately after the mantissa sign bit" in question.parts[1].prompt
-    conversion = question.parts[1].marking.points[0]
-    assert "-1 + 1/4 + 1/16 = -0.6875" in conversion
-    assert "-0.6875 × 2² = -2.75" in conversion
+    conversion = question.parts[1].marking.points
+    assert len(conversion) == 3
+    assert all(point.startswith("1 mark:") for point in conversion)
+    assert any("-1 + 1/4 + 1/16 = -0.6875" in point for point in conversion)
+    assert any("0010₂ = 2" in point for point in conversion)
+    assert any("-0.6875 × 2² = -2.75" in point for point in conversion)
     assert "starts 01 when positive or 10 when negative" in question.parts[2].marking.points[0]
-    scoring_points = question.parts[4].marking.points[:3]
-    assert len(scoring_points) == 3
+    assert len(question.parts[3].marking.points) == 1
+    scoring_points = question.parts[4].marking.points
+    assert len(scoring_points) == 2
     assert all(point.startswith("1 mark:") for point in scoring_points)
     assert "range" in " ".join(question.parts[4].marking.points).casefold()
     assert "precision" in " ".join(question.parts[4].marking.points).casefold()

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import builtins
+import io
 import json
 import sys
 import urllib.error
@@ -15,6 +16,125 @@ from Backend.Core.providers import (
     _ollama_temperature,
     urllib_request,
 )
+
+
+@pytest.mark.parametrize(
+    "module", ["cspapergen.ollama_client", "pastpapergen.ollama_client"]
+)
+def test_standalone_ollama_uses_shared_schema_and_repair(module, monkeypatch):
+    from importlib import import_module
+
+    requests = []
+    replies = iter(['{"broken":', '{"answer":"repaired"}'])
+
+    def request(url, data, headers, **kwargs):
+        requests.append((url, json.loads(data)))
+        return io.BytesIO(
+            json.dumps(
+                {
+                    "message": {"content": next(replies)},
+                    "done": True,
+                    "done_reason": "stop",
+                }
+            ).encode()
+        )
+
+    monkeypatch.setattr("Backend.Core.providers.urllib_request", request)
+    client = import_module(module).OllamaClient("http://localhost:11434", "test-model")
+    assert client.generate_json("Independently solve this question.") == {
+        "answer": "repaired"
+    }
+    assert len(requests) == 2
+    assert all(url.endswith("/api/chat") for url, _ in requests)
+    assert requests[0][1]["think"] is False
+    assert isinstance(requests[0][1]["format"], dict)
+    assert "REPAIR INSTRUCTION" in requests[1][1]["messages"][0]["content"]
+    assert client.supports_parallel_generation is False
+
+
+@pytest.mark.parametrize(
+    "status",
+    [
+        {"done": False},
+        {"done_reason": "length"},
+        {},
+        {"done": True, "done_reason": "unexpected"},
+    ],
+)
+def test_ollama_rejects_incomplete_generation_even_if_json_parses(status, monkeypatch):
+    calls = []
+
+    def request(*args, **kwargs):
+        calls.append(args)
+        return io.BytesIO(
+            json.dumps(
+                {"message": {"content": '{"answer":"partial"}'}, **status}
+            ).encode()
+        )
+
+    monkeypatch.setattr("Backend.Core.providers.urllib_request", request)
+    client = HostedLLMClient(provider="ollama", model="test", api_key="")
+    with pytest.raises(ValueError, match="incomplete"):
+        client.generate_json("Solve this question.")
+    assert len(calls) == 2
+
+
+@pytest.mark.parametrize(
+    "provider,reply",
+    [
+        ("openai", {"status": "incomplete", "output_text": '{"answer":"partial"}'}),
+        ("openai", {"output_text": '{"answer":"partial"}'}),
+        ("anthropic", {"content": [{"type": "text", "text": '{"answer":"partial"}'}]}),
+        (
+            "anthropic",
+            {
+                "stop_reason": "max_tokens",
+                "content": [{"type": "text", "text": '{"answer":"partial"}'}],
+            },
+        ),
+    ],
+)
+def test_hosted_providers_reject_incomplete_generation(provider, reply, monkeypatch):
+    monkeypatch.setattr(
+        "Backend.Core.providers.urllib_request",
+        lambda *args, **kwargs: io.BytesIO(json.dumps(reply).encode()),
+    )
+    client = HostedLLMClient(provider=provider, model="test", api_key="private-key")
+    with pytest.raises(ValueError, match="incomplete") as raised:
+        client.generate_json("Private prompt must not be saved.")
+    assert raised.value.details["provider"] == provider
+    assert "Private prompt" not in json.dumps(raised.value.details)
+    assert "private-key" not in json.dumps(raised.value.details)
+
+
+@pytest.mark.parametrize(
+    "provider,reply",
+    [
+        ("openai", {"status": "completed", "output_text": '{"answer":"complete"}'}),
+        (
+            "anthropic",
+            {
+                "stop_reason": "end_turn",
+                "content": [{"type": "text", "text": '{"answer":"complete"}'}],
+            },
+        ),
+        (
+            "ollama",
+            {
+                "done": True,
+                "done_reason": "stop",
+                "message": {"content": '{"answer":"complete"}'},
+            },
+        ),
+    ],
+)
+def test_completed_provider_response_is_accepted(provider, reply, monkeypatch):
+    monkeypatch.setattr(
+        "Backend.Core.providers.urllib_request",
+        lambda *args, **kwargs: io.BytesIO(json.dumps(reply).encode()),
+    )
+    client = HostedLLMClient(provider=provider, model="test", api_key="")
+    assert client.generate_json("Return JSON.") == {"answer": "complete"}
 
 
 def test_apple_provider_loads_model_once(monkeypatch) -> None:
@@ -131,11 +251,11 @@ def test_client_stops_after_one_structured_response_repair(monkeypatch) -> None:
 
 def test_ollama_schema_constrains_shared_generation_and_review() -> None:
     generation = _ollama_json_schema(
-        'Return one JSON object with a `questions` array. '
+        "Return one JSON object with a `questions` array. "
         'BLUEPRINT_DATA=[{"id":"0/0/0"},{"id":"0/0/1"}]'
     )
     review = _ollama_json_schema(
-        'Return JSON only: `reviews` must contain one object per id. '
+        "Return JSON only: `reviews` must contain one object per id. "
         'REVIEW_DATA=[{"id":"0/0/0"},{"id":"0/0/1"}]'
     )
 
@@ -287,6 +407,7 @@ def test_ollama_uses_structured_chat_with_bounded_output(monkeypatch) -> None:
                         "content": '{"questions":[]}',
                     },
                     "done_reason": "stop",
+                    "done": True,
                 }
             ).encode()
 
@@ -313,9 +434,9 @@ def test_ollama_uses_structured_chat_with_bounded_output(monkeypatch) -> None:
         api_key="",
     )
 
-    assert client.generate_json(
-        "Return one JSON object with a `questions` array."
-    ) == {"questions": []}
+    assert client.generate_json("Return one JSON object with a `questions` array.") == {
+        "questions": []
+    }
     payload = captured["payload"]
     assert captured["url"] == "http://localhost:11434/api/chat"
     assert captured["attempts"] == 2
@@ -330,9 +451,9 @@ def test_ollama_uses_structured_chat_with_bounded_output(monkeypatch) -> None:
 
 
 def test_second_pass_review_is_deterministic() -> None:
-    assert _ollama_temperature(
-        "Act as a second-pass UK A-level assessment editor."
-    ) == 0
+    assert (
+        _ollama_temperature("Act as a second-pass UK A-level assessment editor.") == 0
+    )
 
 
 def test_offline_provider_retries_then_reports_plain_connection_error(
@@ -348,7 +469,9 @@ def test_offline_provider_retries_then_reports_plain_connection_error(
     monkeypatch.setattr("urllib.request.urlopen", offline)
     monkeypatch.setattr("Backend.Core.providers.time.sleep", lambda _delay: None)
 
-    with pytest.raises(RuntimeError, match="Could not reach the provider API after 2 attempts"):
+    with pytest.raises(
+        RuntimeError, match="Could not reach the provider API after 2 attempts"
+    ):
         urllib_request("https://example.invalid", b"{}", {}, attempts=2)
 
     assert attempts == 2

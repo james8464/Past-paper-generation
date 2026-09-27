@@ -586,7 +586,7 @@ def test_aqa_boolean_scheme_preserves_operator_glyphs_and_visible_ink(tmp_path):
     path = tmp_path / "scheme.pdf"
     render_mark_scheme(build_paper2_blueprint(AQA, 26083125), path)
     with pymupdf.open(path) as pdf:
-        page = next(page for page in pdf if "Final answer is A" in page.get_text())
+        page = next(page for page in pdf if "Final answer is " in page.get_text())
         assert all(symbol in page.get_text() for symbol in "⊕⊼⊽")
         for symbol in "⊕⊼⊽":
             rect = page.search_for(symbol)[0]

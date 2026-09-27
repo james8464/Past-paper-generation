@@ -31,10 +31,12 @@ from Backend.Core.exam_blueprints import (
     PaperRule,
     validate_generated_paper,
 )
+from Backend.Core.generation_diagnostics import GenerationEvidenceError
 from Backend.Core.independent_solver import (
     CanonicalSolution,
     IndependentSolver,
     reconcile_solution,
+    solution_failure_evidence,
 )
 from Backend.Core.mark_scheme_quality import validate_mark_scheme_item
 from Backend.Core.model_review import (
@@ -521,9 +523,11 @@ def _generate_item_transaction(
     demand_profile: ReferenceDemandProfile | None = None,
 ) -> GeneratedQuestion:
     failure = ""
+    last_error: Exception | None = None
     candidate: GeneratedQuestion | None = None
     review: ReviewResult | None = None
     for attempt in range(1, policy.attempts + 1):
+        last_error = None
         try:
             prompt = (
                 _generation_prompt(
@@ -636,6 +640,7 @@ def _generate_item_transaction(
                 return candidate
             failure = "; ".join(review.issues or ["not approved"])
         except (KeyError, TypeError, ValueError, ValidationError) as error:
+            last_error = error
             failure = str(error)[:800]
             LOGGER.debug(
                 "AI item attempt %s of %s failed for question %s: %s",
@@ -712,7 +717,7 @@ def _generate_item_transaction(
     raise RuntimeError(
         "AI could not produce a valid, second-pass reviewed item for "
         f"question {task.question.number}: {failure}"
-    )
+    ) from last_error
 
 
 def _independently_validate_candidate(
@@ -749,9 +754,10 @@ def _independently_validate_candidate(
         diagnostics = [
             {"field": issue.field, "message": issue.message} for issue in result.issues
         ]
-        raise ValueError(
+        raise GenerationEvidenceError(
             f"question {candidate.number} failed independent solution "
-            f"reconciliation: {json.dumps(diagnostics, ensure_ascii=False)}"
+            f"reconciliation: {json.dumps(diagnostics, ensure_ascii=False)}",
+            details=solution_failure_evidence(solution, result.issues),
         )
     return solution
 

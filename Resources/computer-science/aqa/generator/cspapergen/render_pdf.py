@@ -9,6 +9,9 @@ from reportlab.lib import colors
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfgen import canvas
 
+from Backend.Core.computer_science_reference_solutions import (
+    paper1_reference_code as _paper1_reference_code,
+)
 from Backend.Core.document_dsl import (
     CanvasBarcodeStyle,
     DocumentRole,
@@ -77,27 +80,6 @@ PAPER2_PART_PAGE_OFFSETS = {
     12: (0, 0, 1, 1, 2, 2),
     13: (0,),
     14: (0,),
-}
-PAPER1_MARK_SCHEME_PAGE_RANGES = {
-    1: (6, 7),
-    2: (7, 7),
-    3: (7, 9),
-    4: (10, 12),
-    5: (13, 13),
-    6: (14, 15),
-    7: (16, 16),
-    8: (16, 16),
-    9: (17, 19),
-    10: (20, 21),
-    11: (22, 23),
-    12: (24, 25),
-}
-PAPER1_REFERENCE_SOLUTION_PAGE_RANGES = {
-    4: (26, 27),
-    9: (28, 29),
-    10: (30, 32),
-    11: (33, 36),
-    12: (37, 41),
 }
 PAPER1_SECTIONS = {
     1: ("Section A", "You are advised to spend about 40 minutes on this section."),
@@ -696,221 +678,37 @@ def _render_paper1_mark_scheme_pages(
     page = 6
     y = _mark_scheme_table_header(pdf, page, blueprint)
     for question in blueprint.questions:
-        start_page, end_page = PAPER1_MARK_SCHEME_PAGE_RANGES[question.number]
-        while page < start_page:
-            pdf.showPage()
-            page += 1
-            if page in {18, 19}:
-                _ms_header(pdf, page, blueprint)
-                y = 710
-            else:
-                y = _mark_scheme_table_header(pdf, page, blueprint)
-        if page != start_page:
-            raise ValueError(
-                f"Question {question.number} missed its mark-scheme start page {start_page}"
-            )
-
-        if question.number == 9:
-            page, y = _render_paper1_validation_evidence_pages(
-                pdf,
-                blueprint,
-                question,
-                page,
-                y,
-            )
-            continue
-
-        continuation_index = 0
-        span = end_page - start_page + 1
-        part_count = len(question.parts)
-        for part_index, part in enumerate(question.parts):
-            desired_page = start_page
-            if part_count > 1:
-                desired_page += round(part_index * (span - 1) / (part_count - 1))
-            while page < desired_page:
-                pdf.showPage()
-                page += 1
-                y = _mark_scheme_table_header(pdf, page, blueprint)
-                if page < desired_page:
-                    y = _draw_mark_scheme_continuation_frame(
-                        pdf,
-                        question,
-                        y,
-                        continuation_index,
-                    )
-                    continuation_index += 1
-            needed = _mark_scheme_part_height(part)
+        for part in question.parts:
+            needed = _mark_scheme_part_height(part) + _mark_scheme_artifact_height(question, part)
             if y - needed < 70:
-                if page >= end_page:
-                    raise ValueError(
-                        f"Question {question.number} overflowed its mark-scheme page range"
-                    )
                 pdf.showPage()
                 page += 1
                 y = _mark_scheme_table_header(pdf, page, blueprint)
+            if y - needed < 70:
+                raise ValueError(
+                    f"Question {question.number}.{part.label} marking guidance exceeds a page"
+                )
             y = _render_mark_scheme_part(pdf, question, part, y)
 
-        next_start = (
-            PAPER1_MARK_SCHEME_PAGE_RANGES[question.number + 1][0]
-            if question.number < 12
-            else None
-        )
-        while page < end_page:
-            pdf.showPage()
-            page += 1
-            y = _mark_scheme_table_header(pdf, page, blueprint)
-            if page != next_start:
-                y = _draw_mark_scheme_continuation_frame(
-                    pdf,
-                    question,
-                    y,
-                    continuation_index,
-                )
-                continuation_index += 1
-
     question_by_number = {question.number: question for question in blueprint.questions}
-    for question_number, (first_page, last_page) in PAPER1_REFERENCE_SOLUTION_PAGE_RANGES.items():
-        question = question_by_number[question_number]
-        for solution_page in range(first_page, last_page + 1):
-            pdf.showPage()
-            page += 1
-            if page != solution_page:
-                raise ValueError(f"Paper 1 reference solution missed page {solution_page}")
-            _draw_paper1_reference_solution_page(
-                pdf,
-                blueprint,
-                question,
-                page,
-                solution_page - first_page,
-            )
-
-
-def _render_paper1_validation_evidence_pages(
-    pdf: canvas.Canvas,
-    blueprint: PaperBlueprint,
-    question: Question,
-    page: int,
-    y: float,
-) -> tuple[int, float]:
-    """Render Question 9 guidance followed by two pages of test evidence."""
-    if page != 17:
-        raise ValueError("Question 9 validation evidence must begin on page 17")
-
-    for part in question.parts:
-        y = _render_mark_scheme_part(
-            pdf,
-            question,
-            part,
-            y,
-            include_answer_artifact=False,
-        )
-
-    for page_offset in range(2):
+    for question_number in (4, 9, 10, 11, 12):
         pdf.showPage()
         page += 1
-        y = _mark_scheme_table_header(pdf, page, blueprint)
-        _draw_validation_evidence_terminal(
-            pdf,
-            question,
-            y,
-            page_offset=page_offset,
+        _draw_paper1_reference_solution_page(
+            pdf, blueprint, question_by_number[question_number], page,
         )
 
-    return page, 76
 
-
-def _draw_validation_evidence_terminal(
-    pdf: canvas.Canvas,
-    question: Question,
-    y: float,
-    *,
-    page_offset: int,
-) -> None:
-    categories = _question_categories(question)
-    if page_offset == 0:
-        cases = [
-            ("normal", "841", categories[0], "45", "ACCEPT"),
-            ("lower boundary", "842", categories[1], "0", "ACCEPT"),
-            ("upper boundary", "843", categories[-1], "100", "ACCEPT"),
-        ]
-    else:
-        cases = [
-            ("below range", "844", categories[0], "-1", "REJECT"),
-            ("above range", "845", categories[1], "101", "REJECT"),
-            ("invalid category", "846", "UNLISTED", "50", "REJECT"),
-            ("non-integer value", "847", categories[-1], "forty", "REJECT"),
-            ("duplicate identifier", "841", categories[0], "60", "REJECT"),
-        ]
-
-    lines = ["QUESTION 09 - VALIDATION TEST EVIDENCE", "ADD input validation", ""]
-    for index, (name, identifier, category, value, outcome) in enumerate(
-        cases,
-        start=1 + page_offset * 3,
-    ):
-        if page_offset == 0:
-            lines.extend(
-                [
-                    f"TEST {index:02d}  {name.upper()}",
-                    "Run add-record validation with:",
-                    f"> identifier: {identifier}",
-                    f"> category:   {category}",
-                    f"> value:      {value}",
-                    f"Expected outcome: {outcome}",
-                    f"Actual outcome:   {outcome}",
-                    "Comparison:       MATCH  [PASS]",
-                    "",
-                ]
-            )
-        else:
-            lines.extend(
-                [
-                    f"TEST {index:02d}  {name.upper()}",
-                    f"> id={identifier}  category={category}  value={value}",
-                    f"> expected={outcome}  actual={outcome}  [PASS]",
-                    "",
-                ]
-            )
-    if page_offset == 1:
-        lines.extend(["SUMMARY", "> 8 tests run", "> 8 passed", "> 0 failed"])
-
-    line_height = 16 if page_offset == 0 else 13
-    panel_height = min(552, max(206, 34 + line_height * len(lines)))
-    panel_x = 113
-    panel_width = 380
-    panel_top = y + 4
-    panel_bottom = panel_top - panel_height
-
-    pdf.setFillColor(colors.HexColor("#111111"))
-    pdf.rect(panel_x, panel_bottom, panel_width, panel_height, stroke=0, fill=1)
-    pdf.setFillColor(colors.HexColor("#e8e8e8"))
-    pdf.setFont(FONT_MONO, 8.5)
-    cursor = panel_top - 18
-    for line in lines:
-        pdf.drawString(panel_x + 9, cursor, line[:70])
-        cursor -= line_height
-    pdf.setFillColor(colors.black)
-
-    table_bottom = min(76, panel_bottom - 14)
-    pdf.rect(45, table_bottom, 505, y + 14 - table_bottom, stroke=1, fill=0)
-    pdf.line(73, table_bottom, 73, y + 14)
-    pdf.line(106, table_bottom, 106, y + 14)
-    pdf.line(500, table_bottom, 500, y + 14)
-
-
-def _question_categories(question: Question) -> list[str]:
-    match = re.search(
-        r"one of (?P<categories>.+?), and a value",
-        question.stem,
-        flags=re.IGNORECASE,
-    )
-    if match is None:
-        return ["CATEGORY_A", "CATEGORY_B", "CATEGORY_C"]
-    categories = [
-        value.strip().upper()
-        for value in re.split(r",\s*(?:and\s+)?|\s+and\s+", match.group("categories"))
-        if value.strip()
-    ]
-    return categories or ["CATEGORY_A", "CATEGORY_B", "CATEGORY_C"]
+def _mark_scheme_artifact_height(question: Question, part: QuestionPart) -> float:
+    if question.style_id == "recursive_graph_traversal" and part.label == "3":
+        return 425
+    if question.style_id == "recursive_graph_traversal" and part.label == "5":
+        return 192
+    if question.style_id == "finite_state_machine" and part.label == "1":
+        return 124
+    if part.marking.ao == "AO3" and part.marks >= 7:
+        return 23 + (4 * 49 if part.marks >= 12 else 3 * 55) + 22
+    return 0
 
 
 def _draw_paper1_reference_solution_page(
@@ -918,155 +716,21 @@ def _draw_paper1_reference_solution_page(
     blueprint: PaperBlueprint,
     question: Question,
     page: int,
-    page_offset: int,
 ) -> None:
     _ms_header(pdf, page, blueprint)
     pdf.setFont(FONT_BOLD, 13)
-    title = "Example Python 3 solution" if page_offset == 0 else "Example solution guidance continued"
-    pdf.drawString(55, 720, f"Question {question.number:02d}: {title}")
-    y = 690
-    if page_offset == 0:
-        pdf.setFont(FONT, 10)
-        for line in _wrap(question.parts[0].prompt, 88):
-            pdf.drawString(55, y, line)
-            y -= 14
-        y -= 10
-        code = _paper1_reference_code(question.number)
-        pdf.setFont(FONT_MONO, 10)
-        for line in code.splitlines():
-            pdf.drawString(62, y, line[:86])
-            y -= 13
-    else:
-        sections = _paper1_reference_guidance(question, page_offset)
-        for heading, lines in sections:
-            pdf.setFont(FONT_BOLD, 11)
-            pdf.drawString(55, y, heading)
-            y -= 19
-            pdf.setFont(FONT, 11)
-            for item in lines:
-                for line_index, line in enumerate(_wrap(item, 82)):
-                    pdf.drawString(67 if line_index == 0 else 80, y, ("• " if line_index == 0 else "") + line)
-                    y -= 15
-                y -= 3
-            y -= 8
-
-
-def _paper1_reference_guidance(
-    question: Question,
-    page_offset: int,
-) -> list[tuple[str, list[str]]]:
-    points = [
-        point.rstrip(";.")
-        for part in question.parts
-        for point in part.marking.points
-    ]
-    if page_offset % 3 == 1:
-        return [
-            ("Mark allocation", points),
-            (
-                "Testing",
-                [
-                    "Use a normal case that exercises the main successful path.",
-                    "Use boundary values and at least one malformed or rejected input.",
-                    "Compare the actual result with a stated expected result.",
-                ],
-            ),
-        ]
-    if page_offset % 3 == 2:
-        return [
-            (
-                "Alternative implementations",
-                [
-                    "Credit a logically equivalent solution with different identifiers or control structures.",
-                    "The solution must preserve every stated validation rule and required output.",
-                    "Do not require the exact formatting shown in the example.",
-                ],
-            ),
-            ("Technical checks", points),
-        ]
-    return [
-        (
-            "Robustness and maintainability",
-            [
-                "Inputs are validated before the program mutates existing data.",
-                "Exceptional input is handled without corrupting state or terminating unexpectedly.",
-                "The implementation is decomposed clearly and avoids duplicated logic.",
-                "Names and control flow make the algorithm straightforward to verify.",
-            ],
-        ),
-        ("Question-specific checks", points),
-    ]
-
-
-def _paper1_reference_code(question_number: int) -> str:
-    examples = {
-        4: """from time import perf_counter
-
-def timed(function, values, trials=5):
-    results = []
-    for _ in range(trials):
-        data = values.copy()
-        started = perf_counter()
-        function(data)
-        results.append(perf_counter() - started)
-    return sum(results) / len(results)
-
-def select_algorithm(values):
-    merge_time = timed(merge_sort, values)
-    bubble_time = timed(bubble_sort, values)
-    return \"merge\" if merge_time < bubble_time else \"bubble\"""",
-        9: """VALID_CATEGORIES = {\"GRASSLAND\", \"WETLAND\", \"WOODLAND\"}
-
-def valid_entry(category, value_text):
-    category = category.strip().upper()
-    if category not in VALID_CATEGORIES:
-        return False
-    try:
-        value = int(value_text)
-    except ValueError:
-        return False
-    return 0 <= value <= 100""",
-        10: """def safe_adjusted_value(row):
-    try:
-        identifier, category, value_text = row.strip().split(\",\")
-        value = int(value_text)
-    except (ValueError, TypeError):
-        return None, \"Malformed input\"
-
-    if value < 0 or value > 100:
-        return None, \"Value out of range\"
-    adjusted = value * MULTIPLIER if value >= THRESHOLD else value
-    return adjusted, None""",
-        11: """def add_record(records):
-    try:
-        identifier = int(input(\"Identifier: \"))
-        if any(item.identifier == identifier for item in records):
-            print(\"Identifier already used\")
-            return
-        category = input(\"Category: \").strip().upper()
-        if category not in CATEGORIES:
-            print(\"Invalid category\")
-            return
-        value = int(input(\"Value: \"))
-        if not 0 <= value <= 100:
-            print(\"Value out of range\")
-            return
-    except ValueError:
-        print(\"A whole number is required\")
-        return
-    records.append(Observation(identifier, category, value))""",
-        12: """def print_report(records):
-    totals = category_totals(records)
-    ordered = sorted(totals, key=lambda name: (-totals[name], name))
-    for category in ordered:
-        members = [item for item in records if item.category == category]
-        best = max(members, key=adjusted_value) if members else None
-        print(category, totals[category], best.identifier if best else \"-\")
-
-# A descending numeric key and ascending category key implement
-# the required deterministic tie break.""",
-    }
-    return examples[question_number]
+    pdf.drawString(43, 745, f"Question {question.number:02d}: Example Python 3 solution")
+    y = 715
+    pdf.setFont(FONT, 10)
+    for line in _wrap(question.parts[0].prompt, 88):
+        pdf.drawString(55, y, line)
+        y -= 14
+    y -= 10
+    code = _paper1_reference_code(question.number, record_name=blueprint.program_record_name)
+    pdf.setFont(FONT_MONO, 10)
+    for line in code.splitlines():
+        pdf.drawString(62, y, line[:86])
+        y -= 13
 
 
 def _render_paper2_mark_scheme_pages(
@@ -1134,81 +798,11 @@ def _render_paper2_mark_scheme_pages(
 
 def _mark_scheme_part_height(part: QuestionPart) -> float:
     wrapped_lines = 1
-    wrapped_lines += sum(len(_wrap(point, 62)) for point in printed_credit_points(part.marking.model_dump(mode="json")))
-    wrapped_lines += sum(len(_wrap(item, 59)) for item in part.marking.accept)
-    wrapped_lines += sum(len(_wrap(item, 59)) for item in part.marking.reject)
-    wrapped_lines += sum(len(_wrap(item, 62)) for item in part.marking.levels)
+    wrapped_lines += sum(len(_wrap_scheme_text(point)) for point in printed_credit_points(part.marking.model_dump(mode="json")))
+    wrapped_lines += sum(len(_wrap_scheme_text(f"A. {item}")) for item in part.marking.accept)
+    wrapped_lines += sum(len(_wrap_scheme_text(f"R. {item}")) for item in part.marking.reject)
+    wrapped_lines += sum(len(_wrap_scheme_text(item)) for item in part.marking.levels)
     return 38 + 15 * wrapped_lines
-
-
-def _draw_mark_scheme_continuation_frame(
-    pdf: canvas.Canvas,
-    question: Question,
-    y: float,
-    continuation_index: int,
-) -> float:
-    bottom = 70
-    top = y + 10
-    pdf.setLineWidth(0.7)
-    pdf.rect(45, bottom, 505, top - bottom, stroke=1, fill=0)
-    pdf.line(73, bottom, 73, top)
-    pdf.line(106, bottom, 106, top)
-    pdf.line(500, bottom, 500, top)
-    pdf.setFont(FONT_BOLD, 11)
-    pdf.drawString(52, y, f"{question.number:02d}")
-    lines = _continuation_guidance_lines(question, continuation_index)
-    cursor = y
-    for line_index, item in enumerate(lines):
-        wrapped = _wrap(item, 62)
-        pdf.setFont(FONT_BOLD if line_index == 0 else FONT, 11)
-        for line in wrapped:
-            pdf.drawString(125, cursor, line)
-            cursor -= 15
-            if cursor < bottom + 18:
-                return bottom
-    return bottom
-
-
-def _continuation_guidance_lines(
-    question: Question,
-    continuation_index: int,
-) -> list[str]:
-    points = [
-        point.rstrip(";.")
-        for part in question.parts
-        for point in part.marking.points
-    ]
-    levels = [
-        level
-        for part in question.parts
-        for level in part.marking.levels
-    ]
-    if continuation_index % 3 == 0:
-        return [
-            "Indicative content continued",
-            *(f"• {point}." for point in points),
-            "Credit any technically correct equivalent that answers the question.",
-            "Do not award the same technical point more than once.",
-        ]
-    if continuation_index % 3 == 1:
-        return [
-            "Assessment guidance",
-            f"Question focus: {question.stem}",
-            "Credit accurate terminology and reasoning that is applied to the stated context.",
-            "Where a consequence is required, the response must establish a valid technical link.",
-            "For a balanced answer, both benefits and limitations must be considered before the conclusion.",
-            *(levels or ["Award each available mark independently unless the guidance states otherwise."]),
-        ]
-    return [
-        "Level and judgement guidance",
-        *(levels or [
-            "A stronger response selects relevant technical material and develops it coherently.",
-            "A mid-range response contains relevant knowledge but has incomplete application or reasoning.",
-            "A limited response presents isolated points with little technical development.",
-        ]),
-        "The final mark should reflect the response as a whole.",
-        "A supported conclusion must follow from the technical arguments presented.",
-    ]
 
 
 class _QuestionRenderState:
@@ -1974,7 +1568,7 @@ def _mark_scheme_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
 
 def _mark_scheme_intro(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
     _ms_header(pdf, page, blueprint)
-    y = 705
+    y = 754
     pdf.setFont(FONT, 10)
     paragraphs = [
         (
@@ -2003,7 +1597,7 @@ def _mark_scheme_intro(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint)
 
 def _mark_scheme_levels(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
     _ms_header(pdf, page, blueprint)
-    y = 705
+    y = 754
     pdf.setFont(FONT_BOLD, 13)
     pdf.drawString(55, y, "Level of response marking instructions")
     y -= 26
@@ -2032,7 +1626,7 @@ def _mark_scheme_levels(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint
 
 def _mark_scheme_annotations(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
     _ms_header(pdf, page, blueprint)
-    y = 705
+    y = 754
     pdf.setFont(FONT_BOLD, 13)
     pdf.drawString(55, y, "Annotation used in the mark scheme")
     y -= 28
@@ -2078,7 +1672,7 @@ def _mark_scheme_annotations(pdf: canvas.Canvas, page: int, blueprint: PaperBlue
 
 def _mark_scheme_examiner_notes(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
     _ms_header(pdf, page, blueprint)
-    y = 705
+    y = 754
     pdf.setFont(FONT_BOLD, 12)
     pdf.drawString(55, y, "To Examiners:")
     y -= 28
@@ -2098,18 +1692,17 @@ def _mark_scheme_examiner_notes(pdf: canvas.Canvas, page: int, blueprint: PaperB
 
 def _mark_scheme_table_header(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> float:
     _ms_header(pdf, page, blueprint)
-    y = 710
-    pdf.setFont(FONT_BOLD, 9)
-    pdf.rect(45, y - 24, 505, 24, stroke=1, fill=0)
-    pdf.line(73, y - 24, 73, y)
-    pdf.line(106, y - 24, 106, y)
-    pdf.line(500, y - 24, 500, y)
-    pdf.drawString(52, y - 16, "Qu")
-    pdf.drawString(84, y - 16, "Pt")
-    pdf.drawString(125, y - 16, "Marking guidance")
-    pdf.drawCentredString(525, y - 10, "Total")
-    pdf.drawCentredString(525, y - 21, "marks")
-    return y - 38
+    y = AQA_A4[1] - 85
+    pdf.setFont(FONT_BOLD, 11)
+    pdf.rect(43, y - 29, 513, 29, stroke=1, fill=0)
+    for x in (71, 100, 511):
+        pdf.line(x, y - 29, x, y)
+    pdf.drawString(49, y - 19, "Qu")
+    pdf.drawString(80, y - 19, "Pt")
+    pdf.drawCentredString(305, y - 19, "Marking guidance")
+    pdf.drawCentredString(533, y - 12, "Total")
+    pdf.drawCentredString(533, y - 24, "marks")
+    return y - 44
 
 
 def _render_mark_scheme_part(
@@ -2124,38 +1717,37 @@ def _render_mark_scheme_part(
 ) -> float:
     start_y = y
     pdf.setFont(FONT_BOLD, 11)
-    pdf.drawString(52, y, f"{question.number:02d}")
-    pdf.drawString(86, y, part.label)
+    pdf.drawString(49, y, f"{question.number:02d}")
+    pdf.drawString(80, y, part.label)
     if show_total:
-        pdf.drawRightString(528, y, str(part.marks))
+        pdf.drawRightString(548, y, str(part.marks))
     pdf.setFont(FONT_BOLD, 11)
-    pdf.drawString(125, y, heading or f"All marks {part.marking.ao}")
+    pdf.drawString(105, y, heading or f"All marks {part.marking.ao}")
     y -= 15
     pdf.setFont(FONT, 11)
     for point in printed_credit_points(part.marking.model_dump(mode="json")):
-        for line in _wrap(point, 62):
-            _draw_scheme_text(pdf, 125, y, line)
+        for line in _wrap_scheme_text(point):
+            _draw_scheme_text(pdf, 105, y, line)
             y -= 15
     for item in part.marking.accept:
-        for line in _wrap(f"A. {item}", 59):
-            _draw_scheme_text(pdf, 125, y, line)
+        for line in _wrap_scheme_text(f"A. {item}"):
+            _draw_scheme_text(pdf, 105, y, line)
             y -= 15
     for item in part.marking.reject:
-        for line in _wrap(f"R. {item}", 59):
-            _draw_scheme_text(pdf, 125, y, line)
+        for line in _wrap_scheme_text(f"R. {item}"):
+            _draw_scheme_text(pdf, 105, y, line)
             y -= 15
     for item in part.marking.levels:
-        for line in _wrap(item, 62):
-            pdf.drawString(125, y, line)
+        for line in _wrap_scheme_text(item):
+            pdf.drawString(105, y, line)
             y -= 15
     if include_answer_artifact:
         y = _draw_mark_scheme_answer_artifact(pdf, question, part, y)
     bottom = y - 5
     top = start_y + 10
-    pdf.rect(45, bottom, 505, top - bottom, stroke=1, fill=0)
-    pdf.line(73, bottom, 73, top)
-    pdf.line(106, bottom, 106, top)
-    pdf.line(500, bottom, 500, top)
+    pdf.rect(43, bottom, 513, top - bottom, stroke=1, fill=0)
+    for x in (71, 100, 511):
+        pdf.line(x, bottom, x, top)
     return min(start_y - 34, y - 18)
 
 
@@ -2173,8 +1765,6 @@ def _draw_mark_scheme_answer_artifact(
         return _draw_transition_table_answer(pdf, y - 5)
     if part.marking.ao == "AO3" and part.marks >= 7:
         return _draw_programming_mark_grid(pdf, part.marks, y - 6)
-    if part.marking.ao == "AO3" and part.marks <= 2:
-        return _draw_test_evidence_box(pdf, question, y - 5)
     return y
 
 
@@ -2348,41 +1938,19 @@ def _draw_programming_mark_grid(
     return cursor - 10
 
 
-def _draw_test_evidence_box(
-    pdf: canvas.Canvas,
-    question: Question,
-    y: float,
-) -> float:
-    width = 372
-    height = 76
-    pdf.setFillColor(colors.HexColor("#1c1c1c"))
-    pdf.rect(125, y - height, width, height, stroke=1, fill=1)
-    pdf.setFillColor(colors.white)
-    pdf.setFont(FONT_MONO, 8.5)
-    evidence = [
-        "Example evidence",
-        f"> Run question {question.number:02d} test",
-        "> Expected: requirement satisfied",
-        "> Actual:   requirement satisfied",
-    ]
-    cursor = y - 17
-    for line in evidence:
-        pdf.drawString(133, cursor, line)
-        cursor -= 16
-    pdf.setFillColor(colors.black)
-    return y - height - 10
-
-
 def _ms_header(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
-    pdf.setFont(FONT_BOLD, 9)
-    pdf.drawCentredString(
-        297,
-        800,
+    pdf.setFont(FONT, 11)
+    pdf.drawRightString(
+        556,
+        794,
         "MARK SCHEME \u2013 A-LEVEL COMPUTER SCIENCE \u2013 "
         f"{blueprint.paper_code} \u2013 JUNE {_exam_date(blueprint).year}",
     )
-    pdf.setFont(FONT, 9)
-    pdf.drawCentredString(297, 32, str(page))
+    pdf.setLineWidth(0.6)
+    pdf.line(0, 774, 553, 774)
+    pdf.line(0, 51, 553, 51)
+    pdf.setFont(FONT, 8)
+    pdf.drawString(43, 35, str(page))
 
 
 def _exam_date(blueprint: PaperBlueprint) -> date:
@@ -2404,6 +1972,31 @@ def _wrap(text: str, width: int) -> list[str]:
             current = word
         else:
             current = candidate
+    if current:
+        lines.append(current)
+    return lines or [""]
+
+
+def _wrap_scheme_text(text: str) -> list[str]:
+    """Wrap 11 pt guidance to the measured 400 pt printable column."""
+    lines: list[str] = []
+    current = ""
+    for word in text.split():
+        candidate = f"{current} {word}".strip()
+        if pdfmetrics.stringWidth(candidate, FONT, 11) <= 400:
+            current = candidate
+            continue
+        if current:
+            lines.append(current)
+            current = ""
+        while pdfmetrics.stringWidth(word, FONT, 11) > 400:
+            cut = 1
+            while (cut < len(word)
+                   and pdfmetrics.stringWidth(word[: cut + 1], FONT, 11) <= 400):
+                cut += 1
+            lines.append(word[:cut])
+            word = word[cut:]
+        current = word
     if current:
         lines.append(current)
     return lines or [""]

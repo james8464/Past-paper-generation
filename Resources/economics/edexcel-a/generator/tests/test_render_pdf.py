@@ -294,6 +294,45 @@ def test_paper_1_render_uses_question_specific_pages(tmp_path):
     assert _pdf_page_count(output) == 32
 
 
+def test_paper_1_long_question_4_context_keeps_mcq_on_source_page(tmp_path):
+    syllabus = load_syllabus(Path(__file__).parents[1] / "data/syllabus_seed.json")
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=26092819)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+
+    assert _pdf_page_count(output) == 32
+    assert _first_page_containing(output, "possible business objective") == 7
+    assert _first_page_containing(output, "changes in data linked to a firm") == 8
+    assert _answer_rule_count(output, 7) >= 10
+    import pymupdf
+
+    with pymupdf.open(output) as pdf:
+        prompt_spans = [
+            span
+            for block in pdf[6].get_text("dict")["blocks"]
+            for line in block.get("lines", [])
+            for span in line.get("spans", [])
+            if "possible business objective" in span.get("text", "")
+        ]
+    assert prompt_spans and all(span["color"] == 0 for span in prompt_spans)
+
+
+@pytest.mark.parametrize("seed", [26092830, 26092886])
+def test_paper_1_tall_question_4_mcq_keeps_adequate_answer_space_and_32_pages(tmp_path, seed):
+    syllabus = load_syllabus(Path(__file__).parents[1] / "data/syllabus_seed.json")
+    config = load_builtin_paper_config("paper_1")
+    blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+    output = tmp_path / "paper.pdf"
+
+    render_question_paper(blueprint, output)
+
+    assert _pdf_page_count(output) == 32
+    assert _first_page_containing(output, "Total for Question 4") == 7
+    assert _answer_rule_count(output, 7) >= 9
+
+
 def test_papers_2_and_3_match_current_reference_page_counts(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     for paper_id in ("paper_2", "paper_3"):

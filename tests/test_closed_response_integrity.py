@@ -212,6 +212,8 @@ def test_production_hosted_chat_preserves_closed_answer_objects(monkeypatch):
         return BytesIO(
             json.dumps(
                 {
+                    "done": True,
+                    "done_reason": "stop",
                     "message": {
                             "content": json.dumps(
                                 complete_solver_response(
@@ -318,6 +320,25 @@ def test_specialist_choice_key_comparison_preserves_numeric_sign():
         require_solution_matches_scheme(
             solution, {"mark_scheme": ["2.75"]}, expected_choice="-2.75"
         )
+
+
+@pytest.mark.parametrize("root_side", ["root", "None", "no side", "neither", "N/A"])
+def test_tree_root_has_no_child_side(root_side):
+    from Backend.Core.independent_solver import CanonicalSolution
+
+    values = {"node-40-parent": "none", "node-40-side": root_side,
+              "node-20-parent": "40", "node-20-side": "left"}
+    solution = CanonicalSolution(item_id="tree", answer=json.dumps(values),
+                                 response_slots=list(values), answer_slots=values)
+    expected = {key: [value] for key, value in values.items()}
+    expected["node-40-side"] = ["root"]
+    assert reconcile_solution(solution, {"closed_answers": expected}).passed
+    # No-side notation cannot turn a missing child edge or wrong root into a pass.
+    expected["node-20-side"] = ["right"]
+    assert not reconcile_solution(solution, {"closed_answers": expected}).passed
+    expected["node-40-side"] = ["left"]
+    expected["node-20-side"] = ["left"]
+    assert not reconcile_solution(solution, {"closed_answers": expected}).passed
 
 
 @pytest.mark.parametrize(

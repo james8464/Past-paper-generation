@@ -175,3 +175,89 @@ existing SWIG warnings (73.90 seconds). The independent reviewer passed 210
 targeted tests and reported no findings. The first-batch GitHub macOS job passed
 its native tests and App Store preflight; the final commit must independently
 pass both required hosted checks before merge. Graphify and lint were refreshed.
+
+## Follow-up repairs — 28 September 2026
+
+Implementation sequence: unify provider handling and preserve useful failure
+evidence; broaden CS inputs and repair floating-point tariffs; remove Paper 1
+scheme padding and align table geometry; rerun app-path generation, inspect
+rendered pages, independently review the changes and require clean GitHub checks.
+
+- Standalone CS and Edexcel Economics now use the same structured Ollama client
+  as the app. Both receive schema-constrained responses and bounded JSON repair.
+  Provider completion metadata must indicate a completed response before parsed
+  JSON is accepted. This prevents a syntactically valid but truncated response
+  from bypassing the repair path. The protocol behaviour follows the official
+  [Ollama structured-output documentation](https://docs.ollama.com/capabilities/structured-outputs)
+  and [Anthropic stop-reason documentation](https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons).
+- Rejected provider/reconciliation attempts can leave a private local report in
+  `.papercreator-diagnostics` beside the selected output folder. Reports are
+  limited to 32 KiB each and the latest 20 files, with owner-only permissions and
+  symlink-resistant writes. They are not uploaded or approved checkpoints.
+  Open answers and detailed issue text are fingerprinted, not retained; only
+  narrowly formatted graph routes/edge counts and finite tree-link values are
+  retained verbatim. Provider
+  reports contain completion metadata and a prompt hash, not the prompt or raw
+  model response. The supplied API key is redacted. Existing UI error messages
+  and retry feedback are separate from these diagnostic records.
+- The app item-retry path preserves its final underlying exception, so useful
+  diagnostic evidence is not lost when retries are exhausted.
+- Across an 80-seed check, CS sources cover three hash collision-pattern families
+  (including wraparound), three tree shapes and traversal tasks, three graph
+  sources, and five truth-table-checked Boolean derivations/final functions.
+  This is broader but still bounded generation, not unlimited task novelty.
+- The nine-mark floating-point question now distributes marks as
+  `1, 3, 1, 1, 2, 1`. Conversion earns separate mantissa, exponent and scaled-result
+  credit. Paper 2 remains 100 marks with AO totals 56/40/4. This is an editorial
+  repair, not evidence of empirically matched student difficulty.
+- The earlier isolated invalid-JSON replay used the legacy standalone client,
+  not the app's injected shared client. A fresh replay through the actual shared
+  client solved the saved Q4.2 correctly (`A-C-F`, two edges) and reconciled
+  successfully. The original failed response remains unavailable, so this does
+  not prove its exact historical failure cause or qualify a full live paper.
+
+Human examiner review, student calibration, Intel qualification and Apple
+distribution approval remain external release gates. Automated checks and
+representative PDF inspection must not be described as those approvals.
+
+### Content and rendering follow-through
+
+- Paper 1 now uses content-driven marking rows and one real code example per
+  programming question, without repeated continuation guidance, artificial blank
+  padding or invented terminal evidence. The publication gate verifies each
+  marking row and the ordered monospaced code in every appendix page; replacing
+  code with a correct heading and filler, or changing a return expression, fails.
+- Reference examples now use the actual supplied timing functions, scenario
+  categories and record class. The reporting example accumulates totals and best
+  records in one pass and handles empty categories and alphabetical ties. Q10's
+  raw-value converter is explicitly named `parse_adjusted_value` so it cannot be
+  confused with the Skeleton Program's record-based `adjusted_value` function.
+  Executable integration tests combine the examples with all four generated
+  scenario programs.
+- CS scheme geometry uses the reference-aligned header/table position and actual
+  font-width wrapping. Seed-42 examples contain 20 Paper 1 scheme pages and 17
+  Paper 2 pages, preserving 39/38 assessed parts and 100/196 credit statements.
+  Representative rendered pages, including the new Q10 code example, were
+  inspected directly. This is not a claim of pixel identity or exhaustive print
+  accessibility certification.
+- Edexcel Paper 1 overflow appeared at seeds `26092819`, `26092830` and
+  `26092886`. Q4 now reserves the actual MCQ height and selects 9–11 writing rules
+  as space permits; the exact 32-page gate remains unchanged. All 100 consecutive
+  seeds `26092800`–`26092899` rendered 32 pages with every question/part prompt
+  present. The MCQ prompt also explicitly restores black text after grey rules.
+- A new live CS bank attempt (effective seed `26092811`, `gemma4:12b`) stopped
+  after 665.44 seconds at a tree-root side mismatch. An isolated live replay
+  reproduced a correct tree with root side `None` where the key required `root`.
+  Those represent the same absence of a parent edge. Matching now recognises
+  equivalent root-side notation only for named tree-side slots; incorrect parent
+  links and left/right sides still fail. The stopped run remains unqualified.
+
+Fresh final-code backend verification: **1,958 passed, 2 skipped**, five existing
+SWIG warnings (95.61 seconds). Native macOS tests: **61 passed**. Release build
+and local signature/sandbox preflight passed; hosted checks must verify the
+published commit independently. The final preview matrix produced every output
+for all 21 routes: 18 full-paper routes passed reference-demand checks, while
+three topic banks remain unqualified for insufficient topic-reference evidence.
+Independent review found no outstanding issue in the repaired scope. Graphify's
+AST map and repository inventory were refreshed; real references and generated
+diagnostics/PDFs remain outside Git.
