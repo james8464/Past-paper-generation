@@ -145,7 +145,7 @@ def main() -> int:
             },
             "mark-scheme": {
                 "page_count": len(scheme_payload["pages"]),
-                "page_count_policy": runtime_page_count_policy(family, "mark-scheme", len(scheme_payload["pages"])),
+                "page_count_policy": runtime_page_count_policy(family, "mark-scheme", len(scheme_payload["pages"]), paper=paper),
                 "page_boxes": [page["boxes"] for page in scheme_payload["pages"]],
             },
         }

@@ -48,6 +48,7 @@ from Backend.Core.reference_demand import (
 )
 
 LOGGER = logging.getLogger(__name__)
+ASSESSMENT_REVIEW_VERSION = "assessment-review-v2"
 
 
 class AssessmentLLMClient(Protocol):
@@ -76,11 +77,9 @@ def _requires_model_review(
     question: GeneratedQuestion,
     policy: GenerationPolicy,
 ) -> bool:
-    """Use deterministic validation for source-locked selected responses."""
+    """A checked answer does not establish stem or distractor quality."""
 
-    return policy.require_model_review and not isinstance(
-        question.authoring_context.get("selected_response_contract"), dict
-    )
+    return policy.require_model_review
 
 
 @dataclass(frozen=True)
@@ -246,7 +245,11 @@ def _generate_batch(
     ]
     for task in verified:
         _validate_release_mark_scheme(task.question)
-    verified_to_review = verified if policy.require_difficulty_review else []
+    verified_to_review = verified if (
+        policy.require_model_review
+        or policy.require_independent_solution
+        or policy.require_difficulty_review
+    ) else []
     trusted_verified = [] if verified_to_review else verified
     result: dict[tuple[int, int, int], GeneratedQuestion] = {
         task.key: task.question.model_copy(update={"provenance": "verified-contract"})
@@ -370,6 +373,7 @@ def _review_verified_contract(
             [candidate],
             client=client,
             subject=subject,
+            canonical_solutions={task.id: canonical_solution},
         )[task.id]
         if _requires_model_review(candidate, policy)
         else ReviewResult(approved=True)
@@ -453,7 +457,18 @@ def _validate_checkpoint_item(
         raise ValueError(
             f"checkpoint item {task.id} changed immutable authoring context"
         )
-    preserves_scheme = original.authoring_context.get("preserve_mark_scheme") is True
+    selected_response = isinstance(
+        original.authoring_context.get("selected_response_contract"), dict
+    )
+    if selected_response and (
+        candidate.choices != original.choices
+        or candidate.correct_choice != original.correct_choice
+    ):
+        raise ValueError(f"checkpoint item {task.id} changed source-owned choices or key")
+    preserves_scheme = (
+        original.authoring_context.get("preserve_mark_scheme") is True
+        or selected_response
+    )
     if preserves_scheme and (
         candidate.mark_scheme != original.mark_scheme
         or candidate.structured_mark_scheme != original.structured_mark_scheme
@@ -559,6 +574,7 @@ def _generate_item_transaction(
                     [candidate],
                     client=client,
                     subject=subject,
+                    canonical_solutions={task.id: canonical_solution},
                 )[task.id]
                 if _requires_model_review(candidate, policy)
                 else ReviewResult(approved=True)
@@ -637,22 +653,23 @@ def _generate_item_transaction(
     if _seeded_fallback_allowed(provider=provider, failure=failure):
         fallback = task.question
         _validate_release_mark_scheme(fallback)
+        canonical_solution = (
+            _independently_validate_candidate(task, fallback, client=client)
+            if policy.require_independent_solution
+            else None
+        )
         fallback_review = (
             _review_batch(
                 [task],
                 [fallback],
                 client=client,
                 subject=subject,
+                canonical_solutions={task.id: canonical_solution},
             )[task.id]
             if _requires_model_review(fallback, policy)
             else ReviewResult(approved=True)
         )
         if fallback_review.approved and not fallback_review.issues:
-            canonical_solution = (
-                _independently_validate_candidate(task, fallback, client=client)
-                if policy.require_independent_solution
-                else None
-            )
             if policy.require_difficulty_review:
                 if demand_profile is None:
                     raise ValueError(
@@ -851,10 +868,7 @@ def _candidate_question(
         generated_prompt,
         original.command_word,
     )
-    preserve_prompt = (
-        original.authoring_context.get("preserve_prompt") is True
-        or has_selected_response_contract
-    )
+    preserve_prompt = original.authoring_context.get("preserve_prompt") is True
     prompt = original.prompt if preserve_prompt else generated_prompt
     _validate_prompt_length(original, prompt)
     generated_values = raw.get("generated_numeric_values")
@@ -1283,8 +1297,11 @@ def _review_batch(
     *,
     client: AssessmentLLMClient,
     subject: str,
+    canonical_solutions: dict[str, CanonicalSolution | None] | None = None,
 ) -> dict[str, ReviewResult]:
-    raw = client.generate_json(_review_prompt(tasks, candidates, subject=subject))
+    raw = client.generate_json(_review_prompt(
+        tasks, candidates, subject=subject, canonical_solutions=canonical_solutions
+    ))
     reviews = raw.get("reviews")
     if not isinstance(reviews, list):
         raise ValueError("second-pass review response has no reviews")
@@ -1662,6 +1679,7 @@ def _review_prompt(
     candidates: list[GeneratedQuestion],
     *,
     subject: str,
+    canonical_solutions: dict[str, CanonicalSolution | None] | None = None,
 ) -> str:
     data = [
         {
@@ -1682,6 +1700,13 @@ def _review_prompt(
             },
             "source": _task_source(task),
             "question": _review_question_payload(candidate),
+            "independent_solution": (
+                solution.model_dump(mode="json", include={
+                    "answer", "steps", "numeric_results", "solution_source", "verified_scope"
+                })
+                if (solution := (canonical_solutions or {}).get(task.id)) is not None
+                else None
+            ),
         }
         for task, candidate in zip(tasks, candidates, strict=True)
     ]
@@ -1694,6 +1719,11 @@ def _review_prompt(
         "examiner could apply consistently. For multiple-choice items, "
         "`correct_choice` is a zero-based storage index; use the explicit "
         "`correct_choice_label` when judging the keyed option. "
+        "Where supplied, independent_solution contains a separately derived answer "
+        "and working. Check it against the visible source and stem; arithmetic "
+        "agreement alone does not establish unambiguity, plausible distractors, "
+        "or appropriate subject content. Identify the exact conflicting input or "
+        "step if disputing that working. "
         f"{objective_policy_for(subject).guidance()} Confirm that the candidate preserves "
         "the exact artefact, subject matter, and scope of `semantic_task_contract` "
         "while using materially new wording. Review adversarially: try to disprove "

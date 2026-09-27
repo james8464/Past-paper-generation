@@ -78,38 +78,6 @@ PAPER2_PART_PAGE_OFFSETS = {
     13: (0,),
     14: (0,),
 }
-PAPER2_MARK_SCHEME_PAGE_RANGES = {
-    1: (6, 8),
-    2: (9, 11),
-    3: (12, 13),
-    4: (14, 14),
-    5: (15, 15),
-    6: (16, 20),
-    7: (20, 23),
-    8: (24, 25),
-    9: (26, 27),
-    10: (27, 27),
-    11: (28, 29),
-    12: (30, 32),
-    13: (33, 34),
-    14: (35, 35),
-}
-PAPER2_MARK_SCHEME_PART_PAGE_OFFSETS = {
-    1: (0, 0, 2),
-    2: (0, 0, 1, 2),
-    3: (0, 1),
-    4: (0,),
-    5: (0,),
-    6: (0, 0, 1, 3, 4),
-    7: (0, 1, 1, 3),
-    8: (0,),
-    9: (0, 0, 1),
-    10: (0, 0),
-    11: (0, 0, 1, 1),
-    12: (0, 0, 1, 1, 2, 2),
-    13: (0,),
-    14: (0,),
-}
 PAPER1_MARK_SCHEME_PAGE_RANGES = {
     1: (6, 7),
     2: (7, 7),
@@ -1111,46 +1079,11 @@ def _render_paper2_mark_scheme_pages(
     page = 6
     y = _mark_scheme_table_header(pdf, page, blueprint)
     for question in blueprint.questions:
-        start_page, end_page = PAPER2_MARK_SCHEME_PAGE_RANGES[question.number]
-        while page < start_page:
-            pdf.showPage()
-            page += 1
-            y = _mark_scheme_table_header(pdf, page, blueprint)
-        if page != start_page:
-            raise ValueError(
-                f"Question {question.number} missed its mark-scheme start page {start_page}"
-            )
-
-        continuation_index = 0
-        offsets = PAPER2_MARK_SCHEME_PART_PAGE_OFFSETS[question.number]
-        if len(offsets) != len(question.parts):
-            raise ValueError(
-                f"Question {question.number} part count does not match its mark-scheme page plan"
-            )
-        for part_index, part in enumerate(question.parts):
-            desired_page = start_page + offsets[part_index]
-            if desired_page > end_page:
-                raise ValueError(
-                    f"Question {question.number} part page exceeds its mark-scheme range"
-                )
-            while page < desired_page:
-                pdf.showPage()
-                page += 1
-                y = _mark_scheme_table_header(pdf, page, blueprint)
-                if page < desired_page:
-                    y = _draw_mark_scheme_continuation_frame(
-                        pdf,
-                        question,
-                        y,
-                        continuation_index,
-                    )
-                    continuation_index += 1
+        # Match the board's typography and table geometry, not an unrelated
+        # paper's page count. Padding that count repeats already awarded points.
+        for part in question.parts:
             needed = _mark_scheme_part_height(part)
             if y - needed < 70:
-                if page >= end_page:
-                    raise ValueError(
-                        f"Question {question.number} overflowed its mark-scheme page range"
-                    )
                 if part.marking.levels:
                     points_only = part.model_copy(
                         update={
@@ -1191,25 +1124,12 @@ def _render_paper2_mark_scheme_pages(
                 pdf.showPage()
                 page += 1
                 y = _mark_scheme_table_header(pdf, page, blueprint)
-            y = _render_mark_scheme_part(pdf, question, part, y)
-
-        next_start = (
-            PAPER2_MARK_SCHEME_PAGE_RANGES[question.number + 1][0]
-            if question.number < 14
-            else None
-        )
-        while page < end_page:
-            pdf.showPage()
-            page += 1
-            y = _mark_scheme_table_header(pdf, page, blueprint)
-            if page != next_start:
-                y = _draw_mark_scheme_continuation_frame(
-                    pdf,
-                    question,
-                    y,
-                    continuation_index,
+            if y - needed < 70:
+                raise ValueError(
+                    f"Question {question.number}.{part.label} marking guidance "
+                    "exceeds a page; shorten it or separate its levels guidance"
                 )
-                continuation_index += 1
+            y = _render_mark_scheme_part(pdf, question, part, y)
 
 
 def _mark_scheme_part_height(part: QuestionPart) -> float:

@@ -15,13 +15,64 @@ from Backend.Core.paths import REPO_ROOT
 
 REGISTRY_PATH = REPO_ROOT / "Resources" / "layout-master-runtime.json"
 EDEXCEL_SCHEME_PAGINATION = "generated-edexcel-mark-scheme-content-v1"
+AQA_CS_SCHEME_PAGINATION = "generated-aqa-cs-paper2-mark-scheme-content-v1"
 
 
-def runtime_page_count_policy(family: str, role: str, reference_count: int) -> dict:
+def runtime_page_count_policy(
+    family: str, role: str, reference_count: int, *, paper: str | None = None
+) -> dict:
     """Generated-content policy is not an observed reference-count range."""
     if family == "edexcel-economics" and role == "mark-scheme":
         return {"kind": EDEXCEL_SCHEME_PAGINATION}
+    if family == "aqa-computer-science" and role == "mark-scheme" and paper == "2":
+        return {"kind": AQA_CS_SCHEME_PAGINATION}
     return {"kind": "exact", "minimum": reference_count, "maximum": reference_count}
+
+
+def _aqa_cs_printed_credit(
+    pdf_path: Path, assessment_path: Path | None, reference_count: int
+) -> dict:
+    """Content-driven pagination must preserve every published marking statement."""
+    from Backend.Core.assessment_package import _extract_items
+    from Backend.Core.open_credit import printed_credit_points
+
+    if assessment_path is None:
+        raise LayoutConformanceError("Content-driven CS pagination requires its assessment package")
+    package = json.loads(assessment_path.read_text(encoding="utf-8"))
+    if package.get("subject") != "computer_science" or str(package.get("paper")) != "2":
+        raise LayoutConformanceError("Content-driven CS pagination package identity differs")
+    blueprint = package.get("blueprint") or {}
+    items = _extract_items(blueprint, subject="computer_science", paper_number="2")
+    if not items or package.get("items") != items:
+        raise LayoutConformanceError("Content-driven CS pagination requires matching assessed items")
+    expected = []
+    for question in blueprint.get("questions", []):
+        for part in question["parts"]:
+            marking = part["marking"]
+            expected.extend(printed_credit_points(marking))
+            for field in ("accept", "reject", "levels"):
+                expected.extend(marking.get(field, []))
+
+    def normalise(text: str) -> str:
+        return re.sub(r"\s+", "", text)
+
+    with fitz.open(pdf_path) as document:
+        pages = [normalise(page.get_text()) for page in document]
+    printed = "".join(pages)
+    if not expected or any(normalise(point) not in printed for point in expected):
+        raise LayoutConformanceError("Content-driven CS scheme omits or truncates marking guidance")
+    if len(pages) <= 5 or any(
+        not any(normalise(point) in page for point in expected)
+        for page in pages[5:]
+    ):
+        raise LayoutConformanceError("Content-driven CS scheme has blank or unassessed padding")
+    return {
+        "policy": AQA_CS_SCHEME_PAGINATION,
+        "reference_page_count": reference_count,
+        "actual_page_count": len(pages),
+        "checked_parts": len(items),
+        "checked_credit_statements": len(expected),
+    }
 
 
 def _edexcel_printed_credit(
@@ -152,6 +203,17 @@ def conform_generated_documents(
         if not generated_path or not master:
             continue
         policy_payload = master.get("page_count_policy")
+        if policy_payload and policy_payload.get("kind") == AQA_CS_SCHEME_PAGINATION:
+            if subject != "computer_science" or paper != "2" or generated_role != "mark_scheme":
+                raise LayoutConformanceError("CS scheme pagination policy cannot apply to this document")
+            conform_pdf_to_box_template(
+                generated_path, master.get("page_boxes") or master["boxes"],
+                expected_page_count=master["page_count"], strict_page_count=False,
+            )
+            results[generated_role] = _aqa_cs_printed_credit(
+                generated_path, paths.get("assessment_package"), int(master["page_count"])
+            )
+            continue
         if policy_payload and policy_payload.get("kind") == EDEXCEL_SCHEME_PAGINATION:
             if (
                 subject != "economics"

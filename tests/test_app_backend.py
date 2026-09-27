@@ -18,6 +18,14 @@ ROOT = Path(__file__).resolve().parents[1]
 BRIDGE = ROOT / "bridge.py"
 
 
+def test_checkpoint_namespace_changes_when_editorial_rules_change(tmp_path, monkeypatch):
+    request = Namespace(subject="economics_aqa", paper="3", seed=1,
+                        provider="ollama", model="test")
+    current = checkpoint_path_for_job(request, tmp_path)
+    monkeypatch.setattr("Backend.Core.generation.ASSESSMENT_REVIEW_VERSION", "older-rules", raising=False)
+    assert checkpoint_path_for_job(request, tmp_path) != current
+
+
 def run_bridge(
     *args: str,
     cwd: Path | None = None,

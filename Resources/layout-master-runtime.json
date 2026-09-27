@@ -15745,9 +15745,7 @@
       "mark-scheme": {
         "page_count": 35,
         "page_count_policy": {
-          "kind": "exact",
-          "minimum": 35,
-          "maximum": 35
+          "kind": "generated-aqa-cs-paper2-mark-scheme-content-v1"
         },
         "page_boxes": [
           {

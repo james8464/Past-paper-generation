@@ -32,6 +32,35 @@ def _sample_pdf(path: Path) -> None:
     pdf.save()
 
 
+@pytest.mark.parametrize("mutation", [None, "missing-credit", "blank-padding", "missing-package"])
+def test_content_driven_cs_scheme_requires_complete_credit(tmp_path, mutation):
+    import pymupdf
+    from cspapergen.cli import generate_package
+
+    from Backend.Core.layout_conformance import conform_generated_documents
+
+    paths = generate_package(output_dir=tmp_path, seed=26092701, dry_run=True)
+    if mutation == "missing-package":
+        paths.pop("assessment_package")
+    elif mutation:
+        with pymupdf.open(paths["mark_scheme"]) as document:
+            if mutation == "missing-credit":
+                page = next(page for page in document if "Final answer = 24.72 MiB" in page.get_text())
+                for rect in page.search_for("Final answer = 24.72 MiB"):
+                    page.add_redact_annot(rect)
+                page.apply_redactions()
+            else:
+                document.new_page(width=595.32, height=841.92)
+            document.saveIncr()
+    if mutation:
+        with pytest.raises(LayoutConformanceError, match=r"requires|omits|padding"):
+            conform_generated_documents("computer_science", "2", paths)
+    else:
+        result = conform_generated_documents("computer_science", "2", paths)["mark_scheme"]
+        assert result["checked_parts"] > 30
+        assert result["actual_page_count"] < result["reference_page_count"]
+
+
 def test_layout_master_preserves_coordinates_without_reference_text(
     tmp_path: Path,
 ) -> None:

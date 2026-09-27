@@ -5,7 +5,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from Backend.Core.ai_assessment import GenerationPolicy, generate_unique_paper
+from Backend.Core.ai_assessment import (
+    ASSESSMENT_REVIEW_VERSION,
+    GenerationPolicy,
+    generate_unique_paper,
+)
 from Backend.Core.assessment_checkpoints import (
     AssessmentCheckpointStore,
     identity_for_blueprint,
@@ -114,7 +118,10 @@ def run_family_adapter(
                     identity_payload,
                     provider=str(getattr(question_client, "provider", "ollama")),
                     model=str(getattr(question_client, "model", model)),
-                    prompt_version=f"{adapter.prompt_version}:{NUMERIC_INTEGRITY_VERSION}",
+                    prompt_version=(
+                        f"{adapter.prompt_version}:{NUMERIC_INTEGRITY_VERSION}:"
+                        f"{ASSESSMENT_REVIEW_VERSION}"
+                    ),
                 ),
             )
             if checkpoint_path is not None

@@ -63,7 +63,7 @@ def test_mark_scheme_cover_uses_shared_measured_title_grid(tmp_path):
         document.close()
 
 
-def test_paper_2_mark_scheme_matches_measured_page_plan(tmp_path):
+def test_paper_2_mark_scheme_contains_each_question_without_padding(tmp_path):
     import pymupdf as fitz
 
     blueprint = build_paper2_blueprint(load_syllabus(), seed=42)
@@ -73,25 +73,12 @@ def test_paper_2_mark_scheme_matches_measured_page_plan(tmp_path):
 
     document = fitz.open(output)
     try:
-        assert document.page_count == 35
-        starts = {
-            1: 6,
-            2: 9,
-            3: 12,
-            4: 14,
-            5: 15,
-            6: 16,
-            7: 20,
-            8: 24,
-            9: 26,
-            10: 27,
-            11: 28,
-            12: 30,
-            13: 33,
-            14: 35,
-        }
-        for question, page_number in starts.items():
-            assert f"{question:02d}" in document[page_number - 1].get_text()
+        text = " ".join(" ".join(page.get_text().split()) for page in document)
+        for question in blueprint.questions:
+            assert f"{question.number:02d}" in text
+        assert "Indicative content continued" not in text
+        assert text.count("The control unit sends a memory-read signal") == 1
+        assert text.count("Final answer =") >= 1
     finally:
         document.close()
 
@@ -108,12 +95,16 @@ def test_paper_2_mark_scheme_keeps_reference_like_specific_content_density(
 
     document = fitz.open(output)
     try:
-        words = sum(len(page.get_text("words")) for page in document)
-        assert words >= 4_500
-
         text = " ".join(page.get_text() for page in document).casefold()
         assert text.count("apply the guidance specifically") == 0
         assert text.count("credit precise technical terminology") <= 1
+        assert text.count("do not award the same technical point more than once") <= 1
+        for page in list(document)[5:]:
+            for block in page.get_text("blocks"):
+                if block[4].strip().isdigit():
+                    continue
+                assert block[1] >= 30
+                assert block[3] <= 780
     finally:
         document.close()
 

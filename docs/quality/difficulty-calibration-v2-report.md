@@ -4,6 +4,10 @@ Initial report: 30 August 2026. Continued qualification: 31 August 2026.
 
 ## Outcome
 
+Latest continuation: [27 September teacher-feedback and review-gate audit](teacher-feedback-review-2026-09-27.md).
+This restores editorial checks bypassed in recent selected-response changes and
+removes duplicated Paper 2 mark-scheme filler. Full live requalification remains open.
+
 The Difficulty Calibration v2 framework is implemented across all advertised assessment routes. It replaces tariff-only calibration with copyright-safe reference features and an item-level, independently solved difficulty gate. Continued live and manual qualification has exposed unresolved subject-policy and closed-answer validation defects, recorded below; implementation coverage is not evidence that every route is yet correctly calibrated.
 
 ## Implemented evidence

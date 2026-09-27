@@ -18,6 +18,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from Backend.Core.ai_assessment import ASSESSMENT_REVIEW_VERSION
 from Backend.Core.assessment_package import validate_assessment_package
 from Backend.Core.assessment_quality import validate_package_novelty
 from Backend.Core.events import (
@@ -197,6 +198,7 @@ def checkpoint_path_for_job(
     output_dir: Path,
 ) -> Path:
     identity = {
+        "assessment_review_version": ASSESSMENT_REVIEW_VERSION,
         "subject": args.subject,
         "paper": args.paper,
         "seed": args.seed,
@@ -397,7 +399,7 @@ def _write_package_manifest(
             "assessment_schema": "Backend.Core.exam_blueprints:v3",
             "assessment_package_schema": 1,
             "blueprint_version": capability.blueprint_version,
-            "prompt_version": "Backend.Core.ai_assessment:v14-closed-numeric-v2",
+            "prompt_version": f"Backend.Core.ai_assessment:v15-closed-numeric-v2:{ASSESSMENT_REVIEW_VERSION}",
             "validator": "Backend.Core.pdf_validation:v2",
         },
         "outputs": {

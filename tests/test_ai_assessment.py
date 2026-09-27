@@ -17,8 +17,8 @@ from Backend.Core.ai_assessment import (
     _normalise_multiple_choice_answer,
     _repair_prompt,
     _required_awarded_entries,
-    _review_prompt,
     _requires_model_review,
+    _review_prompt,
     _seeded_fallback_allowed,
     _Task,
     _task_source,
@@ -386,7 +386,8 @@ def test_candidate_question_preserves_selected_response_choices_owned_by_contrac
 
     assert candidate.choices == choices
     assert candidate.correct_choice == 0
-    assert candidate.prompt == question.prompt
+    assert candidate.prompt != question.prompt
+    assert "quantity of product Y forgone" in candidate.prompt
     assert candidate.mark_scheme == question.mark_scheme
     assert candidate.structured_mark_scheme == question.structured_mark_scheme
     assert solve_selected_response(candidate.model_dump(mode="json"))["answer"] == choices[0]
@@ -1109,7 +1110,13 @@ def test_checkpointed_item_must_still_meet_release_quality_gate() -> None:
         _validate_checkpoint_item(task, question)
 
 
-def test_checkpoint_cannot_replace_a_locked_verified_mark_scheme() -> None:
+@pytest.mark.parametrize("context", [
+    {"preserve_mark_scheme": True},
+    {"selected_response_contract": selected_response_contract(
+        "index_percentage_increase", inputs={"base": 176, "rate": 15}
+    )},
+])
+def test_checkpoint_cannot_replace_a_locked_verified_mark_scheme(context) -> None:
     verified = MarkSchemePoint(
         text="Credit the verified economic relationship.",
         marks=1,
@@ -1126,7 +1133,7 @@ def test_checkpoint_cannot_replace_a_locked_verified_mark_scheme() -> None:
         mark_scheme=[verified.text],
         structured_mark_scheme=[verified],
         assessment_objectives={"AO1": 1},
-        authoring_context={"preserve_mark_scheme": True},
+        authoring_context=context,
     )
     task = _Task(
         key=(0, 0, 0),
@@ -1418,7 +1425,7 @@ def test_verified_contract_item_bypasses_model_generation() -> None:
         client=Client(),
         subject="accounting",
         seed=1,
-        policy=GenerationPolicy(),
+        policy=GenerationPolicy(require_model_review=False),
         progress=None,
         checkpoint_store=Checkpoint(),  # type: ignore[arg-type]
     )
@@ -1534,6 +1541,33 @@ def test_live_verified_contract_is_solved_and_difficulty_reviewed(
     assert reviewed.provenance == "verified-contract-reviewed"
     assert reviewed.authoring_context["difficulty_evidence"]["approved"] is True
     assert checkpoint.saved == reviewed
+
+
+def test_locked_contract_cannot_skip_editor_rejection_when_difficulty_is_disabled() -> None:
+    point = MarkSchemePoint(text="Correct economic answer.", marks=1, assessment_objective="AO1")
+    question = GeneratedQuestion(
+        rule_id="q1", number="1", marks=1, kind="multiple_choice",
+        command_word="Select", topic_id="economics", prompt="Select the outcome.",
+        mark_scheme=[point.text], structured_mark_scheme=[point],
+        choices=[point.text, "Other", "Third", "Fourth"], correct_choice=0,
+        assessment_objectives={"AO1": 1},
+        authoring_context={"preserve_prompt": True, "preserve_mark_scheme": True},
+    )
+    task = _Task(
+        key=(0, 0, 0), question=question,
+        option=GeneratedOption(id="case", title="Case", questions=[question]),
+        topic=type("Topic", (), {"title": "Economics", "points": []})(),
+    )
+
+    class Editor:
+        def generate_json(self, prompt):
+            assert "REVIEW_DATA=" in prompt
+            return {"reviews": [{"id": task.id, "approved": False,
+                                 "ambiguity_issues": ["Two options are correct."]}]}
+
+    with pytest.raises(RuntimeError, match="Two options are correct"):
+        _generate_batch([task], client=Editor(), subject="Economics", seed=1,
+                        policy=GenerationPolicy(), progress=None)
 
 
 def test_rejected_second_item_does_not_regenerate_accepted_first_item() -> None:
@@ -1794,15 +1828,25 @@ def test_review_prompt_labels_multiple_choice_keys_without_index_ambiguity() -> 
         topic=type("Topic", (), {"title": "Economics", "points": []})(),
     )
 
-    prompt = _review_prompt([task], [question], subject="Economics")
+    solution = CanonicalSolution(item_id="q1", answer="Fourth", steps=["Independent derivation"],
+                                 solution_source="deterministic", verified_scope="selected-response")
+    prompt = _review_prompt([task], [question], subject="Economics",
+                            canonical_solutions={task.id: solution})
 
     assert '"correct_choice_label": "D: Fourth"' in prompt
     assert '"correct_choice_index_convention": "zero-based"' in prompt
     assert '"protected_numeric_tokens": []' in prompt
     assert "do not compare the candidate against withheld draft prose" in prompt
+    import json
+    payload = json.loads(prompt.split("REVIEW_DATA=", 1)[1])[0]
+    assert payload["independent_solution"]["answer"] == "Fourth"
+    assert payload["independent_solution"]["steps"] == ["Independent derivation"]
 
 
-def test_deterministic_selected_response_uses_the_independent_solver_review_path() -> None:
+@pytest.mark.parametrize("contract", [{}, selected_response_contract(
+    "index_percentage_increase", inputs={"base": 176, "rate": 15}
+)])
+def test_selected_response_still_requires_editorial_review(contract) -> None:
     question = GeneratedQuestion(
         rule_id="q1",
         number="1",
@@ -1815,10 +1859,11 @@ def test_deterministic_selected_response_uses_the_independent_solver_review_path
         choices=["12", "10", "8", "6"],
         correct_choice=0,
         assessment_objectives={"AO1": 1},
-        authoring_context={"selected_response_contract": {}},
+        authoring_context={"selected_response_contract": contract},
     )
 
-    assert not _requires_model_review(question, GenerationPolicy())
+    assert _requires_model_review(question, GenerationPolicy())
+    assert not _requires_model_review(question, GenerationPolicy(require_model_review=False))
     assert _requires_model_review(
         question.model_copy(update={"authoring_context": {}}), GenerationPolicy()
     )
