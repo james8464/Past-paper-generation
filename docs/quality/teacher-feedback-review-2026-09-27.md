@@ -145,3 +145,33 @@ Full live-paper qualification, broader task variety, remaining layout fidelity,
 teacher review and anonymised student calibration remain release limitations.
 Do not describe the app as examiner-equivalent, visually identical, App Store
 approved or fully finalised on the strength of automated checks alone.
+
+### Clean-runner and live follow-up
+
+The first PR check exposed 13 failures hidden by the development machine:
+missing ignored reference PDFs, Linux font substitution in Mac typography
+checks, and MLX handler tests assuming Apple hardware. The full PDF/backend job
+now targets the supported macOS platform, without removing its assertions.
+Reference-extraction unit tests use generated offline PDFs to exercise the real
+extraction paths; these fixtures are not real-paper qualification evidence.
+
+The live data-structures bank (effective seed `26092731`, `gemma4:12b`) failed
+after 861.46 seconds at Q4.2 independent route reconciliation; no output package
+was published. The saved graph has the unique shortest route A → C → F (two
+edges), and the saved scheme is correct. The failed solver response was not
+retained, so its exact cause cannot be established retrospectively. Offline
+replay did expose a separate false rejection of equivalent arrow notation;
+slot-specific ordered-route matching addresses that without allowing wrong,
+missing, extra or reordered vertices. The failed live run remains unqualified.
+
+The full 18-paper preview comparison reported 70.6% aggregate structural/visual
+similarity (question papers 68.6–79.2%, schemes 61.1–75.2%). These diagnostic
+metrics and representative page inspection show remaining differences, not
+visual identity. Detailed current release gates are tracked in GitHub issues
+#4 (live matrix), #5 (student calibration) and #8 (editorial/print release gates).
+
+Final second-batch verification: **1,914 backend tests passed, 2 skipped**, five
+existing SWIG warnings (73.90 seconds). The independent reviewer passed 210
+targeted tests and reported no findings. The first-batch GitHub macOS job passed
+its native tests and App Store preflight; the final commit must independently
+pass both required hosted checks before merge. Graphify and lint were refreshed.

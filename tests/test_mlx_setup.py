@@ -4,6 +4,7 @@ import json
 import os
 import signal
 from argparse import Namespace
+from functools import partial
 from pathlib import Path
 
 import pytest
@@ -20,6 +21,17 @@ from Backend.Core.mlx_setup import (
     resolve_local_mlx_model,
     validate_mlx_setup_environment,
 )
+
+
+@pytest.fixture
+def supported_mlx_environment(monkeypatch):
+    # Handler behavior must not depend on the CI host's CPU, Python or disk.
+    # Keep the real validation, with explicit supported environment inputs.
+    monkeypatch.setattr(
+        "Backend.Core.mlx_setup.validate_mlx_setup_environment",
+        partial(validate_mlx_setup_environment, python_version=(3, 12),
+                machine="arm64", free_bytes=20 * 1024**3),
+    )
 
 
 def test_missing_direct_runtime_is_installed_before_model_is_prepared() -> None:
@@ -148,6 +160,7 @@ def test_cli_accepts_guided_mlx_setup_command() -> None:
 def test_setup_handler_reports_success_without_terminal_instructions(
     monkeypatch,
     capsys,
+    supported_mlx_environment,
 ) -> None:
     monkeypatch.setattr("Backend.Core.mlx_setup.mlx_runtime_available", lambda: True)
     monkeypatch.setattr("Backend.Core.mlx_setup.load_mlx_model", lambda _model: None)
@@ -161,7 +174,7 @@ def test_setup_handler_reports_success_without_terminal_instructions(
     assert all("pip" not in event.get("message", "").lower() for event in events)
 
 
-def test_setup_handler_reports_plain_recovery_error(monkeypatch, capsys) -> None:
+def test_setup_handler_reports_plain_recovery_error(monkeypatch, capsys, supported_mlx_environment) -> None:
     def fail_to_load(_model: str) -> None:
         raise MLXSetupError("The model could not be prepared. Try Setup Again.")
 

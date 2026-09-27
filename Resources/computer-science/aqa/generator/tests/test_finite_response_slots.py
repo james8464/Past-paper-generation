@@ -285,3 +285,96 @@ def test_solver_sequence_slots_do_not_disclose_computed_length(
         ),
         part.marking.model_dump(),
     ).passed
+
+
+@pytest.mark.parametrize(
+    "route",
+    ["A,C,F", "A, C, F", "[A,C,F]", '["A", "C", "F"]',
+     "A -> C -> F", "A → C → F", "A-C-F"],
+)
+@pytest.mark.parametrize("same_marking_format", [False, True])
+def test_graph_route_accepts_equivalent_ordered_vertex_notation(route, same_marking_format):
+    style = next(s for s in QUESTION_STYLES if s.id == "data_structures_graph")
+    question = build_question(style, 1, style.totals[0], random.Random(7))
+    part = question.parts[1]
+
+    class Client:
+        def generate_json(self, _prompt):
+            return complete_solver_response({
+                "answer": {"route-in-order": route, "edges": "2"},
+                "mark_points": {
+                    "route-in-order": route if same_marking_format else "A,C,F",
+                    "edges": "2",
+                },
+            })
+
+    solution = IndependentSolver(Client()).solve(_part_solver_item(question, part), [])
+    assert reconcile_solution(solution, part.marking.model_dump()).passed
+
+
+@pytest.mark.parametrize(
+    "route,edges",
+    [("A,F", "2"), ("A,C,F,E", "2"), ("F,C,A", "2"),
+     ("A,F,C", "2"), ("A,B,F", "2"), ("A,B,E,F", "3"),
+     ("a,c,f", "2"), ("A,CC,F", "2"), ("A,C,C,F", "2"),
+     ("A,C,F", "3"), ("A,C,F", "-2"), ("A,C,F", "2.1")],
+)
+def test_graph_route_preserves_vertex_identity_order_and_edge_count(route, edges):
+    style = next(s for s in QUESTION_STYLES if s.id == "data_structures_graph")
+    question = build_question(style, 1, style.totals[0], random.Random(7))
+    part = question.parts[1]
+    solution = solve(question, part, {"route-in-order": route, "edges": edges})
+    assert not reconcile_solution(solution, part.marking.model_dump()).passed
+
+
+def test_graph_route_comparison_does_not_normalise_other_sequence_slots():
+    style = next(s for s in QUESTION_STYLES if s.id == "functional_programming")
+    question = build_question(style, 1, style.totals[0], random.Random(7))
+    part = question.parts[0]
+    solution = solve(question, part, {"output-in-order": "16-36-25"})
+    assert not reconcile_solution(solution, part.marking.model_dump()).passed
+
+
+@pytest.mark.parametrize(
+    "route",
+    ["A,,C,F", "A-->C->F", "[A,C,F", '[["A", "C", "F"]]',
+     '["A", null, "F"]', "A,C,F or A,B,F", "A,C,F,", "[]"],
+)
+def test_graph_route_rejects_malformed_or_ambiguous_notation(route):
+    style = next(s for s in QUESTION_STYLES if s.id == "data_structures_graph")
+    question = build_question(style, 1, style.totals[0], random.Random(7))
+    with pytest.raises(ValueError, match="answer and mark_points contradict"):
+        solve(question, question.parts[1], {"route-in-order": route, "edges": "2"})
+
+
+@pytest.mark.parametrize(
+    "marking",
+    [{"route-in-order": "A -> B -> F", "edges": "2"},
+     {"route-in-order": "A -> C -> F", "edges": "3"}],
+)
+def test_graph_route_still_rejects_contradictory_solver_mark_points(marking):
+    style = next(s for s in QUESTION_STYLES if s.id == "data_structures_graph")
+    question = build_question(style, 1, style.totals[0], random.Random(7))
+
+    class Client:
+        def generate_json(self, _prompt):
+            return complete_solver_response({
+                "answer": {"route-in-order": "A,C,F", "edges": "2"},
+                "mark_points": marking,
+            })
+
+    with pytest.raises(ValueError, match="answer and mark_points contradict"):
+        IndependentSolver(Client()).solve(_part_solver_item(question, question.parts[1]), [])
+
+
+@pytest.mark.parametrize("route,passed", [("A → C → F", True), ("A → B → F", False)])
+def test_graph_route_alternatives_use_the_same_ordered_vertex_comparison(route, passed):
+    style = next(s for s in QUESTION_STYLES if s.id == "data_structures_graph")
+    question = build_question(style, 1, style.totals[0], random.Random(7))
+    part = question.parts[1]
+    solution = solve(question, part, {"route-in-order": "A,C,F", "edges": "2"})
+    solution = solution.model_copy(update={
+        "credit_policy_version": "legacy-unverified",
+        "alternatives": [f"route-in-order: {route}"],
+    })
+    assert reconcile_solution(solution, part.marking.model_dump()).passed is passed

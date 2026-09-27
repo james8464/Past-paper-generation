@@ -170,8 +170,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/independent_solver.py": {
-    "mtime": 1789703776.1603005,
-    "ast_hash": "a0ffc080415a0f07e656bbd733f6a2e2",
+    "mtime": 1790544408.6496198,
+    "ast_hash": "9bc0cd4ab75f0d6de93ecca272671bd7",
     "semantic_hash": ""
   },
   "Backend/Core/layout_conformance.py": {
@@ -645,8 +645,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_finite_response_slots.py": {
-    "mtime": 1788288352.985411,
-    "ast_hash": "0f5983c66282c6ab93d2653772d52811",
+    "mtime": 1790544448.5585415,
+    "ast_hash": "25294279632d59d4096230f4600b545b",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_mark_scheme.py": {
@@ -1450,8 +1450,8 @@
     "semantic_hash": ""
   },
   "tests/test_computer_science_objectives.py": {
-    "mtime": 1790541488.3172297,
-    "ast_hash": "bff90ae6ff27aa336f0d13dbc7ac62ce",
+    "mtime": 1790544537.4983752,
+    "ast_hash": "cd6240598c65f9f864c6d478598af1cd",
     "semantic_hash": ""
   },
   "tests/test_computer_science_subject.py": {
@@ -1575,8 +1575,8 @@
     "semantic_hash": ""
   },
   "tests/test_mlx_setup.py": {
-    "mtime": 1787755464.871016,
-    "ast_hash": "a451cd7233e289a0fd62f38387fb9419",
+    "mtime": 1790544440.7670965,
+    "ast_hash": "4f6e773be3e2c8bb486e52e4f12e9e8b",
     "semantic_hash": ""
   },
   "tests/test_model_recommendations.py": {
@@ -1695,8 +1695,8 @@
     "semantic_hash": ""
   },
   "tests/test_source_candidate_paths.py": {
-    "mtime": 1788895925.7423213,
-    "ast_hash": "94d028dc81fc994437a4cd411e74b966",
+    "mtime": 1790544537.4966247,
+    "ast_hash": "9193c85f4017f6523a0895d0b8618ebe",
     "semantic_hash": ""
   },
   "tests/test_subject_plugins.py": {
@@ -1835,8 +1835,8 @@
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1787772724.2843082,
-    "ast_hash": "129f91b67ea6fcb0f61d76867db242e7",
+    "mtime": 1790544362.8180735,
+    "ast_hash": "5c0b7cf55297e2ed0fb4e9b5714318f3",
     "semantic_hash": ""
   },
   "AGENTS.md": {
@@ -2190,8 +2190,8 @@
     "semantic_hash": ""
   },
   "docs/quality/teacher-feedback-review-2026-09-27.md": {
-    "mtime": 1790543580.7229164,
-    "ast_hash": "426b60fb2d1e220fad15494cf869c47c",
+    "mtime": 1790544406.9362228,
+    "ast_hash": "aa879b7d73d145decb18d582d5e773e2",
     "semantic_hash": ""
   },
   "Backend/Core/subject_contracts.py": {
