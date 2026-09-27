@@ -61,6 +61,94 @@ def test_content_driven_cs_scheme_requires_complete_credit(tmp_path, mutation):
         assert result["actual_page_count"] < result["reference_page_count"]
 
 
+@pytest.mark.parametrize(
+    "mutation",
+    [None, "missing-short-credit", "embedded-short-credit", "signed-short-credit",
+     "decimal-short-credit", "fraction-short-credit", "spaced-sign-short-credit", "expression-short-credit",
+     "valid-signed-answer", "valid-decimal-answer", "valid-fraction-answer",
+     "duplicate-row", "duplicate-page", "wrong-question", "duplicate-levels"],
+)
+def test_cs_credit_belongs_to_one_assessed_row_with_valid_levels_continuation(tmp_path, mutation):
+    import pymupdf
+
+    from Backend.Core.assessment_package import _extract_items
+    from Backend.Core.layout_conformance import _aqa_cs_printed_credit
+
+    # Two assessed parts deliberately share a short answer. Global text presence
+    # cannot establish that both parts actually printed their credit.
+    blueprint = {"questions": [{"number": 11, "parts": [
+        {"label": "1", "prompt": "Give the first result.", "marks": 1,
+         "marking": {"ao": "AO2", "points": ["8;"]}},
+        {"label": "2", "prompt": "Explain the second result.", "marks": 3,
+         "marking": {"ao": "AO2", "points": ["8;"],
+                     "accept": ["Equivalent working."],
+                     "levels": ["Level 1: a justified result."]}},
+    ]}]}
+    wrong_numbers = {
+        "embedded-short-credit": "18;",
+        "signed-short-credit": "-8;",
+        "decimal-short-credit": "0.8;",
+        "fraction-short-credit": "1/8;",
+        "spaced-sign-short-credit": "- 8;",
+        "expression-short-credit": "2 + 8;",
+    }
+    valid_numbers = {
+        "valid-signed-answer": "-8;",
+        "valid-decimal-answer": "0.8;",
+        "valid-fraction-answer": "1/8;",
+    }
+    if mutation in wrong_numbers:
+        blueprint["questions"][0]["parts"][1]["marking"]["accept"] = [wrong_numbers[mutation]]
+    elif mutation in valid_numbers:
+        blueprint["questions"][0]["parts"][1]["marking"]["points"] = [valid_numbers[mutation]]
+    package = tmp_path / "assessment.json"
+    package.write_text(json.dumps({
+        "subject": "computer_science", "paper": "2", "blueprint": blueprint,
+        "items": _extract_items(blueprint, subject="computer_science", paper_number="2"),
+    }), encoding="utf-8")
+    path = tmp_path / "scheme.pdf"
+    pdf = canvas.Canvas(str(path), pagesize=(595.32, 841.92))
+    for page in range(5):
+        pdf.drawString(52, 710, f"General guidance {page + 1}")
+        pdf.showPage()
+
+    def row(question, part, y, lines, *, continuation=False):
+        pdf.setFont("Helvetica", 11)
+        pdf.drawString(52, y, question)
+        pdf.drawString(86, y, part)
+        pdf.drawString(125, y, "Extended response levels" if continuation else "All marks AO2")
+        for index, line in enumerate(lines, 1):
+            pdf.drawString(125, y - 15 * index, line)
+
+    row("11", "1", 672, ["8;"])
+    second_lines = ["A. Equivalent", "working."]
+    if mutation in wrong_numbers:
+        second_lines = ["A. " + wrong_numbers[mutation]]
+    elif mutation != "missing-short-credit":
+        second_lines.insert(0, valid_numbers.get(mutation, "8;"))
+    row("12" if mutation == "wrong-question" else "11", "2", 580, second_lines)
+    if mutation == "duplicate-row":
+        row("11", "1", 450, ["8;"])
+    pdf.showPage()
+    row("11", "", 672, ["Level 1: a justified result."], continuation=True)
+    if mutation == "duplicate-levels":
+        row("11", "", 580, ["Level 1: a justified result."], continuation=True)
+    pdf.save()
+    if mutation == "duplicate-page":
+        with pymupdf.open(path) as document:
+            document.fullcopy_page(5)
+            document.saveIncr()
+
+    if mutation and mutation not in valid_numbers:
+        with pytest.raises(LayoutConformanceError, match=r"omits|duplicate|unassessed|continuation"):
+            _aqa_cs_printed_credit(path, package, reference_count=24)
+    else:
+        result = _aqa_cs_printed_credit(path, package, reference_count=24)
+        assert result["checked_parts"] == 2
+        assert result["checked_credit_statements"] == 4
+        assert result["actual_page_count"] == 7
+
+
 def test_layout_master_preserves_coordinates_without_reference_text(
     tmp_path: Path,
 ) -> None:

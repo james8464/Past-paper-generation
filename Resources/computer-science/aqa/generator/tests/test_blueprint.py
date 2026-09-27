@@ -21,6 +21,7 @@ from cspapergen.question_bank import QUESTION_STYLES, STYLE_IDS, build_question
 from cspapergen.syllabus import load_syllabus
 
 from Backend.Core.independent_solver import IndependentSolver
+from Backend.Core.subjects.computer_science import truth_table
 from tests.support.solver_responses import complete_solver_response
 
 
@@ -31,6 +32,28 @@ def test_blueprint_is_deterministic_for_seed():
     second = build_paper2_blueprint(syllabus, seed=123)
 
     assert first.model_dump() == second.model_dump()
+
+
+def test_four_mark_boolean_tasks_have_equivalent_explicit_working():
+    style = next(style for style in QUESTION_STYLES if style.id == "boolean_simplification")
+    expressions = set()
+    answers = set()
+    for seed in range(30):
+        question = build_question(style, number=13, total=4, rng=random.Random(seed))
+        expression = question.stimulus.code
+        expressions.add(expression)
+        assert set(re.findall(r"[A-Z]", expression)) == {"A", "B", "C"}
+        points = question.parts[0].marking.points
+        assert len(points) == 4
+        steps = [point.split(" gives ", 1)[1].rstrip(";") for point in points[:3]]
+        answer = points[3].removeprefix("Final answer is ").rstrip(";")
+        answers.add(answer)
+        assert len(set([expression, *steps, answer])) == 5
+        expected = truth_table(expression, variables=("A", "B", "C"))
+        for step in [*steps, answer]:
+            assert truth_table(step, variables=("A", "B", "C")) == expected
+    assert len(expressions) >= 3
+    assert len(answers) >= 3
 
 
 def test_all_supported_assessments_keep_code_inside_the_renderable_width() -> None:

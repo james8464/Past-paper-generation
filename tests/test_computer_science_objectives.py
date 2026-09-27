@@ -475,9 +475,33 @@ def test_cs_candidate_paths_count_selected_options_only():
     assert "insufficient topic-specific" in audit["reference_scope"]
 
 
-def test_discounted_2025_item_is_not_reference_demand_evidence():
+@pytest.mark.parametrize("mutation", [None, "missing-item", "changed-discount-tariff"])
+def test_discounted_2025_item_is_not_reference_demand_evidence(tmp_path, mutation):
+    from reportlab.pdfgen import canvas
+
     from tools.reference_demand_profiles import _pdf_text, extract_reference_items
-    path = ROOT / "Reference Corpus/a-level/aqa/computer-science/computer-science-7517/question-papers/AQA-75171-QP-JUN25.PDF"
+
+    # Original synthetic questions exercise the edition-bound discount rule;
+    # the copyrighted reference PDF is intentionally not a CI dependency.
+    marks = [3] * 22 + [1] + [2] * 15 + [3]
+    if mutation == "missing-item":
+        marks.pop()
+    elif mutation == "changed-discount-tariff":
+        marks[22], marks[23] = 2, 1  # Preserve 100 marks, corrupt the discounted leaf.
+    path = tmp_path / "AQA-75171-QP-JUN25.PDF"
+    pdf = canvas.Canvas(str(path))
+    for offset in range(0, len(marks), 13):
+        text = pdf.beginText(40, 800)
+        for index, tariff in enumerate(marks[offset:offset + 13], offset + 1):
+            text.textLine(f"{index} Define a computing term. [{tariff} marks]")
+        pdf.drawText(text)
+        pdf.showPage()
+    pdf.save()
+    if mutation:
+        with pytest.raises(ValueError, match="discounted AQA item inventory"):
+            extract_reference_items(_pdf_text(path), board="aqa", family_id="aqa/computer-science",
+                                    paper_id="1", source_name=path.name)
+        return
     items = extract_reference_items(_pdf_text(path), board="aqa", family_id="aqa/computer-science",
                                     paper_id="1", source_name=path.name)
     assert len(items) == 39 and sum(item["marks"] for item in items) == 100

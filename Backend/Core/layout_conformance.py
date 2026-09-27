@@ -45,33 +45,110 @@ def _aqa_cs_printed_credit(
     items = _extract_items(blueprint, subject="computer_science", paper_number="2")
     if not items or package.get("items") != items:
         raise LayoutConformanceError("Content-driven CS pagination requires matching assessed items")
-    expected = []
+    expected = {}
+    levels = {}
     for question in blueprint.get("questions", []):
         for part in question["parts"]:
+            identifier = (f"{int(question['number']):02d}", str(part["label"]))
+            if identifier in expected:
+                raise LayoutConformanceError("Content-driven CS package has duplicate assessed parts")
             marking = part["marking"]
-            expected.extend(printed_credit_points(marking))
-            for field in ("accept", "reject", "levels"):
-                expected.extend(marking.get(field, []))
+            expected[identifier] = [
+                *printed_credit_points(marking),
+                *marking.get("accept", []),
+                *marking.get("reject", []),
+            ]
+            levels[identifier] = marking.get("levels", [])
+    if len(expected) != len(items):
+        raise LayoutConformanceError("Content-driven CS package omits assessed parts")
 
     def normalise(text: str) -> str:
         return re.sub(r"\s+", "", text)
 
+    def contains_credit(text: str, point: str) -> bool:
+        # Keep the extracted word boundaries: removing all whitespace lets
+        # "8;" match "18;". Optional internal spacing still accommodates line
+        # wrapping and separately drawn mathematical symbols in the PDF.
+        characters = normalise(point)
+        if not characters:
+            return False
+        if re.fullmatch(r"[+\-−]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+\-]?\d+)?(?:/[+\-]?\d+(?:\.\d*)?)?[;.]?", characters):
+            # A bare numerical answer is a whole printed statement, not a
+            # suffix of a signed value, decimal, fraction or expression. Keep
+            # physical lines so a preceding row heading does not become part
+            # of the number, while A./R. prefixes remain valid guidance.
+            return any(
+                normalise(re.sub(r"^[AR]\.\s*", "", line.strip())) == characters
+                for line in text.splitlines()
+            )
+        pattern = r"(?<!\w)" + r"\s*".join(map(re.escape, characters)) + r"(?!\w)"
+        return re.search(pattern, text) is not None
+
+    printed_rows = {}
+    continued_levels = {}
+    previous = None
+    previous_page = None
     with fitz.open(pdf_path) as document:
-        pages = [normalise(page.get_text()) for page in document]
-    printed = "".join(pages)
-    if not expected or any(normalise(point) not in printed for point in expected):
-        raise LayoutConformanceError("Content-driven CS scheme omits or truncates marking guidance")
-    if len(pages) <= 5 or any(
-        not any(normalise(point) in page for point in expected)
-        for page in pages[5:]
-    ):
-        raise LayoutConformanceError("Content-driven CS scheme has blank or unassessed padding")
+        actual_count = len(document)
+        # The five front-matter pages are followed by the renderer's Qu / Pt /
+        # guidance columns. Use those columns, not standalone digits in answers
+        # or page furniture, to recover the owner of each credit statement.
+        for page_number in range(5, actual_count):
+            page = document[page_number]
+            words = page.get_text("words", sort=False)
+            anchors = sorted(
+                (word for word in words if 45 <= word[0] < 73
+                 and re.fullmatch(r"\d{2}", word[4])),
+                key=lambda word: word[1],
+            )
+            if not anchors:
+                raise LayoutConformanceError("Content-driven CS scheme has blank or unassessed padding")
+            for index, anchor in enumerate(anchors):
+                bottom = anchors[index + 1][1] - 2 if index + 1 < len(anchors) else page.rect.height - 65
+                part = "".join(word[4] for word in words
+                               if 73 <= word[0] < 106 and abs(word[1] - anchor[1]) < 2)
+                guidance_lines = {}
+                for word in words:
+                    if 106 <= word[0] < 500 and anchor[1] - 2 <= word[1] < bottom:
+                        guidance_lines.setdefault(word[5:7], []).append(word[4])
+                text = "\n".join(" ".join(line) for line in guidance_lines.values())
+                identifier = (anchor[4], part)
+                if not part:
+                    if (index != 0 or previous is None or previous_page != page_number - 1
+                            or anchor[4] != previous[0] or not levels[previous]
+                            or previous in continued_levels
+                            or not text.startswith("Extended response levels")):
+                        raise LayoutConformanceError("Content-driven CS scheme has invalid or duplicate continuation")
+                    identifier = previous
+                    continued_levels[identifier] = text
+                    row_points = levels[identifier]
+                else:
+                    if identifier not in expected:
+                        raise LayoutConformanceError("Content-driven CS scheme has an unassessed question row")
+                    if identifier in printed_rows:
+                        raise LayoutConformanceError("Content-driven CS scheme has duplicate question rows or pages")
+                    printed_rows[identifier] = text
+                    row_points = [*expected[identifier], *levels[identifier]]
+                if not any(contains_credit(text, point) for point in row_points):
+                    raise LayoutConformanceError("Content-driven CS scheme has blank or unassessed padding")
+                previous, previous_page = identifier, page_number
+    for identifier, points in expected.items():
+        printed = printed_rows.get(identifier, "")
+        level_text = continued_levels.get(identifier, printed)
+        if (any(not contains_credit(printed, point) for point in points)
+                or any(not contains_credit(level_text, point) for point in levels[identifier])
+                or identifier not in printed_rows):
+            raise LayoutConformanceError(
+                f"Content-driven CS scheme omits or truncates marking guidance for {'.'.join(identifier)}"
+            )
+        if identifier in continued_levels and any(contains_credit(printed, point) for point in levels[identifier]):
+            raise LayoutConformanceError("Content-driven CS scheme has duplicate levels guidance")
     return {
         "policy": AQA_CS_SCHEME_PAGINATION,
         "reference_page_count": reference_count,
-        "actual_page_count": len(pages),
+        "actual_page_count": actual_count,
         "checked_parts": len(items),
-        "checked_credit_statements": len(expected),
+        "checked_credit_statements": sum(len(expected[key]) + len(levels[key]) for key in expected),
     }
 
 

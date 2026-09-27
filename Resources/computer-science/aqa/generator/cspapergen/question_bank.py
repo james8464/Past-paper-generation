@@ -640,13 +640,14 @@ def _boolean_simplification_question(
     total: int,
     rng: random.Random,
 ) -> Question:
-    expression, answer = rng.choice(
+    extra_term, answer = rng.choice(
         [
-            ("A + A·B", "A"),
-            ("A·B + A·B̅", "A"),
-            ("(A + B)·(A + B̅)", "A"),
+            ("A̅·B·C", "A + B·C"),
+            ("A̅·B", "A + B"),
+            ("B̅·C", "A + C"),
         ]
     )
+    expression = f"(A + B)·(A + C) + {extra_term}"
     stimulus = Stimulus(kind="code", title="Expression", code=expression)
     parts = _parts(
         [
@@ -655,9 +656,9 @@ def _boolean_simplification_question(
                 4,
                 "Using the rules of Boolean algebra, simplify the expression as far as possible. Show each step.",
                 [
-                    "A valid Boolean identity is selected;",
-                    "The identity is applied correctly;",
-                    "Intermediate working is logically equivalent to the original expression;",
+                    f"1 mark: distributivity gives A·A + A·C + A·B + B·C + {extra_term};",
+                    f"1 mark: idempotence gives A + A·C + A·B + B·C + {extra_term};",
+                    f"1 mark: absorption gives A + B·C + {extra_term};",
                     f"Final answer is {answer};",
                 ],
                 "",

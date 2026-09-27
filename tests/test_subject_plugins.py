@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -10,6 +12,64 @@ from Backend.Core.subject_plugins import (
     discover_subject_plugin,
     subject_plugin_ids,
 )
+
+
+@pytest.mark.parametrize("registry_first", [False, True])
+@pytest.mark.parametrize(
+    ("module", "class_name", "identifier"),
+    [
+        ("biology", "BiologyPlugin", "biology"),
+        ("chemistry", "ChemistryPlugin", "chemistry"),
+        ("computer_science", "ComputerSciencePlugin", "computer-science"),
+        ("essay", "EssaySubjectPlugin", "history"),
+        ("mathematics", "MathematicsPlugin", "mathematics"),
+        ("mathematics", "FurtherMathematicsPlugin", "further-mathematics"),
+        ("physics", "PhysicsPlugin", "physics"),
+    ],
+)
+def test_subject_import_order_preserves_discovery(
+    module: str, class_name: str, identifier: str, registry_first: bool
+) -> None:
+    # A clean interpreter prevents pytest's collection order from hiding cycles.
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            """
+import importlib
+import sys
+
+module, class_name, identifier, registry_first = sys.argv[1:]
+if registry_first == "True":
+    importlib.import_module("Backend.Core.subject_plugins")
+subject = importlib.import_module(f"Backend.Core.subjects.{module}")
+from Backend.Core.subject_plugins import (
+    SubjectPlugin, SubjectValidation, discover_subject_plugin, subject_plugin_ids,
+)
+
+plugin = discover_subject_plugin(identifier)
+assert isinstance(plugin, getattr(subject, class_name))
+assert isinstance(plugin, SubjectPlugin)
+assert isinstance(plugin.validate_item(None), SubjectValidation)
+assert plugin.validate_item(None).passed is False
+assert {
+    "accounting", "biology", "business", "chemistry", "computer-science",
+    "economics", "english-literature", "further-mathematics", "geography",
+    "history", "mathematics", "physics", "psychology", "sociology",
+} <= set(subject_plugin_ids())
+""",
+            module,
+            class_name,
+            identifier,
+            str(registry_first),
+        ],
+        cwd=Path(__file__).resolve().parents[1],
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
 
 
 def test_current_subject_and_board_plugins_are_discoverable() -> None:

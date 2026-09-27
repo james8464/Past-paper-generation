@@ -1,8 +1,88 @@
+import hashlib
 import importlib
+from dataclasses import replace
+
+import pytest
+from reportlab.pdfgen import canvas
 
 
 def module():
     return importlib.import_module("tools.source_candidate_paths")
+
+
+def _fixture_pdf(path, pages):
+    """Original synthetic text, with the audited editions' page/mark structure."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pdf = canvas.Canvas(str(path))
+    for number in range(1, max(pages) + 1):
+        text = pdf.beginText(40, 800)
+        text.setFont("Helvetica", 10)
+        for line in pages.get(number, "Synthetic reference fixture").splitlines():
+            text.textLine(line)
+        pdf.drawText(text)
+        pdf.showPage()
+    pdf.save()
+
+
+@pytest.fixture
+def source_corpus(tmp_path, monkeypatch):
+    # Exercise actual PDF discovery, extraction and path enumeration without
+    # relying on the ignored, copyrighted local Reference Corpus directory.
+    from tools import reference_demand_profiles as profiles
+
+    families = tuple(replace(f, root=tmp_path / f.family_id / "question-papers")
+                     for f in profiles.FAMILIES)
+    monkeypatch.setattr(profiles, "FAMILIES", families)
+    roots = {f.family_id: f.root for f in families}
+    ocr = roots["ocr/economics"]
+    for edition in ("676766", "703802"):
+        _fixture_pdf(ocr / f"{edition}-question-paper-themes-in-economics.pdf", {1: "Synthetic quarantined edition"})
+    selected = []
+    for index in range(30):
+        task = "Use the diagram to select a result." if index == 5 else "Select a definition."
+        selected.append(f"{index + 1} {task}\n[1]")
+    _fixture_pdf(ocr / "726593-question-paper-themes-in-economics.pdf", {
+        1: "\n".join(selected[:15]), 2: "\n".join(selected[15:]),
+        3: "Explain a mechanism.\n[10]\nEvaluate a policy.\n[20]\nEvaluate another policy.\n[20]",
+    })
+    tags = ["AO1"] * 15 + ["AO2"] * 7 + ["AO3"] * 8
+    _fixture_pdf(ocr.parent / "mark-schemes/726758-synthetic.pdf", {
+        page: "\n".join(tags[(page - 12) * 5:(page - 11) * 5]) for page in range(12, 18)
+    })
+    aqa = roots["aqa/economics"]
+    _fixture_pdf(aqa / "AQA-71363-QP-JUN25.PDF", {
+        1: "\n".join("Select from a diagram.\n[1 mark]" for _ in range(15)),
+        2: "\n".join("Select a definition.\n[1 mark]" for _ in range(15)),
+        3: "Explain a mechanism.\n[10 marks]\nEvaluate a policy.\n[20 marks]\nEvaluate another policy.\n[20 marks]",
+    })
+    edexcel = roots["pearson-edexcel/economics-a-2015"]
+
+    def short(marks, label="a"):
+        # A neighbouring imperative must not leak into a selected subpart.
+        task = f"({label}) Explain a mechanism.\n({marks})"
+        if marks == 1:
+            task += "\nA First choice\nB Second choice\nC Third choice\nD Fourth choice"
+        return task
+
+    section_b = "\n".join(short(marks) for marks in (5, 8, 10, 12, 15))
+    section_c = "Evaluate first choice.\n(Total for Question 7 = 25 marks)\nEvaluate second choice.\n(Total for Question 8 = 25 marks)"
+    paper1 = {
+        2: short(4), 3: short(1, "b"), 4: short(4), 5: short(1, "b"),
+        6: short(4) + "\n" + short(1, "b"),
+        7: short(4) + "\n" + short(1, "b"),
+        8: short(4), 9: short(1, "b"), 12: section_b, 26: section_c,
+        10: section_b,  # Repeated answer-page tariffs must be ignored.
+    }
+    _fixture_pdf(edexcel / "9ec0-01-que-20240516.pdf", paper1)
+    _fixture_pdf(edexcel / "9ec0-02-que-20240521.pdf", {
+        2: short(1) + "\n" + short(3, "b"), 3: short(3),
+        4: short(1) + "\n" + short(3, "b"), 5: short(3), 7: short(1, "b"),
+        8: short(1) + "\n" + short(3, "b"), 9: short(5), 11: short(1, "b"),
+        16: section_b, 30: section_c, 17: section_b,
+    })
+    synoptic = "\n".join(short(marks) for marks in (5, 8, 12, 25, 25))
+    _fixture_pdf(edexcel / "9ec0-03-que-20240610.pdf", {5: synoptic, 6: synoptic, 21: synoptic})
+    return roots
 
 
 def test_source_path_weighting_keeps_context_and_whole_pairs_equal_to_generated():
@@ -67,10 +147,13 @@ def test_business_edition_does_not_assume_same_question_numbers():
         ]
 
 
-def test_ocr_conflicting_grids_are_quarantined_with_original_hashes():
+def test_ocr_conflicting_grids_are_quarantined_with_original_hashes(source_corpus):
     forms = module().source_forms("ocr/economics", "3")
     conflicts = [f for f in forms if f["status"] == "quarantined"]
     assert {f["year"] for f in conflicts} == {2022, 2023}
+    assert all(f["source_sha256"] == hashlib.sha256(
+        (source_corpus["ocr/economics"] / f["id"]).read_bytes()).hexdigest()
+        for f in forms)
     assert all(
         f["paths"] == [] and f["objective_basis"] == "printed-conflicting"
         for f in conflicts
@@ -85,7 +168,7 @@ def test_ocr_conflicting_grids_are_quarantined_with_original_hashes():
     }
 
 
-def test_edexcel_source_extraction_does_not_duplicate_overview_and_answer_pages():
+def test_edexcel_source_extraction_does_not_duplicate_overview_and_answer_pages(source_corpus):
     for paper, count, printed in [("1", 2, 125), ("2", 2, 125), ("3", 4, 150)]:
         form = next(
             f
@@ -97,7 +180,7 @@ def test_edexcel_source_extraction_does_not_duplicate_overview_and_answer_pages(
         assert all(p["marks"] == 100 for p in form["paths"])
 
 
-def test_clean_ocr_mcq_rows_keep_published_ao_and_non_retrieval_operations():
+def test_clean_ocr_mcq_rows_keep_published_ao_and_non_retrieval_operations(source_corpus):
     form = next(
         f
         for f in module().source_forms("ocr/economics", "3")
@@ -114,7 +197,7 @@ def test_clean_ocr_mcq_rows_keep_published_ao_and_non_retrieval_operations():
     assert all(row["learner_demand"] is None for row in form["items"])
 
 
-def test_aqa_selected_source_operations_do_not_manufacture_objective_tags():
+def test_aqa_selected_source_operations_do_not_manufacture_objective_tags(source_corpus):
     form = next(
         f for f in module().source_forms("aqa/economics", "3") if f["year"] == 2025
     )
@@ -132,7 +215,7 @@ def test_source_and_generated_response_modes_use_same_operation_definition():
     assert target.response_mode == "structured-reasoning"
 
 
-def test_edexcel_2024_selected_subparts_use_actual_operations_without_command_leakage():
+def test_edexcel_2024_selected_subparts_use_actual_operations_without_command_leakage(source_corpus):
     form = next(
         f
         for f in module().source_forms("pearson-edexcel/economics-a-2015", "1")

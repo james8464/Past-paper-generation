@@ -322,8 +322,9 @@ class IndependentSolver:
                 slot: result["answer"][slot].strip() for slot in response_slots
             }
             if any(
-                _closed_normalise(answer_slots[slot])
-                != _closed_normalise(result["mark_points"][slot])
+                not _closed_slot_equal(
+                    slot, answer_slots[slot], result["mark_points"][slot]
+                )
                 for slot in response_slots
             ):
                 raise ValueError(
@@ -740,8 +741,10 @@ def reconcile_solution(
                         not isinstance(value, str) or not value.strip()
                         for value in alternatives
                     )
-                    or _closed_normalise(solution.answer_slots[slot])
-                    not in {_closed_normalise(value) for value in alternatives}
+                    or not any(
+                        _closed_slot_equal(slot, solution.answer_slots[slot], value)
+                        for value in alternatives
+                    )
                 ):
                     issues.append(
                         ReconciliationIssue(
@@ -759,7 +762,10 @@ def reconcile_solution(
                     if ":" in alternative:
                         slot, value = (piece.strip() for piece in alternative.split(":", 1))
                     allowed = accepted.get(slot, [])
-                    if not isinstance(allowed, list) or _closed_normalise(value) not in {_closed_normalise(str(value)) for value in allowed}:
+                    if not isinstance(allowed, list) or not any(
+                        _closed_slot_equal(slot, value, str(candidate))
+                        for candidate in allowed
+                    ):
                         issues.append(ReconciliationIssue(field="alternatives", message=f"unsupported or incorrect closed alternative: {alternative}"))
 
     expected_numbers = [] if solution.response_slots else _numbers(solution.answer)
@@ -879,6 +885,32 @@ def _requires_numeric_contract(item: dict[str, Any]) -> bool:
         )
         or str(item.get("command_word", "")).casefold() == "calculate"
     )
+
+
+def _route_vertices(value: str) -> tuple[str, ...] | None:
+    """Parse route notation without discarding vertex identity, order or count."""
+    value = value.strip().rstrip(".;").rstrip()
+    vertices: object
+    if value.startswith("[") and value.endswith("]"):
+        try:
+            vertices = json.loads(value)
+        except json.JSONDecodeError:
+            vertices = re.split(r"\s*(?:,|->|→|-)\s*", value[1:-1].strip())
+    else:
+        vertices = re.split(r"\s*(?:,|->|→|-)\s*", value)
+    if not isinstance(vertices, list) or not vertices or any(
+        not isinstance(vertex, str) or not re.fullmatch(r"[A-Za-z0-9_]+", vertex)
+        for vertex in vertices
+    ):
+        return None
+    return tuple(vertices)
+
+
+def _closed_slot_equal(slot: str, left: str, right: str) -> bool:
+    if slot == "route-in-order":
+        vertices = _route_vertices(left)
+        return vertices is not None and vertices == _route_vertices(right)
+    return _closed_normalise(left) == _closed_normalise(right)
 
 
 def _closed_normalise(value: str) -> str:

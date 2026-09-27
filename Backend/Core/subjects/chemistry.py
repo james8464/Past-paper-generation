@@ -5,7 +5,7 @@ from collections import Counter
 from dataclasses import dataclass
 from typing import Any
 
-from Backend.Core.subject_plugins import SubjectValidation
+from Backend.Core.subject_contracts import SubjectValidation
 
 
 @dataclass(frozen=True)

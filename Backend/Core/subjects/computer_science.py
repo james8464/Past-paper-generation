@@ -4,7 +4,7 @@ import itertools
 import re
 from typing import Any
 
-from Backend.Core.subject_plugins import SubjectValidation
+from Backend.Core.subject_contracts import SubjectValidation
 
 _PSEUDOCODE_TOKEN = re.compile(
     r"'(?:[^'\\]|\\.)*'|\"(?:[^\"\\]|\\.)*\"|<=|>=|<>|!=|==|←|[A-Za-z_][A-Za-z0-9_]*|\d+(?:\.\d+)?|\S"

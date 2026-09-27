@@ -2,6 +2,15 @@
 
 Native macOS app and Python backend for generating unofficial A-level practice papers.
 
+## Release status
+
+Active development, not an examiner-qualified or App Store-approved release.
+Build and automated checks do not establish identical appearance, originality
+across every generated paper, or empirically matched difficulty. Preview papers
+are not live AI qualification evidence. See the
+[teacher-feedback review](docs/quality/teacher-feedback-review-2026-09-27.md) and
+[open release gates](https://github.com/james8464/Past-paper-generation/issues/8).
+
 ## Run
 
 ```bash
