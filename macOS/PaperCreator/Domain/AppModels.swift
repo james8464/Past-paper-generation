@@ -942,8 +942,8 @@ enum GenerationQualityPolicy {
             pathState = .insufficient
         } else {
             pathState = switch report.candidatePathEvidencePassed {
-            case true: .passed
-            case false: .pending
+            case .some(true): .passed
+            case .some(false): .pending
             case nil: .unknown
             }
         }

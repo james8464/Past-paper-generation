@@ -8,7 +8,7 @@ from typing import Any
 import sympy
 from sympy.parsing.sympy_parser import parse_expr
 
-from Backend.Core.subject_plugins import SubjectValidation
+from Backend.Core.subject_contracts import SubjectValidation
 
 _SAFE_EXPRESSION = re.compile(r"^[A-Za-z0-9_+\-*/^()., ]+$")
 _UNIT_ALIASES = {

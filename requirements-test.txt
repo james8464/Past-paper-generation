@@ -2,3 +2,4 @@ pytest>=8,<10
 pypdf>=5,<7
 ruff>=0.16,<0.17
 sympy>=1.14,<2
+cryptography>=46,<47

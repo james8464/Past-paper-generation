@@ -175,8 +175,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/layout_conformance.py": {
-    "mtime": 1790541646.3328843,
-    "ast_hash": "1f792d4fa9a635a017e648573da469bf",
+    "mtime": 1790543874.1810327,
+    "ast_hash": "4e0961c0970a24115b2ffe88ea974b5d",
     "semantic_hash": ""
   },
   "Backend/Core/layout_master.py": {
@@ -325,8 +325,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/subject_plugins.py": {
-    "mtime": 1787773587.051281,
-    "ast_hash": "e17d27f34d51ff9aa72dc10085dc92af",
+    "mtime": 1790543351.027329,
+    "ast_hash": "2d4192c61ad24d8d6ea192428157c9de",
     "semantic_hash": ""
   },
   "Backend/Core/subjects/__init__.py": {
@@ -340,18 +340,18 @@
     "semantic_hash": ""
   },
   "Backend/Core/subjects/biology.py": {
-    "mtime": 1787773116.86818,
-    "ast_hash": "e9952b74a3ee564229e7eda207e6211b",
+    "mtime": 1790543351.0275855,
+    "ast_hash": "2c14418a5ee673b503a2501b4782da4f",
     "semantic_hash": ""
   },
   "Backend/Core/subjects/chemistry.py": {
-    "mtime": 1787773160.7451236,
-    "ast_hash": "b5c4eecb31c925a25e74c3b8342b5921",
+    "mtime": 1790543351.027813,
+    "ast_hash": "2ed82f874a134fdb56acfd8210ce197c",
     "semantic_hash": ""
   },
   "Backend/Core/subjects/computer_science.py": {
-    "mtime": 1787947561.2578292,
-    "ast_hash": "9f45c068af95f183dd61bdc647937a12",
+    "mtime": 1790543351.028012,
+    "ast_hash": "c9f849e7ad4f169174ec5c316bc2ba28",
     "semantic_hash": ""
   },
   "Backend/Core/subjects/computer_science_contracts.py": {
@@ -365,18 +365,18 @@
     "semantic_hash": ""
   },
   "Backend/Core/subjects/essay.py": {
-    "mtime": 1787773370.2502842,
-    "ast_hash": "0c96758e091ba11fafa9dce7aa34009d",
+    "mtime": 1790543351.0283391,
+    "ast_hash": "26b5fd6e7b1fbf998daf52f3f86c0677",
     "semantic_hash": ""
   },
   "Backend/Core/subjects/mathematics.py": {
-    "mtime": 1787773356.3438568,
-    "ast_hash": "0a0989181e2fbdc4ba772e1ad1ee66a0",
+    "mtime": 1790543351.028525,
+    "ast_hash": "32eb55589589be2783f4bdc32b0e4694",
     "semantic_hash": ""
   },
   "Backend/Core/subjects/physics.py": {
-    "mtime": 1787773137.598234,
-    "ast_hash": "fd282ca62cad6139ef9cc1167d126ad8",
+    "mtime": 1790543351.0286613,
+    "ast_hash": "47ef4b72641600882d1cea24fe93509d",
     "semantic_hash": ""
   },
   "Backend/Core/subjects/selected_response.py": {
@@ -595,8 +595,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/question_bank.py": {
-    "mtime": 1788281541.9634335,
-    "ast_hash": "675f4751e8b9d62975b66c93dbc7faf5",
+    "mtime": 1790543343.2327297,
+    "ast_hash": "972132f7749c6c72f5de83583f9fe494",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/render_pdf.py": {
@@ -625,8 +625,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_blueprint.py": {
-    "mtime": 1788288380.0332737,
-    "ast_hash": "a3bce9477b4bde2a762cf69b51ef65d6",
+    "mtime": 1790543219.3335493,
+    "ast_hash": "075596898cb6da35c8c4278f83bf98b6",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_cli_pdf.py": {
@@ -1140,8 +1140,8 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1789676263.126895,
-    "ast_hash": "200e41399a608f27360d4d45df499d6f",
+    "mtime": 1790543548.6732209,
+    "ast_hash": "07108baaac9af16faea241867e3581e3",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1205,8 +1205,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Domain/AppModels.swift": {
-    "mtime": 1788891529.3153074,
-    "ast_hash": "2978591894c951e2ed9eeaf4fddb2f70",
+    "mtime": 1790543495.5236542,
+    "ast_hash": "3fa448732900b277d960ab09e447b187",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Domain/GenerationEstimator.swift": {
@@ -1540,8 +1540,8 @@
     "semantic_hash": ""
   },
   "tests/test_layout_master.py": {
-    "mtime": 1790541561.5924025,
-    "ast_hash": "54fad81a4c31f759b4797ff3843802ff",
+    "mtime": 1790543886.0575604,
+    "ast_hash": "67c8738e51cd2c2c4833d2d5bcc76632",
     "semantic_hash": ""
   },
   "tests/test_level_of_response.py": {
@@ -1700,8 +1700,8 @@
     "semantic_hash": ""
   },
   "tests/test_subject_plugins.py": {
-    "mtime": 1787773606.7283268,
-    "ast_hash": "584f3bb1a5cd5f707efba3a8e0633864",
+    "mtime": 1790543361.5960507,
+    "ast_hash": "a04281e4701d8384005fd423fdad5423",
     "semantic_hash": ""
   },
   "tests/test_task_source_demand.py": {
@@ -1860,8 +1860,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1787948509.780795,
-    "ast_hash": "a81dd7940d93d3e9b09e27aeb3a077c6",
+    "mtime": 1790543749.5103862,
+    "ast_hash": "858023fc4071155c911c353e024558b2",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/data/notes/text/1.1. Nature of Economics.txt": {
@@ -2080,8 +2080,8 @@
     "semantic_hash": ""
   },
   "requirements-test.txt": {
-    "mtime": 1787772882.9705346,
-    "ast_hash": "d17b31360067ff6717124c38c1fccf14",
+    "mtime": 1790543309.0465913,
+    "ast_hash": "c342aa9ff70567758e0b58ecf46ba903",
     "semantic_hash": ""
   },
   "Design/AppIcon/PaperCreator-AppIcon-Master.png": {
@@ -2190,8 +2190,13 @@
     "semantic_hash": ""
   },
   "docs/quality/teacher-feedback-review-2026-09-27.md": {
-    "mtime": 1790541726.1721814,
-    "ast_hash": "1741cba508b02549f597cf228c465399",
+    "mtime": 1790543580.7229164,
+    "ast_hash": "426b60fb2d1e220fad15494cf869c47c",
+    "semantic_hash": ""
+  },
+  "Backend/Core/subject_contracts.py": {
+    "mtime": 1790543351.0271068,
+    "ast_hash": "fbc98e9315a761cb0ef1c14bdfd646b6",
     "semantic_hash": ""
   }
 }

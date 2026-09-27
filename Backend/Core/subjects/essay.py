@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from Backend.Core.subject_plugins import SubjectValidation
+from Backend.Core.subject_contracts import SubjectValidation
 
 _EVIDENCE_FIELDS = {
     "psychology": ("study",),

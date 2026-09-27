@@ -103,3 +103,45 @@ in the AQA CS generator tests; shared tests in `test_ai_assessment.py`,
   per-part attribution or duplicate-page detection. Renderer regression tests
   separately guard the observed duplicated-guidance defect.
 - Graphify refreshed after code changes. Changes committed locally; no push.
+
+## Publication follow-up
+
+The earlier local-only history was published to GitHub at `9934b49`. That direct
+push reported an administrator bypass of the PR/check rules. Subsequent changes
+use a temporary review branch and the normal pull-request checks instead.
+
+- Compact Paper 2 marking credit is now checked within each question/part row.
+  Missing repeated short answers cannot hide behind another part's identical
+  text. Duplicate rows/pages and repeated or misplaced levels continuations are
+  rejected; legitimate next-page levels continuations remain supported.
+- Four-mark Boolean simplification now uses three variables, explicit equivalent
+  intermediate expressions and three possible final functions. Truth-table tests
+  verify every step. This improves demand, but three templates still do not prove
+  sufficient variety or empirical calibration.
+- Shared subject interfaces now live independently of plugin discovery. Fresh
+  processes can import each subject directly without a circular-import crash;
+  the existing public interface remains available.
+- Clean GitHub checks exposed a missing cryptography test dependency and an
+  optional-Boolean switch unsupported by the runner's Swift compiler. Both were
+  corrected without weakening the checks.
+- Preview matrix seed `26092721`: all 21 routes produced their expected outputs.
+  Eighteen passed reference-demand checks; the three topic banks correctly remain
+  unqualified because topic-reference evidence is insufficient. Preview output
+  is not live AI qualification.
+- Visually inspected the revised Boolean mark-scheme page at 1,400-pixel page
+  height: the working, overbars, table borders and final answer fit without
+  clipping. This is representative inspection, not exhaustive print certification.
+- Final backend suite: **1,873 passed, 2 skipped**, five existing SWIG warnings
+  (82.90 seconds). Native macOS suite: **61 passed**, no failures. Local Release
+  build, signature/sandbox preflight, lint and release-compliance scans passed.
+- Independent review found short numeric credit could match a different number.
+  Whole-statement numeric checks now reject incorrect signed, decimal, fractional
+  and expression variants; 34 targeted review tests passed with no remaining
+  review findings. The complete suite above includes the final fix.
+- Repository inventory and Graphify AST map refreshed. Required GitHub checks
+  remain the merge gate; local success is not a substitute for clean-runner CI.
+
+Full live-paper qualification, broader task variety, remaining layout fidelity,
+teacher review and anonymised student calibration remain release limitations.
+Do not describe the app as examiner-equivalent, visually identical, App Store
+approved or fully finalised on the strength of automated checks alone.

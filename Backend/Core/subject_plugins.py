@@ -1,28 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Protocol, runtime_checkable
+from typing import Any
 
-
-@dataclass(frozen=True)
-class SubjectValidation:
-    passed: bool
-    diagnostics: tuple[str, ...] = ()
-
-
-@runtime_checkable
-class SubjectPlugin(Protocol):
-    id: str
-
-    def validate_item(self, item: Any) -> SubjectValidation: ...
-
-    def solve(self, item: Any) -> Any: ...
-
-    def render_visual(self, specification: Any) -> Any: ...
-
-    def validate_scheme(self, item: Any, scheme: Any) -> SubjectValidation: ...
-
-    def calibration_features(self, item: Any) -> dict[str, float | str]: ...
+from Backend.Core.subject_contracts import SubjectPlugin as SubjectPlugin
+from Backend.Core.subject_contracts import SubjectValidation as SubjectValidation
 
 
 @dataclass(frozen=True)
@@ -109,8 +91,7 @@ def _normalise_identifier(identifier: str) -> str:
     return normalized
 
 
-# Imported after the protocol and registry exist so subject engines can reuse
-# SubjectValidation without a module-initialisation cycle.
+# Subject engines depend only on subject_contracts, never on this registry.
 from Backend.Core.subjects.biology import BiologyPlugin  # noqa: E402
 from Backend.Core.subjects.chemistry import ChemistryPlugin  # noqa: E402
 from Backend.Core.subjects.computer_science import ComputerSciencePlugin  # noqa: E402
