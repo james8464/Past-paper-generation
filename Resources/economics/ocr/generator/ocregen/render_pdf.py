@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import math
 from functools import partial
 from html import escape
+from itertools import zip_longest
 from pathlib import Path
 
-import pymupdf as fitz
 from reportlab.graphics.shapes import Drawing, Line, PolyLine, Rect, String, Wedge
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT
@@ -81,8 +80,6 @@ def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
 def render_mark_scheme(
     paper: GeneratedPaper,
     path: Path,
-    *,
-    _extension_adjustment: int = 0,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     doc = _document(path, paper, "Mark scheme")
@@ -125,26 +122,21 @@ def render_mark_scheme(
         NextPageTemplate("ocr-mark-scheme-landscape"),
         PageBreak(),
         *_supplementary_marking_pages(),
+        NextPageTemplate("ocr-mark-scheme-content"),
         PageBreak(),
     ]
-    if paper.paper_id in {"paper_1", "paper_2"}:
-        story.extend(_paper_one_two_mark_scheme_content(paper))
-    else:
-        for section in paper.sections:
-            story.extend(
-                [_banner(f"Section {section.id}: {section.title}"), Spacer(1, 4 * mm)]
-            )
-            for option in section.options:
-                for question in option.questions:
-                    story.extend(_scheme_block(question))
-            story.append(PageBreak())
-        story.pop()
-    story.extend(
-        _mark_scheme_extension_pages(
-            paper,
-            count_adjustment=_extension_adjustment,
-        )
-    )
+    for section in paper.sections:
+        for option in section.options:
+            for question in option.questions:
+                story.extend(_scheme_block(question))
+    questions = [q for s in paper.sections for o in s.options for q in o.questions]
+    diagram_focuses: set[str] = set()
+    for question in questions:
+        focus = _question_focus(question)
+        if question.marks >= 8 and focus not in diagram_focuses:
+            story.extend([PageBreak(), *_extended_diagram_page(question)])
+            diagram_focuses.add(focus)
+    story.extend([PageBreak(), *_assessment_objectives_page(paper, questions)])
     story.extend(
         [
             NextPageTemplate("ocr-mark-scheme-final"),
@@ -159,20 +151,6 @@ def render_mark_scheme(
         ]
     )
     doc.build(story)
-    target_pages = {"paper_1": 30, "paper_2": 33, "paper_3": 32}[paper.paper_id]
-    with fitz.open(path) as rendered:
-        page_count = rendered.page_count
-    if _extension_adjustment == 0 and page_count != target_pages:
-        render_mark_scheme(
-            paper,
-            path,
-            _extension_adjustment=target_pages - page_count,
-        )
-        return
-    if page_count != target_pages:
-        raise ValueError(
-            f"OCR economics mark scheme rendered {page_count} pages; expected {target_pages}"
-        )
 
 
 def _supplementary_marking_pages() -> list[Flowable]:
@@ -589,122 +567,6 @@ def _guidance_table(
     return table
 
 
-def _paper_one_two_mark_scheme_content(paper: GeneratedPaper) -> list[Flowable]:
-    data_questions = paper.sections[0].options[0].questions
-    section_b = [option.questions[0] for option in paper.sections[1].options]
-    section_c = [option.questions[0] for option in paper.sections[2].options]
-    choice_questions = [*section_b, *section_c]
-    pages: list[list[Flowable]] = [
-        [
-            _banner(f"Section {paper.sections[0].id}: {paper.sections[0].title}"),
-            Spacer(1, 3 * mm),
-            *_scheme_block(data_questions[0]),
-            *_scheme_block(
-                data_questions[1],
-                diagram_questions=[data_questions[1], data_questions[1]],
-            ),
-        ],
-        [
-            *_scheme_block(data_questions[2], body_height=62 * mm),
-            *_scheme_block(data_questions[3], body_height=66 * mm),
-        ],
-        _level_descriptor_page(data_questions[4]),
-        _indicative_guidance_page(data_questions[4]),
-        _level_descriptor_page(data_questions[5]),
-        _indicative_guidance_page(data_questions[5]),
-        _choice_level_descriptor_page(choice_questions, range(3)),
-        [
-            *_choice_level_descriptor_page(choice_questions, range(3, 5)),
-            Spacer(1, 4 * mm),
-            *_compact_indicative_guidance(section_b[0], 6),
-        ],
-        _diagram_guidance_page(section_b),
-    ]
-    result: list[Flowable] = []
-    for index, page in enumerate(pages):
-        if index:
-            result.append(PageBreak())
-        result.extend(page)
-    return result
-
-
-def _level_descriptor_page(question: GeneratedQuestion) -> list[Flowable]:
-    return [
-        Paragraph(
-            f"<b>{escape(question.number)}</b> {escape(question.prompt)}",
-            STYLES["small"],
-        ),
-        Spacer(1, 3 * mm),
-        _level_descriptor_table(question, range(len(_level_bands(question.marks)))),
-    ]
-
-
-def _choice_level_descriptor_page(
-    questions: list[GeneratedQuestion],
-    band_indexes: range,
-) -> list[Flowable]:
-    first = questions[0]
-    alternatives = " OR ".join(
-        f"{escape(question.number)} {escape(question.prompt)}" for question in questions
-    )
-    return [
-        Paragraph("SECTION B AND SECTION C", STYLES["centre_bold"]),
-        Spacer(1, 3 * mm),
-        Paragraph(alternatives, STYLES["small"]),
-        Spacer(1, 3 * mm),
-        _level_descriptor_table(first, band_indexes),
-    ]
-
-
-def _level_descriptor_table(
-    question: GeneratedQuestion,
-    band_indexes: range,
-) -> Table:
-    bands = _level_bands(question.marks)
-    rows: list[list[object]] = [
-        [
-            Paragraph("<b>Level / mark</b>", STYLES["small"]),
-            Paragraph("<b>Descriptor</b>", STYLES["small"]),
-        ]
-    ]
-    for index in band_indexes:
-        level, mark_range = bands[index]
-        rows.append(
-            [
-                Paragraph(
-                    f"<b>Level {level}</b><br/>({mark_range} marks)",
-                    STYLES["small"],
-                ),
-                Paragraph(
-                    escape(_level_descriptor_text(question, level, len(bands))),
-                    STYLES["small"],
-                ),
-            ]
-        )
-    if band_indexes.stop == len(bands):
-        rows.append(
-            [
-                Paragraph("<b>0 marks</b>", STYLES["small"]),
-                Paragraph("Response is not worthy of credit.", STYLES["small"]),
-            ]
-        )
-    table = Table(rows, colWidths=[31 * mm, 229 * mm], repeatRows=1)
-    table.setStyle(
-        TableStyle(
-            [
-                ("GRID", (0, 0), (-1, -1), 0.45, colors.HexColor("#555555")),
-                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#d9d9d9")),
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                ("LEFTPADDING", (0, 0), (-1, -1), 4),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 4),
-                ("TOPPADDING", (0, 0), (-1, -1), 4),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-            ]
-        )
-    )
-    return table
-
-
 def _level_bands(marks: int) -> list[tuple[int, str]]:
     if marks >= 20:
         return [
@@ -805,90 +667,6 @@ def _question_focus(question: GeneratedQuestion) -> str:
         if token in prompt:
             return label
     return "the economic issue in the question"
-
-
-def _indicative_guidance_page(question: GeneratedQuestion) -> list[Flowable]:
-    return [
-        *_compact_indicative_guidance(question, 12),
-        Spacer(1, 4 * mm),
-        Paragraph(
-            "The side of the argument presented first may be credited as analysis, with a "
-            "developed counterargument credited as evaluation.",
-            STYLES["small"],
-        ),
-    ]
-
-
-def _compact_indicative_guidance(
-    question: GeneratedQuestion,
-    limit: int,
-) -> list[Flowable]:
-    points = list(dict.fromkeys(question.mark_scheme))
-    while len(points) < limit:
-        previous_count = len(points)
-        points.extend(_generated_guidance_points(question))
-        points = list(dict.fromkeys(points))
-        if len(points) == previous_count:
-            break
-    rows: list[list[object]] = [
-        [
-            Paragraph(
-                f"<b>Question {escape(question.number)} guidance</b>",
-                STYLES["small"],
-            )
-        ]
-    ]
-    rows.extend(
-        [[Paragraph(f"• {escape(point)}", STYLES["small"])] for point in points[:limit]]
-    )
-    table = Table(rows, colWidths=[260 * mm])
-    table.setStyle(
-        TableStyle(
-            [
-                ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#555555")),
-                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#d9d9d9")),
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                ("LEFTPADDING", (0, 0), (-1, -1), 5),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 5),
-                ("TOPPADDING", (0, 0), (-1, -1), 3),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
-            ]
-        )
-    )
-    return [table]
-
-
-def _generated_guidance_points(question: GeneratedQuestion) -> list[str]:
-    focus = _question_focus(question)
-    return [
-        f"Knowledge and understanding should be accurate and specific to {focus}.",
-        "Application should use the supplied figures, institutional detail or named context.",
-        "Analysis should identify the relevant agent, incentive and transmission mechanism.",
-        "A developed chain should link the initial change to a measurable economic outcome.",
-        "Evaluation may test assumptions, magnitude, time period and distributional effects.",
-        "A supported judgement should answer the precise wording of the question.",
-    ]
-
-
-def _diagram_guidance_page(
-    questions: list[GeneratedQuestion],
-) -> list[Flowable]:
-    return [
-        Paragraph(
-            f"Question {escape(questions[0].number)} / {escape(questions[1].number)} diagram guidance",
-            STYLES["heading"],
-        ),
-        Spacer(1, 3 * mm),
-        _economics_diagram_pair(questions),
-        Spacer(1, 3 * mm),
-        Paragraph(
-            "Credit a different correctly labelled diagram when it is relevant, internally "
-            "consistent and integrated into the written analysis.",
-            STYLES["small"],
-        ),
-        Spacer(1, 3 * mm),
-        *_compact_indicative_guidance(questions[1], 6),
-    ]
 
 
 def _economics_diagram_pair(
@@ -1247,194 +1025,6 @@ def _add_ppf_diagram(
         )
 
 
-MARK_SCHEME_EXTENSION_PAGE_COUNTS = {
-    "paper_1": 10,
-    "paper_2": 13,
-    "paper_3": 9,
-}
-
-
-def _mark_scheme_extension_pages(
-    paper: GeneratedPaper,
-    *,
-    count_adjustment: int = 0,
-) -> list[Flowable]:
-    count = MARK_SCHEME_EXTENSION_PAGE_COUNTS[paper.paper_id] + count_adjustment
-    if count < 2:
-        raise ValueError("OCR economics mark-scheme continuation budget is too small")
-    questions = [
-        question
-        for section in paper.sections
-        for option in section.options
-        for question in option.questions
-    ]
-    extended = [question for question in questions if question.marks >= 8]
-    reserved_indexes = {count - 1}
-    if paper.paper_id == "paper_3":
-        reserved_indexes.update({0, 1, 2})
-    elif count > 1:
-        reserved_indexes.add(1)
-    overflow_indexes = [
-        index for index in range(count) if index not in reserved_indexes
-    ]
-    overflow_pages = _overflow_guidance_pages(questions, overflow_indexes)
-    pages: list[Flowable] = []
-    for index in range(count):
-        pages.append(PageBreak())
-        if paper.paper_id == "paper_3" and index < 3:
-            pages.extend(_mcq_rationale_page(questions[index * 10 : (index + 1) * 10]))
-            continue
-        if index == count - 1:
-            pages.extend(_assessment_objectives_page(paper, questions))
-            continue
-        if index in overflow_pages:
-            pages.extend(overflow_pages[index])
-            continue
-        question = extended[index % len(extended)]
-        if paper.paper_id in {"paper_1", "paper_2"} and index == 1:
-            pages.extend(_extended_diagram_page(question))
-        else:
-            pages.extend(_extended_guidance_page(question, index))
-    return pages
-
-
-def _overflow_guidance_pages(
-    questions: list[GeneratedQuestion],
-    page_indexes: list[int],
-) -> dict[int, list[Flowable]]:
-    entries = [
-        (question.number, point)
-        for question in questions
-        for point in _scheme_overflow_points(question)
-    ]
-    if not entries or not page_indexes:
-        return {}
-    chunk_size = max(1, math.ceil(len(entries) / len(page_indexes)))
-    chunks = [
-        entries[start : start + chunk_size]
-        for start in range(0, len(entries), chunk_size)
-    ]
-    if len(chunks) > len(page_indexes):
-        raise ValueError(
-            "OCR mark-scheme overflow exceeds the measured continuation-page budget"
-        )
-    return {
-        page_index: _overflow_guidance_page(chunk)
-        for page_index, chunk in zip(page_indexes, chunks, strict=False)
-    }
-
-
-def _overflow_guidance_page(
-    entries: list[tuple[str, str]],
-) -> list[Flowable]:
-    rows: list[list[object]] = [
-        [
-            Paragraph("<b>Question</b>", STYLES["small"]),
-            Paragraph(
-                "<b>Additional indicative content and guidance</b>", STYLES["small"]
-            ),
-        ]
-    ]
-    rows.extend(
-        [
-            Paragraph(escape(number), STYLES["small"]),
-            Paragraph(f"• {escape(point)}", STYLES["small"]),
-        ]
-        for number, point in entries
-    )
-    table = Table(rows, colWidths=[25 * mm, 235 * mm], repeatRows=1)
-    table.setStyle(
-        TableStyle(
-            [
-                ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
-                ("BACKGROUND", (0, 0), (-1, 0), GREY),
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                ("LEFTPADDING", (0, 0), (-1, -1), 4),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 4),
-                ("TOPPADDING", (0, 0), (-1, -1), 3),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
-            ]
-        )
-    )
-    return [
-        Paragraph("Additional question-specific guidance", STYLES["heading"]),
-        Spacer(1, 3 * mm),
-        table,
-    ]
-
-
-def _mcq_rationale_page(questions: list[GeneratedQuestion]) -> list[Flowable]:
-    rows = [["Question", "Answer and rationale"]]
-    for question in questions:
-        answer = "ABCD"[question.correct_choice or 0]
-        rationale = (
-            question.mark_scheme[0]
-            if question.mark_scheme
-            else "Credit the keyed answer."
-        )
-        rows.append(
-            [
-                Paragraph(question.number, STYLES["small"]),
-                Paragraph(
-                    f"<b>{answer}</b> — {rationale} {question.prompt}",
-                    STYLES["small"],
-                ),
-            ]
-        )
-    table = Table(rows, colWidths=[24 * mm, 236 * mm], repeatRows=1)
-    table.setStyle(
-        TableStyle(
-            [
-                ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
-                ("BACKGROUND", (0, 0), (-1, 0), GREY),
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                ("PADDING", (0, 0), (-1, -1), 5),
-            ]
-        )
-    )
-    return [
-        Paragraph("Multiple-choice rationale", STYLES["heading"]),
-        Spacer(1, 4 * mm),
-        table,
-    ]
-
-
-def _extended_guidance_page(
-    question: GeneratedQuestion,
-    page_index: int,
-) -> list[Flowable]:
-    points = question.mark_scheme
-    chunk_size = 10
-    start = (page_index * chunk_size) % max(len(points), 1)
-    chunk = (points + points)[start : start + chunk_size]
-    rows = [[Paragraph("Indicative content and level guidance", STYLES["body"]), ""]]
-    rows.extend([[Paragraph(f"• {point}", STYLES["small"]), ""] for point in chunk])
-    table = Table(rows, colWidths=[245 * mm, 15 * mm])
-    table.setStyle(
-        TableStyle(
-            [
-                ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
-                ("BACKGROUND", (0, 0), (-1, 0), GREY),
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                ("PADDING", (0, 0), (-1, -1), 5),
-            ]
-        )
-    )
-    return [
-        Paragraph(f"Question {question.number} guidance continued", STYLES["heading"]),
-        Spacer(1, 3 * mm),
-        Paragraph(question.prompt, STYLES["body"]),
-        Spacer(1, 4 * mm),
-        table,
-        Spacer(1, 4 * mm),
-        Paragraph(
-            "Credit a different but economically valid route when it is developed, "
-            "applied to the question and supports the judgement reached.",
-            STYLES["body"],
-        ),
-    ]
-
-
 def _extended_diagram_page(
     question: GeneratedQuestion,
 ) -> list[Flowable]:
@@ -1444,8 +1034,6 @@ def _extended_diagram_page(
         Paragraph(question.prompt, STYLES["body"]),
         Spacer(1, 3 * mm),
         _economics_diagram_pair([question, question]),
-        Spacer(1, 3 * mm),
-        *_compact_indicative_guidance(question, 6),
     ]
 
 
@@ -2122,116 +1710,179 @@ def _answer_mark(question: GeneratedQuestion) -> Table:
     )
 
 
-def _scheme_block(
-    question: GeneratedQuestion,
-    diagram_questions: list[GeneratedQuestion] | None = None,
-    body_height: float | None = None,
-) -> list[Flowable]:
-    answer_points, guidance_points = _split_scheme_points(question)
-    answer = f"<b>{escape(question.prompt)}</b><br/><br/>" + "<br/>".join(
-        f"• {escape(point)}" for point in answer_points
+class _CreditTable(Table):
+    """Carry the visible question label into an in-row continuation."""
+
+    @staticmethod
+    def _cell_text(value):
+        if isinstance(value, (tuple, list)):
+            return "".join(_CreditTable._cell_text(part) for part in value)
+        return (
+            value.getPlainText() if hasattr(value, "getPlainText") else str(value or "")
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._question_number = next(
+            (
+                self._cell_text(row[0])
+                for row in self._cellvalues[1:]
+                if self._cell_text(row[0]).strip()
+            ),
+            "",
+        )
+
+    def split(self, availWidth, availHeight):
+        pieces = super().split(availWidth, availHeight)
+        if len(pieces) == 2:
+            following = pieces[1]._cellvalues[1][0]
+            for piece in pieces:
+                piece._question_number = self._question_number
+            if not self._cell_text(following).strip() and self._question_number:
+                pieces[1]._cellvalues[1][0] = Paragraph(
+                    escape(self._question_number), STYLES["scheme"]
+                )
+        return pieces
+
+
+def _scheme_block(question: GeneratedQuestion) -> list[Flowable]:
+    # One visible labelled row per complete marking statement. The paginator
+    # can continue rows; no point budgets, clipping or target-page padding.
+    style = STYLES["scheme"]
+
+    def cell(text: str) -> Paragraph:
+        return Paragraph(escape(text), style)
+
+    rows = [[cell(label) for label in ("Question", "Answer", "Mark", "Guidance")]]
+    rows.append(
+        [
+            cell(question.number),
+            cell(question.prompt),
+            cell(str(question.marks)),
+            cell(""),
+        ]
     )
-    answer_cell: list[Flowable] = [Paragraph(answer, STYLES["small"])]
-    if diagram_questions:
-        answer_cell.extend(
+    seen: set[str] = set()
+    seen_labelled_guidance: set[tuple[str, str]] = set()
+    answers: list[str] = []
+    guidance: list[str] = []
+    for point in question.mark_scheme:
+        if point in seen:
+            continue
+        seen.add(point)
+        target = (
+            guidance
+            if point.casefold().startswith(
+                (
+                    "ao1",
+                    "ao2",
+                    "ao3",
+                    "ao4",
+                    "level ",
+                    "levels-based",
+                    "marker check",
+                    "do not award",
+                    "maximum ",
+                )
+            )
+            else answers
+        )
+        target.append(point)
+    for point in question.structured_mark_scheme:
+        if point.text not in seen:
+            answers.append(point.text)
+            seen.add(point.text)
+        for prefix, values in (
+            ("Accept", point.alternatives),
+            ("Allow", point.allow),
+            ("Do not accept", point.do_not_accept),
+            ("Ignore", point.ignore),
+        ):
+            for value in values:
+                identity = (prefix, value)
+                if identity in seen_labelled_guidance:
+                    continue
+                seen_labelled_guidance.add(identity)
+                guidance.append(f"{prefix}: {value}")
+    guidance.extend(_question_guidance(question))
+    for answer, note in zip_longest(answers, guidance, fillvalue=""):
+        rows.append([cell(question.number), cell(answer), cell(""), cell(note)])
+    descriptor_spans: list[tuple] = []
+    if question.scheme_mode == "levels":
+        bands = _level_bands(question.marks)
+        for level, mark_range in bands:
+            descriptor = _level_descriptor_text(question, level, len(bands))
+            descriptor_spans.append(("SPAN", (1, len(rows)), (3, len(rows))))
+            rows.append(
+                [
+                    cell(question.number),
+                    cell(f"Level {level} ({mark_range} marks): {descriptor}"),
+                    cell(""),
+                    cell(""),
+                ]
+            )
+        rows.append(
             [
-                Spacer(1, 2 * mm),
-                Paragraph(
-                    f"<b>Diagram guidance for {escape(question.number)}</b>",
-                    STYLES["small"],
-                ),
-                _compact_economics_diagram_pair(diagram_questions),
+                cell(question.number),
+                cell("0 marks: Response is not worthy of credit."),
+                cell(""),
+                cell(""),
             ]
         )
-    guidance = "<br/>".join(
-        f"• {escape(point)}"
-        for point in [*_question_guidance(question), *guidance_points]
-    )
-    rows: list[list[object]] = [
-        [
-            Paragraph("<b>Question</b>", STYLES["small"]),
-            Paragraph("<b>Answer</b>", STYLES["small"]),
-            Paragraph("<b>Mark</b>", STYLES["small"]),
-            Paragraph("<b>Guidance</b>", STYLES["small"]),
-        ],
-        [
-            Paragraph(escape(question.number), STYLES["small"]),
-            answer_cell,
-            Paragraph(str(question.marks), STYLES["centre"]),
-            Paragraph(guidance, STYLES["small"]),
-        ],
-    ]
-    table = Table(
+    for row in rows[2:]:
+        row[0] = cell("")
+    table = _CreditTable(
         rows,
-        colWidths=[25 * mm, 112 * mm, 17 * mm, 106 * mm],
-        rowHeights=[None, body_height] if body_height is not None else None,
+        colWidths=[72.0, 302.44, 49.62, 302.90],
         repeatRows=1,
+        splitByRow=1,
+        splitInRow=1,
+        hAlign="LEFT",
     )
     table.setStyle(
         TableStyle(
             [
-                ("GRID", (0, 0), (-1, -1), 0.45, colors.HexColor("#555555")),
+                ("BOX", (0, 0), (-1, -1), 0.48, colors.black),
+                ("LINEBELOW", (0, 0), (-1, 0), 0.48, colors.black),
+                ("LINEBEFORE", (1, 0), (1, -1), 0.48, colors.black),
+                (
+                    "LINEBEFORE",
+                    (2, 0),
+                    (2, descriptor_spans[0][1][1] - 1 if descriptor_spans else -1),
+                    0.48,
+                    colors.black,
+                ),
+                (
+                    "LINEBEFORE",
+                    (3, 0),
+                    (3, descriptor_spans[0][1][1] - 1 if descriptor_spans else -1),
+                    0.48,
+                    colors.black,
+                ),
                 ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#d9d9d9")),
                 ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                ("ALIGN", (2, 1), (2, -1), "CENTER"),
                 ("LEFTPADDING", (0, 0), (-1, -1), 5),
                 ("RIGHTPADDING", (0, 0), (-1, -1), 5),
-                ("TOPPADDING", (0, 0), (-1, -1), 5),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+                ("TOPPADDING", (0, 0), (-1, -1), 3),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+                ("NOSPLIT", (0, 0), (-1, 2)),
+                *descriptor_spans,
             ]
         )
     )
-    return [table, Spacer(1, 4 * mm)]
-
-
-def _split_scheme_points(
-    question: GeneratedQuestion,
-) -> tuple[list[str], list[str]]:
-    answer, guidance = _partition_scheme_points(question)
-    answer_limit, guidance_limit = _scheme_point_limits(question)
-    return answer[:answer_limit], guidance[:guidance_limit]
-
-
-def _scheme_overflow_points(question: GeneratedQuestion) -> list[str]:
-    answer, guidance = _partition_scheme_points(question)
-    answer_limit, guidance_limit = _scheme_point_limits(question)
-    return [*answer[answer_limit:], *guidance[guidance_limit:]]
-
-
-def _partition_scheme_points(
-    question: GeneratedQuestion,
-) -> tuple[list[str], list[str]]:
-    guidance_prefixes = (
-        "ao1",
-        "ao2",
-        "ao3",
-        "ao4",
-        "level ",
-        "levels-based",
-        "marker check",
-        "do not award",
-        "maximum ",
-    )
-    answer: list[str] = []
-    guidance: list[str] = []
-    for point in question.mark_scheme:
-        target = guidance if point.casefold().startswith(guidance_prefixes) else answer
-        if point.casefold() != "indicative content":
-            target.append(point)
-    return answer or question.mark_scheme[:1], guidance
-
-
-def _scheme_point_limits(question: GeneratedQuestion) -> tuple[int, int]:
-    answer_limit = 8 if question.marks >= 20 else 6
-    if question.marks >= 8:
-        guidance_limit = 9
-    elif question.kind == "diagram_analysis":
-        guidance_limit = 4
-    elif question.kind == "short_answer":
-        guidance_limit = 1
-    else:
-        guidance_limit = 2
-    return answer_limit, guidance_limit
+    result: list[Flowable] = [table, Spacer(1, 12)]
+    if question.kind == "diagram_analysis":
+        result.extend(
+            [
+                Paragraph(
+                    f"Question {escape(question.number)} diagram guidance",
+                    STYLES["heading"],
+                ),
+                _compact_economics_diagram_pair([question, question]),
+                Spacer(1, 12),
+            ]
+        )
+    return result
 
 
 def _question_guidance(question: GeneratedQuestion) -> list[str]:
@@ -2317,6 +1968,12 @@ def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
     )
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="body")
 
+    if kind == "Question paper":
+        def record_question_end(flowable) -> None:
+            if isinstance(flowable, Paragraph) and flowable.getPlainText() == "END OF QUESTION PAPER":
+                doc._question_paper_end_page = doc.page
+        doc.afterFlowable = record_question_end
+
     def draw_chrome(canvas, value) -> None:
         _chrome(canvas, value, paper.paper_code, kind)
 
@@ -2351,6 +2008,28 @@ def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
                 ),
             )
         )
+        templates.append(
+            PageTemplate(
+                id="ocr-mark-scheme-content",
+                frames=[
+                    Frame(
+                        42.54,
+                        38,
+                        726.96,
+                        height - 56.16 - 38,
+                        leftPadding=0,
+                        rightPadding=0,
+                        topPadding=0,
+                        bottomPadding=0,
+                        id="mark-scheme-content",
+                    )
+                ],
+                pagesize=OCR_MARK_SCHEME_LANDSCAPE_SIZE,
+                onPage=lambda canvas, value: _chrome(
+                    canvas, value, paper.paper_code, kind
+                ),
+            )
+        )
         final_width, final_height = OCR_MARK_SCHEME_FINAL_SIZE
         final_frame = Frame(
             18 * mm,
@@ -2376,13 +2055,16 @@ def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
 def _chrome(canvas, doc, code: str, kind: str) -> None:
     canvas.saveState()
     page_width, page_height = canvas._pagesize
+    if doc.page == 1:
+        canvas.restoreState()
+        return
     if kind == "Question paper" and doc.page > 1:
         canvas.setFillColor(INK)
         canvas.setFont(FONT, 11)
         canvas.drawCentredString(page_width / 2, page_height - 18.8 * mm, str(doc.page))
         canvas.setFont(FONT, 6)
         canvas.drawString(21.5 * mm, 20.2 * mm, code)
-        if doc.page % 2 == 1:
+        if doc.page % 2 == 1 and getattr(doc, "_question_paper_end_page", None) != doc.page:
             canvas.setFont(FONT_BOLD, 10)
             canvas.drawRightString(page_width - 23 * mm, 21.2 * mm, "Turn over")
         canvas.restoreState()
@@ -2403,6 +2085,12 @@ def _chrome(canvas, doc, code: str, kind: str) -> None:
 
 _base = getSampleStyleSheet()
 STYLES = {
+    "scheme": ParagraphStyle(
+        "scheme",
+        fontName=FONT,
+        fontSize=11,
+        leading=13,
+    ),
     "body": ParagraphStyle(
         "body", parent=_base["BodyText"], fontName=FONT, fontSize=11, leading=14
     ),

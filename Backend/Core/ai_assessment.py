@@ -50,7 +50,7 @@ from Backend.Core.reference_demand import (
 )
 
 LOGGER = logging.getLogger(__name__)
-ASSESSMENT_REVIEW_VERSION = "assessment-review-v2"
+ASSESSMENT_REVIEW_VERSION = "assessment-review-v3-source-scope"
 
 
 class AssessmentLLMClient(Protocol):
@@ -734,20 +734,14 @@ def _independently_validate_candidate(
     }
     if any(candidate.authoring_context.get(key) != task.question.authoring_context[key] for key in numeric_fields):
         raise ValueError(f"question {candidate.number} changed immutable numeric source contract")
-    contract = contract_for_question(candidate)
-    sources = list(contract.evidence)
-    known_ids = {source.id for source in sources}
-    for index, text in enumerate(task.option.stimulus, start=1):
-        if not text.strip():
-            continue
-        source_id = (
-            candidate.source_references[index - 1]
-            if index <= len(candidate.source_references)
-            else f"stimulus-{index}"
-        )
-        if source_id not in known_ids:
-            sources.append(EvidenceRecord(id=source_id, text=text))
-            known_ids.add(source_id)
+    contract_for_question(candidate)  # Retain full contract validation before model use.
+    # The option may contain planning extracts that its specialist renderer
+    # never prints (e.g. Accounting 14.2 uses the company-statement case).
+    # A blind solver must see the same public evidence as the writer/reviewer.
+    sources = [
+        EvidenceRecord.model_validate(source)
+        for source in _task_source(task).get("evidence", [])
+    ]
     solution = IndependentSolver(client).solve(candidate, sources)
     result = reconcile_solution(solution, candidate)
     if not result.passed:
@@ -1780,29 +1774,111 @@ def _bounded_text(value: Any, *, name: str, limit: int) -> str:
 
 
 def _task_source(task: _Task) -> dict[str, object]:
-    if task.question.authoring_context:
-        return {
+    context = task.question.authoring_context
+    # These adapters publish question-owned source contracts instead of the
+    # generic option extracts. Mere authoring metadata (word budgets, AO labels)
+    # must not hide a case that the question actually asks the candidate to use.
+    owns_source = any(
+        key in context
+        for key in (
+            "candidate_source",
+            "referenced_question_data",
+            "source_data",
+            "numeric_input_contract",
+            "selected_response_contract",
+            "cs_input_contract",
+            "sql_answer_contract",
+            "calculation_variables",
+            "opening_balances",
+            "transactions_at_start_of_year",
+            "adjustment_source_data",
+        )
+    )
+    if context:
+        source: dict[str, object] = {
             "title": task.option.title,
-            "question_context": task.question.authoring_context,
+            "question_context": context,
             "source_references": task.question.source_references,
         }
-    if not _question_uses_option_source(task):
-        return {
-            "scope": "self_contained_question",
-            "source_references": [],
-            "instruction": (
-                "The question stem is authoritative. Do not import facts or "
-                "figures from the surrounding option or case study."
-            ),
+    else:
+        source = {
+            "title": task.option.title,
+            "source_references": task.question.source_references,
         }
-    return {
-        "title": task.option.title,
-        "stimulus": task.option.stimulus,
-        "chart_title": task.option.chart_title,
-        "chart_labels": task.option.chart_labels,
-        "chart_values": task.option.chart_values,
-        "source_references": task.question.source_references,
-    }
+
+    explicit = task.question.contract
+    raw_contract = context.get("assessment_contract")
+    evidence = (
+        list(explicit.evidence)
+        if explicit is not None
+        else [
+            EvidenceRecord.model_validate(record)
+            for record in (
+                raw_contract.get("evidence", [])
+                if isinstance(raw_contract, dict)
+                else []
+            )
+        ]
+    )
+    known = {record.id: record for record in evidence}
+    if not owns_source and _question_uses_option_source(task):
+        stimulus = []
+        for index, text in enumerate(task.option.stimulus, start=1):
+            identifier = (
+                task.question.source_references[index - 1]
+                if index <= len(task.question.source_references)
+                else f"stimulus-{index}"
+            )
+            # Both sources claim the same printed evidence ID. Reject a conflict
+            # rather than hiding printed text from any of the reviewers.
+            if identifier in known:
+                if known[identifier].text != text:
+                    raise ValueError(
+                        f"Conflicting candidate-visible evidence: {identifier}"
+                    )
+            elif text.strip():
+                record = EvidenceRecord(id=identifier, text=text)
+                evidence.append(record)
+                known[identifier] = record
+            stimulus.append(text)
+        source.update(
+            {
+                "stimulus": stimulus,
+                "chart_title": task.option.chart_title,
+                "chart_labels": task.option.chart_labels,
+                "chart_values": task.option.chart_values,
+            }
+        )
+        if task.option.chart_labels or task.option.chart_values:
+            identifier = f"{task.option.id}:chart"
+            chart_text = json.dumps(
+                {
+                    "chart_title": task.option.chart_title,
+                    "chart_labels": task.option.chart_labels,
+                    "chart_values": task.option.chart_values,
+                },
+                ensure_ascii=False,
+            )
+            if identifier in known:
+                if known[identifier].text != chart_text:
+                    raise ValueError(
+                        f"Conflicting candidate-visible evidence: {identifier}"
+                    )
+            else:
+                evidence.append(EvidenceRecord(id=identifier, text=chart_text))
+    elif not owns_source:
+        source.update(
+            {
+                "scope": "self_contained_question",
+                "instruction": (
+                    "The question stem is authoritative. Do not import facts or "
+                    "figures from the surrounding option or case study."
+                ),
+            }
+        )
+    if evidence:
+        source["evidence"] = [record.model_dump(mode="json") for record in evidence]
+    return source
 
 
 def _demand_item(task: _Task) -> dict[str, object]:
@@ -1819,9 +1895,19 @@ def _difficulty_candidate(
     task: _Task,
     candidate: GeneratedQuestion,
 ) -> object:
-    return shared_difficulty_candidate_projection(
+    projection = shared_difficulty_candidate_projection(
         question=candidate,
         option=task.option,
+    )
+    # Keep the full parent identity for conservative checkpoint invalidation;
+    # only the model-visible view excludes unprinted planning material.
+    return projection.model_copy(
+        update={
+            "review_content": {
+                **projection.review_content,
+                "parent_source": _task_source(task),
+            }
+        }
     )
 
 
@@ -1837,7 +1923,7 @@ def _difficulty_specification(task: _Task) -> dict[str, object]:
 
 
 _OPTION_SOURCE_CUE = re.compile(
-    r"\b(?:appendix|case|chart|data|evidence|extract|figure|information|source|table)\b",
+    r"\b(?:appendix|appendices|cases?|charts?|data|evidence|extracts?|figures?|information|sources?|tables?)\b",
     flags=re.IGNORECASE,
 )
 

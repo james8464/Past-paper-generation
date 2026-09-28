@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -28,6 +29,7 @@ ResponseMode = Literal[
     "multi-selected",
     "result",
     "sequence",
+    "relations",
 ]
 
 
@@ -57,6 +59,14 @@ def derive_task_semantics(
     has_options = isinstance(options, list) and bool(options)
     slots = response_slots if isinstance(response_slots, list) else []
 
+    if text.startswith(("explain ", "describe ")) and operation not in {"explain", "describe", "analyse"}:
+        return None
+    # A prose operation cannot override an explicit construction instruction.
+    if operation not in {"program", "complete-code"} and re.match(
+        r"(?:write|create|develop|implement|complete)\b.*\b(?:code|pseudocode|program|function|procedure|algorithm|select|insert|update|delete|create table)\b", text
+    ):
+        return None
+
     if has_options and operation in {
         "retrieve",
         "describe",
@@ -79,6 +89,8 @@ def derive_task_semantics(
             return "represent", "table"
         if any(word in text for word in ("tree", "diagram", "relationship")):
             return "represent", "diagram"
+    if operation == "represent" and "normalised" in text and "relations" in text:
+        return "represent", "relations"
     if operation == "trace" and "table" in text:
         return "trace", "table"
     if slots and operation in {

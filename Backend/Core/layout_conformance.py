@@ -12,6 +12,10 @@ from Backend.Core.layout_master import (
     PageCountPolicy,
     conform_pdf_to_box_template,
 )
+from Backend.Core.ocr_scheme_content import (
+    OCR_ECONOMICS_SCHEME_PAGINATION,
+    verify_ocr_scheme_content,
+)
 from Backend.Core.paths import REPO_ROOT
 
 REGISTRY_PATH = REPO_ROOT / "Resources" / "layout-master-runtime.json"
@@ -26,6 +30,8 @@ def runtime_page_count_policy(
     """Generated-content policy is not an observed reference-count range."""
     if family == "edexcel-economics" and role == "mark-scheme":
         return {"kind": EDEXCEL_SCHEME_PAGINATION}
+    if family == "ocr-economics" and role == "mark-scheme":
+        return {"kind": OCR_ECONOMICS_SCHEME_PAGINATION}
     if family == "aqa-computer-science" and role == "mark-scheme":
         if paper == "1":
             return {"kind": AQA_CS_PAPER1_SCHEME_PAGINATION}
@@ -324,6 +330,25 @@ def conform_generated_documents(
         if not generated_path or not master:
             continue
         policy_payload = master.get("page_count_policy")
+        if policy_payload and policy_payload.get("kind") == OCR_ECONOMICS_SCHEME_PAGINATION:
+            if subject != "economics_ocr" or record.get("family") != "ocr-economics" or generated_role != "mark_scheme":
+                raise LayoutConformanceError("OCR scheme pagination policy cannot apply to this document")
+            results[generated_role] = verify_ocr_scheme_content(
+                generated_path, paths.get("assessment_package"), paper=paper,
+                reference_count=int(master["page_count"]),
+            )
+            # Overflow retains the landscape marking grid, not the reference's
+            # portrait colophon simply because its fixed page index was reached.
+            measured = master["page_boxes"]
+            landscape = next(box for box in measured if box["media"][2] > box["media"][3])
+            with fitz.open(generated_path) as document:
+                boxes = [
+                    measured[index] if index < 10 else measured[-1]
+                    if index == len(document) - 1 else landscape
+                    for index in range(len(document))
+                ]
+            conform_pdf_to_box_template(generated_path, boxes, strict_page_count=False)
+            continue
         if policy_payload and policy_payload.get("kind") in {
             AQA_CS_SCHEME_PAGINATION, AQA_CS_PAPER1_SCHEME_PAGINATION,
         }:

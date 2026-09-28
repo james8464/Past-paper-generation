@@ -77,7 +77,9 @@ def calibrate_blueprint(paper: PaperBlueprint) -> PaperBlueprint:
     policy = objective_policy_for("7517")
     for question in paper.questions:
         allocations = (
-            BANKS[question.style_id] if paper.assessment_kind == "question-bank"
+            [tuple(part.assessment_objectives.get(f"AO{i}", 0) for i in (1, 2, 3)) for part in question.parts]
+            if paper.assessment_kind == "question-bank" and all(part.assessment_objectives for part in question.parts)
+            else BANKS[question.style_id] if paper.assessment_kind == "question-bank"
             else PAPER2[question.style_id] if paper.paper_number == "2"
             else None
         )
@@ -115,7 +117,7 @@ def calibrate_blueprint(paper: PaperBlueprint) -> PaperBlueprint:
                 operation = "judge"
             part.task_operation = operation
             part.reference_source_dependency = (
-                "task-context" if question.stimulus else "self-contained"
+                "task-context" if question.stimulus or part.reference_source_dependency == "task-context" else "self-contained"
             )
             part.reference_task_contract = _reference_task_contract(question, part)
             if paper.assessment_kind == "question-bank" and part.marking.levels:

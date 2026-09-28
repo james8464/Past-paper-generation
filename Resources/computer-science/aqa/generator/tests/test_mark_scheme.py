@@ -57,8 +57,21 @@ def test_mark_scheme_cover_uses_shared_measured_title_grid(tmp_path):
     try:
         page = document[0]
         assert page.search_for("PAPER")[0].x0 == pytest.approx(46.8, abs=2)
-        assert page.search_for("A-level")[0].y0 == pytest.approx(160.3, abs=3)
-        assert page.search_for("Mark scheme")[0].y0 == pytest.approx(308.7, abs=3)
+        spans = [
+            span
+            for block in page.get_text("dict")["blocks"]
+            for line in block.get("lines", [])
+            for span in line["spans"]
+        ]
+        for text, baseline in (("A-level", 190.3), ("Mark scheme", 323.6)):
+            span = next(span for span in spans if span["text"] == text)
+            assert span["origin"][1] == pytest.approx(baseline, abs=0.2)
+        rules = [drawing for drawing in page.get_drawings() if drawing["rect"].width > 500]
+        assert any(
+            rule["rect"].y0 == pytest.approx(305.7, abs=0.2) and rule["width"] == 3
+            for rule in rules
+        )
+        assert any(rule["rect"].y0 == pytest.approx(360.4, abs=0.2) for rule in rules)
     finally:
         document.close()
 

@@ -14,7 +14,7 @@ from Backend.Core.candidate_paths import (
 )
 
 EXTRACTION_POLICY = "edition-leaf-path-features-v2"
-TOPIC_POLICY = "aqa-topic-operation-records-v2"
+TOPIC_POLICY = "aqa-topic-operation-records-v3"
 UNQUALIFIED_POLICY = "unqualified-reference-v1"
 COMPARABLE_METRICS = (
     "mark_band_distribution",
@@ -250,6 +250,7 @@ class QuarantinedForm(SourceIdentity):
 
 class TopicRecord(UnknownLearnerFeatures):
     id: Text
+    content_focus: str
     year: int = Field(ge=2000, le=2100)
     paper: Literal["1", "2"]
     item: Text
@@ -262,6 +263,7 @@ class TopicRecord(UnknownLearnerFeatures):
     assessment_objectives: Objectives | None
     objective_basis: Literal["unknown", "published-item-allocation"]
     operation: Literal[
+        "judge",
         "explain",
         "describe",
         "analyse",
@@ -283,6 +285,7 @@ class TopicRecord(UnknownLearnerFeatures):
         "selected",
         "relations",
         "multi-selected",
+        "sequence",
         "unknown",
     ]
     feature_basis: Literal["reviewed-task-inference"]

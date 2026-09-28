@@ -349,6 +349,7 @@ def build_item_demand_target(
             "design",
             "program",
             "trace",
+            "represent",
         }
         if task_operation not in allowed_operations:
             raise ValueError("demand item has an invalid task operation")

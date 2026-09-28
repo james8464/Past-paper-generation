@@ -57,10 +57,7 @@ def test_aqa_additional_page_matches_measured_response_grid(tmp_path: Path) -> N
 
         lines = sorted(_horizontal_lines(page), key=lambda rect: rect.y0)
         ruled = [line for line in lines if 95 < line.y0 < 749]
-        gaps = [
-            right.y0 - left.y0
-            for left, right in itertools.pairwise(ruled)
-        ]
+        gaps = [right.y0 - left.y0 for left, right in itertools.pairwise(ruled)]
         assert len(ruled) >= 25
         assert 24.5 <= sorted(gaps)[len(gaps) // 2] <= 26.5
 
@@ -70,6 +67,100 @@ def test_aqa_additional_page_matches_measured_response_grid(tmp_path: Path) -> N
         assert "Independent practice material" not in text
     finally:
         document.close()
+
+
+def test_aqa_answer_grid_prints_black_with_full_size_header(tmp_path: Path) -> None:
+    """Catch inherited grey strokes and small type on the shared answer shell."""
+    document = _render(
+        tmp_path,
+        ExamPageProfile("aqa", "7127/2", "Additional page, if required", "additional"),
+    )
+    try:
+        page = document[0]
+        rules = [
+            d for d in page.get_drawings() if d["rect"].width > 400 and d["type"] == "s"
+        ]
+        assert rules and all(d["color"] == (0, 0, 0) for d in rules)
+        spans = [
+            s
+            for b in page.get_text("dict")["blocks"]
+            for line in b.get("lines", [])
+            for s in line["spans"]
+        ]
+        heading = next(s for s in spans if s["text"].startswith("Additional page"))
+        instruction = next(
+            s for s in spans if s["text"].startswith("Write the question")
+        )
+        assert heading["size"] == pytest.approx(10.56, abs=0.1)
+        assert instruction["size"] == pytest.approx(10.56, abs=0.1)
+        assert heading["origin"][1] == pytest.approx(80.76, abs=0.2)
+        assert instruction["origin"][1] == pytest.approx(92.88, abs=0.2)
+        assert instruction["font"].endswith("Bold")
+    finally:
+        document.close()
+
+
+@pytest.mark.parametrize(
+    "module_name", ["aqaaccountgen.render_pdf", "aqabizgen.render_pdf"]
+)
+def test_aqa_final_blank_uses_page_coordinates_not_remaining_flow_height(
+    tmp_path: Path, module_name: str
+) -> None:
+    """A legal note must not shorten the diagonal or move the central warning."""
+    import importlib
+
+    from reportlab.platypus import SimpleDocTemplate
+
+    renderer = importlib.import_module(module_name)
+    path = tmp_path / "final-blank.pdf"
+    SimpleDocTemplate(str(path), pagesize=A4).build(
+        renderer._no_questions_page(include_legal_notice=True)
+    )
+    with fitz.open(path) as document:
+        page = document[0]
+        warning = page.search_for("DO NOT WRITE ON THIS PAGE")[0]
+        assert 390 < warning.y0 < 410
+        diagonal = [
+            d["rect"]
+            for d in page.get_drawings()
+            if 420 < d["rect"].width < 430 and d["rect"].height > 600
+        ]
+        assert len(diagonal) == 1
+        assert tuple(diagonal[0]) == pytest.approx((114, 54, 538.6, 662.1), abs=3)
+        assert "Independent practice material" in page.get_text()
+
+
+def test_accounting_first_mcq_page_explains_selection_and_correction_before_questions(
+    tmp_path,
+):
+    from aqaaccountgen.configs import RULES
+    from aqaaccountgen.generator import build_paper
+    from aqaaccountgen.render_pdf import render_question_paper
+    from aqaaccountgen.syllabus import load_syllabus
+
+    syllabus = load_syllabus(
+        Path("Resources/accounting/aqa/generator/data/syllabus.json")
+    )
+    paper = build_paper(RULES["paper_1"], syllabus, 42)
+    path = tmp_path / "accounting.pdf"
+    render_question_paper(paper, path)
+    with fitz.open(path) as document:
+        page = document[1]
+        assert "one answer" in page.get_text()
+        assert "cross out" in page.get_text()
+        assert "ring" in page.get_text()
+        panel = next(
+            d
+            for d in page.get_drawings()
+            if d["rect"].width > 450 and 156 < d["rect"].height < 158
+        )
+        corners = [item for item in panel["items"] if item[0] == "c"]
+        assert len(corners) == 4
+        # Source radius is 26.125pt, not a square or token-size corner.
+        assert abs(corners[0][-1].x - corners[0][1].x) == pytest.approx(26.125, abs=0.2)
+        prompt = paper.sections[0].options[0].questions[0].prompt
+        assert 295 < page.search_for(prompt)[0].y0 < 330
+        assert len(document) == 36
 
 
 def test_aqa_legal_notice_page_reserves_the_measured_lower_region(
@@ -205,8 +296,7 @@ def test_aqa_do_not_write_blank_matches_measured_diagonal_shell(
         diagonal = next(
             drawing["rect"]
             for drawing in page.get_drawings()
-            if 420 < drawing["rect"].width < 430
-            and 600 < drawing["rect"].height < 620
+            if 420 < drawing["rect"].width < 430 and 600 < drawing["rect"].height < 620
         )
         assert tuple(diagonal) == pytest.approx((114, 54, 538.6, 662.1), abs=3)
         footer = next(
@@ -219,8 +309,7 @@ def test_aqa_do_not_write_blank_matches_measured_diagonal_shell(
         barcode_bars = [
             drawing["rect"]
             for drawing in page.get_drawings()
-            if drawing.get("fill") == (0.0, 0.0, 0.0)
-            and drawing["rect"].height > 20
+            if drawing.get("fill") == (0.0, 0.0, 0.0) and drawing["rect"].height > 20
         ]
         assert not any(footer.intersects(bar) for bar in barcode_bars)
     finally:

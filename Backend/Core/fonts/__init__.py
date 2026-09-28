@@ -8,6 +8,12 @@ from reportlab.pdfbase.ttfonts import TTFont
 _FONTS_DIR = Path(__file__).resolve().parent
 
 FONT_CANDIDATES: dict[str, list[tuple[str, int]]] = {
+    "ExamCover-Medium": [
+        (str(_FONTS_DIR / "opensans" / "OpenSans-Medium.ttf"), 0),
+    ],
+    "ExamCover-SemiBold": [
+        (str(_FONTS_DIR / "opensans" / "OpenSans-SemiBold.ttf"), 0),
+    ],
     "ExamSans": [
         (str(_FONTS_DIR / "arimo" / "Arimo-Regular.ttf"), 0),
         ("/System/Library/Fonts/HelveticaNeue.ttc", 0),

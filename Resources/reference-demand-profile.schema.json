@@ -55,7 +55,7 @@
           "evidence_policy_id": {
             "enum": [
               "edition-leaf-path-features-v2",
-              "aqa-topic-operation-records-v2",
+              "aqa-topic-operation-records-v3",
               "unqualified-reference-v1"
             ]
           },
@@ -196,7 +196,7 @@
             "if": {
               "properties": {
                 "evidence_policy_id": {
-                  "const": "aqa-topic-operation-records-v2"
+                  "const": "aqa-topic-operation-records-v3"
                 }
               }
             },

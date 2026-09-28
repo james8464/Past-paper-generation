@@ -313,7 +313,8 @@ def test_data_structures_bank_includes_sustained_comparison_demand() -> None:
     choice = next(q for q in bank.questions if q.style_id == "data_structures_choice")
 
     assert [part.marks for part in choice.parts] == [2, 4]
-    assert choice.parts[1].prompt.startswith("Compare")
+    assert choice.parts[1].task_operation == "judge"
+    assert "advantages and disadvantages" in choice.parts[1].prompt
     assert len(choice.parts[1].marking.points) == 4
     assert "references" in choice.stem
     assert bank.total_marks == 30

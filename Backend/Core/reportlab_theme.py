@@ -81,10 +81,33 @@ class AQACompactAnswerLines(AnswerLineFlowable):
 
 
 class OCRAnswerLines(AnswerLineFlowable):
-    def __init__(self, count: int, *, spacing_mm: float = 6.0) -> None:
-        super().__init__(count, spacing_mm=spacing_mm)
+    """OCR dotted writing rules inside the existing allocated answer area.
+
+    Reviewed 2024 H446/02 p29 and H460/01 p17 use Arial 11 full stops,
+    #231f20 ink and 26.004pt baseline pitch, not pale dashed vector strokes.
+    Legacy count/spacing still determines the area, so matching the printed
+    ruling pitch does not move questions or create extra pages.
+    """
+
+    def __init__(self, count: int, *, spacing_mm: float = 6.0, width_mm: float = 167) -> None:
+        super().__init__(count, width_mm=width_mm, spacing_mm=spacing_mm, colour="#231f20", dashed=False)
+
+    def draw(self) -> None:
+        from reportlab.pdfbase.pdfmetrics import stringWidth
+
+        from Backend.Core.fonts import register_fonts
+
+        register_fonts("AQAArial", "AQAArial-Bold")
+        self.canv.setFont("AQAArial", 11)
+        self.canv.setFillColor(self.colour)
+        dots = "." * int(self.width / stringWidth(".", "AQAArial", 11))
+        pitch = 26.0
+        rows = max(1, int(self.height / pitch))
+        first_offset = min(self.height, pitch)
+        for index in range(rows):
+            self.canv.drawString(0, self.height - first_offset - index * pitch, dots)
 
 
-class OCRComputerScienceAnswerLines(AnswerLineFlowable):
+class OCRComputerScienceAnswerLines(OCRAnswerLines):
     def __init__(self, count: int) -> None:
-        super().__init__(count, width_mm=165, spacing_mm=4.7, colour="#666666")
+        super().__init__(count, width_mm=165, spacing_mm=4.7)

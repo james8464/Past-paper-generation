@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import subprocess
 
+import pytest
 from cspapergen.cli import generate_package
 from cspapergen.generator import build_paper1_blueprint
 from cspapergen.syllabus import load_syllabus
@@ -68,11 +69,19 @@ def test_paper1_package_contains_all_on_screen_exam_artifacts(tmp_path) -> None:
     assert all(path.exists() and path.stat().st_size > 0 for path in paths.values())
     assert paths["question_paper"].name == "cs-paper-1-question-paper.pdf"
     assert paths["preliminary_material"].name == "cs-paper-1-preliminary-material.pdf"
-    assert paths["electronic_answer_document"].name == "cs-paper-1-electronic-answer-document.pdf"
+    assert (
+        paths["electronic_answer_document"].name
+        == "cs-paper-1-electronic-answer-document.pdf"
+    )
     assert paths["skeleton_program"].suffix == ".py"
     assert paths["data_file"].suffix == ".txt"
 
-    for role in ("question_paper", "preliminary_material", "electronic_answer_document", "mark_scheme"):
+    for role in (
+        "question_paper",
+        "preliminary_material",
+        "electronic_answer_document",
+        "mark_scheme",
+    ):
         info = subprocess.check_output(["pdfinfo", str(paths[role])], text=True)
         assert "Page size:       595.32 x 841.92 pts (A4)" in info
 
@@ -122,7 +131,29 @@ def test_paper1_finite_state_question_includes_diagram_and_table(tmp_path) -> No
         assert "Figure 6" in text
         assert "Current state" in text
         assert "S0" in text and "S1" in text and "S2" in text
-        assert len(page.get_drawings()) >= 70
+        # Count the actual FSM nodes, not unrelated footer barcode strokes.
+        circles = [
+            d["rect"]
+            for d in page.get_drawings()
+            if len(d["items"]) == 4 and all(item[0] == "c" for item in d["items"])
+        ]
+        assert (
+            sum(
+                r.width == pytest.approx(44, abs=0.1)
+                and r.height == pytest.approx(44, abs=0.1)
+                for r in circles
+            )
+            == 3
+        )
+        assert (
+            sum(
+                r.width == pytest.approx(36, abs=0.1)
+                and r.height == pytest.approx(36, abs=0.1)
+                for r in circles
+            )
+            == 1
+        )
+        assert "Input 0" in text and "Input 1" in text
     finally:
         document.close()
 
@@ -145,10 +176,20 @@ def test_electronic_answer_document_has_one_fillable_field_per_part(tmp_path) ->
 
 
 def test_paper1_artifacts_change_between_seeds(tmp_path) -> None:
-    first = generate_package(output_dir=tmp_path / "a", paper="1", seed=11, dry_run=True)
-    second = generate_package(output_dir=tmp_path / "b", paper="1", seed=12, dry_run=True)
+    first = generate_package(
+        output_dir=tmp_path / "a", paper="1", seed=11, dry_run=True
+    )
+    second = generate_package(
+        output_dir=tmp_path / "b", paper="1", seed=12, dry_run=True
+    )
 
-    roles = {"question_paper", "preliminary_material", "skeleton_program", "data_file", "mark_scheme"}
+    roles = {
+        "question_paper",
+        "preliminary_material",
+        "skeleton_program",
+        "data_file",
+        "mark_scheme",
+    }
     for role in roles:
         first_hash = hashlib.sha256(first[role].read_bytes()).hexdigest()
         second_hash = hashlib.sha256(second[role].read_bytes()).hexdigest()
