@@ -39,6 +39,7 @@ def render_pdf_atomically(
     *,
     role: str,
     timeout_seconds: float = 30.0,
+    language: str = "en-GB",
 ) -> RenderResult:
     """Render one PDF role under a deadline and promote it atomically."""
     if not role.strip():
@@ -65,7 +66,7 @@ def render_pdf_atomically(
         with _render_deadline(role, timeout_seconds):
             renderer(temporary)
             _readable_page_count(temporary, role)
-            add_page_structure_tree(temporary)
+            add_page_structure_tree(temporary, language=language)
         pages = _readable_page_count(temporary, role)
         _sync_file(temporary)
         os.replace(temporary, destination)

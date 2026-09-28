@@ -72,8 +72,16 @@ class HostedLLMClient:
             "Provider could not return valid structured output."
         ) from last_error
 
-    def _ollama(self, prompt: str) -> dict[str, object]:
-        schema = _ollama_json_schema(prompt)
+    def _ollama(
+        self,
+        prompt: str,
+        *,
+        schema: dict | None = None,
+        output_budget: int | None = None,
+        seed: int | None = None,
+        request_function: Any | None = None,
+    ) -> dict[str, object]:
+        schema = _ollama_json_schema(prompt) if schema is None else schema
         payload = json.dumps(
             {
                 "model": self.model,
@@ -85,14 +93,16 @@ class HostedLLMClient:
                     "temperature": _ollama_temperature(prompt),
                     "top_p": 0.9,
                     "num_ctx": 16384,
-                    "num_predict": _ollama_output_budget(schema),
+                    "num_predict": _ollama_output_budget(schema)
+                    if output_budget is None
+                    else output_budget,
                     "repeat_last_n": 256,
                     "repeat_penalty": 1.15,
-                    "seed": _ollama_seed(prompt),
+                    "seed": _ollama_seed(prompt) if seed is None else seed,
                 },
             }
         ).encode("utf-8")
-        request = urllib_request(
+        request = (request_function or urllib_request)(
             f"{self.base_url}/api/chat",
             payload,
             {"Content-Type": "application/json"},
@@ -109,7 +119,10 @@ class HostedLLMClient:
             "done": raw_dict.get("done"),
             "output_tokens": raw_dict.get("eval_count"),
         }
-        if raw_dict.get("done") is not True or raw_dict.get("done_reason") not in {None, "stop"}:
+        if raw_dict.get("done") is not True or raw_dict.get("done_reason") not in {
+            None,
+            "stop",
+        }:
             raise GenerationEvidenceError(
                 "Ollama returned incomplete structured output.", details=diagnostic
             )

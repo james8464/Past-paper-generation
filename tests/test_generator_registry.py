@@ -22,7 +22,7 @@ def test_registry_is_the_canonical_backend_subject_list() -> None:
         if family["advertised"]
     ]
 
-    assert payload["schema_version"] == 4
+    assert payload["schema_version"] == 5
     assert generator_subjects() == tuple(advertised)
     assert set(generator_capabilities()) == set(advertised)
 

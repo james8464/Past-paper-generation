@@ -125,7 +125,7 @@ class MigrationValidator:
         declared = [str(value) for value in family.get("declared_papers", [])]
         output_map = family.get("outputs_by_paper", {})
         if (
-            registry.get("schema_version") != 4
+            registry.get("schema_version") not in {4, 5}
             or family.get("manifest_version") != 1
             or required - set(family)
             or not isinstance(papers, list)

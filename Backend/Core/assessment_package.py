@@ -58,6 +58,11 @@ def load_assessment_package(path: Path) -> dict[str, Any]:
             "Assessment package must contain a JSON object."
         )
     version = document.get("schema_version", 0)
+    if version == 2:
+        from Backend.Core.france.pipeline import validate_package
+
+        validate_package(document)
+        return document
     if version == 1:
         objective_policy_for(str(document.get("subject", ""))).validate(document)
         return document

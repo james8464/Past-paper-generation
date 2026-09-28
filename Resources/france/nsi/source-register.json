@@ -8,21 +8,25 @@
   "documents": [
     {
       "id": "nsi-terminale-programme-2019", "category": "programme", "authority": "MEN",
+      "sha256": "10ce34666edd722a3d8d86642a9f1ac205c7a9d128d6142a17effcba2fb85e69",
       "url": "https://eduscol.education.gouv.fr/sites/default/files/document/spe247annexe1158933pdf-89502.pdf",
       "session": 2019, "centre": "national", "rights": "reference-only", "split": "reference"
     },
     {
       "id": "nsi-language-rubric-2027", "category": "assessment_rules", "authority": "MEN",
+      "sha256": "3d7307051eb3b752e741abf80ab1cf048418b86794e49593551eceb7695c87af",
       "url": "https://www.education.gouv.fr/sites/default/files/document/annexe-attendus-et-observables-redactionnels-520693.pdf",
       "session": 2027, "centre": "national", "rights": "reference-only", "split": "reference"
     },
     {
       "id": "nsi-metropole-j1-2026", "category": "official_paper", "authority": "MEN",
+      "sha256": "0b50b046d287ef40d8059fd07bd2db3b7a32f54cb29ca8c68b3c9ecab3662f73",
       "url": "https://www.education.gouv.fr/sites/default/files/document/baccalaureat-general-2026-numerique-et-sciences-informatiques-517601.pdf",
       "session": 2026, "centre": "metropole", "rights": "reference-only", "split": "reference"
     },
     {
       "id": "nsi-centres-etrangers-j1-2026", "category": "official_paper", "authority": "MEN",
+      "sha256": "c13b6239c516ab3fee3f59852f4e2d2f479ad00032ffcf8957c662a4ce641006",
       "url": "https://www.education.gouv.fr/sites/default/files/document/baccalaureat-general-2026-numerique-et-sciences-informatiques-jour-1-517250.pdf",
       "session": 2026, "centre": "centres-etrangers-groupe-1", "rights": "reference-only", "split": "holdout"
     }

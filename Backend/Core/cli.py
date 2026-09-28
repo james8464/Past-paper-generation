@@ -74,7 +74,42 @@ def build_parser() -> argparse.ArgumentParser:
     generate.add_argument("--dry-run", action="store_true")
     generate.add_argument("--notes", default="")
     generate.set_defaults(handler=handle_generate)
+
+    assessment = subparsers.add_parser("generate-assessment", help="Generate a national-framework practice assessment")
+    assessment.add_argument("--assessment", required=True)
+    assessment.add_argument("--reference-index", type=Path, required=True)
+    assessment.add_argument("--output", default=str(DEFAULT_OUTPUT_DIR))
+    assessment.add_argument("--seed", type=int, required=True)
+    assessment.add_argument("--model", default=DEFAULT_MODEL)
+    assessment.add_argument("--provider", choices=["ollama"], default="ollama")
+    assessment.add_argument("--ollama-url", default=DEFAULT_OLLAMA_URL)
+    assessment.add_argument("--large-print", action="store_true")
+    assessment.add_argument("--allow-remote", action="store_true")
+    assessment.set_defaults(handler=handle_framework_generate)
+    references = subparsers.add_parser("prepare-french-references", help="Download the registered official French reference PDFs")
+    references.add_argument("--output", type=Path, required=True)
+    references.set_defaults(handler=handle_french_references)
     return parser
+
+
+def handle_framework_generate(args: argparse.Namespace) -> int:
+    from Backend.Core.france.runtime import handle_generate_assessment
+
+    return handle_generate_assessment(args)
+
+
+def handle_french_references(args: argparse.Namespace) -> int:
+    from Backend.Core.france.corpus import ingest
+    try:
+        report = ingest(REPO_ROOT / "Resources/france/nsi/source-register.json", args.output)
+        if report["failures"]:
+            emit("error", code="french_sources_incomplete", message="Téléchargement incomplet : " + "; ".join(item["error"] for item in report["failures"]))
+            return 1
+        emit("done", message="Sources initiales préparées. L'archive complète reste en cours de vérification.")
+        return 0
+    except Exception as error:
+        emit("error", message=str(error), code="french_sources_failed")
+        return 1
 
 
 def handle_bundle_check(_args: argparse.Namespace) -> int:

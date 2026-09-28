@@ -1,17 +1,26 @@
 """Local reference retrieval: scope first, text ranking second, no fallback."""
 
+import json
+import re
+import sqlite3
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from hashlib import sha256
-import json
 from pathlib import Path
-import re
-import sqlite3
 from urllib.parse import urlparse
 
 from Backend.Core.education_context import EducationContext
 
-CATEGORIES = frozenset({"programme", "assessment_rules", "official_paper", "official_correction", "academic_resource", "teacher_correction"})
+CATEGORIES = frozenset(
+    {
+        "programme",
+        "assessment_rules",
+        "official_paper",
+        "official_correction",
+        "academic_resource",
+        "teacher_correction",
+    }
+)
 
 
 class EvidenceGap(ValueError):
@@ -37,7 +46,10 @@ class SourceDocument:
         if not isinstance(self.context, EducationContext):
             raise ValueError("Source context is required")
         for name in ("id", "curriculum_version", "authority", "centre"):
-            if not isinstance(getattr(self, name), str) or not getattr(self, name).strip():
+            if (
+                not isinstance(getattr(self, name), str)
+                or not getattr(self, name).strip()
+            ):
                 raise ValueError(f"Missing source {name}")
         if self.category not in CATEGORIES:
             raise ValueError("Unknown source category")
@@ -92,31 +104,63 @@ class ReferenceIndex:
 
     @staticmethod
     def _json(value):
-        return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        return json.dumps(
+            value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        )
 
-    def add(self, source: SourceDocument, content: str | bytes, pages: list[tuple[int, str]]):
+    def add(
+        self, source: SourceDocument, content: str | bytes, pages: list[tuple[int, str]]
+    ):
         raw = content.encode("utf-8") if isinstance(content, str) else content
         if sha256(raw).hexdigest() != source.sha256:
             raise ValueError("Source content hash mismatch")
-        if not pages or any(type(page) is not int or page < 1 or not text.strip() for page, text in pages):
+        if not pages or any(
+            type(page) is not int or page < 1 or not text.strip()
+            for page, text in pages
+        ):
             raise ValueError("Non-empty numbered source pages are required")
         if len({page for page, _ in pages}) != len(pages):
             raise ValueError("Duplicate source page")
         metadata = self._json(asdict(source))
-        previous = self.connection.execute("SELECT metadata FROM sources WHERE id=?", (source.id,)).fetchone()
+        previous = self.connection.execute(
+            "SELECT metadata FROM sources WHERE id=?", (source.id,)
+        ).fetchone()
         if previous:
-            stored = self.connection.execute("SELECT page,text FROM chunks WHERE source_id=? ORDER BY page", (source.id,)).fetchall()
+            stored = self.connection.execute(
+                "SELECT page,text FROM chunks WHERE source_id=? ORDER BY page",
+                (source.id,),
+            ).fetchall()
             if previous[0] != metadata or stored != sorted(pages):
-                raise ValueError("Source identity already exists with different content or metadata")
+                raise ValueError(
+                    "Source identity already exists with different content or metadata"
+                )
             return
         with self.connection:
-            self.connection.execute("INSERT INTO sources VALUES (?,?,?,?,?,?)", (
-                source.id, self._json(source.context.to_dict()), source.curriculum_version,
-                source.category, source.split, metadata,
-            ))
-            self.connection.executemany("INSERT INTO chunks(source_id,page,text) VALUES (?,?,?)", [(source.id, page, text) for page, text in pages])
+            self.connection.execute(
+                "INSERT INTO sources VALUES (?,?,?,?,?,?)",
+                (
+                    source.id,
+                    self._json(source.context.to_dict()),
+                    source.curriculum_version,
+                    source.category,
+                    source.split,
+                    metadata,
+                ),
+            )
+            self.connection.executemany(
+                "INSERT INTO chunks(source_id,page,text) VALUES (?,?,?)",
+                [(source.id, page, text) for page, text in pages],
+            )
 
-    def retrieve(self, context: EducationContext, curriculum: str, query: str, *, categories: tuple[str, ...], limit: int = 4) -> list[ReferenceHit]:
+    def retrieve(
+        self,
+        context: EducationContext,
+        curriculum: str,
+        query: str,
+        *,
+        categories: tuple[str, ...],
+        limit: int = 4,
+    ) -> list[ReferenceHit]:
         if not isinstance(context, EducationContext) or not curriculum.strip():
             raise ValueError("Complete reference scope is required")
         if not categories or set(categories) - CATEGORIES or not 1 <= limit <= 20:
@@ -132,14 +176,31 @@ class ReferenceIndex:
         ).fetchall()
         with sqlite3.connect(":memory:") as ranking:
             ranking.execute("CREATE VIRTUAL TABLE ranked USING fts5(text)")
-            ranking.executemany("INSERT INTO ranked(rowid,text) VALUES (?,?)", [(row[0], row[2]) for row in eligible])
-            matches = ranking.execute("SELECT rowid FROM ranked WHERE ranked MATCH ? ORDER BY bm25(ranked),rowid LIMIT ?", (" OR ".join(f'"{token}"' for token in tokens), limit)).fetchall()
+            ranking.executemany(
+                "INSERT INTO ranked(rowid,text) VALUES (?,?)",
+                [(row[0], row[2]) for row in eligible],
+            )
+            matches = ranking.execute(
+                "SELECT rowid FROM ranked WHERE ranked MATCH ? ORDER BY bm25(ranked),rowid LIMIT ?",
+                (" OR ".join(f'"{token}"' for token in tokens), limit),
+            ).fetchall()
         by_id = {row[0]: row for row in eligible}
         hits = []
         for (row_id,) in matches:
             _, page, text, metadata = by_id[row_id]
             source = json.loads(metadata)
-            hits.append(ReferenceHit(source["id"], source["sha256"], page, text, source["url"], source["category"]))
+            hits.append(
+                ReferenceHit(
+                    source["id"],
+                    source["sha256"],
+                    page,
+                    text,
+                    source["url"],
+                    source["category"],
+                )
+            )
         if not hits:
-            raise EvidenceGap("Aucune référence compatible : ajoutez des sources vérifiées pour ce programme.")
+            raise EvidenceGap(
+                "Aucune référence compatible : ajoutez des sources vérifiées pour ce programme."
+            )
         return hits
