@@ -113,7 +113,7 @@ qualification; the stable runner must rerun/revalidate it.
 - Independent review exposed unsafe resume, interrupted stale evidence,
   model/source drift, subprocess cleanup, prompt-as-answer and labelled numeric
   alternative cases. Each was reproduced and corrected with regression tests.
-- Native macOS tests: 61 passed, no failures.
+- Native macOS tests: 61 passed, no failures, including the final-source refresh.
 - Renderer integration: 2,040 backend tests passed, 2 skipped; all 21 preview
   routes passed; local release build and signature/sandbox preflight passed.
   These precede the later source-scope and cover-font repairs and do not certify

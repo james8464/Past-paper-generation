@@ -61,7 +61,7 @@
 ### Integration and publication
 
 - [ ] Revalidate final-code live artifacts, topic support and PDF fidelity; record precise results and any genuine external limits.
-- [ ] Run complete backend/native tests, lint, release preflight and fresh independent code review.
+- [x] Run complete backend/native tests, lint, release preflight and fresh independent code review.
 - [ ] Refresh Graphify and inventory; commit, publish PR, pass required checks, merge and verify clean main.
 
 ## Execution notes
