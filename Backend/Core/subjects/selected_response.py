@@ -204,6 +204,15 @@ def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
             raise ValueError("economic shift has invalid public inputs") from error
         steps = ["Infer the new equilibrium from the candidate-visible curve shift."]
     elif contract.operation == "opportunity_cost_change":
+        prompt = item.get("prompt")
+        if not isinstance(prompt, str) or not all(
+            re.search(rf"\bproduct\s+{label}\b", prompt, re.IGNORECASE)
+            for label in ("x", "y")
+        ):
+            raise ValueError(
+                "opportunity-cost product labels must match product X and product Y "
+                "in the public stem and source-owned choices"
+            )
         _require_contract_shape(
             contract,
             {"primary_before", "secondary_before", "primary_after", "secondary_after"},

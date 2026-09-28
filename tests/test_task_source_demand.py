@@ -96,6 +96,7 @@ SELECTED_OPERATION_EXAMPLES = {
         "unit": "effect", "decimal_places": 0,
     },
     "opportunity_cost_change": {
+        "prompt": "Product X rises from 20 to 30 units while product Y falls from 80 to 68 units. What is the opportunity cost?",
         "inputs": {"primary_before": "20", "secondary_before": "80", "primary_after": "30", "secondary_after": "68"},
         "choices": ["12 units of product Y", "20 units of product Y", "10 units of product Y", "68 units of product Y"],
         "unit": "quantity", "decimal_places": 0,
@@ -158,8 +159,10 @@ SELECTED_OPERATION_EXAMPLES = {
 def _selected_operation_item(operation: str) -> dict[str, object]:
     example = deepcopy(SELECTED_OPERATION_EXAMPLES[operation])
     choices = example.pop("choices")
+    prompt = example.pop("prompt", "Select the correct answer.")
     return {
         "id": operation,
+        "prompt": prompt,
         "marks": 1,
         "kind": "multiple_choice",
         "choices": choices,
@@ -776,6 +779,9 @@ def test_new_economic_selected_responses_reject_invalid_public_domains(
     unit, decimal_places = units[operation]
     item = {
         "id": operation,
+        "prompt": SELECTED_OPERATION_EXAMPLES[operation].get(
+            "prompt", "Select the correct answer."
+        ),
         "marks": 1,
         "kind": "multiple_choice",
         "choices": choices,
