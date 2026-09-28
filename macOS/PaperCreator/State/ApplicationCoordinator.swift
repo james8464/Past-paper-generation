@@ -56,6 +56,7 @@ final class ApplicationCoordinator: ObservableObject {
     private var didReceiveBackendError = false
     private var didCancelRun = false
     private var activeOperation = RunningOperation.none
+    private var activeFrameworkID: String?
     private var etaTimer: AnyCancellable?
     private var pendingHostedProvider: AIProvider?
     private var preparedMLXModels: Set<String> = []
@@ -232,6 +233,70 @@ final class ApplicationCoordinator: ObservableObject {
         }
     }
 
+    var frenchReferencesFolder: URL {
+        let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support")
+        return support.appendingPathComponent("Paper Creator/French References", isDirectory: true)
+    }
+
+    var hasFrenchReferences: Bool {
+        FileManager.default.fileExists(atPath: frenchReferencesFolder.appendingPathComponent("references.sqlite").path)
+    }
+
+    func prepareFrenchReferences() {
+        startFrenchOperation(arguments: ["prepare-french-references", "--output", frenchReferencesFolder.path], seed: nil)
+    }
+
+    func generateFrenchPaper(largePrint: Bool) {
+        let seed = pendingGenerationSeed ?? Int.random(in: 1 ... Int(Int32.max))
+        pendingGenerationSeed = seed
+        let request = FrenchAssessmentRequest(
+            referenceIndex: frenchReferencesFolder.appendingPathComponent("references.sqlite"),
+            output: distributionMode == .appStore ? AppDefaults.appStoreWorkingFolder() : outputFolder,
+            model: selectedModel.trimmingCharacters(in: .whitespacesAndNewlines),
+            seed: seed, largePrint: largePrint
+        )
+        startFrenchOperation(arguments: request.arguments, seed: seed)
+    }
+
+    private func startFrenchOperation(arguments: [String], seed: Int?) {
+        guard !isRunning, !benchmarkCoordinator.isRunning else { return }
+        activeFrameworkID = FrenchAssessmentRequest.assessmentID
+        didReceiveBackendError = false
+        didCancelRun = false
+        progressEntries.removeAll()
+        generatedFiles.removeAll()
+        lastQualityReport = nil
+        isRunning = true
+        activeOperation = .generation
+        status = String(localized: "Preparing French assessment")
+        generationProgress = nil
+        do {
+            if let seed {
+                try generationCoordinator.begin(GenerationJobRecord(
+                    configuration: GenerationConfiguration(
+                        boardID: "fr-national-nsi", paperID: "written-2027", provider: "ollama",
+                        model: selectedModel, seed: seed, dryRun: false,
+                        educationSystem: "fr-national", assessmentID: FrenchAssessmentRequest.assessmentID,
+                        documentLanguage: "fr-FR"
+                    ),
+                    provenance: GenerationProvenance(
+                        appVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "development",
+                        provider: "ollama", model: selectedModel
+                    ), state: .pending, artifacts: [],
+                    qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
+                ))
+            }
+            runningProcess = try backend.run(arguments: arguments) { [weak self] event in
+                self?.apply(event)
+            } onFinish: { [weak self] result in
+                self?.finishGeneration(result)
+            }
+        } catch {
+            finishGeneration(.failure(error))
+        }
+    }
+
     func chooseOutputFolder() {
         guard !isRunning else { return }
         let panel = NSOpenPanel()
@@ -349,6 +414,16 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     private func applyConfiguration(_ record: GenerationJobRecord, seed: Int?) {
+        if record.configuration.assessmentID == FrenchAssessmentRequest.assessmentID {
+            guard !isRunning, record.configuration.educationSystem == "fr-national",
+                  record.configuration.documentLanguage == "fr-FR",
+                  record.configuration.provider == "ollama" else { return }
+            selectedModel = record.configuration.model
+            pendingGenerationSeed = seed
+            lastQualityReport = nil
+            sidebarSelection = .frenchBaccalaureat
+            return
+        }
         guard !isRunning,
               let board = ExamCatalog.board(id: record.configuration.boardID),
               board.papers.contains(where: {
@@ -819,7 +894,7 @@ final class ApplicationCoordinator: ObservableObject {
         generatedFiles.reversed().first { $0.role == role }
     }
 
-    private func apply(_ event: BackendEvent) {
+    func apply(_ event: BackendEvent) {
         generationCoordinator.receive(event)
         benchmarkCoordinator.receive(event)
         switch event {
@@ -836,8 +911,8 @@ final class ApplicationCoordinator: ObservableObject {
             let file = GeneratedFile(
                 role: role,
                 url: URL(fileURLWithPath: path),
-                subject: "\(selectedBoard.subjectTitle) \(selectedBoard.shortTitle)",
-                paper: selectedPaper.title
+                subject: activeFrameworkID == nil ? "\(selectedBoard.subjectTitle) \(selectedBoard.shortTitle)" : "Baccalauréat général · NSI",
+                paper: activeFrameworkID == nil ? selectedPaper.title : "Partie écrite · 2027"
             )
             if !generatedFiles.contains(where: { $0.url == file.url }) {
                 generatedFiles.insert(file, at: 0)
@@ -880,7 +955,8 @@ final class ApplicationCoordinator: ObservableObject {
         }
     }
 
-    private func finishGeneration(_ result: Result<Int32, Error>) {
+    func finishGeneration(_ result: Result<Int32, Error>) {
+        defer { activeFrameworkID = nil }
         let operation = activeOperation
         activeOperation = .none
         runningProcess = nil
@@ -905,30 +981,35 @@ final class ApplicationCoordinator: ObservableObject {
 
         switch result {
         case let .success(code):
-            if code == 0 {
+            if code == 0 && !didReceiveBackendError {
                 do {
                     try moveGeneratedFilesToOutputFolderIfNeeded()
                 } catch {
                     let message = "The paper was created, but it could not be saved to the selected folder: \(error.localizedDescription)"
                     setError(message)
                     notifyFailure(for: operation, message: message)
+                    try? generationCoordinator.fail(message: message)
+                    pendingGenerationSeed = nil
                     return
                 }
                 status = status == "Starting" ? "Done" : status
                 generationProgress = 1.0
                 generationEstimate = nil
                 persistRecentDocuments()
-                try? generationCoordinator.complete()
+                try? generationCoordinator.complete(artifacts: generatedFiles)
                 if let questionPaper = generatedFile(role: "question_paper") {
                     previewedFileID = questionPaper.id
                     sidebarSelection = .documents
                 }
                 pendingGenerationSeed = nil
                 notifySuccess(for: operation)
-            } else if !didReceiveBackendError {
-                let message = "Generation failed without a backend error message. Refresh Ollama, check the selected model, then try again. Backend exited with code \(code)."
-                setError(message)
-                notifyFailure(for: operation, message: message)
+            } else {
+                let message = didReceiveBackendError ? errorMessage
+                    : "Generation failed without a backend error message. Refresh Ollama, check the selected model, then try again. Backend exited with code \(code)."
+                if !didReceiveBackendError {
+                    setError(message)
+                    notifyFailure(for: operation, message: message)
+                }
                 try? generationCoordinator.fail(message: message)
                 pendingGenerationSeed = nil
             }
@@ -979,6 +1060,24 @@ final class ApplicationCoordinator: ObservableObject {
         let workingFolder = AppDefaults.appStoreWorkingFolder().standardizedFileURL
         let destinationFolder = outputFolder.standardizedFileURL
         guard workingFolder != destinationFolder else { return }
+
+        if activeFrameworkID == FrenchAssessmentRequest.assessmentID,
+           let first = generatedFiles.first {
+            let source = first.url.deletingLastPathComponent().standardizedFileURL
+            guard source.deletingLastPathComponent() == workingFolder,
+                  generatedFiles.allSatisfy({ $0.url.deletingLastPathComponent().standardizedFileURL == source }) else {
+                throw CocoaError(.fileReadInvalidFileName)
+            }
+            let destination = try AssessmentBundleExporter.export(source: source, to: destinationFolder)
+            generatedFiles = generatedFiles.map { file in
+                GeneratedFile(
+                    id: file.id, role: file.role,
+                    url: destination.appendingPathComponent(file.url.lastPathComponent),
+                    createdAt: file.createdAt, subject: file.subject, paper: file.paper
+                )
+            }
+            return
+        }
 
         try FileManager.default.createDirectory(
             at: destinationFolder,

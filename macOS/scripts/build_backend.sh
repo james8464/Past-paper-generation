@@ -54,6 +54,9 @@ build_fingerprint() {
     find "$ROOT_DIR/Resources/board-profiles" -type f -name '*.json' -print0 \
       | sort -z \
       | xargs -0 shasum
+    find "$ROOT_DIR/Resources/france" -type f -name '*.json' -print0 \
+      | sort -z \
+      | xargs -0 shasum
     find "$ROOT_DIR/Backend" -type f -name '*.py' -print0 \
       | sort -z \
       | xargs -0 shasum
@@ -112,6 +115,7 @@ PYINSTALLER_ARGS=(
   --add-data "$ROOT_DIR/Resources/empirical-calibration-policy.json:Resources"
   --add-data "$ROOT_DIR/Resources/reference-demand-profiles.json:Resources"
   --add-data "$ROOT_DIR/Resources/board-profiles:Resources/board-profiles"
+  --add-data "$ROOT_DIR/Resources/france:Resources/france"
   --add-data "$ROOT_DIR/Backend/Core/fonts:Backend/Core/fonts"
 )
 

@@ -41,6 +41,19 @@ final class CoordinatorTests: XCTestCase {
     }
 
     @MainActor
+    func testCompletionRecordsExportedArtifactLocations() throws {
+        let store = RecentDocumentStore(directory: temporaryDirectory, retentionLimit: 10)
+        let coordinator = GenerationCoordinator(history: store)
+        let record = GenerationJobRecord.fixture(state: .pending)
+        try coordinator.begin(record)
+        coordinator.receive(.file(role: "question_paper", path: "/private/working/sujet.pdf"))
+        let exported = GeneratedFile(role: "question_paper", url: temporaryDirectory.appendingPathComponent("sujet.pdf"))
+        try Data("PDF fixture".utf8).write(to: exported.url)
+        try coordinator.complete(artifacts: [exported])
+        XCTAssertEqual(store.records.first?.artifacts.map(\.url), [exported.url])
+    }
+
+    @MainActor
     func testRunningJobBecomesInterruptedAfterRelaunch() throws {
         let original = RecentDocumentStore(directory: temporaryDirectory, retentionLimit: 10)
         try original.save(.fixture(state: .running))
@@ -310,6 +323,40 @@ final class CoordinatorTests: XCTestCase {
         XCTAssertEqual(model.aiProvider.backendID, record.configuration.provider)
         XCTAssertEqual(model.pendingGenerationSeed, record.configuration.seed)
         XCTAssertEqual(model.sidebarSelection, .board(record.configuration.boardID))
+    }
+
+    @MainActor
+    func testReportedBackendFailureFinalizesHistoryAndReleasesSeed() throws {
+        let model = ApplicationCoordinator()
+        let record = GenerationJobRecord.fixture(state: .pending)
+        model.duplicateConfiguration(record)
+        try model.generationCoordinator.begin(record)
+        model.apply(.error(message: "Checkpoint identity changed", code: "french_generation_failed"))
+        model.finishGeneration(.success(1))
+        XCTAssertNil(model.pendingGenerationSeed)
+        XCTAssertNil(model.generationCoordinator.activeJob)
+        XCTAssertEqual(model.recentDocumentStore.records.first(where: { $0.id == record.id })?.state, .failed)
+    }
+
+    @MainActor
+    func testFrenchHistoryPreservesContextWithoutUKBoardLookup() throws {
+        let record = GenerationJobRecord(
+            configuration: GenerationConfiguration(
+                boardID: "fr-national-nsi", paperID: "written-2027", provider: "ollama",
+                model: "fixture", seed: 55, dryRun: false, educationSystem: "fr-national",
+                assessmentID: FrenchAssessmentRequest.assessmentID, documentLanguage: "fr-FR"
+            ),
+            provenance: GenerationProvenance(appVersion: "test", provider: "ollama", model: "fixture"),
+            state: .completed, artifacts: [],
+            qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
+        )
+        let store = RecentDocumentStore(directory: temporaryDirectory, retentionLimit: 2)
+        XCTAssertEqual(store.duplicateConfiguration(of: record).configuration, record.configuration)
+        let model = ApplicationCoordinator()
+        model.duplicateConfiguration(record)
+        XCTAssertEqual(model.sidebarSelection, .frenchBaccalaureat)
+        XCTAssertEqual(model.pendingGenerationSeed, 55)
+        XCTAssertEqual(model.selectedModel, "fixture")
     }
 
     @MainActor

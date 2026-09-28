@@ -70,7 +70,14 @@
 
     },
     "Assessment" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Épreuve"
+          }
+        }
+      }
     },
     "Benchmark" : {
 
@@ -79,7 +86,14 @@
 
     },
     "Cancel" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuler"
+          }
+        }
+      }
     },
     "Cancel Benchmark" : {
 
@@ -154,7 +168,14 @@
 
     },
     "Documents" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Documents"
+          }
+        }
+      }
     },
     "Done" : {
 
@@ -178,7 +199,14 @@
 
     },
     "Favourites" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoris"
+          }
+        }
+      }
     },
     "Fingerprints" : {
 
@@ -190,7 +218,14 @@
 
     },
     "Generation Error" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur de génération"
+          }
+        }
+      }
     },
     "Help" : {
 
@@ -199,7 +234,14 @@
 
     },
     "History" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historique"
+          }
+        }
+      }
     },
     "History checks" : {
 
@@ -226,7 +268,14 @@
 
     },
     "Library" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bibliothèque"
+          }
+        }
+      }
     },
     "Local model" : {
 
@@ -274,7 +323,14 @@
 
     },
     "OK" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
     },
     "Ollama generation is local. Hosted providers send prompts to the provider you select." : {
 
@@ -385,7 +441,14 @@
 
     },
     "Qualification" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diplôme"
+          }
+        }
+      }
     },
     "Quality" : {
 
@@ -397,7 +460,14 @@
 
     },
     "Recent Configurations" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configurations récentes"
+          }
+        }
+      }
     },
     "Recent Documents" : {
 
@@ -460,7 +530,14 @@
 
     },
     "Save to" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrer dans"
+          }
+        }
+      }
     },
     "Score" : {
 
@@ -548,6 +625,306 @@
     },
     "—" : {
 
+    },
+    "French written-paper prototype" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prototype d’épreuve écrite française"
+          }
+        }
+      }
+    },
+    "Original practice papers in French. Teacher review is required before classroom assessment." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sujets d’entraînement originaux en français. Une relecture par un enseignant est nécessaire avant toute utilisation évaluative."
+          }
+        }
+      }
+    },
+    "Stage" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niveau"
+          }
+        }
+      }
+    },
+    "Speciality" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spécialité"
+          }
+        }
+      }
+    },
+    "Three independent exercises: 18 technical points, plus 2 points for French. The practical component is not included." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trois exercices indépendants : 18 points techniques et 2 points pour la maîtrise de la langue. La partie pratique n’est pas incluse."
+          }
+        }
+      }
+    },
+    "References and privacy" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Références et confidentialité"
+          }
+        }
+      }
+    },
+    "Official sources are downloaded only with your permission. Generation uses Ollama on this Mac; no student answers are collected." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les sources officielles sont téléchargées uniquement avec votre accord. La génération utilise Ollama sur ce Mac ; aucune réponse d’élève n’est collectée."
+          }
+        }
+      }
+    },
+    "Prepare French references" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Préparer les références françaises"
+          }
+        }
+      }
+    },
+    "The initial corpus is incomplete. Its existence does not mean that every topic or exam session is covered." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le corpus initial est incomplet. Sa présence ne garantit pas la couverture de chaque thème ou session."
+          }
+        }
+      }
+    },
+    "Model and document" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modèle et document"
+          }
+        }
+      }
+    },
+    "Local Ollama model" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modèle Ollama local"
+          }
+        }
+      }
+    },
+    "Gemma 4 12B is the comparison baseline, not a validated French recommendation. Results with all models require review." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gemma 4 12B sert de référence de comparaison, sans validation pédagogique française. Les résultats de tous les modèles nécessitent une relecture."
+          }
+        }
+      }
+    },
+    "Enlarged print" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grands caractères"
+          }
+        }
+      }
+    },
+    "Interface language" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Langue de l’interface"
+          }
+        }
+      }
+    },
+    "System" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Système"
+          }
+        }
+      }
+    },
+    "English" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anglais"
+          }
+        }
+      }
+    },
+    "Changing the interface language does not change the curriculum or the French language of the paper." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Changer la langue de l’interface ne modifie ni le programme ni la langue française du sujet."
+          }
+        }
+      }
+    },
+    "Choose output folder" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir le dossier de sortie"
+          }
+        }
+      }
+    },
+    "Create an unreviewed draft" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer un brouillon non relu"
+          }
+        }
+      }
+    },
+    "Review checklist" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Points à vérifier"
+          }
+        }
+      }
+    },
+    "Check every answer, allocation of credit, diagram, code listing and page. Compare difficulty and timing with authentic papers. Automated checks cannot replace a French NSI teacher." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifier chaque réponse, attribution de points, figure, extrait de code et page. Comparer la difficulté et la durée aux sujets authentiques. Les contrôles automatiques ne remplacent pas un enseignant de NSI."
+          }
+        }
+      }
+    },
+    "Official NSI examination rules" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définition officielle de l’épreuve NSI"
+          }
+        }
+      }
+    },
+    "Generation status" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "État de la génération"
+          }
+        }
+      }
+    },
+    "Status" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "État"
+          }
+        }
+      }
+    },
+    "Download official references?" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Télécharger les références officielles ?"
+          }
+        }
+      }
+    },
+    "Download references" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Télécharger les références"
+          }
+        }
+      }
+    },
+    "This contacts French Ministry of Education websites and stores public PDFs on this Mac. No model training is performed and no student data is sent." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cette action contacte les sites du ministère de l’Éducation nationale et conserve des PDF publics sur ce Mac. Aucun entraînement de modèle n’est effectué et aucune donnée d’élève n’est envoyée."
+          }
+        }
+      }
+    },
+    "Preparing French assessment" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Préparation de l’épreuve française"
+          }
+        }
+      }
+    },
+    "France" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "France"
+          }
+        }
+      }
+    },
+    "A-level subjects" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Matières A-level"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

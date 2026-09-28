@@ -3,6 +3,37 @@ import XCTest
 @testable import PaperCreator
 
 final class PaperCreatorTests: XCTestCase {
+    func testFrenchBundleExportPreservesManifestAndRejectsOverwrite() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let source = root.appendingPathComponent("working/nsi-2027-fixture")
+        let output = root.appendingPathComponent("selected")
+        try FileManager.default.createDirectory(at: source, withIntermediateDirectories: true)
+        for name in ["sujet.pdf", "corrige.pdf", "assessment.json", "manifest.json"] {
+            try Data(name.utf8).write(to: source.appendingPathComponent(name))
+        }
+        let result = try AssessmentBundleExporter.export(source: source, to: output)
+        XCTAssertEqual(result.lastPathComponent, source.lastPathComponent)
+        for name in ["sujet.pdf", "corrige.pdf", "assessment.json", "manifest.json"] {
+            XCTAssertEqual(try Data(contentsOf: result.appendingPathComponent(name)), Data(name.utf8))
+        }
+        XCTAssertThrowsError(try AssessmentBundleExporter.export(source: source, to: output))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: source.path))
+    }
+
+    func testFrenchRequestKeepsCurriculumSeparateFromUILanguage() {
+        let arguments = FrenchAssessmentRequest(
+            referenceIndex: URL(fileURLWithPath: "/tmp/references.sqlite"),
+            output: URL(fileURLWithPath: "/tmp/papers"), model: "gemma4:12b",
+            seed: 42, largePrint: true
+        ).arguments
+        XCTAssertEqual(arguments.first, "generate-assessment")
+        XCTAssertTrue(arguments.contains("fr-bac-general-nsi-written-2027"))
+        XCTAssertTrue(arguments.contains("--large-print"))
+        XCTAssertFalse(arguments.contains("--subject"))
+        XCTAssertFalse(arguments.contains("--allow-remote"))
+    }
+
     func testQualificationReadinessKeepsThreeEvidenceLevelsIndependent() {
         let readiness = QualificationReadiness(
             engineeringValidated: true,

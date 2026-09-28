@@ -375,6 +375,7 @@ enum CatalogLoadError: LocalizedError {
 
 enum SidebarItem: Hashable {
     case board(String)
+    case frenchBaccalaureat
     case benchmark
     case documents
     case history

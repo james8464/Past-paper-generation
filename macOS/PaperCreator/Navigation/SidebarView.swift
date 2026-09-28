@@ -70,7 +70,13 @@ private struct CatalogSidebarSections: View {
                 }
             }
 
-            Section("Subjects") {
+            Section("France") {
+                NavigationLink(value: SidebarItem.frenchBaccalaureat) {
+                    Label("Baccalauréat · NSI", systemImage: "graduationcap")
+                }
+            }
+
+            Section("A-level subjects") {
                 ForEach(store.filteredSubjects) { subject in
                     DisclosureGroup(isExpanded: expansionBinding(for: subject.id)) {
                         ForEach(subject.boards) { board in
