@@ -248,7 +248,10 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
                 Spacer(1, 5 * mm),
                 Paragraph("Assessment objectives", STYLES["heading"]),
                 Spacer(1, 3 * mm),
-                Paragraph("<br/>".join(escape(point) for point in assessment_objectives), STYLES["body"]),
+                Paragraph(
+                    "<br/>".join(escape(point) for point in assessment_objectives),
+                    STYLES["body"],
+                ),
             ]
             if assessment_objectives
             else []
@@ -259,7 +262,9 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
                 Paragraph("Case-specific guidance", STYLES["heading"]),
                 Spacer(1, 3 * mm),
                 Paragraph(
-                    "<br/>".join(f"• {escape(point)}" for point in shared_case_guidance),
+                    "<br/>".join(
+                        f"• {escape(point)}" for point in shared_case_guidance
+                    ),
                     STYLES["body"],
                 ),
             ]
@@ -377,14 +382,21 @@ def _scheme_page_table(
     guidance_width = 48 * mm
     answer_width = content_width - question_width - mark_width - guidance_width
     widths = [question_width, answer_width, mark_width, guidance_width]
-    needed = [max(cell.wrap(width - 8, body_height)[1] + 7
-                  for cell, width in zip(row, widths, strict=True)) for row in rows[1:]]
+    needed = [
+        max(
+            cell.wrap(width - 8, body_height)[1] + 7
+            for cell, width in zip(row, widths, strict=True)
+        )
+        for row in rows[1:]
+    ]
     # Use the actual landscape frame, leaving its padding and table header.
     # When complete credit exceeds it, the caller creates a continuation page.
     maximum_body = OCR_MARK_SCHEME_LANDSCAPE_SIZE[1] - 37 * mm - 12 - 8 * mm
     body_height = max(body_height, sum(needed))
     if body_height > maximum_body:
-        raise _SchemeOverflow("OCR scheme content needs a content-preserving continuation")
+        raise _SchemeOverflow(
+            "OCR scheme content needs a content-preserving continuation"
+        )
     spare = body_height - sum(needed)
     row_heights = [8 * mm, *(height + spare / item_count for height in needed)]
     table = Table(
@@ -485,7 +497,9 @@ def _observable_credit_points(question: GeneratedQuestion) -> list[str]:
 
 def _is_shared_guidance(text: str) -> bool:
     value = text.casefold()
-    return value.startswith(("marker check:", "do not award the same developed point twice"))
+    return value.startswith(
+        ("marker check:", "do not award the same developed point twice")
+    )
 
 
 def _assessment_objective_label(text: str) -> str:
@@ -800,7 +814,9 @@ def _response_space(
     line_count: int,
 ) -> list[Flowable]:
     if question.kind == "trace":
-        source = SumTrace.model_validate(question.authoring_context["cs_input_contract"])
+        source = SumTrace.model_validate(
+            question.authoring_context["cs_input_contract"]
+        )
         iterations = len(source.values)
         rows = [["Iteration", "total after iteration"]]
         rows.extend([[str(index), ""] for index in range(1, iterations + 1)])
@@ -810,7 +826,11 @@ def _response_space(
             rowHeights=[8 * mm, *([7 * mm] * iterations)],
         )
         table.setStyle(_response_table_style())
-        return [table, Spacer(1, 2 * mm), Paragraph("Final output: ................................", STYLES["body"])]
+        return [
+            table,
+            Spacer(1, 2 * mm),
+            Paragraph("Final output: ................................", STYLES["body"]),
+        ]
     if question.kind == "table":
         rows = [["Feature", "First technology", "Second technology"]]
         rows.extend([["", "", ""] for _ in range(4)])
@@ -876,7 +896,13 @@ def _trace_table(option: GeneratedOption) -> Table:
         [Paragraph(option.chart_title, STYLES["small_bold"]), *option.chart_labels],
         ["Value", *[f"{value:.0f}" for value in option.chart_values]],
     ]
-    table = Table(rows, colWidths=[40 * mm, *([125 * mm / len(option.chart_values)] * len(option.chart_values))])
+    table = Table(
+        rows,
+        colWidths=[
+            40 * mm,
+            *([125 * mm / len(option.chart_values)] * len(option.chart_values)),
+        ],
+    )
     table.setStyle(
         TableStyle(
             [
@@ -950,7 +976,11 @@ def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
         paper_title=paper.title,
         duration="2 hours 30 minutes",
         total_marks=paper.total_marks,
-        materials=("No calculators are permitted.",),
+        materials=(
+            "You may use a ruler (cm/mm).",
+            "You may use an HB pencil.",
+            "No calculators are permitted.",
+        ),
         instructions=(
             "Use black ink. You can use an HB pencil for graphs and diagrams.",
             "Answer all questions.",
@@ -986,6 +1016,12 @@ def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
         subject="Independent A-level Computer Science practice material",
     )
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="body")
+
+    if kind == "Question paper":
+        def record_question_end(flowable) -> None:
+            if isinstance(flowable, Paragraph) and flowable.getPlainText() == "END OF QUESTION PAPER":
+                doc._question_paper_end_page = doc.page
+        doc.afterFlowable = record_question_end
 
     def draw_chrome(canvas, value) -> None:
         _chrome(canvas, value, paper.paper_code, kind)
@@ -1046,7 +1082,7 @@ def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
 def _chrome(canvas, doc, code: str, kind: str) -> None:
     canvas.saveState()
     page_width, page_height = canvas._pagesize
-    if kind == "Mark scheme" and doc.page == 1:
+    if doc.page == 1:
         canvas.restoreState()
         return
     if kind == "Question paper" and doc.page > 1:
@@ -1062,7 +1098,7 @@ def _chrome(canvas, doc, code: str, kind: str) -> None:
                 18 * mm,
                 "END OF QUESTION PAPER",
             )
-        elif doc.page % 2 == 1:
+        elif doc.page % 2 == 1 and getattr(doc, "_question_paper_end_page", None) != doc.page:
             canvas.setFont(FONT_BOLD, 10)
             canvas.drawRightString(page_width - 23 * mm, 21.2 * mm, "Turn over")
         canvas.restoreState()

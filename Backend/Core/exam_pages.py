@@ -94,13 +94,13 @@ def draw_exam_page(
 ) -> None:
     pdf.saveState()
     pdf.setFillColor(colors.white)
-    # Preserve an existing top folio drawn by a family page template while
-    # clearing answer rails and other question-page furniture below it.
+    # Preserve the template's folio. Repainting it would leave a second hidden
+    # text layer in extraction even when the visual background is opaque.
     pdf.rect(0, 0, width, height - 30, stroke=0, fill=1)
     pdf.restoreState()
     pdf.saveState()
     pdf.setFillColor(colors.black)
-    pdf.setStrokeColor(colors.HexColor("#777777"))
+    pdf.setStrokeColor(colors.black)
     pdf.setLineCap(0)
     if profile.board == "aqa":
         _draw_aqa_page(
@@ -139,8 +139,8 @@ def _draw_aqa_page(
     include_footer: bool,
 ) -> None:
     if page_number:
-        pdf.setFont(font, 8)
-        pdf.drawCentredString(width / 2, height - 37, str(page_number))
+        pdf.setFont(font, 11.04)
+        pdf.drawCentredString(290.73, height - 39.0, str(page_number))
 
     if profile.variant == "blank":
         if profile.do_not_write:
@@ -155,10 +155,10 @@ def _draw_aqa_page(
             )
             pdf.setLineWidth(0.75)
             pdf.line(114.0, height - 662.1, 538.6, height - 54.0)
-        pdf.setFont(bold_font, 9)
+        pdf.setFont(bold_font, 11.04)
         pdf.drawCentredString(width / 2, height - 78, profile.heading)
         if profile.do_not_write:
-            pdf.setFont(bold_font, 9)
+            pdf.setFont(bold_font, 11.04)
             pdf.drawCentredString(width / 2, height - 407, "DO NOT WRITE ON THIS PAGE")
             pdf.drawCentredString(
                 width / 2,
@@ -168,7 +168,9 @@ def _draw_aqa_page(
         if profile.legal_notice:
             _draw_independent_notice(pdf, font=font, bold_font=bold_font, height=height)
         if include_footer:
-            _draw_aqa_footer(pdf, profile, width=width, font=font, page_number=page_number)
+            _draw_aqa_footer(
+                pdf, profile, width=width, font=font, page_number=page_number
+            )
         return
 
     if profile.variant == "continuation":
@@ -185,7 +187,9 @@ def _draw_aqa_page(
             page_height=height,
         )
         if include_footer:
-            _draw_aqa_footer(pdf, profile, width=width, font=font, page_number=page_number)
+            _draw_aqa_footer(
+                pdf, profile, width=width, font=font, page_number=page_number
+            )
         return
 
     left = 50.0
@@ -207,15 +211,14 @@ def _draw_aqa_page(
         pdf.line(gutter, height - rule, right, height - rule)
         rule += 25.5
 
-    pdf.setFont(font, 8)
-    pdf.drawCentredString((left + gutter) / 2, height - 79, "Question")
-    pdf.drawCentredString((left + gutter) / 2, height - 89, "number")
-    pdf.setFont(bold_font, 9)
-    pdf.drawCentredString((gutter + right) / 2, height - 79, profile.heading)
-    pdf.setFont(font, 8)
+    pdf.setFont(font, 9)
+    pdf.drawString(56.4, height - 81.12, "Question")
+    pdf.drawString(56.4, height - 91.44, "number")
+    pdf.setFont(bold_font, 10.56)
+    pdf.drawCentredString((gutter + right) / 2, height - 80.76, profile.heading)
     pdf.drawCentredString(
         (gutter + right) / 2,
-        height - 91,
+        height - 92.88,
         "Write the question numbers in the left-hand margin.",
     )
 
@@ -398,8 +401,7 @@ def _draw_rules(
 
 def _draw_barcode(pdf: Canvas, x: float, y: float, value: str) -> None:
     bits = "".join(
-        f"{byte:08b}"
-        for byte in hashlib.sha256(value.encode("utf-8")).digest()[:7]
+        f"{byte:08b}" for byte in hashlib.sha256(value.encode("utf-8")).digest()[:7]
     )
     cursor = x
     for index, bit in enumerate(bits):

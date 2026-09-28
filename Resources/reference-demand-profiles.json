@@ -13723,19 +13723,19 @@
       "assessment_kind": "question-bank",
       "cognitive_operation_distribution": {
         "analyse": 0.277778,
-        "explain": 0.166667,
+        "describe": 0.166667,
         "program": 0.333332,
         "represent": 0.166667,
         "retrieve": 0.055556
       },
       "command_word_distribution": {
         "analyse": 0.277778,
-        "explain": 0.166667,
+        "describe": 0.166667,
         "program": 0.333332,
         "represent": 0.166667,
         "retrieve": 0.055556
       },
-      "comparison_basis": "Reviewed topic-and-actual-operation feature subset; insufficient whole-topic calibration; not a scaled full-paper AO distribution.",
+      "comparison_basis": "Reviewed topic, content-family, actual-operation, response-mode and tariff-band evidence for generated-item support; not whole-topic or learner calibration and not a scaled full-paper AO distribution.",
       "demand_distribution": {
         "unknown": 1.0
       },
@@ -13743,7 +13743,7 @@
         "Four annual schema/scenario clusters, not independent student samples.",
         "REST/HTTP/JSON and floating-point normalisation are excluded."
       ],
-      "evidence_policy_id": "aqa-topic-operation-records-v2",
+      "evidence_policy_id": "aqa-topic-operation-records-v3",
       "extraction_coverage": 0.871166,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
@@ -13771,12 +13771,13 @@
         "selected": 0.111111
       },
       "source_document_count": 4,
-      "source_fingerprint": "1397808e2b58329cfd4e7bbd6740389d43bdd9555c9fc0ac5511e6c8210ca3f0",
+      "source_fingerprint": "6fc1cfc906b996f5f26664b42c47ce29a028e406d7feda6d94ae470e2ebee710",
       "topic_records": [
         {
           "assessment_objectives": {
             "AO2": 1
           },
+          "content_focus": "database-keys",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2025-06.1",
@@ -13807,6 +13808,7 @@
           "assessment_objectives": {
             "AO2": 1
           },
+          "content_focus": "database-relationships",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2025-06.2",
@@ -13837,6 +13839,7 @@
           "assessment_objectives": {
             "AO3": 2
           },
+          "content_focus": "sql-insert",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2025-06.3",
@@ -13868,6 +13871,7 @@
             "AO2": 4,
             "AO3": 2
           },
+          "content_focus": "sql-select",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2025-06.4",
@@ -13898,6 +13902,7 @@
           "assessment_objectives": {
             "AO1": 2
           },
+          "content_focus": "database-concurrency",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2025-06.5",
@@ -13907,7 +13912,7 @@
           "mode": "prose",
           "objective_basis": "published-item-allocation",
           "observed_minutes": null,
-          "operation": "explain",
+          "operation": "describe",
           "paper": "2",
           "question_cluster": "2025-2-06",
           "question_file": "AQA-75172-QP-JUN25.PDF",
@@ -13928,6 +13933,7 @@
           "assessment_objectives": {
             "AO2": 1
           },
+          "content_focus": "",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2024-08.1",
@@ -13958,6 +13964,7 @@
           "assessment_objectives": {
             "AO3": 2
           },
+          "content_focus": "sql-insert",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2024-08.2",
@@ -13988,6 +13995,7 @@
           "assessment_objectives": {
             "AO3": 3
           },
+          "content_focus": "sql-update",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2024-08.3",
@@ -14018,6 +14026,7 @@
           "assessment_objectives": {
             "AO1": 3
           },
+          "content_focus": "database-timestamps",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2024-08.4",
@@ -14027,7 +14036,7 @@
           "mode": "prose",
           "objective_basis": "published-item-allocation",
           "observed_minutes": null,
-          "operation": "explain",
+          "operation": "describe",
           "paper": "2",
           "question_cluster": "2024-2-08",
           "question_file": "AQA-75172-QP-JUN24.PDF",
@@ -14048,6 +14057,7 @@
           "assessment_objectives": {
             "AO1": 2
           },
+          "content_focus": "database-normalisation",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2024-08.5",
@@ -14057,7 +14067,7 @@
           "mode": "prose",
           "objective_basis": "published-item-allocation",
           "observed_minutes": null,
-          "operation": "explain",
+          "operation": "describe",
           "paper": "2",
           "question_cluster": "2024-2-08",
           "question_file": "AQA-75172-QP-JUN24.PDF",
@@ -14078,6 +14088,7 @@
           "assessment_objectives": {
             "AO2": 5
           },
+          "content_focus": "database-design",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2023-05.1",
@@ -14108,6 +14119,7 @@
           "assessment_objectives": {
             "AO2": 2
           },
+          "content_focus": "sql-delete-errors",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2023-05.2",
@@ -14139,6 +14151,7 @@
             "AO1": 1,
             "AO2": 1
           },
+          "content_focus": "database-integrity",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2023-05.3",
@@ -14169,6 +14182,7 @@
           "assessment_objectives": {
             "AO1": 1
           },
+          "content_focus": "",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2022-07.1",
@@ -14199,6 +14213,7 @@
           "assessment_objectives": {
             "AO2": 2
           },
+          "content_focus": "database-relationships",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2022-07.2",
@@ -14229,6 +14244,7 @@
           "assessment_objectives": {
             "AO3": 3
           },
+          "content_focus": "sql-create",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2022-07.3",
@@ -14260,6 +14276,7 @@
             "AO2": 5,
             "AO3": 2
           },
+          "content_focus": "sql-select",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2022-07.4",
@@ -14290,6 +14307,7 @@
           "assessment_objectives": {
             "AO2": 2
           },
+          "content_focus": "database-denormalisation",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2022-07.5",
@@ -14321,24 +14339,26 @@
     {
       "assessment_kind": "question-bank",
       "cognitive_operation_distribution": {
-        "analyse": 0.666666,
-        "explain": 0.166667,
-        "trace": 0.166667
+        "analyse": 0.625,
+        "describe": 0.125,
+        "explain": 0.0625,
+        "trace": 0.1875
       },
       "command_word_distribution": {
-        "analyse": 0.666666,
-        "explain": 0.166667,
-        "trace": 0.166667
+        "analyse": 0.625,
+        "describe": 0.125,
+        "explain": 0.0625,
+        "trace": 0.1875
       },
-      "comparison_basis": "Reviewed topic-and-actual-operation feature subset; insufficient whole-topic calibration; not a scaled full-paper AO distribution.",
+      "comparison_basis": "Reviewed topic, content-family, actual-operation, response-mode and tariff-band evidence for generated-item support; not whole-topic or learner calibration and not a scaled full-paper AO distribution.",
       "demand_distribution": {
         "unknown": 1.0
       },
       "evidence_gaps": [
-        "No audited functional code-construction item; broader composition/filter/fold coverage missing.",
+        "No audited functional code-construction item; reviewed map/filter/fold and recursion tasks do not cover the whole topic.",
         "Imperative recursion does not establish functional-paradigm membership."
       ],
-      "evidence_policy_id": "aqa-topic-operation-records-v2",
+      "evidence_policy_id": "aqa-topic-operation-records-v3",
       "extraction_coverage": 0.871166,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
@@ -14357,18 +14377,20 @@
       "paper_id": "bank-4.12",
       "reference_forms": [],
       "response_mode_distribution": {
-        "multi-selected": 0.166667,
-        "prose": 0.416666,
-        "selected": 0.25,
-        "table": 0.166667
+        "multi-selected": 0.125,
+        "prose": 0.4375,
+        "result": 0.0625,
+        "selected": 0.1875,
+        "table": 0.1875
       },
-      "source_document_count": 4,
-      "source_fingerprint": "85365ba0335215a74c06dba9fc7b8dbcf1cfad8b505498771c538e8e1e051a46",
+      "source_document_count": 6,
+      "source_fingerprint": "12de31b7a689d302e6229e00f3e10a452858da264527bb229b5f6686c578d98c",
       "topic_records": [
         {
           "assessment_objectives": {
             "AO2": 1
           },
+          "content_focus": "functional-properties",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2025-11.1",
@@ -14399,6 +14421,7 @@
           "assessment_objectives": {
             "AO2": 1
           },
+          "content_focus": "function-type",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2025-11.2",
@@ -14429,6 +14452,7 @@
           "assessment_objectives": {
             "AO1": 2
           },
+          "content_focus": "partial-application",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2025-11.4",
@@ -14438,7 +14462,7 @@
           "mode": "prose",
           "objective_basis": "published-item-allocation",
           "observed_minutes": null,
-          "operation": "explain",
+          "operation": "describe",
           "paper": "2",
           "question_cluster": "2025-2-11",
           "question_file": "AQA-75172-QP-JUN25.PDF",
@@ -14459,6 +14483,7 @@
           "assessment_objectives": {
             "AO2": 1
           },
+          "content_focus": "function-type",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2024-11.1",
@@ -14489,6 +14514,7 @@
           "assessment_objectives": {
             "AO1": 2
           },
+          "content_focus": "functional-distribution",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2024-11.2",
@@ -14498,7 +14524,7 @@
           "mode": "prose",
           "objective_basis": "published-item-allocation",
           "observed_minutes": null,
-          "operation": "explain",
+          "operation": "describe",
           "paper": "2",
           "question_cluster": "2024-2-11",
           "question_file": "AQA-75172-QP-JUN24.PDF",
@@ -14519,6 +14545,7 @@
           "assessment_objectives": {
             "AO2": 3
           },
+          "content_focus": "functional-evaluation",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2023-12.1",
@@ -14549,6 +14576,7 @@
           "assessment_objectives": {
             "AO2": 1
           },
+          "content_focus": "function-type",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2023-12.2",
@@ -14579,6 +14607,7 @@
           "assessment_objectives": {
             "AO2": 1
           },
+          "content_focus": "higher-order",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2022-12.1",
@@ -14609,6 +14638,7 @@
           "assessment_objectives": {
             "AO2": 1
           },
+          "content_focus": "functional-recursion",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2022-12.2",
@@ -14639,6 +14669,7 @@
           "assessment_objectives": {
             "AO2": 4
           },
+          "content_focus": "functional-evaluation",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2022-12.3",
@@ -14669,6 +14700,7 @@
           "assessment_objectives": {
             "AO2": 1
           },
+          "content_focus": "functional-purpose",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2022-12.4",
@@ -14699,6 +14731,7 @@
           "assessment_objectives": {
             "AO2": 1
           },
+          "content_focus": "functional-composition",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2022-12.5",
@@ -14727,8 +14760,133 @@
         },
         {
           "assessment_objectives": {
+            "AO2": 3
+          },
+          "content_focus": "functional-recursion",
+          "context_complete": true,
+          "feature_basis": "reviewed-task-inference",
+          "id": "75172-2020-11.2",
+          "item": "11.2",
+          "learner_demand": null,
+          "marks": 3,
+          "mode": "prose",
+          "objective_basis": "published-item-allocation",
+          "observed_minutes": null,
+          "operation": "analyse",
+          "paper": "2",
+          "question_cluster": "2020-2-11",
+          "question_file": "AQA-75172-QP-NOV20.PDF",
+          "question_pages": "34",
+          "question_sha256": "e55def6c924122b12c2f95750f63956a71d183039985128858e95bc63d166720",
+          "reasoning_steps": null,
+          "scheme_file": "AQA-75172-W-MS-NOV20.PDF",
+          "scheme_pages": "24",
+          "scheme_sha256": "115cf68eb69c6041ab95029e3c7649f8e69390540e78a1ae7bfd1daf052a202a",
+          "source_dependency": "task-context",
+          "specification_sha256": "9d5c9066ab090bb66a43e61e9637c2b51b29b15b69e95f430c15a86352f92dd2",
+          "stratum": "core",
+          "topic_basis": "4.12.3",
+          "topic_id": "4.12",
+          "year": 2020
+        },
+        {
+          "assessment_objectives": {
+            "AO1": 2
+          },
+          "content_focus": "higher-order",
+          "context_complete": true,
+          "feature_basis": "reviewed-task-inference",
+          "id": "75172-2020-11.3",
+          "item": "11.3",
+          "learner_demand": null,
+          "marks": 2,
+          "mode": "prose",
+          "objective_basis": "published-item-allocation",
+          "observed_minutes": null,
+          "operation": "explain",
+          "paper": "2",
+          "question_cluster": "2020-2-11",
+          "question_file": "AQA-75172-QP-NOV20.PDF",
+          "question_pages": "35",
+          "question_sha256": "e55def6c924122b12c2f95750f63956a71d183039985128858e95bc63d166720",
+          "reasoning_steps": null,
+          "scheme_file": "AQA-75172-W-MS-NOV20.PDF",
+          "scheme_pages": "24",
+          "scheme_sha256": "115cf68eb69c6041ab95029e3c7649f8e69390540e78a1ae7bfd1daf052a202a",
+          "source_dependency": "self-contained",
+          "specification_sha256": "9d5c9066ab090bb66a43e61e9637c2b51b29b15b69e95f430c15a86352f92dd2",
+          "stratum": "core",
+          "topic_basis": "4.12.2",
+          "topic_id": "4.12",
+          "year": 2020
+        },
+        {
+          "assessment_objectives": {
+            "AO2": 1
+          },
+          "content_focus": "functional-evaluation",
+          "context_complete": true,
+          "feature_basis": "reviewed-task-inference",
+          "id": "75172-2020-11.4",
+          "item": "11.4",
+          "learner_demand": null,
+          "marks": 1,
+          "mode": "result",
+          "objective_basis": "published-item-allocation",
+          "observed_minutes": null,
+          "operation": "analyse",
+          "paper": "2",
+          "question_cluster": "2020-2-11",
+          "question_file": "AQA-75172-QP-NOV20.PDF",
+          "question_pages": "35",
+          "question_sha256": "e55def6c924122b12c2f95750f63956a71d183039985128858e95bc63d166720",
+          "reasoning_steps": null,
+          "scheme_file": "AQA-75172-W-MS-NOV20.PDF",
+          "scheme_pages": "24",
+          "scheme_sha256": "115cf68eb69c6041ab95029e3c7649f8e69390540e78a1ae7bfd1daf052a202a",
+          "source_dependency": "task-context",
+          "specification_sha256": "9d5c9066ab090bb66a43e61e9637c2b51b29b15b69e95f430c15a86352f92dd2",
+          "stratum": "core",
+          "topic_basis": "4.12.3",
+          "topic_id": "4.12",
+          "year": 2020
+        },
+        {
+          "assessment_objectives": {
+            "AO2": 3
+          },
+          "content_focus": "functional-evaluation",
+          "context_complete": true,
+          "feature_basis": "reviewed-task-inference",
+          "id": "75172-2017-06.2",
+          "item": "06.2",
+          "learner_demand": null,
+          "marks": 3,
+          "mode": "table",
+          "objective_basis": "published-item-allocation",
+          "observed_minutes": null,
+          "operation": "trace",
+          "paper": "2",
+          "question_cluster": "2017-2-06",
+          "question_file": "AQA-75172-QP-JUN17.PDF",
+          "question_pages": "15",
+          "question_sha256": "69173c5e964635db2c948ac0e1255ef013cba45afad4ac5b85ab22067d137fc9",
+          "reasoning_steps": null,
+          "scheme_file": "AQA-75172-W-MS-JUN17.PDF",
+          "scheme_pages": "12",
+          "scheme_sha256": "34a9f1d417a75f035b3dee98a9421dfe0c9f50a400976a68b1129683b8b37905",
+          "source_dependency": "task-context",
+          "specification_sha256": "9d5c9066ab090bb66a43e61e9637c2b51b29b15b69e95f430c15a86352f92dd2",
+          "stratum": "core",
+          "topic_basis": "4.12.2/4.12.3",
+          "topic_id": "4.12",
+          "year": 2017
+        },
+        {
+          "assessment_objectives": {
             "AO2": 2
           },
+          "content_focus": "recursive-efficiency",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75172-2025-11.3",
@@ -14738,7 +14896,7 @@
           "mode": "prose",
           "objective_basis": "published-item-allocation",
           "observed_minutes": null,
-          "operation": "analyse-complexity",
+          "operation": "analyse",
           "paper": "2",
           "question_cluster": "2025-2-11",
           "question_file": "AQA-75172-QP-JUN25.PDF",
@@ -14760,22 +14918,24 @@
     {
       "assessment_kind": "question-bank",
       "cognitive_operation_distribution": {
-        "analyse": 0.105263,
-        "describe": 0.263158,
-        "explain": 0.31579,
-        "represent": 0.105263,
-        "retrieve": 0.105263,
-        "trace": 0.105263
+        "analyse": 0.142857,
+        "describe": 0.238095,
+        "explain": 0.285715,
+        "judge": 0.047619,
+        "represent": 0.095238,
+        "retrieve": 0.095238,
+        "trace": 0.095238
       },
       "command_word_distribution": {
-        "analyse": 0.105263,
-        "describe": 0.263158,
-        "explain": 0.31579,
-        "represent": 0.105263,
-        "retrieve": 0.105263,
-        "trace": 0.105263
+        "analyse": 0.142857,
+        "describe": 0.238095,
+        "explain": 0.285715,
+        "judge": 0.047619,
+        "represent": 0.095238,
+        "retrieve": 0.095238,
+        "trace": 0.095238
       },
-      "comparison_basis": "Reviewed topic-and-actual-operation feature subset; insufficient whole-topic calibration; not a scaled full-paper AO distribution.",
+      "comparison_basis": "Reviewed topic, content-family, actual-operation, response-mode and tariff-band evidence for generated-item support; not whole-topic or learner calibration and not a scaled full-paper AO distribution.",
       "demand_distribution": {
         "unknown": 1.0
       },
@@ -14783,12 +14943,12 @@
         "Incomplete vectors, arrays/files and executable structure/program construction coverage.",
         "Skeleton/source-context tasks remain ineligible."
       ],
-      "evidence_policy_id": "aqa-topic-operation-records-v2",
+      "evidence_policy_id": "aqa-topic-operation-records-v3",
       "extraction_coverage": 0.871166,
       "family_id": "aqa/computer-science",
       "mark_band_distribution": {
-        "medium": 0.105263,
-        "short": 0.894737
+        "medium": 0.095238,
+        "short": 0.904762
       },
       "mark_weighted_demand_distribution": {
         "unknown": 1.0
@@ -14803,17 +14963,19 @@
       "paper_id": "bank-4.2",
       "reference_forms": [],
       "response_mode_distribution": {
-        "prose": 0.789474,
-        "result": 0.105263,
-        "table": 0.105263
+        "prose": 0.761905,
+        "result": 0.095238,
+        "sequence": 0.047619,
+        "table": 0.095238
       },
-      "source_document_count": 4,
-      "source_fingerprint": "aad0572e6e3f903002b5be21d8081e3f5af56f22dfc39b780d49dc581565fbc5",
+      "source_document_count": 6,
+      "source_fingerprint": "34cd7faebd3264696178776d66542241d331230723c46fa163e26e5bd3310490",
       "topic_records": [
         {
           "assessment_objectives": {
             "AO1": 1
           },
+          "content_focus": "hash-performance",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2025-01.1",
@@ -14844,6 +15006,7 @@
           "assessment_objectives": {
             "AO1": 4
           },
+          "content_focus": "hash-insertion",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2025-01.2",
@@ -14874,6 +15037,7 @@
           "assessment_objectives": {
             "AO1": 1
           },
+          "content_focus": "hash-performance",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2025-01.3",
@@ -14904,6 +15068,7 @@
           "assessment_objectives": {
             "AO2": 2
           },
+          "content_focus": "tree-properties",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2025-03.2",
@@ -14934,6 +15099,7 @@
           "assessment_objectives": {
             "AO2": 2
           },
+          "content_focus": "graph-representation",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2025-03.3",
@@ -14964,6 +15130,7 @@
           "assessment_objectives": {
             "AO1": 2
           },
+          "content_focus": "",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2025-05.2",
@@ -14994,6 +15161,7 @@
           "assessment_objectives": {
             "AO1": 2
           },
+          "content_focus": "queue-choice",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2024-02.1",
@@ -15024,6 +15192,7 @@
           "assessment_objectives": {
             "AO1": 5
           },
+          "content_focus": "queue-operations",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2024-02.2",
@@ -15054,6 +15223,7 @@
           "assessment_objectives": {
             "AO1": 2
           },
+          "content_focus": "tree-properties",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2024-06.1",
@@ -15084,6 +15254,7 @@
           "assessment_objectives": {
             "AO2": 1
           },
+          "content_focus": "",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2024-06.4",
@@ -15114,6 +15285,7 @@
           "assessment_objectives": {
             "AO1": 5
           },
+          "content_focus": "queue-operations",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2023-01",
@@ -15144,6 +15316,7 @@
           "assessment_objectives": {
             "AO1": 2
           },
+          "content_focus": "tree-properties",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2023-03.1",
@@ -15174,6 +15347,7 @@
           "assessment_objectives": {
             "AO1": 4
           },
+          "content_focus": "queue-operations",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2022-02.1",
@@ -15204,6 +15378,7 @@
           "assessment_objectives": {
             "AO1": 3
           },
+          "content_focus": "dynamic-static",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2022-02.2",
@@ -15213,7 +15388,7 @@
           "mode": "prose",
           "objective_basis": "published-item-allocation",
           "observed_minutes": null,
-          "operation": "explain",
+          "operation": "describe",
           "paper": "1",
           "question_cluster": "2022-1-02",
           "question_file": "AQA-75171-QP-JUN22.PDF",
@@ -15234,6 +15409,7 @@
           "assessment_objectives": {
             "AO2": 1
           },
+          "content_focus": "stack-access",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2022-02.3",
@@ -15264,6 +15440,7 @@
           "assessment_objectives": {
             "AO2": 1
           },
+          "content_focus": "stack-access",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2022-02.4",
@@ -15294,6 +15471,7 @@
           "assessment_objectives": {
             "AO1": 2
           },
+          "content_focus": "stack-reversal",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2022-02.5",
@@ -15303,7 +15481,7 @@
           "mode": "prose",
           "objective_basis": "published-item-allocation",
           "observed_minutes": null,
-          "operation": "describe",
+          "operation": "explain",
           "paper": "1",
           "question_cluster": "2022-1-02",
           "question_file": "AQA-75171-QP-JUN22.PDF",
@@ -15324,6 +15502,7 @@
           "assessment_objectives": {
             "AO2": 1
           },
+          "content_focus": "graph-representation",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2022-04.4",
@@ -15354,6 +15533,7 @@
           "assessment_objectives": {
             "AO1": 1
           },
+          "content_focus": "",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2022-07.4",
@@ -15382,8 +15562,71 @@
         },
         {
           "assessment_objectives": {
+            "AO2": 2
+          },
+          "content_focus": "tree-traversal",
+          "context_complete": true,
+          "feature_basis": "reviewed-task-inference",
+          "id": "75171-2021-02.2",
+          "item": "02.2",
+          "learner_demand": null,
+          "marks": 2,
+          "mode": "sequence",
+          "objective_basis": "published-item-allocation",
+          "observed_minutes": null,
+          "operation": "analyse",
+          "paper": "1",
+          "question_cluster": "2021-1-02",
+          "question_file": "AQA-75171-QP-NOV21.PDF",
+          "question_pages": "4",
+          "question_sha256": "edfb71e3e90e593adb94c4b16fbcea3f83e5e529ee3ec0c39fda3f8a4e0ef2bf",
+          "reasoning_steps": null,
+          "scheme_file": "AQA-75171-MS-NOV21.PDF",
+          "scheme_pages": "7",
+          "scheme_sha256": "ab830f38594fb417d2b61ee15dddc27e31793f3b1c817d2a52bfa22b1e6f79e4",
+          "source_dependency": "task-context",
+          "specification_sha256": "9d5c9066ab090bb66a43e61e9637c2b51b29b15b69e95f430c15a86352f92dd2",
+          "stratum": "core",
+          "topic_basis": "4.2.5",
+          "topic_id": "4.2",
+          "year": 2021
+        },
+        {
+          "assessment_objectives": {
+            "AO1": 4
+          },
+          "content_focus": "dynamic-static",
+          "context_complete": true,
+          "feature_basis": "reviewed-task-inference",
+          "id": "75171-2020-04.1",
+          "item": "04.1",
+          "learner_demand": null,
+          "marks": 4,
+          "mode": "prose",
+          "objective_basis": "published-item-allocation",
+          "observed_minutes": null,
+          "operation": "judge",
+          "paper": "1",
+          "question_cluster": "2020-1-04",
+          "question_file": "AQA-75171-QP-NOV20.PDF",
+          "question_pages": "7",
+          "question_sha256": "000673a60b361c19c01cdbaed46725580a07e35181859f1b215da8ee324cd342",
+          "reasoning_steps": null,
+          "scheme_file": "AQA-75171-W-MS-NOV20.PDF",
+          "scheme_pages": "11",
+          "scheme_sha256": "ecbe57b6c727fcdc4f36d85c1c4371781fef8d931b6690111099112876ad5ba2",
+          "source_dependency": "self-contained",
+          "specification_sha256": "9d5c9066ab090bb66a43e61e9637c2b51b29b15b69e95f430c15a86352f92dd2",
+          "stratum": "core",
+          "topic_basis": "4.2.1.4",
+          "topic_id": "4.2",
+          "year": 2020
+        },
+        {
+          "assessment_objectives": {
             "AO2": 6
           },
+          "content_focus": "",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2025-03.5",
@@ -15414,6 +15657,7 @@
           "assessment_objectives": {
             "AO2": 7
           },
+          "content_focus": "",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2024-06.2",
@@ -15444,6 +15688,7 @@
           "assessment_objectives": {
             "AO2": 2
           },
+          "content_focus": "tree-shape",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2024-06.3",
@@ -15474,16 +15719,17 @@
           "assessment_objectives": {
             "AO2": 1
           },
+          "content_focus": "",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2024-06.5",
           "item": "06.5",
           "learner_demand": null,
           "marks": 1,
-          "mode": "code",
+          "mode": "prose",
           "objective_basis": "published-item-allocation",
           "observed_minutes": null,
-          "operation": "complete-code",
+          "operation": "analyse",
           "paper": "1",
           "question_cluster": "2024-1-06",
           "question_file": "AQA-75171-QP-JUN24.PDF",
@@ -15504,6 +15750,7 @@
           "assessment_objectives": {
             "AO2": 4
           },
+          "content_focus": "",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2023-03.2",
@@ -15534,6 +15781,7 @@
           "assessment_objectives": {
             "AO2": 6
           },
+          "content_focus": "",
           "context_complete": true,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2022-04.5",
@@ -15564,6 +15812,7 @@
           "assessment_objectives": {
             "AO2": 1
           },
+          "content_focus": "",
           "context_complete": false,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2025-05.3",
@@ -15594,6 +15843,7 @@
           "assessment_objectives": {
             "AO2": 1
           },
+          "content_focus": "",
           "context_complete": false,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2025-08",
@@ -15625,6 +15875,7 @@
             "AO1": 2,
             "AO2": 1
           },
+          "content_focus": "",
           "context_complete": false,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2022-07.3",
@@ -15653,6 +15904,7 @@
         },
         {
           "assessment_objectives": null,
+          "content_focus": "",
           "context_complete": false,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2024-13.3",
@@ -15681,6 +15933,7 @@
         },
         {
           "assessment_objectives": null,
+          "content_focus": "",
           "context_complete": false,
           "feature_basis": "reviewed-task-inference",
           "id": "75171-2024-13.4",

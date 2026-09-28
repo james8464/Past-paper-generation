@@ -722,9 +722,22 @@ def _document(path: Path, paper: GeneratedPaper, document_type: str) -> BaseDocT
 def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
     hours, minutes = divmod(paper.duration_minutes, 60)
     duration = f"{hours} hours" if not minutes else f"{hours} hours {minutes} minutes"
+    answer_instructions = (
+        (
+            "Answer the questions specified in each section.",
+            "Answer in the spaces provided and do not write outside the box around each page.",
+        )
+        if paper.paper_id == "paper_3"
+        else (
+            "Write your answers in the separate answer booklet.",
+            *(f"Section {section.id}: {section.instructions}" for section in paper.sections),
+        )
+    )
     return CoverProfile(
         board="aqa",
         subject="Economics",
+        subject_label="Economics" if paper.paper_id == "paper_1" else "ECONOMICS",
+        title_font_size=27.96 if paper.paper_id == "paper_1" else 27.0,
         code=paper.paper_code,
         paper_title=f"Paper {paper.paper_id[-1]}  {paper.title}",
         duration=duration,
@@ -737,8 +750,7 @@ def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
         instructions=(
             "Use black ink or black ball-point pen.",
             "Use pencil only for drawing.",
-            "Answer the questions specified in each section.",
-            "Answer in the spaces provided and do not write outside the box around each page.",
+            *answer_instructions,
             "Show all working and use diagrams where appropriate.",
         ),
         information=("The marks for questions are shown in brackets.",),

@@ -144,7 +144,12 @@ def _validate_verified_question_contract(question) -> None:
         raise ValueError("Sound calculation requires a canonical final answer in MiB")
     if question.style_id == "sql_normalisation":
         required = {"SELECT", "INSERT", "UPDATE", "DELETE", "ERROR"}
-        missing = required - set(prompts.upper().replace(".", " ").split())
+        tokens = set(prompts.upper().replace(".", " ").split())
+        # Asking for two errors is still explicit error analysis. Keep every
+        # required SQL operation; normalise only this ordinary grammatical plural.
+        if "ERRORS" in tokens:
+            tokens.add("ERROR")
+        missing = required - tokens
         if missing:
             raise ValueError(
                 f"Database assessment is missing required SQL work: {sorted(missing)}"

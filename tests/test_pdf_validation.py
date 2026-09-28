@@ -19,7 +19,54 @@ from Backend.Core.pdf_validation import (
 
 def test_metric_compatible_open_fonts_share_reference_family_identity() -> None:
     assert _normalise_font("Arimo-Bold") == _normalise_font("Arial-BoldMT")
-    assert _normalise_font("Tinos-Italic") == _normalise_font("TimesNewRomanPS-ItalicMT")
+    assert _normalise_font("Tinos-Italic") == _normalise_font(
+        "TimesNewRomanPS-ItalicMT"
+    )
+
+
+@pytest.mark.parametrize(
+    "name", ["OpenSans-Medium", "OpenSans-SemiBold", "ABCDEF+OpenSansRoman-Medium"]
+)
+def test_open_sans_weights_and_static_instance_share_family_identity(name):
+    assert _normalise_font(name) == "opensans"
+    assert _normalise_font("OpenSans-CondensedSemiBold") != "opensans"
+
+
+def test_measured_profile_accepts_genuine_open_sans_cover_faces():
+    result = _validate_typography_profile(
+        subject="economics_aqa",
+        role="question_paper",
+        font_characters=Counter(
+            {
+                "Arimo-Regular": 10000,
+                "OpenSansRoman-Medium": 200,
+                "OpenSans-SemiBold": 50,
+            }
+        ),
+        font_sizes=Counter({11.0: 10000, 27.0: 100, 7.0: 50}),
+        filename="question-paper.pdf",
+    )
+    # The stored dominant-eight profile contains Arial only. The two actual
+    # generated families are Arial and Open Sans, not three weight aliases.
+    assert result["font_family_overlap"] == 0.5
+    assert result["uses_standard_pdf_fallback"] is False
+
+
+def test_open_sans_normalisation_does_not_admit_unrelated_cover_families():
+    with pytest.raises(ValueError, match="family overlap"):
+        _validate_typography_profile(
+            subject="economics_aqa",
+            role="question_paper",
+            font_characters=Counter(
+                {
+                    "Arimo-Regular": 10000,
+                    "UnrelatedSans-Medium": 200,
+                    "UnrelatedSerif-Bold": 50,
+                }
+            ),
+            font_sizes=Counter({11.0: 10000, 27.0: 100, 7.0: 50}),
+            filename="question-paper.pdf",
+        )
 
 
 def test_print_evidence_compares_metric_compatible_font_names() -> None:

@@ -706,11 +706,11 @@ def _paper_one_pages(paper: GeneratedPaper) -> list[Flowable]:
     pages.extend([[AnswerLines(34)] for _ in range(5)])
     pages.extend(
         [
-            _no_questions_page(),
+            _no_questions_page(paper_code=paper.paper_code),
             _additional_answer_page(paper.paper_code),
             _additional_answer_page(paper.paper_code),
             _additional_answer_page(paper.paper_code),
-            _no_questions_page(include_legal_notice=True),
+            _no_questions_page(paper_code=paper.paper_code, include_legal_notice=True),
         ]
     )
     assert len(pages) == 31
@@ -777,8 +777,8 @@ def _paper_two_pages(paper: GeneratedPaper) -> list[Flowable]:
             ]
         )
         if section_index < 2:
-            pages.append(_no_questions_page())
-    pages.append(_no_questions_page())
+            pages.append(_no_questions_page(paper_code=paper.paper_code))
+    pages.append(_no_questions_page(paper_code=paper.paper_code))
     pages.extend([_additional_answer_page(paper.paper_code) for _ in range(2)])
     assert len(pages) == 23
     return _page_sequence(pages)
@@ -809,7 +809,7 @@ def _paper_three_pages(paper: GeneratedPaper) -> list[Flowable]:
                 for _ in range(allocation - 1)
             ]
         )
-    pages.append(_no_questions_page())
+    pages.append(_no_questions_page(paper_code=paper.paper_code))
     pages.extend([_additional_answer_page(paper.paper_code) for _ in range(3)])
     assert len(pages) == 27
     return _page_sequence(pages)
@@ -973,8 +973,14 @@ def _mcq_context(question: GeneratedQuestion) -> list[Flowable]:
             _compact_data_table(
                 [
                     ["Evidence", "Observed rate of change"],
-                    ["External environment", str(contract.inputs["external_change"]).title()],
-                    ["Business strategy", str(contract.inputs["strategic_change"]).title()],
+                    [
+                        "External environment",
+                        str(contract.inputs["external_change"]).title(),
+                    ],
+                    [
+                        "Business strategy",
+                        str(contract.inputs["strategic_change"]).title(),
+                    ],
                 ],
                 [70 * mm, 58 * mm],
             ),
@@ -1028,10 +1034,8 @@ def _break_even_diagram(contract: SelectedResponseContract) -> Drawing:
     maximum_value = max(
         values["price_before"] * maximum_output,
         values["price_after"] * maximum_output,
-        values["fixed_cost_before"]
-        + values["variable_cost_before"] * maximum_output,
-        values["fixed_cost_after"]
-        + values["variable_cost_after"] * maximum_output,
+        values["fixed_cost_before"] + values["variable_cost_before"] * maximum_output,
+        values["fixed_cost_after"] + values["variable_cost_after"] * maximum_output,
     )
 
     def point(output: float, amount: float) -> tuple[float, float]:
@@ -1044,9 +1048,8 @@ def _break_even_diagram(contract: SelectedResponseContract) -> Drawing:
         start = point(0, start_amount)
         end = point(maximum_output, start_amount + rate * maximum_output)
         drawing.add(Line(*start, *end, strokeColor=INK))
-        drawing.add(
-            String(end[0] + 3, end[1] - 2, label, fontName=FONT, fontSize=7)
-        )
+        drawing.add(String(end[0] + 3, end[1] - 2, label, fontName=FONT, fontSize=7))
+
     drawing.add(
         String(
             x0,
@@ -1062,14 +1065,10 @@ def _break_even_diagram(contract: SelectedResponseContract) -> Drawing:
     drawing.add(String(x0 - 50, y0 + height - 14, "revenue", fontName=FONT, fontSize=8))
     drawing.add(String(x0 + width - 30, y0 - 18, "Output", fontName=FONT, fontSize=8))
     add_line(0, values["price_before"], "TR1")
-    add_line(
-        values["fixed_cost_before"], values["variable_cost_before"], "TC1"
-    )
+    add_line(values["fixed_cost_before"], values["variable_cost_before"], "TC1")
     add_line(0, values["price_after"], "TR2")
     add_line(values["fixed_cost_after"], values["variable_cost_after"], "TC2")
-    before_xy = point(
-        before_break_even, values["price_before"] * before_break_even
-    )
+    before_xy = point(before_break_even, values["price_before"] * before_break_even)
     after_xy = point(after_break_even, values["price_after"] * after_break_even)
     drawing.add(
         String(
@@ -1092,58 +1091,25 @@ def _break_even_diagram(contract: SelectedResponseContract) -> Drawing:
     return drawing
 
 
-def _do_not_write_drawing(height: float = 226 * mm) -> Drawing:
-    drawing = Drawing(167 * mm, height)
-    drawing.add(Line(0, 0, 167 * mm, height, strokeColor=INK, strokeWidth=0.7))
-    drawing.add(
-        String(
-            83.5 * mm,
-            height / 2,
-            "DO NOT WRITE ON THIS PAGE",
-            fontName=FONT_BOLD,
-            fontSize=10,
-            textAnchor="middle",
-        )
-    )
-    drawing.add(
-        String(
-            83.5 * mm,
-            height / 2 - 6 * mm,
-            "ANSWER IN THE SPACES PROVIDED",
-            fontName=FONT_BOLD,
-            fontSize=10,
-            textAnchor="middle",
-        )
-    )
-    return drawing
-
-
 def _no_questions_page(
     *,
+    paper_code: str = "7132",
     include_legal_notice: bool = False,
 ) -> list[Flowable]:
-    height = 178 * mm if include_legal_notice else 226 * mm
-    content: list[Flowable] = [
-        Paragraph(
-            "There are no questions printed on this page",
-            STYLES["centre_bold"],
-        ),
-        Spacer(1, 3 * mm),
-        _do_not_write_drawing(height),
-    ]
-    if include_legal_notice:
-        content.extend(
-            [
-                Spacer(1, 7 * mm),
-                Paragraph("Independent practice material", STYLES["small"]),
-                Paragraph(
-                    "Created by Paper Creator for private revision. This paper is not "
-                    "produced, endorsed or approved by AQA or any examination board.",
-                    STYLES["small"],
-                ),
-            ]
+    return [
+        ExamPage(
+            ExamPageProfile(
+                board="aqa",
+                code=paper_code,
+                heading="There are no questions printed on this page",
+                variant="blank",
+                legal_notice=include_legal_notice,
+                do_not_write=True,
+            ),
+            font=FONT,
+            bold_font=FONT_BOLD,
         )
-    return content
+    ]
 
 
 def _additional_answer_page(paper_code: str) -> list[Flowable]:
@@ -1383,6 +1349,7 @@ def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
     return CoverProfile(
         board="aqa",
         subject="Business",
+        title_font_size=27.96,
         code=paper.paper_code,
         paper_title=f"Paper {paper.paper_id[-1]}  {paper.title}",
         duration="2 hours",

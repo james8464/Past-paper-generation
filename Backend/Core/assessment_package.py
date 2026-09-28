@@ -402,15 +402,9 @@ def _reference_demand_audit(
             items, profile.paper_id.removeprefix("bank-"), profile.topic_records
         )
         report["topic_evidence"] = topic
-        report["evidence_state"] = "insufficient"
-        report["profile_fit_passed"] = False
-        report["passed"] = False
-        paths["passed"] = False
-        paths["evidence_state"] = "insufficient"
-        report["failed_checks"] = [
-            *review_failed,
-            "topic_reference_evidence_insufficient",
-        ]
+        report["evidence_state"] = topic["evidence_state"]
+        report["profile_fit_passed"] = topic["passed"]
+        paths["evidence_state"] = topic["evidence_state"]
         # Controller ruling: insufficiency is not a calibration pass nor an
         # exemption from structural, source/content, correctness or review gates.
         structural_failures = [
@@ -419,14 +413,22 @@ def _reference_demand_audit(
             for failure in row["failed_checks"]
             if failure.startswith(("allocated_", "objective_", "section_"))
         ]
+        report["failed_checks"] = list(dict.fromkeys([
+            *review_failed, *structural_failures,
+            *([] if topic["passed"] else ["topic_reference_evidence_insufficient"]),
+        ]))
+        report["passed"] = (topic["passed"] and not report["failed_checks"]
+                            and paths["evidence_validation_passed"])
+        paths["passed"] = report["passed"]
         report["build_eligible"] = (
             not preview
             and not review_failed
             and not structural_failures
             and paths["evidence_validation_passed"]
+            and topic["passed"]
         )
         report["build_gate_basis"] = (
-            "Structure/correctness/source-content identity/item review required; topic calibration remains insufficient."
+            "Reviewed generated-item source support plus structure/correctness/source-content identity/item review; not whole-topic or learner calibration."
         )
     return report
 

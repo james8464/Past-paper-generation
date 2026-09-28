@@ -435,7 +435,7 @@ def test_profile_policy_source_and_topology_changes_invalidate_target_identity()
     )
 
 
-def test_bank_manifest_keeps_insufficiency_separate_from_printed_review():
+def test_bank_manifest_keeps_item_source_support_separate_from_printed_review():
     from pathlib import Path
 
     from cspapergen.generator import build_topic_question_bank
@@ -457,13 +457,15 @@ def test_bank_manifest_keeps_insufficiency_separate_from_printed_review():
         preview=False,
         blueprint=raw,
     )
-    assert report["evidence_state"] == "insufficient"
+    assert report["evidence_state"] == "source-supported"
+    assert report["topic_evidence"]["passed"] is True
+    assert report["topic_evidence"]["whole_topic_qualified"] is False
     assert report["passed"] is False
     assert report["path_evidence"]["passed"] is False
     assert report["build_eligible"] is False
     assert "item_review_coverage" in report["failed_checks"]
     assert report["items_checked"] == len(data)
-    assert report["topic_evidence"]["strata"]["core"] == {"parts": 19, "marks": 42}
+    assert report["topic_evidence"]["strata"]["core"] == {"parts": 21, "marks": 48}
 
 
 def test_one_choice_cannot_hide_an_objective_budget_failure():

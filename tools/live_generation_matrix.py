@@ -4,9 +4,10 @@ import argparse
 import hashlib
 import json
 import signal
-import subprocess
 import sys
 import time
+import urllib.error
+import urllib.request
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -22,6 +23,7 @@ from Backend.Core.qualification.manifest import (
     QualificationManifest,
     VersionIdentity,
 )
+from tools.live_process import run_backend
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY_PATH = ROOT / "Resources" / "generator-registry.json"
@@ -94,15 +96,44 @@ def run_matrix(
     output_root.mkdir(parents=True, exist_ok=True)
     results: list[dict[str, Any]] = []
     started = time.time()
+    _save_matrix_report(
+        results,
+        output_root=output_root,
+        started=started,
+        jobs=jobs,
+        model=model,
+        provider=provider,
+        dry_run=dry_run,
+        base_seed=base_seed,
+        ollama_url=ollama_url,
+        command_prefix=command_prefix,
+    )
     for index, job in enumerate(jobs):
         run_dir = output_root / job.backend_subject / f"paper-{job.paper}"
         run_dir.mkdir(parents=True, exist_ok=True)
         result_path = run_dir / "matrix-result.json"
+        seed = base_seed + job.seed_offset
+        model_digest = (
+            _model_digest(provider, model, ollama_url) if not dry_run else None
+        )
+        request_identity = _request_identity(
+            job,
+            seed=seed,
+            model=model,
+            provider=provider,
+            ollama_url=ollama_url,
+            dry_run=dry_run,
+            command_prefix=command_prefix,
+            model_digest=model_digest,
+        )
         if resume:
-            previous = _resumable_result(result_path)
+            previous = _resumable_result(result_path, request_identity=request_identity)
             if previous is not None:
                 qualification_path = previous.get("qualification_manifest")
-                if not qualification_path or not Path(str(qualification_path)).is_file():
+                if (
+                    not qualification_path
+                    or not Path(str(qualification_path)).is_file()
+                ):
                     qualification_path = _write_qualification_manifest(
                         job=job,
                         result=previous,
@@ -117,9 +148,20 @@ def run_matrix(
                     )
                 print(f"[{index + 1}/{len(jobs)}] {job.id}: already passed", flush=True)
                 results.append(previous)
+                _save_matrix_report(
+                    results,
+                    output_root=output_root,
+                    started=started,
+                    jobs=jobs,
+                    model=model,
+                    provider=provider,
+                    dry_run=dry_run,
+                    base_seed=base_seed,
+                    ollama_url=ollama_url,
+                    command_prefix=command_prefix,
+                )
                 continue
 
-        seed = base_seed + job.seed_offset
         command = [
             *command_prefix,
             "generate",
@@ -142,25 +184,38 @@ def run_matrix(
             command.append("--dry-run")
 
         print(f"[{index + 1}/{len(jobs)}] {job.id}: generating", flush=True)
+        active_result = {
+            "id": job.id,
+            "seed": seed,
+            "status": "running",
+            "passed": False,
+            "generation_passed": False,
+            "reference_demand_passed": False,
+            "request_identity": request_identity,
+            "files": {},
+            "model": None if dry_run else model,
+            "provider": None if dry_run else provider,
+            "model_digest": model_digest,
+        }
+        result_path.write_text(json.dumps(active_result) + "\n", encoding="utf-8")
+        (run_dir / "events.jsonl").write_text("", encoding="utf-8")
+        _write_qualification_manifest(
+            job=job,
+            result=active_result,
+            result_path=result_path,
+            run_dir=run_dir,
+            output_root=output_root,
+        )
         before = time.monotonic()
-        timed_out = False
-        try:
-            completed = subprocess.run(
-                command,
-                cwd=ROOT,
-                capture_output=True,
-                text=True,
-                timeout=timeout_seconds,
-                check=False,
-            )
-            return_code = completed.returncode
-            stdout = completed.stdout
-            stderr = completed.stderr
-        except subprocess.TimeoutExpired as error:
-            timed_out = True
-            return_code = 124
-            stdout = _timeout_text(error.stdout)
-            stderr = _timeout_text(error.stderr)
+        completed = run_backend(
+            command,
+            cwd=ROOT,
+            run_dir=run_dir,
+            timeout_seconds=timeout_seconds,
+        )
+        return_code = completed.return_code
+        timed_out = completed.timed_out
+        stdout, stderr = completed.stdout, completed.stderr
         duration = round(time.monotonic() - before, 2)
         (run_dir / "events.jsonl").write_text(stdout, encoding="utf-8")
         (run_dir / "stderr.log").write_text(stderr, encoding="utf-8")
@@ -189,7 +244,26 @@ def run_matrix(
             and not missing_files
             and any(event.get("type") == "done" for event in events)
         )
-        demand = _read_package_manifest(file_events.get("assessment_package")).get("reference_demand")
+        current_identity = _request_identity(
+            job,
+            seed=seed,
+            model=model,
+            provider=provider,
+            ollama_url=ollama_url,
+            dry_run=dry_run,
+            command_prefix=command_prefix,
+            model_digest=_model_digest(provider, model, ollama_url)
+            if not dry_run
+            else None,
+        )
+        if current_identity != request_identity:
+            generation_passed = False
+            error_messages.append(
+                "runtime source or model changed during generation; rerun on stable inputs"
+            )
+        demand = _read_package_manifest(file_events.get("assessment_package")).get(
+            "reference_demand"
+        )
         demand_passed = isinstance(demand, dict) and demand.get("passed") is True
         if generation_passed and not demand_passed:
             checks = demand.get("failed_checks", []) if isinstance(demand, dict) else []
@@ -209,6 +283,11 @@ def run_matrix(
             "model": None if dry_run else model,
             "provider": None if dry_run else provider,
             "preview": dry_run,
+            "status": "completed",
+            "request_identity": request_identity,
+            "model_digest": model_digest,
+            "peak_backend_rss_bytes": completed.peak_backend_rss_bytes,
+            "memory_scope": "Backend peak resident memory; separate model-server/GPU memory excluded.",
             "duration_seconds": duration,
             "return_code": return_code,
             "timed_out": timed_out,
@@ -219,6 +298,12 @@ def run_matrix(
             "missing_files": missing_files,
             "errors": error_messages,
             "files": {role: str(path) for role, path in sorted(file_events.items())},
+            "artifact_sha256": {
+                role: _sha256(path)
+                for role, path in sorted(file_events.items())
+                if path.is_file()
+            },
+            "events_sha256": _sha256(run_dir / "events.jsonl"),
         }
         result_path.write_text(
             json.dumps(result, indent=2, ensure_ascii=False) + "\n",
@@ -238,11 +323,90 @@ def run_matrix(
         )
         results.append(result)
         verdict = "passed" if passed else "failed"
-        print(f"[{index + 1}/{len(jobs)}] {job.id}: {verdict} in {duration:.0f}s", flush=True)
+        print(
+            f"[{index + 1}/{len(jobs)}] {job.id}: {verdict} in {duration:.0f}s",
+            flush=True,
+        )
+        _save_matrix_report(
+            results,
+            output_root=output_root,
+            started=started,
+            jobs=jobs,
+            model=model,
+            provider=provider,
+            dry_run=dry_run,
+            base_seed=base_seed,
+            ollama_url=ollama_url,
+            command_prefix=command_prefix,
+        )
 
+    return _save_matrix_report(
+        results,
+        output_root=output_root,
+        started=started,
+        jobs=jobs,
+        model=model,
+        provider=provider,
+        dry_run=dry_run,
+        base_seed=base_seed,
+        ollama_url=ollama_url,
+        command_prefix=command_prefix,
+    )
+
+
+def _save_matrix_report(
+    results: list[dict[str, Any]],
+    *,
+    output_root: Path,
+    started: float,
+    jobs: list[MatrixJob],
+    model: str,
+    provider: str,
+    dry_run: bool,
+    base_seed: int,
+    ollama_url: str,
+    command_prefix: list[str],
+) -> dict[str, Any]:
+    model_digest = _model_digest(provider, model, ollama_url) if not dry_run else None
+    runtime_sha256 = _runtime_sha256()
+    by_id = {job.id: job for job in jobs}
+    for result in results:
+        if result.get("passed") is not True:
+            continue
+        job = by_id[result["id"]]
+        expected = _request_identity(
+            job,
+            seed=base_seed + job.seed_offset,
+            model=model,
+            provider=provider,
+            ollama_url=ollama_url,
+            dry_run=dry_run,
+            command_prefix=command_prefix,
+            model_digest=model_digest,
+            runtime_sha256=runtime_sha256,
+        )
+        run_dir = output_root / job.backend_subject / f"paper-{job.paper}"
+        result_path = run_dir / "matrix-result.json"
+        if _resumable_result(result_path, request_identity=expected) is None:
+            result["passed"] = result["generation_passed"] = False
+            result["errors"].append(
+                "qualification evidence is stale, incomplete or unverifiable; rerun this route"
+            )
+            result_path.write_text(
+                json.dumps(result, indent=2) + "\n", encoding="utf-8"
+            )
+            _write_qualification_manifest(
+                job=job,
+                result=result,
+                result_path=result_path,
+                run_dir=run_dir,
+                output_root=output_root,
+            )
     passed_count = sum(bool(result["passed"]) for result in results)
     report = {
         "schema_version": 1,
+        "complete": len(results) == len(jobs),
+        "expected_jobs": len(jobs),
         "generated_at_unix": round(time.time()),
         "duration_seconds": round(time.time() - started, 2),
         "model": None if dry_run else model,
@@ -278,6 +442,8 @@ def matrix_markdown(report: dict[str, Any]) -> str:
         "# Live generation matrix",
         "",
         f"Model: `{report['model'] or 'preview mode'}`",
+        f"Scope: {len(report['results'])}/{report.get('expected_jobs', len(report['results']))} routes completed; "
+        + ("complete run." if report.get("complete", True) else "INCOMPLETE run."),
         "",
         "| Generator | Paper | Result | Time | Error |",
         "|---|---:|---|---:|---|",
@@ -312,7 +478,76 @@ def _events(stdout: str) -> list[dict[str, Any]]:
     return result
 
 
-def _resumable_result(path: Path) -> dict[str, Any] | None:
+def _request_identity(
+    job: MatrixJob,
+    *,
+    seed: int,
+    model: str,
+    provider: str,
+    ollama_url: str,
+    dry_run: bool,
+    command_prefix: list[str],
+    model_digest: str | None,
+    runtime_sha256: str | None = None,
+) -> dict[str, Any]:
+    return {
+        "version": 1,
+        "job": job.id,
+        "seed": seed,
+        "preview": dry_run,
+        "model": None if dry_run else model,
+        "provider": None if dry_run else provider,
+        "model_digest": model_digest,
+        "endpoint_sha256": hashlib.sha256(ollama_url.rstrip("/").encode()).hexdigest(),
+        "runtime_sha256": runtime_sha256
+        if runtime_sha256 is not None
+        else _runtime_sha256(),
+        "command": command_prefix,
+        "executable_sha256": _sha256(Path(command_prefix[0]))
+        if Path(command_prefix[0]).is_file()
+        else None,
+        "expected_roles": list(job.expected_roles),
+    }
+
+
+def _runtime_sha256() -> str:
+    runtime_files = [ROOT / "bridge.py", ROOT / "requirements-build.txt"]
+    for folder in (ROOT / "Backend", ROOT / "Resources"):
+        runtime_files.extend(
+            path
+            for path in folder.rglob("*")
+            if path.is_file()
+            and "tests" not in path.parts
+            and path.suffix.casefold() in {".py", ".json", ".toml", ".ttf", ".otf"}
+            and path.name != "repository-inventory.json"
+        )
+    digest = hashlib.sha256()
+    for path in sorted(runtime_files):
+        digest.update(str(path.relative_to(ROOT)).encode())
+        digest.update(_sha256(path).encode())
+    return digest.hexdigest()
+
+
+def _model_digest(provider: str, model: str, ollama_url: str) -> str | None:
+    if provider != "ollama":
+        return None
+    try:
+        with urllib.request.urlopen(
+            ollama_url.rstrip("/") + "/api/tags", timeout=5
+        ) as response:
+            payload = json.load(response)
+        for entry in payload.get("models", []):
+            if entry.get("name") == model or entry.get("model") == model:
+                value = entry.get("digest")
+                return value if isinstance(value, str) else None
+    except (OSError, ValueError, AttributeError):
+        pass
+    return None
+
+
+def _resumable_result(
+    path: Path, *, request_identity: dict[str, Any]
+) -> dict[str, Any] | None:
     if not path.is_file():
         return None
     try:
@@ -321,21 +556,41 @@ def _resumable_result(path: Path) -> dict[str, Any] | None:
         return None
     if not isinstance(result, dict) or result.get("passed") is not True:
         return None
-    files = result.get("files")
-    if not isinstance(files, dict) or not files:
+    if result.get("request_identity") != request_identity:
         return None
-    demand = _read_package_manifest(files.get("assessment_package")).get("reference_demand")
+    if (
+        request_identity["provider"] == "ollama"
+        and not request_identity["model_digest"]
+    ):
+        return None
+    files = result.get("files")
+    expected = set(request_identity["expected_roles"]) | {"package_manifest"}
+    hashes = result.get("artifact_sha256")
+    if (
+        not isinstance(files, dict)
+        or not expected.issubset(files)
+        or not isinstance(hashes, dict)
+    ):
+        return None
+    try:
+        if any(
+            not Path(value).is_file() or _sha256(Path(value)) != hashes.get(role)
+            for role, value in files.items()
+        ):
+            return None
+    except (OSError, TypeError, ValueError):
+        return None
+    events_path = path.parent / "events.jsonl"
+    if not events_path.is_file() or _sha256(events_path) != result.get("events_sha256"):
+        return None
+    demand = _read_package_manifest(files.get("assessment_package")).get(
+        "reference_demand"
+    )
     if not isinstance(demand, dict) or demand.get("passed") is not True:
         return None
     result["generation_passed"] = True
     result["reference_demand_passed"] = True
-    return result if all(Path(str(path)).is_file() for path in files.values()) else None
-
-
-def _timeout_text(value: str | bytes | None) -> str:
-    if value is None:
-        return ""
-    return value.decode(errors="replace") if isinstance(value, bytes) else value
+    return result
 
 
 def _process_failure_message(
@@ -352,7 +607,9 @@ def _process_failure_message(
         except ValueError:
             signal_name = "unknown signal"
         return f"backend terminated by signal {signal_name} ({signal_number})"
-    detail = next((line.strip() for line in reversed(stderr.splitlines()) if line.strip()), "")
+    detail = next(
+        (line.strip() for line in reversed(stderr.splitlines()) if line.strip()), ""
+    )
     if detail:
         return f"backend exited with status {return_code}: {detail}"
     return f"backend exited with status {return_code}"
@@ -371,6 +628,7 @@ def _write_qualification_manifest(
     generator = package.get("generator", {})
     backend = package.get("backend", {})
     passed = bool(result["passed"])
+    running = result.get("status") == "running"
     generation_passed = bool(result.get("generation_passed", passed))
     artifacts = [
         ArtifactEvidence.from_path(role, Path(path))
@@ -394,7 +652,7 @@ def _write_qualification_manifest(
         model=ModelIdentity(
             provider=result.get("provider"),
             name=result.get("model"),
-            digest=package.get("request", {}).get("model_digest"),
+            digest=result.get("model_digest"),
         ),
         versions=VersionIdentity(
             contract=str(inputs.get("assessment_schema", unavailable)),
@@ -410,10 +668,22 @@ def _write_qualification_manifest(
         ),
         artifacts=artifacts,
         gate_results={
-            "generation": GateState.PASSED if generation_passed else GateState.FAILED,
-            "pdf": GateState.PASSED if generation_passed else GateState.FAILED,
+            "generation": GateState.NOT_RUN
+            if running
+            else GateState.PASSED
+            if generation_passed
+            else GateState.FAILED,
+            "pdf": GateState.NOT_RUN
+            if running
+            else GateState.PASSED
+            if generation_passed
+            else GateState.FAILED,
             "reference_demand": (
-                GateState.PASSED if result.get("reference_demand_passed") else GateState.FAILED
+                GateState.NOT_RUN
+                if running
+                else GateState.PASSED
+                if result.get("reference_demand_passed")
+                else GateState.FAILED
             ),
             "visual": GateState.NOT_RUN,
             "expert_review": GateState.NOT_RUN,
@@ -461,6 +731,8 @@ def _write_run_qualification_manifest(
         "model": model,
         "provider": provider,
         "summary": report["summary"],
+        "complete": report["complete"],
+        "expected_jobs": report["expected_jobs"],
         "paper_manifests": paper_manifests,
     }
     path = output_root / "qualification-run-manifest.json"

@@ -18,6 +18,8 @@ from Backend.Core.pdf_accessibility import has_logical_page_order
 
 CONTROLLED_FONT_PREFIXES = {
     "economics": (
+        "OpenSansRoman-Medium",
+        "OpenSans-SemiBold",
         "Arimo",
         "HelveticaNeue",
         "Verdana",
@@ -29,6 +31,8 @@ CONTROLLED_FONT_PREFIXES = {
         "ZapfDingbats",
     ),
     "default": (
+        "OpenSansRoman-Medium",
+        "OpenSans-SemiBold",
         "Arimo",
         "Arial",
         "Courier",
@@ -843,6 +847,15 @@ def _layout_profiles() -> dict[tuple[str, str], dict[str, Any]]:
 
 def _normalise_font(value: str) -> str:
     name = value.rsplit("+", 1)[-1].casefold()
+    # Open Sans static instances use either OpenSans or OpenSansRoman as the
+    # PostScript family stem. Weight/style suffixes do not create new families;
+    # keep condensed faces distinct instead of broadly prefix-matching them.
+    compact = re.sub(r"[\s,_-]", "", name)
+    if re.fullmatch(
+        r"opensans(?:roman)?(?:light|regular|medium|semibold|bold|extrabold)?(?:italic)?",
+        compact,
+    ):
+        return "opensans"
     for token in (
         "bold",
         "italic",

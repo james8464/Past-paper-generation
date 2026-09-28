@@ -573,7 +573,7 @@ def build_document() -> ReferenceDemandDocument:
             profile.topic_records = records
             profile.evidence_policy_id = TOPIC_POLICY_ID
             profile.evidence_gaps = GAPS[topic]
-            profile.comparison_basis = "Reviewed topic-and-actual-operation feature subset; insufficient whole-topic calibration; not a scaled full-paper AO distribution."
+            profile.comparison_basis = "Reviewed topic, content-family, actual-operation, response-mode and tariff-band evidence for generated-item support; not whole-topic or learner calibration and not a scaled full-paper AO distribution."
             profile.source_fingerprint = hashlib.sha256(
                 json.dumps(records, sort_keys=True).encode()
             ).hexdigest()

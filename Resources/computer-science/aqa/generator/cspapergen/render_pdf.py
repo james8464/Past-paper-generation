@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import re
+from dataclasses import replace
 from datetime import date
 from pathlib import Path
 
@@ -517,7 +518,11 @@ def _draw_complexity_support_page(
     pdf.setFont(FONT_BOLD, 11)
     pdf.drawCentredString(289, 710, f"Information for Question {question.number}")
     pdf.setFont(FONT, 10)
-    pdf.drawString(82, 676, "Record timing results for both algorithms before reaching a conclusion.")
+    pdf.drawString(
+        82,
+        676,
+        "Record timing results for both algorithms before reaching a conclusion.",
+    )
     rows = [
         ["Input size", "Algorithm X time", "Algorithm Y time", "Selected algorithm"],
         ["100", "", "", ""],
@@ -576,7 +581,11 @@ def _draw_paper1_support_page(
         state = _render_stimulus(pdf, question.stimulus, state)
     pdf.setFont(FONT, 9)
     state.y -= 12
-    pdf.drawString(82, state.y, "This information is repeated so that it remains visible while you complete the task.")
+    pdf.drawString(
+        82,
+        state.y,
+        "This information is repeated so that it remains visible while you complete the task.",
+    )
 
 
 def _draw_intentionally_blank_page(
@@ -585,6 +594,14 @@ def _draw_intentionally_blank_page(
     *,
     do_not_write: bool = False,
 ) -> None:
+    if state.blueprint.delivery_mode == "on-screen":
+        # The on-screen header already contains its folio and footer. Unlike
+        # the written-paper shell, this leaf has no candidate border to repaint.
+        pdf.setFont(FONT, 11.04)
+        pdf.drawCentredString(291.5, 430, "There are no questions printed on this page")
+        state.y = 380
+        state.is_blank = True
+        return
     draw_exam_page(
         pdf,
         ExamPageProfile(
@@ -647,7 +664,12 @@ def _render_generic_mark_scheme_pages(
             page += 1
             y = _mark_scheme_table_header(pdf, page, blueprint)
         for part in question.parts:
-            needed = 56 + 15 * (len(part.marking.points) + len(part.marking.accept) + len(part.marking.reject) + len(part.marking.levels))
+            needed = 56 + 15 * (
+                len(part.marking.points)
+                + len(part.marking.accept)
+                + len(part.marking.reject)
+                + len(part.marking.levels)
+            )
             if y - needed < 70:
                 pdf.showPage()
                 page += 1
@@ -663,9 +685,7 @@ def _set_document_metadata(
     pdf.setTitle(f"{blueprint.paper_code} {blueprint.title} — {role}")
     pdf.setAuthor("Paper creator")
     pdf.setCreator("Paper creator")
-    pdf.setSubject(
-        "Independent A-level Computer Science practice material"
-    )
+    pdf.setSubject("Independent A-level Computer Science practice material")
 
 
 def _render_paper1_mark_scheme_pages(
@@ -679,7 +699,9 @@ def _render_paper1_mark_scheme_pages(
     y = _mark_scheme_table_header(pdf, page, blueprint)
     for question in blueprint.questions:
         for part in question.parts:
-            needed = _mark_scheme_part_height(part) + _mark_scheme_artifact_height(question, part)
+            needed = _mark_scheme_part_height(part) + _mark_scheme_artifact_height(
+                question, part
+            )
             if y - needed < 70:
                 pdf.showPage()
                 page += 1
@@ -695,7 +717,10 @@ def _render_paper1_mark_scheme_pages(
         pdf.showPage()
         page += 1
         _draw_paper1_reference_solution_page(
-            pdf, blueprint, question_by_number[question_number], page,
+            pdf,
+            blueprint,
+            question_by_number[question_number],
+            page,
         )
 
 
@@ -719,14 +744,18 @@ def _draw_paper1_reference_solution_page(
 ) -> None:
     _ms_header(pdf, page, blueprint)
     pdf.setFont(FONT_BOLD, 13)
-    pdf.drawString(43, 745, f"Question {question.number:02d}: Example Python 3 solution")
+    pdf.drawString(
+        43, 745, f"Question {question.number:02d}: Example Python 3 solution"
+    )
     y = 715
     pdf.setFont(FONT, 10)
     for line in _wrap(question.parts[0].prompt, 88):
         pdf.drawString(55, y, line)
         y -= 14
     y -= 10
-    code = _paper1_reference_code(question.number, record_name=blueprint.program_record_name)
+    code = _paper1_reference_code(
+        question.number, record_name=blueprint.program_record_name
+    )
     pdf.setFont(FONT_MONO, 10)
     for line in code.splitlines():
         pdf.drawString(62, y, line[:86])
@@ -751,9 +780,7 @@ def _render_paper2_mark_scheme_pages(
                 if part.marking.levels:
                     points_only = part.model_copy(
                         update={
-                            "marking": part.marking.model_copy(
-                                update={"levels": []}
-                            )
+                            "marking": part.marking.model_copy(update={"levels": []})
                         }
                     )
                     levels_only = part.model_copy(
@@ -798,9 +825,16 @@ def _render_paper2_mark_scheme_pages(
 
 def _mark_scheme_part_height(part: QuestionPart) -> float:
     wrapped_lines = 1
-    wrapped_lines += sum(len(_wrap_scheme_text(point)) for point in printed_credit_points(part.marking.model_dump(mode="json")))
-    wrapped_lines += sum(len(_wrap_scheme_text(f"A. {item}")) for item in part.marking.accept)
-    wrapped_lines += sum(len(_wrap_scheme_text(f"R. {item}")) for item in part.marking.reject)
+    wrapped_lines += sum(
+        len(_wrap_scheme_text(point))
+        for point in printed_credit_points(part.marking.model_dump(mode="json"))
+    )
+    wrapped_lines += sum(
+        len(_wrap_scheme_text(f"A. {item}")) for item in part.marking.accept
+    )
+    wrapped_lines += sum(
+        len(_wrap_scheme_text(f"R. {item}")) for item in part.marking.reject
+    )
     wrapped_lines += sum(len(_wrap_scheme_text(item)) for item in part.marking.levels)
     return 38 + 15 * wrapped_lines
 
@@ -810,39 +844,41 @@ class _QuestionRenderState:
         self.page = page
         self.y = y
         self.blueprint = blueprint
+        self.is_blank = False
 
 
 def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
+    _rf("ExamCover-Medium", "ExamCover-SemiBold")
+    on_screen = blueprint.delivery_mode == "on-screen"
     pdf.setFont(FONT_BOLD, 27)
     pdf.drawString(40, 768, "PAPER")
     pdf.setFont(FONT_BOLD, 10)
     pdf.drawString(40, 752, "CREATOR")
     pdf.setFont(FONT, 11)
-    candidate_instruction = (
-        "Complete the candidate details and save all electronic work clearly."
-        if blueprint.delivery_mode == "on-screen"
-        else "Please write clearly in block capitals."
-    )
-    pdf.rect(40, 564, 504, 166, stroke=1, fill=0)
-    pdf.drawString(55, 708, candidate_instruction)
-    _candidate_fields(pdf)
+    if not on_screen:
+        pdf.rect(40, 564, 504, 166, stroke=1, fill=0)
+        pdf.drawString(55, 708, "Please write clearly in block capitals.")
+        _candidate_fields(pdf)
 
-    pdf.setFont(FONT_BOLD, 18)
-    pdf.drawString(40, 535, "A-level")
-    pdf.setFont(FONT_BOLD, 22)
-    pdf.drawString(40, 501, "COMPUTER SCIENCE")
-    pdf.setFont(FONT_BOLD, 16)
+    pdf.setFont("ExamCover-Medium", 27.96)
+    pdf.drawString(40, 685.92 if on_screen else 535, "A-level")
+    pdf.setFont("ExamCover-SemiBold", 27.96)
+    pdf.drawString(40, 650.32 if on_screen else 501, "COMPUTER SCIENCE")
+    pdf.setFont("ExamCover-Medium", 16)
     document_title = (
         "Topic Question Bank"
         if blueprint.assessment_kind == "question-bank"
         else f"Paper {blueprint.paper_number}"
     )
-    pdf.drawString(40, 476, document_title)
+    pdf.drawString(40, 622.22 if on_screen else 476, document_title)
     pdf.setLineWidth(2)
-    pdf.line(40, 455, 545, 455)
+    pdf.line(40, 598 if on_screen else 455, 545, 598 if on_screen else 455)
     pdf.setFont(FONT, 11)
-    pdf.drawString(40, 438, _formatted_exam_date(blueprint))
-    pdf.drawString(231, 438, blueprint.session)
+    date_y = 571 if on_screen else 438
+    date_text = _formatted_exam_date(blueprint)
+    pdf.drawString(40, date_y, date_text)
+    session_x = max(231, 40 + pdf.stringWidth(date_text, FONT, 11) + 12)
+    pdf.drawString(session_x, date_y, blueprint.session)
     hours, minutes = divmod(blueprint.duration_minutes, 60)
     if hours and minutes:
         duration = f"{hours} hour{'s' if hours != 1 else ''} {minutes} minutes"
@@ -850,10 +886,13 @@ def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
         duration = f"{hours} hour{'s' if hours != 1 else ''}"
     else:
         duration = f"{minutes} minutes"
-    pdf.drawString(306, 438, f"Time allowed: {duration}")
+    time_text = f"Time allowed: {duration}"
+    pdf.drawRightString(545, date_y, time_text)
 
-    y = 410
-    material_lines = ["For this paper you must have:"] + [f"\u2022 {item}." for item in blueprint.materials]
+    y = 544.5 if on_screen else 410
+    material_lines = ["For this paper you must have:"] + [
+        f"\u2022 {item}." for item in blueprint.materials
+    ]
     y = _cover_section(pdf, y, "Materials", material_lines)
     response_instruction = (
         "\u2022 Enter written answers in the supplied Electronic Answer Document and complete programming tasks in your development environment."
@@ -870,15 +909,29 @@ def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
         y - 8,
         "Instructions",
         [
-            "\u2022 Use black ink or black ball-point pen.",
-            "\u2022 Fill in the boxes at the top of this page.",
+            "\u2022 Complete your candidate details in the Electronic Answer Document."
+            if on_screen
+            else "\u2022 Use black ink or black ball-point pen.",
+            "\u2022 Save all electronic work using the required filenames."
+            if on_screen
+            else "\u2022 Fill in the boxes at the top of this page.",
             "\u2022 Answer all questions.",
             response_instruction,
             extra_space_instruction,
-            "\u2022 Do all rough work in this book. Cross through any work you do not want to be marked.",
+            "\u2022 Clearly identify the final answer and test evidence you want to be marked."
+            if on_screen
+            else "\u2022 Do all rough work in this book. Cross through any work you do not want to be marked.",
         ],
     )
-    y = _cover_section(pdf, y - 8, "Information", ["\u2022 The marks for questions are shown in brackets.", f"\u2022 The maximum mark for this paper is {blueprint.total_marks}."])
+    y = _cover_section(
+        pdf,
+        y - 8,
+        "Information",
+        [
+            "\u2022 The marks for questions are shown in brackets.",
+            f"\u2022 The maximum mark for this paper is {blueprint.total_marks}.",
+        ],
+    )
     advice = (
         [
             "\u2022 Run and test programming answers in Python 3.",
@@ -894,16 +947,25 @@ def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     )
     _cover_section(pdf, y - 8, "Advice", advice)
 
-    _examiner_table(pdf, len(blueprint.questions), y_top=390)
+    if not on_screen:
+        _examiner_table(pdf, len(blueprint.questions), y_top=390)
+    else:
+        pdf.setStrokeColor(colors.HexColor("#cccccc"))
+        pdf.setLineWidth(0.25)
+        pdf.line(38.6, AQA_A4[1] - 773.95, 541.4, AQA_A4[1] - 773.95)
+        _draw_on_screen_footer(pdf, blueprint)
+        pdf.setFont(FONT_BOLD, 20.04)
+        pdf.drawRightString(539, 18.72, blueprint.paper_code)
+        return
     draw_barcode(
         pdf,
         x=52,
         y=17,
-        caption="01",
-        style=AQA_CS_FOOTER_BARCODE,
+        caption=f"PRACTICE{blueprint.paper_code.replace('/', '')}01",
+        # The source cover spreads its readable caption below the bars.
+        # Keep our independent code there, not overprinted through the ink.
+        style=replace(AQA_CS_FOOTER_BARCODE, spread_caption=True),
     )
-    pdf.setFont(FONT_BOLD, 8)
-    pdf.drawString(130, 35, f"*PRACTICE{blueprint.paper_code.replace('/', '')}01*")
     pdf.setFont(FONT, 9)
     pdf.drawRightString(535, 35, blueprint.paper_code)
 
@@ -930,7 +992,9 @@ def _small_boxes(pdf: canvas.Canvas, x: float, y: float, count: int) -> None:
         pdf.rect(x + index * 28.5, y, 28.5, 28, stroke=1, fill=0)
 
 
-def _cover_section(pdf: canvas.Canvas, y: float, heading: str, lines: list[str]) -> float:
+def _cover_section(
+    pdf: canvas.Canvas, y: float, heading: str, lines: list[str]
+) -> float:
     pdf.setFont(FONT_BOLD, 11)
     pdf.drawString(40, y, heading)
     y -= 16
@@ -968,7 +1032,18 @@ def _examiner_table(pdf: canvas.Canvas, count: int, y_top: float = 470) -> None:
     pdf.drawString(x + 8, bottom + 5, "TOTAL")
 
 
-def _draw_question_page_header(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
+def _draw_question_page_header(
+    pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint
+) -> None:
+    if blueprint.delivery_mode == "on-screen":
+        pdf.setFont(FONT, 11.04)
+        pdf.drawCentredString(291.5, AQA_A4[1] - 39, str(page))
+        pdf.setStrokeColor(colors.Color(0.533, 0.533, 0.533))
+        pdf.setLineWidth(0.5)
+        pdf.line(44.75, AQA_A4[1] - 53.25, 538, AQA_A4[1] - 53.25)
+        pdf.setStrokeColor(colors.black)
+        _draw_on_screen_footer(pdf, blueprint)
+        return
     pdf.setFont(FONT, 10)
     pdf.drawCentredString(297, 805, str(page))
     pdf.setFont(FONT, 7)
@@ -995,6 +1070,14 @@ def _draw_question_page_header(pdf: canvas.Canvas, page: int, blueprint: PaperBl
         style=AQA_CS_FOOTER_BARCODE,
     )
     pdf.drawRightString(539, 28, f"Paper Creator / {blueprint.paper_code}")
+
+
+def _draw_on_screen_footer(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
+    pdf.setFillColor(colors.black)
+    pdf.setFont(FONT, 6.96)
+    pdf.drawString(
+        50.76, 17.82, f"Paper Creator / {blueprint.paper_code} / Unofficial practice"
+    )
 
 
 def _render_question(
@@ -1028,7 +1111,8 @@ def _render_question(
             show_answer_space=show_answer_space,
         )
     state = _ensure_space(pdf, state, 34)
-    _mark_total_box(pdf, question.total_marks, state.y)
+    if state.blueprint.delivery_mode != "on-screen":
+        _mark_total_box(pdf, question.total_marks, state.y)
     state.y -= 42
     return state
 
@@ -1053,7 +1137,9 @@ def _render_part(
         pdf.drawString(118, prompt_y, line)
         prompt_y -= 14
     pdf.setFont(FONT_BOLD, 10)
-    pdf.drawRightString(534, prompt_y + 14, f"[{part.marks} mark{'s' if part.marks != 1 else ''}]")
+    pdf.drawRightString(
+        534, prompt_y + 14, f"[{part.marks} mark{'s' if part.marks != 1 else ''}]"
+    )
     state.y = prompt_y - 12
     response_is_in_stimulus = (
         question.style_id == "software_classification" and part.label == "1"
@@ -1098,29 +1184,45 @@ def candidate_stimulus_data(stimulus: Stimulus | None) -> dict[str, object]:
         data["code"] = render_sql_schema(stimulus.sql_contract)
     if stimulus.kind == "classification":
         if not stimulus.lines:
-            raise ValueError("classification figure lacks candidate-visible maintenance examples")
+            raise ValueError(
+                "classification figure lacks candidate-visible maintenance examples"
+            )
         first, second, *_ = stimulus.diagram.split("|")
         data.pop("diagram", None)
         data["links"] = [
-            {"parent": parent, "child": child} for parent, child in [
-                ("Software", "1"), ("Software", "System software"),
-                ("1", first), ("1", second),
-                ("System software", "2"), ("System software", "Translators"),
+            {"parent": parent, "child": child}
+            for parent, child in [
+                ("Software", "1"),
+                ("Software", "System software"),
+                ("1", first),
+                ("1", second),
+                ("System software", "2"),
+                ("System software", "Translators"),
             ]
         ]
     elif stimulus.kind == "network":
         data.pop("diagram", None)
         data["links"] = [
-            ["Client", "Switch"], ["Laptop", "Switch"],
-            ["Switch", "Router"], ["Router", "Server"],
+            ["Client", "Switch"],
+            ["Laptop", "Switch"],
+            ["Switch", "Router"],
+            ["Router", "Server"],
         ]
     elif stimulus.kind == "fsm":
         data.pop("diagram", None)
-        data.update({
-            "start_state": "S0", "accepting_states": ["S1"],
-            "transitions": [["S0", "1", "S1"], ["S1", "0", "S2"],
-                            ["S2", "0", "S1"], ["S1", "1", "S1"], ["S2", "1", "S2"]],
-        })
+        data.update(
+            {
+                "start_state": "S0",
+                "accepting_states": ["S1"],
+                "transitions": [
+                    ["S0", "1", "S1"],
+                    ["S1", "0", "S2"],
+                    ["S2", "0", "S1"],
+                    ["S1", "1", "S1"],
+                    ["S2", "1", "S2"],
+                ],
+            }
+        )
     elif stimulus.kind == "optical":
         data["visible_labels"] = ["laser", "spiral track", "pits and lands"]
     if stimulus.kind in {"table", "bitgrid", "packet", "truth_table", "fsm"}:
@@ -1129,7 +1231,9 @@ def candidate_stimulus_data(stimulus: Stimulus | None) -> dict[str, object]:
     return data
 
 
-def _render_stimulus(pdf: canvas.Canvas, stimulus: Stimulus, state: _QuestionRenderState) -> _QuestionRenderState:
+def _render_stimulus(
+    pdf: canvas.Canvas, stimulus: Stimulus, state: _QuestionRenderState
+) -> _QuestionRenderState:
     state = _ensure_space(pdf, state, 110)
     pdf.setFont(FONT_BOLD, 10)
     pdf.drawCentredString(282, state.y, stimulus.title)
@@ -1329,9 +1433,16 @@ def _draw_erd(pdf: canvas.Canvas, diagram: str, x: float, y: float) -> float:
     return y - 74
 
 
-def _draw_network_diagram(pdf: canvas.Canvas, diagram: str, x: float, y: float) -> float:
+def _draw_network_diagram(
+    pdf: canvas.Canvas, diagram: str, x: float, y: float
+) -> float:
     nodes = _network_nodes(diagram, x, y)
-    for start, end in [("Client", "Switch"), ("Laptop", "Switch"), ("Switch", "Router"), ("Router", "Server")]:
+    for start, end in [
+        ("Client", "Switch"),
+        ("Laptop", "Switch"),
+        ("Switch", "Router"),
+        ("Router", "Server"),
+    ]:
         if start in nodes and end in nodes:
             sx, sy = nodes[start]
             ex, ey = nodes[end]
@@ -1355,7 +1466,10 @@ def _draw_classification_diagram(
     y: float,
 ) -> float:
     data = candidate_stimulus_data(stimulus)
-    application_one, application_two = data["links"][2]["child"], data["links"][3]["child"]
+    application_one, application_two = (
+        data["links"][2]["child"],
+        data["links"][3]["child"],
+    )
     boxes = {
         "Software": (x, y - 104, 76, 34),
         "1": (x + 110, y - 55, 112, 34),
@@ -1378,7 +1492,9 @@ def _draw_classification_diagram(
         pdf.line(ex - 4, ey + eh / 2 - 3, ex, ey + eh / 2)
     for label, (bx, by, width, height) in boxes.items():
         pdf.rect(bx, by, width, height, stroke=1, fill=0)
-        pdf.setFont(FONT_BOLD if label in {"Software", "1", "System software"} else FONT, 9.5)
+        pdf.setFont(
+            FONT_BOLD if label in {"Software", "1", "System software"} else FONT, 9.5
+        )
         for line_index, line in enumerate(_wrap(label, 19)):
             pdf.drawCentredString(
                 bx + width / 2,
@@ -1417,35 +1533,57 @@ def _draw_optical_diagram(
 
 def _network_nodes(diagram: str, x: float, y: float) -> dict[str, tuple[float, float]]:
     if diagram == "mesh-wan":
-        return {"Client": (x + 36, y - 42), "Laptop": (x + 36, y - 86), "Switch": (x + 140, y - 64), "Router": (x + 238, y - 64), "Server": (x + 330, y - 64)}
+        return {
+            "Client": (x + 36, y - 42),
+            "Laptop": (x + 36, y - 86),
+            "Switch": (x + 140, y - 64),
+            "Router": (x + 238, y - 64),
+            "Server": (x + 330, y - 64),
+        }
     if diagram == "star-lan":
-        return {"Client": (x + 44, y - 40), "Laptop": (x + 44, y - 90), "Switch": (x + 178, y - 64), "Router": (x + 290, y - 64), "Server": (x + 342, y - 104)}
-    return {"Client": (x + 40, y - 64), "Laptop": (x + 40, y - 104), "Switch": (x + 152, y - 84), "Router": (x + 252, y - 84), "Server": (x + 340, y - 84)}
+        return {
+            "Client": (x + 44, y - 40),
+            "Laptop": (x + 44, y - 90),
+            "Switch": (x + 178, y - 64),
+            "Router": (x + 290, y - 64),
+            "Server": (x + 342, y - 104),
+        }
+    return {
+        "Client": (x + 40, y - 64),
+        "Laptop": (x + 40, y - 104),
+        "Switch": (x + 152, y - 84),
+        "Router": (x + 252, y - 84),
+        "Server": (x + 340, y - 84),
+    }
 
 
-def _ensure_space(pdf: canvas.Canvas, state: _QuestionRenderState, height: float) -> _QuestionRenderState:
+def _ensure_space(
+    pdf: canvas.Canvas, state: _QuestionRenderState, height: float
+) -> _QuestionRenderState:
     if state.y - height >= BOTTOM:
         return state
+    return _new_question_page(pdf, state)
+
+
+def _new_question_page(
+    pdf: canvas.Canvas, state: _QuestionRenderState
+) -> _QuestionRenderState:
     pdf.setFont(FONT, 9)
-    pdf.drawRightString(500, 62, "Turn over >")
+    if state.blueprint.delivery_mode != "on-screen" or (
+        state.page % 2 and not state.is_blank
+    ):
+        pdf.drawRightString(500, 62, "Turn over >")
     pdf.showPage()
     state.page += 1
     state.y = 724
+    state.is_blank = False
     _draw_question_page_header(pdf, state.page, state.blueprint)
     return state
 
 
-def _new_question_page(pdf: canvas.Canvas, state: _QuestionRenderState) -> _QuestionRenderState:
-    pdf.setFont(FONT, 9)
-    pdf.drawRightString(500, 62, "Turn over >")
-    pdf.showPage()
-    state.page += 1
-    state.y = 724
-    _draw_question_page_header(pdf, state.page, state.blueprint)
-    return state
-
-
-def _draw_question_ref(pdf: canvas.Canvas, x: float, y: float, number: int, part_label: str | None = None) -> None:
+def _draw_question_ref(
+    pdf: canvas.Canvas, x: float, y: float, number: int, part_label: str | None = None
+) -> None:
     digits = list(f"{number:02d}")
     cursor = x
     pdf.setFont(FONT_BOLD, 10)
@@ -1466,7 +1604,10 @@ def _answer_line_count(part: QuestionPart) -> int:
     if part.options:
         return 0
     if part.answer_unit:
-        return max(part.answer_lines, 5 if part.marks == 1 else 7 if part.marks == 2 else part.marks * 3)
+        return max(
+            part.answer_lines,
+            5 if part.marks == 1 else 7 if part.marks == 2 else part.marks * 3,
+        )
     if part.marks == 1:
         return max(part.answer_lines, 4)
     if part.marks == 2:
@@ -1482,7 +1623,9 @@ def _answer_line_count(part: QuestionPart) -> int:
     return max(part.answer_lines, 42)
 
 
-def _answer_lines_paginated(pdf: canvas.Canvas, state: _QuestionRenderState, count: int) -> _QuestionRenderState:
+def _answer_lines_paginated(
+    pdf: canvas.Canvas, state: _QuestionRenderState, count: int
+) -> _QuestionRenderState:
     remaining = count
     while remaining:
         available = int((state.y - (BOTTOM + 60)) // LINE_GAP)
@@ -1566,7 +1709,9 @@ def _mark_scheme_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     )
 
 
-def _mark_scheme_intro(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
+def _mark_scheme_intro(
+    pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint
+) -> None:
     _ms_header(pdf, page, blueprint)
     y = 754
     pdf.setFont(FONT, 10)
@@ -1595,7 +1740,9 @@ def _mark_scheme_intro(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint)
         y -= 10
 
 
-def _mark_scheme_levels(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
+def _mark_scheme_levels(
+    pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint
+) -> None:
     _ms_header(pdf, page, blueprint)
     y = 754
     pdf.setFont(FONT_BOLD, 13)
@@ -1624,7 +1771,9 @@ def _mark_scheme_levels(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint
         y -= 10
 
 
-def _mark_scheme_annotations(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
+def _mark_scheme_annotations(
+    pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint
+) -> None:
     _ms_header(pdf, page, blueprint)
     y = 754
     pdf.setFont(FONT_BOLD, 13)
@@ -1670,7 +1819,9 @@ def _mark_scheme_annotations(pdf: canvas.Canvas, page: int, blueprint: PaperBlue
         y -= 4
 
 
-def _mark_scheme_examiner_notes(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None:
+def _mark_scheme_examiner_notes(
+    pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint
+) -> None:
     _ms_header(pdf, page, blueprint)
     y = 754
     pdf.setFont(FONT_BOLD, 12)
@@ -1685,12 +1836,18 @@ def _mark_scheme_examiner_notes(pdf: canvas.Canvas, page: int, blueprint: PaperB
     ]
     for paragraph in paragraphs:
         for line in _wrap(paragraph, 94):
-            pdf.drawString(70, y, "\u2022 " + line if line == _wrap(paragraph, 94)[0] else "  " + line)
+            pdf.drawString(
+                70,
+                y,
+                "\u2022 " + line if line == _wrap(paragraph, 94)[0] else "  " + line,
+            )
             y -= 14
         y -= 8
 
 
-def _mark_scheme_table_header(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> float:
+def _mark_scheme_table_header(
+    pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint
+) -> float:
     _ms_header(pdf, page, blueprint)
     y = AQA_A4[1] - 85
     pdf.setFont(FONT_BOLD, 11)
@@ -1769,9 +1926,7 @@ def _draw_mark_scheme_answer_artifact(
 
 
 def _draw_adjacency_matrix_answers(pdf: canvas.Canvas, y: float) -> float:
-    edges = {
-        (1, 2), (1, 4), (2, 3), (2, 5), (3, 6), (4, 5), (5, 6)
-    }
+    edges = {(1, 2), (1, 4), (2, 3), (2, 5), (3, 6), (4, 5), (5, 6)}
     cell = 16
     size = cell * 7
     matrices = [
@@ -1991,8 +2146,10 @@ def _wrap_scheme_text(text: str) -> list[str]:
             current = ""
         while pdfmetrics.stringWidth(word, FONT, 11) > 400:
             cut = 1
-            while (cut < len(word)
-                   and pdfmetrics.stringWidth(word[: cut + 1], FONT, 11) <= 400):
+            while (
+                cut < len(word)
+                and pdfmetrics.stringWidth(word[: cut + 1], FONT, 11) <= 400
+            ):
                 cut += 1
             lines.append(word[:cut])
             word = word[cut:]
@@ -2018,7 +2175,7 @@ def _draw_scheme_text(pdf: canvas.Canvas, x: float, y: float, text: str) -> None
         pdf.addLiteral(f"/Span << /ActualText <FEFF{ord(chunk):04X}> >> BDC")
         # The space supplies a selectable text box; the vectors supply the ink.
         pdf.drawString(x, y, "  ")
-        pdf.setLineWidth(.7)
+        pdf.setLineWidth(0.7)
         if chunk == "⊕":
             pdf.circle(x + width / 2, y + size / 2, size / 2, stroke=1, fill=0)
             pdf.line(x + 2, y + size / 2, x + width - 2, y + size / 2)

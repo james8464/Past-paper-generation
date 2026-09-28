@@ -1104,7 +1104,9 @@ def _extended_judgement_page(
         applied_points = question.mark_scheme[5:8]
     else:
         applied_points = [
-            point for point in question.mark_scheme if point.startswith(("AO2:", "AO3:"))
+            point
+            for point in question.mark_scheme
+            if point.startswith(("AO2:", "AO3:"))
         ][7:]
     return [
         Paragraph(f"{title} continued", STYLES["kicker"]),
@@ -1420,7 +1422,9 @@ def _assessment_objectives_page(
 ) -> list[Flowable]:
     rows = [["Question", "Marks", "Assessment focus"]]
     for question in questions:
-        focus = "; ".join(f"{ao}: {marks}" for ao, marks in question.assessment_objectives.items())
+        focus = "; ".join(
+            f"{ao}: {marks}" for ao, marks in question.assessment_objectives.items()
+        )
         rows.append([question.number, str(question.marks), focus])
     table = Table(rows, colWidths=[38 * mm, 25 * mm, 104 * mm], repeatRows=1)
     table.setStyle(
@@ -1435,7 +1439,10 @@ def _assessment_objectives_page(
     )
     return [
         Paragraph("Assessment objectives grid", STYLES["heading"]),
-        Paragraph("AO1: Knowledge and understanding; AO2: Application; AO3: Analysis and evaluation.", STYLES["small"]),
+        Paragraph(
+            "AO1: Knowledge and understanding; AO2: Application; AO3: Analysis and evaluation.",
+            STYLES["small"],
+        ),
         Spacer(1, 4 * mm),
         table,
         Spacer(1, 5 * mm),
@@ -1455,6 +1462,7 @@ def _paper_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
         content: list[Flowable] = []
         if start == 0:
             content.extend(_intro(section_a))
+            content.extend([Spacer(1, 6), _MultipleChoiceInstructions(), Spacer(1, 20)])
         for question in a_option.questions[start:stop]:
             content.extend(_mcq_block(question))
         pages.append(content)
@@ -1554,12 +1562,12 @@ def _paper_two_section_c_pages(
         [AnswerLines(34)],
         [Paragraph("Extra space", STYLES["small"]), AnswerLines(33)],
         [AnswerLines(34)],
-        _no_questions_page(),
+        _no_questions_page(paper_code=paper_code),
         _additional_answer_page(paper_code),
         _additional_answer_page(paper_code),
         _additional_answer_page(paper_code),
         _additional_answer_page(paper_code),
-        _no_questions_page(include_legal_notice=True),
+        _no_questions_page(paper_code=paper_code, include_legal_notice=True),
     ]
 
 
@@ -1595,7 +1603,7 @@ def _paper_one_section_c_pages(
             AnswerLines(33),
         ],
         [AnswerLines(34)],
-        _no_questions_page(),
+        _no_questions_page(paper_code=paper_code),
         _additional_answer_page(paper_code),
         _additional_answer_page(paper_code),
         _additional_answer_page(paper_code, include_legal_notice=True),
@@ -1687,7 +1695,9 @@ def _accounting_system_case(option: GeneratedOption) -> Table:
 def _shareholder_case(question: GeneratedQuestion) -> Table:
     source = question.authoring_context.get("candidate_source")
     if not isinstance(source, dict):
-        raise ValueError("shareholder question requires a candidate-visible source contract")
+        raise ValueError(
+            "shareholder question requires a candidate-visible source contract"
+        )
     shareholder = ShareholderCase.from_candidate_source(source)
     qualitative_evidence = source.get("qualitative_evidence")
     if not isinstance(qualitative_evidence, list) or not all(
@@ -1833,28 +1843,23 @@ def _shareholder_case(question: GeneratedQuestion) -> Table:
 
 def _no_questions_page(
     *,
+    paper_code: str = "7127",
     include_legal_notice: bool = False,
 ) -> list[Flowable]:
-    page = _do_not_write_page(height=165 * mm if include_legal_notice else 226 * mm)
-    page[0] = Paragraph(
-        "There are no questions printed on this page",
-        STYLES["centre_bold"],
-    )
-    if include_legal_notice:
-        page.extend(
-            [
-                Spacer(1, 5 * mm),
-                Paragraph("Independent practice material", STYLES["small"]),
-                Paragraph(
-                    "Created by Paper Creator for private revision. This paper is "
-                    "not produced, endorsed or approved by AQA or any examination "
-                    "board. All organisations, figures and source material are "
-                    "independently created.",
-                    STYLES["small"],
-                ),
-            ]
+    return [
+        ExamPage(
+            ExamPageProfile(
+                board="aqa",
+                code=paper_code,
+                heading="There are no questions printed on this page",
+                variant="blank",
+                legal_notice=include_legal_notice,
+                do_not_write=True,
+            ),
+            font=FONT,
+            bold_font=FONT_BOLD,
         )
-    return page
+    ]
 
 
 def _additional_answer_page(
@@ -2526,6 +2531,47 @@ def _response_line_count(question: GeneratedQuestion) -> int:
     if question.kind == "calculation":
         return min(18, max(7, question.marks * 2))
     return min(18, max(4, question.marks * 2 + 2))
+
+
+class _MultipleChoiceInstructions(Flowable):
+    """Explain the scannable response method before the first MCQ."""
+
+    width = 167 * mm
+    height = 156.7
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.width = 167 * mm
+        self.height = 156.7
+
+    def draw(self) -> None:
+        pdf = self.canv
+        pdf.setStrokeColor(colors.black)
+        pdf.setFillColor(colors.black)
+        pdf.setLineWidth(0.35)
+        pdf.roundRect(0, 0, self.width, self.height, 26.125)
+        pdf.setFont(FONT, 11)
+        for text, offset in (
+            ("For multiple-choice questions, select one answer for each question.", 20),
+            ("Completely fill the circle alongside the answer you wish to select.", 45),
+            ("To change your answer, cross out the original selection as shown.", 96),
+            ("To return to a crossed-out answer, ring the selection you now wish", 122),
+            ("to use, as shown.", 135),
+        ):
+            pdf.drawString(10, self.height - offset, text)
+        pdf.setFont(FONT, 7)
+        pdf.drawString(10, self.height - 70, "CORRECT METHOD")
+        pdf.drawString(190, self.height - 70, "WRONG METHODS")
+        for x, filled in ((120, True), (282, False), (310, False)):
+            pdf.circle(x, self.height - 67, 5, stroke=1, fill=int(filled))
+        pdf.line(306, self.height - 71, 314, self.height - 63)
+        pdf.line(306, self.height - 63, 314, self.height - 71)
+        pdf.circle(430, self.height - 96, 5, stroke=1, fill=1)
+        pdf.line(421, self.height - 103, 439, self.height - 89)
+        pdf.line(421, self.height - 89, 439, self.height - 103)
+        pdf.circle(430, self.height - 135, 5, stroke=1, fill=1)
+        pdf.line(423, self.height - 140, 437, self.height - 130)
+        pdf.circle(430, self.height - 135, 10, stroke=1, fill=0)
 
 
 def _mcq_block(question: GeneratedQuestion) -> list[Flowable]:

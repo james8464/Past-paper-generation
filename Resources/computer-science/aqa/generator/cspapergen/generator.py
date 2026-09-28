@@ -467,11 +467,10 @@ def build_topic_question_bank(
     topic = syllabus.get_topic(topic_id)
     run_seed = seed if seed is not None else secrets.randbits(64)
     rng = random.Random(run_seed)
-    styles = {style.id: style for style in QUESTION_STYLES}
-    questions = [
-        build_question(styles[style_id], number, marks, rng)
-        for number, (style_id, marks) in enumerate(plan, start=1)
-    ]
+    from cspapergen.topic_bank import build_reference_bank_questions
+    questions = build_reference_bank_questions(topic_id, rng)
+    if tuple((question.style_id, question.total_marks) for question in questions) != plan:
+        raise ValueError("Reviewed topic-bank tasks do not match the declared plan")
     return calibrate_blueprint(PaperBlueprint(
         assessment_kind="question-bank",
         focus_topic_id=topic_id,
