@@ -1,0 +1,1148 @@
+{
+  "schema_version": 1,
+  "source": "https://eduscol.education.gouv.fr/5199/annales-des-epreuves-du-baccalaureat-des-voies-generale-et-technologique",
+  "observed_at": "2026-09-28",
+  "method": "Rendered official archive: NSI filter, all eight pagination pages",
+  "document_url_prefix": "https://eduscol.education.gouv.fr/sites/default/files/document/",
+  "qualification": "Baccalauréat général",
+  "subject": "Numérique et sciences informatiques",
+  "index_rows": 79,
+  "document_links": 122,
+  "unique_urls": 122,
+  "pdf_links": 114,
+  "zip_links": 8,
+  "content_reconciliation": "pending",
+  "rights": "document_specific_review_pending_do_not_bundle",
+  "retrieval_eligible": false,
+  "format_legend": {
+    "standard": "Ordinary subject",
+    "A16": "Arial 16",
+    "A20": "Arial 20",
+    "A24": "Arial 24",
+    "BA": "Braille abrégé",
+    "BI": "Braille intégral (preserves source label even where filename differs)"
+  },
+  "historical_format_note": "2021 exceptional sessions and 2022 choice-based adaptations must not be treated as 2027 templates.",
+  "rows": [
+    {
+      "year": 2026,
+      "session": "normal",
+      "centre": "Amérique du Nord",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "26-nsij1an1-127703.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2026,
+      "session": "normal",
+      "centre": "Amérique du Nord",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "26-nsij2an1-127706.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2026,
+      "session": "normal",
+      "centre": "Asie",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "26-nsij1ja1-127778.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2026,
+      "session": "normal",
+      "centre": "Asie",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "26-nsij2ja1-127781.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2026,
+      "session": "normal",
+      "centre": "Polynésie française",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "26-nsij1po1-127913.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2026,
+      "session": "normal",
+      "centre": "Polynésie française",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "26-nsij2po1-127916.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2026,
+      "session": "normal",
+      "centre": "Antilles Guyane",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "26-nsij1ag1-128391.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2026,
+      "session": "normal",
+      "centre": "Antilles Guyane",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "26-nsij2ag1-128394.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2026,
+      "session": "normal",
+      "centre": "Métropole",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "26-nsij1me1-128190.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2026,
+      "session": "normal",
+      "centre": "Métropole",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "26-nsij2me1-128193.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2026,
+      "session": "normal",
+      "centre": "Centres étrangers G1",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "26-nsij1g11-128514.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2026,
+      "session": "normal",
+      "centre": "Centres étrangers G1",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "26-nsij2g11-128517.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "session": "normal",
+      "centre": "Nouvelle-Calédonie",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "25-nsij1nc1v1-123671.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "session": "normal",
+      "centre": "Nouvelle-Calédonie",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "25-nsij2nc1v1-123668.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "session": "normal",
+      "centre": "Amérique du Nord",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "25-nsij1an1v1pdf-113049.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "session": "normal",
+      "centre": "Amérique du Nord",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "25-nsipe2v1pdf-113052.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "session": "normal",
+      "centre": "Asie",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "25-nsij1ja1v1pdf-113115.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "session": "normal",
+      "centre": "Asie",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "25-nsij2ja1v1pdf-113118.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "25-nsij2ja1-a16pdf-124937.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "session": "normal",
+      "centre": "Centres étrangers G1",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "25-nsij1g11v1-123773.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "25-nsij1g11-a16pdf-125018.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "session": "normal",
+      "centre": "Centres étrangers G1",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "25-nsij2g11v1-123770.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "25-nsij2g11-a16pdf-125021.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "session": "normal",
+      "centre": "Métropole",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "25-nsij1me1v1-1pdf-112647.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "25-nsij1me1-a16pdf-125273.pdf"
+        },
+        {
+          "format": "A20",
+          "file": "25-nsij1me1-a20pdf-125276.pdf"
+        },
+        {
+          "format": "BI",
+          "file": "25-nsij1me1-bizip-124805.zip"
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "session": "normal",
+      "centre": "Métropole",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "25-nsij2me1v1pdf-112650.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "25-nsij2me1-a16pdf-125279.pdf"
+        },
+        {
+          "format": "A20",
+          "file": "25-nsij2me1-a20pdf-125282.pdf"
+        },
+        {
+          "format": "A24",
+          "file": "25-nsij2me1-a24pdf-125285.pdf"
+        },
+        {
+          "format": "BI",
+          "file": "25-nsij2me1-bizip-124808.zip"
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "session": "normal",
+      "centre": "Polynésie française",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "25-nsij1po1v1pdf-112974.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "session": "normal",
+      "centre": "Polynésie française",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "25-nsij2po1v1pdf-112977.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "session": "replacement",
+      "centre": "Asie",
+      "description": "Sujet",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "25-nsipe4v1pdf-120492.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "session": "replacement",
+      "centre": "Métropole",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "25-nsij1me3v2pdf-120447.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "session": "replacement",
+      "centre": "Métropole",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "25-nsij2me3v1v2pdf-120450.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "session": "normal",
+      "centre": "Amérique du Nord",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "24-nsij1an1v1pdf-106641.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "session": "normal",
+      "centre": "Amérique du Nord",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "24-nsij2an1v1pdf-106668.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "session": "normal",
+      "centre": "Asie",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "24-nsij1ja1v1pdf-106716.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "session": "normal",
+      "centre": "Asie",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "24-nsij2ja1v1pdf-106719.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "24-nsij2ja1-a16pdf-108813.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "session": "normal",
+      "centre": "Centres étrangers - Groupe 1",
+      "description": "Sujet",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "24-nsig11bisv1pdf-106392.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "session": "normal",
+      "centre": "Centres étrangers - Groupe 1",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "24-nsij1g11v1pdf-106422.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "24-nsij1g11-a16pdf-108885.pdf"
+        },
+        {
+          "format": "A20",
+          "file": "24-nsij1g11-a20pdf-108888.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "session": "normal",
+      "centre": "Centres étrangers - Groupe 1",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "24-nsij2g11v1pdf-106461.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "24-nsij2g11-a16pdf-108891.pdf"
+        },
+        {
+          "format": "A20",
+          "file": "24-nsij2g11-a20pdf-108894.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "session": "normal",
+      "centre": "Métropole, La Réunion, Mayotte",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "24-nsij1me1v2-0pdf-106224.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "24-nsij1me1-a16pdf-109113.pdf"
+        },
+        {
+          "format": "A20",
+          "file": "24-nsij1me1-a20pdf-109116.pdf"
+        },
+        {
+          "format": "BI",
+          "file": "24-nsij1me1-bazip-109299.zip"
+        },
+        {
+          "format": "BI",
+          "file": "24-nsij1me1-bizip-109302.zip"
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "session": "normal",
+      "centre": "Métropole, La Réunion, Mayotte",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "24-nsij2me1v1-0pdf-106260.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "24-nsij2me1-a16pdf-109119.pdf"
+        },
+        {
+          "format": "A20",
+          "file": "24-nsij2me1-a20pdf-109122.pdf"
+        },
+        {
+          "format": "BA",
+          "file": "24-nsij2me1-bazip-109305.zip"
+        },
+        {
+          "format": "BI",
+          "file": "24-nsij2me1-bizip-109308.zip"
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "session": "normal",
+      "centre": "Polynésie française",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "24-nsij1po1v1pdf-106515.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "session": "normal",
+      "centre": "Polynésie française",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "24-nsij2po1v1pdf-106548.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "session": "replacement",
+      "centre": "Métropole",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "24-nsij1me3pdf-110625.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "session": "replacement",
+      "centre": "Métropole",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "24-nsij2me3pdf-110628.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "session": "normal",
+      "centre": "Centres étrangers - Groupe 1",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "baccalaur-g-n-ral-2023-num-rique-et-sciences-informatiques-133586pdf-98868.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "23-nsij1g11-a16pdf-104031.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "session": "normal",
+      "centre": "Centres étrangers - Groupe 1",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "baccalaur-g-n-ral-2023-num-rique-et-sciences-informatiques-133631pdf-98889.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "23-nsij2g11-a16pdf-104034.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "session": "normal",
+      "centre": "Centres étrangers - Groupe 1",
+      "description": "Jour 3",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "baccalaur-g-n-ral-2023-num-rique-et-sciences-informatiques-134012pdf-98949.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "session": "normal",
+      "centre": "Centres étrangers - Groupe 1",
+      "description": "Jour 4",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "baccalaur-g-n-ral-2023-num-rique-et-sciences-informatiques-134054pdf-98979.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "session": "normal",
+      "centre": "La Réunion",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "23-nsij1lr1-sujetpdf-104121.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "23-nsij1lr1-a16pdf-104124.pdf"
+        },
+        {
+          "format": "A20",
+          "file": "23-nsij1lr1-a20pdf-104127.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "session": "normal",
+      "centre": "La Réunion",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "23-nsij2lr1pdf-105861.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "23-nsij2lr1-a16pdf-104130.pdf"
+        },
+        {
+          "format": "A20",
+          "file": "23-nsij2lr1-a20pdf-104133.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "session": "normal",
+      "centre": "Métropole, Mayotte, Antilles Guyane",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "baccalaur-g-n-ral-2023-num-rique-et-sciences-informatiques-1338320pdf-98589.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "23-nsij1me1-a16pdf-104337.pdf"
+        },
+        {
+          "format": "A20",
+          "file": "23-nsij1me1-a20pdf-104340.pdf"
+        },
+        {
+          "format": "BI",
+          "file": "23-nsij1me1-bizip-103836.zip"
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "session": "normal",
+      "centre": "Métropole, Mayotte, Antilles Guyane",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "baccalaur-g-n-ral-2023-num-rique-et-sciences-informatiques-133955pdf-98742.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "23-nsij2me1-a16pdf-104334.pdf"
+        },
+        {
+          "format": "A20",
+          "file": "23-nsij2me1-a20pdf-104343.pdf"
+        },
+        {
+          "format": "BI",
+          "file": "23-nsij2me1-bizip-103839.zip"
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "session": "normal",
+      "centre": "Nouvelle-Calédonie",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "23-nsij1nc1pdf-105246.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "session": "normal",
+      "centre": "Nouvelle-Calédonie",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "23-nsij2nc1pdf-105249.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "session": "normal",
+      "centre": "Polynésie française",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "baccalaur-g-n-ral-2023-num-rique-et-sciences-informatiques-133643pdf-98790.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "session": "normal",
+      "centre": "Polynésie française",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "baccalaur-g-n-ral-2023-num-rique-et-sciences-informatiques-133706pdf-98808.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "normal",
+      "centre": "Amérique du Nord",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "sujet-22-nsij1an1pdf-96882.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "normal",
+      "centre": "Amérique du Nord",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "sujet-22-nsij2an1pdf-96912.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "22-nsij2an1-a16pdf-99624.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "normal",
+      "centre": "Asie",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "bg-asiensi-jour-1sujet-22-nsij1ja1pdf-96792.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "normal",
+      "centre": "Asie",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "bg-asiensi-jour-2sujet-22-nsij2ja1pdf-96840.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "normal",
+      "centre": "Centres étrangers - Groupe 1",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "22-nsij1g11pdf-100104.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "22-nsijg11-a16pdf-100206.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "normal",
+      "centre": "Centres étrangers - Groupe 1",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "22-nsij2g11pdf-100107.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "22-nsij2g11-a16pdf-99627.pdf"
+        },
+        {
+          "format": "A20",
+          "file": "22-nsij2g11-a20pdf-99630.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "normal",
+      "centre": "Mayotte",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "baccalaur-g-n-ral-2022-num-rique-et-sciences-informatiques-mayotte-jour-1-114662pdf-96060.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "normal",
+      "centre": "Mayotte",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "baccalaur-g-n-ral-2022-num-rique-et-sciences-informatiques-mayotte-jour-2-114665pdf-96063.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "normal",
+      "centre": "Métropole, La Réunion, Antilles Guyane",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "baccalaur-g-n-ral-2022-num-rique-et-sciences-informatiques-1142420pdf-96396.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "22-nsij1me1-a16pdf-99618.pdf"
+        },
+        {
+          "format": "A20",
+          "file": "22-nsij1me1-a20pdf-99621.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "normal",
+      "centre": "Métropole, La Réunion, Antilles Guyane",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "baccalaur-g-n-ral-2022-num-rique-et-sciences-informatiques-preuve-du-12-mai-2022-114344pdf-96399.pdf"
+        },
+        {
+          "format": "A16",
+          "file": "22-nsij2me1-a16pdf-99633.pdf"
+        },
+        {
+          "format": "A20",
+          "file": "22-nsij2me1-a20pdf-99636.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "normal",
+      "centre": "Nouvelle-Calédonie",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "22-nsij2nc1pdf-96816.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "normal",
+      "centre": "Nouvelle-Calédonie",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "22-nsij1nc1pdf-96744.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "normal",
+      "centre": "Polynésie française",
+      "description": "Sujet",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "baccalaur-g-n-ral-2022-num-rique-et-sciences-informatiques-jour-1-pf-114758pdf-96282.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "replacement",
+      "centre": "Amérique du Sud",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "22-nsij2as1pdf-97191.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "replacement",
+      "centre": "Amérique du Sud",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "22-nsij1as1pdf-97188.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "replacement",
+      "centre": "Métropole, Mayotte, La Réunion, Antilles Guyane",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "22-nsij2me3pdf-97086.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "replacement",
+      "centre": "Métropole, Mayotte, La Réunion, Antilles Guyane",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "22-nsij1me3pdf-97050.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "replacement",
+      "centre": "Nouvelle-Calédonie",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "22-nsij2nc1pdf-97404.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "session": "replacement",
+      "centre": "Nouvelle-Calédonie",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "22-nsij1nc1pdf-97371.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "session": "normal-and-replacement",
+      "centre": "Amérique du Nord",
+      "description": "Sujet",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "nsij1an1pdf-91461.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "session": "normal-and-replacement",
+      "centre": "Centres étrangers - Groupe 1",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "21-nsij1g1pdf-91410.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "session": "normal-and-replacement",
+      "centre": "Centres étrangers - Groupe 1",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "21-nsij2g1pdf-91413.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "session": "normal-and-replacement",
+      "centre": "Polynésie française",
+      "description": "Sujet",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "numerique-et-sciences-informatiquesj221-nsij2po1pdf-91122.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "session": "normal",
+      "centre": "Métropole, Mayotte, La Réunion, Antilles Guyane",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "21-nsij1mepdf-91140.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "session": "normal",
+      "centre": "Métropole, Mayotte, La Réunion, Antilles Guyane",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "21-nsij2mepdf-91143.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "session": "replacement",
+      "centre": "Métropole, Mayotte, La Réunion, Antilles Guyane",
+      "description": "Jour 1",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "21-nsij1me3pdf-91251.pdf"
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "session": "replacement",
+      "centre": "Métropole, Mayotte, La Réunion, Antilles Guyane",
+      "description": "Jour 2",
+      "documents": [
+        {
+          "format": "standard",
+          "file": "21-nsij2me3pdf-91254.pdf"
+        }
+      ]
+    }
+  ]
+}

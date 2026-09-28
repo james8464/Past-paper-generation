@@ -1,0 +1,81 @@
+# French NSI prototype verification — 2026-09-28
+
+**PROTOTYPE, not educational qualification.** Tracks
+[issue #16](https://github.com/james8464/Past-paper-generation/issues/16).
+The approved plan remains incomplete. No French live inference, teacher review,
+learner pilot or App Store approval is represented by this record.
+
+## Engineering checks
+
+- Baseline: 2,078 Python tests passed, two optional skips.
+- Education/reference foundation: 2,094 passed, two optional skips.
+- Integrated prototype: 2,122 passed, two optional skips.
+- Inference redirect protection: 2,123 passed, two optional skips; five existing
+  PyMuPDF/SWIG deprecation warnings. A subsequent reviewer-name whitespace regression
+  was reproduced and repaired; focused tests passed. Final consolidated run:
+  **2,124 passed, two optional skips, five existing warnings** (142.42 seconds).
+- Native build/tests passed, including reproduced export, history and failure
+  lifecycle regressions. Final packaging/native run: **66 passed, zero failures,
+  zero skips**, arm64 MacBook Pro, macOS 26.6.2. This is not Intel or App Store testing.
+
+Independent review identified four repaired issues: nested French bundles bypassing
+App Store export; code wrapping changing Python semantics; unsupported qualification
+claims being accepted; and failed jobs retaining unusable checkpoint seeds/history.
+Exported artifact locations are now used in persistent history as well.
+
+Tests cover French response schemas/budgets/seeds; source/model/reference checkpoint
+identities; package-reader dispatch; complete-or-absent publication; rendering failure;
+cancellation; scoped retrieval; exact points; and bounded technical contracts.
+These are deterministic tests, not evidence of a language model's NSI accuracy.
+
+## References
+
+Four pinned seed PDFs are acquired/indexed locally; one is holdout-only. The macOS
+system-trust programme download was exercised: 201,097 bytes, SHA-256
+`10ce34666edd722a3d8d86642a9f1ac205c7a9d128d6142a17effcba2fb85e69`.
+TLS verification remains enabled; the fallback rejects redirects/non-approved hosts.
+No official PDFs are committed or bundled. Archive completeness remains false.
+
+The official interactive archive's NSI filter was traversed across all eight pages:
+79 rows, 122 distinct linked documents (114 PDFs, eight Braille ZIP archives).
+The [discovery snapshot](french-nsi-archive-discovery-2026-09-28.json) records every
+link and normalized session/centre/variant metadata; its transcription checksum
+matched the browser-extracted rows. This reconciles the visible index count only:
+content hashes, duplicate-content checks, availability, per-document rights and
+stratified holdouts remain pending. Discovery entries are not retrieval-eligible.
+
+## Manual PDF inspection
+
+Rendered the 2026 Métropole reference cover/first exercise using Poppler. Inspected
+all four question-paper pages and eight correction pages of an engineering fixture,
+then the three changed correction pages after repair. The correction now has five
+pages including unchanged cover/guidance. Fixed short corrections spilling onto
+almost-empty continuation pages; credit headings identify exercise and question.
+
+The fixture contains deliberately trivial repeated calculations. It is **not** a
+live-generated paper, realistic NSI assessment or accepted evaluation specimen.
+It establishes neither difficulty, timing, originality nor authentic paper length.
+
+Remaining visual differences/work:
+
+- Cover grouping, vertical rhythm, heading weight, exercise headings and footers
+  differ from the historical reference. Compatible fonts are not pixel identity.
+- Real papers use extended contextual exercises, diagrams and code. Structured
+  vector diagrams/tables and complete code-layout qualification remain unfinished.
+- Overwide code fails instead of silently changing it. Large-print bounds tests
+  exist; full manual large-print/accessibility/VoiceOver/reading-order audits do not.
+- Independent non-official branding is intentional; 2026 references cannot establish
+  an official 2027 template. Keep visual calibration `not_run`.
+
+## Isolation
+
+Manual native UI smoke: opened the built app, selected the French workspace,
+verified that UK qualification controls disappear, switched System → Français
+and observed translated controls/consent text with unchanged 2027 NSI context.
+Opened and cancelled reference-download consent; no generation was started.
+Restored the original language and board selection. This is a smoke check, not a
+complete keyboard, contrast, VoiceOver or window-size accessibility audit.
+
+Changes remain in `french-baccalaureat`. Main's UK controller was verified active;
+no duplicate inference was started. Do not merge into its source baseline during
+that run. Issues #4/#8 remain open independently; a prototype does not close #16.
