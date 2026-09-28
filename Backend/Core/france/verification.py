@@ -143,7 +143,11 @@ def _sql(contract):
     ):
         raise ValueError("Requête hors limites")
     with sqlite3.connect(":memory:") as db:
-        db.enable_load_extension(False)
+        # Some Python builds omit extension loading altogether. The authorizer
+        # below independently denies load_extension even when SQLite exposes it.
+        disable_extensions = getattr(db, "enable_load_extension", None)
+        if disable_extensions is not None:
+            disable_extensions(False)
         db.setlimit(sqlite3.SQLITE_LIMIT_LENGTH, 65536)
         db.setlimit(sqlite3.SQLITE_LIMIT_SQL_LENGTH, 8192)
         db.setlimit(sqlite3.SQLITE_LIMIT_COLUMN, 64)

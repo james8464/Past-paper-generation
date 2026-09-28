@@ -17,6 +17,17 @@ learner pilot or App Store approval is represented by this record.
 - Native build/tests passed, including reproduced export, history and failure
   lifecycle regressions. Final packaging/native run: **66 passed, zero failures,
   zero skips**, arm64 MacBook Pro, macOS 26.6.2. This is not Intel or App Store testing.
+- Local App Store build preflight passed at commit `05553ad`: Release build,
+  signing verification and sandbox/hardened-runtime checks. This does not establish
+  distribution signing, Apple review or App Store acceptance.
+- Initial GitHub backend run found a Python-build portability defect: SQLite's
+  extension-loading API can be absent. Reproduced it with a connection lacking that
+  API, then repaired feature detection while retaining the SQL authorizer's denial
+  of extension loading and external databases. All eight NSI assessment tests pass.
+  Full local requalification: **2,125 passed, two optional skips, five existing
+  warnings** (107.49 seconds). Independent review found no Important issue.
+  The initial GitHub native release/tests job passed; GitHub requalification of
+  the repair is separate from these local totals.
 
 Independent review identified four repaired issues: nested French bundles bypassing
 App Store export; code wrapping changing Python semantics; unsupported qualification

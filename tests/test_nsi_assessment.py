@@ -59,8 +59,29 @@ def test_deterministic_verifier_does_not_trust_expected_answer():
     )
 
 
-def test_sql_verification_checks_results_and_disallows_external_access():
+@pytest.mark.parametrize("extension_api_available", [True, False])
+def test_sql_verification_checks_results_and_disallows_external_access(
+    monkeypatch, extension_api_available
+):
+    import sqlite3
+
     from Backend.Core.france.verification import verify_contract
+
+    if not extension_api_available:
+        connect = sqlite3.connect
+
+        class ConnectionWithoutExtensions(sqlite3.Connection):
+            def __getattribute__(self, name):
+                if name == "enable_load_extension":
+                    raise AttributeError(name)
+                return super().__getattribute__(name)
+
+        monkeypatch.setattr(
+            sqlite3, "connect",
+            lambda *args, **kwargs: connect(
+                *args, **kwargs, factory=ConnectionWithoutExtensions
+            ),
+        )
 
     base = {
         "kind": "sql",
