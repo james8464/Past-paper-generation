@@ -34,7 +34,10 @@ from Backend.Core.numeric_integrity import (
     numeric_result,
 )
 from Backend.Core.open_credit import validate_open_credit_review
-from Backend.Core.subjects.accounting import solve_accounting_calculation
+from Backend.Core.subjects.accounting import (
+    derive_accounting_open_response_context,
+    solve_accounting_calculation,
+)
 from Backend.Core.subjects.computer_science_contracts import (
     solve_computer_science_contract,
 )
@@ -149,6 +152,11 @@ class IndependentSolver:
         policy.validate(raw_item)
         allowed_source_ids = {source.id for source in sources}
         solver_item = _without_answer_key(raw_item)
+        derived_context = derive_accounting_open_response_context(raw_item)
+        if derived_context is not None:
+            solver_item.setdefault("authoring_context", {})[
+                "independently_derived_context"
+            ] = derived_context
         response_slots = raw_item.get("response_slots") or []
         if (
             not isinstance(response_slots, list)
@@ -254,6 +262,12 @@ class IndependentSolver:
                     "and no others: steps, answer, mark_points, evidence_ids, alternatives, "
                     "partial_credit_boundaries, follow_through_rules. Every field is required; "
                     "every array must be present explicitly even when empty; do not return null. "
+                    "Follow every independent_solver_instructions entry in authoring_context; "
+                    "derive its requested facts solely from candidate-visible inputs and show "
+                    "those derivations in steps. "
+                    "When independently_derived_context is present, treat its numeric results "
+                    "as authoritative code-derived facts from the public inputs; use them in "
+                    "the answer and do not replace them with new model arithmetic. "
                     'For an open response the literal envelope is: {"steps":["reasoning step"],'
                     '"answer":"complete answer","mark_points":["creditable point"],'
                     '"evidence_ids":[],"alternatives":[],"partial_credit_boundaries":[],'

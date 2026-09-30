@@ -364,6 +364,17 @@ def _written(
         prompt = (
             f"Assess the usefulness of the income statement to the employees of {business}."
         )
+        authoring_context = {
+            "independent_solver_instructions": [
+                "Use the independently derived profit for the year, recomputed from every "
+                "referenced company-statement source amount and adjustment, when assessing "
+                "usefulness.",
+                "Use the supplier invoice and irrecoverable debt figures when assessing "
+                "whether the reported result is reliable.",
+                "Relate the recomputed profit and adjustment uncertainty to employee pay, "
+                "job security, cash availability and a supported overall judgement.",
+            ]
+        }
         scheme = [
             f"AO2: Use the calculated profit for the year of {_gbp(case.profit_for_year)} when considering the employer's capacity to sustain jobs and pay;",
             "AO2: Apply the unrecorded supplier invoice and irrecoverable debt adjustments to the reliability of the reported result;",
