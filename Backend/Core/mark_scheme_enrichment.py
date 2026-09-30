@@ -190,34 +190,66 @@ def _objective_guidance(
             for ao in question.assessment_objectives
         ]
     application = _application_label(subject)
+    objectives = set(question.assessment_objectives) or {"AO1", "AO2", "AO3", "AO4"}
     if question.marks <= 4:
-        concise = [
-            "Indicative content",
-            f"AO1: credit accurate knowledge of {topic_title}.",
-            *[
-                f"AO1: accept a correct point about {point}."
-                for point in points[: min(question.marks, 2)]
-            ],
-            f"{application}: apply the answer to the figures, constraints or evidence supplied in the question.",
-            f"AO3: where explanation is required, link {points[0]} to a relevant consequence rather than merely naming it.",
-        ]
+        concise = ["Indicative content"]
+        if "AO1" in objectives:
+            if question.command_word.casefold() in {"compare", "identify"}:
+                concise.append(
+                    "AO1: reward accurate identification and comparison of the named economic measures."
+                )
+            else:
+                concise.extend(
+                    [
+                        f"AO1: credit accurate knowledge of {topic_title}.",
+                        *[
+                            f"AO1: accept a correct point about {point}."
+                            for point in points[: min(question.marks, 2)]
+                        ],
+                    ]
+                )
+        if "AO2" in objectives:
+            concise.append(
+                f"{application}: apply the answer to the figures, constraints or evidence supplied in the question."
+            )
+        if "AO3" in objectives:
+            concise.append(
+                f"AO3: where explanation is required, link {points[0]} to a relevant consequence rather than merely naming it."
+            )
+        if "AO4" in objectives:
+            concise.append(
+                "AO4: support a judgement using the evidence and relevant limitations."
+            )
         if subject == "computer science":
             concise.append(
                 "Accept equivalent pseudocode or technical terminology only where its meaning and result are unambiguous."
             )
         return concise
-    guidance = [
-        "Indicative content",
-        f"AO1: demonstrate precise knowledge of {topic_title}, using the terminology in the specification accurately.",
-        *[
-            f"AO1: credit an accurate explanation of {point}, where it is relevant to the question."
-            for point in points[:3]
-        ],
-        f"{application}: select and use the figures, constraints or evidence supplied in the question; unsupported generic statements do not demonstrate application.",
-        f"{application}: link each applied point directly to the named organisation, market, system or decision and the precise proposition in the final question.",
-        f"AO3: develop a complete chain of reasoning from {points[0]} through an intermediate effect to a supported outcome.",
-        f"AO3: a second valid route may use {points[1]} and {points[2]}; reward the reasoning rather than the wording of this guidance.",
-    ]
+    guidance = ["Indicative content"]
+    if "AO1" in objectives:
+        guidance.extend(
+            [
+                f"AO1: demonstrate precise knowledge of {topic_title}, using the terminology in the specification accurately.",
+                *[
+                    f"AO1: credit an accurate explanation of {point}, where it is relevant to the question."
+                    for point in points[:3]
+                ],
+            ]
+        )
+    if "AO2" in objectives:
+        guidance.extend(
+            [
+                f"{application}: select and use the figures, constraints or evidence supplied in the question; unsupported generic statements do not demonstrate application.",
+                f"{application}: link each applied point directly to the named organisation, market, system or decision and the precise proposition in the final question.",
+            ]
+        )
+    if "AO3" in objectives:
+        guidance.extend(
+            [
+                f"AO3: develop a complete chain of reasoning from {points[0]} through an intermediate effect to a supported outcome.",
+                f"AO3: a second valid route may use {points[1]} and {points[2]}; reward the reasoning rather than the wording of this guidance.",
+            ]
+        )
     if subject == "computer science":
         guidance.extend(
             [
@@ -235,21 +267,31 @@ def _objective_guidance(
             ]
         )
     elif subject == "business":
-        guidance.extend(
-            [
-                "AO2: reward selective use of the quantitative and qualitative case evidence, including correctly interpreted units and trends.",
-                "AO3: analysis must explain how the business evidence changes costs, demand, operations, people or strategic risk.",
-                "AO4: evaluation should weigh the importance of the evidence, timescale, stakeholder impact and uncertainty before reaching a decision.",
-            ]
-        )
+        if "AO2" in objectives:
+            guidance.append(
+                "AO2: reward selective use of the quantitative and qualitative case evidence, including correctly interpreted units and trends."
+            )
+        if "AO3" in objectives:
+            guidance.append(
+                "AO3: analysis must explain how the business evidence changes costs, demand, operations, people or strategic risk."
+            )
+        if "AO4" in objectives:
+            guidance.append(
+                "AO4: evaluation should weigh the importance of the evidence, timescale, stakeholder impact and uncertainty before reaching a decision."
+            )
     else:
-        guidance.extend(
-            [
-                "AO2: reward accurate use of source data, including units, direction and scale; a quotation alone is not application.",
-                "AO3: analysis should identify the relevant economic agent, incentive and transmission mechanism before stating the final effect.",
-                "AO4: evaluation may consider assumptions, elasticities, magnitude, time period, distributional effects and unintended consequences.",
-            ]
-        )
+        if "AO2" in objectives:
+            guidance.append(
+                "AO2: reward accurate use of source data, including units, direction and scale; a quotation alone is not application."
+            )
+        if "AO3" in objectives:
+            guidance.append(
+                "AO3: analysis should identify the relevant economic agent, incentive and transmission mechanism before stating the final effect."
+            )
+        if "AO4" in objectives:
+            guidance.append(
+                "AO4: evaluation may consider assumptions, elasticities, magnitude, time period, distributional effects and unintended consequences."
+            )
     return guidance
 
 

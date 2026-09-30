@@ -165,7 +165,7 @@ def _written_option(
     if paper_rule.id == "paper_3":
         title = f"Synoptic theme: {context.title()}"
         figure_contexts = [
-            _theme_figure(context, rng, index)
+            _theme_figure(topic, context, rng, index)
             for index in range(1, 4)
         ]
         stimulus = [
@@ -224,7 +224,7 @@ def _written_option(
         chart_title=(
             str(figure_contexts[0]["title"])
             if figure_contexts
-            else f"Index for {context} (base = 100)"
+            else f"Figure 1: Index for {context} (base = 100)"
         ),
         chart_labels=(
             list(figure_contexts[0]["labels"])
@@ -301,6 +301,23 @@ def _question(
             "preserve_mark_scheme": True,
         }
         source_references = [f"Extract {extract_number}"]
+    elif rule.id in {"calculation", "comparison", "relationship_3", "relationship_4"}:
+        authoring_context = {
+            "figure": {
+                "number": "1",
+                "title": f"Index for {context} (base = 100)",
+                "labels": [str(2021 + index) for index in range(len(question_values))],
+                "series": [
+                    {
+                        "label": "Activity index",
+                        "values": question_values,
+                    }
+                ],
+                "units": "index points",
+            },
+            "preserve_prompt": True,
+            "preserve_mark_scheme": True,
+        }
     if rule.kind == "calculation":
         from Backend.Core.numeric_integrity import percentage_change_context
         authoring_context.update(percentage_change_context(question_values[0], question_values[-1]))
@@ -319,9 +336,10 @@ def _question(
             source_references.append(f"Figure {extract_number}.1")
         else:
             prompt = (
-                f"Using the data in {evidence}, calculate the percentage change in "
-                "the index. Give your answer to one decimal place."
+                "Using Figure 1, calculate the percentage change in the activity "
+                "index from 2021 to 2025. Give your answer to one decimal place."
             )
+            source_references.append("Figure 1")
         mark_label = "mark" if rule.marks == 1 else "marks"
         scheme = [
             f"Valid method using {question_values[0]} and {question_values[-1]}.",
@@ -347,8 +365,9 @@ def _question(
                 "One mark for each of two distinct features supported by the extract."
             ]
         else:
+            primary_series = figure["series"][0]
             scheme = [
-                "Primary activity index: credit an accurate feature using "
+                f"{primary_series['label']}: credit an accurate feature using "
                 f"{question_values[0]} and {question_values[-1]}.",
                 f"{comparison_series['label']}: credit an accurate feature using "
                 f"{comparison_series['values'][0]} and "
@@ -374,12 +393,31 @@ def _question(
         elif rule.id.startswith("extract_"):
             extract_number = rule.id.split("_")[1]
             figure_number = f"{extract_number}.1"
-            verb = "compare" if rule.command_word == "Compare" else "explain"
-            prompt = (
-                f"Using Figure {figure_number}, {verb} the changes shown and relate them to "
-                f"{point}."
-            )
+            if rule.command_word == "Compare" and comparison_series is not None:
+                primary_series = figure["series"][0]
+                prompt = (
+                    f"Using Figure {figure_number}, compare the change in the "
+                    f"{primary_series['label'].lower()} with the "
+                    f"{comparison_series['label'].lower()}."
+                )
+                authoring_context["required_prompt_terms"] = [
+                    primary_series["label"],
+                    comparison_series["label"],
+                ]
+            else:
+                verb = "compare" if rule.command_word == "Compare" else "explain"
+                prompt = (
+                    f"Using Figure {figure_number}, {verb} the changes shown and relate them to "
+                    f"{point}."
+                )
             source_references.append(f"Figure {figure_number}")
+        elif rule.id == "comparison":
+            labels = authoring_context["figure"]["labels"]
+            prompt = (
+                f"Using Figure 1, compare the activity index in {labels[0]} with "
+                f"the activity index in {labels[-1]}."
+            )
+            source_references.append("Figure 1")
         else:
             verb = "compare" if rule.command_word == "Compare" else "explain"
             prompt = f"Using the data in {evidence}, {verb} the observed changes and relate them to {point}."
@@ -400,6 +438,49 @@ def _question(
                 "A developed link between the numerical trend and relevant evidence from "
                 "the extracts.",
             ]
+        elif rule.id.startswith("extract_") and comparison_series is not None:
+            primary_series = figure["series"][0]
+            primary_change = question_values[-1] - question_values[0]
+            comparison_values = [float(value) for value in comparison_series["values"]]
+            comparison_change = comparison_values[-1] - comparison_values[0]
+
+            def change_text(value: float) -> str:
+                direction = "increases" if value >= 0 else "decreases"
+                return f"{direction} by {abs(value):.1f} index points"
+
+            if rule.marks == 3:
+                scheme = [
+                    f"The {primary_series['label']} {change_text(primary_change)}, "
+                    f"from {question_values[0]} to {question_values[-1]}.",
+                    f"The {comparison_series['label']} {change_text(comparison_change)}, "
+                    f"from {comparison_values[0]} to {comparison_values[-1]}.",
+                    (
+                        "Both indices move in the same direction; "
+                        if primary_change * comparison_change >= 0
+                        else "The indices move in opposite directions; "
+                    )
+                    + f"their changes differ by {abs(primary_change - comparison_change):.1f} index points.",
+                ]
+            else:
+                scheme = [
+                    f"The {primary_series['label']} {change_text(primary_change)} while "
+                    f"the {comparison_series['label']} {change_text(comparison_change)}.",
+                    (
+                        "Both indices move in the same direction; "
+                        if primary_change * comparison_change >= 0
+                        else "The indices move in opposite directions; "
+                    )
+                    + f"their changes differ by {abs(primary_change - comparison_change):.1f} index points.",
+                ]
+        elif rule.id == "comparison":
+            labels = authoring_context["figure"]["labels"]
+            direction = "higher" if question_values[-1] >= question_values[0] else "lower"
+            scheme = [
+                f"The activity index is {question_values[0]} in {labels[0]} and "
+                f"{question_values[-1]} in {labels[-1]}.",
+                f"It is {abs(question_values[-1] - question_values[0]):.1f} index points "
+                f"{direction} in {labels[-1]}.",
+            ]
         else:
             direction = (
                 "an increase"
@@ -414,7 +495,7 @@ def _question(
                 f"Developed economic reasoning involving {point}.",
                 "Recognition of the limits of the comparison.",
             ]
-        if comparison_series is not None and rule.id not in {
+        if comparison_series is not None and not rule.id.startswith("extract_") and rule.id not in {
             "relationship_3",
             "relationship_4",
         }:
@@ -472,6 +553,7 @@ def _extract_number(rule_id: str) -> int | None:
 
 
 def _theme_figure(
+    topic: Topic,
     context: str,
     rng: random.Random,
     index: int,
@@ -488,9 +570,22 @@ def _theme_figure(
         values.append(end)
         return values
 
+    primary_label = {
+        "micro-1": "Productive output index",
+        "micro-2": "Market demand index",
+        "micro-3": "Operating profit index",
+        "micro-4": "Market entry index",
+        "micro-5": "Employment index",
+        "micro-6": "Environmental quality index",
+        "macro-1": "Real output index",
+        "macro-2": "Real income per head index",
+        "macro-3": "Productive capacity index",
+        "macro-4": "Export volume index",
+        "macro-5": "Credit activity index",
+    }[topic.id]
     series = [
         {
-            "label": "Primary activity index",
+            "label": primary_label,
             "values": series_values(),
         }
     ]
@@ -642,6 +737,7 @@ def _extract(
         comparison_sentence = ""
     else:
         primary_values = figure["series"][0]["values"]
+        primary_label = figure["series"][0]["label"]
         start_index = float(primary_values[0])
         end_index = float(primary_values[-1])
         comparison_sentence = ""
@@ -676,9 +772,14 @@ def _extract(
         "macro-4": "export volumes, import expenditure and the exchange rate",
         "macro-5": "lending, arrears and the cost of credit",
     }.get(topic.id, "the main activity index")
+    measure_label = (
+        f"An index of {measure}"
+        if figure is None
+        else f"The {primary_label.lower()}"
+    )
     return (
         f"Extract {index}: {context.title()}. The available evidence concerns {focus}. "
-        f"An index of {measure} changed from {start_index:g} to {end_index:g}."
+        f"{measure_label} changed from {start_index:g} to {end_index:g}."
         f"{comparison_sentence} The four largest "
         f"participants accounted for {share}% of recorded activity. Over the same period, households "
         f"and firms {response}. The effect was strongest for {stakeholder}; {second_stakeholder} "
