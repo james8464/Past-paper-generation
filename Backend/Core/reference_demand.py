@@ -373,6 +373,11 @@ def build_item_demand_target(
             and response_mode != "selected-response"
         ):
             minimum_steps = max(minimum_steps, 2)
+        if task_operation == "analyse" and response_mode != "selected-response":
+            # Longer analytical tariffs can reward several linked causal
+            # stages. Allow roughly one independently creditable stage for
+            # every two marks while retaining the bounded review ceiling.
+            maximum_steps = max(maximum_steps, min(12, (marks + 1) // 2))
         maximum_steps = max(maximum_steps, len(operations))
     if objective_policy.computational:
         task_operation = task_operation or objective_policy.task_operation(

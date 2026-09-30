@@ -233,6 +233,27 @@ def test_calculation_reasoning_ceiling_scales_with_tariff(
     assert target.maximum_reasoning_steps == expected_maximum
 
 
+def test_explicit_analysis_reasoning_ceiling_scales_with_tariff() -> None:
+    reference_demand = module()
+    profile = reference_demand.ReferenceDemandProfile.model_validate(profile_payload())
+
+    target = reference_demand.build_item_demand_target(
+        {
+            "id": "q-analysis-9",
+            "marks": 9,
+            "kind": "analysis",
+            "command_word": "Analyse",
+            "task_operation": "analyse",
+            "assessment_objectives": {"AO1": 2, "AO2": 3, "AO3": 4},
+            "intended_demand": "standard",
+            "context": ["A case study supplies financial and operational evidence."],
+        },
+        profile,
+    )
+
+    assert target.maximum_reasoning_steps == 5
+
+
 def test_reference_extraction_pairs_local_command_and_mark_without_retaining_prose() -> (
     None
 ):
