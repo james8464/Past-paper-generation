@@ -1034,7 +1034,7 @@ def _align_paper1_structure(
         3: [
             _paper1_part("1", 1, "State the purpose of a depth-first traversal of a graph.", ["To visit or search all reachable vertices by following a path as far as possible before backtracking;"], 2, "AO1"),
             _paper1_part("2", 2, "Using AL, identify one cycle and explain why it proves that this graph is not a tree.", ["A valid cycle is 1–2–5–4–1;", "A tree is acyclic, whereas that route returns to its start using distinct edges;"], 4, "AO2"),
-            _paper1_part("3", 2, "Complete an adjacency matrix for the graph represented by AL. Record only the entries that contain 1.", ["Entries are symmetric for the undirected graph;", "All and only the listed edges are represented;"], 5, "AO2"),
+            _paper1_part("3", 2, "Complete every cell of the adjacency matrix for the graph represented by AL. Use 1 for an edge and 0 otherwise.", ["Entries are symmetric for the undirected graph;", "All and only the listed edges are represented;"], 5, "AO2"),
             _paper1_part("4", 1, "Describe the base case in reachable that returns True.", ["The current vertex is the target vertex;"], 2, "AO2"),
             _paper1_part("5", 6, "Trace the call reachable(3, 6, set()). The third argument is an initially empty set. Record, in order, every recursive call and every change made to visited.", [
                 "Initial call reachable(3, 6, set()) begins with visited = {};",

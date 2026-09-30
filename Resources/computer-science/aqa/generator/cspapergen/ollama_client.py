@@ -291,6 +291,7 @@ def _prompt(
     objective_guidance = objective_policy_for("computer science").guidance() + " Computer Science has no AO4."
     if _uses_scenario_only_generation(question):
         stem_numbers = ", ".join(numeric_tokens(question.stem)) or "none"
+        scenario_terms = ", ".join(_required_scenario_terms(question)) or "none"
         return f"""You are writing an unofficial A-level Computer Science {blueprint.paper_code} Paper {blueprint.paper_number}.
 
 Use only this syllabus topic: {question.topic_id} {topic_title}
@@ -299,6 +300,7 @@ Immutable reference-demand targets: {json.dumps(demand_targets, ensure_ascii=Fal
 {objective_guidance}
 
 Create a concise, materially new fictional scenario stem for the immutable multipart task below. The stem must establish the same technical setting without copying a complete sentence from the draft. Preserve these numeric tokens from the draft stem exactly: {stem_numbers}. Introduce no other numeric values. Do not repeat, rewrite or answer the parts. Do not add exam-board branding.
+Preserve these marking-coupled scenario terms exactly: {scenario_terms}.
 
 Draft stem: {question.stem}
 Immutable parts for context only:
@@ -595,6 +597,16 @@ def _validate_ai_question(original: Question, candidate: Question) -> None:
     candidate_text = " ".join(
         [candidate.stem, *(part.prompt for part in candidate.parts)]
     )
+    missing_scenario_terms = [
+        term
+        for term in _required_scenario_terms(original)
+        if term.casefold() not in candidate.stem.casefold()
+    ]
+    if missing_scenario_terms:
+        raise ValueError(
+            "question changed a required scenario term: "
+            + ", ".join(missing_scenario_terms)
+        )
     constrained_multipart = len(original.parts) >= 3 and bool(
         numeric_tokens(original_text)
     )
@@ -673,6 +685,19 @@ def _text_list(raw: object, fallback: list[str]) -> list[str]:
         return fallback
     values = [str(item).strip() for item in raw if str(item).strip()]
     return values or fallback
+
+
+def _required_scenario_terms(question: Question) -> list[str]:
+    if question.style_id != "compression_short" or len(question.parts) < 2:
+        return []
+    prefix = "Explain why lossless compression may be required for "
+    prompt = question.parts[1].prompt
+    if not prompt.startswith(prefix):
+        raise ValueError("compression question has no marking-coupled data type")
+    term = prompt.removeprefix(prefix).rstrip(". ")
+    if not term:
+        raise ValueError("compression question has an empty data type")
+    return [term]
 
 
 def _clean(text: str) -> str:

@@ -151,6 +151,9 @@ def test_paper1_matrix_keys_do_not_reveal_which_cells_contain_one():
         for r, row in enumerate(rows, 1)
         for c, value in enumerate(row, 1)
     }
+    assert "complete every cell" in part.prompt.casefold()
+    assert "1 for an edge and 0 otherwise" in part.prompt.casefold()
+    assert "record only" not in part.prompt.casefold()
     assert set(part.response_slots) == set(answers)
     assert reconcile_solution(
         solve(question, part, answers), part.marking.model_dump()
