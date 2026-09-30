@@ -70,8 +70,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/computer_science_authoring.py": {
-    "mtime": 1790612148.5839493,
-    "ast_hash": "2d3bbc6f673b19d4acdec776047206e0",
+    "mtime": 1790754167.066072,
+    "ast_hash": "e8ab9be7f846fe2261047c52e6017948",
     "semantic_hash": ""
   },
   "Backend/Core/credit_policy.py": {
@@ -170,8 +170,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/independent_solver.py": {
-    "mtime": 1790752845.452059,
-    "ast_hash": "5269693e02db99ee12c63980dd87d105",
+    "mtime": 1790754117.1460383,
+    "ast_hash": "9291adebd6ab181231a90b9b49ef1080",
     "semantic_hash": ""
   },
   "Backend/Core/layout_conformance.py": {
@@ -280,8 +280,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/providers.py": {
-    "mtime": 1790612148.6009824,
-    "ast_hash": "4dfd7c0ea886f7e4d5353760a080e5d4",
+    "mtime": 1790754117.1473217,
+    "ast_hash": "e22a5d84e6e6048de789e5d16358de54",
     "semantic_hash": ""
   },
   "Backend/Core/psychometrics.py": {
@@ -355,8 +355,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/subjects/computer_science_contracts.py": {
-    "mtime": 1790612148.6026428,
-    "ast_hash": "4808fd0eeeb32a0f761c889a25356cb8",
+    "mtime": 1790754117.1463869,
+    "ast_hash": "54980dbdcb27e9c5df8754b0339460da",
     "semantic_hash": ""
   },
   "Backend/Core/subjects/economics_contracts.py": {
@@ -585,8 +585,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/ollama_client.py": {
-    "mtime": 1790753339.3946571,
-    "ast_hash": "04c0db5a67e528bcb1c1599f5220f534",
+    "mtime": 1790762275.5049713,
+    "ast_hash": "b17546712da7f70d41765a2543ebb68d",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/paper1_assets.py": {
@@ -625,8 +625,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_blueprint.py": {
-    "mtime": 1790753262.769669,
-    "ast_hash": "3d5d8aa19ed044acc64e9477abd5fb07",
+    "mtime": 1790762181.0211391,
+    "ast_hash": "3b60eb4c36e0f8738ddc7d0262fe092e",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_cli_pdf.py": {
@@ -645,8 +645,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_finite_response_slots.py": {
-    "mtime": 1790753063.776348,
-    "ast_hash": "29437bcd01c73cac561d6b7bb73a4861",
+    "mtime": 1790754117.147701,
+    "ast_hash": "3cbd28585058dad61e32a74a44efcd0c",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_mark_scheme.py": {
@@ -1620,8 +1620,8 @@
     "semantic_hash": ""
   },
   "tests/test_providers.py": {
-    "mtime": 1790612148.6702414,
-    "ast_hash": "d30c908594ea1af5bd93b177678a832a",
+    "mtime": 1790753949.4438257,
+    "ast_hash": "05f5c300f6f0f7e2d7e648d08cfa6a1c",
     "semantic_hash": ""
   },
   "tests/test_psychometrics.py": {

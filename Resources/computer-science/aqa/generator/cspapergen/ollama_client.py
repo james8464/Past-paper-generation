@@ -688,16 +688,27 @@ def _text_list(raw: object, fallback: list[str]) -> list[str]:
 
 
 def _required_scenario_terms(question: Question) -> list[str]:
-    if question.style_id != "compression_short" or len(question.parts) < 2:
-        return []
-    prefix = "Explain why lossless compression may be required for "
-    prompt = question.parts[1].prompt
-    if not prompt.startswith(prefix):
-        raise ValueError("compression question has no marking-coupled data type")
-    term = prompt.removeprefix(prefix).rstrip(". ")
-    if not term:
-        raise ValueError("compression question has an empty data type")
-    return [term]
+    if question.style_id == "database_extended":
+        return [
+            "CLIENT",
+            "ClientID",
+            "REGISTRATION",
+            "RegistrationID",
+            "BookingDate",
+            "WORKSHOP",
+            "WorkshopID",
+            "Places",
+        ]
+    if question.style_id == "compression_short" and len(question.parts) >= 2:
+        prefix = "Explain why lossless compression may be required for "
+        prompt = question.parts[1].prompt
+        if not prompt.startswith(prefix):
+            raise ValueError("compression question has no marking-coupled data type")
+        term = prompt.removeprefix(prefix).rstrip(". ")
+        if not term:
+            raise ValueError("compression question has an empty data type")
+        return [term]
+    return []
 
 
 def _clean(text: str) -> str:

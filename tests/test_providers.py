@@ -387,7 +387,7 @@ def test_ollama_schema_bounds_specialist_question_parts() -> None:
         'Do not repeat, rewrite or answer the parts. Return {"stem": "string", "parts": ['
     )
     assert scenario_only["properties"]["parts"]["maxItems"] == 0
-    assert _ollama_output_budget(scenario_only) == 96
+    assert _ollama_output_budget(scenario_only) == 256
 
 
 def test_ollama_uses_structured_chat_with_bounded_output(monkeypatch) -> None:

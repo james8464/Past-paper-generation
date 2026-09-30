@@ -966,6 +966,9 @@ def _closed_slot_equal(slot: str, left: str, right: str) -> bool:
     if slot == "route-in-order":
         vertices = _route_vertices(left)
         return vertices is not None and vertices == _route_vertices(right)
+    if re.fullmatch(r"(?:row|column)-[A-Za-z0-9]+", slot):
+        left_cells = _matrix_vector(left)
+        return left_cells is not None and left_cells == _matrix_vector(right)
     if re.fullmatch(r"node--?\d+-side", slot):
         # The root is neither a left nor a right child. Both encodings describe
         # that same absence of a parent edge; other child sides stay exact.
@@ -973,6 +976,14 @@ def _closed_slot_equal(slot: str, left: str, right: str) -> bool:
         if _closed_normalise(left) in root_sides and _closed_normalise(right) in root_sides:
             return True
     return _closed_normalise(left) == _closed_normalise(right)
+
+
+def _matrix_vector(value: str) -> tuple[str, ...] | None:
+    compact = value.strip().strip("[]()").strip()
+    cells = re.split(r"\s*,\s*|\s+", compact)
+    if not cells or any(cell not in {"0", "1"} for cell in cells):
+        return None
+    return tuple(cells)
 
 
 def _closed_normalise(value: str) -> str:
