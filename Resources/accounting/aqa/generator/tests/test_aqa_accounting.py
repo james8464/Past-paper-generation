@@ -808,7 +808,7 @@ def test_partnership_calculations_have_complete_shared_source_contracts() -> Non
 
 
 def test_both_packages_render_36_page_question_papers(tmp_path: Path) -> None:
-    mark_scheme_pages = {"1": 26, "2": 16}
+    mark_scheme_pages = {"1": 26, "2": 28}
     for paper in ("1", "2"):
         paths = generate_package(
             paper=paper,
@@ -824,6 +824,23 @@ def test_both_packages_render_36_page_question_papers(tmp_path: Path) -> None:
         assert page_count(paths["question_paper"]) == 36
         assert page_count(paths["mark_scheme"]) == mark_scheme_pages[paper]
         assert all(path.stat().st_size > 2000 for path in paths.values())
+
+
+def test_paper_two_uses_distinct_source_verification_pages_not_repeated_guidance(
+    tmp_path: Path,
+) -> None:
+    paths = generate_package(
+        paper="2",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=26092841,
+    )
+    pages = [page.extract_text() or "" for page in PdfReader(paths["mark_scheme"]).pages]
+    verification_pages = [text for text in pages if "verification record" in text]
+
+    assert len(verification_pages) == 12
+    assert len(set(verification_pages)) == 12
+    assert all("Source and expected values" in text for text in verification_pages)
 
 
 def test_paper_two_calculations_do_not_print_unrelated_index_tables(

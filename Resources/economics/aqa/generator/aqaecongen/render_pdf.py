@@ -583,9 +583,6 @@ def _scheme_question_page(
             question.number,
             diagram_contract,
         )
-        diagram.scale(0.68, 0.68)
-        diagram.width *= 0.68
-        diagram.height *= 0.68
         answer.extend(
             [
                 Paragraph("<b>Expected diagram</b>", content_style),

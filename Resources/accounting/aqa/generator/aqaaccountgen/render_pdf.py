@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from functools import partial
 from pathlib import Path
+from xml.sax.saxutils import escape
 
 from reportlab.graphics.shapes import Drawing, Line, String
 from reportlab.lib import colors
@@ -1340,11 +1341,102 @@ def _mark_scheme_extension_pages(paper: GeneratedPaper) -> list[Flowable]:
         for section in paper.sections
         for question in section.options[0].questions
     ]
-    return [
+    verification_questions = [
+        question
+        for section in paper.sections[:2]
+        for question in section.options[0].questions
+        if question.kind != "multiple_choice"
+    ]
+    if len(verification_questions) != 12:
+        raise ValueError(
+            "AQA accounting Paper 2 requires 12 source-verification entries"
+        )
+    pages: list[Flowable] = []
+    for question in verification_questions:
+        pages.extend([PageBreak(), *_question_verification_page(question)])
+    pages.extend(
+        [
         PageBreak(),
         *_assessment_objectives_page(paper, questions),
         PageBreak(),
         *_independent_practice_page(),
+        ]
+    )
+    return pages
+
+
+def _question_verification_page(question: GeneratedQuestion) -> list[Flowable]:
+    rows = _candidate_verification_rows(question)
+    table = _scheme_grid(
+        ["Source or verification field", "Expected value or consistency check"],
+        rows,
+        [69 * mm, 98 * mm],
+    )
+    objectives = ", ".join(
+        f"{objective}: {marks}"
+        for objective, marks in question.assessment_objectives.items()
+        if marks
+    )
+    awarded_routes = [
+        point for point in question.structured_mark_scheme if point.marks > 0
+    ]
+    return [
+        Paragraph(
+            f"Question {escape(question.number)} verification record",
+            STYLES["heading"],
+        ),
+        Spacer(1, 3 * mm),
+        Paragraph(escape(question.prompt), STYLES["scheme_small"]),
+        Spacer(1, 4 * mm),
+        Paragraph("Source and expected values", STYLES["centre_bold"]),
+        Spacer(1, 2 * mm),
+        table,
+        Spacer(1, 4 * mm),
+        Paragraph(
+            f"Assessment allocation: {escape(objectives)}. "
+            f"The {question.marks} marks are distributed across "
+            f"{len(awarded_routes)} distinct credited routes.",
+            STYLES["scheme_small"],
+        ),
+    ]
+
+
+def _candidate_verification_rows(question: GeneratedQuestion) -> list[list[str]]:
+    rows: list[tuple[str, str]] = []
+
+    def visit(label: str, value: object) -> None:
+        if len(rows) >= 9:
+            return
+        if isinstance(value, dict):
+            for key, child in value.items():
+                visit(f"{label}.{key}" if label else str(key), child)
+            return
+        if isinstance(value, (list, tuple)):
+            if all(not isinstance(item, (dict, list, tuple)) for item in value):
+                rows.append((label, ", ".join(str(item) for item in value)))
+                return
+            for index, child in enumerate(value, start=1):
+                visit(f"{label}[{index}]", child)
+            return
+        rows.append((label, str(value)))
+
+    context = question.authoring_context
+    for key in (
+        "source_data",
+        "adjustment_source_data",
+        "verified_answers",
+        "candidate_source",
+    ):
+        if key in context:
+            visit(key, context[key])
+    if not rows:
+        rows = [
+            ("topic", question.topic_id),
+            ("printed mark total", str(question.marks)),
+        ]
+    return [
+        [escape(label), escape(value[:180])]
+        for label, value in rows
     ]
 
 

@@ -391,7 +391,11 @@ def _question(
     if calibrated:
         prompt, scheme = calibrated
         authoring_context.update({"preserve_prompt": True, "preserve_mark_scheme": True})
-    task_operation = _task_operation(prompt)
+    task_operation = (
+        "analyse"
+        if rule.kind == "analysis" and rule.assessment_objectives.get("AO2", 0) > 0
+        else _task_operation(prompt)
+    )
     authoring_context["task_operation"] = task_operation
     return GeneratedQuestion(
         rule_id=rule.id,

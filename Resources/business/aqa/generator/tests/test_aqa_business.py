@@ -418,6 +418,7 @@ def test_generated_validation_rejects_normalized_duplicate_mcq_choices() -> None
 
 
 def test_packages_render_current_page_geometry(tmp_path: Path) -> None:
+    expected_scheme_pages = {"1": 23, "2": 20, "3": 14}
     for paper, expected_pages in (("1", 32), ("2", 24), ("3", 28)):
         paths = generate_package(
             paper=paper,
@@ -434,6 +435,7 @@ def test_packages_render_current_page_geometry(tmp_path: Path) -> None:
         assert paths.keys() == expected_roles
         assert len(PdfReader(paths["question_paper"]).pages) == expected_pages
         scheme_pages = PdfReader(paths["mark_scheme"]).pages
+        assert len(scheme_pages) == expected_scheme_pages[paper]
         scheme_text = [page.extract_text() or "" for page in scheme_pages]
         assert all(text.strip() for text in scheme_text)
         assert "Independent practice material" in scheme_text[-1]

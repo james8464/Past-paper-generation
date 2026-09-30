@@ -166,6 +166,21 @@ def render_mark_scheme(
                     story.extend(_scheme_block(question))
             story.append(PageBreak())
         story.pop()
+        continuation_count = {"paper_2": 5, "paper_3": 3}[paper.paper_id]
+        continuation_questions = sorted(
+            (question for question in questions if question.marks >= 9),
+            key=lambda question: (-question.marks, question.number),
+        )[:continuation_count]
+        for question in continuation_questions:
+            story.extend(
+                [
+                    PageBreak(),
+                    *_assessment_route_page(
+                        question,
+                        f"Question {question.number} application and judgement",
+                    ),
+                ]
+            )
         story.extend(
             [
                 PageBreak(),
@@ -189,7 +204,11 @@ def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
         question_24,
         "Question 24 marking guidance",
     )
-    question_24_continuation.extend(
+    question_24_evaluation = _assessment_route_page(
+        question_24,
+        "Question 24 evaluation and judgement",
+    )
+    question_24_evaluation.extend(
         [
             Spacer(1, 14 * mm),
             Paragraph("Independent practice material", STYLES["small"]),
@@ -242,6 +261,7 @@ def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
             *_twenty_five_mark_levels(question_21, high_levels=True),
         ],
         _twenty_five_mark_continuation(question_21, "Lower-level descriptors"),
+        _assessment_route_page(question_21, "Question 21 assessment map"),
         [
             *_question_block(question_22),
             *_twenty_five_mark_levels(question_22, high_levels=True),
@@ -259,6 +279,7 @@ def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
             *_twenty_five_mark_levels(question_24, high_levels=True),
         ],
         question_24_continuation,
+        question_24_evaluation,
     ]
 
 
@@ -516,6 +537,64 @@ def _indicative_content_page(
         ),
         Spacer(1, 5 * mm),
         *_indicative_points(question, limit=10),
+    ]
+
+
+def _assessment_route_page(
+    question: GeneratedQuestion,
+    heading: str,
+) -> list[Flowable]:
+    context = question.authoring_context.get("task_context")
+    rows: list[list[object]] = [["Assessment feature", "Question-specific evidence"]]
+    if isinstance(context, dict):
+        rows.extend(
+            [
+                [
+                    str(key).replace("_", " ").title(),
+                    Paragraph(str(value), STYLES["scheme_small"]),
+                ]
+                for key, value in context.items()
+            ]
+        )
+    rows.extend(
+        [
+            [
+                "Assessment objectives",
+                ", ".join(
+                    f"{objective}: {marks}"
+                    for objective, marks in question.assessment_objectives.items()
+                    if marks
+                ),
+            ],
+            ["Printed marks", str(question.marks)],
+            ["Expected working time", f"{question.expected_minutes:g} minutes"],
+        ]
+    )
+    table = Table(rows, colWidths=[51 * mm, 116 * mm], repeatRows=1)
+    table.setStyle(
+        TableStyle(
+            [
+                ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
+                ("BACKGROUND", (0, 0), (-1, 0), GREY),
+                ("FONTNAME", (0, 0), (-1, 0), FONT_BOLD),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("PADDING", (0, 0), (-1, -1), 5),
+            ]
+        )
+    )
+    return [
+        Paragraph(heading, STYLES["heading"]),
+        Spacer(1, 4 * mm),
+        Paragraph(question.prompt, STYLES["body"]),
+        Spacer(1, 5 * mm),
+        table,
+        Spacer(1, 5 * mm),
+        Paragraph(
+            "Use this map to check that the awarded level reflects the complete "
+            "question-specific case and mark allocation. The indicative credit appears "
+            "once in the preceding marking entry.",
+            STYLES["small"],
+        ),
     ]
 
 
