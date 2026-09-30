@@ -97,7 +97,11 @@ def _enrich_question(
         "observable_mark_points": list(observable_mark_points),
         **alternative_permission("equivalent-assessed-route"),
         "common_errors": ["repeating an undeveloped point for double credit"],
-        "level_policy_id": level_policy_id if _uses_levels(question) else None,
+        "level_policy_id": (
+            question.authoring_context.get("level_policy_id", level_policy_id)
+            if _uses_levels(question)
+            else None
+        ),
     }
     if question.marks >= 4:
         authoring_context["partial_credit_boundaries"] = [
@@ -121,7 +125,8 @@ def _enrich_question(
                 "authoring_context": authoring_context,
             }
         )
-    scheme.extend(_objective_guidance(question, topic.title, selected, subject))
+    if question.authoring_context.get("item_specific_mark_scheme") is not True:
+        scheme.extend(_objective_guidance(question, topic.title, selected, subject))
     if (
         _uses_levels(question)
         and subject != "computer science"

@@ -190,8 +190,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/mark_scheme_enrichment.py": {
-    "mtime": 1790767967.8546386,
-    "ast_hash": "e25c0124fa64d0acb497aae791d674e6",
+    "mtime": 1790769763.3117082,
+    "ast_hash": "4dce00675c45e4b356a41d856337009a",
     "semantic_hash": ""
   },
   "Backend/Core/mark_scheme_front_matter.py": {
@@ -785,13 +785,13 @@
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/aqaecongen/generator.py": {
-    "mtime": 1790612431.9933689,
-    "ast_hash": "341d09b9453ba8f19a5f78d2fe125b4c",
+    "mtime": 1790771235.6501024,
+    "ast_hash": "ae8592942db4536191655432bbc9c186",
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/aqaecongen/render_pdf.py": {
-    "mtime": 1790612148.62103,
-    "ast_hash": "f6fc3fc0e83a1467e7ac81b5efc7817b",
+    "mtime": 1790770684.4579213,
+    "ast_hash": "18975c9cac5065c865c6da2d6a810066",
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/aqaecongen/syllabus.py": {
@@ -815,8 +815,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/tests/test_aqa_economics.py": {
-    "mtime": 1790612760.4704652,
-    "ast_hash": "844ab9790a65ae679da64c1a30804e58",
+    "mtime": 1790771295.9267974,
+    "ast_hash": "bbd53cffa3887e416e9e777d7fb327d9",
     "semantic_hash": ""
   },
   "Resources/economics/cambridge-international/generator/data/syllabus.json": {
@@ -2307,6 +2307,16 @@
   "docs/superpowers/plans/2026-09-28-selected-response-label-integrity.md": {
     "mtime": 1790613097.436323,
     "ast_hash": "7ff16208030fc5df7ab44372aafcaba0",
+    "semantic_hash": ""
+  },
+  "Resources/economics/aqa/generator/aqaecongen/level_policy.py": {
+    "mtime": 1790768760.6791754,
+    "ast_hash": "73c974dea5fd72641408f1cbcf81fd32",
+    "semantic_hash": ""
+  },
+  "Resources/economics/aqa/generator/aqaecongen/written_tasks.py": {
+    "mtime": 1790769624.4517174,
+    "ast_hash": "ebaad196f7b4a731151b6fd29e1e3b55",
     "semantic_hash": ""
   }
 }
