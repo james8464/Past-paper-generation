@@ -45,7 +45,8 @@ Four pinned seed PDFs are acquired/indexed locally; one is holdout-only. The mac
 system-trust programme download was exercised: 201,097 bytes, SHA-256
 `10ce34666edd722a3d8d86642a9f1ac205c7a9d128d6142a17effcba2fb85e69`.
 TLS verification remains enabled; the fallback rejects redirects/non-approved hosts.
-No official PDFs are committed or bundled. Archive completeness remains false.
+No official PDFs are committed or bundled. At this dated checkpoint, archive
+completeness remained false; the 30 September addendum below supersedes that status.
 
 The official interactive archive's NSI filter was traversed across all eight pages:
 79 rows, 122 distinct linked documents (114 PDFs, eight Braille ZIP archives).
@@ -90,3 +91,35 @@ complete keyboard, contrast, VoiceOver or window-size accessibility audit.
 Changes remain in `french-baccalaureat`. Main's UK controller was verified active;
 no duplicate inference was started. Do not merge into its source baseline during
 that run. Issues #4/#8 remain open independently; a prototype does not close #16.
+
+## 30 September reconciliation and fidelity addendum
+
+The archive gate above is now complete locally. All 79 canonical 2021–2026 paper
+links downloaded successfully, alongside the two foundational documents, and all
+81 registered files have pinned SHA-256 hashes. Thirteen papers are frozen as
+holdouts. Forty-three enlarged-print/braille links remain recorded as non-retrieval
+representations of canonical papers. Two byte-identical 2022 Nouvelle-Calédonie
+normal/replacement pairs were found; one identity from each pair is excluded from
+the SQLite index so duplicates cannot alter ranking. Neither pair crosses the
+holdout boundary. The current index has 79 unique sources: 66 reference and 13
+holdout. Rights remain reference-only and no source PDF is bundled.
+
+The renderer was remeasured against the official Métropole 2026 paper. It now uses
+the measured A4 cover rhythm, 20/14/11-point hierarchy, 14-point centred exercise
+titles, italic scope line, question indents, unmodified 12-point code and independent
+non-official branding. Correction guidance appears once, followed by compact answer
+and indicative-credit blocks. All generated fixture pages were manually inspected;
+the fixture still does not establish educational quality.
+
+The French-focused regression suite passes **57 tests** after archive reconciliation,
+originality, difficulty, rendering, runtime, review and benchmark-runner changes.
+The complete backend suite passes **2,189 tests** with two optional skips and five
+existing PyMuPDF/SWIG deprecation warnings. Native compilation succeeds and 69 of
+70 tests pass; the sole failure is the deliberately missing real `TutorialFrenchNSI`
+screenshot. The Mac session is locked, so neither that truthful UI asset nor the
+real demonstration video can be captured yet. A mock image is not accepted as a pass.
+
+A resumable candidate-model runner now preserves first-pass/repaired status, logs,
+checkpoints, timing, RSS, hardware, Ollama version and exact model/source/code identity.
+The live matrix remains not run. The exact `ministral-3:8b` and `qwen3:8b` candidates
+must be installed and the source committed before qualification begins.

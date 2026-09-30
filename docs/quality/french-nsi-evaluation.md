@@ -15,6 +15,12 @@ selecting a French recommendation; correctness and French NSI teacher judgement
 outweigh speed. Then use ten new whole-paper seeds. Quantisation changes need
 fresh evidence. Missing hardware is untested, never an inferred pass.
 
+The executable protocol is `tools/run_french_nsi_qualification.command`. It runs
+ten complete papers per model, giving thirty exercises per configuration. A global
+lock prevents duplicate campaigns. Accepted checkpoints are reused only when the
+implementation hash, reference-index hash, model digest and seed match. Failed
+attempts remain failures unless an explicit reviewed retry is requested.
+
 ## Rubric
 
 Score each dimension 1 (unusable), 2 (major revision), 3 (minor revision), 4 (ready
@@ -40,10 +46,10 @@ self-attested review record is not sufficient for release qualification.
 
 Deterministic failure blocks publication. Unsupported verification remains
 unresolved. Model review is supplemental: agreement between models can still be
-wrong. Existing contiguous-text screening is uncalibrated and does not establish
-copyright compliance or algorithmic originality. Add labelled copied/renamed/new
-examples before setting qualified thresholds. No numeric "similarity" percentage
-is a substitute for examiner judgement.
+wrong. Current screening compares text n-grams, normalized code, question structure
+and generation history. Its thresholds remain unqualified until labelled copied,
+superficially renamed and genuinely new examples establish precision and recall.
+No numeric "similarity" percentage is a substitute for examiner judgement.
 
 ## Artifact review
 

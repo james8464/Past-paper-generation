@@ -21,9 +21,7 @@ only the written component, not the practical assessment or diploma grade.
 ## Developer commands
 
 ```sh
-python -m tools.french_reference_corpus \
-  --register Resources/france/nsi/source-register.json \
-  --output 'Reference Corpus/france/nsi'
+./tools/run_french_nsi_reference_reconciliation.command
 
 python bridge.py generate-assessment \
   --assessment fr-bac-general-nsi-written-2027 \
@@ -37,6 +35,16 @@ active. `--large-print` selects enlarged type. Remote Ollama requires explicit
 `--allow-remote` and HTTPS; the native French workspace uses loopback only.
 Reference preparation is online and requires user consent. Generation uses the
 installed local model. No fine-tuning occurs. No model download is silently started.
+
+After source and code are committed and the exact candidate models are installed,
+run the resumable benchmark outside Codex with:
+
+```sh
+./tools/run_french_nsi_qualification.command
+```
+
+The runner refuses duplicate campaigns and stops if implementation or reference
+identity changes. Preview or fixture output cannot replace a live result.
 
 ## Storage and privacy
 
@@ -61,9 +69,10 @@ Keep framework qualification independent from technical availability.
 
 ## Current limitations
 
-See `occitanie-project.md` and `quality/french-nsi-evaluation.md`. The seed corpus,
-initial equal-weight blueprint, restricted verifier and provisional renderer are
-not the completed qualification programme. Native structured diagrams/tables,
-complete corpus reconciliation, calibrated originality, full interface translation,
-benchmark matrix and teacher/pilot evidence remain explicit work items. A generated
-draft is not automatically suitable for classroom assessment.
+See `occitanie-project.md` and `quality/french-nsi-evaluation.md`. The complete
+archive is locally hashed, duplicate-aware and holdout-scoped; structured diagrams,
+exact fractional credit, cognitive progression and teacher-review records are
+implemented. Remaining gates are a live candidate-model matrix, labelled originality
+calibration, exhaustive generated-paper review, two independent NSI teacher
+recommendations and a supervised learner pilot. A generated draft is not
+automatically suitable for classroom assessment.

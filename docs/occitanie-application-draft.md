@@ -1,8 +1,9 @@
 # Prix Occitanie 2026 — contenu de candidature à vérifier
 
-**PLANNED — 28 septembre 2026.** Brouillon de travail, non envoyé. Les trois
-sections ci-dessous sont destinées aux trois pages du dossier prescrit ; leur
-pagination finale et leur correspondance avec le formulaire restent à vérifier.
+**SUPERSEDED — 30 septembre 2026.** Ce brouillon de travail reste conservé pour
+la traçabilité. La candidature paginée, le dossier technique, la note mathématique
+et la checklist sont désormais générés depuis `tools/build_occitanie_submission.py`
+et documentés dans `competition/occitanie-2026/README.md`. Aucun dossier n'a été envoyé.
 Confirmer auprès des organisateurs l'éligibilité personnelle, les restrictions
 de financement antérieur et l'adéquation au périmètre régional/environnemental.
 Ne pas présenter une candidature comme recevable avant cette confirmation.

@@ -1,13 +1,14 @@
 # Occitanie: original French NSI practice papers
 
-Last updated: 2026-09-28. This is an evidence/status record, not a claim of
+Last updated: 2026-09-30. This is an evidence/status record, not a claim of
 educational approval. No teacher, school, Région, examiner or Ministry endorsement
 has been obtained. No prize application has been submitted.
 
 Implementation tracking: [issue #16](https://github.com/james8464/Past-paper-generation/issues/16).
 See the [engineering verification record](quality/french-nsi-prototype-verification-2026-09-28.md)
-and [French application-content draft](occitanie-application-draft.md). The latter
-is not yet a paginated or eligibility-confirmed submission.
+and [competition submission pack](competition/occitanie-2026/README.md). The formal
+application renders as exactly three A4 pages, but personal eligibility, contact
+fields and prior-funding status still require James's confirmation.
 
 ## Problem and beneficiaries
 
@@ -33,36 +34,46 @@ automated passing must not be represented as examiner approval.
   holdouts excluded; hashes, provenance and rights status retained.
 - French authoring, blind solver and separate review passes; bounded SQL, binary,
   shortest-path and restricted Python-trace checks; unsupported contracts unresolved.
+- Structured tables and vector graphs; programme-capability mappings, cognitive
+  operations, estimated time and a required progression beyond simple recall.
+- Seeded 5.5/6/6.5 technical allocations totalling 18, plus a separate two-point
+  language component. The detailed allocation remains an indicative product barème.
+- Text, normalized-code, structural and generation-history originality screening;
+  similarity remains risk evidence, not a copyright guarantee.
 - Hash-bound checkpoints, rejected attempts retained, French draft PDFs and
   atomic folder publication. All outputs remain non-official, unreviewed drafts.
-- Native French workspace, consent before downloads, selected French interface
-  translations, local Ollama endpoint, standard/enlarged print, history metadata.
+- Native French workspace, consent before downloads, French interface translations,
+  local Ollama endpoint, standard/enlarged print, history metadata and review UI.
 - Human review-record API tied to artifact hashes. Reviewer identity is self-attested,
   not authenticated; this is not an official signature or school approval system.
 
 ## Evidence and limits
 
-Four seed PDFs are locally acquired with pinned hashes: Terminale programme,
-2027 language rubric, 2026 Métropole subject and one centres-étrangers holdout.
-The official archive index has been traversed: 79 NSI entries and 122 linked
-documents (114 PDFs/eight Braille ZIPs), preserved in the discovery snapshot.
-The full 2021–2026 **content reconciliation remains incomplete**: download hashes,
-duplicates, rights and holdouts are not established for those newly discovered links.
-Only the four-source seed corpus is retrieval-enabled.
+The official 2021–2026 archive index and content are reconciled locally: 79 canonical
+papers, 43 accessibility representations, 122 links, 13 frozen holdouts and no
+download failures. All 81 registered documents (79 papers plus the programme and
+language rubric) have pinned SHA-256 hashes. Two byte-identical Nouvelle-Calédonie
+2022 normal/replacement pairs are recorded and collapsed in retrieval. Neither pair
+crosses the holdout boundary. Source PDFs remain local and unbundled; document-specific
+rights and third-party illustrations still need review before redistribution.
 Python's certificate store failed on Eduscol in this development environment;
-verified system curl obtained the programme. No insecure TLS mode was used.
+verified system curl was used without disabling TLS or accepting redirects.
 
 The measured Métropole source is A4 (595.32 × 841.92 pt), mainly Arial 12 pt,
 with Courier New 12 pt code. The renderer is **PROTOTYPE**: compatible fonts and
-geometry, not pixel identity. Structured diagram/table rendering, exhaustive visual
-comparison, calibrated originality thresholds and whole-topic reference coverage
-are not yet qualified. Equal six-point exercise allocations are a product choice,
-not an official 2027 allocation. Timing estimates and AI difficulty judgements are
-not empirical calibration. Restricted code evaluation does not support all Python.
+measured geometry, not pixel identity. Cover hierarchy, exercise titles, scope
+lines, question indents, code, vector diagrams/tables and correction guidance are
+implemented and manually inspected on fixtures. A 2026 source cannot establish an
+official 2027 template. Timing and AI difficulty judgements remain non-empirical;
+restricted code evaluation does not support all Python; originality thresholds
+still require labelled calibration.
 
-No French live model benchmark has run: the separate UK matrix still owns the
-local model. No French model is recommended as validated. No teacher-reviewed
-release, student pilot, Intel test or multi-memory hardware matrix exists.
+A resumable French benchmark runner is implemented for gemma4:12b,
+ministral-3:8b and qwen3:8b: ten full papers and thirty exercises per model, with
+fixed seeds, model/source/code identity, failure preservation and duplicate-run
+locking. The live campaign has not selected a model; the exact Ministral and Qwen
+candidates are not currently installed. No teacher-reviewed release, student pilot,
+Intel test or multi-memory hardware matrix exists.
 
 ## Genuine Occitanie scenario — PLANNED
 
@@ -112,13 +123,14 @@ Provisional €1,000 use: €500 teacher review, €200 pilot travel, €200 har
 accessibility testing, €100 contingency. These are proposed allocations, not
 expenditure or commitments. Confirm prize rules and reviewer availability first.
 
-## Prize preparation — PLANNED
+## Prize preparation — IMPLEMENTED documents / PLANNED submission
 
-The announced deadline is 2 November 2026. Confirm applicant enrolment eligibility,
-prior-funding restrictions and whether this educational/territorial proposal fits
-the competition's regional and sustainable-development remit with the organisers.
-The prescribed application is limited to three pages. Prepare an honest prototype
-demonstration and twelve-month plan; do not promise final qualification by deadline.
+The announced deadline is 2 November 2026 at midnight. The formal three-page DOCX,
+technical/user dossier and mathematical qualification note are generated and visually
+verified. A factual email draft, claims register, checklist, video script and a
+user-operated macOS recording command are included. The real video is not recorded
+while the Mac session is locked. Confirm applicant enrolment eligibility, contact
+details and prior-funding restrictions before sending.
 Do not infer environmental benefit from "local AI": measure energy, reuse and
 hardware requirements before making a sustainability claim.
 
