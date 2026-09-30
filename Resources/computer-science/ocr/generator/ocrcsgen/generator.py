@@ -117,6 +117,26 @@ def _programming_scheme(point: str, evidence: str) -> list[str]:
     ]
 
 
+def _task_operation(prompt: str) -> str:
+    command = prompt.split(maxsplit=1)[0].casefold().strip(".,:;!?()[]{}")
+    operations = {
+        "calculate": "transform",
+        "complete": "transform",
+        "describe": "describe",
+        "develop": "program",
+        "discuss": "judge",
+        "draw": "design",
+        "evaluate": "judge",
+        "explain": "explain",
+        "state": "retrieve",
+        "trace": "trace",
+    }
+    try:
+        return operations[command]
+    except KeyError as error:
+        raise ValueError(f"unsupported OCR task command: {command}") from error
+
+
 def build_paper(
     rule: PaperRule, syllabus: Syllabus, seed: int | None = None
 ) -> GeneratedPaper:
@@ -371,8 +391,8 @@ def _question(
     if calibrated:
         prompt, scheme = calibrated
         authoring_context.update({"preserve_prompt": True, "preserve_mark_scheme": True})
-    if rule.kind == "analysis" and rule.assessment_objectives.get("AO2"):
-        authoring_context["task_operation"] = "analyse"
+    task_operation = _task_operation(prompt)
+    authoring_context["task_operation"] = task_operation
     return GeneratedQuestion(
         rule_id=rule.id,
         number=number,

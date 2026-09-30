@@ -397,6 +397,11 @@ def build_item_demand_target(
             maximum_steps = min(12, max(3, marks))
         elif task_operation == "trace":
             minimum_steps, maximum_steps = 2, 4
+        elif task_operation in {"describe", "explain"}:
+            # Descriptive/explanatory tariffs may allocate one independently
+            # creditable conceptual stage per mark without becoming a harder
+            # operation type. Preserve that legitimate ceiling.
+            maximum_steps = max(maximum_steps, min(12, marks))
         elif marks <= 2:
             minimum_steps, maximum_steps = 1, 3
     # A target cannot require more distinct cognitive operations than the

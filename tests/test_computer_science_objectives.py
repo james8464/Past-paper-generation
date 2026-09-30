@@ -48,6 +48,30 @@ def test_aqa_cs_explicit_component_budgets_and_allotted_time(paper_id, expected)
     assert minutes == 150
 
 
+@pytest.mark.parametrize(
+    ("paper_id", "seed", "section_index", "question_index", "expected_steps"),
+    [
+        ("1", 26092853, 0, 2, 3),
+        ("2", 26092854, 5, 2, 5),
+    ],
+)
+def test_ocr_named_explanation_stages_fit_their_tariff(
+    paper_id, seed, section_index, question_index, expected_steps
+):
+    paper = build_paper(load_rule(paper_id), OCR, seed)
+    question = paper.sections[section_index].options[0].questions[question_index]
+    assert question.task_operation is None
+    assert question.authoring_context["task_operation"] == "explain"
+    demand_item = question.model_dump(mode="json")
+    demand_item["task_operation"] = question.authoring_context["task_operation"]
+    target = build_item_demand_target(
+        demand_item,
+        profile_for("ocr/computer-science", paper_id),
+    )
+    assert len(question.mark_scheme[:expected_steps]) == expected_steps
+    assert target.maximum_reasoning_steps >= expected_steps
+
+
 def test_aqa_difficulty_identity_binds_parent_source_key_credit_and_contract() -> None:
     import copy
 
