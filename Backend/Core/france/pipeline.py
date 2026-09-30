@@ -9,7 +9,12 @@ from dataclasses import asdict
 from hashlib import sha256
 from pathlib import Path
 
-from Backend.Core.education_context import NSI_2027, NSI_CONTEXT, EducationContext
+from Backend.Core.education_context import (
+    NSI_2027,
+    NSI_CONTEXT,
+    EducationContext,
+    points,
+)
 from Backend.Core.france.nsi import (
     CURRICULUM_OBJECTIVES,
     LANGUAGE_RUBRIC_2027,
@@ -21,7 +26,7 @@ from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.france.verification import verify_contract
 from Backend.Core.scoped_references import ReferenceIndex
 
-PROMPT_VERSION = "fr-nsi-written-2027-v3"
+PROMPT_VERSION = "fr-nsi-written-2027-v4"
 REVIEW_FLAGS = (
     "correct",
     "native_french",
@@ -58,6 +63,51 @@ ALLOCATION_PROFILES = (
     ("6", "6.5", "5.5"),
     ("6.5", "5.5", "6"),
 )
+QUESTION_POINT_PROFILES = {
+    "5.5": ("0.5", "0.5", "1", "1", "1", "1.5"),
+    "6": ("0.5", "1", "1", "1", "1", "1.5"),
+    "6.5": ("0.5", "1", "1", "1", "1.5", "1.5"),
+}
+QUESTION_TIME_PROFILES = (
+    (6, 9, 10, 12, 14, 19),
+    (7, 8, 11, 12, 15, 17),
+    (8, 9, 10, 11, 14, 18),
+)
+QUESTION_OPERATION_PROFILES = (
+    ("recall", "apply", "analyse", "debug", "design", "justify"),
+    ("apply", "analyse", "debug", "apply", "design", "justify"),
+    ("recall", "apply", "analyse", "justify", "debug", "design"),
+)
+QUESTION_DIFFICULTY_PROFILES = (
+    (1, 2, 2, 3, 4, 4),
+    (2, 2, 3, 3, 4, 4),
+    (1, 2, 3, 3, 4, 4),
+)
+
+
+def _question_blueprint(
+    exercise_number: int,
+    technical_points: str,
+    curriculum_codes: tuple[str, ...],
+    variation: int,
+) -> list[dict]:
+    points_plan = QUESTION_POINT_PROFILES[technical_points]
+    time_plan = QUESTION_TIME_PROFILES[variation]
+    operation_plan = QUESTION_OPERATION_PROFILES[variation]
+    difficulty_plan = QUESTION_DIFFICULTY_PROFILES[variation]
+    return [
+        {
+            "id": f"{exercise_number}{chr(ord('a') + index)}",
+            "points": points_plan[index],
+            "estimated_minutes": time_plan[index],
+            "operation": operation_plan[index],
+            "difficulty": difficulty_plan[index],
+            "required_curriculum_code": curriculum_codes[
+                (index + variation) % len(curriculum_codes)
+            ],
+        }
+        for index in range(6)
+    ]
 
 
 def _tasks_for_seed(seed: int) -> list[dict]:
@@ -70,6 +120,12 @@ def _tasks_for_seed(seed: int) -> list[dict]:
             "technical_points": allocations[position],
             "required_material_kind": material_kind,
             "required_curriculum_codes": list(curriculum_codes),
+            "question_blueprint": _question_blueprint(
+                position + 1,
+                allocations[position],
+                curriculum_codes,
+                (seed + position) % len(QUESTION_TIME_PROFILES),
+            ),
         }
         for position, (
             topics,
@@ -119,7 +175,10 @@ def _prompt(
         "points distincts à la maîtrise de la langue. Calculatrice interdite. "
         "Pour chaque question, indique les capacités officielles réellement "
         "mobilisées, l'opération cognitive, le niveau de difficulté de 1 à 4 et "
-        "une durée réaliste; la somme des durées doit être celle de l'exercice. "
+        "une durée réaliste. Crée exactement les six questions du champ "
+        "question_blueprint : identifiant, points, durée, opération, difficulté et "
+        "capacité obligatoire doivent correspondre exactement; les critères du "
+        "barème de chaque question doivent totaliser ses points. "
         "Évalue toutes les capacités obligatoires fournies, avec au plus une "
         "question de simple restitution et plusieurs tâches d'analyse, conception, "
         "débogage ou justification, dont au moins une de niveau 4. "
@@ -311,6 +370,9 @@ def generate_assessment(
                                     "required_curriculum_codes": task[
                                         "required_curriculum_codes"
                                     ],
+                                    "question_blueprint": task[
+                                        "question_blueprint"
+                                    ],
                             },
                             references[position],
                             seed,
@@ -327,6 +389,23 @@ def generate_assessment(
                         or exercise.target_points != task["technical_points"]
                     ):
                         raise ValueError("Plan de l'exercice non respecté")
+                    question_plan = task["question_blueprint"]
+                    if len(exercise.questions) != len(question_plan) or any(
+                        question.id != planned["id"]
+                        or points(question.points) != points(planned["points"])
+                        or question.estimated_minutes
+                        != planned["estimated_minutes"]
+                        or question.operation != planned["operation"]
+                        or question.difficulty != planned["difficulty"]
+                        or planned["required_curriculum_code"]
+                        not in question.curriculum_codes
+                        for question, planned in zip(
+                            exercise.questions, question_plan, strict=True
+                        )
+                    ):
+                        raise ValueError(
+                            "Le plan détaillé des questions n'est pas respecté"
+                        )
                     covered_codes = {
                         code
                         for question in exercise.questions

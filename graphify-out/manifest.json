@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1790789706.04142,
-    "ast_hash": "ce64216be0974706ed75ddf9c5654cd2",
+    "mtime": 1790791719.8799329,
+    "ast_hash": "05e58f4048af2dfcc72054af6aa21c9e",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1790789804.0232863,
-    "ast_hash": "25c54f718a8ff64672084869c9408b20",
+    "mtime": 1790791254.69082,
+    "ast_hash": "1ca2b276d6c198afd4f196e3c7b238b7",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1775,13 +1775,13 @@
     "semantic_hash": "248449f6aabd502dc802118071813a95"
   },
   "tests/test_nsi_assessment.py": {
-    "mtime": 1790778903.856634,
-    "ast_hash": "53199d653ca9293ebbfef1e917d8cf66",
+    "mtime": 1790791433.8960438,
+    "ast_hash": "0860ba85b57f6875296f6a9214075829",
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1790789657.4895844,
-    "ast_hash": "38ea65df1ab68c775178a8a852944155",
+    "mtime": 1790791533.6367161,
+    "ast_hash": "f35e76013e88c1d7ad67d4993495b369",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -2542,6 +2542,11 @@
   "macOS/PaperCreator/Assets.xcassets/TutorialWorkspace.imageset/TutorialWorkspace.png": {
     "mtime": 1790616627.8858018,
     "ast_hash": "b7b67305703a2e1104b10c8ae5cd8f5a",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-framework-migration-ledger.md": {
+    "mtime": 1790791215.3607657,
+    "ast_hash": "99c20d98674d6ebb519e6e31a18d509a",
     "semantic_hash": ""
   }
 }

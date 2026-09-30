@@ -42,12 +42,19 @@ class FrenchClient:
     def generate_json(self, prompt):
         self.calls += 1
         if prompt.startswith("Résous indépendamment"):
+            candidate = json.loads(prompt.split("\n", 1)[1])
             return {
-                "answers": {str(i): str(i) for i in range(1, 7)},
+                "answers": {
+                    question["id"]: str(index)
+                    for index, question in enumerate(
+                        candidate["questions"], start=1
+                    )
+                },
                 "issues": [],
                 "minutes": 60,
             }
         if prompt.startswith("Vérifie ce sujet"):
+            candidate = json.loads(prompt.split("\n", 1)[1])["exercise"]
             return {
                 "correct": not self.reject,
                 "native_french": True,
@@ -57,15 +64,13 @@ class FrenchClient:
                 "context_consistent": True,
                 "issues": [],
                 "rationale": "Analyse détaillée de chaque réponse et de son barème.",
-                "question_ids": [str(i) for i in range(1, 7)],
+                "question_ids": [
+                    question["id"] for question in candidate["questions"]
+                ],
             }
         task = json.loads(prompt.split("DONNÉES_JSON\n", 1)[1])
         number = task["exercise_id"]
-        allocations = {
-            "5.5": ["1", "1", "1", "1", "1", "0.5"],
-            "6": ["1", "1", "1", "1", "1", "1"],
-            "6.5": ["1.5", "1", "1", "1", "1", "1"],
-        }[task["technical_points"]]
+        question_blueprint = task["question_blueprint"]
         if task["required_material_kind"] == "weighted_graph":
             materials = [
                 {
@@ -115,28 +120,28 @@ class FrenchClient:
             "materials": materials,
             "questions": [
                 dict(
-                    id=str(i),
+                    id=plan["id"],
                     prompt=prompt.format(i=i),
-                    points=allocations[i - 1],
+                    points=plan["points"],
                     answer=str(i),
                     marking=[
                         {
-                            "points": allocations[i - 1],
+                            "points": plan["points"],
                             "criterion": f"Résultat {i} et justification.",
                         }
                     ],
                     material_ids=["support"] if i == 1 else [],
-                    curriculum_codes=[task["required_curriculum_codes"][(i - 1) % len(task["required_curriculum_codes"])]],
-                    operation=("apply", "analyse", "design", "debug", "justify", "analyse")[i - 1],
-                    difficulty=(2, 2, 3, 3, 4, 4)[i - 1],
-                    estimated_minutes=task["minutes"] // 6 + (1 if i <= task["minutes"] % 6 else 0),
+                    curriculum_codes=[plan["required_curriculum_code"]],
+                    operation=plan["operation"],
+                    difficulty=plan["difficulty"],
+                    estimated_minutes=plan["estimated_minutes"],
                     verification={
                         "kind": "binary",
                         "input": format(i, "b"),
                         "expected": i,
                     },
                 )
-                for i in range(1, 7)
+                for i, plan in enumerate(question_blueprint, start=1)
             ],
         }
 
@@ -227,6 +232,31 @@ def test_failed_review_keeps_attempt_evidence_and_never_accepts(tmp_path):
     saved = json.loads(checkpoint.read_text())
     assert len(saved["failed_attempts"]) == 3
     assert saved["accepted"] == {}
+
+
+def test_generation_rejects_relational_drift_from_the_question_blueprint(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class DriftingBlueprintClient(FrenchClient):
+        def generate_json(self, prompt):
+            result = super().generate_json(prompt)
+            if prompt.startswith("Rédige directement en français académique"):
+                first, second = result["questions"][:2]
+                first["points"], second["points"] = second["points"], first["points"]
+                first["marking"][0]["points"] = first["points"]
+                second["marking"][0]["points"] = second["points"]
+            return result
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+
+    with pytest.raises(ValueError, match="plan détaillé"):
+        generate_assessment(
+            index_path=index,
+            client=DriftingBlueprintClient(),
+            seed=5,
+            checkpoint=tmp_path / "checkpoint.json",
+        )
 
 
 def test_checkpoint_rejects_changed_model_identity(tmp_path):

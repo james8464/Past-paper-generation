@@ -269,3 +269,24 @@ def test_exercise_rejects_flat_low_demand_question_sets():
         question["estimated_minutes"] = 10
     with pytest.raises(ValueError, match="demande cognitive"):
         NSIExercise.model_validate(raw)
+
+
+def test_seeded_question_blueprints_make_marks_and_timing_exact_before_ai():
+    from Backend.Core.france.pipeline import _tasks_for_seed
+
+    for seed in range(3):
+        for task in _tasks_for_seed(seed):
+            questions = task["question_blueprint"]
+            assert len(questions) == 6
+            assert sum(Decimal(item["points"]) for item in questions) == Decimal(
+                task["technical_points"]
+            )
+            assert sum(item["estimated_minutes"] for item in questions) == task[
+                "minutes"
+            ]
+            assert set(task["required_curriculum_codes"]) <= {
+                item["required_curriculum_code"] for item in questions
+            }
+            assert len({item["operation"] for item in questions}) >= 3
+            assert sum(item["operation"] == "recall" for item in questions) <= 1
+            assert any(item["difficulty"] == 4 for item in questions)
