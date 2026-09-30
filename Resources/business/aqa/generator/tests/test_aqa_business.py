@@ -9,6 +9,7 @@ from aqabizgen.cli import generate_package
 from aqabizgen.configs import RULES
 from aqabizgen.financials import FinancialPosition, format_number
 from aqabizgen.generator import build_paper
+from aqabizgen.render_pdf import _cover_profile
 from aqabizgen.syllabus import load_syllabus
 from pypdf import PdfReader
 
@@ -96,6 +97,47 @@ def test_paper_one_calculations_share_source_data_with_mark_scheme() -> None:
     )
     assert roce.authoring_context["verified_answers"]["operating_profit"] == (
         financials.operating_profit_at_twelve_percent
+    )
+
+
+def test_financial_position_is_balanced_from_displayed_source_values() -> None:
+    financials = FinancialPosition.from_chart_values([100, 100, 100, 100, 100])
+
+    assert financials.current_assets == 177
+    assert financials.non_current_assets == 335
+    assert financials.payables == 66
+    assert financials.non_current_liabilities == 229
+    assert financials.total_equity == 217
+    assert financials.current_assets + financials.non_current_assets == 512
+    assert (
+        financials.payables
+        + financials.non_current_liabilities
+        + financials.total_equity
+        == 512
+    )
+
+
+def test_financial_position_rejects_an_unbalanced_direct_value() -> None:
+    with pytest.raises(ValueError, match="must balance"):
+        FinancialPosition(
+            inventories=100,
+            receivables=42,
+            cash=35,
+            payables=66,
+            non_current_assets=335,
+            non_current_liabilities=229,
+            total_equity=1,
+        )
+
+
+def test_paper_one_cover_uses_candidate_section_totals() -> None:
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 26092845)
+
+    assert _cover_profile(paper).mark_rows == (
+        ("A", 15),
+        ("B", 35),
+        ("C", 25),
+        ("D", 25),
     )
 
 

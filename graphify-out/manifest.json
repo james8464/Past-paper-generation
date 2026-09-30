@@ -500,8 +500,8 @@
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/financials.py": {
-    "mtime": 1790612148.6077437,
-    "ast_hash": "6f375dfdf1d75690706a51008315fec7",
+    "mtime": 1790750819.2849114,
+    "ast_hash": "bab41bc541ca0553ca63eac7846f85a3",
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/generator.py": {
@@ -510,8 +510,8 @@
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/render_pdf.py": {
-    "mtime": 1790612148.608063,
-    "ast_hash": "19be3ead0b290a06bd3a9d5ceea12829",
+    "mtime": 1790750819.2920675,
+    "ast_hash": "4020e87137c24da2c98474b48a70616c",
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/syllabus.py": {
@@ -535,8 +535,8 @@
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/tests/test_aqa_business.py": {
-    "mtime": 1790612148.6085405,
-    "ast_hash": "3c545615e225a134f5fedd887cf51d86",
+    "mtime": 1790750752.5785446,
+    "ast_hash": "52f19970495e2aa1f04a173b3b949c2d",
     "semantic_hash": ""
   },
   "Resources/catalog.json": {
@@ -1140,7 +1140,7 @@
     "semantic_hash": ""
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1790612500.892227,
+    "mtime": 1790612952.517867,
     "ast_hash": "4d61725e2acb369c475d517dfe5e6d4b",
     "semantic_hash": ""
   },
@@ -2305,8 +2305,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-09-28-selected-response-label-integrity.md": {
-    "mtime": 1790612286.4904957,
-    "ast_hash": "62257f3841e3d57d18dd683c91867c66",
+    "mtime": 1790613097.436323,
+    "ast_hash": "7ff16208030fc5df7ab44372aafcaba0",
     "semantic_hash": ""
   }
 }

@@ -1367,7 +1367,7 @@ def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
         mark_rows=tuple(
             (
                 section.id,
-                sum(question.marks for question in section.options[0].questions),
+                section.candidate_marks,
             )
             for section in paper.sections
         ),
