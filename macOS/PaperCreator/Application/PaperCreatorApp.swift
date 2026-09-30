@@ -1,6 +1,12 @@
 import SwiftUI
 import TipKit
 
+enum AppLaunchPolicy {
+    static func presentsMainWindow(environment: [String: String] = ProcessInfo.processInfo.environment) -> Bool {
+        environment["XCTestConfigurationFilePath"] == nil
+    }
+}
+
 @main
 struct PaperCreator: App {
     @StateObject private var application = ApplicationCoordinator()
@@ -17,7 +23,7 @@ struct PaperCreator: App {
                 .environment(application.benchmarkCoordinator)
                 .environment(application.generationCoordinator)
         }
-        .defaultLaunchBehavior(.presented)
+        .defaultLaunchBehavior(AppLaunchPolicy.presentsMainWindow() ? .presented : .suppressed)
         .commands {
             AppCommands(application: application)
         }

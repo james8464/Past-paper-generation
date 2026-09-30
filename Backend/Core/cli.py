@@ -89,6 +89,18 @@ def build_parser() -> argparse.ArgumentParser:
     references = subparsers.add_parser("prepare-french-references", help="Download the registered official French reference PDFs")
     references.add_argument("--output", type=Path, required=True)
     references.set_defaults(handler=handle_french_references)
+    review = subparsers.add_parser(
+        "review-french-assessment",
+        help="Record a hash-bound human review of a French assessment bundle",
+    )
+    review.add_argument("--manifest", type=Path, required=True)
+    review.add_argument("--reviewer", required=True)
+    review.add_argument(
+        "--decision", choices=["approved", "revise", "rejected"], required=True
+    )
+    review.add_argument("--scores-json", required=True)
+    review.add_argument("--notes", required=True)
+    review.set_defaults(handler=handle_french_review)
     return parser
 
 
@@ -110,6 +122,12 @@ def handle_french_references(args: argparse.Namespace) -> int:
     except Exception as error:
         emit("error", message=str(error), code="french_sources_failed")
         return 1
+
+
+def handle_french_review(args: argparse.Namespace) -> int:
+    from Backend.Core.france.teacher_review import handle_record_review
+
+    return handle_record_review(args)
 
 
 def handle_bundle_check(_args: argparse.Namespace) -> int:

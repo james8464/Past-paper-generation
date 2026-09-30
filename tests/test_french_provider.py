@@ -22,7 +22,16 @@ def test_french_transport_has_own_schema_seed_and_output_budget(monkeypatch):
         model="fixture", base_url="http://localhost:11434", seed=42
     )
     prompt = _prompt(
-        {"exercise_id": "1", "topics": ["algorithmique"], "minutes": 60}, [], 42, 1, ""
+        {
+            "exercise_id": "1",
+            "topics": ["algorithmique"],
+            "minutes": 70,
+            "required_curriculum_codes": ["ALG-GRAPHES"],
+        },
+        [],
+        42,
+        1,
+        "",
     )
     client.generate_json(prompt)
     client.generate_json(prompt)

@@ -385,6 +385,7 @@ enum HelpTopic: String, CaseIterable, Identifiable {
     case gettingStarted
     case choosingAModel
     case creatingAPaper
+    case frenchBaccalaureat
     case checkingQuality
     case privacy
     case troubleshooting
@@ -397,6 +398,7 @@ enum HelpTopic: String, CaseIterable, Identifiable {
         case .gettingStarted: "Getting Started"
         case .choosingAModel: "Choosing a Model"
         case .creatingAPaper: "Creating a Paper"
+        case .frenchBaccalaureat: "French Baccalauréat · NSI"
         case .checkingQuality: "Checking Quality"
         case .privacy: "Privacy"
         case .troubleshooting: "Troubleshooting"
@@ -409,6 +411,7 @@ enum HelpTopic: String, CaseIterable, Identifiable {
         case .gettingStarted: "hand.wave"
         case .choosingAModel: "cpu"
         case .creatingAPaper: "doc.badge.plus"
+        case .frenchBaccalaureat: "graduationcap"
         case .checkingQuality: "checklist"
         case .privacy: "hand.raised"
         case .troubleshooting: "wrench.and.screwdriver"

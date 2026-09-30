@@ -6,6 +6,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import unicodedata
 from collections import defaultdict
 from dataclasses import asdict
 from datetime import UTC, datetime
@@ -151,6 +152,215 @@ def assign_splits(entries: list[dict]) -> dict[str, str]:
     return result
 
 
+def _identifier_part(value: str) -> str:
+    plain = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode()
+    return re.sub(r"[^a-z0-9]+", "-", plain.casefold()).strip("-")
+
+
+def reconcile_archive_discovery(
+    discovery: dict, foundational_documents: list[dict]
+) -> dict:
+    """Turn a captured official archive index into a frozen acquisition register.
+
+    The split is assigned from metadata before any new paper content is read. Only
+    the standard representation becomes a candidate source; enlarged-print and
+    braille links remain in the manifest as non-retrieval aliases.
+    """
+    if discovery.get("schema_version") != 1:
+        raise ValueError("Unsupported French archive discovery schema")
+    rows = discovery.get("rows")
+    if not isinstance(rows, list) or len(rows) != discovery.get("index_rows"):
+        raise ValueError("Archive row count does not match the captured index")
+    prefix = discovery.get("document_url_prefix", "")
+    check_url(prefix)
+
+    files = [
+        document.get("file")
+        for row in rows
+        for document in row.get("documents", [])
+    ]
+    if any(not isinstance(filename, str) or not filename for filename in files):
+        raise ValueError("Archive document is missing its filename")
+    urls = [urljoin(prefix, filename) for filename in files]
+    if len(urls) != discovery.get("document_links"):
+        raise ValueError("Archive link count does not match the captured index")
+    if len(set(urls)) != discovery.get("unique_urls"):
+        raise ValueError("Archive unique-link count does not match the captured index")
+    for url in urls:
+        check_url(url)
+
+    papers = []
+    variants = []
+    identifiers = set()
+    for row in rows:
+        standard = [
+            document
+            for document in row.get("documents", [])
+            if document.get("format") == "standard"
+        ]
+        if len(standard) != 1:
+            raise ValueError("Each archive row must contain exactly one standard paper")
+        identifier = "nsi-{}-{}-{}-{}".format(
+            row["year"],
+            _identifier_part(row["session"]),
+            _identifier_part(row["centre"]),
+            _identifier_part(row["description"]),
+        )
+        if identifier in identifiers:
+            suffix = sha256(standard[0]["file"].encode()).hexdigest()[:8]
+            identifier = f"{identifier}-{suffix}"
+        identifiers.add(identifier)
+        paper = {
+            "id": identifier,
+            "category": "official_paper",
+            "authority": "MEN",
+            "url": urljoin(prefix, standard[0]["file"]),
+            "session": int(row["year"]),
+            "centre": row["centre"],
+            "rights": "reference-only",
+            "split": "reference",
+            "exam_session": row["session"],
+            "description": row["description"],
+            "curriculum_version": "nsi-2019",
+            "document_language": "fr-FR",
+            "template_eligible": int(row["year"]) >= 2023,
+            "historical_format_note": (
+                None
+                if int(row["year"]) >= 2023
+                else "Legacy or exceptional format; never use as a 2027 layout template."
+            ),
+        }
+        papers.append(paper)
+        for document in row.get("documents", []):
+            if document is standard[0]:
+                continue
+            variants.append(
+                {
+                    "canonical_document_id": identifier,
+                    "format": document["format"],
+                    "url": urljoin(prefix, document["file"]),
+                    "retrieval_eligible": False,
+                    "reason": "accessibility-representation-of-canonical-paper",
+                }
+            )
+
+    splits = assign_splits(papers)
+    for paper in papers:
+        paper["split"] = splits[paper["id"]]
+        paper["retrieval_eligible"] = paper["split"] == "reference"
+
+    foundational = [dict(document) for document in foundational_documents]
+    if any(document.get("category") == "official_paper" for document in foundational):
+        raise ValueError("Foundational documents must not duplicate archive papers")
+    return {
+        "schema_version": 1,
+        "status": "archive-index-reconciled-content-acquisition-pending",
+        "scope": "fr-national/bac-general/generale/terminale/nsi/nsi-2019",
+        "rights_note": (
+            "Local reference inspection only; no source PDFs bundled. Rights and "
+            "third-party illustrations require document-specific review."
+        ),
+        "archive_url": discovery["source"],
+        "assessment_rules_url": "https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N",
+        "archive_reconciliation": {
+            "observed_at": discovery.get("observed_at"),
+            "complete_index": True,
+            "content_hashes_complete": False,
+            "standard_papers": len(papers),
+            "accessibility_variants": len(variants),
+            "total_links": len(urls),
+            "holdout_papers": sum(
+                paper["split"] == "holdout" for paper in papers
+            ),
+        },
+        "documents": foundational + papers,
+        "archive_variants": variants,
+    }
+
+
+def pin_reconciled_hashes(register: dict, manifest: dict) -> dict:
+    """Pin successfully acquired bytes without concealing gaps or duplicates."""
+    if manifest.get("failures") or not manifest.get("complete_archive"):
+        raise ValueError("Cannot pin an incomplete French archive acquisition")
+    by_id = {
+        document["id"]: document["sha256"]
+        for document in manifest.get("documents", [])
+    }
+    expected = {document["id"] for document in register.get("documents", [])}
+    missing = sorted(expected - by_id.keys())
+    if missing:
+        raise ValueError(f"Archive manifest is missing documents: {', '.join(missing)}")
+    pinned = json.loads(json.dumps(register, ensure_ascii=False))
+    for document in pinned["documents"]:
+        digest = by_id[document["id"]]
+        if not re.fullmatch(r"[a-f0-9]{64}", digest):
+            raise ValueError(f"Invalid acquired hash for {document['id']}")
+        document["sha256"] = digest
+    reconciliation = pinned["archive_reconciliation"]
+    reconciliation["content_hashes_complete"] = True
+    reconciliation["duplicate_content_groups"] = len(
+        manifest.get("duplicates", [])
+    )
+    reconciliation["acquired_documents"] = len(pinned["documents"])
+    pinned["status"] = "archive-content-reconciled"
+    return pinned
+
+
+def duplicate_index_policy(documents: list[dict]) -> list[dict]:
+    """Choose one indexed identity per byte-identical group.
+
+    When an identical file crosses the holdout boundary, the holdout identity is
+    retained so the same bytes can never re-enter retrieval through an alias.
+    """
+    by_digest = defaultdict(list)
+    for document in documents:
+        by_digest[document["sha256"]].append(document)
+    groups = []
+    for digest, copies in sorted(by_digest.items()):
+        if len(copies) < 2:
+            continue
+        ordered_ids = sorted(document["id"] for document in copies)
+        held_out = sorted(
+            document["id"]
+            for document in copies
+            if document["split"] == "holdout"
+        )
+        canonical = held_out[0] if held_out else ordered_ids[0]
+        groups.append(
+            {
+                "sha256": digest,
+                "ids": ordered_ids,
+                "canonical_id": canonical,
+                "excluded_ids": [
+                    identifier for identifier in ordered_ids if identifier != canonical
+                ],
+                "crosses_holdout_boundary": bool(held_out)
+                and len(held_out) != len(copies),
+            }
+        )
+    return groups
+
+
+def prune_unregistered_sources(
+    index: ReferenceIndex, registered_ids: set[str]
+) -> list[str]:
+    existing = {
+        row[0] for row in index.connection.execute("SELECT id FROM sources").fetchall()
+    }
+    stale = sorted(existing - registered_ids)
+    if stale:
+        with index.connection:
+            index.connection.executemany(
+                "DELETE FROM chunks WHERE source_id=?",
+                [(identifier,) for identifier in stale],
+            )
+            index.connection.executemany(
+                "DELETE FROM sources WHERE id=?",
+                [(identifier,) for identifier in stale],
+            )
+    return stale
+
+
 def ingest(register: Path, output: Path) -> dict:
     payload = json.loads(register.read_text(encoding="utf-8"))
     if payload.get("schema_version") != 1:
@@ -161,6 +371,7 @@ def ingest(register: Path, output: Path) -> dict:
         "complete_archive": False,
         "documents": [],
         "failures": [],
+        "duplicates": [],
     }
     opener = build_opener(OfficialRedirects())
     with ReferenceIndex(output / "references.sqlite") as index:
@@ -235,6 +446,41 @@ def ingest(register: Path, output: Path) -> dict:
                 report["documents"].append({**asdict(source), "page_metrics": metrics})
             except Exception as error:
                 report["failures"].append({"id": entry["id"], "error": str(error)})
+    expected_archive = payload.get("archive_reconciliation", {}).get(
+        "standard_papers"
+    )
+    acquired_archive = sum(
+        document["category"] == "official_paper"
+        for document in report["documents"]
+    )
+    report["complete_archive"] = bool(
+        expected_archive is not None
+        and acquired_archive == expected_archive
+        and not report["failures"]
+    )
+    report["duplicates"] = duplicate_index_policy(report["documents"])
+    excluded = {
+        identifier
+        for group in report["duplicates"]
+        for identifier in group["excluded_ids"]
+    }
+    registered_ids = {entry["id"] for entry in payload["documents"]}
+    with ReferenceIndex(output / "references.sqlite") as index:
+        if excluded:
+            with index.connection:
+                index.connection.executemany(
+                    "DELETE FROM chunks WHERE source_id=?",
+                    [(identifier,) for identifier in sorted(excluded)],
+                )
+                index.connection.executemany(
+                    "DELETE FROM sources WHERE id=?",
+                    [(identifier,) for identifier in sorted(excluded)],
+                )
+        report["stale_index_sources_removed"] = prune_unregistered_sources(
+            index, registered_ids
+        )
+    for document in report["documents"]:
+        document["indexed"] = document["id"] not in excluded
     (output / "manifest.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
@@ -252,7 +498,8 @@ def main():
             {
                 "downloaded": len(report["documents"]),
                 "failures": report["failures"],
-                "complete_archive": False,
+                "complete_archive": report["complete_archive"],
+                "duplicates": len(report["duplicates"]),
             },
             ensure_ascii=False,
         )

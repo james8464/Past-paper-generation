@@ -11,6 +11,7 @@ def exercise():
         "context": "Un lycée modélise son réseau.",
         "topics": ["architectures-reseaux"],
         "minutes": 60,
+        "target_points": "6",
         "questions": [
             dict(
                 id=str(i),
@@ -18,6 +19,12 @@ def exercise():
                 points="1",
                 answer=str(i),
                 marking=[{"points": "1", "criterion": f"Valeur {i} justifiée."}],
+                curriculum_codes=["ASR-ROUTAGE"],
+                operation=("apply", "analyse", "design", "debug", "justify", "analyse")[
+                    i - 1
+                ],
+                difficulty=(2, 2, 3, 3, 4, 4)[i - 1],
+                estimated_minutes=10,
                 verification={"kind": "binary", "input": format(i, "b"), "expected": i},
             )
             for i in range(1, 7)
@@ -34,6 +41,37 @@ def test_exercise_credit_is_exact_and_duplicate_labels_rejected():
     raw["questions"][1]["id"] = "1"
     with pytest.raises(ValueError, match="identifiants"):
         NSIExercise.model_validate(raw)
+
+
+def test_exercise_credit_must_match_its_explicit_blueprint_allocation():
+    from Backend.Core.france.nsi import NSIExercise
+
+    raw = exercise()
+    raw["target_points"] = "5.5"
+    with pytest.raises(ValueError, match="allocation"):
+        NSIExercise.model_validate(raw)
+
+
+def test_language_rubric_is_officially_structured_but_numerically_indicative():
+    from Backend.Core.france.nsi import LANGUAGE_RUBRIC_2027
+
+    assert LANGUAGE_RUBRIC_2027["points"] == "2"
+    assert LANGUAGE_RUBRIC_2027["allocation_status"] == "indicative_product_profile"
+    assert set(LANGUAGE_RUBRIC_2027["dimensions"]) == {
+        "orthographe",
+        "syntaxe",
+        "lexique",
+        "organisation",
+    }
+    assert [band["id"] for band in LANGUAGE_RUBRIC_2027["bands"]] == [
+        "tres_insuffisant",
+        "insuffisant",
+        "satisfaisant",
+        "tres_satisfaisant",
+    ]
+    assert sum(
+        Decimal(value) for value in LANGUAGE_RUBRIC_2027["indicative_points"].values()
+    ) > Decimal("2")
 
 
 def test_marking_must_credit_each_question_exactly():
@@ -151,3 +189,83 @@ def test_solver_prompt_does_not_leak_solution_or_marking():
     assert "SOLUTION_SECRET" not in prompt and "MARKING_SECRET" not in prompt
     assert '"expected"' not in prompt
     assert "Un lycée" in prompt
+
+
+def test_structured_graph_is_bound_to_question_and_deterministic_contract():
+    from Backend.Core.france.nsi import NSIExercise
+
+    raw = exercise()
+    raw["materials"] = [
+        {
+            "kind": "weighted_graph",
+            "id": "reseau",
+            "title": "Réseau du lycée",
+            "nodes": ["A", "B", "C"],
+            "edges": [["A", "B", 2], ["B", "C", 3], ["A", "C", 8]],
+            "directed": True,
+        }
+    ]
+    raw["questions"][0]["material_ids"] = ["reseau"]
+    raw["questions"][0]["verification"] = {
+        "kind": "shortest_path",
+        "material_id": "reseau",
+        "edges": [["A", "B", 2], ["B", "C", 3], ["A", "C", 8]],
+        "directed": True,
+        "start": "A",
+        "end": "C",
+        "expected": 5,
+    }
+    NSIExercise.model_validate(raw)
+    raw["questions"][0]["verification"]["edges"][0][2] = 9
+    with pytest.raises(ValueError, match="figure"):
+        NSIExercise.model_validate(raw)
+
+
+def test_structured_table_requires_rectangular_bounded_data():
+    from Backend.Core.france.nsi import NSIExercise
+
+    raw = exercise()
+    raw["materials"] = [
+        {
+            "kind": "table",
+            "id": "mesures",
+            "title": "Mesures relevées",
+            "columns": ["id", "valeur"],
+            "rows": [["1", "4"], ["2"]],
+        }
+    ]
+    with pytest.raises(ValueError):
+        NSIExercise.model_validate(raw)
+
+
+def test_question_demand_is_bound_to_official_capabilities_and_time_budget():
+    from Backend.Core.france.nsi import NSIExercise
+
+    raw = exercise()
+    raw["minutes"] = 60
+    operations = ["apply", "analyse", "design", "debug", "justify", "analyse"]
+    difficulties = [2, 2, 3, 3, 4, 4]
+    for index, question in enumerate(raw["questions"]):
+        question["curriculum_codes"] = ["ASR-ROUTAGE"]
+        question["operation"] = operations[index]
+        question["difficulty"] = difficulties[index]
+        question["estimated_minutes"] = 10
+    parsed = NSIExercise.model_validate(raw)
+    assert sum(question.estimated_minutes for question in parsed.questions) == 60
+
+    raw["questions"][0]["curriculum_codes"] = ["BDD-SQL-MUTATION"]
+    with pytest.raises(ValueError, match="programme"):
+        NSIExercise.model_validate(raw)
+
+
+def test_exercise_rejects_flat_low_demand_question_sets():
+    from Backend.Core.france.nsi import NSIExercise
+
+    raw = exercise()
+    for question in raw["questions"]:
+        question["curriculum_codes"] = ["ASR-ROUTAGE"]
+        question["operation"] = "recall"
+        question["difficulty"] = 1
+        question["estimated_minutes"] = 10
+    with pytest.raises(ValueError, match="demande cognitive"):
+        NSIExercise.model_validate(raw)

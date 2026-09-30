@@ -811,7 +811,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Créer un brouillon non relu"
+            "value" : "Créer un sujet non relu"
           }
         }
       }
@@ -902,6 +902,576 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Préparation de l’épreuve française"
+          }
+        }
+      }
+    },
+    "French Baccalauréat · NSI" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Baccalauréat français · NSI"
+          }
+        }
+      }
+    },
+    "Delete downloaded French references" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer les références françaises téléchargées"
+          }
+        }
+      }
+    },
+    "Record a teacher review" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrer l’avis d’un enseignant"
+          }
+        }
+      }
+    },
+    "How this route works" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fonctionnement du parcours français"
+          }
+        }
+      }
+    },
+    "Prepare the official French references" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Préparer les références officielles françaises"
+          }
+        }
+      }
+    },
+    "Create an original, unreviewed draft" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer un sujet original non relu"
+          }
+        }
+      }
+    },
+    "Inspect both PDFs and the validation record" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Examiner les deux PDF et le rapport de validation"
+          }
+        }
+      }
+    },
+    "Record an independent teacher decision" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrer la décision indépendante d’un enseignant"
+          }
+        }
+      }
+    },
+    "A recorded review is bound to the exact document hashes. Editing or regenerating any file makes that review stale." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’avis enregistré est lié aux empreintes exactes des documents. Toute modification ou régénération d’un fichier invalide cet avis."
+          }
+        }
+      }
+    },
+    "Open the French NSI help guide" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir le guide de la NSI française"
+          }
+        }
+      }
+    },
+    "Delete downloaded French references?" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer les références françaises téléchargées ?"
+          }
+        }
+      }
+    },
+    "Delete References" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer les références"
+          }
+        }
+      }
+    },
+    "The local reference PDFs and search index will be removed. Generated papers are not affected." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les PDF de référence locaux et l’index de recherche seront supprimés. Les sujets générés ne seront pas modifiés."
+          }
+        }
+      }
+    },
+    "Teacher review" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avis de l’enseignant"
+          }
+        }
+      }
+    },
+    "This is a self-attested review record, not an official signature or examiner endorsement." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il s’agit d’un avis déclaré par son auteur, et non d’une signature officielle ou d’une validation par un examinateur."
+          }
+        }
+      }
+    },
+    "Reviewer name" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom de l’enseignant"
+          }
+        }
+      }
+    },
+    "Decision" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Décision"
+          }
+        }
+      }
+    },
+    "Approved for classroom practice" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Approuvé pour un entraînement en classe"
+          }
+        }
+      }
+    },
+    "Revisions required" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Révisions nécessaires"
+          }
+        }
+      }
+    },
+    "Rejected" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refusé"
+          }
+        }
+      }
+    },
+    "Rubric · 1 to 4" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grille · de 1 à 4"
+          }
+        }
+      }
+    },
+    "Correctness" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exactitude"
+          }
+        }
+      }
+    },
+    "Curriculum alignment" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conformité au programme"
+          }
+        }
+      }
+    },
+    "Quality of French" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qualité du français"
+          }
+        }
+      }
+    },
+    "Difficulty" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Difficulté"
+          }
+        }
+      }
+    },
+    "Timing" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durée"
+          }
+        }
+      }
+    },
+    "Marking guidance" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indications de correction"
+          }
+        }
+      }
+    },
+    "Layout" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mise en page"
+          }
+        }
+      }
+    },
+    "Originality" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Originalité"
+          }
+        }
+      }
+    },
+    "Review notes" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commentaires de relecture"
+          }
+        }
+      }
+    },
+    "Choose Reviewed Bundle and Record" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir le dossier relu et enregistrer"
+          }
+        }
+      }
+    },
+    "Preparing French references" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Préparation des références françaises"
+          }
+        }
+      }
+    },
+    "French references deleted" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Références françaises supprimées"
+          }
+        }
+      }
+    },
+    "Choose the manifest.json file from the reviewed assessment bundle." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez le fichier manifest.json du dossier d’épreuve relu."
+          }
+        }
+      }
+    },
+    "Choose the bundle's manifest.json file." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez le fichier manifest.json du dossier."
+          }
+        }
+      }
+    },
+    "Complete every review score and add review notes." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renseignez chaque note de la grille et ajoutez des commentaires."
+          }
+        }
+      }
+    },
+    "Recording teacher review" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrement de l’avis de l’enseignant"
+          }
+        }
+      }
+    },
+    "The French route creates original Terminale NSI written practice for the 2027 rules. It is separate from the UK exam-board generators and does not include the practical component." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le parcours français crée des sujets écrits originaux d’entraînement pour la spécialité NSI en Terminale selon les règles de 2027. Il est distinct des générateurs britanniques et n’inclut pas l’épreuve pratique."
+          }
+        }
+      }
+    },
+    "The French workspace keeps the official context, local references, model warning, accessibility format and human-review gate together." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’espace français réunit le cadre officiel, les références locales, l’avertissement sur le modèle, le format accessible et la validation humaine."
+          }
+        }
+      }
+    },
+    "Prepare references" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Préparer les références"
+          }
+        }
+      }
+    },
+    "Approve the one-time download from registered French Ministry sources. Holdout material is excluded from generation." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autorisez le téléchargement ponctuel depuis les sources enregistrées du ministère. Les documents réservés à l’évaluation sont exclus de la génération."
+          }
+        }
+      }
+    },
+    "Create a draft" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer un sujet"
+          }
+        }
+      }
+    },
+    "The app builds three independent exercises, 18 technical points and a distinct indicative two-point language component." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’app construit trois exercices indépendants, 18 points techniques et une composante distincte et indicative de 2 points pour la langue."
+          }
+        }
+      }
+    },
+    "Inspect the bundle" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Examiner le dossier"
+          }
+        }
+      }
+    },
+    "Read the subject, proposed correction and validation record. Check every structured table, graph, answer and allocation." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lisez le sujet, le corrigé proposé et le rapport de validation. Vérifiez chaque tableau structuré, graphe, réponse et attribution de points."
+          }
+        }
+      }
+    },
+    "Record teacher review" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrer l’avis d’un enseignant"
+          }
+        }
+      }
+    },
+    "Choose the bundle manifest, score all eight review dimensions and record an explicit decision. The record is bound to every artifact hash." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez le manifeste du dossier, notez les huit dimensions et enregistrez une décision explicite. L’avis est lié à l’empreinte de chaque document."
+          }
+        }
+      }
+    },
+    "Use with learners only after review" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utiliser avec les élèves uniquement après relecture"
+          }
+        }
+      }
+    },
+    "Difficulty and timing remain reference-informed until teacher and learner evidence exists for the exact form." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La difficulté et la durée restent estimées à partir des références tant que le sujet exact ne dispose pas de données d’enseignants et d’élèves."
+          }
+        }
+      }
+    },
+    "Unreviewed and non-official" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non relu et non officiel"
+          }
+        }
+      }
+    },
+    "Automated authoring, solving and verification do not constitute Ministry, examiner or teacher approval. Regenerating or editing any artifact invalidates its recorded review." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La rédaction, la résolution et la vérification automatisées ne constituent pas une approbation du ministère, d’un examinateur ou d’un enseignant. Toute régénération ou modification d’un document invalide l’avis enregistré."
+          }
+        }
+      }
+    },
+    "Local data and deletion" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Données locales et suppression"
+          }
+        }
+      }
+    },
+    "French source PDFs and their search index stay in Application Support until you delete them from the French workspace." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les PDF sources français et leur index de recherche restent dans Application Support jusqu’à leur suppression depuis l’espace français."
+          }
+        }
+      }
+    },
+    "Ollama generation uses the loopback address and never silently falls back to a hosted provider." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La génération Ollama utilise l’adresse locale et ne bascule jamais silencieusement vers un fournisseur distant."
+          }
+        }
+      }
+    },
+    "Generated bundles contain questions, corrections, provenance and validation evidence, but no student accounts or submitted answers." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les dossiers générés contiennent les questions, les corrigés, la provenance et les preuves de validation, mais aucun compte ni réponse d’élève."
+          }
+        }
+      }
+    },
+    "Official 2027 NSI definition" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définition officielle de la NSI 2027"
+          }
+        }
+      }
+    },
+    "Official language rubric" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grille officielle de maîtrise de la langue"
           }
         }
       }

@@ -17,6 +17,7 @@ from Backend.Core.france.nsi import NSIExercise
 from Backend.Core.france.pipeline import (
     atomic_json,
     digest,
+    exercise_candidate_text,
     generate_assessment,
     validate_package,
 )
@@ -95,6 +96,39 @@ def validate_pdf(path: Path):
             raise ValueError("Crédits ou statut du document manquants")
 
 
+def load_originality_history(output: Path) -> list[str]:
+    """Read a bounded set of candidate-only text from earlier local bundles."""
+    history: list[str] = []
+    if not output.is_dir():
+        return history
+    for bundle in sorted(output.glob("nsi-2027-*"), reverse=True):
+        assessment = bundle / "assessment.json"
+        try:
+            if (
+                bundle.is_symlink()
+                or not bundle.is_dir()
+                or assessment.is_symlink()
+                or not assessment.is_file()
+                or assessment.stat().st_size > 5 * 1024 * 1024
+            ):
+                continue
+            package = json.loads(assessment.read_text(encoding="utf-8"))
+            if (
+                package.get("schema_version") != 2
+                or package.get("assessment_policy")
+                != "fr-bac-general-nsi-written-2027"
+                or not isinstance(package.get("exercises"), list)
+            ):
+                continue
+            for raw in package["exercises"]:
+                history.append(exercise_candidate_text(NSIExercise.model_validate(raw)))
+                if len(history) == 20:
+                    return history
+        except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError):
+            continue
+    return history
+
+
 def handle_generate_assessment(args) -> int:
     staging = None
     previous_handler = None
@@ -130,6 +164,7 @@ def handle_generate_assessment(args) -> int:
             seed=args.seed,
             checkpoint=checkpoint,
             progress=lambda message: emit_progress(message, stage="french_generation"),
+            previous_texts=load_originality_history(output),
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))

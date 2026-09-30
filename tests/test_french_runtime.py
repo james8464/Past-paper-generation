@@ -58,9 +58,16 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure):
         import pymupdf
 
         with pymupdf.open(bundles[0] / "corrige.pdf") as pdf:
-            # Six tiny fixture answers fit together; no orphan answer page.
-            assert len(pdf) == 5
-            assert "Exercice 1, question 6" in pdf[2].get_text()
+            # Structured resources add space, but every exercise remains present
+            # with its final marking entry and no empty trailing page.
+            assert 5 <= len(pdf) <= 8
+            text = " ".join(page.get_text() for page in pdf)
+            assert all(
+                f"Exercice {exercise} (" in text for exercise in range(1, 4)
+            )
+            assert text.count("Réponse attendue") == 18
+            assert text.count("Barème indicatif") >= 18
+            assert pdf[-1].get_text().strip()
 
 
 def test_runtime_rejects_remote_ollama_without_explicit_consent():
@@ -91,3 +98,28 @@ def test_missing_sources_fail_before_model_and_leave_no_output(tmp_path, capsys)
     assert handle_generate_assessment(args) == 1
     assert "références" in capsys.readouterr().out
     assert not (tmp_path / "output").exists()
+
+
+def test_originality_history_reads_only_bounded_valid_local_bundles(tmp_path):
+    import json
+
+    from Backend.Core.france.runtime import load_originality_history
+    from tests.test_nsi_assessment import exercise
+
+    output = tmp_path / "output"
+    valid = output / "nsi-2027-1-valid"
+    valid.mkdir(parents=True)
+    payload = {
+        "schema_version": 2,
+        "assessment_policy": "fr-bac-general-nsi-written-2027",
+        "exercises": [exercise()],
+    }
+    (valid / "assessment.json").write_text(json.dumps(payload), encoding="utf-8")
+    malformed = output / "nsi-2027-2-malformed"
+    malformed.mkdir()
+    (malformed / "assessment.json").write_text("not-json", encoding="utf-8")
+
+    history = load_originality_history(output)
+    assert len(history) == 1
+    assert "Données d'un réseau" in history[0]
+    assert "Valeur 1 justifiée" not in history[0]

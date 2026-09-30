@@ -232,6 +232,8 @@ def _shortest_path(contract):
             raise ValueError("Arête invalide")
         graph.setdefault(start, []).append((end, weight))
         graph.setdefault(end, [])
+        if contract.get("directed") is False:
+            graph[end].append((start, weight))
     start, end = contract["start"], contract["end"]
     if start not in graph or end not in graph:
         raise ValueError("Sommet absent")

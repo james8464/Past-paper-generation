@@ -1,6 +1,8 @@
 """Self-attested human review records; hashes bind scope, not reviewer credentials."""
 
 import json
+import os
+import tempfile
 from datetime import UTC, datetime
 from hashlib import sha256
 from pathlib import Path
@@ -92,3 +94,54 @@ def review_status(manifest: Path, record: dict) -> str:
         return record["decision"]
     except (ValueError, OSError, KeyError, TypeError):
         return "stale"
+
+
+def _write_record(manifest: Path, record: dict) -> Path:
+    destination = manifest.parent / f"teacher-review-{record['record_id'][:12]}.json"
+    rendered = json.dumps(record, ensure_ascii=False, indent=2) + "\n"
+    if destination.exists():
+        if destination.is_symlink() or destination.read_text(encoding="utf-8") != rendered:
+            raise ValueError("Un enregistrement différent utilise déjà cet identifiant")
+        return destination
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=".teacher-review-", suffix=".json", dir=manifest.parent
+    )
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+            stream.write(rendered)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, destination)
+    finally:
+        temporary.unlink(missing_ok=True)
+    return destination
+
+
+def handle_record_review(args) -> int:
+    from Backend.Core.events import emit
+
+    try:
+        scores = json.loads(args.scores_json)
+        if not isinstance(scores, dict):
+            raise ValueError("La grille de relecture doit être un objet JSON")
+        record = record_review(
+            args.manifest,
+            reviewer=args.reviewer,
+            decision=args.decision,
+            scores=scores,
+            notes=args.notes,
+        )
+        destination = _write_record(args.manifest, record)
+        emit("file", role="teacher_review", path=str(destination))
+        emit(
+            "done",
+            message=(
+                "Relecture enregistrée et liée aux empreintes des documents. "
+                "Toute modification la rend caduque."
+            ),
+        )
+        return 0
+    except Exception as error:
+        emit("error", message=str(error), code="french_review_failed")
+        return 1

@@ -1,6 +1,7 @@
 import AppKit
 import Combine
 import Foundation
+import UniformTypeIdentifiers
 @preconcurrency import UserNotifications
 
 @MainActor
@@ -244,7 +245,23 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func prepareFrenchReferences() {
-        startFrenchOperation(arguments: ["prepare-french-references", "--output", frenchReferencesFolder.path], seed: nil)
+        startFrenchOperation(
+            arguments: ["prepare-french-references", "--output", frenchReferencesFolder.path],
+            seed: nil,
+            statusMessage: String(localized: "Preparing French references")
+        )
+    }
+
+    func deleteFrenchReferences() {
+        guard !isRunning else { return }
+        do {
+            if FileManager.default.fileExists(atPath: frenchReferencesFolder.path) {
+                try FileManager.default.removeItem(at: frenchReferencesFolder)
+            }
+            status = String(localized: "French references deleted")
+        } catch {
+            setError(error.localizedDescription)
+        }
     }
 
     func generateFrenchPaper(largePrint: Bool) {
@@ -259,7 +276,47 @@ final class ApplicationCoordinator: ObservableObject {
         startFrenchOperation(arguments: request.arguments, seed: seed)
     }
 
-    private func startFrenchOperation(arguments: [String], seed: Int?) {
+    func recordFrenchReview(
+        reviewer: String,
+        decision: FrenchReviewDecision,
+        scores: [String: Int],
+        notes: String
+    ) {
+        guard !isRunning else { return }
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = false
+        panel.allowedContentTypes = [.json]
+        panel.message = String(localized: "Choose the manifest.json file from the reviewed assessment bundle.")
+        guard panel.runModal() == .OK, let manifest = panel.url else { return }
+        guard manifest.lastPathComponent == "manifest.json" else {
+            setError(String(localized: "Choose the bundle's manifest.json file."))
+            return
+        }
+        let request = FrenchReviewRequest(
+            manifest: manifest,
+            reviewer: reviewer,
+            decision: decision,
+            scores: scores,
+            notes: notes
+        )
+        guard request.isComplete else {
+            setError(String(localized: "Complete every review score and add review notes."))
+            return
+        }
+        startFrenchOperation(
+            arguments: request.arguments,
+            seed: nil,
+            statusMessage: String(localized: "Recording teacher review")
+        )
+    }
+
+    private func startFrenchOperation(
+        arguments: [String],
+        seed: Int?,
+        statusMessage: String = String(localized: "Preparing French assessment")
+    ) {
         guard !isRunning, !benchmarkCoordinator.isRunning else { return }
         activeFrameworkID = FrenchAssessmentRequest.assessmentID
         didReceiveBackendError = false
@@ -269,7 +326,7 @@ final class ApplicationCoordinator: ObservableObject {
         lastQualityReport = nil
         isRunning = true
         activeOperation = .generation
-        status = String(localized: "Preparing French assessment")
+        status = statusMessage
         generationProgress = nil
         do {
             if let seed {
