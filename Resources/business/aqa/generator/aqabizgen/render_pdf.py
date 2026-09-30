@@ -3,7 +3,6 @@ from __future__ import annotations
 from functools import partial
 from pathlib import Path
 
-import pymupdf as fitz
 from reportlab.graphics.shapes import Drawing, Line, PolyLine, Rect, String
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT
@@ -134,8 +133,6 @@ def render_source_booklet(paper: GeneratedPaper, path: Path) -> None:
 def render_mark_scheme(
     paper: GeneratedPaper,
     path: Path,
-    *,
-    _extension_adjustment: int = 0,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     doc = _document(path, paper, "Mark scheme")
@@ -156,6 +153,12 @@ def render_mark_scheme(
                 story.append(PageBreak())
         doc.build(story)
     else:
+        questions = [
+            question
+            for section in paper.sections
+            for option in section.options
+            for question in option.questions
+        ]
         for section in paper.sections:
             story.extend([_banner(f"Section {section.id}"), Spacer(1, 4 * mm)])
             for option in section.options:
@@ -164,26 +167,14 @@ def render_mark_scheme(
             story.append(PageBreak())
         story.pop()
         story.extend(
-            _mark_scheme_extension_pages(
-                paper,
-                count_adjustment=_extension_adjustment,
-            )
+            [
+                PageBreak(),
+                *_assessment_objectives_page(paper, questions),
+                PageBreak(),
+                *_independent_practice_page(),
+            ]
         )
         doc.build(story)
-    target_pages = {"paper_1": 23, "paper_2": 20, "paper_3": 14}[paper.paper_id]
-    with fitz.open(path) as rendered:
-        page_count = rendered.page_count
-    if _extension_adjustment == 0 and page_count != target_pages:
-        render_mark_scheme(
-            paper,
-            path,
-            _extension_adjustment=target_pages - page_count,
-        )
-        return
-    if page_count != target_pages:
-        raise ValueError(
-            f"AQA business mark scheme rendered {page_count} pages; expected {target_pages}"
-        )
 
 
 def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
@@ -194,6 +185,21 @@ def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
     ].questions
     question_21, question_22 = [option.questions[0] for option in section_c.options]
     question_23, question_24 = [option.questions[0] for option in section_d.options]
+    question_24_continuation = _twenty_five_mark_continuation(
+        question_24,
+        "Question 24 marking guidance",
+    )
+    question_24_continuation.extend(
+        [
+            Spacer(1, 14 * mm),
+            Paragraph("Independent practice material", STYLES["small"]),
+            Paragraph(
+                "Created by Paper Creator for private revision. This mark scheme is not "
+                "produced, endorsed or approved by AQA or any examination board.",
+                STYLES["small"],
+            ),
+        ]
+    )
     return [
         _objective_test_answers(mcq_questions),
         [
@@ -236,7 +242,6 @@ def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
             *_twenty_five_mark_levels(question_21, high_levels=True),
         ],
         _twenty_five_mark_continuation(question_21, "Lower-level descriptors"),
-        _indicative_content_page(question_21, "Question 21 indicative content"),
         [
             *_question_block(question_22),
             *_twenty_five_mark_levels(question_22, high_levels=True),
@@ -253,17 +258,7 @@ def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
             *_question_block(question_24),
             *_twenty_five_mark_levels(question_24, high_levels=True),
         ],
-        _twenty_five_mark_continuation(question_24, "Lower-level descriptors"),
-        [
-            *_indicative_content_page(question_24, "Evaluation"),
-            Spacer(1, 14 * mm),
-            Paragraph("Independent practice material", STYLES["small"]),
-            Paragraph(
-                "Created by Paper Creator for private revision. This mark scheme is not "
-                "produced, endorsed or approved by AQA or any examination board.",
-                STYLES["small"],
-            ),
-        ],
+        question_24_continuation,
     ]
 
 
@@ -498,9 +493,12 @@ def _indicative_points(
     *,
     limit: int = 6,
 ) -> list[Flowable]:
+    points = question.authoring_context.get("observable_mark_points")
+    if not isinstance(points, list) or not all(isinstance(point, str) for point in points):
+        points = question.mark_scheme
     return [
         Paragraph(f"• {point}", STYLES["body"])
-        for point in question.mark_scheme[:limit]
+        for point in points[:limit]
     ]
 
 
@@ -531,80 +529,6 @@ def _twenty_five_mark_continuation(
         *_twenty_five_mark_levels(question, high_levels=False),
         Spacer(1, 6 * mm),
         *_indicative_points(question, limit=8),
-    ]
-
-
-MARK_SCHEME_EXTENSION_PAGE_COUNTS = {
-    "paper_1": 7,
-    "paper_2": 7,
-    "paper_3": 4,
-}
-
-
-def _mark_scheme_extension_pages(
-    paper: GeneratedPaper,
-    *,
-    count_adjustment: int = 0,
-) -> list[Flowable]:
-    count = MARK_SCHEME_EXTENSION_PAGE_COUNTS[paper.paper_id] + count_adjustment
-    if count < 2:
-        raise ValueError("AQA business mark-scheme continuation budget is too small")
-    questions = [
-        question
-        for section in paper.sections
-        for option in section.options
-        for question in option.questions
-    ]
-    extended = [question for question in questions if question.marks >= 9]
-    pages: list[Flowable] = []
-    for index in range(count):
-        pages.append(PageBreak())
-        if index == count - 2:
-            pages.extend(_assessment_objectives_page(paper, questions))
-        elif index == count - 1:
-            pages.extend(_independent_practice_page())
-        else:
-            question = extended[index % len(extended)]
-            pages.extend(_continued_marking_guidance(question, index))
-    return pages
-
-
-def _continued_marking_guidance(
-    question: GeneratedQuestion,
-    page_index: int,
-) -> list[Flowable]:
-    points = question.mark_scheme
-    chunk_size = 9
-    start = (page_index * chunk_size) % max(len(points), 1)
-    chunk = (points + points)[start : start + chunk_size]
-    rows = [["Indicative content and level guidance", ""]]
-    rows.extend(
-        [[Paragraph(f"• {point}", STYLES["scheme_small"]), ""] for point in chunk]
-    )
-    table = Table(rows, colWidths=[155 * mm, 12 * mm])
-    table.setStyle(
-        TableStyle(
-            [
-                ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
-                ("BACKGROUND", (0, 0), (-1, 0), GREY),
-                ("FONTNAME", (0, 0), (-1, 0), FONT_BOLD),
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                ("PADDING", (0, 0), (-1, -1), 5),
-            ]
-        )
-    )
-    return [
-        Paragraph(f"Question {question.number} guidance continued", STYLES["heading"]),
-        Spacer(1, 3 * mm),
-        Paragraph(question.prompt, STYLES["body"]),
-        Spacer(1, 4 * mm),
-        table,
-        Spacer(1, 5 * mm),
-        Paragraph(
-            "Credit a different but valid business argument when it is developed, "
-            "applied to the case and supports the judgement reached.",
-            STYLES["body"],
-        ),
     ]
 
 
