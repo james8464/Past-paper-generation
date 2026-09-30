@@ -898,9 +898,14 @@ def project_applied_mcq(source: AppliedMCQSource) -> AppliedMCQProjection:
         "id": f"applied-{source.operation}",
         "marks": 1,
         "kind": "multiple_choice",
+        "prompt": prompt,
         "choices": choices,
         "authoring_context": {"selected_response_contract": contract},
     }
+    if isinstance(source, OpportunityCostSource):
+        # The model can reword the task, but these names also identify the
+        # immutable choices. Renaming only the stem makes them ambiguous.
+        item["authoring_context"]["required_prompt_terms"] = ["product X", "product Y"]
     solution = solve_selected_response(item)
     if solution is None or solution["answer"] not in choices:
         raise ValueError("applied source projection could not derive one checked key")

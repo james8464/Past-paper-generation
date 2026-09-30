@@ -337,6 +337,85 @@ def test_applied_source_mutation_reaches_rendered_candidate_text_and_key(
     assert "falls from 80 to 68 units" not in text
 
 
+@pytest.mark.parametrize(
+    "primary,secondary",
+    [("Product A", "Product B"), ("product X", "product Z"),
+     ("product Xylophone", "product Yard"), ("", "")],
+)
+def test_opportunity_cost_rejects_stem_labels_inconsistent_with_options(
+    primary, secondary
+):
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
+    item = paper.sections[0].options[0].questions[0].model_dump(mode="json")
+    assert solve_selected_response(item)["answer"] == "12 units of product Y"
+    item["prompt"] = item["prompt"].replace("product X", primary).replace(
+        "product Y", secondary
+    )
+    with pytest.raises(ValueError, match="product labels"):
+        solve_selected_response(item)
+
+
+def test_opportunity_cost_accepts_case_and_whitespace_variants_of_public_labels():
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
+    item = paper.sections[0].options[0].questions[0].model_dump(mode="json")
+    item["prompt"] = item["prompt"].replace("product X", "PRODUCT  X").replace(
+        "product Y", "Product\nY"
+    )
+    assert solve_selected_response(item)["answer"] == "12 units of product Y"
+
+
+@pytest.mark.parametrize("primary,secondary,error", [
+    ("Product A", "Product B", "required source or visual term"),
+    ("Product Xylophone", "Product Yard", "product labels"),
+])
+def test_ai_parser_rejects_product_rename_before_model_review(primary, secondary, error):
+    from types import SimpleNamespace
+
+    from Backend.Core.ai_assessment import GenerationPolicy, _candidate_question, _tasks
+
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
+    task = _tasks(paper, {topic.id: topic for topic in SYLLABUS.topics})[0]
+    raw = {"prompt": (
+        f"A production switch increases {primary} output from 20 to 30 units, "
+        f"while {secondary} falls from 80 to 68 units. Which option gives the "
+        "output forgone for the extra 10 units?"
+    )}
+    with pytest.raises(ValueError, match=error):
+        _candidate_question(
+            task, raw, client=SimpleNamespace(provider="test", model="test"),
+            policy=GenerationPolicy(),
+        )
+
+
+def test_independent_validation_rejects_product_rename_without_calling_model():
+    from Backend.Core.ai_assessment import _independently_validate_candidate, _tasks
+
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
+    task = _tasks(paper, {topic.id: topic for topic in SYLLABUS.topics})[0]
+    candidate = task.question.model_copy(update={
+        "prompt": task.question.prompt.replace("product X", "Product A").replace(
+            "product Y", "Product B"
+        )
+    })
+    with pytest.raises(ValueError, match="product labels"):
+        _independently_validate_candidate(task, candidate, client=None)
+
+
+def test_checkpoint_replay_rejects_product_rename():
+    from Backend.Core.ai_assessment import _tasks, _validate_checkpoint_item
+
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
+    task = _tasks(paper, {topic.id: topic for topic in SYLLABUS.topics})[0]
+    _validate_checkpoint_item(task, task.question)
+    candidate = task.question.model_copy(update={
+        "prompt": task.question.prompt.replace("product X", "Product A").replace(
+            "product Y", "Product B"
+        )
+    })
+    with pytest.raises(ValueError, match="product labels"):
+        _validate_checkpoint_item(task, candidate)
+
+
 def test_missing_typed_applied_source_prevents_candidate_artifact(monkeypatch) -> None:
     monkeypatch.delitem(aqa_generator.APPLIED_SOURCE_BY_NUMBER, 1)
     with pytest.raises(ValueError, match="missing applied candidate source"):

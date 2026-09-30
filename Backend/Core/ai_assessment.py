@@ -48,6 +48,7 @@ from Backend.Core.reference_demand import (
     ReferenceDemandProfile,
     build_item_demand_target,
 )
+from Backend.Core.subjects.selected_response import solve_selected_response
 
 LOGGER = logging.getLogger(__name__)
 ASSESSMENT_REVIEW_VERSION = "assessment-review-v3-source-scope"
@@ -476,6 +477,8 @@ def _validate_checkpoint_item(
         or candidate.structured_mark_scheme != original.structured_mark_scheme
     ):
         raise ValueError(f"checkpoint item {task.id} changed verified marking guidance")
+    if selected_response:
+        solve_selected_response(candidate.model_dump(mode="json"))
     if not candidate.prompt.strip() or not candidate.structured_mark_scheme:
         raise ValueError(f"checkpoint item {task.id} is incomplete")
     _validate_prompt_length(original, candidate.prompt)
@@ -1034,6 +1037,10 @@ def _candidate_question(
             "provenance": f"ai:{provider}:{model}",
         }
     )
+    if has_selected_response_contract:
+        # Reject invalid public stems inside the repair loop, before review or
+        # checkpointing, even when optional independent model solving is off.
+        solve_selected_response(candidate.model_dump(mode="json"))
     _validate_release_mark_scheme(candidate)
     return candidate
 
