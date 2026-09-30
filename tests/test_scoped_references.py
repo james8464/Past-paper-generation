@@ -90,3 +90,22 @@ def test_query_punctuation_is_data_not_fts_syntax(tmp_path):
             )[0].source_id
             == "fr"
         )
+
+
+def test_read_only_retrieval_does_not_change_the_catalogue_bytes(tmp_path):
+    from Backend.Core.education_context import NSI_CONTEXT
+    from Backend.Core.scoped_references import ReferenceIndex
+
+    path = tmp_path / "references.sqlite"
+    with ReferenceIndex(path) as index:
+        document, text = source()
+        index.add(document, text, [(1, text)])
+    before = sha256(path.read_bytes()).hexdigest()
+
+    with ReferenceIndex(path, read_only=True) as index:
+        hits = index.retrieve(
+            NSI_CONTEXT, "nsi-2019", "arbres parcours", categories=("programme",)
+        )
+
+    assert [hit.source_id for hit in hits] == ["fr"]
+    assert sha256(path.read_bytes()).hexdigest() == before

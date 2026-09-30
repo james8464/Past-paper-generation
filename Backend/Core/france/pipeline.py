@@ -256,7 +256,7 @@ def generate_assessment(
         raise ValueError("Historique d'originalité invalide ou trop volumineux")
     tasks = _tasks_for_seed(seed)
     references = []
-    with ReferenceIndex(index_path) as index:
+    with ReferenceIndex(index_path, read_only=True) as index:
         for task in tasks:
             hits = []
             for category in ("programme", "official_paper"):

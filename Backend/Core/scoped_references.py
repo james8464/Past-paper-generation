@@ -78,13 +78,20 @@ class ReferenceHit:
 
 
 class ReferenceIndex:
-    def __init__(self, path: Path):
-        self.connection = sqlite3.connect(path)
+    def __init__(self, path: Path, *, read_only: bool = False):
+        self.connection = (
+            sqlite3.connect(f"{path.resolve().as_uri()}?mode=ro", uri=True)
+            if read_only
+            else sqlite3.connect(path)
+        )
         self.connection.execute("PRAGMA foreign_keys=ON")
         version = self.connection.execute("PRAGMA user_version").fetchone()[0]
-        if version not in (0, 1):
+        supported_versions = (1,) if read_only else (0, 1)
+        if version not in supported_versions:
             self.connection.close()
             raise ValueError("Unsupported reference index version")
+        if read_only:
+            return
         self.connection.executescript("""
             CREATE TABLE IF NOT EXISTS sources (
                 id TEXT PRIMARY KEY, scope TEXT NOT NULL, curriculum TEXT NOT NULL,

@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1790778886.6670074,
-    "ast_hash": "8b1b64b0777d18f22a1ada5b46fb8cce",
+    "mtime": 1790789706.04142,
+    "ast_hash": "ce64216be0974706ed75ddf9c5654cd2",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
@@ -400,9 +400,9 @@
     "semantic_hash": "88f7e50edceca0a597ada761e3c99a45"
   },
   "Backend/Core/scoped_references.py": {
-    "mtime": 1790774644.3797762,
-    "ast_hash": "2057c97c3ea45bdb9e9b464c8191cfd2",
-    "semantic_hash": "2057c97c3ea45bdb9e9b464c8191cfd2"
+    "mtime": 1790789706.0407748,
+    "ast_hash": "3e3c501eb3484e015dec26332a10f55f",
+    "semantic_hash": ""
   },
   "Backend/Core/subject_contracts.py": {
     "mtime": 1790616627.8056552,
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1790784550.9212341,
-    "ast_hash": "11ae996895659e2a6e609d3111cdea87",
+    "mtime": 1790789804.0232863,
+    "ast_hash": "25c54f718a8ff64672084869c9408b20",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1780,8 +1780,8 @@
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1790778670.7491148,
-    "ast_hash": "60beeede431e6263a5163c3b6d9cc0c3",
+    "mtime": 1790789657.4895844,
+    "ast_hash": "38ea65df1ab68c775178a8a852944155",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -1900,9 +1900,9 @@
     "semantic_hash": "eb07f67fea1826e9830cc755a903fd66"
   },
   "tests/test_scoped_references.py": {
-    "mtime": 1790774644.380827,
-    "ast_hash": "f791985724f3a4ac71f9d607c7a81980",
-    "semantic_hash": "f791985724f3a4ac71f9d607c7a81980"
+    "mtime": 1790789626.374958,
+    "ast_hash": "4ff9622e555092ff9ab79db849a9ce6b",
+    "semantic_hash": ""
   },
   "tests/test_shared_numeric_integrity.py": {
     "mtime": 1790616627.904769,

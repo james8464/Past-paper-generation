@@ -163,10 +163,12 @@ def test_generation_is_french_scoped_and_resume_does_not_repeat_model_work(tmp_p
 
     index = tmp_path / "sources.sqlite"
     make_index(index)
+    index_digest = sha256(index.read_bytes()).hexdigest()
     client = FrenchClient()
     package = generate_assessment(
         index_path=index, client=client, seed=5, checkpoint=tmp_path / "checkpoint.json"
     )
+    assert sha256(index.read_bytes()).hexdigest() == index_digest
     assert len(package["exercises"]) == 3
     assert package["education_context"] == asdict(NSI_CONTEXT)
     assert package["teacher_review"]["state"] == "not_run"
