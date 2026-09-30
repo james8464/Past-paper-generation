@@ -57,6 +57,20 @@ def test_blueprint_contains_structured_mcq_and_mark_scheme_content():
     assert "(4 marks)" not in first.prompt
 
 
+def test_ppf_stimulus_is_limited_to_ppf_compatible_topics() -> None:
+    syllabus = load_syllabus(Path("data/syllabus_seed.json"))
+    config = load_builtin_paper_config("paper_2")
+
+    for seed in (26092859, *range(40)):
+        blueprint = build_paper_blueprint(config, syllabus, seed=seed)
+        ppf_questions = [
+            question
+            for question in blueprint.questions
+            if question.stimulus_kind == "production_possibility_frontier"
+        ]
+        assert all(question.topic_id in {"1.1", "2.5"} for question in ppf_questions)
+
+
 def test_paper_3_uses_coherent_synoptic_case_studies():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_3")

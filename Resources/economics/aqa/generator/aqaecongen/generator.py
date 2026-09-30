@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import random
+import re
 import secrets
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Literal
@@ -8,12 +9,15 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict
 
 from aqaecongen.configs import PAPER3_VISUAL_QUESTION_NUMBERS
+from aqaecongen.level_policy import level_guidance
 from aqaecongen.syllabus import Syllabus, Topic
+from aqaecongen.written_tasks import WrittenTaskProfile, profile_for
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
     GeneratedQuestion,
     GeneratedSection,
+    MarkSchemePoint,
     PaperRule,
     QuestionRule,
     resolve_question_rules,
@@ -138,6 +142,22 @@ ECONOMIES = [
     "Ilyria",
     "Junora",
 ]
+WRITTEN_CONTEXTS_BY_TOPIC = {
+    "4.1.1": ECONOMIES,
+    "4.1.2": [
+        "retail financial services",
+        "mobile payment platforms",
+        "private dental care",
+        "household energy contracts",
+    ],
+    "4.1.3": INDUSTRIES,
+    "4.1.4": INDUSTRIES,
+    "4.1.5": INDUSTRIES,
+    "4.1.6": INDUSTRIES,
+    "4.1.7": ECONOMIES,
+    "4.1.8": INDUSTRIES,
+    **{f"4.2.{index}": ECONOMIES for index in range(1, 7)},
+}
 MCQ_FACTS = {
     "4.1.1": (
         "Which change represents an increase in opportunity cost?",
@@ -345,7 +365,8 @@ def _build_written_option(
     rng: random.Random,
 ) -> tuple[GeneratedOption, int]:
     is_data = section_id == "A" or rule.id == "paper_3"
-    context_name = rng.choice(INDUSTRIES if topic.paper == 1 else ECONOMIES)
+    context_name = rng.choice(WRITTEN_CONTEXTS_BY_TOPIC[topic.id])
+    task_profile = profile_for(topic.id)
     start = rng.randint(72, 138)
     changes = [rng.randint(-9, 14) for _ in range(4)]
     values = [float(start)]
@@ -365,13 +386,14 @@ def _build_written_option(
             values,
             rng,
             expanded=rule.id == "paper_3",
+            task_profile=task_profile,
         )
         if is_data
         else [
             (
-                f"A fictional case in {context_name} illustrates how {rng.choice(topic.points)} "
-                f"can affect firms, households and wider economic outcomes. Recent evidence "
-                "suggests that the size and distribution of these effects remain contested."
+                f"A fictional case in {context_name} provides the following evidence: "
+                f"{task_profile.source_evidence} The analytical and policy implications "
+                "depend on the assumptions identified in the questions."
             )
         ]
     )
@@ -389,6 +411,7 @@ def _build_written_option(
                 rng,
                 is_data=is_data,
                 paper_id=rule.id,
+                task_profile=task_profile,
             )
         )
     return (
@@ -416,8 +439,9 @@ def _written_question(
     *,
     is_data: bool,
     paper_id: str,
+    task_profile: WrittenTaskProfile,
 ) -> GeneratedQuestion:
-    point = rng.choice(topic.points)
+    point = task_profile.focus_terms[0]
     change = ((values[-1] - values[0]) / values[0]) * 100
     context = (
         (
@@ -443,66 +467,65 @@ def _written_question(
         ]
     elif rule.kind == "data_interpretation":
         prompt = (
-            "Assess the extent to which the data in the source insert suggest "
-            f"that outcomes in {context_name} have improved."
+            "Assess the extent to which the data in the source insert support the "
+            f"claim that {task_profile.data_mechanism} in {context_name}."
         )
         scheme = [
-            "Accurate comparison of at least two relevant indicators from the source insert.",
-            "Recognition that the indicators measure different dimensions and may conflict.",
-            "A supported judgement about the extent of improvement and limits of the data.",
+            f"Define the relevant concept: {task_profile.focus_terms[0]}.",
+            "Compare at least two relevant indicators from the source insert, quoting values and directions accurately.",
+            "Analyse why the indicators measure different dimensions and may give conflicting signals.",
+            f"Reach a supported judgement about whether {task_profile.data_mechanism}.",
         ]
     elif rule.marks <= 10:
         if rule.kind == "diagram_analysis":
+            diagram = task_profile.diagram_contract
             prompt = (
-                f"With the help of a correctly labelled diagram and using {context}, explain "
-                f"one way in which {point} could affect {context_name}."
+                "With the help of a correctly labelled diagram and using "
+                f"{context}, explain how {diagram['cause']} is likely to affect "
+                f"{task_profile.focus_terms[0]} in {context_name}."
             )
+            scheme = [
+                f"Define and apply {point} to the evidence about {context_name}.",
+                f"Show {diagram['effect']}.",
+                "Award the top level only when axes, curves, both equilibria and the direction of change are accurate and used in the explanation.",
+                "Develop a causal chain from the stated change through the diagram to the final economic effect.",
+            ]
         else:
             prompt = (
-                f"Using {context}, explain one way in which {point} could affect {context_name}."
+                f"Using {context}, explain how {task_profile.data_mechanism} in {context_name}."
             )
-        scheme = [
-            f"Knowledge and application of {point}.",
-            f"A logical chain connecting the change to an outcome in {context_name}.",
-            (
-                "A correctly labelled diagram with the relevant shift and new equilibrium."
-                if rule.kind == "diagram_analysis"
-                else "Accurate use of the supplied evidence."
-            ),
-        ]
+            scheme = [
+                f"Define {point} accurately.",
+                f"Use a precise item of evidence about {context_name} rather than merely naming the context.",
+                f"Develop the economic mechanism: {task_profile.data_mechanism}.",
+            ]
     elif rule.marks <= 15:
-        prompt = (
-            f"Explain how {point} can influence outcomes associated with {topic.title.lower()}."
-        )
+        prompt = task_profile.analysis_prompt
         scheme = [
-            f"Accurate knowledge of {topic.title}.",
-            f"Developed analysis of at least two channels involving {point}.",
-            "Relevant diagram, calculation or contextual example where appropriate.",
+            *task_profile.analysis_points,
+            "Credit a relevant diagram or numerical example only when it advances the analytical chain.",
         ]
     elif rule.command_word == "Recommend":
         prompt = (
             f"After considering Extract D and the evidence in Extracts A, B and C, would you "
-            f"recommend {policy_name(topic, rng)} to improve outcomes in {context_name}? "
+            f"recommend {task_profile.recommendation} for {context_name}? "
             "Justify your recommendation."
         )
         scheme = [
-            f"Accurate knowledge and application of {topic.title}.",
-            "Developed analysis of the proposed intervention and at least one realistic alternative.",
-            "Evaluation of evidence quality, opportunity cost, unintended effects and time period.",
-            "A justified recommendation that follows from the preceding analysis.",
+            *task_profile.evaluation_points,
+            f"A justified recommendation on {task_profile.recommendation} that follows from the preceding analysis.",
         ]
     else:
+        proposition = task_profile.evaluation_view.split(" ", 1)[1]
         prompt = (
-            f"{rule.command_word} the view that changes in {point} are the most "
-            f"effective way to improve outcomes in {context_name}. Use {context} "
-            "and your economic knowledge."
+            f"{rule.command_word} {proposition} Use {context} and your economic knowledge."
         )
         scheme = [
-            f"Accurate knowledge and application of {topic.title}.",
-            f"Developed analysis of how {point} affects incentives, behaviour and outcomes.",
-            "Balanced evaluation using assumptions, time period, magnitude and alternative policies.",
-            "A supported final judgement that answers the precise proposition.",
+            *task_profile.evaluation_points,
+            "A supported final judgement that answers the precise proposition in the question.",
         ]
+    if rule.marks in {9, 10, 15, 25}:
+        scheme.extend(level_guidance(rule.marks))
     if paper_id == "paper_3":
         scheme.extend(
             _paper_three_indicative_content(
@@ -511,8 +534,72 @@ def _written_question(
                 identifier,
                 values,
                 point,
+                include_evaluation=rule.marks >= 20,
             )
         )
+    matched_focus_terms = [
+        term for term in task_profile.focus_terms if term.casefold() in prompt.casefold()
+    ]
+    if not matched_focus_terms and rule.kind == "diagram_analysis":
+        matched_focus_terms = [task_profile.diagram_contract["cause"]]
+    if not matched_focus_terms and rule.kind in {"data_response", "data_interpretation"}:
+        matched_focus_terms = [task_profile.data_mechanism]
+    if not matched_focus_terms:
+        stopwords = {
+            "considering",
+            "economic",
+            "economy",
+            "explain",
+            "evaluate",
+            "discuss",
+            "recommend",
+            "relevant",
+        }
+        matched_focus_terms = [
+            word
+            for word in re.findall(r"[A-Za-z][A-Za-z-]{6,}", prompt)
+            if word.casefold() not in stopwords
+        ][:1]
+    authoring_context = {
+        **(
+            percentage_change_context(values[0], values[-1])
+            if rule.kind == "calculation"
+            else {}
+        ),
+        **(
+            {"level_policy_id": f"aqa-economics-{rule.marks}-mark"}
+            if rule.marks in {9, 10, 15, 25}
+            else {}
+        ),
+    }
+    if rule.marks >= 4:
+        authoring_context.update(
+            {
+                "item_specific_mark_scheme": True,
+                "task_focus_terms": matched_focus_terms,
+                "required_prompt_terms": matched_focus_terms,
+                "observable_mark_points": list(scheme),
+            }
+        )
+    if rule.kind == "diagram_analysis":
+        authoring_context.update(
+            {
+                "written_diagram_contract": dict(task_profile.diagram_contract),
+                "required_prompt_terms": [
+                    task_profile.diagram_contract["cause"],
+                    "diagram",
+                ],
+            }
+        )
+    structured_mark_scheme = (
+        _item_specific_scheme(scheme, rule)
+        if rule.marks >= 4
+        else []
+    )
+    if structured_mark_scheme:
+        authoring_context["observable_mark_points"] = [
+            point.text for point in structured_mark_scheme if point.marks > 0
+        ]
     return GeneratedQuestion(
         rule_id=rule.id,
         number=number,
@@ -522,10 +609,8 @@ def _written_question(
         topic_id=topic.id,
         prompt=prompt,
         mark_scheme=scheme,
-        authoring_context=(
-            percentage_change_context(values[0], values[-1])
-            if rule.kind == "calculation" else {}
-        ),
+        structured_mark_scheme=structured_mark_scheme,
+        authoring_context=authoring_context,
         assessment_objectives=dict(rule.assessment_objectives),
         intended_demand=rule.intended_demand or "standard",
         expected_minutes=rule.expected_minutes,
@@ -534,12 +619,61 @@ def _written_question(
     )
 
 
+def _item_specific_scheme(
+    scheme: list[str],
+    rule: QuestionRule,
+) -> list[MarkSchemePoint]:
+    guidance_prefixes = (
+        "award ",
+        "credit ",
+        "do not ",
+        "level ",
+        "levels-based",
+        "marker check",
+    )
+    content_indices = [
+        index
+        for index, text in enumerate(scheme)
+        if not text.casefold().startswith(guidance_prefixes)
+    ]
+    objectives = list(rule.assessment_objectives.items())
+    if len(content_indices) < len(objectives):
+        raise ValueError(
+            f"{rule.id} has fewer item-specific marking routes than objectives"
+        )
+    allocation = {
+        content_indices[index]: (objective, marks)
+        for index, (objective, marks) in enumerate(objectives)
+    }
+    points: list[MarkSchemePoint] = []
+    for index, text in enumerate(scheme):
+        lowered = text.casefold()
+        if lowered.startswith(("level ", "levels-based")):
+            credit_type = "level"
+        elif lowered.startswith(guidance_prefixes):
+            credit_type = "guidance"
+        else:
+            credit_type = "point"
+        objective, marks = allocation.get(index, (None, 0))
+        points.append(
+            MarkSchemePoint(
+                text=text,
+                marks=marks,
+                credit_type=credit_type,
+                assessment_objective=objective,
+            )
+        )
+    return points
+
+
 def _paper_three_indicative_content(
     topic: Topic,
     context_name: str,
     identifier: int,
     values: list[float],
     focus: str,
+    *,
+    include_evaluation: bool,
 ) -> list[str]:
     start, end = values[0], values[-1]
     change = ((end - start) / start) * 100
@@ -547,7 +681,7 @@ def _paper_three_indicative_content(
     trough = min(values)
     first, second, *remaining = topic.points
     third = remaining[0] if remaining else first
-    return [
+    analysis = [
         f"Use the change in the activity index from {start:.1f} to {end:.1f}, "
         f"equivalent to {change:.1f}%, and state whether it supports the proposition.",
         f"Compare the peak of {peak:.1f} with the trough of {trough:.1f}; the path "
@@ -562,14 +696,19 @@ def _paper_three_indicative_content(
         "or welfare, identifying each intermediate step.",
         f"Develop a separate analytical route using {second}; reward it only where it "
         "adds a distinct mechanism rather than repeating the first chain.",
-        f"Consider how {third} could weaken, reinforce or delay the predicted effect in "
-        f"{context_name}.",
         "Distinguish a movement along a curve from a shift of the curve and require "
         "correct axis labels, curve labels and the direction of any change.",
         "Where an aggregate-demand and aggregate-supply diagram is used, distinguish "
         "the short-run effect on real output and the price level from long-run capacity.",
         "Where a market diagram is used, distinguish private and social costs or "
         "benefits and identify the relevant equilibrium quantity.",
+    ]
+    if not include_evaluation:
+        return analysis
+    return [
+        *analysis,
+        f"Consider how {third} could weaken, reinforce or delay the predicted effect in "
+        f"{context_name}.",
         "Test the importance of price and income elasticities; the direction of an "
         "effect may be clear while its size remains uncertain.",
         "Consider adjustment lags and expectations. Households and firms may respond "
@@ -929,107 +1068,76 @@ def _stimulus(
     rng: random.Random,
     *,
     expanded: bool,
+    task_profile: WrittenTaskProfile,
 ) -> list[str]:
-    first, second = rng.sample(topic.points, 2)
-    share = rng.randint(18, 72)
-    policy = rng.choice(
-        ["a targeted tax change", "new competition rules", "a training subsidy", "an interest-rate change"]
-    )
-    depth = (
-        [
-            _case_depth(rng, context_name, topic, focus)
-            for focus in (first, second, policy, f"the reliability of evidence about {first}")
-        ]
-        if expanded
-        else [
-            _case_depth(rng, context_name, topic, first, sentence_count=2),
-            _case_depth(rng, context_name, topic, second, sentence_count=2),
-            "",
-            "",
-        ]
-    )
-    compact_c = ""
-    compact_d = ""
-    if not expanded:
-        sample_size = rng.randrange(900, 4200, 50)
-        support = rng.randint(38, 76)
-        expected_cost = rng.randint(2, 9)
-        adjustment_years = rng.randint(2, 7)
-        compact_c = (
-            f" A survey of {sample_size:,} households and firms found that {support}% "
-            f"supported the proposal, although respondents expected compliance costs to "
-            f"rise by {expected_cost}%. A pilot scheme reported higher participation and "
-            "investment, but the participating area was not randomly selected. One forecast "
-            f"assumed that behaviour would adjust over {adjustment_years} years; another "
-            "assumed an immediate response and estimated a much larger effect. The measure "
-            "would also require public spending that could otherwise support infrastructure, "
-            "healthcare or education."
+    sample_size = rng.randrange(900, 4200, 50)
+    support = rng.randint(38, 76)
+    expected_cost = rng.randint(2, 9)
+    adjustment_years = rng.randint(2, 7)
+    depth_count = 6 if expanded else 2
+    depth = [
+        _evidence_depth(
+            rng,
+            context_name,
+            focus,
+            sentence_count=depth_count,
         )
-        compact_d = (
-            " The headline index is a base-year measure rather than an absolute value and "
-            "does not distinguish nominal from real changes. The sample excludes informal "
-            "activity and may under-represent low-income households and small firms. "
-            "Correlation between the policy and the outcome does not establish causation: "
-            "exchange rates, energy prices and conditions in trading partners also changed. "
-            "Some benefits may arise only in the long run, while adjustment costs are "
-            "concentrated in the short run. Economists therefore disagree about the size, "
-            "distribution and durability of the predicted effects."
+        for focus in (
+            task_profile.focus_terms[0],
+            task_profile.data_mechanism,
+            task_profile.recommendation,
+            "the reliability of the evidence",
         )
+    ]
     return [
         (
-            f"Extract A: Activity in {context_name} changed "
-            f"from an index of {values[0]:.1f} to {values[-1]:.1f}. Analysts linked the movement "
-            f"to {first} and changing household and firm incentives. The path was uneven: the "
-            f"index reached {max(values):.1f} at its highest point and {min(values):.1f} at its "
-            "lowest. This suggests that a single annual comparison may conceal important changes "
-            "in capacity, confidence and the distribution of gains. Survey respondents also "
-            "reported different experiences according to income, location and access to finance. "
+            f"Extract A: Evidence for case {identifier}. The activity index for {context_name} "
+            f"changed from {values[0]:.1f} in 2024 to {values[-1]:.1f} in 2028. It reached "
+            f"{max(values):.1f} at its highest point and {min(values):.1f} at its lowest. "
+            f"The case concerns {topic.title.lower()}. {task_profile.source_evidence} "
+            "The index records relative activity rather than welfare and does not show how "
+            "the change is distributed between groups. "
             + depth[0]
         ),
         (
-            f"Extract B: The largest participants account for {share}% of measured activity. "
-            f"Some economists argue that {second} explains the observed outcome; others emphasise "
-            "adjustment lags, imperfect information and differences between short-run and long-run "
-            "effects. New entrants face uncertain demand and must make decisions before complete "
-            "information is available. Established participants may benefit from scale, reputation "
-            "or access to distribution networks. These conditions affect prices, output, employment "
-            "and the extent to which changes in efficiency are passed on to households. "
+            f"Extract B: Economic mechanism. Economists investigating {context_name} propose "
+            f"the following chain: {task_profile.data_mechanism}. This claim must be supported "
+            "by the direction and scale of the data, not by correlation alone. Its strength "
+            "depends on the responses of the relevant households, firms, workers or government, "
+            "and on whether the adjustment occurs in the short run or the long run. "
             + depth[1]
         ),
         (
-            f"Extract C: Policymakers are considering {policy}. The likely effects depend on "
-            "elasticities, the response of expectations, administrative costs and conditions elsewhere "
-            "in the economy. Supporters expect the measure to change incentives and improve long-run "
-            "productive capacity. Critics argue that resources could be diverted from more effective "
-            "uses and that firms or consumers may alter their behaviour in ways that reduce the "
-            "policy's impact. Distributional effects may differ from the effect on total output. "
-            + compact_c
+            f"Extract C: Policy proposal. Policymakers are considering {task_profile.recommendation}. "
+            f"A survey of {sample_size:,} affected people and organisations found that {support}% "
+            f"supported the proposal, although respondents expected implementation costs to rise "
+            f"by {expected_cost}%. One forecast assumed adjustment over {adjustment_years} years; "
+            "another assumed an immediate response and estimated a larger effect. The proposal "
+            "uses finance and administrative capacity that cannot be used for other priorities. "
             + depth[2]
         ),
         (
-            f"Extract D: Reasons for caution. Evidence about {context_name} is incomplete and the "
-            f"importance of {first} cannot be isolated from {second}. The index does not measure "
-            "quality, unpaid activity or wider effects on wellbeing. Outcomes may also reflect global "
-            "conditions rather than domestic policy. A judgement should therefore compare realistic "
-            "alternatives, consider opportunity cost, distinguish short-run adjustment from long-run "
-            "effects and explain who gains and who bears the cost. "
-            + compact_d
+            f"Extract D: Reasons for caution. The evidence for {context_name} is incomplete. "
+            "The headline index is a base-year measure, not an absolute level, and may conceal "
+            "differences between nominal and real changes or between totals and per-person values. "
+            "The sample may omit informal activity and under-represent some affected groups. "
+            "Other economic changes occurred at the same time, so the observed association does "
+            "not by itself establish causation. A judgement should compare realistic alternatives, "
+            "opportunity costs, time periods and distributional effects. "
             + depth[3]
         ),
     ]
 
 
-def _case_depth(
+def _evidence_depth(
     rng: random.Random,
     context_name: str,
-    topic: Topic,
     focus: str,
     *,
-    sentence_count: int = 7,
+    sentence_count: int,
 ) -> str:
     sample_size = rng.randrange(850, 4200, 50)
     household_share = rng.randint(24, 68)
-    firm_share = rng.randint(12, 55)
     lag = rng.randint(2, 8)
     region = rng.choice(["northern region", "coastal region", "capital region", "rural region"])
     sentences = [
@@ -1037,10 +1145,7 @@ def _case_depth(
             f"A survey of {sample_size:,} households found that {household_share}% had noticed "
             f"a change connected with {focus}, although reported experiences varied considerably."
         ),
-        (
-            f"Businesses in the {region} were more cautious: only {firm_share}% expected the "
-            "change to persist, and several reported constraints on investment or recruitment."
-        ),
+        f"Evidence from the {region} differed from the national average, which may limit generalisation.",
         (
             f"One forecast assumed an adjustment period of {lag} years, but a second forecast "
             "used faster behavioural responses and produced a substantially different result."
@@ -1054,16 +1159,16 @@ def _case_depth(
             "response to other changes taking place at the same time."
         ),
         (
-            "Some benefits are not recorded in market transactions, while some costs fall on "
-            "third parties and are therefore omitted from private financial data."
+            "Some relevant benefits or costs are not recorded in market transactions and are "
+            "therefore omitted from the headline data."
         ),
         (
             "The estimates are sensitive to the chosen base year, the treatment of inflation "
             "and whether outcomes are measured in total or on a per-person basis."
         ),
         (
-            f"A small pilot scheme linked to {rng.choice(topic.points)} produced an early improvement, "
-            "but the participating area was not randomly selected and may not be representative."
+            f"A small pilot linked to {focus} produced an early change, but its participants "
+            "were not randomly selected and may not be representative."
         ),
         (
             "Expectations may change before a policy is introduced, making it difficult to separate "

@@ -71,6 +71,50 @@ def solve_accounting_calculation(item: dict[str, Any]) -> dict[str, Any] | None:
     return solution
 
 
+def derive_accounting_open_response_context(
+    item: dict[str, Any],
+) -> dict[str, Any] | None:
+    """Derive prior-question figures for an open response from public inputs.
+
+    This deliberately calls the same source-only arithmetic used for closed
+    accounting tasks. It never reads a draft scheme or ``verified_answers``.
+    """
+
+    if item.get("rule_id") != "company_adjustment":
+        return None
+    context = item.get("authoring_context")
+    if not isinstance(context, dict):
+        raise ValueError("company adjustment requires an authoring context")
+    references = context.get("referenced_question_data")
+    if not isinstance(references, dict):
+        raise ValueError("company adjustment requires referenced question data")
+    statement = references.get("company_statement")
+    if not isinstance(statement, dict):
+        raise ValueError("company adjustment requires the company statement inputs")
+    public_context = {
+        key: statement[key]
+        for key in ("source_data", "adjustment_source_data", "adjustment_policy")
+        if key in statement
+    }
+    calculation = solve_accounting_calculation(
+        {
+            "rule_id": "company_statement",
+            "authoring_context": {
+                **public_context,
+                "preserve_prompt": True,
+                "preserve_mark_scheme": True,
+            },
+        }
+    )
+    if calculation is None:
+        raise ValueError("company adjustment source calculation is incomplete")
+    return {
+        "source": "deterministic-candidate-inputs",
+        "numeric_results": calculation["numeric_results"],
+        "steps": calculation["steps"],
+    }
+
+
 MANAGEMENT_INPUT_UNITS = {
     "contribution": {
         "units_sold": "units",

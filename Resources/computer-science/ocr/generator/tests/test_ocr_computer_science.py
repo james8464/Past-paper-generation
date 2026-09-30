@@ -343,6 +343,24 @@ def test_every_question_has_board_specific_context_and_marking() -> None:
         )
 
 
+def test_contextual_analysis_items_record_analysis_not_the_surface_command() -> None:
+    paper = build_paper(RULES["paper_2"], SYLLABUS, 26092853)
+    analysis_items = [
+        question
+        for section in paper.sections
+        for option in section.options
+        for question in option.questions
+        if question.kind == "analysis"
+        and question.assessment_objectives.get("AO2", 0) > 0
+    ]
+
+    assert analysis_items
+    assert all(
+        question.authoring_context["task_operation"] == "analyse"
+        for question in analysis_items
+    )
+
+
 def test_programming_items_allow_reviewed_code_literals() -> None:
     paper = build_paper(RULES["paper_2"], SYLLABUS, 26080118)
     programming = next(

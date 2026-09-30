@@ -1,7 +1,7 @@
 import random
 
 import pytest
-from cspapergen.generator import build_paper1_blueprint
+from cspapergen.generator import build_paper1_blueprint, build_topic_question_bank
 from cspapergen.ollama_client import _part_solver_item
 from cspapergen.question_bank import QUESTION_STYLES, build_question
 from cspapergen.syllabus import load_syllabus
@@ -151,6 +151,9 @@ def test_paper1_matrix_keys_do_not_reveal_which_cells_contain_one():
         for r, row in enumerate(rows, 1)
         for c, value in enumerate(row, 1)
     }
+    assert "complete every cell" in part.prompt.casefold()
+    assert "1 for an edge and 0 otherwise" in part.prompt.casefold()
+    assert "record only" not in part.prompt.casefold()
     assert set(part.response_slots) == set(answers)
     assert reconcile_solution(
         solve(question, part, answers), part.marking.model_dump()
@@ -158,6 +161,45 @@ def test_paper1_matrix_keys_do_not_reveal_which_cells_contain_one():
     assert not reconcile_solution(
         solve(question, part, {**answers, "r1c2": "0"}), part.marking.model_dump()
     ).passed
+
+
+def test_graph_matrix_vectors_accept_clear_space_separated_cells_only() -> None:
+    bank = build_topic_question_bank(load_syllabus(), topic_id="4.2", seed=26092850)
+    question = bank.questions[3]
+    part = question.parts[2]
+    spaced = {"row-E": "0 0 0 0 0", "column-E": "0 0 0 0 0"}
+    assert reconcile_solution(
+        solve(question, part, spaced), part.marking.model_dump()
+    ).passed
+    for wrong in (
+        {**spaced, "row-E": "0 0 0 0"},
+        {**spaced, "column-E": "0 0 1 0 0"},
+    ):
+        assert not reconcile_solution(
+            solve(question, part, wrong), part.marking.model_dump()
+        ).passed
+
+
+def test_functional_list_trace_is_derived_without_model_arithmetic() -> None:
+    bank = build_topic_question_bank(load_syllabus(), topic_id="4.12", seed=26092852)
+    question = bank.questions[0]
+    part = question.parts[0]
+
+    class NoModelArithmetic:
+        def generate_json(self, _prompt):
+            raise AssertionError("functional list trace must be source-derived")
+
+    solution = IndependentSolver(NoModelArithmetic()).solve(
+        _part_solver_item(question, part), []
+    )
+    assert solution.solution_source == "deterministic-candidate-inputs"
+    assert solution.answer_slots == {
+        "filtered-values": "[8, 9, 6]",
+        "mapped-values": "[16, 18, 12]",
+        "total-values": "23",
+        "total-mapped": "46",
+    }
+    assert reconcile_solution(solution, part.marking.model_dump()).passed
 
 
 def test_truth_input_combination_preserves_all_valid_rows_without_mixing_them():

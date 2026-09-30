@@ -178,6 +178,55 @@ def test_written_references_match_rendered_figure() -> None:
     assert any("Figure 1" in prompt for prompt in prompts)
 
 
+def test_paper_one_comparison_uses_the_same_named_figure_as_its_scheme() -> None:
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 26092855)
+    option = paper.sections[0].options[0]
+    calculation = next(item for item in option.questions if item.number == "1(c)(i)")
+    question = next(item for item in option.questions if item.number == "1(c)(ii)")
+
+    assert option.chart_title.startswith("Figure 1:")
+    assert "Figure 1" in calculation.prompt
+    assert "extract" not in calculation.prompt.casefold()
+    assert all(
+        str(value) in " ".join(calculation.mark_scheme)
+        for value in (option.chart_values[0], option.chart_values[-1])
+    )
+    assert "Figure 1" in question.prompt
+    assert option.chart_labels[0] in question.prompt
+    assert option.chart_labels[-1] in question.prompt
+    assert "extract" not in question.prompt.casefold()
+    assert len(question.authoring_context["observable_mark_points"]) == question.marks
+    assert all(
+        str(value) in " ".join(question.mark_scheme)
+        for value in (option.chart_values[0], option.chart_values[-1])
+    )
+
+
+def test_paper_three_comparisons_bind_named_series_extract_and_credit() -> None:
+    paper = build_paper(RULES["paper_3"], SYLLABUS, 26092857)
+    option = paper.sections[1].options[0]
+
+    for question in (
+        item
+        for item in option.questions
+        if item.rule_id in {"extract_2_compare", "extract_3_compare"}
+    ):
+        figure = question.authoring_context["figure"]
+        primary, comparison = figure["series"]
+        extract_text = question.authoring_context["extract_text"]
+        scheme = " ".join(question.mark_scheme)
+
+        assert primary["label"].casefold() in question.prompt.casefold()
+        assert comparison["label"].casefold() in question.prompt.casefold()
+        assert primary["label"].casefold() in extract_text.casefold()
+        assert comparison["label"].casefold() in extract_text.casefold()
+        assert primary["label"] in scheme
+        assert comparison["label"] in scheme
+        assert "relate them" not in question.prompt.casefold()
+        assert "accurate knowledge of the global context" not in scheme.casefold()
+        assert len(question.authoring_context["observable_mark_points"]) == question.marks
+
+
 def test_relationship_questions_align_knowledge_and_application_marks() -> None:
     paper = build_paper(RULES["paper_2"], SYLLABUS, 26080120)
     questions = {

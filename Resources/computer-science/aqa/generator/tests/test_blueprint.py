@@ -14,6 +14,7 @@ from cspapergen.generator import (
 from cspapergen.ollama_client import (
     _merge_question,
     _prompt,
+    _validate_ai_question,
     improve_questions_with_ollama,
     review_blueprint_difficulty,
 )
@@ -725,6 +726,67 @@ def test_ai_cannot_detach_wording_from_immutable_stimulus() -> None:
     assert [part.prompt for part in candidate.parts] == [
         part.prompt for part in question.parts
     ]
+
+
+def test_compression_scenario_cannot_change_the_marking_data_type() -> None:
+    blueprint = build_paper2_blueprint(load_syllabus(), seed=26092849)
+    question = blueprint.questions[9]
+    assert "archived financial records" in question.stem
+
+    detached = _merge_question(
+        question,
+        {
+            "stem": "A legal practice stores and transmits legal documents.",
+            "parts": [],
+        },
+    )
+    with pytest.raises(ValueError, match="required scenario term"):
+        _validate_ai_question(question, detached)
+
+    retained = _merge_question(
+        question,
+        {
+            "stem": (
+                "A national archive transfers archived financial records between "
+                "secure storage sites."
+            ),
+            "parts": [],
+        },
+    )
+    _validate_ai_question(question, retained)
+
+
+def test_database_scenario_cannot_rename_immutable_entities_or_keys() -> None:
+    blueprint = build_topic_question_bank(
+        load_syllabus(), topic_id="4.10", seed=26092851
+    )
+    question = blueprint.questions[2]
+    detached = _merge_question(
+        question,
+        {
+            "stem": (
+                "A training centre links students, enrolments and modules while "
+                "recording the places reserved."
+            ),
+            "parts": [],
+        },
+    )
+    with pytest.raises(ValueError, match="required scenario term"):
+        _validate_ai_question(question, detached)
+
+    retained = _merge_question(
+        question,
+        {
+            "stem": (
+                "A conference platform stores each CLIENT using ClientID. A "
+                "REGISTRATION identified by RegistrationID belongs to one client and "
+                "records BookingDate. Each registration can reserve Places on several "
+                "WORKSHOP records identified by WorkshopID."
+            ),
+            "parts": [],
+        },
+    )
+    _validate_ai_question(question, retained)
 
 
 def test_database_question_has_exact_command_and_mark_coverage() -> None:

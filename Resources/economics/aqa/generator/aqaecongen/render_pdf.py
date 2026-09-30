@@ -27,6 +27,7 @@ from aqaecongen.configs import (
     PAPER3_MCQ_PAGE_COUNTS,
     PAPER3_VISUAL_QUESTION_NUMBERS,
 )
+from aqaecongen.level_policy import level_rows
 from Backend.Core.document_dsl import (
     AQAQuestionHeaderFactory,
     DocumentRole,
@@ -257,6 +258,7 @@ def _paper_one_two_mark_scheme_pages(
             "Section A",
             "For 9- and 25-mark responses, determine the level first and then "
             "select the mark using accuracy, application and development.",
+            tariffs=(9, 25),
         ),
     ]
     for option in context_section.options:
@@ -305,6 +307,7 @@ def _paper_one_two_mark_scheme_pages(
             "Section B",
             "Each essay carries 40 marks. Apply the 15-mark and 25-mark level "
             "descriptors independently and reward a supported economic judgement.",
+            tariffs=(15, 25),
         )
     )
     for option in essay_section.options:
@@ -328,7 +331,7 @@ def _paper_three_mark_scheme_pages(
     pages: list[list[Flowable]] = [
         _general_marking_page(),
         _mcq_key_page(mcq_section.options),
-        _levels_page(),
+        _levels_page((10, 15, 25)),
     ]
     for question, page_count in zip(questions, (3, 2, 2), strict=True):
         for segment in range(1, page_count + 1):
@@ -404,26 +407,14 @@ def _assessment_objectives_table() -> Table:
     return table
 
 
-def _levels_page() -> list[Flowable]:
-    raw_rows = [
-        ["Level", "Characteristics of the response"],
-        [
-            "Highest",
-            "Precise knowledge, sustained application, complete analytical chains "
-            "and a judgement supported by the preceding argument.",
-        ],
-        [
-            "Middle",
-            "Sound knowledge and some developed analysis; application or evaluation "
-            "may be uneven but remains relevant to the question.",
-        ],
-        [
-            "Lowest",
-            "Isolated relevant knowledge or short reasoning chains with limited "
-            "application and little supported evaluation.",
-        ],
-        ["0", "No creditworthy material."],
-    ]
+def _levels_page(tariffs: tuple[int, ...] = (9, 10, 15, 25)) -> list[Flowable]:
+    raw_rows = [["Tariff", "Bands used in this practice mark scheme"]]
+    for marks in tariffs:
+        bands = ", ".join(
+            f"Level {row.level}: {row.mark_range}"
+            for row in level_rows(marks)
+        )
+        raw_rows.append([f"{marks} marks", bands])
     rows = [
         [
             Paragraph(str(level), STYLES["scheme"]),
@@ -459,7 +450,12 @@ def _levels_page() -> list[Flowable]:
     ]
 
 
-def _section_levels_page(title: str, guidance: str) -> list[Flowable]:
+def _section_levels_page(
+    title: str,
+    guidance: str,
+    *,
+    tariffs: tuple[int, ...],
+) -> list[Flowable]:
     return [
         _section_banner(title),
         Spacer(1, 5 * mm),
@@ -467,8 +463,41 @@ def _section_levels_page(title: str, guidance: str) -> list[Flowable]:
         Spacer(1, 5 * mm),
         Paragraph(guidance, STYLES["body"]),
         Spacer(1, 6 * mm),
-        *_levels_page()[2:],
+        _level_policy_table(tariffs),
     ]
+
+
+def _level_policy_table(tariffs: tuple[int, ...]) -> Table:
+    raw_rows = [["Tariff / level", "Marks", "Characteristics of the response"]]
+    for marks in tariffs:
+        raw_rows.extend(
+            [
+                [f"{marks}-mark L{row.level}", row.mark_range, row.description]
+                for row in level_rows(marks)
+            ]
+        )
+    rows = [
+        [Paragraph(str(value), STYLES["scheme"]) for value in row]
+        for row in raw_rows
+    ]
+    table = Table(rows, colWidths=[31 * mm, 20 * mm, 114 * mm], repeatRows=1)
+    table.setStyle(
+        TableStyle(
+            [
+                ("GRID", (0, 0), (-1, -1), 0.45, colors.HexColor("#777777")),
+                ("BACKGROUND", (0, 0), (-1, 0), GREY),
+                ("FONTNAME", (0, 0), (-1, 0), FONT_BOLD),
+                ("FONTNAME", (0, 1), (-1, -1), FONT),
+                ("FONTSIZE", (0, 0), (-1, -1), 8),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("TOPPADDING", (0, 0), (-1, -1), 3.5),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 3.5),
+                ("LEFTPADDING", (0, 0), (-1, -1), 4),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+            ]
+        )
+    )
+    return table
 
 
 def _mcq_key_page(options: list[GeneratedOption]) -> list[Flowable]:
@@ -546,14 +575,22 @@ def _scheme_question_page(
             ]
         )
     if question.kind == "diagram_analysis" and segment == 2:
-        diagram = _economic_diagram(question.topic_id, question.number)
-        diagram.scale(0.68, 0.68)
-        diagram.width *= 0.68
-        diagram.height *= 0.68
+        diagram_contract = question.authoring_context.get(
+            "written_diagram_contract", {}
+        )
+        diagram = _economic_diagram(
+            question.topic_id,
+            question.number,
+            diagram_contract,
+        )
         answer.extend(
             [
                 Paragraph("<b>Expected diagram</b>", content_style),
                 diagram,
+                Paragraph(
+                    f"<b>Expected change:</b> {diagram_contract.get('effect', '')}",
+                    content_style,
+                ),
                 Spacer(1, 2 * mm),
             ]
         )
@@ -1169,13 +1206,69 @@ def _economic_diagram(
     )
     drawing.add(Line(x0, y0, x0, y0 + height, strokeWidth=0.8))
     drawing.add(Line(x0, y0, x0 + width, y0, strokeWidth=0.8))
+    visual = visual or {}
+    visual_kind = str(visual.get("visual_kind", ""))
+    y_axis = str(visual.get("y_axis", "Price level" if topic_id.startswith("4.2") else "Price"))
+    x_axis = str(visual.get("x_axis", "Real output" if topic_id.startswith("4.2") else "Quantity"))
+
+    if visual_kind == "ppf_shift":
+        first = [x0 + 8, y0 + 101, x0 + 90, y0 + 92, x0 + 170, y0 + 68, x0 + 238, y0 + 31]
+        second = [x0 + 8, y0 + 111, x0 + 106, y0 + 105, x0 + 205, y0 + 82, x0 + 294, y0 + 31]
+        drawing.add(PolyLine(first, strokeColor=MID_GREY, strokeWidth=1.0, strokeDashArray=[4, 3]))
+        drawing.add(PolyLine(second, strokeColor=BLACK, strokeWidth=1.2))
+        drawing.add(String(x0 + 230, y0 + 34, "PPF1", fontName=FONT, fontSize=8))
+        drawing.add(String(x0 + 286, y0 + 34, "PPF2", fontName=FONT_BOLD, fontSize=8))
+        drawing.add(String(x0 - 32, y0 + height, y_axis, fontName=FONT, fontSize=8))
+        drawing.add(String(x0 + width - 52, y0 - 14, x_axis, fontName=FONT, fontSize=8))
+        return drawing
+
+    if visual_kind == "lorenz_shift":
+        equality = [x0, y0, x0 + 280, y0 + 105]
+        first = [x0, y0, x0 + 70, y0 + 7, x0 + 140, y0 + 23, x0 + 210, y0 + 52, x0 + 280, y0 + 105]
+        second = [x0, y0, x0 + 70, y0 + 17, x0 + 140, y0 + 43, x0 + 210, y0 + 72, x0 + 280, y0 + 105]
+        drawing.add(PolyLine(equality, strokeColor=MID_GREY, strokeWidth=0.9, strokeDashArray=[4, 3]))
+        drawing.add(PolyLine(first, strokeColor=MID_GREY, strokeWidth=1.0))
+        drawing.add(PolyLine(second, strokeColor=BLACK, strokeWidth=1.2))
+        drawing.add(String(x0 + 150, y0 + 70, "Line of equality", fontName=FONT, fontSize=7))
+        drawing.add(String(x0 + 175, y0 + 38, "Lorenz 1", fontName=FONT, fontSize=8))
+        drawing.add(String(x0 + 185, y0 + 62, "Lorenz 2", fontName=FONT_BOLD, fontSize=8))
+        drawing.add(String(x0 - 32, y0 + height, y_axis, fontName=FONT, fontSize=8))
+        drawing.add(String(x0 + width - 85, y0 - 14, x_axis, fontName=FONT, fontSize=8))
+        return drawing
+
+    if visual_kind == "externality":
+        msb = [x0 + 45, y0 + 102, x0 + 280, y0 + 18]
+        mpc = [x0 + 45, y0 + 16, x0 + 280, y0 + 94]
+        msc = [x0 + 45, y0 + 42, x0 + 280, y0 + 120]
+        drawing.add(PolyLine(msb, strokeColor=BLACK, strokeWidth=1.1))
+        drawing.add(PolyLine(mpc, strokeColor=MID_GREY, strokeWidth=1.0, strokeDashArray=[4, 3]))
+        drawing.add(PolyLine(msc, strokeColor=BLACK, strokeWidth=1.2))
+        drawing.add(String(x0 + 283, y0 + 12, "MSB", fontName=FONT, fontSize=8))
+        drawing.add(String(x0 + 283, y0 + 91, "MPC", fontName=FONT, fontSize=8))
+        drawing.add(String(x0 + 283, y0 + 112, "MSC", fontName=FONT_BOLD, fontSize=8))
+        social_x, market_x = x0 + 145, x0 + 183
+        drawing.add(Line(social_x, y0, social_x, y0 + 66, strokeColor=MID_GREY, strokeWidth=0.7, strokeDashArray=[3, 3]))
+        drawing.add(Line(market_x, y0, market_x, y0 + 62, strokeColor=MID_GREY, strokeWidth=0.7, strokeDashArray=[3, 3]))
+        drawing.add(String(social_x - 7, y0 - 12, "Q*", fontName=FONT_BOLD, fontSize=8))
+        drawing.add(String(market_x - 7, y0 - 12, "Qm", fontName=FONT, fontSize=8))
+        drawing.add(String(x0 - 44, y0 + height, y_axis, fontName=FONT, fontSize=8))
+        drawing.add(String(x0 + width - 20, y0 - 14, x_axis, fontName=FONT, fontSize=8))
+        return drawing
+
     demand = [x0 + 55, y0 + 102, x0 + 275, y0 + 16]
     supply = [x0 + 55, y0 + 16, x0 + 275, y0 + 104]
-    curve = str((visual or {}).get("curve", ""))
-    direction = str((visual or {}).get("direction", ""))
+    curve = str(visual.get("curve", ""))
+    direction = str(visual.get("direction", ""))
     aggregate = topic_id.startswith("4.2")
-    demand_name = "AD" if aggregate else "D"
-    supply_name = "SRAS" if aggregate else "S"
+    demand_name = str(visual.get("demand_label") or ("AD" if aggregate else "D"))
+    supply_name = str(visual.get("supply_label") or ("SRAS" if aggregate else "S"))
+    curve_role = (
+        "demand"
+        if curve in {"D", "AD", demand_name}
+        else "supply"
+        if curve in {"S", "SRAS", supply_name}
+        else ""
+    )
 
     if curve == "LRAS" and aggregate and direction in {"left", "right"}:
         original_x = x0 + 210
@@ -1205,9 +1298,12 @@ def _economic_diagram(
         drawing.add(String(demand[-2] - 5, demand[-1] - 10, "AD", fontName=FONT, fontSize=8))
         drawing.add(String(original_x - 12, y0 + height + 2, "LRAS1", fontName=FONT, fontSize=8))
         drawing.add(String(shifted_x - 12, y0 + height + 2, "LRAS2", fontName=FONT_BOLD, fontSize=8))
-    elif curve in {demand_name, supply_name} and direction in {"left", "right"}:
-        shifting = demand if curve == demand_name else supply
-        fixed = supply if curve == demand_name else demand
+        for label, equilibrium_x in (("E1", original_x), ("E2", shifted_x)):
+            equilibrium_y = demand[1] + (demand[3] - demand[1]) * (equilibrium_x - demand[0]) / (demand[2] - demand[0])
+            drawing.add(String(equilibrium_x + 3, equilibrium_y + 3, label, fontName=FONT_BOLD, fontSize=7))
+    elif curve_role and direction in {"left", "right"}:
+        shifting = demand if curve_role == "demand" else supply
+        fixed = supply if curve_role == "demand" else demand
         offset = 35 if direction == "right" else -35
         shifted = [
             value + offset if index % 2 == 0 else value
@@ -1224,7 +1320,8 @@ def _economic_diagram(
         )
         drawing.add(PolyLine(shifted, strokeColor=BLACK, strokeWidth=1.2))
 
-        fixed_name = supply_name if curve == demand_name else demand_name
+        fixed_name = supply_name if curve_role == "demand" else demand_name
+        shifting_name = demand_name if curve_role == "demand" else supply_name
         fixed_label_y = fixed[-1] + (3 if fixed is supply else -10)
         shifting_label_y = shifting[-1] + (3 if shifting is supply else -10)
         drawing.add(
@@ -1236,11 +1333,16 @@ def _economic_diagram(
                 fontSize=8,
             )
         )
+        base_x, base_y = x0 + 165, y0 + 59
+        shift = offset / 2
+        shifted_y = base_y + (7 if curve_role == "demand" else -7) * (1 if direction == "right" else -1)
+        drawing.add(String(base_x + 3, base_y + 3, "E1", fontName=FONT, fontSize=7))
+        drawing.add(String(base_x + shift + 3, shifted_y + 3, "E2", fontName=FONT_BOLD, fontSize=7))
         drawing.add(
             String(
                 shifting[-2] - 3,
                 shifting_label_y,
-                f"{curve}1",
+                f"{shifting_name}1",
                 fontName=FONT,
                 fontSize=8,
             )
@@ -1249,7 +1351,7 @@ def _economic_diagram(
             String(
                 shifted[-2] - 3,
                 shifting_label_y,
-                f"{curve}2",
+                f"{shifting_name}2",
                 fontName=FONT_BOLD,
                 fontSize=8,
             )
@@ -1260,10 +1362,6 @@ def _economic_diagram(
         drawing.add(String(x0 + 290, y0 + 12, demand_name, fontName=FONT, fontSize=8))
         drawing.add(String(x0 + 292, y0 + 106, supply_name, fontName=FONT, fontSize=8))
 
-    y_axis = str((visual or {}).get("y_axis", "Price level" if aggregate else "Price"))
-    x_axis = str(
-        (visual or {}).get("x_axis", "Real output" if aggregate else "Quantity")
-    )
     drawing.add(String(x0 - 32, y0 + height, y_axis, fontName=FONT, fontSize=8))
     drawing.add(String(x0 + width - 34, y0 - 14, x_axis, fontName=FONT, fontSize=8))
     return drawing

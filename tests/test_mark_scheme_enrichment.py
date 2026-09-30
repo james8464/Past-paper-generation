@@ -13,6 +13,7 @@ def question(
     marks: int,
     mark_scheme: list[str] | None = None,
     authoring_context: dict[str, object] | None = None,
+    assessment_objectives: dict[str, int] | None = None,
 ) -> GeneratedQuestion:
     return GeneratedQuestion(
         rule_id="test",
@@ -24,6 +25,7 @@ def question(
         prompt=f"{command_word} the required response.",
         mark_scheme=mark_scheme or ["Credit an accurate, fully worked answer."],
         authoring_context=authoring_context or {},
+        assessment_objectives=assessment_objectives or {},
     )
 
 
@@ -118,3 +120,40 @@ def test_enrichment_derives_observable_points_before_structured_hydration() -> N
     enriched = _enrich_question(draft, topic(), "accounting")
 
     assert enriched.authoring_context["observable_mark_points"] == expected
+
+
+def test_short_guidance_mentions_only_objectives_assessed_by_the_item() -> None:
+    enriched = _enrich_question(
+        question(
+            kind="calculation",
+            command_word="Calculate",
+            marks=2,
+            assessment_objectives={"AO2": 2},
+        ),
+        topic(),
+        "economics",
+    )
+
+    guidance = " ".join(enriched.mark_scheme)
+    assert "AO2:" in guidance
+    assert "AO1:" not in guidance
+    assert "AO3:" not in guidance
+    assert "AO4:" not in guidance
+
+
+def test_existing_level_grid_is_not_duplicated() -> None:
+    draft = question(
+        kind="extended_response",
+        command_word="Advise",
+        marks=25,
+        mark_scheme=[
+            "Item-specific indicative point.",
+            "Level 5 (21–25): fully supported.",
+            "Level 0 (0): no creditworthy material.",
+        ],
+    )
+
+    enriched = _enrich_question(draft, topic(), "accounting")
+
+    assert sum(point.startswith("Level 5") for point in enriched.mark_scheme) == 1
+    assert sum(point.startswith("Level 0") for point in enriched.mark_scheme) == 1

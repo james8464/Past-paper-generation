@@ -643,6 +643,7 @@ _STIMULUS_TOPIC_IDS = {
     "money_market_diagram": {"4.4"},
     "laffer_curve": {"4.5"},
     "poverty_trap_diagram": {"4.2", "4.3"},
+    "production_possibility_frontier": {"1.1", "2.5"},
     "index_number_chart": {"1.2.4", "2.1", "3.1", "3.3", "4.1"},
     "line_graph": {"1.2.2", "1.2.3", "1.2.4", "2.1", "2.5", "3.1", "3.3", "3.4", "3.5", "4.1", "4.2"},
     "bar_chart": {"2.1", "2.5", "3.4", "4.2"},

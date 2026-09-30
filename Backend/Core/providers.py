@@ -777,7 +777,7 @@ def _ollama_output_budget(schema: dict[str, object]) -> int:
         properties = schema.get("properties")
         parts = properties.get("parts") if isinstance(properties, dict) else None
         if isinstance(parts, dict) and parts.get("maxItems") == 0:
-            return 96
+            return 256
         if isinstance(parts, dict):
             items = parts.get("items")
             item_properties = (

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from copy import deepcopy
 from pathlib import Path
 
@@ -9,6 +10,7 @@ from aqabizgen.cli import generate_package
 from aqabizgen.configs import RULES
 from aqabizgen.financials import FinancialPosition, format_number
 from aqabizgen.generator import build_paper
+from aqabizgen.render_pdf import _cover_profile
 from aqabizgen.syllabus import load_syllabus
 from pypdf import PdfReader
 
@@ -99,6 +101,47 @@ def test_paper_one_calculations_share_source_data_with_mark_scheme() -> None:
     )
 
 
+def test_financial_position_is_balanced_from_displayed_source_values() -> None:
+    financials = FinancialPosition.from_chart_values([100, 100, 100, 100, 100])
+
+    assert financials.current_assets == 177
+    assert financials.non_current_assets == 335
+    assert financials.payables == 66
+    assert financials.non_current_liabilities == 229
+    assert financials.total_equity == 217
+    assert financials.current_assets + financials.non_current_assets == 512
+    assert (
+        financials.payables
+        + financials.non_current_liabilities
+        + financials.total_equity
+        == 512
+    )
+
+
+def test_financial_position_rejects_an_unbalanced_direct_value() -> None:
+    with pytest.raises(ValueError, match="must balance"):
+        FinancialPosition(
+            inventories=100,
+            receivables=42,
+            cash=35,
+            payables=66,
+            non_current_assets=335,
+            non_current_liabilities=229,
+            total_equity=1,
+        )
+
+
+def test_paper_one_cover_uses_candidate_section_totals() -> None:
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 26092845)
+
+    assert _cover_profile(paper).mark_rows == (
+        ("A", 15),
+        ("B", 35),
+        ("C", 25),
+        ("D", 25),
+    )
+
+
 def test_paper_two_calculations_name_the_displayed_sales_series() -> None:
     paper = build_paper(RULES["paper_2"], SYLLABUS, 123)
     calculations = [
@@ -122,6 +165,35 @@ def test_multi_seed_validity_and_uniqueness() -> None:
         validate_generated_paper(first, rule, SYLLABUS.topic_ids)
         assert first.model_dump() == same.model_dump()
         assert first.model_dump() != different.model_dump()
+
+
+def test_paper_one_essays_bind_a_comparative_decision_to_visible_evidence() -> None:
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 26092845)
+    essays = [
+        option.questions[0]
+        for section in paper.sections[2:]
+        for option in section.options
+    ]
+
+    assert len(essays) == 4
+    for question in essays:
+        context = question.authoring_context["task_context"]
+        required_prompt_terms = question.authoring_context["required_prompt_terms"]
+        required_mark_scheme_terms = question.authoring_context[
+            "required_mark_scheme_terms"
+        ]
+        prompt = question.prompt.casefold()
+        marking = " ".join(question.mark_scheme).casefold()
+
+        assert context["driver"] != context["comparator"]
+        assert " rather than " in prompt
+        assert "most important influence" not in prompt
+        assert all(term.casefold() in prompt for term in required_prompt_terms)
+        assert all(term.casefold() in marking for term in required_mark_scheme_terms)
+        assert context["market"].casefold() in marking
+        assert context["objective"].casefold() in marking
+        assert any("intermediate effect" in point.casefold() for point in question.mark_scheme)
+        assert any("comparative judgement" in point.casefold() for point in question.mark_scheme)
 
 
 def test_mcq_choices_are_distinct() -> None:
@@ -346,7 +418,7 @@ def test_generated_validation_rejects_normalized_duplicate_mcq_choices() -> None
 
 
 def test_packages_render_current_page_geometry(tmp_path: Path) -> None:
-    mark_scheme_pages = {"1": 23, "2": 20, "3": 14}
+    expected_scheme_pages = {"1": 23, "2": 20, "3": 14}
     for paper, expected_pages in (("1", 32), ("2", 24), ("3", 28)):
         paths = generate_package(
             paper=paper,
@@ -362,9 +434,59 @@ def test_packages_render_current_page_geometry(tmp_path: Path) -> None:
         expected_roles.add("assessment_package")
         assert paths.keys() == expected_roles
         assert len(PdfReader(paths["question_paper"]).pages) == expected_pages
-        assert len(PdfReader(paths["mark_scheme"]).pages) == mark_scheme_pages[paper]
+        scheme_pages = PdfReader(paths["mark_scheme"]).pages
+        assert len(scheme_pages) == expected_scheme_pages[paper]
+        scheme_text = [page.extract_text() or "" for page in scheme_pages]
+        assert all(text.strip() for text in scheme_text)
+        assert "Independent practice material" in scheme_text[-1]
         if paper == "3":
             assert len(PdfReader(paths["source_booklet"]).pages) == 8
+
+
+def test_mark_schemes_print_task_owned_credit_once(tmp_path: Path) -> None:
+    paper_one = build_paper(RULES["paper_1"], SYLLABUS, 26092845)
+    paper_one_paths = generate_package(
+        paper="1",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path / "paper-1",
+        seed=26092845,
+    )
+    paper_one_text = re.sub(
+        r"\s+",
+        " ",
+        " ".join(
+            page.extract_text() or ""
+            for page in PdfReader(paper_one_paths["mark_scheme"]).pages
+        ),
+    )
+    essays = [
+        option.questions[0]
+        for section in paper_one.sections[2:]
+        for option in section.options
+    ]
+    for question in essays:
+        context = question.authoring_context["task_context"]
+        route = (
+            f"Comparative judgement: decide between {context['driver']} and "
+            f"{context['comparator']}"
+        )
+        assert paper_one_text.count(route) == 1
+
+    paper_two_paths = generate_package(
+        paper="2",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path / "paper-2",
+        seed=123,
+    )
+    paper_two_text = re.sub(
+        r"\s+",
+        " ",
+        " ".join(
+            page.extract_text() or ""
+            for page in PdfReader(paper_two_paths["mark_scheme"]).pages
+        ),
+    )
+    assert paper_two_text.count("Accurate knowledge of Human resource management.") == 1
 
 
 def test_paper_three_reserves_blank_leaf_and_three_additional_pages(
@@ -427,12 +549,12 @@ def test_paper_one_uses_measured_question_and_answer_page_plan(tmp_path: Path) -
     assert "Independent practice material" in (pages[31].extract_text() or "")
 
     scheme_pages = PdfReader(paths["mark_scheme"]).pages
-    assert "Objective Test Answers" in (scheme_pages[4].extract_text() or "")
-    assert "Current assets" in (scheme_pages[6].extract_text() or "")
-    assert "Section C" in (scheme_pages[13].extract_text() or "")
-    assert "Section D" in (scheme_pages[18].extract_text() or "")
-    assert "Evaluation" in (scheme_pages[22].extract_text() or "")
     scheme_text = "\n".join(page.extract_text() or "" for page in scheme_pages)
+    assert "Objective Test Answers" in scheme_text
+    assert "Current assets" in scheme_text
+    assert "Section C" in scheme_text
+    assert "Section D" in scheme_text
+    assert "Question 24 marking guidance" in scheme_text
     option = build_paper(RULES["paper_1"], SYLLABUS, 123).sections[1].options[0]
     financials = FinancialPosition.from_chart_values(option.chart_values)
     assert f"{format_number(financials.current_ratio)}:1" in scheme_text

@@ -32,14 +32,18 @@ class CaptureSolverClient:
         raise CapturedSolverPrompt(prompt)
 
 
-def solver_payload(task):
+def solver_prompt(task):
     # Stop at the external-model boundary; source projection and blind-key
     # removal both execute normally.
     with pytest.raises(CapturedSolverPrompt) as captured:
         _independently_validate_candidate(
             task, task.question, client=CaptureSolverClient()
         )
-    return json.loads(str(captured.value).split("\n", 1)[1])
+    return str(captured.value)
+
+
+def solver_payload(task):
+    return json.loads(solver_prompt(task).split("\n", 1)[1])
 
 
 def task_with_source(
@@ -108,9 +112,27 @@ def test_accounting_14_2_solver_uses_printed_company_case_not_unprinted_option_e
         assert "6789600" in text  # Printed revenue needed to recompute profit.
         assert '"supplier_invoice": 3059' in text
         assert '"trade_receivable": 186714' in text
-    # Supply the public AO2 inputs, never the private worked answer.
-    assert "1,001,495" not in json.dumps(payload)
+    # The open-response solver receives a code-derived calculation from the
+    # public inputs, never the private worked answer or marking points.
+    derived = payload["item"]["authoring_context"][
+        "independently_derived_context"
+    ]
+    assert derived["source"] == "deterministic-candidate-inputs"
+    assert derived["numeric_results"]["profit_for_year"] == 1_001_495
+    assert derived["numeric_results"]["adjusted_marketing_expenses"] == 762_259
+    assert derived["numeric_results"]["irrecoverable_debt"] == 168_043
+    assert "verified_answers" not in json.dumps(payload)
     assert "observable_mark_points" not in payload["item"]["authoring_context"]
+    instructions = payload["item"]["authoring_context"][
+        "independent_solver_instructions"
+    ]
+    assert any("recompute" in instruction.casefold() for instruction in instructions)
+    assert any("supplier invoice" in instruction.casefold() for instruction in instructions)
+    assert any("irrecoverable debt" in instruction.casefold() for instruction in instructions)
+    assert "1,001,495" not in " ".join(instructions)
+    assert (
+        "Follow every independent_solver_instructions entry" in solver_prompt(task)
+    )
 
 
 def test_self_contained_solver_excludes_contradictory_unrelated_option_data():

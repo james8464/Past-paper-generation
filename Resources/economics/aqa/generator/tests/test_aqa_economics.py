@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import random
 import re
 from copy import deepcopy
 from decimal import Decimal
@@ -12,9 +13,12 @@ from aqaecongen import render_pdf
 from aqaecongen.cli import generate_package
 from aqaecongen.configs import PAPER3_VISUAL_QUESTION_NUMBERS, RULES
 from aqaecongen.generator import build_paper
+from aqaecongen.level_policy import level_guidance, level_rows
 from aqaecongen.render_pdf import _visible_scheme_points, render_question_paper
 from aqaecongen.syllabus import load_syllabus
+from aqaecongen.written_tasks import PROFILES
 from pypdf import PdfReader
+from reportlab.graphics.shapes import Drawing
 
 from Backend.Core.assessment_package import _extract_items
 from Backend.Core.assessment_quality import assert_distinct_items
@@ -52,6 +56,213 @@ def test_paper_one_and_two_have_exact_aqa_choice_structure() -> None:
             ("extended_response", 25, "Discuss"),
         ]
         assert [q.marks for q in rule.sections[1].questions] == [15, 25]
+
+
+def test_aqa_economics_level_policy_matches_published_tariff_bands() -> None:
+    assert [row.mark_range for row in level_rows(9)] == ["7–9", "4–6", "1–3", "0"]
+    assert [row.mark_range for row in level_rows(15)] == [
+        "11–15",
+        "6–10",
+        "1–5",
+        "0",
+    ]
+    assert [row.mark_range for row in level_rows(25)] == [
+        "21–25",
+        "16–20",
+        "11–15",
+        "6–10",
+        "1–5",
+        "0",
+    ]
+
+    fifteen_mark_guidance = " ".join(level_guidance(15)).casefold()
+    assert "analysis" in fifteen_mark_guidance
+    assert "evaluation" not in fifteen_mark_guidance
+    assert "judgement" not in fifteen_mark_guidance
+
+
+def test_generated_written_questions_keep_the_tariff_specific_level_policy() -> None:
+    expected_ranges = {
+        9: {"7–9", "4–6", "1–3"},
+        10: {"8–10", "4–7", "1–3"},
+        15: {"11–15", "6–10", "1–5"},
+        25: {"21–25", "16–20", "11–15", "6–10", "1–5"},
+    }
+    for rule in RULES.values():
+        paper = build_paper(rule, SYLLABUS, seed=26092842)
+        for section in paper.sections:
+            for option in section.options:
+                for question in option.questions:
+                    if question.marks not in expected_ranges:
+                        continue
+                    assert question.authoring_context["level_policy_id"] == (
+                        f"aqa-economics-{question.marks}-mark"
+                    )
+                    guidance = " ".join(question.mark_scheme)
+                    assert expected_ranges[question.marks] <= {
+                        row.mark_range for row in level_rows(question.marks)
+                    }
+                    assert all(
+                        mark_range in guidance
+                        for mark_range in expected_ranges[question.marks]
+                    )
+                    if question.marks == 15:
+                        assert "evaluation" not in guidance.casefold()
+                        assert "judgement" not in guidance.casefold()
+
+
+def test_written_tasks_are_topic_specific_and_do_not_use_vague_outcome_stems() -> None:
+    forbidden = (
+        "outcomes associated with",
+        "most effective way to improve outcomes",
+        "could affect firms, households and wider economic outcomes",
+    )
+    for paper_id, seed in (("paper_1", 26092842), ("paper_2", 26092843)):
+        paper = build_paper(RULES[paper_id], SYLLABUS, seed=seed)
+        questions = [
+            question
+            for section in paper.sections
+            for option in section.options
+            for question in option.questions
+        ]
+        combined = " ".join(question.prompt for question in questions).casefold()
+        assert all(phrase not in combined for phrase in forbidden)
+        for question in questions:
+            if question.marks < 4:
+                continue
+            focus_terms = question.authoring_context.get("task_focus_terms")
+            assert isinstance(focus_terms, list) and focus_terms
+            assert any(term.casefold() in question.prompt.casefold() for term in focus_terms)
+            assert question.authoring_context.get("item_specific_mark_scheme") is True
+            scheme = " ".join(question.mark_scheme).casefold()
+            assert "demonstrate precise knowledge of" not in scheme
+            assert "where it is relevant to the question" not in scheme
+
+
+def test_distribution_contexts_are_economies_not_unrelated_industries() -> None:
+    paper = build_paper(RULES["paper_1"], SYLLABUS, seed=26092842)
+    distribution_option = next(
+        option
+        for section in paper.sections
+        for option in section.options
+        if option.questions[0].topic_id == "4.1.7"
+    )
+    combined = " ".join(
+        [distribution_option.title, *distribution_option.stimulus]
+        + [question.prompt for question in distribution_option.questions]
+    ).casefold()
+    assert all(industry not in combined for industry in aqa_generator.INDUSTRIES)
+    diagram_question = next(
+        question
+        for question in distribution_option.questions
+        if question.kind == "diagram_analysis"
+    )
+    assert "income inequality" in diagram_question.prompt.casefold()
+
+
+def test_each_written_source_is_built_around_its_topic_specific_case() -> None:
+    for topic in SYLLABUS.topics:
+        profile = PROFILES[topic.id]
+        extracts = aqa_generator._stimulus(
+            topic,
+            "Testland",
+            1234,
+            [100.0, 102.0, 99.0, 104.0, 106.0],
+            random.Random(42),
+            expanded=False,
+            task_profile=profile,
+        )
+        combined = " ".join(extracts)
+        assert profile.source_evidence in combined
+        assert profile.data_mechanism in combined
+        assert profile.recommendation in combined
+        assert "largest participants account" not in combined.casefold()
+        assert "explains the observed outcome" not in combined.casefold()
+
+
+def test_written_diagram_contract_binds_prompt_scheme_and_renderer(monkeypatch) -> None:
+    captured: list[dict[str, object]] = []
+
+    def capture(
+        topic_id: str,
+        number: str,
+        visual: dict[str, object] | None = None,
+    ) -> Drawing:
+        captured.append(dict(visual or {}))
+        return Drawing(100, 50)
+
+    monkeypatch.setattr(render_pdf, "_economic_diagram", capture)
+    for paper_id, seed in (("paper_1", 26092842), ("paper_2", 26092843)):
+        paper = build_paper(RULES[paper_id], SYLLABUS, seed=seed)
+        diagrams = [
+            question
+            for section in paper.sections
+            for option in section.options
+            for question in option.questions
+            if question.kind == "diagram_analysis"
+        ]
+        assert diagrams
+        for question in diagrams:
+            contract = question.authoring_context["written_diagram_contract"]
+            assert contract["cause"].casefold() in question.prompt.casefold()
+            assert contract["effect"].casefold() in " ".join(question.mark_scheme).casefold()
+            before = len(captured)
+            render_pdf._scheme_question_page(
+                question,
+                segment=2,
+                segment_count=2,
+            )
+            assert captured[before] == contract
+
+
+def test_written_diagram_renderer_prints_the_declared_economic_structure() -> None:
+    required_by_kind = {
+        "ppf_shift": {"PPF1", "PPF2"},
+        "lorenz_shift": {"Line of equality", "Lorenz 1", "Lorenz 2"},
+        "externality": {"MSC", "MPC", "MSB", "Qm", "Q*"},
+        "market_shift": {"E1", "E2"},
+        "labour_market_shift": {"DL1", "DL2", "SL", "E1", "E2"},
+        "aggregate_shift": {"E1", "E2"},
+    }
+    for topic_id, profile in PROFILES.items():
+        contract = profile.diagram_contract
+        drawing = render_pdf._economic_diagram(topic_id, "3", contract)
+        labels = {
+            item.text
+            for item in drawing.contents
+            if hasattr(item, "text") and isinstance(item.text, str)
+        }
+        assert contract["x_axis"] in labels
+        assert contract["y_axis"] in labels
+        assert required_by_kind[contract["visual_kind"]] <= labels
+
+
+def test_item_specific_schemes_do_not_duplicate_text_as_ao_labels() -> None:
+    for rule in RULES.values():
+        paper = build_paper(rule, SYLLABUS, seed=26092842)
+        for section in paper.sections:
+            for option in section.options:
+                for question in option.questions:
+                    if not question.authoring_context.get("item_specific_mark_scheme"):
+                        continue
+                    awarded = [
+                        point
+                        for point in question.structured_mark_scheme
+                        if point.marks > 0
+                    ]
+                    assert len({point.text for point in awarded}) == len(awarded)
+                    assert all("[AO" not in point.text for point in awarded)
+                    assert {
+                        objective: sum(
+                            point.marks
+                            for point in awarded
+                            if point.assessment_objective == objective
+                        )
+                        for objective in question.assessment_objectives
+                    } == question.assessment_objectives
+                    assert question.authoring_context["observable_mark_points"] == [
+                        point.text for point in awarded
+                    ]
 
 
 def test_paper_three_has_thirty_mcqs_and_fifty_mark_case_study() -> None:
@@ -513,11 +724,17 @@ def test_verified_examiner_guidance_is_retained_during_ai_authoring() -> None:
             == max(12, len(question.prompt.split()) + 2)
             for question in written_questions
         )
-        assert all(
-            len(question.mark_scheme) >= (18 if question.marks >= 15 else 8)
-            for question in written_questions
-            if question.marks >= 9
-        )
+        for question in written_questions:
+            if question.marks < 9:
+                continue
+            substantive = [
+                point
+                for point in question.mark_scheme
+                if not point.startswith(("Level ", "Levels-based"))
+                and not point.startswith(("Marker check:", "Do not award"))
+            ]
+            assert len(substantive) >= 4
+            assert question.authoring_context.get("observable_mark_points")
 
 
 def test_mark_scheme_prints_item_specific_guidance_once_per_question() -> None:
@@ -633,7 +850,13 @@ def test_each_package_renders_readable_pdfs(tmp_path: Path) -> None:
             assert max(set(body_sizes), key=body_sizes.count) >= 11
             levels_page = scheme_pages[3].extract_text() or ""
             assert "Levels of response" in levels_page
-            assert "Highest" in levels_page
+            assert all(mark_range in levels_page for mark_range in ("7–9", "21–25"))
+            assert "Highest" not in levels_page
+            essay_levels_page = scheme_pages[14].extract_text() or ""
+            assert all(
+                mark_range in essay_levels_page
+                for mark_range in ("11–15", "21–25")
+            )
 
 
 def test_paper_three_mark_scheme_fits_long_reference_guidance(tmp_path: Path) -> None:
@@ -649,4 +872,4 @@ def test_paper_three_mark_scheme_fits_long_reference_guidance(tmp_path: Path) ->
 
     assert len(mark_scheme.pages) == 11
     assert scheme_text.count("Marker check:") <= 1
-    assert "A justified recommendation that follows" in scheme_text
+    assert "A justified recommendation on" in scheme_text

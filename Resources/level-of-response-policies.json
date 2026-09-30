@@ -29,6 +29,60 @@
       "misconception_cap_level": 1
     },
     {
+      "id": "aqa-economics-9-mark",
+      "board": "aqa",
+      "maximum_mark": 9,
+      "best_fit": true,
+      "levels": [
+        {"level": 0, "minimum_mark": 0, "maximum_mark": 0, "minimum_coverage": 0.0, "descriptor": "No creditworthy material."},
+        {"level": 1, "minimum_mark": 1, "maximum_mark": 3, "minimum_coverage": 0.01, "descriptor": "Limited relevant knowledge, application or diagram use."},
+        {"level": 2, "minimum_mark": 4, "maximum_mark": 6, "minimum_coverage": 0.35, "descriptor": "Relevant application and reasonable analysis, with an incomplete chain or diagram."},
+        {"level": 3, "minimum_mark": 7, "maximum_mark": 9, "minimum_coverage": 0.75, "descriptor": "Focused contextual explanation with a clear chain and an accurate, appropriately used diagram."}
+      ],
+      "misconception_cap_level": 1
+    },
+    {
+      "id": "aqa-economics-10-mark",
+      "board": "aqa",
+      "maximum_mark": 10,
+      "best_fit": true,
+      "levels": [
+        {"level": 0, "minimum_mark": 0, "maximum_mark": 0, "minimum_coverage": 0.0, "descriptor": "No creditworthy material."},
+        {"level": 1, "minimum_mark": 1, "maximum_mark": 3, "minimum_coverage": 0.01, "descriptor": "Limited response with isolated data use or unsupported assertions."},
+        {"level": 2, "minimum_mark": 4, "maximum_mark": 7, "minimum_coverage": 0.35, "descriptor": "Reasonable assessment using relevant data and some recognition of limitations."},
+        {"level": 3, "minimum_mark": 8, "maximum_mark": 10, "minimum_coverage": 0.75, "descriptor": "Well-organised assessment using several data comparisons, limitations and a supported conclusion."}
+      ],
+      "misconception_cap_level": 1
+    },
+    {
+      "id": "aqa-economics-15-mark",
+      "board": "aqa",
+      "maximum_mark": 15,
+      "best_fit": true,
+      "levels": [
+        {"level": 0, "minimum_mark": 0, "maximum_mark": 0, "minimum_coverage": 0.0, "descriptor": "No creditworthy material."},
+        {"level": 1, "minimum_mark": 1, "maximum_mark": 5, "minimum_coverage": 0.01, "descriptor": "Limited knowledge with short or confused analytical links."},
+        {"level": 2, "minimum_mark": 6, "maximum_mark": 10, "minimum_coverage": 0.35, "descriptor": "Relevant knowledge, application and analysis, though development may be uneven."},
+        {"level": 3, "minimum_mark": 11, "maximum_mark": 15, "minimum_coverage": 0.75, "descriptor": "Accurate knowledge, effective application and clear, developed analytical chains."}
+      ],
+      "misconception_cap_level": 1
+    },
+    {
+      "id": "aqa-economics-25-mark",
+      "board": "aqa",
+      "maximum_mark": 25,
+      "best_fit": true,
+      "levels": [
+        {"level": 0, "minimum_mark": 0, "maximum_mark": 0, "minimum_coverage": 0.0, "descriptor": "No creditworthy material."},
+        {"level": 1, "minimum_mark": 1, "maximum_mark": 5, "minimum_coverage": 0.01, "descriptor": "Fragmentary knowledge with little development and no effective evaluation."},
+        {"level": 2, "minimum_mark": 6, "maximum_mark": 10, "minimum_coverage": 0.2, "descriptor": "Limited application and analysis with weak or largely unsupported evaluation."},
+        {"level": 3, "minimum_mark": 11, "maximum_mark": 15, "minimum_coverage": 0.4, "descriptor": "Reasonable analysis with some evaluation, but support or development is uneven."},
+        {"level": 4, "minimum_mark": 16, "maximum_mark": 20, "minimum_coverage": 0.65, "descriptor": "Sound, focused analysis with relevant supported evaluation and a reasoned conclusion."},
+        {"level": 5, "minimum_mark": 21, "maximum_mark": 25, "minimum_coverage": 0.85, "descriptor": "Precise, sustained contextual analysis with supported evaluation and a fully justified conclusion."}
+      ],
+      "misconception_cap_level": 1
+    },
+    {
       "id": "ocr-standard-4-level",
       "board": "ocr",
       "maximum_mark": 20,

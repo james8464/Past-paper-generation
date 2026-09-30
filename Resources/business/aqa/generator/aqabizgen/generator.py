@@ -556,11 +556,86 @@ def _written_question(
             "Credit a relevant calculation, model or counter-effect.",
         ]
     elif rule.kind == "essay":
-        prompt = (
-            f"Evaluate whether focusing on {point} is the most important influence on the "
-            f"long-term performance of a business operating in {rng.choice(MARKETS)}."
+        market = rng.choice(MARKETS)
+        comparator = rng.choice(
+            [candidate for candidate in topic.points if candidate != point]
         )
-        scheme = _levels(rule.marks, topic, point, case_id)
+        objective = rng.choice(
+            [
+                "operating profit",
+                "market share",
+                "long-term cash flow",
+                "customer retention",
+            ]
+        )
+        horizon = rng.randint(3, 6)
+        investment_budget = rng.randint(2, 15)
+        visible_growth = f"{change:.1f}%"
+        prompt = (
+            f"A business operating in {market} recorded revenue growth of "
+            f"{visible_growth} last year and has an investment budget of "
+            f"£{investment_budget}m. Evaluate whether prioritising {point} rather than "
+            f"{comparator} is likely to be the better way to improve {objective} over the next "
+            f"{horizon} years."
+        )
+        content = [
+            f"Accurate explanation of {point} and how it could affect {objective}.",
+            (
+                f"A developed route for {point}: identify an intermediate effect on "
+                f"revenue, cost, capability or risk in {market}, then link it to "
+                f"{objective}."
+            ),
+            (
+                f"Use the visible evidence of {visible_growth} revenue growth, the "
+                f"£{investment_budget}m budget and the {horizon}-year horizon to assess "
+                "scale, affordability and timing."
+            ),
+            (
+                f"A developed counter-route for {comparator}: explain an intermediate "
+                f"effect and why it could have a stronger impact on {objective}."
+            ),
+            (
+                f"Interaction and contingency: the effect of {point} may depend on "
+                f"{comparator}, competitor responses and implementation constraints in "
+                f"{market}."
+            ),
+            (
+                f"Comparative judgement: decide between {point} and {comparator} using "
+                f"relative magnitude, timing, likelihood and the stated objective of "
+                f"improving {objective}."
+            ),
+        ]
+        scheme = _levels(rule.marks, topic, point, case_id, content=content)
+        authoring_context = {
+            "task_context": {
+                "driver": point,
+                "comparator": comparator,
+                "market": market,
+                "objective": objective,
+                "revenue_growth": visible_growth,
+                "investment_budget": f"£{investment_budget}m",
+                "horizon": f"{horizon} years",
+            },
+            "required_prompt_terms": [
+                point,
+                comparator,
+                market,
+                objective,
+                visible_growth,
+                f"£{investment_budget}m",
+                f"{horizon} years",
+            ],
+            "required_mark_scheme_terms": [
+                point,
+                comparator,
+                market,
+                objective,
+                visible_growth,
+                f"£{investment_budget}m",
+                f"{horizon}-year",
+            ],
+            "observable_mark_points": content,
+        }
     else:
         prompt = (
             f"Evaluate whether action on {point} is the best strategic response for "
@@ -600,7 +675,14 @@ def _written_question(
     )
 
 
-def _levels(marks: int, topic: Topic, point: str, case_id: int) -> list[str]:
+def _levels(
+    marks: int,
+    topic: Topic,
+    point: str,
+    case_id: int,
+    *,
+    content: list[str] | None = None,
+) -> list[str]:
     bands = {
         16: [
             "Level 4 (13–16): excellent knowledge, sustained contextual analysis, balanced evaluation and a supported judgement.",
@@ -630,9 +712,12 @@ def _levels(marks: int, topic: Topic, point: str, case_id: int) -> list[str]:
             "Level 1 (1–5): isolated points or unsupported assertions.",
         ],
     }
-    return [
+    indicative_content = content or [
         f"Indicative content: {topic.title}; {point}; application to the business.",
         "Consider objectives, stakeholder effects, quantitative evidence, risk, time and alternatives.",
+    ]
+    return [
+        *indicative_content,
         *bands[marks],
         "Level 0 (0): no creditworthy material.",
     ]

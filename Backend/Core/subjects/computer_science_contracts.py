@@ -78,8 +78,16 @@ class BooleanEvaluation(Inputs):
     inputs: list[dict[str, Literal[0, 1]]] = Field(min_length=1, max_length=8)
 
 
+class FunctionalListOperations(Inputs):
+    kind: Literal["functional-list-operations"] = "functional-list-operations"
+    values: list[int] = Field(min_length=3, max_length=7)
+    filter_greater_than: int
+    map_multiplier: int
+
+
 CS_INPUTS = TypeAdapter(Annotated[SumTrace | DenaryHex | BitmapBytes | SoundBytes |
-    UnsignedSum | FloatingEncode | BooleanEvaluation, Field(discriminator="kind")])
+    UnsignedSum | FloatingEncode | BooleanEvaluation | FunctionalListOperations,
+    Field(discriminator="kind")])
 
 
 def solve_computer_science_contract(item: dict[str, Any]) -> dict[str, Any] | None:
@@ -150,6 +158,48 @@ def solve_computer_science_contract(item: dict[str, Any]) -> dict[str, Any] | No
         bits = f"{int(scaled):0{source.mantissa_bits}b}" + f"{exponent % (2 ** source.exponent_bits):0{source.exponent_bits}b}"
         text("representation", "Floating representation", bits)
         steps = ["Normalise the positive binary fraction to a leading 01 mantissa.", "Encode the exact signed mantissa and two's-complement exponent in the declared widths."]
+    elif isinstance(source, FunctionalListOperations):
+        filtered = [
+            value for value in source.values if value > source.filter_greater_than
+        ]
+        mapped = [value * source.map_multiplier for value in source.values]
+        texts.extend([
+            CheckedTextOutput(
+                role="filtered-values",
+                value=str(filtered),
+                whole_statement=True,
+                scheme_pattern=r"^filtered values = (\[.*\])\.$",
+            ),
+            CheckedTextOutput(
+                role="mapped-values",
+                value=str(mapped),
+                whole_statement=True,
+                scheme_pattern=r"^mapped values = (\[.*\])\.$",
+            ),
+        ])
+        number(
+            "total-values",
+            "total values =",
+            sum(source.values),
+        )
+        number(
+            "total-mapped",
+            "total (mapped values) =",
+            sum(mapped),
+        )
+        outputs[-2] = outputs[-2].model_copy(
+            update={"scheme_pattern": rf"^total values = (?P<value>{NUMBER})\."}
+        )
+        outputs[-1] = outputs[-1].model_copy(
+            update={
+                "scheme_pattern": rf"^total \(mapped values\) = (?P<value>{NUMBER})\."
+            }
+        )
+        steps = [
+            "Filter the supplied values using the strict greater-than threshold.",
+            "Apply the multiplier independently to every original list item.",
+            "Fold each requested list from zero using addition.",
+        ]
     else:
         operation = {
             "A OR B": lambda a, b: a or b,

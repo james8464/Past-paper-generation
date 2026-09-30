@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from copy import deepcopy
 from typing import Any
 
@@ -94,6 +95,40 @@ def aqa_cs_solver_item(question: dict[str, Any], part: dict[str, Any], stimulus:
         "open_credit_contract": part.get("open_credit_contract", {}),
         "expected_answer_form": "numeric" if part["prompt"].split(maxsplit=1)[0].casefold() in {"calculate", "determine"} else "constructed_response",
     }
+    if (
+        question.get("style_id") == "functional_programming"
+        and set(part.get("response_slots", []))
+        == {
+            "filtered-values",
+            "mapped-values",
+            "total-values",
+            "total-mapped",
+        }
+    ):
+        code = stimulus.get("code")
+        if not isinstance(code, str):
+            raise ValueError("functional list task has no candidate-visible code")
+        values_match = re.search(r"^values = \[([\d, ]+)\]$", code, re.MULTILINE)
+        multiplier_match = re.search(
+            r"^double n = (-?\d+) \* n$", code, re.MULTILINE
+        )
+        threshold_match = re.search(
+            r"^filtered xs = filter \(>(-?\d+)\) xs$", code, re.MULTILINE
+        )
+        if (
+            values_match is None
+            or multiplier_match is None
+            or threshold_match is None
+            or "mapped xs = map double xs" not in code
+            or "total xs = fold (+) 0 xs" not in code
+        ):
+            raise ValueError("functional list task uses unsupported source code")
+        authoring_context["cs_input_contract"] = {
+            "kind": "functional-list-operations",
+            "values": [int(value) for value in values_match.group(1).split(",")],
+            "filter_greater_than": int(threshold_match.group(1)),
+            "map_multiplier": int(multiplier_match.group(1)),
+        }
     intent_id = str(part.get("sql_intent_id", ""))
     if intent_id:
         raw_contract = stimulus.get("sql_contract")
