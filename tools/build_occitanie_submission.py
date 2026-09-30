@@ -243,7 +243,7 @@ def build_application() -> Path:
         doc,
         [
             "Prototype fonctionnel : parcours français distinct, génération locale, références officielles filtrées, points décimaux exacts, contrôles techniques, PDF standard et agrandi, historique et fiche de relecture.",
-            "Qualité en cours de qualification : mise en page mesurée sur les annales 2026, banc d’essai local reproductible, corpus officiel à compléter et résultats de modèles à comparer.",
+            "Qualité en cours de qualification : 79 annales officielles 2021–2026 réconciliées et hashées, 13 sujets réservés en holdout, mise en page mesurée sur les annales 2026 et résultats de modèles à comparer.",
             "Validation externe non acquise : aucun partenariat régional ni avis d’enseignant français n’est encore revendiqué. Le prix financerait précisément cette phase d’évaluation."
         ],
     )
@@ -270,7 +270,7 @@ def build_application() -> Path:
         doc,
         ["Période", "Travail", "Résultat vérifiable"],
         [
-            ["Mois 1 à 2", "Achever le corpus et le banc d’essai local. Recruter deux enseignants de NSI.", "Sources réconciliées, résultats conservés, protocole signé par les relecteurs."],
+            ["Mois 1 à 2", "Achever le banc d’essai local sur le corpus réconcilié. Recruter deux enseignants de NSI.", "Résultats conservés, modèle retenu ou rejet motivé, protocole signé par les relecteurs."],
             ["Mois 3 à 4", "Faire relire six sujets stratifiés et corriger les défauts.", "Deux avis indépendants par sujet, défauts et révisions tracés."],
             ["Mois 5 à 6", "Conduire un pilote encadré dans un établissement volontaire.", "Temps enseignant, durées élèves, ambiguïtés et contraintes d’accès mesurés."],
             ["Mois 7 à 9", "Créer le module de contextes issus de données ouvertes d’Occitanie et auditer l’accessibilité.", "Provenance des jeux de données, sujets relus, PDF standard et agrandi."],
@@ -389,7 +389,7 @@ def build_technical_dossier() -> Path:
         [
             ["Fuite de données", "Modèle local par défaut, aucune copie élève, aucun repli cloud silencieux.", "Un serveur Ollama distant reste possible uniquement avec accord explicite et HTTPS."],
             ["Code généré", "SQL isolé et borné ; interprétation restreinte des constructions prises en charge.", "Le logiciel n’exécute jamais un programme Python arbitraire."],
-            ["Source inadaptée", "Filtrage du périmètre avant classement et échec explicite si aucune source ne convient.", "Le corpus complet 2021-2026 reste à réconcilier."],
+            ["Source inadaptée", "Filtrage du périmètre avant classement, holdout séparé et échec explicite si aucune source ne convient.", "Les droits et illustrations tierces restent examinés document par document."],
             ["Copie d’annale", "Comparaison du texte, du code normalisé, de la structure et des générations précédentes.", "Un score de similarité ne constitue pas une garantie juridique."],
             ["Droits documentaires", "Références conservées localement avec URL, droits et empreinte.", "Les illustrations tierces demandent une analyse document par document."],
         ],

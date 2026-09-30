@@ -44,7 +44,13 @@ Before sending, James must also confirm that he remains eligible under the exact
 
 ## Evidence boundaries
 
-The French NSI path is a working prototype. Automated controls, measured PDF geometry and a resumable local-model benchmark are implemented. A complete live French benchmark, two independent French NSI teacher recommendations and a supervised learner pilot are not yet complete. The application therefore describes those items as planned qualification work, not achieved approval.
+The French NSI path is a working prototype. The official 2021–2026 archive is
+reconciled locally (79 canonical papers, 13 holdouts, 43 recorded accessibility
+representations, two duplicate-content groups), and automated controls, measured PDF
+geometry and a resumable local-model benchmark are implemented. A complete accepted
+live French benchmark, two independent French NSI teacher recommendations and a
+supervised learner pilot are not yet complete. The application therefore describes
+those items as planned qualification work, not achieved approval.
 
 The project does not claim endorsement by the Ministry, the Région Occitanie, the Toulouse or Montpellier academies, CentraleSupélec or any examination board. Generated files remain independently branded and marked non-official.
 
@@ -55,4 +61,3 @@ The project does not claim endorsement by the Ministry, the Région Occitanie, t
 - [Competition rules](https://association.centralesupelec-alumni.com/medias/editor/PRIX_OCCITANIE_2026/REGLEMENT_PRIX_OCCITANIE_2026.pdf)
 - [Official 2027 NSI examination definition](https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N)
 - [Région Occitanie open-data portal](https://data.laregion.fr/)
-

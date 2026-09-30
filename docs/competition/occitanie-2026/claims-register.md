@@ -9,13 +9,12 @@ Updated 30 September 2026. The status labels are deliberately strict.
 | PDF layout is reference-informed | IMPLEMENTED | A4 geometry, typography and cover positions are measured against the official 2026 Métropole paper; the 2027 profile remains provisional. |
 | The software produces examiner-approved papers | NOT CLAIMED | Requires two independent French NSI reviewers and revision of six stratified papers. |
 | Difficulty is equivalent to the real baccalauréat | NOT CLAIMED | Current controls constrain cognitive mix; empirical timing and difficulty require a supervised pilot. |
-| The complete 2021–2026 archive is usable as a reconciled corpus | PROTOTYPE | The official archive index is captured; document hashes, duplicates, rights and holdout reconciliation remain a release gate. |
+| The complete visible 2021–2026 archive is reconciled locally | IMPLEMENTED | 79 canonical papers plus two foundational documents have pinned hashes; 13 papers are holdout-only, 43 accessibility representations are aliases, and two duplicate-content groups are collapsed in retrieval. Source PDFs remain local and reference-only. |
 | A resumable local-model benchmark exists | IMPLEMENTED | Fixed seeds, model/source/code identity, checkpoints, failure preservation and duplicate-run locking are implemented. |
-| A French live benchmark has selected the best model | PLANNED | Run on stable source with exact candidate model digests and preserve every attempt. |
+| A French live benchmark has selected the best model | IN PROGRESS | The first Gemma campaign exposed a reference-index mutation and rejected malformed model output. The index bug is repaired with immutable reads; the replacement campaign preserves exact source/model identities and failures. No model is selected yet. |
 | A Toulouse/Montpellier teacher pilot exists | PLANNED | No school or teacher partnership is claimed until written agreement exists. |
 | Regional open data is already used in generated exercises | PLANNED | Intended optional module; values and provenance must remain distinct from synthetic exercise data. |
 | Students need a Mac or AI account | FALSE | Students receive ordinary PDFs; generation remains on the teacher's Mac. |
 | The project is endorsed by a public authority | NOT CLAIMED | No endorsement exists. |
 | The app is suitable for every Mac | NOT CLAIMED | Hardware support depends on measured model quality, memory and latency. |
 | The project is GDPR compliant | NOT CLAIMED | Local-first design reduces data transfer, but each school needs its own governance review. |
-

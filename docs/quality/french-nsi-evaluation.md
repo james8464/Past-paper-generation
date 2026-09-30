@@ -1,6 +1,7 @@
 # French NSI evaluation protocol
 
-Status: engineering prototype; no live model or teacher qualification recorded.
+Status: engineering prototype; a live model campaign is running, but no accepted
+candidate-model campaign or teacher qualification is recorded.
 
 ## Reproducible runs
 

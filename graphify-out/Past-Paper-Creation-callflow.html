@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>Past Paper Creation — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 7322 nodes, 20353 edges, 291 communities. Commit: f71a9a3</p>
+<p class="subtitle">Generated from graphify knowledge graph: 7322 nodes, 20353 edges, 291 communities. Commit: 9c2e1f2</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -92,23 +92,23 @@ flowchart LR
     class EXTRACT_PIPELINE_5F350230 module;
     BUILD_GRAPH_321CBB04("Graph Build<br/><small>1106 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
-    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>864 nodes</small>")
+    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>892 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
     OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>53 nodes</small>")
     class OUTPUTS_DOCS_ED82387C module;
     CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>2 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
-    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>183 nodes</small>")
+    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>182 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
     SERVE_API_35EC8E86("Serving API<br/><small>101 nodes</small>")
     class SERVE_API_35EC8E86 module;
     SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>8 nodes</small>")
     class SECURITY_GLOBAL_5B9C6A04 module;
-    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>3878 nodes</small>")
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>3832 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
     DOCUMENT_DSL_INIT_PY_34020C9A("document_dsl/__init__.py<br/><small>150 nodes</small>")
     class DOCUMENT_DSL_INIT_PY_34020C9A module;
-    STRING_ECB25204("String<br/><small>120 nodes</small>")
+    STRING_ECB25204("String<br/><small>126 nodes</small>")
     class STRING_ECB25204 module;
     CODINGKEYS_2CCF71B7("CodingKeys<br/><small>57 nodes</small>")
     class CODINGKEYS_2CCF71B7 module;
@@ -116,20 +116,20 @@ flowchart LR
     class DOCUMENTPREVIEWVIEW_3BBFFC64 module;
     CODINGKEYS_DFEF23_FF5CBE38("CodingKeys<br/><small>42 nodes</small>")
     class CODINGKEYS_DFEF23_FF5CBE38 module;
-    OTHER_D0941E68("Other<br/><small>666 nodes</small>")
+    OTHER_D0941E68("Other<br/><small>679 nodes</small>")
     class OTHER_D0941E68 module;
-    ANALYSIS_CLUSTERING_C79796DA -->|calls x511| TESTS_FIXTURES_B84B1DCC
-    TESTS_FIXTURES_B84B1DCC -->|calls x442| ANALYSIS_CLUSTERING_C79796DA
-    OTHER_D0941E68 -->|imports x149| TESTS_FIXTURES_B84B1DCC
-    TESTS_FIXTURES_B84B1DCC -->|calls x76| INGEST_CACHE_UPDATE_FF457338
-    STRING_ECB25204 -->|references x66| TESTS_FIXTURES_B84B1DCC
-    TESTS_FIXTURES_B84B1DCC -->|calls x62| OTHER_D0941E68
+    ANALYSIS_CLUSTERING_C79796DA -->|calls x505| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|calls x432| ANALYSIS_CLUSTERING_C79796DA
+    OTHER_D0941E68 -->|imports x116| TESTS_FIXTURES_B84B1DCC
+    STRING_ECB25204 -->|references x64| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|calls x63| INGEST_CACHE_UPDATE_FF457338
+    TESTS_FIXTURES_B84B1DCC -->|calls x61| OTHER_D0941E68
     EXTRACT_PIPELINE_5F350230 -->|contains x61| TESTS_FIXTURES_B84B1DCC
     EXTRACT_PIPELINE_5F350230 -->|contains x52| ANALYSIS_CLUSTERING_C79796DA
     ANALYSIS_CLUSTERING_C79796DA -->|calls x38| EXTRACT_PIPELINE_5F350230
-    TESTS_FIXTURES_B84B1DCC -->|calls x30| BUILD_GRAPH_321CBB04
+    TESTS_FIXTURES_B84B1DCC -->|calls x31| BUILD_GRAPH_321CBB04
     TESTS_FIXTURES_B84B1DCC -->|imports x27| EXTRACT_PIPELINE_5F350230
-    TESTS_FIXTURES_B84B1DCC -->|implements x25| STRING_ECB25204
+    TESTS_FIXTURES_B84B1DCC -->|implements x26| STRING_ECB25204
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -146,19 +146,19 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>41</td><td><code>135</code></td></tr><tr><td>Graph Build</td><td>1106</td><td><code>25, 34, 60, 40, 48, 73, 98, 200, 93, 104, 101, 109, 116, 86, 113, 118, 150, 123, 59, 129, 138, 115, 178, 122, 136, 175, 139, 142, 143, 119, 149, 151, 153, 154, 155, 131, 160, 161, 163, 166, 168, 187, 202, 174, 188, 141, 180, 181, 182, 189, 190, 192, 194, 196, 263, 266, 274, 208, 278, 279, 280, 184, 212, 213, 216, 218, 219, 281, 282</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>864</td><td><code>2, 10, 6, 16, 26, 44, 39, 55, 53, 62, 68, 58, 124, 102, 54, 114, 169, 268, 269, 270, 271, 272, 273</code></td></tr><tr><td>Outputs &amp; Docs</td><td>53</td><td><code>145, 183, 199, 257</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>2</td><td><code>226</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>183</td><td><code>11, 8, 158</code></td></tr><tr><td>Serving API</td><td>101</td><td><code>12, 126, 107, 265, 277</code></td></tr><tr><td>Security &amp; Global Graph</td><td>8</td><td><code>258</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>3878</td><td><code>1, 9, 17, 5, 3, 7, 13, 24, 15, 18, 20, 14, 19, 67, 173, 30, 45, 22, 92, 32, 33, 36, 47, 83, 37, 56, 29, 28, 41, 57, 43, 35, 52, 27, 49, 95, 38, 50, 72, 103, 31, 78, 21, 71, 61, 106, 66, 64, 65, 69, 70, 99, 74, 125, 23, 51, 89, 76, 85, 87, 75, 82, 77, 80, 91, 94, 111, 167, 110, 88, 117, 152, 96, 105, 121, 132, 127, 128, 133, 198, 100, 130, 120, 137, 144, 146, 148, 159, 162, 170, 217, 248, 249, 256, 185, 260, 275, 286, 191, 287, 201, 203, 204, 289, 290</code></td></tr><tr><td>document_dsl/__init__.py</td><td>150</td><td><code>0</code></td></tr><tr><td>String</td><td>120</td><td><code>4</code></td></tr><tr><td>CodingKeys</td><td>57</td><td><code>46</code></td></tr><tr><td>DocumentPreviewView</td><td>51</td><td><code>42</code></td></tr><tr><td>CodingKeys</td><td>42</td><td><code>134</code></td></tr><tr><td>Other</td><td>666</td><td><code>63, 81, 84, 108, 90, 97, 112, 177, 164, 140, 147, 172, 157, 179, 193, 195, 197, 205, 165, 214, 215, 79, 171, 220, 244, 245, 246, 247, 176, 251, 250, 252, 253, 254, 255, 186, 259, 261, 262, 156, 264, 288, 206, 267, 207, 276, 209, 210, 211, 221, 222, 223, 224, 225, 227, 228, 229, 230, 231, 232, 233, 283, 284, 285, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>41</td><td><code>135</code></td></tr><tr><td>Graph Build</td><td>1106</td><td><code>25, 34, 60, 40, 48, 73, 98, 113, 143, 200, 93, 104, 101, 109, 116, 160, 86, 118, 123, 59, 129, 138, 115, 178, 122, 136, 139, 142, 119, 149, 151, 153, 154, 155, 131, 161, 163, 166, 168, 175, 202, 174, 188, 141, 180, 181, 182, 187, 189, 190, 192, 194, 196, 263, 266, 274, 208, 278, 279, 280, 184, 212, 213, 216, 218, 219, 281, 282</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>892</td><td><code>2, 10, 6, 16, 26, 44, 39, 55, 53, 62, 68, 58, 124, 102, 54, 114, 169, 268, 269, 270, 271, 272, 273</code></td></tr><tr><td>Outputs &amp; Docs</td><td>53</td><td><code>145, 183, 199, 257</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>2</td><td><code>226</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>182</td><td><code>11, 8, 158</code></td></tr><tr><td>Serving API</td><td>101</td><td><code>12, 126, 107, 265, 277</code></td></tr><tr><td>Security &amp; Global Graph</td><td>8</td><td><code>258</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>3832</td><td><code>1, 9, 5, 17, 3, 7, 13, 24, 15, 18, 20, 14, 19, 67, 30, 45, 22, 32, 33, 36, 92, 47, 83, 37, 56, 29, 28, 41, 57, 43, 27, 35, 52, 49, 95, 38, 50, 125, 72, 31, 71, 78, 61, 106, 66, 103, 64, 65, 69, 70, 99, 74, 23, 51, 89, 76, 84, 85, 87, 75, 82, 77, 80, 91, 94, 111, 167, 21, 105, 110, 88, 117, 152, 96, 121, 132, 127, 128, 133, 198, 100, 130, 120, 137, 144, 146, 148, 159, 162, 170, 217, 248, 249, 256, 185, 260, 286, 191, 287, 201, 203, 204, 289, 290, 288</code></td></tr><tr><td>document_dsl/__init__.py</td><td>150</td><td><code>0</code></td></tr><tr><td>String</td><td>126</td><td><code>4</code></td></tr><tr><td>CodingKeys</td><td>57</td><td><code>46</code></td></tr><tr><td>DocumentPreviewView</td><td>51</td><td><code>42</code></td></tr><tr><td>CodingKeys</td><td>42</td><td><code>134</code></td></tr><tr><td>Other</td><td>679</td><td><code>63, 81, 173, 108, 90, 97, 112, 177, 164, 140, 147, 172, 157, 179, 193, 195, 197, 205, 165, 214, 215, 79, 150, 171, 220, 244, 245, 246, 247, 176, 251, 250, 252, 253, 254, 255, 186, 259, 275, 261, 262, 156, 264, 206, 267, 207, 276, 209, 210, 211, 221, 222, 223, 224, 225, 227, 228, 229, 230, 231, 232, 233, 283, 284, 285, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243</code></td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Core Flow</h4>
-    <div class="arrow-chain">CLI &amp; Skill Installers -&gt; Extraction Pipeline -&gt; Tests &amp; Fixtures -&gt; Analysis &amp; Clustering -&gt; document_dsl/__init__.py -&gt; Outputs &amp; Docs -&gt; Graph Build</div>
+    <div class="arrow-chain">CLI &amp; Skill Installers -&gt; Extraction Pipeline -&gt; Tests &amp; Fixtures -&gt; Analysis &amp; Clustering -&gt; Other -&gt; Ingestion &amp; Updates -&gt; String</div>
   </div>
 </div>
 <div class="grid">
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>7322 nodes · 20353 edges · 291 communities (260 shown, 31 thin omitted)</li>
+      <li>7322 nodes · 20353 edges · 291 communities (259 shown, 32 thin omitted)</li>
       <li>Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 1225 edges (avg confidence: 0.64)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `GeneratedQuestion` - 216 edges</li>
@@ -859,12 +859,12 @@ flowchart LR
 
 <!-- ====== 4. Analysis & Clustering ====== -->
 <h2 id="analysis-clustering">4. Analysis &amp; Clustering</h2>
-<p>Analysis &amp; Clustering groups implementation around generator, resources, aqa, computer, mostly in generator/cspapergen/render_pdf.py, generator/pastpapergen/generator.py, generator/cspapergen/question_bank.py. This section covers 864 nodes and 2408 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Analysis &amp; Clustering groups implementation around generator, resources, aqa, computer, mostly in generator/cspapergen/render_pdf.py, generator/pastpapergen/generator.py, generator/cspapergen/question_bank.py. This section covers 892 nodes and 2453 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Analysis &amp; Clustering (864 nodes, 2408 edges)
+    %% Section: Analysis &amp; Clustering (892 nodes, 2453 edges)
     subgraph analysis_clustering_Backend_Core_benchmark_py_ad20c69e["Backend/Core/benchmark.py"]
         backend_core_benchmark_handle_benchmark_303eb156("handle_benchmark()<br/><small>Backend/Core/benchmark.py</small>")
         backend_core_benchmark_cpu_load_percent_a21569b0("cpu_load_percent()<br/><small>Backend/Core/benchmark.py</small>")
@@ -901,7 +901,7 @@ flowchart LR
     backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_benchmark_thermal_speed_limit_perce_0dc698c9
     backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_paths_absolute_user_path_a4a9742d
     resources_computer_science_aqa_generator_cspaper_e688065e -->|imports| resources_computer_science_aqa_generator_cspaper_93d2977e
-    %% Omitted for readability: 846 nodes, 0 edges
+    %% Omitted for readability: 874 nodes, 0 edges
     class backend_core_benchmark_handle_benchmark_303eb156 function;
     class backend_core_benchmark_cpu_load_percent_a21569b0 function;
     class backend_core_benchmark_cpu_probe_6744e47e function;
@@ -946,7 +946,7 @@ flowchart LR
   <td><code>exam_blueprints.py</code><br><small style="color:var(--muted)">Backend/Core/exam_blueprints.py</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>configs.py</code><br><small style="color:var(--muted)">generator/ocregen/configs.py</small><br><code>configs.py</code><br><small style="color:var(--muted)">generator/aqaecongen/configs.py</small><br><code>configs.py</code><br><small style="color:var(--muted)">generator/ocrcsgen/configs.py</small><br>+11 more</td>
+  <td><code>configs.py</code><br><small style="color:var(--muted)">generator/aqaecongen/configs.py</small><br><code>configs.py</code><br><small style="color:var(--muted)">generator/aqabizgen/configs.py</small><br><code>configs.py</code><br><small style="color:var(--muted)">generator/ocregen/configs.py</small><br>+11 more</td>
   <td>Module file in Backend/Core/exam_blueprints.py.</td>
 </tr>
 <tr>
@@ -954,7 +954,7 @@ flowchart LR
   <td><code>QuestionRule</code><br><small style="color:var(--muted)">Backend/Core/exam_blueprints.py</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>_AppliedSource</code><br><small style="color:var(--muted)">generator/aqaecongen/generator.py</small><br><code>AppliedMCQProjection</code><br><small style="color:var(--muted)">generator/aqaecongen/generator.py</small><br><code>configs.py</code><br><small style="color:var(--muted)">generator/aqabizgen/configs.py</small><br>+16 more</td>
+  <td><code>_AppliedSource</code><br><small style="color:var(--muted)">generator/aqaecongen/generator.py</small><br><code>AppliedMCQProjection</code><br><small style="color:var(--muted)">generator/aqaecongen/generator.py</small><br><code>configs.py</code><br><small style="color:var(--muted)">generator/aqaaccountgen/configs.py</small><br>+16 more</td>
   <td>QuestionRule node in Backend/Core/exam_blueprints.py.</td>
 </tr>
 <tr>
@@ -970,7 +970,7 @@ flowchart LR
   <td><code>SectionRule</code><br><small style="color:var(--muted)">Backend/Core/exam_blueprints.py</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>candidate_marks()</code><br><small style="color:var(--muted)">Backend/Core/exam_blueprints.py</small><br><code>configs.py</code><br><small style="color:var(--muted)">generator/ocregen/configs.py</small><br><code>configs.py</code><br><small style="color:var(--muted)">generator/ocrcsgen/configs.py</small><br>+10 more</td>
+  <td><code>candidate_marks()</code><br><small style="color:var(--muted)">Backend/Core/exam_blueprints.py</small><br><code>configs.py</code><br><small style="color:var(--muted)">generator/aqabizgen/configs.py</small><br><code>configs.py</code><br><small style="color:var(--muted)">generator/ocregen/configs.py</small><br>+10 more</td>
   <td>SectionRule node in Backend/Core/exam_blueprints.py.</td>
 </tr>
 <tr>
@@ -1002,7 +1002,7 @@ flowchart LR
   <td><code>PaperRule</code><br><small style="color:var(--muted)">Backend/Core/exam_blueprints.py</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>_AppliedSource</code><br><small style="color:var(--muted)">generator/aqaecongen/generator.py</small><br><code>AppliedMCQProjection</code><br><small style="color:var(--muted)">generator/aqaecongen/generator.py</small><br><code>configs.py</code><br><small style="color:var(--muted)">generator/aqabizgen/configs.py</small><br>+19 more</td>
+  <td><code>_AppliedSource</code><br><small style="color:var(--muted)">generator/aqaecongen/generator.py</small><br><code>AppliedMCQProjection</code><br><small style="color:var(--muted)">generator/aqaecongen/generator.py</small><br><code>configs.py</code><br><small style="color:var(--muted)">generator/aqaaccountgen/configs.py</small><br>+19 more</td>
   <td>PaperRule node in Backend/Core/exam_blueprints.py.</td>
 </tr>
 <tr>
@@ -1050,7 +1050,7 @@ flowchart LR
   <td><code>mark_scheme_enrichment.py</code><br><small style="color:var(--muted)">Backend/Core/mark_scheme_enrichment.py</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td><code>exam_blueprints.py</code><br><small style="color:var(--muted)">Backend/Core/exam_blueprints.py</small><br><code>GeneratedPaper</code><br><small style="color:var(--muted)">Backend/Core/exam_blueprints.py</small><br><code>GeneratedSection</code><br><small style="color:var(--muted)">Backend/Core/exam_blueprints.py</small></td>
-  <td><code>generator.py</code><br><small style="color:var(--muted)">generator/ocrcsgen/generator.py</small><br><code>generator.py</code><br><small style="color:var(--muted)">generator/aqaaccountgen/generator.py</small><br><code>generator.py</code><br><small style="color:var(--muted)">generator/aqaecongen/generator.py</small><br>+1 more</td>
+  <td><code>generator.py</code><br><small style="color:var(--muted)">generator/aqaecongen/generator.py</small><br><code>generator.py</code><br><small style="color:var(--muted)">generator/aqabizgen/generator.py</small><br><code>generator.py</code><br><small style="color:var(--muted)">generator/aqaaccountgen/generator.py</small><br>+1 more</td>
   <td>Module file in Backend/Core/mark_scheme_enrichment.py.</td>
 </tr>
 <tr>
@@ -1058,7 +1058,7 @@ flowchart LR
   <td><code>enrich_paper()</code><br><small style="color:var(--muted)">Backend/Core/mark_scheme_enrichment.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>_clean_text()</code><br><small style="color:var(--muted)">Backend/Core/mark_scheme_enrichment.py</small><br><code>generator.py</code><br><small style="color:var(--muted)">generator/ocrcsgen/generator.py</small><br><code>generator.py</code><br><small style="color:var(--muted)">generator/aqaecongen/generator.py</small><br>+2 more</td>
+  <td><code>_clean_text()</code><br><small style="color:var(--muted)">Backend/Core/mark_scheme_enrichment.py</small><br><code>generator.py</code><br><small style="color:var(--muted)">generator/aqabizgen/generator.py</small><br><code>generator.py</code><br><small style="color:var(--muted)">generator/aqaaccountgen/generator.py</small><br>+2 more</td>
   <td>enrich_paper() node in Backend/Core/mark_scheme_enrichment.py.</td>
 </tr>
 <tr>
@@ -1082,7 +1082,7 @@ flowchart LR
   <td><code>percentage_change_context()</code><br><small style="color:var(--muted)">Backend/Core/numeric_integrity.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>_written_question()</code><br><small style="color:var(--muted)">generator/aqabizgen/generator.py</small><br><code>_written_question()</code><br><small style="color:var(--muted)">generator/aqaecongen/generator.py</small><br><code>generator.py</code><br><small style="color:var(--muted)">generator/aqaecongen/generator.py</small><br>+1 more</td>
+  <td><code>_written_question()</code><br><small style="color:var(--muted)">generator/aqaecongen/generator.py</small><br><code>_written_question()</code><br><small style="color:var(--muted)">generator/aqabizgen/generator.py</small><br><code>generator.py</code><br><small style="color:var(--muted)">generator/aqabizgen/generator.py</small><br>+1 more</td>
   <td>percentage_change_context() node in Backend/Core/numeric_integrity.py.</td>
 </tr>
 <tr>
@@ -1200,7 +1200,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x721, references x648, contains x525, imports x126. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x724, references x655, contains x533, imports x134. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -1629,12 +1629,12 @@ flowchart LR
 
 <!-- ====== 7. Ingestion & Updates ====== -->
 <h2 id="ingest-cache-update">7. Ingestion &amp; Updates</h2>
-<p>Ingestion &amp; Updates groups implementation around macos, papercreator, state, applicationcoordinatorswift, mostly in PaperCreator/State/ApplicationCoordinator.swift, Core/qualification/manifest.py, tools/live_generation_matrix.py. This section covers 183 nodes and 446 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Ingestion &amp; Updates groups implementation around macos, papercreator, state, applicationcoordinatorswift, mostly in PaperCreator/State/ApplicationCoordinator.swift, Core/qualification/manifest.py, tools/live_generation_matrix.py. This section covers 182 nodes and 442 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Ingestion &amp; Updates (183 nodes, 446 edges)
+    %% Section: Ingestion &amp; Updates (182 nodes, 442 edges)
     subgraph ingest_cache_update_Core_qualification_manifest_3e3bea5d["Core/qualification/manifest.py"]
         backend_core_qualification_manifest_qualificatio_417c1d72("QualificationManifest<br/><small>Core/qualification/manifest.py</small>")
         backend_core_qualification_manifest_modelidentit_c90bb800("ModelIdentity<br/><small>Core/qualification/manifest.py</small>")
@@ -1680,7 +1680,7 @@ flowchart LR
     backend_core_qualification_init_6f08a478 -->|imports| backend_core_qualification_manifest_qualificatio_417c1d72
     backend_core_qualification_init_6f08a478 -->|imports| backend_core_qualification_manifest_qualificatio_1055ba38
     backend_core_qualification_init_6f08a478 -->|imports| backend_core_qualification_manifest_versionident_d142d785
-    %% Omitted for readability: 165 nodes, 0 edges
+    %% Omitted for readability: 164 nodes, 0 edges
     class backend_core_qualification_manifest_qualificatio_417c1d72 klass;
     class backend_core_qualification_manifest_modelidentit_c90bb800 klass;
     class backend_core_qualification_manifest_versionident_d142d785 klass;
@@ -1842,14 +1842,6 @@ flowchart LR
 </tr>
 <tr>
   <td>16</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Generation/GeneratorWorkspaceView.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>selectAIProvider()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>selectAssessmentKind()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>selectPaperID()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br>+1 more</td>
-  <td>.body node in Features/Generation/GeneratorWorkspaceView.swift.</td>
-</tr>
-<tr>
-  <td>17</td>
   <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1857,7 +1849,7 @@ flowchart LR
   <td>.body node in Features/Settings/SettingsPane.swift.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>17</td>
   <td><code>.providerSettings</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1865,7 +1857,7 @@ flowchart LR
   <td>.providerSettings node in Features/Settings/SettingsPane.swift.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>18</td>
   <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1873,7 +1865,7 @@ flowchart LR
   <td>.body node in Features/Settings/SettingsPane.swift.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>19</td>
   <td><code>ApplicationCoordinator</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>defaultOutputFolder()</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small><br><code>MLXRecoveryState</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
@@ -1881,7 +1873,7 @@ flowchart LR
   <td>ApplicationCoordinator node in PaperCreator/State/ApplicationCoordinator.swift.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>20</td>
   <td><code>Double</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -1889,7 +1881,7 @@ flowchart LR
   <td>Double node in project.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>21</td>
   <td><code>String</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -1897,7 +1889,7 @@ flowchart LR
   <td>String node in project.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>22</td>
   <td><code>UUID</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -1905,7 +1897,7 @@ flowchart LR
   <td>UUID node in project.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>23</td>
   <td><code>Int</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -1913,7 +1905,7 @@ flowchart LR
   <td>Int node in project.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>24</td>
   <td><code>Process</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -1921,7 +1913,7 @@ flowchart LR
   <td>Process node in project.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>25</td>
   <td><code>AnyCancellable</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -1929,7 +1921,7 @@ flowchart LR
   <td>AnyCancellable node in project.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>26</td>
   <td><code>Set</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -1937,7 +1929,7 @@ flowchart LR
   <td>Set node in project.</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>27</td>
   <td><code>URL</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -1945,7 +1937,7 @@ flowchart LR
   <td>URL node in project.</td>
 </tr>
 <tr>
-  <td>29</td>
+  <td>28</td>
   <td><code>.selectedBoard</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>ApplicationCoordinator</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
@@ -1953,12 +1945,20 @@ flowchart LR
   <td>.selectedBoard node in PaperCreator/State/ApplicationCoordinator.swift.</td>
 </tr>
 <tr>
-  <td>30</td>
+  <td>29</td>
   <td><code>.selectedPaper</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>ApplicationCoordinator</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
   <td>No direct outbound edge</td>
   <td>.selectedPaper node in PaperCreator/State/ApplicationCoordinator.swift.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>.selectedBoardID</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ApplicationCoordinator</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>.selectedBoardID node in PaperCreator/State/ApplicationCoordinator.swift.</td>
 </tr>
 </table>
 
@@ -2469,12 +2469,12 @@ flowchart LR
 
 <!-- ====== 10. Tests & Fixtures ====== -->
 <h2 id="tests-fixtures">10. Tests &amp; Fixtures</h2>
-<p>Tests &amp; Fixtures groups implementation around test, tests, generator, resources, mostly in tools/paper_fidelity_audit.py, generator/tests/test_question_styles.py, Backend/Core/ai_assessment.py. This section covers 3878 nodes and 11537 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Tests &amp; Fixtures groups implementation around test, tests, generator, resources, mostly in tools/paper_fidelity_audit.py, generator/tests/test_question_styles.py, Backend/Core/ai_assessment.py. This section covers 3832 nodes and 11545 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Tests &amp; Fixtures (3878 nodes, 11537 edges)
+    %% Section: Tests &amp; Fixtures (3832 nodes, 11545 edges)
     subgraph tests_fixtures_Backend_Core_ai_assessment_py_93891410["Backend/Core/ai_assessment.py"]
         backend_core_ai_assessment_assessmentllmclient_af77fd0e("AssessmentLLMClient<br/><small>Backend/Core/ai_assessment.py</small>")
         backend_core_ai_assessment_assessmentllmclient_g_314242c3("generate_json()<br/><small>Backend/Core/ai_assessment.py</small>")
@@ -2512,7 +2512,7 @@ flowchart LR
     backend_core_ai_assessment_generate_item_transac_7b6ae53f -->|calls| backend_core_ai_assessment_review_batch_87a73a37
     backend_core_ai_assessment_generate_item_transac_7b6ae53f -->|calls| tests_test_ai_assessment_test_content_approval_c_22a3fa7b
     backend_core_independent_solver_independentsolve_ca9b7e1f -->|calls| backend_core_independent_solver_reconcile_soluti_03e71447
-    %% Omitted for readability: 3860 nodes, 0 edges
+    %% Omitted for readability: 3814 nodes, 0 edges
     class backend_core_ai_assessment_assessmentllmclient_af77fd0e entry;
     class backend_core_ai_assessment_assessmentllmclient_g_314242c3 function;
     class backend_core_ai_assessment_assessmentllmclient_s_2b7acbd9 function;
@@ -2811,7 +2811,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x4731, contains x2454, references x1592, imports x1070. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x4726, contains x2449, references x1597, imports x1076. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -3171,12 +3171,12 @@ flowchart LR
 
 <!-- ====== 12. String ====== -->
 <h2 id="string">12. String</h2>
-<p>String groups implementation around macos, papercreator, appmodelsswift, domain, mostly in PaperCreator/Domain/AppModels.swift, PaperCreator/State/BenchmarkCoordinator.swift, Features/Generation/GeneratorWorkspaceView.swift. This section covers 120 nodes and 234 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>String groups implementation around macos, papercreator, appmodelsswift, domain, mostly in PaperCreator/Domain/AppModels.swift, PaperCreator/State/BenchmarkCoordinator.swift, Features/Generation/GeneratorWorkspaceView.swift. This section covers 126 nodes and 241 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: String (120 nodes, 234 edges)
+    %% Section: String (126 nodes, 241 edges)
     subgraph string_PaperCreator_Domain_AppModels_swift_efb5b8c1["PaperCreator/Domain/AppModels.swift"]
         macos_papercreator_domain_appmodels_aiprovider_b6919ae6("AIProvider<br/><small>PaperCreator/Domain/AppModels.swift</small>")
         macos_papercreator_domain_appmodels_examboardopt_5ae43597("ExamBoardOption<br/><small>PaperCreator/Domain/AppModels.swift</small>")
@@ -3205,7 +3205,7 @@ flowchart LR
     macos_papercreator_domain_appmodels_qualificatio_e3af0146 -->|method| macos_papercreator_domain_appmodels_qualificatio_3b950141
     macos_papercreator_domain_appmodels_generatorcon_77b39f8f -->|method| macos_papercreator_domain_appmodels_generatorcon_930a891b
     macos_papercreator_domain_appmodels_generatorcon_77b39f8f -->|method| macos_papercreator_domain_appmodels_generatorcon_da10daf6
-    %% Omitted for readability: 102 nodes, 0 edges
+    %% Omitted for readability: 108 nodes, 0 edges
     class macos_papercreator_domain_appmodels_aiprovider_b6919ae6 klass;
     class macos_papercreator_domain_appmodels_examboardopt_5ae43597 klass;
     class macos_papercreator_domain_appmodels_benchmarksam_6a36f8ea klass;
@@ -3492,7 +3492,7 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>PaperCreator/Domain/AppModels.swift</code></td><td>91 nodes</td></tr>
+      <tr><td><code>PaperCreator/Domain/AppModels.swift</code></td><td>97 nodes</td></tr>
 <tr><td><code>PaperCreator/State/BenchmarkCoordinator.swift</code></td><td>6 nodes</td></tr>
 <tr><td><code>Features/Generation/GeneratorWorkspaceView.swift</code></td><td>2 nodes</td></tr>
 <tr><td><code>PaperCreator/State/ApplicationCoordinator.swift</code></td><td>1 nodes</td></tr>
@@ -3503,7 +3503,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x96, method x42, contains x29, case of x21. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x97, method x42, contains x30, case of x26. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4539,12 +4539,12 @@ flowchart LR
 
 <!-- ====== 16. Other ====== -->
 <h2 id="other">16. Other</h2>
-<p>Other groups implementation around docs, 2026, backend, superpowers, mostly in generator/aqaaccountgen/case_data.py, docs/project-analysis/PROJECT_ANALYSIS.md, superpowers/plans/2026-08-26-paper-creator-excellence-programme.md. This section covers 666 nodes and 887 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Other groups implementation around docs, 2026, superpowers, macos, mostly in generator/aqaaccountgen/case_data.py, docs/project-analysis/PROJECT_ANALYSIS.md, Features/Generation/GeneratorWorkspaceView.swift. This section covers 679 nodes and 883 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Other (666 nodes, 887 edges)
+    %% Section: Other (679 nodes, 883 edges)
     subgraph other_Backend_Core_assessment_objectives_py_a04dd05e["Backend/Core/assessment_objectives.py"]
         backend_core_assessment_objectives_objectivepoli_0a06578f("ObjectivePolicy<br/><small>Backend/Core/assessment_objectives.py</small>")
         backend_core_assessment_objectives_objectivepoli_f7ee7e42("fingerprint()<br/><small>Backend/Core/assessment_objectives.py</small>")
@@ -4582,7 +4582,7 @@ flowchart LR
     backend_core_credit_policy_credit_rule_62ce1b3e -->|calls| backend_core_credit_policy_collect_credit_rules_534a03a4
     backend_core_credit_policy_credit_rule_62ce1b3e -->|calls| backend_core_credit_policy_declared_rule_metadat_b1fc85f1
     backend_core_credit_policy_collect_credit_rules_534a03a4 -->|calls| backend_core_independent_solver_independentsolve_f534d564
-    %% Omitted for readability: 648 nodes, 0 edges
+    %% Omitted for readability: 661 nodes, 0 edges
     class backend_core_assessment_objectives_objectivepoli_0a06578f klass;
     class backend_core_assessment_objectives_objectivepoli_f7ee7e42 function;
     class backend_core_assessment_objectives_objectivepoli_09765bf0 function;
@@ -4872,7 +4872,7 @@ flowchart LR
       <tr><td><code>generator/aqaaccountgen/case_data.py</code></td><td>51 nodes</td></tr>
 <tr><td><code>docs/project-analysis/PROJECT_ANALYSIS.md</code></td><td>29 nodes</td></tr>
 <tr><td><code>superpowers/plans/2026-08-26-paper-creator-excellence-programme.md</code></td><td>28 nodes</td></tr>
-<tr><td><code>Features/Generation/GeneratorWorkspaceView.swift</code></td><td>27 nodes</td></tr>
+<tr><td><code>Features/Generation/GeneratorWorkspaceView.swift</code></td><td>28 nodes</td></tr>
 <tr><td><code>Core/overlay/graphs.py</code></td><td>26 nodes</td></tr>
 <tr><td><code>Backend/Core/independent_solver.py</code></td><td>24 nodes</td></tr>
 <tr><td><code>superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md</code></td><td>24 nodes</td></tr>
@@ -4881,7 +4881,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x380, calls x178, references x145, method x115. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x383, calls x187, references x140, method x119. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4911,7 +4911,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>Past Paper Creation — Architecture Documentation</p>
-  <p>Generated: 2026-09-30 17:36 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-09-30 17:49 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->
