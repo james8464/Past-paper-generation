@@ -76,3 +76,29 @@ def test_french_transport_refuses_redirects_and_environment_proxy(monkeypatch):
     )
     assert handlers[0].proxies == {}
     assert isinstance(handlers[1], NoRedirects)
+
+
+def test_french_transport_allows_slow_local_generation(monkeypatch):
+    from Backend.Core.france.network import ollama_request
+
+    observed = {}
+
+    def open_request(request, *, timeout):
+        observed["url"] = request.full_url
+        observed["timeout"] = timeout
+        return io.BytesIO(b"{}")
+
+    monkeypatch.setattr(
+        "Backend.Core.france.network.open_ollama_request", open_request
+    )
+
+    ollama_request(
+        "http://localhost:11434/api/chat",
+        b"{}",
+        {"Content-Type": "application/json"},
+    )
+
+    assert observed == {
+        "url": "http://localhost:11434/api/chat",
+        "timeout": 900,
+    }

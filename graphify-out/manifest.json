@@ -175,9 +175,9 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/network.py": {
-    "mtime": 1790774644.378745,
-    "ast_hash": "ae1d3b2d3d28c030e21458a8c4f3d25c",
-    "semantic_hash": "ae1d3b2d3d28c030e21458a8c4f3d25c"
+    "mtime": 1790790686.5581784,
+    "ast_hash": "9943fdd14248ede3d462065173321133",
+    "semantic_hash": ""
   },
   "Backend/Core/france/nsi.py": {
     "mtime": 1790778818.1402056,
@@ -1670,8 +1670,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_provider.py": {
-    "mtime": 1790778978.612491,
-    "ast_hash": "a22cb119bea6c2f6de096432898de762",
+    "mtime": 1790790663.2110054,
+    "ast_hash": "19215be3394aa471eac98bd7052c41ea",
     "semantic_hash": ""
   },
   "tests/test_french_review.py": {
