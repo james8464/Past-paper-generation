@@ -122,7 +122,11 @@ def _enrich_question(
             }
         )
     scheme.extend(_objective_guidance(question, topic.title, selected, subject))
-    if _uses_levels(question) and subject != "computer science":
+    if (
+        _uses_levels(question)
+        and subject != "computer science"
+        and not any(point.casefold().startswith("level ") for point in scheme)
+    ):
         scheme.extend(_level_guidance(question.marks, subject))
     scheme.append(
         "Marker check: reward a valid alternative route where it demonstrates the same assessed knowledge or skill."

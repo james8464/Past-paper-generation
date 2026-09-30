@@ -10,6 +10,7 @@ import pymupdf as fitz
 import pytest
 from aqaaccountgen import case_data
 from aqaaccountgen.case_data import (
+    AccountingSystemCase,
     CostingCase,
     IncomeStatementCase,
     NonCurrentAssetCase,
@@ -84,6 +85,39 @@ def test_shareholder_question_uses_the_same_visible_case_for_generator_context()
     assert "verified_answers" not in question.authoring_context
     assert "price_earnings_ratio" not in question.authoring_context["candidate_source"]
     assert "dividend_yield_percent" not in question.authoring_context["candidate_source"]
+
+
+@pytest.mark.parametrize("paper_id", ["paper_1", "paper_2"])
+def test_section_c_decisions_share_complete_candidate_visible_cases(
+    paper_id: str,
+) -> None:
+    paper = build_paper(RULES[paper_id], SYLLABUS, 26092841)
+    option = paper.sections[-1].options[0]
+    system = next(item for item in option.questions if item.rule_id == "decision_1")
+    shareholder = next(item for item in option.questions if item.rule_id == "decision_2")
+    expected_system = AccountingSystemCase.from_chart_values(
+        option.title, option.chart_values
+    )
+    expected_shareholder = ShareholderCase.from_chart_values(
+        option.title, option.chart_values
+    )
+
+    assert system.authoring_context["candidate_source"] == (
+        expected_system.candidate_source()
+    )
+    assert shareholder.authoring_context["candidate_source"] == (
+        expected_shareholder.candidate_source()
+    )
+    assert all(
+        point in system.mark_scheme for point in expected_system.mark_scheme_points()
+    )
+    assert all(
+        point in shareholder.mark_scheme
+        for point in expected_shareholder.mark_scheme_points()
+    )
+    assert "capital investment appraisal" not in " ".join(system.mark_scheme).casefold()
+    assert sum(point.startswith("Level 5") for point in system.mark_scheme) == 1
+    assert sum(point.startswith("Level 5") for point in shareholder.mark_scheme) == 1
 
 
 def test_shareholder_visible_source_reaches_reviewer_and_solver_without_answer_keys() -> None:
@@ -774,7 +808,7 @@ def test_partnership_calculations_have_complete_shared_source_contracts() -> Non
 
 
 def test_both_packages_render_36_page_question_papers(tmp_path: Path) -> None:
-    mark_scheme_pages = {"1": 26, "2": 28}
+    mark_scheme_pages = {"1": 26, "2": 16}
     for paper in ("1", "2"):
         paths = generate_package(
             paper=paper,
@@ -831,6 +865,70 @@ def test_paper_two_mark_scheme_rows_contain_only_item_specific_guidance(
     assert "Accounting standards require consistent recognition" in text
     assert "Marker check: reward a valid alternative route" not in text
     assert "confusing Marginal costing with a superficially related concept" not in text
+
+
+def test_paper_two_prints_the_same_section_c_sources_used_by_review(tmp_path: Path) -> None:
+    seed = 26092841
+    paper = build_paper(RULES["paper_2"], SYLLABUS, seed)
+    option = paper.sections[-1].options[0]
+    paths = generate_package(
+        paper="2",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=seed,
+    )
+    text = " ".join(
+        page.extract_text() or ""
+        for page in PdfReader(paths["question_paper"]).pages
+    )
+
+    for question in option.questions:
+        source = question.authoring_context["candidate_source"]
+        assert source["business"] in text
+    system = AccountingSystemCase.from_candidate_source(
+        option.questions[0].authoring_context["candidate_source"]
+    )
+    shareholder = ShareholderCase.from_candidate_source(
+        option.questions[1].authoring_context["candidate_source"]
+    )
+    assert f"£{system.annual_bookkeeper_salary:,}" in text
+    assert f"£{system.annual_software_cost:,}" in text
+    assert f"{shareholder.share_price_start_pence}p" in text
+    assert shareholder.comparator_name in text
+
+
+def test_paper_two_mark_scheme_does_not_cycle_section_c_guidance(
+    tmp_path: Path,
+) -> None:
+    seed = 26092841
+    paper = build_paper(RULES["paper_2"], SYLLABUS, seed)
+    paths = generate_package(
+        paper="2",
+        syllabus_path=ROOT / "data" / "syllabus.json",
+        output_dir=tmp_path,
+        seed=seed,
+    )
+    text = re.sub(
+        r"\s+",
+        " ",
+        " ".join(
+            page.extract_text() or ""
+            for page in PdfReader(paths["mark_scheme"]).pages
+        ),
+    )
+
+    option = paper.sections[-1].options[0]
+    case_points = [
+        *AccountingSystemCase.from_candidate_source(
+            option.questions[0].authoring_context["candidate_source"]
+        ).mark_scheme_points(),
+        *ShareholderCase.from_candidate_source(
+            option.questions[1].authoring_context["candidate_source"]
+        ).mark_scheme_points(),
+    ]
+    for point in case_points:
+        assert text.count(re.sub(r"\s+", " ", point)) == 1
+    assert "guidance continued" not in text.casefold()
 
 
 def test_paper_one_section_a_matches_measured_case_and_account_pages(tmp_path: Path) -> None:
@@ -900,7 +998,7 @@ def test_paper_two_section_c_matches_reference_page_roles(tmp_path: Path) -> Non
     assert "Section C" in (pages[19].extract_text() or "")
     assert "Advise" in (pages[20].extract_text() or "")
     assert "DO NOT WRITE ON THIS PAGE" in (pages[24].extract_text() or "")
-    assert "Extract 2" in (pages[25].extract_text() or "")
+    assert "Statement of changes in equity" in (pages[25].extract_text() or "")
     assert "Advise" in (pages[26].extract_text() or "")
     assert "END OF QUESTIONS" in (pages[29].extract_text() or "")
     assert "There are no questions printed on this page" in (

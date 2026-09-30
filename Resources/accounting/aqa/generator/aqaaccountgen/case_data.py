@@ -18,6 +18,113 @@ def _round_pounds(value: Decimal) -> int:
 
 
 @dataclass(frozen=True)
+class AccountingSystemCase:
+    """Candidate-visible source for the bookkeeping-system decision."""
+
+    business: str
+    annual_bookkeeper_salary: int
+    annual_software_cost: int
+    initial_training_cost: int
+    annual_accountant_fee: int
+    estimated_lost_profit: int
+
+    @classmethod
+    def from_chart_values(
+        cls, business: str, values: list[float]
+    ) -> AccountingSystemCase:
+        if len(values) != 5:
+            raise ValueError("accounting-system case requires five chart values")
+        scaled = [round(value * 1_000) for value in values]
+        return cls(
+            business=business,
+            annual_bookkeeper_salary=int(scaled[0] * 0.32),
+            annual_software_cost=int(scaled[1] * 0.24),
+            initial_training_cost=int(scaled[2] * 0.09),
+            annual_accountant_fee=int(scaled[3] * 0.08),
+            estimated_lost_profit=int(scaled[4] * 0.14),
+        )
+
+    @classmethod
+    def from_candidate_source(
+        cls, source: dict[str, object]
+    ) -> AccountingSystemCase:
+        costs = dict(source["costs"])
+        return cls(
+            business=str(source["business"]),
+            annual_bookkeeper_salary=int(costs["annual_bookkeeper_salary"]),
+            annual_software_cost=int(costs["annual_software_cost"]),
+            initial_training_cost=int(costs["initial_training_cost"]),
+            annual_accountant_fee=int(costs["annual_accountant_fee"]),
+            estimated_lost_profit=int(costs["estimated_lost_profit"]),
+        )
+
+    def candidate_source(self) -> dict[str, object]:
+        return {
+            "business": self.business,
+            "source_type": "accounting_system_decision_case",
+            "units": "GBP per year unless described as initial",
+            "costs": {
+                "annual_bookkeeper_salary": self.annual_bookkeeper_salary,
+                "annual_software_cost": self.annual_software_cost,
+                "initial_training_cost": self.initial_training_cost,
+                "annual_accountant_fee": self.annual_accountant_fee,
+                "estimated_lost_profit": self.estimated_lost_profit,
+            },
+            "current_system": [
+                "The owner spends two days each week recording transactions, preparing customer statements and following up late payments.",
+                "The latest trial balance contained errors and the year-end accounts were delayed.",
+                "Inventory records do not agree with the physical count and monthly bank reconciliations are several weeks in arrears.",
+                "The owner cannot determine the profit earned on individual contracts.",
+            ],
+            "bookkeeper_option": [
+                "A qualified bookkeeper would use double-entry records and prepare draft financial statements.",
+                "The owner expects improved credit control, monthly management information and more time to develop the business.",
+            ],
+            "software_option": [
+                "Cloud software would automate bank reconciliation and invoicing.",
+                "The external accountant would introduce the system and provide quarterly management information.",
+                "The owner is concerned about data security, subscription increases and unreliable internet access.",
+            ],
+            "implementation_evidence": [
+                "Two family members work in the business but neither has formal accounting training.",
+                "One family member opposes changing familiar procedures.",
+            ],
+        }
+
+    def authoring_context(self) -> dict[str, object]:
+        source = self.candidate_source()
+        return {
+            "preserve_prompt": True,
+            "preserve_mark_scheme": True,
+            "task_scope": (
+                "Advise the owner which accounting-record system to adopt using all "
+                "published costs, control weaknesses, benefits and implementation risks."
+            ),
+            "required_prompt_terms": ["accounting records", "owner"],
+            "candidate_source": source,
+            "source_data": source,
+        }
+
+    def mark_scheme_points(self) -> list[str]:
+        return [
+            (
+                f"AO2: Compare the annual bookkeeper salary of {_gbp(self.annual_bookkeeper_salary)} "
+                f"with annual software cost of {_gbp(self.annual_software_cost)}, initial "
+                f"training of {_gbp(self.initial_training_cost)} and the current accountant "
+                f"fee of {_gbp(self.annual_accountant_fee)}."
+            ),
+            (
+                f"AO2: Apply the estimated lost profit of {_gbp(self.estimated_lost_profit)} "
+                "and the stated record, reconciliation and credit-control weaknesses."
+            ),
+            "AO3: Develop how a bookkeeper could improve double entry, credit control and timely management information, while creating a recurring employment cost and dependence on one employee.",
+            "AO3: Develop how cloud automation could improve invoicing and bank reconciliation at lower annual cost, while training, cyber security, subscription and internet risks may reduce the benefit.",
+            "AO3: Compare both options with continuing the current system, including the owner's time and the cost of recurring errors and delayed decisions.",
+            "AO3: Reach a justified, conditional recommendation linked to cost, control quality, staff capability and implementation risk; do not recommend solely on the lowest stated cost.",
+        ]
+
+
+@dataclass(frozen=True)
 class CostingCase:
     units_sold: int
     selling_price_per_unit: int

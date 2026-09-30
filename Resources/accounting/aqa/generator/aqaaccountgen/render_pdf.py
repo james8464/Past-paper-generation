@@ -3,7 +3,6 @@ from __future__ import annotations
 from functools import partial
 from pathlib import Path
 
-import pymupdf as fitz
 from reportlab.graphics.shapes import Drawing, Line, String
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT
@@ -23,6 +22,7 @@ from reportlab.platypus import (
 )
 
 from aqaaccountgen.case_data import (
+    AccountingSystemCase,
     IncomeStatementCase,
     NonCurrentAssetCase,
     PartnershipCase,
@@ -85,8 +85,6 @@ def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
 def render_mark_scheme(
     paper: GeneratedPaper,
     path: Path,
-    *,
-    _extension_adjustment: int = 0,
 ) -> None:
     objective_policy_for("accounting").validate(paper)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -121,27 +119,8 @@ def render_mark_scheme(
             story.extend(_scheme_block(question))
         story.append(PageBreak())
     story.pop()
-    story.extend(
-        _mark_scheme_extension_pages(
-            paper,
-            count_adjustment=_extension_adjustment,
-        )
-    )
+    story.extend(_mark_scheme_extension_pages(paper))
     doc.build(story)
-    target_pages = 28
-    with fitz.open(path) as rendered:
-        page_count = rendered.page_count
-    if _extension_adjustment == 0 and page_count != target_pages:
-        render_mark_scheme(
-            paper,
-            path,
-            _extension_adjustment=target_pages - page_count,
-        )
-        return
-    if page_count != target_pages:
-        raise ValueError(
-            f"AQA accounting mark scheme rendered {page_count} pages; expected {target_pages}"
-        )
 
 
 def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
@@ -1355,64 +1334,17 @@ def _scheme_grid(
     return table
 
 
-MARK_SCHEME_EXTENSION_PAGE_COUNTS = {
-    "paper_1": 7,
-    "paper_2": 8,
-}
-
-
-def _mark_scheme_extension_pages(
-    paper: GeneratedPaper,
-    *,
-    count_adjustment: int = 0,
-) -> list[Flowable]:
-    count = MARK_SCHEME_EXTENSION_PAGE_COUNTS[paper.paper_id] + count_adjustment
-    if count < 2:
-        raise ValueError("AQA accounting mark-scheme continuation budget is too small")
+def _mark_scheme_extension_pages(paper: GeneratedPaper) -> list[Flowable]:
     questions = [
         question
         for section in paper.sections
         for question in section.options[0].questions
     ]
-    extended = [question for question in questions if question.marks >= 6]
-    pages: list[Flowable] = []
-    for index in range(count):
-        pages.append(PageBreak())
-        if index == count - 2:
-            pages.extend(_assessment_objectives_page(paper, questions))
-        elif index == count - 1:
-            pages.extend(_independent_practice_page())
-        else:
-            question = extended[index % len(extended)]
-            pages.extend(_continued_marking_guidance(question, index))
-    return pages
-
-
-def _continued_marking_guidance(
-    question: GeneratedQuestion,
-    _page_index: int,
-) -> list[Flowable]:
-    points = [text for text, _marks in _item_specific_mark_scheme_rows(question)]
-    rows = [["Indicative marking guidance", ""]]
-    rows.extend([[Paragraph(f"• {point}", STYLES["small"]), ""] for point in points])
-    table = Table(rows, colWidths=[155 * mm, 12 * mm])
-    table.setStyle(
-        TableStyle(
-            [
-                ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
-                ("BACKGROUND", (0, 0), (-1, 0), GREY),
-                ("FONTNAME", (0, 0), (-1, 0), FONT_BOLD),
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                ("PADDING", (0, 0), (-1, -1), 5),
-            ]
-        )
-    )
     return [
-        Paragraph(f"Question {question.number} guidance continued", STYLES["heading"]),
-        Spacer(1, 3 * mm),
-        Paragraph(question.prompt, STYLES["body"]),
-        Spacer(1, 4 * mm),
-        table,
+        PageBreak(),
+        *_assessment_objectives_page(paper, questions),
+        PageBreak(),
+        *_independent_practice_page(),
     ]
 
 
@@ -1544,20 +1476,13 @@ def _paper_two_section_c_pages(
 ) -> list[list[Flowable]]:
     question_16, question_17 = option.questions
     return [
-        [
-            *_intro(section),
-            Paragraph(option.title, STYLES["option"]),
-            Paragraph(option.stimulus[0], STYLES["extract"]),
-        ],
+        [*_intro(section), _accounting_system_case(question_16)],
         [*_question_page(question_16, option, lines=29)],
         [AnswerLines(34)],
         [Paragraph("Extra space", STYLES["small"]), AnswerLines(33)],
         [AnswerLines(34)],
         _do_not_write_page(),
-        [
-            Paragraph(option.stimulus[1], STYLES["extract"]),
-            Spacer(1, 4 * mm),
-        ],
+        [_shareholder_case(question_17)],
         [*_question_page(question_17, option, lines=29)],
         [AnswerLines(34)],
         [Paragraph("Extra space", STYLES["small"]), AnswerLines(33)],
@@ -1578,7 +1503,7 @@ def _paper_one_section_c_pages(
 ) -> list[list[Flowable]]:
     question_16, question_17 = option.questions
     return [
-        [*_intro(section), _accounting_system_case(option)],
+        [*_intro(section), _accounting_system_case(question_16)],
         [
             _question_table(question_16),
             Spacer(1, 4 * mm),
@@ -1610,56 +1535,40 @@ def _paper_one_section_c_pages(
     ]
 
 
-def _accounting_system_case(option: GeneratedOption) -> Table:
-    values = [round(value * 1000) for value in option.chart_values]
-    annual_salary = int(values[0] * 0.32)
-    software_cost = int(values[1] * 0.24)
-    training_cost = int(values[2] * 0.09)
-    accountant_fee = int(values[3] * 0.08)
-    lost_profit = int(values[4] * 0.14)
+def _accounting_system_case(question: GeneratedQuestion) -> Table:
+    source = question.authoring_context.get("candidate_source")
+    if not isinstance(source, dict):
+        raise ValueError(
+            "accounting-system question requires a candidate-visible source contract"
+        )
+    case = AccountingSystemCase.from_candidate_source(source)
+    current_system = list(source["current_system"])
+    bookkeeper_option = list(source["bookkeeper_option"])
+    software_option = list(source["software_option"])
+    implementation = list(source["implementation_evidence"])
     paragraphs = [
         (
-            f"<b>{option.title}</b> is a growing business owned by a sole trader. "
+            f"<b>{case.business}</b> is a growing business owned by a sole trader. "
             "Its accounting records are currently maintained by the owner using "
-            "spreadsheets, a cash book and paper invoices. Two family members work in "
-            "the business, but neither has received formal accounting training."
+            "spreadsheets, a cash book and paper invoices."
+        ),
+        " ".join(current_system),
+        (
+            f"The external accountant charges £{case.annual_accountant_fee:,} each year "
+            "to correct the records and prepare the financial statements. Inaccurate "
+            f"cost information caused an estimated £{case.estimated_lost_profit:,} of "
+            "profit to be lost during the last year."
         ),
         (
-            "The owner spends two days each week recording transactions, preparing "
-            "customer statements and following up late payments. The latest trial "
-            "balance contained several errors and the year-end accounts were delayed. "
-            f"An external accountant charges £{accountant_fee:,} each year to correct "
-            "the records and prepare the financial statements."
+            f"A qualified bookkeeper would cost £{case.annual_bookkeeper_salary:,} each "
+            f"year. {' '.join(bookkeeper_option)}"
         ),
         (
-            "The current system has caused the business to lose money. Several "
-            "irrecoverable debts were not identified promptly, inventory records do not "
-            "agree with the physical count, and the owner cannot determine the profit "
-            "earned on individual contracts."
+            f"Alternatively, cloud accounting software would cost "
+            f"£{case.annual_software_cost:,} each year, with initial staff training of "
+            f"£{case.initial_training_cost:,}. {' '.join(software_option)}"
         ),
-        (
-            f"During the last year, inaccurate cost information contributed to a contract "
-            f"being quoted too low. The owner estimates that £{lost_profit:,} of profit "
-            "was lost. Monthly bank reconciliations are also several weeks in arrears."
-        ),
-        (
-            f"A qualified bookkeeper would cost £{annual_salary:,} each year. The owner "
-            "expects the bookkeeper to improve credit control, provide monthly management "
-            "information and allow more time to develop the business. The bookkeeper "
-            "would use double-entry records and prepare draft financial statements."
-        ),
-        (
-            f"Alternatively, cloud accounting software would cost £{software_cost:,} "
-            f"with initial staff training of £{training_cost:,}. It would automate bank "
-            "reconciliation and invoicing, but the owner is concerned about data security, "
-            "subscription increases and the reliability of internet access."
-        ),
-        (
-            "The external accountant has offered to introduce the system and provide "
-            "quarterly management information. One family member opposes the change "
-            "because the existing procedures are familiar and customers have not "
-            "complained about the invoices."
-        ),
+        " ".join(implementation),
         (
             "The owner must decide whether to employ a bookkeeper, introduce the cloud "
             "system, or continue with the present arrangements."

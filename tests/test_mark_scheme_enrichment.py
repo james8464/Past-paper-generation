@@ -139,3 +139,21 @@ def test_short_guidance_mentions_only_objectives_assessed_by_the_item() -> None:
     assert "AO1:" not in guidance
     assert "AO3:" not in guidance
     assert "AO4:" not in guidance
+
+
+def test_existing_level_grid_is_not_duplicated() -> None:
+    draft = question(
+        kind="extended_response",
+        command_word="Advise",
+        marks=25,
+        mark_scheme=[
+            "Item-specific indicative point.",
+            "Level 5 (21–25): fully supported.",
+            "Level 0 (0): no creditworthy material.",
+        ],
+    )
+
+    enriched = _enrich_question(draft, topic(), "accounting")
+
+    assert sum(point.startswith("Level 5") for point in enriched.mark_scheme) == 1
+    assert sum(point.startswith("Level 0") for point in enriched.mark_scheme) == 1

@@ -4,6 +4,7 @@ import random
 import secrets
 
 from aqaaccountgen.case_data import (
+    AccountingSystemCase,
     CostingCase,
     IncomeStatementCase,
     NonCurrentAssetCase,
@@ -411,38 +412,23 @@ def _written(
             "AO3: Reach a supported conclusion on whether relying on default arrangements would meet these partners' particular needs.",
         ]
     elif rule.id == "decision_1":
+        case = AccountingSystemCase.from_chart_values(business, values)
         prompt = (
             f"Advise the owner of {business} which approach should be used to improve "
             "the accounting records. Use the information in the case and reach a "
             "justified conclusion."
         )
-        scheme = [
-            "Compare the annual and initial financial costs of each approach;",
-            "Analyse the likely effect on accuracy, timeliness and credit control;",
-            "Consider the owner's time, staff expertise and quality of management information;",
-            "Evaluate security, reliability and implementation risks;",
-            "Reach a justified recommendation supported by the case evidence.",
-            *_levels(topic, point, case_id),
-        ]
+        scheme = [*case.mark_scheme_points(), *_decision_levels()]
+        authoring_context = case.authoring_context()
     elif rule.id == "decision_2":
         prompt = (
             f"Advise the investor whether the shares in {business} should be retained "
             "or sold. Use the financial and non-financial evidence and reach a "
             "justified conclusion."
         )
-        if paper_id == "paper_1":
-            case = ShareholderCase.from_chart_values(business, values)
-            scheme = [*case.mark_scheme_points(), *_levels(topic, point, case_id)]
-            authoring_context = case.authoring_context()
-        else:
-            scheme = [
-                "Analyse movements in profit, equity, dividends and the market price;",
-                "Use relevant investor ratios and explain what they indicate;",
-                "Assess gearing, interest-rate exposure and future cost pressure;",
-                "Consider dividend policy and relevant non-financial evidence;",
-                "Reach a balanced judgement that recognises the investor's objectives.",
-                *_levels(topic, point, case_id),
-            ]
+        case = ShareholderCase.from_chart_values(business, values)
+        scheme = [*case.mark_scheme_points(), *_decision_levels()]
+        authoring_context = case.authoring_context()
     elif rule.id == "frc":
         prompt = (
             f"Explain one benefit to investors of {business} preparing its financial "
@@ -849,6 +835,17 @@ def _levels(topic: Topic, point: str, case_id: int) -> list[str]:
         "Level 3 (11–15): sound accounting analysis and some evaluation.",
         "Level 2 (6–10): partial calculations or limited analytical links.",
         "Level 1 (1–5): isolated relevant points.",
+        "Level 0 (0): no creditworthy material.",
+    ]
+
+
+def _decision_levels() -> list[str]:
+    return [
+        "Level 5 (21–25): fully integrated analysis of the published case, balanced evaluation and a justified recommendation.",
+        "Level 4 (16–20): developed, case-applied analysis and relevant evaluation with a supported recommendation.",
+        "Level 3 (11–15): sound accounting analysis using some case evidence and some evaluation.",
+        "Level 2 (6–10): partial calculations or limited analytical links with weak application.",
+        "Level 1 (1–5): isolated relevant points with little or no development.",
         "Level 0 (0): no creditworthy material.",
     ]
 
