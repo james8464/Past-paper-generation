@@ -129,7 +129,8 @@ expenditure or commitments. Confirm prize rules and reviewer availability first.
 
 The announced deadline is 2 November 2026 at midnight. The formal three-page DOCX
 and PDF, technical/user dossier and mathematical qualification note are generated and
-visually verified as portable sans-serif documents. The formal PDF remains exactly
+visually verified as portable sans-serif documents. The formal application is in
+French; both supporting reports are in English. The formal PDF remains exactly
 three A4 pages. A factual email draft, claims register, checklist, video script and a
 user-operated macOS recording command are included. A real demonstration video has
 not been recorded. Confirm applicant enrolment eligibility, contact details and

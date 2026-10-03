@@ -13,10 +13,12 @@ The jury evaluates the relationship with Occitanie, originality, engineering cha
 Run `tools/build_occitanie_submission.py` with the bundled document runtime to recreate:
 
 - `Prix-Occitanie-2026-Candidature-James-Durup.docx` — formal three-page application;
-- `Paper-Creator-NSI-Dossier-Technique-et-Usage.docx` — technical and user dossier;
-- `Paper-Creator-NSI-Analyse-Mathematique.docx` — measurement and decision framework.
+- `Paper-Creator-NSI-Technical-and-User-Report.docx` — technical and user dossier;
+- `Paper-Creator-NSI-Mathematical-Analysis.docx` — measurement and decision framework.
 
-Matching PDFs have been rendered and visually checked page by page in
+The formal application is in French, following the organiser's form. The
+supporting technical/user and mathematical reports are in English, as requested
+by James. Matching PDFs have been rendered and visually checked page by page in
 `output/occitanie-2026/`: three A4 pages for the formal application, four for
 the technical/user dossier and three for the mathematical analysis. The directory
 is intentionally ignored by Git so personal submission copies are not published

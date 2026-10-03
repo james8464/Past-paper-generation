@@ -336,139 +336,139 @@ def build_technical_dossier() -> Path:
     configure_document(doc, compact=True)
     title_block(
         doc,
-        "Paper Creator pour le baccalauréat NSI",
-        "Dossier technique et parcours utilisateur, Prix Occitanie 2026",
+        "Paper Creator for French NSI",
+        "Technical and user report · Prix Occitanie 2026",
     )
     doc.add_paragraph(
-        "Ce dossier explique le prototype, ce qu’un enseignant peut en faire aujourd’hui et les preuves encore nécessaires avant un usage scolaire qualifié. Le socle technique existe, mais la première campagne complète avec Gemma 4 12B a rejeté dix sujets sur dix. Aucun modèle français n’est donc recommandé. La suite dépend de corrections mesurées, de deux relecteurs NSI et d’un pilote encadré."
+        "This report explains the prototype, what a teacher can do with it today, and the evidence still needed before it can be recommended for classroom practice. The engineering foundation exists, but the first complete Gemma 4 12B campaign rejected all ten papers. No French model is therefore recommended. Progress depends on measured repairs, two independent NSI teacher reviewers, and a supervised pilot."
     )
-    doc.add_heading("Besoin utilisateur", level=1)
+    doc.add_heading("The teacher’s task", level=1)
     doc.add_paragraph(
-        "Un enseignant dispose d’un nombre fini d’annales et doit préparer des exercices nouveaux sans introduire d’erreur de contenu ou de barème. Paper Creator produit un brouillon complet à relire. L’enseignant garde la décision de diffusion ; l’application ne corrige pas les copies et ne collecte aucune donnée élève."
+        "A teacher has a finite supply of past papers and needs fresh practice without introducing errors in questions or marking. Paper Creator produces a complete draft for review. The teacher decides whether to share it; the app neither marks student work nor collects student responses."
     )
     add_table(
         doc,
-        ["Étape", "Action de l’enseignant", "Action du logiciel"],
+        ["Step", "Teacher", "Application"],
         [
-            ["1", "Préparer les références officielles avec son accord.", "Télécharger, identifier et indexer localement les documents autorisés."],
-            ["2", "Choisir un modèle Ollama et le profil d’impression.", "Vérifier que le modèle est local et enregistrer son empreinte."],
-            ["3", "Créer un sujet non relu.", "Planifier trois exercices, générer, résoudre, contrôler et réparer les échecs."],
-            ["4", "Lire le sujet, le corrigé et les preuves.", "Afficher le statut, les sources, les contrôles et les limites."],
-            ["5", "Enregistrer une décision de relecture.", "Lier le compte rendu aux empreintes exactes des fichiers."],
+            ["1", "Approve preparation of official references.", "Download, identify, and index permitted documents locally."],
+            ["2", "Choose an Ollama model and print profile.", "Check the local model and record its identity."],
+            ["3", "Create an unreviewed draft.", "Plan three exercises; generate, solve, check, and repair failures."],
+            ["4", "Read both PDFs and the evidence.", "Show status, sources, checks, and limitations."],
+            ["5", "Record a review decision.", "Bind the review to the exact file hashes."],
         ],
         [1.2, 7.3, 8.3],
     )
 
     doc.add_heading("Architecture", level=1)
     doc.add_paragraph(
-        "L’interface SwiftUI communique avec un moteur Python par messages JSON. Le registre d’évaluations sélectionne une politique française explicite. Cette séparation empêche les objectifs d’évaluation britanniques, les barèmes entiers et les consignes en anglais de s’appliquer par défaut au baccalauréat."
+        "A SwiftUI interface exchanges JSON messages with a Python engine. The assessment registry selects an explicit French policy. This boundary prevents UK assessment objectives, integer-only marks, and English instructions from silently applying to the baccalauréat."
     )
     add_table(
         doc,
-        ["Couche", "Responsabilité", "Preuve produite"],
+        ["Layer", "Responsibility", "Evidence retained"],
         [
-            ["Catalogue", "Contexte éducatif, version du programme, règles 2027 et langue.", "Identifiants immuables et compatibilité contrôlée."],
-            ["Références", "Filtrage France, Terminale, NSI, programme compatible, catégorie et droits.", "URL, date, SHA-256, pages et séparation référence/holdout."],
-            ["Génération", "Trois plans indépendants, contexte, questions, réponses et barème en français.", "Candidats et tentatives rejetées conservés dans le point de reprise."],
-            ["Vérification", "SQL borné, traces, binaire, graphes, cohérence, solution indépendante et originalité.", "Résultats déterministes et statut non résolu quand le contrôle manque."],
-            ["Publication", "Sujet, corrigé et manifeste atomiques en français.", "Empreintes des artefacts et absence de publication partielle."],
-            ["Relecture", "Décision humaine et grille de huit dimensions.", "Enregistrement séparé lié aux empreintes."],
+            ["Catalogue", "Education context, curriculum version, 2027 rules, and language.", "Immutable IDs and checked compatibility."],
+            ["References", "Filter by France, Terminale, NSI, curriculum, category, and rights.", "URL, date, SHA-256, pages, and reference/holdout split."],
+            ["Generation", "Three independent plans; French contexts, questions, answers, and credit.", "Candidates and rejected attempts in resumable checkpoints."],
+            ["Verification", "Bounded SQL, traces, binary, graphs, consistency, blind solving, originality.", "Deterministic results; unresolved status when a check is unavailable."],
+            ["Publication", "Atomic French question paper, proposed solution, and manifest.", "Artifact hashes; no partial release."],
+            ["Review", "Human decision against an eight-part rubric.", "Separate record tied to artifact hashes."],
         ],
         [3.0, 8.0, 5.8],
     )
 
-    doc.add_heading("Règles françaises implémentées", level=1)
+    doc.add_heading("Implemented French assessment rules", level=1)
     add_bullets(
         doc,
         [
-            "Partie écrite de Terminale générale, session 2027 : 3 h 30 et trois exercices indépendants.",
-            "Dix-huit points techniques et deux points distincts pour la maîtrise de la langue. Le détail du barème reste indicatif.",
-            "Connaissances de Première utilisables comme prérequis, sans remplacer les capacités essentielles de Terminale.",
-            "Chaque question porte un à trois codes de capacité officiels, une opération cognitive, une difficulté de 1 à 4 et un temps estimé.",
-            "Chaque exercice couvre ses thèmes annoncés, totalise 70 minutes, contient au moins trois opérations cognitives et une question de difficulté 4."
+            "Terminale written component, session 2027: 3 hours 30 minutes and three independent exercises.",
+            "Eighteen technical points plus a separate two-point French-language component. Detailed credit is indicative, not an official marking grid.",
+            "Première knowledge may be a prerequisite but cannot replace the essential Terminale focus.",
+            "Each question records one to three official capability codes, a cognitive operation, a 1–4 difficulty label, and an estimated time.",
+            "Each exercise covers its declared topics, totals 70 minutes, uses at least three cognitive operations, and includes a difficulty-4 question."
         ],
     )
 
-    doc.add_heading("Qualité des questions", level=1)
+    doc.add_heading("Question quality", level=1)
     doc.add_paragraph(
-        "Le modèle reçoit un plan contraint plutôt qu’une demande vague. Pour les bases de données, le plan peut exiger une interrogation complexe, une mutation INSERT, UPDATE ou DELETE, ou la détection d’une anomalie. Pour les graphes, le sujet contient des sommets, arêtes et poids structurés, puis le moteur vérifie que la figure et le contrat de réponse décrivent exactement le même graphe. Les questions fermées passent par un calcul de référence ; les affirmations non couvertes restent explicitement non résolues."
+        "The model receives a constrained plan, not a vague request. A database plan can require a complex query, an INSERT/UPDATE/DELETE operation, or error diagnosis. Graph tasks carry structured vertices, edges, and weights, so the engine can check that the diagram and answer contract describe the same graph. Closed-answer questions receive a reference calculation; unsupported claims stay explicitly unresolved."
     )
     doc.add_paragraph(
-        "La difficulté ne peut pas être prouvée par une étiquette du modèle. Le schéma refuse les suites de questions de simple rappel et impose une progression vers l’analyse, la conception, le débogage ou la justification. La calibration finale compare les sujets à un holdout d’annales et aux temps observés pendant le pilote."
-    )
-
-    doc.add_heading("Fidélité des PDF", level=1)
-    doc.add_paragraph(
-        "Le profil A4 a été mesuré sur le sujet Métropole 2026 : géométrie 595,32 × 841,92 points, corps principal proche d’Arial 12 points et code proche de Courier New 12 points. La couverture 2027 reprend la hiérarchie, les positions verticales, la durée et l’interdiction de la calculatrice. Les exercices utilisent des titres centrés, une phrase de portée en italique, des numéros en retrait et des figures vectorielles. Le pied de page et le titre « entraînement non officiel » conservent une identité indépendante ; le logiciel n’imite aucun identifiant officiel."
+        "A difficulty label from a model is not proof of difficulty. The schema rejects recall-only sequences and requires progression towards analysis, design, debugging, or justification. Final calibration must compare drafts with held-out past papers and observed learner timings."
     )
 
-    doc.add_heading("Sécurité, confidentialité et droits", level=1)
+    doc.add_heading("PDF fidelity", level=1)
+    doc.add_paragraph(
+        "The A4 profile was measured against a 2026 Métropole paper: 595.32 × 841.92 points, body text close to 12-point Arial, and code close to 12-point Courier New. The provisional 2027 cover carries the hierarchy, vertical placement, duration, and no-calculator notice. Exercises use centred titles, italic scope lines, indented numbering, and vector diagrams. Independent branding and a visible ‘non-official practice’ title prevent confusion with an official examination paper."
+    )
+
+    doc.add_heading("Safety, privacy, and rights", level=1)
     add_table(
         doc,
-        ["Risque", "Mesure actuelle", "Limite"],
+        ["Risk", "Current safeguard", "Limit"],
         [
-            ["Fuite de données", "Modèle local par défaut, aucune copie élève, aucun repli cloud silencieux.", "Un serveur Ollama distant reste possible uniquement avec accord explicite et HTTPS."],
-            ["Code généré", "SQL isolé et borné ; interprétation restreinte des constructions prises en charge.", "Le logiciel n’exécute jamais un programme Python arbitraire."],
-            ["Source inadaptée", "Filtrage du périmètre avant classement, holdout séparé et échec explicite si aucune source ne convient.", "Les droits et illustrations tierces restent examinés document par document."],
-            ["Copie d’annale", "Comparaison du texte, du code normalisé, de la structure et des générations précédentes.", "Un score de similarité ne constitue pas une garantie juridique."],
-            ["Droits documentaires", "Références conservées localement avec URL, droits et empreinte.", "Les illustrations tierces demandent une analyse document par document."],
+            ["Data exposure", "French UI uses loopback Ollama; no student responses or silent cloud fallback.", "The separate CLI permits a remote Ollama server only by explicit opt-in over HTTPS."],
+            ["Generated code", "SQL runs in an isolated, bounded setting; supported code has restricted interpretation.", "Arbitrary generated Python is never executed."],
+            ["Wrong source", "Scope filter precedes ranking; holdouts are separate; empty eligible sets fail explicitly.", "Third-party rights still need document-level review."],
+            ["Past-paper copying", "Compare text, normalised code, structure, and previous generations.", "Similarity is risk evidence, not a legal guarantee."],
+            ["Document rights", "Local references retain URL, rights status, and hash.", "Third-party illustrations need separate clearance."],
         ],
         [3.0, 8.0, 5.8],
     )
 
-    doc.add_heading("Qualification technique", level=1)
+    doc.add_heading("Qualification evidence", level=1)
     doc.add_paragraph(
-        "Le banc d’essai autonome exécute dix sujets par modèle, soit trente exercices par configuration, sur des graines fixes. Il conserve les sorties, erreurs, points de reprise, temps, version Ollama, matériel, empreinte du modèle et empreinte du code. Un verrou empêche deux campagnes françaises simultanées. Si le code ou les références changent, la campagne s’arrête au lieu de mélanger des résultats incompatibles."
+        "The benchmark runner attempts ten complete papers per model—30 exercises per configuration—using fixed seeds. It retains outputs, errors, checkpoints, timing, Ollama version, hardware, model digest, and source identity. A lock prevents duplicate French campaigns. If code or references change, the run stops rather than mixing incompatible evidence."
     )
     add_table(
         doc,
-        ["Niveau", "Condition de passage", "Statut au 3 octobre 2026"],
+        ["Gate", "Required evidence", "Status · 3 October 2026"],
         [
-            ["Automatisé", "Tests, contrôles de contenu, publication et inspection PDF sans défaut bloquant.", "Contrôles implémentés ; première campagne Gemma 4 12B : 0/10 sujet accepté. Correctifs et nouvel essai requis."],
-            ["Enseignants", "Deux enseignants relisent indépendamment six sujets ; exactitude et barème à 4/4, autres dimensions au moins 3/4.", "Relecteurs non encore recrutés."],
-            ["Élèves", "Pilote supervisé : durée, ambiguïtés, accessibilité et charge enseignant.", "Planifié, sous réserve d’un établissement volontaire."],
+            ["Automated", "Tests, content checks, publication checks, and PDF inspection with no blocking defect.", "Controls implemented; Gemma 4 12B first campaign: 0/10 accepted. Redesign and rerun needed."],
+            ["Teachers", "Two NSI teachers independently review six papers; correctness and marking 4/4, other dimensions at least 3/4.", "Reviewers not yet recruited."],
+            ["Learners", "Supervised pilot measuring timing, ambiguity, accessibility, and teacher workload.", "Planned; no partner school yet."],
         ],
         [3.2, 9.0, 4.6],
     )
 
-    doc.add_heading("Déploiement en Occitanie", level=1)
+    doc.add_heading("Occitanie deployment", level=1)
     doc.add_paragraph(
-        "Le premier déploiement garde la création sur le Mac de l’enseignant et utilise les canaux existants pour les élèves. La Région indique que tous les lycées publics sont labellisés « Lycées numériques » et que loRdi vise l’accès aux ressources pédagogiques. Le projet ne prétend pas faire tourner l’application sur ces ordinateurs Windows ; ils lisent simplement les PDF. Le pilote cherchera des enseignants dans les académies de Toulouse et de Montpellier et documentera les différences réelles de contexte avant toute affirmation territoriale."
+        "The first deployment keeps generation on a teacher’s Mac and uses existing channels to share PDFs with students. Occitanie’s loRdi devices support access to resources; the project does not claim that these Windows laptops run the Mac app or a large model. The pilot will seek teachers in the Toulouse and Montpellier academies and document actual access conditions rather than assert an unevidenced regional divide."
     )
     doc.add_paragraph(
-        "Le module régional prévu utilisera des jeux sous Licence Ouverte 2.0. Les valeurs officielles resteront distinguées des données synthétiques d’un exercice. Les premiers thèmes envisagés sont l’infrastructure des lycées et loRdi, la consommation d’énergie, les énergies renouvelables et les transports. Chaque contexte devra servir une capacité NSI réelle, par exemple une requête SQL, un graphe de routage ou une analyse algorithmique."
+        "A planned regional module will use cleared Open Licence 2.0 datasets. Official values will remain distinct from synthetic exercise data. Candidate contexts include school infrastructure, loRdi, energy use, renewables, and transport. Every context must support a genuine NSI capability, such as SQL, route graphs, or algorithm analysis; regional names alone are not educational value."
     )
 
-    doc.add_heading("Risques et décisions", level=1)
+    doc.add_heading("Risks and decisions", level=1)
     add_table(
         doc,
-        ["Risque", "Décision"],
+        ["Risk", "Decision"],
         [
-            ["Erreur pédagogique crédible mais fausse", "Bloquer la publication automatisée quand un contrôle échoue et conserver la relecture humaine comme condition d’usage."],
-            ["Modèle trop lourd pour le matériel", "Comparer la qualité avant la vitesse, mesurer le matériel réel et ne pas annoncer une compatibilité avec tous les Mac."],
-            ["Mise en page historiquement exacte mais règles 2027 nouvelles", "Étiqueter le profil 2027 comme provisoire jusqu’à publication d’exemples contemporains."],
-            ["Faible lien régional", "Évaluer un pilote réel et des données régionales plutôt que renommer artificiellement les villes d’un exercice."],
-            ["Résultat de pilote défavorable", "Publier la limite, restreindre le périmètre ou arrêter l’extension concernée."],
+            ["Plausible but wrong question", "Block automated publication on failed checks; require human review before classroom use."],
+            ["Model exceeds available memory", "Prioritise correctness over speed, measure actual hardware, and do not promise compatibility with every Mac."],
+            ["Historical layout, new 2027 rules", "Label the 2027 visual profile provisional until contemporary papers support it."],
+            ["Weak regional connection", "Test a real pilot and relevant regional data rather than merely rename places in a question."],
+            ["Unfavourable pilot", "Publish the limitation, narrow scope, or stop the affected extension."],
         ],
         [6.0, 10.8],
     )
 
-    doc.add_heading("Sources", level=1)
+    doc.add_heading("Primary sources", level=1)
     sources = [
-        ("Règlement du Prix Occitanie 2026", "https://association.centralesupelec-alumni.com/medias/editor/PRIX_OCCITANIE_2026/REGLEMENT_PRIX_OCCITANIE_2026.pdf"),
-        ("Définition officielle de l’épreuve NSI 2027", "https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N"),
-        ("Programmes et ressources NSI", "https://eduscol.education.gouv.fr/5823/programmes-et-ressources-en-numerique-et-sciences-informatiques-voie-g"),
-        ("Annales officielles", "https://eduscol.education.gouv.fr/5199/annales-des-epreuves-du-baccalaureat-des-voies-generale-et-technologique"),
+        ("Prix Occitanie 2026 rules", "https://association.centralesupelec-alumni.com/medias/editor/PRIX_OCCITANIE_2026/REGLEMENT_PRIX_OCCITANIE_2026.pdf"),
+        ("Official NSI 2027 examination definition", "https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N"),
+        ("NSI curriculum and resources", "https://eduscol.education.gouv.fr/5823/programmes-et-ressources-en-numerique-et-sciences-informatiques-voie-g"),
+        ("Official past-paper archive", "https://eduscol.education.gouv.fr/5199/annales-des-epreuves-du-baccalaureat-des-voies-generale-et-technologique"),
         ("loRdi", "https://www.laregion.fr/aide-a-l-acquisition-d-un-ordinateur-portable-lordi"),
-        ("Lycées de demain", "https://www.laregion.fr/Quelle-demarche-pour-le-lycee-de-demain-39604"),
-        ("Open data des lycées d’Occitanie", "https://data.laregion.fr/explore/dataset/lycees-occitanie/"),
-        ("Historique de consommation d’énergie", "https://data.laregion.fr/explore/dataset/historique-de-la-consommation-denergie-en-occitanie/"),
-        ("Recommandations CNIL pour les enseignants", "https://www.cnil.fr/fr/enseignant-usage-systeme-ia"),
+        ("Occitanie school strategy", "https://www.laregion.fr/Quelle-demarche-pour-le-lycee-de-demain-39604"),
+        ("Occitanie schools open data", "https://data.laregion.fr/explore/dataset/lycees-occitanie/"),
+        ("Occitanie energy-use history", "https://data.laregion.fr/explore/dataset/historique-de-la-consommation-denergie-en-occitanie/"),
+        ("CNIL guidance for teachers", "https://www.cnil.fr/fr/enseignant-usage-systeme-ia"),
     ]
     for index, (label, url) in enumerate(sources, 1):
         add_source(doc, index, label, url)
 
-    path = OUTPUT / "Paper-Creator-NSI-Dossier-Technique-et-Usage.docx"
+    path = OUTPUT / "Paper-Creator-NSI-Technical-and-User-Report.docx"
     OUTPUT.mkdir(parents=True, exist_ok=True)
     finalize_fonts(doc)
     doc.save(path)
@@ -480,106 +480,106 @@ def build_mathematical_analysis() -> Path:
     configure_document(doc)
     title_block(
         doc,
-        "Analyse mathématique de la qualification",
-        "Paper Creator, pilote NSI Occitanie, version du 3 octobre 2026",
+        "Mathematical analysis of qualification",
+        "Paper Creator · Occitanie NSI pilot · 3 October 2026",
     )
     doc.add_paragraph(
-        "Cette note définit les quantités que le projet mesure et les seuils utilisés pour décider si un sujet peut poursuivre la qualification. Elle ne transforme pas un petit échantillon en preuve d’équivalence psychométrique avec le baccalauréat. Les exemples numériques sont signalés comme illustratifs tant que le pilote n’a pas fourni de données."
+        "This note defines what the project measures and the thresholds for deciding whether a paper may proceed through qualification. A small sample cannot prove psychometric equivalence to the baccalauréat. Numerical examples remain illustrative until a supervised pilot supplies observations."
     )
     doc.add_paragraph(
-        "Résultat observé au 3 octobre 2026 : la première campagne de dix sujets complets avec Gemma 4 12B n’a accepté aucun sujet. Les calculs d’échantillonnage ci-dessous décrivent un scénario futur sans défaut ; ils ne s’appliquent pas à cette campagne et ne justifient aucune recommandation du modèle."
-    )
-
-    doc.add_heading("Contraintes exactes du sujet", level=1)
-    doc.add_paragraph(
-        "Pour les trois exercices e = 1, 2, 3, le logiciel impose une durée mₑ = 70 minutes. La durée totale vaut donc Σmₑ = 210 minutes, soit 3 h 30. Les crédits techniques pₑ sont tirés parmi 5,5 ; 6 ; 6,5 points dans un ordre dépendant de la graine, avec Σpₑ = 18. Le composant de langue vaut exactement 2 points et reste séparé. Le total imprimé est 20 points. Les calculs utilisent des nombres décimaux exacts, et non des flottants binaires."
-    )
-    doc.add_paragraph(
-        "Pour chaque question q d’un exercice, les points de ses critères doivent vérifier Σcᵢ = p_q et les temps estimés doivent vérifier Σt_q = 70. Une différence, même de 0,5 point, bloque le document."
+        "Observed result on 3 October 2026: the first campaign of ten complete Gemma 4 12B papers accepted none. The zero-defect sample calculations below describe a possible future result; they do not apply to this campaign or justify recommending that model."
     )
 
-    doc.add_heading("Demande cognitive", level=1)
+    doc.add_heading("Exact paper constraints", level=1)
     doc.add_paragraph(
-        "Chaque question reçoit une opération parmi rappel, application, analyse, conception, débogage et justification, ainsi qu’une difficulté entière de 1 à 4. Un exercice valide contient au plus une question de rappel, au moins trois opérations différentes, au moins deux opérations de niveau supérieur parmi analyse, conception, débogage et justification, et au moins une question de difficulté 4. Ces inégalités constituent un garde-fou structurel ; elles ne prouvent pas que des élèves ressentiront la difficulté attendue."
+        "For three exercises e = 1, 2, 3, the plan assigns mₑ = 70 minutes each. Thus Σmₑ = 210 minutes, or 3 hours 30 minutes. Technical credits pₑ are 5.5, 6, and 6.5 points in a seed-dependent order, with Σpₑ = 18. A separate French-language component contributes exactly 2 points, making the printed total 20. Credit uses exact decimal arithmetic, not binary floating point."
+    )
+    doc.add_paragraph(
+        "For every question q, its marking criteria must satisfy Σcᵢ = p_q; estimated question times in each exercise must satisfy Σt_q = 70 minutes. A mismatch—even 0.5 point—blocks the document."
     )
 
-    doc.add_heading("Taux de défaut et taille d’échantillon", level=1)
+    doc.add_heading("Cognitive demand", level=1)
     doc.add_paragraph(
-        "Soit p la probabilité qu’un exercice contienne un défaut bloquant détectable pendant la revue. Après n exercices indépendants et zéro défaut observé, une borne supérieure unilatérale simple à 95 % est p₉₅ = 1 - 0,05^(1/n). Pour n = 30 exercices d’un modèle, p₉₅ ≈ 9,5 %. Même une campagne sans échec ne permet donc pas d’affirmer que le taux réel est inférieur à 1 %. Il faudrait environ 299 exercices sans défaut pour atteindre cette borne."
+        "Each question is labelled as recall, application, analysis, design, debugging, or justification, and receives an integer difficulty label from 1 to 4. A valid exercise has at most one recall-only question, at least three different operations, at least two higher-order operations, and at least one difficulty-4 question. These constraints are structural guardrails; they do not establish how difficult learners will actually find the work."
+    )
+
+    doc.add_heading("Defect rates and sample size", level=1)
+    doc.add_paragraph(
+        "Let p be the probability that an exercise has a blocking defect detectable during review. Given n independent exercises and zero observed defects, a simple one-sided 95% upper bound is p₉₅ = 1 − 0.05^(1/n). For n = 30 exercises from one model, p₉₅ ≈ 9.5%. Even a flawless 30-exercise run would not establish a true defect rate below 1%; roughly 299 defect-free exercises would be needed for that bound."
     )
     add_table(
         doc,
-        ["Observations sans défaut", "Borne supérieure 95 %", "Interprétation"],
+        ["Zero-defect sample", "95% upper bound", "Interpretation"],
         [
-            ["30 exercices", "9,5 %", "Premier tri d’un modèle, insuffisant pour une affirmation forte."],
-            ["90 exercices", "3,3 %", "Résultat agrégé de trois modèles, non transférable à chaque modèle."],
-            ["299 exercices", "1,0 %", "Ordre de grandeur nécessaire pour une borne inférieure à 1 %."],
+            ["30 exercises", "9.5%", "Initial model screen, not a strong reliability claim."],
+            ["90 exercises", "3.3%", "A pooled total would not transfer to each model."],
+            ["299 exercises", "1.0%", "Approximate scale needed for a bound below 1%."],
         ],
         [4.0, 4.0, 8.8],
     )
     doc.add_paragraph(
-        "L’hypothèse d’indépendance est optimiste : plusieurs exercices peuvent partager le même modèle, le même prompt ou la même faiblesse de contrôle. Le rapport conserve donc les défauts par catégorie et par version, au lieu de publier un taux unique sans contexte."
+        "Independence is optimistic: exercises may share a model, prompt, or verification weakness. The evaluation must therefore retain defects by category and version rather than publish a context-free aggregate rate."
     )
 
-    doc.add_heading("Évaluation par les enseignants", level=1)
+    doc.add_heading("Teacher evaluation", level=1)
     doc.add_paragraph(
-        "Deux enseignants notent six sujets sur huit dimensions : exactitude, ambiguïté, programme, français, difficulté, durée, barème et structure authentique. Chaque note va de 1 à 4. Un sujet ne passe que si exactitude = 4, barème = 4 et toutes les autres notes sont au moins 3 pour les deux relecteurs après révision. Cette règle privilégie l’absence d’erreur substantielle plutôt qu’une moyenne qui pourrait masquer un défaut grave."
+        "Two teachers score six papers independently on eight dimensions: correctness, ambiguity, curriculum fit, French, difficulty, duration, marking, and authentic structure. Scores run from 1 to 4. After revisions, a paper passes only if both reviewers give correctness = 4 and marking = 4, with every other dimension at least 3. A high average cannot hide a substantive error."
     )
     doc.add_paragraph(
-        "L’accord entre relecteurs sera décrit par dimension. Pour les notes ordinales, le projet calculera le kappa pondéré quadratique κw. Il publiera aussi la matrice des désaccords et les commentaires, car un κ élevé peut coexister avec un biais partagé. Avec seulement douze fiches de revue, l’intervalle d’incertitude restera large."
-    )
-
-    doc.add_heading("Calibration du temps", level=1)
-    doc.add_paragraph(
-        "Pour un élève i et un sujet j, l’erreur relative de durée vaut eᵢⱼ = (Tᵢⱼ - 210) / 210. La médiane de T décrit mieux le temps typique qu’une moyenne sensible aux abandons. Le rapport donnera la médiane, l’écart interquartile, le nombre de copies terminées et la proportion dépassant 210 minutes. Les observations seront séparées selon le contexte et l’aménagement éventuel ; elles ne serviront pas à construire une norme nationale."
+        "Agreement will be reported per dimension. For ordinal ratings, the project will calculate quadratically weighted kappa κw, alongside a disagreement matrix and comments. High agreement can still coexist with shared bias, and only twelve review sheets leave wide uncertainty."
     )
 
-    doc.add_heading("Mesure du temps enseignant", level=1)
+    doc.add_heading("Timing calibration", level=1)
     doc.add_paragraph(
-        "Le gain par sujet est Δt = t_manuel - (t_génération surveillée + t_relecture + t_correction). Le pilote mesure chaque terme au lieu de demander une impression globale. Pour N sujets, la valeur annuelle en temps est N × Δt. Exemple illustratif : si un sujet manuel demande 120 minutes et que la génération, la relecture et les corrections demandent 35 minutes, douze sujets économisent 17 heures. Ce chiffre ne sera pas présenté comme un résultat avant observation."
+        "For learner i and paper j, relative duration error is eᵢⱼ = (Tᵢⱼ − 210) / 210. The median T better describes a typical completion time than a mean distorted by abandoned attempts. Results will include the median, interquartile range, number of completed papers, and share exceeding 210 minutes. Contexts and approved accommodations will be reported separately; a small pilot cannot define a national norm."
     )
 
-    doc.add_heading("Fidélité de mise en page", level=1)
+    doc.add_heading("Teacher time", level=1)
     doc.add_paragraph(
-        "La comparaison visuelle repose sur des mesures, pas sur un pourcentage opaque de ressemblance. Pour une caractéristique k, par exemple la marge, la taille de police ou la position verticale d’un titre, la distance normalisée est d_k = |x_k - r_k| / s_k, où r_k est la mesure de référence et s_k une tolérance justifiée. La distance de mise en page D = Σw_k d_k sert à détecter une régression. Les poids w_k totalisent 1 et sont publiés. Le score ne couvre pas la qualité des questions."
-    )
-    doc.add_paragraph(
-        "Le profil actuel utilise notamment A4 595,32 × 841,92 points, un corps de 12 points, une marge gauche proche de 70,6 points, des titres d’exercice de 14 points et des positions de couverture mesurées sur le sujet Métropole 2026. L’identité indépendante et la mention non officielle restent des écarts voulus."
+        "Time saved per paper is Δt = t_manual − (t_supervised generation + t_review + t_repair). The pilot will measure each term rather than ask for a general impression. Across N papers, annual time saved is N × Δt. Illustration only: if a manual paper takes 120 minutes and assisted generation, review, and repair take 35, twelve papers save 17 hours. This is not an observed result."
     )
 
-    doc.add_heading("Originalité", level=1)
+    doc.add_heading("Layout fidelity", level=1)
     doc.add_paragraph(
-        "Le contrôle compare les n-grammes de texte, le code normalisé, la structure des questions et les générations précédentes. Les seuils sont ajustés sur trois classes étiquetées : copie, renommage superficiel et exercice réellement différent. La précision et le rappel sont rapportés séparément. Un seuil est acceptable seulement si les copies et renommages du jeu de validation sont rejetés sans éliminer une part excessive des exercices différents. Ce contrôle réduit un risque ; il ne constitue pas une garantie de droit d’auteur."
+        "Visual comparison uses measurements, not an opaque ‘similarity percentage’. For feature k—such as a margin, font size, or heading position—the normalised distance is d_k = |x_k − r_k| / s_k, where r_k is the reference measurement and s_k is a justified tolerance. Aggregate layout distance D = Σw_k d_k flags regressions; published weights sum to 1. This score says nothing about question quality."
+    )
+    doc.add_paragraph(
+        "The current profile uses A4 at 595.32 × 841.92 points, 12-point body text, a left margin near 70.6 points, 14-point exercise titles, and cover positions measured from a 2026 Métropole paper. Independent branding and the non-official notice are deliberate differences."
     )
 
-    doc.add_heading("Énergie et sobriété", level=1)
+    doc.add_heading("Originality", level=1)
     doc.add_paragraph(
-        "La taille d’un téléchargement de modèle ne mesure ni la mémoire utilisée ni l’énergie. Lors du banc d’essai, l’énergie par sujet accepté sera E = P_moyenne × t / 3600, avec P en watts et t en secondes. Le rapport donnera l’énergie des tentatives rejetées et le nombre de réutilisations du PDF. Aucune réduction d’empreinte carbone ne sera revendiquée sans mesure de puissance, facteur d’émission explicite et scénario de comparaison pertinent."
+        "Screening compares text n-grams, normalised code, question structure, and previous generations. Thresholds must be calibrated on labelled copies, superficial renamings, and genuinely different tasks; precision and recall are reported separately. A threshold is acceptable only if it rejects copied and renamed holdout cases without discarding too many original ones. This reduces risk but is not a copyright guarantee."
     )
 
-    doc.add_heading("Budget et seuil de décision", level=1)
+    doc.add_heading("Energy and resource use", level=1)
+    doc.add_paragraph(
+        "Model download size is neither memory use nor energy consumption. During benchmarking, energy per accepted paper will be E = P_mean × t / 3600, with P in watts and t in seconds. The report will include energy spent on rejected attempts and the number of times a PDF is reused. No carbon-reduction claim is justified without measured power, an explicit emissions factor, and a relevant comparator."
+    )
+
+    doc.add_heading("Budget and decision rule", level=1)
     add_table(
         doc,
-        ["Poste", "Montant", "Mesure associée"],
+        ["Use", "Amount", "Evidence purchased"],
         [
-            ["Relecture", "500 €", "Douze fiches indépendantes sur six sujets et temps réellement passé."],
-            ["Déplacements", "200 €", "Séances du pilote, contexte de l’établissement et contraintes observées."],
-            ["Matériel et accessibilité", "200 €", "Configurations testées, mémoire, durée, PDF standard et agrandi."],
-            ["Données et imprévus", "100 €", "Ressources régionales ou besoin documenté par le pilote."],
+            ["Teacher review", "€500", "Twelve independent review sheets for six papers and time spent."],
+            ["Pilot travel", "€200", "Observed school context and access constraints."],
+            ["Hardware/accessibility", "€200", "Tested configurations, memory, speed, standard/enlarged PDFs."],
+            ["Data/contingency", "€100", "Regional resources or a documented pilot need."],
         ],
         [5.2, 2.2, 9.4],
     )
     doc.add_paragraph(
-        "La poursuite au-delà du pilote exige simultanément : aucun défaut bloquant non résolu, deux recommandations écrites pour un usage d’entraînement après relecture, une durée plausible, un gain de temps enseignant observé et un matériel compatible avec le scénario choisi. Un seul indicateur favorable ne suffit pas."
+        "Continuing beyond the pilot requires all of the following: no unresolved blocking defect, two written teacher recommendations for reviewed practice use, plausible completion time, observed teacher time savings, and hardware suitable for the chosen deployment. One favourable metric is not enough."
     )
 
-    doc.add_heading("Références", level=1)
-    add_source(doc, 1, "Règles NSI 2027", "https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N")
-    add_source(doc, 2, "Annales officielles", "https://eduscol.education.gouv.fr/5199/annales-des-epreuves-du-baccalaureat-des-voies-generale-et-technologique")
-    add_source(doc, 3, "Grille nationale de maîtrise de la langue", "https://www.education.gouv.fr/sites/default/files/document/annexe-attendus-et-observables-redactionnels-520693.pdf")
-    add_source(doc, 4, "Règlement du Prix Occitanie 2026", "https://association.centralesupelec-alumni.com/medias/editor/PRIX_OCCITANIE_2026/REGLEMENT_PRIX_OCCITANIE_2026.pdf")
+    doc.add_heading("References", level=1)
+    add_source(doc, 1, "NSI 2027 rules", "https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N")
+    add_source(doc, 2, "Official past papers", "https://eduscol.education.gouv.fr/5199/annales-des-epreuves-du-baccalaureat-des-voies-generale-et-technologique")
+    add_source(doc, 3, "Official French-language rubric", "https://www.education.gouv.fr/sites/default/files/document/annexe-attendus-et-observables-redactionnels-520693.pdf")
+    add_source(doc, 4, "Prix Occitanie 2026 rules", "https://association.centralesupelec-alumni.com/medias/editor/PRIX_OCCITANIE_2026/REGLEMENT_PRIX_OCCITANIE_2026.pdf")
 
-    path = OUTPUT / "Paper-Creator-NSI-Analyse-Mathematique.docx"
+    path = OUTPUT / "Paper-Creator-NSI-Mathematical-Analysis.docx"
     OUTPUT.mkdir(parents=True, exist_ok=True)
     finalize_fonts(doc)
     doc.save(path)
