@@ -1,5 +1,18 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
+  "assessment_frameworks": [
+    {
+      "id": "fr-bac-general-nsi-written-2027",
+      "policy": "fr-nsi-written-v1",
+      "education_system": "fr-national",
+      "status": "prototype",
+      "document_language": "fr-FR",
+      "supported_providers": ["ollama"],
+      "teacher_review": "not_run",
+      "empirical_calibration": "not_run",
+      "visual_calibration": "not_run"
+    }
+  ],
   "qualification": "a-level",
   "readiness_gates": [
     "blueprint",

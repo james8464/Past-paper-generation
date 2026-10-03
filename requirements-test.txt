@@ -3,3 +3,4 @@ pypdf>=5,<7
 ruff>=0.16,<0.17
 sympy>=1.14,<2
 cryptography>=46,<47
+python-docx>=1.2,<2

@@ -18,6 +18,9 @@ struct GenerationConfiguration: Codable, Equatable, Hashable {
     let model: String
     let seed: Int?
     let dryRun: Bool
+    var educationSystem: String? = nil
+    var assessmentID: String? = nil
+    var documentLanguage: String? = nil
 }
 
 struct GenerationProvenance: Codable, Equatable {
@@ -220,7 +223,10 @@ final class RecentDocumentStore {
             provider: record.configuration.provider,
             model: record.configuration.model,
             seed: newSeed ?? record.configuration.seed,
-            dryRun: record.configuration.dryRun
+            dryRun: record.configuration.dryRun,
+            educationSystem: record.configuration.educationSystem,
+            assessmentID: record.configuration.assessmentID,
+            documentLanguage: record.configuration.documentLanguage
         )
         return GenerationJobRecord(
             configuration: configuration,

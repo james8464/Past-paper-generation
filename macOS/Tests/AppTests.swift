@@ -3,6 +3,71 @@ import XCTest
 @testable import PaperCreator
 
 final class PaperCreatorTests: XCTestCase {
+    func testAppLaunchPolicySuppressesWindowsOnlyDuringUnitTests() {
+        XCTAssertFalse(
+            AppLaunchPolicy.presentsMainWindow(
+                environment: ["XCTestConfigurationFilePath": "/tmp/tests.xctestconfiguration"]
+            )
+        )
+        XCTAssertTrue(AppLaunchPolicy.presentsMainWindow(environment: [:]))
+    }
+
+    func testFrenchBundleExportPreservesManifestAndRejectsOverwrite() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let source = root.appendingPathComponent("working/nsi-2027-fixture")
+        let output = root.appendingPathComponent("selected")
+        try FileManager.default.createDirectory(at: source, withIntermediateDirectories: true)
+        for name in ["sujet.pdf", "corrige.pdf", "assessment.json", "manifest.json"] {
+            try Data(name.utf8).write(to: source.appendingPathComponent(name))
+        }
+        let result = try AssessmentBundleExporter.export(source: source, to: output)
+        XCTAssertEqual(result.lastPathComponent, source.lastPathComponent)
+        for name in ["sujet.pdf", "corrige.pdf", "assessment.json", "manifest.json"] {
+            XCTAssertEqual(try Data(contentsOf: result.appendingPathComponent(name)), Data(name.utf8))
+        }
+        XCTAssertThrowsError(try AssessmentBundleExporter.export(source: source, to: output))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: source.path))
+    }
+
+    func testFrenchRequestKeepsCurriculumSeparateFromUILanguage() {
+        let arguments = FrenchAssessmentRequest(
+            referenceIndex: URL(fileURLWithPath: "/tmp/references.sqlite"),
+            output: URL(fileURLWithPath: "/tmp/papers"), model: "gemma4:12b",
+            seed: 42, largePrint: true
+        ).arguments
+        XCTAssertEqual(arguments.first, "generate-assessment")
+        XCTAssertTrue(arguments.contains("fr-bac-general-nsi-written-2027"))
+        XCTAssertTrue(arguments.contains("--large-print"))
+        XCTAssertFalse(arguments.contains("--subject"))
+        XCTAssertFalse(arguments.contains("--allow-remote"))
+    }
+
+    func testFrenchTeacherReviewRequestCarriesTheCompleteRubric() throws {
+        let scores = Dictionary(
+            uniqueKeysWithValues: FrenchReviewRequest.rubricKeys.map { ($0, 3) }
+        )
+        let request = FrenchReviewRequest(
+            manifest: URL(fileURLWithPath: "/tmp/nsi/manifest.json"),
+            reviewer: "Mme Martin",
+            decision: .revise,
+            scores: scores,
+            notes: "Revoir la question 2."
+        )
+
+        XCTAssertTrue(request.isComplete)
+        XCTAssertEqual(request.arguments.first, "review-french-assessment")
+        XCTAssertTrue(request.arguments.contains("/tmp/nsi/manifest.json"))
+        let scoresIndex = try XCTUnwrap(request.arguments.firstIndex(of: "--scores-json"))
+        let encoded = try XCTUnwrap(
+            request.arguments[scoresIndex + 1].data(using: .utf8)
+        )
+        let decoded = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: encoded) as? [String: Int]
+        )
+        XCTAssertEqual(decoded, scores)
+    }
+
     func testQualificationReadinessKeepsThreeEvidenceLevelsIndependent() {
         let readiness = QualificationReadiness(
             engineeringValidated: true,
@@ -372,6 +437,32 @@ final class PaperCreatorTests: XCTestCase {
     func testTutorialScreenshotsAreBundled() {
         XCTAssertNotNil(NSImage(named: NSImage.Name("TutorialWorkspace")))
         XCTAssertNotNil(NSImage(named: NSImage.Name("TutorialModelSettings")))
+        XCTAssertNotNil(NSImage(named: NSImage.Name("TutorialFrenchNSI")))
+    }
+
+    func testFrenchNSIWorkflowHasFrenchLocalisation() {
+        let resourceURL = try? XCTUnwrap(Bundle.main.url(forResource: "fr", withExtension: "lproj"))
+        let frenchBundle = resourceURL.flatMap(Bundle.init(url:))
+        XCTAssertNotNil(frenchBundle)
+        XCTAssertEqual(
+            frenchBundle?.localizedString(forKey: "Record a teacher review", value: nil, table: nil),
+            "Enregistrer l’avis d’un enseignant"
+        )
+        XCTAssertEqual(
+            frenchBundle?.localizedString(forKey: "Create an unreviewed draft", value: nil, table: nil),
+            "Créer un sujet non relu"
+        )
+        XCTAssertEqual(
+            frenchBundle?.localizedString(forKey: "Delete downloaded French references", value: nil, table: nil),
+            "Supprimer les références françaises téléchargées"
+        )
+    }
+
+    func testFrenchReviewUsesEnvironmentLocalisableKeys() {
+        XCTAssertEqual(FrenchReviewDecision.approved.localizationKey, "Approved for classroom practice")
+        XCTAssertEqual(FrenchReviewDecision.revise.localizationKey, "Revisions required")
+        XCTAssertEqual(FrenchReviewRubric.localizationKey(for: "correctness"), "Correctness")
+        XCTAssertEqual(FrenchReviewRubric.localizationKey(for: "language"), "Quality of French")
     }
 
     func testDisplayPathAbbreviatesOnlyTheHomeFolder() {

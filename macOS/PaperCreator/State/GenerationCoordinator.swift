@@ -52,8 +52,9 @@ final class GenerationCoordinator {
         }
     }
 
-    func complete() throws {
+    func complete(artifacts: [GeneratedFile]? = nil) throws {
         guard var job = activeJob else { return }
+        if let artifacts { generatedFiles = artifacts }
         job.state = .completed
         job.artifacts = generatedFiles
         job.updatedAt = clock.now

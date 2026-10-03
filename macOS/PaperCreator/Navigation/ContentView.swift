@@ -5,6 +5,7 @@ struct ContentView: View {
     @Environment(CatalogStore.self) private var catalog
     @AppStorage(AppStorageKey.navigationColumnVisibility)
     private var navigationColumnVisibility = "all"
+    @AppStorage("interfaceLanguage") private var interfaceLanguage = "system"
 
     var body: some View {
         @Bindable var catalog = catalog
@@ -23,6 +24,8 @@ struct ContentView: View {
                     }
                 case .benchmark:
                     BenchmarkWorkspace()
+                case .frenchBaccalaureat:
+                    FrenchAssessmentWorkspace()
                 case .documents:
                     DocumentPreviewView(
                         files: application.generatedFiles,
@@ -35,6 +38,7 @@ struct ContentView: View {
             .navigationSplitViewStyle(.balanced)
         }
         .frame(minWidth: 720, minHeight: 560)
+        .environment(\.locale, interfaceLanguage == "system" ? .current : Locale(identifier: interfaceLanguage))
         .alert("Generation Error", isPresented: $application.showError) {
             Button("OK", role: .cancel) { }
         } message: {

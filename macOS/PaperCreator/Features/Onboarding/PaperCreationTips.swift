@@ -26,7 +26,7 @@ struct PreviewTip: Tip {
 struct QualityTip: Tip {
     var title: Text { Text("Review both documents") }
     var message: Text? {
-        Text("Open the question paper and mark scheme in Documents, then check the Quality inspector.")
+        Text("Open both PDFs in Documents, then review the quality evidence.")
     }
     var image: Image? { Image(systemName: "checklist") }
 }

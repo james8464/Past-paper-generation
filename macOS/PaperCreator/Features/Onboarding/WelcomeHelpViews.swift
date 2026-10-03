@@ -129,6 +129,8 @@ private struct HelpTopicPage: View {
                     choosingAModel
                 case .creatingAPaper:
                     creatingAPaper
+                case .frenchBaccalaureat:
+                    frenchBaccalaureat
                 case .checkingQuality:
                     checkingQuality
                 case .privacy:
@@ -154,7 +156,7 @@ private struct HelpTopicPage: View {
                     ("Choose a generator", "Select a supported subject and exam board in the sidebar."),
                     ("Prepare AI", "For local generation, install Ollama and use the model recommended for this Mac."),
                     ("Configure the paper", "Choose a paper, output folder, and provider. Leave preview mode off for new AI-written questions."),
-                    ("Create and review", "Create the paper, then inspect the PDFs and the Quality inspector before using them."),
+                    ("Create and review", "Create the paper, then inspect both PDFs and the quality evidence before using them."),
                 ]
             )
 
@@ -278,10 +280,52 @@ private struct HelpTopicPage: View {
                 title: "Layout review",
                 rows: [
                     "Check page size, cover hierarchy, fonts, margins, question numbering, mark placement, continuation space, tables, diagrams, and page breaks.",
-                    "Use Recent Documents to open both PDFs. The Quality inspector reports blueprint, originality, visual, and difficulty evidence separately.",
+                    "Use Recent Documents to open both PDFs. Quality review reports blueprint, originality, visual, and difficulty evidence separately.",
                     "Difficulty is intended demand until the exact form has enough independently reviewed examiner, learner-response, and timing evidence; the app does not claim psychometric equivalence.",
                 ]
             )
+        }
+    }
+
+    private var frenchBaccalaureat: some View {
+        Group {
+            Text("The French route creates original Terminale NSI written practice for the 2027 rules. It is separate from the UK exam-board generators and does not include the practical component.")
+                .foregroundStyle(.secondary)
+
+            HelpScreenshot(
+                name: "TutorialFrenchNSI",
+                caption: "The French workspace keeps the official context, local references, model warning, accessibility format and human-review gate together."
+            )
+
+            HelpSteps(
+                rows: [
+                    ("Prepare references", "Approve the one-time download from registered French Ministry sources. Holdout material is excluded from generation."),
+                    ("Create a draft", "The app builds three independent exercises, 18 technical points and a distinct indicative two-point language component."),
+                    ("Inspect the bundle", "Read the subject, proposed correction and validation record. Check every structured table, graph, answer and allocation."),
+                    ("Record teacher review", "Choose the bundle manifest, score all eight review dimensions and record an explicit decision. The record is bound to every artifact hash."),
+                    ("Use with learners only after review", "Difficulty and timing remain reference-informed until teacher and learner evidence exists for the exact form."),
+                ]
+            )
+
+            HelpCallout(
+                title: "Unreviewed and non-official",
+                message: "Automated authoring, solving and verification do not constitute Ministry, examiner or teacher approval. Regenerating or editing any artifact invalidates its recorded review.",
+                systemImage: "person.badge.shield.checkmark"
+            )
+
+            HelpSection(
+                title: "Local data and deletion",
+                rows: [
+                    "French source PDFs and their search index stay in Application Support until you delete them from the French workspace.",
+                    "Ollama generation uses the loopback address and never silently falls back to a hosted provider.",
+                    "Generated bundles contain questions, corrections, provenance and validation evidence, but no student accounts or submitted answers.",
+                ]
+            )
+
+            HStack {
+                Link("Official 2027 NSI definition", destination: URL(string: "https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N")!)
+                Link("Official language rubric", destination: URL(string: "https://www.education.gouv.fr/sites/default/files/document/annexe-attendus-et-observables-redactionnels-520693.pdf")!)
+            }
         }
     }
 

@@ -64,7 +64,7 @@ class GeneratorCapability:
 @lru_cache(maxsize=1)
 def generator_capabilities() -> dict[str, GeneratorCapability]:
     payload = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
-    if payload.get("schema_version") not in {2, 3, 4}:
+    if payload.get("schema_version") not in {2, 3, 4, 5}:
         raise ValueError(
             f"unsupported generator registry schema: {payload.get('schema_version')}"
         )
@@ -92,6 +92,20 @@ def generator_capability(subject: str) -> GeneratorCapability:
 
 def generator_subjects() -> tuple[str, ...]:
     return tuple(generator_capabilities())
+
+
+def assessment_framework(identifier: str):
+    """National frameworks are not exam boards and never inherit UK AO policy."""
+    from Backend.Core.education_context import NSI_2027
+
+    payload = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    frameworks = payload.get("assessment_frameworks", [])
+    matches = [item for item in frameworks if item.get("id") == identifier]
+    if payload.get("schema_version") != 5 or len(matches) != 1:
+        raise ValueError(f"Unsupported assessment framework: {identifier}")
+    if identifier != NSI_2027.id or matches[0].get("policy") != "fr-nsi-written-v1":
+        raise ValueError(f"Unrecognised assessment policy: {identifier}")
+    return NSI_2027
 
 
 def _capability(raw: dict[str, Any]) -> GeneratorCapability:

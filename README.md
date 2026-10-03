@@ -1,6 +1,18 @@
 # Paper creator
 
-Native macOS app and Python backend for generating unofficial A-level practice papers.
+Native macOS app and Python backend for generating unofficial A-level practice papers,
+with a French NSI extension in development.
+
+## French NSI / Occitanie prototype
+
+An isolated French Terminale NSI written-practice workflow is under development.
+See [architecture and usage](docs/french-baccalaureat.md),
+[current evidence and limitations](docs/quality/french-nsi-prototype-verification-2026-09-28.md)
+and the [Occitanie pilot](docs/occitanie-project.md).
+It is not educationally qualified: corpus reconciliation, richer exercise forms,
+live model evaluation and independent French teacher review remain unfinished.
+The model recommendations and live qualification matrix below concern UK routes,
+not a validated recommendation for French NSI.
 
 ## Release status
 
