@@ -1,6 +1,6 @@
 # Prix Occitanie 2026 submission pack
 
-Updated 30 September 2026.
+Updated 3 October 2026.
 
 ## Formal requirement
 
@@ -16,7 +16,11 @@ Run `tools/build_occitanie_submission.py` with the bundled document runtime to r
 - `Paper-Creator-NSI-Dossier-Technique-et-Usage.docx` — technical and user dossier;
 - `Paper-Creator-NSI-Analyse-Mathematique.docx` — measurement and decision framework.
 
-Verified PDFs are exported to `output/occitanie-2026/`. That directory is intentionally ignored by Git so personal submission copies are not published automatically.
+Matching PDFs have been rendered and visually checked page by page in
+`output/occitanie-2026/`: three A4 pages for the formal application, four for
+the technical/user dossier and three for the mathematical analysis. The directory
+is intentionally ignored by Git so personal submission copies are not published
+automatically. Regenerate and reinspect the formal PDF after filling personal facts.
 
 Only the three-page application is formally required. The two appendices and the demonstration video should be provided through a private link if the organisers accept supporting material. They must not cause the formal application to exceed three pages.
 
@@ -51,6 +55,11 @@ geometry and a resumable local-model benchmark are implemented. A complete accep
 live French benchmark, two independent French NSI teacher recommendations and a
 supervised learner pilot are not yet complete. The application therefore describes
 those items as planned qualification work, not achieved approval.
+
+The pinned Gemma 4 12B live campaign accepted 0 of 10 complete papers; it is
+failure evidence, not a successful qualification or a model recommendation. A
+teacher-approved practice release still requires a revised generation approach,
+new live evidence and independent human review.
 
 The project does not claim endorsement by the Ministry, the Région Occitanie, the Toulouse or Montpellier academies, CentraleSupélec or any examination board. Generated files remain independently branded and marked non-official.
 

@@ -3,9 +3,7 @@ import TipKit
 
 struct GeneratorWorkspace: View {
     @EnvironmentObject private var application: ApplicationCoordinator
-    @AppStorage(AppStorageKey.qualityInspectorVisible)
-    private var showsQualityInspector = true
-    @State private var showsCompactQualityInspector = false
+    @State private var showsQualityReview = false
     let board: ExamBoardOption
     let layoutMode: WorkspaceLayoutMode
 
@@ -26,18 +24,11 @@ struct GeneratorWorkspace: View {
             ToolbarItemGroup(placement: .primaryAction) {
                 if board.isReady {
                     Button {
-                        if layoutMode.showsInspector {
-                            showsQualityInspector.toggle()
-                        } else {
-                            showsCompactQualityInspector = true
-                        }
+                        showsQualityReview = true
                     } label: {
-                        Label(
-                            qualityButtonTitle,
-                            systemImage: "checklist"
-                        )
+                        Label("Quality review", systemImage: "checklist")
                     }
-                    .help(qualityButtonTitle)
+                    .help("Review the quality evidence and its limits")
 
                     if application.isRunning {
                         Button(role: .cancel, action: application.cancelGeneration) {
@@ -56,19 +47,17 @@ struct GeneratorWorkspace: View {
                 }
             }
         }
-        .inspector(isPresented: inspectorPresentation) {
-            QualityInspector()
-                .inspectorColumnWidth(min: 250, ideal: 290, max: 360)
-        }
-        .sheet(isPresented: $showsCompactQualityInspector) {
+        .sheet(isPresented: $showsQualityReview) {
             NavigationStack {
-                QualityInspector()
-                    .frame(minWidth: 480, minHeight: 520)
+                QualityReviewView()
+                    .frame(minWidth: layoutMode.qualityReviewWidth, minHeight: 480)
+                    .navigationTitle("Quality review")
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
                             Button("Close") {
-                                showsCompactQualityInspector = false
+                                showsQualityReview = false
                             }
+                            .keyboardShortcut(.cancelAction)
                         }
                     }
             }
@@ -98,28 +87,6 @@ struct GeneratorWorkspace: View {
             : "Create Paper"
     }
 
-    private var qualityButtonTitle: String {
-        if !layoutMode.showsInspector {
-            return "Show Quality Inspector"
-        }
-        return showsQualityInspector
-            ? "Hide Quality Inspector"
-            : "Show Quality Inspector"
-    }
-
-    private var inspectorPresentation: Binding<Bool> {
-        Binding(
-            get: {
-                board.isReady
-                    && layoutMode.showsInspector
-                    && showsQualityInspector
-            },
-            set: { isPresented in
-                guard board.isReady, layoutMode.showsInspector else { return }
-                showsQualityInspector = isPresented
-            }
-        )
-    }
 }
 
 private struct PaperConfiguration: View {
@@ -339,7 +306,7 @@ private struct RecentDocuments: View {
     }
 }
 
-private struct QualityInspector: View {
+private struct QualityReviewView: View {
     @EnvironmentObject private var application: ApplicationCoordinator
 
     var body: some View {

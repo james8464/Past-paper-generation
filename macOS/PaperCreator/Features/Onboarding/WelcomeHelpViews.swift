@@ -156,7 +156,7 @@ private struct HelpTopicPage: View {
                     ("Choose a generator", "Select a supported subject and exam board in the sidebar."),
                     ("Prepare AI", "For local generation, install Ollama and use the model recommended for this Mac."),
                     ("Configure the paper", "Choose a paper, output folder, and provider. Leave preview mode off for new AI-written questions."),
-                    ("Create and review", "Create the paper, then inspect the PDFs and the Quality inspector before using them."),
+                    ("Create and review", "Create the paper, then inspect both PDFs and the quality evidence before using them."),
                 ]
             )
 
@@ -280,7 +280,7 @@ private struct HelpTopicPage: View {
                 title: "Layout review",
                 rows: [
                     "Check page size, cover hierarchy, fonts, margins, question numbering, mark placement, continuation space, tables, diagrams, and page breaks.",
-                    "Use Recent Documents to open both PDFs. The Quality inspector reports blueprint, originality, visual, and difficulty evidence separately.",
+                    "Use Recent Documents to open both PDFs. Quality review reports blueprint, originality, visual, and difficulty evidence separately.",
                     "Difficulty is intended demand until the exact form has enough independently reviewed examiner, learner-response, and timing evidence; the app does not claim psychometric equivalence.",
                 ]
             )

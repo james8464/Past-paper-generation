@@ -1,8 +1,34 @@
-import Foundation
+import AppKit
+import SwiftUI
 import XCTest
 @testable import PaperCreator
 
 final class AccessibilityTests: XCTestCase {
+    @MainActor
+    func testReadyWorkspaceLaysOutInAnExpandedWindow() {
+        let application = ApplicationCoordinator()
+        let board = ExamCatalog.board(id: "economics-aqa")!
+        application.selectBoard(board)
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 1_440, height: 900),
+            styleMask: [.titled, .resizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.contentView = NSHostingView(
+            rootView: ContentView()
+                .environmentObject(application)
+                .environment(application.catalogStore)
+                .environment(application.benchmarkCoordinator)
+                .environment(application.generationCoordinator)
+        )
+        window.orderFront(nil)
+        window.contentView?.layoutSubtreeIfNeeded()
+        window.displayIfNeeded()
+        RunLoop.current.run(until: Date().addingTimeInterval(0.5))
+        XCTAssertNotNil(window.contentView)
+    }
+
     func testWorkspaceLayoutProtectsCompactWindowsFromColumnOverlap() {
         XCTAssertEqual(WorkspaceLayoutPolicy.mode(for: 720), .compact)
         XCTAssertEqual(WorkspaceLayoutPolicy.mode(for: 839), .compact)
@@ -13,8 +39,9 @@ final class AccessibilityTests: XCTestCase {
         XCTAssertEqual(WorkspaceLayoutPolicy.mode(for: 1_200), .expanded)
 
         XCTAssertFalse(WorkspaceLayoutPolicy.mode(for: 720).showsSidebar)
-        XCTAssertFalse(WorkspaceLayoutPolicy.mode(for: 900).showsInspector)
-        XCTAssertTrue(WorkspaceLayoutPolicy.mode(for: 1_200).showsInspector)
+        XCTAssertEqual(WorkspaceLayoutPolicy.mode(for: 720).qualityReviewWidth, 420)
+        XCTAssertEqual(WorkspaceLayoutPolicy.mode(for: 900).qualityReviewWidth, 480)
+        XCTAssertEqual(WorkspaceLayoutPolicy.mode(for: 1_200).qualityReviewWidth, 560)
     }
 
     func testEveryProviderAndHelpTopicHasSpokenTextAndSymbol() {

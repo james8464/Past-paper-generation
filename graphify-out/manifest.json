@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1790791254.69082,
-    "ast_hash": "1ca2b276d6c198afd4f196e3c7b238b7",
+    "mtime": 1791033760.7067943,
+    "ast_hash": "519eb89060e728f24351d069b1241a94",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1305,9 +1305,9 @@
     "semantic_hash": "2ebbc8c546d34807957098f3b39534ed"
   },
   "macOS/PaperCreator/Components/NativeVisualStyle.swift": {
-    "mtime": 1790616627.8860269,
-    "ast_hash": "e338a98bbb20e08ac857c9ddecf88172",
-    "semantic_hash": "e338a98bbb20e08ac857c9ddecf88172"
+    "mtime": 1791031583.0558217,
+    "ast_hash": "1286a4a94a2cd3c7994ad5b3cc791b58",
+    "semantic_hash": ""
   },
   "macOS/PaperCreator/Components/SharedViews.swift": {
     "mtime": 1790616627.8861485,
@@ -1355,23 +1355,23 @@
     "semantic_hash": "c1ad220248a752267979a93dd5206942"
   },
   "macOS/PaperCreator/Features/Generation/FrenchAssessmentWorkspace.swift": {
-    "mtime": 1790778292.0890267,
-    "ast_hash": "85e9c62555f7338b6b028aa9959379d8",
+    "mtime": 1791033090.1978142,
+    "ast_hash": "85186939ea6bd96b44cc6bdefcf358bd",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Generation/GeneratorWorkspaceView.swift": {
-    "mtime": 1790616627.887679,
-    "ast_hash": "0bf48129234a388021d70ca8cefe5cab",
-    "semantic_hash": "0bf48129234a388021d70ca8cefe5cab"
+    "mtime": 1791033321.6395047,
+    "ast_hash": "255731bff66781b02e2cef8465bc6a15",
+    "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Onboarding/PaperCreationTips.swift": {
-    "mtime": 1790616627.8878489,
-    "ast_hash": "95c722407933250af708b5536b953714",
-    "semantic_hash": "95c722407933250af708b5536b953714"
+    "mtime": 1791031899.5999224,
+    "ast_hash": "08da1146d1f6e384fe37ad6372bf30b5",
+    "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Onboarding/WelcomeHelpViews.swift": {
-    "mtime": 1790776937.3794582,
-    "ast_hash": "3a41dbfb3811af49277d073dc266c053",
+    "mtime": 1791031899.6003146,
+    "ast_hash": "02df419ca8db5cb0357d4c0f0dc103f0",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Settings/SettingsPane.swift": {
@@ -1380,7 +1380,7 @@
     "semantic_hash": "6caec8dbb5cb006926aa763c7013ff97"
   },
   "macOS/PaperCreator/Navigation/ContentView.swift": {
-    "mtime": 1790774644.4330308,
+    "mtime": 1791031079.0934396,
     "ast_hash": "372035cd44ff5ea3cdfd23409396ef42",
     "semantic_hash": "372035cd44ff5ea3cdfd23409396ef42"
   },
@@ -1440,9 +1440,9 @@
     "semantic_hash": "5bf232a55ba6ea284e0c08a72096456f"
   },
   "macOS/Tests/AccessibilityTests.swift": {
-    "mtime": 1790616627.890988,
-    "ast_hash": "bd1282cf8ed4f711e308819a9c29cf9a",
-    "semantic_hash": "bd1282cf8ed4f711e308819a9c29cf9a"
+    "mtime": 1791031583.0562336,
+    "ast_hash": "a411e605e3a11f044ffa0d58da93d798",
+    "semantic_hash": ""
   },
   "macOS/Tests/AppTests.swift": {
     "mtime": 1790778220.7184212,
@@ -2055,8 +2055,8 @@
     "semantic_hash": ""
   },
   "tools/build_occitanie_submission.py": {
-    "mtime": 1790790507.4243324,
-    "ast_hash": "a0301b5b453d973acbd9377558227a63",
+    "mtime": 1791032921.3850873,
+    "ast_hash": "2240dadffe1c211ab1c7ea2d4031cfdb",
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
@@ -2255,13 +2255,13 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/README.md": {
-    "mtime": 1790790507.4253623,
-    "ast_hash": "d22461a09123b56f6b636def90ec1dd0",
+    "mtime": 1791033514.193356,
+    "ast_hash": "7942cbdd344a1d9905d0fe945279f213",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/claims-register.md": {
-    "mtime": 1790790507.4258466,
-    "ast_hash": "4812d0c57ebfe583f4ad5d6efc4f6adf",
+    "mtime": 1791024163.6212013,
+    "ast_hash": "530b401621c05927132e3715d16cbd8e",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/demo-script.md": {
@@ -2285,8 +2285,8 @@
     "semantic_hash": ""
   },
   "docs/occitanie-project.md": {
-    "mtime": 1790783973.9230301,
-    "ast_hash": "cbdbb3d093c92409c22d63d5f124f2a3",
+    "mtime": 1791033514.1877158,
+    "ast_hash": "25a04996e4547e4f8e69dd2e5d1c0b34",
     "semantic_hash": ""
   },
   "docs/project-analysis/IMPLEMENTATION_AND_FIDELITY_REPORT.md": {
@@ -2330,8 +2330,8 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-evaluation.md": {
-    "mtime": 1790790507.4263456,
-    "ast_hash": "773a3beb7eecc26470f9429208c5043a",
+    "mtime": 1791024163.6208963,
+    "ast_hash": "700e17153492ef407e27f3c6a8d71b62",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-prototype-verification-2026-09-28.md": {
@@ -2465,8 +2465,8 @@
     "semantic_hash": ""
   },
   "requirements-test.txt": {
-    "mtime": 1790616627.8928924,
-    "ast_hash": "c342aa9ff70567758e0b58ecf46ba903",
+    "mtime": 1791033820.6152742,
+    "ast_hash": "921d9c73da7d59b5791fd226d72303a6",
     "semantic_hash": ""
   },
   "Design/AppIcon/PaperCreator-AppIcon-Master.png": {
@@ -2547,6 +2547,21 @@
   "docs/quality/french-framework-migration-ledger.md": {
     "mtime": 1790791215.3607657,
     "ast_hash": "99c20d98674d6ebb519e6e31a18d509a",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/Assets.xcassets/TutorialFrenchNSI.imageset/Contents.json": {
+    "mtime": 1791033185.8653119,
+    "ast_hash": "0cf875fb4396d7322c5dd3fda800eca1",
+    "semantic_hash": ""
+  },
+  "tests/test_occitanie_submission.py": {
+    "mtime": 1791033833.587543,
+    "ast_hash": "dbe3b003330a93db79a9e4303cdb66e6",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/Assets.xcassets/TutorialFrenchNSI.imageset/TutorialFrenchNSI.png": {
+    "mtime": 1791033247.9677582,
+    "ast_hash": "d950e10843fb3016ca764bc6834c8635",
     "semantic_hash": ""
   }
 }

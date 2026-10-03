@@ -9,14 +9,12 @@ from docx.enum.table import WD_CELL_VERTICAL_ALIGNMENT, WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from docx.shared import Cm, Inches, Pt, RGBColor
+from docx.shared import Cm, Pt, RGBColor
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "output" / "occitanie-2026"
-ICON = ROOT / "Design" / "AppIcon" / "PaperCreator-AppIcon-Master.png"
-BLUE = "244A73"
-PALE_BLUE = "EAF1F7"
 LIGHT_GREY = "D9D9D9"
+HEADER_GREY = "F2F2F7"
 
 
 def set_cell_shading(cell, fill: str) -> None:
@@ -41,6 +39,22 @@ def set_cell_margins(cell, value: int = 100) -> None:
             margins.append(element)
         element.set(qn("w:w"), str(value))
         element.set(qn("w:type"), "dxa")
+
+
+def set_cell_borders(cell) -> None:
+    properties = cell._tc.get_or_add_tcPr()
+    borders = properties.find(qn("w:tcBorders"))
+    if borders is None:
+        borders = OxmlElement("w:tcBorders")
+        properties.append(borders)
+    for edge in ("top", "left", "bottom", "right"):
+        element = borders.find(qn(f"w:{edge}"))
+        if element is None:
+            element = OxmlElement(f"w:{edge}")
+            borders.append(element)
+        element.set(qn("w:val"), "single")
+        element.set(qn("w:sz"), "4")
+        element.set(qn("w:color"), LIGHT_GREY)
 
 
 def set_repeat_header(row) -> None:
@@ -77,27 +91,27 @@ def configure_document(doc: Document, *, compact: bool = False) -> None:
     section = doc.sections[0]
     section.page_width = Cm(21)
     section.page_height = Cm(29.7)
-    section.top_margin = Cm(1.45 if compact else 1.8)
-    section.bottom_margin = Cm(1.45 if compact else 1.65)
-    section.left_margin = Cm(1.65 if compact else 2.0)
-    section.right_margin = Cm(1.65 if compact else 2.0)
+    section.top_margin = Cm(1.7 if compact else 1.9)
+    section.bottom_margin = Cm(1.55 if compact else 1.7)
+    section.left_margin = Cm(1.9 if compact else 2.1)
+    section.right_margin = Cm(1.9 if compact else 2.1)
     section.header_distance = Cm(0.65)
     section.footer_distance = Cm(0.65)
 
     normal = doc.styles["Normal"]
-    normal.font.name = "Aptos"
-    normal.font.size = Pt(9.2 if compact else 10.5)
+    normal.font.name = "Arial"
+    normal.font.size = Pt(10.2 if compact else 10.8)
     normal.font.color.rgb = RGBColor(0, 0, 0)
-    normal.paragraph_format.space_after = Pt(4 if compact else 6)
-    normal.paragraph_format.line_spacing = 1.06 if compact else 1.12
-    for name, size in (("Title", 23), ("Heading 1", 15), ("Heading 2", 12)):
+    normal.paragraph_format.space_after = Pt(5 if compact else 6)
+    normal.paragraph_format.line_spacing = 1.12
+    for name, size in (("Title", 22), ("Heading 1", 13.5), ("Heading 2", 11.5)):
         style = doc.styles[name]
-        style.font.name = "Aptos Display"
+        style.font.name = "Arial"
         style.font.size = Pt(size)
         style.font.color.rgb = RGBColor(0, 0, 0)
         style.font.bold = name != "Title"
-        style.paragraph_format.space_before = Pt(8)
-        style.paragraph_format.space_after = Pt(5)
+        style.paragraph_format.space_before = Pt(12)
+        style.paragraph_format.space_after = Pt(6)
         style.paragraph_format.keep_with_next = True
     title_properties = doc.styles["Title"].element.get_or_add_pPr()
     title_border = title_properties.find(qn("w:pBdr"))
@@ -106,39 +120,44 @@ def configure_document(doc: Document, *, compact: bool = False) -> None:
 
     footer = section.footer.paragraphs[0]
     footer.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    footer.add_run("Prix Occitanie 2026  |  James Durup  |  page ")
+    footer.add_run("Paper Creator  ·  Prix Occitanie 2026  ·  ")
     add_page_field(footer)
     for run in footer.runs:
-        run.font.name = "Aptos"
+        run.font.name = "Arial"
         run.font.size = Pt(8)
         run.font.color.rgb = RGBColor(85, 85, 85)
 
 
+def finalize_fonts(doc: Document) -> None:
+    """Use an explicit portable face instead of Word's serif theme fallback."""
+    paragraphs = list(doc.paragraphs)
+    for paragraph in doc.paragraphs:
+        paragraph.paragraph_format.keep_together = True
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                paragraphs.extend(cell.paragraphs)
+    for paragraph in paragraphs:
+        for run in paragraph.runs:
+            run.font.name = "Arial"
+            if paragraph.style.name == "Title":
+                run.font.size = Pt(22)
+                run.font.color.rgb = RGBColor(0, 0, 0)
+            elif paragraph.style.name == "Heading 1":
+                run.font.size = Pt(13.5)
+                run.font.bold = True
+            elif paragraph.style.name == "Heading 2":
+                run.font.size = Pt(11.5)
+                run.font.bold = True
+
+
 def title_block(doc: Document, title: str, subtitle: str) -> None:
-    table = doc.add_table(rows=1, cols=2)
-    table.alignment = WD_TABLE_ALIGNMENT.LEFT
-    table.autofit = False
-    table.columns[0].width = Cm(2.1)
-    table.columns[1].width = Cm(14.5)
-    set_repeat_header(table.rows[0])
-    prevent_row_split(table.rows[0])
-    if ICON.is_file():
-        paragraph = table.cell(0, 0).paragraphs[0]
-        picture = paragraph.add_run().add_picture(str(ICON), width=Inches(0.62))
-        picture._inline.docPr.set("title", "Paper Creator")
-        picture._inline.docPr.set(
-            "descr", "Icône de Paper Creator représentant un stylo noir."
-        )
-    title_cell = table.cell(0, 1)
-    title_paragraph = title_cell.paragraphs[0]
-    title_paragraph.style = doc.styles["Title"]
+    title_paragraph = doc.add_paragraph(style="Title")
     title_paragraph.add_run(title)
-    subtitle_paragraph = title_cell.add_paragraph(subtitle)
-    subtitle_paragraph.paragraph_format.space_after = Pt(8)
+    subtitle_paragraph = doc.add_paragraph(subtitle)
+    subtitle_paragraph.paragraph_format.space_after = Pt(14)
     subtitle_paragraph.runs[0].font.size = Pt(11)
     subtitle_paragraph.runs[0].font.color.rgb = RGBColor(70, 70, 70)
-    for cell in table.rows[0].cells:
-        set_cell_margins(cell, 40)
 
 
 def add_label_paragraph(doc: Document, label: str, text: str) -> None:
@@ -165,19 +184,21 @@ def add_table(doc: Document, headers: list[str], rows: list[list[str]], widths=N
     prevent_row_split(header)
     for index, value in enumerate(headers):
         cell = header.cells[index]
-        set_cell_shading(cell, BLUE)
-        set_cell_margins(cell)
+        set_cell_shading(cell, HEADER_GREY)
+        set_cell_margins(cell, 120)
+        set_cell_borders(cell)
         cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
         run = cell.paragraphs[0].add_run(value)
         run.bold = True
-        run.font.color.rgb = RGBColor(255, 255, 255)
+        run.font.color.rgb = RGBColor(0, 0, 0)
     for row_index, values in enumerate(rows):
         row = table.add_row()
         prevent_row_split(row)
         cells = row.cells
         for index, value in enumerate(values):
             cell = cells[index]
-            set_cell_margins(cell)
+            set_cell_margins(cell, 120)
+            set_cell_borders(cell)
             cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
             if row_index % 2:
                 set_cell_shading(cell, "F5F7F9")
@@ -207,11 +228,11 @@ def build_application() -> Path:
     identity = add_table(
         doc,
         ["Nom", "Prénom", "Promotion", "Courriel", "Téléphone"],
-        [["Durup", "James", "", "james.durup@student-cs.fr", ""]],
+        [["Durup", "James", "À compléter", "james.durup@student-cs.fr", "À compléter"]],
         [2.6, 2.6, 2.4, 6.2, 3.0],
     )
     identity.rows[1].cells[3].paragraphs[0].runs[0].font.size = Pt(8.4)
-    add_label_paragraph(doc, "Adresse", "")
+    add_label_paragraph(doc, "Adresse", "À compléter")
     doc.add_heading("Présentation du candidat", level=1)
     doc.add_paragraph(
         "Je suis étudiant à CentraleSupélec et je développe Paper Creator, une application macOS qui utilise des modèles d’intelligence artificielle locaux pour produire des sujets d’entraînement originaux. Je m’intéresse à la conception de logiciels vérifiables et à l’usage responsable de l’IA dans l’éducation. Une première version consacrée aux A levels britanniques m’a permis de construire le moteur de génération, les contrôles techniques et la production de PDF. Le projet présenté ici adapte ce travail au baccalauréat français et prépare un pilote avec des enseignants de NSI en Occitanie."
@@ -226,13 +247,12 @@ def build_application() -> Path:
         "La version française suit les règles annoncées pour la session 2027 : trois exercices indépendants, 3 h 30, 18 points techniques et 2 points pour la maîtrise de la langue. Chaque question est rattachée à une capacité du programme officiel. Le logiciel vérifie les totaux, les durées, certaines réponses calculables, les requêtes SQL, les traces d’algorithmes, les graphes et la cohérence entre le sujet et le corrigé. Les documents portent clairement la mention « entraînement non officiel » et restent non relus tant qu’un enseignant n’a pas enregistré sa décision."
     )
 
-    doc.add_page_break()
     doc.add_heading("Originalité du projet", level=1)
     doc.add_paragraph(
         "Paper Creator ne se limite pas à envoyer une consigne générale à un agent conversationnel. Il sépare le programme, les règles d’examen et les références historiques. Il demande au modèle de produire des données structurées, résout ensuite chaque exercice sans lui montrer le corrigé proposé, puis applique des contrôles déterministes et un second contrôle indépendant. Les preuves, les versions du modèle et les empreintes des fichiers restent attachées au sujet. Une relecture humaine est liée aux empreintes exactes des PDF : toute modification la rend caduque."
     )
     doc.add_paragraph(
-        "L’ancrage régional repose sur deux travaux concrets. Le premier est un pilote avec des enseignants des académies de Toulouse et de Montpellier. Le second est un module optionnel de contextes NSI fondé sur des données ouvertes de la Région, par exemple les lycées, les transports ou l’historique de consommation d’énergie. Ces données serviront à concevoir des problèmes d’algorithmique et de bases de données liés au territoire, sans transformer le nom d’une ville en simple décor."
+        "L’ancrage régional sera construit et mesuré, non simplement nommé. Je souhaite organiser un pilote avec des enseignants des académies de Toulouse et de Montpellier, puis créer un module optionnel fondé sur des données ouvertes d’Occitanie. Les lycées, les transports, la consommation d’énergie et, si les droits le permettent, les ressources en eau pourront nourrir des exercices d’algorithmique et de bases de données sur des questions territoriales et climatiques réelles. Aucun partenariat régional n’est encore conclu."
     )
     doc.add_heading("Bénéficiaires", level=1)
     doc.add_paragraph(
@@ -242,9 +262,9 @@ def build_application() -> Path:
     add_bullets(
         doc,
         [
-            "Prototype fonctionnel : parcours français distinct, génération locale, références officielles filtrées, points décimaux exacts, contrôles techniques, PDF standard et agrandi, historique et fiche de relecture.",
-            "Qualité en cours de qualification : 79 annales officielles 2021–2026 réconciliées et hashées, 13 sujets réservés en holdout, mise en page mesurée sur les annales 2026 et résultats de modèles à comparer.",
-            "Validation externe non acquise : aucun partenariat régional ni avis d’enseignant français n’est encore revendiqué. Le prix financerait précisément cette phase d’évaluation."
+            "Prototype technique : parcours français distinct, génération locale, références filtrées, points décimaux exacts, contrôles de réponses et PDF standard ou agrandi.",
+            "Qualité non qualifiée : 79 annales officielles 2021–2026 sont réconciliées et 13 réservées à l’évaluation. La première campagne a rejeté dix sujets complets sur dix ; le modèle testé ne peut pas encore être recommandé.",
+            "Validation humaine à organiser : aucun partenariat régional ni avis d’enseignant français n’est revendiqué. Le prix financerait l’amélioration et l’évaluation indépendante."
         ],
     )
     doc.add_heading("Présentation et aides antérieures", level=1)
@@ -254,7 +274,7 @@ def build_application() -> Path:
     add_label_paragraph(
         doc,
         "Financement ou demande d’aide antérieure",
-        "",
+        "À confirmer avant envoi.",
     )
     doc.add_heading("Adéquation au Prix Occitanie", level=1)
     doc.add_paragraph(
@@ -264,7 +284,6 @@ def build_application() -> Path:
         "Le projet est techniquement faisable dans les douze mois parce que le moteur, le parcours macOS et la production de PDF existent déjà. Le travail restant est précisément celui que le jury peut rendre possible : confronter l’outil au territoire, mesurer son utilité et documenter aussi bien les résultats positifs que les limites."
     )
 
-    doc.add_page_break()
     doc.add_heading("Travaux prévus pendant les douze mois suivant le prix", level=1)
     add_table(
         doc,
@@ -307,20 +326,21 @@ def build_application() -> Path:
 
     path = OUTPUT / "Prix-Occitanie-2026-Candidature-James-Durup.docx"
     OUTPUT.mkdir(parents=True, exist_ok=True)
+    finalize_fonts(doc)
     doc.save(path)
     return path
 
 
 def build_technical_dossier() -> Path:
     doc = Document()
-    configure_document(doc)
+    configure_document(doc, compact=True)
     title_block(
         doc,
         "Paper Creator pour le baccalauréat NSI",
         "Dossier technique et parcours utilisateur, Prix Occitanie 2026",
     )
     doc.add_paragraph(
-        "Ce dossier explique le fonctionnement du prototype, ce qu’un enseignant peut en faire aujourd’hui et les preuves encore nécessaires avant un usage scolaire qualifié. La conclusion est simple : le socle technique existe, mais la recommandation pédagogique dépend encore du banc d’essai français, de deux relecteurs NSI et d’un pilote encadré."
+        "Ce dossier explique le prototype, ce qu’un enseignant peut en faire aujourd’hui et les preuves encore nécessaires avant un usage scolaire qualifié. Le socle technique existe, mais la première campagne complète avec Gemma 4 12B a rejeté dix sujets sur dix. Aucun modèle français n’est donc recommandé. La suite dépend de corrections mesurées, de deux relecteurs NSI et d’un pilote encadré."
     )
     doc.add_heading("Besoin utilisateur", level=1)
     doc.add_paragraph(
@@ -402,9 +422,9 @@ def build_technical_dossier() -> Path:
     )
     add_table(
         doc,
-        ["Niveau", "Condition de passage", "Statut au 30 septembre 2026"],
+        ["Niveau", "Condition de passage", "Statut au 3 octobre 2026"],
         [
-            ["Automatisé", "Tests, contrôles de contenu, publication et inspection PDF sans défaut bloquant.", "Implémenté ; campagne live française à exécuter sur source stabilisée."],
+            ["Automatisé", "Tests, contrôles de contenu, publication et inspection PDF sans défaut bloquant.", "Contrôles implémentés ; première campagne Gemma 4 12B : 0/10 sujet accepté. Correctifs et nouvel essai requis."],
             ["Enseignants", "Deux enseignants relisent indépendamment six sujets ; exactitude et barème à 4/4, autres dimensions au moins 3/4.", "Relecteurs non encore recrutés."],
             ["Élèves", "Pilote supervisé : durée, ambiguïtés, accessibilité et charge enseignant.", "Planifié, sous réserve d’un établissement volontaire."],
         ],
@@ -450,6 +470,7 @@ def build_technical_dossier() -> Path:
 
     path = OUTPUT / "Paper-Creator-NSI-Dossier-Technique-et-Usage.docx"
     OUTPUT.mkdir(parents=True, exist_ok=True)
+    finalize_fonts(doc)
     doc.save(path)
     return path
 
@@ -460,10 +481,13 @@ def build_mathematical_analysis() -> Path:
     title_block(
         doc,
         "Analyse mathématique de la qualification",
-        "Paper Creator, pilote NSI Occitanie, version du 30 septembre 2026",
+        "Paper Creator, pilote NSI Occitanie, version du 3 octobre 2026",
     )
     doc.add_paragraph(
         "Cette note définit les quantités que le projet mesure et les seuils utilisés pour décider si un sujet peut poursuivre la qualification. Elle ne transforme pas un petit échantillon en preuve d’équivalence psychométrique avec le baccalauréat. Les exemples numériques sont signalés comme illustratifs tant que le pilote n’a pas fourni de données."
+    )
+    doc.add_paragraph(
+        "Résultat observé au 3 octobre 2026 : la première campagne de dix sujets complets avec Gemma 4 12B n’a accepté aucun sujet. Les calculs d’échantillonnage ci-dessous décrivent un scénario futur sans défaut ; ils ne s’appliquent pas à cette campagne et ne justifient aucune recommandation du modèle."
     )
 
     doc.add_heading("Contraintes exactes du sujet", level=1)
@@ -557,6 +581,7 @@ def build_mathematical_analysis() -> Path:
 
     path = OUTPUT / "Paper-Creator-NSI-Analyse-Mathematique.docx"
     OUTPUT.mkdir(parents=True, exist_ok=True)
+    finalize_fonts(doc)
     doc.save(path)
     return path
 

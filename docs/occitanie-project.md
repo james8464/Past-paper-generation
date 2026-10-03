@@ -1,6 +1,6 @@
 # Occitanie: original French NSI practice papers
 
-Last updated: 2026-09-30. This is an evidence/status record, not a claim of
+Last updated: 2026-10-03. This is an evidence/status record, not a claim of
 educational approval. No teacher, school, Région, examiner or Ministry endorsement
 has been obtained. No prize application has been submitted.
 
@@ -71,8 +71,10 @@ still require labelled calibration.
 A resumable French benchmark runner is implemented for gemma4:12b,
 ministral-3:8b and qwen3:8b: ten full papers and thirty exercises per model, with
 fixed seeds, model/source/code identity, failure preservation and duplicate-run
-locking. The live campaign has not selected a model; the exact Ministral and Qwen
-candidates are not currently installed. No teacher-reviewed release, student pilot,
+locking. The completed pinned Gemma 4 12B campaign accepted **0 of 10** complete
+papers; its rejected attempts remain evidence for redesign, not qualified papers.
+The campaign has not selected a model; the exact Ministral and Qwen candidates are
+not currently installed. No teacher-reviewed release, student pilot,
 Intel test or multi-memory hardware matrix exists.
 
 ## Genuine Occitanie scenario — PLANNED
@@ -125,12 +127,13 @@ expenditure or commitments. Confirm prize rules and reviewer availability first.
 
 ## Prize preparation — IMPLEMENTED documents / PLANNED submission
 
-The announced deadline is 2 November 2026 at midnight. The formal three-page DOCX,
-technical/user dossier and mathematical qualification note are generated and visually
-verified. A factual email draft, claims register, checklist, video script and a
-user-operated macOS recording command are included. The real video is not recorded
-while the Mac session is locked. Confirm applicant enrolment eligibility, contact
-details and prior-funding restrictions before sending.
+The announced deadline is 2 November 2026 at midnight. The formal three-page DOCX
+and PDF, technical/user dossier and mathematical qualification note are generated and
+visually verified as portable sans-serif documents. The formal PDF remains exactly
+three A4 pages. A factual email draft, claims register, checklist, video script and a
+user-operated macOS recording command are included. A real demonstration video has
+not been recorded. Confirm applicant enrolment eligibility, contact details and
+prior-funding restrictions before sending.
 Do not infer environmental benefit from "local AI": measure energy, reuse and
 hardware requirements before making a sustainability claim.
 

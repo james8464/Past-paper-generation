@@ -11,17 +11,20 @@ struct FrenchAssessmentWorkspace: View {
     var body: some View {
         Form {
             Section {
-                Text("French written-paper prototype").font(.title2).fontWeight(.semibold)
-                Text("Original practice papers in French. Teacher review is required before classroom assessment.")
+                Text("NSI written practice")
+                    .font(.title2.weight(.semibold))
+                Text("Original, non-official drafts for teachers to review before classroom use.")
                     .foregroundStyle(.secondary)
-                LabeledContent("Qualification", value: "Baccalauréat général")
-                LabeledContent("Stage", value: "Terminale")
-                LabeledContent("Speciality", value: "Numérique et sciences informatiques")
-                LabeledContent("Assessment", value: "Partie écrite · 2027 · 3 h 30 · /20")
-                Text("Three independent exercises: 18 technical points, plus 2 points for French. The practical component is not included.")
+                LabeledContent("Programme", value: "Baccalauréat général · Terminale · NSI")
+                LabeledContent("Written exam") {
+                    Text(localizedValue("2027 · 3 h 30 · 3 independent exercises"))
+                }
+                LabeledContent("Indicative credit") {
+                    Text(localizedValue("18 technical + 2 French language = 20"))
+                }
             }
             Section("References and privacy") {
-                Text("Official sources are downloaded only with your permission. Generation uses Ollama on this Mac; no student answers are collected.")
+                Text("Official sources are downloaded with your permission. Generation stays on this Mac unless you configure a remote Ollama server.")
                 Button("Prepare French references") { showDownloadConsent = true }
                     .disabled(application.isRunning)
                 if application.hasFrenchReferences {
@@ -30,12 +33,12 @@ struct FrenchAssessmentWorkspace: View {
                     }
                     .disabled(application.isRunning)
                 }
-                Text("The initial corpus is incomplete. Its existence does not mean that every topic or exam session is covered.")
+                Text("The reference corpus is incomplete; its presence does not prove topic coverage.")
                     .font(.callout).foregroundStyle(.secondary)
             }
-            Section("Model and document") {
+            Section("Create a draft") {
                 TextField("Local Ollama model", text: $application.selectedModel)
-                Text("Gemma 4 12B is the comparison baseline, not a validated French recommendation. Results with all models require review.")
+                Text("No French model is yet qualified. Gemma 4 12B is a comparison baseline, not a recommendation.")
                     .font(.callout).foregroundStyle(.secondary)
                 Toggle("Enlarged print", isOn: $largePrint)
                 Picker("Interface language", selection: $interfaceLanguage) {
@@ -43,28 +46,14 @@ struct FrenchAssessmentWorkspace: View {
                     Text("English").tag("en")
                     Text("Français").tag("fr")
                 }
-                Text("Changing the interface language does not change the curriculum or the French language of the paper.")
-                    .font(.callout).foregroundStyle(.secondary)
                 LabeledContent("Save to", value: application.outputFolder.lastPathComponent)
                 Button("Choose output folder", action: application.chooseOutputFolder)
-                Button("Create an unreviewed draft") { application.generateFrenchPaper(largePrint: largePrint) }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(application.isRunning || !application.hasFrenchReferences || application.selectedModel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
-            Section("Review checklist") {
-                Text("Check every answer, allocation of credit, diagram, code listing and page. Compare difficulty and timing with authentic papers. Automated checks cannot replace a French NSI teacher.")
+            Section("Review and guidance") {
+                Text("Check both PDFs, the validation record, difficulty and timing. Automated checks do not replace an NSI teacher.")
                 Button("Record a teacher review") { showTeacherReview = true }
                     .disabled(application.isRunning)
                 Link("Official NSI examination rules", destination: URL(string: "https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N")!)
-            }
-            Section("How this route works") {
-                LabeledContent("1", value: "Prepare the official French references")
-                LabeledContent("2", value: "Create an original, unreviewed draft")
-                LabeledContent("3", value: "Inspect both PDFs and the validation record")
-                LabeledContent("4", value: "Record an independent teacher decision")
-                Text("A recorded review is bound to the exact document hashes. Editing or regenerating any file makes that review stale.")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
                 Button("Open the French NSI help guide") {
                     application.showHelpGuide(topic: .frenchBaccalaureat)
                 }
@@ -74,7 +63,6 @@ struct FrenchAssessmentWorkspace: View {
                     ProgressView()
                     Text(application.status)
                         .accessibilityLabel(Text("Generation status"))
-                    Button("Cancel", role: .cancel, action: application.cancelGeneration)
                 }
             } else if !application.progressEntries.isEmpty {
                 Section("Status") { Text(application.status) }
@@ -82,6 +70,20 @@ struct FrenchAssessmentWorkspace: View {
         }
         .formStyle(.grouped)
         .navigationTitle("Baccalauréat · NSI")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                if application.isRunning {
+                    Button("Cancel", role: .cancel, action: application.cancelGeneration)
+                } else {
+                    Button("Create a draft", systemImage: "doc.badge.plus") {
+                        application.generateFrenchPaper(largePrint: largePrint)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(!canGenerate)
+                    .help(createHelp)
+                }
+            }
+        }
         .confirmationDialog("Download official references?", isPresented: $showDownloadConsent, titleVisibility: .visible) {
             Button("Download references", action: application.prepareFrenchReferences)
             Button("Cancel", role: .cancel) { }
@@ -102,6 +104,31 @@ struct FrenchAssessmentWorkspace: View {
             FrenchTeacherReviewSheet()
                 .environmentObject(application)
         }
+    }
+
+    private var canGenerate: Bool {
+        !application.isRunning
+            && application.hasFrenchReferences
+            && !application.selectedModel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var createHelp: String {
+        if !application.hasFrenchReferences {
+            return localizedValue("Prepare French references first.")
+        }
+        if application.selectedModel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return localizedValue("Choose a local Ollama model first.")
+        }
+        return localizedValue("Create a non-official draft for teacher review.")
+    }
+
+    private func localizedValue(_ key: String) -> String {
+        let language = interfaceLanguage == "system"
+            ? Locale.current.language.languageCode?.identifier ?? "en"
+            : interfaceLanguage
+        guard let path = Bundle.main.path(forResource: language, ofType: "lproj"),
+              let bundle = Bundle(path: path) else { return key }
+        return bundle.localizedString(forKey: key, value: key, table: "Localizable")
     }
 }
 

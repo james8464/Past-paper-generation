@@ -108,7 +108,14 @@
 
     },
     "Close" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fermer"
+          }
+        }
+      }
     },
     "Choose the subject and paper. AI-assisted families also let you choose a model; constrained families run without one." : {
 
@@ -120,7 +127,14 @@
 
     },
     "Coming soon" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "À venir"
+          }
+        }
+      }
     },
     "Completed, cancelled, and interrupted jobs will appear here." : {
 
@@ -284,7 +298,14 @@
 
     },
     "Mac Benchmark" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Test du Mac"
+          }
+        }
+      }
     },
     "Metric" : {
 
@@ -453,6 +474,16 @@
     "Quality" : {
 
     },
+    "Quality review" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contrôle de qualité"
+          }
+        }
+      }
+    },
     "Quick Look" : {
 
     },
@@ -495,6 +526,16 @@
     },
     "Report an Issue" : {
 
+    },
+    "Review the quality evidence and its limits" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consulter les preuves de qualité et leurs limites"
+          }
+        }
+      }
     },
     "Results" : {
 
@@ -579,7 +620,14 @@
 
     },
     "Subjects and boards" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Matières et organismes d’examen"
+          }
+        }
+      }
     },
     "The PDF could not be exported" : {
 
@@ -1492,6 +1540,156 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Matières A-level"
+          }
+        }
+      }
+    },
+    "NSI written practice" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sujets d’entraînement en NSI"
+          }
+        }
+      }
+    },
+    "Original, non-official drafts for teachers to review before classroom use." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sujets inédits et non officiels, à relire par un enseignant avant utilisation en classe."
+          }
+        }
+      }
+    },
+    "Programme" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Programme"
+          }
+        }
+      }
+    },
+    "Written exam" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Épreuve écrite"
+          }
+        }
+      }
+    },
+    "2027 · 3 h 30 · 3 independent exercises" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2027 · 3 h 30 · 3 exercices indépendants"
+          }
+        }
+      }
+    },
+    "Indicative credit" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Barème indicatif"
+          }
+        }
+      }
+    },
+    "18 technical + 2 French language = 20" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "18 points techniques + 2 points de langue = 20"
+          }
+        }
+      }
+    },
+    "Official sources are downloaded with your permission. Generation stays on this Mac unless you configure a remote Ollama server." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les sources officielles sont téléchargées avec votre accord. La génération reste sur ce Mac, sauf si vous configurez un serveur Ollama distant."
+          }
+        }
+      }
+    },
+    "The reference corpus is incomplete; its presence does not prove topic coverage." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le corpus de référence est incomplet : sa présence ne garantit pas la couverture de tous les thèmes."
+          }
+        }
+      }
+    },
+    "No French model is yet qualified. Gemma 4 12B is a comparison baseline, not a recommendation." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun modèle n’est encore qualifié pour la NSI. Gemma 4 12B sert de base de comparaison, pas de recommandation."
+          }
+        }
+      }
+    },
+    "Review and guidance" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relecture et aide"
+          }
+        }
+      }
+    },
+    "Check both PDFs, the validation record, difficulty and timing. Automated checks do not replace an NSI teacher." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifiez les deux PDF, les contrôles, la difficulté et la durée. Un contrôle automatisé ne remplace pas la relecture d’un enseignant de NSI."
+          }
+        }
+      }
+    },
+    "Prepare French references first." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Préparez d’abord les références françaises."
+          }
+        }
+      }
+    },
+    "Choose a local Ollama model first." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez d’abord un modèle Ollama local."
+          }
+        }
+      }
+    },
+    "Create a non-official draft for teacher review." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer un sujet non officiel à faire relire par un enseignant."
           }
         }
       }

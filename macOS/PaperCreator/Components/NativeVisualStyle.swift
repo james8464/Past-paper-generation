@@ -9,8 +9,12 @@ enum WorkspaceLayoutMode: Equatable {
         self != .compact
     }
 
-    var showsInspector: Bool {
-        self == .expanded
+    var qualityReviewWidth: CGFloat {
+        switch self {
+        case .compact: 420
+        case .standard: 480
+        case .expanded: 560
+        }
     }
 }
 
