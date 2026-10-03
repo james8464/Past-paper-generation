@@ -1,6 +1,6 @@
 # Competition claims register
 
-Updated 30 September 2026. The status labels are deliberately strict.
+Updated 2 October 2026. The status labels are deliberately strict.
 
 | Claim | Status | Evidence or next gate |
 |---|---|---|
@@ -11,7 +11,7 @@ Updated 30 September 2026. The status labels are deliberately strict.
 | Difficulty is equivalent to the real baccalauréat | NOT CLAIMED | Current controls constrain cognitive mix; empirical timing and difficulty require a supervised pilot. |
 | The complete visible 2021–2026 archive is reconciled locally | IMPLEMENTED | 79 canonical papers plus two foundational documents have pinned hashes; 13 papers are holdout-only, 43 accessibility representations are aliases, and two duplicate-content groups are collapsed in retrieval. Source PDFs remain local and reference-only. |
 | A resumable local-model benchmark exists | IMPLEMENTED | Fixed seeds, model/source/code identity, checkpoints, failure preservation and duplicate-run locking are implemented. |
-| A French live benchmark has selected the best model | IN PROGRESS | The first Gemma campaign exposed a reference-index mutation and rejected malformed model output. The index bug is repaired with immutable reads; the replacement campaign preserves exact source/model identities and failures. No model is selected yet. |
+| A French live benchmark has selected the best model | IN PROGRESS | The completed Gemma 4 12B campaign accepted 0/10 papers. All failures are preserved with exact source/model identity; other candidates and a revised generation architecture remain to be evaluated. No model is selected yet. |
 | A Toulouse/Montpellier teacher pilot exists | PLANNED | No school or teacher partnership is claimed until written agreement exists. |
 | Regional open data is already used in generated exercises | PLANNED | Intended optional module; values and provenance must remain distinct from synthetic exercise data. |
 | Students need a Mac or AI account | FALSE | Students receive ordinary PDFs; generation remains on the teacher's Mac. |

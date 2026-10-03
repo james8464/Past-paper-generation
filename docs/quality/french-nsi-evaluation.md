@@ -1,7 +1,27 @@
 # French NSI evaluation protocol
 
-Status: engineering prototype; a live model campaign is running, but no accepted
-candidate-model campaign or teacher qualification is recorded.
+Status: engineering prototype. The first complete Gemma 4 12B campaign finished
+with zero accepted papers out of ten. No candidate-model or teacher qualification
+is recorded.
+
+## First complete live campaign (30 September 2026)
+
+`tmp/qualification-fr-nsi-2027/gemma4-blueprint-v4/benchmark-summary.json`
+records ten failed papers from seeds 270100–270109, with thirty rejected
+exercise drafts and one accepted exercise retained in per-seed checkpoints. The
+implementation hash was
+`bd1468ca74a1dbe501e5eedc306d26531fb52ff9a6271b20fc13607cbfafbfbb`;
+the reference-index hash was
+`8244bb8e149aa6d4ab6dabc96529dc220810209f9ef27fe09d6d86260e4fdea6`;
+the model digest was
+`4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c`.
+One seed accepted an initial exercise but failed the next. Most rejected drafts
+omitted the question-to-figure identifiers needed to prove use of the structured
+graph or table. Other failures included mismatched question plans, marking totals,
+invalid decimal strings and duplicated graph edges. These are output-quality
+failures, not paper passes. The model cannot be recommended for French NSI on
+this evidence. Test the other exact candidate models and review the generation
+architecture before another ten-paper campaign.
 
 ## Reproducible runs
 
