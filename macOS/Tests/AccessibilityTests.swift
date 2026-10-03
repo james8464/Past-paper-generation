@@ -44,6 +44,12 @@ final class AccessibilityTests: XCTestCase {
         XCTAssertEqual(WorkspaceLayoutPolicy.mode(for: 1_200).qualityReviewWidth, 560)
     }
 
+    func testFrenchTeacherFormKeepsReadableLineLengthWithoutClippingSmallWindows() {
+        XCTAssertEqual(FrenchWorkspaceLayoutPolicy.contentWidth(for: 600), 568)
+        XCTAssertEqual(FrenchWorkspaceLayoutPolicy.contentWidth(for: 900), 840)
+        XCTAssertEqual(FrenchWorkspaceLayoutPolicy.contentWidth(for: 1_440), 840)
+    }
+
     func testEveryProviderAndHelpTopicHasSpokenTextAndSymbol() {
         for provider in AIProvider.allCases {
             XCTAssertFalse(provider.title.isEmpty)

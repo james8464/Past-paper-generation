@@ -1,5 +1,11 @@
 import SwiftUI
 
+enum FrenchWorkspaceLayoutPolicy {
+    static func contentWidth(for availableWidth: CGFloat) -> CGFloat {
+        max(0, min(availableWidth - 32, 840))
+    }
+}
+
 struct FrenchAssessmentWorkspace: View {
     @EnvironmentObject private var application: ApplicationCoordinator
     @AppStorage("interfaceLanguage") private var interfaceLanguage = "system"
@@ -9,6 +15,49 @@ struct FrenchAssessmentWorkspace: View {
     @State private var showTeacherReview = false
 
     var body: some View {
+        GeometryReader { geometry in
+            form
+                .frame(width: FrenchWorkspaceLayoutPolicy.contentWidth(for: geometry.size.width))
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .navigationTitle("Baccalauréat · NSI")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                if application.isRunning {
+                    Button("Cancel", role: .cancel, action: application.cancelGeneration)
+                } else {
+                    Button("Create a draft", systemImage: "doc.badge.plus") {
+                        application.generateFrenchPaper(largePrint: largePrint)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(!canGenerate)
+                    .help(createHelp)
+                }
+            }
+        }
+        .confirmationDialog("Download official references?", isPresented: $showDownloadConsent, titleVisibility: .visible) {
+            Button("Download references", action: application.prepareFrenchReferences)
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("This contacts French Ministry of Education websites and stores public PDFs on this Mac. No model training is performed and no student data is sent.")
+        }
+        .confirmationDialog(
+            "Delete downloaded French references?",
+            isPresented: $showDeleteReferences,
+            titleVisibility: .visible
+        ) {
+            Button("Delete References", role: .destructive, action: application.deleteFrenchReferences)
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("The local reference PDFs and search index will be removed. Generated papers are not affected.")
+        }
+        .sheet(isPresented: $showTeacherReview) {
+            FrenchTeacherReviewSheet()
+                .environmentObject(application)
+        }
+    }
+
+    private var form: some View {
         Form {
             Section {
                 Text("NSI written practice")
@@ -69,41 +118,6 @@ struct FrenchAssessmentWorkspace: View {
             }
         }
         .formStyle(.grouped)
-        .navigationTitle("Baccalauréat · NSI")
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                if application.isRunning {
-                    Button("Cancel", role: .cancel, action: application.cancelGeneration)
-                } else {
-                    Button("Create a draft", systemImage: "doc.badge.plus") {
-                        application.generateFrenchPaper(largePrint: largePrint)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(!canGenerate)
-                    .help(createHelp)
-                }
-            }
-        }
-        .confirmationDialog("Download official references?", isPresented: $showDownloadConsent, titleVisibility: .visible) {
-            Button("Download references", action: application.prepareFrenchReferences)
-            Button("Cancel", role: .cancel) { }
-        } message: {
-            Text("This contacts French Ministry of Education websites and stores public PDFs on this Mac. No model training is performed and no student data is sent.")
-        }
-        .confirmationDialog(
-            "Delete downloaded French references?",
-            isPresented: $showDeleteReferences,
-            titleVisibility: .visible
-        ) {
-            Button("Delete References", role: .destructive, action: application.deleteFrenchReferences)
-            Button("Cancel", role: .cancel) { }
-        } message: {
-            Text("The local reference PDFs and search index will be removed. Generated papers are not affected.")
-        }
-        .sheet(isPresented: $showTeacherReview) {
-            FrenchTeacherReviewSheet()
-                .environmentObject(application)
-        }
     }
 
     private var canGenerate: Bool {
