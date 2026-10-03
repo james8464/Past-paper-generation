@@ -24,7 +24,7 @@ struct FrenchAssessmentWorkspace: View {
                 }
             }
             Section("References and privacy") {
-                Text("Official sources are downloaded with your permission. Generation stays on this Mac unless you configure a remote Ollama server.")
+                Text("Official sources are downloaded with your permission. French generation uses Ollama on this Mac, with no cloud fallback.")
                 Button("Prepare French references") { showDownloadConsent = true }
                     .disabled(application.isRunning)
                 if application.hasFrenchReferences {

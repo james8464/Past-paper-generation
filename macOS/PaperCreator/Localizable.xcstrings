@@ -1614,12 +1614,12 @@
         }
       }
     },
-    "Official sources are downloaded with your permission. Generation stays on this Mac unless you configure a remote Ollama server." : {
+    "Official sources are downloaded with your permission. French generation uses Ollama on this Mac, with no cloud fallback." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les sources officielles sont téléchargées avec votre accord. La génération reste sur ce Mac, sauf si vous configurez un serveur Ollama distant."
+            "value" : "Les sources officielles sont téléchargées avec votre accord. La génération française utilise Ollama sur ce Mac, sans bascule vers le cloud."
           }
         }
       }
