@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 from pathlib import Path
+from urllib.parse import urlparse
 
 from docx import Document
 from docx.enum.table import WD_CELL_VERTICAL_ALIGNMENT, WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.opc.constants import RELATIONSHIP_TYPE
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt, RGBColor
@@ -87,31 +89,38 @@ def add_page_field(paragraph) -> None:
     run._r.extend([begin, instruction, separate, text, end])
 
 
-def configure_document(doc: Document, *, compact: bool = False) -> None:
+def configure_document(
+    doc: Document, *, compact: bool = False, editorial: bool = False
+) -> None:
     section = doc.sections[0]
     section.page_width = Cm(21)
     section.page_height = Cm(29.7)
-    section.top_margin = Cm(1.7 if compact else 1.9)
-    section.bottom_margin = Cm(1.55 if compact else 1.7)
-    section.left_margin = Cm(1.9 if compact else 2.1)
-    section.right_margin = Cm(1.9 if compact else 2.1)
+    section.top_margin = Cm(2.0 if editorial else 1.7 if compact else 1.9)
+    section.bottom_margin = Cm(1.7 if editorial else 1.55 if compact else 1.7)
+    section.left_margin = Cm(2.1 if editorial and compact else 2.35 if editorial else 1.9 if compact else 2.1)
+    section.right_margin = Cm(2.1 if editorial and compact else 2.35 if editorial else 1.9 if compact else 2.1)
     section.header_distance = Cm(0.65)
     section.footer_distance = Cm(0.65)
 
     normal = doc.styles["Normal"]
     normal.font.name = "Arial"
-    normal.font.size = Pt(10.2 if compact else 10.8)
+    normal.font.size = Pt(10.5 if editorial and compact else 11 if editorial else 10.2 if compact else 10.8)
     normal.font.color.rgb = RGBColor(0, 0, 0)
-    normal.paragraph_format.space_after = Pt(5 if compact else 6)
-    normal.paragraph_format.line_spacing = 1.12
-    for name, size in (("Title", 22), ("Heading 1", 13.5), ("Heading 2", 11.5)):
+    normal.paragraph_format.space_after = Pt(5 if editorial and compact else 8 if editorial else 5 if compact else 6)
+    normal.paragraph_format.line_spacing = 1.12 if editorial and compact else 1.22 if editorial else 1.12
+    heading_sizes = (
+        (("Title", 30), ("Heading 1", 16), ("Heading 2", 12.5))
+        if editorial else
+        (("Title", 22), ("Heading 1", 13.5), ("Heading 2", 11.5))
+    )
+    for name, size in heading_sizes:
         style = doc.styles[name]
         style.font.name = "Arial"
         style.font.size = Pt(size)
         style.font.color.rgb = RGBColor(0, 0, 0)
         style.font.bold = name != "Title"
-        style.paragraph_format.space_before = Pt(12)
-        style.paragraph_format.space_after = Pt(6)
+        style.paragraph_format.space_before = Pt(12 if editorial and compact else 18 if editorial else 12)
+        style.paragraph_format.space_after = Pt(6 if editorial and compact else 9 if editorial else 6)
         style.paragraph_format.keep_with_next = True
     title_properties = doc.styles["Title"].element.get_or_add_pPr()
     title_border = title_properties.find(qn("w:pBdr"))
@@ -141,13 +150,13 @@ def finalize_fonts(doc: Document) -> None:
         for run in paragraph.runs:
             run.font.name = "Arial"
             if paragraph.style.name == "Title":
-                run.font.size = Pt(22)
+                run.font.size = doc.styles["Title"].font.size
                 run.font.color.rgb = RGBColor(0, 0, 0)
             elif paragraph.style.name == "Heading 1":
-                run.font.size = Pt(13.5)
+                run.font.size = doc.styles["Heading 1"].font.size
                 run.font.bold = True
             elif paragraph.style.name == "Heading 2":
-                run.font.size = Pt(11.5)
+                run.font.size = doc.styles["Heading 2"].font.size
                 run.font.bold = True
 
 
@@ -212,9 +221,31 @@ def add_table(doc: Document, headers: list[str], rows: list[list[str]], widths=N
 
 def add_source(doc: Document, number: int, label: str, url: str) -> None:
     paragraph = doc.add_paragraph()
-    paragraph.paragraph_format.space_after = Pt(2)
-    paragraph.add_run(f"[{number}] {label}. ").bold = True
-    paragraph.add_run(url)
+    paragraph.paragraph_format.space_after = Pt(0)
+    paragraph.add_run(f"[{number}] ").font.size = Pt(9)
+    relationship_id = paragraph.part.relate_to(url, RELATIONSHIP_TYPE.HYPERLINK, is_external=True)
+    hyperlink = OxmlElement("w:hyperlink")
+    hyperlink.set(qn("r:id"), relationship_id)
+    run = OxmlElement("w:r")
+    properties = OxmlElement("w:rPr")
+    color = OxmlElement("w:color")
+    color.set(qn("w:val"), "1D1D1F")
+    properties.append(color)
+    underline = OxmlElement("w:u")
+    underline.set(qn("w:val"), "single")
+    properties.append(underline)
+    size = OxmlElement("w:sz")
+    size.set(qn("w:val"), "18")
+    properties.append(size)
+    run.append(properties)
+    text = OxmlElement("w:t")
+    text.text = label
+    run.append(text)
+    hyperlink.append(run)
+    paragraph._p.append(hyperlink)
+    domain = paragraph.add_run(f"  ·  {urlparse(url).netloc}")
+    domain.font.size = Pt(9)
+    domain.font.color.rgb = RGBColor(90, 90, 90)
 
 
 def build_application() -> Path:
@@ -225,13 +256,8 @@ def build_application() -> Path:
         "Candidature au Prix Occitanie 2026",
         "Paper Creator, pilote NSI Occitanie",
     )
-    identity = add_table(
-        doc,
-        ["Nom", "Prénom", "Promotion", "Courriel", "Téléphone"],
-        [["Durup", "James", "À compléter", "james.durup@student-cs.fr", "À compléter"]],
-        [2.6, 2.6, 2.4, 6.2, 3.0],
-    )
-    identity.rows[1].cells[3].paragraphs[0].runs[0].font.size = Pt(8.4)
+    add_label_paragraph(doc, "Candidat", "James Durup · CentraleSupélec · promotion : À compléter")
+    add_label_paragraph(doc, "Contact", "james.durup@student-cs.fr · téléphone : À compléter")
     add_label_paragraph(doc, "Adresse", "À compléter")
     doc.add_heading("Présentation du candidat", level=1)
     doc.add_paragraph(
@@ -285,45 +311,26 @@ def build_application() -> Path:
     )
 
     doc.add_heading("Travaux prévus pendant les douze mois suivant le prix", level=1)
-    add_table(
-        doc,
-        ["Période", "Travail", "Résultat vérifiable"],
-        [
-            ["Mois 1 à 2", "Achever le banc d’essai local sur le corpus réconcilié. Recruter deux enseignants de NSI.", "Résultats conservés, modèle retenu ou rejet motivé, protocole signé par les relecteurs."],
-            ["Mois 3 à 4", "Faire relire six sujets stratifiés et corriger les défauts.", "Deux avis indépendants par sujet, défauts et révisions tracés."],
-            ["Mois 5 à 6", "Conduire un pilote encadré dans un établissement volontaire.", "Temps enseignant, durées élèves, ambiguïtés et contraintes d’accès mesurés."],
-            ["Mois 7 à 9", "Créer le module de contextes issus de données ouvertes d’Occitanie et auditer l’accessibilité.", "Provenance des jeux de données, sujets relus, PDF standard et agrandi."],
-            ["Mois 10 à 12", "Évaluer l’extension à une deuxième spécialité ou à une inférence mutualisée.", "Décision documentée à partir du pilote et des limites matérielles."],
-        ],
-        [2.3, 7.0, 7.0],
-    )
+    for period, activity, evidence in (
+        ("Mois 1 à 2", "Banc d’essai local et recrutement de deux enseignants de NSI", "résultats conservés, choix du modèle motivé, protocole de relecture"),
+        ("Mois 3 à 4", "Six sujets relus et corrigés", "deux avis indépendants par sujet, défauts et révisions tracés"),
+        ("Mois 5 à 6", "Pilote encadré dans un lycée volontaire", "temps enseignant et élèves, ambiguïtés et accès mesurés"),
+        ("Mois 7 à 9", "Données ouvertes d’Occitanie et audit d’accessibilité", "provenance, sujets relus, PDF standard et agrandi"),
+        ("Mois 10 à 12", "Décision sur une deuxième spécialité ou l’inférence mutualisée", "conclusion fondée sur le pilote et le matériel"),
+    ):
+        add_label_paragraph(doc, period + ".", activity + " ; preuve : " + evidence + ".")
     doc.add_heading("Utilisation du prix de 1 000 euros", level=1)
-    add_table(
-        doc,
-        ["Dépense", "Montant", "Justification"],
-        [
-            ["Relecture par des enseignants", "500 €", "Rémunérer le temps d’analyse détaillée et de seconde lecture."],
-            ["Déplacements du pilote", "200 €", "Rencontrer les équipes et observer l’usage réel en Occitanie."],
-            ["Essais matériels et accessibilité", "200 €", "Tester plusieurs configurations et les PDF agrandis."],
-            ["Données et imprévus", "100 €", "Préparer les ressources régionales et absorber un besoin validé par le pilote."],
-        ],
-        [6.1, 2.0, 8.2],
-    )
+    for amount, purpose in (
+        ("500 €", "relecture indépendante par des enseignants"),
+        ("200 €", "déplacements du pilote en Occitanie"),
+        ("200 €", "essais matériels et accessibilité des PDF"),
+        ("100 €", "données régionales et besoin imprévu du pilote"),
+    ):
+        add_label_paragraph(doc, amount, purpose + ".")
     doc.add_heading("Faisabilité et résultats attendus", level=1)
     doc.add_paragraph(
         "Le socle logiciel fonctionne déjà sur macOS. Le risque principal n’est pas la production d’un PDF, mais la justesse pédagogique. Le projet impose donc une séquence de qualification qui conserve les échecs et interdit de confondre un contrôle automatisé avec l’avis d’un enseignant. À douze mois, le résultat attendu est un outil que deux enseignants de NSI recommandent pour un usage d’entraînement après relecture, accompagné de mesures transparentes sur le temps gagné, les erreurs rencontrées, le matériel et l’accessibilité."
     )
-    doc.add_heading("Schéma d’usage", level=1)
-    add_table(
-        doc,
-        ["Création", "Contrôles", "Décision", "Diffusion"],
-        [["Mac de l’enseignant\nModèle local", "Programme, réponses, barème, originalité et PDF", "Relecture liée aux empreintes des fichiers", "PDF sur ENT, loRdi ou papier"]],
-        [4.0, 4.3, 4.3, 4.0],
-    )
-    doc.add_paragraph(
-        "Sources principales : règlement du Prix Occitanie 2026 ; Bulletin officiel NSI session 2027 ; programme officiel de Terminale NSI ; portail open data de la Région Occitanie ; dispositif loRdi. Les liens complets figurent dans le dossier technique joint au projet."
-    )
-
     path = OUTPUT / "Prix-Occitanie-2026-Candidature-James-Durup.docx"
     OUTPUT.mkdir(parents=True, exist_ok=True)
     finalize_fonts(doc)
@@ -333,7 +340,7 @@ def build_application() -> Path:
 
 def build_technical_dossier() -> Path:
     doc = Document()
-    configure_document(doc, compact=True)
+    configure_document(doc, editorial=True)
     title_block(
         doc,
         "Paper Creator for French NSI",
@@ -346,36 +353,46 @@ def build_technical_dossier() -> Path:
     doc.add_paragraph(
         "A teacher has a finite supply of past papers and needs fresh practice without introducing errors in questions or marking. Paper Creator produces a complete draft for review. The teacher decides whether to share it; the app neither marks student work nor collects student responses."
     )
-    add_table(
-        doc,
-        ["Step", "Teacher", "Application"],
-        [
-            ["1", "Approve preparation of official references.", "Download, identify, and index permitted documents locally."],
-            ["2", "Choose an Ollama model and print profile.", "Check the local model and record its identity."],
-            ["3", "Create an unreviewed draft.", "Plan three exercises; generate, solve, check, and repair failures."],
-            ["4", "Read both PDFs and the evidence.", "Show status, sources, checks, and limitations."],
-            ["5", "Record a review decision.", "Bind the review to the exact file hashes."],
-        ],
-        [1.2, 7.3, 8.3],
+    screenshot = ROOT / "macOS/PaperCreator/Assets.xcassets/TutorialFrenchNSI.imageset/TutorialFrenchNSI.png"
+    picture = doc.add_picture(str(screenshot), width=Cm(16.2))
+    picture.height = Cm(14.1)
+    crop = OxmlElement("a:srcRect")
+    crop.set("l", "30000")
+    crop.set("r", "13000")
+    crop.set("b", "15000")
+    picture._inline.graphic.graphicData.pic.blipFill.insert(1, crop)
+    picture._inline.docPr.set(
+        "descr", "French NSI workspace in the Paper Creator macOS prototype"
     )
+    caption = doc.add_paragraph("Prototype interface · local draft controls and assessment context.")
+    caption.paragraph_format.space_after = Pt(12)
+    for run in caption.runs:
+        run.italic = True
+        run.font.size = Pt(9)
+        run.font.color.rgb = RGBColor(85, 85, 85)
+    doc.add_page_break()
+    doc.add_heading("From request to reviewed artifact", level=1)
+    for label, detail in (
+        ("01  Prepare references.", "The teacher permits a local download; the app identifies and indexes eligible official documents."),
+        ("02  Choose a model.", "The teacher selects a local Ollama model and print profile; the app records the model identity."),
+        ("03  Create a draft.", "The app plans three exercises, generates proposed answers, solves independently, and checks failures."),
+        ("04  Inspect the evidence.", "The teacher reads both PDFs, sources, validation results, and limitations."),
+        ("05  Record a decision.", "A review applies only to the exact artifact hashes; a changed paper needs new review."),
+    ):
+        add_label_paragraph(doc, label, detail)
 
     doc.add_heading("Architecture", level=1)
     doc.add_paragraph(
         "A SwiftUI interface exchanges JSON messages with a Python engine. The assessment registry selects an explicit French policy. This boundary prevents UK assessment objectives, integer-only marks, and English instructions from silently applying to the baccalauréat."
     )
-    add_table(
-        doc,
-        ["Layer", "Responsibility", "Evidence retained"],
-        [
-            ["Catalogue", "Education context, curriculum version, 2027 rules, and language.", "Immutable IDs and checked compatibility."],
-            ["References", "Filter by France, Terminale, NSI, curriculum, category, and rights.", "URL, date, SHA-256, pages, and reference/holdout split."],
-            ["Generation", "Three independent plans; French contexts, questions, answers, and credit.", "Candidates and rejected attempts in resumable checkpoints."],
-            ["Verification", "Bounded SQL, traces, binary, graphs, consistency, blind solving, originality.", "Deterministic results; unresolved status when a check is unavailable."],
-            ["Publication", "Atomic French question paper, proposed solution, and manifest.", "Artifact hashes; no partial release."],
-            ["Review", "Human decision against an eight-part rubric.", "Separate record tied to artifact hashes."],
-        ],
-        [3.0, 8.0, 5.8],
-    )
+    for label, detail in (
+        ("Catalogue.", "Explicit education context, curriculum and rule versions, language, and checked compatibility."),
+        ("References.", "French-only eligibility filtering; source URL, retrieval date, hash, page, rights and holdout status retained."),
+        ("Generation.", "Three independent plans and French questions, with rejected attempts in resumable checkpoints."),
+        ("Verification.", "Bounded SQL and algorithm checks, blind solving and originality; unsupported claims remain unresolved."),
+        ("Publication and review.", "Atomic PDF bundle plus manifest, followed by an eight-part human review bound to file hashes."),
+    ):
+        add_label_paragraph(doc, label, detail)
 
     doc.add_heading("Implemented French assessment rules", level=1)
     add_bullets(
@@ -403,55 +420,50 @@ def build_technical_dossier() -> Path:
     )
 
     doc.add_heading("Safety, privacy, and rights", level=1)
-    add_table(
-        doc,
-        ["Risk", "Current safeguard", "Limit"],
-        [
-            ["Data exposure", "French UI uses loopback Ollama; no student responses or silent cloud fallback.", "The separate CLI permits a remote Ollama server only by explicit opt-in over HTTPS."],
-            ["Generated code", "SQL runs in an isolated, bounded setting; supported code has restricted interpretation.", "Arbitrary generated Python is never executed."],
-            ["Wrong source", "Scope filter precedes ranking; holdouts are separate; empty eligible sets fail explicitly.", "Third-party rights still need document-level review."],
-            ["Past-paper copying", "Compare text, normalised code, structure, and previous generations.", "Similarity is risk evidence, not a legal guarantee."],
-            ["Document rights", "Local references retain URL, rights status, and hash.", "Third-party illustrations need separate clearance."],
-        ],
-        [3.0, 8.0, 5.8],
-    )
+    for label, detail in (
+        ("Data exposure.", "The French UI uses loopback Ollama, with no student responses or silent cloud fallback. A separate CLI permits a remote server only by explicit HTTPS opt-in."),
+        ("Generated code.", "SQL runs in an isolated, bounded setting; supported code has restricted interpretation. Arbitrary generated Python is never executed."),
+        ("Wrong source.", "Scope filtering precedes ranking; holdouts are separate and an empty eligible set fails explicitly. Third-party rights still need document-level review."),
+        ("Past-paper copying.", "Text, normalised code, structure and prior generations are compared. Similarity is risk evidence, not a legal guarantee."),
+        ("Document rights.", "Local references retain URL, rights status and hash. Third-party illustrations require separate clearance."),
+    ):
+        add_label_paragraph(doc, label, detail)
 
+    doc.add_page_break()
     doc.add_heading("Qualification evidence", level=1)
     doc.add_paragraph(
         "The benchmark runner attempts ten complete papers per model—30 exercises per configuration—using fixed seeds. It retains outputs, errors, checkpoints, timing, Ollama version, hardware, model digest, and source identity. A lock prevents duplicate French campaigns. If code or references change, the run stops rather than mixing incompatible evidence."
     )
-    add_table(
-        doc,
-        ["Gate", "Required evidence", "Status · 3 October 2026"],
-        [
-            ["Automated", "Tests, content checks, publication checks, and PDF inspection with no blocking defect.", "Controls implemented; Gemma 4 12B first campaign: 0/10 accepted. Redesign and rerun needed."],
-            ["Teachers", "Two NSI teachers independently review six papers; correctness and marking 4/4, other dimensions at least 3/4.", "Reviewers not yet recruited."],
-            ["Learners", "Supervised pilot measuring timing, ambiguity, accessibility, and teacher workload.", "Planned; no partner school yet."],
-        ],
-        [3.2, 9.0, 4.6],
+    add_label_paragraph(
+        doc, "Automated · 0/10 accepted.",
+        "The first Gemma 4 12B campaign did not pass. Repair and a fresh source-pinned run are required; implemented checks are not teacher approval."
+    )
+    add_label_paragraph(
+        doc, "Teachers · not recruited.",
+        "Two NSI teachers must independently review six papers; correctness and marking must each score 4/4, with other dimensions at least 3/4."
+    )
+    add_label_paragraph(
+        doc, "Learners · not piloted.",
+        "A supervised pilot must measure timing, ambiguity, accessibility and teacher workload. No partner school is yet arranged."
     )
 
     doc.add_heading("Occitanie deployment", level=1)
     doc.add_paragraph(
-        "The first deployment keeps generation on a teacher’s Mac and uses existing channels to share PDFs with students. Occitanie’s loRdi devices support access to resources; the project does not claim that these Windows laptops run the Mac app or a large model. The pilot will seek teachers in the Toulouse and Montpellier academies and document actual access conditions rather than assert an unevidenced regional divide."
+        "Teachers generate on a Mac and share ordinary PDFs. Occitanie’s loRdi devices can display them; these Windows laptops are not claimed to run the app or a large model. The pilot will seek teachers in Toulouse and Montpellier and record actual access conditions."
     )
     doc.add_paragraph(
-        "A planned regional module will use cleared Open Licence 2.0 datasets. Official values will remain distinct from synthetic exercise data. Candidate contexts include school infrastructure, loRdi, energy use, renewables, and transport. Every context must support a genuine NSI capability, such as SQL, route graphs, or algorithm analysis; regional names alone are not educational value."
+        "A planned regional module will use rights-cleared open datasets on schools, energy or transport. Official values will remain distinct from synthetic exercise data. Each context must support an NSI capability such as SQL or graph algorithms; place names alone add no educational value."
     )
 
     doc.add_heading("Risks and decisions", level=1)
-    add_table(
-        doc,
-        ["Risk", "Decision"],
-        [
-            ["Plausible but wrong question", "Block automated publication on failed checks; require human review before classroom use."],
-            ["Model exceeds available memory", "Prioritise correctness over speed, measure actual hardware, and do not promise compatibility with every Mac."],
-            ["Historical layout, new 2027 rules", "Label the 2027 visual profile provisional until contemporary papers support it."],
-            ["Weak regional connection", "Test a real pilot and relevant regional data rather than merely rename places in a question."],
-            ["Unfavourable pilot", "Publish the limitation, narrow scope, or stop the affected extension."],
-        ],
-        [6.0, 10.8],
-    )
+    for label, detail in (
+        ("Wrong answer.", "Block publication and require teacher review."),
+        ("Memory pressure.", "Benchmark actual Macs; promise no universal compatibility."),
+        ("2027 visual rules.", "Keep the historical-reference layout provisional."),
+        ("Regional relevance.", "Test useful data and a real pilot, not renamed places."),
+        ("Unfavourable pilot.", "Report limits, narrow scope, or stop."),
+    ):
+        add_label_paragraph(doc, label, detail)
 
     doc.add_heading("Primary sources", level=1)
     sources = [
@@ -477,7 +489,7 @@ def build_technical_dossier() -> Path:
 
 def build_mathematical_analysis() -> Path:
     doc = Document()
-    configure_document(doc)
+    configure_document(doc, compact=True, editorial=True)
     title_block(
         doc,
         "Mathematical analysis of qualification",
@@ -507,20 +519,19 @@ def build_mathematical_analysis() -> Path:
     doc.add_paragraph(
         "Let p be the probability that an exercise has a blocking defect detectable during review. Given n independent exercises and zero observed defects, a simple one-sided 95% upper bound is p₉₅ = 1 − 0.05^(1/n). For n = 30 exercises from one model, p₉₅ ≈ 9.5%. Even a flawless 30-exercise run would not establish a true defect rate below 1%; roughly 299 defect-free exercises would be needed for that bound."
     )
+    doc.add_paragraph(
+        "Shared prompts or model failures weaken independence; defect rates must therefore be reported by category and version."
+    )
     add_table(
         doc,
         ["Zero-defect sample", "95% upper bound", "Interpretation"],
         [
-            ["30 exercises", "9.5%", "Initial model screen, not a strong reliability claim."],
-            ["90 exercises", "3.3%", "A pooled total would not transfer to each model."],
-            ["299 exercises", "1.0%", "Approximate scale needed for a bound below 1%."],
+            ["30 exercises", "9.5%", "Initial model screen only."],
+            ["90 exercises", "3.3%", "Pooling cannot prove each model."],
+            ["299 exercises", "1.0%", "Approximate 1% scale."],
         ],
         [4.0, 4.0, 8.8],
     )
-    doc.add_paragraph(
-        "Independence is optimistic: exercises may share a model, prompt, or verification weakness. The evaluation must therefore retain defects by category and version rather than publish a context-free aggregate rate."
-    )
-
     doc.add_heading("Teacher evaluation", level=1)
     doc.add_paragraph(
         "Two teachers score six papers independently on eight dimensions: correctness, ambiguity, curriculum fit, French, difficulty, duration, marking, and authentic structure. Scores run from 1 to 4. After revisions, a paper passes only if both reviewers give correctness = 4 and marking = 4, with every other dimension at least 3. A high average cannot hide a substantive error."
@@ -558,17 +569,13 @@ def build_mathematical_analysis() -> Path:
     )
 
     doc.add_heading("Budget and decision rule", level=1)
-    add_table(
-        doc,
-        ["Use", "Amount", "Evidence purchased"],
-        [
-            ["Teacher review", "€500", "Twelve independent review sheets for six papers and time spent."],
-            ["Pilot travel", "€200", "Observed school context and access constraints."],
-            ["Hardware/accessibility", "€200", "Tested configurations, memory, speed, standard/enlarged PDFs."],
-            ["Data/contingency", "€100", "Regional resources or a documented pilot need."],
-        ],
-        [5.2, 2.2, 9.4],
-    )
+    for label, detail in (
+        ("€500 · Teacher review.", "Twelve independent review sheets for six papers and the reviewers’ time."),
+        ("€200 · Pilot travel.", "Observed school context and access constraints."),
+        ("€200 · Hardware and accessibility.", "Tested configurations, memory, speed, and standard/enlarged PDFs."),
+        ("€100 · Data and contingency.", "Regional resources or a documented pilot need."),
+    ):
+        add_label_paragraph(doc, label, detail)
     doc.add_paragraph(
         "Continuing beyond the pilot requires all of the following: no unresolved blocking defect, two written teacher recommendations for reviewed practice use, plausible completion time, observed teacher time savings, and hardware suitable for the chosen deployment. One favourable metric is not enough."
     )

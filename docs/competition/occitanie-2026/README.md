@@ -12,14 +12,14 @@ The jury evaluates the relationship with Occitanie, originality, engineering cha
 
 Run `tools/build_occitanie_submission.py` with the bundled document runtime to recreate:
 
-- `Prix-Occitanie-2026-Candidature-James-Durup.docx` — formal three-page application;
+- `Prix-Occitanie-2026-Candidature-James-Durup.docx` — formal application (two pages before personal details; three-page maximum);
 - `Paper-Creator-NSI-Technical-and-User-Report.docx` — technical and user dossier;
 - `Paper-Creator-NSI-Mathematical-Analysis.docx` — measurement and decision framework.
 
 The formal application is in French, following the organiser's form. The
 supporting technical/user and mathematical reports are in English, as requested
 by James. Matching PDFs have been rendered and visually checked page by page in
-`output/occitanie-2026/`: three A4 pages for the formal application, four for
+`output/occitanie-2026/`: two A4 pages for the formal application, four for
 the technical/user dossier and three for the mathematical analysis. The directory
 is intentionally ignored by Git so personal submission copies are not published
 automatically. Regenerate and reinspect the formal PDF after filling personal facts.
@@ -41,7 +41,7 @@ Before sending, James must also confirm that he remains eligible under the exact
 
 - [ ] Fill the four personal facts above in the DOCX.
 - [ ] Confirm no disqualifying prior outside funding.
-- [ ] Export the edited formal application to PDF and confirm it still has exactly three A4 pages.
+- [ ] Export the edited formal application to PDF and confirm it remains at most three A4 pages.
 - [ ] Search the final PDF for comments, tracked changes and placeholders.
 - [ ] Confirm that every claim still matches `docs/competition/occitanie-2026/claims-register.md`.
 - [ ] Record the real application demonstration after unlocking the Mac.
@@ -64,6 +64,8 @@ teacher-approved practice release still requires a revised generation approach,
 new live evidence and independent human review.
 
 The project does not claim endorsement by the Ministry, the Région Occitanie, the Toulouse or Montpellier academies, CentraleSupélec or any examination board. Generated files remain independently branded and marked non-official.
+
+The [Apple report visual audit](apple-report-visual-audit.md) records the official design references, specific differences and editorial changes. Apple's imagery and branding are not included in the submission.
 
 ## Official sources
 
