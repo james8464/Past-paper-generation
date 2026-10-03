@@ -355,10 +355,16 @@ def build_technical_dossier() -> Path:
     )
     screenshot = ROOT / "macOS/PaperCreator/Assets.xcassets/TutorialFrenchNSI.imageset/TutorialFrenchNSI.png"
     picture = doc.add_picture(str(screenshot), width=Cm(16.2))
+    picture.height = Cm(14.1)
+    crop = OxmlElement("a:srcRect")
+    crop.set("l", "30000")
+    crop.set("r", "13000")
+    crop.set("b", "15000")
+    picture._inline.graphic.graphicData.pic.blipFill.insert(1, crop)
     picture._inline.docPr.set(
         "descr", "French NSI workspace in the Paper Creator macOS prototype"
     )
-    caption = doc.add_paragraph("Prototype interface · teacher creates a draft, then reviews its evidence and PDFs.")
+    caption = doc.add_paragraph("Prototype interface · local draft controls and assessment context.")
     caption.paragraph_format.space_after = Pt(12)
     for run in caption.runs:
         run.italic = True
@@ -509,25 +515,23 @@ def build_mathematical_analysis() -> Path:
         "Each question is labelled as recall, application, analysis, design, debugging, or justification, and receives an integer difficulty label from 1 to 4. A valid exercise has at most one recall-only question, at least three different operations, at least two higher-order operations, and at least one difficulty-4 question. These constraints are structural guardrails; they do not establish how difficult learners will actually find the work."
     )
 
-    doc.add_page_break()
     doc.add_heading("Defect rates and sample size", level=1)
     doc.add_paragraph(
         "Let p be the probability that an exercise has a blocking defect detectable during review. Given n independent exercises and zero observed defects, a simple one-sided 95% upper bound is p₉₅ = 1 − 0.05^(1/n). For n = 30 exercises from one model, p₉₅ ≈ 9.5%. Even a flawless 30-exercise run would not establish a true defect rate below 1%; roughly 299 defect-free exercises would be needed for that bound."
+    )
+    doc.add_paragraph(
+        "Shared prompts or model failures weaken independence; defect rates must therefore be reported by category and version."
     )
     add_table(
         doc,
         ["Zero-defect sample", "95% upper bound", "Interpretation"],
         [
-            ["30 exercises", "9.5%", "Initial model screen, not a strong reliability claim."],
-            ["90 exercises", "3.3%", "A pooled total would not transfer to each model."],
-            ["299 exercises", "1.0%", "Approximate scale needed for a bound below 1%."],
+            ["30 exercises", "9.5%", "Initial model screen only."],
+            ["90 exercises", "3.3%", "Pooling cannot prove each model."],
+            ["299 exercises", "1.0%", "Approximate 1% scale."],
         ],
         [4.0, 4.0, 8.8],
     )
-    doc.add_paragraph(
-        "Independence is optimistic: exercises may share a model, prompt, or verification weakness. The evaluation must therefore retain defects by category and version rather than publish a context-free aggregate rate."
-    )
-
     doc.add_heading("Teacher evaluation", level=1)
     doc.add_paragraph(
         "Two teachers score six papers independently on eight dimensions: correctness, ambiguity, curriculum fit, French, difficulty, duration, marking, and authentic structure. Scores run from 1 to 4. After revisions, a paper passes only if both reviewers give correctness = 4 and marking = 4, with every other dimension at least 3. A high average cannot hide a substantive error."

@@ -55,6 +55,10 @@ def test_technical_report_shows_and_describes_the_real_mac_workflow() -> None:
     assert len(document.inline_shapes) == 1
     picture = document.inline_shapes[0]._inline.docPr
     assert "French NSI" in picture.get("descr", "")
+    crop = document.element.body.xpath(".//a:srcRect")
+    assert len(crop) == 1
+    assert int(crop[0].get("l")) >= 20000
+    assert document.inline_shapes[0].height.cm >= 12
     assert any("prototype interface" in paragraph.text.lower() for paragraph in document.paragraphs)
 
 
@@ -92,6 +96,7 @@ def test_editorial_reports_do_not_break_large_grids_across_pages() -> None:
 
     assert not technical.tables
     assert len(mathematical.tables) == 1
+    assert not mathematical.element.body.xpath(".//w:br[@w:type='page']")
 
 
 def test_formal_application_uses_readable_milestones_instead_of_split_grids() -> None:

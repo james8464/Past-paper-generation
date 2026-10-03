@@ -2055,8 +2055,8 @@
     "semantic_hash": ""
   },
   "tools/build_occitanie_submission.py": {
-    "mtime": 1791038790.677866,
-    "ast_hash": "6a0e7641a5b9f1d13c546fed7b4217d2",
+    "mtime": 1791039782.9546416,
+    "ast_hash": "4ace8d1adfb75851105579302e057d42",
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
@@ -2555,8 +2555,8 @@
     "semantic_hash": ""
   },
   "tests/test_occitanie_submission.py": {
-    "mtime": 1791037766.7545583,
-    "ast_hash": "c977ece1f54983febfb331116394e72f",
+    "mtime": 1791039691.5973928,
+    "ast_hash": "d16063929861a125d6cf611689da45ae",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Assets.xcassets/TutorialFrenchNSI.imageset/TutorialFrenchNSI.png": {
@@ -2565,8 +2565,8 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/apple-report-visual-audit.md": {
-    "mtime": 1791038388.4244387,
-    "ast_hash": "053083845d7d787433546d19f79d5867",
+    "mtime": 1791039794.131635,
+    "ast_hash": "896593a8dd2ac32c954dfb086f8a7116",
     "semantic_hash": ""
   }
 }
