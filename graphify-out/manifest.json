@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791036368.8862972,
-    "ast_hash": "519eb89060e728f24351d069b1241a94",
+    "mtime": 1791038659.9470022,
+    "ast_hash": "f14932a485510da869e979a02241c19e",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2055,8 +2055,8 @@
     "semantic_hash": ""
   },
   "tools/build_occitanie_submission.py": {
-    "mtime": 1791037916.7636616,
-    "ast_hash": "a9c6234acf0d7a2d392fb317e2c6b58f",
+    "mtime": 1791038790.677866,
+    "ast_hash": "6a0e7641a5b9f1d13c546fed7b4217d2",
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
