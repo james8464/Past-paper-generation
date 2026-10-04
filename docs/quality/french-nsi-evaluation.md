@@ -151,6 +151,20 @@ No PDF was produced. The page-by-page comparison of the historical official
 2026 paper and the earlier renderer fixture, plus item-level live findings, is
 recorded in `docs/quality/french-nsi-manual-comparison-2026-10-04.md`.
 
+The subsequent source-pinned Qwen 3.5 9B exploratory run at the same seed
+also accepted **0/1 complete papers** (implementation
+`d9b188f103efd02c0ce6dc7ffb5e7456c49aaf2251c9468174455a8e63bb32d1`,
+model digest
+`6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7`).
+All three exercise-1 attempts failed exact marking validation; the first also
+contained visible self-editing text in a question and non-rectangular table
+data. Its summary and raw drafts are in
+`tmp/qualification-fr-nsi-2027/diagnostic-20261004-merged-qwen35/`.
+This is an exploratory model, not a replacement for the predeclared Qwen 3
+8B comparison. A bounded marking-only repair now has regression tests, but
+the failed run cannot be reclassified as accepted and a new pinned run is
+required to assess the change.
+
 ## Reproducible runs
 
 Pin the repository commit, registry/prompt version, full source hashes and split,
