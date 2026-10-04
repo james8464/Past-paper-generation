@@ -461,7 +461,7 @@ def test_only_explicit_material_ids_are_recovered_from_omitted_links():
         "materials": [{"id": "map_ville"}, {"id": "road_network"}],
         "questions": [
             {"id": "1a", "prompt": "Analyser le graphe `map_ville`."},
-            {"id": "1b", "prompt": "Analyser le graphe map_ville_2."},
+            {"id": "1b", "prompt": "Comparer la variable map_ville_2."},
             {"id": "1c", "prompt": "Analyser le graphe G."},
             {"id": "1d", "prompt": "Utiliser road_network.", "material_ids": []},
         ],
@@ -535,6 +535,90 @@ def test_unknown_explicit_figure_identifier_is_not_bound_to_other_material():
         bind_explicit_material_ids(raw)
 
 
+@pytest.mark.parametrize(
+    "reference",
+    (
+        "les figures `support_1` et `unknown_graph`",
+        "les figures «support_1» et «unknown_graph»",
+        "les figures support_1 et unknown_graph",
+    ),
+)
+def test_one_known_figure_does_not_hide_unknown_coordinated_figure(reference):
+    from Backend.Core.france.pipeline import bind_explicit_material_ids
+
+    raw = {
+        "materials": [{"id": "support_1"}],
+        "questions": [
+            {
+                "id": "1a",
+                "prompt": f"Comparer {reference} pour répondre au besoin.",
+                "material_ids": [],
+            }
+        ],
+    }
+    with pytest.raises(ValueError, match="Identifiant"):
+        bind_explicit_material_ids(raw)
+
+
+def test_duplicate_declared_material_identifier_is_rejected_before_binding():
+    from Backend.Core.france.pipeline import bind_explicit_material_ids
+
+    raw = {
+        "materials": [{"id": "support"}, {"id": "support"}],
+        "questions": [
+            {"id": "1a", "prompt": "Lire `support`.", "material_ids": []}
+        ],
+    }
+    with pytest.raises(ValueError, match="dupliqu"):
+        bind_explicit_material_ids(raw)
+
+
+def test_unknown_second_figure_rejected_during_generation_and_package_replay(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import (
+        digest,
+        generate_assessment,
+        validate_package,
+    )
+
+    class UnknownFigureClient(FrenchClient):
+        def generate_json(self, prompt):
+            result = super().generate_json(prompt)
+            if prompt.startswith("Rédige directement en français académique"):
+                result["questions"][0]["prompt"] = (
+                    "Comparer les figures `support` et `unknown_graph`."
+                )
+                result["questions"][0]["material_ids"] = []
+            return result
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    with pytest.raises(ValueError, match="Identifiant de figure inconnu"):
+        generate_assessment(
+            index_path=index,
+            client=UnknownFigureClient(),
+            seed=5,
+            checkpoint=tmp_path / "rejected.json",
+        )
+
+    package = generate_assessment(
+        index_path=index,
+        client=FrenchClient(),
+        seed=5,
+        checkpoint=tmp_path / "accepted.json",
+    )
+    changed = deepcopy(package)
+    candidate = changed["evidence"][0]["candidate"]
+    candidate["questions"][0]["prompt"] = (
+        "Comparer les figures `support` et `unknown_graph`."
+    )
+    candidate["questions"][0]["material_ids"] = []
+    changed["evidence"][0]["candidate_sha256"] = digest(candidate)
+    with pytest.raises(ValueError, match="Identifiant de figure inconnu"):
+        validate_package(changed)
+
+
 def test_planned_question_rejects_authored_metadata_drift_without_mutating_raw():
     from copy import deepcopy
 
@@ -575,6 +659,35 @@ def test_planned_question_rejects_authored_metadata_drift_without_mutating_raw()
         drifted[field] = changed_value
         with pytest.raises(ValueError, match="plan"):
             assemble_planned_question(plan, drifted)
+
+
+def test_planned_question_accepts_equivalent_exact_decimal_credit():
+    from Backend.Core.france.pipeline import assemble_planned_question
+
+    plan = {
+        "id": "1a",
+        "points": "1",
+        "estimated_minutes": 6,
+        "operation": "apply",
+        "difficulty": 2,
+        "required_curriculum_code": "SD-GRAPHE",
+    }
+    authored = {
+        "id": "1a",
+        "prompt": "Lire la valeur d'une arête du graphe fourni.",
+        "points": "1.0",
+        "answer": "La valeur est deux.",
+        "marking": [{"points": "1.0", "criterion": "Valeur correcte."}],
+        "material_ids": [],
+        "curriculum_codes": ["SD-GRAPHE"],
+        "operation": "apply",
+        "difficulty": 2,
+        "estimated_minutes": 6,
+        "verification": {"kind": "human"},
+    }
+    question = assemble_planned_question(plan, authored)
+    assert question.points == "1"
+    assert authored["points"] == "1.0"
 
 
 def test_planned_question_cannot_inject_missing_curriculum_evidence():

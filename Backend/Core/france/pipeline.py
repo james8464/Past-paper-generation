@@ -193,6 +193,38 @@ def digest(value) -> str:
     ).hexdigest()
 
 
+def _named_figure_ids(prompt: str, declared: set[str]) -> list[str]:
+    """Read explicit figure names, including coordinated French references."""
+    token = re.compile(
+        r"\s*(?:`([a-z][a-z0-9_-]{1,31})`|«\s*([a-z][a-z0-9_-]{1,31})\s*»|([a-z][a-z0-9_-]{1,31}))",
+        flags=re.IGNORECASE,
+    )
+    connector = re.compile(r"\s*(?:,|\bet\b|\bou\b)\s*", flags=re.IGNORECASE)
+    mentioned = []
+    for figure in re.finditer(r"\b(?:graphes?|tableaux|figures?)\b", prompt, re.I):
+        tail = prompt[figure.end() :]
+        tail = re.sub(r"^\s*(?:pondérés?|orientés?)\b", "", tail, flags=re.I)
+        first = token.match(tail)
+        if first is None:
+            continue
+        cursor = first
+        for _ in range(6):
+            name = next(value for value in cursor.groups() if value is not None)
+            quoted = cursor.group(1) is not None or cursor.group(2) is not None
+            if not quoted and name not in declared and not any(
+                char.isdigit() or char == "_" for char in name
+            ):
+                break
+            mentioned.append(name)
+            join = connector.match(tail, cursor.end())
+            if join is None:
+                break
+            cursor = token.match(tail, join.end())
+            if cursor is None:
+                break
+    return mentioned
+
+
 def bind_explicit_material_ids(raw: dict) -> tuple[dict, list[dict]]:
     """Recover only links the model wrote verbatim, leaving vague references unresolved."""
     if (
@@ -206,6 +238,8 @@ def bind_explicit_material_ids(raw: dict) -> tuple[dict, list[dict]]:
         for material in raw["materials"]
         if isinstance(material, dict) and isinstance(material.get("id"), str)
     ]
+    if len(identifiers) != len(set(identifiers)):
+        raise ValueError("Identifiant de figure dupliqué")
     result = deepcopy(raw)
     bindings = []
     for question in result["questions"]:
@@ -214,11 +248,7 @@ def bind_explicit_material_ids(raw: dict) -> tuple[dict, list[dict]]:
         prompt = question.get("prompt")
         if not isinstance(prompt, str):
             continue
-        named_figures = re.findall(
-            r"\b(?:graphe|tableau|figure)(?:\s+pondéré)?\s+`([a-z][a-z0-9_-]{1,31})`",
-            prompt,
-            flags=re.IGNORECASE,
-        )
+        named_figures = _named_figure_ids(prompt, set(identifiers))
         if any(name not in identifiers for name in named_figures):
             raise ValueError("Identifiant de figure inconnu dans la question")
         explicit = [
@@ -279,14 +309,18 @@ def assemble_planned_question(plan: dict, authored: dict) -> NSIQuestion:
     """Assemble immutable credit/identity from the plan, rejecting authored drift."""
     if not isinstance(authored, dict):
         raise ValueError("Question du plan manquante")
-    fields = ("id", "points", "estimated_minutes", "operation", "difficulty")
-    if any(authored.get(field) != plan[field] for field in fields):
+    fields = ("id", "estimated_minutes", "operation", "difficulty")
+    try:
+        credit_matches = points(authored.get("points")) == points(plan["points"])
+    except ValueError:
+        credit_matches = False
+    if not credit_matches or any(authored.get(field) != plan[field] for field in fields):
         raise ValueError("Métadonnées de la question incompatibles avec le plan")
     codes = authored.get("curriculum_codes")
     if not isinstance(codes, list) or plan["required_curriculum_code"] not in codes:
         raise ValueError("Capacité de la question incompatible avec le plan")
     content = deepcopy(authored)
-    for field in fields:
+    for field in (*fields, "points"):
         content[field] = plan[field]
     return NSIQuestion.model_validate(content)
 
