@@ -24,10 +24,12 @@ failures, not paper passes. The model cannot be recommended for French NSI on
 this evidence. Test the other exact candidate models and review the generation
 architecture before another ten-paper campaign.
 
-As of 4 October 2026, that ignored raw run directory is no longer present in
-the workspace. This historical summary is not independently auditable from its
-original logs or checkpoints. A fresh identity-pinned run must retain its raw
-evidence before any qualification claim.
+On 4 October 2026, the ignored run directory was recovered from an older
+managed worktree and copied into the primary checkout. The summary, ten
+per-seed results, ten checkpoints and event logs are now available at the path
+above for audit. This recovery does not alter the 0/10 outcome or qualify the
+old source/model configuration. A new identity-pinned run is still required
+after the authoring redesign.
 
 ## 4 October diagnostic (not qualification)
 
