@@ -165,6 +165,18 @@ This is an exploratory model, not a replacement for the predeclared Qwen 3
 the failed run cannot be reclassified as accepted and a new pinned run is
 required to assess the change.
 
+That new run, on merged PR #31 source, again accepted **0/1**. Its first draft
+reached marking repair, but the French Ollama transport rejected the new prompt
+type before model inference; attempts two and three failed duration consistency
+and figure-ID consistency respectively. The full failure and original drafts
+remain in
+`tmp/qualification-fr-nsi-2027/diagnostic-20261004-marking-repair-qwen35/`
+(implementation
+`9cd0c95450ddd79ea521aed753f25704b843e24434be295301a26bf205bbced2`).
+A provider-boundary regression now covers the exact repair prompt. Its fix is
+not evidence that a complete paper can be generated; another pinned run is
+needed after protected integration.
+
 ## Reproducible runs
 
 Pin the repository commit, registry/prompt version, full source hashes and split,

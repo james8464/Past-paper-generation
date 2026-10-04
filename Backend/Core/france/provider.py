@@ -51,7 +51,7 @@ class FrenchOllamaClient(HostedLLMClient):
 def response_policy(prompt: str) -> tuple[dict, int]:
     if prompt.startswith("Rédige directement en français académique"):
         return authoring_schema(), 6144
-    if prompt.startswith("Répare uniquement la question"):
+    if prompt.startswith(("Répare uniquement la question", "Répare uniquement le barème")):
         schema = NSIQuestion.model_json_schema()
         schema["required"].extend(["material_ids", "verification"])
         return schema, 3072

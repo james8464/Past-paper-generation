@@ -138,3 +138,17 @@ def test_repair_transport_requires_material_and_verification_contracts():
     )
     assert {"material_ids", "verification"} <= set(schema["required"])
     assert budget >= 2048
+
+
+def test_marking_repair_uses_french_question_schema_without_uk_fallback():
+    from Backend.Core.france.provider import response_policy
+    from Backend.Core.france.question_review import repair_marking_prompt
+
+    prompt = repair_marking_prompt(
+        {"id": "1a", "points": "0.5", "marking": [{"points": "0", "criterion": "Résultat."}]},
+        {"id": "1a", "points": "0.5"},
+    )
+    schema, budget = response_policy(prompt)
+    assert schema["title"] == "NSIQuestion"
+    assert {"material_ids", "verification"} <= set(schema["required"])
+    assert budget >= 2048
