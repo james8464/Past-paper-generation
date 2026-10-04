@@ -305,6 +305,24 @@ def test_french_benchmark_preserves_malformed_result_before_model_call(
     assert result.read_text() == "{"
 
 
+def test_french_benchmark_preserves_empty_result_before_model_call(
+    tmp_path, monkeypatch
+):
+    from tools import french_nsi_benchmark as benchmark
+
+    args = _one_paper_args(tmp_path)
+    item_root = args.output / "runs" / "gemma4-12b" / "model-sha" / "270100"
+    item_root.mkdir(parents=True)
+    _write_session(args)
+    result = item_root / "result.json"
+    result.write_text("{}")
+    _no_model_call(monkeypatch, benchmark)
+
+    with pytest.raises(ValueError, match=r"résultat.*intégrité"):
+        benchmark.run_plan(args)
+    assert result.read_text() == "{}"
+
+
 def test_french_benchmark_rejects_missing_result_with_prior_attempt(
     tmp_path, monkeypatch
 ):

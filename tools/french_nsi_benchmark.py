@@ -311,24 +311,23 @@ def run_plan(args: argparse.Namespace) -> int:
         item_root = output / "runs" / _slug(item.model) / digest[:12] / str(item.seed)
         result_path = item_root / "result.json"
         previous = _load_json(result_path)
-        if result_path.exists() and previous is None:
-            raise ValueError("Le résultat a perdu son intégrité; conserver le dossier")
-        if previous is None and item_root.exists() and any(item_root.iterdir()):
-            raise ValueError("Le résultat a perdu son intégrité; conserver le dossier")
-        if previous and (
-            previous.get("identity") != identity
+        if result_path.exists() and (
+            not previous
+            or previous.get("identity") != identity
             or previous.get("status") not in {"passed", "failed", "timed_out"}
         ):
+            raise ValueError("Le résultat a perdu son intégrité; conserver le dossier")
+        if previous is None and item_root.exists() and any(item_root.iterdir()):
             raise ValueError("Le résultat a perdu son intégrité; conserver le dossier")
         if accepted_result(result_path, identity):
             results.append(previous)
             continue
-        if previous and previous.get("status") == "passed":
+        if previous is not None and previous.get("status") == "passed":
             raise ValueError(
                 "Une preuve acceptée a perdu son intégrité; conserver le dossier "
                 "et enquêter avant toute nouvelle génération"
             )
-        if previous and previous.get("status") != "passed" and not args.retry_failed:
+        if previous is not None and not args.retry_failed:
             results.append(previous)
             continue
 
