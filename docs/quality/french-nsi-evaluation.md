@@ -38,8 +38,12 @@ omitted `material_ids`; two nevertheless referred to the exact graph ID in
 question prose. This exposed an authoring-protocol failure, not a reason to
 accept unlinked figures. The subsequent narrow repair recovers only exact IDs
 written in a question when the JSON field was omitted, records the untouched
-candidate and inferred links, and revalidates their provenance with the
-package. Empty fields, vague references and mismatched IDs remain unresolved.
+candidate, its digest and inferred links, and revalidates their consistency
+with the package. Deictic mentions such as “le graphe G fourni” without a
+structured link are rejected per question; other vague uses may still require
+human judgement. These hashes catch accidental or isolated edits, not a
+coordinated rewrite of the package: the independently stored artifact manifest
+is the separate integrity boundary.
 The prompt now explicitly requires both the question reference and its JSON
 link. This source change invalidates the diagnostic as a qualification run;
 new pinned live evidence is required. The drafts also contained substantive

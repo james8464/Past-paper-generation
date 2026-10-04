@@ -27,6 +27,10 @@ from Backend.Core.france.verification import verify_contract
 from Backend.Core.scoped_references import ReferenceIndex
 
 PROMPT_VERSION = "fr-nsi-written-2027-v5"
+# The recorded v4 source identity; never accept a newer package relabelled v4.
+LEGACY_V4_IMPLEMENTATION_SHA256 = (
+    "bd1468ca74a1dbe501e5eedc306d26531fb52ff9a6271b20fc13607cbfafbfbb"
+)
 REVIEW_FLAGS = (
     "correct",
     "native_french",
@@ -177,6 +181,28 @@ def bind_explicit_material_ids(raw: dict) -> tuple[dict, list[dict]]:
                 {"question_id": question.get("id"), "material_ids": explicit}
             )
     return result, bindings
+
+
+def require_link_for_material_mentions(exercise: NSIExercise) -> None:
+    """Reject deictic figure references that have no traceable structured input."""
+    kinds = {material.kind for material in exercise.materials}
+    patterns = []
+    if "weighted_graph" in kinds:
+        patterns.append(r"\b(?:le|du|au|ce)\s+graphe\b")
+        patterns.append(r"\bgraphe\s+(?:[A-Z]\b|fourni\b|ci-dessus\b)")
+    if "table" in kinds:
+        patterns.append(r"\b(?:le|du|au|ce)\s+tableau\b")
+        patterns.append(r"\btableau\s+(?:fourni\b|ci-dessus\b)")
+    if kinds:
+        patterns.append(r"\b(?:la|cette|de la)\s+figure\b")
+    for question in exercise.questions:
+        if not question.material_ids and any(
+            re.search(pattern, question.prompt, flags=re.IGNORECASE)
+            for pattern in patterns
+        ):
+            raise ValueError(
+                f"Question {question.id} : figure non reliée à ses données structurées"
+            )
 
 
 def atomic_json(path: Path, payload):
@@ -416,6 +442,7 @@ def generate_assessment(
                     bound, bindings = bind_explicit_material_ids(raw)
                     record["material_bindings"] = bindings
                     exercise = NSIExercise.model_validate(bound)
+                    require_link_for_material_mentions(exercise)
                     if (
                         exercise.id != key
                         or list(exercise.topics) != task["topics"]
@@ -495,6 +522,7 @@ def generate_assessment(
                         "evidence": {
                             "exercise_sha256": digest(exercise.model_dump(mode="json")),
                             "candidate": raw,
+                            "candidate_sha256": digest(raw),
                             "material_bindings": bindings,
                             "references": references[position],
                             "deterministic": checks,
@@ -564,6 +592,11 @@ def validate_package(package: dict):
         )
     ):
         raise ValueError("Identité d'évaluation incompatible")
+    if (
+        identity["prompt_version"] == "fr-nsi-written-2027-v4"
+        and identity["implementation_sha256"] != LEGACY_V4_IMPLEMENTATION_SHA256
+    ):
+        raise ValueError("Identité historique française non reconnue")
     seed = identity.get("seed")
     if type(seed) is not int or identity.get("blueprint") != _tasks_for_seed(seed):
         raise ValueError("Plan d'évaluation incompatible")
@@ -605,11 +638,13 @@ def validate_package(package: dict):
             bound, bindings = bind_explicit_material_ids(raw_candidate)
             if (
                 not isinstance(raw_candidate, dict)
+                or evidence.get("candidate_sha256") != digest(raw_candidate)
                 or evidence.get("material_bindings") != bindings
                 or NSIExercise.model_validate(bound).model_dump(mode="json")
                 != exercise.model_dump(mode="json")
             ):
                 raise ValueError("Preuve de liaison figure-question invalide")
+            require_link_for_material_mentions(exercise)
         _check_review(
             exercise, evidence.get("independent_solution"), evidence.get("review")
         )

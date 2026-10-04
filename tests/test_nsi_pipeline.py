@@ -431,6 +431,20 @@ def test_explicit_material_recovery_is_package_bound_and_cannot_hide_drift(tmp_p
     with pytest.raises(ValueError, match="liaison"):
         validate_package(changed)
 
+    changed = deepcopy(package)
+    changed["evidence"][0]["candidate"]["questions"][0]["material_ids"] = ["support"]
+    changed["evidence"][0]["material_bindings"] = []
+    with pytest.raises(ValueError, match="liaison"):
+        validate_package(changed)
+
+    changed = deepcopy(package)
+    changed["identity"]["prompt_version"] = "fr-nsi-written-2027-v4"
+    for evidence in changed["evidence"]:
+        del evidence["candidate"]
+        del evidence["material_bindings"]
+    with pytest.raises(ValueError, match="historique"):
+        validate_package(changed)
+
 
 def test_legacy_french_package_without_candidate_binding_evidence_remains_readable(
     tmp_path,
@@ -446,7 +460,35 @@ def test_legacy_french_package_without_candidate_binding_evidence_remains_readab
         checkpoint=tmp_path / "checkpoint.json",
     )
     package["identity"]["prompt_version"] = "fr-nsi-written-2027-v4"
+    package["identity"]["implementation_sha256"] = (
+        "bd1468ca74a1dbe501e5eedc306d26531fb52ff9a6271b20fc13607cbfafbfbb"
+    )
     for evidence in package["evidence"]:
         del evidence["candidate"]
         del evidence["material_bindings"]
+        del evidence["candidate_sha256"]
     validate_package(package)
+
+
+def test_one_linked_question_cannot_hide_another_unlinked_figure_question(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class VagueFigureClient(FrenchClient):
+        def generate_json(self, prompt):
+            result = super().generate_json(prompt)
+            if prompt.startswith("Rédige directement en français académique"):
+                result["questions"][1]["prompt"] = (
+                    "En utilisant le graphe G fourni, expliquer le résultat obtenu."
+                )
+                result["questions"][1]["material_ids"] = []
+            return result
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    with pytest.raises(ValueError, match="figure non reliée"):
+        generate_assessment(
+            index_path=index,
+            client=VagueFigureClient(),
+            seed=5,
+            checkpoint=tmp_path / "checkpoint.json",
+        )
