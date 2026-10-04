@@ -7,8 +7,9 @@ has been obtained. No prize application has been submitted.
 Implementation tracking: [issue #16](https://github.com/james8464/Past-paper-generation/issues/16).
 See the [engineering verification record](quality/french-nsi-prototype-verification-2026-09-28.md)
 and [competition submission pack](competition/occitanie-2026/README.md). The formal
-application renders as exactly three A4 pages, but personal eligibility, contact
-fields and prior-funding status still require James's confirmation.
+application currently renders as two A4 pages, within the three-page limit, but
+personal eligibility, contact fields and prior-funding status still require
+James's confirmation.
 
 ## Problem and beneficiaries
 
@@ -127,12 +128,13 @@ expenditure or commitments. Confirm prize rules and reviewer availability first.
 
 ## Prize preparation — IMPLEMENTED documents / PLANNED submission
 
-The announced deadline is 2 November 2026 at midnight. The formal three-page DOCX
+The announced deadline is 2 November 2026 at midnight. The formal application DOCX
 and PDF, technical/user dossier and mathematical qualification note are generated and
 visually verified as portable sans-serif documents. The formal application is in
-French; both supporting reports are in English. The formal PDF remains exactly
-three A4 pages. A factual email draft, claims register, checklist, video script and a
-user-operated macOS recording command are included. A real demonstration video has
+French; both supporting reports are in English. The current formal PDF is two A4
+pages, within the three-page limit. A factual email draft, claims register,
+checklist, video script and a user-operated macOS recording command are included.
+A real demonstration video has
 not been recorded. Confirm applicant enrolment eligibility, contact details and
 prior-funding restrictions before sending.
 Do not infer environmental benefit from "local AI": measure energy, reuse and

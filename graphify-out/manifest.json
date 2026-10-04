@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791038659.9470022,
+    "mtime": 1791040548.649961,
     "ast_hash": "f14932a485510da869e979a02241c19e",
     "semantic_hash": ""
   },
@@ -1355,7 +1355,7 @@
     "semantic_hash": "c1ad220248a752267979a93dd5206942"
   },
   "macOS/PaperCreator/Features/Generation/FrenchAssessmentWorkspace.swift": {
-    "mtime": 1791038189.769461,
+    "mtime": 1791040548.6730065,
     "ast_hash": "57e0522f14258870bc1d1f9eb26444c7",
     "semantic_hash": ""
   },
@@ -1440,7 +1440,7 @@
     "semantic_hash": "5bf232a55ba6ea284e0c08a72096456f"
   },
   "macOS/Tests/AccessibilityTests.swift": {
-    "mtime": 1791038023.4760103,
+    "mtime": 1791040548.673433,
     "ast_hash": "911c7a0af20ec3abee1c30976009d043",
     "semantic_hash": ""
   },
@@ -2055,7 +2055,7 @@
     "semantic_hash": ""
   },
   "tools/build_occitanie_submission.py": {
-    "mtime": 1791039782.9546416,
+    "mtime": 1791040548.6742861,
     "ast_hash": "4ace8d1adfb75851105579302e057d42",
     "semantic_hash": ""
   },
@@ -2255,7 +2255,7 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/README.md": {
-    "mtime": 1791038388.4249,
+    "mtime": 1791040548.650331,
     "ast_hash": "e8a886af0d09ae8887e7047e725b217c",
     "semantic_hash": ""
   },
@@ -2285,8 +2285,8 @@
     "semantic_hash": ""
   },
   "docs/occitanie-project.md": {
-    "mtime": 1791036368.887134,
-    "ast_hash": "39040b4c6a63eee07d62fc1b405efb8e",
+    "mtime": 1791047960.9462621,
+    "ast_hash": "8f7256ee96eeb531de98f15c9d07cb3d",
     "semantic_hash": ""
   },
   "docs/project-analysis/IMPLEMENTATION_AND_FIDELITY_REPORT.md": {
@@ -2555,7 +2555,7 @@
     "semantic_hash": ""
   },
   "tests/test_occitanie_submission.py": {
-    "mtime": 1791039691.5973928,
+    "mtime": 1791040548.6737273,
     "ast_hash": "d16063929861a125d6cf611689da45ae",
     "semantic_hash": ""
   },
@@ -2565,7 +2565,7 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/apple-report-visual-audit.md": {
-    "mtime": 1791039794.131635,
+    "mtime": 1791040548.650673,
     "ast_hash": "896593a8dd2ac32c954dfb086f8a7116",
     "semantic_hash": ""
   }
