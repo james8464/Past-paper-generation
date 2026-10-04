@@ -31,6 +31,7 @@ from Backend.Core.france.question_review import (
     alignment_failures,
     alignment_prompt,
     check_question_alignment,
+    repair_marking_prompt,
     repair_question_prompt,
 )
 from Backend.Core.france.source_identity import implementation_identity
@@ -314,6 +315,19 @@ def _legacy_bind_explicit_material_ids(raw: dict) -> tuple[dict, list[dict]]:
     return result, bindings
 
 
+def _invalid_marking_allocation(authored: dict, plan: dict) -> bool:
+    marking = authored.get("marking")
+    if not isinstance(marking, list) or not marking or not all(
+        isinstance(credit, dict) for credit in marking
+    ):
+        return False
+    try:
+        credits = [points(credit.get("points")) for credit in marking]
+    except ValueError:
+        return False  # Other malformed credit fields remain a schema failure.
+    return any(credit <= 0 for credit in credits) or sum(credits) != points(plan["points"])
+
+
 def assemble_planned_question(plan: dict, authored: dict) -> NSIQuestion:
     """Assemble immutable credit/identity from the plan, rejecting authored drift."""
     if not isinstance(authored, dict):
@@ -328,10 +342,18 @@ def assemble_planned_question(plan: dict, authored: dict) -> NSIQuestion:
     codes = authored.get("curriculum_codes")
     if not isinstance(codes, list) or plan["required_curriculum_code"] not in codes:
         raise ValueError("Capacité de la question incompatible avec le plan")
+    if _invalid_marking_allocation(authored, plan):
+        raise InvalidQuestionMarking(plan["id"])
     content = deepcopy(authored)
     for field in (*fields, "points"):
         content[field] = plan[field]
     return NSIQuestion.model_validate(content)
+
+
+class InvalidQuestionMarking(ValueError):
+    def __init__(self, question_id: str):
+        self.question_id = question_id
+        super().__init__(f"Question {question_id} : barème incompatible avec le plan")
 
 
 def _assemble_planned_exercise(
@@ -360,7 +382,7 @@ def _assemble_planned_exercise(
     return NSIExercise.model_validate(assembled), records
 
 
-def _replay_targeted_repairs(evidence: dict, final_candidate: dict) -> None:
+def _replay_targeted_repairs(evidence: dict, final_candidate: dict, task: dict) -> None:
     """Bind a repaired candidate to its original and at most two raw replacements."""
     repairs = evidence.get("targeted_repairs")
     initial = evidence.get("initial_candidate")
@@ -391,6 +413,30 @@ def _replay_targeted_repairs(evidence: dict, final_candidate: dict) -> None:
             or replacement.get("id") != repair["question_id"]
         ):
             raise ValueError("Question de réparation ciblée invalide")
+        if "marking_error" in repair:
+            original = questions[matches[0]]
+            planned = next(
+                (
+                    item
+                    for item in task["question_blueprint"]
+                    if item["id"] == repair["question_id"]
+                ),
+                None,
+            )
+            if (
+                "review" in repair
+                or planned is None
+                or repair["marking_error"]
+                != str(InvalidQuestionMarking(repair["question_id"]))
+                or not _invalid_marking_allocation(original, planned)
+                or replacement.keys() != original.keys()
+                or any(
+                    replacement[field] != value
+                    for field, value in original.items()
+                    if field != "marking"
+                )
+            ):
+                raise ValueError("La réparation du barème a changé la question")
         candidate["questions"][matches[0]] = deepcopy(replacement)
         if repair.get("after_sha256") != digest(candidate):
             raise ValueError("Empreinte de réparation ciblée invalide")
@@ -962,15 +1008,59 @@ def generate_assessment(
                         for previous_key in sorted(state["accepted"])
                     ]
                     for repair_round in range(3):
-                        exercise, bindings, assembly, checks, originality = (
-                            _prepare_candidate(
-                                raw,
-                                task,
-                                key,
-                                references[position],
-                                [*originality_history, *within_paper_history],
+                        try:
+                            exercise, bindings, assembly, checks, originality = (
+                                _prepare_candidate(
+                                    raw,
+                                    task,
+                                    key,
+                                    references[position],
+                                    [*originality_history, *within_paper_history],
+                                )
                             )
-                        )
+                        except InvalidQuestionMarking as error:
+                            if repair_round == 2:
+                                raise
+                            question_index = next(
+                                index
+                                for index, question in enumerate(raw["questions"])
+                                if question["id"] == error.question_id
+                            )
+                            original = raw["questions"][question_index]
+                            replacement = client.generate_json(
+                                repair_marking_prompt(
+                                    original, task["question_blueprint"][question_index]
+                                )
+                            )
+                            record["repair_responses"].append(
+                                {"question_id": error.question_id, "response": replacement}
+                            )
+                            if (
+                                not isinstance(replacement, dict)
+                                or replacement.keys() != original.keys()
+                                or any(
+                                    replacement[field] != value
+                                    for field, value in original.items()
+                                    if field != "marking"
+                                )
+                            ):
+                                raise ValueError(
+                                    "La réparation du barème a changé la question"
+                                ) from error
+                            before = digest(raw)
+                            revised = deepcopy(raw)
+                            revised["questions"][question_index] = replacement
+                            repairs.append(
+                                {
+                                    "question_id": error.question_id,
+                                    "before_sha256": before,
+                                    "replacement": replacement,
+                                    "after_sha256": digest(revised),
+                                    "marking_error": str(error),
+                                }
+                            )
+                            raw = revised
+                            continue
                         record["material_bindings"] = bindings
                         alignment = client.generate_json(
                             alignment_prompt(exercise, task, references[position])
@@ -1171,7 +1261,9 @@ def validate_package(package: dict):
         if identity["prompt_version"] != "fr-nsi-written-2027-v4":
             raw_candidate = evidence.get("candidate")
             if identity["prompt_version"] in {PROMPT_VERSION, "fr-nsi-written-2027-v9"}:
-                _replay_targeted_repairs(evidence, raw_candidate)
+                _replay_targeted_repairs(
+                    evidence, raw_candidate, expected_blueprint[int(exercise.id) - 1]
+                )
             if identity["prompt_version"] in {
                 PROMPT_VERSION,
                 "fr-nsi-written-2027-v9",

@@ -75,7 +75,9 @@ fixed seeds, model/source/code identity, failure preservation and duplicate-run
 locking. The completed pinned Gemma 4 12B campaign accepted **0 of 10** complete
 papers; its rejected attempts remain evidence for redesign, not qualified papers.
 The campaign has not selected a model; the exact Ministral and Qwen candidates are
-not currently installed. No teacher-reviewed release, student pilot,
+not currently installed. An exploratory Qwen 3.5 9B single-paper run also
+accepted 0/1 complete papers on 4 October; it does not replace the planned
+candidate comparison. No teacher-reviewed release, student pilot,
 Intel test or multi-memory hardware matrix exists.
 
 ## Genuine Occitanie scenario — PLANNED

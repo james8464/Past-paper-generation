@@ -98,3 +98,20 @@ def repair_question_prompt(
             ensure_ascii=False,
         )
     )
+
+
+def repair_marking_prompt(authored_question: dict, planned: dict) -> str:
+    """Repair an invalid allocation without permitting a change of task or answer."""
+    return (
+        "Répare uniquement le barème de cette question NSI Terminale. "
+        "Chaque crédit doit être strictement positif et leur somme doit être "
+        "exactement égale aux points prévus. Garde tous les autres champs, y "
+        "compris la consigne et la réponse, strictement identiques. Si la "
+        "réponse ne permet pas d'attribuer ces points honnêtement, ne fabrique "
+        "pas de critères : le brouillon sera refusé. Réponds uniquement par "
+        "l'objet JSON complet de cette question.\nDONNÉES_JSON\n"
+        + json.dumps(
+            {"question": authored_question, "planned": planned},
+            ensure_ascii=False,
+        )
+    )

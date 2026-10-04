@@ -473,6 +473,150 @@ def test_failed_question_is_repaired_without_reauthoring_accepted_peers(tmp_path
         validate_package(tampered)
 
 
+@pytest.mark.parametrize("invalid_credit", ["0", "999"])
+def test_invalid_marking_is_repaired_without_changing_the_question(tmp_path, invalid_credit):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import (
+        _replay_targeted_repairs,
+        digest,
+        generate_assessment,
+        validate_package,
+    )
+
+    class MarkingClient(FrenchClient):
+        def __init__(self):
+            super().__init__()
+            self.repairs = 0
+
+        def generate_json(self, prompt):
+            if prompt.startswith("Répare uniquement le barème"):
+                self.repairs += 1
+                request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+                repaired = dict(request["question"])
+                repaired["marking"] = [{
+                    "points": request["planned"]["points"],
+                    "criterion": "Résultat exact et justification correspondante.",
+                }]
+                return repaired
+            result = super().generate_json(prompt)
+            if prompt.startswith("Rédige directement en français académique") and result["id"] == "1":
+                result["questions"][0]["marking"][0]["points"] = invalid_credit
+            return result
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    client = MarkingClient()
+    package = generate_assessment(
+        index_path=index,
+        client=client,
+        seed=5,
+        checkpoint=tmp_path / "checkpoint.json",
+    )
+    evidence = package["evidence"][0]
+    assert client.repairs == 1
+    assert len(evidence["targeted_repairs"]) == 1
+    original = evidence["initial_candidate"]["questions"][0]
+    repaired = evidence["candidate"]["questions"][0]
+    assert {key: value for key, value in original.items() if key != "marking"} == {
+        key: value for key, value in repaired.items() if key != "marking"
+    }
+    assert evidence["candidate"]["questions"][1:] == evidence["initial_candidate"]["questions"][1:]
+    validate_package(package)
+
+    tampered = deepcopy(evidence)
+    changed = deepcopy(tampered["candidate"])
+    changed["questions"][0]["prompt"] = "Une consigne différente mais au même barème."
+    tampered["targeted_repairs"][0]["replacement"] = changed["questions"][0]
+    tampered["targeted_repairs"][0]["after_sha256"] = digest(changed)
+    with pytest.raises(ValueError, match="barème"):
+        _replay_targeted_repairs(
+            tampered, changed, package["identity"]["blueprint"][0]
+        )
+    fabricated = deepcopy(evidence)
+    fabricated["initial_candidate"]["questions"][0]["marking"] = deepcopy(
+        repaired["marking"]
+    )
+    fabricated["targeted_repairs"][0]["before_sha256"] = digest(
+        fabricated["initial_candidate"]
+    )
+    with pytest.raises(ValueError, match="barème"):
+        _replay_targeted_repairs(
+            fabricated, evidence["candidate"], package["identity"]["blueprint"][0]
+        )
+
+
+def test_marking_repair_cannot_rewrite_the_question(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class RewritingClient(FrenchClient):
+        def generate_json(self, prompt):
+            if prompt.startswith("Répare uniquement le barème"):
+                request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+                repaired = dict(request["question"])
+                repaired["prompt"] = "Une autre consigne, qui change la tâche du candidat."
+                repaired["marking"] = [{
+                    "points": request["planned"]["points"],
+                    "criterion": "Justification de la réponse attendue.",
+                }]
+                return repaired
+            result = super().generate_json(prompt)
+            if prompt.startswith("Rédige directement en français académique") and result["id"] == "1":
+                result["questions"][0]["marking"][0]["points"] = "0"
+            return result
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "checkpoint.json"
+    with pytest.raises(ValueError, match="Exercice 1 refusé"):
+        generate_assessment(
+            index_path=index,
+            client=RewritingClient(),
+            seed=5,
+            checkpoint=checkpoint,
+        )
+    failed = json.loads(checkpoint.read_text())["failed_attempts"]
+    assert len(failed) == 3
+    assert all("changé la question" in item["error"] for item in failed)
+    assert all(item["repair_responses"] for item in failed)
+
+
+def test_invalid_marking_repair_is_bounded_and_never_published(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class UnhelpfulClient(FrenchClient):
+        def __init__(self):
+            super().__init__()
+            self.repairs = 0
+
+        def generate_json(self, prompt):
+            if prompt.startswith("Répare uniquement le barème"):
+                self.repairs += 1
+                request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+                return request["question"]
+            result = super().generate_json(prompt)
+            if prompt.startswith("Rédige directement en français académique") and result["id"] == "1":
+                result["questions"][0]["marking"][0]["points"] = "0"
+            return result
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "checkpoint.json"
+    client = UnhelpfulClient()
+    with pytest.raises(ValueError, match="Exercice 1 refusé"):
+        generate_assessment(
+            index_path=index,
+            client=client,
+            seed=5,
+            checkpoint=checkpoint,
+        )
+    saved = json.loads(checkpoint.read_text())
+    assert client.repairs == 6
+    assert saved["accepted"] == {}
+    assert len(saved["failed_attempts"]) == 3
+    assert all(len(item["targeted_repairs"]) == 2 for item in saved["failed_attempts"])
+
+
 def test_targeted_repair_is_bounded_and_preserves_failed_drafts(tmp_path):
     from Backend.Core.france.pipeline import generate_assessment
 
