@@ -41,6 +41,20 @@ class FrenchClient:
 
     def generate_json(self, prompt):
         self.calls += 1
+        if prompt.startswith("Contrôle indépendant des capacités"):
+            request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+            return {
+                "questions": [
+                    {
+                        "question_id": planned["id"],
+                        "objective_code": planned["required_curriculum_code"],
+                        "aligned": True,
+                        "rationale": "La consigne de cette question mobilise effectivement la capacité prévue dans le plan.",
+                        "issues": [],
+                    }
+                    for planned in request["question_blueprint"]
+                ]
+            }
         if prompt.startswith("Résous indépendamment"):
             candidate = json.loads(prompt.split("\n", 1)[1])
             return {
@@ -285,15 +299,339 @@ def test_generation_is_french_scoped_and_resume_does_not_repeat_model_work(tmp_p
         "indicative_product_profile"
     )
     validate_package(package)
-    assert client.calls == 9
+    assert client.calls == 12
     again = generate_assessment(
         index_path=index, client=client, seed=5, checkpoint=tmp_path / "checkpoint.json"
     )
     assert again == package
-    assert client.calls == 9
+    assert client.calls == 12
     package["exercises"][0]["questions"][0]["answer"] = "changed"
     with pytest.raises(ValueError, match="hash"):
         validate_package(package)
+
+
+def test_question_alignment_rejects_semantic_mismatch_despite_correct_metadata(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class MisalignedClient(FrenchClient):
+        def generate_json(self, prompt):
+            response = super().generate_json(prompt)
+            if prompt.startswith("Contrôle indépendant des capacités"):
+                response["questions"][0]["aligned"] = False
+                response["questions"][0]["issues"] = [
+                    "La consigne porte sur le routage, pas sur la représentation d'un graphe."
+                ]
+            return response
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "checkpoint.json"
+    with pytest.raises(ValueError, match="refusé"):
+        generate_assessment(
+            index_path=index,
+            client=MisalignedClient(),
+            seed=5,
+            checkpoint=checkpoint,
+        )
+    state = json.loads(checkpoint.read_text(encoding="utf-8"))
+    assert state["accepted"] == {}
+    assert len(state["failed_attempts"]) == 3
+    assert all("question_alignment" in item for item in state["failed_attempts"])
+
+
+def test_question_alignment_rejects_missing_item_even_with_positive_exercise_review(
+    tmp_path,
+):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class MissingItemClient(FrenchClient):
+        def generate_json(self, prompt):
+            response = super().generate_json(prompt)
+            if prompt.startswith("Contrôle indépendant des capacités"):
+                response["questions"].pop()
+            return response
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    with pytest.raises(ValueError, match="refusé"):
+        generate_assessment(
+            index_path=index,
+            client=MissingItemClient(),
+            seed=5,
+            checkpoint=tmp_path / "checkpoint.json",
+        )
+
+
+def test_question_alignment_evidence_is_required_on_replay(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=FrenchClient(),
+        seed=5,
+        checkpoint=tmp_path / "checkpoint.json",
+    )
+    missing = deepcopy(package)
+    del missing["evidence"][0]["question_alignment"]
+    with pytest.raises(ValueError, match="alignement"):
+        validate_package(missing)
+
+    contradicted = deepcopy(package)
+    contradicted["evidence"][0]["question_alignment"]["review"]["questions"][0][
+        "objective_code"
+    ] = "ASR-ROUTAGE"
+    with pytest.raises(ValueError, match="alignement"):
+        validate_package(contradicted)
+
+
+def test_alignment_reviewer_never_receives_author_answer_or_marking(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class InspectingClient(FrenchClient):
+        def generate_json(self, prompt):
+            if prompt.startswith("Contrôle indépendant des capacités"):
+                request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+                for question in request["exercise"]["questions"]:
+                    assert "answer" not in question
+                    assert "marking" not in question
+                    assert "verification" not in question
+            return super().generate_json(prompt)
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    generate_assessment(
+        index_path=index,
+        client=InspectingClient(),
+        seed=5,
+        checkpoint=tmp_path / "checkpoint.json",
+    )
+
+
+def test_failed_question_is_repaired_without_reauthoring_accepted_peers(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    class RepairingClient(FrenchClient):
+        def __init__(self):
+            super().__init__()
+            self.repairs = 0
+            self.alignment_views = []
+
+        def generate_json(self, prompt):
+            if prompt.startswith("Répare uniquement la question"):
+                self.calls += 1
+                self.repairs += 1
+                request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+                result = dict(request["question"])
+                result["prompt"] = "Version corrigée : " + result["prompt"]
+                result["answer"] = "Réponse recalculée pour la version corrigée."
+                return result
+            response = super().generate_json(prompt)
+            if prompt.startswith("Contrôle indépendant des capacités"):
+                request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+                self.alignment_views.append(request["exercise"])
+                if (
+                    request["exercise"]["id"] == "1"
+                    and "Version corrigée"
+                    not in request["exercise"]["questions"][1]["prompt"]
+                ):
+                    response["questions"][1]["aligned"] = False
+                    response["questions"][1]["issues"] = [
+                        "La première formulation ne permet pas d'établir la capacité."
+                    ]
+            return response
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    client = RepairingClient()
+    package = generate_assessment(
+        index_path=index,
+        client=client,
+        seed=5,
+        checkpoint=tmp_path / "checkpoint.json",
+    )
+    evidence = package["evidence"][0]
+    assert client.repairs == 1
+    assert len(evidence["targeted_repairs"]) == 1
+    start = evidence["initial_candidate"]
+    final = evidence["candidate"]
+    assert start["questions"][1] != final["questions"][1]
+    assert start["questions"][:1] == final["questions"][:1]
+    assert start["questions"][2:] == final["questions"][2:]
+    assert "Version corrigée" in package["exercises"][0]["questions"][1]["prompt"]
+    assert len([view for view in client.alignment_views if view["id"] == "1"]) == 2
+    validate_package(package)
+
+    tampered = json.loads(json.dumps(package))
+    tampered["evidence"][0]["targeted_repairs"][0]["replacement"]["prompt"] = (
+        "Une autre consigne modifiée après génération."
+    )
+    with pytest.raises(ValueError, match="réparation"):
+        validate_package(tampered)
+
+
+def test_targeted_repair_is_bounded_and_preserves_failed_drafts(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class PersistentMismatchClient(FrenchClient):
+        def __init__(self):
+            super().__init__()
+            self.repairs = 0
+
+        def generate_json(self, prompt):
+            if prompt.startswith("Répare uniquement la question"):
+                self.calls += 1
+                self.repairs += 1
+                request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+                result = dict(request["question"])
+                result["prompt"] = f"Nouvelle version {self.repairs} : " + result["prompt"]
+                return result
+            response = super().generate_json(prompt)
+            if prompt.startswith("Contrôle indépendant des capacités"):
+                response["questions"][1]["aligned"] = False
+                response["questions"][1]["issues"] = ["Objectif non évalué."]
+            return response
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "checkpoint.json"
+    client = PersistentMismatchClient()
+    with pytest.raises(ValueError, match="refusé"):
+        generate_assessment(
+            index_path=index, client=client, seed=5, checkpoint=checkpoint
+        )
+    state = json.loads(checkpoint.read_text(encoding="utf-8"))
+    assert client.repairs == 6
+    assert len(state["failed_attempts"]) == 3
+    assert all(len(item["targeted_repairs"]) == 2 for item in state["failed_attempts"])
+    assert state["accepted"] == {}
+
+
+@pytest.mark.parametrize("cancel_type", [KeyboardInterrupt, InterruptedError])
+def test_cancellation_during_repair_keeps_evidence_and_no_partial_acceptance(
+    tmp_path, cancel_type
+):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class InterruptingClient(FrenchClient):
+        def generate_json(self, prompt):
+            if prompt.startswith("Répare uniquement la question"):
+                raise cancel_type("Création annulée")
+            response = super().generate_json(prompt)
+            if prompt.startswith("Contrôle indépendant des capacités"):
+                response["questions"][0]["aligned"] = False
+                response["questions"][0]["issues"] = ["Question hors capacité."]
+            return response
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "checkpoint.json"
+    with pytest.raises(cancel_type):
+        generate_assessment(
+            index_path=index,
+            client=InterruptingClient(),
+            seed=5,
+            checkpoint=checkpoint,
+        )
+    state = json.loads(checkpoint.read_text(encoding="utf-8"))
+    assert state["accepted"] == {}
+    assert state["failed_attempts"][0]["cancelled"] is True
+    assert state["failed_attempts"][0]["candidate"]["questions"]
+
+    resumed = generate_assessment(
+        index_path=index,
+        client=FrenchClient(),
+        seed=5,
+        checkpoint=checkpoint,
+    )
+    assert len(resumed["exercises"]) == 3
+    assert json.loads(checkpoint.read_text())["failed_attempts"][0]["cancelled"]
+
+
+def test_invalid_repair_response_is_recorded_before_rejection(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class WrongIdentityClient(FrenchClient):
+        def generate_json(self, prompt):
+            if prompt.startswith("Répare uniquement la question"):
+                self.calls += 1
+                request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+                return {**request["question"], "id": "9z"}
+            response = super().generate_json(prompt)
+            if prompt.startswith("Contrôle indépendant des capacités"):
+                response["questions"][0]["aligned"] = False
+                response["questions"][0]["issues"] = ["Capacité non évaluée."]
+            return response
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "checkpoint.json"
+    with pytest.raises(ValueError, match="refusé"):
+        generate_assessment(
+            index_path=index,
+            client=WrongIdentityClient(),
+            seed=5,
+            checkpoint=checkpoint,
+        )
+    failed = json.loads(checkpoint.read_text())["failed_attempts"]
+    assert len(failed) == 3
+    assert all(
+        item["repair_responses"][0]["response"]["id"] == "9z" for item in failed
+    )
+
+
+def test_repair_invalidates_downstream_solution_dependencies(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class DependencyClient(FrenchClient):
+        def generate_json(self, prompt):
+            if prompt.startswith("Répare uniquement la question"):
+                self.calls += 1
+                request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+                return {
+                    **request["question"],
+                    "prompt": "Version corrigée : " + request["question"]["prompt"],
+                }
+            response = super().generate_json(prompt)
+            if prompt.startswith("Contrôle indépendant des capacités"):
+                request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+                if (
+                    request["exercise"]["id"] == "1"
+                    and "Version corrigée"
+                    not in request["exercise"]["questions"][0]["prompt"]
+                ):
+                    response["questions"][0]["aligned"] = False
+                    response["questions"][0]["issues"] = ["Capacité non évaluée."]
+            if prompt.startswith("Résous indépendamment"):
+                request = json.loads(prompt.split("\n", 1)[1])
+                if request["id"] == "1" and request["questions"][0]["prompt"].startswith(
+                    "Version corrigée"
+                ):
+                    response["issues"] = [
+                        "La réponse de 1b dépend de l'ancien résultat de 1a."
+                    ]
+            return response
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "checkpoint.json"
+    with pytest.raises(ValueError, match="refusé"):
+        generate_assessment(
+            index_path=index,
+            client=DependencyClient(),
+            seed=5,
+            checkpoint=checkpoint,
+        )
+    state = json.loads(checkpoint.read_text(encoding="utf-8"))
+    assert state["accepted"] == {}
+    assert len(state["failed_attempts"]) == 3
+    assert all(item["targeted_repairs"] for item in state["failed_attempts"])
+    assert all(
+        item["independent_solution"]["issues"] for item in state["failed_attempts"]
+    )
 
 
 def test_failed_review_keeps_attempt_evidence_and_never_accepts(tmp_path):

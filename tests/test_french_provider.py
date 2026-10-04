@@ -109,3 +109,32 @@ def test_french_transport_allows_slow_local_generation(monkeypatch):
         "url": "http://localhost:11434/api/chat",
         "timeout": 900,
     }
+
+
+def test_alignment_transport_requires_per_question_evidence():
+    from Backend.Core.france.provider import response_policy
+
+    prompt = (
+        'Contrôle indépendant des capacités\nDONNÉES_JSON\n'
+        '{"question_blueprint":[{"id":"1a","required_curriculum_code":"SD-GRAPHE"}]}'
+    )
+    schema, budget = response_policy(prompt)
+    item = schema["properties"]["questions"]["items"]
+    assert set(item["required"]) == {
+        "question_id",
+        "objective_code",
+        "aligned",
+        "rationale",
+        "issues",
+    }
+    assert budget >= 2048
+
+
+def test_repair_transport_requires_material_and_verification_contracts():
+    from Backend.Core.france.provider import response_policy
+
+    schema, budget = response_policy(
+        'Répare uniquement la question\nDONNÉES_JSON\n{"question":{"id":"1a"}}'
+    )
+    assert {"material_ids", "verification"} <= set(schema["required"])
+    assert budget >= 2048

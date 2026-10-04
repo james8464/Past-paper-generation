@@ -185,13 +185,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1791130848.1606426,
-    "ast_hash": "26fcc8ea1229161f9d901bdbfabeca3a",
+    "mtime": 1791134020.162071,
+    "ast_hash": "4b8de2d147216aeb42e40ed826b1f261",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
-    "mtime": 1791129181.5021214,
-    "ast_hash": "2bb15753546fdfc13cedc79d0981922d",
+    "mtime": 1791132897.1522622,
+    "ast_hash": "ed1588cb819b72e6d5615339db3c4032",
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791129181.5460818,
-    "ast_hash": "69e8e81a3d133a67c4f5a586eb0d647d",
+    "mtime": 1791133509.0464866,
+    "ast_hash": "d9cb4b85e8daa11e3695d4c13192c4ae",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1670,8 +1670,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_provider.py": {
-    "mtime": 1791129181.6023865,
-    "ast_hash": "45d0947cec51a98dba0c9e3f2c70922f",
+    "mtime": 1791133006.5710552,
+    "ast_hash": "e6b7215f05b2b5c49ef0f72ca8e949b1",
     "semantic_hash": ""
   },
   "tests/test_french_review.py": {
@@ -1780,8 +1780,8 @@
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1791131000.1924448,
-    "ast_hash": "7c6389aec9d1a7ec17a214496f4fb6a3",
+    "mtime": 1791134045.2174957,
+    "ast_hash": "b052b7fe720937dd3efa3f76cdac98f3",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -2260,8 +2260,8 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/claims-register.md": {
-    "mtime": 1791130112.278798,
-    "ast_hash": "89616d2f8c2336c307e81aef499552a7",
+    "mtime": 1791132347.347518,
+    "ast_hash": "f667a79d551b473a5272e54b831c8275",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/demo-script.md": {
@@ -2330,8 +2330,8 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-evaluation.md": {
-    "mtime": 1791130112.2784836,
-    "ast_hash": "0b27165a46013ff9594d5b10c745e074",
+    "mtime": 1791134100.6146567,
+    "ast_hash": "93089600cff113560fb43c473f1f759c",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-prototype-verification-2026-09-28.md": {
@@ -2582,6 +2582,11 @@
   "docs/superpowers/specs/2026-10-04-french-nsi-authoring-redesign.md": {
     "mtime": 1791129181.5549731,
     "ast_hash": "bc2e685cd578f9772cc0859d2bb089fc",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/question_review.py": {
+    "mtime": 1791132897.1520262,
+    "ast_hash": "5b386f9535b82b78e1ea1048c9733c4c",
     "semantic_hash": ""
   }
 }

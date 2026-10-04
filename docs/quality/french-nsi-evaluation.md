@@ -24,10 +24,12 @@ failures, not paper passes. The model cannot be recommended for French NSI on
 this evidence. Test the other exact candidate models and review the generation
 architecture before another ten-paper campaign.
 
-As of 4 October 2026, that ignored raw run directory is no longer present in
-the workspace. This historical summary is not independently auditable from its
-original logs or checkpoints. A fresh identity-pinned run must retain its raw
-evidence before any qualification claim.
+On 4 October 2026, the ignored run directory was recovered from an older
+managed worktree and copied into the primary checkout. The summary, ten
+per-seed results, ten checkpoints and event logs are now available at the path
+above for audit. This recovery does not alter the 0/10 outcome or qualify the
+old source/model configuration. A new identity-pinned run is still required
+after the authoring redesign.
 
 ## 4 October diagnostic (not qualification)
 
@@ -90,8 +92,18 @@ question-level deterministic checks were unresolved, while the AI review
 reported no issues. No PDF was produced. This is a false-positive defect in
 automated content review, tracked in GitHub issue #26, not a paper pass. The v8
 slice binds only exact figure identifiers and records immutable question-plan
-assembly; question-level semantic alignment and independent teacher review
-remain outstanding.
+assembly. The v9 source slice adds an answer-free, item-level AI alignment
+decision for every planned capability, rejects missing or contradictory
+decisions, and binds those decisions to the exact candidate view on replay.
+The v9 source also permits at most two question-only repairs per exercise
+draft, preserving the original and replacement payloads, rerunning the full
+exercise's structural, deterministic, originality, alignment, blind-solver
+and review gates, and replaying the repair chain on package load. Rejected
+repair responses are retained before validation. Keyboard and app-signal
+cancellation record the interrupted draft without partial acceptance. These
+safeguards have regression tests but no live model evidence yet. A model may
+still make a wrong positive judgement; independent teacher review remains
+outstanding.
 
 ## Reproducible runs
 

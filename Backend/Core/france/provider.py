@@ -4,7 +4,7 @@ import json
 from hashlib import sha256
 
 from Backend.Core.france.network import ollama_request
-from Backend.Core.france.nsi import authoring_schema
+from Backend.Core.france.nsi import NSIQuestion, authoring_schema
 from Backend.Core.france.pipeline import REVIEW_FLAGS
 from Backend.Core.providers import HostedLLMClient
 
@@ -51,6 +51,10 @@ class FrenchOllamaClient(HostedLLMClient):
 def response_policy(prompt: str) -> tuple[dict, int]:
     if prompt.startswith("Rédige directement en français académique"):
         return authoring_schema(), 6144
+    if prompt.startswith("Répare uniquement la question"):
+        schema = NSIQuestion.model_json_schema()
+        schema["required"].extend(["material_ids", "verification"])
+        return schema, 3072
     text = {"type": "string", "minLength": 1, "maxLength": 6000}
     issues = {"type": "array", "items": text, "maxItems": 32}
     if prompt.startswith("Résous indépendamment"):
@@ -78,6 +82,32 @@ def response_policy(prompt: str) -> tuple[dict, int]:
                 "minItems": 4,
                 "maxItems": 16,
             },
+        }
+        budget = 3072
+    elif prompt.startswith("Contrôle indépendant des capacités"):
+        request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+        identifiers = [item["id"] for item in request["question_blueprint"]]
+        item = {
+            "type": "object",
+            "properties": {
+                "question_id": {"type": "string", "enum": identifiers},
+                "objective_code": {"type": "string", "minLength": 3, "maxLength": 40},
+                "aligned": {"type": "boolean"},
+                "rationale": {"type": "string", "minLength": 40, "maxLength": 1800},
+                "issues": issues,
+            },
+            "required": [
+                "question_id", "objective_code", "aligned", "rationale", "issues"
+            ],
+            "additionalProperties": False,
+        }
+        properties = {
+            "questions": {
+                "type": "array",
+                "items": item,
+                "minItems": len(identifiers),
+                "maxItems": len(identifiers),
+            }
         }
         budget = 3072
     else:
