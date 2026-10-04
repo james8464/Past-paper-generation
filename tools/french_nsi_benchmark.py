@@ -17,7 +17,7 @@ import subprocess
 import sys
 import time
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from hashlib import sha256
 from pathlib import Path
@@ -27,6 +27,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from Backend.Core.education_context import NSI_2027  # noqa: E402
+from Backend.Core.france.pipeline import PROMPT_VERSION  # noqa: E402
 from Backend.Core.france.runtime import model_identity  # noqa: E402
 from Backend.Core.france.source_identity import implementation_identity  # noqa: E402
 from Backend.Core.paths import REPO_ROOT  # noqa: E402
@@ -61,7 +63,12 @@ def _load_json(path: Path) -> dict[str, Any] | None:
 
 
 def accepted_result(path: Path, identity: dict[str, Any]) -> bool:
-    value = _load_json(path)
+    return _accepted_payload(_load_json(path), path, identity)
+
+
+def _accepted_payload(
+    value: dict[str, Any] | None, path: Path, identity: dict[str, Any]
+) -> bool:
     if not value or value.get("status") != "passed" or value.get("identity") != identity:
         return False
     recorded_artifacts = value.get("artifacts")
@@ -96,6 +103,12 @@ def accepted_result(path: Path, identity: dict[str, Any]) -> bool:
         )
     ):
         return False
+    if (
+        manifest_identity.get("assessment") != asdict(NSI_2027)
+        or manifest_identity.get("prompt_version") != PROMPT_VERSION
+        or manifest_identity.get("provider") != "ollama"
+    ):
+        return False
     artifacts = manifest.get("artifacts")
     if not isinstance(artifacts, dict) or not {
         "question_paper", "mark_scheme", "assessment_package"
@@ -117,7 +130,13 @@ def accepted_result(path: Path, identity: dict[str, Any]) -> bool:
                 return False
         except OSError:
             return False
-    return True
+    package_file = artifacts["assessment_package"]["file"]
+    package = _load_json(manifest_path.parent / package_file)
+    return bool(
+        package
+        and package.get("assessment_policy") == ASSESSMENT
+        and package.get("identity") == manifest_identity
+    )
 
 
 def _events(stdout: str) -> list[dict[str, Any]]:
@@ -255,10 +274,15 @@ def run_plan(args: argparse.Namespace) -> int:
         "papers_per_model": args.papers_per_model,
     }
     session_path = output / "session.json"
-    existing = _load_json(session_path)
-    if existing is not None and existing.get("identity") != session_identity:
-        raise ValueError("Ce dossier appartient à une autre identité de qualification")
-    if existing is None:
+    if session_path.exists():
+        existing = _load_json(session_path)
+        if existing is None:
+            raise ValueError("La session a perdu son intégrité; conserver le dossier")
+        if existing.get("identity") != session_identity:
+            raise ValueError("Ce dossier appartient à une autre identité de qualification")
+    else:
+        if any(output.iterdir()):
+            raise ValueError("La session a perdu son intégrité; conserver le dossier")
         _atomic_json(
             session_path,
             {
@@ -286,10 +310,19 @@ def run_plan(args: argparse.Namespace) -> int:
         }
         item_root = output / "runs" / _slug(item.model) / digest[:12] / str(item.seed)
         result_path = item_root / "result.json"
-        if accepted_result(result_path, identity):
-            results.append(_load_json(result_path))
-            continue
         previous = _load_json(result_path)
+        if result_path.exists() and previous is None:
+            raise ValueError("Le résultat a perdu son intégrité; conserver le dossier")
+        if previous is None and item_root.exists() and any(item_root.iterdir()):
+            raise ValueError("Le résultat a perdu son intégrité; conserver le dossier")
+        if previous and (
+            previous.get("identity") != identity
+            or previous.get("status") not in {"passed", "failed", "timed_out"}
+        ):
+            raise ValueError("Le résultat a perdu son intégrité; conserver le dossier")
+        if accepted_result(result_path, identity):
+            results.append(previous)
+            continue
         if previous and previous.get("status") == "passed":
             raise ValueError(
                 "Une preuve acceptée a perdu son intégrité; conserver le dossier "
@@ -355,6 +388,13 @@ def run_plan(args: argparse.Namespace) -> int:
             },
             "completed_at": datetime.now(UTC).isoformat(),
         }
+        if result["status"] == "passed" and not _accepted_payload(
+            result, result_path, identity
+        ):
+            result["status"] = "failed"
+            result["error"] = "L'intégrité des artefacts publiés est invalide"
+            _atomic_json(result_path, result)
+            raise ValueError("Les artefacts ont perdu leur intégrité; conserver le dossier")
         _atomic_json(result_path, result)
         results.append(result)
         if implementation_identity() != source_identity:

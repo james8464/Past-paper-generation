@@ -2045,8 +2045,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_benchmark_runner.py": {
-    "mtime": 1791114459.8059022,
-    "ast_hash": "6d6fee5272e9860c2eacf3eceff35035",
+    "mtime": 1791115299.4432247,
+    "ast_hash": "222f57ebc029931d8c7e109cead8e374",
     "semantic_hash": ""
   },
   "tests/test_french_originality.py": {
@@ -2060,8 +2060,8 @@
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
-    "mtime": 1791114319.7455559,
-    "ast_hash": "07beddc1d7eb316c77904a67f9e3a4e5",
+    "mtime": 1791115402.0469677,
+    "ast_hash": "90a5e54f6131fe79b9b7c8d6b8414a0d",
     "semantic_hash": ""
   },
   "tools/reconcile_french_nsi_archive.py": {
