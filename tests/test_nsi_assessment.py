@@ -115,7 +115,8 @@ def test_sql_verification_checks_results_and_disallows_external_access(
                 return super().__getattribute__(name)
 
         monkeypatch.setattr(
-            sqlite3, "connect",
+            sqlite3,
+            "connect",
             lambda *args, **kwargs: connect(
                 *args, **kwargs, factory=ConnectionWithoutExtensions
             ),
@@ -281,12 +282,65 @@ def test_seeded_question_blueprints_make_marks_and_timing_exact_before_ai():
             assert sum(Decimal(item["points"]) for item in questions) == Decimal(
                 task["technical_points"]
             )
-            assert sum(item["estimated_minutes"] for item in questions) == task[
-                "minutes"
-            ]
+            assert (
+                sum(item["estimated_minutes"] for item in questions) == task["minutes"]
+            )
             assert set(task["required_curriculum_codes"]) <= {
                 item["required_curriculum_code"] for item in questions
             }
             assert len({item["operation"] for item in questions}) >= 3
             assert sum(item["operation"] == "recall" for item in questions) <= 1
             assert any(item["difficulty"] == 4 for item in questions)
+
+
+def test_question_intents_follow_coherent_parts_instead_of_rotating_codes():
+    from Backend.Core.france.pipeline import _tasks_for_seed
+
+    expected = (
+        (
+            "SD-GRAPHE",
+            "SD-GRAPHE",
+            "ALG-GRAPHES",
+            "ALG-GRAPHES",
+            "ALG-ARBRES",
+            "ALG-ARBRES",
+        ),
+        (
+            "BDD-ANOMALIES",
+            "BDD-SQL-SELECT",
+            "BDD-SQL-SELECT",
+            "BDD-SQL-MUTATION",
+            "LP-DEBUG",
+            "LP-DEBUG",
+        ),
+        (
+            "ASR-ROUTAGE",
+            "ASR-ROUTAGE",
+            "ASR-PROCESSUS",
+            "ASR-PROCESSUS",
+            "ASR-CRYPTO",
+            "ASR-CRYPTO",
+        ),
+    )
+    for seed in (270100, 270101, 270102):
+        for task, codes in zip(_tasks_for_seed(seed), expected, strict=True):
+            questions = task["question_blueprint"]
+            assert tuple(q["required_curriculum_code"] for q in questions) == codes
+            assert [q["part_id"] for q in questions] == ["A", "A", "B", "B", "C", "C"]
+            assert all(q["goal"] and q["response_form"] for q in questions)
+            assert task["scenario_brief"]
+            assert set(task["required_curriculum_codes"]) == set(codes)
+    assert (
+        _tasks_for_seed(270100)[0]["scenario_brief"]
+        != _tasks_for_seed(270101)[0]["scenario_brief"]
+    )
+
+
+def test_recorded_v6_blueprint_is_not_rewritten_by_new_archetypes():
+    from Backend.Core.france.pipeline import _legacy_tasks_for_seed
+
+    legacy = _legacy_tasks_for_seed(270100)
+    assert (
+        legacy[0]["question_blueprint"][0]["required_curriculum_code"] == "ALG-GRAPHES"
+    )
+    assert "scenario_brief" not in legacy[0]

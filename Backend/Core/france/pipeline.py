@@ -15,6 +15,7 @@ from Backend.Core.education_context import (
     EducationContext,
     points,
 )
+from Backend.Core.france.archetypes import archetype_for_seed
 from Backend.Core.france.nsi import (
     CURRICULUM_OBJECTIVES,
     LANGUAGE_RUBRIC_2027,
@@ -28,12 +29,13 @@ from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.france.verification import verify_contract
 from Backend.Core.scoped_references import ReferenceIndex
 
-PROMPT_VERSION = "fr-nsi-written-2027-v6"
+PROMPT_VERSION = "fr-nsi-written-2027-v7"
 # Recorded source identities prevent a newer package dropping its evidence via
 # an earlier prompt-version label. The separate manifest remains the trust root.
 LEGACY_IMPLEMENTATIONS = {
     "fr-nsi-written-2027-v4": "bd1468ca74a1dbe501e5eedc306d26531fb52ff9a6271b20fc13607cbfafbfbb",
     "fr-nsi-written-2027-v5": "2e603cc84d59c48553b7c4a8e31129a3a337092b62188391f276c20125cef9a5",
+    "fr-nsi-written-2027-v6": "cba1b74b98c236608d983242778de8db6c3e891142e4ea635ebb0c7fd776c69d",
 }
 REVIEW_FLAGS = (
     "correct",
@@ -118,7 +120,7 @@ def _question_blueprint(
     ]
 
 
-def _tasks_for_seed(seed: int) -> list[dict]:
+def _legacy_tasks_for_seed(seed: int) -> list[dict]:
     allocations = ALLOCATION_PROFILES[seed % len(ALLOCATION_PROFILES)]
     return [
         {
@@ -143,6 +145,42 @@ def _tasks_for_seed(seed: int) -> list[dict]:
             curriculum_codes,
         ) in enumerate(TASKS)
     ]
+
+
+def _tasks_for_seed(seed: int) -> list[dict]:
+    allocations = ALLOCATION_PROFILES[seed % len(ALLOCATION_PROFILES)]
+    tasks = []
+    for position, archetype in enumerate(archetype_for_seed(seed)):
+        variation = (seed + position) % len(QUESTION_TIME_PROFILES)
+        questions = [
+            {
+                "id": f"{position + 1}{chr(ord('a') + index)}",
+                "points": QUESTION_POINT_PROFILES[allocations[position]][index],
+                "estimated_minutes": QUESTION_TIME_PROFILES[variation][index],
+                "operation": intent.operation,
+                "difficulty": intent.difficulty,
+                "required_curriculum_code": intent.code,
+                "part_id": intent.part_id,
+                "goal": intent.goal,
+                "response_form": intent.response_form,
+            }
+            for index, intent in enumerate(archetype.intents)
+        ]
+        tasks.append(
+            {
+                "topics": list(archetype.topics),
+                "query": archetype.query,
+                "minutes": archetype.minutes,
+                "technical_points": allocations[position],
+                "required_material_kind": archetype.material_kind,
+                "required_curriculum_codes": list(archetype.required_curriculum_codes),
+                "archetype_id": archetype.id,
+                "scenario_brief": archetype.scenario_brief,
+                "part_briefs": list(archetype.part_briefs),
+                "question_blueprint": questions,
+            }
+        )
+    return tasks
 
 
 def digest(value) -> str:
@@ -251,6 +289,11 @@ def _prompt(
         "question_blueprint : identifiant, points, durée, opération, difficulté et "
         "capacité obligatoire doivent correspondre exactement; les critères du "
         "barème de chaque question doivent totaliser ses points. "
+        "Suis les parties A, B et C et leurs objectifs de question dans l'ordre. "
+        "La brève situation sert de fil conducteur : invente des données et des "
+        "questions nouvelles, sans recycler les exemples des annales. Chaque "
+        "question doit réellement évaluer sa capacité et respecter la forme de "
+        "réponse indiquée; ne te contente pas d'en recopier le code. "
         "Évalue toutes les capacités obligatoires fournies, avec au plus une "
         "question de simple restitution et plusieurs tâches d'analyse, conception, "
         "débogage ou justification, dont au moins une de niveau 4. "
@@ -364,6 +407,50 @@ def _originality(exercise, references, previous_texts=()):
     )
 
 
+def _check_exercise_plan(exercise: NSIExercise, task: dict, key: str) -> None:
+    if (
+        exercise.id != key
+        or list(exercise.topics) != task["topics"]
+        or exercise.minutes != task["minutes"]
+        or exercise.target_points != task["technical_points"]
+    ):
+        raise ValueError("Plan de l'exercice non respecté")
+    question_plan = task["question_blueprint"]
+    if len(exercise.questions) != len(question_plan) or any(
+        question.id != planned["id"]
+        or points(question.points) != points(planned["points"])
+        or question.estimated_minutes != planned["estimated_minutes"]
+        or question.operation != planned["operation"]
+        or question.difficulty != planned["difficulty"]
+        or planned["required_curriculum_code"] not in question.curriculum_codes
+        for question, planned in zip(exercise.questions, question_plan, strict=True)
+    ):
+        raise ValueError("Le plan détaillé des questions n'est pas respecté")
+    covered_codes = {
+        code for question in exercise.questions for code in question.curriculum_codes
+    }
+    if not set(task["required_curriculum_codes"]) <= covered_codes:
+        raise ValueError(
+            "Les capacités obligatoires du programme ne sont pas toutes évaluées"
+        )
+    required_materials = [
+        material
+        for material in exercise.materials
+        if material.kind == task["required_material_kind"]
+    ]
+    used_materials = {
+        material_id
+        for question in exercise.questions
+        for material_id in question.material_ids
+    }
+    if not required_materials or not any(
+        material.id in used_materials for material in required_materials
+    ):
+        raise ValueError(
+            "La ressource structurée du plan doit être utilisée par une question"
+        )
+
+
 def generate_assessment(
     *,
     index_path: Path,
@@ -442,6 +529,9 @@ def generate_assessment(
                                 "required_curriculum_codes": task[
                                     "required_curriculum_codes"
                                 ],
+                                "archetype_id": task["archetype_id"],
+                                "scenario_brief": task["scenario_brief"],
+                                "part_briefs": task["part_briefs"],
                                 "question_blueprint": task["question_blueprint"],
                             },
                             references[position],
@@ -456,54 +546,7 @@ def generate_assessment(
                     record["material_bindings"] = bindings
                     exercise = NSIExercise.model_validate(bound)
                     require_link_for_material_mentions(exercise)
-                    if (
-                        exercise.id != key
-                        or list(exercise.topics) != task["topics"]
-                        or exercise.minutes != task["minutes"]
-                        or exercise.target_points != task["technical_points"]
-                    ):
-                        raise ValueError("Plan de l'exercice non respecté")
-                    question_plan = task["question_blueprint"]
-                    if len(exercise.questions) != len(question_plan) or any(
-                        question.id != planned["id"]
-                        or points(question.points) != points(planned["points"])
-                        or question.estimated_minutes != planned["estimated_minutes"]
-                        or question.operation != planned["operation"]
-                        or question.difficulty != planned["difficulty"]
-                        or planned["required_curriculum_code"]
-                        not in question.curriculum_codes
-                        for question, planned in zip(
-                            exercise.questions, question_plan, strict=True
-                        )
-                    ):
-                        raise ValueError(
-                            "Le plan détaillé des questions n'est pas respecté"
-                        )
-                    covered_codes = {
-                        code
-                        for question in exercise.questions
-                        for code in question.curriculum_codes
-                    }
-                    if not set(task["required_curriculum_codes"]) <= covered_codes:
-                        raise ValueError(
-                            "Les capacités obligatoires du programme ne sont pas toutes évaluées"
-                        )
-                    required_materials = [
-                        material
-                        for material in exercise.materials
-                        if material.kind == task["required_material_kind"]
-                    ]
-                    used_materials = {
-                        material_id
-                        for question in exercise.questions
-                        for material_id in question.material_ids
-                    }
-                    if not required_materials or not any(
-                        material.id in used_materials for material in required_materials
-                    ):
-                        raise ValueError(
-                            "La ressource structurée du plan doit être utilisée par une question"
-                        )
+                    _check_exercise_plan(exercise, task, key)
                     checks = [
                         verify_contract(question.verification)
                         for question in exercise.questions
@@ -609,7 +652,16 @@ def validate_package(package: dict):
     if legacy_hash and identity["implementation_sha256"] != legacy_hash:
         raise ValueError("Identité historique française non reconnue")
     seed = identity.get("seed")
-    if type(seed) is not int or identity.get("blueprint") != _tasks_for_seed(seed):
+    expected_blueprint = (
+        (
+            _tasks_for_seed(seed)
+            if identity["prompt_version"] == PROMPT_VERSION
+            else _legacy_tasks_for_seed(seed)
+        )
+        if type(seed) is int
+        else None
+    )
+    if identity.get("blueprint") != expected_blueprint:
         raise ValueError("Plan d'évaluation incompatible")
     if package.get("content_sha256") != digest(package["exercises"]):
         raise ValueError("Assessment content hash mismatch")
@@ -625,6 +677,12 @@ def validate_package(package: dict):
     ):
         raise ValueError("Historique d'originalité incompatible")
     exercises = [NSIExercise.model_validate(raw) for raw in package["exercises"]]
+    if len(exercises) != len(expected_blueprint):
+        raise ValueError("Nombre d'exercices incompatible avec le plan")
+    for position, (exercise, task) in enumerate(
+        zip(exercises, expected_blueprint, strict=True), start=1
+    ):
+        _check_exercise_plan(exercise, task, str(position))
     NSI_2027.validate_credit(
         [str(exercise.credit) for exercise in exercises], package["language_points"]
     )
@@ -646,7 +704,7 @@ def validate_package(package: dict):
             raise ValueError("Exercise evidence hash mismatch")
         if identity["prompt_version"] != "fr-nsi-written-2027-v4":
             raw_candidate = evidence.get("candidate")
-            if identity["prompt_version"] == PROMPT_VERSION:
+            if identity["prompt_version"] in {PROMPT_VERSION, "fr-nsi-written-2027-v6"}:
                 require_authoring_fields(raw_candidate)
             bound, bindings = bind_explicit_material_ids(raw_candidate)
             if (

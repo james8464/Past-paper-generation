@@ -180,17 +180,17 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/nsi.py": {
-    "mtime": 1791123746.5248368,
+    "mtime": 1791124971.5121756,
     "ast_hash": "876be31706ff0a282f6fc704e170388a",
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1791123737.4740255,
-    "ast_hash": "82683e878dbe09bc6c670b3a608c82ca",
+    "mtime": 1791127338.7080383,
+    "ast_hash": "48cbf47fb3779c822d10297bd02294ec",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
-    "mtime": 1791122935.6714318,
+    "mtime": 1791124971.517835,
     "ast_hash": "2bb15753546fdfc13cedc79d0981922d",
     "semantic_hash": ""
   },
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791040548.649961,
-    "ast_hash": "f14932a485510da869e979a02241c19e",
+    "mtime": 1791127461.236466,
+    "ast_hash": "69e8e81a3d133a67c4f5a586eb0d647d",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1670,7 +1670,7 @@
     "semantic_hash": ""
   },
   "tests/test_french_provider.py": {
-    "mtime": 1791123084.9769037,
+    "mtime": 1791124971.5675123,
     "ast_hash": "45d0947cec51a98dba0c9e3f2c70922f",
     "semantic_hash": ""
   },
@@ -1775,13 +1775,13 @@
     "semantic_hash": "248449f6aabd502dc802118071813a95"
   },
   "tests/test_nsi_assessment.py": {
-    "mtime": 1791036368.9292412,
-    "ast_hash": "0860ba85b57f6875296f6a9214075829",
+    "mtime": 1791126876.298492,
+    "ast_hash": "1c2edc3a9763d7bbc60a68bbaabc2b9b",
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1791124216.8120286,
-    "ast_hash": "344b9a9389b8164978a2d20c8e3bba3f",
+    "mtime": 1791127338.7080386,
+    "ast_hash": "a3692a2508568aa2bb64ca99dd369967",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -2255,13 +2255,13 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/README.md": {
-    "mtime": 1791123066.5773542,
-    "ast_hash": "9517b3671954df27c82cad522772358c",
+    "mtime": 1791126014.996233,
+    "ast_hash": "d05945111b55356f7ca7efffd8d3d5f1",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/claims-register.md": {
-    "mtime": 1791123054.1239758,
-    "ast_hash": "a7a7c77aeb58acc2359c917c10f86e4f",
+    "mtime": 1791126014.9964197,
+    "ast_hash": "fb041959a638cad0580c63038136a8e5",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/demo-script.md": {
@@ -2330,8 +2330,8 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-evaluation.md": {
-    "mtime": 1791123029.701654,
-    "ast_hash": "a7a40c0c3c6cc40c1545dc1d4a99e762",
+    "mtime": 1791126003.527467,
+    "ast_hash": "d2a8d9a6429589445bf8734f240f7a18",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-prototype-verification-2026-09-28.md": {
@@ -2567,6 +2567,21 @@
   "docs/competition/occitanie-2026/apple-report-visual-audit.md": {
     "mtime": 1791040548.650673,
     "ast_hash": "896593a8dd2ac32c954dfb086f8a7116",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/archetypes.py": {
+    "mtime": 1791126677.623201,
+    "ast_hash": "d5ad373862c4450e5a66397b123a8aa0",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-04-french-nsi-authoring-redesign.md": {
+    "mtime": 1791125992.3258135,
+    "ast_hash": "b0f3da051701289f7934aaa7e40944f0",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-04-french-nsi-authoring-redesign.md": {
+    "mtime": 1791125937.4579911,
+    "ast_hash": "bc2e685cd578f9772cc0859d2bb089fc",
     "semantic_hash": ""
   }
 }

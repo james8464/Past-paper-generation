@@ -61,6 +61,21 @@ fields, while the package model continues to read recorded v4/v5 evidence.
 This is a structural output constraint, not a claim that question content or
 difficulty has improved. A fresh v6 run is required before judging that.
 
+The pinned v6 one-paper Gemma diagnostic on 4 October also accepted 0/1
+(seed 270100; implementation
+`cba1b74b98c236608d983242778de8db6c3e891142e4ea635ebb0c7fd776c69d`).
+All three rejected drafts and the benchmark summary are preserved under
+`tmp/qualification-fr-nsi-2027/diagnostic-20261004-v6-gemma4/`. Two drafts
+missed the detailed question blueprint; one left an explicitly named graph
+unlinked. No PDF was published. Inspection showed that cyclic programme-code
+assignment makes the six-question plan less coherent than the contextual parts
+observed in the historical 2026 Métropole paper. The first redesign slice
+groups question intents into contextual parts and replays their blueprint when
+a package is reopened. Its remaining semantic-alignment and targeted-repair
+gates are recorded in
+`docs/superpowers/specs/2026-10-04-french-nsi-authoring-redesign.md`.
+This slice has not passed a live paper and is not a model recommendation.
+
 ## Reproducible runs
 
 Pin the repository commit, registry/prompt version, full source hashes and split,
