@@ -407,6 +407,50 @@ def _originality(exercise, references, previous_texts=()):
     )
 
 
+def _check_exercise_plan(exercise: NSIExercise, task: dict, key: str) -> None:
+    if (
+        exercise.id != key
+        or list(exercise.topics) != task["topics"]
+        or exercise.minutes != task["minutes"]
+        or exercise.target_points != task["technical_points"]
+    ):
+        raise ValueError("Plan de l'exercice non respecté")
+    question_plan = task["question_blueprint"]
+    if len(exercise.questions) != len(question_plan) or any(
+        question.id != planned["id"]
+        or points(question.points) != points(planned["points"])
+        or question.estimated_minutes != planned["estimated_minutes"]
+        or question.operation != planned["operation"]
+        or question.difficulty != planned["difficulty"]
+        or planned["required_curriculum_code"] not in question.curriculum_codes
+        for question, planned in zip(exercise.questions, question_plan, strict=True)
+    ):
+        raise ValueError("Le plan détaillé des questions n'est pas respecté")
+    covered_codes = {
+        code for question in exercise.questions for code in question.curriculum_codes
+    }
+    if not set(task["required_curriculum_codes"]) <= covered_codes:
+        raise ValueError(
+            "Les capacités obligatoires du programme ne sont pas toutes évaluées"
+        )
+    required_materials = [
+        material
+        for material in exercise.materials
+        if material.kind == task["required_material_kind"]
+    ]
+    used_materials = {
+        material_id
+        for question in exercise.questions
+        for material_id in question.material_ids
+    }
+    if not required_materials or not any(
+        material.id in used_materials for material in required_materials
+    ):
+        raise ValueError(
+            "La ressource structurée du plan doit être utilisée par une question"
+        )
+
+
 def generate_assessment(
     *,
     index_path: Path,
@@ -502,54 +546,7 @@ def generate_assessment(
                     record["material_bindings"] = bindings
                     exercise = NSIExercise.model_validate(bound)
                     require_link_for_material_mentions(exercise)
-                    if (
-                        exercise.id != key
-                        or list(exercise.topics) != task["topics"]
-                        or exercise.minutes != task["minutes"]
-                        or exercise.target_points != task["technical_points"]
-                    ):
-                        raise ValueError("Plan de l'exercice non respecté")
-                    question_plan = task["question_blueprint"]
-                    if len(exercise.questions) != len(question_plan) or any(
-                        question.id != planned["id"]
-                        or points(question.points) != points(planned["points"])
-                        or question.estimated_minutes != planned["estimated_minutes"]
-                        or question.operation != planned["operation"]
-                        or question.difficulty != planned["difficulty"]
-                        or planned["required_curriculum_code"]
-                        not in question.curriculum_codes
-                        for question, planned in zip(
-                            exercise.questions, question_plan, strict=True
-                        )
-                    ):
-                        raise ValueError(
-                            "Le plan détaillé des questions n'est pas respecté"
-                        )
-                    covered_codes = {
-                        code
-                        for question in exercise.questions
-                        for code in question.curriculum_codes
-                    }
-                    if not set(task["required_curriculum_codes"]) <= covered_codes:
-                        raise ValueError(
-                            "Les capacités obligatoires du programme ne sont pas toutes évaluées"
-                        )
-                    required_materials = [
-                        material
-                        for material in exercise.materials
-                        if material.kind == task["required_material_kind"]
-                    ]
-                    used_materials = {
-                        material_id
-                        for question in exercise.questions
-                        for material_id in question.material_ids
-                    }
-                    if not required_materials or not any(
-                        material.id in used_materials for material in required_materials
-                    ):
-                        raise ValueError(
-                            "La ressource structurée du plan doit être utilisée par une question"
-                        )
+                    _check_exercise_plan(exercise, task, key)
                     checks = [
                         verify_contract(question.verification)
                         for question in exercise.questions
@@ -680,6 +677,12 @@ def validate_package(package: dict):
     ):
         raise ValueError("Historique d'originalité incompatible")
     exercises = [NSIExercise.model_validate(raw) for raw in package["exercises"]]
+    if len(exercises) != len(expected_blueprint):
+        raise ValueError("Nombre d'exercices incompatible avec le plan")
+    for position, (exercise, task) in enumerate(
+        zip(exercises, expected_blueprint, strict=True), start=1
+    ):
+        _check_exercise_plan(exercise, task, str(position))
     NSI_2027.validate_credit(
         [str(exercise.credit) for exercise in exercises], package["language_points"]
     )

@@ -69,9 +69,12 @@ All three rejected drafts and the benchmark summary are preserved under
 missed the detailed question blueprint; one left an explicitly named graph
 unlinked. No PDF was published. Inspection showed that cyclic programme-code
 assignment makes the six-question plan less coherent than the contextual parts
-observed in the historical 2026 Métropole paper. The redesign and its gates
-are recorded in `docs/superpowers/specs/2026-10-04-french-nsi-authoring-redesign.md`;
-it is not yet a passed implementation or a model recommendation.
+observed in the historical 2026 Métropole paper. The first redesign slice
+groups question intents into contextual parts and replays their blueprint when
+a package is reopened. Its remaining semantic-alignment and targeted-repair
+gates are recorded in
+`docs/superpowers/specs/2026-10-04-french-nsi-authoring-redesign.md`.
+This slice has not passed a live paper and is not a model recommendation.
 
 ## Reproducible runs
 

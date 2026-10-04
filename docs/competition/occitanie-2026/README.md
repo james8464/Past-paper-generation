@@ -64,7 +64,7 @@ teacher-approved practice release still requires a revised generation approach,
 new live evidence and independent human review.
 Three additional one-paper diagnostics on 4 October each accepted 0 of 1; their
 new raw failures are retained locally. The latest stricter authoring contract
-has not passed a live paper. A source-backed authoring redesign is planned;
+has not passed a live paper. A source-backed authoring redesign is underway;
 the application must present the generator as a prototype, not as a validated
 classroom-ready paper maker.
 

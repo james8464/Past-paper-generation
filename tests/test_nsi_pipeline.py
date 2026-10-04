@@ -142,6 +142,35 @@ class FrenchClient:
         }
 
 
+def make_legacy_structural_package(tmp_path, monkeypatch):
+    """Generate fixture content against the actual pre-v7 question blueprint."""
+    from copy import deepcopy
+
+    from Backend.Core.france import pipeline
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    original = pipeline._tasks_for_seed
+    legacy = pipeline._legacy_tasks_for_seed(5)
+    current = original(5)
+    authoring_tasks = deepcopy(legacy)
+    for old_task, new_task in zip(authoring_tasks, current, strict=True):
+        for field in ("archetype_id", "scenario_brief", "part_briefs"):
+            old_task[field] = new_task[field]
+    monkeypatch.setattr(pipeline, "_tasks_for_seed", lambda seed: authoring_tasks)
+    try:
+        package = pipeline.generate_assessment(
+            index_path=index,
+            client=FrenchClient(),
+            seed=5,
+            checkpoint=tmp_path / "checkpoint.json",
+        )
+    finally:
+        monkeypatch.setattr(pipeline, "_tasks_for_seed", original)
+    package["identity"]["blueprint"] = legacy
+    return package
+
+
 @pytest.mark.parametrize("field", ["materials", "material_ids", "verification"])
 def test_authoring_rejects_missing_required_raw_fields(tmp_path, field):
     from Backend.Core.france.pipeline import generate_assessment
@@ -499,27 +528,15 @@ def test_v6_explicit_material_link_evidence_cannot_hide_drift(tmp_path):
 
 def test_legacy_french_package_without_candidate_binding_evidence_remains_readable(
     tmp_path,
+    monkeypatch,
 ):
-    from Backend.Core.france.pipeline import (
-        _legacy_tasks_for_seed,
-        generate_assessment,
-        validate_package,
-    )
+    from Backend.Core.france.pipeline import validate_package
 
-    index = tmp_path / "sources.sqlite"
-    make_index(index)
-    package = generate_assessment(
-        index_path=index,
-        client=FrenchClient(),
-        seed=5,
-        checkpoint=tmp_path / "checkpoint.json",
-    )
+    package = make_legacy_structural_package(tmp_path, monkeypatch)
     package["identity"]["prompt_version"] = "fr-nsi-written-2027-v4"
     package["identity"]["implementation_sha256"] = (
         "bd1468ca74a1dbe501e5eedc306d26531fb52ff9a6271b20fc13607cbfafbfbb"
     )
-    # This synthetic reader fixture uses the recorded blueprint identity.
-    package["identity"]["blueprint"] = _legacy_tasks_for_seed(5)
     for evidence in package["evidence"]:
         del evidence["candidate"]
         del evidence["material_bindings"]
@@ -527,23 +544,12 @@ def test_legacy_french_package_without_candidate_binding_evidence_remains_readab
     validate_package(package)
 
 
-def test_recorded_v5_package_keeps_its_candidate_evidence(tmp_path):
+def test_recorded_v5_package_keeps_its_candidate_evidence(tmp_path, monkeypatch):
     from copy import deepcopy
 
-    from Backend.Core.france.pipeline import (
-        _legacy_tasks_for_seed,
-        generate_assessment,
-        validate_package,
-    )
+    from Backend.Core.france.pipeline import validate_package
 
-    index = tmp_path / "sources.sqlite"
-    make_index(index)
-    package = generate_assessment(
-        index_path=index,
-        client=FrenchClient(),
-        seed=5,
-        checkpoint=tmp_path / "checkpoint.json",
-    )
+    package = make_legacy_structural_package(tmp_path, monkeypatch)
     relabelled = deepcopy(package)
     relabelled["identity"]["prompt_version"] = "fr-nsi-written-2027-v5"
     with pytest.raises(ValueError, match="historique"):
@@ -552,7 +558,6 @@ def test_recorded_v5_package_keeps_its_candidate_evidence(tmp_path):
     package["identity"]["implementation_sha256"] = (
         "2e603cc84d59c48553b7c4a8e31129a3a337092b62188391f276c20125cef9a5"
     )
-    package["identity"]["blueprint"] = _legacy_tasks_for_seed(5)
     validate_package(package)
 
     changed = deepcopy(package)
@@ -561,11 +566,31 @@ def test_recorded_v5_package_keeps_its_candidate_evidence(tmp_path):
         validate_package(changed)
 
 
-def test_recorded_v6_reader_keeps_required_raw_fields(tmp_path):
+def test_recorded_v6_reader_keeps_required_raw_fields(tmp_path, monkeypatch):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import digest, validate_package
+
+    package = make_legacy_structural_package(tmp_path, monkeypatch)
+    package["identity"]["prompt_version"] = "fr-nsi-written-2027-v6"
+    package["identity"]["implementation_sha256"] = (
+        "cba1b74b98c236608d983242778de8db6c3e891142e4ea635ebb0c7fd776c69d"
+    )
+    validate_package(package)
+
+    changed = deepcopy(package)
+    del changed["evidence"][0]["candidate"]["questions"][0]["verification"]
+    changed["evidence"][0]["candidate_sha256"] = digest(
+        changed["evidence"][0]["candidate"]
+    )
+    with pytest.raises(ValueError, match="verification"):
+        validate_package(changed)
+
+
+def test_package_replay_rejects_rehashed_question_blueprint_drift(tmp_path):
     from copy import deepcopy
 
     from Backend.Core.france.pipeline import (
-        _legacy_tasks_for_seed,
         digest,
         generate_assessment,
         validate_package,
@@ -579,19 +604,15 @@ def test_recorded_v6_reader_keeps_required_raw_fields(tmp_path):
         seed=5,
         checkpoint=tmp_path / "checkpoint.json",
     )
-    package["identity"]["prompt_version"] = "fr-nsi-written-2027-v6"
-    package["identity"]["implementation_sha256"] = (
-        "cba1b74b98c236608d983242778de8db6c3e891142e4ea635ebb0c7fd776c69d"
-    )
-    package["identity"]["blueprint"] = _legacy_tasks_for_seed(5)
-    validate_package(package)
-
     changed = deepcopy(package)
-    del changed["evidence"][0]["candidate"]["questions"][0]["verification"]
+    changed["exercises"][0]["questions"][0]["difficulty"] = 4
+    changed["evidence"][0]["candidate"]["questions"][0]["difficulty"] = 4
     changed["evidence"][0]["candidate_sha256"] = digest(
         changed["evidence"][0]["candidate"]
     )
-    with pytest.raises(ValueError, match="verification"):
+    changed["evidence"][0]["exercise_sha256"] = digest(changed["exercises"][0])
+    changed["content_sha256"] = digest(changed["exercises"])
+    with pytest.raises(ValueError, match="plan détaillé"):
         validate_package(changed)
 
 
