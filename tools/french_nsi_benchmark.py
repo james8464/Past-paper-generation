@@ -17,7 +17,7 @@ import subprocess
 import sys
 import time
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from hashlib import sha256
 from pathlib import Path
@@ -27,6 +27,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from Backend.Core.education_context import NSI_2027  # noqa: E402
+from Backend.Core.france.pipeline import PROMPT_VERSION  # noqa: E402
 from Backend.Core.france.runtime import model_identity  # noqa: E402
 from Backend.Core.france.source_identity import implementation_identity  # noqa: E402
 from Backend.Core.paths import REPO_ROOT  # noqa: E402
@@ -61,11 +63,80 @@ def _load_json(path: Path) -> dict[str, Any] | None:
 
 
 def accepted_result(path: Path, identity: dict[str, Any]) -> bool:
-    value = _load_json(path)
+    return _accepted_payload(_load_json(path), path, identity)
+
+
+def _accepted_payload(
+    value: dict[str, Any] | None, path: Path, identity: dict[str, Any]
+) -> bool:
     if not value or value.get("status") != "passed" or value.get("identity") != identity:
         return False
-    manifest = value.get("artifacts", {}).get("manifest")
-    return isinstance(manifest, str) and (path.parent / manifest).is_file()
+    recorded_artifacts = value.get("artifacts")
+    if not isinstance(recorded_artifacts, dict):
+        return False
+    manifest_name = recorded_artifacts.get("manifest")
+    manifest_sha256 = recorded_artifacts.get("manifest_sha256")
+    if not isinstance(manifest_name, str) or not isinstance(manifest_sha256, str):
+        return False
+    manifest_path = path.parent / manifest_name
+    manifest = _load_json(manifest_path)
+    if not manifest or manifest.get("schema_version") != 1:
+        return False
+    try:
+        if _sha256(manifest_path) != manifest_sha256:
+            return False
+    except OSError:
+        return False
+    if (
+        manifest.get("assessment") != ASSESSMENT
+        or manifest.get("status") != "unreviewed_draft"
+    ):
+        return False
+    manifest_identity = manifest.get("identity")
+    if not isinstance(manifest_identity, dict) or any(
+        manifest_identity.get(manifest_key) != identity.get(result_key)
+        for manifest_key, result_key in (
+            ("implementation_sha256", "implementation"),
+            ("model", "model"),
+            ("model_digest", "model_digest"),
+            ("seed", "seed"),
+        )
+    ):
+        return False
+    if (
+        manifest_identity.get("assessment") != asdict(NSI_2027)
+        or manifest_identity.get("prompt_version") != PROMPT_VERSION
+        or manifest_identity.get("provider") != "ollama"
+    ):
+        return False
+    artifacts = manifest.get("artifacts")
+    if not isinstance(artifacts, dict) or not {
+        "question_paper", "mark_scheme", "assessment_package"
+    } <= artifacts.keys():
+        return False
+    for artifact in artifacts.values():
+        if not isinstance(artifact, dict):
+            return False
+        filename, expected_hash = artifact.get("file"), artifact.get("sha256")
+        if (
+            not isinstance(filename, str)
+            or Path(filename).name != filename
+            or not isinstance(expected_hash, str)
+            or not re.fullmatch(r"[a-f0-9]{64}", expected_hash)
+        ):
+            return False
+        try:
+            if _sha256(manifest_path.parent / filename) != expected_hash:
+                return False
+        except OSError:
+            return False
+    package_file = artifacts["assessment_package"]["file"]
+    package = _load_json(manifest_path.parent / package_file)
+    return bool(
+        package
+        and package.get("assessment_policy") == ASSESSMENT
+        and package.get("identity") == manifest_identity
+    )
 
 
 def _events(stdout: str) -> list[dict[str, Any]]:
@@ -203,10 +274,15 @@ def run_plan(args: argparse.Namespace) -> int:
         "papers_per_model": args.papers_per_model,
     }
     session_path = output / "session.json"
-    existing = _load_json(session_path)
-    if existing is not None and existing.get("identity") != session_identity:
-        raise ValueError("Ce dossier appartient à une autre identité de qualification")
-    if existing is None:
+    if session_path.exists():
+        existing = _load_json(session_path)
+        if existing is None:
+            raise ValueError("La session a perdu son intégrité; conserver le dossier")
+        if existing.get("identity") != session_identity:
+            raise ValueError("Ce dossier appartient à une autre identité de qualification")
+    else:
+        if any(output.iterdir()):
+            raise ValueError("La session a perdu son intégrité; conserver le dossier")
         _atomic_json(
             session_path,
             {
@@ -234,11 +310,24 @@ def run_plan(args: argparse.Namespace) -> int:
         }
         item_root = output / "runs" / _slug(item.model) / digest[:12] / str(item.seed)
         result_path = item_root / "result.json"
-        if accepted_result(result_path, identity):
-            results.append(_load_json(result_path))
-            continue
         previous = _load_json(result_path)
-        if previous and previous.get("status") != "passed" and not args.retry_failed:
+        if result_path.exists() and (
+            not previous
+            or previous.get("identity") != identity
+            or previous.get("status") not in {"passed", "failed", "timed_out"}
+        ):
+            raise ValueError("Le résultat a perdu son intégrité; conserver le dossier")
+        if previous is None and item_root.exists() and any(item_root.iterdir()):
+            raise ValueError("Le résultat a perdu son intégrité; conserver le dossier")
+        if accepted_result(result_path, identity):
+            results.append(previous)
+            continue
+        if previous is not None and previous.get("status") == "passed":
+            raise ValueError(
+                "Une preuve acceptée a perdu son intégrité; conserver le dossier "
+                "et enquêter avant toute nouvelle génération"
+            )
+        if previous is not None and not args.retry_failed:
             results.append(previous)
             continue
 
@@ -292,9 +381,19 @@ def run_plan(args: argparse.Namespace) -> int:
             "identity": identity,
             "exercise_count": item.exercise_count,
             "attempt_directory": attempt.name,
-            "artifacts": {"manifest": relative_manifest},
+            "artifacts": {
+                "manifest": relative_manifest,
+                "manifest_sha256": _sha256(manifest) if manifest is not None else None,
+            },
             "completed_at": datetime.now(UTC).isoformat(),
         }
+        if result["status"] == "passed" and not _accepted_payload(
+            result, result_path, identity
+        ):
+            result["status"] = "failed"
+            result["error"] = "L'intégrité des artefacts publiés est invalide"
+            _atomic_json(result_path, result)
+            raise ValueError("Les artefacts ont perdu leur intégrité; conserver le dossier")
         _atomic_json(result_path, result)
         results.append(result)
         if implementation_identity() != source_identity:

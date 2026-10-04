@@ -6,8 +6,9 @@ is recorded.
 
 ## First complete live campaign (30 September 2026)
 
+The earlier run at
 `tmp/qualification-fr-nsi-2027/gemma4-blueprint-v4/benchmark-summary.json`
-records ten failed papers from seeds 270100–270109, with thirty rejected
+recorded ten failed papers from seeds 270100–270109, with thirty rejected
 exercise drafts and one accepted exercise retained in per-seed checkpoints. The
 implementation hash was
 `bd1468ca74a1dbe501e5eedc306d26531fb52ff9a6271b20fc13607cbfafbfbb`;
@@ -22,6 +23,11 @@ invalid decimal strings and duplicated graph edges. These are output-quality
 failures, not paper passes. The model cannot be recommended for French NSI on
 this evidence. Test the other exact candidate models and review the generation
 architecture before another ten-paper campaign.
+
+As of 4 October 2026, that ignored raw run directory is no longer present in
+the workspace. This historical summary is not independently auditable from its
+original logs or checkpoints. A fresh identity-pinned run must retain its raw
+evidence before any qualification claim.
 
 ## Reproducible runs
 
@@ -41,6 +47,11 @@ ten complete papers per model, giving thirty exercises per configuration. A glob
 lock prevents duplicate campaigns. Accepted checkpoints are reused only when the
 implementation hash, reference-index hash, model digest and seed match. Failed
 attempts remain failures unless an explicit reviewed retry is requested.
+
+An accepted run is resumed only when its manifest fingerprint, assessment identity
+and every recorded artifact hash still match. If accepted evidence is missing or
+changed, the runner stops before contacting the model; investigate and preserve
+the directory rather than silently replacing the paper.
 
 ## Rubric
 

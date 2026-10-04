@@ -2045,8 +2045,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_benchmark_runner.py": {
-    "mtime": 1791036368.9284632,
-    "ast_hash": "4083555e1102876683e29e8a5186e006",
+    "mtime": 1791115698.8323622,
+    "ast_hash": "4e92833b98f71e421f2213c6ca90545c",
     "semantic_hash": ""
   },
   "tests/test_french_originality.py": {
@@ -2060,8 +2060,8 @@
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
-    "mtime": 1791036368.9300401,
-    "ast_hash": "6138f3c29e3fbf1358fad06b6c58e83f",
+    "mtime": 1791115720.389748,
+    "ast_hash": "2db0da5e71af4b28f3793e25737d034b",
     "semantic_hash": ""
   },
   "tools/reconcile_french_nsi_archive.py": {
@@ -2285,7 +2285,7 @@
     "semantic_hash": ""
   },
   "docs/occitanie-project.md": {
-    "mtime": 1791047960.9462621,
+    "mtime": 1791113045.326386,
     "ast_hash": "8f7256ee96eeb531de98f15c9d07cb3d",
     "semantic_hash": ""
   },
@@ -2330,8 +2330,8 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-evaluation.md": {
-    "mtime": 1791036368.891468,
-    "ast_hash": "700e17153492ef407e27f3c6a8d71b62",
+    "mtime": 1791114563.4753823,
+    "ast_hash": "72c2873b8256d94e83106681af5cfe76",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-prototype-verification-2026-09-28.md": {
