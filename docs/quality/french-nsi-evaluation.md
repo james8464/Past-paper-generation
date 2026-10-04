@@ -92,8 +92,12 @@ question-level deterministic checks were unresolved, while the AI review
 reported no issues. No PDF was produced. This is a false-positive defect in
 automated content review, tracked in GitHub issue #26, not a paper pass. The v8
 slice binds only exact figure identifiers and records immutable question-plan
-assembly; question-level semantic alignment and independent teacher review
-remain outstanding.
+assembly. The v9 source slice adds an answer-free, item-level AI alignment
+decision for every planned capability, rejects missing or contradictory
+decisions, and binds those decisions to the exact candidate view on replay.
+This gate has regression tests but no live model evidence yet. A model may
+still make a wrong positive judgement; bounded targeted repair and independent
+teacher review remain outstanding.
 
 ## Reproducible runs
 

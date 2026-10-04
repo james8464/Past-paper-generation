@@ -41,6 +41,20 @@ class FrenchClient:
 
     def generate_json(self, prompt):
         self.calls += 1
+        if prompt.startswith("Contrôle indépendant des capacités"):
+            request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+            return {
+                "questions": [
+                    {
+                        "question_id": planned["id"],
+                        "objective_code": planned["required_curriculum_code"],
+                        "aligned": True,
+                        "rationale": "La consigne de cette question mobilise effectivement la capacité prévue dans le plan.",
+                        "issues": [],
+                    }
+                    for planned in request["question_blueprint"]
+                ]
+            }
         if prompt.startswith("Résous indépendamment"):
             candidate = json.loads(prompt.split("\n", 1)[1])
             return {
@@ -285,15 +299,116 @@ def test_generation_is_french_scoped_and_resume_does_not_repeat_model_work(tmp_p
         "indicative_product_profile"
     )
     validate_package(package)
-    assert client.calls == 9
+    assert client.calls == 12
     again = generate_assessment(
         index_path=index, client=client, seed=5, checkpoint=tmp_path / "checkpoint.json"
     )
     assert again == package
-    assert client.calls == 9
+    assert client.calls == 12
     package["exercises"][0]["questions"][0]["answer"] = "changed"
     with pytest.raises(ValueError, match="hash"):
         validate_package(package)
+
+
+def test_question_alignment_rejects_semantic_mismatch_despite_correct_metadata(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class MisalignedClient(FrenchClient):
+        def generate_json(self, prompt):
+            response = super().generate_json(prompt)
+            if prompt.startswith("Contrôle indépendant des capacités"):
+                response["questions"][0]["aligned"] = False
+                response["questions"][0]["issues"] = [
+                    "La consigne porte sur le routage, pas sur la représentation d'un graphe."
+                ]
+            return response
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "checkpoint.json"
+    with pytest.raises(ValueError, match="refusé"):
+        generate_assessment(
+            index_path=index,
+            client=MisalignedClient(),
+            seed=5,
+            checkpoint=checkpoint,
+        )
+    state = json.loads(checkpoint.read_text(encoding="utf-8"))
+    assert state["accepted"] == {}
+    assert len(state["failed_attempts"]) == 3
+    assert all("question_alignment" in item for item in state["failed_attempts"])
+
+
+def test_question_alignment_rejects_missing_item_even_with_positive_exercise_review(
+    tmp_path,
+):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class MissingItemClient(FrenchClient):
+        def generate_json(self, prompt):
+            response = super().generate_json(prompt)
+            if prompt.startswith("Contrôle indépendant des capacités"):
+                response["questions"].pop()
+            return response
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    with pytest.raises(ValueError, match="refusé"):
+        generate_assessment(
+            index_path=index,
+            client=MissingItemClient(),
+            seed=5,
+            checkpoint=tmp_path / "checkpoint.json",
+        )
+
+
+def test_question_alignment_evidence_is_required_on_replay(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=FrenchClient(),
+        seed=5,
+        checkpoint=tmp_path / "checkpoint.json",
+    )
+    missing = deepcopy(package)
+    del missing["evidence"][0]["question_alignment"]
+    with pytest.raises(ValueError, match="alignement"):
+        validate_package(missing)
+
+    contradicted = deepcopy(package)
+    contradicted["evidence"][0]["question_alignment"]["review"]["questions"][0][
+        "objective_code"
+    ] = "ASR-ROUTAGE"
+    with pytest.raises(ValueError, match="alignement"):
+        validate_package(contradicted)
+
+
+def test_alignment_reviewer_never_receives_author_answer_or_marking(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class InspectingClient(FrenchClient):
+        def generate_json(self, prompt):
+            if prompt.startswith("Contrôle indépendant des capacités"):
+                request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+                for question in request["exercise"]["questions"]:
+                    assert "answer" not in question
+                    assert "marking" not in question
+                    assert "verification" not in question
+            return super().generate_json(prompt)
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    generate_assessment(
+        index_path=index,
+        client=InspectingClient(),
+        seed=5,
+        checkpoint=tmp_path / "checkpoint.json",
+    )
 
 
 def test_failed_review_keeps_attempt_evidence_and_never_accepts(tmp_path):

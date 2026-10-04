@@ -26,11 +26,15 @@ from Backend.Core.france.nsi import (
     solver_prompt,
 )
 from Backend.Core.france.originality import screen_originality
+from Backend.Core.france.question_review import (
+    alignment_prompt,
+    check_question_alignment,
+)
 from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.france.verification import verify_contract
 from Backend.Core.scoped_references import ReferenceIndex
 
-PROMPT_VERSION = "fr-nsi-written-2027-v8"
+PROMPT_VERSION = "fr-nsi-written-2027-v9"
 # Recorded source identities prevent a newer package dropping its evidence via
 # an earlier prompt-version label. The separate manifest remains the trust root.
 LEGACY_IMPLEMENTATIONS = {
@@ -38,6 +42,7 @@ LEGACY_IMPLEMENTATIONS = {
     "fr-nsi-written-2027-v5": "2e603cc84d59c48553b7c4a8e31129a3a337092b62188391f276c20125cef9a5",
     "fr-nsi-written-2027-v6": "cba1b74b98c236608d983242778de8db6c3e891142e4ea635ebb0c7fd776c69d",
     "fr-nsi-written-2027-v7": "20c0a8fa1f53825d6598ae1f1af59a1cee2ddbc946c4a0fd7c49233e79e0bcdf",
+    "fr-nsi-written-2027-v8": "20f94fd7fa2852b3d42f945cf9b116adf38791bf4a6adae6af32bb41169bb62d",
 }
 REVIEW_FLAGS = (
     "correct",
@@ -694,6 +699,11 @@ def generate_assessment(
                         references[position],
                         [*originality_history, *within_paper_history],
                     )
+                    alignment = client.generate_json(
+                        alignment_prompt(exercise, task, references[position])
+                    )
+                    record["question_alignment"] = alignment
+                    check_question_alignment(exercise, task, alignment)
                     solution = client.generate_json(solver_prompt(exercise))
                     record["independent_solution"] = solution
                     review = client.generate_json(
@@ -714,6 +724,10 @@ def generate_assessment(
                             "independent_solution": solution,
                             "review": review,
                             "originality": originality,
+                            "question_alignment": {
+                                "candidate_view_sha256": digest(exercise.candidate_view()),
+                                "review": alignment,
+                            },
                         },
                     }
                     state["accepted"][key] = accepted
@@ -785,7 +799,7 @@ def validate_package(package: dict):
         (
             _tasks_for_seed(seed)
             if identity["prompt_version"]
-            in {PROMPT_VERSION, "fr-nsi-written-2027-v7"}
+            in {PROMPT_VERSION, "fr-nsi-written-2027-v8", "fr-nsi-written-2027-v7"}
             else _legacy_tasks_for_seed(seed)
         )
         if type(seed) is int
@@ -836,17 +850,18 @@ def validate_package(package: dict):
             raw_candidate = evidence.get("candidate")
             if identity["prompt_version"] in {
                 PROMPT_VERSION,
+                "fr-nsi-written-2027-v8",
                 "fr-nsi-written-2027-v7",
                 "fr-nsi-written-2027-v6",
             }:
                 require_authoring_fields(raw_candidate)
             binder = (
                 bind_explicit_material_ids
-                if identity["prompt_version"] == PROMPT_VERSION
+                if identity["prompt_version"] in {PROMPT_VERSION, "fr-nsi-written-2027-v8"}
                 else _legacy_bind_explicit_material_ids
             )
             bound, bindings = binder(raw_candidate)
-            if identity["prompt_version"] == PROMPT_VERSION:
+            if identity["prompt_version"] in {PROMPT_VERSION, "fr-nsi-written-2027-v8"}:
                 assembled, assembly = _assemble_planned_exercise(
                     bound, expected_blueprint[int(exercise.id) - 1], raw_candidate
                 )
@@ -863,6 +878,19 @@ def validate_package(package: dict):
             ):
                 raise ValueError("Preuve de liaison figure-question invalide")
             require_link_for_material_mentions(exercise)
+        if identity["prompt_version"] == PROMPT_VERSION:
+            alignment = evidence.get("question_alignment")
+            if (
+                not isinstance(alignment, dict)
+                or alignment.get("candidate_view_sha256")
+                != digest(exercise.candidate_view())
+            ):
+                raise ValueError("Preuve d'alignement individuel absente ou périmée")
+            check_question_alignment(
+                exercise,
+                expected_blueprint[int(exercise.id) - 1],
+                alignment.get("review"),
+            )
         _check_review(
             exercise, evidence.get("independent_solution"), evidence.get("review")
         )

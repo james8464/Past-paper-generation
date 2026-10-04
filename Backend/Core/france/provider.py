@@ -80,6 +80,32 @@ def response_policy(prompt: str) -> tuple[dict, int]:
             },
         }
         budget = 3072
+    elif prompt.startswith("Contrôle indépendant des capacités"):
+        request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+        identifiers = [item["id"] for item in request["question_blueprint"]]
+        item = {
+            "type": "object",
+            "properties": {
+                "question_id": {"type": "string", "enum": identifiers},
+                "objective_code": {"type": "string", "minLength": 3, "maxLength": 40},
+                "aligned": {"type": "boolean"},
+                "rationale": {"type": "string", "minLength": 40, "maxLength": 1800},
+                "issues": issues,
+            },
+            "required": [
+                "question_id", "objective_code", "aligned", "rationale", "issues"
+            ],
+            "additionalProperties": False,
+        }
+        properties = {
+            "questions": {
+                "type": "array",
+                "items": item,
+                "minItems": len(identifiers),
+                "maxItems": len(identifiers),
+            }
+        }
+        budget = 3072
     else:
         raise ValueError("Type de requête française inconnu; aucun repli britannique")
     return {

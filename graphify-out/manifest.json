@@ -185,13 +185,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1791130848.1606426,
-    "ast_hash": "26fcc8ea1229161f9d901bdbfabeca3a",
+    "mtime": 1791132729.0537248,
+    "ast_hash": "372e0629f4ee09ef5b93a2eebc19d6c2",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
-    "mtime": 1791129181.5021214,
-    "ast_hash": "2bb15753546fdfc13cedc79d0981922d",
+    "mtime": 1791132508.196047,
+    "ast_hash": "54c34d32e06971221ef53b3a971e586e",
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
@@ -1670,8 +1670,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_provider.py": {
-    "mtime": 1791129181.6023865,
-    "ast_hash": "45d0947cec51a98dba0c9e3f2c70922f",
+    "mtime": 1791132426.7457526,
+    "ast_hash": "0d93798c6cf94b83864634c2cd176845",
     "semantic_hash": ""
   },
   "tests/test_french_review.py": {
@@ -1780,8 +1780,8 @@
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1791131000.1924448,
-    "ast_hash": "7c6389aec9d1a7ec17a214496f4fb6a3",
+    "mtime": 1791132594.878764,
+    "ast_hash": "dcf73df768a6dd676dfcbdd88abb5cc4",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -2330,8 +2330,8 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-evaluation.md": {
-    "mtime": 1791132347.347222,
-    "ast_hash": "8d7527560af32693b33c399aa15cbda0",
+    "mtime": 1791132616.498254,
+    "ast_hash": "15b2f915e9bdd451181f5772006df81d",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-prototype-verification-2026-09-28.md": {
@@ -2582,6 +2582,11 @@
   "docs/superpowers/specs/2026-10-04-french-nsi-authoring-redesign.md": {
     "mtime": 1791129181.5549731,
     "ast_hash": "bc2e685cd578f9772cc0859d2bb089fc",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/question_review.py": {
+    "mtime": 1791132508.1954145,
+    "ast_hash": "972a51400e5a82ad174292c4e4b365d2",
     "semantic_hash": ""
   }
 }
