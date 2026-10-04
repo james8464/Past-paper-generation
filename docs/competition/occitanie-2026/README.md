@@ -62,6 +62,9 @@ The pinned Gemma 4 12B live campaign accepted 0 of 10 complete papers; it is
 failure evidence, not a successful qualification or a model recommendation. A
 teacher-approved practice release still requires a revised generation approach,
 new live evidence and independent human review.
+Two additional one-paper diagnostics on 4 October each accepted 0 of 1; their
+new raw failures are retained locally. The application must not imply that the
+subsequent authoring-contract change has passed a live paper.
 
 The project does not claim endorsement by the Ministry, the Région Occitanie, the Toulouse or Montpellier academies, CentraleSupélec or any examination board. Generated files remain independently branded and marked non-official.
 

@@ -470,6 +470,35 @@ def test_legacy_french_package_without_candidate_binding_evidence_remains_readab
     validate_package(package)
 
 
+def test_recorded_v5_package_keeps_its_candidate_evidence(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=FrenchClient(),
+        seed=5,
+        checkpoint=tmp_path / "checkpoint.json",
+    )
+    relabelled = deepcopy(package)
+    relabelled["identity"]["prompt_version"] = "fr-nsi-written-2027-v5"
+    with pytest.raises(ValueError, match="historique"):
+        validate_package(relabelled)
+    package["identity"]["prompt_version"] = "fr-nsi-written-2027-v5"
+    package["identity"]["implementation_sha256"] = (
+        "2e603cc84d59c48553b7c4a8e31129a3a337092b62188391f276c20125cef9a5"
+    )
+    validate_package(package)
+
+    changed = deepcopy(package)
+    del changed["evidence"][0]["candidate_sha256"]
+    with pytest.raises(ValueError, match="liaison"):
+        validate_package(changed)
+
+
 @pytest.mark.parametrize(
     "unlinked_prompt",
     [

@@ -50,6 +50,17 @@ new pinned live evidence is required. The drafts also contained substantive
 questions needing independent review, so the repair does not establish
 educational quality.
 
+A second source-pinned, one-paper diagnostic using the v5 prompt also accepted
+0/1 at seed 270100. Its three rejected drafts are retained under
+`tmp/qualification-fr-nsi-2027/diagnostic-20261004-v5-gemma4/`. Two failed
+the per-question blueprint; one named figure IDs without supplying any
+`materials`. The model's transport schema had treated `materials` and each
+question's `material_ids` as optional because the package reader retains
+defaults for historical records. The v6 authoring schema now requires those
+fields, while the package model continues to read recorded v4/v5 evidence.
+This is a structural output constraint, not a claim that question content or
+difficulty has improved. A fresh v6 run is required before judging that.
+
 ## Reproducible runs
 
 Pin the repository commit, registry/prompt version, full source hashes and split,
