@@ -239,6 +239,45 @@ def test_structured_table_requires_rectangular_bounded_data():
         NSIExercise.model_validate(raw)
 
 
+def test_sql_relation_identifier_is_visible_and_optional_create_clause_is_valid():
+    from reportlab.lib.styles import ParagraphStyle
+
+    from Backend.Core.france.nsi import NSIExercise
+    from Backend.Core.france.pipeline import require_declared_relations
+    from Backend.Core.france.rendering import structured_material
+
+    raw = exercise()
+    raw["materials"] = [
+        {
+            "kind": "table",
+            "id": "technicien",
+            "title": "Personnel de maintenance",
+            "columns": ["id", "nom"],
+            "rows": [["1", "Alice"], ["2", "Bob"]],
+        }
+    ]
+    raw["questions"][0]["prompt"] = "Lire SELECT nom FROM technicien."
+    raw["questions"][0]["material_ids"] = ["technicien"]
+    raw["questions"][0]["verification"] = {
+        "kind": "sql",
+        "schema": "CREATE TABLE IF NOT EXISTS technicien (id INTEGER, nom TEXT);",
+        "rows": {"technicien": [[1, "Alice"], [2, "Bob"]]},
+        "query": "SELECT nom FROM technicien",
+        "expected": [["Alice"], ["Bob"]],
+    }
+    parsed = NSIExercise.model_validate(raw)
+
+    require_declared_relations(parsed)
+    block = structured_material(
+        parsed.materials[0],
+        body=ParagraphStyle("body"),
+        bold_font="Helvetica-Bold",
+        regular_font="Helvetica",
+        available_width=420,
+    )
+    assert "technicien" in block._content[0].text
+
+
 def test_question_demand_is_bound_to_official_capabilities_and_time_budget():
     from Backend.Core.france.nsi import NSIExercise
 

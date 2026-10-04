@@ -58,7 +58,12 @@ def structured_material(
     regular_font: str,
     available_width: float,
 ):
-    title = Paragraph(escape(material.title), body)
+    heading = (
+        f"{material.title} — {material.id}"
+        if isinstance(material, NSITableMaterial)
+        else material.title
+    )
+    title = Paragraph(escape(heading), body)
     if isinstance(material, NSITableMaterial):
         rows = [
             [Paragraph(escape(value), body) for value in material.columns],
