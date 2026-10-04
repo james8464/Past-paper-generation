@@ -475,6 +475,7 @@ def test_legacy_french_package_without_candidate_binding_evidence_remains_readab
     [
         "En utilisant le graphe G fourni, expliquer le résultat obtenu.",
         "À partir des arêtes de G, calculer la distance du trajet.",
+        "Lire le graphe pour déterminer un trajet réalisable.",
     ],
 )
 def test_one_linked_question_cannot_hide_another_unlinked_figure_question(
@@ -523,3 +524,29 @@ def test_constructing_a_new_graph_does_not_require_link_to_supplied_graph(tmp_pa
         checkpoint=tmp_path / "checkpoint.json",
     )
     assert package["status"] == "unreviewed_draft"
+
+
+def test_unlinked_table_use_is_rejected_when_another_question_links_it(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class VagueTableClient(FrenchClient):
+        def generate_json(self, prompt):
+            result = super().generate_json(prompt)
+            if prompt.startswith("Rédige directement en français académique"):
+                task = json.loads(prompt.split("DONNÉES_JSON\n", 1)[1])
+                if task["required_material_kind"] == "table":
+                    result["questions"][1]["prompt"] = (
+                        "Utiliser le tableau pour calculer la réponse."
+                    )
+                    result["questions"][1]["material_ids"] = []
+            return result
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    with pytest.raises(ValueError, match="figure non reliée"):
+        generate_assessment(
+            index_path=index,
+            client=VagueTableClient(),
+            seed=5,
+            checkpoint=tmp_path / "checkpoint.json",
+        )

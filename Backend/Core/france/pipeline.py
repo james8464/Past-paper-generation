@@ -187,13 +187,20 @@ def require_link_for_material_mentions(exercise: NSIExercise) -> None:
     """Reject deictic figure references that have no traceable structured input."""
     kinds = {material.kind for material in exercise.materials}
     patterns = []
+    use_verb = (
+        r"(?:utiliser|utilisez|lire|lisez|observer|observez|analyser|analysez|"
+        r"consulter|consultez|exploiter|exploitez|étudier|étudiez|parcourir|"
+        r"parcourez|utilisant|lisant|selon)"
+    )
     if "weighted_graph" in kinds:
         patterns.append(r"\b(?:ce|du|au)\s+graphe\b")
         patterns.append(r"\bgraphe\s+(?:[A-Z]\b|fourni\b|ci-dessus\b)")
+        patterns.append(r"\b" + use_verb + r"\s+(?:le|ce)\s+graphe\b")
         patterns.append(r"(?-i:\bG\b)")
     if "table" in kinds:
         patterns.append(r"\b(?:ce|du|au)\s+tableau\b")
         patterns.append(r"\btableau\s+(?:fourni\b|ci-dessus\b)")
+        patterns.append(r"\b" + use_verb + r"\s+(?:le|ce)\s+tableau\b")
     if kinds:
         patterns.append(r"\b(?:la|cette|de la)\s+figure\b")
     for question in exercise.questions:
