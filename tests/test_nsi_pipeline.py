@@ -1677,3 +1677,29 @@ def test_current_question_can_transition_from_unbalanced_to_balanced_tree():
         "Pour un arbre équilibré, la recherche coûte O(log n).",
         "",
     )
+
+
+def test_negated_balance_and_unrelated_tree_do_not_license_logarithmic_claim():
+    from Backend.Core.france.pipeline import require_tree_complexity_premise
+
+    answer = "La recherche coûte O(log n)."
+    with pytest.raises(ValueError, match="équilibre"):
+        require_tree_complexity_premise(
+            "Cet ABR ne peut pas être équilibré. Pourquoi est-il plus efficace ?",
+            answer,
+            "",
+        )
+    with pytest.raises(ValueError, match="équilibre"):
+        require_tree_complexity_premise(
+            "Pourquoi cet ABR est-il plus efficace qu'une liste ?",
+            answer,
+            "Un autre ABR utilisé auparavant est équilibré.",
+        )
+
+
+def test_authoring_prompt_explains_the_balanced_tree_assumption():
+    from Backend.Core.france.pipeline import _prompt, _tasks_for_seed
+
+    prompt = _prompt(_tasks_for_seed(270100)[0], [], 270100, 1, "")
+    assert "O(log n)" in prompt
+    assert "on suppose que cet ABR est équilibré" in prompt
