@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1791036368.8703234,
-    "ast_hash": "05e58f4048af2dfcc72054af6aa21c9e",
+    "mtime": 1791121812.170895,
+    "ast_hash": "6a83ead80e4cbb63495e6480bc92ea9b",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
@@ -1180,7 +1180,7 @@
     "semantic_hash": "ca4140cd1ca0ca98ce3f059703b03d80"
   },
   "Resources/france/nsi/source-register.json": {
-    "mtime": 1791036368.8834867,
+    "mtime": 1791117879.347191,
     "ast_hash": "bb0e800e28ffe8e7c655d70c59e7d16e",
     "semantic_hash": ""
   },
@@ -1780,8 +1780,8 @@
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1791036368.9295278,
-    "ast_hash": "f35e76013e88c1d7ad67d4993495b369",
+    "mtime": 1791121784.8104222,
+    "ast_hash": "215f7e4b55c4fb219bd62fe4a3967633",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -2045,7 +2045,7 @@
     "semantic_hash": ""
   },
   "tests/test_french_benchmark_runner.py": {
-    "mtime": 1791115698.8323622,
+    "mtime": 1791117732.8053102,
     "ast_hash": "4e92833b98f71e421f2213c6ca90545c",
     "semantic_hash": ""
   },
@@ -2060,7 +2060,7 @@
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
-    "mtime": 1791115720.389748,
+    "mtime": 1791117732.8055992,
     "ast_hash": "2db0da5e71af4b28f3793e25737d034b",
     "semantic_hash": ""
   },
@@ -2260,8 +2260,8 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/claims-register.md": {
-    "mtime": 1791036368.8866673,
-    "ast_hash": "530b401621c05927132e3715d16cbd8e",
+    "mtime": 1791120896.3345973,
+    "ast_hash": "7a8a71fc19cdf367ff3db77aeb7f6b65",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/demo-script.md": {
@@ -2330,8 +2330,8 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-evaluation.md": {
-    "mtime": 1791114563.4753823,
-    "ast_hash": "72c2873b8256d94e83106681af5cfe76",
+    "mtime": 1791121206.8339312,
+    "ast_hash": "c9d8b6358fe3f59c6da22d89c3a96274",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-prototype-verification-2026-09-28.md": {

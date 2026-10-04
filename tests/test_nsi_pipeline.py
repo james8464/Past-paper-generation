@@ -46,9 +46,7 @@ class FrenchClient:
             return {
                 "answers": {
                     question["id"]: str(index)
-                    for index, question in enumerate(
-                        candidate["questions"], start=1
-                    )
+                    for index, question in enumerate(candidate["questions"], start=1)
                 },
                 "issues": [],
                 "minutes": 60,
@@ -64,9 +62,7 @@ class FrenchClient:
                 "context_consistent": True,
                 "issues": [],
                 "rationale": "Analyse détaillée de chaque réponse et de son barème.",
-                "question_ids": [
-                    question["id"] for question in candidate["questions"]
-                ],
+                "question_ids": [question["id"] for question in candidate["questions"]],
             }
         task = json.loads(prompt.split("DONNÉES_JSON\n", 1)[1])
         number = task["exercise_id"]
@@ -199,7 +195,9 @@ def test_generation_is_french_scoped_and_resume_does_not_repeat_model_work(tmp_p
             for question in exercise["questions"]
             for code in question["curriculum_codes"]
         }
-        for task, exercise in zip(package["identity"]["blueprint"], package["exercises"], strict=True)
+        for task, exercise in zip(
+            package["identity"]["blueprint"], package["exercises"], strict=True
+        )
     )
     assert package["language_rubric"]["allocation_status"] == (
         "indicative_product_profile"
@@ -371,4 +369,184 @@ def test_previous_generation_text_is_identity_bound_and_rejected_when_reused(tmp
             seed=5,
             checkpoint=tmp_path / "second.json",
             previous_texts=[previous_text],
+        )
+
+
+def test_only_explicit_material_ids_are_recovered_from_omitted_links():
+    from Backend.Core.france.pipeline import bind_explicit_material_ids
+
+    raw = {
+        "materials": [{"id": "map_ville"}, {"id": "road_network"}],
+        "questions": [
+            {"id": "1a", "prompt": "Analyser le graphe `map_ville`."},
+            {"id": "1b", "prompt": "Analyser le graphe map_ville_2."},
+            {"id": "1c", "prompt": "Analyser le graphe G."},
+            {"id": "1d", "prompt": "Utiliser road_network.", "material_ids": []},
+        ],
+    }
+    bound, evidence = bind_explicit_material_ids(raw)
+
+    assert bound["questions"][0]["material_ids"] == ["map_ville"]
+    assert "material_ids" not in bound["questions"][1]
+    assert "material_ids" not in bound["questions"][2]
+    assert bound["questions"][3]["material_ids"] == []
+    assert evidence == [{"question_id": "1a", "material_ids": ["map_ville"]}]
+    assert "material_ids" not in raw["questions"][0]
+
+
+def test_explicit_material_recovery_is_package_bound_and_cannot_hide_drift(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    class OmittedExplicitLinkClient(FrenchClient):
+        def generate_json(self, prompt):
+            result = super().generate_json(prompt)
+            if prompt.startswith("Rédige directement en français académique"):
+                result["questions"][0]["prompt"] += " Voir `support`."
+                del result["questions"][0]["material_ids"]
+            return result
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=OmittedExplicitLinkClient(),
+        seed=5,
+        checkpoint=tmp_path / "checkpoint.json",
+    )
+    assert package["exercises"][0]["questions"][0]["material_ids"] == ["support"]
+    assert package["evidence"][0]["material_bindings"] == [
+        {"question_id": "1a", "material_ids": ["support"]}
+    ]
+    validate_package(package)
+
+    changed = deepcopy(package)
+    changed["evidence"][0]["material_bindings"] = []
+    with pytest.raises(ValueError, match="liaison"):
+        validate_package(changed)
+
+    changed = deepcopy(package)
+    changed["evidence"][0]["candidate"]["questions"][0]["prompt"] = "Voir G."
+    with pytest.raises(ValueError, match="liaison"):
+        validate_package(changed)
+
+    changed = deepcopy(package)
+    changed["evidence"][0]["candidate"]["questions"][0]["material_ids"] = ["support"]
+    changed["evidence"][0]["material_bindings"] = []
+    with pytest.raises(ValueError, match="liaison"):
+        validate_package(changed)
+
+    changed = deepcopy(package)
+    changed["identity"]["prompt_version"] = "fr-nsi-written-2027-v4"
+    for evidence in changed["evidence"]:
+        del evidence["candidate"]
+        del evidence["material_bindings"]
+    with pytest.raises(ValueError, match="historique"):
+        validate_package(changed)
+
+
+def test_legacy_french_package_without_candidate_binding_evidence_remains_readable(
+    tmp_path,
+):
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=FrenchClient(),
+        seed=5,
+        checkpoint=tmp_path / "checkpoint.json",
+    )
+    package["identity"]["prompt_version"] = "fr-nsi-written-2027-v4"
+    package["identity"]["implementation_sha256"] = (
+        "bd1468ca74a1dbe501e5eedc306d26531fb52ff9a6271b20fc13607cbfafbfbb"
+    )
+    for evidence in package["evidence"]:
+        del evidence["candidate"]
+        del evidence["material_bindings"]
+        del evidence["candidate_sha256"]
+    validate_package(package)
+
+
+@pytest.mark.parametrize(
+    "unlinked_prompt",
+    [
+        "En utilisant le graphe G fourni, expliquer le résultat obtenu.",
+        "À partir des arêtes de G, calculer la distance du trajet.",
+        "Lire le graphe pour déterminer un trajet réalisable.",
+    ],
+)
+def test_one_linked_question_cannot_hide_another_unlinked_figure_question(
+    tmp_path, unlinked_prompt
+):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class VagueFigureClient(FrenchClient):
+        def generate_json(self, prompt):
+            result = super().generate_json(prompt)
+            if prompt.startswith("Rédige directement en français académique"):
+                result["questions"][1]["prompt"] = unlinked_prompt
+                result["questions"][1]["material_ids"] = []
+            return result
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    with pytest.raises(ValueError, match="figure non reliée"):
+        generate_assessment(
+            index_path=index,
+            client=VagueFigureClient(),
+            seed=5,
+            checkpoint=tmp_path / "checkpoint.json",
+        )
+
+
+def test_constructing_a_new_graph_does_not_require_link_to_supplied_graph(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class NewGraphClient(FrenchClient):
+        def generate_json(self, prompt):
+            result = super().generate_json(prompt)
+            if prompt.startswith("Rédige directement en français académique"):
+                result["questions"][1]["prompt"] = (
+                    "Construire le graphe des dépendances de votre algorithme."
+                )
+                result["questions"][1]["material_ids"] = []
+            return result
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=NewGraphClient(),
+        seed=5,
+        checkpoint=tmp_path / "checkpoint.json",
+    )
+    assert package["status"] == "unreviewed_draft"
+
+
+def test_unlinked_table_use_is_rejected_when_another_question_links_it(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class VagueTableClient(FrenchClient):
+        def generate_json(self, prompt):
+            result = super().generate_json(prompt)
+            if prompt.startswith("Rédige directement en français académique"):
+                task = json.loads(prompt.split("DONNÉES_JSON\n", 1)[1])
+                if task["required_material_kind"] == "table":
+                    result["questions"][1]["prompt"] = (
+                        "Utiliser le tableau pour calculer la réponse."
+                    )
+                    result["questions"][1]["material_ids"] = []
+            return result
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    with pytest.raises(ValueError, match="figure non reliée"):
+        generate_assessment(
+            index_path=index,
+            client=VagueTableClient(),
+            seed=5,
+            checkpoint=tmp_path / "checkpoint.json",
         )
