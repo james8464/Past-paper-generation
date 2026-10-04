@@ -1,4 +1,63 @@
 import json
+from argparse import Namespace
+from hashlib import sha256
+
+import pytest
+
+
+def _passed_result(tmp_path):
+    identity = {
+        "implementation": "implementation-sha",
+        "reference_index_sha256": "reference-sha",
+        "model": "gemma4:12b",
+        "model_digest": "model-sha",
+        "seed": 270100,
+    }
+    bundle = tmp_path / "bundle"
+    bundle.mkdir()
+    artifacts = {}
+    for role, filename in (
+        ("question_paper", "sujet.pdf"),
+        ("mark_scheme", "corrige.pdf"),
+        ("assessment_package", "assessment.json"),
+    ):
+        content = role.encode()
+        (bundle / filename).write_bytes(content)
+        artifacts[role] = {
+            "file": filename,
+            "sha256": sha256(content).hexdigest(),
+        }
+    manifest = bundle / "manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "assessment": "fr-bac-general-nsi-written-2027",
+                "status": "unreviewed_draft",
+                "identity": {
+                    "implementation_sha256": identity["implementation"],
+                    "model": identity["model"],
+                    "model_digest": identity["model_digest"],
+                    "seed": identity["seed"],
+                },
+                "artifacts": artifacts,
+            }
+        )
+    )
+    result = tmp_path / "result.json"
+    result.write_text(
+        json.dumps(
+            {
+                "status": "passed",
+                "identity": identity,
+                "artifacts": {
+                    "manifest": "bundle/manifest.json",
+                    "manifest_sha256": sha256(manifest.read_bytes()).hexdigest(),
+                },
+            }
+        )
+    )
+    return result, identity, bundle
 
 
 def test_french_benchmark_plan_has_thirty_exercises_per_model():
@@ -14,25 +73,72 @@ def test_french_benchmark_plan_has_thirty_exercises_per_model():
 def test_french_benchmark_resume_requires_exact_identity(tmp_path):
     from tools.french_nsi_benchmark import accepted_result
 
-    result = tmp_path / "result.json"
-    result.write_text(
-        json.dumps(
-            {
-                "status": "passed",
-                "identity": {"implementation": "abc", "model_digest": "model"},
-                "artifacts": {"manifest": "bundle/manifest.json"},
-            }
-        )
-    )
-    (tmp_path / "bundle").mkdir()
-    (tmp_path / "bundle" / "manifest.json").write_text("{}")
+    result, identity, _ = _passed_result(tmp_path)
+    assert accepted_result(result, identity)
+    assert not accepted_result(result, {**identity, "implementation": "changed"})
 
-    assert accepted_result(
-        result, {"implementation": "abc", "model_digest": "model"}
+
+def test_french_benchmark_resume_rejects_modified_artifact(tmp_path):
+    from tools.french_nsi_benchmark import accepted_result
+
+    result, identity, bundle = _passed_result(tmp_path)
+    (bundle / "sujet.pdf").write_bytes(b"changed paper")
+    assert not accepted_result(result, identity)
+
+
+def test_french_benchmark_resume_rejects_modified_manifest(tmp_path):
+    from tools.french_nsi_benchmark import accepted_result
+
+    result, identity, bundle = _passed_result(tmp_path)
+    manifest = bundle / "manifest.json"
+    value = json.loads(manifest.read_text())
+    value["identity"]["model_digest"] = "different-model"
+    manifest.write_text(json.dumps(value))
+    assert not accepted_result(result, identity)
+
+
+def test_french_benchmark_stops_before_model_call_for_corrupt_passed_result(
+    tmp_path, monkeypatch
+):
+    from tools import french_nsi_benchmark as benchmark
+
+    reference_index = tmp_path / "references.sqlite"
+    reference_index.write_bytes(b"reference index")
+    output = tmp_path / "output"
+    item_root = output / "runs" / "gemma4-12b" / "model-sha" / "270100"
+    item_root.mkdir(parents=True)
+    result, identity, bundle = _passed_result(item_root)
+    value = json.loads(result.read_text())
+    value["identity"]["reference_index_sha256"] = sha256(
+        reference_index.read_bytes()
+    ).hexdigest()
+    result.write_text(json.dumps(value))
+    (bundle / "sujet.pdf").write_bytes(b"changed paper")
+
+    monkeypatch.setattr(
+        benchmark, "implementation_identity", lambda: identity["implementation"]
     )
-    assert not accepted_result(
-        result, {"implementation": "changed", "model_digest": "model"}
+    monkeypatch.setattr(
+        benchmark, "model_identity", lambda *_: identity["model_digest"]
     )
+    monkeypatch.setattr(benchmark, "hardware_record", lambda: {})
+
+    def unexpected_model_call(*_args, **_kwargs):
+        pytest.fail("The model must not rerun over a corrupted passed result")
+
+    monkeypatch.setattr(benchmark, "run_backend", unexpected_model_call)
+    args = Namespace(
+        reference_index=reference_index,
+        output=output,
+        models="gemma4:12b",
+        base_seed=270100,
+        papers_per_model=1,
+        timeout_seconds=30,
+        ollama_url="http://localhost:11434",
+        retry_failed=False,
+    )
+    with pytest.raises(ValueError, match=r"preuve.*intégrité"):
+        benchmark.run_plan(args)
 
 
 def test_french_benchmark_summary_preserves_repairs_and_failures(tmp_path):

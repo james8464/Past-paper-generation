@@ -64,8 +64,60 @@ def accepted_result(path: Path, identity: dict[str, Any]) -> bool:
     value = _load_json(path)
     if not value or value.get("status") != "passed" or value.get("identity") != identity:
         return False
-    manifest = value.get("artifacts", {}).get("manifest")
-    return isinstance(manifest, str) and (path.parent / manifest).is_file()
+    recorded_artifacts = value.get("artifacts")
+    if not isinstance(recorded_artifacts, dict):
+        return False
+    manifest_name = recorded_artifacts.get("manifest")
+    manifest_sha256 = recorded_artifacts.get("manifest_sha256")
+    if not isinstance(manifest_name, str) or not isinstance(manifest_sha256, str):
+        return False
+    manifest_path = path.parent / manifest_name
+    manifest = _load_json(manifest_path)
+    if not manifest or manifest.get("schema_version") != 1:
+        return False
+    try:
+        if _sha256(manifest_path) != manifest_sha256:
+            return False
+    except OSError:
+        return False
+    if (
+        manifest.get("assessment") != ASSESSMENT
+        or manifest.get("status") != "unreviewed_draft"
+    ):
+        return False
+    manifest_identity = manifest.get("identity")
+    if not isinstance(manifest_identity, dict) or any(
+        manifest_identity.get(manifest_key) != identity.get(result_key)
+        for manifest_key, result_key in (
+            ("implementation_sha256", "implementation"),
+            ("model", "model"),
+            ("model_digest", "model_digest"),
+            ("seed", "seed"),
+        )
+    ):
+        return False
+    artifacts = manifest.get("artifacts")
+    if not isinstance(artifacts, dict) or not {
+        "question_paper", "mark_scheme", "assessment_package"
+    } <= artifacts.keys():
+        return False
+    for artifact in artifacts.values():
+        if not isinstance(artifact, dict):
+            return False
+        filename, expected_hash = artifact.get("file"), artifact.get("sha256")
+        if (
+            not isinstance(filename, str)
+            or Path(filename).name != filename
+            or not isinstance(expected_hash, str)
+            or not re.fullmatch(r"[a-f0-9]{64}", expected_hash)
+        ):
+            return False
+        try:
+            if _sha256(manifest_path.parent / filename) != expected_hash:
+                return False
+        except OSError:
+            return False
+    return True
 
 
 def _events(stdout: str) -> list[dict[str, Any]]:
@@ -238,6 +290,11 @@ def run_plan(args: argparse.Namespace) -> int:
             results.append(_load_json(result_path))
             continue
         previous = _load_json(result_path)
+        if previous and previous.get("status") == "passed":
+            raise ValueError(
+                "Une preuve acceptée a perdu son intégrité; conserver le dossier "
+                "et enquêter avant toute nouvelle génération"
+            )
         if previous and previous.get("status") != "passed" and not args.retry_failed:
             results.append(previous)
             continue
@@ -292,7 +349,10 @@ def run_plan(args: argparse.Namespace) -> int:
             "identity": identity,
             "exercise_count": item.exercise_count,
             "attempt_directory": attempt.name,
-            "artifacts": {"manifest": relative_manifest},
+            "artifacts": {
+                "manifest": relative_manifest,
+                "manifest_sha256": _sha256(manifest) if manifest is not None else None,
+            },
             "completed_at": datetime.now(UTC).isoformat(),
         }
         _atomic_json(result_path, result)
