@@ -95,9 +95,13 @@ slice binds only exact figure identifiers and records immutable question-plan
 assembly. The v9 source slice adds an answer-free, item-level AI alignment
 decision for every planned capability, rejects missing or contradictory
 decisions, and binds those decisions to the exact candidate view on replay.
-This gate has regression tests but no live model evidence yet. A model may
-still make a wrong positive judgement; bounded targeted repair and independent
-teacher review remain outstanding.
+The v9 source also permits at most two question-only repairs per exercise
+draft, preserving the original and replacement payloads, rerunning the full
+exercise's structural, deterministic, originality, alignment, blind-solver
+and review gates, and replaying the repair chain on package load. Cancellation
+records the interrupted draft without partial acceptance. These safeguards
+have regression tests but no live model evidence yet. A model may still make a
+wrong positive judgement; independent teacher review remains outstanding.
 
 ## Reproducible runs
 

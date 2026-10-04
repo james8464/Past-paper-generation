@@ -128,3 +128,13 @@ def test_alignment_transport_requires_per_question_evidence():
         "issues",
     }
     assert budget >= 2048
+
+
+def test_repair_transport_requires_material_and_verification_contracts():
+    from Backend.Core.france.provider import response_policy
+
+    schema, budget = response_policy(
+        'Répare uniquement la question\nDONNÉES_JSON\n{"question":{"id":"1a"}}'
+    )
+    assert {"material_ids", "verification"} <= set(schema["required"])
+    assert budget >= 2048

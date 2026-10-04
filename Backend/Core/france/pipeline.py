@@ -27,8 +27,10 @@ from Backend.Core.france.nsi import (
 )
 from Backend.Core.france.originality import screen_originality
 from Backend.Core.france.question_review import (
+    alignment_failures,
     alignment_prompt,
     check_question_alignment,
+    repair_question_prompt,
 )
 from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.france.verification import verify_contract
@@ -356,6 +358,44 @@ def _assemble_planned_exercise(
     return NSIExercise.model_validate(assembled), records
 
 
+def _replay_targeted_repairs(evidence: dict, final_candidate: dict) -> None:
+    """Bind a repaired candidate to its original and at most two raw replacements."""
+    repairs = evidence.get("targeted_repairs")
+    initial = evidence.get("initial_candidate")
+    if not isinstance(repairs, list) or len(repairs) > 2:
+        raise ValueError("Historique de réparation ciblée invalide")
+    if not repairs:
+        if initial is not None:
+            raise ValueError("Brouillon initial superflu sans réparation")
+        return
+    if not isinstance(initial, dict):
+        raise ValueError("Brouillon initial de réparation manquant")
+    candidate = deepcopy(initial)
+    for repair in repairs:
+        if not isinstance(repair, dict) or repair.get("before_sha256") != digest(candidate):
+            raise ValueError("Chaîne de réparation ciblée invalide")
+        questions = candidate.get("questions")
+        if not isinstance(questions, list):
+            raise ValueError("Questions de réparation manquantes")
+        matches = [
+            index
+            for index, question in enumerate(questions)
+            if isinstance(question, dict) and question.get("id") == repair.get("question_id")
+        ]
+        replacement = repair.get("replacement")
+        if (
+            len(matches) != 1
+            or not isinstance(replacement, dict)
+            or replacement.get("id") != repair["question_id"]
+        ):
+            raise ValueError("Question de réparation ciblée invalide")
+        candidate["questions"][matches[0]] = deepcopy(replacement)
+        if repair.get("after_sha256") != digest(candidate):
+            raise ValueError("Empreinte de réparation ciblée invalide")
+    if candidate != final_candidate:
+        raise ValueError("La réparation ciblée ne reproduit pas le brouillon accepté")
+
+
 def require_link_for_material_mentions(exercise: NSIExercise) -> None:
     """Reject deictic figure references that have no traceable structured input."""
     kinds = {material.kind for material in exercise.materials}
@@ -582,6 +622,20 @@ def _check_exercise_plan(exercise: NSIExercise, task: dict, key: str) -> None:
         )
 
 
+def _prepare_candidate(raw, task, key, references, previous_texts):
+    """Recheck the entire affected exercise after every targeted content change."""
+    require_authoring_fields(raw)
+    bound, bindings = bind_explicit_material_ids(raw)
+    exercise, assembly = _assemble_planned_exercise(bound, task, raw)
+    require_link_for_material_mentions(exercise)
+    _check_exercise_plan(exercise, task, key)
+    checks = [verify_contract(question.verification) for question in exercise.questions]
+    if any(check["state"] == "failed" for check in checks):
+        raise ValueError("Vérification déterministe refusée")
+    originality = _originality(exercise, references, previous_texts)
+    return exercise, bindings, assembly, checks, originality
+
+
 def generate_assessment(
     *,
     index_path: Path,
@@ -672,20 +726,9 @@ def generate_assessment(
                         )
                     )
                     record["candidate"] = raw
-                    require_authoring_fields(raw)
-                    bound, bindings = bind_explicit_material_ids(raw)
-                    record["material_bindings"] = bindings
-                    exercise, assembly = _assemble_planned_exercise(
-                        bound, task, raw
-                    )
-                    require_link_for_material_mentions(exercise)
-                    _check_exercise_plan(exercise, task, key)
-                    checks = [
-                        verify_contract(question.verification)
-                        for question in exercise.questions
-                    ]
-                    if any(check["state"] == "failed" for check in checks):
-                        raise ValueError("Vérification déterministe refusée")
+                    initial_candidate = deepcopy(raw)
+                    repairs = []
+                    record["targeted_repairs"] = repairs
                     within_paper_history = [
                         exercise_candidate_text(
                             NSIExercise.model_validate(
@@ -694,16 +737,60 @@ def generate_assessment(
                         )
                         for previous_key in sorted(state["accepted"])
                     ]
-                    originality = _originality(
-                        exercise,
-                        references[position],
-                        [*originality_history, *within_paper_history],
-                    )
-                    alignment = client.generate_json(
-                        alignment_prompt(exercise, task, references[position])
-                    )
-                    record["question_alignment"] = alignment
-                    check_question_alignment(exercise, task, alignment)
+                    for repair_round in range(3):
+                        exercise, bindings, assembly, checks, originality = (
+                            _prepare_candidate(
+                                raw,
+                                task,
+                                key,
+                                references[position],
+                                [*originality_history, *within_paper_history],
+                            )
+                        )
+                        record["material_bindings"] = bindings
+                        alignment = client.generate_json(
+                            alignment_prompt(exercise, task, references[position])
+                        )
+                        record["question_alignment"] = alignment
+                        failures = alignment_failures(exercise, task, alignment)
+                        if not failures:
+                            break
+                        if repair_round == 2:
+                            check_question_alignment(exercise, task, alignment)
+                        question_id = failures[0]
+                        question_index = next(
+                            index
+                            for index, question in enumerate(raw["questions"])
+                            if question["id"] == question_id
+                        )
+                        reviewer_item = alignment["questions"][question_index]
+                        replacement = client.generate_json(
+                            repair_question_prompt(
+                                exercise,
+                                task,
+                                raw["questions"][question_index],
+                                reviewer_item,
+                            )
+                        )
+                        if (
+                            not isinstance(replacement, dict)
+                            or replacement.get("id") != question_id
+                        ):
+                            raise ValueError("La réparation a changé l'identité de la question")
+                        before = digest(raw)
+                        revised = deepcopy(raw)
+                        revised["questions"][question_index] = replacement
+                        repairs.append(
+                            {
+                                "question_id": question_id,
+                                "before_sha256": before,
+                                "replacement": replacement,
+                                "after_sha256": digest(revised),
+                                "review": alignment,
+                            }
+                        )
+                        raw = revised
+                    record["final_candidate"] = raw
                     solution = client.generate_json(solver_prompt(exercise))
                     record["independent_solution"] = solution
                     review = client.generate_json(
@@ -717,6 +804,8 @@ def generate_assessment(
                             "exercise_sha256": digest(exercise.model_dump(mode="json")),
                             "candidate": raw,
                             "candidate_sha256": digest(raw),
+                            "initial_candidate": initial_candidate if repairs else None,
+                            "targeted_repairs": repairs,
                             "material_bindings": bindings,
                             "plan_assembly": assembly,
                             "references": references[position],
@@ -733,6 +822,12 @@ def generate_assessment(
                     state["accepted"][key] = accepted
                     atomic_json(checkpoint, state)
                     break
+                except KeyboardInterrupt:
+                    state["failed_attempts"].append(
+                        {**record, "error": "Génération annulée", "cancelled": True}
+                    )
+                    atomic_json(checkpoint, state)
+                    raise
                 except (ValueError, TypeError, KeyError) as error:
                     failure = str(error)
                     state["failed_attempts"].append({**record, "error": failure})
@@ -848,6 +943,8 @@ def validate_package(package: dict):
             raise ValueError("Exercise evidence hash mismatch")
         if identity["prompt_version"] != "fr-nsi-written-2027-v4":
             raw_candidate = evidence.get("candidate")
+            if identity["prompt_version"] == PROMPT_VERSION:
+                _replay_targeted_repairs(evidence, raw_candidate)
             if identity["prompt_version"] in {
                 PROMPT_VERSION,
                 "fr-nsi-written-2027-v8",
