@@ -98,10 +98,12 @@ decisions, and binds those decisions to the exact candidate view on replay.
 The v9 source also permits at most two question-only repairs per exercise
 draft, preserving the original and replacement payloads, rerunning the full
 exercise's structural, deterministic, originality, alignment, blind-solver
-and review gates, and replaying the repair chain on package load. Cancellation
-records the interrupted draft without partial acceptance. These safeguards
-have regression tests but no live model evidence yet. A model may still make a
-wrong positive judgement; independent teacher review remains outstanding.
+and review gates, and replaying the repair chain on package load. Rejected
+repair responses are retained before validation. Keyboard and app-signal
+cancellation record the interrupted draft without partial acceptance. These
+safeguards have regression tests but no live model evidence yet. A model may
+still make a wrong positive judgement; independent teacher review remains
+outstanding.
 
 ## Reproducible runs
 

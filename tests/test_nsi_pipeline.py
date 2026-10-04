@@ -510,13 +510,16 @@ def test_targeted_repair_is_bounded_and_preserves_failed_drafts(tmp_path):
     assert state["accepted"] == {}
 
 
-def test_cancellation_during_repair_keeps_evidence_and_no_partial_acceptance(tmp_path):
+@pytest.mark.parametrize("cancel_type", [KeyboardInterrupt, InterruptedError])
+def test_cancellation_during_repair_keeps_evidence_and_no_partial_acceptance(
+    tmp_path, cancel_type
+):
     from Backend.Core.france.pipeline import generate_assessment
 
     class InterruptingClient(FrenchClient):
         def generate_json(self, prompt):
             if prompt.startswith("Répare uniquement la question"):
-                raise KeyboardInterrupt()
+                raise cancel_type("Création annulée")
             response = super().generate_json(prompt)
             if prompt.startswith("Contrôle indépendant des capacités"):
                 response["questions"][0]["aligned"] = False
@@ -526,7 +529,7 @@ def test_cancellation_during_repair_keeps_evidence_and_no_partial_acceptance(tmp
     index = tmp_path / "sources.sqlite"
     make_index(index)
     checkpoint = tmp_path / "checkpoint.json"
-    with pytest.raises(KeyboardInterrupt):
+    with pytest.raises(cancel_type):
         generate_assessment(
             index_path=index,
             client=InterruptingClient(),
@@ -546,6 +549,89 @@ def test_cancellation_during_repair_keeps_evidence_and_no_partial_acceptance(tmp
     )
     assert len(resumed["exercises"]) == 3
     assert json.loads(checkpoint.read_text())["failed_attempts"][0]["cancelled"]
+
+
+def test_invalid_repair_response_is_recorded_before_rejection(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class WrongIdentityClient(FrenchClient):
+        def generate_json(self, prompt):
+            if prompt.startswith("Répare uniquement la question"):
+                self.calls += 1
+                request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+                return {**request["question"], "id": "9z"}
+            response = super().generate_json(prompt)
+            if prompt.startswith("Contrôle indépendant des capacités"):
+                response["questions"][0]["aligned"] = False
+                response["questions"][0]["issues"] = ["Capacité non évaluée."]
+            return response
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "checkpoint.json"
+    with pytest.raises(ValueError, match="refusé"):
+        generate_assessment(
+            index_path=index,
+            client=WrongIdentityClient(),
+            seed=5,
+            checkpoint=checkpoint,
+        )
+    failed = json.loads(checkpoint.read_text())["failed_attempts"]
+    assert len(failed) == 3
+    assert all(
+        item["repair_responses"][0]["response"]["id"] == "9z" for item in failed
+    )
+
+
+def test_repair_invalidates_downstream_solution_dependencies(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class DependencyClient(FrenchClient):
+        def generate_json(self, prompt):
+            if prompt.startswith("Répare uniquement la question"):
+                self.calls += 1
+                request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+                return {
+                    **request["question"],
+                    "prompt": "Version corrigée : " + request["question"]["prompt"],
+                }
+            response = super().generate_json(prompt)
+            if prompt.startswith("Contrôle indépendant des capacités"):
+                request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+                if (
+                    request["exercise"]["id"] == "1"
+                    and "Version corrigée"
+                    not in request["exercise"]["questions"][0]["prompt"]
+                ):
+                    response["questions"][0]["aligned"] = False
+                    response["questions"][0]["issues"] = ["Capacité non évaluée."]
+            if prompt.startswith("Résous indépendamment"):
+                request = json.loads(prompt.split("\n", 1)[1])
+                if request["id"] == "1" and request["questions"][0]["prompt"].startswith(
+                    "Version corrigée"
+                ):
+                    response["issues"] = [
+                        "La réponse de 1b dépend de l'ancien résultat de 1a."
+                    ]
+            return response
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "checkpoint.json"
+    with pytest.raises(ValueError, match="refusé"):
+        generate_assessment(
+            index_path=index,
+            client=DependencyClient(),
+            seed=5,
+            checkpoint=checkpoint,
+        )
+    state = json.loads(checkpoint.read_text(encoding="utf-8"))
+    assert state["accepted"] == {}
+    assert len(state["failed_attempts"]) == 3
+    assert all(item["targeted_repairs"] for item in state["failed_attempts"])
+    assert all(
+        item["independent_solution"]["issues"] for item in state["failed_attempts"]
+    )
 
 
 def test_failed_review_keeps_attempt_evidence_and_never_accepts(tmp_path):

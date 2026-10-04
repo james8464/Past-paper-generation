@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1791132960.8745923,
-    "ast_hash": "3791b5b1d3aae99315e6224f84474077",
+    "mtime": 1791134020.162071,
+    "ast_hash": "4b8de2d147216aeb42e40ed826b1f261",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791129181.5460818,
-    "ast_hash": "69e8e81a3d133a67c4f5a586eb0d647d",
+    "mtime": 1791133509.0464866,
+    "ast_hash": "d9cb4b85e8daa11e3695d4c13192c4ae",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1780,8 +1780,8 @@
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1791133006.5706058,
-    "ast_hash": "1292bb3e94cb1ddbad80cd64b9933fc5",
+    "mtime": 1791134045.2174957,
+    "ast_hash": "b052b7fe720937dd3efa3f76cdac98f3",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -2330,8 +2330,8 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-evaluation.md": {
-    "mtime": 1791133359.4218445,
-    "ast_hash": "a7d381a54be7aa9b04f183999a505531",
+    "mtime": 1791134100.6146567,
+    "ast_hash": "93089600cff113560fb43c473f1f759c",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-prototype-verification-2026-09-28.md": {

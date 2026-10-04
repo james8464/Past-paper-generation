@@ -729,6 +729,7 @@ def generate_assessment(
                     initial_candidate = deepcopy(raw)
                     repairs = []
                     record["targeted_repairs"] = repairs
+                    record["repair_responses"] = []
                     within_paper_history = [
                         exercise_candidate_text(
                             NSIExercise.model_validate(
@@ -771,6 +772,9 @@ def generate_assessment(
                                 raw["questions"][question_index],
                                 reviewer_item,
                             )
+                        )
+                        record["repair_responses"].append(
+                            {"question_id": question_id, "response": replacement}
                         )
                         if (
                             not isinstance(replacement, dict)
@@ -822,9 +826,9 @@ def generate_assessment(
                     state["accepted"][key] = accepted
                     atomic_json(checkpoint, state)
                     break
-                except KeyboardInterrupt:
+                except (KeyboardInterrupt, InterruptedError) as error:
                     state["failed_attempts"].append(
-                        {**record, "error": "Génération annulée", "cancelled": True}
+                        {**record, "error": str(error), "cancelled": True}
                     )
                     atomic_json(checkpoint, state)
                     raise
