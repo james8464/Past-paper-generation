@@ -62,9 +62,11 @@ The pinned Gemma 4 12B live campaign accepted 0 of 10 complete papers; it is
 failure evidence, not a successful qualification or a model recommendation. A
 teacher-approved practice release still requires a revised generation approach,
 new live evidence and independent human review.
-Three additional one-paper diagnostics on 4 October each accepted 0 of 1; their
-new raw failures are retained locally. The latest stricter authoring contract
-has not passed a live paper. A source-backed authoring redesign is underway;
+Four additional one-paper diagnostics on 4 October each accepted 0 of 1; their
+new raw failures are retained locally. The fourth also exposed an exercise that
+passed automated review despite invalid content, so structural acceptance alone
+cannot be claimed as educational readiness. The latest authoring contract has
+not passed a live paper. A source-backed authoring redesign is underway;
 the application must present the generator as a prototype, not as a validated
 classroom-ready paper maker.
 

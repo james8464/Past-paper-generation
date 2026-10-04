@@ -76,6 +76,23 @@ gates are recorded in
 `docs/superpowers/specs/2026-10-04-french-nsi-authoring-redesign.md`.
 This slice has not passed a live paper and is not a model recommendation.
 
+The source-pinned v7 diagnostic also accepted 0/1 complete papers (seed 270100,
+implementation `20c0a8fa1f53825d6598ae1f1af59a1cee2ddbc946c4a0fd7c49233e79e0bcdf`,
+model digest `4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c`).
+The raw checkpoint and result are retained under
+`tmp/qualification-fr-nsi-2027/diagnostic-20261004-v7-gemma4/`. All three
+attempts at exercise 2 failed because its questions did not link the declared
+table; its SQL drafts also described relations not supplied as structured
+data. Exercise 1 was accepted by automated gates but manually rejected: it
+described an invalid binary-search tree, posed an underspecified full-function
+task for one point, and had a BFS debugging answer/marking mismatch. All six
+question-level deterministic checks were unresolved, while the AI review
+reported no issues. No PDF was produced. This is a false-positive defect in
+automated content review, tracked in GitHub issue #26, not a paper pass. The v8
+slice binds only exact figure identifiers and records immutable question-plan
+assembly; question-level semantic alignment and independent teacher review
+remain outstanding.
+
 ## Reproducible runs
 
 Pin the repository commit, registry/prompt version, full source hashes and split,
