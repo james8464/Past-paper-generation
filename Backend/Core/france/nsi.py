@@ -342,14 +342,36 @@ class NSIExercise(BaseModel):
         )
 
 
+AUTHORING_REQUIRED_QUESTION_FIELDS = ("material_ids", "verification")
+
+
 def authoring_schema() -> dict:
     """Require generation-only fields without changing legacy package readers."""
     schema = NSIExercise.model_json_schema()
     schema["required"].append("materials")
     schema["properties"]["materials"]["minItems"] = 1
     question = schema["$defs"]["NSIQuestion"]
-    question["required"].extend(("material_ids", "verification"))
+    question["required"].extend(AUTHORING_REQUIRED_QUESTION_FIELDS)
     return schema
+
+
+def require_authoring_fields(candidate: dict) -> None:
+    """Reject omitted generation fields before legacy-compatible defaults apply."""
+    if (
+        not isinstance(candidate, dict)
+        or not isinstance(candidate.get("materials"), list)
+        or not candidate["materials"]
+    ):
+        raise ValueError("Le brouillon doit fournir materials non vide")
+    questions = candidate.get("questions")
+    if not isinstance(questions, list):
+        raise ValueError("Le brouillon doit fournir questions")
+    for question in questions:
+        if not isinstance(question, dict):
+            raise ValueError("Une question du brouillon est invalide")
+        for field in AUTHORING_REQUIRED_QUESTION_FIELDS:
+            if field not in question:
+                raise ValueError(f"La question doit fournir {field}")
 
 
 def solver_prompt(exercise: NSIExercise) -> str:

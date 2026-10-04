@@ -180,13 +180,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/nsi.py": {
-    "mtime": 1791123084.9769075,
-    "ast_hash": "e6a5943769ca902e9cf465416ae0e31d",
+    "mtime": 1791123746.5248368,
+    "ast_hash": "876be31706ff0a282f6fc704e170388a",
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1791122926.2190554,
-    "ast_hash": "c264da046f1f79508152228c0e10845c",
+    "mtime": 1791123737.4740255,
+    "ast_hash": "82683e878dbe09bc6c670b3a608c82ca",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
@@ -1780,8 +1780,8 @@
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1791122980.8077762,
-    "ast_hash": "d945a74f73f4dfd2ee4812a538b15bca",
+    "mtime": 1791124216.8120286,
+    "ast_hash": "344b9a9389b8164978a2d20c8e3bba3f",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {

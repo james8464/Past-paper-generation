@@ -20,6 +20,7 @@ from Backend.Core.france.nsi import (
     LANGUAGE_RUBRIC_2027,
     NSIExercise,
     authoring_schema,
+    require_authoring_fields,
     solver_prompt,
 )
 from Backend.Core.france.originality import screen_originality
@@ -450,6 +451,7 @@ def generate_assessment(
                         )
                     )
                     record["candidate"] = raw
+                    require_authoring_fields(raw)
                     bound, bindings = bind_explicit_material_ids(raw)
                     record["material_bindings"] = bindings
                     exercise = NSIExercise.model_validate(bound)
@@ -644,6 +646,8 @@ def validate_package(package: dict):
             raise ValueError("Exercise evidence hash mismatch")
         if identity["prompt_version"] != "fr-nsi-written-2027-v4":
             raw_candidate = evidence.get("candidate")
+            if identity["prompt_version"] == PROMPT_VERSION:
+                require_authoring_fields(raw_candidate)
             bound, bindings = bind_explicit_material_ids(raw_candidate)
             if (
                 not isinstance(raw_candidate, dict)
