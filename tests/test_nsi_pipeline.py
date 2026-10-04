@@ -1513,6 +1513,27 @@ def test_breadth_first_search_false_claim_can_be_the_question_to_refute():
     )
 
 
+def test_early_return_on_repeat_can_really_stop_breadth_first_search():
+    from Backend.Core.france.pipeline import require_algorithm_premises
+
+    prompt = (
+        "```python\n"
+        "while file:\n"
+        "    sommet = file.pop(0)\n"
+        "    if sommet in visites:\n"
+        "        return visites\n"
+        "    if sommet not in visites:\n"
+        "        visites.append(sommet)\n"
+        "        file.extend(adj[sommet])\n"
+        "```\n"
+        "Le programme s'arrête prématurément si une boucle existe. "
+        "Expliquez la faute."
+    )
+    require_algorithm_premises(
+        prompt, "Le return quitte la fonction dès qu'un sommet est revu."
+    )
+
+
 def test_tree_constructor_must_be_defined_in_candidate_facing_material():
     from Backend.Core.france.pipeline import require_tree_constructor_context
 
@@ -1529,6 +1550,17 @@ def test_tree_constructor_must_be_defined_in_candidate_facing_material():
         answer,
         "Un ABR indexe les incidents.",
     )
+
+
+def test_merely_naming_tree_constructor_does_not_define_its_api():
+    from Backend.Core.france.pipeline import require_tree_constructor_context
+
+    with pytest.raises(ValueError, match="Noeud"):
+        require_tree_constructor_context(
+            "Utilisez Noeud(valeur) pour créer un nouveau nœud.",
+            "return Noeud(valeur)",
+            "Un ABR indexe les incidents.",
+        )
 
 
 def test_false_breadth_first_debug_premise_cannot_be_accepted(tmp_path):
@@ -1594,3 +1626,14 @@ def test_tree_logarithmic_advantage_needs_a_visible_balance_assumption():
         answer,
         "",
     )
+
+
+def test_negated_tree_balance_is_not_a_logarithmic_premise():
+    from Backend.Core.france.pipeline import require_tree_complexity_premise
+
+    with pytest.raises(ValueError, match="équilibre"):
+        require_tree_complexity_premise(
+            "Cet ABR non équilibré est-il plus efficace qu'une liste ?",
+            "La recherche coûte O(log n).",
+            "",
+        )

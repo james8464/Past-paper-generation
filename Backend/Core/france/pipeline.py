@@ -1,5 +1,6 @@
 """Source-scoped French authoring with hash-bound reviews and resumable drafts."""
 
+import ast
 import json
 import os
 import re
@@ -537,6 +538,16 @@ def require_algorithm_premises(prompt: str, answer: str) -> None:
         return
     blocks = re.findall(r"```(?:python)?\s*\n(.*?)```", prompt, re.DOTALL | re.I)
     for code in blocks:
+        try:
+            tree = ast.parse(code)
+        except SyntaxError:
+            continue
+        loop_has_exit = any(
+            isinstance(child, (ast.Return, ast.Break, ast.Raise))
+            for loop in ast.walk(tree)
+            if isinstance(loop, ast.While)
+            for child in ast.walk(loop)
+        )
         if all(
             re.search(pattern, code)
             for pattern in (
@@ -546,7 +557,7 @@ def require_algorithm_premises(prompt: str, answer: str) -> None:
                 r"\bvisites\.append\(sommet\)",
                 r"\bfile\.extend\(adj\[sommet\]\)",
             )
-        ) and not re.search(r"\b(?:break|raise)\b|\bfile\s*=\s*\[\]", code):
+        ) and not loop_has_exit and not re.search(r"\bfile\s*=\s*\[\]", code):
             raise ValueError(
                 "La prémisse du parcours en largeur attribue à tort un arrêt "
                 "prématuré à une boucle"
@@ -558,7 +569,11 @@ def require_tree_constructor_context(prompt: str, answer: str, context: str) -> 
     if not re.search(r"\bNoeud\s*\(", answer):
         return
     visible = context + "\n" + prompt
-    if not re.search(r"\b(?:class\s+Noeud\b|Noeud\s*\([^)]*\))", visible):
+    if not re.search(
+        r"\b(?:class\s+Noeud\b|constructeur\s+Noeud\s*\([^)]*\))",
+        visible,
+        re.IGNORECASE,
+    ):
         raise ValueError("Le constructeur Noeud du corrigé n'est pas défini dans le sujet")
 
 
@@ -570,7 +585,10 @@ def require_tree_complexity_premise(prompt: str, answer: str, context: str) -> N
         and re.search(r"\blog\s*n\b", answer, re.I)
     ):
         return
-    if not re.search(r"\béquilibré\b", context + "\n" + prompt, re.I):
+    visible = context + "\n" + prompt
+    if re.search(r"\b(?:non|pas|jamais)\s+équilibré\b|\bdéséquilibré\b", visible, re.I) or not re.search(
+        r"\béquilibré\b", visible, re.I
+    ):
         raise ValueError(
             "L'avantage logarithmique de l'ABR suppose un équilibre non établi"
         )
