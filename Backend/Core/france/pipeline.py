@@ -599,11 +599,14 @@ def require_tree_complexity_premise(prompt: str, answer: str, context: str) -> N
         and re.search(r"\blog\s*n\b", answer, re.I)
     ):
         return
-    balance_terms = r"\b(?:équilibré|déséquilibré)\b"
-    premise = prompt if re.search(balance_terms, prompt, re.I) else context
-    if re.search(r"\b(?:non|pas|jamais)\s+équilibré\b|\bdéséquilibré\b", premise, re.I) or not re.search(
-        r"\béquilibré\b", premise, re.I
-    ):
+    states = list(
+        re.finditer(
+            r"\b(?:(non|pas|jamais)\s+)?(équilibré|déséquilibré)\b",
+            context + "\n" + prompt,
+            re.IGNORECASE,
+        )
+    )
+    if not states or states[-1].group(1) or states[-1].group(2).lower() != "équilibré":
         raise ValueError(
             "L'avantage logarithmique de l'ABR suppose un équilibre non établi"
         )

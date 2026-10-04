@@ -1666,3 +1666,14 @@ def test_current_balanced_tree_premise_overrides_earlier_unbalanced_case():
         "La recherche dans cet arbre équilibré coûte O(log n).",
         "La question précédente portait sur un ABR non équilibré.",
     )
+
+
+def test_current_question_can_transition_from_unbalanced_to_balanced_tree():
+    from Backend.Core.france.pipeline import require_tree_complexity_premise
+
+    require_tree_complexity_premise(
+        "Après un ABR non équilibré, on suppose maintenant cet ABR équilibré. "
+        "Pourquoi est-il plus efficace ?",
+        "Pour un arbre équilibré, la recherche coûte O(log n).",
+        "",
+    )
