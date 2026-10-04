@@ -1323,3 +1323,148 @@ def test_unlinked_table_use_is_rejected_when_another_question_links_it(tmp_path)
             seed=5,
             checkpoint=tmp_path / "checkpoint.json",
         )
+
+
+@pytest.mark.parametrize("field", ["prompt", "answer"])
+def test_sql_questions_cannot_name_relations_absent_from_supplied_materials(field):
+    from Backend.Core.france.nsi import NSIExercise
+    from Backend.Core.france.pipeline import require_declared_relations
+
+    raw = FrenchClient().generate_json(
+        'DONNÉES_JSON\n{"exercise_id":"2","topics":["bases-donnees","langages-programmation"],'
+        '"minutes":70,"technical_points":"6","required_material_kind":"table",'
+        '"question_blueprint":['
+        + ",".join(
+            json.dumps(
+                {
+                    "id": f"2{chr(97 + index)}",
+                    "points": "1",
+                    "estimated_minutes": minutes,
+                    "operation": operation,
+                    "difficulty": difficulty,
+                    "required_curriculum_code": code,
+                }
+            )
+            for index, (minutes, operation, difficulty, code) in enumerate(
+                [
+                    (10, "apply", 2, "BDD-ANOMALIES"),
+                    (10, "analyse", 2, "BDD-SQL-SELECT"),
+                    (10, "debug", 3, "BDD-SQL-SELECT"),
+                    (10, "apply", 3, "BDD-SQL-MUTATION"),
+                    (15, "design", 4, "LP-DEBUG"),
+                    (15, "justify", 4, "LP-DEBUG"),
+                ]
+            )
+        )
+        + "]}"
+    )
+    raw["materials"][0]["id"] = "technicien"
+    raw["questions"][0]["material_ids"] = ["technicien"]
+    raw["questions"][1][field] = (
+        "Écrire SELECT nom FROM technicien JOIN intervention "
+        "ON technicien.id = intervention.id_tech."
+    )
+    raw["questions"][1]["material_ids"] = ["technicien"]
+    exercise = NSIExercise.model_validate(raw)
+
+    with pytest.raises(ValueError, match=r"relation.*absente"):
+        require_declared_relations(exercise)
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [
+        "Un arbre binaire de recherche : 10 est racine, 20 à gauche.",
+        "Un arbre binaire de recherche : 10 est la racine; 20 est à gauche de 10.",
+        "Dans cet ABR, la racine est 10 et 20 se trouve à gauche de la racine.",
+    ],
+)
+def test_invalid_binary_search_tree_premise_is_rejected(bad):
+    from Backend.Core.france.pipeline import require_consistent_tree_premises
+
+    with pytest.raises(ValueError, match="arbre binaire de recherche"):
+        require_consistent_tree_premises(bad)
+
+
+def test_valid_binary_search_tree_descendant_positions_are_not_compared_to_root():
+    from Backend.Core.france.pipeline import require_consistent_tree_premises
+
+    require_consistent_tree_premises(
+        "Un ABR contient les clés [10, 20, 30] "
+        "(20 est racine, 10 à gauche, 30 à droite)."
+    )
+    require_consistent_tree_premises(
+        "Un ABR : la racine est 10; 30 à droite de 10; 20 est à gauche de 30."
+    )
+    require_consistent_tree_premises(
+        "Un ABR : 10 est la racine; 30 à droite de 10; "
+        "20 à gauche d’un nœud de valeur 30."
+    )
+
+
+def test_live_style_invalid_tree_cannot_reach_automated_review(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class InvalidTreeClient(FrenchClient):
+        def generate_json(self, prompt):
+            result = super().generate_json(prompt)
+            if prompt.startswith("Rédige directement en français académique"):
+                task = json.loads(prompt.split("DONNÉES_JSON\n", 1)[1])
+                if task["exercise_id"] == "1":
+                    result["questions"][4]["prompt"] = (
+                        "Un arbre binaire de recherche contient les clés "
+                        "[10, 20, 30, 40] (10 est racine, 20 à gauche, "
+                        "30 à droite). Écrire l'insertion de 25."
+                    )
+            return result
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    client = InvalidTreeClient()
+    with pytest.raises(ValueError, match="Exercice 1 refusé"):
+        generate_assessment(
+            index_path=index,
+            client=client,
+            seed=5,
+            checkpoint=tmp_path / "checkpoint.json",
+        )
+    state = json.loads((tmp_path / "checkpoint.json").read_text(encoding="utf-8"))
+    assert len(state["failed_attempts"]) == 3
+    assert all(
+        "arbre binaire de recherche" in attempt["error"]
+        for attempt in state["failed_attempts"]
+    )
+    assert client.calls == 3
+
+
+def test_sql_relation_absent_from_printed_tables_rejects_draft(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class MissingRelationClient(FrenchClient):
+        def generate_json(self, prompt):
+            result = super().generate_json(prompt)
+            if prompt.startswith("Rédige directement en français académique"):
+                task = json.loads(prompt.split("DONNÉES_JSON\n", 1)[1])
+                if task["exercise_id"] == "2":
+                    result["questions"][1]["prompt"] = (
+                        "Corriger SELECT nom FROM support JOIN intervention "
+                        "ON support.id = intervention.id."
+                    )
+            return result
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "checkpoint.json"
+    with pytest.raises(ValueError, match="Exercice 2 refusé"):
+        generate_assessment(
+            index_path=index,
+            client=MissingRelationClient(),
+            seed=5,
+            checkpoint=checkpoint,
+        )
+    state = json.loads(checkpoint.read_text(encoding="utf-8"))
+    assert list(state["accepted"]) == ["1"]
+    assert all(
+        "relation SQL absente" in attempt["error"]
+        for attempt in state["failed_attempts"]
+    )

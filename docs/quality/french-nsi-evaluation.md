@@ -105,6 +105,36 @@ safeguards have regression tests but no live model evidence yet. A model may
 still make a wrong positive judgement; independent teacher review remains
 outstanding.
 
+The source-pinned v9 one-paper Gemma diagnostic at seed 270100 also accepted
+0/1 complete papers. Its implementation hash was
+`d8f9be2d0956acb79aa76dc2edceb1a540cc5a834993068a2dda03662683258c`;
+the model digest was
+`4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c`
+and the reference-index hash was
+`ec2339e6dffeba485f94d33d8e6f868e24cd2c40ad32830621201496ca32d594`.
+The failed result, three rejected exercise-2 drafts and accepted exercise-1
+checkpoint remain under
+`tmp/qualification-fr-nsi-2027/diagnostic-20261004-v9-gemma4/`.
+Each exercise-2 draft failed the structured-table-use gate. Manual inspection
+found that the drafts also named SQL relations absent from their printed data.
+The accepted first exercise still described an impossible binary-search tree:
+it put 20 to the left of root 10. Its item-level AI alignment review marked
+that question aligned, and all six deterministic item contracts remained
+unresolved. It also requested a complete recursive function for one point
+without defining the `Noeud` API. No PDF was produced. Thus the v9 checks
+improved provenance and repair discipline but did not establish content
+correctness or model suitability.
+
+The v10 source adds a narrow fail-closed check for explicit contradictory BST
+placements and SQL relation names that are not printed as structured materials
+or linked to the relevant question. A table's relation identifier is now
+visible in its PDF heading; an internal ID alone is not student-facing data.
+The checks reproduce the saved v9 defects, but cannot prove every tree, SQL
+query or answer correct. The prompt now asks for one material per SQL relation
+and a self-contained, point-sized tree task. A fresh source-pinned run is
+needed to determine whether the model can satisfy those constraints; teacher
+review remains essential.
+
 ## Reproducible runs
 
 Pin the repository commit, registry/prompt version, full source hashes and split,
