@@ -1468,3 +1468,251 @@ def test_sql_relation_absent_from_printed_tables_rejects_draft(tmp_path):
         "relation SQL absente" in attempt["error"]
         for attempt in state["failed_attempts"]
     )
+
+
+def test_claimed_cycle_does_not_make_standard_breadth_first_search_stop_early():
+    from Backend.Core.france.pipeline import require_algorithm_premises
+
+    prompt = (
+        "```python\n"
+        "def parcourir_largeur(adj, start):\n"
+        "    visites = []\n"
+        "    file = [start]\n"
+        "    while file:\n"
+        "        sommet = file.pop(0)\n"
+        "        if sommet not in visites:\n"
+        "            visites.append(sommet)\n"
+        "            file.extend(adj[sommet])\n"
+        "    return visites\n"
+        "```\n"
+        "Le programme s'arrête prématurément si une boucle existe. "
+        "Identifiez la faille logique."
+    )
+    with pytest.raises(ValueError, match="parcours en largeur"):
+        require_algorithm_premises(prompt, "La boucle provoque un arrêt prématuré.")
+
+
+def test_breadth_first_search_false_claim_can_be_the_question_to_refute():
+    from Backend.Core.france.pipeline import require_algorithm_premises
+
+    prompt = (
+        "Un élève affirme qu'une boucle fait que ce parcours en largeur "
+        "s'arrête prématurément. Cette affirmation est-elle exacte ?\n"
+        "```python\n"
+        "while file:\n"
+        "    sommet = file.pop(0)\n"
+        "    if sommet not in visites:\n"
+        "        visites.append(sommet)\n"
+        "        file.extend(adj[sommet])\n"
+        "```"
+    )
+    require_algorithm_premises(
+        prompt,
+        "Non. Le parcours peut mettre deux fois un sommet dans la file, "
+        "mais la boucle ne le fait pas s'arrêter prématurément.",
+    )
+
+
+def test_early_return_on_repeat_can_really_stop_breadth_first_search():
+    from Backend.Core.france.pipeline import require_algorithm_premises
+
+    prompt = (
+        "```python\n"
+        "while file:\n"
+        "    sommet = file.pop(0)\n"
+        "    if sommet in visites:\n"
+        "        return visites\n"
+        "    if sommet not in visites:\n"
+        "        visites.append(sommet)\n"
+        "        file.extend(adj[sommet])\n"
+        "```\n"
+        "Le programme s'arrête prématurément si une boucle existe. "
+        "Expliquez la faute."
+    )
+    require_algorithm_premises(
+        prompt, "Le return quitte la fonction dès qu'un sommet est revu."
+    )
+
+
+def test_break_in_nested_loop_does_not_stop_queue_traversal():
+    from Backend.Core.france.pipeline import require_algorithm_premises
+
+    prompt = (
+        "```python\n"
+        "while file:\n"
+        "    sommet = file.pop(0)\n"
+        "    if sommet not in visites:\n"
+        "        visites.append(sommet)\n"
+        "        for voisin in adj[sommet]:\n"
+        "            break\n"
+        "        file.extend(adj[sommet])\n"
+        "```\n"
+        "Le programme s'arrête prématurément si une boucle existe."
+    )
+    with pytest.raises(ValueError, match="parcours en largeur"):
+        require_algorithm_premises(prompt, "La boucle provoque l'arrêt prématuré.")
+
+
+def test_tree_constructor_must_be_defined_in_candidate_facing_material():
+    from Backend.Core.france.pipeline import require_tree_constructor_context
+
+    prompt = (
+        "Écrivez une fonction inserer(arbre, valeur) pour cet arbre. "
+        "Si le nœud est vide, créez un nouvel objet."
+    )
+    answer = "if arbre is None: return Noeud(valeur)"
+    with pytest.raises(ValueError, match="Noeud"):
+        require_tree_constructor_context(prompt, answer, "Un ABR indexe les incidents.")
+
+    require_tree_constructor_context(
+        "La classe Noeud possède le constructeur Noeud(valeur). " + prompt,
+        answer,
+        "Un ABR indexe les incidents.",
+    )
+
+
+def test_merely_naming_tree_constructor_does_not_define_its_api():
+    from Backend.Core.france.pipeline import require_tree_constructor_context
+
+    with pytest.raises(ValueError, match="Noeud"):
+        require_tree_constructor_context(
+            "Utilisez Noeud(valeur) pour créer un nouveau nœud.",
+            "return Noeud(valeur)",
+            "Un ABR indexe les incidents.",
+        )
+
+
+def test_false_breadth_first_debug_premise_cannot_be_accepted(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class FalsePremiseClient(FrenchClient):
+        def generate_json(self, prompt):
+            result = super().generate_json(prompt)
+            if prompt.startswith("Rédige directement en français académique"):
+                task = json.loads(prompt.split("DONNÉES_JSON\n", 1)[1])
+                if task["exercise_id"] == "1":
+                    result["questions"][2]["prompt"] = (
+                        "```python\n"
+                        "def parcourir_largeur(adj, start):\n"
+                        "    visites = []\n"
+                        "    file = [start]\n"
+                        "    while file:\n"
+                        "        sommet = file.pop(0)\n"
+                        "        if sommet not in visites:\n"
+                        "            visites.append(sommet)\n"
+                        "            file.extend(adj[sommet])\n"
+                        "    return visites\n"
+                        "```\n"
+                        "Le programme s'arrête prématurément si une boucle existe."
+                    )
+                    result["questions"][2]["answer"] = (
+                        "Une boucle provoque un arrêt prématuré."
+                    )
+            return result
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "checkpoint.json"
+    with pytest.raises(ValueError, match="Exercice 1 refusé"):
+        generate_assessment(
+            index_path=index,
+            client=FalsePremiseClient(),
+            seed=5,
+            checkpoint=checkpoint,
+        )
+    state = json.loads(checkpoint.read_text(encoding="utf-8"))
+    assert list(state["accepted"]) == []
+    assert all(
+        "parcours en largeur" in attempt["error"]
+        for attempt in state["failed_attempts"]
+    )
+
+
+def test_tree_logarithmic_advantage_needs_a_visible_balance_assumption():
+    from Backend.Core.france.pipeline import require_tree_complexity_premise
+
+    prompt = (
+        "Un ABR contient les clés 10, 20, 30, 40 et 50. On recherche 40. "
+        "Justifiez pourquoi cette opération est plus efficace qu'une recherche "
+        "linéaire dans une liste non triée de 1000 éléments."
+    )
+    answer = "Dans un arbre équilibré, la recherche coûte O(log n)."
+    with pytest.raises(ValueError, match="équilibre"):
+        require_tree_complexity_premise(prompt, answer, "")
+
+    require_tree_complexity_premise(
+        "On suppose que cet ABR de 1000 clés est équilibré. " + prompt,
+        answer,
+        "",
+    )
+
+
+def test_negated_tree_balance_is_not_a_logarithmic_premise():
+    from Backend.Core.france.pipeline import require_tree_complexity_premise
+
+    with pytest.raises(ValueError, match="équilibre"):
+        require_tree_complexity_premise(
+            "Cet ABR non équilibré est-il plus efficace qu'une liste ?",
+            "La recherche coûte O(log n).",
+            "",
+        )
+
+
+def test_current_balanced_tree_premise_overrides_earlier_unbalanced_case():
+    from Backend.Core.france.pipeline import require_tree_complexity_premise
+
+    require_tree_complexity_premise(
+        "On suppose maintenant cet ABR équilibré. Pourquoi est-il plus efficace ?",
+        "La recherche dans cet arbre équilibré coûte O(log n).",
+        "La question précédente portait sur un ABR non équilibré.",
+    )
+
+
+def test_current_question_can_transition_from_unbalanced_to_balanced_tree():
+    from Backend.Core.france.pipeline import require_tree_complexity_premise
+
+    require_tree_complexity_premise(
+        "Après un ABR non équilibré, on suppose maintenant cet ABR équilibré. "
+        "Pourquoi est-il plus efficace ?",
+        "Pour un arbre équilibré, la recherche coûte O(log n).",
+        "",
+    )
+
+
+def test_negated_balance_and_unrelated_tree_do_not_license_logarithmic_claim():
+    from Backend.Core.france.pipeline import require_tree_complexity_premise
+
+    answer = "La recherche coûte O(log n)."
+    with pytest.raises(ValueError, match="équilibre"):
+        require_tree_complexity_premise(
+            "Cet ABR ne peut pas être équilibré. Pourquoi est-il plus efficace ?",
+            answer,
+            "",
+        )
+    with pytest.raises(ValueError, match="équilibre"):
+        require_tree_complexity_premise(
+            "Pourquoi cet ABR est-il plus efficace qu'une liste ?",
+            answer,
+            "Un autre ABR utilisé auparavant est équilibré.",
+        )
+    with pytest.raises(ValueError, match="équilibre"):
+        require_tree_complexity_premise(
+            "Ce n'est pas vrai que cet ABR est équilibré. "
+            "Pourquoi est-il plus efficace ?",
+            answer,
+            "",
+        )
+    with pytest.raises(ValueError, match="équilibre"):
+        require_tree_complexity_premise(
+            "Cet ABR est équilibré ? Pourquoi est-il plus efficace ?",
+            answer,
+            "",
+        )
+
+
+def test_authoring_prompt_explains_the_balanced_tree_assumption():
+    from Backend.Core.france.pipeline import _prompt, _tasks_for_seed
+
+    prompt = _prompt(_tasks_for_seed(270100)[0], [], 270100, 1, "")
+    assert "O(log n)" in prompt
+    assert "on suppose que cet ABR est équilibré" in prompt

@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1791137717.818242,
-    "ast_hash": "ab09e304965fbf0e6c4f28b6d215db78",
+    "mtime": 1791144150.9089339,
+    "ast_hash": "8377f8abeaa0ee3745ab1b9cc3fa14b4",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791133509.0464866,
-    "ast_hash": "d9cb4b85e8daa11e3695d4c13192c4ae",
+    "mtime": 1791141818.9297798,
+    "ast_hash": "f3ed1b58e326c0f7bf3a4c245acceaee",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1780,8 +1780,8 @@
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1791137732.463393,
-    "ast_hash": "0de08f93e8d3c224022dbfa0f24ba53f",
+    "mtime": 1791144140.383919,
+    "ast_hash": "9928c23e58fd2fd8d8ecf18487e68b78",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -2260,8 +2260,8 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/claims-register.md": {
-    "mtime": 1791136689.789452,
-    "ast_hash": "ddafc8930eaad962d6c26e258583b0e7",
+    "mtime": 1791141800.0909631,
+    "ast_hash": "32104a232816563991dcb239d8a61b0b",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/demo-script.md": {
@@ -2330,8 +2330,8 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-evaluation.md": {
-    "mtime": 1791137548.902295,
-    "ast_hash": "9b63a3b81fbbdef323d1dfa551c23d93",
+    "mtime": 1791141930.7444096,
+    "ast_hash": "015dd2a67c8ad438af00fbc3eebad7ee",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-prototype-verification-2026-09-28.md": {
@@ -2587,6 +2587,11 @@
   "Backend/Core/france/question_review.py": {
     "mtime": 1791132897.1520262,
     "ast_hash": "5b386f9535b82b78e1ea1048c9733c4c",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-manual-comparison-2026-10-04.md": {
+    "mtime": 1791141926.1248982,
+    "ast_hash": "056ccfbc03b7d0b211d51b11551085d4",
     "semantic_hash": ""
   }
 }

@@ -135,6 +135,22 @@ and a self-contained, point-sized tree task. A fresh source-pinned run is
 needed to determine whether the model can satisfy those constraints; teacher
 review remains essential.
 
+The source-pinned v10 diagnostic at seed 270100 completed on 4 October with
+**0/1 complete papers** (implementation
+`edf553526fd68471e56c4f0dd0af2a9011d4f4c70c6ee2e722707156f65daa71`).
+Its three exercise-2 drafts failed SQL-table linking or figure-ID consistency;
+the checkpoint retained an automatically accepted first exercise. Manual review
+rejected that exercise because its breadth-first-search diagnosis falsely
+claimed a cycle could stop the shown algorithm early, its tree answer used an
+undefined `Noeud` constructor, and other questions were ambiguous or
+underspecified. The six deterministic checks remained unresolved. A focused
+regression now rejects the observed false cycle claim, undefined constructor
+and unsupported logarithmic tree advantage before AI review; these narrow
+checks are not general algorithm verification.
+No PDF was produced. The page-by-page comparison of the historical official
+2026 paper and the earlier renderer fixture, plus item-level live findings, is
+recorded in `docs/quality/french-nsi-manual-comparison-2026-10-04.md`.
+
 ## Reproducible runs
 
 Pin the repository commit, registry/prompt version, full source hashes and split,
