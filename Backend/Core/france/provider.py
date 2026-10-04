@@ -4,7 +4,7 @@ import json
 from hashlib import sha256
 
 from Backend.Core.france.network import ollama_request
-from Backend.Core.france.nsi import NSIExercise
+from Backend.Core.france.nsi import authoring_schema
 from Backend.Core.france.pipeline import REVIEW_FLAGS
 from Backend.Core.providers import HostedLLMClient
 
@@ -50,7 +50,7 @@ class FrenchOllamaClient(HostedLLMClient):
 
 def response_policy(prompt: str) -> tuple[dict, int]:
     if prompt.startswith("Rédige directement en français académique"):
-        return NSIExercise.model_json_schema(), 6144
+        return authoring_schema(), 6144
     text = {"type": "string", "minLength": 1, "maxLength": 6000}
     issues = {"type": "array", "items": text, "maxItems": 32}
     if prompt.startswith("Résous indépendamment"):

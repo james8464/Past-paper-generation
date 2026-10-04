@@ -142,6 +142,59 @@ class FrenchClient:
         }
 
 
+@pytest.mark.parametrize("field", ["materials", "material_ids", "verification"])
+def test_authoring_rejects_missing_required_raw_fields(tmp_path, field):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class OmittedFieldClient(FrenchClient):
+        def generate_json(self, prompt):
+            result = super().generate_json(prompt)
+            if prompt.startswith("Rédige directement en français académique"):
+                if field == "materials":
+                    del result["materials"]
+                else:
+                    del result["questions"][0][field]
+            return result
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "checkpoint.json"
+    with pytest.raises(ValueError, match="Exercice 1 refusé"):
+        generate_assessment(
+            index_path=index,
+            client=OmittedFieldClient(),
+            seed=5,
+            checkpoint=checkpoint,
+        )
+    state = json.loads(checkpoint.read_text(encoding="utf-8"))
+    assert len(state["failed_attempts"]) == 3
+    assert all(field in item["error"] for item in state["failed_attempts"])
+
+
+def test_v6_package_rechecks_authoring_fields_in_raw_evidence(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=FrenchClient(),
+        seed=5,
+        checkpoint=tmp_path / "checkpoint.json",
+    )
+    changed = deepcopy(package)
+    del changed["evidence"][0]["candidate"]["questions"][0]["verification"]
+    from Backend.Core.france.pipeline import digest
+
+    changed["evidence"][0]["candidate_sha256"] = digest(
+        changed["evidence"][0]["candidate"]
+    )
+    with pytest.raises(ValueError, match="verification"):
+        validate_package(changed)
+
+
 def test_missing_reference_never_calls_model(tmp_path):
     from Backend.Core.france.pipeline import generate_assessment
 
@@ -394,35 +447,34 @@ def test_only_explicit_material_ids_are_recovered_from_omitted_links():
     assert "material_ids" not in raw["questions"][0]
 
 
-def test_explicit_material_recovery_is_package_bound_and_cannot_hide_drift(tmp_path):
+def test_v6_explicit_material_link_evidence_cannot_hide_drift(tmp_path):
     from copy import deepcopy
 
     from Backend.Core.france.pipeline import generate_assessment, validate_package
 
-    class OmittedExplicitLinkClient(FrenchClient):
+    class ExplicitLinkClient(FrenchClient):
         def generate_json(self, prompt):
             result = super().generate_json(prompt)
             if prompt.startswith("Rédige directement en français académique"):
                 result["questions"][0]["prompt"] += " Voir `support`."
-                del result["questions"][0]["material_ids"]
             return result
 
     index = tmp_path / "sources.sqlite"
     make_index(index)
     package = generate_assessment(
         index_path=index,
-        client=OmittedExplicitLinkClient(),
+        client=ExplicitLinkClient(),
         seed=5,
         checkpoint=tmp_path / "checkpoint.json",
     )
     assert package["exercises"][0]["questions"][0]["material_ids"] == ["support"]
-    assert package["evidence"][0]["material_bindings"] == [
-        {"question_id": "1a", "material_ids": ["support"]}
-    ]
+    assert package["evidence"][0]["material_bindings"] == []
     validate_package(package)
 
     changed = deepcopy(package)
-    changed["evidence"][0]["material_bindings"] = []
+    changed["evidence"][0]["material_bindings"] = [
+        {"question_id": "1a", "material_ids": ["support"]}
+    ]
     with pytest.raises(ValueError, match="liaison"):
         validate_package(changed)
 
@@ -432,8 +484,7 @@ def test_explicit_material_recovery_is_package_bound_and_cannot_hide_drift(tmp_p
         validate_package(changed)
 
     changed = deepcopy(package)
-    changed["evidence"][0]["candidate"]["questions"][0]["material_ids"] = ["support"]
-    changed["evidence"][0]["material_bindings"] = []
+    changed["evidence"][0]["candidate"]["questions"][0]["material_ids"] = []
     with pytest.raises(ValueError, match="liaison"):
         validate_package(changed)
 
@@ -468,6 +519,35 @@ def test_legacy_french_package_without_candidate_binding_evidence_remains_readab
         del evidence["material_bindings"]
         del evidence["candidate_sha256"]
     validate_package(package)
+
+
+def test_recorded_v5_package_keeps_its_candidate_evidence(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=FrenchClient(),
+        seed=5,
+        checkpoint=tmp_path / "checkpoint.json",
+    )
+    relabelled = deepcopy(package)
+    relabelled["identity"]["prompt_version"] = "fr-nsi-written-2027-v5"
+    with pytest.raises(ValueError, match="historique"):
+        validate_package(relabelled)
+    package["identity"]["prompt_version"] = "fr-nsi-written-2027-v5"
+    package["identity"]["implementation_sha256"] = (
+        "2e603cc84d59c48553b7c4a8e31129a3a337092b62188391f276c20125cef9a5"
+    )
+    validate_package(package)
+
+    changed = deepcopy(package)
+    del changed["evidence"][0]["candidate_sha256"]
+    with pytest.raises(ValueError, match="liaison"):
+        validate_package(changed)
 
 
 @pytest.mark.parametrize(

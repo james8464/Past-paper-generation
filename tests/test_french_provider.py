@@ -37,6 +37,15 @@ def test_french_transport_has_own_schema_seed_and_output_budget(monkeypatch):
     client.generate_json(prompt)
     payload = requests[0]
     assert payload["format"]["title"] == "NSIExercise"
+    assert "materials" in payload["format"]["required"]
+    assert payload["format"]["properties"]["materials"]["minItems"] == 1
+    assert {"material_ids", "verification"} <= set(
+        payload["format"]["$defs"]["NSIQuestion"]["required"]
+    )
+    prompt_schema = json.loads(
+        prompt.split("schéma JSON :\n", 1)[1].split("\nDONNÉES_JSON", 1)[0]
+    )
+    assert payload["format"] == prompt_schema
     assert payload["options"]["num_predict"] == 6144
     assert payload["options"]["num_ctx"] == 16384
     assert payload["options"]["seed"] != 0
@@ -88,9 +97,7 @@ def test_french_transport_allows_slow_local_generation(monkeypatch):
         observed["timeout"] = timeout
         return io.BytesIO(b"{}")
 
-    monkeypatch.setattr(
-        "Backend.Core.france.network.open_ollama_request", open_request
-    )
+    monkeypatch.setattr("Backend.Core.france.network.open_ollama_request", open_request)
 
     ollama_request(
         "http://localhost:11434/api/chat",

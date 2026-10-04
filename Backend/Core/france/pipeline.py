@@ -19,6 +19,8 @@ from Backend.Core.france.nsi import (
     CURRICULUM_OBJECTIVES,
     LANGUAGE_RUBRIC_2027,
     NSIExercise,
+    authoring_schema,
+    require_authoring_fields,
     solver_prompt,
 )
 from Backend.Core.france.originality import screen_originality
@@ -26,11 +28,13 @@ from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.france.verification import verify_contract
 from Backend.Core.scoped_references import ReferenceIndex
 
-PROMPT_VERSION = "fr-nsi-written-2027-v5"
-# The recorded v4 source identity; never accept a newer package relabelled v4.
-LEGACY_V4_IMPLEMENTATION_SHA256 = (
-    "bd1468ca74a1dbe501e5eedc306d26531fb52ff9a6271b20fc13607cbfafbfbb"
-)
+PROMPT_VERSION = "fr-nsi-written-2027-v6"
+# Recorded source identities prevent a newer package dropping its evidence via
+# an earlier prompt-version label. The separate manifest remains the trust root.
+LEGACY_IMPLEMENTATIONS = {
+    "fr-nsi-written-2027-v4": "bd1468ca74a1dbe501e5eedc306d26531fb52ff9a6271b20fc13607cbfafbfbb",
+    "fr-nsi-written-2027-v5": "2e603cc84d59c48553b7c4a8e31129a3a337092b62188391f276c20125cef9a5",
+}
 REVIEW_FLAGS = (
     "correct",
     "native_french",
@@ -266,7 +270,7 @@ def _prompt(
         "sql(schema,rows,query,expected), shortest_path(edges,start,end,expected). "
         "Sinon utilise {kind:human}; n'invente pas de vérification. "
         "Les points sont des chaînes décimales. Réponds uniquement selon ce schéma JSON :\n"
-        + json.dumps(NSIExercise.model_json_schema(), ensure_ascii=False)
+        + json.dumps(authoring_schema(), ensure_ascii=False)
         + "\nDONNÉES_JSON\n"
         + json.dumps(
             {
@@ -447,6 +451,7 @@ def generate_assessment(
                         )
                     )
                     record["candidate"] = raw
+                    require_authoring_fields(raw)
                     bound, bindings = bind_explicit_material_ids(raw)
                     record["material_bindings"] = bindings
                     exercise = NSIExercise.model_validate(bound)
@@ -593,17 +598,15 @@ def validate_package(package: dict):
     if (
         identity.get("assessment") != asdict(NSI_2027)
         or identity.get("prompt_version")
-        not in {PROMPT_VERSION, "fr-nsi-written-2027-v4"}
+        not in {PROMPT_VERSION, *LEGACY_IMPLEMENTATIONS}
         or not identity.get("model_digest")
         or not re.fullmatch(
             r"[a-f0-9]{64}", str(identity.get("implementation_sha256", ""))
         )
     ):
         raise ValueError("Identité d'évaluation incompatible")
-    if (
-        identity["prompt_version"] == "fr-nsi-written-2027-v4"
-        and identity["implementation_sha256"] != LEGACY_V4_IMPLEMENTATION_SHA256
-    ):
+    legacy_hash = LEGACY_IMPLEMENTATIONS.get(identity["prompt_version"])
+    if legacy_hash and identity["implementation_sha256"] != legacy_hash:
         raise ValueError("Identité historique française non reconnue")
     seed = identity.get("seed")
     if type(seed) is not int or identity.get("blueprint") != _tasks_for_seed(seed):
@@ -641,8 +644,10 @@ def validate_package(package: dict):
     for exercise, evidence in zip(exercises, package["evidence"], strict=True):
         if evidence.get("exercise_sha256") != digest(exercise.model_dump(mode="json")):
             raise ValueError("Exercise evidence hash mismatch")
-        if identity["prompt_version"] == PROMPT_VERSION:
+        if identity["prompt_version"] != "fr-nsi-written-2027-v4":
             raw_candidate = evidence.get("candidate")
+            if identity["prompt_version"] == PROMPT_VERSION:
+                require_authoring_fields(raw_candidate)
             bound, bindings = bind_explicit_material_ids(raw_candidate)
             if (
                 not isinstance(raw_candidate, dict)

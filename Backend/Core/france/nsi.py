@@ -22,29 +22,98 @@ TOPICS = frozenset(
 # official Terminale NSI programme. They keep each generated question tied to
 # an assessable capability instead of treating a broad chapter name as proof.
 CURRICULUM_OBJECTIVES = {
-    "SD-INTERFACE": ("structures-donnees", "Spécifier une structure par son interface et distinguer l'implémentation."),
-    "SD-POO": ("structures-donnees", "Définir une classe et utiliser ses attributs et méthodes."),
-    "SD-LINEAIRE": ("structures-donnees", "Choisir et manipuler listes, piles, files ou dictionnaires."),
-    "SD-ARBRE": ("structures-donnees", "Modéliser une situation par un arbre et en évaluer les mesures."),
-    "SD-GRAPHE": ("structures-donnees", "Modéliser un graphe et passer entre ses représentations."),
-    "BDD-MODELE": ("bases-donnees", "Identifier relations, attributs, domaines et contraintes de clés."),
-    "BDD-ANOMALIES": ("bases-donnees", "Repérer redondances et anomalies d'insertion, suppression ou mise à jour."),
-    "BDD-SGBD": ("bases-donnees", "Expliquer les services d'un système de gestion de bases de données."),
-    "BDD-SQL-SELECT": ("bases-donnees", "Construire une interrogation SQL avec SELECT, FROM, WHERE et JOIN."),
-    "BDD-SQL-MUTATION": ("bases-donnees", "Construire une requête SQL UPDATE, INSERT ou DELETE."),
-    "ASR-SOC": ("architectures-reseaux", "Identifier les composants et avantages d'un système sur puce."),
-    "ASR-PROCESSUS": ("architectures-reseaux", "Analyser processus, ordonnancement, ressources et interblocage."),
-    "ASR-ROUTAGE": ("architectures-reseaux", "Déterminer une route selon RIP ou OSPF à partir de tables données."),
-    "ASR-CRYPTO": ("architectures-reseaux", "Expliquer chiffrement symétrique, asymétrique et échange de clé."),
-    "LP-CALCULABILITE": ("langages-programmation", "Raisonner sur programme-donnée, calculabilité et indécidabilité."),
-    "LP-RECURSIVITE": ("langages-programmation", "Écrire et analyser un programme récursif."),
-    "LP-MODULARITE": ("langages-programmation", "Exploiter une API et concevoir un module documenté."),
-    "LP-PARADIGMES": ("langages-programmation", "Distinguer et choisir les paradigmes impératif, fonctionnel et objet."),
-    "LP-DEBUG": ("langages-programmation", "Diagnostiquer un défaut et construire des tests pertinents."),
-    "ALG-ARBRES": ("algorithmique", "Parcourir, rechercher et insérer dans un arbre binaire."),
-    "ALG-GRAPHES": ("algorithmique", "Parcourir un graphe, détecter un cycle ou chercher un chemin."),
-    "ALG-DIVISER": ("algorithmique", "Concevoir un algorithme diviser-pour-régner et raisonner sur son coût."),
-    "ALG-DYNAMIQUE": ("algorithmique", "Concevoir une solution par programmation dynamique."),
+    "SD-INTERFACE": (
+        "structures-donnees",
+        "Spécifier une structure par son interface et distinguer l'implémentation.",
+    ),
+    "SD-POO": (
+        "structures-donnees",
+        "Définir une classe et utiliser ses attributs et méthodes.",
+    ),
+    "SD-LINEAIRE": (
+        "structures-donnees",
+        "Choisir et manipuler listes, piles, files ou dictionnaires.",
+    ),
+    "SD-ARBRE": (
+        "structures-donnees",
+        "Modéliser une situation par un arbre et en évaluer les mesures.",
+    ),
+    "SD-GRAPHE": (
+        "structures-donnees",
+        "Modéliser un graphe et passer entre ses représentations.",
+    ),
+    "BDD-MODELE": (
+        "bases-donnees",
+        "Identifier relations, attributs, domaines et contraintes de clés.",
+    ),
+    "BDD-ANOMALIES": (
+        "bases-donnees",
+        "Repérer redondances et anomalies d'insertion, suppression ou mise à jour.",
+    ),
+    "BDD-SGBD": (
+        "bases-donnees",
+        "Expliquer les services d'un système de gestion de bases de données.",
+    ),
+    "BDD-SQL-SELECT": (
+        "bases-donnees",
+        "Construire une interrogation SQL avec SELECT, FROM, WHERE et JOIN.",
+    ),
+    "BDD-SQL-MUTATION": (
+        "bases-donnees",
+        "Construire une requête SQL UPDATE, INSERT ou DELETE.",
+    ),
+    "ASR-SOC": (
+        "architectures-reseaux",
+        "Identifier les composants et avantages d'un système sur puce.",
+    ),
+    "ASR-PROCESSUS": (
+        "architectures-reseaux",
+        "Analyser processus, ordonnancement, ressources et interblocage.",
+    ),
+    "ASR-ROUTAGE": (
+        "architectures-reseaux",
+        "Déterminer une route selon RIP ou OSPF à partir de tables données.",
+    ),
+    "ASR-CRYPTO": (
+        "architectures-reseaux",
+        "Expliquer chiffrement symétrique, asymétrique et échange de clé.",
+    ),
+    "LP-CALCULABILITE": (
+        "langages-programmation",
+        "Raisonner sur programme-donnée, calculabilité et indécidabilité.",
+    ),
+    "LP-RECURSIVITE": (
+        "langages-programmation",
+        "Écrire et analyser un programme récursif.",
+    ),
+    "LP-MODULARITE": (
+        "langages-programmation",
+        "Exploiter une API et concevoir un module documenté.",
+    ),
+    "LP-PARADIGMES": (
+        "langages-programmation",
+        "Distinguer et choisir les paradigmes impératif, fonctionnel et objet.",
+    ),
+    "LP-DEBUG": (
+        "langages-programmation",
+        "Diagnostiquer un défaut et construire des tests pertinents.",
+    ),
+    "ALG-ARBRES": (
+        "algorithmique",
+        "Parcourir, rechercher et insérer dans un arbre binaire.",
+    ),
+    "ALG-GRAPHES": (
+        "algorithmique",
+        "Parcourir un graphe, détecter un cycle ou chercher un chemin.",
+    ),
+    "ALG-DIVISER": (
+        "algorithmique",
+        "Concevoir un algorithme diviser-pour-régner et raisonner sur son coût.",
+    ),
+    "ALG-DYNAMIQUE": (
+        "algorithmique",
+        "Concevoir une solution par programmation dynamique.",
+    ),
     "ALG-BOYER": ("algorithmique", "Étudier la recherche textuelle de Boyer-Moore."),
 }
 
@@ -227,14 +296,18 @@ class NSIExercise(BaseModel):
                 raise ValueError("La vérification référence une figure absente")
             if question.verification.get("kind") == "shortest_path":
                 if not isinstance(material, NSIWeightedGraphMaterial):
-                    raise ValueError("La vérification de chemin exige une figure graphe")
+                    raise ValueError(
+                        "La vérification de chemin exige une figure graphe"
+                    )
                 contract_edges = question.verification.get("edges")
                 if contract_edges != [list(edge) for edge in material.edges] or (
                     question.verification.get("directed") is not material.directed
                 ):
                     raise ValueError("La vérification et la figure graphe divergent")
         if self.credit != points(self.target_points):
-            raise ValueError("Le crédit de l'exercice ne correspond pas à son allocation")
+            raise ValueError(
+                "Le crédit de l'exercice ne correspond pas à son allocation"
+            )
         covered_topics = {
             CURRICULUM_OBJECTIVES[code][0]
             for question in self.questions
@@ -242,7 +315,10 @@ class NSIExercise(BaseModel):
         }
         if set(self.topics) - covered_topics:
             raise ValueError("Un thème annoncé du programme n'est pas évalué")
-        if sum(question.estimated_minutes for question in self.questions) != self.minutes:
+        if (
+            sum(question.estimated_minutes for question in self.questions)
+            != self.minutes
+        ):
             raise ValueError("Le temps des questions ne correspond pas à l'exercice")
         operations = {question.operation for question in self.questions}
         demanding = {"analyse", "design", "debug", "justify"}
@@ -264,6 +340,38 @@ class NSIExercise(BaseModel):
             exclude={"questions": {"__all__": {"answer", "marking", "verification"}}},
             mode="json",
         )
+
+
+AUTHORING_REQUIRED_QUESTION_FIELDS = ("material_ids", "verification")
+
+
+def authoring_schema() -> dict:
+    """Require generation-only fields without changing legacy package readers."""
+    schema = NSIExercise.model_json_schema()
+    schema["required"].append("materials")
+    schema["properties"]["materials"]["minItems"] = 1
+    question = schema["$defs"]["NSIQuestion"]
+    question["required"].extend(AUTHORING_REQUIRED_QUESTION_FIELDS)
+    return schema
+
+
+def require_authoring_fields(candidate: dict) -> None:
+    """Reject omitted generation fields before legacy-compatible defaults apply."""
+    if (
+        not isinstance(candidate, dict)
+        or not isinstance(candidate.get("materials"), list)
+        or not candidate["materials"]
+    ):
+        raise ValueError("Le brouillon doit fournir materials non vide")
+    questions = candidate.get("questions")
+    if not isinstance(questions, list):
+        raise ValueError("Le brouillon doit fournir questions")
+    for question in questions:
+        if not isinstance(question, dict):
+            raise ValueError("Une question du brouillon est invalide")
+        for field in AUTHORING_REQUIRED_QUESTION_FIELDS:
+            if field not in question:
+                raise ValueError(f"La question doit fournir {field}")
 
 
 def solver_prompt(exercise: NSIExercise) -> str:
