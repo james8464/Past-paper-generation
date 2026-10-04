@@ -6126,8 +6126,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_france_archetypes",
-      "community": 303,
-      "community_name": "archetypes.py",
+      "community": 59,
+      "community_name": "pipeline.py",
       "norm_label": "archetypes.py"
     },
     {
@@ -6137,8 +6137,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "backend_core_france_archetypes_questionintent",
-      "community": 303,
-      "community_name": "archetypes.py",
+      "community": 59,
+      "community_name": "pipeline.py",
       "norm_label": "questionintent"
     },
     {
@@ -6148,8 +6148,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "backend_core_france_archetypes_exercisearchetype",
-      "community": 303,
-      "community_name": "archetypes.py",
+      "community": 59,
+      "community_name": "pipeline.py",
       "norm_label": "exercisearchetype"
     },
     {
@@ -6159,8 +6159,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "backend_core_france_archetypes_exercisearchetype_required_curriculum_codes",
-      "community": 303,
-      "community_name": "archetypes.py",
+      "community": 59,
+      "community_name": "pipeline.py",
       "norm_label": ".required_curriculum_codes()"
     },
     {
@@ -6170,8 +6170,8 @@
       "source_location": "L238",
       "_origin": "ast",
       "id": "backend_core_france_archetypes_archetype_for_seed",
-      "community": 303,
-      "community_name": "archetypes.py",
+      "community": 59,
+      "community_name": "pipeline.py",
       "norm_label": "archetype_for_seed()"
     },
     {
@@ -6181,8 +6181,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_france_archetypes_rationale_1",
-      "community": 303,
-      "community_name": "archetypes.py",
+      "community": 59,
+      "community_name": "pipeline.py",
       "norm_label": "coherent, original exercise briefs for the french nsi written route."
     },
     {
@@ -6192,8 +6192,8 @@
       "source_location": "L239",
       "_origin": "ast",
       "id": "backend_core_france_archetypes_rationale_239",
-      "community": 303,
-      "community_name": "archetypes.py",
+      "community": 59,
+      "community_name": "pipeline.py",
       "norm_label": "vary the scenario brief while retaining each exercise's learning sequence."
     },
     {
@@ -6456,8 +6456,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_france_network",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": "network.py"
     },
     {
@@ -6467,8 +6467,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "backend_core_france_network_noredirects",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": "noredirects"
     },
     {
@@ -6478,8 +6478,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_core_france_network_py_httpredirecthandler",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": "httpredirecthandler"
     },
     {
@@ -6489,8 +6489,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "backend_core_france_network_noredirects_redirect_request",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": ".redirect_request()"
     },
     {
@@ -6500,8 +6500,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "backend_core_france_network_open_ollama_request",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": "open_ollama_request()"
     },
     {
@@ -6511,8 +6511,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "request",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": "request"
     },
     {
@@ -6522,8 +6522,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "backend_core_france_network_ollama_request",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": "ollama_request()"
     },
     {
@@ -6533,8 +6533,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_france_network_rationale_1",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": "keep french inference on the explicitly selected server, without proxy routing."
     },
     {
@@ -6610,8 +6610,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_core_france_nsi_py_model_validator",
-      "community": 38,
-      "community_name": "points",
+      "community": 44,
+      "community_name": "nsi.py",
       "norm_label": "model_validator"
     },
     {
@@ -6621,8 +6621,8 @@
       "source_location": "L173",
       "_origin": "ast",
       "id": "backend_core_france_nsi_nsitablematerial_rectangular",
-      "community": 38,
-      "community_name": "points",
+      "community": 44,
+      "community_name": "nsi.py",
       "norm_label": ".rectangular()"
     },
     {
@@ -6643,8 +6643,8 @@
       "source_location": "L197",
       "_origin": "ast",
       "id": "backend_core_france_nsi_nsiweightedgraphmaterial_valid_graph",
-      "community": 38,
-      "community_name": "points",
+      "community": 44,
+      "community_name": "nsi.py",
       "norm_label": ".valid_graph()"
     },
     {
@@ -6665,8 +6665,8 @@
       "source_location": "L241",
       "_origin": "ast",
       "id": "backend_core_france_nsi_nsiquestion_credit_matches",
-      "community": 38,
-      "community_name": "points",
+      "community": 44,
+      "community_name": "nsi.py",
       "norm_label": ".credit_matches()"
     },
     {
@@ -6698,8 +6698,8 @@
       "source_location": "L274",
       "_origin": "ast",
       "id": "backend_core_france_nsi_nsiexercise_validate_structure",
-      "community": 38,
-      "community_name": "points",
+      "community": 44,
+      "community_name": "nsi.py",
       "norm_label": ".validate_structure()"
     },
     {
@@ -7091,7 +7091,7 @@
       "label": "require_semantic_material_integrity()",
       "file_type": "code",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L624",
+      "source_location": "L620",
       "_origin": "ast",
       "id": "backend_core_france_pipeline_require_semantic_material_integrity",
       "community": 63,
@@ -7102,7 +7102,7 @@
       "label": "atomic_json()",
       "file_type": "code",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L641",
+      "source_location": "L637",
       "_origin": "ast",
       "id": "backend_core_france_pipeline_atomic_json",
       "community": 27,
@@ -7124,18 +7124,18 @@
       "label": "_prompt()",
       "file_type": "code",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L655",
+      "source_location": "L651",
       "_origin": "ast",
       "id": "backend_core_france_pipeline_prompt",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": "_prompt()"
     },
     {
       "label": "_review_prompt()",
       "file_type": "code",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L732",
+      "source_location": "L728",
       "_origin": "ast",
       "id": "backend_core_france_pipeline_review_prompt",
       "community": 59,
@@ -7146,7 +7146,7 @@
       "label": "_check_review()",
       "file_type": "code",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L754",
+      "source_location": "L750",
       "_origin": "ast",
       "id": "backend_core_france_pipeline_check_review",
       "community": 120,
@@ -7157,7 +7157,7 @@
       "label": "exercise_candidate_text()",
       "file_type": "code",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L789",
+      "source_location": "L785",
       "_origin": "ast",
       "id": "backend_core_france_pipeline_exercise_candidate_text",
       "community": 27,
@@ -7168,7 +7168,7 @@
       "label": "_originality()",
       "file_type": "code",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L799",
+      "source_location": "L795",
       "_origin": "ast",
       "id": "backend_core_france_pipeline_originality",
       "community": 59,
@@ -7179,7 +7179,7 @@
       "label": "_check_exercise_plan()",
       "file_type": "code",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L807",
+      "source_location": "L803",
       "_origin": "ast",
       "id": "backend_core_france_pipeline_check_exercise_plan",
       "community": 59,
@@ -7190,7 +7190,7 @@
       "label": "_prepare_candidate()",
       "file_type": "code",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L851",
+      "source_location": "L847",
       "_origin": "ast",
       "id": "backend_core_france_pipeline_prepare_candidate",
       "community": 59,
@@ -7201,7 +7201,7 @@
       "label": "generate_assessment()",
       "file_type": "code",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L866",
+      "source_location": "L862",
       "_origin": "ast",
       "id": "backend_core_france_pipeline_generate_assessment",
       "community": 120,
@@ -7212,7 +7212,7 @@
       "label": "validate_package()",
       "file_type": "code",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1093",
+      "source_location": "L1089",
       "_origin": "ast",
       "id": "backend_core_france_pipeline_validate_package",
       "community": 120,
@@ -7355,9 +7355,9 @@
       "label": "Recheck the entire affected exercise after every targeted content change.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L852",
+      "source_location": "L848",
       "_origin": "ast",
-      "id": "backend_core_france_pipeline_rationale_852",
+      "id": "backend_core_france_pipeline_rationale_848",
       "community": 59,
       "community_name": "pipeline.py",
       "norm_label": "recheck the entire affected exercise after every targeted content change."
@@ -7380,8 +7380,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "backend_core_france_provider_frenchollamaclient",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": "frenchollamaclient"
     },
     {
@@ -7391,8 +7391,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "backend_core_france_provider_frenchollamaclient_init",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": ".__init__()"
     },
     {
@@ -7402,8 +7402,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "backend_core_france_provider_frenchollamaclient_generate_json",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": ".generate_json()"
     },
     {
@@ -7413,8 +7413,8 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "backend_core_france_provider_response_policy",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": "response_policy()"
     },
     {
@@ -7435,8 +7435,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_france_question_review",
-      "community": 59,
-      "community_name": "pipeline.py",
+      "community": 63,
+      "community_name": "NSIExercise",
       "norm_label": "question_review.py"
     },
     {
@@ -7446,8 +7446,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "backend_core_france_question_review_alignment_prompt",
-      "community": 59,
-      "community_name": "pipeline.py",
+      "community": 63,
+      "community_name": "NSIExercise",
       "norm_label": "alignment_prompt()"
     },
     {
@@ -7457,8 +7457,8 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "backend_core_france_question_review_check_question_alignment",
-      "community": 59,
-      "community_name": "pipeline.py",
+      "community": 63,
+      "community_name": "NSIExercise",
       "norm_label": "check_question_alignment()"
     },
     {
@@ -7468,8 +7468,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "backend_core_france_question_review_alignment_failures",
-      "community": 59,
-      "community_name": "pipeline.py",
+      "community": 63,
+      "community_name": "NSIExercise",
       "norm_label": "alignment_failures()"
     },
     {
@@ -7479,8 +7479,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "backend_core_france_question_review_repair_question_prompt",
-      "community": 59,
-      "community_name": "pipeline.py",
+      "community": 63,
+      "community_name": "NSIExercise",
       "norm_label": "repair_question_prompt()"
     },
     {
@@ -7490,8 +7490,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_france_question_review_rationale_1",
-      "community": 59,
-      "community_name": "pipeline.py",
+      "community": 63,
+      "community_name": "NSIExercise",
       "norm_label": "answer-free, item-level review of french nsi curriculum alignment."
     },
     {
@@ -7501,8 +7501,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "backend_core_france_question_review_rationale_9",
-      "community": 59,
-      "community_name": "pipeline.py",
+      "community": 63,
+      "community_name": "NSIExercise",
       "norm_label": "ask a separate reviewer to judge the question, not its claimed label."
     },
     {
@@ -7512,8 +7512,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "backend_core_france_question_review_rationale_42",
-      "community": 59,
-      "community_name": "pipeline.py",
+      "community": 63,
+      "community_name": "NSIExercise",
       "norm_label": "incomplete or contradictory model evidence never authorises a question."
     },
     {
@@ -7523,8 +7523,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "backend_core_france_question_review_rationale_49",
-      "community": 59,
-      "community_name": "pipeline.py",
+      "community": 63,
+      "community_name": "NSIExercise",
       "norm_label": "return specifically rejected items; malformed review is not repair evidence."
     },
     {
@@ -7534,8 +7534,8 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "backend_core_france_question_review_rationale_77",
-      "community": 59,
-      "community_name": "pipeline.py",
+      "community": 63,
+      "community_name": "NSIExercise",
       "norm_label": "keep the scenario and peer questions fixed while revising one draft."
     },
     {
@@ -7589,8 +7589,8 @@
       "source_location": "L155",
       "_origin": "ast",
       "id": "backend_core_france_rendering_code_listing",
-      "community": 27,
-      "community_name": "runtime.py",
+      "community": 44,
+      "community_name": "nsi.py",
       "norm_label": "code_listing()"
     },
     {
@@ -7710,8 +7710,8 @@
       "source_location": "L156",
       "_origin": "ast",
       "id": "backend_core_france_rendering_rationale_156",
-      "community": 27,
-      "community_name": "runtime.py",
+      "community": 44,
+      "community_name": "nsi.py",
       "norm_label": "never rewrite executable text to make it fit a page."
     },
     {
@@ -14618,8 +14618,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "backend_core_reportlab_theme_aqacompactanswerlines",
-      "community": 19,
-      "community_name": "aqaecongen/render_pdf.py",
+      "community": 133,
+      "community_name": "reportlab_theme.py",
       "norm_label": "aqacompactanswerlines"
     },
     {
@@ -21727,8 +21727,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_financials_financialposition",
-      "community": 22,
-      "community_name": "test_aqa_business.py",
+      "community": 311,
+      "community_name": "FinancialPosition",
       "norm_label": "financialposition"
     },
     {
@@ -21738,8 +21738,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_financials_financialposition_post_init",
-      "community": 22,
-      "community_name": "test_aqa_business.py",
+      "community": 311,
+      "community_name": "FinancialPosition",
       "norm_label": ".__post_init__()"
     },
     {
@@ -21760,8 +21760,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_financials_financialposition_current_assets",
-      "community": 22,
-      "community_name": "test_aqa_business.py",
+      "community": 311,
+      "community_name": "FinancialPosition",
       "norm_label": ".current_assets()"
     },
     {
@@ -21771,8 +21771,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_financials_financialposition_total_assets",
-      "community": 22,
-      "community_name": "test_aqa_business.py",
+      "community": 311,
+      "community_name": "FinancialPosition",
       "norm_label": ".total_assets()"
     },
     {
@@ -21782,8 +21782,8 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_financials_financialposition_total_liabilities_and_equity",
-      "community": 22,
-      "community_name": "test_aqa_business.py",
+      "community": 311,
+      "community_name": "FinancialPosition",
       "norm_label": ".total_liabilities_and_equity()"
     },
     {
@@ -21793,8 +21793,8 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_financials_financialposition_net_current_assets",
-      "community": 22,
-      "community_name": "test_aqa_business.py",
+      "community": 311,
+      "community_name": "FinancialPosition",
       "norm_label": ".net_current_assets()"
     },
     {
@@ -21804,8 +21804,8 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_financials_financialposition_current_ratio",
-      "community": 22,
-      "community_name": "test_aqa_business.py",
+      "community": 311,
+      "community_name": "FinancialPosition",
       "norm_label": ".current_ratio()"
     },
     {
@@ -21815,8 +21815,8 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_financials_financialposition_capital_employed",
-      "community": 22,
-      "community_name": "test_aqa_business.py",
+      "community": 311,
+      "community_name": "FinancialPosition",
       "norm_label": ".capital_employed()"
     },
     {
@@ -21826,8 +21826,8 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_financials_financialposition_operating_profit_at_twelve_percent",
-      "community": 22,
-      "community_name": "test_aqa_business.py",
+      "community": 311,
+      "community_name": "FinancialPosition",
       "norm_label": ".operating_profit_at_twelve_percent()"
     },
     {
@@ -21848,8 +21848,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_financials_rationale_8",
-      "community": 22,
-      "community_name": "test_aqa_business.py",
+      "community": 311,
+      "community_name": "FinancialPosition",
       "norm_label": "the single source of truth for paper 1 financial-statement figures."
     },
     {
@@ -22464,8 +22464,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_syllabus",
-      "community": 305,
-      "community_name": "aqabizgen/syllabus.py",
+      "community": 22,
+      "community_name": "test_aqa_business.py",
       "norm_label": "aqabizgen/syllabus.py"
     },
     {
@@ -22475,8 +22475,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_syllabus_topic",
-      "community": 305,
-      "community_name": "aqabizgen/syllabus.py",
+      "community": 22,
+      "community_name": "test_aqa_business.py",
       "norm_label": "topic"
     },
     {
@@ -22486,8 +22486,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_syllabus_py_basemodel",
-      "community": 305,
-      "community_name": "aqabizgen/syllabus.py",
+      "community": 22,
+      "community_name": "test_aqa_business.py",
       "norm_label": "basemodel"
     },
     {
@@ -22497,8 +22497,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_syllabus_syllabus",
-      "community": 305,
-      "community_name": "aqabizgen/syllabus.py",
+      "community": 22,
+      "community_name": "test_aqa_business.py",
       "norm_label": "syllabus"
     },
     {
@@ -22508,8 +22508,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_syllabus_syllabus_topic_ids",
-      "community": 305,
-      "community_name": "aqabizgen/syllabus.py",
+      "community": 22,
+      "community_name": "test_aqa_business.py",
       "norm_label": ".topic_ids()"
     },
     {
@@ -22519,8 +22519,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_syllabus_load_syllabus",
-      "community": 305,
-      "community_name": "aqabizgen/syllabus.py",
+      "community": 22,
+      "community_name": "test_aqa_business.py",
       "norm_label": "load_syllabus()"
     },
     {
@@ -22530,8 +22530,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_syllabus_py_path",
-      "community": 305,
-      "community_name": "aqabizgen/syllabus.py",
+      "community": 22,
+      "community_name": "test_aqa_business.py",
       "norm_label": "path"
     },
     {
@@ -22621,8 +22621,8 @@
       "source_location": "L121",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_tests_test_aqa_business_test_financial_position_rejects_an_unbalanced_direct_value",
-      "community": 22,
-      "community_name": "test_aqa_business.py",
+      "community": 311,
+      "community_name": "FinancialPosition",
       "norm_label": "test_financial_position_rejects_an_unbalanced_direct_value()"
     },
     {
@@ -22940,8 +22940,8 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_cli_supporting",
-      "community": 176,
-      "community_name": "paper1_assets.py",
+      "community": 57,
+      "community_name": "cspapergen/cli.py",
       "norm_label": "_supporting()"
     },
     {
@@ -30707,8 +30707,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_main",
-      "community": 57,
-      "community_name": "cspapergen/cli.py",
+      "community": 312,
+      "community_name": "generate_package",
       "norm_label": "pastpapergen/__main__.py"
     },
     {
@@ -30839,8 +30839,8 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_cli_generate_package",
-      "community": 57,
-      "community_name": "cspapergen/cli.py",
+      "community": 312,
+      "community_name": "generate_package",
       "norm_label": "generate_package()"
     },
     {
@@ -30850,8 +30850,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_cli_py_path",
-      "community": 57,
-      "community_name": "cspapergen/cli.py",
+      "community": 312,
+      "community_name": "generate_package",
       "norm_label": "path"
     },
     {
@@ -30861,8 +30861,8 @@
       "source_location": "L136",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_cli_default_output_dir",
-      "community": 57,
-      "community_name": "cspapergen/cli.py",
+      "community": 312,
+      "community_name": "generate_package",
       "norm_label": "default_output_dir()"
     },
     {
@@ -30872,8 +30872,8 @@
       "source_location": "L140",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_cli_main",
-      "community": 57,
-      "community_name": "cspapergen/cli.py",
+      "community": 312,
+      "community_name": "generate_package",
       "norm_label": "main()"
     },
     {
@@ -34502,8 +34502,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_syllabus",
-      "community": 58,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 7,
+      "community_name": "build_paper_blueprint",
       "norm_label": "pastpapergen/syllabus.py"
     },
     {
@@ -35121,8 +35121,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_cli",
-      "community": 57,
-      "community_name": "cspapergen/cli.py",
+      "community": 312,
+      "community_name": "generate_package",
       "norm_label": "test_cli.py"
     },
     {
@@ -35132,8 +35132,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_cli_test_cli_dry_run_creates_paper_package",
-      "community": 57,
-      "community_name": "cspapergen/cli.py",
+      "community": 312,
+      "community_name": "generate_package",
       "norm_label": "test_cli_dry_run_creates_paper_package()"
     },
     {
@@ -35143,8 +35143,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_cli_test_generate_package_without_seed_does_not_write_audit",
-      "community": 57,
-      "community_name": "cspapergen/cli.py",
+      "community": 312,
+      "community_name": "generate_package",
       "norm_label": "test_generate_package_without_seed_does_not_write_audit()"
     },
     {
@@ -35154,8 +35154,8 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_cli_test_generate_package_reports_rendering_progress",
-      "community": 57,
-      "community_name": "cspapergen/cli.py",
+      "community": 312,
+      "community_name": "generate_package",
       "norm_label": "test_generate_package_reports_rendering_progress()"
     },
     {
@@ -35374,8 +35374,8 @@
       "source_location": "L289",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_mark_scheme_layout_test_mark_scheme_rows_fit_within_single_page_after_long_extracts",
-      "community": 7,
-      "community_name": "build_paper_blueprint",
+      "community": 74,
+      "community_name": "test_mark_scheme_layout.py",
       "norm_label": "test_mark_scheme_rows_fit_within_single_page_after_long_extracts()"
     },
     {
@@ -37816,8 +37816,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_syllabus",
-      "community": 58,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 7,
+      "community_name": "build_paper_blueprint",
       "norm_label": "test_syllabus.py"
     },
     {
@@ -37827,8 +37827,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_syllabus_test_load_seed_syllabus_has_theme_topics",
-      "community": 58,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 7,
+      "community_name": "build_paper_blueprint",
       "norm_label": "test_load_seed_syllabus_has_theme_topics()"
     },
     {
@@ -37838,8 +37838,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_syllabus_test_topic_filter_only_returns_allowed_themes",
-      "community": 58,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 7,
+      "community_name": "build_paper_blueprint",
       "norm_label": "test_topic_filter_only_returns_allowed_themes()"
     },
     {
@@ -37849,8 +37849,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_validation",
-      "community": 58,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 7,
+      "community_name": "build_paper_blueprint",
       "norm_label": "test_validation.py"
     },
     {
@@ -37860,8 +37860,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_validation_test_validate_blueprint_accepts_generated_paper",
-      "community": 58,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 7,
+      "community_name": "build_paper_blueprint",
       "norm_label": "test_validate_blueprint_accepts_generated_paper()"
     },
     {
@@ -37871,8 +37871,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_validation_test_validate_blueprint_rejects_topic_outside_paper_themes",
-      "community": 58,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 7,
+      "community_name": "build_paper_blueprint",
       "norm_label": "test_validate_blueprint_rejects_topic_outside_paper_themes()"
     },
     {
@@ -37882,8 +37882,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_validation_test_validate_blueprint_rejects_unstructured_mcq",
-      "community": 58,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 7,
+      "community_name": "build_paper_blueprint",
       "norm_label": "test_validate_blueprint_rejects_unstructured_mcq()"
     },
     {
@@ -37893,8 +37893,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_validation_test_validate_blueprint_rejects_llm_mark_text_in_prompt",
-      "community": 58,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 7,
+      "community_name": "build_paper_blueprint",
       "norm_label": "test_validate_blueprint_rejects_llm_mark_text_in_prompt()"
     },
     {
@@ -44089,8 +44089,8 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_evidence_gaps",
-      "community": 73,
-      "community_name": "properties",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "evidence_gaps"
     },
     {
@@ -44100,8 +44100,8 @@
       "source_location": "L89",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_evidence_gaps_type",
-      "community": 73,
-      "community_name": "properties",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "type"
     },
     {
@@ -45354,7 +45354,7 @@
       "source_location": "L371",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_defs_pathoption",
-      "community": 148,
+      "community": 305,
       "community_name": "id",
       "norm_label": "pathoption"
     },
@@ -45365,7 +45365,7 @@
       "source_location": "L372",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathoption_additionalproperties",
-      "community": 148,
+      "community": 305,
       "community_name": "id",
       "norm_label": "additionalproperties"
     },
@@ -45376,7 +45376,7 @@
       "source_location": "L373",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathoption_properties",
-      "community": 148,
+      "community": 305,
       "community_name": "id",
       "norm_label": "properties"
     },
@@ -45387,7 +45387,7 @@
       "source_location": "L374",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_id",
-      "community": 148,
+      "community": 305,
       "community_name": "id",
       "norm_label": "id"
     },
@@ -45398,7 +45398,7 @@
       "source_location": "L375",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_id_minlength",
-      "community": 148,
+      "community": 305,
       "community_name": "id",
       "norm_label": "minlength"
     },
@@ -45409,7 +45409,7 @@
       "source_location": "L376",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_id_title",
-      "community": 148,
+      "community": 305,
       "community_name": "id",
       "norm_label": "title"
     },
@@ -45420,7 +45420,7 @@
       "source_location": "L377",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_id_type",
-      "community": 148,
+      "community": 305,
       "community_name": "id",
       "norm_label": "type"
     },
@@ -45431,8 +45431,8 @@
       "source_location": "L379",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_item_ids",
-      "community": 143,
-      "community_name": "paths",
+      "community": 305,
+      "community_name": "id",
       "norm_label": "item_ids"
     },
     {
@@ -45442,8 +45442,8 @@
       "source_location": "L380",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_items",
-      "community": 143,
-      "community_name": "paths",
+      "community": 305,
+      "community_name": "id",
       "norm_label": "items"
     },
     {
@@ -45453,8 +45453,8 @@
       "source_location": "L383",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_minitems",
-      "community": 143,
-      "community_name": "paths",
+      "community": 305,
+      "community_name": "id",
       "norm_label": "minitems"
     },
     {
@@ -45464,8 +45464,8 @@
       "source_location": "L384",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_title",
-      "community": 143,
-      "community_name": "paths",
+      "community": 305,
+      "community_name": "id",
       "norm_label": "title"
     },
     {
@@ -45475,8 +45475,8 @@
       "source_location": "L385",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_type",
-      "community": 143,
-      "community_name": "paths",
+      "community": 305,
+      "community_name": "id",
       "norm_label": "type"
     },
     {
@@ -45519,7 +45519,7 @@
       "source_location": "L392",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathoption_title",
-      "community": 148,
+      "community": 305,
       "community_name": "id",
       "norm_label": "title"
     },
@@ -45530,7 +45530,7 @@
       "source_location": "L393",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathoption_type",
-      "community": 148,
+      "community": 305,
       "community_name": "id",
       "norm_label": "type"
     },
@@ -45542,7 +45542,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_defs_pathsection",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "pathsection"
     },
     {
@@ -45553,7 +45553,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_additionalproperties",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "additionalproperties"
     },
     {
@@ -45564,7 +45564,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_properties",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "properties"
     },
     {
@@ -45575,7 +45575,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_answer_options",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "answer_options"
     },
     {
@@ -45586,7 +45586,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_answer_options_exclusiveminimum",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "exclusiveminimum"
     },
     {
@@ -45597,7 +45597,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_answer_options_title",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "title"
     },
     {
@@ -45608,7 +45608,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_answer_options_type",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "type"
     },
     {
@@ -45619,7 +45619,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_candidate_marks",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "candidate_marks"
     },
     {
@@ -45630,7 +45630,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_candidate_marks_exclusiveminimum",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "exclusiveminimum"
     },
     {
@@ -45641,7 +45641,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_candidate_marks_title",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "title"
     },
     {
@@ -45652,7 +45652,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_candidate_marks_type",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "type"
     },
     {
@@ -45663,7 +45663,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_options",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "options"
     },
     {
@@ -45685,7 +45685,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_options_minitems",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "minitems"
     },
     {
@@ -45696,7 +45696,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_options_title",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "title"
     },
     {
@@ -45707,7 +45707,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_options_type",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "type"
     },
     {
@@ -45718,7 +45718,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_required",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "required"
     },
     {
@@ -45729,7 +45729,7 @@
       "_origin": "ast",
       "id": "ref_answer_options",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "answer_options"
     },
     {
@@ -45740,7 +45740,7 @@
       "_origin": "ast",
       "id": "ref_candidate_marks",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "candidate_marks"
     },
     {
@@ -45751,7 +45751,7 @@
       "_origin": "ast",
       "id": "ref_options",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "options"
     },
     {
@@ -45762,7 +45762,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_title",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "title"
     },
     {
@@ -45773,7 +45773,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_type",
       "community": 148,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "type"
     },
     {
@@ -48071,8 +48071,8 @@
       "source_location": "L896",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_minlength",
-      "community": 143,
-      "community_name": "paths",
+      "community": 305,
+      "community_name": "id",
       "norm_label": "minlength"
     },
     {
@@ -48699,7 +48699,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_application_appcommands",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "appcommands.swift"
     },
     {
@@ -48711,7 +48711,7 @@
       "_origin": "ast",
       "id": "swiftui",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "swiftui"
     },
     {
@@ -48722,7 +48722,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_application_appcommands_appcommands",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "appcommands"
     },
     {
@@ -48733,7 +48733,7 @@
       "_origin": "ast",
       "id": "commands",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "commands"
     },
     {
@@ -48932,7 +48932,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "papercreatorapp.swift"
     },
     {
@@ -48944,7 +48944,7 @@
       "_origin": "ast",
       "id": "tipkit",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "tipkit"
     },
     {
@@ -48955,7 +48955,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_applaunchpolicy",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "applaunchpolicy"
     },
     {
@@ -48966,7 +48966,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_applaunchpolicy_presentsmainwindow",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": ".presentsmainwindow()"
     },
     {
@@ -48977,7 +48977,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_swift_string",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "string"
     },
     {
@@ -48988,7 +48988,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_swift_bool",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "bool"
     },
     {
@@ -48999,7 +48999,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_papercreator",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "papercreator"
     },
     {
@@ -49010,7 +49010,7 @@
       "_origin": "ast",
       "id": "app",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "app"
     },
     {
@@ -49021,7 +49021,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_papercreator_init",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": ".init()"
     },
     {
@@ -49032,7 +49032,7 @@
       "_origin": "ast",
       "id": "scene",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "scene"
     },
     {
@@ -49043,7 +49043,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_papercreator_body",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": ".body"
     },
     {
@@ -49053,7 +49053,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": "nativevisualstyle.swift"
     },
@@ -49064,7 +49064,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": "workspacelayoutmode"
     },
@@ -49086,7 +49086,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_compact",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": "compact"
     },
@@ -49097,7 +49097,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_standard",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": "standard"
     },
@@ -49108,7 +49108,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_expanded",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": "expanded"
     },
@@ -49119,7 +49119,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_swift_bool",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": "bool"
     },
@@ -49130,7 +49130,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_showssidebar",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": ".showssidebar"
     },
@@ -49141,7 +49141,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_swift_cgfloat",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": "cgfloat"
     },
@@ -49152,7 +49152,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_qualityreviewwidth",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": ".qualityreviewwidth"
     },
@@ -49163,7 +49163,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutpolicy",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": "workspacelayoutpolicy"
     },
@@ -49174,7 +49174,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutpolicy_mode",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": ".mode()"
     },
@@ -49208,7 +49208,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_sharedviews",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "sharedviews.swift"
     },
     {
@@ -52981,8 +52981,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview",
-      "community": 55,
-      "community_name": "SwiftUI",
+      "community": 190,
+      "community_name": "DocumentPreviewView",
       "norm_label": "documentpreviewview.swift"
     },
     {
@@ -52994,7 +52994,7 @@
       "_origin": "ast",
       "id": "appkit",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "appkit"
     },
     {
@@ -53005,8 +53005,8 @@
       "source_location": "L2",
       "_origin": "ast",
       "id": "combine",
-      "community": 55,
-      "community_name": "SwiftUI",
+      "community": 190,
+      "community_name": "DocumentPreviewView",
       "norm_label": "combine"
     },
     {
@@ -53017,8 +53017,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "pdfkit",
-      "community": 55,
-      "community_name": "SwiftUI",
+      "community": 190,
+      "community_name": "DocumentPreviewView",
       "norm_label": "pdfkit"
     },
     {
@@ -53029,8 +53029,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "quartz",
-      "community": 55,
-      "community_name": "SwiftUI",
+      "community": 190,
+      "community_name": "DocumentPreviewView",
       "norm_label": "quartz"
     },
     {
@@ -53041,8 +53041,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "uniformtypeidentifiers",
-      "community": 55,
-      "community_name": "SwiftUI",
+      "community": 190,
+      "community_name": "DocumentPreviewView",
       "norm_label": "uniformtypeidentifiers"
     },
     {
@@ -53394,7 +53394,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview",
       "community": 81,
-      "community_name": ".body",
+      "community_name": "JobHistoryView",
       "norm_label": "jobhistoryview.swift"
     },
     {
@@ -53405,7 +53405,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_jobhistoryview",
       "community": 81,
-      "community_name": ".body",
+      "community_name": "JobHistoryView",
       "norm_label": "jobhistoryview"
     },
     {
@@ -53416,7 +53416,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_swift_generationjobrecord",
       "community": 81,
-      "community_name": ".body",
+      "community_name": "JobHistoryView",
       "norm_label": "generationjobrecord"
     },
     {
@@ -53427,7 +53427,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_jobhistoryview_body",
       "community": 81,
-      "community_name": ".body",
+      "community_name": "JobHistoryView",
       "norm_label": ".body"
     },
     {
@@ -53438,7 +53438,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_jobhistoryview_selectedrecord",
       "community": 81,
-      "community_name": ".body",
+      "community_name": "JobHistoryView",
       "norm_label": ".selectedrecord"
     },
     {
@@ -53449,7 +53449,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_swift_set",
       "community": 81,
-      "community_name": ".body",
+      "community_name": "JobHistoryView",
       "norm_label": "set"
     },
     {
@@ -53460,7 +53460,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_jobhistoryview_boardtitle",
       "community": 81,
-      "community_name": ".body",
+      "community_name": "JobHistoryView",
       "norm_label": ".boardtitle()"
     },
     {
@@ -53471,7 +53471,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_swift_string",
       "community": 81,
-      "community_name": ".body",
+      "community_name": "JobHistoryView",
       "norm_label": "string"
     },
     {
@@ -53482,7 +53482,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_generationjobstate",
       "community": 81,
-      "community_name": ".body",
+      "community_name": "JobHistoryView",
       "norm_label": "generationjobstate"
     },
     {
@@ -53493,7 +53493,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_generationjobstate_title",
       "community": 81,
-      "community_name": ".body",
+      "community_name": "JobHistoryView",
       "norm_label": ".title"
     },
     {
@@ -53504,7 +53504,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_generationjobstate_systemimage",
       "community": 81,
-      "community_name": ".body",
+      "community_name": "JobHistoryView",
       "norm_label": ".systemimage"
     },
     {
@@ -54549,7 +54549,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "settingspane.swift"
     },
     {
@@ -54560,7 +54560,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspane",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "settingspane"
     },
     {
@@ -54571,7 +54571,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspane_body",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": ".body"
     },
     {
@@ -54582,7 +54582,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspaneid",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "settingspaneid"
     },
     {
@@ -54593,7 +54593,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspaneid_ai",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "ai"
     },
     {
@@ -54604,7 +54604,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspaneid_output",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "output"
     },
     {
@@ -54615,7 +54615,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspaneid_privacy",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "privacy"
     },
     {
@@ -54626,7 +54626,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspaneid_title",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": ".title"
     },
     {
@@ -54637,7 +54637,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingswindowconfiguration",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "settingswindowconfiguration"
     },
     {
@@ -54648,7 +54648,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingswindowconfiguration_makensview",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": ".makensview()"
     },
     {
@@ -54659,7 +54659,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_swift_context",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "context"
     },
     {
@@ -54670,7 +54670,7 @@
       "_origin": "ast",
       "id": "nsview",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "nsview"
     },
     {
@@ -54681,7 +54681,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingswindowconfiguration_updatensview",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": ".updatensview()"
     },
     {
@@ -54692,7 +54692,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingswindowconfiguration_configure",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": ".configure()"
     },
     {
@@ -54702,7 +54702,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "nswindow",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": "nswindow"
     },
@@ -54714,7 +54714,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_aisettingstab",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "aisettingstab"
     },
     {
@@ -54736,7 +54736,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_aisettingstab_providersettings",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": ".providersettings"
     },
     {
@@ -54769,7 +54769,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_privacysettingstab",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "privacysettingstab"
     },
     {
@@ -54780,7 +54780,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_privacysettingstab_body",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": ".body"
     },
     {
@@ -54790,7 +54790,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": "contentview.swift"
     },
@@ -54801,7 +54801,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentview",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": "contentview"
     },
@@ -54812,7 +54812,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentview_body",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": ".body"
     },
@@ -54823,7 +54823,7 @@
       "source_location": "L94",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentview_columnvisibility",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": ".columnvisibility()"
     },
@@ -54834,7 +54834,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_swift_binding",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": "binding"
     },
@@ -54845,7 +54845,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "navigationsplitviewvisibility",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": "navigationsplitviewvisibility"
     },
@@ -54856,7 +54856,7 @@
       "source_location": "L117",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentview_ensuresidebarselection",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": ".ensuresidebarselection()"
     },
@@ -54867,7 +54867,7 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentview_selectboard",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": ".selectboard()"
     },
@@ -54878,7 +54878,7 @@
       "source_location": "L135",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentviewpreview",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": "contentviewpreview"
     },
@@ -54889,7 +54889,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "previewprovider",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": "previewprovider"
     },
@@ -54900,7 +54900,7 @@
       "source_location": "L136",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentviewpreview_previews",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": ".previews"
     },
@@ -55473,8 +55473,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator",
-      "community": 55,
-      "community_name": "SwiftUI",
+      "community": 190,
+      "community_name": "DocumentPreviewView",
       "norm_label": "applicationcoordinator.swift"
     },
     {
@@ -55485,8 +55485,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "usernotifications",
-      "community": 55,
-      "community_name": "SwiftUI",
+      "community": 190,
+      "community_name": "DocumentPreviewView",
       "norm_label": "usernotifications"
     },
     {
@@ -56717,8 +56717,8 @@
       "source_location": "L1309",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_runningoperation",
-      "community": 55,
-      "community_name": "SwiftUI",
+      "community": 190,
+      "community_name": "DocumentPreviewView",
       "norm_label": "runningoperation"
     },
     {
@@ -56728,8 +56728,8 @@
       "source_location": "L1310",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_runningoperation_none",
-      "community": 55,
-      "community_name": "SwiftUI",
+      "community": 190,
+      "community_name": "DocumentPreviewView",
       "norm_label": "none"
     },
     {
@@ -56739,8 +56739,8 @@
       "source_location": "L1311",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_runningoperation_generation",
-      "community": 55,
-      "community_name": "SwiftUI",
+      "community": 190,
+      "community_name": "DocumentPreviewView",
       "norm_label": "generation"
     },
     {
@@ -56750,8 +56750,8 @@
       "source_location": "L1312",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_runningoperation_modelpull",
-      "community": 55,
-      "community_name": "SwiftUI",
+      "community": 190,
+      "community_name": "DocumentPreviewView",
       "norm_label": "modelpull"
     },
     {
@@ -56761,8 +56761,8 @@
       "source_location": "L1313",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_runningoperation_mlxsetup",
-      "community": 55,
-      "community_name": "SwiftUI",
+      "community": 190,
+      "community_name": "DocumentPreviewView",
       "norm_label": "mlxsetup"
     },
     {
@@ -58248,7 +58248,7 @@
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "accessibilitytests.swift"
     },
     {
@@ -58260,7 +58260,7 @@
       "_origin": "ast",
       "id": "xctest",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "xctest"
     },
     {
@@ -58272,7 +58272,7 @@
       "_origin": "ast",
       "id": "papercreator",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "papercreator"
     },
     {
@@ -58282,7 +58282,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": "accessibilitytests"
     },
@@ -58293,7 +58293,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "xctestcase",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": "xctestcase"
     },
@@ -58304,7 +58304,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testreadyworkspacelaysoutinanexpandedwindow",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": ".testreadyworkspacelaysoutinanexpandedwindow()"
     },
@@ -58315,7 +58315,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testworkspacelayoutprotectscompactwindowsfromcolumnoverlap",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": ".testworkspacelayoutprotectscompactwindowsfromcolumnoverlap()"
     },
@@ -58337,7 +58337,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testeveryproviderandhelptopichasspokentextandsymbol",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": ".testeveryproviderandhelptopichasspokentextandsymbol()"
     },
@@ -58348,7 +58348,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testqualificationstatesneverrelyoncolouralone",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": ".testqualificationstatesneverrelyoncolouralone()"
     },
@@ -58359,7 +58359,7 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testlongpseudolocalisedcopyandrighttoleftlocaleremainavailable",
-      "community": 81,
+      "community": 55,
       "community_name": ".body",
       "norm_label": ".testlongpseudolocalisedcopyandrighttoleftlocaleremainavailable()"
     },
@@ -58382,7 +58382,7 @@
       "_origin": "ast",
       "id": "macos_tests_apptests",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "apptests.swift"
     },
     {
@@ -58404,7 +58404,7 @@
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testapplaunchpolicysuppresseswindowsonlyduringunittests",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": ".testapplaunchpolicysuppresseswindowsonlyduringunittests()"
     },
     {
@@ -58877,7 +58877,7 @@
       "_origin": "ast",
       "id": "macos_tests_coordinatortests",
       "community": 55,
-      "community_name": "SwiftUI",
+      "community_name": ".body",
       "norm_label": "coordinatortests.swift"
     },
     {
@@ -65162,8 +65162,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_french_framework",
-      "community": 27,
-      "community_name": "runtime.py",
+      "community": 44,
+      "community_name": "nsi.py",
       "norm_label": "test_french_framework.py"
     },
     {
@@ -65173,8 +65173,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "tests_test_french_framework_test_code_listings_never_silently_wrap_or_change_indentation",
-      "community": 27,
-      "community_name": "runtime.py",
+      "community": 44,
+      "community_name": "nsi.py",
       "norm_label": "test_code_listings_never_silently_wrap_or_change_indentation()"
     },
     {
@@ -65217,8 +65217,8 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "tests_test_french_framework_test_french_pdf_has_real_credit_language_and_no_official_claim",
-      "community": 27,
-      "community_name": "runtime.py",
+      "community": 44,
+      "community_name": "nsi.py",
       "norm_label": "test_french_pdf_has_real_credit_language_and_no_official_claim()"
     },
     {
@@ -65228,8 +65228,8 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "tests_test_french_framework_test_french_pdf_renders_structured_tables_and_graphs_as_vectors",
-      "community": 27,
-      "community_name": "runtime.py",
+      "community": 44,
+      "community_name": "nsi.py",
       "norm_label": "test_french_pdf_renders_structured_tables_and_graphs_as_vectors()"
     },
     {
@@ -65239,8 +65239,8 @@
       "source_location": "L186",
       "_origin": "ast",
       "id": "tests_test_french_framework_test_french_pdf_uses_measured_bac_page_geometry",
-      "community": 27,
-      "community_name": "runtime.py",
+      "community": 44,
+      "community_name": "nsi.py",
       "norm_label": "test_french_pdf_uses_measured_bac_page_geometry()"
     },
     {
@@ -65250,8 +65250,8 @@
       "source_location": "L187",
       "_origin": "ast",
       "id": "tests_test_french_framework_rationale_187",
-      "community": 27,
-      "community_name": "runtime.py",
+      "community": 44,
+      "community_name": "nsi.py",
       "norm_label": "keep the provisional 2027 profile close to the measured 2026 subject."
     },
     {
@@ -65305,8 +65305,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_french_provider",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": "test_french_provider.py"
     },
     {
@@ -65316,8 +65316,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "tests_test_french_provider_test_french_transport_has_own_schema_seed_and_output_budget",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": "test_french_transport_has_own_schema_seed_and_output_budget()"
     },
     {
@@ -65327,8 +65327,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "tests_test_french_provider_test_french_transport_refuses_redirects_and_environment_proxy",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": "test_french_transport_refuses_redirects_and_environment_proxy()"
     },
     {
@@ -65338,8 +65338,8 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "tests_test_french_provider_test_french_transport_allows_slow_local_generation",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": "test_french_transport_allows_slow_local_generation()"
     },
     {
@@ -65349,8 +65349,8 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "tests_test_french_provider_test_alignment_transport_requires_per_question_evidence",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": "test_alignment_transport_requires_per_question_evidence()"
     },
     {
@@ -65360,8 +65360,8 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "tests_test_french_provider_test_repair_transport_requires_material_and_verification_contracts",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": "test_repair_transport_requires_material_and_verification_contracts()"
     },
     {
@@ -68558,11 +68558,11 @@
       "label": "test_authoring_prompt_explains_the_balanced_tree_assumption()",
       "file_type": "code",
       "source_file": "tests/test_nsi_pipeline.py",
-      "source_location": "L1700",
+      "source_location": "L1713",
       "_origin": "ast",
       "id": "tests_test_nsi_pipeline_test_authoring_prompt_explains_the_balanced_tree_assumption",
-      "community": 44,
-      "community_name": "nsi.py",
+      "community": 303,
+      "community_name": "test_french_provider.py",
       "norm_label": "test_authoring_prompt_explains_the_balanced_tree_assumption()"
     },
     {
@@ -111805,7 +111805,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1099",
+      "source_location": "L1095",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_validate_package",
@@ -112016,7 +112016,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L818",
+      "source_location": "L814",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_check_exercise_plan",
@@ -112402,7 +112402,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L930",
+      "source_location": "L926",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -127601,7 +127601,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L807",
+      "source_location": "L803",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_check_exercise_plan",
@@ -127613,7 +127613,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L789",
+      "source_location": "L785",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_exercise_candidate_text",
@@ -127626,7 +127626,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L962",
+      "source_location": "L958",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -127661,7 +127661,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L624",
+      "source_location": "L620",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_require_semantic_material_integrity",
@@ -127673,7 +127673,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L732",
+      "source_location": "L728",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_review_prompt",
@@ -127686,7 +127686,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1149",
+      "source_location": "L1145",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_validate_package",
@@ -128078,7 +128078,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L713",
+      "source_location": "L709",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_prompt",
@@ -128137,7 +128137,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L853",
+      "source_location": "L849",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_prepare_candidate",
@@ -128149,7 +128149,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1186",
+      "source_location": "L1182",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_validate_package",
@@ -128173,7 +128173,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1025",
+      "source_location": "L1021",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -128405,7 +128405,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L800",
+      "source_location": "L796",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_originality",
@@ -128486,7 +128486,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L641",
+      "source_location": "L637",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline",
@@ -128508,7 +128508,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L807",
+      "source_location": "L803",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline",
@@ -128519,7 +128519,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L754",
+      "source_location": "L750",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline",
@@ -128541,7 +128541,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L789",
+      "source_location": "L785",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline",
@@ -128552,7 +128552,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L866",
+      "source_location": "L862",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline",
@@ -128596,7 +128596,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L799",
+      "source_location": "L795",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline",
@@ -128607,7 +128607,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L851",
+      "source_location": "L847",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline",
@@ -128618,7 +128618,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L655",
+      "source_location": "L651",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline",
@@ -128695,7 +128695,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L624",
+      "source_location": "L620",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline",
@@ -128728,7 +128728,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L732",
+      "source_location": "L728",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline",
@@ -128750,7 +128750,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1093",
+      "source_location": "L1089",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline",
@@ -129001,7 +129001,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1129",
+      "source_location": "L1125",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_validate_package",
@@ -129049,7 +129049,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L887",
+      "source_location": "L883",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -129061,7 +129061,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1126",
+      "source_location": "L1122",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_validate_package",
@@ -129109,7 +129109,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_pipeline.py",
-      "source_location": "L1701",
+      "source_location": "L1714",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_pipeline",
@@ -129121,7 +129121,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_pipeline.py",
-      "source_location": "L1703",
+      "source_location": "L1716",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_pipeline_test_authoring_prompt_explains_the_balanced_tree_assumption",
@@ -129145,7 +129145,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L911",
+      "source_location": "L907",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -129169,7 +129169,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1136",
+      "source_location": "L1132",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_validate_package",
@@ -129312,7 +129312,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L854",
+      "source_location": "L850",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_prepare_candidate",
@@ -129501,7 +129501,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L855",
+      "source_location": "L851",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_prepare_candidate",
@@ -129513,7 +129513,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1194",
+      "source_location": "L1190",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_validate_package",
@@ -129536,7 +129536,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1178",
+      "source_location": "L1174",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_validate_package",
@@ -129548,7 +129548,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L856",
+      "source_location": "L852",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_prepare_candidate",
@@ -129571,7 +129571,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1209",
+      "source_location": "L1205",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_validate_package",
@@ -129594,7 +129594,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L626",
+      "source_location": "L622",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_require_semantic_material_integrity",
@@ -129665,7 +129665,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L630",
+      "source_location": "L626",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_require_semantic_material_integrity",
@@ -129724,7 +129724,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L631",
+      "source_location": "L627",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_require_semantic_material_integrity",
@@ -129807,7 +129807,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L632",
+      "source_location": "L628",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_require_semantic_material_integrity",
@@ -129866,7 +129866,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L635",
+      "source_location": "L631",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_require_semantic_material_integrity",
@@ -129950,7 +129950,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L857",
+      "source_location": "L853",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_prepare_candidate",
@@ -129962,7 +129962,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1211",
+      "source_location": "L1207",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_validate_package",
@@ -129974,7 +129974,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L641",
+      "source_location": "L637",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_atomic_json",
@@ -129986,7 +129986,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1054",
+      "source_location": "L1050",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -130022,7 +130022,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L866",
+      "source_location": "L862",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -130034,7 +130034,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L932",
+      "source_location": "L928",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -130070,7 +130070,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_pipeline.py",
-      "source_location": "L1701",
+      "source_location": "L1714",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_pipeline",
@@ -130082,7 +130082,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_pipeline.py",
-      "source_location": "L1703",
+      "source_location": "L1716",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_pipeline_test_authoring_prompt_explains_the_balanced_tree_assumption",
@@ -130094,7 +130094,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1028",
+      "source_location": "L1024",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -130106,7 +130106,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1031",
+      "source_location": "L1027",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -130118,7 +130118,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1227",
+      "source_location": "L1223",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_validate_package",
@@ -130130,7 +130130,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L961",
+      "source_location": "L957",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -130142,7 +130142,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L801",
+      "source_location": "L797",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_originality",
@@ -130154,7 +130154,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1243",
+      "source_location": "L1239",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_validate_package",
@@ -130190,34 +130190,34 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L862",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "backend_core_france_pipeline_prepare_candidate",
-      "target": "backend_core_france_pipeline_originality",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1239",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "backend_core_france_pipeline_validate_package",
-      "target": "backend_core_france_pipeline_originality",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "Backend/Core/france/pipeline.py",
       "source_location": "L858",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_prepare_candidate",
+      "target": "backend_core_france_pipeline_originality",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Backend/Core/france/pipeline.py",
+      "source_location": "L1235",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_core_france_pipeline_validate_package",
+      "target": "backend_core_france_pipeline_originality",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Backend/Core/france/pipeline.py",
+      "source_location": "L854",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "backend_core_france_pipeline_prepare_candidate",
       "target": "backend_core_france_pipeline_check_exercise_plan",
       "confidence_score": 1.0
     },
@@ -130226,7 +130226,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1155",
+      "source_location": "L1151",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_validate_package",
@@ -130238,7 +130238,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L970",
+      "source_location": "L966",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -130250,7 +130250,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L859",
+      "source_location": "L855",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_prepare_candidate",
@@ -130261,10 +130261,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L852",
+      "source_location": "L848",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_pipeline_rationale_852",
+      "source": "backend_core_france_pipeline_rationale_848",
       "target": "backend_core_france_pipeline_prepare_candidate",
       "confidence_score": 1.0
     },
@@ -130273,7 +130273,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1089",
+      "source_location": "L1085",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -130285,7 +130285,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L983",
+      "source_location": "L979",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -130297,7 +130297,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L980",
+      "source_location": "L976",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -130309,7 +130309,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L987",
+      "source_location": "L983",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -130321,7 +130321,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L996",
+      "source_location": "L992",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -130333,7 +130333,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L906",
+      "source_location": "L902",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -130345,7 +130345,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L889",
+      "source_location": "L885",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_generate_assessment",
@@ -130777,7 +130777,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1222",
+      "source_location": "L1218",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_validate_package",
@@ -130789,7 +130789,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/pipeline.py",
-      "source_location": "L1231",
+      "source_location": "L1227",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_pipeline_validate_package",
@@ -298407,7 +298407,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_pipeline.py",
-      "source_location": "L1700",
+      "source_location": "L1713",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_pipeline",
@@ -325388,5 +325388,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "f0d1eb9ca01c45924c57c81a1dc5d6c123c12d6f"
+  "built_at_commit": "50fd1048fa4f98b6f9f4503ccdea2ab964e8d794"
 }

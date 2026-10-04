@@ -1695,6 +1695,19 @@ def test_negated_balance_and_unrelated_tree_do_not_license_logarithmic_claim():
             answer,
             "Un autre ABR utilisé auparavant est équilibré.",
         )
+    with pytest.raises(ValueError, match="équilibre"):
+        require_tree_complexity_premise(
+            "Ce n'est pas vrai que cet ABR est équilibré. "
+            "Pourquoi est-il plus efficace ?",
+            answer,
+            "",
+        )
+    with pytest.raises(ValueError, match="équilibre"):
+        require_tree_complexity_premise(
+            "Cet ABR est équilibré ? Pourquoi est-il plus efficace ?",
+            answer,
+            "",
+        )
 
 
 def test_authoring_prompt_explains_the_balanced_tree_assumption():

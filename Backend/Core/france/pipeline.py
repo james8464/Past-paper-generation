@@ -611,10 +611,6 @@ def require_tree_complexity_premise(prompt: str, answer: str, context: str) -> N
             r"\b(?:non|ne|pas|jamais|déséquilibré)\b", clause[: balance.end()], re.I
         ):
             positive = True
-    if not positive and re.search(
-        r"\b(?:cet|l['’])\s*ABR\s+est\s+équilibré\b", prompt, re.I
-    ):
-        positive = True
     if not positive:
         raise ValueError(
             "L'avantage logarithmique de l'ABR suppose un équilibre non établi"
