@@ -1534,6 +1534,25 @@ def test_early_return_on_repeat_can_really_stop_breadth_first_search():
     )
 
 
+def test_break_in_nested_loop_does_not_stop_queue_traversal():
+    from Backend.Core.france.pipeline import require_algorithm_premises
+
+    prompt = (
+        "```python\n"
+        "while file:\n"
+        "    sommet = file.pop(0)\n"
+        "    if sommet not in visites:\n"
+        "        visites.append(sommet)\n"
+        "        for voisin in adj[sommet]:\n"
+        "            break\n"
+        "        file.extend(adj[sommet])\n"
+        "```\n"
+        "Le programme s'arrête prématurément si une boucle existe."
+    )
+    with pytest.raises(ValueError, match="parcours en largeur"):
+        require_algorithm_premises(prompt, "La boucle provoque l'arrêt prématuré.")
+
+
 def test_tree_constructor_must_be_defined_in_candidate_facing_material():
     from Backend.Core.france.pipeline import require_tree_constructor_context
 
@@ -1637,3 +1656,13 @@ def test_negated_tree_balance_is_not_a_logarithmic_premise():
             "La recherche coûte O(log n).",
             "",
         )
+
+
+def test_current_balanced_tree_premise_overrides_earlier_unbalanced_case():
+    from Backend.Core.france.pipeline import require_tree_complexity_premise
+
+    require_tree_complexity_premise(
+        "On suppose maintenant cet ABR équilibré. Pourquoi est-il plus efficace ?",
+        "La recherche dans cet arbre équilibré coûte O(log n).",
+        "La question précédente portait sur un ABR non équilibré.",
+    )

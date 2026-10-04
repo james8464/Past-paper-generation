@@ -536,6 +536,20 @@ def require_algorithm_premises(prompt: str, answer: str) -> None:
     )
     if challenged_claim:
         return
+
+    def exits_queue_loop(node: ast.AST, nested_loop: bool = False) -> bool:
+        if isinstance(node, (ast.Return, ast.Raise)):
+            return True
+        if isinstance(node, ast.Break):
+            return not nested_loop
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            return False
+        nested = nested_loop or isinstance(node, (ast.For, ast.While))
+        return any(
+            exits_queue_loop(child, nested)
+            for child in ast.iter_child_nodes(node)
+        )
+
     blocks = re.findall(r"```(?:python)?\s*\n(.*?)```", prompt, re.DOTALL | re.I)
     for code in blocks:
         try:
@@ -543,10 +557,10 @@ def require_algorithm_premises(prompt: str, answer: str) -> None:
         except SyntaxError:
             continue
         loop_has_exit = any(
-            isinstance(child, (ast.Return, ast.Break, ast.Raise))
+            exits_queue_loop(child)
             for loop in ast.walk(tree)
             if isinstance(loop, ast.While)
-            for child in ast.walk(loop)
+            for child in loop.body
         )
         if all(
             re.search(pattern, code)
@@ -585,9 +599,10 @@ def require_tree_complexity_premise(prompt: str, answer: str, context: str) -> N
         and re.search(r"\blog\s*n\b", answer, re.I)
     ):
         return
-    visible = context + "\n" + prompt
-    if re.search(r"\b(?:non|pas|jamais)\s+équilibré\b|\bdéséquilibré\b", visible, re.I) or not re.search(
-        r"\béquilibré\b", visible, re.I
+    balance_terms = r"\b(?:équilibré|déséquilibré)\b"
+    premise = prompt if re.search(balance_terms, prompt, re.I) else context
+    if re.search(r"\b(?:non|pas|jamais)\s+équilibré\b|\bdéséquilibré\b", premise, re.I) or not re.search(
+        r"\béquilibré\b", premise, re.I
     ):
         raise ValueError(
             "L'avantage logarithmique de l'ABR suppose un équilibre non établi"
