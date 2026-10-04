@@ -190,8 +190,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
-    "mtime": 1791132897.1522622,
-    "ast_hash": "ed1588cb819b72e6d5615339db3c4032",
+    "mtime": 1791148099.104049,
+    "ast_hash": "548798d997f83558b270c1952687e60a",
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
@@ -1670,8 +1670,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_provider.py": {
-    "mtime": 1791133006.5710552,
-    "ast_hash": "e6b7215f05b2b5c49ef0f72ca8e949b1",
+    "mtime": 1791148087.6566975,
+    "ast_hash": "3a13a1cf8a207327cac48d4d0e9250e2",
     "semantic_hash": ""
   },
   "tests/test_french_review.py": {
@@ -2330,8 +2330,8 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-evaluation.md": {
-    "mtime": 1791146545.5647917,
-    "ast_hash": "e16231bebe80d6d58a84955ef47ab2fc",
+    "mtime": 1791148114.3951592,
+    "ast_hash": "3a5d65a3114a54fc696c1551894cd76e",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-prototype-verification-2026-09-28.md": {
@@ -2590,8 +2590,8 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-manual-comparison-2026-10-04.md": {
-    "mtime": 1791146636.3013384,
-    "ast_hash": "dab2fca5891240af2c1f01780a2f34e6",
+    "mtime": 1791148124.7864337,
+    "ast_hash": "676719d2a31aa39de56757da0dead8d8",
     "semantic_hash": ""
   }
 }
