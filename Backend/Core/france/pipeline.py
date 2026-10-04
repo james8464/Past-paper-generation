@@ -188,10 +188,11 @@ def require_link_for_material_mentions(exercise: NSIExercise) -> None:
     kinds = {material.kind for material in exercise.materials}
     patterns = []
     if "weighted_graph" in kinds:
-        patterns.append(r"\b(?:le|du|au|ce)\s+graphe\b")
+        patterns.append(r"\b(?:ce|du|au)\s+graphe\b")
         patterns.append(r"\bgraphe\s+(?:[A-Z]\b|fourni\b|ci-dessus\b)")
+        patterns.append(r"(?-i:\bG\b)")
     if "table" in kinds:
-        patterns.append(r"\b(?:le|du|au|ce)\s+tableau\b")
+        patterns.append(r"\b(?:ce|du|au)\s+tableau\b")
         patterns.append(r"\btableau\s+(?:fourni\b|ci-dessus\b)")
     if kinds:
         patterns.append(r"\b(?:la|cette|de la)\s+figure\b")

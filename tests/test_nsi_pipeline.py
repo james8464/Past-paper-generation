@@ -470,16 +470,23 @@ def test_legacy_french_package_without_candidate_binding_evidence_remains_readab
     validate_package(package)
 
 
-def test_one_linked_question_cannot_hide_another_unlinked_figure_question(tmp_path):
+@pytest.mark.parametrize(
+    "unlinked_prompt",
+    [
+        "En utilisant le graphe G fourni, expliquer le résultat obtenu.",
+        "À partir des arêtes de G, calculer la distance du trajet.",
+    ],
+)
+def test_one_linked_question_cannot_hide_another_unlinked_figure_question(
+    tmp_path, unlinked_prompt
+):
     from Backend.Core.france.pipeline import generate_assessment
 
     class VagueFigureClient(FrenchClient):
         def generate_json(self, prompt):
             result = super().generate_json(prompt)
             if prompt.startswith("Rédige directement en français académique"):
-                result["questions"][1]["prompt"] = (
-                    "En utilisant le graphe G fourni, expliquer le résultat obtenu."
-                )
+                result["questions"][1]["prompt"] = unlinked_prompt
                 result["questions"][1]["material_ids"] = []
             return result
 
@@ -492,3 +499,27 @@ def test_one_linked_question_cannot_hide_another_unlinked_figure_question(tmp_pa
             seed=5,
             checkpoint=tmp_path / "checkpoint.json",
         )
+
+
+def test_constructing_a_new_graph_does_not_require_link_to_supplied_graph(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    class NewGraphClient(FrenchClient):
+        def generate_json(self, prompt):
+            result = super().generate_json(prompt)
+            if prompt.startswith("Rédige directement en français académique"):
+                result["questions"][1]["prompt"] = (
+                    "Construire le graphe des dépendances de votre algorithme."
+                )
+                result["questions"][1]["material_ids"] = []
+            return result
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=NewGraphClient(),
+        seed=5,
+        checkpoint=tmp_path / "checkpoint.json",
+    )
+    assert package["status"] == "unreviewed_draft"
