@@ -20,6 +20,7 @@ from Backend.Core.france.nsi import (
     CURRICULUM_OBJECTIVES,
     LANGUAGE_RUBRIC_2027,
     NSIExercise,
+    NSIQuestion,
     authoring_schema,
     require_authoring_fields,
     solver_prompt,
@@ -29,13 +30,14 @@ from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.france.verification import verify_contract
 from Backend.Core.scoped_references import ReferenceIndex
 
-PROMPT_VERSION = "fr-nsi-written-2027-v7"
+PROMPT_VERSION = "fr-nsi-written-2027-v8"
 # Recorded source identities prevent a newer package dropping its evidence via
 # an earlier prompt-version label. The separate manifest remains the trust root.
 LEGACY_IMPLEMENTATIONS = {
     "fr-nsi-written-2027-v4": "bd1468ca74a1dbe501e5eedc306d26531fb52ff9a6271b20fc13607cbfafbfbb",
     "fr-nsi-written-2027-v5": "2e603cc84d59c48553b7c4a8e31129a3a337092b62188391f276c20125cef9a5",
     "fr-nsi-written-2027-v6": "cba1b74b98c236608d983242778de8db6c3e891142e4ea635ebb0c7fd776c69d",
+    "fr-nsi-written-2027-v7": "20c0a8fa1f53825d6598ae1f1af59a1cee2ddbc946c4a0fd7c49233e79e0bcdf",
 }
 REVIEW_FLAGS = (
     "correct",
@@ -191,8 +193,86 @@ def digest(value) -> str:
     ).hexdigest()
 
 
+def _named_figure_ids(prompt: str, declared: set[str]) -> list[str]:
+    """Read explicit figure names, including coordinated French references."""
+    token = re.compile(
+        r"\s*(?:`([a-z][a-z0-9_-]{1,31})`|«\s*([a-z][a-z0-9_-]{1,31})\s*»|([a-z][a-z0-9_-]{1,31}))",
+        flags=re.IGNORECASE,
+    )
+    connector = re.compile(r"\s*(?:,|\bet\b|\bou\b)\s*", flags=re.IGNORECASE)
+    mentioned = []
+    for figure in re.finditer(r"\b(?:graphes?|tableaux|figures?)\b", prompt, re.I):
+        tail = prompt[figure.end() :]
+        tail = re.sub(r"^\s*(?:pondérés?|orientés?)\b", "", tail, flags=re.I)
+        first = token.match(tail)
+        if first is None:
+            continue
+        cursor = first
+        for _ in range(6):
+            name = next(value for value in cursor.groups() if value is not None)
+            quoted = cursor.group(1) is not None or cursor.group(2) is not None
+            if not quoted and name not in declared and not any(
+                char.isdigit() or char == "_" for char in name
+            ):
+                break
+            mentioned.append(name)
+            join = connector.match(tail, cursor.end())
+            if join is None:
+                break
+            cursor = token.match(tail, join.end())
+            if cursor is None:
+                break
+    return mentioned
+
+
 def bind_explicit_material_ids(raw: dict) -> tuple[dict, list[dict]]:
     """Recover only links the model wrote verbatim, leaving vague references unresolved."""
+    if (
+        not isinstance(raw, dict)
+        or not isinstance(raw.get("materials"), list)
+        or not isinstance(raw.get("questions"), list)
+    ):
+        return raw, []
+    identifiers = [
+        material.get("id")
+        for material in raw["materials"]
+        if isinstance(material, dict) and isinstance(material.get("id"), str)
+    ]
+    if len(identifiers) != len(set(identifiers)):
+        raise ValueError("Identifiant de figure dupliqué")
+    result = deepcopy(raw)
+    bindings = []
+    for question in result["questions"]:
+        if not isinstance(question, dict):
+            continue
+        prompt = question.get("prompt")
+        if not isinstance(prompt, str):
+            continue
+        named_figures = _named_figure_ids(prompt, set(identifiers))
+        if any(name not in identifiers for name in named_figures):
+            raise ValueError("Identifiant de figure inconnu dans la question")
+        explicit = [
+            identifier
+            for identifier in identifiers
+            if re.search(r"(?<![\w-])" + re.escape(identifier) + r"(?![\w-])", prompt)
+        ]
+        supplied = question.get("material_ids")
+        if (
+            explicit
+            and supplied not in (None, [], explicit)
+            and (not isinstance(supplied, list) or set(supplied) != set(explicit))
+        ):
+            raise ValueError("La liaison figure-question contredit l'identifiant cité")
+        if explicit and ("material_ids" not in question or supplied == []):
+            question["material_ids"] = explicit
+            bindings.append(
+                {"question_id": question.get("id"), "material_ids": explicit}
+            )
+    return result, bindings
+
+
+def _legacy_bind_explicit_material_ids(raw: dict) -> tuple[dict, list[dict]]:
+    """Replay the v5-v7 binding rule without changing recorded evidence."""
     if (
         not isinstance(raw, dict)
         or not isinstance(raw.get("materials"), list)
@@ -223,6 +303,52 @@ def bind_explicit_material_ids(raw: dict) -> tuple[dict, list[dict]]:
                 {"question_id": question.get("id"), "material_ids": explicit}
             )
     return result, bindings
+
+
+def assemble_planned_question(plan: dict, authored: dict) -> NSIQuestion:
+    """Assemble immutable credit/identity from the plan, rejecting authored drift."""
+    if not isinstance(authored, dict):
+        raise ValueError("Question du plan manquante")
+    fields = ("id", "estimated_minutes", "operation", "difficulty")
+    try:
+        credit_matches = points(authored.get("points")) == points(plan["points"])
+    except ValueError:
+        credit_matches = False
+    if not credit_matches or any(authored.get(field) != plan[field] for field in fields):
+        raise ValueError("Métadonnées de la question incompatibles avec le plan")
+    codes = authored.get("curriculum_codes")
+    if not isinstance(codes, list) or plan["required_curriculum_code"] not in codes:
+        raise ValueError("Capacité de la question incompatible avec le plan")
+    content = deepcopy(authored)
+    for field in (*fields, "points"):
+        content[field] = plan[field]
+    return NSIQuestion.model_validate(content)
+
+
+def _assemble_planned_exercise(
+    bound: dict, task: dict, raw_candidate: dict
+) -> tuple[NSIExercise, list[dict]]:
+    assembled = deepcopy(bound)
+    records = []
+    assembled["questions"] = []
+    for plan, authored, raw_question in zip(
+        task["question_blueprint"],
+        bound["questions"],
+        raw_candidate["questions"],
+        strict=True,
+    ):
+        question = assemble_planned_question(plan, authored)
+        question_data = question.model_dump(mode="json")
+        assembled["questions"].append(question_data)
+        records.append(
+            {
+                "question_id": question.id,
+                "authored_sha256": digest(raw_question),
+                "assembled_sha256": digest(question_data),
+                "plan_sha256": digest(plan),
+            }
+        )
+    return NSIExercise.model_validate(assembled), records
 
 
 def require_link_for_material_mentions(exercise: NSIExercise) -> None:
@@ -544,7 +670,9 @@ def generate_assessment(
                     require_authoring_fields(raw)
                     bound, bindings = bind_explicit_material_ids(raw)
                     record["material_bindings"] = bindings
-                    exercise = NSIExercise.model_validate(bound)
+                    exercise, assembly = _assemble_planned_exercise(
+                        bound, task, raw
+                    )
                     require_link_for_material_mentions(exercise)
                     _check_exercise_plan(exercise, task, key)
                     checks = [
@@ -580,6 +708,7 @@ def generate_assessment(
                             "candidate": raw,
                             "candidate_sha256": digest(raw),
                             "material_bindings": bindings,
+                            "plan_assembly": assembly,
                             "references": references[position],
                             "deterministic": checks,
                             "independent_solution": solution,
@@ -655,7 +784,8 @@ def validate_package(package: dict):
     expected_blueprint = (
         (
             _tasks_for_seed(seed)
-            if identity["prompt_version"] == PROMPT_VERSION
+            if identity["prompt_version"]
+            in {PROMPT_VERSION, "fr-nsi-written-2027-v7"}
             else _legacy_tasks_for_seed(seed)
         )
         if type(seed) is int
@@ -704,14 +834,31 @@ def validate_package(package: dict):
             raise ValueError("Exercise evidence hash mismatch")
         if identity["prompt_version"] != "fr-nsi-written-2027-v4":
             raw_candidate = evidence.get("candidate")
-            if identity["prompt_version"] in {PROMPT_VERSION, "fr-nsi-written-2027-v6"}:
+            if identity["prompt_version"] in {
+                PROMPT_VERSION,
+                "fr-nsi-written-2027-v7",
+                "fr-nsi-written-2027-v6",
+            }:
                 require_authoring_fields(raw_candidate)
-            bound, bindings = bind_explicit_material_ids(raw_candidate)
+            binder = (
+                bind_explicit_material_ids
+                if identity["prompt_version"] == PROMPT_VERSION
+                else _legacy_bind_explicit_material_ids
+            )
+            bound, bindings = binder(raw_candidate)
+            if identity["prompt_version"] == PROMPT_VERSION:
+                assembled, assembly = _assemble_planned_exercise(
+                    bound, expected_blueprint[int(exercise.id) - 1], raw_candidate
+                )
+                if evidence.get("plan_assembly") != assembly:
+                    raise ValueError("Preuve d'assemblage du plan invalide")
+            else:
+                assembled = NSIExercise.model_validate(bound)
             if (
                 not isinstance(raw_candidate, dict)
                 or evidence.get("candidate_sha256") != digest(raw_candidate)
                 or evidence.get("material_bindings") != bindings
-                or NSIExercise.model_validate(bound).model_dump(mode="json")
+                or assembled.model_dump(mode="json")
                 != exercise.model_dump(mode="json")
             ):
                 raise ValueError("Preuve de liaison figure-question invalide")

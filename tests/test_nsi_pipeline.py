@@ -330,7 +330,7 @@ def test_generation_rejects_relational_drift_from_the_question_blueprint(tmp_pat
     index = tmp_path / "sources.sqlite"
     make_index(index)
 
-    with pytest.raises(ValueError, match="plan détaillé"):
+    with pytest.raises(ValueError, match="plan"):
         generate_assessment(
             index_path=index,
             client=DriftingBlueprintClient(),
@@ -461,7 +461,7 @@ def test_only_explicit_material_ids_are_recovered_from_omitted_links():
         "materials": [{"id": "map_ville"}, {"id": "road_network"}],
         "questions": [
             {"id": "1a", "prompt": "Analyser le graphe `map_ville`."},
-            {"id": "1b", "prompt": "Analyser le graphe map_ville_2."},
+            {"id": "1b", "prompt": "Comparer la variable map_ville_2."},
             {"id": "1c", "prompt": "Analyser le graphe G."},
             {"id": "1d", "prompt": "Utiliser road_network.", "material_ids": []},
         ],
@@ -471,9 +471,296 @@ def test_only_explicit_material_ids_are_recovered_from_omitted_links():
     assert bound["questions"][0]["material_ids"] == ["map_ville"]
     assert "material_ids" not in bound["questions"][1]
     assert "material_ids" not in bound["questions"][2]
-    assert bound["questions"][3]["material_ids"] == []
-    assert evidence == [{"question_id": "1a", "material_ids": ["map_ville"]}]
+    assert bound["questions"][3]["material_ids"] == ["road_network"]
+    assert evidence == [
+        {"question_id": "1a", "material_ids": ["map_ville"]},
+        {"question_id": "1d", "material_ids": ["road_network"]},
+    ]
     assert "material_ids" not in raw["questions"][0]
+
+
+def test_empty_material_links_recover_only_exact_declared_identifiers():
+    from Backend.Core.france.pipeline import bind_explicit_material_ids
+
+    raw = {
+        "materials": [{"id": "support_1"}, {"id": "support_2"}],
+        "questions": [
+            {"id": "1a", "prompt": "Lire `support_1`.", "material_ids": []},
+            {"id": "1b", "prompt": "Comparer support_1 et support_2.", "material_ids": []},
+            {"id": "1c", "prompt": "Lire le tableau.", "material_ids": []},
+        ],
+    }
+
+    bound, evidence = bind_explicit_material_ids(raw)
+
+    assert [item["material_ids"] for item in bound["questions"]] == [
+        ["support_1"],
+        ["support_1", "support_2"],
+        [],
+    ]
+    assert evidence == [
+        {"question_id": "1a", "material_ids": ["support_1"]},
+        {"question_id": "1b", "material_ids": ["support_1", "support_2"]},
+    ]
+    assert raw["questions"][0]["material_ids"] == []
+
+
+def test_material_link_conflicting_with_explicit_prompt_identifier_is_rejected():
+    from Backend.Core.france.pipeline import bind_explicit_material_ids
+
+    raw = {
+        "materials": [{"id": "support_1"}, {"id": "support_2"}],
+        "questions": [
+            {"id": "1a", "prompt": "Lire `support_1`.", "material_ids": ["support_2"]}
+        ],
+    }
+    with pytest.raises(ValueError, match=r"liaison|identifiant"):
+        bind_explicit_material_ids(raw)
+
+
+def test_unknown_explicit_figure_identifier_is_not_bound_to_other_material():
+    from Backend.Core.france.pipeline import bind_explicit_material_ids
+
+    raw = {
+        "materials": [{"id": "support_1"}],
+        "questions": [
+            {
+                "id": "1a",
+                "prompt": "Lire le graphe `unknown_graph` pour trouver un chemin.",
+                "material_ids": [],
+            }
+        ],
+    }
+    with pytest.raises(ValueError, match="Identifiant"):
+        bind_explicit_material_ids(raw)
+
+
+@pytest.mark.parametrize(
+    "reference",
+    (
+        "les figures `support_1` et `unknown_graph`",
+        "les figures «support_1» et «unknown_graph»",
+        "les figures support_1 et unknown_graph",
+    ),
+)
+def test_one_known_figure_does_not_hide_unknown_coordinated_figure(reference):
+    from Backend.Core.france.pipeline import bind_explicit_material_ids
+
+    raw = {
+        "materials": [{"id": "support_1"}],
+        "questions": [
+            {
+                "id": "1a",
+                "prompt": f"Comparer {reference} pour répondre au besoin.",
+                "material_ids": [],
+            }
+        ],
+    }
+    with pytest.raises(ValueError, match="Identifiant"):
+        bind_explicit_material_ids(raw)
+
+
+def test_duplicate_declared_material_identifier_is_rejected_before_binding():
+    from Backend.Core.france.pipeline import bind_explicit_material_ids
+
+    raw = {
+        "materials": [{"id": "support"}, {"id": "support"}],
+        "questions": [
+            {"id": "1a", "prompt": "Lire `support`.", "material_ids": []}
+        ],
+    }
+    with pytest.raises(ValueError, match="dupliqu"):
+        bind_explicit_material_ids(raw)
+
+
+def test_unknown_second_figure_rejected_during_generation_and_package_replay(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import (
+        digest,
+        generate_assessment,
+        validate_package,
+    )
+
+    class UnknownFigureClient(FrenchClient):
+        def generate_json(self, prompt):
+            result = super().generate_json(prompt)
+            if prompt.startswith("Rédige directement en français académique"):
+                result["questions"][0]["prompt"] = (
+                    "Comparer les figures `support` et `unknown_graph`."
+                )
+                result["questions"][0]["material_ids"] = []
+            return result
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    with pytest.raises(ValueError, match="Identifiant de figure inconnu"):
+        generate_assessment(
+            index_path=index,
+            client=UnknownFigureClient(),
+            seed=5,
+            checkpoint=tmp_path / "rejected.json",
+        )
+
+    package = generate_assessment(
+        index_path=index,
+        client=FrenchClient(),
+        seed=5,
+        checkpoint=tmp_path / "accepted.json",
+    )
+    changed = deepcopy(package)
+    candidate = changed["evidence"][0]["candidate"]
+    candidate["questions"][0]["prompt"] = (
+        "Comparer les figures `support` et `unknown_graph`."
+    )
+    candidate["questions"][0]["material_ids"] = []
+    changed["evidence"][0]["candidate_sha256"] = digest(candidate)
+    with pytest.raises(ValueError, match="Identifiant de figure inconnu"):
+        validate_package(changed)
+
+
+def test_planned_question_rejects_authored_metadata_drift_without_mutating_raw():
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import assemble_planned_question
+
+    plan = {
+        "id": "1a",
+        "points": "0.5",
+        "estimated_minutes": 6,
+        "operation": "apply",
+        "difficulty": 2,
+        "required_curriculum_code": "SD-GRAPHE",
+    }
+    authored = {
+        "id": "1a",
+        "prompt": "Lire la valeur de l'arête AB dans le graphe fourni.",
+        "points": "0.5",
+        "answer": "La valeur est 2.",
+        "marking": [{"points": "0.5", "criterion": "Valeur correcte."}],
+        "material_ids": [],
+        "curriculum_codes": ["SD-GRAPHE"],
+        "operation": "apply",
+        "difficulty": 2,
+        "estimated_minutes": 6,
+        "verification": {"kind": "human"},
+    }
+    original = deepcopy(authored)
+    question = assemble_planned_question(plan, authored)
+    assert question.id == "1a" and question.points == "0.5"
+    assert authored == original
+    for field, changed_value in (
+        ("id", "1b"),
+        ("points", "1"),
+        ("operation", "recall"),
+        ("difficulty", 4),
+    ):
+        drifted = deepcopy(authored)
+        drifted[field] = changed_value
+        with pytest.raises(ValueError, match="plan"):
+            assemble_planned_question(plan, drifted)
+
+
+def test_planned_question_accepts_equivalent_exact_decimal_credit():
+    from Backend.Core.france.pipeline import assemble_planned_question
+
+    plan = {
+        "id": "1a",
+        "points": "1",
+        "estimated_minutes": 6,
+        "operation": "apply",
+        "difficulty": 2,
+        "required_curriculum_code": "SD-GRAPHE",
+    }
+    authored = {
+        "id": "1a",
+        "prompt": "Lire la valeur d'une arête du graphe fourni.",
+        "points": "1.0",
+        "answer": "La valeur est deux.",
+        "marking": [{"points": "1.0", "criterion": "Valeur correcte."}],
+        "material_ids": [],
+        "curriculum_codes": ["SD-GRAPHE"],
+        "operation": "apply",
+        "difficulty": 2,
+        "estimated_minutes": 6,
+        "verification": {"kind": "human"},
+    }
+    question = assemble_planned_question(plan, authored)
+    assert question.points == "1"
+    assert authored["points"] == "1.0"
+
+
+def test_planned_question_cannot_inject_missing_curriculum_evidence():
+    from Backend.Core.france.pipeline import assemble_planned_question
+
+    plan = {
+        "id": "1a",
+        "points": "0.5",
+        "estimated_minutes": 6,
+        "operation": "apply",
+        "difficulty": 2,
+        "required_curriculum_code": "SD-GRAPHE",
+    }
+    authored = {
+        "id": "1a",
+        "prompt": "Écrire une requête SQL pour calculer les commandes reçues.",
+        "points": "0.5",
+        "answer": "SELECT COUNT(*) FROM commandes;",
+        "marking": [{"points": "0.5", "criterion": "Requête correcte."}],
+        "material_ids": [],
+        "curriculum_codes": ["BDD-SQL-SELECT"],
+        "operation": "apply",
+        "difficulty": 2,
+        "estimated_minutes": 6,
+        "verification": {"kind": "human"},
+    }
+    with pytest.raises(ValueError, match="plan"):
+        assemble_planned_question(plan, authored)
+
+
+def test_current_package_records_and_replays_question_plan_assembly(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=FrenchClient(),
+        seed=5,
+        checkpoint=tmp_path / "checkpoint.json",
+    )
+    assembly = package["evidence"][0]["plan_assembly"]
+    assert len(assembly) == 6
+    assert assembly[0]["question_id"] == "1a"
+    assert all(len(item["authored_sha256"]) == 64 for item in assembly)
+    validate_package(package)
+
+    changed = deepcopy(package)
+    changed["evidence"][0]["plan_assembly"][0]["authored_sha256"] = "0" * 64
+    with pytest.raises(ValueError, match=r"plan|assemblage"):
+        validate_package(changed)
+
+
+def test_recorded_v7_package_does_not_require_new_assembly_evidence(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=FrenchClient(),
+        seed=5,
+        checkpoint=tmp_path / "checkpoint.json",
+    )
+    package["identity"]["prompt_version"] = "fr-nsi-written-2027-v7"
+    package["identity"]["implementation_sha256"] = (
+        "20c0a8fa1f53825d6598ae1f1af59a1cee2ddbc946c4a0fd7c49233e79e0bcdf"
+    )
+    for evidence in package["evidence"]:
+        evidence.pop("plan_assembly", None)
+    validate_package(package)
 
 
 def test_v6_explicit_material_link_evidence_cannot_hide_drift(tmp_path):
@@ -508,13 +795,15 @@ def test_v6_explicit_material_link_evidence_cannot_hide_drift(tmp_path):
         validate_package(changed)
 
     changed = deepcopy(package)
-    changed["evidence"][0]["candidate"]["questions"][0]["prompt"] = "Voir G."
-    with pytest.raises(ValueError, match="liaison"):
+    changed["evidence"][0]["candidate"]["questions"][0]["prompt"] = (
+        "Expliquer le graphe G et ses sommets."
+    )
+    with pytest.raises(ValueError, match=r"liaison|assemblage"):
         validate_package(changed)
 
     changed = deepcopy(package)
     changed["evidence"][0]["candidate"]["questions"][0]["material_ids"] = []
-    with pytest.raises(ValueError, match="liaison"):
+    with pytest.raises(ValueError, match=r"liaison|assemblage"):
         validate_package(changed)
 
     changed = deepcopy(package)
