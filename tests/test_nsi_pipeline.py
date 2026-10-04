@@ -46,9 +46,7 @@ class FrenchClient:
             return {
                 "answers": {
                     question["id"]: str(index)
-                    for index, question in enumerate(
-                        candidate["questions"], start=1
-                    )
+                    for index, question in enumerate(candidate["questions"], start=1)
                 },
                 "issues": [],
                 "minutes": 60,
@@ -64,9 +62,7 @@ class FrenchClient:
                 "context_consistent": True,
                 "issues": [],
                 "rationale": "Analyse détaillée de chaque réponse et de son barème.",
-                "question_ids": [
-                    question["id"] for question in candidate["questions"]
-                ],
+                "question_ids": [question["id"] for question in candidate["questions"]],
             }
         task = json.loads(prompt.split("DONNÉES_JSON\n", 1)[1])
         number = task["exercise_id"]
@@ -199,7 +195,9 @@ def test_generation_is_french_scoped_and_resume_does_not_repeat_model_work(tmp_p
             for question in exercise["questions"]
             for code in question["curriculum_codes"]
         }
-        for task, exercise in zip(package["identity"]["blueprint"], package["exercises"], strict=True)
+        for task, exercise in zip(
+            package["identity"]["blueprint"], package["exercises"], strict=True
+        )
     )
     assert package["language_rubric"]["allocation_status"] == (
         "indicative_product_profile"
@@ -372,3 +370,83 @@ def test_previous_generation_text_is_identity_bound_and_rejected_when_reused(tmp
             checkpoint=tmp_path / "second.json",
             previous_texts=[previous_text],
         )
+
+
+def test_only_explicit_material_ids_are_recovered_from_omitted_links():
+    from Backend.Core.france.pipeline import bind_explicit_material_ids
+
+    raw = {
+        "materials": [{"id": "map_ville"}, {"id": "road_network"}],
+        "questions": [
+            {"id": "1a", "prompt": "Analyser le graphe `map_ville`."},
+            {"id": "1b", "prompt": "Analyser le graphe map_ville_2."},
+            {"id": "1c", "prompt": "Analyser le graphe G."},
+            {"id": "1d", "prompt": "Utiliser road_network.", "material_ids": []},
+        ],
+    }
+    bound, evidence = bind_explicit_material_ids(raw)
+
+    assert bound["questions"][0]["material_ids"] == ["map_ville"]
+    assert "material_ids" not in bound["questions"][1]
+    assert "material_ids" not in bound["questions"][2]
+    assert bound["questions"][3]["material_ids"] == []
+    assert evidence == [{"question_id": "1a", "material_ids": ["map_ville"]}]
+    assert "material_ids" not in raw["questions"][0]
+
+
+def test_explicit_material_recovery_is_package_bound_and_cannot_hide_drift(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    class OmittedExplicitLinkClient(FrenchClient):
+        def generate_json(self, prompt):
+            result = super().generate_json(prompt)
+            if prompt.startswith("Rédige directement en français académique"):
+                result["questions"][0]["prompt"] += " Voir `support`."
+                del result["questions"][0]["material_ids"]
+            return result
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=OmittedExplicitLinkClient(),
+        seed=5,
+        checkpoint=tmp_path / "checkpoint.json",
+    )
+    assert package["exercises"][0]["questions"][0]["material_ids"] == ["support"]
+    assert package["evidence"][0]["material_bindings"] == [
+        {"question_id": "1a", "material_ids": ["support"]}
+    ]
+    validate_package(package)
+
+    changed = deepcopy(package)
+    changed["evidence"][0]["material_bindings"] = []
+    with pytest.raises(ValueError, match="liaison"):
+        validate_package(changed)
+
+    changed = deepcopy(package)
+    changed["evidence"][0]["candidate"]["questions"][0]["prompt"] = "Voir G."
+    with pytest.raises(ValueError, match="liaison"):
+        validate_package(changed)
+
+
+def test_legacy_french_package_without_candidate_binding_evidence_remains_readable(
+    tmp_path,
+):
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=FrenchClient(),
+        seed=5,
+        checkpoint=tmp_path / "checkpoint.json",
+    )
+    package["identity"]["prompt_version"] = "fr-nsi-written-2027-v4"
+    for evidence in package["evidence"]:
+        del evidence["candidate"]
+        del evidence["material_bindings"]
+    validate_package(package)

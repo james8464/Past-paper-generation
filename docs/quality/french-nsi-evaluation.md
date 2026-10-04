@@ -29,6 +29,23 @@ the workspace. This historical summary is not independently auditable from its
 original logs or checkpoints. A fresh identity-pinned run must retain its raw
 evidence before any qualification claim.
 
+## 4 October diagnostic (not qualification)
+
+A fresh one-paper Gemma 4 12B diagnostic at seed 270100 retained three rejected
+exercise drafts and accepted no paper. Its raw checkpoint is under
+`tmp/qualification-fr-nsi-2027/diagnostic-20261004-gemma4/`. All three drafts
+omitted `material_ids`; two nevertheless referred to the exact graph ID in
+question prose. This exposed an authoring-protocol failure, not a reason to
+accept unlinked figures. The subsequent narrow repair recovers only exact IDs
+written in a question when the JSON field was omitted, records the untouched
+candidate and inferred links, and revalidates their provenance with the
+package. Empty fields, vague references and mismatched IDs remain unresolved.
+The prompt now explicitly requires both the question reference and its JSON
+link. This source change invalidates the diagnostic as a qualification run;
+new pinned live evidence is required. The drafts also contained substantive
+questions needing independent review, so the repair does not establish
+educational quality.
+
 ## Reproducible runs
 
 Pin the repository commit, registry/prompt version, full source hashes and split,
