@@ -45,7 +45,9 @@ def test_graph_tree_binding_prints_locked_materials_and_declared_node_api():
                 "contract_task_id": task_id,
                 "claimed_result": expected[task_id],
                 "prompt": f"Examinez le support `{'arbre' if task_id in ('1e', '1f') else 'reseau'}`.",
-                "answer": "return Noeud(valeur)" if task_id == "1e" else "Justification détaillée.",
+                "answer": "return Noeud(valeur)"
+                if task_id == "1e"
+                else "Justification détaillée.",
             }
             for task_id in contract.to_dict()["task_ids"]
         ],
@@ -60,12 +62,14 @@ def test_graph_tree_binding_prints_locked_materials_and_declared_node_api():
         "task_ids"
     ]
     assert all("claimed_result" not in item for item in bound["questions"])
-    assert " → ".join(contract.to_dict()["expected"]["1a"]["path"]) in bound[
-        "questions"
-    ][0]["answer"]
-    assert " → ".join(contract.to_dict()["expected"]["1d"]["order"]) in bound[
-        "questions"
-    ][3]["answer"]
+    assert (
+        " → ".join(contract.to_dict()["expected"]["1a"]["path"])
+        in bound["questions"][0]["answer"]
+    )
+    assert (
+        " → ".join(contract.to_dict()["expected"]["1d"]["order"])
+        in bound["questions"][3]["answer"]
+    )
     assert bound["questions"][4]["answer"] != raw["questions"][4]["answer"]
 
 
@@ -158,14 +162,18 @@ def test_graph_tree_candidate_uses_locked_materials_before_all_exercise_checks()
         _prompt({**task, "exercise_id": "1"}, [], 270100, 1, "")
     )
     raw["materials"] = []
-    raw["context"] = "Une équipe étudie un réseau de collecte et les demandes associées."
+    raw["context"] = (
+        "Une équipe étudie un réseau de collecte et les demandes associées."
+    )
     for question in raw["questions"]:
         task_id = question["id"]
         material_id = "arbre" if task_id in ("1e", "1f") else "reseau"
         question["contract_task_id"] = task_id
         question["claimed_result"] = contract.to_dict()["expected"][task_id]
         question["material_ids"] = [material_id]
-        question["prompt"] = f"Examinez le support `{material_id}` et justifiez votre résultat."
+        question["prompt"] = (
+            f"Examinez le support `{material_id}` et justifiez votre résultat."
+        )
         question["verification"] = {"kind": "human"}
     raw["questions"][4]["answer"] = "return Noeud(valeur)"
 
@@ -302,6 +310,138 @@ class FrenchClient:
                 for i, plan in enumerate(question_blueprint, start=1)
             ],
         }
+
+
+class ContractFrenchClient(FrenchClient):
+    def __init__(self, stop_on_part=None):
+        super().__init__()
+        self.part_calls = []
+        self.stop_on_part = stop_on_part
+
+    def generate_json(self, prompt):
+        if prompt.startswith("Rédige la partie "):
+            part = prompt[len("Rédige la partie ")]
+            if self.stop_on_part == part:
+                raise KeyboardInterrupt
+            self.part_calls.append(part)
+            self.calls += 1
+            request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+            questions = []
+            for plan in request["question_blueprint"]:
+                material = "arbre" if plan["id"] in {"1e", "1f"} else "reseau"
+                questions.append(
+                    {
+                        "id": plan["id"],
+                        "contract_task_id": plan["id"],
+                        "claimed_result": request["expected"][plan["id"]],
+                        "prompt": f"Pour la tâche {plan['id']}, analysez le support `{material}` et justifiez le résultat.",
+                        "points": plan["points"],
+                        "answer": "Une justification fondée sur les données fournies.",
+                        "marking": [
+                            {
+                                "points": plan["points"],
+                                "criterion": "Méthode et résultat corrects.",
+                            }
+                        ],
+                        "material_ids": [material],
+                        "curriculum_codes": [plan["required_curriculum_code"]],
+                        "operation": plan["operation"],
+                        "difficulty": plan["difficulty"],
+                        "estimated_minutes": plan["estimated_minutes"],
+                        "verification": {"kind": "human"},
+                    }
+                )
+            if request["part"] == "A":
+                return {
+                    "title": "Réseau et interventions",
+                    "context": "Une équipe étudie les trajets et les demandes d'intervention.",
+                    "questions": questions,
+                }
+            return {"questions": questions}
+        return super().generate_json(prompt)
+
+
+def test_v11_contract_route_generates_and_replays_three_exercises(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ContractFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+    )
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v11"
+    assert len(package["exercises"]) == 3
+    assert len(package["evidence"][0]["part_evidence"]["parts"]) == 3
+    assert all(
+        item["state"] == "passed" for item in package["evidence"][0]["deterministic"]
+    )
+    assert validate_package(package)["structural_checks"] == "passed"
+    assert package["status"] == "unreviewed_draft"
+
+
+def test_v11_contract_checkpoint_resumes_only_missing_parts(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "checkpoint.json"
+    client = ContractFrenchClient(stop_on_part="B")
+    with pytest.raises(KeyboardInterrupt):
+        generate_assessment(
+            index_path=index,
+            client=client,
+            seed=270100,
+            checkpoint=checkpoint,
+            contract_graph_tree=True,
+        )
+    assert client.part_calls == ["A"]
+    state = json.loads(checkpoint.read_text())
+    assert state["accepted"] == {}
+    assert state["failed_attempts"][0]["cancelled"] is True
+    client.stop_on_part = None
+    package = generate_assessment(
+        index_path=index,
+        client=client,
+        seed=270100,
+        checkpoint=checkpoint,
+        contract_graph_tree=True,
+    )
+    assert client.part_calls == ["A", "B", "C"]
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v11"
+
+
+def test_v11_contract_package_rejects_stale_digest_and_printed_graph(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import (
+        digest,
+        generate_assessment,
+        validate_package,
+    )
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ContractFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+    )
+    changed = deepcopy(package)
+    changed["identity"]["graph_tree_contract_sha256"] = "0" * 64
+    with pytest.raises(ValueError, match="contrat"):
+        validate_package(changed)
+    changed = deepcopy(package)
+    changed["exercises"][0]["materials"][0]["edges"][0][2] += 1
+    changed["content_sha256"] = digest(changed["exercises"])
+    changed["evidence"][0]["exercise_sha256"] = digest(changed["exercises"][0])
+    with pytest.raises(ValueError):
+        validate_package(changed)
 
 
 def make_legacy_structural_package(tmp_path, monkeypatch):
@@ -458,7 +598,9 @@ def test_generation_is_french_scoped_and_resume_does_not_repeat_model_work(tmp_p
         validate_package(package)
 
 
-def test_question_alignment_rejects_semantic_mismatch_despite_correct_metadata(tmp_path):
+def test_question_alignment_rejects_semantic_mismatch_despite_correct_metadata(
+    tmp_path,
+):
     from Backend.Core.france.pipeline import generate_assessment
 
     class MisalignedClient(FrenchClient):
@@ -622,7 +764,9 @@ def test_failed_question_is_repaired_without_reauthoring_accepted_peers(tmp_path
 
 
 @pytest.mark.parametrize("invalid_credit", ["0", "999"])
-def test_invalid_marking_is_repaired_without_changing_the_question(tmp_path, invalid_credit):
+def test_invalid_marking_is_repaired_without_changing_the_question(
+    tmp_path, invalid_credit
+):
     from copy import deepcopy
 
     from Backend.Core.france.pipeline import (
@@ -642,13 +786,18 @@ def test_invalid_marking_is_repaired_without_changing_the_question(tmp_path, inv
                 self.repairs += 1
                 request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
                 repaired = dict(request["question"])
-                repaired["marking"] = [{
-                    "points": request["planned"]["points"],
-                    "criterion": "Résultat exact et justification correspondante.",
-                }]
+                repaired["marking"] = [
+                    {
+                        "points": request["planned"]["points"],
+                        "criterion": "Résultat exact et justification correspondante.",
+                    }
+                ]
                 return repaired
             result = super().generate_json(prompt)
-            if prompt.startswith("Rédige directement en français académique") and result["id"] == "1":
+            if (
+                prompt.startswith("Rédige directement en français académique")
+                and result["id"] == "1"
+            ):
                 result["questions"][0]["marking"][0]["points"] = invalid_credit
             return result
 
@@ -669,7 +818,10 @@ def test_invalid_marking_is_repaired_without_changing_the_question(tmp_path, inv
     assert {key: value for key, value in original.items() if key != "marking"} == {
         key: value for key, value in repaired.items() if key != "marking"
     }
-    assert evidence["candidate"]["questions"][1:] == evidence["initial_candidate"]["questions"][1:]
+    assert (
+        evidence["candidate"]["questions"][1:]
+        == evidence["initial_candidate"]["questions"][1:]
+    )
     validate_package(package)
 
     tampered = deepcopy(evidence)
@@ -678,9 +830,7 @@ def test_invalid_marking_is_repaired_without_changing_the_question(tmp_path, inv
     tampered["targeted_repairs"][0]["replacement"] = changed["questions"][0]
     tampered["targeted_repairs"][0]["after_sha256"] = digest(changed)
     with pytest.raises(ValueError, match="barème"):
-        _replay_targeted_repairs(
-            tampered, changed, package["identity"]["blueprint"][0]
-        )
+        _replay_targeted_repairs(tampered, changed, package["identity"]["blueprint"][0])
     fabricated = deepcopy(evidence)
     fabricated["initial_candidate"]["questions"][0]["marking"] = deepcopy(
         repaired["marking"]
@@ -702,14 +852,21 @@ def test_marking_repair_cannot_rewrite_the_question(tmp_path):
             if prompt.startswith("Répare uniquement le barème"):
                 request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
                 repaired = dict(request["question"])
-                repaired["prompt"] = "Une autre consigne, qui change la tâche du candidat."
-                repaired["marking"] = [{
-                    "points": request["planned"]["points"],
-                    "criterion": "Justification de la réponse attendue.",
-                }]
+                repaired["prompt"] = (
+                    "Une autre consigne, qui change la tâche du candidat."
+                )
+                repaired["marking"] = [
+                    {
+                        "points": request["planned"]["points"],
+                        "criterion": "Justification de la réponse attendue.",
+                    }
+                ]
                 return repaired
             result = super().generate_json(prompt)
-            if prompt.startswith("Rédige directement en français académique") and result["id"] == "1":
+            if (
+                prompt.startswith("Rédige directement en français académique")
+                and result["id"] == "1"
+            ):
                 result["questions"][0]["marking"][0]["points"] = "0"
             return result
 
@@ -743,7 +900,10 @@ def test_invalid_marking_repair_is_bounded_and_never_published(tmp_path):
                 request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
                 return request["question"]
             result = super().generate_json(prompt)
-            if prompt.startswith("Rédige directement en français académique") and result["id"] == "1":
+            if (
+                prompt.startswith("Rédige directement en français académique")
+                and result["id"] == "1"
+            ):
                 result["questions"][0]["marking"][0]["points"] = "0"
             return result
 
@@ -779,7 +939,9 @@ def test_targeted_repair_is_bounded_and_preserves_failed_drafts(tmp_path):
                 self.repairs += 1
                 request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
                 result = dict(request["question"])
-                result["prompt"] = f"Nouvelle version {self.repairs} : " + result["prompt"]
+                result["prompt"] = (
+                    f"Nouvelle version {self.repairs} : " + result["prompt"]
+                )
                 return result
             response = super().generate_json(prompt)
             if prompt.startswith("Contrôle indépendant des capacités"):
@@ -870,9 +1032,7 @@ def test_invalid_repair_response_is_recorded_before_rejection(tmp_path):
         )
     failed = json.loads(checkpoint.read_text())["failed_attempts"]
     assert len(failed) == 3
-    assert all(
-        item["repair_responses"][0]["response"]["id"] == "9z" for item in failed
-    )
+    assert all(item["repair_responses"][0]["response"]["id"] == "9z" for item in failed)
 
 
 def test_repair_invalidates_downstream_solution_dependencies(tmp_path):
@@ -899,9 +1059,9 @@ def test_repair_invalidates_downstream_solution_dependencies(tmp_path):
                     response["questions"][0]["issues"] = ["Capacité non évaluée."]
             if prompt.startswith("Résous indépendamment"):
                 request = json.loads(prompt.split("\n", 1)[1])
-                if request["id"] == "1" and request["questions"][0]["prompt"].startswith(
-                    "Version corrigée"
-                ):
+                if request["id"] == "1" and request["questions"][0][
+                    "prompt"
+                ].startswith("Version corrigée"):
                     response["issues"] = [
                         "La réponse de 1b dépend de l'ancien résultat de 1a."
                     ]
@@ -1116,7 +1276,11 @@ def test_empty_material_links_recover_only_exact_declared_identifiers():
         "materials": [{"id": "support_1"}, {"id": "support_2"}],
         "questions": [
             {"id": "1a", "prompt": "Lire `support_1`.", "material_ids": []},
-            {"id": "1b", "prompt": "Comparer support_1 et support_2.", "material_ids": []},
+            {
+                "id": "1b",
+                "prompt": "Comparer support_1 et support_2.",
+                "material_ids": [],
+            },
             {"id": "1c", "prompt": "Lire le tableau.", "material_ids": []},
         ],
     }
@@ -1195,9 +1359,7 @@ def test_duplicate_declared_material_identifier_is_rejected_before_binding():
 
     raw = {
         "materials": [{"id": "support"}, {"id": "support"}],
-        "questions": [
-            {"id": "1a", "prompt": "Lire `support`.", "material_ids": []}
-        ],
+        "questions": [{"id": "1a", "prompt": "Lire `support`.", "material_ids": []}],
     }
     with pytest.raises(ValueError, match="dupliqu"):
         bind_explicit_material_ids(raw)

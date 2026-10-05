@@ -115,8 +115,7 @@ def load_originality_history(output: Path) -> list[str]:
             package = json.loads(assessment.read_text(encoding="utf-8"))
             if (
                 package.get("schema_version") != 2
-                or package.get("assessment_policy")
-                != "fr-bac-general-nsi-written-2027"
+                or package.get("assessment_policy") != "fr-bac-general-nsi-written-2027"
                 or not isinstance(package.get("exercises"), list)
             ):
                 continue
@@ -165,6 +164,7 @@ def handle_generate_assessment(args) -> int:
             checkpoint=checkpoint,
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
+            contract_graph_tree=True,
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))

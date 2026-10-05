@@ -9,7 +9,7 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure):
     from hashlib import sha256
 
     from Backend.Core.france import runtime
-    from tests.test_nsi_pipeline import FrenchClient, make_index
+    from tests.test_nsi_pipeline import ContractFrenchClient, make_index
 
     index = tmp_path / "references.sqlite"
     make_index(index)
@@ -25,7 +25,9 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure):
         large_print=False,
     )
     monkeypatch.setattr(runtime, "model_identity", lambda *args: "fixture-digest")
-    monkeypatch.setattr(runtime, "FrenchOllamaClient", lambda **kwargs: FrenchClient())
+    monkeypatch.setattr(
+        runtime, "FrenchOllamaClient", lambda **kwargs: ContractFrenchClient()
+    )
     if failure == "render":
 
         def broken(*args, **kwargs):
@@ -55,6 +57,7 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure):
                 == artifact["sha256"]
             )
         assert manifest["status"] == "unreviewed_draft"
+        assert manifest["identity"]["prompt_version"] == "fr-nsi-written-2027-v11"
         import pymupdf
 
         with pymupdf.open(bundles[0] / "corrige.pdf") as pdf:
@@ -62,9 +65,7 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure):
             # with its final marking entry and no empty trailing page.
             assert 5 <= len(pdf) <= 8
             text = " ".join(page.get_text() for page in pdf)
-            assert all(
-                f"Exercice {exercise} (" in text for exercise in range(1, 4)
-            )
+            assert all(f"Exercice {exercise} (" in text for exercise in range(1, 4))
             assert text.count("Réponse attendue") == 18
             assert text.count("Barème indicatif") >= 18
             assert pdf[-1].get_text().strip()

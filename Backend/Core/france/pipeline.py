@@ -19,12 +19,16 @@ from Backend.Core.education_context import (
 from Backend.Core.france.archetypes import archetype_for_seed
 from Backend.Core.france.graph_tree_authoring import (
     apply_graph_tree_repair,
+    author_graph_tree_parts,
     replay_graph_tree_parts,
 )
 from Backend.Core.france.graph_tree_binding import (
     bind_graph_tree_contract as _bind_graph_tree_contract,
 )
-from Backend.Core.france.graph_tree_contract import GraphTreeContract
+from Backend.Core.france.graph_tree_contract import (
+    GraphTreeContract,
+    build_graph_tree_contract,
+)
 from Backend.Core.france.nsi import (
     CURRICULUM_OBJECTIVES,
     LANGUAGE_RUBRIC_2027,
@@ -48,6 +52,7 @@ from Backend.Core.france.verification import verify_contract
 from Backend.Core.scoped_references import ReferenceIndex
 
 PROMPT_VERSION = "fr-nsi-written-2027-v10"
+CONTRACT_PROMPT_VERSION = "fr-nsi-written-2027-v11"
 # Recorded source identities prevent a newer package dropping its evidence via
 # an earlier prompt-version label. The separate manifest remains the trust root.
 LEGACY_IMPLEMENTATIONS = {
@@ -1120,6 +1125,7 @@ def generate_assessment(
     checkpoint: Path,
     progress=None,
     previous_texts: list[str] | None = None,
+    contract_graph_tree: bool = False,
 ) -> dict:
     if type(seed) is not int:
         raise ValueError("Une graine entière est obligatoire")
@@ -1151,7 +1157,9 @@ def generate_assessment(
             references.append([asdict(hit) for hit in hits])
     identity = {
         "assessment": asdict(NSI_2027),
-        "prompt_version": PROMPT_VERSION,
+        "prompt_version": (
+            CONTRACT_PROMPT_VERSION if contract_graph_tree else PROMPT_VERSION
+        ),
         "implementation_sha256": implementation_identity(),
         "seed": seed,
         "provider": client.provider,
@@ -1161,6 +1169,10 @@ def generate_assessment(
         "blueprint": tasks,
         "originality_history_digest": digest(originality_history),
     }
+    if contract_graph_tree:
+        identity["graph_tree_contract_sha256"] = build_graph_tree_contract(
+            seed, "1"
+        ).digest
     state = {"identity": identity, "accepted": {}, "failed_attempts": []}
     if checkpoint.exists():
         state = json.loads(checkpoint.read_text(encoding="utf-8"))
@@ -1177,6 +1189,31 @@ def generate_assessment(
                 record = {"exercise_id": key, "attempt": attempt}
                 try:
                     emit(f"Rédaction et vérification de l'exercice {key}/3")
+                    if contract_graph_tree and key == "1":
+                        contract = build_graph_tree_contract(seed, key)
+                        part_path = checkpoint.with_name(
+                            f"{checkpoint.name}.exercise-{key}.attempt-{attempt}.parts.json"
+                        )
+                        raw, part_evidence = author_graph_tree_parts(
+                            client, task, contract, references[position], part_path
+                        )
+                        record["part_evidence"] = part_evidence
+                        exercise, accepted_evidence = evaluate_graph_tree_draft(
+                            raw,
+                            task,
+                            contract,
+                            references[position],
+                            originality_history,
+                            client,
+                            record,
+                        )
+                        accepted_evidence["part_evidence"] = part_evidence
+                        state["accepted"][key] = {
+                            "exercise": exercise.model_dump(mode="json"),
+                            "evidence": accepted_evidence,
+                        }
+                        atomic_json(checkpoint, state)
+                        break
                     raw = client.generate_json(
                         _prompt(
                             {
@@ -1410,7 +1447,7 @@ def validate_package(package: dict):
     if (
         identity.get("assessment") != asdict(NSI_2027)
         or identity.get("prompt_version")
-        not in {PROMPT_VERSION, *LEGACY_IMPLEMENTATIONS}
+        not in {PROMPT_VERSION, CONTRACT_PROMPT_VERSION, *LEGACY_IMPLEMENTATIONS}
         or not identity.get("model_digest")
         or not re.fullmatch(
             r"[a-f0-9]{64}", str(identity.get("implementation_sha256", ""))
@@ -1421,12 +1458,19 @@ def validate_package(package: dict):
     if legacy_hash and identity["implementation_sha256"] != legacy_hash:
         raise ValueError("Identité historique française non reconnue")
     seed = identity.get("seed")
+    if identity["prompt_version"] == CONTRACT_PROMPT_VERSION and (
+        type(seed) is not int
+        or identity.get("graph_tree_contract_sha256")
+        != build_graph_tree_contract(seed, "1").digest
+    ):
+        raise ValueError("Identité du contrat graphe/arbre incompatible")
     expected_blueprint = (
         (
             _tasks_for_seed(seed)
             if identity["prompt_version"]
             in {
                 PROMPT_VERSION,
+                CONTRACT_PROMPT_VERSION,
                 "fr-nsi-written-2027-v9",
                 "fr-nsi-written-2027-v8",
                 "fr-nsi-written-2027-v7",
@@ -1477,14 +1521,30 @@ def validate_package(package: dict):
     for exercise, evidence in zip(exercises, package["evidence"], strict=True):
         if evidence.get("exercise_sha256") != digest(exercise.model_dump(mode="json")):
             raise ValueError("Exercise evidence hash mismatch")
+        if identity["prompt_version"] == CONTRACT_PROMPT_VERSION and exercise.id == "1":
+            replay_graph_tree_evidence(
+                exercise,
+                evidence,
+                expected_blueprint[0],
+                build_graph_tree_contract(seed, "1"),
+                evidence.get("references"),
+                previous_texts,
+            )
+            previous_texts.append(exercise_candidate_text(exercise))
+            continue
         if identity["prompt_version"] != "fr-nsi-written-2027-v4":
             raw_candidate = evidence.get("candidate")
-            if identity["prompt_version"] in {PROMPT_VERSION, "fr-nsi-written-2027-v9"}:
+            if identity["prompt_version"] in {
+                PROMPT_VERSION,
+                CONTRACT_PROMPT_VERSION,
+                "fr-nsi-written-2027-v9",
+            }:
                 _replay_targeted_repairs(
                     evidence, raw_candidate, expected_blueprint[int(exercise.id) - 1]
                 )
             if identity["prompt_version"] in {
                 PROMPT_VERSION,
+                CONTRACT_PROMPT_VERSION,
                 "fr-nsi-written-2027-v9",
                 "fr-nsi-written-2027-v8",
                 "fr-nsi-written-2027-v7",
@@ -1494,12 +1554,18 @@ def validate_package(package: dict):
             binder = (
                 bind_explicit_material_ids
                 if identity["prompt_version"]
-                in {PROMPT_VERSION, "fr-nsi-written-2027-v9", "fr-nsi-written-2027-v8"}
+                in {
+                    PROMPT_VERSION,
+                    CONTRACT_PROMPT_VERSION,
+                    "fr-nsi-written-2027-v9",
+                    "fr-nsi-written-2027-v8",
+                }
                 else _legacy_bind_explicit_material_ids
             )
             bound, bindings = binder(raw_candidate)
             if identity["prompt_version"] in {
                 PROMPT_VERSION,
+                CONTRACT_PROMPT_VERSION,
                 "fr-nsi-written-2027-v9",
                 "fr-nsi-written-2027-v8",
             }:
@@ -1518,11 +1584,15 @@ def validate_package(package: dict):
             ):
                 raise ValueError("Preuve de liaison figure-question invalide")
             require_link_for_material_mentions(exercise)
-            if identity["prompt_version"] == PROMPT_VERSION:
+            if identity["prompt_version"] in {PROMPT_VERSION, CONTRACT_PROMPT_VERSION}:
                 require_semantic_material_integrity(
                     exercise, expected_blueprint[int(exercise.id) - 1]
                 )
-        if identity["prompt_version"] in {PROMPT_VERSION, "fr-nsi-written-2027-v9"}:
+        if identity["prompt_version"] in {
+            PROMPT_VERSION,
+            CONTRACT_PROMPT_VERSION,
+            "fr-nsi-written-2027-v9",
+        }:
             alignment = evidence.get("question_alignment")
             if not isinstance(alignment, dict) or alignment.get(
                 "candidate_view_sha256"

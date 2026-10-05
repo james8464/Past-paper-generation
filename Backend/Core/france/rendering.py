@@ -74,8 +74,7 @@ def structured_material(
         ]
         table = Table(
             rows,
-            colWidths=[available_width / len(material.columns)]
-            * len(material.columns),
+            colWidths=[available_width / len(material.columns)] * len(material.columns),
             repeatRows=1,
         )
         table.setStyle(
@@ -183,9 +182,7 @@ class NumberedCanvas(Canvas):
                 70, 43, "Paper Creator — entraînement non officiel — non relu"
             )
             self.setFont("ExamSans", 10)
-            self.drawRightString(
-                A4[0] - 54, 43, f"Page : {self._pageNumber} / {total}"
-            )
+            self.drawRightString(A4[0] - 54, 43, f"Page : {self._pageNumber} / {total}")
             super().showPage()
         super().save()
 
@@ -223,9 +220,7 @@ def draw_cover_page(
         bold_font,
     )
     centred("Durée de l’épreuve : 3 heures 30", 447, 11, regular_font)
-    centred(
-        "L’usage de la calculatrice n’est pas autorisé.", 515, 11, italic_font
-    )
+    centred("L’usage de la calculatrice n’est pas autorisé.", 515, 11, italic_font)
     centred(
         "Dès que ce sujet vous est remis, assurez-vous qu’il est complet.",
         560,
@@ -308,7 +303,7 @@ def render_assessment(
         bulletIndent=6,
         bulletFontName=regular,
         bulletFontSize=size,
-        spaceAfter=10,
+        spaceAfter=6 if correction else 10,
     )
     question_followup = ParagraphStyle(
         "NSIQuestionFollowup",
@@ -323,8 +318,8 @@ def render_assessment(
         "NSICredit",
         parent=body,
         fontName=bold,
-        spaceBefore=4,
-        spaceAfter=4,
+        spaceBefore=3 if correction else 4,
+        spaceAfter=2 if correction else 4,
         keepWithNext=True,
     )
     doc = SimpleDocTemplate(
@@ -387,7 +382,9 @@ def render_assessment(
 
     def point_label(value: str) -> str:
         numeric = value.replace(".", ",")
-        return f"{numeric} point" if value in {"0.5", "1", "1.0"} else f"{numeric} points"
+        return (
+            f"{numeric} point" if value in {"0.5", "1", "1.0"} else f"{numeric} points"
+        )
 
     if correction:
         paragraph("Consignes générales de correction", heading)
@@ -404,9 +401,7 @@ def render_assessment(
         rubric_rows.extend(
             [
                 band["label"],
-                LANGUAGE_RUBRIC_2027["indicative_points"][band["id"]].replace(
-                    ".", ","
-                ),
+                LANGUAGE_RUBRIC_2027["indicative_points"][band["id"]].replace(".", ","),
             ]
             for band in LANGUAGE_RUBRIC_2027["bands"]
         )
@@ -473,7 +468,13 @@ def render_assessment(
                 marking_table.setStyle(
                     TableStyle(
                         [
-                            ("GRID", (0, 0), (-1, -1), 0.35, colors.HexColor("#B8B8B8")),
+                            (
+                                "GRID",
+                                (0, 0),
+                                (-1, -1),
+                                0.35,
+                                colors.HexColor("#B8B8B8"),
+                            ),
                             ("VALIGN", (0, 0), (-1, -1), "TOP"),
                             ("LEFTPADDING", (0, 0), (-1, -1), 5),
                             ("RIGHTPADDING", (0, 0), (-1, -1), 5),
@@ -484,6 +485,7 @@ def render_assessment(
                 )
                 story.append(marking_table)
                 story.append(Spacer(1, 8))
+
     def cover_page(canvas, built_doc):
         draw_cover_page(
             canvas,
