@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1791146702.5122838,
-    "ast_hash": "5ae54cd5f721743b223c17604d620136",
+    "mtime": 1791164989.7609513,
+    "ast_hash": "3a6f4289ab0341f56e348ba1930496d1",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791164166.725812,
-    "ast_hash": "aa3a7ce2f6856711fe14512d5aa98ce0",
+    "mtime": 1791164845.2103,
+    "ast_hash": "cfb28a7eae3c149aaef35e9b2f658f5e",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1780,8 +1780,8 @@
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1791146719.3332622,
-    "ast_hash": "f14519fa5545fe8d90d98f9d69a0bee2",
+    "mtime": 1791164989.7618487,
+    "ast_hash": "a117fb9339b6d7d41dcafb8505bae2b9",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -2612,6 +2612,11 @@
   "docs/superpowers/specs/2026-10-05-french-nsi-verifiable-exercises.md": {
     "mtime": 1791163754.933633,
     "ast_hash": "fcfb29ce875868875134895346b053ea",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/graph_tree_binding.py": {
+    "mtime": 1791164829.6261013,
+    "ast_hash": "60e08f4ccc81a85b270ab251809418c8",
     "semantic_hash": ""
   }
 }

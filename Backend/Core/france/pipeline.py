@@ -17,6 +17,10 @@ from Backend.Core.education_context import (
     points,
 )
 from Backend.Core.france.archetypes import archetype_for_seed
+from Backend.Core.france.graph_tree_binding import (
+    bind_graph_tree_contract as _bind_graph_tree_contract,
+)
+from Backend.Core.france.graph_tree_contract import GraphTreeContract
 from Backend.Core.france.nsi import (
     CURRICULUM_OBJECTIVES,
     LANGUAGE_RUBRIC_2027,
@@ -890,10 +894,24 @@ def _check_exercise_plan(exercise: NSIExercise, task: dict, key: str) -> None:
         )
 
 
-def _prepare_candidate(raw, task, key, references, previous_texts):
+def _prepare_candidate(
+    raw,
+    task,
+    key,
+    references,
+    previous_texts,
+    *,
+    contract: GraphTreeContract | None = None,
+):
     """Recheck the entire affected exercise after every targeted content change."""
-    require_authoring_fields(raw)
-    bound, bindings = bind_explicit_material_ids(raw)
+    contract_binding = None
+    if contract is None:
+        require_authoring_fields(raw)
+        candidate = raw
+    else:
+        candidate, contract_binding = _bind_graph_tree_contract(raw, contract)
+        require_authoring_fields(candidate)
+    bound, bindings = bind_explicit_material_ids(candidate)
     exercise, assembly = _assemble_planned_exercise(bound, task, raw)
     require_link_for_material_mentions(exercise)
     require_semantic_material_integrity(exercise, task)
@@ -902,7 +920,7 @@ def _prepare_candidate(raw, task, key, references, previous_texts):
     if any(check["state"] == "failed" for check in checks):
         raise ValueError("Vérification déterministe refusée")
     originality = _originality(exercise, references, previous_texts)
-    return exercise, bindings, assembly, checks, originality
+    return exercise, bindings, assembly, checks, originality, contract_binding
 
 
 def generate_assessment(
@@ -1009,7 +1027,7 @@ def generate_assessment(
                     ]
                     for repair_round in range(3):
                         try:
-                            exercise, bindings, assembly, checks, originality = (
+                            exercise, bindings, assembly, checks, originality, _ = (
                                 _prepare_candidate(
                                     raw,
                                     task,

@@ -30,6 +30,154 @@ def make_index(path):
             index.add(document, text, [(1, text)])
 
 
+def test_graph_tree_binding_prints_locked_materials_and_declared_node_api():
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import _bind_graph_tree_contract
+
+    contract = build_graph_tree_contract(270100, "1")
+    expected = contract.to_dict()["expected"]
+    raw = {
+        "context": "Une équipe étudie ses trajets et les demandes d'intervention.",
+        "materials": [],
+        "questions": [
+            {
+                "id": task_id,
+                "contract_task_id": task_id,
+                "claimed_result": expected[task_id],
+                "prompt": f"Examinez le support `{'arbre' if task_id in ('1e', '1f') else 'reseau'}`.",
+                "answer": "return Noeud(valeur)" if task_id == "1e" else "Justification détaillée.",
+            }
+            for task_id in contract.to_dict()["task_ids"]
+        ],
+    }
+
+    bound, binding = _bind_graph_tree_contract(raw, contract)
+    assert {item["id"] for item in bound["materials"]} == {"reseau", "arbre"}
+    assert "class Noeud:" in bound["context"]
+    assert "self.gauche = None" in bound["context"]
+    assert binding["contract_sha256"] == contract.digest
+    assert [item["task_id"] for item in binding["questions"]] == contract.to_dict()[
+        "task_ids"
+    ]
+    assert all("claimed_result" not in item for item in bound["questions"])
+    assert " → ".join(contract.to_dict()["expected"]["1a"]["path"]) in bound[
+        "questions"
+    ][0]["answer"]
+    assert " → ".join(contract.to_dict()["expected"]["1d"]["order"]) in bound[
+        "questions"
+    ][3]["answer"]
+    assert bound["questions"][4]["answer"] != raw["questions"][4]["answer"]
+
+
+def test_graph_tree_binding_rejects_a_missing_graph_edge():
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import _bind_graph_tree_contract
+
+    contract = build_graph_tree_contract(270100, "1")
+    raw = {
+        "context": "Un réseau de collecte relie les postes.",
+        "materials": [],
+        "questions": [
+            {
+                "id": task_id,
+                "contract_task_id": task_id,
+                "claimed_result": contract.to_dict()["expected"][task_id],
+                "prompt": "Le graphe `reseau` contient l'arête A-F. Calculez son poids."
+                if task_id == "1a"
+                else "Examinez les données.",
+                "answer": "Réponse contextualisée.",
+            }
+            for task_id in contract.to_dict()["task_ids"]
+        ],
+    }
+    with pytest.raises(ValueError, match=r"arête|graphe"):
+        _bind_graph_tree_contract(raw, contract)
+
+
+def test_graph_tree_binding_rejects_an_incorrect_bfs_claim():
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import _bind_graph_tree_contract
+
+    contract = build_graph_tree_contract(270100, "1")
+    raw = {
+        "context": "Un réseau de collecte relie les postes.",
+        "materials": [],
+        "questions": [
+            {
+                "id": task_id,
+                "contract_task_id": task_id,
+                "claimed_result": {"order": ["F", "E", "D", "C", "B", "A"]}
+                if task_id == "1d"
+                else contract.to_dict()["expected"][task_id],
+                "prompt": "Examinez les données.",
+                "answer": "Réponse contextualisée.",
+            }
+            for task_id in contract.to_dict()["task_ids"]
+        ],
+    }
+    with pytest.raises(ValueError, match="Résultat déclaré"):
+        _bind_graph_tree_contract(raw, contract)
+
+
+def test_graph_tree_binding_rejects_a_bfs_answer_that_contradicts_its_claim():
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import _bind_graph_tree_contract
+
+    contract = build_graph_tree_contract(270100, "1")
+    raw = {
+        "context": "Un réseau de collecte relie les postes.",
+        "materials": [],
+        "questions": [
+            {
+                "id": task_id,
+                "contract_task_id": task_id,
+                "claimed_result": contract.to_dict()["expected"][task_id],
+                "prompt": "Examinez les données.",
+                "answer": "Ordre du parcours en largeur : F, E, D, C, B, A."
+                if task_id == "1d"
+                else "Réponse contextualisée.",
+            }
+            for task_id in contract.to_dict()["task_ids"]
+        ],
+    }
+    with pytest.raises(ValueError, match=r"parcours|réponse"):
+        _bind_graph_tree_contract(raw, contract)
+
+
+def test_graph_tree_candidate_uses_locked_materials_before_all_exercise_checks():
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import (
+        _prepare_candidate,
+        _prompt,
+        _tasks_for_seed,
+    )
+
+    task = _tasks_for_seed(270100)[0]
+    contract = build_graph_tree_contract(270100, "1")
+    raw = FrenchClient().generate_json(
+        _prompt({**task, "exercise_id": "1"}, [], 270100, 1, "")
+    )
+    raw["materials"] = []
+    raw["context"] = "Une équipe étudie un réseau de collecte et les demandes associées."
+    for question in raw["questions"]:
+        task_id = question["id"]
+        material_id = "arbre" if task_id in ("1e", "1f") else "reseau"
+        question["contract_task_id"] = task_id
+        question["claimed_result"] = contract.to_dict()["expected"][task_id]
+        question["material_ids"] = [material_id]
+        question["prompt"] = f"Examinez le support `{material_id}` et justifiez votre résultat."
+        question["verification"] = {"kind": "human"}
+    raw["questions"][4]["answer"] = "return Noeud(valeur)"
+
+    exercise, _, _, checks, _, binding = _prepare_candidate(
+        raw, task, "1", [], [], contract=contract
+    )
+    assert {item.id for item in exercise.materials} == {"reseau", "arbre"}
+    assert "class Noeud:" in exercise.context
+    assert binding["contract_sha256"] == contract.digest
+    assert all(item["state"] != "failed" for item in checks)
+
+
 class FrenchClient:
     provider = "ollama"
     model = "fixture"
