@@ -175,3 +175,102 @@ def test_resumed_part_rejects_changed_prompt_or_extra_saved_part(tmp_path):
     draft.write_text(json.dumps(saved))
     with pytest.raises(ValueError, match="brouillon"):
         author_graph_tree_parts(PartClient(), task, contract, [], draft)
+
+
+class ReviewClient:
+    def __init__(self, corrupt_repair=False):
+        self.alignment_calls = 0
+        self.corrupt_repair = corrupt_repair
+
+    def generate_json(self, prompt):
+        if prompt.startswith("Contrôle indépendant des capacités"):
+            self.alignment_calls += 1
+            request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+            return {
+                "questions": [
+                    {
+                        "question_id": plan["id"],
+                        "objective_code": plan["required_curriculum_code"],
+                        "aligned": self.alignment_calls > 1 or plan["id"] != "1a",
+                        "rationale": "La consigne mobilise la capacité attendue et les données affichées dans l'exercice.",
+                        "issues": ["Préciser la consigne"]
+                        if self.alignment_calls == 1 and plan["id"] == "1a"
+                        else [],
+                    }
+                    for plan in request["question_blueprint"]
+                ]
+            }
+        if prompt.startswith("Répare la question verrouillée"):
+            question = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])["question"]
+            changed = {
+                **question,
+                "prompt": "À partir du support `reseau`, calculez et justifiez le plus court chemin demandé.",
+            }
+            if self.corrupt_repair:
+                changed["points"] = "99"
+            return changed
+        if prompt.startswith("Résous indépendamment"):
+            exercise = json.loads(prompt.split("\n", 1)[1])
+            return {
+                "answers": {
+                    item["id"]: "Résultat contrôlé." for item in exercise["questions"]
+                },
+                "issues": [],
+                "minutes": 70,
+            }
+        if prompt.startswith("Vérifie ce sujet"):
+            exercise = json.loads(prompt.split("\n", 1)[1])["exercise"]
+            return {
+                "correct": True,
+                "native_french": True,
+                "curriculum_aligned": True,
+                "difficulty_appropriate": True,
+                "marking_consistent": True,
+                "context_consistent": True,
+                "issues": [],
+                "rationale": "Chaque question et son barème ont été vérifiés contre les données et la résolution.",
+                "question_ids": [item["id"] for item in exercise["questions"]],
+            }
+        raise AssertionError("Unexpected model prompt")
+
+
+def test_contract_review_rechecks_all_gates_after_one_bounded_repair(monkeypatch):
+    from Backend.Core.france import pipeline
+
+    task, contract = _setup()
+    raw, _ = author_parts_without_draft(PartClient(), task, contract)
+    original = pipeline._prepare_candidate
+    calls = []
+
+    def observe(*args, **kwargs):
+        calls.append(args[0])
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(pipeline, "_prepare_candidate", observe)
+    record = {}
+    client = ReviewClient()
+    exercise, evidence = pipeline.evaluate_graph_tree_draft(
+        raw, task, contract, [], [], client, record
+    )
+    assert client.alignment_calls == 2
+    assert len(calls) == 2
+    assert exercise.questions[0].prompt != raw["questions"][0]["prompt"]
+    assert evidence["contract_binding"]["contract_sha256"] == contract.digest
+    assert len(evidence["targeted_repairs"]) == 1
+    assert evidence["question_alignment"]["review"]["questions"][0]["aligned"]
+    assert len(evidence["deterministic"]) == 6
+    assert evidence["independent_solution"]["issues"] == []
+
+
+def test_contract_review_preserves_rejected_repair_response():
+    from Backend.Core.france.pipeline import evaluate_graph_tree_draft
+
+    task, contract = _setup()
+    raw, _ = author_parts_without_draft(PartClient(), task, contract)
+    record = {}
+    with pytest.raises(ValueError, match="verrouillé"):
+        evaluate_graph_tree_draft(
+            raw, task, contract, [], [], ReviewClient(True), record
+        )
+    assert record["repair_responses"][0]["response"]["points"] == "99"
+    assert record["candidate"] == raw

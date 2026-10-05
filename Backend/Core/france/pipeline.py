@@ -17,6 +17,7 @@ from Backend.Core.education_context import (
     points,
 )
 from Backend.Core.france.archetypes import archetype_for_seed
+from Backend.Core.france.graph_tree_authoring import apply_graph_tree_repair
 from Backend.Core.france.graph_tree_binding import (
     bind_graph_tree_contract as _bind_graph_tree_contract,
 )
@@ -35,6 +36,7 @@ from Backend.Core.france.question_review import (
     alignment_failures,
     alignment_prompt,
     check_question_alignment,
+    graph_tree_repair_prompt,
     repair_marking_prompt,
     repair_question_prompt,
 )
@@ -225,8 +227,10 @@ def _named_figure_ids(prompt: str, declared: set[str]) -> list[str]:
         for _ in range(6):
             name = next(value for value in cursor.groups() if value is not None)
             quoted = cursor.group(1) is not None or cursor.group(2) is not None
-            if not quoted and name not in declared and not any(
-                char.isdigit() or char == "_" for char in name
+            if (
+                not quoted
+                and name not in declared
+                and not any(char.isdigit() or char == "_" for char in name)
             ):
                 break
             mentioned.append(name)
@@ -321,15 +325,19 @@ def _legacy_bind_explicit_material_ids(raw: dict) -> tuple[dict, list[dict]]:
 
 def _invalid_marking_allocation(authored: dict, plan: dict) -> bool:
     marking = authored.get("marking")
-    if not isinstance(marking, list) or not marking or not all(
-        isinstance(credit, dict) for credit in marking
+    if (
+        not isinstance(marking, list)
+        or not marking
+        or not all(isinstance(credit, dict) for credit in marking)
     ):
         return False
     try:
         credits = [points(credit.get("points")) for credit in marking]
     except ValueError:
         return False  # Other malformed credit fields remain a schema failure.
-    return any(credit <= 0 for credit in credits) or sum(credits) != points(plan["points"])
+    return any(credit <= 0 for credit in credits) or sum(credits) != points(
+        plan["points"]
+    )
 
 
 def assemble_planned_question(plan: dict, authored: dict) -> NSIQuestion:
@@ -341,7 +349,9 @@ def assemble_planned_question(plan: dict, authored: dict) -> NSIQuestion:
         credit_matches = points(authored.get("points")) == points(plan["points"])
     except ValueError:
         credit_matches = False
-    if not credit_matches or any(authored.get(field) != plan[field] for field in fields):
+    if not credit_matches or any(
+        authored.get(field) != plan[field] for field in fields
+    ):
         raise ValueError("Métadonnées de la question incompatibles avec le plan")
     codes = authored.get("curriculum_codes")
     if not isinstance(codes, list) or plan["required_curriculum_code"] not in codes:
@@ -400,7 +410,9 @@ def _replay_targeted_repairs(evidence: dict, final_candidate: dict, task: dict) 
         raise ValueError("Brouillon initial de réparation manquant")
     candidate = deepcopy(initial)
     for repair in repairs:
-        if not isinstance(repair, dict) or repair.get("before_sha256") != digest(candidate):
+        if not isinstance(repair, dict) or repair.get("before_sha256") != digest(
+            candidate
+        ):
             raise ValueError("Chaîne de réparation ciblée invalide")
         questions = candidate.get("questions")
         if not isinstance(questions, list):
@@ -408,7 +420,8 @@ def _replay_targeted_repairs(evidence: dict, final_candidate: dict, task: dict) 
         matches = [
             index
             for index, question in enumerate(questions)
-            if isinstance(question, dict) and question.get("id") == repair.get("question_id")
+            if isinstance(question, dict)
+            and question.get("id") == repair.get("question_id")
         ]
         replacement = repair.get("replacement")
         if (
@@ -495,7 +508,11 @@ def require_declared_relations(exercise: NSIExercise) -> None:
     )
     for question in exercise.questions:
         text = "\n".join(
-            (question.prompt, question.answer, *(item.criterion for item in question.marking))
+            (
+                question.prompt,
+                question.answer,
+                *(item.criterion for item in question.marking),
+            )
         )
         names = {name.lower() for name in sql_name.findall(text)}
         names.update(name.lower() for name in named_table.findall(text))
@@ -534,11 +551,11 @@ def require_consistent_tree_premises(text: str) -> None:
     """Reject explicit BST placements that contradict its ordering invariant."""
     if not re.search(r"\b(?:ABR|arbre binaire de recherche)\b", text, re.IGNORECASE):
         return
-    root_before = re.search(
-        r"\b(\d+)\s+est\s+(?:la\s+)?racine\b", text, re.IGNORECASE
-    )
+    root_before = re.search(r"\b(\d+)\s+est\s+(?:la\s+)?racine\b", text, re.IGNORECASE)
     root_after = re.search(r"\bla\s+racine\s+est\s+(\d+)\b", text, re.IGNORECASE)
-    root = int((root_before or root_after).group(1)) if root_before or root_after else None
+    root = (
+        int((root_before or root_after).group(1)) if root_before or root_after else None
+    )
     placement = re.compile(
         r"\b(?P<value>\d+)\s+(?:est\s+|se\s+trouve\s+)?à\s+"
         r"(?P<side>gauche|droite)\b"
@@ -596,8 +613,7 @@ def require_algorithm_premises(prompt: str, answer: str) -> None:
             return False
         nested = nested_loop or isinstance(node, (ast.For, ast.While))
         return any(
-            exits_queue_loop(child, nested)
-            for child in ast.iter_child_nodes(node)
+            exits_queue_loop(child, nested) for child in ast.iter_child_nodes(node)
         )
 
     blocks = re.findall(r"```(?:python)?\s*\n(.*?)```", prompt, re.DOTALL | re.I)
@@ -612,16 +628,20 @@ def require_algorithm_premises(prompt: str, answer: str) -> None:
             if isinstance(loop, ast.While)
             for child in loop.body
         )
-        if all(
-            re.search(pattern, code)
-            for pattern in (
-                r"\bwhile\s+file\s*:",
-                r"\bfile\.pop\(0\)",
-                r"\bif\s+sommet\s+not\s+in\s+visites\s*:",
-                r"\bvisites\.append\(sommet\)",
-                r"\bfile\.extend\(adj\[sommet\]\)",
+        if (
+            all(
+                re.search(pattern, code)
+                for pattern in (
+                    r"\bwhile\s+file\s*:",
+                    r"\bfile\.pop\(0\)",
+                    r"\bif\s+sommet\s+not\s+in\s+visites\s*:",
+                    r"\bvisites\.append\(sommet\)",
+                    r"\bfile\.extend\(adj\[sommet\]\)",
+                )
             )
-        ) and not loop_has_exit and not re.search(r"\bfile\s*=\s*\[\]", code):
+            and not loop_has_exit
+            and not re.search(r"\bfile\s*=\s*\[\]", code)
+        ):
             raise ValueError(
                 "La prémisse du parcours en largeur attribue à tort un arrêt "
                 "prématuré à une boucle"
@@ -638,7 +658,9 @@ def require_tree_constructor_context(prompt: str, answer: str, context: str) -> 
         visible,
         re.IGNORECASE,
     ):
-        raise ValueError("Le constructeur Noeud du corrigé n'est pas défini dans le sujet")
+        raise ValueError(
+            "Le constructeur Noeud du corrigé n'est pas défini dans le sujet"
+        )
 
 
 def require_tree_complexity_premise(prompt: str, answer: str, context: str) -> None:
@@ -653,12 +675,19 @@ def require_tree_complexity_premise(prompt: str, answer: str, context: str) -> N
     # assumption again in this question rather than borrowing a keyword from
     # an unrelated scenario or from the proposed answer.
     positive = False
-    for assumption in re.finditer(r"\b(?:on\s+suppose|supposons|on\s+admet)\b", prompt, re.I):
+    for assumption in re.finditer(
+        r"\b(?:on\s+suppose|supposons|on\s+admet)\b", prompt, re.I
+    ):
         clause = re.split(r"[.!?]", prompt[assumption.end() :], maxsplit=1)[0]
         tree = re.search(r"\b(?:ABR|arbre binaire de recherche)\b", clause, re.I)
         balance = re.search(r"\béquilibré\b", clause, re.I)
-        if tree and balance and tree.start() < balance.start() and not re.search(
-            r"\b(?:non|ne|pas|jamais|déséquilibré)\b", clause[: balance.end()], re.I
+        if (
+            tree
+            and balance
+            and tree.start() < balance.start()
+            and not re.search(
+                r"\b(?:non|ne|pas|jamais|déséquilibré)\b", clause[: balance.end()], re.I
+            )
         ):
             positive = True
     if not positive:
@@ -923,6 +952,93 @@ def _prepare_candidate(
     return exercise, bindings, assembly, checks, originality, contract_binding
 
 
+def evaluate_graph_tree_draft(
+    raw: dict,
+    task: dict,
+    contract: GraphTreeContract,
+    references: list[dict],
+    previous_texts: list[str],
+    client,
+    record: dict,
+) -> tuple[NSIExercise, dict]:
+    """Run every existing gate after each bounded graph/tree repair.
+
+    `record` is mutated before each provider call so the outer checkpoint can
+    preserve a rejected response or interruption without publishing a package.
+    """
+    record["candidate"] = deepcopy(raw)
+    initial = deepcopy(raw)
+    repairs: list[dict] = []
+    record["targeted_repairs"] = repairs
+    record["repair_responses"] = []
+    for repair_round in range(3):
+        exercise, bindings, assembly, checks, originality, contract_binding = (
+            _prepare_candidate(
+                raw, task, "1", references, previous_texts, contract=contract
+            )
+        )
+        record["material_bindings"] = bindings
+        record["contract_binding"] = contract_binding
+        alignment = client.generate_json(alignment_prompt(exercise, task, references))
+        record["question_alignment"] = alignment
+        failures = alignment_failures(exercise, task, alignment)
+        if not failures:
+            break
+        if repair_round == 2:
+            check_question_alignment(exercise, task, alignment)
+        question_id = failures[0]
+        question_index = next(
+            index
+            for index, question in enumerate(raw["questions"])
+            if question["id"] == question_id
+        )
+        replacement = client.generate_json(
+            graph_tree_repair_prompt(
+                raw,
+                task,
+                contract,
+                question_id,
+                alignment["questions"][question_index],
+            )
+        )
+        record["repair_responses"].append(
+            {"question_id": question_id, "response": replacement}
+        )
+        revised, repair = apply_graph_tree_repair(
+            raw, question_id, replacement, contract
+        )
+        repair["replacement"] = replacement
+        repair["review"] = alignment
+        repairs.append(repair)
+        raw = revised
+    record["final_candidate"] = deepcopy(raw)
+    solution = client.generate_json(solver_prompt(exercise))
+    record["independent_solution"] = solution
+    review = client.generate_json(_review_prompt(exercise, solution, references))
+    record["review"] = review
+    _check_review(exercise, solution, review)
+    evidence = {
+        "exercise_sha256": digest(exercise.model_dump(mode="json")),
+        "candidate": raw,
+        "candidate_sha256": digest(raw),
+        "initial_candidate": initial if repairs else None,
+        "targeted_repairs": repairs,
+        "material_bindings": bindings,
+        "contract_binding": contract_binding,
+        "plan_assembly": assembly,
+        "references": references,
+        "deterministic": checks,
+        "independent_solution": solution,
+        "review": review,
+        "originality": originality,
+        "question_alignment": {
+            "candidate_view_sha256": digest(exercise.candidate_view()),
+            "review": alignment,
+        },
+    }
+    return exercise, evidence
+
+
 def generate_assessment(
     *,
     index_path: Path,
@@ -1051,7 +1167,10 @@ def generate_assessment(
                                 )
                             )
                             record["repair_responses"].append(
-                                {"question_id": error.question_id, "response": replacement}
+                                {
+                                    "question_id": error.question_id,
+                                    "response": replacement,
+                                }
                             )
                             if (
                                 not isinstance(replacement, dict)
@@ -1111,7 +1230,9 @@ def generate_assessment(
                             not isinstance(replacement, dict)
                             or replacement.get("id") != question_id
                         ):
-                            raise ValueError("La réparation a changé l'identité de la question")
+                            raise ValueError(
+                                "La réparation a changé l'identité de la question"
+                            )
                         before = digest(raw)
                         revised = deepcopy(raw)
                         revised["questions"][question_index] = replacement
@@ -1149,7 +1270,9 @@ def generate_assessment(
                             "review": review,
                             "originality": originality,
                             "question_alignment": {
-                                "candidate_view_sha256": digest(exercise.candidate_view()),
+                                "candidate_view_sha256": digest(
+                                    exercise.candidate_view()
+                                ),
                                 "review": alignment,
                             },
                         },
@@ -1229,7 +1352,12 @@ def validate_package(package: dict):
         (
             _tasks_for_seed(seed)
             if identity["prompt_version"]
-            in {PROMPT_VERSION, "fr-nsi-written-2027-v9", "fr-nsi-written-2027-v8", "fr-nsi-written-2027-v7"}
+            in {
+                PROMPT_VERSION,
+                "fr-nsi-written-2027-v9",
+                "fr-nsi-written-2027-v8",
+                "fr-nsi-written-2027-v7",
+            }
             else _legacy_tasks_for_seed(seed)
         )
         if type(seed) is int
@@ -1292,11 +1420,16 @@ def validate_package(package: dict):
                 require_authoring_fields(raw_candidate)
             binder = (
                 bind_explicit_material_ids
-                if identity["prompt_version"] in {PROMPT_VERSION, "fr-nsi-written-2027-v9", "fr-nsi-written-2027-v8"}
+                if identity["prompt_version"]
+                in {PROMPT_VERSION, "fr-nsi-written-2027-v9", "fr-nsi-written-2027-v8"}
                 else _legacy_bind_explicit_material_ids
             )
             bound, bindings = binder(raw_candidate)
-            if identity["prompt_version"] in {PROMPT_VERSION, "fr-nsi-written-2027-v9", "fr-nsi-written-2027-v8"}:
+            if identity["prompt_version"] in {
+                PROMPT_VERSION,
+                "fr-nsi-written-2027-v9",
+                "fr-nsi-written-2027-v8",
+            }:
                 assembled, assembly = _assemble_planned_exercise(
                     bound, expected_blueprint[int(exercise.id) - 1], raw_candidate
                 )
@@ -1308,8 +1441,7 @@ def validate_package(package: dict):
                 not isinstance(raw_candidate, dict)
                 or evidence.get("candidate_sha256") != digest(raw_candidate)
                 or evidence.get("material_bindings") != bindings
-                or assembled.model_dump(mode="json")
-                != exercise.model_dump(mode="json")
+                or assembled.model_dump(mode="json") != exercise.model_dump(mode="json")
             ):
                 raise ValueError("Preuve de liaison figure-question invalide")
             require_link_for_material_mentions(exercise)
@@ -1319,11 +1451,9 @@ def validate_package(package: dict):
                 )
         if identity["prompt_version"] in {PROMPT_VERSION, "fr-nsi-written-2027-v9"}:
             alignment = evidence.get("question_alignment")
-            if (
-                not isinstance(alignment, dict)
-                or alignment.get("candidate_view_sha256")
-                != digest(exercise.candidate_view())
-            ):
+            if not isinstance(alignment, dict) or alignment.get(
+                "candidate_view_sha256"
+            ) != digest(exercise.candidate_view()):
                 raise ValueError("Preuve d'alignement individuel absente ou périmée")
             check_question_alignment(
                 exercise,
