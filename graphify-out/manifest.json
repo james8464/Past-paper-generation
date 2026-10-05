@@ -200,8 +200,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
-    "mtime": 1791215369.0310225,
-    "ast_hash": "e874efa69f48ecd63081f1547ddabe2d",
+    "mtime": 1791218651.7593422,
+    "ast_hash": "3c065807de00e97df3991cae27b79857",
     "semantic_hash": ""
   },
   "Backend/Core/france/source_identity.py": {
@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791188957.1863177,
+    "mtime": 1791218796.877275,
     "ast_hash": "3d32e5a9ccb33b5e7dc52dfacc79edad",
     "semantic_hash": ""
   },
@@ -1680,8 +1680,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_runtime.py": {
-    "mtime": 1791214824.4289074,
-    "ast_hash": "ec2b9e3d0c642d490799d858af82623d",
+    "mtime": 1791218946.9718337,
+    "ast_hash": "7d2d6adf0028e7442b55207478e8ef62",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {
@@ -2330,8 +2330,8 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-evaluation.md": {
-    "mtime": 1791214924.8448644,
-    "ast_hash": "375fd777fe87c2de600632c127e6d9ff",
+    "mtime": 1791219054.8498635,
+    "ast_hash": "25e9e97b0c92dcc0b436e1c77180dd9b",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-prototype-verification-2026-09-28.md": {
@@ -2615,18 +2615,18 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_tree_binding.py": {
-    "mtime": 1791215323.739322,
-    "ast_hash": "0b952cf642e659885a4e2c270bcdd06d",
+    "mtime": 1791218609.7158139,
+    "ast_hash": "4e5319c513aa21646f61c22eaef6ba27",
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_tree_authoring.py": {
-    "mtime": 1791210882.2918267,
-    "ast_hash": "7055b4ae204c75de737c0f22ffc0719f",
+    "mtime": 1791218510.4030218,
+    "ast_hash": "37826b60ca586c9ea2d4bbcfe5969d7d",
     "semantic_hash": ""
   },
   "tests/test_french_graph_tree_authoring.py": {
-    "mtime": 1791210931.9954233,
-    "ast_hash": "ddbc6b9355a9c1d3938753ba7f3f4f13",
+    "mtime": 1791218946.9691067,
+    "ast_hash": "9cec8564a112c6837869a9316d366b0b",
     "semantic_hash": ""
   }
 }

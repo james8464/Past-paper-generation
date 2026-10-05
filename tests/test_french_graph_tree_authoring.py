@@ -93,6 +93,28 @@ def test_part_authoring_exposes_only_part_facts_and_resumes_after_cancel(tmp_pat
     assert all("response_sha256" in item for item in evidence["parts"])
 
 
+def test_student_sees_shortest_path_tie_rule_for_tied_graph():
+    from Backend.Core.france.graph_tree_binding import bind_graph_tree_contract
+
+    task = _tasks_for_seed(4)[0]
+    contract = build_graph_tree_contract(4, "1")
+    raw, _ = author_parts_without_draft(PartClient(), task, contract)
+    bound, _ = bind_graph_tree_contract(raw, contract)
+    assert "poids total" in bound["context"]
+    assert "ordre lexicographique" in bound["context"]
+
+
+def test_student_sees_contract_edge_list_as_graph_alternative():
+    from Backend.Core.france.graph_tree_binding import bind_graph_tree_contract
+
+    task, contract = _setup()
+    raw, _ = author_parts_without_draft(PartClient(), task, contract)
+    bound, _ = bind_graph_tree_contract(raw, contract)
+    first = contract.to_dict()["graph"]["edges"][0]
+    assert "Arêtes du réseau (non orientées)" in bound["context"]
+    assert f"{first[0]}-{first[1]} : {first[2]}" in bound["context"]
+
+
 def test_bounded_repair_rejects_changes_to_locked_fields_and_peers():
     from Backend.Core.france.graph_tree_authoring import apply_graph_tree_repair
 
@@ -225,6 +247,48 @@ def test_invalid_part_response_is_preserved_with_its_hash(tmp_path):
     ).encode()
     assert failure["response_sha256"] == sha256(canonical).hexdigest()
     assert saved["parts"] == []
+
+
+def test_failed_attempt_hash_is_checked_on_resume_and_package_replay(tmp_path):
+    from Backend.Core.france.graph_tree_authoring import (
+        author_graph_tree_parts,
+        replay_graph_tree_parts,
+    )
+
+    task, contract = _setup()
+    draft = tmp_path / "draft.json"
+    _, evidence = author_graph_tree_parts(
+        PartClient(), task, contract, [], draft, run_identity=_run_identity()
+    )
+    evidence["failed_attempts"] = [
+        {
+            "part": "A",
+            "error": "invalid response",
+            "response": {"questions": []},
+            "response_sha256": "0" * 64,
+        }
+    ]
+    draft.write_text(json.dumps(evidence), encoding="utf-8")
+    with pytest.raises(ValueError, match=r"échec|Échec|preuve"):
+        replay_graph_tree_parts(
+            task, contract, [], evidence, run_identity=_run_identity()
+        )
+    with pytest.raises(ValueError, match=r"échec|Échec|preuve"):
+        author_graph_tree_parts(
+            PartClient(), task, contract, [], draft, run_identity=_run_identity()
+        )
+
+
+def test_failed_attempt_structure_is_checked_on_package_replay():
+    from Backend.Core.france.graph_tree_authoring import replay_graph_tree_parts
+
+    task, contract = _setup()
+    _, evidence = author_parts_without_draft(PartClient(), task, contract)
+    evidence["failed_attempts"] = [{"part": "D", "error": "invalid"}]
+    with pytest.raises(ValueError, match=r"échec|Échec|preuve"):
+        replay_graph_tree_parts(
+            task, contract, [], evidence, run_identity=_run_identity()
+        )
 
 
 def test_part_resume_rejects_changed_model_identity_before_reusing_part_a(tmp_path):

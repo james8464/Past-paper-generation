@@ -34,6 +34,26 @@ def _run_identity_hash(identity: dict) -> str:
     return _hash(identity)
 
 
+def _check_failed_attempts(value: object) -> None:
+    if not isinstance(value, list):
+        raise ValueError("Preuve d'échec de partie invalide")
+    for failure in value:
+        if (
+            not isinstance(failure, dict)
+            or not isinstance(failure.get("part"), str)
+            or failure["part"] not in "ABC"
+            or not isinstance(failure.get("error"), str)
+            or not failure["error"]
+            or ("response" in failure) != ("response_sha256" in failure)
+            or set(failure) - {"part", "error", "response", "response_sha256"}
+        ):
+            raise ValueError("Preuve d'échec de partie invalide")
+        if "response" in failure and failure["response_sha256"] != _hash(
+            failure["response"]
+        ):
+            raise ValueError("Preuve d'échec de partie modifiée")
+
+
 def _save(path: Path, payload: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, name = tempfile.mkstemp(prefix=".nsi-parts-", dir=path.parent)
@@ -204,6 +224,7 @@ def author_graph_tree_parts(
             or not isinstance(draft.get("failed_attempts"), list)
         ):
             raise ValueError("Structure du brouillon de parties invalide")
+        _check_failed_attempts(draft["failed_attempts"])
     for part in "ABC":
         index = "ABC".index(part)
         request = _part_request(part, task, contract, references)
@@ -270,6 +291,7 @@ def replay_graph_tree_parts(
         evidence.get(key) != value for key, value in identity.items()
     ):
         raise ValueError("Identité du brouillon de parties modifiée")
+    _check_failed_attempts(evidence.get("failed_attempts"))
     parts = evidence.get("parts")
     if not isinstance(parts, list) or len(parts) != 3:
         raise ValueError("Trois parties prouvées sont requises")

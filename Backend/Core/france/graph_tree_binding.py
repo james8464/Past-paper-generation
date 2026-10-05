@@ -80,6 +80,14 @@ def canonical_answer(task_id: str, result: dict) -> str:
     raise ValueError("Tâche de contrat inconnue")
 
 
+def graph_edge_manifest(graph: dict) -> str:
+    """Provide a text alternative whose endpoint/weight pairs can be checked."""
+    edges = " ; ".join(
+        f"{start}-{end} : {weight}" for start, end, weight in graph["edges"]
+    )
+    return "Arêtes du réseau (non orientées) : " + edges + "."
+
+
 def bind_graph_tree_contract(
     raw: dict, contract: GraphTreeContract
 ) -> tuple[dict, dict]:
@@ -130,6 +138,12 @@ def bind_graph_tree_contract(
     ]
     bound["context"] = (
         context.rstrip()
+        + "\n\n"
+        + graph_edge_manifest(graph)
+        + "\n\nPour le plus court chemin, minimiser le poids total. "
+        + "Si plusieurs chemins ont le même poids total, retenir celui dont "
+        + "la suite des sommets est première dans l'ordre lexicographique "
+        + "(ordre alphabétique, de A vers F)."
         + "\n\nPour la question 1c, étudier ce programme de parcours en largeur erroné "
         + "sur le graphe `reseau` (voisins dans l'ordre alphabétique) :\n\n```python\n"
         + data["debug_case"]["faulty_code"]

@@ -13,7 +13,7 @@ from urllib.request import Request
 import pymupdf
 
 from Backend.Core.events import emit, emit_progress
-from Backend.Core.france.graph_tree_binding import canonical_answer
+from Backend.Core.france.graph_tree_binding import canonical_answer, graph_edge_manifest
 from Backend.Core.france.graph_tree_contract import (
     GraphTreeContract,
     build_graph_tree_contract,
@@ -140,6 +140,8 @@ def validate_contract_pdf(
     if printed_tree != expected_tree:
         raise ValueError("Table de l'arbre imprimé incompatible avec le contrat")
     flat = " ".join(text.split())
+    if " ".join(graph_edge_manifest(data["graph"]).split()) not in flat:
+        raise ValueError("Arêtes textuelles du graphe incompatibles avec le contrat")
     if (
         " ".join(data["debug_case"]["faulty_code"].split()) not in flat
         or " ".join(data["node_api"].split()) not in flat

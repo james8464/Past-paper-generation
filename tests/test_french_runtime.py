@@ -73,6 +73,13 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
         contract = build_graph_tree_contract(args.seed, "1")
         validate_contract_pdf(bundles[0] / "sujet.pdf", contract, correction=False)
         validate_contract_pdf(bundles[0] / "corrige.pdf", contract, correction=True)
+        original_manifest = runtime.graph_edge_manifest
+        monkeypatch.setattr(
+            runtime, "graph_edge_manifest", lambda graph: "Arêtes incorrectes"
+        )
+        with pytest.raises(ValueError, match=r"arêtes|Arêtes"):
+            validate_contract_pdf(bundles[0] / "sujet.pdf", contract, correction=False)
+        monkeypatch.setattr(runtime, "graph_edge_manifest", original_manifest)
         with pytest.raises(ValueError, match=r"contrat|figure|graphe"):
             validate_contract_pdf(
                 bundles[0] / "sujet.pdf",

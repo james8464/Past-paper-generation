@@ -19,13 +19,22 @@ against a bounded test graph, rejects answers differing from the canonical
 result, requires the indicative marking to cite it, and compares extracted
 graph/tree/code facts and corrected results in both PDF roles before publication.
 
-These checks are engineering constraints, not a proof that every free-form
-French premise is true. The only generated specimens used for these regressions
-are fake-client fixtures. No post-redesign live paper has been accepted or
-manually compared with a historical official PDF; no French NSI teacher has
-approved classroom use. PR #33 must remain draft until the complete suite,
-independent review and protected exact-head checks finish. Its changes do not
-retroactively qualify the failed Gemma/Qwen runs below.
+Independent re-review of the repaired PR reproduced a false A–F adjacency
+claim that passed when phrased in unrestricted prose. This remains a critical
+merge blocker; neither passing tests nor model agreement prove free-form
+premises true. The review also found missing PDF edge-endpoint evidence,
+unchecked hashes for failed part attempts, and an unstated shortest-path tie
+rule. The current unmerged repair adds a printed edge/weight text alternative
+checked on extraction, validates failed-attempt records during resume and
+replay, and states the lexicographic tie rule. Its remaining factual-prose
+problem must be solved before merging or running a new expensive matrix.
+
+The only generated specimens used for these regressions are fake-client
+fixtures. Their page flow and code presentation still need manual polish. No
+post-redesign live paper has been accepted or manually compared with a
+historical official PDF; no French NSI teacher has approved classroom use.
+PR #33 remains draft. Its changes do not retroactively qualify the failed
+Gemma/Qwen runs below.
 
 ## First complete live campaign (30 September 2026)
 
