@@ -22,6 +22,15 @@ def _hash(value: object) -> str:
     ).hexdigest()
 
 
+def _run_identity_hash(identity: dict) -> str:
+    if not isinstance(identity, dict) or any(
+        not isinstance(identity.get(field), str) or not identity[field]
+        for field in ("provider", "model_digest", "implementation_sha256")
+    ):
+        raise ValueError("Identité du modèle ou du code incomplète")
+    return _hash(identity)
+
+
 def _save(path: Path, payload: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, name = tempfile.mkstemp(prefix=".nsi-parts-", dir=path.parent)
@@ -163,12 +172,15 @@ def author_graph_tree_parts(
     contract: GraphTreeContract,
     references: list[dict],
     draft_path: Path | None,
+    *,
+    run_identity: dict,
 ) -> tuple[dict, dict]:
     """Persist each accepted part; resume only against identical inputs."""
     identity = {
         "contract_sha256": contract.digest,
         "task_sha256": _hash(task),
         "reference_sha256": _hash(references),
+        "run_identity_sha256": _run_identity_hash(run_identity),
     }
     draft = {**identity, "parts": [], "failed_attempts": []}
     if draft_path is not None and draft_path.exists():
@@ -196,8 +208,10 @@ def author_graph_tree_parts(
             _check_part(part, saved["response"], request)
             continue
         prompt = part_prompt(part, task, contract, references)
+        received = False
         try:
             response = client.generate_json(prompt)
+            received = True
             _check_part(part, response, request)
             trial = deepcopy(draft)
             trial["parts"].append(
@@ -212,11 +226,17 @@ def author_graph_tree_parts(
             if draft_path is not None:
                 _save(draft_path, draft)
         except Exception as error:
-            draft["failed_attempts"].append({"part": part, "error": str(error)})
+            failure = {"part": part, "error": str(error)}
+            if received:
+                failure["response"] = response
+                failure["response_sha256"] = _hash(response)
+            draft["failed_attempts"].append(failure)
             if draft_path is not None:
                 _save(draft_path, draft)
             raise
-    raw = replay_graph_tree_parts(task, contract, references, draft)
+    raw = replay_graph_tree_parts(
+        task, contract, references, draft, run_identity=run_identity
+    )
     return raw, deepcopy(draft)
 
 
@@ -225,12 +245,15 @@ def replay_graph_tree_parts(
     contract: GraphTreeContract,
     references: list[dict],
     evidence: dict,
+    *,
+    run_identity: dict,
 ) -> dict:
     """Rebuild a candidate only from the three hash-linked accepted responses."""
     identity = {
         "contract_sha256": contract.digest,
         "task_sha256": _hash(task),
         "reference_sha256": _hash(references),
+        "run_identity_sha256": _run_identity_hash(run_identity),
     }
     if not isinstance(evidence, dict) or any(
         evidence.get(key) != value for key, value in identity.items()

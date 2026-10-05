@@ -1054,12 +1054,17 @@ def replay_graph_tree_evidence(
     contract: GraphTreeContract,
     references: list[dict],
     previous_texts: list[str],
+    run_identity: dict,
 ) -> bool:
     """Rebuild the accepted exercise from immutable parts and bounded repairs."""
     if not isinstance(evidence, dict) or evidence.get("references") != references:
         raise ValueError("Références de l'exercice incompatibles")
     raw = replay_graph_tree_parts(
-        task, contract, references, evidence.get("part_evidence")
+        task,
+        contract,
+        references,
+        evidence.get("part_evidence"),
+        run_identity=run_identity,
     )
     repairs = evidence.get("targeted_repairs")
     if not isinstance(repairs, list) or len(repairs) > 2:
@@ -1195,7 +1200,12 @@ def generate_assessment(
                             f"{checkpoint.name}.exercise-{key}.attempt-{attempt}.parts.json"
                         )
                         raw, part_evidence = author_graph_tree_parts(
-                            client, task, contract, references[position], part_path
+                            client,
+                            task,
+                            contract,
+                            references[position],
+                            part_path,
+                            run_identity=identity,
                         )
                         record["part_evidence"] = part_evidence
                         exercise, accepted_evidence = evaluate_graph_tree_draft(
@@ -1529,6 +1539,7 @@ def validate_package(package: dict):
                 build_graph_tree_contract(seed, "1"),
                 evidence.get("references"),
                 previous_texts,
+                identity,
             )
             previous_texts.append(exercise_candidate_text(exercise))
             continue

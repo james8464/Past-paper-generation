@@ -10,6 +10,12 @@ from hashlib import sha256
 from Backend.Core.france.graph_tree_contract import GraphTreeContract
 
 _EDGE = re.compile(r"\b([A-F])\s*(?:-|–|→|->)\s*([A-F])\b")
+_EDGE_WEIGHT = re.compile(
+    r"\b([A-F])\s*[-–]\s*([A-F])\s*"
+    r"(?:a\s+un\s+|de\s+)?(?:poids|p[eè]se|co[uû]te)\s*"
+    r"(?:de\s*)?(\d+)\b",
+    re.IGNORECASE,
+)
 _BFS_ANSWER = re.compile(
     r"(?:ordre\s+du\s+parcours\s+en\s+largeur|ordre\s+BFS)\s*[:=]\s*"
     r"([A-F](?:\s*(?:,|→|->)\s*[A-F]){2,})",
@@ -81,6 +87,7 @@ def bind_graph_tree_contract(
     graph = data["graph"]
     tree = data["tree"]
     declared_edges = {tuple(sorted(edge[:2])) for edge in graph["edges"]}
+    edge_weights = {tuple(sorted(edge[:2])): edge[2] for edge in graph["edges"]}
     bound = deepcopy(raw)
     bound["materials"] = [
         {
@@ -129,6 +136,9 @@ def bind_graph_tree_contract(
         for start, end in _EDGE.findall(prompt + "\n" + answer):
             if tuple(sorted((start, end))) not in declared_edges:
                 raise ValueError(f"Arête absente du graphe : {start}-{end}")
+        for start, end, weight in _EDGE_WEIGHT.findall(prompt + "\n" + answer):
+            if int(weight) != edge_weights.get(tuple(sorted((start, end)))):
+                raise ValueError(f"Poids de l'arête incompatible : {start}-{end}")
         if task_id == "1d":
             stated_order = _BFS_ANSWER.search(answer)
             if (

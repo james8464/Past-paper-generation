@@ -98,6 +98,32 @@ def test_graph_tree_binding_rejects_a_missing_graph_edge():
         _bind_graph_tree_contract(raw, contract)
 
 
+def test_graph_tree_binding_rejects_false_weight_for_an_existing_edge():
+    """A correct structured claim cannot license a contradictory printed fact."""
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import _bind_graph_tree_contract
+
+    contract = build_graph_tree_contract(270100, "1")
+    raw = {
+        "context": "Une équipe étudie un réseau de collecte.",
+        "materials": [],
+        "questions": [
+            {
+                "id": task_id,
+                "contract_task_id": task_id,
+                "claimed_result": contract.to_dict()["expected"][task_id],
+                "prompt": "L'arête A-B a un poids de 99. Quel chemin choisir ?"
+                if task_id == "1a"
+                else "Examinez les données fournies.",
+                "answer": "Justification contextualisée.",
+            }
+            for task_id in contract.to_dict()["task_ids"]
+        ],
+    }
+    with pytest.raises(ValueError, match=r"poids|arête"):
+        _bind_graph_tree_contract(raw, contract)
+
+
 def test_graph_tree_binding_rejects_an_incorrect_bfs_claim():
     from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
     from Backend.Core.france.pipeline import _bind_graph_tree_contract
