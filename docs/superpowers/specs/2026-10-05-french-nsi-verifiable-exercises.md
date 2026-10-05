@@ -66,10 +66,13 @@ and a structured `claimed_result`. Those fields remain in evidence but do not
 enter the old `NSIQuestion` package schema. Contract-owned source materials,
 expected result and verification kind are assembled separately from the raw
 model response. Reject a structured claim that differs from the canonical
-result. Render the canonical final result from the contract; the model may
-write explanatory steps and context-specific credit, which remain subject to
-alignment and human review. This avoids treating a correct JSON claim as
-proof that every free-text sentence is true.
+result. For this first slice, provide the canonical answer sentence in the
+part request and require the model to copy it exactly; reject a divergent
+answer instead of silently replacing it. Require at least one marking
+criterion to cite that checked sentence. Free-form explanatory steps remain
+out of the automatically accepted answer, pending a way to verify them; the
+criterion is still indicative and requires teacher review. This avoids
+treating a correct JSON claim as proof that every free-text sentence is true.
 Reject text that contradicts those materials or requires undeclared data.
 Do not silently rewrite the model's question or marking: a bounded, logged
 repair call may revise one question; all structural, mathematical, originality,
@@ -78,8 +81,10 @@ the initial candidate, every repair, all failures and exact hashes.
 
 For the first slice, require deterministic checks for shortest-path and
 ordered graph-traversal questions, and for at least one tree operation. A
-deliberate debugging task may contain broken code, but its diagnosed defect
-and corrected behavior must be established by a trusted test case. Unsupported
+deliberate debugging task includes an application-owned, printed faulty BFS
+program and a bounded graph test case. Its diagnosed defect and corrected
+behavior are established by running only the exact trusted snippets, never
+model-generated code. Unsupported
 natural-language reasoning remains explicitly unresolved, not automatically
 correct. No generated Python is executed outside the existing restricted
 interpreter; generated SQL remains isolated and bounded.

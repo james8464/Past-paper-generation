@@ -18,7 +18,7 @@ def test_seed_repeats_the_same_contract_and_changes_data_for_another_seed():
     assert first.to_dict() == repeat.to_dict()
     assert first.digest == repeat.digest
     assert first.digest != other.digest
-    assert first.to_dict()["version"] == 1
+    assert first.to_dict()["version"] == 2
     assert first.to_dict()["task_ids"] == ["1a", "1b", "1c", "1d", "1e", "1f"]
 
 
@@ -37,6 +37,22 @@ def test_generated_materials_are_connected_and_the_tree_is_search_ordered():
         GraphTreeContract.from_dict(data).digest
         == build_graph_tree_contract(270100, "1").digest
     )
+
+
+def test_debug_case_has_printable_faulty_code_and_a_checked_correction():
+    data = build_graph_tree_contract(270100, "1").to_dict()
+    case = data["debug_case"]
+    assert "if visin not in visites:" in case["faulty_code"]
+    assert case["input"]["A"] == ["B", "C"]
+    assert case["start"] == "A"
+    assert case["expected_error"] == "NameError"
+    assert case["corrected_order"] == ["A", "B", "C", "D", "E", "F"]
+    assert data["expected"]["1c"]["corrected_order"] == case["corrected_order"]
+
+    altered = deepcopy(data)
+    altered["debug_case"]["faulty_code"] = "def parcours_largeur(*args): return []"
+    with pytest.raises(ValueError, match=r"debug|fault|code"):
+        GraphTreeContract.from_dict(altered)
 
 
 def test_hand_checked_graph_and_tree_results():
@@ -64,13 +80,25 @@ def test_hand_checked_graph_and_tree_results():
         ],
         "insert_key": 25,
     }
+    data["debug_case"]["input"] = {
+        "A": ["B", "C"],
+        "B": ["A", "C", "D"],
+        "C": ["A", "B", "D"],
+        "D": ["B", "C", "E"],
+        "E": ["D", "F"],
+        "F": ["E"],
+    }
     data.pop("expected")
     contract = GraphTreeContract.from_dict(data)
     expected = contract.to_dict()["expected"]
 
     assert expected["1a"] == {"path": ["A", "B", "C", "D", "E", "F"], "weight": 16}
     assert expected["1b"] == {"neighbours": ["B", "C"], "weight_sum": 14}
-    assert expected["1c"] == {"fault": "misspelled_neighbour", "correct_name": "voisin"}
+    assert expected["1c"] == {
+        "fault": "misspelled_neighbour",
+        "correct_name": "voisin",
+        "corrected_order": ["A", "B", "C", "D", "E", "F"],
+    }
     assert expected["1d"] == {"order": ["A", "B", "C", "D", "E", "F"]}
     assert expected["1e"] == {"search_path": [40, 20, 30], "insert_key": 25}
     assert expected["1f"] == {"inorder": [10, 20, 25, 30, 40, 60]}

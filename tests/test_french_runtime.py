@@ -4,7 +4,8 @@ import pytest
 
 
 @pytest.mark.parametrize("failure", [None, "render", "cancel"])
-def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure):
+@pytest.mark.parametrize("large_print", [False, True])
+def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large_print):
     import json
     from hashlib import sha256
 
@@ -22,7 +23,7 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure):
         model="fixture",
         ollama_url="http://localhost:11434",
         allow_remote=False,
-        large_print=False,
+        large_print=large_print,
     )
     monkeypatch.setattr(runtime, "model_identity", lambda *args: "fixture-digest")
     monkeypatch.setattr(
@@ -61,11 +62,23 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure):
         import pymupdf
 
         package = json.loads((bundles[0] / "assessment.json").read_text())
-        contract = package["evidence"][0]["part_evidence"]
+        part_evidence = package["evidence"][0]["part_evidence"]
         assert (
-            contract["contract_sha256"]
+            part_evidence["contract_sha256"]
             == manifest["identity"]["graph_tree_contract_sha256"]
         )
+        from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+        from Backend.Core.france.runtime import validate_contract_pdf
+
+        contract = build_graph_tree_contract(args.seed, "1")
+        validate_contract_pdf(bundles[0] / "sujet.pdf", contract, correction=False)
+        validate_contract_pdf(bundles[0] / "corrige.pdf", contract, correction=True)
+        with pytest.raises(ValueError, match=r"contrat|figure|graphe"):
+            validate_contract_pdf(
+                bundles[0] / "sujet.pdf",
+                build_graph_tree_contract(args.seed + 1, "1"),
+                correction=False,
+            )
         with pymupdf.open(bundles[0] / "sujet.pdf") as question_pdf:
             question_text = "\n".join(page.get_text() for page in question_pdf)
             assert (
@@ -80,7 +93,9 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure):
         with pymupdf.open(bundles[0] / "corrige.pdf") as pdf:
             # Structured resources add space, but every exercise remains present
             # with its final marking entry and no empty trailing page.
-            assert 5 <= len(pdf) <= 8
+            assert 5 <= len(pdf) <= (12 if large_print else 9)
+            last_page = pdf[-1].get_text()
+            assert "3e." in last_page and "3f." in last_page
             text = " ".join(page.get_text() for page in pdf)
             assert all(f"Exercice {exercise} (" in text for exercise in range(1, 4))
             assert text.count("Réponse attendue") == 18

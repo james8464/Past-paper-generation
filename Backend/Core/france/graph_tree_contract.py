@@ -23,6 +23,51 @@ _NODE_API = (
     "        self.gauche = None\n"
     "        self.droite = None"
 )
+_FAULTY_BFS = (
+    "def parcours_largeur(reseau, depart):\n"
+    "    visites = {depart}\n"
+    "    file = [depart]\n"
+    "    ordre = []\n"
+    "    while file:\n"
+    "        sommet = file.pop(0)\n"
+    "        ordre.append(sommet)\n"
+    "        for voisin in reseau[sommet]:\n"
+    "            if visin not in visites:\n"
+    "                visites.add(voisin)\n"
+    "                file.append(voisin)\n"
+    "    return ordre"
+)
+_CORRECTED_BFS = _FAULTY_BFS.replace("if visin not in visites:", "if voisin not in visites:")
+
+
+def _run_trusted_bfs(source: str, graph: dict[str, list[str]]) -> list[str]:
+    """Execute only the two fixed, application-owned snippets, never model code."""
+    if source not in {_FAULTY_BFS, _CORRECTED_BFS}:
+        raise ValueError("Unknown trusted debugging code")
+    namespace: dict = {}
+    exec(source, {"__builtins__": {}}, namespace)
+    return namespace["parcours_largeur"](graph, "A")
+
+
+def _debug_case(adjacency: dict[str, list[tuple[str, int]]]) -> dict:
+    input_graph = {
+        node: [neighbor for neighbor, _ in edges] for node, edges in adjacency.items()
+    }
+    try:
+        _run_trusted_bfs(_FAULTY_BFS, input_graph)
+    except NameError as error:
+        if "visin" not in str(error):
+            raise ValueError("Unexpected debugging fault") from error
+    else:
+        raise ValueError("Faulty debugging code did not fail")
+    corrected = _run_trusted_bfs(_CORRECTED_BFS, input_graph)
+    return {
+        "faulty_code": _FAULTY_BFS,
+        "input": input_graph,
+        "start": "A",
+        "expected_error": "NameError",
+        "corrected_order": corrected,
+    }
 
 
 def _graph_adjacency(graph: dict) -> dict[str, list[tuple[str, int]]]:
@@ -124,9 +169,11 @@ def _tree_nodes(tree: dict) -> dict[int, tuple[int | None, int | None]]:
     return nodes
 
 
-def _expected(graph: dict, tree: dict) -> dict:
+def _expected(graph: dict, tree: dict, debug_case: dict) -> dict:
     adjacency = _graph_adjacency(graph)
     nodes = _tree_nodes(tree)
+    if debug_case != _debug_case(adjacency):
+        raise ValueError("Invalid debugging code or test case")
     queue = [(0, ("A",), "A")]
     best: dict[str, tuple[int, tuple[str, ...]]] = {"A": (0, ("A",))}
     while queue:
@@ -165,7 +212,11 @@ def _expected(graph: dict, tree: dict) -> dict:
             "neighbours": [node for node, _ in adjacency["A"]],
             "weight_sum": sum(weight for _, weight in adjacency["A"]),
         },
-        "1c": {"fault": "misspelled_neighbour", "correct_name": "voisin"},
+        "1c": {
+            "fault": "misspelled_neighbour",
+            "correct_name": "voisin",
+            "corrected_order": debug_case["corrected_order"],
+        },
         "1d": {"order": bfs},
         "1e": {"search_path": search_path, "insert_key": insertion},
         "1f": {"inorder": sorted([*nodes, insertion])},
@@ -189,7 +240,7 @@ class GraphTreeContract:
     def from_dict(cls, data: dict) -> GraphTreeContract:
         if (
             not isinstance(data, dict)
-            or data.get("version") != 1
+            or data.get("version") != 2
             or type(data.get("seed")) is not int
             or data.get("exercise_id") != "1"
             or data.get("task_ids") != list(_TASK_IDS)
@@ -200,7 +251,7 @@ class GraphTreeContract:
         tree = data.get("tree")
         if not isinstance(graph, dict) or not isinstance(tree, dict):
             raise ValueError("Missing graph/tree material")
-        expected = _expected(graph, tree)
+        expected = _expected(graph, tree, data.get("debug_case"))
         if "expected" in data and data["expected"] != expected:
             raise ValueError("Canonical result does not match contract data")
         canonical = {**data, "expected": expected}
@@ -212,6 +263,7 @@ class GraphTreeContract:
             "node_api",
             "graph",
             "tree",
+            "debug_case",
             "expected",
         }:
             raise ValueError("Unexpected graph/tree contract field")
@@ -246,19 +298,21 @@ def build_graph_tree_contract(seed: int, exercise_id: str) -> GraphTreeContract:
                 children[parent][direction] = key
                 break
             parent = child
+    graph = {
+        "id": "reseau",
+        "nodes": list(_NODES),
+        "edges": edges,
+        "directed": False,
+    }
     return GraphTreeContract.from_dict(
         {
-            "version": 1,
+            "version": 2,
             "seed": seed,
             "exercise_id": exercise_id,
             "task_ids": list(_TASK_IDS),
             "node_api": _NODE_API,
-            "graph": {
-                "id": "reseau",
-                "nodes": list(_NODES),
-                "edges": edges,
-                "directed": False,
-            },
+            "graph": graph,
+            "debug_case": _debug_case(_graph_adjacency(graph)),
             "tree": {
                 "id": "arbre",
                 "columns": ["cle", "gauche", "droite"],

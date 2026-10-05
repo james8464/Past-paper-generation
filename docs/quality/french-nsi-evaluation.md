@@ -4,6 +4,29 @@ Status: engineering prototype. The first complete Gemma 4 12B campaign finished
 with zero accepted papers out of ten. No candidate-model or teacher qualification
 is recorded.
 
+## 5 October integrity redesign — draft, not live-qualified
+
+Draft PR #33 replaces the first graph/tree exercise's unconstrained data with
+a seeded, versioned contract. Review of its initial implementation found that
+an invented edge weight could still be printed, model answers were silently
+replaced, the debugging task had no printed faulty program, rejected part
+responses were incompletely preserved, part-resume identity omitted the model,
+and PDF checks did not compare printed facts. The reviewed repair work now
+rejects the reproduced false weight, retains rejected part responses and binds
+part resume to the full run identity. The current unmerged source also prints
+an application-owned faulty BFS program, executes only exact trusted snippets
+against a bounded test graph, rejects answers differing from the canonical
+result, requires the indicative marking to cite it, and compares extracted
+graph/tree/code facts and corrected results in both PDF roles before publication.
+
+These checks are engineering constraints, not a proof that every free-form
+French premise is true. The only generated specimens used for these regressions
+are fake-client fixtures. No post-redesign live paper has been accepted or
+manually compared with a historical official PDF; no French NSI teacher has
+approved classroom use. PR #33 must remain draft until the complete suite,
+independent review and protected exact-head checks finish. Its changes do not
+retroactively qualify the failed Gemma/Qwen runs below.
+
 ## First complete live campaign (30 September 2026)
 
 The earlier run at

@@ -31,6 +31,7 @@ def make_index(path):
 
 
 def test_graph_tree_binding_prints_locked_materials_and_declared_node_api():
+    from Backend.Core.france.graph_tree_binding import canonical_answer
     from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
     from Backend.Core.france.pipeline import _bind_graph_tree_contract
 
@@ -45,9 +46,13 @@ def test_graph_tree_binding_prints_locked_materials_and_declared_node_api():
                 "contract_task_id": task_id,
                 "claimed_result": expected[task_id],
                 "prompt": f"Examinez le support `{'arbre' if task_id in ('1e', '1f') else 'reseau'}`.",
-                "answer": "return Noeud(valeur)"
-                if task_id == "1e"
-                else "Justification détaillée.",
+                "answer": canonical_answer(task_id, expected[task_id]),
+                "marking": [
+                    {
+                        "points": "1",
+                        "criterion": canonical_answer(task_id, expected[task_id]),
+                    }
+                ],
             }
             for task_id in contract.to_dict()["task_ids"]
         ],
@@ -57,6 +62,8 @@ def test_graph_tree_binding_prints_locked_materials_and_declared_node_api():
     assert {item["id"] for item in bound["materials"]} == {"reseau", "arbre"}
     assert "class Noeud:" in bound["context"]
     assert "self.gauche = None" in bound["context"]
+    assert "def parcours_largeur(reseau, depart):" in bound["context"]
+    assert "if visin not in visites:" in bound["context"]
     assert binding["contract_sha256"] == contract.digest
     assert [item["task_id"] for item in binding["questions"]] == contract.to_dict()[
         "task_ids"
@@ -70,10 +77,11 @@ def test_graph_tree_binding_prints_locked_materials_and_declared_node_api():
         " → ".join(contract.to_dict()["expected"]["1d"]["order"])
         in bound["questions"][3]["answer"]
     )
-    assert bound["questions"][4]["answer"] != raw["questions"][4]["answer"]
+    assert bound["questions"][4]["answer"] == raw["questions"][4]["answer"]
 
 
 def test_graph_tree_binding_rejects_a_missing_graph_edge():
+    from Backend.Core.france.graph_tree_binding import canonical_answer
     from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
     from Backend.Core.france.pipeline import _bind_graph_tree_contract
 
@@ -89,7 +97,17 @@ def test_graph_tree_binding_rejects_a_missing_graph_edge():
                 "prompt": "Le graphe `reseau` contient l'arête A-F. Calculez son poids."
                 if task_id == "1a"
                 else "Examinez les données.",
-                "answer": "Réponse contextualisée.",
+                "answer": canonical_answer(
+                    task_id, contract.to_dict()["expected"][task_id]
+                ),
+                "marking": [
+                    {
+                        "points": "1",
+                        "criterion": canonical_answer(
+                            task_id, contract.to_dict()["expected"][task_id]
+                        ),
+                    }
+                ],
             }
             for task_id in contract.to_dict()["task_ids"]
         ],
@@ -100,6 +118,7 @@ def test_graph_tree_binding_rejects_a_missing_graph_edge():
 
 def test_graph_tree_binding_rejects_false_weight_for_an_existing_edge():
     """A correct structured claim cannot license a contradictory printed fact."""
+    from Backend.Core.france.graph_tree_binding import canonical_answer
     from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
     from Backend.Core.france.pipeline import _bind_graph_tree_contract
 
@@ -115,7 +134,17 @@ def test_graph_tree_binding_rejects_false_weight_for_an_existing_edge():
                 "prompt": "L'arête A-B a un poids de 99. Quel chemin choisir ?"
                 if task_id == "1a"
                 else "Examinez les données fournies.",
-                "answer": "Justification contextualisée.",
+                "answer": canonical_answer(
+                    task_id, contract.to_dict()["expected"][task_id]
+                ),
+                "marking": [
+                    {
+                        "points": "1",
+                        "criterion": canonical_answer(
+                            task_id, contract.to_dict()["expected"][task_id]
+                        ),
+                    }
+                ],
             }
             for task_id in contract.to_dict()["task_ids"]
         ],
@@ -124,7 +153,92 @@ def test_graph_tree_binding_rejects_false_weight_for_an_existing_edge():
         _bind_graph_tree_contract(raw, contract)
 
 
+def test_graph_tree_binding_rejects_false_context_weight_even_with_valid_questions():
+    from Backend.Core.france.graph_tree_binding import canonical_answer
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import _bind_graph_tree_contract
+
+    contract = build_graph_tree_contract(270100, "1")
+    expected = contract.to_dict()["expected"]
+    raw = {
+        "context": "L'arête A-B a un poids de 99 dans ce réseau de collecte.",
+        "materials": [],
+        "questions": [
+            {
+                "id": task_id,
+                "contract_task_id": task_id,
+                "claimed_result": expected[task_id],
+                "prompt": "Analysez les données fournies.",
+                "answer": canonical_answer(task_id, expected[task_id]),
+                "marking": [
+                    {
+                        "points": "1",
+                        "criterion": canonical_answer(task_id, expected[task_id]),
+                    }
+                ],
+            }
+            for task_id in contract.to_dict()["task_ids"]
+        ],
+    }
+    with pytest.raises(ValueError, match=r"poids|arête"):
+        _bind_graph_tree_contract(raw, contract)
+
+
+def test_graph_tree_binding_rejects_false_authored_answer_instead_of_replacing_it():
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import _bind_graph_tree_contract
+
+    contract = build_graph_tree_contract(270100, "1")
+    raw = {
+        "context": "Une équipe étudie un réseau de collecte.",
+        "materials": [],
+        "questions": [
+            {
+                "id": task_id,
+                "contract_task_id": task_id,
+                "claimed_result": contract.to_dict()["expected"][task_id],
+                "prompt": "Analysez le support de l'exercice.",
+                "answer": "Le chemin le plus court a un poids total de 99."
+                if task_id == "1a"
+                else "Réponse contextualisée.",
+            }
+            for task_id in contract.to_dict()["task_ids"]
+        ],
+    }
+    with pytest.raises(ValueError, match=r"réponse|Résultat|contrat"):
+        _bind_graph_tree_contract(raw, contract)
+
+
+def test_graph_tree_binding_rejects_generic_credit_with_no_checked_result():
+    from Backend.Core.france.graph_tree_binding import canonical_answer
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import _bind_graph_tree_contract
+
+    contract = build_graph_tree_contract(270100, "1")
+    expected = contract.to_dict()["expected"]
+    raw = {
+        "context": "Une équipe étudie un réseau de collecte.",
+        "materials": [],
+        "questions": [
+            {
+                "id": task_id,
+                "contract_task_id": task_id,
+                "claimed_result": expected[task_id],
+                "prompt": "Analysez le support de l'exercice.",
+                "answer": canonical_answer(task_id, expected[task_id]),
+                "marking": [
+                    {"points": "1", "criterion": "Méthode et résultat corrects."}
+                ],
+            }
+            for task_id in contract.to_dict()["task_ids"]
+        ],
+    }
+    with pytest.raises(ValueError, match=r"barème|critère|résultat"):
+        _bind_graph_tree_contract(raw, contract)
+
+
 def test_graph_tree_binding_rejects_an_incorrect_bfs_claim():
+    from Backend.Core.france.graph_tree_binding import canonical_answer
     from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
     from Backend.Core.france.pipeline import _bind_graph_tree_contract
 
@@ -140,7 +254,17 @@ def test_graph_tree_binding_rejects_an_incorrect_bfs_claim():
                 if task_id == "1d"
                 else contract.to_dict()["expected"][task_id],
                 "prompt": "Examinez les données.",
-                "answer": "Réponse contextualisée.",
+                "answer": canonical_answer(
+                    task_id, contract.to_dict()["expected"][task_id]
+                ),
+                "marking": [
+                    {
+                        "points": "1",
+                        "criterion": canonical_answer(
+                            task_id, contract.to_dict()["expected"][task_id]
+                        ),
+                    }
+                ],
             }
             for task_id in contract.to_dict()["task_ids"]
         ],
@@ -150,6 +274,7 @@ def test_graph_tree_binding_rejects_an_incorrect_bfs_claim():
 
 
 def test_graph_tree_binding_rejects_a_bfs_answer_that_contradicts_its_claim():
+    from Backend.Core.france.graph_tree_binding import canonical_answer
     from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
     from Backend.Core.france.pipeline import _bind_graph_tree_contract
 
@@ -165,7 +290,17 @@ def test_graph_tree_binding_rejects_a_bfs_answer_that_contradicts_its_claim():
                 "prompt": "Examinez les données.",
                 "answer": "Ordre du parcours en largeur : F, E, D, C, B, A."
                 if task_id == "1d"
-                else "Réponse contextualisée.",
+                else canonical_answer(
+                    task_id, contract.to_dict()["expected"][task_id]
+                ),
+                "marking": [
+                    {
+                        "points": "1",
+                        "criterion": canonical_answer(
+                            task_id, contract.to_dict()["expected"][task_id]
+                        ),
+                    }
+                ],
             }
             for task_id in contract.to_dict()["task_ids"]
         ],
@@ -175,6 +310,7 @@ def test_graph_tree_binding_rejects_a_bfs_answer_that_contradicts_its_claim():
 
 
 def test_graph_tree_candidate_uses_locked_materials_before_all_exercise_checks():
+    from Backend.Core.france.graph_tree_binding import canonical_answer
     from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
     from Backend.Core.france.pipeline import (
         _prepare_candidate,
@@ -201,7 +337,12 @@ def test_graph_tree_candidate_uses_locked_materials_before_all_exercise_checks()
             f"Examinez le support `{material_id}` et justifiez votre résultat."
         )
         question["verification"] = {"kind": "human"}
-    raw["questions"][4]["answer"] = "return Noeud(valeur)"
+        question["answer"] = canonical_answer(
+            task_id, contract.to_dict()["expected"][task_id]
+        )
+        question["marking"] = [
+            {"points": question["points"], "criterion": question["answer"]}
+        ]
 
     exercise, _, _, checks, _, binding = _prepare_candidate(
         raw, task, "1", [], [], contract=contract
@@ -362,11 +503,11 @@ class ContractFrenchClient(FrenchClient):
                         "claimed_result": request["expected"][plan["id"]],
                         "prompt": f"Pour la tâche {plan['id']}, analysez le support `{material}` et justifiez le résultat.",
                         "points": plan["points"],
-                        "answer": "Une justification fondée sur les données fournies.",
+                        "answer": request["required_answers"][plan["id"]],
                         "marking": [
                             {
                                 "points": plan["points"],
-                                "criterion": "Méthode et résultat corrects.",
+                                "criterion": request["required_answers"][plan["id"]],
                             }
                         ],
                         "material_ids": [material],

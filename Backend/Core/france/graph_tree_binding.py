@@ -30,7 +30,18 @@ def _hash(value: object) -> str:
     return sha256(encoded).hexdigest()
 
 
-def _canonical_answer(task_id: str, result: dict) -> str:
+def _check_graph_prose(
+    value: str, declared_edges: set[tuple[str, str]], weights: dict
+) -> None:
+    for start, end in _EDGE.findall(value):
+        if tuple(sorted((start, end))) not in declared_edges:
+            raise ValueError(f"Arête absente du graphe : {start}-{end}")
+    for start, end, weight in _EDGE_WEIGHT.findall(value):
+        if int(weight) != weights.get(tuple(sorted((start, end)))):
+            raise ValueError(f"Poids de l'arête incompatible : {start}-{end}")
+
+
+def canonical_answer(task_id: str, result: dict) -> str:
     if task_id == "1a":
         return (
             "Le plus court chemin est "
@@ -44,7 +55,12 @@ def _canonical_answer(task_id: str, result: dict) -> str:
             + f" ; la somme des poids incidents est {result['weight_sum']}."
         )
     if task_id == "1c":
-        return "La variable mal orthographiée doit être remplacée par `voisin`."
+        return (
+            "Le programme échoue avec NameError car `visin` n'est pas défini. "
+            "Remplacer `visin` par `voisin` ; le parcours corrigé donne "
+            + " → ".join(result["corrected_order"])
+            + "."
+        )
     if task_id == "1d":
         return "L'ordre du parcours en largeur est " + " → ".join(result["order"]) + "."
     if task_id == "1e":
@@ -88,6 +104,9 @@ def bind_graph_tree_contract(
     tree = data["tree"]
     declared_edges = {tuple(sorted(edge[:2])) for edge in graph["edges"]}
     edge_weights = {tuple(sorted(edge[:2])): edge[2] for edge in graph["edges"]}
+    _check_graph_prose(context, declared_edges, edge_weights)
+    if isinstance(raw.get("title"), str):
+        _check_graph_prose(raw["title"], declared_edges, edge_weights)
     bound = deepcopy(raw)
     bound["materials"] = [
         {
@@ -111,6 +130,10 @@ def bind_graph_tree_contract(
     ]
     bound["context"] = (
         context.rstrip()
+        + "\n\nPour la question 1c, étudier ce programme de parcours en largeur erroné "
+        + "sur le graphe `reseau` (voisins dans l'ordre alphabétique) :\n\n```python\n"
+        + data["debug_case"]["faulty_code"]
+        + "\n```\nLe test utilise le graphe affiché et le sommet de départ A."
         + "\n\nLe tableau `arbre` décrit un ABR dont la racine est "
         + str(tree["root"])
         + ". Le symbole — signifie l'absence d'un enfant. "
@@ -133,12 +156,31 @@ def bind_graph_tree_contract(
         answer = question.get("answer")
         if not isinstance(prompt, str) or not isinstance(answer, str):
             raise ValueError("Question et réponse textuelles requises")
-        for start, end in _EDGE.findall(prompt + "\n" + answer):
-            if tuple(sorted((start, end))) not in declared_edges:
-                raise ValueError(f"Arête absente du graphe : {start}-{end}")
-        for start, end, weight in _EDGE_WEIGHT.findall(prompt + "\n" + answer):
-            if int(weight) != edge_weights.get(tuple(sorted((start, end)))):
-                raise ValueError(f"Poids de l'arête incompatible : {start}-{end}")
+        if answer.strip() != canonical_answer(task_id, data["expected"][task_id]):
+            raise ValueError(
+                f"La réponse rédigée ne correspond pas au résultat du contrat : {task_id}"
+            )
+        marking = question.get("marking")
+        if not isinstance(marking, list) or not any(
+            isinstance(item, dict)
+            and isinstance(item.get("criterion"), str)
+            and answer in item["criterion"]
+            for item in marking
+        ):
+            raise ValueError(f"Le barème ne contient pas le résultat vérifié : {task_id}")
+        _check_graph_prose(
+            prompt
+            + "\n"
+            + answer
+            + "\n"
+            + "\n".join(
+                item["criterion"]
+                for item in marking
+                if isinstance(item, dict) and isinstance(item.get("criterion"), str)
+            ),
+            declared_edges,
+            edge_weights,
+        )
         if task_id == "1d":
             stated_order = _BFS_ANSWER.search(answer)
             if (
@@ -158,7 +200,6 @@ def bind_graph_tree_contract(
                 "authored_verification_sha256": _hash(question.get("verification")),
             }
         )
-        question["answer"] = _canonical_answer(task_id, data["expected"][task_id])
         question["verification"] = {
             "kind": "graph_tree",
             "contract": data,

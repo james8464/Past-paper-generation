@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 import shutil
 import signal
 import tempfile
@@ -12,6 +13,11 @@ from urllib.request import Request
 import pymupdf
 
 from Backend.Core.events import emit, emit_progress
+from Backend.Core.france.graph_tree_binding import canonical_answer
+from Backend.Core.france.graph_tree_contract import (
+    GraphTreeContract,
+    build_graph_tree_contract,
+)
 from Backend.Core.france.network import open_ollama_request
 from Backend.Core.france.nsi import NSIExercise
 from Backend.Core.france.pipeline import (
@@ -96,6 +102,61 @@ def validate_pdf(path: Path):
             raise ValueError("Crédits ou statut du document manquants")
 
 
+def validate_contract_pdf(
+    path: Path, contract: GraphTreeContract, *, correction: bool
+) -> None:
+    """Compare extracted printed facts with the locked first-exercise contract."""
+    data = contract.to_dict()
+    with pymupdf.open(path) as pdf:
+        lines = [
+            line.strip()
+            for page in pdf
+            for line in page.get_text().splitlines()
+            if line.strip()
+            and not line.startswith("Paper Creator —")
+            and not line.startswith("Page : ")
+        ]
+    text = "\n".join(lines)
+    graph_header = "Réseau pondéré des postes"
+    tree_header = "Arbre des identifiants d'intervention — arbre"
+    if text.count(graph_header) != 1 or text.count(tree_header) != 1:
+        raise ValueError("Figure de graphe ou arbre absente du PDF")
+    graph_segment = text.split(graph_header + "\n", 1)[1].split(
+        "\n" + tree_header, 1
+    )[0]
+    printed_graph = graph_segment.splitlines()
+    expected_graph = [str(edge[2]) for edge in data["graph"]["edges"]] + data[
+        "graph"
+    ]["nodes"]
+    if printed_graph != expected_graph:
+        raise ValueError("Poids ou sommets du graphe imprimé incompatibles avec le contrat")
+    tree_segment = text.split(tree_header + "\n", 1)[1].split("\n1a.", 1)[0]
+    printed_tree = tree_segment.splitlines()
+    expected_tree = list(data["tree"]["columns"]) + [
+        str(value) if value is not None else "—"
+        for row in data["tree"]["rows"]
+        for value in row
+    ]
+    if printed_tree != expected_tree:
+        raise ValueError("Table de l'arbre imprimé incompatible avec le contrat")
+    flat = " ".join(text.split())
+    if (
+        " ".join(data["debug_case"]["faulty_code"].split()) not in flat
+        or " ".join(data["node_api"].split()) not in flat
+        or not re.search(
+            rf"racine est {data['tree']['root']}\b.*?clé à insérer est {data['tree']['insert_key']}\b",
+            flat,
+        )
+    ):
+        raise ValueError("Code ou données d'ABR imprimés incompatibles avec le contrat")
+    for task_id in data["task_ids"]:
+        answer = canonical_answer(task_id, data["expected"][task_id])
+        if correction and answer not in flat:
+            raise ValueError(f"Résultat corrigé {task_id} absent du PDF")
+        if not correction and answer in flat:
+            raise ValueError(f"Réponse {task_id} révélée dans le sujet")
+
+
 def load_originality_history(output: Path) -> list[str]:
     """Read a bounded set of candidate-only text from earlier local bundles."""
     history: list[str] = []
@@ -169,6 +230,7 @@ def handle_generate_assessment(args) -> int:
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
         exercises = [NSIExercise.model_validate(item) for item in package["exercises"]]
+        graph_tree_contract = build_graph_tree_contract(args.seed, "1")
         paths = {}
         for role, correction, filename in (
             ("question_paper", False, "sujet.pdf"),
@@ -187,6 +249,7 @@ def handle_generate_assessment(args) -> int:
                 language="fr-FR",
             )
             validate_pdf(path)
+            validate_contract_pdf(path, graph_tree_contract, correction=correction)
             paths[role] = path
         atomic_json(staging / "assessment.json", package)
         paths["assessment_package"] = staging / "assessment.json"

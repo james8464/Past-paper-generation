@@ -200,8 +200,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
-    "mtime": 1791178661.2318816,
-    "ast_hash": "b5f7f284bad8943dbdd9aeae79e4d760",
+    "mtime": 1791215369.0310225,
+    "ast_hash": "e874efa69f48ecd63081f1547ddabe2d",
     "semantic_hash": ""
   },
   "Backend/Core/france/source_identity.py": {
@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791179019.5459356,
+    "mtime": 1791188957.1863177,
     "ast_hash": "3d32e5a9ccb33b5e7dc52dfacc79edad",
     "semantic_hash": ""
   },
@@ -1680,8 +1680,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_runtime.py": {
-    "mtime": 1791179005.1058218,
-    "ast_hash": "117d77afd5a83be0739452016f06d898",
+    "mtime": 1791214824.4289074,
+    "ast_hash": "ec2b9e3d0c642d490799d858af82623d",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {
@@ -1780,8 +1780,8 @@
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1791185272.0263927,
-    "ast_hash": "f3a19df0889ac6db7e231ce7b8adadda",
+    "mtime": 1791214950.3653853,
+    "ast_hash": "cf76582ef258d84cae55f0ce27e8d6fa",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -2330,8 +2330,8 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-evaluation.md": {
-    "mtime": 1791148114.3951592,
-    "ast_hash": "3a5d65a3114a54fc696c1551894cd76e",
+    "mtime": 1791214924.8448644,
+    "ast_hash": "375fd777fe87c2de600632c127e6d9ff",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-prototype-verification-2026-09-28.md": {
@@ -2595,13 +2595,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_tree_contract.py": {
-    "mtime": 1791164306.3588417,
-    "ast_hash": "12fb0d35638fa076f5b2767bd882d05b",
+    "mtime": 1791199863.1562636,
+    "ast_hash": "dbf992c4465b44307377e5d0ff3921ef",
     "semantic_hash": ""
   },
   "tests/test_french_graph_tree_contract.py": {
-    "mtime": 1791174457.2554939,
-    "ast_hash": "a28122e6258bb2af795948b0700291de",
+    "mtime": 1791199838.4120152,
+    "ast_hash": "1116ba1c3dd53bc5abae9ba3158de78b",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-05-french-nsi-verifiable-exercises.md": {
@@ -2610,23 +2610,23 @@
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-10-05-french-nsi-verifiable-exercises.md": {
-    "mtime": 1791163754.933633,
-    "ast_hash": "fcfb29ce875868875134895346b053ea",
+    "mtime": 1791214889.810441,
+    "ast_hash": "898f3d9791f258781d898928ca49e8a5",
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_tree_binding.py": {
-    "mtime": 1791185326.7710433,
-    "ast_hash": "eeca21f45ea04922010d8d5398d0892e",
+    "mtime": 1791215323.739322,
+    "ast_hash": "0b952cf642e659885a4e2c270bcdd06d",
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_tree_authoring.py": {
-    "mtime": 1791185530.5243251,
-    "ast_hash": "605c41c9b88623af0c2ad00a61c74d49",
+    "mtime": 1791210882.2918267,
+    "ast_hash": "7055b4ae204c75de737c0f22ffc0719f",
     "semantic_hash": ""
   },
   "tests/test_french_graph_tree_authoring.py": {
-    "mtime": 1791185676.5299249,
-    "ast_hash": "422aed3fd0eb14a0d8ccdf17ad603a03",
+    "mtime": 1791210931.9954233,
+    "ast_hash": "ddbc6b9355a9c1d3938753ba7f3f4f13",
     "semantic_hash": ""
   }
 }

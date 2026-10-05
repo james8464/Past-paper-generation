@@ -8,6 +8,8 @@ from Backend.Core.france.pipeline import _tasks_for_seed
 
 
 def _question(plan, result):
+    from Backend.Core.france.graph_tree_binding import canonical_answer
+
     material = "arbre" if plan["id"] in {"1e", "1f"} else "reseau"
     return {
         "id": plan["id"],
@@ -15,8 +17,11 @@ def _question(plan, result):
         "claimed_result": result,
         "prompt": f"Analysez le support `{material}` et justifiez votre réponse.",
         "points": plan["points"],
-        "answer": "Une réponse argumentée fondée sur les données fournies.",
-        "marking": [{"points": plan["points"], "criterion": "Démarche correcte"}],
+        "answer": canonical_answer(plan["id"], result),
+        "marking": [
+            {
+                "points": plan["points"], "criterion": canonical_answer(plan["id"], result)}
+        ],
         "material_ids": [material],
         "curriculum_codes": [plan["required_curriculum_code"]],
         "operation": plan["operation"],
