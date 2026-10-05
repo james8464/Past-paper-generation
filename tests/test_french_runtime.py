@@ -60,6 +60,23 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure):
         assert manifest["identity"]["prompt_version"] == "fr-nsi-written-2027-v11"
         import pymupdf
 
+        package = json.loads((bundles[0] / "assessment.json").read_text())
+        contract = package["evidence"][0]["part_evidence"]
+        assert (
+            contract["contract_sha256"]
+            == manifest["identity"]["graph_tree_contract_sha256"]
+        )
+        with pymupdf.open(bundles[0] / "sujet.pdf") as question_pdf:
+            question_text = "\n".join(page.get_text() for page in question_pdf)
+            assert (
+                "Sujet d'entraînement" in question_text
+                or "SUJET D’ENTRAÎNEMENT" in question_text
+            )
+            assert "class Noeud:" in question_text
+            assert "self.gauche = None" in question_text
+            assert "Arbre des identifiants" in question_text
+            assert "Réseau pondéré des postes" in question_text
+            assert "Réponse attendue" not in question_text
         with pymupdf.open(bundles[0] / "corrige.pdf") as pdf:
             # Structured resources add space, but every exercise remains present
             # with its final marking entry and no empty trailing page.
