@@ -3,6 +3,10 @@
 import json
 from hashlib import sha256
 
+from Backend.Core.france.graph_tree_authoring import (
+    contract_question_schema,
+    part_response_schema,
+)
 from Backend.Core.france.network import ollama_request
 from Backend.Core.france.nsi import NSIQuestion, authoring_schema
 from Backend.Core.france.pipeline import REVIEW_FLAGS
@@ -49,9 +53,28 @@ class FrenchOllamaClient(HostedLLMClient):
 
 
 def response_policy(prompt: str) -> tuple[dict, int]:
+    if prompt.startswith("Répare la question verrouillée"):
+        schema = contract_question_schema()
+        embedded = json.loads(
+            prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
+        )
+        if embedded != schema:
+            raise ValueError("Schéma de réparation incohérent")
+        return schema, 3072
+    if prompt.startswith("Rédige la partie "):
+        part = prompt[len("Rédige la partie ") : len("Rédige la partie ") + 1]
+        schema = part_response_schema(part)
+        embedded = json.loads(
+            prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
+        )
+        if embedded != schema:
+            raise ValueError("Schéma de partie incohérent")
+        return schema, 4096
     if prompt.startswith("Rédige directement en français académique"):
         return authoring_schema(), 6144
-    if prompt.startswith(("Répare uniquement la question", "Répare uniquement le barème")):
+    if prompt.startswith(
+        ("Répare uniquement la question", "Répare uniquement le barème")
+    ):
         schema = NSIQuestion.model_json_schema()
         schema["required"].extend(["material_ids", "verification"])
         return schema, 3072
@@ -97,7 +120,11 @@ def response_policy(prompt: str) -> tuple[dict, int]:
                 "issues": issues,
             },
             "required": [
-                "question_id", "objective_code", "aligned", "rationale", "issues"
+                "question_id",
+                "objective_code",
+                "aligned",
+                "rationale",
+                "issues",
             ],
             "additionalProperties": False,
         }
