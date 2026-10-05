@@ -259,6 +259,10 @@ def test_contract_review_rechecks_all_gates_after_one_bounded_repair(monkeypatch
     assert len(evidence["targeted_repairs"]) == 1
     assert evidence["question_alignment"]["review"]["questions"][0]["aligned"]
     assert len(evidence["deterministic"]) == 6
+    assert all(item["state"] == "passed" for item in evidence["deterministic"])
+    assert all(
+        question.verification["kind"] == "graph_tree" for question in exercise.questions
+    )
     assert evidence["independent_solution"]["issues"] == []
 
 
@@ -274,3 +278,54 @@ def test_contract_review_preserves_rejected_repair_response():
         )
     assert record["repair_responses"][0]["response"]["points"] == "99"
     assert record["candidate"] == raw
+
+
+def test_part_evidence_replay_reconstructs_raw_and_rejects_tampering():
+    from copy import deepcopy
+
+    from Backend.Core.france.graph_tree_authoring import replay_graph_tree_parts
+
+    task, contract = _setup()
+    raw, evidence = author_parts_without_draft(PartClient(), task, contract)
+    assert replay_graph_tree_parts(task, contract, [], evidence) == raw
+    changed = deepcopy(evidence)
+    changed["parts"][1]["response"]["questions"][0]["prompt"] = "Question altérée"
+    with pytest.raises(ValueError, match="Preuve de partie"):
+        replay_graph_tree_parts(task, contract, [], changed)
+    changed = deepcopy(evidence)
+    changed["contract_sha256"] = "0" * 64
+    with pytest.raises(ValueError, match="Identité"):
+        replay_graph_tree_parts(task, contract, [], changed)
+
+
+def test_contract_evidence_replay_rejects_stale_material_and_answer():
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import (
+        evaluate_graph_tree_draft,
+        replay_graph_tree_evidence,
+    )
+
+    task, contract = _setup()
+    raw, parts = author_parts_without_draft(PartClient(), task, contract)
+    exercise, evidence = evaluate_graph_tree_draft(
+        raw, task, contract, [], [], ReviewClient(), {}
+    )
+    evidence["part_evidence"] = parts
+    assert replay_graph_tree_evidence(exercise, evidence, task, contract, [], [])
+
+    bad_evidence = deepcopy(evidence)
+    bad_evidence["contract_binding"]["contract_sha256"] = "0" * 64
+    with pytest.raises(ValueError, match=r"contrat|liaison"):
+        replay_graph_tree_evidence(exercise, bad_evidence, task, contract, [], [])
+    bad_exercise = exercise.model_copy(
+        update={"context": exercise.context + "\nDonnées modifiées."}
+    )
+    with pytest.raises(ValueError, match=r"assemblage|identique|empreinte"):
+        replay_graph_tree_evidence(bad_exercise, evidence, task, contract, [], [])
+    bad_evidence = deepcopy(evidence)
+    bad_evidence["part_evidence"]["parts"][0]["response"]["questions"][0]["answer"] = (
+        "Faux"
+    )
+    with pytest.raises(ValueError, match="Preuve de partie"):
+        replay_graph_tree_evidence(exercise, bad_evidence, task, contract, [], [])

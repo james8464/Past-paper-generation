@@ -17,7 +17,10 @@ from Backend.Core.education_context import (
     points,
 )
 from Backend.Core.france.archetypes import archetype_for_seed
-from Backend.Core.france.graph_tree_authoring import apply_graph_tree_repair
+from Backend.Core.france.graph_tree_authoring import (
+    apply_graph_tree_repair,
+    replay_graph_tree_parts,
+)
 from Backend.Core.france.graph_tree_binding import (
     bind_graph_tree_contract as _bind_graph_tree_contract,
 )
@@ -1037,6 +1040,76 @@ def evaluate_graph_tree_draft(
         },
     }
     return exercise, evidence
+
+
+def replay_graph_tree_evidence(
+    exercise: NSIExercise,
+    evidence: dict,
+    task: dict,
+    contract: GraphTreeContract,
+    references: list[dict],
+    previous_texts: list[str],
+) -> bool:
+    """Rebuild the accepted exercise from immutable parts and bounded repairs."""
+    if not isinstance(evidence, dict) or evidence.get("references") != references:
+        raise ValueError("Références de l'exercice incompatibles")
+    raw = replay_graph_tree_parts(
+        task, contract, references, evidence.get("part_evidence")
+    )
+    repairs = evidence.get("targeted_repairs")
+    if not isinstance(repairs, list) or len(repairs) > 2:
+        raise ValueError("Historique de réparation du contrat invalide")
+    if evidence.get("initial_candidate") != (raw if repairs else None):
+        raise ValueError("Brouillon initial du contrat incompatible")
+    for repair in repairs:
+        if (
+            not isinstance(repair, dict)
+            or repair.get("before_sha256") != digest(raw)
+            or repair.get("replacement_sha256") != digest(repair.get("replacement"))
+        ):
+            raise ValueError("Chaîne de réparation du contrat invalide")
+        before, *_ = _prepare_candidate(
+            raw, task, "1", references, previous_texts, contract=contract
+        )
+        rejected = alignment_failures(before, task, repair.get("review"))
+        if repair.get("question_id") not in rejected:
+            raise ValueError("Réparation sans refus individuel prouvé")
+        raw, replayed = apply_graph_tree_repair(
+            raw, repair["question_id"], repair["replacement"], contract
+        )
+        if any(repair.get(key) != value for key, value in replayed.items()):
+            raise ValueError("Empreinte de réparation du contrat invalide")
+    if evidence.get("candidate") != raw or evidence.get("candidate_sha256") != digest(
+        raw
+    ):
+        raise ValueError("Candidat du contrat incompatible")
+    rebuilt, bindings, assembly, checks, originality, contract_binding = (
+        _prepare_candidate(
+            raw, task, "1", references, previous_texts, contract=contract
+        )
+    )
+    if evidence.get("exercise_sha256") != digest(
+        exercise.model_dump(mode="json")
+    ) or rebuilt.model_dump(mode="json") != exercise.model_dump(mode="json"):
+        raise ValueError("Exercice non identique à son assemblage prouvé")
+    if (
+        evidence.get("material_bindings") != bindings
+        or evidence.get("contract_binding") != contract_binding
+        or evidence.get("plan_assembly") != assembly
+        or evidence.get("deterministic") != checks
+        or evidence.get("originality") != originality
+    ):
+        raise ValueError("Preuve de liaison ou de contrat incompatible")
+    alignment = evidence.get("question_alignment")
+    if not isinstance(alignment, dict) or alignment.get(
+        "candidate_view_sha256"
+    ) != digest(exercise.candidate_view()):
+        raise ValueError("Alignement du contrat absent ou périmé")
+    check_question_alignment(exercise, task, alignment.get("review"))
+    _check_review(
+        exercise, evidence.get("independent_solution"), evidence.get("review")
+    )
+    return True
 
 
 def generate_assessment(

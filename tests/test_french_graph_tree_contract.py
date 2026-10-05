@@ -90,3 +90,22 @@ def test_duplicate_tree_key_is_rejected():
     data.pop("expected")
     with pytest.raises(ValueError, match=r"duplicate|unique|BST"):
         GraphTreeContract.from_dict(data)
+
+
+def test_graph_tree_verification_recomputes_canonical_results_and_rejects_tampering():
+    from Backend.Core.france.verification import verify_contract
+
+    data = build_graph_tree_contract(270100, "1").to_dict()
+    for task_id in data["task_ids"]:
+        check = {
+            "kind": "graph_tree",
+            "contract": data,
+            "task_id": task_id,
+            "expected": data["expected"][task_id],
+        }
+        assert verify_contract(check)["state"] == "passed"
+    check["expected"] = {}
+    assert verify_contract(check)["state"] == "failed"
+    check["expected"] = data["expected"][task_id]
+    check["contract"]["graph"]["edges"][0][2] += 1
+    assert verify_contract(check)["state"] == "failed"

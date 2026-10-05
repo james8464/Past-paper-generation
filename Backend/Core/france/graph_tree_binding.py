@@ -145,10 +145,18 @@ def bind_graph_tree_contract(
                 "claimed_result": deepcopy(question["claimed_result"]),
                 "canonical_result_sha256": _hash(data["expected"][task_id]),
                 "authored_answer_sha256": _hash(answer),
+                "authored_verification_sha256": _hash(question.get("verification")),
             }
         )
         question["answer"] = _canonical_answer(task_id, data["expected"][task_id])
+        question["verification"] = {
+            "kind": "graph_tree",
+            "contract": data,
+            "task_id": task_id,
+            "expected": deepcopy(data["expected"][task_id]),
+        }
         records[-1]["assembled_answer_sha256"] = _hash(question["answer"])
+        records[-1]["assembled_verification_sha256"] = _hash(question["verification"])
         del question["contract_task_id"]
         del question["claimed_result"]
     return bound, {

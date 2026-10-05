@@ -216,7 +216,42 @@ def author_graph_tree_parts(
             if draft_path is not None:
                 _save(draft_path, draft)
             raise
-    first = draft["parts"][0]["response"]
+    raw = replay_graph_tree_parts(task, contract, references, draft)
+    return raw, deepcopy(draft)
+
+
+def replay_graph_tree_parts(
+    task: dict,
+    contract: GraphTreeContract,
+    references: list[dict],
+    evidence: dict,
+) -> dict:
+    """Rebuild a candidate only from the three hash-linked accepted responses."""
+    identity = {
+        "contract_sha256": contract.digest,
+        "task_sha256": _hash(task),
+        "reference_sha256": _hash(references),
+    }
+    if not isinstance(evidence, dict) or any(
+        evidence.get(key) != value for key, value in identity.items()
+    ):
+        raise ValueError("Identité du brouillon de parties modifiée")
+    parts = evidence.get("parts")
+    if not isinstance(parts, list) or len(parts) != 3:
+        raise ValueError("Trois parties prouvées sont requises")
+    for part, item in zip("ABC", parts, strict=True):
+        if (
+            not isinstance(item, dict)
+            or item.get("part") != part
+            or item.get("prompt_sha256")
+            != _hash(part_prompt(part, task, contract, references))
+            or item.get("response_sha256") != _hash(item.get("response"))
+        ):
+            raise ValueError("Preuve de partie modifiée")
+        _check_part(
+            part, item["response"], _part_request(part, task, contract, references)
+        )
+    first = parts[0]["response"]
     raw = {
         "id": "1",
         "title": first["title"],
@@ -226,13 +261,11 @@ def author_graph_tree_parts(
         "target_points": task["technical_points"],
         "materials": [],
         "questions": [
-            question
-            for part in draft["parts"]
-            for question in part["response"]["questions"]
+            question for part in parts for question in part["response"]["questions"]
         ],
     }
     bind_graph_tree_contract(raw, contract)
-    return raw, deepcopy(draft)
+    return raw
 
 
 def apply_graph_tree_repair(

@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1791170905.9731958,
-    "ast_hash": "8ac81814c709803d71af6647ef4f88c4",
+    "mtime": 1791174503.7953048,
+    "ast_hash": "2932681393898c7d66d942f9cd1b53ce",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
@@ -215,8 +215,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/verification.py": {
-    "mtime": 1791129181.5028195,
-    "ast_hash": "828d32d2a38d6dbc7ca4dd8bd2c2100f",
+    "mtime": 1791174478.7041125,
+    "ast_hash": "5b12e21c2726016f0cd12eaa9a45316a",
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791171035.8807344,
+    "mtime": 1791174618.1958585,
     "ast_hash": "3d32e5a9ccb33b5e7dc52dfacc79edad",
     "semantic_hash": ""
   },
@@ -2600,8 +2600,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_graph_tree_contract.py": {
-    "mtime": 1791164306.3588412,
-    "ast_hash": "455bd70484a3ce519abbf124fa9315c9",
+    "mtime": 1791174457.2554939,
+    "ast_hash": "a28122e6258bb2af795948b0700291de",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-05-french-nsi-verifiable-exercises.md": {
@@ -2615,18 +2615,18 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_tree_binding.py": {
-    "mtime": 1791164829.6261013,
-    "ast_hash": "60e08f4ccc81a85b270ab251809418c8",
+    "mtime": 1791174478.7044969,
+    "ast_hash": "15098c303b5b92808100d8432cc55d9f",
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_tree_authoring.py": {
-    "mtime": 1791167447.8191116,
-    "ast_hash": "22c9308827adbdcb5c0a9d4ea77f451d",
+    "mtime": 1791174503.7950444,
+    "ast_hash": "1cc9a1588dec1aad538c03e9dbdfd57c",
     "semantic_hash": ""
   },
   "tests/test_french_graph_tree_authoring.py": {
-    "mtime": 1791170905.9727044,
-    "ast_hash": "3cbb8ee4daed3e07063a8d65a4f777fb",
+    "mtime": 1791174503.7950425,
+    "ast_hash": "a23906e67d82f95c7f7053d6d3d720d4",
     "semantic_hash": ""
   }
 }
