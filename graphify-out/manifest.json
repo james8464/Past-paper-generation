@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791218796.877275,
-    "ast_hash": "3d32e5a9ccb33b5e7dc52dfacc79edad",
+    "mtime": 1791232435.6986642,
+    "ast_hash": "c43814fe29905bcf311ca1b3c549f323",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2625,8 +2625,28 @@
     "semantic_hash": ""
   },
   "tests/test_french_graph_tree_authoring.py": {
-    "mtime": 1791218946.9691067,
+    "mtime": 1791221881.0421145,
     "ast_hash": "9cec8564a112c6837869a9316d366b0b",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/graph_tree_prose.py": {
+    "mtime": 1791267810.0416663,
+    "ast_hash": "651942a4c28ee831cf8040830790a4c8",
+    "semantic_hash": ""
+  },
+  "tests/test_french_graph_tree_prose.py": {
+    "mtime": 1791267810.0417557,
+    "ast_hash": "32fd81ec99abb7977c2f3a0d451de3a1",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-05-french-nsi-closed-prose.md": {
+    "mtime": 1791232422.9333887,
+    "ast_hash": "807ac5f2b984c0537fe796080077bbdc",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-05-french-nsi-closed-prose-design.md": {
+    "mtime": 1791227159.2802927,
+    "ast_hash": "c20dddb5073955accdea4cc43fc29481",
     "semantic_hash": ""
   }
 }
