@@ -290,9 +290,7 @@ def test_graph_tree_binding_rejects_a_bfs_answer_that_contradicts_its_claim():
                 "prompt": "Examinez les données.",
                 "answer": "Ordre du parcours en largeur : F, E, D, C, B, A."
                 if task_id == "1d"
-                else canonical_answer(
-                    task_id, contract.to_dict()["expected"][task_id]
-                ),
+                else canonical_answer(task_id, contract.to_dict()["expected"][task_id]),
                 "marking": [
                     {
                         "points": "1",
@@ -528,6 +526,162 @@ class ContractFrenchClient(FrenchClient):
         return super().generate_json(prompt)
 
 
+class ClosedProseFrenchClient(FrenchClient):
+    """Only the external model response is faked; package validation is real."""
+
+    def generate_json(self, prompt):
+        if prompt.startswith("Sélectionne la partie "):
+            request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+            result = {
+                "questions": [
+                    {
+                        "contract_task_id": task_id,
+                        "claimed_result": request["expected"][task_id],
+                        "question_form_id": f"{task_id}-q1",
+                        "rubric_form_id": f"{task_id}-r1",
+                    }
+                    for task_id in request["task_ids"]
+                ]
+            }
+            if request["part"] == "A":
+                result.update(scene_id="service", slots={"activity": "interventions"})
+            return result
+        return super().generate_json(prompt)
+
+
+def test_v12_closed_prose_package_replays_and_binds_catalogue(tmp_path):
+    from Backend.Core.france.graph_tree_prose import (
+        PROSE_CONTRACT_VERSION,
+        prose_catalogue_digest,
+    )
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ClosedProseFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+    )
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v12"
+    assert package["identity"]["prose_contract_version"] == PROSE_CONTRACT_VERSION
+    assert package["identity"]["prose_catalogue_sha256"] == prose_catalogue_digest()
+    assert (
+        package["evidence"][0]["contract_binding"]["prose_contract_version"]
+        == PROSE_CONTRACT_VERSION
+    )
+    assert validate_package(package)["structural_checks"] == "passed"
+
+
+def test_v12_package_rejects_rehashed_printed_text_and_provenance_tampering(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import (
+        digest,
+        generate_assessment,
+        validate_package,
+    )
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ClosedProseFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+    )
+    for mutate in (
+        lambda changed: changed["exercises"][0].update(
+            title="A et F sont directement reliés."
+        ),
+        lambda changed: changed["exercises"][0].update(
+            context="Le graphe est complet."
+        ),
+        lambda changed: changed["exercises"][0]["questions"][0].update(
+            prompt="A et F sont directement reliés."
+        ),
+        lambda changed: changed["exercises"][0]["questions"][0].update(
+            answer="Le poids est 999."
+        ),
+        lambda changed: changed["exercises"][0]["questions"][1]["marking"][0].update(
+            criterion="La clé 999 existe."
+        ),
+        lambda changed: changed["exercises"][0]["questions"][1]["marking"][0].update(
+            points="0.75"
+        ),
+        lambda changed: changed["exercises"][0]["materials"][0]["edges"][0].__setitem__(
+            2, 999
+        ),
+        lambda changed: changed["exercises"][0]["materials"][1]["rows"][0].__setitem__(
+            0, "999"
+        ),
+    ):
+        changed = deepcopy(package)
+        mutate(changed)
+        changed["content_sha256"] = digest(changed["exercises"])
+        changed["evidence"][0]["exercise_sha256"] = digest(changed["exercises"][0])
+        with pytest.raises(ValueError):
+            validate_package(changed)
+    for field in ("prose_contract_version", "prose_catalogue_sha256"):
+        changed = deepcopy(package)
+        changed["identity"][field] = "0" * 64
+        with pytest.raises(ValueError):
+            validate_package(changed)
+    changed = deepcopy(package)
+    del changed["evidence"][0]["part_evidence"]
+    with pytest.raises(ValueError):
+        validate_package(changed)
+
+
+def test_v12_targeted_choice_repair_is_replayed_and_tampering_rejected(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    class RepairingClient(ClosedProseFrenchClient):
+        def __init__(self):
+            super().__init__()
+            self.review_count = 0
+
+        def generate_json(self, prompt):
+            if prompt.startswith("Contrôle indépendant des capacités"):
+                review = super().generate_json(prompt)
+                if self.review_count == 0:
+                    review["questions"][0]["aligned"] = False
+                    review["questions"][0]["issues"] = ["Formulation à préciser"]
+                self.review_count += 1
+                return review
+            if prompt.startswith("Répare une sélection verrouillée"):
+                request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+                replacement = dict(request["question"])
+                replacement["question_form_id"] = "1a-q2"
+                return replacement
+            return super().generate_json(prompt)
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=RepairingClient(),
+        seed=270100,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+    )
+    repairs = package["evidence"][0]["targeted_repairs"]
+    assert len(repairs) == 1
+    assert repairs[0]["question_id"] == "1a"
+    assert validate_package(package)["structural_checks"] == "passed"
+    changed = deepcopy(package)
+    changed["evidence"][0]["targeted_repairs"][0]["replacement"]["question_form_id"] = (
+        "1a-q1"
+    )
+    with pytest.raises(ValueError):
+        validate_package(changed)
+
+
 def test_v11_contract_route_generates_and_replays_three_exercises(tmp_path):
     from Backend.Core.france.pipeline import generate_assessment, validate_package
 
@@ -539,6 +693,7 @@ def test_v11_contract_route_generates_and_replays_three_exercises(tmp_path):
         seed=270100,
         checkpoint=tmp_path / "checkpoint.json",
         contract_graph_tree=True,
+        contract_authoring_version="v11",
     )
     assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v11"
     assert len(package["exercises"]) == 3
@@ -564,6 +719,7 @@ def test_v11_contract_checkpoint_resumes_only_missing_parts(tmp_path):
             seed=270100,
             checkpoint=checkpoint,
             contract_graph_tree=True,
+            contract_authoring_version="v11",
         )
     assert client.part_calls == ["A"]
     state = json.loads(checkpoint.read_text())
@@ -576,6 +732,7 @@ def test_v11_contract_checkpoint_resumes_only_missing_parts(tmp_path):
         seed=270100,
         checkpoint=checkpoint,
         contract_graph_tree=True,
+        contract_authoring_version="v11",
     )
     assert client.part_calls == ["A", "B", "C"]
     assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v11"
@@ -598,6 +755,7 @@ def test_v11_contract_package_rejects_stale_digest_and_printed_graph(tmp_path):
         seed=270100,
         checkpoint=tmp_path / "checkpoint.json",
         contract_graph_tree=True,
+        contract_authoring_version="v11",
     )
     changed = deepcopy(package)
     changed["identity"]["graph_tree_contract_sha256"] = "0" * 64

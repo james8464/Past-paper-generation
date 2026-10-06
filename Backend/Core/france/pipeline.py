@@ -18,8 +18,11 @@ from Backend.Core.education_context import (
 )
 from Backend.Core.france.archetypes import archetype_for_seed
 from Backend.Core.france.graph_tree_authoring import (
+    apply_closed_prose_repair,
     apply_graph_tree_repair,
+    author_closed_prose_parts,
     author_graph_tree_parts,
+    replay_closed_prose_parts,
     replay_graph_tree_parts,
 )
 from Backend.Core.france.graph_tree_binding import (
@@ -28,6 +31,11 @@ from Backend.Core.france.graph_tree_binding import (
 from Backend.Core.france.graph_tree_contract import (
     GraphTreeContract,
     build_graph_tree_contract,
+)
+from Backend.Core.france.graph_tree_prose import (
+    PROSE_CONTRACT_VERSION,
+    prose_catalogue_digest,
+    render_graph_tree_candidate,
 )
 from Backend.Core.france.nsi import (
     CURRICULUM_OBJECTIVES,
@@ -43,6 +51,7 @@ from Backend.Core.france.question_review import (
     alignment_failures,
     alignment_prompt,
     check_question_alignment,
+    closed_prose_repair_prompt,
     graph_tree_repair_prompt,
     repair_marking_prompt,
     repair_question_prompt,
@@ -53,6 +62,7 @@ from Backend.Core.scoped_references import ReferenceIndex
 
 PROMPT_VERSION = "fr-nsi-written-2027-v10"
 CONTRACT_PROMPT_VERSION = "fr-nsi-written-2027-v11"
+CLOSED_PROSE_PROMPT_VERSION = "fr-nsi-written-2027-v12"
 # Recorded source identities prevent a newer package dropping its evidence via
 # an earlier prompt-version label. The separate manifest remains the trust root.
 LEGACY_IMPLEMENTATIONS = {
@@ -939,6 +949,7 @@ def _prepare_candidate(
     previous_texts,
     *,
     contract: GraphTreeContract | None = None,
+    closed_selections: list[dict] | None = None,
 ):
     """Recheck the entire affected exercise after every targeted content change."""
     contract_binding = None
@@ -946,7 +957,13 @@ def _prepare_candidate(
         require_authoring_fields(raw)
         candidate = raw
     else:
-        candidate, contract_binding = _bind_graph_tree_contract(raw, contract)
+        if closed_selections is not None and raw != render_graph_tree_candidate(
+            task, contract, closed_selections
+        ):
+            raise ValueError("Candidat hors du texte fermé vérifié")
+        candidate, contract_binding = _bind_graph_tree_contract(
+            raw, contract, closed_prose=closed_selections is not None
+        )
         require_authoring_fields(candidate)
     bound, bindings = bind_explicit_material_ids(candidate)
     exercise, assembly = _assemble_planned_exercise(bound, task, raw)
@@ -1122,6 +1139,188 @@ def replay_graph_tree_evidence(
     return True
 
 
+def evaluate_closed_prose_draft(
+    raw: dict,
+    selections: list[dict],
+    task: dict,
+    contract: GraphTreeContract,
+    references: list[dict],
+    previous_texts: list[str],
+    client,
+    record: dict,
+) -> tuple[NSIExercise, dict]:
+    """Run the existing gates, allowing only finite single-item repair."""
+    record["candidate"] = deepcopy(raw)
+    initial = deepcopy(raw)
+    repairs: list[dict] = []
+    record["targeted_repairs"] = repairs
+    record["repair_responses"] = []
+    for repair_round in range(3):
+        exercise, bindings, assembly, checks, originality, contract_binding = (
+            _prepare_candidate(
+                raw,
+                task,
+                "1",
+                references,
+                previous_texts,
+                contract=contract,
+                closed_selections=selections,
+            )
+        )
+        record["material_bindings"] = bindings
+        record["contract_binding"] = contract_binding
+        alignment = client.generate_json(alignment_prompt(exercise, task, references))
+        record["question_alignment"] = alignment
+        failures = alignment_failures(exercise, task, alignment)
+        if not failures:
+            break
+        if repair_round == 2:
+            check_question_alignment(exercise, task, alignment)
+        question_id = failures[0]
+        question_index = next(
+            index
+            for index, question in enumerate(raw["questions"])
+            if question["id"] == question_id
+        )
+        replacement = client.generate_json(
+            closed_prose_repair_prompt(
+                selections,
+                task,
+                contract,
+                question_id,
+                alignment["questions"][question_index],
+            )
+        )
+        record["repair_responses"].append(
+            {"question_id": question_id, "response": replacement}
+        )
+        selections, raw, repair = apply_closed_prose_repair(
+            selections, question_id, replacement, task, contract
+        )
+        repair["replacement"] = replacement
+        repair["review"] = alignment
+        repairs.append(repair)
+    record["final_candidate"] = deepcopy(raw)
+    solution = client.generate_json(solver_prompt(exercise))
+    record["independent_solution"] = solution
+    review = client.generate_json(_review_prompt(exercise, solution, references))
+    record["review"] = review
+    _check_review(exercise, solution, review)
+    evidence = {
+        "exercise_sha256": digest(exercise.model_dump(mode="json")),
+        "candidate": raw,
+        "candidate_sha256": digest(raw),
+        "initial_candidate": initial if repairs else None,
+        "closed_selections": selections,
+        "prose_contract_version": PROSE_CONTRACT_VERSION,
+        "prose_catalogue_sha256": prose_catalogue_digest(),
+        "targeted_repairs": repairs,
+        "material_bindings": bindings,
+        "contract_binding": contract_binding,
+        "plan_assembly": assembly,
+        "references": references,
+        "deterministic": checks,
+        "independent_solution": solution,
+        "review": review,
+        "originality": originality,
+        "question_alignment": {
+            "candidate_view_sha256": digest(exercise.candidate_view()),
+            "review": alignment,
+        },
+    }
+    return exercise, evidence
+
+
+def replay_closed_prose_evidence(
+    exercise: NSIExercise,
+    evidence: dict,
+    task: dict,
+    contract: GraphTreeContract,
+    references: list[dict],
+    previous_texts: list[str],
+    run_identity: dict,
+) -> bool:
+    if (
+        not isinstance(evidence, dict)
+        or evidence.get("references") != references
+        or evidence.get("prose_contract_version") != PROSE_CONTRACT_VERSION
+        or evidence.get("prose_catalogue_sha256") != prose_catalogue_digest()
+    ):
+        raise ValueError("Preuve du texte fermé absente ou modifiée")
+    part_evidence = evidence.get("part_evidence")
+    raw = replay_closed_prose_parts(
+        task, contract, references, part_evidence, run_identity=run_identity
+    )
+    selections = [deepcopy(part["response"]) for part in part_evidence["parts"]]
+    repairs = evidence.get("targeted_repairs")
+    if not isinstance(repairs, list) or len(repairs) > 2:
+        raise ValueError("Historique de réparation fermé invalide")
+    if evidence.get("initial_candidate") != (raw if repairs else None):
+        raise ValueError("Brouillon initial fermé incompatible")
+    for repair in repairs:
+        if (
+            not isinstance(repair, dict)
+            or repair.get("before_sha256") != digest(raw)
+            or repair.get("replacement_sha256") != digest(repair.get("replacement"))
+        ):
+            raise ValueError("Chaîne de réparation fermée invalide")
+        before, *_ = _prepare_candidate(
+            raw,
+            task,
+            "1",
+            references,
+            previous_texts,
+            contract=contract,
+            closed_selections=selections,
+        )
+        if repair.get("question_id") not in alignment_failures(
+            before, task, repair.get("review")
+        ):
+            raise ValueError("Réparation sans refus individuel prouvé")
+        selections, raw, replayed = apply_closed_prose_repair(
+            selections, repair["question_id"], repair["replacement"], task, contract
+        )
+        if any(repair.get(key) != value for key, value in replayed.items()):
+            raise ValueError("Empreinte de réparation fermée invalide")
+    if (
+        evidence.get("closed_selections") != selections
+        or evidence.get("candidate") != raw
+        or evidence.get("candidate_sha256") != digest(raw)
+    ):
+        raise ValueError("Candidat fermé incompatible")
+    rebuilt, bindings, assembly, checks, originality, contract_binding = (
+        _prepare_candidate(
+            raw,
+            task,
+            "1",
+            references,
+            previous_texts,
+            contract=contract,
+            closed_selections=selections,
+        )
+    )
+    if (
+        evidence.get("exercise_sha256") != digest(exercise.model_dump(mode="json"))
+        or rebuilt.model_dump(mode="json") != exercise.model_dump(mode="json")
+        or evidence.get("material_bindings") != bindings
+        or evidence.get("contract_binding") != contract_binding
+        or evidence.get("plan_assembly") != assembly
+        or evidence.get("deterministic") != checks
+        or evidence.get("originality") != originality
+    ):
+        raise ValueError("Preuve d'assemblage du texte fermé invalide")
+    alignment = evidence.get("question_alignment")
+    if not isinstance(alignment, dict) or alignment.get(
+        "candidate_view_sha256"
+    ) != digest(exercise.candidate_view()):
+        raise ValueError("Alignement du texte fermé absent ou périmé")
+    check_question_alignment(exercise, task, alignment.get("review"))
+    _check_review(
+        exercise, evidence.get("independent_solution"), evidence.get("review")
+    )
+    return True
+
+
 def generate_assessment(
     *,
     index_path: Path,
@@ -1131,9 +1330,14 @@ def generate_assessment(
     progress=None,
     previous_texts: list[str] | None = None,
     contract_graph_tree: bool = False,
+    contract_authoring_version: str = "v12",
 ) -> dict:
     if type(seed) is not int:
         raise ValueError("Une graine entière est obligatoire")
+    if contract_authoring_version not in {"v11", "v12"} or (
+        not contract_graph_tree and contract_authoring_version != "v12"
+    ):
+        raise ValueError("Version de rédaction du contrat inconnue")
     model_digest = getattr(client, "model_digest", "")
     if not model_digest:
         raise ValueError("L'identité exacte du modèle local doit être enregistrée")
@@ -1163,7 +1367,13 @@ def generate_assessment(
     identity = {
         "assessment": asdict(NSI_2027),
         "prompt_version": (
-            CONTRACT_PROMPT_VERSION if contract_graph_tree else PROMPT_VERSION
+            (
+                CLOSED_PROSE_PROMPT_VERSION
+                if contract_authoring_version == "v12"
+                else CONTRACT_PROMPT_VERSION
+            )
+            if contract_graph_tree
+            else PROMPT_VERSION
         ),
         "implementation_sha256": implementation_identity(),
         "seed": seed,
@@ -1178,6 +1388,9 @@ def generate_assessment(
         identity["graph_tree_contract_sha256"] = build_graph_tree_contract(
             seed, "1"
         ).digest
+        if contract_authoring_version == "v12":
+            identity["prose_contract_version"] = PROSE_CONTRACT_VERSION
+            identity["prose_catalogue_sha256"] = prose_catalogue_digest()
     state = {"identity": identity, "accepted": {}, "failed_attempts": []}
     if checkpoint.exists():
         state = json.loads(checkpoint.read_text(encoding="utf-8"))
@@ -1199,7 +1412,12 @@ def generate_assessment(
                         part_path = checkpoint.with_name(
                             f"{checkpoint.name}.exercise-{key}.attempt-{attempt}.parts.json"
                         )
-                        raw, part_evidence = author_graph_tree_parts(
+                        author_parts = (
+                            author_closed_prose_parts
+                            if contract_authoring_version == "v12"
+                            else author_graph_tree_parts
+                        )
+                        raw, part_evidence = author_parts(
                             client,
                             task,
                             contract,
@@ -1208,15 +1426,27 @@ def generate_assessment(
                             run_identity=identity,
                         )
                         record["part_evidence"] = part_evidence
-                        exercise, accepted_evidence = evaluate_graph_tree_draft(
-                            raw,
-                            task,
-                            contract,
-                            references[position],
-                            originality_history,
-                            client,
-                            record,
-                        )
+                        if contract_authoring_version == "v12":
+                            exercise, accepted_evidence = evaluate_closed_prose_draft(
+                                raw,
+                                [item["response"] for item in part_evidence["parts"]],
+                                task,
+                                contract,
+                                references[position],
+                                originality_history,
+                                client,
+                                record,
+                            )
+                        else:
+                            exercise, accepted_evidence = evaluate_graph_tree_draft(
+                                raw,
+                                task,
+                                contract,
+                                references[position],
+                                originality_history,
+                                client,
+                                record,
+                            )
                         accepted_evidence["part_evidence"] = part_evidence
                         state["accepted"][key] = {
                             "exercise": exercise.model_dump(mode="json"),
@@ -1457,7 +1687,12 @@ def validate_package(package: dict):
     if (
         identity.get("assessment") != asdict(NSI_2027)
         or identity.get("prompt_version")
-        not in {PROMPT_VERSION, CONTRACT_PROMPT_VERSION, *LEGACY_IMPLEMENTATIONS}
+        not in {
+            PROMPT_VERSION,
+            CONTRACT_PROMPT_VERSION,
+            CLOSED_PROSE_PROMPT_VERSION,
+            *LEGACY_IMPLEMENTATIONS,
+        }
         or not identity.get("model_digest")
         or not re.fullmatch(
             r"[a-f0-9]{64}", str(identity.get("implementation_sha256", ""))
@@ -1468,12 +1703,20 @@ def validate_package(package: dict):
     if legacy_hash and identity["implementation_sha256"] != legacy_hash:
         raise ValueError("Identité historique française non reconnue")
     seed = identity.get("seed")
-    if identity["prompt_version"] == CONTRACT_PROMPT_VERSION and (
+    if identity["prompt_version"] in {
+        CONTRACT_PROMPT_VERSION,
+        CLOSED_PROSE_PROMPT_VERSION,
+    } and (
         type(seed) is not int
         or identity.get("graph_tree_contract_sha256")
         != build_graph_tree_contract(seed, "1").digest
     ):
         raise ValueError("Identité du contrat graphe/arbre incompatible")
+    if identity["prompt_version"] == CLOSED_PROSE_PROMPT_VERSION and (
+        identity.get("prose_contract_version") != PROSE_CONTRACT_VERSION
+        or identity.get("prose_catalogue_sha256") != prose_catalogue_digest()
+    ):
+        raise ValueError("Identité du texte fermé incompatible")
     expected_blueprint = (
         (
             _tasks_for_seed(seed)
@@ -1481,6 +1724,7 @@ def validate_package(package: dict):
             in {
                 PROMPT_VERSION,
                 CONTRACT_PROMPT_VERSION,
+                CLOSED_PROSE_PROMPT_VERSION,
                 "fr-nsi-written-2027-v9",
                 "fr-nsi-written-2027-v8",
                 "fr-nsi-written-2027-v7",
@@ -1531,6 +1775,21 @@ def validate_package(package: dict):
     for exercise, evidence in zip(exercises, package["evidence"], strict=True):
         if evidence.get("exercise_sha256") != digest(exercise.model_dump(mode="json")):
             raise ValueError("Exercise evidence hash mismatch")
+        if (
+            identity["prompt_version"] == CLOSED_PROSE_PROMPT_VERSION
+            and exercise.id == "1"
+        ):
+            replay_closed_prose_evidence(
+                exercise,
+                evidence,
+                expected_blueprint[0],
+                build_graph_tree_contract(seed, "1"),
+                evidence.get("references"),
+                previous_texts,
+                identity,
+            )
+            previous_texts.append(exercise_candidate_text(exercise))
+            continue
         if identity["prompt_version"] == CONTRACT_PROMPT_VERSION and exercise.id == "1":
             replay_graph_tree_evidence(
                 exercise,
@@ -1548,6 +1807,7 @@ def validate_package(package: dict):
             if identity["prompt_version"] in {
                 PROMPT_VERSION,
                 CONTRACT_PROMPT_VERSION,
+                CLOSED_PROSE_PROMPT_VERSION,
                 "fr-nsi-written-2027-v9",
             }:
                 _replay_targeted_repairs(
@@ -1556,6 +1816,7 @@ def validate_package(package: dict):
             if identity["prompt_version"] in {
                 PROMPT_VERSION,
                 CONTRACT_PROMPT_VERSION,
+                CLOSED_PROSE_PROMPT_VERSION,
                 "fr-nsi-written-2027-v9",
                 "fr-nsi-written-2027-v8",
                 "fr-nsi-written-2027-v7",
@@ -1568,6 +1829,7 @@ def validate_package(package: dict):
                 in {
                     PROMPT_VERSION,
                     CONTRACT_PROMPT_VERSION,
+                    CLOSED_PROSE_PROMPT_VERSION,
                     "fr-nsi-written-2027-v9",
                     "fr-nsi-written-2027-v8",
                 }
@@ -1577,6 +1839,7 @@ def validate_package(package: dict):
             if identity["prompt_version"] in {
                 PROMPT_VERSION,
                 CONTRACT_PROMPT_VERSION,
+                CLOSED_PROSE_PROMPT_VERSION,
                 "fr-nsi-written-2027-v9",
                 "fr-nsi-written-2027-v8",
             }:
@@ -1595,13 +1858,18 @@ def validate_package(package: dict):
             ):
                 raise ValueError("Preuve de liaison figure-question invalide")
             require_link_for_material_mentions(exercise)
-            if identity["prompt_version"] in {PROMPT_VERSION, CONTRACT_PROMPT_VERSION}:
+            if identity["prompt_version"] in {
+                PROMPT_VERSION,
+                CONTRACT_PROMPT_VERSION,
+                CLOSED_PROSE_PROMPT_VERSION,
+            }:
                 require_semantic_material_integrity(
                     exercise, expected_blueprint[int(exercise.id) - 1]
                 )
         if identity["prompt_version"] in {
             PROMPT_VERSION,
             CONTRACT_PROMPT_VERSION,
+            CLOSED_PROSE_PROMPT_VERSION,
             "fr-nsi-written-2027-v9",
         }:
             alignment = evidence.get("question_alignment")

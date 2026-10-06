@@ -89,7 +89,7 @@ def graph_edge_manifest(graph: dict) -> str:
 
 
 def bind_graph_tree_contract(
-    raw: dict, contract: GraphTreeContract
+    raw: dict, contract: GraphTreeContract, *, closed_prose: bool = False
 ) -> tuple[dict, dict]:
     """Assemble locked materials without erasing the model's raw evidence."""
     data = contract.to_dict()
@@ -175,13 +175,22 @@ def bind_graph_tree_contract(
                 f"La réponse rédigée ne correspond pas au résultat du contrat : {task_id}"
             )
         marking = question.get("marking")
-        if not isinstance(marking, list) or not any(
-            isinstance(item, dict)
-            and isinstance(item.get("criterion"), str)
-            and answer in item["criterion"]
-            for item in marking
+        if (
+            not isinstance(marking, list)
+            or not marking
+            or (
+                not closed_prose
+                and not any(
+                    isinstance(item, dict)
+                    and isinstance(item.get("criterion"), str)
+                    and answer in item["criterion"]
+                    for item in marking
+                )
+            )
         ):
-            raise ValueError(f"Le barème ne contient pas le résultat vérifié : {task_id}")
+            raise ValueError(
+                f"Le barème ne contient pas le résultat vérifié : {task_id}"
+            )
         _check_graph_prose(
             prompt
             + "\n"
@@ -224,8 +233,17 @@ def bind_graph_tree_contract(
         records[-1]["assembled_verification_sha256"] = _hash(question["verification"])
         del question["contract_task_id"]
         del question["claimed_result"]
-    return bound, {
+    binding = {
         "contract_sha256": contract.digest,
         "materials_sha256": _hash(bound["materials"]),
         "questions": records,
     }
+    if closed_prose:
+        from Backend.Core.france.graph_tree_prose import (
+            PROSE_CONTRACT_VERSION,
+            prose_catalogue_digest,
+        )
+
+        binding["prose_contract_version"] = PROSE_CONTRACT_VERSION
+        binding["prose_catalogue_sha256"] = prose_catalogue_digest()
+    return bound, binding

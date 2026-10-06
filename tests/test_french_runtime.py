@@ -10,7 +10,7 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
     from hashlib import sha256
 
     from Backend.Core.france import runtime
-    from tests.test_nsi_pipeline import ContractFrenchClient, make_index
+    from tests.test_nsi_pipeline import ClosedProseFrenchClient, make_index
 
     index = tmp_path / "references.sqlite"
     make_index(index)
@@ -27,7 +27,7 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
     )
     monkeypatch.setattr(runtime, "model_identity", lambda *args: "fixture-digest")
     monkeypatch.setattr(
-        runtime, "FrenchOllamaClient", lambda **kwargs: ContractFrenchClient()
+        runtime, "FrenchOllamaClient", lambda **kwargs: ClosedProseFrenchClient()
     )
     if failure == "render":
 
@@ -58,7 +58,7 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
                 == artifact["sha256"]
             )
         assert manifest["status"] == "unreviewed_draft"
-        assert manifest["identity"]["prompt_version"] == "fr-nsi-written-2027-v11"
+        assert manifest["identity"]["prompt_version"] == "fr-nsi-written-2027-v12"
         import pymupdf
 
         package = json.loads((bundles[0] / "assessment.json").read_text())
