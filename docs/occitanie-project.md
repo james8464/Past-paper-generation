@@ -1,6 +1,6 @@
 # Occitanie: original French NSI practice papers
 
-Last updated: 2026-10-03. This is an evidence/status record, not a claim of
+Last updated: 2026-10-06. This is an evidence/status record, not a claim of
 educational approval. No teacher, school, Région, examiner or Ministry endorsement
 has been obtained. No prize application has been submitted.
 
@@ -43,6 +43,10 @@ automated passing must not be represented as examiner approval.
   similarity remains risk evidence, not a copyright guarantee.
 - Hash-bound checkpoints, rejected attempts retained, French draft PDFs and
   atomic folder publication. All outputs remain non-official, unreviewed drafts.
+- The first graph/tree exercise now uses a finite French prose catalogue and
+  selection-only model responses. The selected forms, catalogue digest, locked
+  answers and exact credits are replayed in the package and checked against
+  extracted standard/large-print PDFs. Exercises 2–3 remain model-authored.
 - Native French workspace, consent before downloads, French interface translations,
   local Ollama endpoint, standard/enlarged print, history metadata and review UI.
 - Human review-record API tied to artifact hashes. Reviewer identity is self-attested,
@@ -68,6 +72,12 @@ implemented and manually inspected on fixtures. A 2026 source cannot establish a
 official 2027 template. Timing and AI difficulty judgements remain non-empirical;
 restricted code evaluation does not support all Python; originality thresholds
 still require labelled calibration.
+The [6 October v12 PDF check](quality/french-nsi-v12-pdf-verification-2026-10-06.md)
+inspected all pages of four deterministic fixture PDFs. Exercise 1 is more
+substantive than the earlier generic fixture, but its figure is smaller than the
+official comparator and exercises 2–3 still contain repetitive fixture content.
+This is a renderer and contract check, not a successful live paper or classroom
+qualification.
 
 A resumable French benchmark runner is implemented for gemma4:12b,
 ministral-3:8b and qwen3:8b: ten full papers and thirty exercises per model, with
@@ -79,6 +89,7 @@ not currently installed. An exploratory Qwen 3.5 9B single-paper run also
 accepted 0/1 complete papers on 4 October; it does not replace the planned
 candidate comparison. No teacher-reviewed release, student pilot,
 Intel test or multi-memory hardware matrix exists.
+The v12 redesign has not yet produced an accepted identity-pinned live paper.
 
 ## Genuine Occitanie scenario — PLANNED
 

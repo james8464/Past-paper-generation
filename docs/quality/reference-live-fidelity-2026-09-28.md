@@ -136,3 +136,21 @@ pass reports 37 data/configuration sources with no extracted nodes; these are
 not represented as complete semantic coverage. Large-graph HTML uses the
 271-community overview. The repository inventory classifies 504 tracked files
 with no forbidden or unclassified artifacts.
+
+## 6 October French v12 source-fidelity checkpoint
+
+The earlier UK matrix and its failures are retained as historical evidence; its
+identity does not qualify the changed shared source. The French graph/tree slice
+now uses a versioned finite French catalogue, with selection-only authoring,
+hash-bound replay and extracted-PDF comparison. This narrows one observed
+false-positive authoring class without claiming general NSI correctness.
+Deterministic fixtures passed; no v12 live complete paper has yet been accepted.
+The [page-level comparison](french-nsi-v12-pdf-verification-2026-10-06.md)
+keeps the official 2026 reference separate from the non-official fixture.
+
+Do not launch the final shared-source UK-plus-French live matrix while this
+branch is changing. After protected integration and source freeze, pin the
+implementation, model digests, reference index and artifact hashes, preserve
+every failed attempt, and inspect every resulting PDF. Human teacher review,
+learner calibration and accessibility are independent gates; issues #4 and #8
+remain open until actual qualification.

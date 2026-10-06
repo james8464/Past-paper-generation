@@ -1,5 +1,7 @@
+import pytest
 from docx import Document
 
+from tools import build_occitanie_submission as submission
 from tools.build_occitanie_submission import (
     build_application,
     build_mathematical_analysis,
@@ -8,6 +10,12 @@ from tools.build_occitanie_submission import (
     finalize_fonts,
     title_block,
 )
+
+
+@pytest.fixture(autouse=True)
+def isolate_generated_submission_files(tmp_path, monkeypatch):
+    """Tests must not overwrite the applicant's editable submission copies."""
+    monkeypatch.setattr(submission, "OUTPUT", tmp_path)
 
 
 def test_application_title_uses_a_real_title_paragraph() -> None:
@@ -47,6 +55,9 @@ def test_supporting_reports_are_in_english_while_the_application_stays_french() 
     assert "0/10 accepted" in " ".join(
         paragraph.text for paragraph in technical.paragraphs
     )
+    assert "finite French-language catalogue" in " ".join(
+        paragraph.text for paragraph in technical.paragraphs
+    )
 
 
 def test_technical_report_shows_and_describes_the_real_mac_workflow() -> None:
@@ -58,8 +69,13 @@ def test_technical_report_shows_and_describes_the_real_mac_workflow() -> None:
     crop = document.element.body.xpath(".//a:srcRect")
     assert len(crop) == 1
     assert int(crop[0].get("l")) >= 20000
+    assert int(crop[0].get("b")) >= 20000
     assert document.inline_shapes[0].height.cm >= 12
-    assert any("prototype interface" in paragraph.text.lower() for paragraph in document.paragraphs)
+    assert document.inline_shapes[0].height.cm <= 13
+    assert any(
+        "prototype interface" in paragraph.text.lower()
+        for paragraph in document.paragraphs
+    )
 
 
 def test_supporting_reports_have_a_distinct_editorial_hierarchy() -> None:
@@ -87,7 +103,9 @@ def test_supporting_sources_are_clickable_without_long_printed_urls() -> None:
         ]
         assert len(links) == expected_links
         assert all(link.startswith("https://") for link in links)
-        assert not any("https://" in paragraph.text for paragraph in document.paragraphs)
+        assert not any(
+            "https://" in paragraph.text for paragraph in document.paragraphs
+        )
 
 
 def test_editorial_reports_do_not_break_large_grids_across_pages() -> None:

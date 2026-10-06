@@ -97,21 +97,37 @@ def configure_document(
     section.page_height = Cm(29.7)
     section.top_margin = Cm(2.0 if editorial else 1.7 if compact else 1.9)
     section.bottom_margin = Cm(1.7 if editorial else 1.55 if compact else 1.7)
-    section.left_margin = Cm(2.1 if editorial and compact else 2.35 if editorial else 1.9 if compact else 2.1)
-    section.right_margin = Cm(2.1 if editorial and compact else 2.35 if editorial else 1.9 if compact else 2.1)
+    section.left_margin = Cm(
+        2.1 if editorial and compact else 2.35 if editorial else 1.9 if compact else 2.1
+    )
+    section.right_margin = Cm(
+        2.1 if editorial and compact else 2.35 if editorial else 1.9 if compact else 2.1
+    )
     section.header_distance = Cm(0.65)
     section.footer_distance = Cm(0.65)
 
     normal = doc.styles["Normal"]
     normal.font.name = "Arial"
-    normal.font.size = Pt(10.5 if editorial and compact else 11 if editorial else 10.2 if compact else 10.8)
+    normal.font.size = Pt(
+        10.5
+        if editorial and compact
+        else 11
+        if editorial
+        else 10.2
+        if compact
+        else 10.8
+    )
     normal.font.color.rgb = RGBColor(0, 0, 0)
-    normal.paragraph_format.space_after = Pt(5 if editorial and compact else 8 if editorial else 5 if compact else 6)
-    normal.paragraph_format.line_spacing = 1.12 if editorial and compact else 1.22 if editorial else 1.12
+    normal.paragraph_format.space_after = Pt(
+        5 if editorial and compact else 8 if editorial else 5 if compact else 6
+    )
+    normal.paragraph_format.line_spacing = (
+        1.12 if editorial and compact else 1.22 if editorial else 1.12
+    )
     heading_sizes = (
         (("Title", 30), ("Heading 1", 16), ("Heading 2", 12.5))
-        if editorial else
-        (("Title", 22), ("Heading 1", 13.5), ("Heading 2", 11.5))
+        if editorial
+        else (("Title", 22), ("Heading 1", 13.5), ("Heading 2", 11.5))
     )
     for name, size in heading_sizes:
         style = doc.styles[name]
@@ -119,8 +135,12 @@ def configure_document(
         style.font.size = Pt(size)
         style.font.color.rgb = RGBColor(0, 0, 0)
         style.font.bold = name != "Title"
-        style.paragraph_format.space_before = Pt(12 if editorial and compact else 18 if editorial else 12)
-        style.paragraph_format.space_after = Pt(6 if editorial and compact else 9 if editorial else 6)
+        style.paragraph_format.space_before = Pt(
+            12 if editorial and compact else 18 if editorial else 12
+        )
+        style.paragraph_format.space_after = Pt(
+            6 if editorial and compact else 9 if editorial else 6
+        )
         style.paragraph_format.keep_with_next = True
     title_properties = doc.styles["Title"].element.get_or_add_pPr()
     title_border = title_properties.find(qn("w:pBdr"))
@@ -223,7 +243,9 @@ def add_source(doc: Document, number: int, label: str, url: str) -> None:
     paragraph = doc.add_paragraph()
     paragraph.paragraph_format.space_after = Pt(0)
     paragraph.add_run(f"[{number}] ").font.size = Pt(9)
-    relationship_id = paragraph.part.relate_to(url, RELATIONSHIP_TYPE.HYPERLINK, is_external=True)
+    relationship_id = paragraph.part.relate_to(
+        url, RELATIONSHIP_TYPE.HYPERLINK, is_external=True
+    )
     hyperlink = OxmlElement("w:hyperlink")
     hyperlink.set(qn("r:id"), relationship_id)
     run = OxmlElement("w:r")
@@ -256,8 +278,12 @@ def build_application() -> Path:
         "Candidature au Prix Occitanie 2026",
         "Paper Creator, pilote NSI Occitanie",
     )
-    add_label_paragraph(doc, "Candidat", "James Durup · CentraleSupélec · promotion : À compléter")
-    add_label_paragraph(doc, "Contact", "james.durup@student-cs.fr · téléphone : À compléter")
+    add_label_paragraph(
+        doc, "Candidat", "James Durup · CentraleSupélec · promotion : À compléter"
+    )
+    add_label_paragraph(
+        doc, "Contact", "james.durup@student-cs.fr · téléphone : À compléter"
+    )
     add_label_paragraph(doc, "Adresse", "À compléter")
     doc.add_heading("Présentation du candidat", level=1)
     doc.add_paragraph(
@@ -290,7 +316,7 @@ def build_application() -> Path:
         [
             "Prototype technique : parcours français distinct, génération locale, références filtrées, points décimaux exacts, contrôles de réponses et PDF standard ou agrandi.",
             "Qualité non qualifiée : 79 annales officielles 2021–2026 sont réconciliées et 13 réservées à l’évaluation. La première campagne a rejeté dix sujets complets sur dix ; le modèle testé ne peut pas encore être recommandé.",
-            "Validation humaine à organiser : aucun partenariat régional ni avis d’enseignant français n’est revendiqué. Le prix financerait l’amélioration et l’évaluation indépendante."
+            "Validation humaine à organiser : aucun partenariat régional ni avis d’enseignant français n’est revendiqué. Le prix financerait l’amélioration et l’évaluation indépendante.",
         ],
     )
     doc.add_heading("Présentation et aides antérieures", level=1)
@@ -312,13 +338,35 @@ def build_application() -> Path:
 
     doc.add_heading("Travaux prévus pendant les douze mois suivant le prix", level=1)
     for period, activity, evidence in (
-        ("Mois 1 à 2", "Banc d’essai local et recrutement de deux enseignants de NSI", "résultats conservés, choix du modèle motivé, protocole de relecture"),
-        ("Mois 3 à 4", "Six sujets relus et corrigés", "deux avis indépendants par sujet, défauts et révisions tracés"),
-        ("Mois 5 à 6", "Pilote encadré dans un lycée volontaire", "temps enseignant et élèves, ambiguïtés et accès mesurés"),
-        ("Mois 7 à 9", "Données ouvertes d’Occitanie et audit d’accessibilité", "provenance, sujets relus, PDF standard et agrandi"),
-        ("Mois 10 à 12", "Décision sur une deuxième spécialité ou l’inférence mutualisée", "conclusion fondée sur le pilote et le matériel"),
+        (
+            "Mois 1 à 2",
+            "Banc d’essai local et recrutement de deux enseignants de NSI",
+            "résultats conservés, choix du modèle motivé, protocole de relecture",
+        ),
+        (
+            "Mois 3 à 4",
+            "Six sujets relus et corrigés",
+            "deux avis indépendants par sujet, défauts et révisions tracés",
+        ),
+        (
+            "Mois 5 à 6",
+            "Pilote encadré dans un lycée volontaire",
+            "temps enseignant et élèves, ambiguïtés et accès mesurés",
+        ),
+        (
+            "Mois 7 à 9",
+            "Données ouvertes d’Occitanie et audit d’accessibilité",
+            "provenance, sujets relus, PDF standard et agrandi",
+        ),
+        (
+            "Mois 10 à 12",
+            "Décision sur une deuxième spécialité ou l’inférence mutualisée",
+            "conclusion fondée sur le pilote et le matériel",
+        ),
     ):
-        add_label_paragraph(doc, period + ".", activity + " ; preuve : " + evidence + ".")
+        add_label_paragraph(
+            doc, period + ".", activity + " ; preuve : " + evidence + "."
+        )
     doc.add_heading("Utilisation du prix de 1 000 euros", level=1)
     for amount, purpose in (
         ("500 €", "relecture indépendante par des enseignants"),
@@ -347,24 +395,29 @@ def build_technical_dossier() -> Path:
         "Technical and user report · Prix Occitanie 2026",
     )
     doc.add_paragraph(
-        "This report explains the prototype, what a teacher can do with it today, and the evidence still needed before it can be recommended for classroom practice. The engineering foundation exists, but the first complete Gemma 4 12B campaign rejected all ten papers. No French model is therefore recommended. Progress depends on measured repairs, two independent NSI teacher reviewers, and a supervised pilot."
+        "This report explains the prototype, what a teacher can do with it today, and the evidence still needed before it can be recommended for classroom practice. A controlled-language graph/tree exercise now prevents the model from inventing its questions, answers or marking clauses; the other two exercises remain model-authored. The first complete Gemma 4 12B campaign rejected all ten papers, and the redesigned route has not passed a live paper. No French model is recommended. Two independent NSI teacher reviewers and a supervised pilot remain essential."
     )
     doc.add_heading("The teacher’s task", level=1)
     doc.add_paragraph(
         "A teacher has a finite supply of past papers and needs fresh practice without introducing errors in questions or marking. Paper Creator produces a complete draft for review. The teacher decides whether to share it; the app neither marks student work nor collects student responses."
     )
-    screenshot = ROOT / "macOS/PaperCreator/Assets.xcassets/TutorialFrenchNSI.imageset/TutorialFrenchNSI.png"
+    screenshot = (
+        ROOT
+        / "macOS/PaperCreator/Assets.xcassets/TutorialFrenchNSI.imageset/TutorialFrenchNSI.png"
+    )
     picture = doc.add_picture(str(screenshot), width=Cm(16.2))
-    picture.height = Cm(14.1)
+    picture.height = Cm(12.3)
     crop = OxmlElement("a:srcRect")
     crop.set("l", "30000")
     crop.set("r", "13000")
-    crop.set("b", "15000")
+    crop.set("b", "20000")
     picture._inline.graphic.graphicData.pic.blipFill.insert(1, crop)
     picture._inline.docPr.set(
         "descr", "French NSI workspace in the Paper Creator macOS prototype"
     )
-    caption = doc.add_paragraph("Prototype interface · local draft controls and assessment context.")
+    caption = doc.add_paragraph(
+        "Prototype interface · local draft controls and assessment context."
+    )
     caption.paragraph_format.space_after = Pt(12)
     for run in caption.runs:
         run.italic = True
@@ -373,11 +426,26 @@ def build_technical_dossier() -> Path:
     doc.add_page_break()
     doc.add_heading("From request to reviewed artifact", level=1)
     for label, detail in (
-        ("01  Prepare references.", "The teacher permits a local download; the app identifies and indexes eligible official documents."),
-        ("02  Choose a model.", "The teacher selects a local Ollama model and print profile; the app records the model identity."),
-        ("03  Create a draft.", "The app plans three exercises, generates proposed answers, solves independently, and checks failures."),
-        ("04  Inspect the evidence.", "The teacher reads both PDFs, sources, validation results, and limitations."),
-        ("05  Record a decision.", "A review applies only to the exact artifact hashes; a changed paper needs new review."),
+        (
+            "01  Prepare references.",
+            "The teacher permits a local download; the app identifies and indexes eligible official documents.",
+        ),
+        (
+            "02  Choose a model.",
+            "The teacher selects a local Ollama model and print profile; the app records the model identity.",
+        ),
+        (
+            "03  Create a draft.",
+            "The app plans three exercises, generates proposed answers, solves independently, and checks failures.",
+        ),
+        (
+            "04  Inspect the evidence.",
+            "The teacher reads both PDFs, sources, validation results, and limitations.",
+        ),
+        (
+            "05  Record a decision.",
+            "A review applies only to the exact artifact hashes; a changed paper needs new review.",
+        ),
     ):
         add_label_paragraph(doc, label, detail)
 
@@ -386,11 +454,26 @@ def build_technical_dossier() -> Path:
         "A SwiftUI interface exchanges JSON messages with a Python engine. The assessment registry selects an explicit French policy. This boundary prevents UK assessment objectives, integer-only marks, and English instructions from silently applying to the baccalauréat."
     )
     for label, detail in (
-        ("Catalogue.", "Explicit education context, curriculum and rule versions, language, and checked compatibility."),
-        ("References.", "French-only eligibility filtering; source URL, retrieval date, hash, page, rights and holdout status retained."),
-        ("Generation.", "Three independent plans and French questions, with rejected attempts in resumable checkpoints."),
-        ("Verification.", "Bounded SQL and algorithm checks, blind solving and originality; unsupported claims remain unresolved."),
-        ("Publication and review.", "Atomic PDF bundle plus manifest, followed by an eight-part human review bound to file hashes."),
+        (
+            "Catalogue.",
+            "Explicit education context, curriculum and rule versions, language, and checked compatibility.",
+        ),
+        (
+            "References.",
+            "French-only eligibility filtering; source URL, retrieval date, hash, page, rights and holdout status retained.",
+        ),
+        (
+            "Generation.",
+            "Three independent plans and French questions, with rejected attempts in resumable checkpoints.",
+        ),
+        (
+            "Verification.",
+            "Bounded SQL and algorithm checks, blind solving and originality; unsupported claims remain unresolved.",
+        ),
+        (
+            "Publication and review.",
+            "Atomic PDF bundle plus manifest, followed by an eight-part human review bound to file hashes.",
+        ),
     ):
         add_label_paragraph(doc, label, detail)
 
@@ -402,13 +485,13 @@ def build_technical_dossier() -> Path:
             "Eighteen technical points plus a separate two-point French-language component. Detailed credit is indicative, not an official marking grid.",
             "Première knowledge may be a prerequisite but cannot replace the essential Terminale focus.",
             "Each question records one to three official capability codes, a cognitive operation, a 1–4 difficulty label, and an estimated time.",
-            "Each exercise covers its declared topics, totals 70 minutes, uses at least three cognitive operations, and includes a difficulty-4 question."
+            "Each exercise covers its declared topics, totals 70 minutes, uses at least three cognitive operations, and includes a difficulty-4 question.",
         ],
     )
 
     doc.add_heading("Question quality", level=1)
     doc.add_paragraph(
-        "The model receives a constrained plan, not a vague request. A database plan can require a complex query, an INSERT/UPDATE/DELETE operation, or error diagnosis. Graph tasks carry structured vertices, edges, and weights, so the engine can check that the diagram and answer contract describe the same graph. Closed-answer questions receive a reference calculation; unsupported claims stay explicitly unresolved."
+        "The model receives a constrained plan, not a vague request. For the first graph/tree exercise, it now selects from a finite French-language catalogue: the engine renders every instruction, answer and exact-credit clause from locked graph and tree data. The selection and catalogue digest are bound to the checkpoint, package and exported PDFs. Database and protocol exercises still use separately checked model-authored text; a passing structural check is not proof that those questions are correct."
     )
     doc.add_paragraph(
         "A difficulty label from a model is not proof of difficulty. The schema rejects recall-only sequences and requires progression towards analysis, design, debugging, or justification. Final calibration must compare drafts with held-out past papers and observed learner timings."
@@ -421,11 +504,26 @@ def build_technical_dossier() -> Path:
 
     doc.add_heading("Safety, privacy, and rights", level=1)
     for label, detail in (
-        ("Data exposure.", "The French UI uses loopback Ollama, with no student responses or silent cloud fallback. A separate CLI permits a remote server only by explicit HTTPS opt-in."),
-        ("Generated code.", "SQL runs in an isolated, bounded setting; supported code has restricted interpretation. Arbitrary generated Python is never executed."),
-        ("Wrong source.", "Scope filtering precedes ranking; holdouts are separate and an empty eligible set fails explicitly. Third-party rights still need document-level review."),
-        ("Past-paper copying.", "Text, normalised code, structure and prior generations are compared. Similarity is risk evidence, not a legal guarantee."),
-        ("Document rights.", "Local references retain URL, rights status and hash. Third-party illustrations require separate clearance."),
+        (
+            "Data exposure.",
+            "The French UI uses loopback Ollama, with no student responses or silent cloud fallback. A separate CLI permits a remote server only by explicit HTTPS opt-in.",
+        ),
+        (
+            "Generated code.",
+            "SQL runs in an isolated, bounded setting; supported code has restricted interpretation. Arbitrary generated Python is never executed.",
+        ),
+        (
+            "Wrong source.",
+            "Scope filtering precedes ranking; holdouts are separate and an empty eligible set fails explicitly. Third-party rights still need document-level review.",
+        ),
+        (
+            "Past-paper copying.",
+            "Text, normalised code, structure and prior generations are compared. Similarity is risk evidence, not a legal guarantee.",
+        ),
+        (
+            "Document rights.",
+            "Local references retain URL, rights status and hash. Third-party illustrations require separate clearance.",
+        ),
     ):
         add_label_paragraph(doc, label, detail)
 
@@ -435,16 +533,19 @@ def build_technical_dossier() -> Path:
         "The benchmark runner attempts ten complete papers per model—30 exercises per configuration—using fixed seeds. It retains outputs, errors, checkpoints, timing, Ollama version, hardware, model digest, and source identity. A lock prevents duplicate French campaigns. If code or references change, the run stops rather than mixing incompatible evidence."
     )
     add_label_paragraph(
-        doc, "Automated · 0/10 accepted.",
-        "The first Gemma 4 12B campaign did not pass. Repair and a fresh source-pinned run are required; implemented checks are not teacher approval."
+        doc,
+        "Automated · 0/10 accepted.",
+        "The first Gemma 4 12B campaign did not pass. The new graph/tree contract passes deterministic fixture and PDF-integrity tests, but has no accepted live complete paper. A source-pinned run and independent subject review are still required.",
     )
     add_label_paragraph(
-        doc, "Teachers · not recruited.",
-        "Two NSI teachers must independently review six papers; correctness and marking must each score 4/4, with other dimensions at least 3/4."
+        doc,
+        "Teachers · not recruited.",
+        "Two NSI teachers must independently review six papers; correctness and marking must each score 4/4, with other dimensions at least 3/4.",
     )
     add_label_paragraph(
-        doc, "Learners · not piloted.",
-        "A supervised pilot must measure timing, ambiguity, accessibility and teacher workload. No partner school is yet arranged."
+        doc,
+        "Learners · not piloted.",
+        "A supervised pilot must measure timing, ambiguity, accessibility and teacher workload. No partner school is yet arranged.",
     )
 
     doc.add_heading("Occitanie deployment", level=1)
@@ -458,24 +559,57 @@ def build_technical_dossier() -> Path:
     doc.add_heading("Risks and decisions", level=1)
     for label, detail in (
         ("Wrong answer.", "Block publication and require teacher review."),
-        ("Memory pressure.", "Benchmark actual Macs; promise no universal compatibility."),
+        (
+            "Memory pressure.",
+            "Benchmark actual Macs; promise no universal compatibility.",
+        ),
         ("2027 visual rules.", "Keep the historical-reference layout provisional."),
-        ("Regional relevance.", "Test useful data and a real pilot, not renamed places."),
+        (
+            "Regional relevance.",
+            "Test useful data and a real pilot, not renamed places.",
+        ),
         ("Unfavourable pilot.", "Report limits, narrow scope, or stop."),
     ):
         add_label_paragraph(doc, label, detail)
 
     doc.add_heading("Primary sources", level=1)
     sources = [
-        ("Prix Occitanie 2026 rules", "https://association.centralesupelec-alumni.com/medias/editor/PRIX_OCCITANIE_2026/REGLEMENT_PRIX_OCCITANIE_2026.pdf"),
-        ("Official NSI 2027 examination definition", "https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N"),
-        ("NSI curriculum and resources", "https://eduscol.education.gouv.fr/5823/programmes-et-ressources-en-numerique-et-sciences-informatiques-voie-g"),
-        ("Official past-paper archive", "https://eduscol.education.gouv.fr/5199/annales-des-epreuves-du-baccalaureat-des-voies-generale-et-technologique"),
-        ("loRdi", "https://www.laregion.fr/aide-a-l-acquisition-d-un-ordinateur-portable-lordi"),
-        ("Occitanie school strategy", "https://www.laregion.fr/Quelle-demarche-pour-le-lycee-de-demain-39604"),
-        ("Occitanie schools open data", "https://data.laregion.fr/explore/dataset/lycees-occitanie/"),
-        ("Occitanie energy-use history", "https://data.laregion.fr/explore/dataset/historique-de-la-consommation-denergie-en-occitanie/"),
-        ("CNIL guidance for teachers", "https://www.cnil.fr/fr/enseignant-usage-systeme-ia"),
+        (
+            "Prix Occitanie 2026 rules",
+            "https://association.centralesupelec-alumni.com/medias/editor/PRIX_OCCITANIE_2026/REGLEMENT_PRIX_OCCITANIE_2026.pdf",
+        ),
+        (
+            "Official NSI 2027 examination definition",
+            "https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N",
+        ),
+        (
+            "NSI curriculum and resources",
+            "https://eduscol.education.gouv.fr/5823/programmes-et-ressources-en-numerique-et-sciences-informatiques-voie-g",
+        ),
+        (
+            "Official past-paper archive",
+            "https://eduscol.education.gouv.fr/5199/annales-des-epreuves-du-baccalaureat-des-voies-generale-et-technologique",
+        ),
+        (
+            "loRdi",
+            "https://www.laregion.fr/aide-a-l-acquisition-d-un-ordinateur-portable-lordi",
+        ),
+        (
+            "Occitanie school strategy",
+            "https://www.laregion.fr/Quelle-demarche-pour-le-lycee-de-demain-39604",
+        ),
+        (
+            "Occitanie schools open data",
+            "https://data.laregion.fr/explore/dataset/lycees-occitanie/",
+        ),
+        (
+            "Occitanie energy-use history",
+            "https://data.laregion.fr/explore/dataset/historique-de-la-consommation-denergie-en-occitanie/",
+        ),
+        (
+            "CNIL guidance for teachers",
+            "https://www.cnil.fr/fr/enseignant-usage-systeme-ia",
+        ),
     ]
     for index, (label, url) in enumerate(sources, 1):
         add_source(doc, index, label, url)
@@ -569,22 +703,54 @@ def build_mathematical_analysis() -> Path:
     )
 
     doc.add_heading("Budget and decision rule", level=1)
-    for label, detail in (
-        ("€500 · Teacher review.", "Twelve independent review sheets for six papers and the reviewers’ time."),
-        ("€200 · Pilot travel.", "Observed school context and access constraints."),
-        ("€200 · Hardware and accessibility.", "Tested configurations, memory, speed, and standard/enlarged PDFs."),
-        ("€100 · Data and contingency.", "Regional resources or a documented pilot need."),
+    for index, (label, detail) in enumerate(
+        (
+            (
+                "€500 · Teacher review.",
+                "Twelve independent review sheets for six papers and the reviewers’ time.",
+            ),
+            ("€200 · Pilot travel.", "Observed school context and access constraints."),
+            (
+                "€200 · Hardware and accessibility.",
+                "Tested configurations, memory, speed, and standard/enlarged PDFs.",
+            ),
+            (
+                "€100 · Data and contingency.",
+                "Regional resources or a documented pilot need.",
+            ),
+        )
     ):
         add_label_paragraph(doc, label, detail)
+        doc.paragraphs[-1].paragraph_format.keep_with_next = index < 3
     doc.add_paragraph(
         "Continuing beyond the pilot requires all of the following: no unresolved blocking defect, two written teacher recommendations for reviewed practice use, plausible completion time, observed teacher time savings, and hardware suitable for the chosen deployment. One favourable metric is not enough."
     )
 
     doc.add_heading("References", level=1)
-    add_source(doc, 1, "NSI 2027 rules", "https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N")
-    add_source(doc, 2, "Official past papers", "https://eduscol.education.gouv.fr/5199/annales-des-epreuves-du-baccalaureat-des-voies-generale-et-technologique")
-    add_source(doc, 3, "Official French-language rubric", "https://www.education.gouv.fr/sites/default/files/document/annexe-attendus-et-observables-redactionnels-520693.pdf")
-    add_source(doc, 4, "Prix Occitanie 2026 rules", "https://association.centralesupelec-alumni.com/medias/editor/PRIX_OCCITANIE_2026/REGLEMENT_PRIX_OCCITANIE_2026.pdf")
+    add_source(
+        doc,
+        1,
+        "NSI 2027 rules",
+        "https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N",
+    )
+    add_source(
+        doc,
+        2,
+        "Official past papers",
+        "https://eduscol.education.gouv.fr/5199/annales-des-epreuves-du-baccalaureat-des-voies-generale-et-technologique",
+    )
+    add_source(
+        doc,
+        3,
+        "Official French-language rubric",
+        "https://www.education.gouv.fr/sites/default/files/document/annexe-attendus-et-observables-redactionnels-520693.pdf",
+    )
+    add_source(
+        doc,
+        4,
+        "Prix Occitanie 2026 rules",
+        "https://association.centralesupelec-alumni.com/medias/editor/PRIX_OCCITANIE_2026/REGLEMENT_PRIX_OCCITANIE_2026.pdf",
+    )
 
     path = OUTPUT / "Paper-Creator-NSI-Mathematical-Analysis.docx"
     OUTPUT.mkdir(parents=True, exist_ok=True)
@@ -594,7 +760,11 @@ def build_mathematical_analysis() -> Path:
 
 
 def main() -> None:
-    for path in (build_application(), build_technical_dossier(), build_mathematical_analysis()):
+    for path in (
+        build_application(),
+        build_technical_dossier(),
+        build_mathematical_analysis(),
+    ):
         print(path)
 
 

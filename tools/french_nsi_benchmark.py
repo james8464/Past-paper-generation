@@ -28,6 +28,10 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from Backend.Core.education_context import NSI_2027  # noqa: E402
+from Backend.Core.france.graph_tree_prose import (  # noqa: E402
+    PROSE_CONTRACT_VERSION,
+    prose_catalogue_digest,
+)
 from Backend.Core.france.pipeline import PROMPT_VERSION  # noqa: E402
 from Backend.Core.france.runtime import model_identity  # noqa: E402
 from Backend.Core.france.source_identity import implementation_identity  # noqa: E402
@@ -45,7 +49,9 @@ class BenchmarkItem:
     exercise_count: int = 3
 
 
-def build_plan(models: list[str], *, base_seed: int, papers: int) -> list[BenchmarkItem]:
+def build_plan(
+    models: list[str], *, base_seed: int, papers: int
+) -> list[BenchmarkItem]:
     if not models or len(set(models)) != len(models):
         raise ValueError("La liste des modèles doit être non vide et sans doublon")
     if type(base_seed) is not int or papers < 1:
@@ -69,7 +75,11 @@ def accepted_result(path: Path, identity: dict[str, Any]) -> bool:
 def _accepted_payload(
     value: dict[str, Any] | None, path: Path, identity: dict[str, Any]
 ) -> bool:
-    if not value or value.get("status") != "passed" or value.get("identity") != identity:
+    if (
+        not value
+        or value.get("status") != "passed"
+        or value.get("identity") != identity
+    ):
         return False
     recorded_artifacts = value.get("artifacts")
     if not isinstance(recorded_artifacts, dict):
@@ -106,13 +116,17 @@ def _accepted_payload(
     if (
         manifest_identity.get("assessment") != asdict(NSI_2027)
         or manifest_identity.get("prompt_version") != PROMPT_VERSION
+        or manifest_identity.get("prose_contract_version") != PROSE_CONTRACT_VERSION
+        or manifest_identity.get("prose_catalogue_sha256") != prose_catalogue_digest()
         or manifest_identity.get("provider") != "ollama"
     ):
         return False
     artifacts = manifest.get("artifacts")
-    if not isinstance(artifacts, dict) or not {
-        "question_paper", "mark_scheme", "assessment_package"
-    } <= artifacts.keys():
+    if (
+        not isinstance(artifacts, dict)
+        or not {"question_paper", "mark_scheme", "assessment_package"}
+        <= artifacts.keys()
+    ):
         return False
     for artifact in artifacts.values():
         if not isinstance(artifact, dict):
@@ -163,7 +177,9 @@ def summarize_run(
     failures = failures if isinstance(failures, list) else []
     events = _events(run.stdout)
     errors = [event.get("message") for event in events if event.get("type") == "error"]
-    status = "passed" if run.return_code == 0 and artifact_manifest is not None else "failed"
+    status = (
+        "passed" if run.return_code == 0 and artifact_manifest is not None else "failed"
+    )
     if run.timed_out:
         status = "timed_out"
     return {
@@ -261,9 +277,7 @@ def run_plan(args: argparse.Namespace) -> int:
     plan = build_plan(models, base_seed=args.base_seed, papers=args.papers_per_model)
     source_identity = implementation_identity()
     reference_identity = _sha256(reference_index)
-    model_digests = {
-        model: model_identity(args.ollama_url, model) for model in models
-    }
+    model_digests = {model: model_identity(args.ollama_url, model) for model in models}
     session_identity = {
         "schema_version": 1,
         "assessment": ASSESSMENT,
@@ -279,7 +293,9 @@ def run_plan(args: argparse.Namespace) -> int:
         if existing is None:
             raise ValueError("La session a perdu son intégrité; conserver le dossier")
         if existing.get("identity") != session_identity:
-            raise ValueError("Ce dossier appartient à une autre identité de qualification")
+            raise ValueError(
+                "Ce dossier appartient à une autre identité de qualification"
+            )
     else:
         if any(output.iterdir()):
             raise ValueError("La session a perdu son intégrité; conserver le dossier")
@@ -298,8 +314,13 @@ def run_plan(args: argparse.Namespace) -> int:
 
     results = []
     for item in plan:
-        if implementation_identity() != source_identity or _sha256(reference_index) != reference_identity:
-            raise RuntimeError("Le code ou les références ont changé; qualification arrêtée")
+        if (
+            implementation_identity() != source_identity
+            or _sha256(reference_index) != reference_identity
+        ):
+            raise RuntimeError(
+                "Le code ou les références ont changé; qualification arrêtée"
+            )
         digest = model_digests[item.model]
         identity = {
             "implementation": source_identity,
@@ -393,19 +414,27 @@ def run_plan(args: argparse.Namespace) -> int:
             result["status"] = "failed"
             result["error"] = "L'intégrité des artefacts publiés est invalide"
             _atomic_json(result_path, result)
-            raise ValueError("Les artefacts ont perdu leur intégrité; conserver le dossier")
+            raise ValueError(
+                "Les artefacts ont perdu leur intégrité; conserver le dossier"
+            )
         _atomic_json(result_path, result)
         results.append(result)
         if implementation_identity() != source_identity:
-            raise RuntimeError("Le code a changé pendant une génération; arrêt immédiat")
+            raise RuntimeError(
+                "Le code a changé pendant une génération; arrêt immédiat"
+            )
 
     complete = len(results) == len(plan)
     report = {
         "identity": session_identity,
         "planned_papers": len(plan),
         "planned_exercises_per_model": args.papers_per_model * 3,
-        "passed": sum(result and result.get("status") == "passed" for result in results),
-        "failed": sum(result and result.get("status") != "passed" for result in results),
+        "passed": sum(
+            result and result.get("status") == "passed" for result in results
+        ),
+        "failed": sum(
+            result and result.get("status") != "passed" for result in results
+        ),
         "complete": complete,
         "results": results,
         "educational_qualification": "not_run",
