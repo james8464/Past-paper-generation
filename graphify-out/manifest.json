@@ -190,8 +190,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
-    "mtime": 1791268137.5555348,
-    "ast_hash": "ad5208aef5aade1143e64f91ed8c9e0c",
+    "mtime": 1791272289.0944462,
+    "ast_hash": "507f032e37d99b4b447f3a85a9d135da",
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
@@ -355,9 +355,9 @@
     "semantic_hash": "132ea2e342ee1bf9202161d8d6092c1e"
   },
   "Backend/Core/providers.py": {
-    "mtime": 1791129181.50685,
-    "ast_hash": "e281ca58a5fed5898d30d781fc5e122d",
-    "semantic_hash": "e281ca58a5fed5898d30d781fc5e122d"
+    "mtime": 1791272198.5598865,
+    "ast_hash": "43ce5cb91342e655d2b390a28869c68f",
+    "semantic_hash": ""
   },
   "Backend/Core/psychometrics.py": {
     "mtime": 1791129181.5069368,
@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791269675.9955807,
+    "mtime": 1791271279.9744558,
     "ast_hash": "000071cf6608c482d7ca37c1956e7127",
     "semantic_hash": ""
   },
@@ -1670,8 +1670,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_provider.py": {
-    "mtime": 1791148087.6566975,
-    "ast_hash": "3a13a1cf8a207327cac48d4d0e9250e2",
+    "mtime": 1791272209.7354143,
+    "ast_hash": "6a792111323f5453012e007da36c2ffd",
     "semantic_hash": ""
   },
   "tests/test_french_review.py": {
@@ -2045,8 +2045,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_benchmark_runner.py": {
-    "mtime": 1791271006.129682,
-    "ast_hash": "c238ece1ccda3d0ddcc3c0b499205262",
+    "mtime": 1791271633.202785,
+    "ast_hash": "4d702e24935c60a46bb7e553240e1d14",
     "semantic_hash": ""
   },
   "tests/test_french_originality.py": {
@@ -2060,8 +2060,8 @@
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
-    "mtime": 1791271006.1296792,
-    "ast_hash": "f634048abbbac57d2981b6acd4be9144",
+    "mtime": 1791271685.2172177,
+    "ast_hash": "a647c1fa88441a9ca6d11a3f742c2b9d",
     "semantic_hash": ""
   },
   "tools/reconcile_french_nsi_archive.py": {
@@ -2335,8 +2335,8 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-prototype-verification-2026-09-28.md": {
-    "mtime": 1791270426.371702,
-    "ast_hash": "d736ca0292c437c926deb995ce668ff3",
+    "mtime": 1791272011.0954134,
+    "ast_hash": "6a894e925516a93aff2e35880acaf083",
     "semantic_hash": ""
   },
   "docs/quality/ocr-question-chrome-2026-09-28.md": {
@@ -2615,13 +2615,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_tree_binding.py": {
-    "mtime": 1791268658.2877607,
-    "ast_hash": "646ce903f04ffa84889972854830af57",
+    "mtime": 1791271685.2190046,
+    "ast_hash": "dcb567385f64038f6e1d200d528c45e7",
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_tree_authoring.py": {
-    "mtime": 1791268177.191542,
-    "ast_hash": "1ca6332b6d5b31f5ba28572eb0c572b9",
+    "mtime": 1791272301.2906718,
+    "ast_hash": "6d9d107c3bbd2da060f93d4caa4ba7f4",
     "semantic_hash": ""
   },
   "tests/test_french_graph_tree_authoring.py": {
@@ -2630,8 +2630,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_tree_prose.py": {
-    "mtime": 1791267810.0416663,
-    "ast_hash": "651942a4c28ee831cf8040830790a4c8",
+    "mtime": 1791271685.218759,
+    "ast_hash": "8eb3510819c98c8df0f16528a74cfbe9",
     "semantic_hash": ""
   },
   "tests/test_french_graph_tree_prose.py": {
@@ -2650,13 +2650,13 @@
     "semantic_hash": ""
   },
   "tests/test_french_closed_prose_authoring.py": {
-    "mtime": 1791268177.191394,
-    "ast_hash": "626d8098f265bb56be95d561e33bdd48",
+    "mtime": 1791272301.2906756,
+    "ast_hash": "6fa0c8496121c3b04b41560e9ae71888",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v12-pdf-verification-2026-10-06.md": {
-    "mtime": 1791269451.298803,
-    "ast_hash": "6e60cb7429f18ee26087e996e174eace",
+    "mtime": 1791272011.0949488,
+    "ast_hash": "e6ba8a8161cfb6e4de44f3a9594c142a",
     "semantic_hash": ""
   }
 }
