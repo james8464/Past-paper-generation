@@ -1,5 +1,6 @@
 """Selection-only French authoring preserves rejected responses and replay identity."""
 
+import io
 import json
 from copy import deepcopy
 from hashlib import sha256
@@ -137,6 +138,152 @@ def test_rejected_response_is_recorded_with_prompt_and_run_identity(tmp_path, mu
     assert failure["response_sha256"] == _hash(failure["response"])
     assert len(failure["prompt_sha256"]) == 64
     assert failure["run_identity_sha256"] == saved["run_identity_sha256"]
+
+
+def test_transport_failures_checkpoint_each_raw_attempt(tmp_path):
+    from Backend.Core.france.graph_tree_authoring import author_closed_prose_parts
+    from Backend.Core.generation_diagnostics import GenerationEvidenceError
+
+    class TruncatedClient(SelectionClient):
+        def generate_json(self, prompt):
+            request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+            if request["part"] == "B":
+                raw = '{"questions":'
+                raise GenerationEvidenceError(
+                    "incomplete",
+                    details={
+                        "attempts": [
+                            {
+                                "attempt": 1,
+                                "raw_response": raw,
+                                "raw_response_sha256": sha256(raw.encode()).hexdigest(),
+                                "prompt_sha256": sha256(prompt.encode()).hexdigest(),
+                                "stop_reason": "length",
+                                "error": "incomplete",
+                            }
+                        ]
+                    },
+                )
+            return super().generate_json(prompt)
+
+    task, contract = _setup()
+    draft = tmp_path / "selection.json"
+    with pytest.raises(GenerationEvidenceError):
+        author_closed_prose_parts(
+            TruncatedClient(), task, contract, [], draft, run_identity=_identity()
+        )
+    saved = json.loads(draft.read_text())
+    attempts = saved["failed_attempts"][-1]["transport_attempts"]
+    assert attempts[0]["raw_response"] == '{"questions":'
+    assert attempts[0]["raw_response_sha256"] == sha256(b'{"questions":').hexdigest()
+    from Backend.Core.france.graph_tree_authoring import replay_closed_prose_parts
+
+    with pytest.raises(ValueError):
+        bad = deepcopy(saved)
+        bad["failed_attempts"][-1]["transport_attempts"][0]["raw_response"] = "tampered"
+        replay_closed_prose_parts(task, contract, [], bad, run_identity=_identity())
+    with pytest.raises(ValueError):
+        bad = deepcopy(saved)
+        bad["failed_attempts"][-1]["transport_attempts"][0]["prompt_sha256"] = "0" * 64
+        replay_closed_prose_parts(task, contract, [], bad, run_identity=_identity())
+
+
+def test_successful_provider_retry_keeps_rejected_raw_response(tmp_path):
+    from Backend.Core.france.graph_tree_authoring import author_closed_prose_parts
+
+    class RetryClient(SelectionClient):
+        def generate_json(self, prompt):
+            request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+            self.last_transport_attempts = []
+            if request["part"] == "B":
+                raw = "{truncated"
+                self.last_transport_attempts = [
+                    {
+                        "attempt": 1,
+                        "raw_response": raw,
+                        "raw_response_sha256": sha256(raw.encode()).hexdigest(),
+                        "prompt_sha256": sha256(prompt.encode()).hexdigest(),
+                        "stop_reason": "length",
+                        "error": "incomplete",
+                    }
+                ]
+            return super().generate_json(prompt)
+
+    task, contract = _setup()
+    draft = tmp_path / "selection.json"
+    _, evidence = author_closed_prose_parts(
+        RetryClient(), task, contract, [], draft, run_identity=_identity()
+    )
+    assert [part["part"] for part in evidence["parts"]] == list("ABC")
+    assert len(evidence["failed_attempts"]) == 1
+    assert (
+        evidence["failed_attempts"][0]["transport_attempts"][0]["raw_response"]
+        == "{truncated"
+    )
+
+
+def test_real_french_provider_retry_is_checkpointed_after_success(
+    tmp_path, monkeypatch
+):
+    from Backend.Core.france.graph_tree_authoring import author_closed_prose_parts
+    from Backend.Core.france.provider import FrenchOllamaClient
+
+    failures = 0
+
+    def request(url, data, headers, **kwargs):
+        nonlocal failures
+        prompt = json.loads(data)["messages"][0]["content"]
+        request_data = json.loads(
+            prompt.split("\nDONNÉES_JSON\n", 1)[1].split("\nRéparation", 1)[0]
+        )
+        if request_data["part"] == "B" and failures == 0:
+            failures += 1
+            payload = {
+                "done": False,
+                "done_reason": "length",
+                "message": {"content": '{"questions":'},
+            }
+        else:
+            payload = {
+                "done": True,
+                "done_reason": "stop",
+                "message": {"content": json.dumps(_response(request_data))},
+            }
+        return io.BytesIO(json.dumps(payload).encode())
+
+    monkeypatch.setattr("Backend.Core.france.provider.ollama_request", request)
+    task, contract = _setup()
+    draft = tmp_path / "selection.json"
+    client = FrenchOllamaClient(
+        model="fixture", base_url="http://localhost:11434", seed=42
+    )
+    _, evidence = author_closed_prose_parts(
+        client, task, contract, [], draft, run_identity=_identity()
+    )
+    assert [item["part"] for item in evidence["parts"]] == list("ABC")
+    failure = evidence["failed_attempts"][0]
+    assert failure["part"] == "B"
+    assert failure["transport_attempts"][0]["raw_response"] == '{"questions":'
+    from Backend.Core.france.graph_tree_authoring import part_selection_prompt
+
+    prompt = part_selection_prompt("B", task, contract, [])
+    assert (
+        failure["transport_attempts"][0]["prompt_sha256"]
+        == sha256(prompt.encode()).hexdigest()
+    )
+
+
+def test_bst_principle_explains_key_order_not_only_traversal():
+    from Backend.Core.france.graph_tree_binding import canonical_answer
+    from Backend.Core.france.graph_tree_prose import _RUBRIC_WORDING
+
+    answer = canonical_answer("1f", {"inorder": [2, 4, 6]})
+    assert "inférieures" in answer and "supérieures" in answer
+    for wording in _RUBRIC_WORDING["1f"]:
+        assert any(
+            "inférieures" in criterion and "supérieures" in criterion
+            for criterion in wording
+        )
 
 
 def test_resume_keeps_failure_and_rejects_tampering(tmp_path):

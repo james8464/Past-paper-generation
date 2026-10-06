@@ -22,6 +22,7 @@ from Backend.Core.france.graph_tree_prose import (
     validate_selection,
 )
 from Backend.Core.france.nsi import NSIQuestion
+from Backend.Core.generation_diagnostics import GenerationEvidenceError
 
 
 def _hash(value: object) -> str:
@@ -30,6 +31,17 @@ def _hash(value: object) -> str:
             value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
         ).encode()
     ).hexdigest()
+
+
+def french_retry_prompt(prompt: str, retry_index: int) -> str:
+    if retry_index == 0:
+        return prompt
+    if retry_index not in (1, 2):
+        raise ValueError("Numéro de nouvelle tentative invalide")
+    return (
+        prompt + "\nRéparation : la réponse précédente était incomplète. "
+        "Renvoyer un objet JSON complet, sans commentaire ni omission."
+    )
 
 
 def _run_identity_hash(identity: dict) -> str:
@@ -440,14 +452,14 @@ def _closed_identity(
 
 
 def _check_closed_failures(
-    value: object, run_hash: str, prompt_hashes: dict[str, str]
+    value: object, run_hash: str, prompts: dict[str, str]
 ) -> None:
     if not isinstance(value, list):
         raise ValueError("Preuve d'échec de sélection invalide")
     for failure in value:
         if (
             not isinstance(failure, dict)
-            or set(failure)
+            or set(failure) - {"transport_attempts"}
             not in (
                 {"part", "error", "prompt_sha256", "run_identity_sha256"},
                 {
@@ -460,18 +472,66 @@ def _check_closed_failures(
                 },
             )
             or not isinstance(failure["part"], str)
-            or failure["part"] not in prompt_hashes
+            or failure["part"] not in prompts
             or not isinstance(failure["error"], str)
             or not failure["error"]
             or not isinstance(failure["prompt_sha256"], str)
-            or failure["prompt_sha256"] != prompt_hashes[failure["part"]]
+            or failure["prompt_sha256"] != _hash(prompts[failure["part"]])
             or failure["run_identity_sha256"] != run_hash
             or (
                 "response" in failure
                 and failure["response_sha256"] != _hash(failure["response"])
             )
+            or (
+                "transport_attempts" in failure
+                and not _valid_transport_attempts(
+                    failure["transport_attempts"], prompts[failure["part"]]
+                )
+            )
         ):
             raise ValueError("Preuve d'échec de sélection modifiée")
+
+
+def _valid_transport_attempts(value: object, prompt: str) -> bool:
+    return (
+        isinstance(value, list)
+        and bool(value)
+        and all(
+            isinstance(item, dict)
+            and set(item)
+            == {
+                "attempt",
+                "raw_response",
+                "raw_response_sha256",
+                "prompt_sha256",
+                "stop_reason",
+                "error",
+            }
+            and type(item["attempt"]) is int
+            and item["attempt"] == index
+            and isinstance(item["raw_response"], str)
+            and item["raw_response_sha256"]
+            == sha256(item["raw_response"].encode("utf-8")).hexdigest()
+            and item["prompt_sha256"]
+            == sha256(
+                french_retry_prompt(prompt, index - 1).encode("utf-8")
+            ).hexdigest()
+            and (item["stop_reason"] is None or isinstance(item["stop_reason"], str))
+            and isinstance(item["error"], str)
+            and bool(item["error"])
+            for index, item in enumerate(value, start=1)
+        )
+        and len(value) <= 3
+    )
+
+
+def _transport_attempts(
+    client, prompt: str, error: BaseException | None = None
+) -> list[dict]:
+    attempts = getattr(client, "last_transport_attempts", None)
+    if attempts is None and isinstance(error, GenerationEvidenceError):
+        attempts = error.details.get("attempts")
+    return deepcopy(attempts) if _valid_transport_attempts(attempts, prompt) else []
 
 
 def _check_closed_saved_part(
@@ -504,9 +564,8 @@ def author_closed_prose_parts(
 ) -> tuple[dict, dict]:
     """Persist validated finite selections and every rejected raw attempt."""
     identity = _closed_identity(task, contract, references, run_identity)
-    prompt_hashes = {
-        part: _hash(part_selection_prompt(part, task, contract, references))
-        for part in "ABC"
+    prompts = {
+        part: part_selection_prompt(part, task, contract, references) for part in "ABC"
     }
     draft = {**identity, "parts": [], "failed_attempts": []}
     if draft_path is not None and draft_path.exists():
@@ -520,7 +579,7 @@ def author_closed_prose_parts(
         ):
             raise ValueError("Structure du brouillon de sélection invalide")
         _check_closed_failures(
-            draft["failed_attempts"], identity["run_identity_sha256"], prompt_hashes
+            draft["failed_attempts"], identity["run_identity_sha256"], prompts
         )
     for index, part in enumerate("ABC"):
         if len(draft["parts"]) > index:
@@ -533,6 +592,19 @@ def author_closed_prose_parts(
         try:
             response = client.generate_json(prompt)
             received = True
+            attempts = _transport_attempts(client, prompt)
+            if attempts:
+                draft["failed_attempts"].append(
+                    {
+                        "part": part,
+                        "error": "Réponse structurée rejetée avant nouvelle tentative",
+                        "prompt_sha256": _hash(prompt),
+                        "run_identity_sha256": identity["run_identity_sha256"],
+                        "transport_attempts": attempts,
+                    }
+                )
+                if draft_path is not None:
+                    _save(draft_path, draft)
             validate_selection(part, response, task, contract)
             draft["parts"].append(
                 {
@@ -553,6 +625,10 @@ def author_closed_prose_parts(
             }
             if received:
                 failure.update(response=response, response_sha256=_hash(response))
+            else:
+                attempts = _transport_attempts(client, prompt, error)
+                if attempts:
+                    failure["transport_attempts"] = attempts
             draft["failed_attempts"].append(failure)
             if draft_path is not None:
                 _save(draft_path, draft)
@@ -580,12 +656,11 @@ def replay_closed_prose_parts(
         or any(evidence.get(key) != value for key, value in identity.items())
     ):
         raise ValueError("Identité du brouillon de sélection modifiée")
-    prompt_hashes = {
-        part: _hash(part_selection_prompt(part, task, contract, references))
-        for part in "ABC"
+    prompts = {
+        part: part_selection_prompt(part, task, contract, references) for part in "ABC"
     }
     _check_closed_failures(
-        evidence["failed_attempts"], identity["run_identity_sha256"], prompt_hashes
+        evidence["failed_attempts"], identity["run_identity_sha256"], prompts
     )
     parts = evidence["parts"]
     if not isinstance(parts, list) or len(parts) != 3:
