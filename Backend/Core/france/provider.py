@@ -6,6 +6,8 @@ from hashlib import sha256
 from Backend.Core.france.graph_tree_authoring import (
     contract_question_schema,
     part_response_schema,
+    part_selection_schema,
+    question_selection_schema,
 )
 from Backend.Core.france.network import ollama_request
 from Backend.Core.france.nsi import NSIQuestion, authoring_schema
@@ -53,6 +55,24 @@ class FrenchOllamaClient(HostedLLMClient):
 
 
 def response_policy(prompt: str) -> tuple[dict, int]:
+    if prompt.startswith("Répare une sélection verrouillée"):
+        embedded = json.loads(
+            prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
+        )
+        request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+        schema = question_selection_schema(request["question_id"])
+        if embedded != schema:
+            raise ValueError("Schéma de réparation de sélection incohérent")
+        return schema, 1024
+    if prompt.startswith("Sélectionne la partie "):
+        part = prompt[len("Sélectionne la partie ") : len("Sélectionne la partie ") + 1]
+        schema = part_selection_schema(part)
+        embedded = json.loads(
+            prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
+        )
+        if embedded != schema:
+            raise ValueError("Schéma de sélection incohérent")
+        return schema, 2048
     if prompt.startswith("Répare la question verrouillée"):
         schema = contract_question_schema()
         embedded = json.loads(

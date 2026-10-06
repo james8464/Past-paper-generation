@@ -190,8 +190,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
-    "mtime": 1791167402.2533195,
-    "ast_hash": "f065a369d283d7252cfcb3628ce6232e",
+    "mtime": 1791268137.5555348,
+    "ast_hash": "ad5208aef5aade1143e64f91ed8c9e0c",
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791232435.6986642,
-    "ast_hash": "c43814fe29905bcf311ca1b3c549f323",
+    "mtime": 1791267943.6175199,
+    "ast_hash": "0c8ca7e9cadae0be72c29f26f3f0a912",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2585,8 +2585,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/question_review.py": {
-    "mtime": 1791167402.2534409,
-    "ast_hash": "d83cbdce9eb1166678266e4a7dd12f1f",
+    "mtime": 1791268129.945686,
+    "ast_hash": "cb969cc9094fc3e6d03eeea95b5aca90",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-manual-comparison-2026-10-04.md": {
@@ -2620,8 +2620,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_tree_authoring.py": {
-    "mtime": 1791218510.4030218,
-    "ast_hash": "37826b60ca586c9ea2d4bbcfe5969d7d",
+    "mtime": 1791268177.191542,
+    "ast_hash": "1ca6332b6d5b31f5ba28572eb0c572b9",
     "semantic_hash": ""
   },
   "tests/test_french_graph_tree_authoring.py": {
@@ -2647,6 +2647,11 @@
   "docs/superpowers/specs/2026-10-05-french-nsi-closed-prose-design.md": {
     "mtime": 1791227159.2802927,
     "ast_hash": "c20dddb5073955accdea4cc43fc29481",
+    "semantic_hash": ""
+  },
+  "tests/test_french_closed_prose_authoring.py": {
+    "mtime": 1791268177.191394,
+    "ast_hash": "626d8098f265bb56be95d561e33bdd48",
     "semantic_hash": ""
   }
 }
