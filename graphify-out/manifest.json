@@ -200,8 +200,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
-    "mtime": 1791218651.7593422,
-    "ast_hash": "3c065807de00e97df3991cae27b79857",
+    "mtime": 1791269513.4612584,
+    "ast_hash": "a283b9fcc57527c1eaa865a43c0ecff8",
     "semantic_hash": ""
   },
   "Backend/Core/france/source_identity.py": {
@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791268302.2652128,
+    "mtime": 1791268791.3765914,
     "ast_hash": "c6cf71f60d2344b63bf675e810c92b24",
     "semantic_hash": ""
   },
@@ -1680,8 +1680,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_runtime.py": {
-    "mtime": 1791268589.8151908,
-    "ast_hash": "07086ad064df2ec5b16c7c29ec0a5688",
+    "mtime": 1791269513.4612615,
+    "ast_hash": "3edc499ac4bd6371624df40cd0e0037b",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {
@@ -2652,6 +2652,11 @@
   "tests/test_french_closed_prose_authoring.py": {
     "mtime": 1791268177.191394,
     "ast_hash": "626d8098f265bb56be95d561e33bdd48",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v12-pdf-verification-2026-10-06.md": {
+    "mtime": 1791269451.298803,
+    "ast_hash": "6e60cb7429f18ee26087e996e174eace",
     "semantic_hash": ""
   }
 }

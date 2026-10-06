@@ -68,11 +68,108 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
             == manifest["identity"]["graph_tree_contract_sha256"]
         )
         from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+        from Backend.Core.france.nsi import NSIExercise
         from Backend.Core.france.runtime import validate_contract_pdf
 
         contract = build_graph_tree_contract(args.seed, "1")
-        validate_contract_pdf(bundles[0] / "sujet.pdf", contract, correction=False)
-        validate_contract_pdf(bundles[0] / "corrige.pdf", contract, correction=True)
+        exercise = NSIExercise.model_validate(package["exercises"][0])
+        validate_contract_pdf(
+            bundles[0] / "sujet.pdf", contract, correction=False, exercise=exercise
+        )
+        validate_contract_pdf(
+            bundles[0] / "corrige.pdf", contract, correction=True, exercise=exercise
+        )
+        import copy
+
+        altered = copy.deepcopy(package["exercises"][0])
+        altered["questions"][0]["prompt"] = "Le graphe contient une arête A-F."
+        with pytest.raises(ValueError):
+            validate_contract_pdf(
+                bundles[0] / "sujet.pdf",
+                contract,
+                correction=False,
+                exercise=NSIExercise.model_validate(altered),
+            )
+        altered = copy.deepcopy(package["exercises"][0])
+        altered["questions"][1]["marking"][0]["points"] = "0.25"
+        altered["questions"][1]["marking"][1]["points"] = "0.75"
+        with pytest.raises(ValueError):
+            validate_contract_pdf(
+                bundles[0] / "corrige.pdf",
+                contract,
+                correction=True,
+                exercise=NSIExercise.model_validate(altered),
+            )
+        original_open = pymupdf.open
+
+        class ExtractedPage:
+            def __init__(self, content):
+                self.content = content
+
+            def get_text(self):
+                return self.content
+
+        class ExtractedDocument:
+            def __init__(self, pages):
+                self.pages = [ExtractedPage(page) for page in pages]
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def __iter__(self):
+                return iter(self.pages)
+
+        def reject_tampered_extraction(role, before, after, *, correction):
+            with original_open(bundles[0] / role) as pdf:
+                pages = [page.get_text() for page in pdf]
+            matching = [index for index, page in enumerate(pages) if before in page]
+            assert len(matching) == 1
+            pages[matching[0]] = pages[matching[0]].replace(before, after, 1)
+            with monkeypatch.context() as patch:
+                patch.setattr(
+                    runtime.pymupdf, "open", lambda _path: ExtractedDocument(pages)
+                )
+                with pytest.raises(ValueError):
+                    validate_contract_pdf(
+                        bundles[0] / role,
+                        contract,
+                        correction=correction,
+                        exercise=exercise,
+                    )
+
+        reject_tampered_extraction(
+            "sujet.pdf",
+            "Réseau pondéré des postes\n7\n",
+            "Réseau pondéré des postes\n8\n",
+            correction=False,
+        )
+        reject_tampered_extraction(
+            "sujet.pdf",
+            "Arbre des identifiants d'intervention — arbre\ncle\ngauche\ndroite\n78\n",
+            "Arbre des identifiants d'intervention — arbre\ncle\ngauche\ndroite\n79\n",
+            correction=False,
+        )
+        reject_tampered_extraction(
+            "sujet.pdf",
+            "Déterminez dans `reseau`",
+            "Consigne manquante",
+            correction=False,
+        )
+        reject_tampered_extraction(
+            "sujet.pdf",
+            "Déterminez dans `reseau`",
+            "Déterminez dans `reseau` " + exercise.questions[0].answer,
+            correction=False,
+        )
+        reject_tampered_extraction(
+            "corrige.pdf",
+            exercise.questions[1].marking[0].criterion,
+            "Critère manquant.",
+            correction=True,
+        )
         original_manifest = runtime.graph_edge_manifest
         monkeypatch.setattr(
             runtime, "graph_edge_manifest", lambda graph: "Arêtes incorrectes"

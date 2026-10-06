@@ -103,7 +103,11 @@ def validate_pdf(path: Path):
 
 
 def validate_contract_pdf(
-    path: Path, contract: GraphTreeContract, *, correction: bool
+    path: Path,
+    contract: GraphTreeContract,
+    *,
+    correction: bool,
+    exercise: NSIExercise | None = None,
 ) -> None:
     """Compare extracted printed facts with the locked first-exercise contract."""
     data = contract.to_dict()
@@ -121,15 +125,17 @@ def validate_contract_pdf(
     tree_header = "Arbre des identifiants d'intervention — arbre"
     if text.count(graph_header) != 1 or text.count(tree_header) != 1:
         raise ValueError("Figure de graphe ou arbre absente du PDF")
-    graph_segment = text.split(graph_header + "\n", 1)[1].split(
-        "\n" + tree_header, 1
-    )[0]
+    graph_segment = text.split(graph_header + "\n", 1)[1].split("\n" + tree_header, 1)[
+        0
+    ]
     printed_graph = graph_segment.splitlines()
-    expected_graph = [str(edge[2]) for edge in data["graph"]["edges"]] + data[
-        "graph"
-    ]["nodes"]
+    expected_graph = [str(edge[2]) for edge in data["graph"]["edges"]] + data["graph"][
+        "nodes"
+    ]
     if printed_graph != expected_graph:
-        raise ValueError("Poids ou sommets du graphe imprimé incompatibles avec le contrat")
+        raise ValueError(
+            "Poids ou sommets du graphe imprimé incompatibles avec le contrat"
+        )
     tree_segment = text.split(tree_header + "\n", 1)[1].split("\n1a.", 1)[0]
     printed_tree = tree_segment.splitlines()
     expected_tree = list(data["tree"]["columns"]) + [
@@ -157,6 +163,32 @@ def validate_contract_pdf(
             raise ValueError(f"Résultat corrigé {task_id} absent du PDF")
         if not correction and answer in flat:
             raise ValueError(f"Réponse {task_id} révélée dans le sujet")
+    if exercise is not None:
+        if (
+            exercise.id != "1"
+            or [item.id for item in exercise.questions] != data["task_ids"]
+        ):
+            raise ValueError("Exercice du PDF incompatible avec le contrat")
+        for question in exercise.questions:
+            prompt = " ".join(question.prompt.split())
+            if flat.count(prompt) != 1:
+                raise ValueError(
+                    f"Consigne {question.id} absente ou dupliquée dans le PDF"
+                )
+            answer = " ".join(question.answer.split())
+            if correction and answer not in flat:
+                raise ValueError(f"Réponse {question.id} absente du corrigé")
+            if not correction and answer in flat:
+                raise ValueError(f"Réponse {question.id} révélée dans le sujet")
+            for credit in question.marking:
+                criterion = " ".join(credit.criterion.split())
+                label = credit.points.replace(".", ",")
+                unit = "point" if credit.points in {"0.5", "1", "1.0"} else "points"
+                expected_credit = f"{label} {unit} {criterion}"
+                if correction and expected_credit not in flat:
+                    raise ValueError(f"Crédit {question.id} absent du corrigé")
+                if not correction and criterion in flat:
+                    raise ValueError(f"Barème {question.id} révélé dans le sujet")
 
 
 def load_originality_history(output: Path) -> list[str]:
@@ -251,7 +283,12 @@ def handle_generate_assessment(args) -> int:
                 language="fr-FR",
             )
             validate_pdf(path)
-            validate_contract_pdf(path, graph_tree_contract, correction=correction)
+            validate_contract_pdf(
+                path,
+                graph_tree_contract,
+                correction=correction,
+                exercise=exercises[0],
+            )
             paths[role] = path
         atomic_json(staging / "assessment.json", package)
         paths["assessment_package"] = staging / "assessment.json"
