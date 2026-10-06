@@ -143,3 +143,18 @@ small graph labels, less deliberate page flow and generic fixture content for
 exercises 2–3. No v12 live complete paper, independent French NSI teacher review,
 learner calibration or accessibility approval is evidenced. The new selection
 path is an engineering repair, not a validated product.
+
+Independent review then found three release-blocking defects. The v12 benchmark
+resume gate incorrectly expected a v10 prompt identity; malformed local-model
+responses were not retained across internal retries; and question 1f's answer
+and rubric described infix traversal in place of the ABR ordering invariant.
+Regression tests now cover all three, including evidence retained after a
+successful retry. A second review found that fenced JSON or prose surrounding
+valid JSON was still accepted by the transport; v12 selection and repair now
+require a whole-response JSON object. Each rejected retry records its exact
+raw output, raw hash, prompt hash, error and stop reason, including when a later
+retry succeeds. The closed-prose catalogue was versioned to v2, so old
+catalogue identities do not silently replay. The full local suite passed
+**2,356 tests**, with two optional skips and the same five warnings. This is
+still a fixture/engineering checkpoint, not a successful live paper or human
+review.

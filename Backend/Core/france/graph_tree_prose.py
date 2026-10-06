@@ -14,7 +14,7 @@ from hashlib import sha256
 from Backend.Core.france.graph_tree_binding import canonical_answer
 from Backend.Core.france.graph_tree_contract import GraphTreeContract
 
-PROSE_CONTRACT_VERSION = "fr-nsi-graph-tree-prose-v1"
+PROSE_CONTRACT_VERSION = "fr-nsi-graph-tree-prose-v2"
 
 _SCENES = {
     "service": {
@@ -110,11 +110,11 @@ _RUBRIC_WORDING = {
     "1f": (
         (
             "Parcours infixe correct : {inorder}.",
-            "Principe : sous-arbre gauche, racine, puis sous-arbre droit.",
+            "Propriété d'un ABR : clés du sous-arbre gauche inférieures à la racine et clés du sous-arbre droit supérieures à la racine.",
         ),
         (
             "Ordre infixe après insertion : {inorder}.",
-            "Justification par l'ordre gauche, racine, droite de l'ABR.",
+            "Propriété de recherche : clés à gauche inférieures à la racine et clés à droite supérieures à la racine.",
         ),
     ),
 }

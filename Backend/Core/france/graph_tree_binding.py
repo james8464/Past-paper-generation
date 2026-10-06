@@ -75,7 +75,7 @@ def canonical_answer(task_id: str, result: dict) -> str:
         return (
             "Après insertion, le parcours infixe donne "
             + " → ".join(str(key) for key in result["inorder"])
-            + ". Un ABR parcourt le sous-arbre gauche, la racine, puis le sous-arbre droit."
+            + ". Dans un ABR, les clés du sous-arbre gauche sont inférieures à la racine et celles du sous-arbre droit sont supérieures ; le parcours infixe visite gauche, racine, puis droite."
         )
     raise ValueError("Tâche de contrat inconnue")
 
