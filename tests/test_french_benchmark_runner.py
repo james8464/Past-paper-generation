@@ -10,7 +10,7 @@ from Backend.Core.france.graph_tree_prose import (
     PROSE_CONTRACT_VERSION,
     prose_catalogue_digest,
 )
-from Backend.Core.france.pipeline import PROMPT_VERSION
+from Backend.Core.france.pipeline import CLOSED_PROSE_PROMPT_VERSION
 
 
 def _passed_result(tmp_path):
@@ -25,7 +25,7 @@ def _passed_result(tmp_path):
     bundle.mkdir()
     manifest_identity = {
         "assessment": asdict(NSI_2027),
-        "prompt_version": PROMPT_VERSION,
+        "prompt_version": CLOSED_PROSE_PROMPT_VERSION,
         "prose_contract_version": PROSE_CONTRACT_VERSION,
         "prose_catalogue_sha256": prose_catalogue_digest(),
         "implementation_sha256": identity["implementation"],

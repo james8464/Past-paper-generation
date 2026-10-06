@@ -32,7 +32,7 @@ from Backend.Core.france.graph_tree_prose import (  # noqa: E402
     PROSE_CONTRACT_VERSION,
     prose_catalogue_digest,
 )
-from Backend.Core.france.pipeline import PROMPT_VERSION  # noqa: E402
+from Backend.Core.france.pipeline import CLOSED_PROSE_PROMPT_VERSION  # noqa: E402
 from Backend.Core.france.runtime import model_identity  # noqa: E402
 from Backend.Core.france.source_identity import implementation_identity  # noqa: E402
 from Backend.Core.paths import REPO_ROOT  # noqa: E402
@@ -115,7 +115,7 @@ def _accepted_payload(
         return False
     if (
         manifest_identity.get("assessment") != asdict(NSI_2027)
-        or manifest_identity.get("prompt_version") != PROMPT_VERSION
+        or manifest_identity.get("prompt_version") != CLOSED_PROSE_PROMPT_VERSION
         or manifest_identity.get("prose_contract_version") != PROSE_CONTRACT_VERSION
         or manifest_identity.get("prose_catalogue_sha256") != prose_catalogue_digest()
         or manifest_identity.get("provider") != "ollama"
