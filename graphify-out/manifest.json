@@ -195,13 +195,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1791178661.2318785,
+    "mtime": 1791359992.067434,
     "ast_hash": "5dd15dabd7003f24e19a610cc2fcb8e1",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
-    "mtime": 1791358412.296415,
-    "ast_hash": "4d51aeb0b249a0f7292df203f459ae75",
+    "mtime": 1791360068.6246502,
+    "ast_hash": "119a973ef6187d98f81b63ec9ab78f06",
     "semantic_hash": ""
   },
   "Backend/Core/france/source_identity.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791357724.1027703,
-    "ast_hash": "3b22ac2ec65cb9b17fd53ebbe6e07f8b",
+    "mtime": 1791360199.7498856,
+    "ast_hash": "98e0ceec873f46db3ed164a172a7b3ab",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1680,8 +1680,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_runtime.py": {
-    "mtime": 1791358412.2964778,
-    "ast_hash": "9a9b64924433e2cf20b5ac1d2882ae6b",
+    "mtime": 1791360068.6246688,
+    "ast_hash": "b3b3e5f7f95f7ca35283d5141a65060d",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {
@@ -2285,8 +2285,8 @@
     "semantic_hash": ""
   },
   "docs/occitanie-project.md": {
-    "mtime": 1791355896.2059467,
-    "ast_hash": "0cd35098171b9bf68b385cef97e8b5d9",
+    "mtime": 1791360165.1308222,
+    "ast_hash": "dba9104f68316b340d60bc8b3195bfa9",
     "semantic_hash": ""
   },
   "docs/project-analysis/IMPLEMENTATION_AND_FIDELITY_REPORT.md": {
@@ -2345,8 +2345,8 @@
     "semantic_hash": ""
   },
   "docs/quality/reference-live-fidelity-2026-09-28.md": {
-    "mtime": 1791355942.8193102,
-    "ast_hash": "9151b90f7687c2fe038ee8cbb521f3ff",
+    "mtime": 1791360165.1339238,
+    "ast_hash": "3357c31ce8b9f90eb96bc2106e4792f6",
     "semantic_hash": ""
   },
   "docs/quality/teacher-feedback-review-2026-09-27.md": {
@@ -2690,18 +2690,18 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/database_binding.py": {
-    "mtime": 1791358670.5738199,
-    "ast_hash": "7002b8860a669a3fcba3ec38d8c3517b",
+    "mtime": 1791359889.0562158,
+    "ast_hash": "1c2934472f823c4bb574d0aaacd2aa8f",
     "semantic_hash": ""
   },
   "Backend/Core/france/database_prose.py": {
-    "mtime": 1791358412.2964125,
-    "ast_hash": "7bba2b3c14bed335de692411b1f8e4ca",
+    "mtime": 1791359889.060001,
+    "ast_hash": "a630210edee3f9fc5e270eecedaf428e",
     "semantic_hash": ""
   },
   "tests/test_french_database_prose.py": {
-    "mtime": 1791358748.7755847,
-    "ast_hash": "591622130ce5d63f31586b29861145bb",
+    "mtime": 1791360068.624644,
+    "ast_hash": "cec5a221e0032c25ddadb0e62f3fb3ee",
     "semantic_hash": ""
   },
   "Backend/Core/france/database_authoring.py": {
@@ -2710,8 +2710,13 @@
     "semantic_hash": ""
   },
   "tests/test_french_database_authoring.py": {
-    "mtime": 1791357686.295788,
-    "ast_hash": "9e3cbe2c2333cfd15639f82fb9f8b9ab",
+    "mtime": 1791360068.6245506,
+    "ast_hash": "2b4345d1144ddacad447aff6af7e87fb",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v14-controlled-diagnostic-2026-10-07.md": {
+    "mtime": 1791360149.5598958,
+    "ast_hash": "7082e5eb474a72e830c9c091a8635e1a",
     "semantic_hash": ""
   }
 }
