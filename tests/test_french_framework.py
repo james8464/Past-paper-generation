@@ -131,6 +131,9 @@ def test_french_pdf_has_real_credit_language_and_no_official_claim(tmp_path):
             assert "Dès que ce sujet vous est remis" not in cover
             assert "Le candidat traite les trois exercices" not in cover
             assert "L’usage de la calculatrice" not in cover
+            for word in pdf[0].get_text("words"):
+                assert 0 <= word[0] < word[2] <= pdf[0].rect.width
+                assert 0 <= word[1] < word[3] <= pdf[0].rect.height
 
 
 def test_french_pdf_renders_structured_tables_and_graphs_as_vectors(tmp_path):

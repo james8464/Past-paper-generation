@@ -1665,8 +1665,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_framework.py": {
-    "mtime": 1791402151.7861397,
-    "ast_hash": "cb3a146c03ae792f2a618c058a205fcd",
+    "mtime": 1791402708.2176352,
+    "ast_hash": "b9a2ab662a6ceffca965f4fea92119dc",
     "semantic_hash": ""
   },
   "tests/test_french_provider.py": {
