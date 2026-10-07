@@ -26,8 +26,8 @@ surface forms, but they do not imply unlimited novelty or teacher approval.
 ## Exercise and factual contract
 
 The route keeps three independent 70-minute written exercises and its existing
-seeded technical allocation of 6 points for Exercise 1, 6.5 points for Exercise 2
-and 5.5 points for Exercise 3, plus a separate two-point
+seeded technical allocation of 5.5, 6 and 6.5 points in varying exercise
+order, plus a separate two-point
 indicative French-language component. Exercise 2 retains six blueprint IDs
 `2a`–`2f`, parts A/B/C and the mapped official 2019 curriculum capabilities.
 Its scenario is independent of the graph/tree and network exercises.

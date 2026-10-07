@@ -93,3 +93,17 @@ def test_database_renderer_rejects_changed_blueprint_credit():
     plans[0]["points"] = "99"
     with pytest.raises(ValueError, match=r"blueprint|credit"):
         render_database_candidate(contract, selection, plans)
+
+
+@pytest.mark.parametrize("seed", [270100, 270101, 270102])
+def test_database_renderer_respects_each_seeded_credit_profile(seed):
+    contract = build_database_contract(seed)
+    task = _tasks_for_seed(seed)[1]
+    selection = _setup()[2]
+    exercise = NSIExercise.model_validate(
+        render_database_candidate(contract, selection, task["question_blueprint"])
+    )
+    assert exercise.credit == Decimal(task["technical_points"])
+    assert [question.points for question in exercise.questions] == [
+        plan["points"] for plan in task["question_blueprint"]
+    ]

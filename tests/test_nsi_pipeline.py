@@ -549,6 +549,50 @@ class ClosedProseFrenchClient(FrenchClient):
         return super().generate_json(prompt)
 
 
+class ControlledDatabaseFrenchClient(ClosedProseFrenchClient):
+    def generate_json(self, prompt):
+        if prompt.startswith("Sélectionne l'exercice 2"):
+            return {
+                "scene_id": "atelier",
+                "question_forms": {
+                    f"2{letter}": f"2{letter}-q1" for letter in "abcdef"
+                },
+                "rubric_forms": {f"2{letter}": f"2{letter}-r1" for letter in "abcdef"},
+            }
+        return super().generate_json(prompt)
+
+
+def test_v13_controlled_database_package_replays_and_rejects_rehashed_tamper(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import (
+        digest,
+        generate_assessment,
+        validate_package,
+    )
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledDatabaseFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v13",
+    )
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v13"
+    assert package["identity"]["database_contract_sha256"]
+    assert package["evidence"][1]["database_selection"]["accepted"]["response"]
+    assert validate_package(package)["structural_checks"] == "passed"
+    changed = deepcopy(package)
+    changed["exercises"][1]["questions"][2]["answer"] = "Une autre requête."
+    changed["content_sha256"] = digest(changed["exercises"])
+    changed["evidence"][1]["exercise_sha256"] = digest(changed["exercises"][1])
+    with pytest.raises(ValueError, match=r"database|Database|identique|preuve"):
+        validate_package(changed)
+
+
 def test_v12_closed_prose_package_replays_and_binds_catalogue(tmp_path):
     from Backend.Core.france.graph_tree_prose import (
         PROSE_CONTRACT_VERSION,

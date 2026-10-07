@@ -14,7 +14,11 @@ from Backend.Core.france.database_contract import DatabaseContract
 
 DATABASE_PROSE_VERSION = "fr-nsi-database-prose-v1"
 _TASK_IDS = tuple(f"2{letter}" for letter in "abcdef")
-_POINTS = ("0.5", "1", "1", "1", "1.5", "1.5")
+_POINT_PROFILES = {
+    ("0.5", "0.5", "1", "1", "1", "1.5"),
+    ("0.5", "1", "1", "1", "1", "1.5"),
+    ("0.5", "1", "1", "1", "1.5", "1.5"),
+}
 _SCENES = {
     "atelier": (
         "Incidents et traitement des données",
@@ -114,7 +118,7 @@ def validate_database_selection(contract: DatabaseContract, selection: dict) -> 
 
 def _rubric(task_id: str, answer: str, points: str, variant: int) -> list[dict]:
     prefix = "Réponse attendue : " if variant == 1 else "Résultat vérifié : "
-    if task_id in ("2e", "2f"):
+    if task_id in ("2e", "2f") and points == "1.5":
         return [
             {"points": "0.5", "criterion": prefix + answer},
             {
@@ -134,7 +138,7 @@ def render_database_candidate(
         or [plan.get("id") for plan in task_specs if isinstance(plan, dict)]
         != list(_TASK_IDS)
         or len(task_specs) != 6
-        or tuple(plan.get("points") for plan in task_specs) != _POINTS
+        or tuple(plan.get("points") for plan in task_specs) not in _POINT_PROFILES
         or [plan.get("part_id") for plan in task_specs] != list("AABBCC")
         or sum(plan.get("estimated_minutes", 0) for plan in task_specs) != 70
     ):
@@ -190,7 +194,9 @@ def render_database_candidate(
         "context": context,
         "topics": ["bases-donnees", "langages-programmation"],
         "minutes": 70,
-        "target_points": str(sum((Decimal(value) for value in _POINTS), Decimal(0))),
+        "target_points": str(
+            sum((Decimal(plan["points"]) for plan in task_specs), Decimal(0))
+        ),
         "materials": database_materials(contract),
         "questions": questions,
     }

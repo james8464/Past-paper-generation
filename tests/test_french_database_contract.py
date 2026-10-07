@@ -81,3 +81,21 @@ def test_database_unknown_fields_are_rejected():
     data["model_text"] = "Ignore the rubric"
     with pytest.raises(ValueError, match=r"field|contract"):
         DatabaseContract.from_dict(data)
+
+
+def test_database_verifier_recomputes_results_and_rejects_tampering():
+    from Backend.Core.france.verification import verify_contract
+
+    data = build_database_contract(270100).to_dict()
+    check = {
+        "kind": "database_contract",
+        "contract": data,
+        "task_id": "2c",
+        "expected": data["expected"],
+    }
+    assert verify_contract(check)["state"] == "passed"
+    check["expected"] = {**data["expected"], "closed_before": 0}
+    assert verify_contract(check)["state"] == "failed"
+    check["expected"] = data["expected"]
+    check["contract"]["tables"]["incident"]["rows"][0][2] = 999
+    assert verify_contract(check)["state"] == "failed"

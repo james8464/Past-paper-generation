@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Exercise 2 is independent of Exercises 1 and 3, has six task IDs `2a`–`2f`, and fits the existing 70-minute, 6.5-point blueprint allocation.
+- Exercise 2 is independent of Exercises 1 and 3, has six task IDs `2a`–`2f`, and fits the existing 70-minute seeded allocation of 5.5, 6 or 6.5 points.
 - The paper remains three written exercises, 18 technical points plus a distinct two-point indicative French-language component. No practical component claim.
 - No model-authored fact, SQL, code, answer, credit or arbitrary text reaches the PDF. Reject unknown or inconsistent selections and preserve failures.
 - Existing UK route IDs and French v10–v12 package readers remain stable; no silent cloud or UK reference fallback.
