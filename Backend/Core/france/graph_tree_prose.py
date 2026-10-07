@@ -14,7 +14,7 @@ from hashlib import sha256
 from Backend.Core.france.graph_tree_binding import canonical_answer
 from Backend.Core.france.graph_tree_contract import GraphTreeContract
 
-PROSE_CONTRACT_VERSION = "fr-nsi-graph-tree-prose-v2"
+PROSE_CONTRACT_VERSION = "fr-nsi-graph-tree-prose-v3"
 
 _SCENES = {
     "service": {
@@ -30,8 +30,26 @@ _SCENES = {
             "Le réseau pondéré et l'arbre binaire de recherche ci-dessous "
             "représentent deux structures distinctes.",
         ),
+        "collectes": (
+            "Réseau et arbre de recherche",
+            "Un service coordonne des collectes entre plusieurs postes. "
+            "Le réseau pondéré et l'arbre binaire de recherche ci-dessous "
+            "représentent deux structures distinctes.",
+        ),
     },
     "collecte": {
+        "interventions": (
+            "Collecte en réseau et arbre de recherche",
+            "Un service de collecte coordonne des interventions entre plusieurs postes. "
+            "Le réseau pondéré et l'arbre binaire de recherche ci-dessous "
+            "représentent deux structures distinctes.",
+        ),
+        "demandes": (
+            "Collecte en réseau et arbre de recherche",
+            "Un service de collecte organise des demandes entre plusieurs postes. "
+            "Le réseau pondéré et l'arbre binaire de recherche ci-dessous "
+            "représentent deux structures distinctes.",
+        ),
         "collectes": (
             "Collectes en réseau et arbre de recherche",
             "Un service planifie des collectes entre plusieurs postes. "

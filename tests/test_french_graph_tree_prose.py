@@ -96,6 +96,22 @@ def test_second_scene_and_wording_change_only_presentation():
     ]
 
 
+def test_every_schema_advertised_scene_activity_pair_is_renderable():
+    contract = build_graph_tree_contract(270100, "1")
+    task = _tasks_for_seed(270100)[0]
+    schema = selection_schema("A")
+    scene_ids = schema["properties"]["scene_id"]["enum"]
+    activities = schema["properties"]["slots"]["properties"]["activity"]["enum"]
+    for scene_id in scene_ids:
+        for activity in activities:
+            choices = _selections(contract)
+            choices[0]["scene_id"] = scene_id
+            choices[0]["slots"]["activity"] = activity
+            validate_selection("A", choices[0], task, contract)
+            rendered = render_graph_tree_candidate(task, contract, choices)
+            assert rendered["context"]
+
+
 @pytest.mark.parametrize(
     "injection",
     [
