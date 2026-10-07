@@ -89,7 +89,13 @@ not currently installed. An exploratory Qwen 3.5 9B single-paper run also
 accepted 0/1 complete papers on 4 October; it does not replace the planned
 candidate comparison. No teacher-reviewed release, student pilot,
 Intel test or multi-memory hardware matrix exists.
-The v12 redesign has not yet produced an accepted identity-pinned live paper.
+The v12/v13 redesign has not yet produced an accepted identity-pinned live
+paper. The 7 October v13 diagnostic accepted its finite-authored first
+exercise, but the database exercise failed three authoring attempts, so no PDF
+was published. Its [failure record](quality/french-nsi-v13-live-diagnostic-2026-10-07.md)
+preserves source/model/reference identities and rejected candidates. Exercises
+2–3 need stronger original-data authoring before a full-paper qualification
+claim is supportable.
 
 ## Genuine Occitanie scenario — PLANNED
 
