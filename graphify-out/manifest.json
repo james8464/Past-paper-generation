@@ -200,8 +200,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
-    "mtime": 1791269513.4612584,
-    "ast_hash": "a283b9fcc57527c1eaa865a43c0ecff8",
+    "mtime": 1791358412.296415,
+    "ast_hash": "4d51aeb0b249a0f7292df203f459ae75",
     "semantic_hash": ""
   },
   "Backend/Core/france/source_identity.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791357200.936778,
-    "ast_hash": "13d56d582384929e72927b369bd2044b",
+    "mtime": 1791357724.1027703,
+    "ast_hash": "3b22ac2ec65cb9b17fd53ebbe6e07f8b",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1680,8 +1680,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_runtime.py": {
-    "mtime": 1791269513.4612615,
-    "ast_hash": "3edc499ac4bd6371624df40cd0e0037b",
+    "mtime": 1791358412.2964778,
+    "ast_hash": "9a9b64924433e2cf20b5ac1d2882ae6b",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {
@@ -2045,8 +2045,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_benchmark_runner.py": {
-    "mtime": 1791271633.202785,
-    "ast_hash": "4d702e24935c60a46bb7e553240e1d14",
+    "mtime": 1791358581.0859413,
+    "ast_hash": "2d886e22f047149bfbade2a58d2e4cfe",
     "semantic_hash": ""
   },
   "tests/test_french_originality.py": {
@@ -2060,8 +2060,8 @@
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
-    "mtime": 1791271685.2172177,
-    "ast_hash": "a647c1fa88441a9ca6d11a3f742c2b9d",
+    "mtime": 1791358635.6736877,
+    "ast_hash": "1aeac46e4eae8611279d044145a05ad6",
     "semantic_hash": ""
   },
   "tools/reconcile_french_nsi_archive.py": {
@@ -2665,8 +2665,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/database_contract.py": {
-    "mtime": 1791356778.1918776,
-    "ast_hash": "daa320f480ea969460d3bb85f2a2756d",
+    "mtime": 1791358412.2964158,
+    "ast_hash": "07a15b5e00baed4238f64deaff363d8c",
     "semantic_hash": ""
   },
   "tests/test_french_database_contract.py": {
@@ -2690,18 +2690,18 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/database_binding.py": {
-    "mtime": 1791357174.4136977,
-    "ast_hash": "d3c2f6cad4eb0cc9eaa477bd8f4f8ca1",
+    "mtime": 1791358670.5738199,
+    "ast_hash": "7002b8860a669a3fcba3ec38d8c3517b",
     "semantic_hash": ""
   },
   "Backend/Core/france/database_prose.py": {
-    "mtime": 1791357438.7300797,
-    "ast_hash": "0843048d9a0bfe2d30df6142848d57f7",
+    "mtime": 1791358412.2964125,
+    "ast_hash": "7bba2b3c14bed335de692411b1f8e4ca",
     "semantic_hash": ""
   },
   "tests/test_french_database_prose.py": {
-    "mtime": 1791357409.3551078,
-    "ast_hash": "dfb14c7e91aad6166d61349fe2b7c734",
+    "mtime": 1791358748.7755847,
+    "ast_hash": "591622130ce5d63f31586b29861145bb",
     "semantic_hash": ""
   },
   "Backend/Core/france/database_authoring.py": {
