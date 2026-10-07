@@ -188,3 +188,16 @@ The one-question final subject page is also a visible pagination failure.
 This is retained as a **manual failure after automated pass**, not a validated
 live checkpoint. Freeze and qualify a corrected shared source before any UK/French
 final matrix; issues #4 and #8 stay open.
+
+Protected PR #36 then passed backend and macOS checks and merged the app-owned
+network exercise at `6ee8d5d2d4f8493d5112627e0a4016ccaf8b57de`. Its
+[first pinned live diagnostic](french-nsi-v15-live-diagnostic-2026-10-07.md)
+passed automated generation on one local Gemma model and seed, with no rejected
+attempt. All six subject and ten correction pages were rendered and inspected.
+The route, SQL, process and security answers are derivable from printed facts,
+but comparison with the official 2026 Métropole paper shows a much shorter
+assessment (six pages and 18 questions versus 16 pages and 36 questions).
+This is a **manual fidelity hold after automated pass**, not educational
+qualification. Preserve the passing engineering checkpoint and prior failures;
+expand the original task progression and obtain teacher time and marking review
+before the final shared-source matrix or any validated-product claim.
