@@ -2718,5 +2718,25 @@
     "mtime": 1791360149.5598958,
     "ast_hash": "7082e5eb474a72e830c9c091a8635e1a",
     "semantic_hash": ""
+  },
+  "Backend/Core/france/network_contract.py": {
+    "mtime": 1791363640.8386748,
+    "ast_hash": "e01a5ff56fb1b8b7c9d268bdb8cdac84",
+    "semantic_hash": ""
+  },
+  "tests/test_french_network_contract.py": {
+    "mtime": 1791363658.055698,
+    "ast_hash": "2266f92ac95b7a3aef8d86fa1ef17dbd",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-07-french-nsi-controlled-network.md": {
+    "mtime": 1791363520.0892875,
+    "ast_hash": "6a947b640d61b3854bc78d84900772d9",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-07-french-nsi-controlled-network-design.md": {
+    "mtime": 1791363520.0888484,
+    "ast_hash": "3423293f6586f6e94452382858ebc36d",
+    "semantic_hash": ""
   }
 }
