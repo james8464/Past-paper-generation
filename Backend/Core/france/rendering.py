@@ -22,7 +22,7 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-from Backend.Core.fonts import register_font
+from Backend.Core.fonts import register_font, register_fonts
 from Backend.Core.france.nsi import (
     LANGUAGE_RUBRIC_2027,
     NSIExercise,
@@ -57,10 +57,11 @@ def structured_material(
     bold_font: str,
     regular_font: str,
     available_width: float,
+    show_id: bool = True,
 ):
     heading = (
         f"{material.title} — {material.id}"
-        if isinstance(material, NSITableMaterial)
+        if show_id and isinstance(material, NSITableMaterial)
         else material.title
     )
     title = Paragraph(escape(heading), body)
@@ -258,13 +259,15 @@ def render_assessment(
     correction: bool,
     large_print: bool = False,
 ):
-    regular = register_font("ExamSans")
-    bold = register_font("ExamSans-Bold")
-    italic = register_font("ExamSans-Italic")
+    faces = register_fonts("ExamSans", "ExamSans-Bold", "ExamSans-Italic")
+    regular = faces["ExamSans"]
+    bold = faces["ExamSans-Bold"]
+    italic = faces["ExamSans-Italic"]
     mono = register_font("AQACourier", fallback="Courier")
     size = 16 if large_print else 12
     body = ParagraphStyle(
-        "NSIBody", fontName=regular, fontSize=size, leading=size * 1.25, spaceAfter=10
+        "NSIBody", fontName=regular, fontSize=size, leading=size * 1.25,
+        spaceAfter=6 if correction else 10,
     )
     heading = ParagraphStyle(
         "NSIHeading",
@@ -292,7 +295,7 @@ def render_assessment(
         parent=body,
         fontName=italic,
         spaceBefore=6,
-        spaceAfter=10,
+        spaceAfter=6 if correction else 10,
         keepWithNext=True,
     )
     question_style = ParagraphStyle(
@@ -303,13 +306,13 @@ def render_assessment(
         bulletIndent=6,
         bulletFontName=regular,
         bulletFontSize=size,
-        spaceAfter=6 if correction else 10,
+        spaceAfter=4 if correction else 10,
     )
     question_followup = ParagraphStyle(
         "NSIQuestionFollowup",
         parent=body,
         leftIndent=30,
-        spaceAfter=10,
+        spaceAfter=6 if correction else 10,
     )
     code = ParagraphStyle(
         "NSICode", parent=body, fontName=mono, fontSize=size, leading=size * 1.2
@@ -444,9 +447,10 @@ def render_assessment(
                     bold_font=bold,
                     regular_font=regular,
                     available_width=doc.width,
+                    show_id=exercise.id != "3",
                 )
             )
-        for question in exercise.questions:
+        for question_index, question in enumerate(exercise.questions):
             question_content(question.id, question.prompt)
             if correction:
                 story[-1].keepWithNext = True
@@ -478,13 +482,17 @@ def render_assessment(
                             ("VALIGN", (0, 0), (-1, -1), "TOP"),
                             ("LEFTPADDING", (0, 0), (-1, -1), 5),
                             ("RIGHTPADDING", (0, 0), (-1, -1), 5),
-                            ("TOPPADDING", (0, 0), (-1, -1), 4),
-                            ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+                            ("TOPPADDING", (0, 0), (-1, -1), 3 if correction else 4),
+                            ("BOTTOMPADDING", (0, 0), (-1, -1), 3 if correction else 4),
                         ]
                     )
                 )
                 story.append(marking_table)
-                story.append(Spacer(1, 8))
+                if (
+                    exercise_index < len(exercises) - 1
+                    or question_index < len(exercise.questions) - 1
+                ):
+                    story.append(Spacer(1, 5))
 
     def cover_page(canvas, built_doc):
         draw_cover_page(

@@ -253,14 +253,36 @@ def _shortest_path(contract):
 
 def verify_contract(contract: dict) -> dict:
     kind = contract.get("kind")
-    if kind not in {"binary", "sql", "python_trace", "shortest_path", "graph_tree"}:
+    if kind not in {
+        "binary",
+        "sql",
+        "python_trace",
+        "shortest_path",
+        "graph_tree",
+        "database_contract",
+        "network_contract",
+    }:
         return {
             "state": "unresolved",
             "passed": False,
             "reason": "Vérification humaine nécessaire",
         }
     try:
-        if kind == "graph_tree":
+        if kind == "network_contract":
+            from Backend.Core.france.network_contract import NetworkContract
+
+            data = NetworkContract.from_dict(contract["contract"]).to_dict()
+            if contract["task_id"] not in data["task_ids"]:
+                raise ValueError("Tâche de réseau absente")
+            actual = data["expected"]
+        elif kind == "database_contract":
+            from Backend.Core.france.database_contract import DatabaseContract
+
+            data = DatabaseContract.from_dict(contract["contract"]).to_dict()
+            if contract["task_id"] not in data["task_ids"]:
+                raise ValueError("Tâche de base de données absente")
+            actual = data["expected"]
+        elif kind == "graph_tree":
             from Backend.Core.france.graph_tree_contract import GraphTreeContract
 
             data = GraphTreeContract.from_dict(contract["contract"]).to_dict()

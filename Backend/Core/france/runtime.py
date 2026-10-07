@@ -13,12 +13,19 @@ from urllib.request import Request
 import pymupdf
 
 from Backend.Core.events import emit, emit_progress
+from Backend.Core.france.database_binding import database_materials
+from Backend.Core.france.database_contract import (
+    DatabaseContract,
+    build_database_contract,
+)
 from Backend.Core.france.graph_tree_binding import canonical_answer, graph_edge_manifest
 from Backend.Core.france.graph_tree_contract import (
     GraphTreeContract,
     build_graph_tree_contract,
 )
 from Backend.Core.france.network import open_ollama_request
+from Backend.Core.france.network_binding import network_materials
+from Backend.Core.france.network_contract import NetworkContract, build_network_contract
 from Backend.Core.france.nsi import NSIExercise
 from Backend.Core.france.pipeline import (
     atomic_json,
@@ -191,6 +198,168 @@ def validate_contract_pdf(
                     raise ValueError(f"Barème {question.id} révélé dans le sujet")
 
 
+def validate_database_contract_pdf(
+    path: Path,
+    contract: DatabaseContract,
+    *,
+    correction: bool,
+    exercise: NSIExercise,
+) -> None:
+    """Check that both PDF roles print the exact locked database exercise."""
+    data = contract.to_dict()
+    if (
+        exercise.id != "2"
+        or [question.id for question in exercise.questions] != data["task_ids"]
+    ):
+        raise ValueError("Database exercise does not match its contract")
+    with pymupdf.open(path) as pdf:
+        lines = [
+            line.strip()
+            for page in pdf
+            for line in page.get_text().splitlines()
+            if line.strip()
+            and not line.startswith("Paper Creator —")
+            and not line.startswith("Page : ")
+        ]
+    text = "\n".join(lines)
+    flat = " ".join(text.split())
+    heading = f"Exercice 2 ({exercise.target_points.replace('.', ',')} points)"
+    if text.count(heading) != 1:
+        raise ValueError("Database exercise credit differs from locked blueprint")
+    for task_id in data["task_ids"]:
+        if (
+            sum(
+                bool(re.match(rf"^{re.escape(task_id)}\.(?:\s|$)", line))
+                for line in lines
+            )
+            != 1
+        ):
+            raise ValueError(f"Database question label {task_id} missing or duplicated")
+    for key_fact in (
+        "id_agent, id_cat et id_incident sont des clés primaires",
+        "id_agent référence agent.id_agent",
+        "id_cat référence categorie.id_cat",
+    ):
+        if key_fact not in flat:
+            raise ValueError("Database key explanation differs from locked contract")
+    materials = database_materials(contract)
+    headers = [f"{item['title']} — {item['id']}" for item in materials]
+    for index, material in enumerate(materials):
+        header = headers[index]
+        following = headers[index + 1] if index < 2 else "2a."
+        if text.count(header) != 1 or following not in text:
+            raise ValueError("Database table heading missing from PDF")
+        printed = (
+            text.split(header + "\n", 1)[1].split("\n" + following, 1)[0].splitlines()
+        )
+        expected = list(material["columns"]) + [
+            cell for row in material["rows"] for cell in row
+        ]
+        if printed != expected:
+            raise ValueError("Database table rows differ from locked contract")
+    if (
+        " ".join(data["faulty_sql"].split()) not in flat
+        or " ".join(data["faulty_python"].split()) not in flat
+    ):
+        raise ValueError("Database SQL or Python code missing from PDF")
+    for question in exercise.questions:
+        prompt = " ".join(question.prompt.split())
+        if flat.count(prompt) != 1:
+            raise ValueError(f"Database prompt {question.id} missing or duplicated")
+        answer = " ".join(re.sub(r"```(?:sql|python)?", " ", question.answer).split())
+        if correction and answer not in flat:
+            raise ValueError(f"Database answer {question.id} missing")
+        if not correction and answer in flat:
+            raise ValueError(f"Database answer {question.id} leaked into paper")
+        for credit in question.marking:
+            criterion = " ".join(credit.criterion.split())
+            label = credit.points.replace(".", ",")
+            unit = "point" if credit.points in {"0.5", "1", "1.0"} else "points"
+            if correction and f"{label} {unit} {criterion}" not in flat:
+                raise ValueError(f"Database credit {question.id} missing")
+            if not correction and criterion in flat:
+                raise ValueError(f"Database rubric {question.id} leaked into paper")
+
+
+def validate_network_contract_pdf(
+    path: Path,
+    contract: NetworkContract,
+    *,
+    correction: bool,
+    exercise: NSIExercise,
+) -> None:
+    """Require exact app-owned network evidence in each published PDF role."""
+    data = contract.to_dict()
+    if (
+        exercise.id != "3"
+        or [question.id for question in exercise.questions] != data["task_ids"]
+    ):
+        raise ValueError("Network exercise does not match its contract")
+    with pymupdf.open(path) as pdf:
+        lines = [
+            line.strip()
+            for page in pdf
+            for line in page.get_text().splitlines()
+            if line.strip()
+            and not line.startswith("Paper Creator —")
+            and not line.startswith("Page : ")
+        ]
+    text = "\n".join(lines)
+    flat = " ".join(text.split())
+    heading = f"Exercice 3 ({exercise.target_points.replace('.', ',')} points)"
+    if text.count(heading) != 1:
+        raise ValueError("Network exercise credit differs from locked blueprint")
+    for task_id in data["task_ids"]:
+        if (
+            sum(
+                bool(re.match(rf"^{re.escape(task_id)}\.(?:\s|$)", line))
+                for line in lines
+            )
+            != 1
+        ):
+            raise ValueError(f"Network question label {task_id} missing or duplicated")
+    for premise in (
+        "aucun secret partagé initial",
+        "clé publique de la station est authentifiée",
+        "observateur passif",
+        f"R1–Station passe de {data['links'][1][2]} à {data['change']['new_cost']}",
+    ):
+        if premise not in flat:
+            raise ValueError("Network premise missing from PDF")
+    materials = network_materials(contract)
+    headers = [item["title"] for item in materials]
+    for index, material in enumerate(materials):
+        header = headers[index]
+        following = headers[index + 1] if index == 0 else "3a."
+        if text.count(header) != 1 or following not in text:
+            raise ValueError("Network table heading missing from PDF")
+        printed = (
+            text.split(header + "\n", 1)[1].split("\n" + following, 1)[0].splitlines()
+        )
+        expected = list(material["columns"]) + [
+            cell for row in material["rows"] for cell in row
+        ]
+        if printed != expected:
+            raise ValueError("Network table rows differ from locked contract")
+    for question in exercise.questions:
+        prompt = " ".join(question.prompt.split())
+        if flat.count(prompt) != 1:
+            raise ValueError(f"Network prompt {question.id} missing or duplicated")
+        answer = " ".join(question.answer.split())
+        if correction and answer not in flat:
+            raise ValueError(f"Network answer {question.id} missing")
+        if not correction and answer in flat:
+            raise ValueError(f"Network answer {question.id} leaked into paper")
+        for credit in question.marking:
+            criterion = " ".join(credit.criterion.split())
+            label = credit.points.replace(".", ",")
+            unit = "point" if credit.points in {"0.5", "1", "1.0"} else "points"
+            if correction and f"{label} {unit} {criterion}" not in flat:
+                raise ValueError(f"Network credit {question.id} missing")
+            if not correction and criterion in flat:
+                raise ValueError(f"Network rubric {question.id} leaked into paper")
+
+
 def load_originality_history(output: Path) -> list[str]:
     """Read a bounded set of candidate-only text from earlier local bundles."""
     history: list[str] = []
@@ -260,11 +429,14 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
+            contract_authoring_version="v14",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
         exercises = [NSIExercise.model_validate(item) for item in package["exercises"]]
         graph_tree_contract = build_graph_tree_contract(args.seed, "1")
+        database_contract = build_database_contract(args.seed)
+        network_contract = build_network_contract(args.seed)
         paths = {}
         for role, correction, filename in (
             ("question_paper", False, "sujet.pdf"),
@@ -288,6 +460,18 @@ def handle_generate_assessment(args) -> int:
                 graph_tree_contract,
                 correction=correction,
                 exercise=exercises[0],
+            )
+            validate_database_contract_pdf(
+                path,
+                database_contract,
+                correction=correction,
+                exercise=exercises[1],
+            )
+            validate_network_contract_pdf(
+                path,
+                network_contract,
+                correction=correction,
+                exercise=exercises[2],
             )
             paths[role] = path
         atomic_json(staging / "assessment.json", package)

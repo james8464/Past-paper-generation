@@ -177,3 +177,14 @@ Exercise 2. All three recorded rejections include lexical false positives:
 separate data/content defects. No complete paper or PDF exists for this run.
 Preserve both failed-run identities and checkpoints; neither parser repair nor
 fixture success alone establishes French or shared-route qualification.
+
+The subsequent [controlled-database live diagnostic](french-nsi-v14-controlled-diagnostic-2026-10-07.md)
+published one complete non-official draft, with first-pass automated acceptance
+of all three exercises. Page-by-page comparison then rejected Exercise 3: its
+routing arithmetic uses costs not supplied by the paper, the route-change
+question lacks alternatives, the resource-order repair is ineffective, and
+the claim that asymmetric encryption is indispensable has an unstated premise.
+The one-question final subject page is also a visible pagination failure.
+This is retained as a **manual failure after automated pass**, not a validated
+live checkpoint. Freeze and qualify a corrected shared source before any UK/French
+final matrix; issues #4 and #8 stay open.

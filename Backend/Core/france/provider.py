@@ -3,6 +3,8 @@
 import json
 from hashlib import sha256
 
+from Backend.Core.france.database_contract import DatabaseContract
+from Backend.Core.france.database_prose import database_selection_schema
 from Backend.Core.france.graph_tree_authoring import (
     contract_question_schema,
     french_retry_prompt,
@@ -11,6 +13,8 @@ from Backend.Core.france.graph_tree_authoring import (
     question_selection_schema,
 )
 from Backend.Core.france.network import ollama_request
+from Backend.Core.france.network_contract import NetworkContract
+from Backend.Core.france.network_prose import network_selection_schema
 from Backend.Core.france.nsi import NSIQuestion, authoring_schema
 from Backend.Core.france.pipeline import REVIEW_FLAGS
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
@@ -46,7 +50,12 @@ class FrenchOllamaClient(HostedLLMClient):
                     seed=seed,
                     request_function=ollama_request,
                     strict_json=prompt.startswith(
-                        ("Sélectionne la partie ", "Répare une sélection verrouillée")
+                        (
+                            "Sélectionne la partie ",
+                            "Répare une sélection verrouillée",
+                            "Sélectionne l'exercice 2",
+                            "Sélectionne l'exercice 3",
+                        )
                     ),
                 )
             except ValueError as error:
@@ -80,6 +89,26 @@ class FrenchOllamaClient(HostedLLMClient):
 
 
 def response_policy(prompt: str) -> tuple[dict, int]:
+    if prompt.startswith("Sélectionne l'exercice 3"):
+        embedded = json.loads(
+            prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
+        )
+        request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+        contract = NetworkContract.from_dict(request["contract"])
+        schema = network_selection_schema(contract)
+        if embedded != schema or request.get("contract_sha256") != contract.digest:
+            raise ValueError("Network selection schema or contract mismatch")
+        return schema, 2048
+    if prompt.startswith("Sélectionne l'exercice 2"):
+        embedded = json.loads(
+            prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
+        )
+        request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+        contract = DatabaseContract.from_dict(request["contract"])
+        schema = database_selection_schema(contract)
+        if embedded != schema or request.get("contract_sha256") != contract.digest:
+            raise ValueError("Database selection schema or contract mismatch")
+        return schema, 2048
     if prompt.startswith("Répare une sélection verrouillée"):
         embedded = json.loads(
             prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]

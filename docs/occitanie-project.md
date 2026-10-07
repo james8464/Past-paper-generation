@@ -43,10 +43,12 @@ automated passing must not be represented as examiner approval.
   similarity remains risk evidence, not a copyright guarantee.
 - Hash-bound checkpoints, rejected attempts retained, French draft PDFs and
   atomic folder publication. All outputs remain non-official, unreviewed drafts.
-- The first graph/tree exercise now uses a finite French prose catalogue and
-  selection-only model responses. The selected forms, catalogue digest, locked
-  answers and exact credits are replayed in the package and checked against
-  extracted standard/large-print PDFs. Exercises 2–3 remain model-authored.
+- The first graph/tree exercise uses a finite French prose catalogue and
+  selection-only model responses. The second, relational database exercise
+  now has app-owned rows, SQL, Python, computed answers and exact credits;
+  model selection is limited to finite French wording IDs. Both contracts are
+  replayed in the package and checked against extracted standard/large-print
+  PDFs. Exercise 3 remains model-authored and is not content-qualified.
 - Native French workspace, consent before downloads, French interface translations,
   local Ollama endpoint, standard/enlarged print, history metadata and review UI.
 - Human review-record API tied to artifact hashes. Reviewer identity is self-attested,
@@ -94,8 +96,14 @@ paper. The 7 October v13 diagnostic accepted its finite-authored first
 exercise, but the database exercise failed three authoring attempts, so no PDF
 was published. Its [failure record](quality/french-nsi-v13-live-diagnostic-2026-10-07.md)
 preserves source/model/reference identities and rejected candidates. Exercises
-2–3 need stronger original-data authoring before a full-paper qualification
-claim is supportable.
+2–3 needed stronger original-data authoring before a full-paper qualification
+claim was supportable. A later [controlled-database diagnostic](quality/french-nsi-v14-controlled-diagnostic-2026-10-07.md)
+published a complete three-exercise draft on one pinned Gemma/seed run with no
+rejected attempts, but page-by-page manual inspection **rejected** its
+model-authored third exercise for ungrounded routing answers, a weak process
+repair and an unsupported cryptographic premise. Automated completion is not
+subject-matter or teacher validation. Exercise 3 needs a locked, answerable
+contract and a fresh pinned run before the final matrix or submission claim.
 
 ## Genuine Occitanie scenario — PLANNED
 
