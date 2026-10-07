@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791355466.2667148,
-    "ast_hash": "af9e9a9488199f74e868084f57e240ae",
+    "mtime": 1791356977.9182472,
+    "ast_hash": "8ff24570179bff1be4be96fe9fdce930",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2670,8 +2670,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_database_contract.py": {
-    "mtime": 1791356717.4859202,
-    "ast_hash": "2ab03a0102772b9ceeac7852c5f34c0a",
+    "mtime": 1791356846.45413,
+    "ast_hash": "da555970e74eaccd74f1d8831c5115b6",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v13-live-diagnostic-2026-10-07.md": {
@@ -2680,13 +2680,28 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-07-french-nsi-controlled-database.md": {
-    "mtime": 1791356669.429724,
-    "ast_hash": "e7ec1c507b7c861c28fda202905e1e3e",
+    "mtime": 1791357036.7018054,
+    "ast_hash": "4e098951416ee752e2a8277921c6fa1b",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-10-07-french-nsi-controlled-database-design.md": {
-    "mtime": 1791356489.8626971,
-    "ast_hash": "52d1447b61df9ff856a12aa939e3eda5",
+    "mtime": 1791357036.702581,
+    "ast_hash": "31dfe129cf53c8882ed208237f57e804",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/database_binding.py": {
+    "mtime": 1791357174.4136977,
+    "ast_hash": "d3c2f6cad4eb0cc9eaa477bd8f4f8ca1",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/database_prose.py": {
+    "mtime": 1791357174.4137106,
+    "ast_hash": "c85f018ae3bb5c26adef7079d6dab7d8",
+    "semantic_hash": ""
+  },
+  "tests/test_french_database_prose.py": {
+    "mtime": 1791357174.413698,
+    "ast_hash": "3a248a3ab891473932827dace3e4d23f",
     "semantic_hash": ""
   }
 }
