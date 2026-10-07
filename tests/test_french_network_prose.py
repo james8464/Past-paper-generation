@@ -48,7 +48,18 @@ def test_network_prints_all_route_process_and_security_facts(seed, credit):
     assert "passif" in exercise.context
     assert str(data["expected"]["before"]["cost"]) in exercise.questions[0].answer
     assert str(data["expected"]["after"]["cost"]) in exercise.questions[1].answer
+    initial = [row[2] for row in data["links"]]
+    changed = data["change"]["new_cost"]
+    assert f"{initial[0]} + {initial[1]}" in exercise.questions[0].answer
+    assert f"{initial[2]} + {initial[3]}" in exercise.questions[0].answer
+    assert f"{initial[0]} + {changed}" in exercise.questions[1].answer
     assert "libère" in exercise.questions[3].answer
+    assert "B obtient B, termine" in exercise.questions[3].answer
+    assert "C acquiert A puis B" in exercise.questions[3].answer
+    assert "n’authentifie pas le capteur" in exercise.questions[5].answer
+    assert "n’authentifie pas le capteur" in " ".join(
+        mark.criterion for mark in exercise.questions[5].marking
+    )
     assert "indispensable" not in " ".join(q.answer for q in exercise.questions)
     assert all(question.verification["contract"] == data for question in exercise.questions)
 

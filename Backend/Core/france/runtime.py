@@ -327,7 +327,7 @@ def validate_network_contract_pdf(
         if premise not in flat:
             raise ValueError("Network premise missing from PDF")
     materials = network_materials(contract)
-    headers = [f"{item['title']} — {item['id']}" for item in materials]
+    headers = [item["title"] for item in materials]
     for index, material in enumerate(materials):
         header = headers[index]
         following = headers[index + 1] if index == 0 else "3a."

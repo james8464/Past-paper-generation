@@ -118,14 +118,14 @@ def _rubric(task_id: str, contract: NetworkContract, points: str, variant: int) 
     expected = contract.to_dict()["expected"]
     prefix = "Points accordés pour " if variant == 1 else "Vérifier "
     criteria = {
-        "3a": [f"les deux coûts initiaux {expected['before']['cost']} et {expected['before']['other_cost']} et la route via R1."],
-        "3b": [f"les nouveaux coûts {expected['after']['other_cost']} et {expected['after']['cost']} et la route via R2."],
+        "3a": [f"les deux additions donnant {expected['before']['cost']} et {expected['before']['other_cost']} et la route via R1."],
+        "3b": [f"les deux additions donnant {expected['after']['other_cost']} et {expected['after']['cost']} et la route via R2."],
         "3c": ["le cycle : B détient A, attend B ; C détient B, attend A."],
-        "3d": ["la libération de B par C et l'ordre commun A avant B, qui supprime le cycle."],
+        "3d": ["la libération de B par C, la fin de B, la reprise de C et l'ordre commun A avant B, qui supprime le cycle."],
         "3e": ["la clé publique authentifiée, la clé de session chiffrée et son usage symétrique."],
         "3f": [
             "la confidentialité face à l'observateur passif et la clé publique authentifiée.",
-            "les limites (métadonnées, terminal compromis) et le cas d'un secret prépartagé.",
+            "les limites (métadonnées, terminal compromis), le fait que la clé de la station n’authentifie pas le capteur et le cas d'un secret prépartagé.",
         ],
     }[task_id]
     if len(criteria) == 2 and points == "1.5":

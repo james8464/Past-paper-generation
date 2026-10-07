@@ -85,3 +85,45 @@ def test_network_rejects_free_text_preserves_failure_and_identity(tmp_path):
         replay_network_selection(
             task, contract, [], tampered, run_identity=_identity()
         )
+
+
+def test_network_replay_rejects_forged_attempt_history(tmp_path):
+    from Backend.Core.france.network_authoring import (
+        author_network_selection,
+        replay_network_selection,
+    )
+
+    task = _tasks_for_seed(270100)[2]
+    contract = build_network_contract(270100)
+    invalid = _selection()
+    invalid["scene_id"] = "unlisted"
+    path = tmp_path / "network-selection.json"
+    _, evidence = author_network_selection(
+        SelectionClient([invalid, _selection()]), task, contract, [], path,
+        run_identity=_identity(),
+    )
+    for tamper in ("third_failure", "attempt_number", "valid_failed_response"):
+        forged = deepcopy(evidence)
+        if tamper == "third_failure":
+            forged["failed_attempts"].extend(
+                [deepcopy(forged["failed_attempts"][0]) for _ in range(2)]
+            )
+            forged["failed_attempts"][1]["attempt"] = 2
+            forged["failed_attempts"][2]["attempt"] = 3
+        elif tamper == "attempt_number":
+            forged["failed_attempts"][0]["attempt"] = 2
+        else:
+            forged["failed_attempts"][0]["response"] = _selection()
+            from Backend.Core.france.network_authoring import _hash
+            forged["failed_attempts"][0]["response_sha256"] = _hash(_selection())
+        with pytest.raises(ValueError):
+            replay_network_selection(
+                task, contract, [], forged, run_identity=_identity()
+            )
+        forged["accepted"] = None
+        path.write_text(__import__("json").dumps(forged), encoding="utf-8")
+        with pytest.raises(ValueError):
+            author_network_selection(
+                SelectionClient([_selection()]), task, contract, [], path,
+                run_identity=_identity(),
+            )

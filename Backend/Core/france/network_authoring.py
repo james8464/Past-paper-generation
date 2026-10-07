@@ -80,6 +80,44 @@ def _save(path: Path, data: dict) -> None:
         Path(name).unlink(missing_ok=True)
 
 
+def _validate_failures(
+    failures: object, prompt_hash: str, contract: NetworkContract,
+    task: dict, *, accepted: bool,
+) -> list[dict]:
+    limit = 2 if accepted else 3
+    if not isinstance(failures, list) or len(failures) > limit:
+        raise ValueError("Invalid network failure evidence")
+    for number, failure in enumerate(failures, start=1):
+        if (
+            not isinstance(failure, dict)
+            or set(failure) - {
+                "attempt", "error", "prompt_sha256", "response",
+                "response_sha256", "transport_attempts",
+            }
+            or type(failure.get("attempt")) is not int
+            or failure["attempt"] != number
+            or failure.get("prompt_sha256") != prompt_hash
+            or not isinstance(failure.get("error"), str)
+            or not failure["error"]
+            or ("response" in failure) != ("response_sha256" in failure)
+            or (
+                "response" in failure
+                and failure["response_sha256"] != _hash(failure["response"])
+            )
+        ):
+            raise ValueError("Network failed response hash mismatch")
+        if "response" in failure:
+            try:
+                validate_network_selection(contract, failure["response"])
+                render_network_candidate(
+                    contract, failure["response"], task["question_blueprint"]
+                )
+            except (ValueError, TypeError, KeyError):
+                continue
+            raise ValueError("Network failure contains valid response")
+    return failures
+
+
 def replay_network_selection(
     task: dict,
     contract: NetworkContract,
@@ -94,26 +132,9 @@ def replay_network_selection(
     ):
         raise ValueError("Network selection identity mismatch")
     prompt_hash = _hash(network_selection_prompt(task, contract, references))
-    failures = evidence.get("failed_attempts")
-    if not isinstance(failures, list) or len(failures) > 3:
-        raise ValueError("Invalid network failure evidence")
-    for failure in failures:
-        if (
-            not isinstance(failure, dict)
-            or set(failure) - {
-                "attempt", "error", "prompt_sha256", "response",
-                "response_sha256", "transport_attempts",
-            }
-            or failure.get("prompt_sha256") != prompt_hash
-            or not isinstance(failure.get("error"), str)
-            or not failure["error"]
-            or ("response" in failure) != ("response_sha256" in failure)
-            or (
-                "response" in failure
-                and failure["response_sha256"] != _hash(failure["response"])
-            )
-        ):
-            raise ValueError("Network failed response hash mismatch")
+    _validate_failures(
+        evidence.get("failed_attempts"), prompt_hash, contract, task, accepted=True
+    )
     accepted = evidence.get("accepted")
     if (
         not isinstance(accepted, dict)
@@ -154,9 +175,9 @@ def author_network_selection(
             ), deepcopy(state)
     else:
         state = {**identity, "failed_attempts": [], "accepted": None}
-    failures = state.get("failed_attempts")
-    if not isinstance(failures, list) or len(failures) > 3:
-        raise ValueError("Invalid network selection checkpoint")
+    failures = _validate_failures(
+        state.get("failed_attempts"), prompt_hash, contract, task, accepted=False
+    )
     for attempt in range(len(failures) + 1, 4):
         response = None
         try:

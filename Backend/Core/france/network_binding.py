@@ -28,15 +28,18 @@ def network_materials(contract: NetworkContract) -> list[dict]:
 def canonical_network_answer(task_id: str, contract: NetworkContract) -> str:
     data = contract.to_dict()
     before, after = data["expected"]["before"], data["expected"]["after"]
+    r1_start, r1_end, r2_start, r2_end = (row[2] for row in data["links"])
     if task_id == "3a":
         return (
-            f"La route Central–R1–Station coûte {before['cost']} "
-            f"contre {before['other_cost']} par R2 : elle est choisie."
+            f"Central–R1–Station : {r1_start} + {r1_end} = {before['cost']}. "
+            f"Central–R2–Station : {r2_start} + {r2_end} = {before['other_cost']}. "
+            "La route via R1 est choisie."
         )
     if task_id == "3b":
         return (
-            f"Après la hausse, Central–R1–Station coûte {after['other_cost']} "
-            f"et Central–R2–Station coûte {after['cost']}. "
+            f"Après la hausse, Central–R1–Station : {r1_start} + "
+            f"{data['change']['new_cost']} = {after['other_cost']}. "
+            f"Central–R2–Station : {r2_start} + {r2_end} = {after['cost']}. "
             "La route via R2 devient la moins coûteuse."
         )
     if task_id == "3c":
@@ -46,8 +49,9 @@ def canonical_network_answer(task_id: str, contract: NetworkContract) -> str:
         )
     if task_id == "3d":
         return (
-            "C libère B. Les deux processus demandent ensuite A avant B : "
-            "C ne détient plus B en attendant A, donc le cycle est rompu."
+            "C libère B ; B obtient B, termine et libère A et B. "
+            "C acquiert A puis B. Ensuite, les deux processus appliquent "
+            "l'ordre commun A avant B : le cycle ne peut plus se former."
         )
     if task_id == "3e":
         return (
@@ -61,7 +65,9 @@ def canonical_network_answer(task_id: str, contract: NetworkContract) -> str:
             "Un observateur passif ne lit ni la clé de session chiffrée ni les "
             "messages symétriques, si les primitives sont sûres. La clé publique "
             "authentifiée empêche sa substitution. Ni les métadonnées ni un "
-            "terminal compromis ne sont protégés. Avec un secret prépartagé, "
+            "terminal compromis ne sont protégés. Elle n’authentifie pas le capteur "
+            "auprès de la station : la confidentialité ne prouve pas l'identité "
+            "de l'émetteur. Avec un secret prépartagé, "
             "un autre protocole serait possible."
         )
     raise ValueError("Unknown network task")

@@ -334,6 +334,8 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
             assert "self.gauche = None" in question_text
             assert "Arbre des identifiants" in question_text
             assert "Réseau pondéré des postes" in question_text
+            assert "— links" not in question_text
+            assert "— processes" not in question_text
             assert "Réponse attendue" not in question_text
         with pymupdf.open(bundles[0] / "corrige.pdf") as pdf:
             # Structured resources add space, but every exercise remains present
