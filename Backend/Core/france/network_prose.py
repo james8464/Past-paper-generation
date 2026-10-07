@@ -124,8 +124,8 @@ def _rubric(task_id: str, contract: NetworkContract, points: str, variant: int) 
         "3d": ["la libération de B par C et l'ordre commun A avant B, qui supprime le cycle."],
         "3e": ["la clé publique authentifiée, la clé de session chiffrée et son usage symétrique."],
         "3f": [
-            "la confidentialité conditionnelle face à un observateur passif et l'authenticité de la clé publique.",
-            "les limites : terminal compromis, métadonnées ; un secret prépartagé changerait le protocole.",
+            "la confidentialité face à l'observateur passif et la clé publique authentifiée.",
+            "les limites (métadonnées, terminal compromis) et le cas d'un secret prépartagé.",
         ],
     }[task_id]
     if len(criteria) == 2 and points == "1.5":
@@ -154,14 +154,13 @@ def render_network_candidate(
     title, lead = _SCENES[selection["scene_id"]]
     context = (
         lead
-        + " Les quatre liaisons bidirectionnelles et leurs coûts initiaux sont "
-        + "tous indiqués dans le premier tableau. Pour la question 3b, le coût "
-        + f"de R1–Station passe de {data['links'][1][2]} à {data['change']['new_cost']} ; "
-        + "les autres coûts sont inchangés. Le second tableau montre un état "
-        + "simultané de deux processus utilisant les ressources A et B. "
-        + "Pour les questions 3e et 3f, un capteur et la station ne disposent "
-        + "d'aucun secret partagé initial ; la clé publique de la station est "
-        + "authentifiée. On considère seulement un observateur passif du réseau."
+        + " Le tableau 1 donne tous les coûts des quatre liaisons "
+        + "bidirectionnelles. En 3b, R1–Station passe de "
+        + f"{data['links'][1][2]} à {data['change']['new_cost']} ; "
+        + "les autres coûts ne changent pas. Le tableau 2 fixe l'état simultané "
+        + "des processus B et C. Pour 3e–3f, le capteur et la station n'ont "
+        + "aucun secret partagé initial. La clé publique de la station est "
+        + "authentifiée ; l'adversaire est un observateur passif."
     )
     questions = []
     for task_id, plan in zip(_TASK_IDS, task_specs, strict=True):
@@ -198,7 +197,9 @@ def render_network_candidate(
         "context": context,
         "topics": ["architectures-reseaux"],
         "minutes": 70,
-        "target_points": str(sum((Decimal(plan["points"]) for plan in task_specs), Decimal(0))),
+        "target_points": str(
+            sum((Decimal(plan["points"]) for plan in task_specs), Decimal(0)).normalize()
+        ),
         "materials": network_materials(contract),
         "questions": questions,
     }

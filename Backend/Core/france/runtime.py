@@ -24,6 +24,8 @@ from Backend.Core.france.graph_tree_contract import (
     build_graph_tree_contract,
 )
 from Backend.Core.france.network import open_ollama_request
+from Backend.Core.france.network_binding import network_materials
+from Backend.Core.france.network_contract import NetworkContract, build_network_contract
 from Backend.Core.france.nsi import NSIExercise
 from Backend.Core.france.pipeline import (
     atomic_json,
@@ -279,6 +281,85 @@ def validate_database_contract_pdf(
                 raise ValueError(f"Database rubric {question.id} leaked into paper")
 
 
+def validate_network_contract_pdf(
+    path: Path,
+    contract: NetworkContract,
+    *,
+    correction: bool,
+    exercise: NSIExercise,
+) -> None:
+    """Require exact app-owned network evidence in each published PDF role."""
+    data = contract.to_dict()
+    if (
+        exercise.id != "3"
+        or [question.id for question in exercise.questions] != data["task_ids"]
+    ):
+        raise ValueError("Network exercise does not match its contract")
+    with pymupdf.open(path) as pdf:
+        lines = [
+            line.strip()
+            for page in pdf
+            for line in page.get_text().splitlines()
+            if line.strip()
+            and not line.startswith("Paper Creator —")
+            and not line.startswith("Page : ")
+        ]
+    text = "\n".join(lines)
+    flat = " ".join(text.split())
+    heading = f"Exercice 3 ({exercise.target_points.replace('.', ',')} points)"
+    if text.count(heading) != 1:
+        raise ValueError("Network exercise credit differs from locked blueprint")
+    for task_id in data["task_ids"]:
+        if (
+            sum(
+                bool(re.match(rf"^{re.escape(task_id)}\.(?:\s|$)", line))
+                for line in lines
+            )
+            != 1
+        ):
+            raise ValueError(f"Network question label {task_id} missing or duplicated")
+    for premise in (
+        "aucun secret partagé initial",
+        "clé publique de la station est authentifiée",
+        "observateur passif",
+        f"R1–Station passe de {data['links'][1][2]} à {data['change']['new_cost']}",
+    ):
+        if premise not in flat:
+            raise ValueError("Network premise missing from PDF")
+    materials = network_materials(contract)
+    headers = [f"{item['title']} — {item['id']}" for item in materials]
+    for index, material in enumerate(materials):
+        header = headers[index]
+        following = headers[index + 1] if index == 0 else "3a."
+        if text.count(header) != 1 or following not in text:
+            raise ValueError("Network table heading missing from PDF")
+        printed = (
+            text.split(header + "\n", 1)[1].split("\n" + following, 1)[0].splitlines()
+        )
+        expected = list(material["columns"]) + [
+            cell for row in material["rows"] for cell in row
+        ]
+        if printed != expected:
+            raise ValueError("Network table rows differ from locked contract")
+    for question in exercise.questions:
+        prompt = " ".join(question.prompt.split())
+        if flat.count(prompt) != 1:
+            raise ValueError(f"Network prompt {question.id} missing or duplicated")
+        answer = " ".join(question.answer.split())
+        if correction and answer not in flat:
+            raise ValueError(f"Network answer {question.id} missing")
+        if not correction and answer in flat:
+            raise ValueError(f"Network answer {question.id} leaked into paper")
+        for credit in question.marking:
+            criterion = " ".join(credit.criterion.split())
+            label = credit.points.replace(".", ",")
+            unit = "point" if credit.points in {"0.5", "1", "1.0"} else "points"
+            if correction and f"{label} {unit} {criterion}" not in flat:
+                raise ValueError(f"Network credit {question.id} missing")
+            if not correction and criterion in flat:
+                raise ValueError(f"Network rubric {question.id} leaked into paper")
+
+
 def load_originality_history(output: Path) -> list[str]:
     """Read a bounded set of candidate-only text from earlier local bundles."""
     history: list[str] = []
@@ -348,13 +429,14 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v13",
+            contract_authoring_version="v14",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
         exercises = [NSIExercise.model_validate(item) for item in package["exercises"]]
         graph_tree_contract = build_graph_tree_contract(args.seed, "1")
         database_contract = build_database_contract(args.seed)
+        network_contract = build_network_contract(args.seed)
         paths = {}
         for role, correction, filename in (
             ("question_paper", False, "sujet.pdf"),
@@ -384,6 +466,12 @@ def handle_generate_assessment(args) -> int:
                 database_contract,
                 correction=correction,
                 exercise=exercises[1],
+            )
+            validate_network_contract_pdf(
+                path,
+                network_contract,
+                correction=correction,
+                exercise=exercises[2],
             )
             paths[role] = path
         atomic_json(staging / "assessment.json", package)

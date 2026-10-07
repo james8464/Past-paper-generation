@@ -446,7 +446,7 @@ def render_assessment(
                     available_width=doc.width,
                 )
             )
-        for question in exercise.questions:
+        for question_index, question in enumerate(exercise.questions):
             question_content(question.id, question.prompt)
             if correction:
                 story[-1].keepWithNext = True
@@ -484,7 +484,11 @@ def render_assessment(
                     )
                 )
                 story.append(marking_table)
-                story.append(Spacer(1, 8))
+                if (
+                    exercise_index < len(exercises) - 1
+                    or question_index < len(exercise.questions) - 1
+                ):
+                    story.append(Spacer(1, 8))
 
     def cover_page(canvas, built_doc):
         draw_cover_page(

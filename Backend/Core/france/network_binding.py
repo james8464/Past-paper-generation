@@ -46,24 +46,22 @@ def canonical_network_answer(task_id: str, contract: NetworkContract) -> str:
         )
     if task_id == "3d":
         return (
-            "Pour sortir de cet état, C libère B. Les deux processus "
-            "demandent ensuite toujours A avant B. C ne conserve plus B "
-            "en attendant A : le cycle d'attente est rompu."
+            "C libère B. Les deux processus demandent ensuite A avant B : "
+            "C ne détient plus B en attendant A, donc le cycle est rompu."
         )
     if task_id == "3e":
         return (
-            "1. Le capteur obtient la clé publique authentifiée de la station. "
-            "2. Il génère une clé de session aléatoire et la chiffre avec cette "
-            "clé publique. 3. La station la déchiffre avec sa clé privée ; "
-            "les deux utilisent ensuite la clé de session pour les messages."
+            "1. Le capteur obtient la clé publique authentifiée. "
+            "2. Il crée une clé de session aléatoire et la chiffre avec cette clé. "
+            "3. La station la déchiffre avec sa clé privée ; les messages sont "
+            "ensuite chiffrés symétriquement."
         )
     if task_id == "3f":
         return (
-            "Un observateur passif ne peut pas lire la clé de session chiffrée "
-            "ni les messages protégés par elle, si les primitives sont sûres. "
-            "L'authenticité de la clé publique évite une substitution ; le "
-            "chiffrement symétrique sert aux messages. Ce dispositif ne protège "
-            "ni un terminal compromis ni les métadonnées. Avec un secret "
-            "prépartagé, un autre protocole serait possible."
+            "Un observateur passif ne lit ni la clé de session chiffrée ni les "
+            "messages symétriques, si les primitives sont sûres. La clé publique "
+            "authentifiée empêche sa substitution. Ni les métadonnées ni un "
+            "terminal compromis ne sont protégés. Avec un secret prépartagé, "
+            "un autre protocole serait possible."
         )
     raise ValueError("Unknown network task")

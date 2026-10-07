@@ -34,6 +34,7 @@ def test_network_prints_all_route_process_and_security_facts(seed, credit):
     )
     data = contract.to_dict()
     assert exercise.credit == Decimal(credit)
+    assert exercise.target_points == _tasks_for_seed(seed)[2]["technical_points"]
     assert exercise.minutes == 70
     assert [question.id for question in exercise.questions] == data["task_ids"]
     assert [material.id for material in exercise.materials] == ["links", "processes"]

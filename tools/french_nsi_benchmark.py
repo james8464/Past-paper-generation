@@ -37,8 +37,13 @@ from Backend.Core.france.graph_tree_prose import (  # noqa: E402
     PROSE_CONTRACT_VERSION,
     prose_catalogue_digest,
 )
+from Backend.Core.france.network_contract import build_network_contract  # noqa: E402
+from Backend.Core.france.network_prose import (  # noqa: E402
+    NETWORK_PROSE_VERSION,
+    network_catalogue_digest,
+)
 from Backend.Core.france.pipeline import (  # noqa: E402
-    CONTROLLED_DATABASE_PROMPT_VERSION,
+    CONTROLLED_NETWORK_PROMPT_VERSION,
 )
 from Backend.Core.france.runtime import model_identity  # noqa: E402
 from Backend.Core.france.source_identity import implementation_identity  # noqa: E402
@@ -122,7 +127,7 @@ def _accepted_payload(
         return False
     if (
         manifest_identity.get("assessment") != asdict(NSI_2027)
-        or manifest_identity.get("prompt_version") != CONTROLLED_DATABASE_PROMPT_VERSION
+        or manifest_identity.get("prompt_version") != CONTROLLED_NETWORK_PROMPT_VERSION
         or manifest_identity.get("prose_contract_version") != PROSE_CONTRACT_VERSION
         or manifest_identity.get("prose_catalogue_sha256") != prose_catalogue_digest()
         or manifest_identity.get("database_contract_sha256")
@@ -131,6 +136,12 @@ def _accepted_payload(
         != DATABASE_PROSE_VERSION
         or manifest_identity.get("database_prose_catalogue_sha256")
         != database_catalogue_digest()
+        or manifest_identity.get("network_contract_sha256")
+        != build_network_contract(identity["seed"]).digest
+        or manifest_identity.get("network_prose_contract_version")
+        != NETWORK_PROSE_VERSION
+        or manifest_identity.get("network_prose_catalogue_sha256")
+        != network_catalogue_digest()
         or manifest_identity.get("provider") != "ollama"
     ):
         return False
