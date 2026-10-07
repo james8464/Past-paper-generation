@@ -171,7 +171,9 @@ integration before any broader run.
 PR #34 subsequently passed protected backend and macOS checks and merged at
 `3def2c2ef8995041a7c00ee0f08f177b44afcba1`. The [new pinned live diagnostic](french-nsi-v13-live-diagnostic-2026-10-07.md)
 accepted the finite-authored first exercise, then failed all three attempts at
-Exercise 2. One rejection exposes an SQL lexical false positive; the other two
-expose inconsistent model-authored links between questions and structured
-tables. No complete paper or PDF exists for this run. Preserve both failed-run
-identities and checkpoints. Do not infer French or shared-route qualification.
+Exercise 2. All three recorded rejections include lexical false positives:
+`UPDATE avec` was read as a relation name once, and ordinary uses of
+“technicien” were read as table citations twice. The raw candidates also have
+separate data/content defects. No complete paper or PDF exists for this run.
+Preserve both failed-run identities and checkpoints; neither parser repair nor
+fixture success alone establishes French or shared-route qualification.

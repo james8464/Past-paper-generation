@@ -21,10 +21,13 @@ detector read the French marking phrase “UPDATE avec un filtre” as a SQL
 statement naming a relation `avec`. This is a demonstrable lexical false
 positive, not evidence that the candidate would otherwise pass: its raw
 questions and code still require independent content review. Attempts 2 and 3
-failed because question text cited structured relation identifiers that did
-not match the question's `material_ids`; some supplied data or code also
-contradicted its own context. The validator correctly kept those candidates
-out of the paper. Do not loosen the figure/data binding gate to pass them.
+reported figure-question binding conflicts. The first conflict in each was
+another lexical false positive: the common noun “technicien” matched a table
+ID although the sentence was not an explicit citation of that table.
+Separate inspection found substantive candidate defects, including a query
+answer using a category absent from its rows and missing or malformed table
+data. None of the three candidates is accepted. Repair the lexical detectors
+without dropping the gate for genuine contradictions.
 
 The next design decision is how to constrain Exercises 2 and 3 to original,
 verifiable data and French wording while preserving three independent tasks.
