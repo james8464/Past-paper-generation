@@ -154,3 +154,16 @@ implementation, model digests, reference index and artifact hashes, preserve
 every failed attempt, and inspect every resulting PDF. Human teacher review,
 learner calibration and accessibility are independent gates; issues #4 and #8
 remain open until actual qualification.
+
+## 7 October French live diagnostic — failed, source repair in progress
+
+PR #33 was squash-merged through successful protected checks at
+`934581818e15f3ad5e2a06a13e6c82928d48f2d6`. A first pinned live French
+diagnostic then failed before producing a PDF: all three Exercise 1 attempts
+chose `collecte` with `demandes`, which the published selection schema allowed
+but the catalogue validator rejected. The [diagnostic record](french-nsi-v12-live-diagnostic-2026-10-07.md)
+pins the exact source, model, reference index and retained attempt artifacts.
+This is a source-contract defect, not evidence that the model broke its schema.
+No live French paper has been accepted and the final shared-source matrix is
+still on hold. A repair must pass tests, a fresh pinned live retry and protected
+integration before any broader run.
