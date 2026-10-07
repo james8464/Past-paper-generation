@@ -167,3 +167,13 @@ This is a source-contract defect, not evidence that the model broke its schema.
 No live French paper has been accepted and the final shared-source matrix is
 still on hold. A repair must pass tests, a fresh pinned live retry and protected
 integration before any broader run.
+
+PR #34 subsequently passed protected backend and macOS checks and merged at
+`3def2c2ef8995041a7c00ee0f08f177b44afcba1`. The [new pinned live diagnostic](french-nsi-v13-live-diagnostic-2026-10-07.md)
+accepted the finite-authored first exercise, then failed all three attempts at
+Exercise 2. All three recorded rejections include lexical false positives:
+`UPDATE avec` was read as a relation name once, and ordinary uses of
+“technicien” were read as table citations twice. The raw candidates also have
+separate data/content defects. No complete paper or PDF exists for this run.
+Preserve both failed-run identities and checkpoints; neither parser repair nor
+fixture success alone establishes French or shared-route qualification.
