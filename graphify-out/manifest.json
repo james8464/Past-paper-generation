@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1791357686.2973182,
-    "ast_hash": "aa625ffa15c835e0cae0ea98aeafaff7",
+    "mtime": 1791364121.4722042,
+    "ast_hash": "efbb676487a00cace3160674fa12f98b",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
@@ -215,8 +215,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/verification.py": {
-    "mtime": 1791357686.2958496,
-    "ast_hash": "aa4279d7c9ee77ec575115befbe551f1",
+    "mtime": 1791364018.1842458,
+    "ast_hash": "eaf707cb894dae6d559572ebfd6e07db",
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791363845.6514506,
-    "ast_hash": "1e73ae2f3974096924e7079cdcba8d87",
+    "mtime": 1791363984.6947284,
+    "ast_hash": "a08244e6d325d7191e17a4e4cddf1972",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1780,8 +1780,8 @@
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1791357686.297353,
-    "ast_hash": "393e28b9dce17eeff5d73f03923b49d8",
+    "mtime": 1791364121.472462,
+    "ast_hash": "0cd5d7b8765a5a864a4e99e2ba4f270b",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -2725,8 +2725,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_network_contract.py": {
-    "mtime": 1791363658.055698,
-    "ast_hash": "2266f92ac95b7a3aef8d86fa1ef17dbd",
+    "mtime": 1791364006.9107082,
+    "ast_hash": "641992d78b5ee93df01a8b6d69774696",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-07-french-nsi-controlled-network.md": {

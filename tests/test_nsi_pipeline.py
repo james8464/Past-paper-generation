@@ -562,6 +562,52 @@ class ControlledDatabaseFrenchClient(ClosedProseFrenchClient):
         return super().generate_json(prompt)
 
 
+class ControlledNetworkFrenchClient(ControlledDatabaseFrenchClient):
+    def generate_json(self, prompt):
+        if prompt.startswith("Sélectionne l'exercice 3"):
+            return {
+                "scene_id": "campus",
+                "question_forms": {
+                    f"3{letter}": f"3{letter}-q1" for letter in "abcdef"
+                },
+                "rubric_forms": {
+                    f"3{letter}": f"3{letter}-r1" for letter in "abcdef"
+                },
+            }
+        return super().generate_json(prompt)
+
+
+def test_v14_controlled_network_package_replays_and_rejects_rehashed_tamper(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import (
+        digest,
+        generate_assessment,
+        validate_package,
+    )
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledNetworkFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v14",
+    )
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v14"
+    assert package["identity"]["network_contract_sha256"]
+    assert package["evidence"][2]["network_selection"]["accepted"]["response"]
+    assert validate_package(package)["structural_checks"] == "passed"
+    changed = deepcopy(package)
+    changed["exercises"][2]["questions"][1]["answer"] = "Une autre route."
+    changed["content_sha256"] = digest(changed["exercises"])
+    changed["evidence"][2]["exercise_sha256"] = digest(changed["exercises"][2])
+    with pytest.raises(ValueError, match=r"network|Network|identique|preuve"):
+        validate_package(changed)
+
+
 def test_v13_controlled_database_package_replays_and_rejects_rehashed_tamper(tmp_path):
     from copy import deepcopy
 

@@ -260,6 +260,7 @@ def verify_contract(contract: dict) -> dict:
         "shortest_path",
         "graph_tree",
         "database_contract",
+        "network_contract",
     }:
         return {
             "state": "unresolved",
@@ -267,7 +268,14 @@ def verify_contract(contract: dict) -> dict:
             "reason": "Vérification humaine nécessaire",
         }
     try:
-        if kind == "database_contract":
+        if kind == "network_contract":
+            from Backend.Core.france.network_contract import NetworkContract
+
+            data = NetworkContract.from_dict(contract["contract"]).to_dict()
+            if contract["task_id"] not in data["task_ids"]:
+                raise ValueError("Tâche de réseau absente")
+            actual = data["expected"]
+        elif kind == "database_contract":
             from Backend.Core.france.database_contract import DatabaseContract
 
             data = DatabaseContract.from_dict(contract["contract"]).to_dict()

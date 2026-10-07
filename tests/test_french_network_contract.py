@@ -65,3 +65,22 @@ def test_boolean_version_is_not_an_integer_version():
     forged["version"] = True
     with pytest.raises(ValueError):
         NetworkContract.from_dict(forged)
+
+
+def test_network_verifier_recomputes_all_results_and_rejects_tampering():
+    from Backend.Core.france.verification import verify_contract
+
+    data = build_network_contract(270100).to_dict()
+    check = {
+        "kind": "network_contract",
+        "contract": data,
+        "task_id": "3b",
+        "expected": data["expected"],
+    }
+    assert verify_contract(check)["state"] == "passed"
+    forged = deepcopy(check)
+    forged["expected"]["after"]["cost"] += 1
+    assert verify_contract(forged)["state"] == "failed"
+    forged = deepcopy(check)
+    forged["contract"]["links"][1][2] += 1
+    assert verify_contract(forged)["state"] == "failed"

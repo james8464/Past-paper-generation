@@ -46,6 +46,15 @@ from Backend.Core.france.graph_tree_prose import (
     prose_catalogue_digest,
     render_graph_tree_candidate,
 )
+from Backend.Core.france.network_authoring import (
+    author_network_selection,
+    replay_network_selection,
+)
+from Backend.Core.france.network_contract import build_network_contract
+from Backend.Core.france.network_prose import (
+    NETWORK_PROSE_VERSION,
+    network_catalogue_digest,
+)
 from Backend.Core.france.nsi import (
     CURRICULUM_OBJECTIVES,
     LANGUAGE_RUBRIC_2027,
@@ -73,6 +82,7 @@ PROMPT_VERSION = "fr-nsi-written-2027-v10"
 CONTRACT_PROMPT_VERSION = "fr-nsi-written-2027-v11"
 CLOSED_PROSE_PROMPT_VERSION = "fr-nsi-written-2027-v12"
 CONTROLLED_DATABASE_PROMPT_VERSION = "fr-nsi-written-2027-v13"
+CONTROLLED_NETWORK_PROMPT_VERSION = "fr-nsi-written-2027-v14"
 # Recorded source identities prevent a newer package dropping its evidence via
 # an earlier prompt-version label. The separate manifest remains the trust root.
 LEGACY_IMPLEMENTATIONS = {
@@ -1344,7 +1354,7 @@ def generate_assessment(
 ) -> dict:
     if type(seed) is not int:
         raise ValueError("Une graine entière est obligatoire")
-    if contract_authoring_version not in {"v11", "v12", "v13"} or (
+    if contract_authoring_version not in {"v11", "v12", "v13", "v14"} or (
         not contract_graph_tree and contract_authoring_version != "v12"
     ):
         raise ValueError("Version de rédaction du contrat inconnue")
@@ -1378,7 +1388,9 @@ def generate_assessment(
         "assessment": asdict(NSI_2027),
         "prompt_version": (
             (
-                CONTROLLED_DATABASE_PROMPT_VERSION
+                CONTROLLED_NETWORK_PROMPT_VERSION
+                if contract_authoring_version == "v14"
+                else CONTROLLED_DATABASE_PROMPT_VERSION
                 if contract_authoring_version == "v13"
                 else CLOSED_PROSE_PROMPT_VERSION
                 if contract_authoring_version == "v12"
@@ -1400,13 +1412,17 @@ def generate_assessment(
         identity["graph_tree_contract_sha256"] = build_graph_tree_contract(
             seed, "1"
         ).digest
-        if contract_authoring_version in {"v12", "v13"}:
+        if contract_authoring_version in {"v12", "v13", "v14"}:
             identity["prose_contract_version"] = PROSE_CONTRACT_VERSION
             identity["prose_catalogue_sha256"] = prose_catalogue_digest()
-        if contract_authoring_version == "v13":
+        if contract_authoring_version in {"v13", "v14"}:
             identity["database_contract_sha256"] = build_database_contract(seed).digest
             identity["database_prose_contract_version"] = DATABASE_PROSE_VERSION
             identity["database_prose_catalogue_sha256"] = database_catalogue_digest()
+        if contract_authoring_version == "v14":
+            identity["network_contract_sha256"] = build_network_contract(seed).digest
+            identity["network_prose_contract_version"] = NETWORK_PROSE_VERSION
+            identity["network_prose_catalogue_sha256"] = network_catalogue_digest()
     state = {"identity": identity, "accepted": {}, "failed_attempts": []}
     if checkpoint.exists():
         state = json.loads(checkpoint.read_text(encoding="utf-8"))
@@ -1430,7 +1446,7 @@ def generate_assessment(
                         )
                         author_parts = (
                             author_closed_prose_parts
-                            if contract_authoring_version in {"v12", "v13"}
+                            if contract_authoring_version in {"v12", "v13", "v14"}
                             else author_graph_tree_parts
                         )
                         raw, part_evidence = author_parts(
@@ -1442,7 +1458,7 @@ def generate_assessment(
                             run_identity=identity,
                         )
                         record["part_evidence"] = part_evidence
-                        if contract_authoring_version in {"v12", "v13"}:
+                        if contract_authoring_version in {"v12", "v13", "v14"}:
                             exercise, accepted_evidence = evaluate_closed_prose_draft(
                                 raw,
                                 [item["response"] for item in part_evidence["parts"]],
@@ -1472,7 +1488,7 @@ def generate_assessment(
                         break
                     if (
                         contract_graph_tree
-                        and contract_authoring_version == "v13"
+                        and contract_authoring_version in {"v13", "v14"}
                         and key == "2"
                     ):
                         contract = build_database_contract(seed)
@@ -1520,6 +1536,61 @@ def generate_assessment(
                                 ),
                                 "candidate_sha256": digest(raw),
                                 "database_selection": selection_evidence,
+                                "references": references[position],
+                                "deterministic": checks,
+                                "originality": originality,
+                            },
+                        }
+                        atomic_json(checkpoint, state)
+                        break
+                    if (
+                        contract_graph_tree
+                        and contract_authoring_version == "v14"
+                        and key == "3"
+                    ):
+                        contract = build_network_contract(seed)
+                        selection_path = checkpoint.with_name(
+                            f"{checkpoint.name}.exercise-3.attempt-{attempt}.selection.json"
+                        )
+                        raw, selection_evidence = author_network_selection(
+                            client,
+                            task,
+                            contract,
+                            references[position],
+                            selection_path,
+                            run_identity=identity,
+                        )
+                        record["network_selection"] = selection_evidence
+                        record["candidate"] = raw
+                        exercise = NSIExercise.model_validate(raw)
+                        _check_exercise_plan(exercise, task, key)
+                        checks = [
+                            verify_contract(question.verification)
+                            for question in exercise.questions
+                        ]
+                        if any(check["state"] != "passed" for check in checks):
+                            raise ValueError("Contrat déterministe de réseau refusé")
+                        within_paper_history = [
+                            exercise_candidate_text(
+                                NSIExercise.model_validate(
+                                    state["accepted"][previous_key]["exercise"]
+                                )
+                            )
+                            for previous_key in sorted(state["accepted"])
+                        ]
+                        originality = _originality(
+                            exercise,
+                            references[position],
+                            [*originality_history, *within_paper_history],
+                        )
+                        state["accepted"][key] = {
+                            "exercise": exercise.model_dump(mode="json"),
+                            "evidence": {
+                                "exercise_sha256": digest(
+                                    exercise.model_dump(mode="json")
+                                ),
+                                "candidate_sha256": digest(raw),
+                                "network_selection": selection_evidence,
                                 "references": references[position],
                                 "deterministic": checks,
                                 "originality": originality,
@@ -1765,6 +1836,7 @@ def validate_package(package: dict):
             CONTRACT_PROMPT_VERSION,
             CLOSED_PROSE_PROMPT_VERSION,
             CONTROLLED_DATABASE_PROMPT_VERSION,
+            CONTROLLED_NETWORK_PROMPT_VERSION,
             *LEGACY_IMPLEMENTATIONS,
         }
         or not identity.get("model_digest")
@@ -1781,6 +1853,7 @@ def validate_package(package: dict):
         CONTRACT_PROMPT_VERSION,
         CLOSED_PROSE_PROMPT_VERSION,
         CONTROLLED_DATABASE_PROMPT_VERSION,
+        CONTROLLED_NETWORK_PROMPT_VERSION,
     } and (
         type(seed) is not int
         or identity.get("graph_tree_contract_sha256")
@@ -1790,18 +1863,29 @@ def validate_package(package: dict):
     if identity["prompt_version"] in {
         CLOSED_PROSE_PROMPT_VERSION,
         CONTROLLED_DATABASE_PROMPT_VERSION,
+        CONTROLLED_NETWORK_PROMPT_VERSION,
     } and (
         identity.get("prose_contract_version") != PROSE_CONTRACT_VERSION
         or identity.get("prose_catalogue_sha256") != prose_catalogue_digest()
     ):
         raise ValueError("Identité du texte fermé incompatible")
-    if identity["prompt_version"] == CONTROLLED_DATABASE_PROMPT_VERSION and (
+    if identity["prompt_version"] in {
+        CONTROLLED_DATABASE_PROMPT_VERSION,
+        CONTROLLED_NETWORK_PROMPT_VERSION,
+    } and (
         identity.get("database_contract_sha256") != build_database_contract(seed).digest
         or identity.get("database_prose_contract_version") != DATABASE_PROSE_VERSION
         or identity.get("database_prose_catalogue_sha256")
         != database_catalogue_digest()
     ):
         raise ValueError("Identité du contrat de base de données incompatible")
+    if identity["prompt_version"] == CONTROLLED_NETWORK_PROMPT_VERSION and (
+        identity.get("network_contract_sha256") != build_network_contract(seed).digest
+        or identity.get("network_prose_contract_version") != NETWORK_PROSE_VERSION
+        or identity.get("network_prose_catalogue_sha256")
+        != network_catalogue_digest()
+    ):
+        raise ValueError("Identité du contrat de réseau incompatible")
     expected_blueprint = (
         (
             _tasks_for_seed(seed)
@@ -1811,6 +1895,7 @@ def validate_package(package: dict):
                 CONTRACT_PROMPT_VERSION,
                 CLOSED_PROSE_PROMPT_VERSION,
                 CONTROLLED_DATABASE_PROMPT_VERSION,
+                CONTROLLED_NETWORK_PROMPT_VERSION,
                 "fr-nsi-written-2027-v9",
                 "fr-nsi-written-2027-v8",
                 "fr-nsi-written-2027-v7",
@@ -1863,7 +1948,11 @@ def validate_package(package: dict):
             raise ValueError("Exercise evidence hash mismatch")
         if (
             identity["prompt_version"]
-            in {CLOSED_PROSE_PROMPT_VERSION, CONTROLLED_DATABASE_PROMPT_VERSION}
+            in {
+                CLOSED_PROSE_PROMPT_VERSION,
+                CONTROLLED_DATABASE_PROMPT_VERSION,
+                CONTROLLED_NETWORK_PROMPT_VERSION,
+            }
             and exercise.id == "1"
         ):
             replay_closed_prose_evidence(
@@ -1878,7 +1967,10 @@ def validate_package(package: dict):
             previous_texts.append(exercise_candidate_text(exercise))
             continue
         if (
-            identity["prompt_version"] == CONTROLLED_DATABASE_PROMPT_VERSION
+            identity["prompt_version"] in {
+                CONTROLLED_DATABASE_PROMPT_VERSION,
+                CONTROLLED_NETWORK_PROMPT_VERSION,
+            }
             and exercise.id == "2"
         ):
             raw = replay_database_selection(
@@ -1901,6 +1993,32 @@ def validate_package(package: dict):
                 != _originality(exercise, evidence["references"], previous_texts)
             ):
                 raise ValueError("Database exercise evidence does not replay exactly")
+            previous_texts.append(exercise_candidate_text(exercise))
+            continue
+        if (
+            identity["prompt_version"] == CONTROLLED_NETWORK_PROMPT_VERSION
+            and exercise.id == "3"
+        ):
+            raw = replay_network_selection(
+                expected_blueprint[2],
+                build_network_contract(seed),
+                evidence.get("references"),
+                evidence.get("network_selection"),
+                run_identity=identity,
+            )
+            rebuilt = NSIExercise.model_validate(raw)
+            checks = [
+                verify_contract(question.verification) for question in rebuilt.questions
+            ]
+            if (
+                rebuilt.model_dump(mode="json") != exercise.model_dump(mode="json")
+                or evidence.get("candidate_sha256") != digest(raw)
+                or evidence.get("deterministic") != checks
+                or any(check["state"] != "passed" for check in checks)
+                or evidence.get("originality")
+                != _originality(exercise, evidence["references"], previous_texts)
+            ):
+                raise ValueError("Network exercise evidence does not replay exactly")
             previous_texts.append(exercise_candidate_text(exercise))
             continue
         if identity["prompt_version"] == CONTRACT_PROMPT_VERSION and exercise.id == "1":
