@@ -121,6 +121,17 @@ def test_french_pdf_has_real_credit_language_and_no_official_claim(tmp_path):
                     assert word[0] >= 0 and word[2] <= page.rect.width
                     assert word[1] >= 0 and word[3] <= page.rect.height
 
+        correction = tmp_path / f"correction-{large}.pdf"
+        render_assessment(correction, exercises, correction=True, large_print=large)
+        with pymupdf.open(correction) as pdf:
+            cover = " ".join(pdf[0].get_text().split())
+            assert "CORRIGÉ PROPOSÉ ET BARÈME INDICATIF" in cover
+            assert "corrigé proposé" in pdf.metadata["title"].lower()
+            assert "enseignant" in cover
+            assert "Dès que ce sujet vous est remis" not in cover
+            assert "Le candidat traite les trois exercices" not in cover
+            assert "L’usage de la calculatrice" not in cover
+
 
 def test_french_pdf_renders_structured_tables_and_graphs_as_vectors(tmp_path):
     from Backend.Core.france.nsi import NSIExercise
