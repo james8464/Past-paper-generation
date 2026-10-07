@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791271279.9744558,
-    "ast_hash": "000071cf6608c482d7ca37c1956e7127",
+    "mtime": 1791355466.2667148,
+    "ast_hash": "af9e9a9488199f74e868084f57e240ae",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2285,8 +2285,8 @@
     "semantic_hash": ""
   },
   "docs/occitanie-project.md": {
-    "mtime": 1791270410.0995338,
-    "ast_hash": "7d06ee1d5662736c0b8be4479b662bc3",
+    "mtime": 1791355896.2059467,
+    "ast_hash": "0cd35098171b9bf68b385cef97e8b5d9",
     "semantic_hash": ""
   },
   "docs/project-analysis/IMPLEMENTATION_AND_FIDELITY_REPORT.md": {
@@ -2345,8 +2345,8 @@
     "semantic_hash": ""
   },
   "docs/quality/reference-live-fidelity-2026-09-28.md": {
-    "mtime": 1791347107.1700833,
-    "ast_hash": "b3db31b49069db08fad9e29f701ce2ae",
+    "mtime": 1791355942.8193102,
+    "ast_hash": "9151b90f7687c2fe038ee8cbb521f3ff",
     "semantic_hash": ""
   },
   "docs/quality/teacher-feedback-review-2026-09-27.md": {
@@ -2660,8 +2660,33 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v12-live-diagnostic-2026-10-07.md": {
-    "mtime": 1791347107.1705012,
-    "ast_hash": "98ffddb52ca1fa47ac8be49d5d54e70f",
+    "mtime": 1791348269.4840658,
+    "ast_hash": "38079cf49a866e579eb1d4f0df5e9ded",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/database_contract.py": {
+    "mtime": 1791356778.1918776,
+    "ast_hash": "daa320f480ea969460d3bb85f2a2756d",
+    "semantic_hash": ""
+  },
+  "tests/test_french_database_contract.py": {
+    "mtime": 1791356717.4859202,
+    "ast_hash": "2ab03a0102772b9ceeac7852c5f34c0a",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v13-live-diagnostic-2026-10-07.md": {
+    "mtime": 1791355942.818937,
+    "ast_hash": "1635d7cb15d3e925ed757f255f137a5c",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-07-french-nsi-controlled-database.md": {
+    "mtime": 1791356669.429724,
+    "ast_hash": "e7ec1c507b7c861c28fda202905e1e3e",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-07-french-nsi-controlled-database-design.md": {
+    "mtime": 1791356489.8626971,
+    "ast_hash": "52d1447b61df9ff856a12aa939e3eda5",
     "semantic_hash": ""
   }
 }
