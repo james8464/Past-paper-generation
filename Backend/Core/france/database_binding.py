@@ -8,7 +8,7 @@ from Backend.Core.france.database_contract import DatabaseContract
 def database_materials(contract: DatabaseContract) -> list[dict]:
     data = contract.to_dict()
     titles = {
-        "agent": "Agents de l'atelier",
+        "agent": "Agents enregistrés",
         "categorie": "Catégories d'incident",
         "incident": "Incidents enregistrés",
     }

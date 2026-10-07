@@ -221,6 +221,25 @@ def validate_database_contract_pdf(
         ]
     text = "\n".join(lines)
     flat = " ".join(text.split())
+    heading = f"Exercice 2 ({exercise.target_points.replace('.', ',')} points)"
+    if text.count(heading) != 1:
+        raise ValueError("Database exercise credit differs from locked blueprint")
+    for task_id in data["task_ids"]:
+        if (
+            sum(
+                bool(re.match(rf"^{re.escape(task_id)}\.(?:\s|$)", line))
+                for line in lines
+            )
+            != 1
+        ):
+            raise ValueError(f"Database question label {task_id} missing or duplicated")
+    for key_fact in (
+        "id_agent, id_cat et id_incident sont des clés primaires",
+        "id_agent référence agent.id_agent",
+        "id_cat référence categorie.id_cat",
+    ):
+        if key_fact not in flat:
+            raise ValueError("Database key explanation differs from locked contract")
     materials = database_materials(contract)
     headers = [f"{item['title']} — {item['id']}" for item in materials]
     for index, material in enumerate(materials):

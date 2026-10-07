@@ -43,7 +43,7 @@ _QUESTIONS = {
         "Corrigez la jointure de la requête affichée pour obtenir les catégories réelles des incidents ; combien de lignes sont renvoyées ?",
     ),
     "2d": (
-        "Écrivez une requête UPDATE ne modifiant que l'incident {incident_id} pour le rendre clos. Combien d'incidents sont alors clos ?",
+        "Écrivez une requête UPDATE qui clôt uniquement l'incident {incident_id}. Combien d'incidents sont alors clos ?",
         "Rendez clos uniquement l'incident {incident_id} au moyen de SQL, puis indiquez le nouveau nombre d'incidents clos.",
     ),
     "2e": (

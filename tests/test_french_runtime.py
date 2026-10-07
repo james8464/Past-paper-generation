@@ -237,6 +237,17 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
             "Critère de jointure manquant",
             correction=True,
         )
+        reject_tampered_database(
+            "sujet.pdf",
+            "Exercice 2 (5,5 points)",
+            "Exercice 2 (6,5 points)",
+            correction=False,
+        )
+        reject_tampered_database(
+            "sujet.pdf", "agent.id_agent", "agent.id_inconnu", correction=False
+        )
+        reject_tampered_database("sujet.pdf", "2e.", "2x.", correction=False)
+        reject_tampered_database("corrige.pdf", "2f.", "2x.", correction=True)
         original_manifest = runtime.graph_edge_manifest
         monkeypatch.setattr(
             runtime, "graph_edge_manifest", lambda graph: "Arêtes incorrectes"

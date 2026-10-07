@@ -118,3 +118,40 @@ def test_database_resume_refuses_changed_identity_and_tampered_response(tmp_path
         replay_database_selection(
             task, contract, [], tampered, run_identity=_identity()
         )
+
+
+def test_database_resume_refuses_changed_contract_or_catalogue(tmp_path, monkeypatch):
+    from Backend.Core.france import database_authoring
+
+    task = _tasks_for_seed(270100)[1]
+    contract = build_database_contract(270100)
+    draft = tmp_path / "db-selection.json"
+    database_authoring.author_database_selection(
+        SelectionClient([_selection()]),
+        task,
+        contract,
+        [],
+        draft,
+        run_identity=_identity(),
+    )
+    with pytest.raises(ValueError, match=r"identity|identit"):
+        database_authoring.author_database_selection(
+            SelectionClient([]),
+            task,
+            build_database_contract(270101),
+            [],
+            draft,
+            run_identity=_identity(),
+        )
+    monkeypatch.setattr(
+        database_authoring, "database_catalogue_digest", lambda: "changed"
+    )
+    with pytest.raises(ValueError, match=r"identity|identit"):
+        database_authoring.author_database_selection(
+            SelectionClient([]),
+            task,
+            contract,
+            [],
+            draft,
+            run_identity=_identity(),
+        )

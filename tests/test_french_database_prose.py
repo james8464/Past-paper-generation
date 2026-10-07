@@ -70,6 +70,17 @@ def test_database_renderer_prints_source_data_and_correct_answers():
     )
 
 
+def test_service_scene_has_no_atelier_specific_table_title():
+    contract, plans, selection = _setup()
+    selection["scene_id"] = "service"
+    exercise = NSIExercise.model_validate(
+        render_database_candidate(contract, selection, plans)
+    )
+    assert all(
+        "atelier" not in material.title.lower() for material in exercise.materials
+    )
+
+
 def test_database_marking_is_specific_and_does_not_embed_code_fences():
     contract, plans, selection = _setup()
     exercise = NSIExercise.model_validate(
