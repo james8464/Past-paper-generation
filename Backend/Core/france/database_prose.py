@@ -47,12 +47,12 @@ _QUESTIONS = {
         "Rendez clos uniquement l'incident {incident_id} au moyen de SQL, puis indiquez le nouveau nombre d'incidents clos.",
     ),
     "2e": (
-        "Proposez un test par assertion, construit avec les statuts des quatre incidents, qui révèle le défaut de `nombre_clos`.",
+        "Proposez un test par assertion, construit avec les statuts des quatre incidents, qui révèle le défaut de nombre_clos.",
         "Écrivez une assertion vérifiant le nombre d'incidents clos à partir des lignes fournies et montrez qu'elle échoue sur le code affiché.",
     ),
     "2f": (
-        "Corrigez la condition fautive de `nombre_clos` et justifiez le résultat sur les quatre incidents affichés.",
-        "Quelle condition faut-il changer dans `nombre_clos` ? Donnez le résultat corrigé et expliquez pourquoi.",
+        "Corrigez la condition fautive de nombre_clos et justifiez le résultat sur les quatre incidents affichés.",
+        "Quelle condition faut-il changer dans nombre_clos ? Donnez le résultat corrigé et expliquez pourquoi.",
     ),
 }
 
@@ -116,17 +116,43 @@ def validate_database_selection(contract: DatabaseContract, selection: dict) -> 
     return selection
 
 
-def _rubric(task_id: str, answer: str, points: str, variant: int) -> list[dict]:
-    prefix = "Réponse attendue : " if variant == 1 else "Résultat vérifié : "
-    if task_id in ("2e", "2f") and points == "1.5":
+def _rubric(
+    task_id: str, contract: DatabaseContract, points: str, variant: int
+) -> list[dict]:
+    data = contract.to_dict()
+    expected = data["expected"]
+    incident_id = data["tables"]["incident"]["rows"][0][0]
+    prefix = "Points accordés pour " if variant == 1 else "Vérifier "
+    criteria = {
+        "2a": ["la clé étrangère invalide : id_agent = 999 n'existe pas dans agent."],
+        "2b": [
+            f"la catégorie {expected['correct_join'][0][1]} de l'incident {incident_id} via id_cat."
+        ],
+        "2c": [
+            "la jointure incident.id_cat = categorie.id_cat et ses "
+            f"{len(expected['correct_join'])} lignes."
+        ],
+        "2d": [
+            f"l'UPDATE borné à l'incident {incident_id} ; "
+            f"{expected['updated_count']} ligne modifiée et "
+            f"{expected['closed_after_update']} incidents clos."
+        ],
+        "2e": [
+            f"un test assert qui attend {expected['closed_before']} incidents clos.",
+            f"l'échec du test : le code compte les statuts ouvert et renvoie {expected['faulty_python_count']}.",
+        ],
+        "2f": [
+            "la condition corrigée statut == 'clos'.",
+            f"la justification sur les données : {expected['closed_before']} clos, "
+            f"contre {expected['faulty_python_count']} pour le code fautif.",
+        ],
+    }[task_id]
+    if len(criteria) == 2 and points == "1.5":
         return [
-            {"points": "0.5", "criterion": prefix + answer},
-            {
-                "points": "1",
-                "criterion": "Explication du résultat à partir des quatre données affichées.",
-            },
+            {"points": "0.5", "criterion": prefix + criteria[0]},
+            {"points": "1", "criterion": prefix + criteria[1]},
         ]
-    return [{"points": points, "criterion": prefix + answer}]
+    return [{"points": points, "criterion": prefix + " ".join(criteria)}]
 
 
 def render_database_candidate(
@@ -148,15 +174,15 @@ def render_database_candidate(
     first_incident = data["tables"]["incident"]["rows"][0][0]
     context = (
         lead
-        + " Les attributs `id_agent`, `id_cat` et `id_incident` sont des clés primaires "
-        + "dans leur relation respective. Dans `incident`, `id_agent` référence "
-        + "`agent.id_agent` et `id_cat` référence `categorie.id_cat`. "
+        + " Les attributs id_agent, id_cat et id_incident sont des clés primaires "
+        + "dans leur relation respective. Dans incident, id_agent référence "
+        + "agent.id_agent et id_cat référence categorie.id_cat. "
         + "Les trois tableaux ci-dessous donnent l'état initial des données. "
         + "Pour les questions 2c et 2d, les requêtes concernent cet état initial. "
         + "La requête suivante est erronée :\n\n```sql\n"
         + data["faulty_sql"]
         + "\n```\n\nLa fonction suivante doit compter les incidents clos. "
-        + "Chaque argument est une liste de dictionnaires ayant au moins la clé `statut` :\n\n```python\n"
+        + "Son argument est une liste de dictionnaires ayant au moins la clé statut :\n\n```python\n"
         + data["faulty_python"]
         + "\n```"
     )
@@ -174,7 +200,7 @@ def render_database_candidate(
                 "prompt": prompt,
                 "points": plan["points"],
                 "answer": answer,
-                "marking": _rubric(task_id, answer, plan["points"], rubric_variant),
+                "marking": _rubric(task_id, contract, plan["points"], rubric_variant),
                 "material_ids": ["agent", "categorie", "incident"],
                 "curriculum_codes": [plan["required_curriculum_code"]],
                 "operation": plan["operation"],

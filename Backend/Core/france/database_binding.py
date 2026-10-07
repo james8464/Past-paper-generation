@@ -54,17 +54,20 @@ def canonical_database_answer(task_id: str, contract: DatabaseContract) -> str:
         )
     if task_id == "2e":
         statuses = [row[3] for row in data["tables"]["incident"]["rows"]]
-        input_value = ", ".join("{'statut': '" + status + "'}" for status in statuses)
+        input_value = ",\n    ".join(
+            "{'statut': '" + status + "'}" for status in statuses
+        )
         return (
-            "Un test révélateur est `assert nombre_clos(["
+            "Un test révélateur est :\n```python\nassert nombre_clos([\n    "
             + input_value
-            + f"]) == {expected['closed_before']}`. Le programme fourni renvoie "
+            + f"\n]) == {expected['closed_before']}\n```\nLe programme fourni renvoie "
             f"{expected['faulty_python_count']} : l'assertion échoue."
         )
     if task_id == "2f":
         return (
-            "Remplacer `if incident['statut'] == 'ouvert':` par "
-            "`if incident['statut'] == 'clos':`. La fonction corrigée renvoie "
+            "Remplacer la condition fautive par :\n"
+            "```python\nif incident['statut'] == 'clos':\n```\n"
+            "La fonction corrigée renvoie "
             f"{expected['closed_before']} sur les quatre lignes affichées, "
             f"et non {expected['faulty_python_count']}."
         )

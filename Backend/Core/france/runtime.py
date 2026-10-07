@@ -13,6 +13,11 @@ from urllib.request import Request
 import pymupdf
 
 from Backend.Core.events import emit, emit_progress
+from Backend.Core.france.database_binding import database_materials
+from Backend.Core.france.database_contract import (
+    DatabaseContract,
+    build_database_contract,
+)
 from Backend.Core.france.graph_tree_binding import canonical_answer, graph_edge_manifest
 from Backend.Core.france.graph_tree_contract import (
     GraphTreeContract,
@@ -191,6 +196,70 @@ def validate_contract_pdf(
                     raise ValueError(f"Barème {question.id} révélé dans le sujet")
 
 
+def validate_database_contract_pdf(
+    path: Path,
+    contract: DatabaseContract,
+    *,
+    correction: bool,
+    exercise: NSIExercise,
+) -> None:
+    """Check that both PDF roles print the exact locked database exercise."""
+    data = contract.to_dict()
+    if (
+        exercise.id != "2"
+        or [question.id for question in exercise.questions] != data["task_ids"]
+    ):
+        raise ValueError("Database exercise does not match its contract")
+    with pymupdf.open(path) as pdf:
+        lines = [
+            line.strip()
+            for page in pdf
+            for line in page.get_text().splitlines()
+            if line.strip()
+            and not line.startswith("Paper Creator —")
+            and not line.startswith("Page : ")
+        ]
+    text = "\n".join(lines)
+    flat = " ".join(text.split())
+    materials = database_materials(contract)
+    headers = [f"{item['title']} — {item['id']}" for item in materials]
+    for index, material in enumerate(materials):
+        header = headers[index]
+        following = headers[index + 1] if index < 2 else "2a."
+        if text.count(header) != 1 or following not in text:
+            raise ValueError("Database table heading missing from PDF")
+        printed = (
+            text.split(header + "\n", 1)[1].split("\n" + following, 1)[0].splitlines()
+        )
+        expected = list(material["columns"]) + [
+            cell for row in material["rows"] for cell in row
+        ]
+        if printed != expected:
+            raise ValueError("Database table rows differ from locked contract")
+    if (
+        " ".join(data["faulty_sql"].split()) not in flat
+        or " ".join(data["faulty_python"].split()) not in flat
+    ):
+        raise ValueError("Database SQL or Python code missing from PDF")
+    for question in exercise.questions:
+        prompt = " ".join(question.prompt.split())
+        if flat.count(prompt) != 1:
+            raise ValueError(f"Database prompt {question.id} missing or duplicated")
+        answer = " ".join(re.sub(r"```(?:sql|python)?", " ", question.answer).split())
+        if correction and answer not in flat:
+            raise ValueError(f"Database answer {question.id} missing")
+        if not correction and answer in flat:
+            raise ValueError(f"Database answer {question.id} leaked into paper")
+        for credit in question.marking:
+            criterion = " ".join(credit.criterion.split())
+            label = credit.points.replace(".", ",")
+            unit = "point" if credit.points in {"0.5", "1", "1.0"} else "points"
+            if correction and f"{label} {unit} {criterion}" not in flat:
+                raise ValueError(f"Database credit {question.id} missing")
+            if not correction and criterion in flat:
+                raise ValueError(f"Database rubric {question.id} leaked into paper")
+
+
 def load_originality_history(output: Path) -> list[str]:
     """Read a bounded set of candidate-only text from earlier local bundles."""
     history: list[str] = []
@@ -260,11 +329,13 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
+            contract_authoring_version="v13",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
         exercises = [NSIExercise.model_validate(item) for item in package["exercises"]]
         graph_tree_contract = build_graph_tree_contract(args.seed, "1")
+        database_contract = build_database_contract(args.seed)
         paths = {}
         for role, correction, filename in (
             ("question_paper", False, "sujet.pdf"),
@@ -288,6 +359,12 @@ def handle_generate_assessment(args) -> int:
                 graph_tree_contract,
                 correction=correction,
                 exercise=exercises[0],
+            )
+            validate_database_contract_pdf(
+                path,
+                database_contract,
+                correction=correction,
+                exercise=exercises[1],
             )
             paths[role] = path
         atomic_json(staging / "assessment.json", package)

@@ -10,7 +10,7 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
     from hashlib import sha256
 
     from Backend.Core.france import runtime
-    from tests.test_nsi_pipeline import ClosedProseFrenchClient, make_index
+    from tests.test_nsi_pipeline import ControlledDatabaseFrenchClient, make_index
 
     index = tmp_path / "references.sqlite"
     make_index(index)
@@ -27,7 +27,7 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
     )
     monkeypatch.setattr(runtime, "model_identity", lambda *args: "fixture-digest")
     monkeypatch.setattr(
-        runtime, "FrenchOllamaClient", lambda **kwargs: ClosedProseFrenchClient()
+        runtime, "FrenchOllamaClient", lambda **kwargs: ControlledDatabaseFrenchClient()
     )
     if failure == "render":
 
@@ -58,7 +58,7 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
                 == artifact["sha256"]
             )
         assert manifest["status"] == "unreviewed_draft"
-        assert manifest["identity"]["prompt_version"] == "fr-nsi-written-2027-v12"
+        assert manifest["identity"]["prompt_version"] == "fr-nsi-written-2027-v13"
         import pymupdf
 
         package = json.loads((bundles[0] / "assessment.json").read_text())
@@ -67,9 +67,13 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
             part_evidence["contract_sha256"]
             == manifest["identity"]["graph_tree_contract_sha256"]
         )
+        from Backend.Core.france.database_contract import build_database_contract
         from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
         from Backend.Core.france.nsi import NSIExercise
-        from Backend.Core.france.runtime import validate_contract_pdf
+        from Backend.Core.france.runtime import (
+            validate_contract_pdf,
+            validate_database_contract_pdf,
+        )
 
         contract = build_graph_tree_contract(args.seed, "1")
         exercise = NSIExercise.model_validate(package["exercises"][0])
@@ -78,6 +82,20 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
         )
         validate_contract_pdf(
             bundles[0] / "corrige.pdf", contract, correction=True, exercise=exercise
+        )
+        database_contract = build_database_contract(args.seed)
+        database_exercise = NSIExercise.model_validate(package["exercises"][1])
+        validate_database_contract_pdf(
+            bundles[0] / "sujet.pdf",
+            database_contract,
+            correction=False,
+            exercise=database_exercise,
+        )
+        validate_database_contract_pdf(
+            bundles[0] / "corrige.pdf",
+            database_contract,
+            correction=True,
+            exercise=database_exercise,
         )
         import copy
 
@@ -170,6 +188,55 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
             "Critère manquant.",
             correction=True,
         )
+
+        def reject_tampered_database(role, before, after, *, correction):
+            with original_open(bundles[0] / role) as pdf:
+                pages = [page.get_text() for page in pdf]
+            matching = [index for index, page in enumerate(pages) if before in page]
+            assert len(matching) == 1
+            pages[matching[0]] = pages[matching[0]].replace(before, after, 1)
+            with monkeypatch.context() as patch:
+                patch.setattr(
+                    runtime.pymupdf, "open", lambda _path: ExtractedDocument(pages)
+                )
+                with pytest.raises(ValueError):
+                    validate_database_contract_pdf(
+                        bundles[0] / role,
+                        database_contract,
+                        correction=correction,
+                        exercise=database_exercise,
+                    )
+
+        reject_tampered_database(
+            "sujet.pdf",
+            "101\n1\n2\nouvert\n",
+            "101\n1\n2\nclos\n",
+            correction=False,
+        )
+        reject_tampered_database(
+            "sujet.pdf",
+            "incident.id_agent = categorie.id_cat",
+            "incident.id_cat = categorie.id_cat",
+            correction=False,
+        )
+        reject_tampered_database(
+            "sujet.pdf",
+            "if incident['statut'] == 'ouvert':",
+            "if incident['statut'] == 'clos':",
+            correction=False,
+        )
+        reject_tampered_database(
+            "sujet.pdf",
+            "Écrivez une requête UPDATE",
+            "Consigne de base de données manquante",
+            correction=False,
+        )
+        reject_tampered_database(
+            "corrige.pdf",
+            "Points accordés pour la jointure",
+            "Critère de jointure manquant",
+            correction=True,
+        )
         original_manifest = runtime.graph_edge_manifest
         monkeypatch.setattr(
             runtime, "graph_edge_manifest", lambda graph: "Arêtes incorrectes"
@@ -197,7 +264,7 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
         with pymupdf.open(bundles[0] / "corrige.pdf") as pdf:
             # Structured resources add space, but every exercise remains present
             # with its final marking entry and no empty trailing page.
-            assert 5 <= len(pdf) <= (12 if large_print else 9)
+            assert 5 <= len(pdf) <= (12 if large_print else 10)
             last_page = pdf[-1].get_text()
             assert "3e." in last_page and "3f." in last_page
             text = " ".join(page.get_text() for page in pdf)

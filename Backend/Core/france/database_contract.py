@@ -23,12 +23,17 @@ _FOREIGN_KEYS = [
     ["incident", "id_cat", "categorie", "id_cat"],
 ]
 _SELECT_PREFIX = (
-    "SELECT incident.id_incident, categorie.libelle "
-    "FROM incident JOIN categorie ON "
+    "SELECT incident.id_incident, categorie.libelle\n"
+    "FROM incident\nJOIN categorie ON\n    "
 )
-_FAULTY_SQL = _SELECT_PREFIX + "incident.id_agent = categorie.id_cat ORDER BY incident.id_incident"
-_CORRECT_SQL = _SELECT_PREFIX + "incident.id_cat = categorie.id_cat ORDER BY incident.id_incident"
-_UPDATE_SQL = "UPDATE incident SET statut = 'clos' WHERE id_incident = {incident_id}"
+_FAULTY_SQL = (
+    _SELECT_PREFIX
+    + "incident.id_agent = categorie.id_cat\nORDER BY incident.id_incident"
+)
+_CORRECT_SQL = (
+    _SELECT_PREFIX + "incident.id_cat = categorie.id_cat\nORDER BY incident.id_incident"
+)
+_UPDATE_SQL = "UPDATE incident SET statut = 'clos'\nWHERE id_incident = {incident_id}"
 _FAULTY_PYTHON = (
     "def nombre_clos(incidents):\n"
     "    total = 0\n"
@@ -63,7 +68,10 @@ def _validated_rows(tables: object) -> dict[str, list[list]]:
         rows_by_table[name] = rows
 
     for row in rows_by_table["agent"]:
-        if any(not isinstance(value, str) or not value.isalpha() or len(value) > 24 for value in row[1:]):
+        if any(
+            not isinstance(value, str) or not value.isalpha() or len(value) > 24
+            for value in row[1:]
+        ):
             raise ValueError("Invalid agent value")
     for row in rows_by_table["categorie"]:
         if not isinstance(row[1], str) or not row[1].isalpha() or len(row[1]) > 24:
@@ -91,9 +99,7 @@ def _expected(rows: dict[str, list[list]], update_sql: str) -> dict:
         )
         for name, columns in _COLUMNS.items():
             slots = ",".join("?" for _ in columns)
-            connection.executemany(
-                f"INSERT INTO {name} VALUES ({slots})", rows[name]
-            )
+            connection.executemany(f"INSERT INTO {name} VALUES ({slots})", rows[name])
         faulty = [list(row) for row in connection.execute(_FAULTY_SQL)]
         correct = [list(row) for row in connection.execute(_CORRECT_SQL)]
         closed_before = sum(row[3] == "clos" for row in rows["incident"])
@@ -104,10 +110,14 @@ def _expected(rows: dict[str, list[list]], update_sql: str) -> dict:
         if rows["incident"][0][3] != "ouvert":
             raise ValueError("Update target must begin open")
         cursor = connection.execute(update_sql)
-        updated = [row[0] for row in connection.execute(
-            "SELECT id_incident FROM incident WHERE statut = 'clos' "
-            "AND id_incident = ?", (target,)
-        )]
+        updated = [
+            row[0]
+            for row in connection.execute(
+                "SELECT id_incident FROM incident WHERE statut = 'clos' "
+                "AND id_incident = ?",
+                (target,),
+            )
+        ]
         return {
             "faulty_join": faulty,
             "correct_join": correct,
@@ -139,9 +149,18 @@ class DatabaseContract:
     @classmethod
     def from_dict(cls, data: dict) -> DatabaseContract:
         if not isinstance(data, dict) or set(data) - {
-            "version", "seed", "exercise_id", "task_ids", "tables",
-            "foreign_keys", "faulty_sql", "correct_sql", "update_sql",
-            "faulty_python", "correct_python", "expected",
+            "version",
+            "seed",
+            "exercise_id",
+            "task_ids",
+            "tables",
+            "foreign_keys",
+            "faulty_sql",
+            "correct_sql",
+            "update_sql",
+            "faulty_python",
+            "correct_python",
+            "expected",
         }:
             raise ValueError("Unexpected database contract field")
         if (
@@ -167,7 +186,11 @@ class DatabaseContract:
         canonical = {**data, "expected": expected}
         if len(canonical) != 12:
             raise ValueError("Missing database contract field")
-        return cls(json.dumps(canonical, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+        return cls(
+            json.dumps(
+                canonical, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+            )
+        )
 
 
 def build_database_contract(seed: int, exercise_id: str = "2") -> DatabaseContract:
@@ -183,20 +206,28 @@ def build_database_contract(seed: int, exercise_id: str = "2") -> DatabaseContra
         [103, 2, 1, "clos"],
         [104, 3, 2, "clos"],
     ]
-    return DatabaseContract.from_dict({
-        "version": 1,
-        "seed": seed,
-        "exercise_id": exercise_id,
-        "task_ids": list(_TASK_IDS),
-        "tables": {
-            "agent": {"columns": _COLUMNS["agent"], "rows": [[i, names[i - 1], sectors[i - 1]] for i in (1, 2, 3)]},
-            "categorie": {"columns": _COLUMNS["categorie"], "rows": [[i, labels[i - 1]] for i in (1, 2, 3)]},
-            "incident": {"columns": _COLUMNS["incident"], "rows": incidents},
-        },
-        "foreign_keys": _FOREIGN_KEYS,
-        "faulty_sql": _FAULTY_SQL,
-        "correct_sql": _CORRECT_SQL,
-        "update_sql": _UPDATE_SQL.format(incident_id=incidents[0][0]),
-        "faulty_python": _FAULTY_PYTHON,
-        "correct_python": _CORRECT_PYTHON,
-    })
+    return DatabaseContract.from_dict(
+        {
+            "version": 1,
+            "seed": seed,
+            "exercise_id": exercise_id,
+            "task_ids": list(_TASK_IDS),
+            "tables": {
+                "agent": {
+                    "columns": _COLUMNS["agent"],
+                    "rows": [[i, names[i - 1], sectors[i - 1]] for i in (1, 2, 3)],
+                },
+                "categorie": {
+                    "columns": _COLUMNS["categorie"],
+                    "rows": [[i, labels[i - 1]] for i in (1, 2, 3)],
+                },
+                "incident": {"columns": _COLUMNS["incident"], "rows": incidents},
+            },
+            "foreign_keys": _FOREIGN_KEYS,
+            "faulty_sql": _FAULTY_SQL,
+            "correct_sql": _CORRECT_SQL,
+            "update_sql": _UPDATE_SQL.format(incident_id=incidents[0][0]),
+            "faulty_python": _FAULTY_PYTHON,
+            "correct_python": _CORRECT_PYTHON,
+        }
+    )

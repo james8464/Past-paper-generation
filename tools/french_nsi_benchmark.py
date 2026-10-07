@@ -28,11 +28,18 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from Backend.Core.education_context import NSI_2027  # noqa: E402
+from Backend.Core.france.database_contract import build_database_contract  # noqa: E402
+from Backend.Core.france.database_prose import (  # noqa: E402
+    DATABASE_PROSE_VERSION,
+    database_catalogue_digest,
+)
 from Backend.Core.france.graph_tree_prose import (  # noqa: E402
     PROSE_CONTRACT_VERSION,
     prose_catalogue_digest,
 )
-from Backend.Core.france.pipeline import CLOSED_PROSE_PROMPT_VERSION  # noqa: E402
+from Backend.Core.france.pipeline import (  # noqa: E402
+    CONTROLLED_DATABASE_PROMPT_VERSION,
+)
 from Backend.Core.france.runtime import model_identity  # noqa: E402
 from Backend.Core.france.source_identity import implementation_identity  # noqa: E402
 from Backend.Core.paths import REPO_ROOT  # noqa: E402
@@ -115,9 +122,15 @@ def _accepted_payload(
         return False
     if (
         manifest_identity.get("assessment") != asdict(NSI_2027)
-        or manifest_identity.get("prompt_version") != CLOSED_PROSE_PROMPT_VERSION
+        or manifest_identity.get("prompt_version") != CONTROLLED_DATABASE_PROMPT_VERSION
         or manifest_identity.get("prose_contract_version") != PROSE_CONTRACT_VERSION
         or manifest_identity.get("prose_catalogue_sha256") != prose_catalogue_digest()
+        or manifest_identity.get("database_contract_sha256")
+        != build_database_contract(identity["seed"]).digest
+        or manifest_identity.get("database_prose_contract_version")
+        != DATABASE_PROSE_VERSION
+        or manifest_identity.get("database_prose_catalogue_sha256")
+        != database_catalogue_digest()
         or manifest_identity.get("provider") != "ollama"
     ):
         return False

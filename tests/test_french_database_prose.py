@@ -70,6 +70,48 @@ def test_database_renderer_prints_source_data_and_correct_answers():
     )
 
 
+def test_database_marking_is_specific_and_does_not_embed_code_fences():
+    contract, plans, selection = _setup()
+    exercise = NSIExercise.model_validate(
+        render_database_candidate(contract, selection, plans)
+    )
+    criteria = [
+        credit.criterion
+        for question in exercise.questions
+        for credit in question.marking
+    ]
+    assert all("```" not in criterion for criterion in criteria)
+    assert "incident.id_cat = categorie.id_cat" in " ".join(criteria)
+    assert "101" in " ".join(criteria)
+    assert "ouvert" in " ".join(criteria)
+    assert "clos" in " ".join(criteria)
+    assert all(not criterion.startswith("Attribuer pour") for criterion in criteria)
+
+
+def test_database_inline_prose_is_print_ready_without_markdown_backticks():
+    contract, plans, selection = _setup()
+    exercise = NSIExercise.model_validate(
+        render_database_candidate(contract, selection, plans)
+    )
+    context_without_code = exercise.context.replace(
+        "```sql\n" + contract.to_dict()["faulty_sql"] + "\n```", ""
+    ).replace("```python\n" + contract.to_dict()["faulty_python"] + "\n```", "")
+    assert "`" not in context_without_code
+    assert "Chaque argument" not in context_without_code
+    assert all("`" not in question.prompt for question in exercise.questions)
+    assert "`" not in exercise.questions[4].answer.replace("```python", "").replace(
+        "```", ""
+    )
+    assert "`" not in exercise.questions[5].answer.replace("```python", "").replace(
+        "```", ""
+    )
+    assert "```python\nassert nombre_clos([" in exercise.questions[4].answer
+    assert (
+        "```python\nif incident['statut'] == 'clos':\n```"
+        in exercise.questions[5].answer
+    )
+
+
 @pytest.mark.parametrize(
     "change",
     [

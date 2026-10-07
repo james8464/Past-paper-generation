@@ -6,11 +6,16 @@ from hashlib import sha256
 import pytest
 
 from Backend.Core.education_context import NSI_2027
+from Backend.Core.france.database_contract import build_database_contract
+from Backend.Core.france.database_prose import (
+    DATABASE_PROSE_VERSION,
+    database_catalogue_digest,
+)
 from Backend.Core.france.graph_tree_prose import (
     PROSE_CONTRACT_VERSION,
     prose_catalogue_digest,
 )
-from Backend.Core.france.pipeline import CLOSED_PROSE_PROMPT_VERSION
+from Backend.Core.france.pipeline import CONTROLLED_DATABASE_PROMPT_VERSION
 
 
 def _passed_result(tmp_path):
@@ -25,9 +30,12 @@ def _passed_result(tmp_path):
     bundle.mkdir()
     manifest_identity = {
         "assessment": asdict(NSI_2027),
-        "prompt_version": CLOSED_PROSE_PROMPT_VERSION,
+        "prompt_version": CONTROLLED_DATABASE_PROMPT_VERSION,
         "prose_contract_version": PROSE_CONTRACT_VERSION,
         "prose_catalogue_sha256": prose_catalogue_digest(),
+        "database_contract_sha256": build_database_contract(270100).digest,
+        "database_prose_contract_version": DATABASE_PROSE_VERSION,
+        "database_prose_catalogue_sha256": database_catalogue_digest(),
         "implementation_sha256": identity["implementation"],
         "seed": identity["seed"],
         "provider": "ollama",
@@ -157,17 +165,17 @@ def test_french_benchmark_resume_requires_exact_identity(tmp_path):
     assert not accepted_result(result, {**identity, "implementation": "changed"})
 
 
-def test_french_benchmark_resume_rejects_missing_v12_prose_identity(tmp_path):
+def test_french_benchmark_resume_rejects_missing_v13_database_identity(tmp_path):
     from tools.french_nsi_benchmark import accepted_result
 
     result, identity, bundle = _passed_result(tmp_path)
     manifest = bundle / "manifest.json"
     manifest_value = json.loads(manifest.read_text())
-    manifest_value["identity"].pop("prose_contract_version")
+    manifest_value["identity"].pop("database_contract_sha256")
     manifest.write_text(json.dumps(manifest_value))
     package = bundle / "assessment.json"
     package_value = json.loads(package.read_text())
-    package_value["identity"].pop("prose_contract_version")
+    package_value["identity"].pop("database_contract_sha256")
     package.write_text(json.dumps(package_value))
     manifest_value["artifacts"]["assessment_package"]["sha256"] = sha256(
         package.read_bytes()
