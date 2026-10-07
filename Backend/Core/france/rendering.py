@@ -22,7 +22,7 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-from Backend.Core.fonts import register_font
+from Backend.Core.fonts import register_font, register_fonts
 from Backend.Core.france.nsi import (
     LANGUAGE_RUBRIC_2027,
     NSIExercise,
@@ -258,9 +258,10 @@ def render_assessment(
     correction: bool,
     large_print: bool = False,
 ):
-    regular = register_font("ExamSans")
-    bold = register_font("ExamSans-Bold")
-    italic = register_font("ExamSans-Italic")
+    faces = register_fonts("ExamSans", "ExamSans-Bold", "ExamSans-Italic")
+    regular = faces["ExamSans"]
+    bold = faces["ExamSans-Bold"]
+    italic = faces["ExamSans-Italic"]
     mono = register_font("AQACourier", fallback="Courier")
     size = 16 if large_print else 12
     body = ParagraphStyle(

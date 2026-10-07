@@ -310,6 +310,22 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
             )
         with pymupdf.open(bundles[0] / "sujet.pdf") as question_pdf:
             question_text = "\n".join(page.get_text() for page in question_pdf)
+            spans = [
+                span
+                for page in question_pdf
+                for block in page.get_text("dict")["blocks"]
+                if "lines" in block
+                for line in block["lines"]
+                for span in line["spans"]
+            ]
+            assert any(
+                "Exercice 3" in span["text"] and "Bold" in span["font"]
+                for span in spans
+            )
+            assert any(
+                "Un campus relie" in span["text"] and "Regular" in span["font"]
+                for span in spans
+            )
             assert (
                 "Sujet d'entraînement" in question_text
                 or "SUJET D’ENTRAÎNEMENT" in question_text
@@ -341,6 +357,48 @@ def test_runtime_rejects_remote_ollama_without_explicit_consent():
     validate_endpoint("https://school.example.fr", allow_remote=True)
     with pytest.raises(ValueError):
         validate_endpoint("https://key:password@school.example.fr", allow_remote=True)
+
+
+def test_french_pdf_restores_roman_body_after_other_renderer_font_mapping(tmp_path, monkeypatch):
+    import pymupdf
+    from reportlab.lib import fonts
+
+    from Backend.Core.fonts import register_fonts
+    from Backend.Core.france.network_contract import build_network_contract
+    from Backend.Core.france.network_prose import render_network_candidate
+    from Backend.Core.france.nsi import NSIExercise
+    from Backend.Core.france.pipeline import _tasks_for_seed
+    from Backend.Core.france.rendering import render_assessment
+
+    register_fonts("ExamSans", "ExamSans-Bold", "ExamSans-Italic")
+    selection = {
+        "scene_id": "campus",
+        "question_forms": {f"3{letter}": f"3{letter}-q1" for letter in "abcdef"},
+        "rubric_forms": {f"3{letter}": f"3{letter}-r1" for letter in "abcdef"},
+    }
+    exercise = NSIExercise.model_validate(
+        render_network_candidate(
+            build_network_contract(270100), selection,
+            _tasks_for_seed(270100)[2]["question_blueprint"],
+        )
+    )
+    with monkeypatch.context() as patch:
+        patch.setitem(fonts._ps2tt_map, "examsans", ("examsans", 0, 1))
+        patch.setitem(fonts._tt2ps_map, ("examsans", 0, 0), "ExamSans-Italic")
+        path = tmp_path / "subject.pdf"
+        render_assessment(path, [exercise], correction=False)
+    with pymupdf.open(path) as pdf:
+        spans = [
+            span
+            for block in pdf[-1].get_text("dict")["blocks"]
+            if "lines" in block
+            for line in block["lines"]
+            for span in line["spans"]
+        ]
+    assert any(
+        "Un campus relie" in span["text"] and "Regular" in span["font"]
+        for span in spans
+    )
 
 
 def test_missing_sources_fail_before_model_and_leave_no_output(tmp_path, capsys):
