@@ -43,12 +43,11 @@ automated passing must not be represented as examiner approval.
   similarity remains risk evidence, not a copyright guarantee.
 - Hash-bound checkpoints, rejected attempts retained, French draft PDFs and
   atomic folder publication. All outputs remain non-official, unreviewed drafts.
-- The first graph/tree exercise uses a finite French prose catalogue and
-  selection-only model responses. The second, relational database exercise
-  now has app-owned rows, SQL, Python, computed answers and exact credits;
-  model selection is limited to finite French wording IDs. Both contracts are
-  replayed in the package and checked against extracted standard/large-print
-  PDFs. Exercise 3 remains model-authored and is not content-qualified.
+- All three written exercises now have app-owned facts, answers and exact
+  credits; the model chooses only finite French wording IDs. The graph/tree,
+  relational database and network/process/security contracts are replayed in
+  the package and checked against extracted standard/large-print PDFs. This
+  engineering control does not establish classroom suitability.
 - Native French workspace, consent before downloads, French interface translations,
   local Ollama endpoint, standard/enlarged print, history metadata and review UI.
 - Human review-record API tied to artifact hashes. Reviewer identity is self-attested,
@@ -91,7 +90,7 @@ not currently installed. An exploratory Qwen 3.5 9B single-paper run also
 accepted 0/1 complete papers on 4 October; it does not replace the planned
 candidate comparison. No teacher-reviewed release, student pilot,
 Intel test or multi-memory hardware matrix exists.
-The v12/v13 redesign has not yet produced an accepted identity-pinned live
+The v12/v13 redesign did not produce an accepted identity-pinned live
 paper. The 7 October v13 diagnostic accepted its finite-authored first
 exercise, but the database exercise failed three authoring attempts, so no PDF
 was published. Its [failure record](quality/french-nsi-v13-live-diagnostic-2026-10-07.md)
@@ -101,9 +100,15 @@ claim was supportable. A later [controlled-database diagnostic](quality/french-n
 published a complete three-exercise draft on one pinned Gemma/seed run with no
 rejected attempts, but page-by-page manual inspection **rejected** its
 model-authored third exercise for ungrounded routing answers, a weak process
-repair and an unsupported cryptographic premise. Automated completion is not
-subject-matter or teacher validation. Exercise 3 needs a locked, answerable
-contract and a fresh pinned run before the final matrix or submission claim.
+repair and an unsupported cryptographic premise. Protected PR #36 replaced
+that exercise with a locked network contract. The [subsequent live diagnostic](quality/french-nsi-v15-live-diagnostic-2026-10-07.md)
+passed automation and yielded internally consistent PDFs, but manual comparison
+with the official 2026 paper placed product fidelity on hold: six pages and
+18 questions against the comparator's 16 pages and 36 questions. These counts
+are not a mandatory template, but the gap requires fuller reasoning sequences
+and teacher time calibration before a submission-readiness claim. Automated
+completion is not subject-matter or teacher validation; the final matrix remains
+on hold.
 
 ## Genuine Occitanie scenario — PLANNED
 
