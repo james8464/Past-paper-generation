@@ -221,13 +221,17 @@ def draw_cover_page(
         bold_font,
     )
     centred("Durée de l’épreuve : 3 heures 30", 447, 11, regular_font)
-    centred("L’usage de la calculatrice n’est pas autorisé.", 515, 11, italic_font)
-    centred(
-        "Dès que ce sujet vous est remis, assurez-vous qu’il est complet.",
-        560,
-        11,
-        regular_font,
-    )
+    if correction:
+        centred("Document de travail pour la relecture pédagogique.", 515, 11, italic_font)
+        centred("Réponses et crédits à vérifier avant toute évaluation.", 560, 11, regular_font)
+    else:
+        centred("L’usage de la calculatrice n’est pas autorisé.", 515, 11, italic_font)
+        centred(
+            "Dès que ce sujet vous est remis, assurez-vous qu’il est complet.",
+            560,
+            11,
+            regular_font,
+        )
     centred(
         "Ce document doit être relu par un enseignant avant toute utilisation.",
         583,
@@ -241,14 +245,24 @@ def draw_cover_page(
         regular_font,
     )
     centred(
-        "Le sujet est composé de trois exercices indépendants.",
+        "Trois exercices indépendants - corrigé proposé."
+        if correction else "Le sujet est composé de trois exercices indépendants.",
         650,
         15,
         bold_font,
     )
-    centred("Le candidat traite les trois exercices.", 678, 15, bold_font)
+    centred(
+        "Barème et variantes à confirmer par un enseignant."
+        if correction else "Le candidat traite les trois exercices.",
+        678,
+        15,
+        bold_font,
+    )
 
-    canvas.setTitle("NSI - sujet d'entraînement non officiel")
+    canvas.setTitle(
+        "NSI - corrigé proposé et barème indicatif"
+        if correction else "NSI - sujet d'entraînement non officiel"
+    )
     canvas.setAuthor("Paper Creator")
 
 
@@ -332,7 +346,10 @@ def render_assessment(
         rightMargin=54,
         topMargin=60,
         bottomMargin=65,
-        title="NSI - sujet d'entraînement non officiel",
+        title=(
+            "NSI - corrigé proposé et barème indicatif"
+            if correction else "NSI - sujet d'entraînement non officiel"
+        ),
         author="Paper Creator",
         pageCompression=1,
     )

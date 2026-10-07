@@ -195,8 +195,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1791365716.5785322,
-    "ast_hash": "e423342eebd49d3cd9386455f6b31cdb",
+    "mtime": 1791402167.5534935,
+    "ast_hash": "dd957652bf6a93c0b13d238559afe10c",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791364665.4300668,
-    "ast_hash": "a08244e6d325d7191e17a4e4cddf1972",
+    "mtime": 1791400099.4708433,
+    "ast_hash": "48f7041af1e759d2a7cc58b461b7c351",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1665,8 +1665,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_framework.py": {
-    "mtime": 1791129181.6021178,
-    "ast_hash": "05b63cc404d1684b582a4aab5108d431",
+    "mtime": 1791402708.2176352,
+    "ast_hash": "b9a2ab662a6ceffca965f4fea92119dc",
     "semantic_hash": ""
   },
   "tests/test_french_provider.py": {
@@ -2285,8 +2285,8 @@
     "semantic_hash": ""
   },
   "docs/occitanie-project.md": {
-    "mtime": 1791360165.1308222,
-    "ast_hash": "dba9104f68316b340d60bc8b3195bfa9",
+    "mtime": 1791394479.4465568,
+    "ast_hash": "20ba7ac744cb4119bd4405cc859ce7f4",
     "semantic_hash": ""
   },
   "docs/project-analysis/IMPLEMENTATION_AND_FIDELITY_REPORT.md": {
@@ -2345,8 +2345,8 @@
     "semantic_hash": ""
   },
   "docs/quality/reference-live-fidelity-2026-09-28.md": {
-    "mtime": 1791360165.1339238,
-    "ast_hash": "3357c31ce8b9f90eb96bc2106e4792f6",
+    "mtime": 1791394479.4470327,
+    "ast_hash": "41f25905c1605847ab432a84a3b17d06",
     "semantic_hash": ""
   },
   "docs/quality/teacher-feedback-review-2026-09-27.md": {
@@ -2762,6 +2762,11 @@
   "tests/test_french_network_authoring.py": {
     "mtime": 1791365241.0131648,
     "ast_hash": "249f39a25a7dc4beeaa466940c4cb3df",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v15-live-diagnostic-2026-10-07.md": {
+    "mtime": 1791394522.4994953,
+    "ast_hash": "74c6a06e3a67d227e6c6a96759bb8bb1",
     "semantic_hash": ""
   }
 }
