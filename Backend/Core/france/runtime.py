@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 import shutil
 import signal
 import tempfile
@@ -12,6 +13,11 @@ from urllib.request import Request
 import pymupdf
 
 from Backend.Core.events import emit, emit_progress
+from Backend.Core.france.graph_tree_binding import canonical_answer, graph_edge_manifest
+from Backend.Core.france.graph_tree_contract import (
+    GraphTreeContract,
+    build_graph_tree_contract,
+)
 from Backend.Core.france.network import open_ollama_request
 from Backend.Core.france.nsi import NSIExercise
 from Backend.Core.france.pipeline import (
@@ -96,6 +102,95 @@ def validate_pdf(path: Path):
             raise ValueError("Crédits ou statut du document manquants")
 
 
+def validate_contract_pdf(
+    path: Path,
+    contract: GraphTreeContract,
+    *,
+    correction: bool,
+    exercise: NSIExercise | None = None,
+) -> None:
+    """Compare extracted printed facts with the locked first-exercise contract."""
+    data = contract.to_dict()
+    with pymupdf.open(path) as pdf:
+        lines = [
+            line.strip()
+            for page in pdf
+            for line in page.get_text().splitlines()
+            if line.strip()
+            and not line.startswith("Paper Creator —")
+            and not line.startswith("Page : ")
+        ]
+    text = "\n".join(lines)
+    graph_header = "Réseau pondéré des postes"
+    tree_header = "Arbre des identifiants d'intervention — arbre"
+    if text.count(graph_header) != 1 or text.count(tree_header) != 1:
+        raise ValueError("Figure de graphe ou arbre absente du PDF")
+    graph_segment = text.split(graph_header + "\n", 1)[1].split("\n" + tree_header, 1)[
+        0
+    ]
+    printed_graph = graph_segment.splitlines()
+    expected_graph = [str(edge[2]) for edge in data["graph"]["edges"]] + data["graph"][
+        "nodes"
+    ]
+    if printed_graph != expected_graph:
+        raise ValueError(
+            "Poids ou sommets du graphe imprimé incompatibles avec le contrat"
+        )
+    tree_segment = text.split(tree_header + "\n", 1)[1].split("\n1a.", 1)[0]
+    printed_tree = tree_segment.splitlines()
+    expected_tree = list(data["tree"]["columns"]) + [
+        str(value) if value is not None else "—"
+        for row in data["tree"]["rows"]
+        for value in row
+    ]
+    if printed_tree != expected_tree:
+        raise ValueError("Table de l'arbre imprimé incompatible avec le contrat")
+    flat = " ".join(text.split())
+    if " ".join(graph_edge_manifest(data["graph"]).split()) not in flat:
+        raise ValueError("Arêtes textuelles du graphe incompatibles avec le contrat")
+    if (
+        " ".join(data["debug_case"]["faulty_code"].split()) not in flat
+        or " ".join(data["node_api"].split()) not in flat
+        or not re.search(
+            rf"racine est {data['tree']['root']}\b.*?clé à insérer est {data['tree']['insert_key']}\b",
+            flat,
+        )
+    ):
+        raise ValueError("Code ou données d'ABR imprimés incompatibles avec le contrat")
+    for task_id in data["task_ids"]:
+        answer = canonical_answer(task_id, data["expected"][task_id])
+        if correction and answer not in flat:
+            raise ValueError(f"Résultat corrigé {task_id} absent du PDF")
+        if not correction and answer in flat:
+            raise ValueError(f"Réponse {task_id} révélée dans le sujet")
+    if exercise is not None:
+        if (
+            exercise.id != "1"
+            or [item.id for item in exercise.questions] != data["task_ids"]
+        ):
+            raise ValueError("Exercice du PDF incompatible avec le contrat")
+        for question in exercise.questions:
+            prompt = " ".join(question.prompt.split())
+            if flat.count(prompt) != 1:
+                raise ValueError(
+                    f"Consigne {question.id} absente ou dupliquée dans le PDF"
+                )
+            answer = " ".join(question.answer.split())
+            if correction and answer not in flat:
+                raise ValueError(f"Réponse {question.id} absente du corrigé")
+            if not correction and answer in flat:
+                raise ValueError(f"Réponse {question.id} révélée dans le sujet")
+            for credit in question.marking:
+                criterion = " ".join(credit.criterion.split())
+                label = credit.points.replace(".", ",")
+                unit = "point" if credit.points in {"0.5", "1", "1.0"} else "points"
+                expected_credit = f"{label} {unit} {criterion}"
+                if correction and expected_credit not in flat:
+                    raise ValueError(f"Crédit {question.id} absent du corrigé")
+                if not correction and criterion in flat:
+                    raise ValueError(f"Barème {question.id} révélé dans le sujet")
+
+
 def load_originality_history(output: Path) -> list[str]:
     """Read a bounded set of candidate-only text from earlier local bundles."""
     history: list[str] = []
@@ -115,8 +210,7 @@ def load_originality_history(output: Path) -> list[str]:
             package = json.loads(assessment.read_text(encoding="utf-8"))
             if (
                 package.get("schema_version") != 2
-                or package.get("assessment_policy")
-                != "fr-bac-general-nsi-written-2027"
+                or package.get("assessment_policy") != "fr-bac-general-nsi-written-2027"
                 or not isinstance(package.get("exercises"), list)
             ):
                 continue
@@ -165,10 +259,12 @@ def handle_generate_assessment(args) -> int:
             checkpoint=checkpoint,
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
+            contract_graph_tree=True,
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
         exercises = [NSIExercise.model_validate(item) for item in package["exercises"]]
+        graph_tree_contract = build_graph_tree_contract(args.seed, "1")
         paths = {}
         for role, correction, filename in (
             ("question_paper", False, "sujet.pdf"),
@@ -187,6 +283,12 @@ def handle_generate_assessment(args) -> int:
                 language="fr-FR",
             )
             validate_pdf(path)
+            validate_contract_pdf(
+                path,
+                graph_tree_contract,
+                correction=correction,
+                exercise=exercises[0],
+            )
             paths[role] = path
         atomic_json(staging / "assessment.json", package)
         paths["assessment_package"] = staging / "assessment.json"

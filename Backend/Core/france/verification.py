@@ -253,14 +253,22 @@ def _shortest_path(contract):
 
 def verify_contract(contract: dict) -> dict:
     kind = contract.get("kind")
-    if kind not in {"binary", "sql", "python_trace", "shortest_path"}:
+    if kind not in {"binary", "sql", "python_trace", "shortest_path", "graph_tree"}:
         return {
             "state": "unresolved",
             "passed": False,
             "reason": "Vérification humaine nécessaire",
         }
     try:
-        if kind == "binary":
+        if kind == "graph_tree":
+            from Backend.Core.france.graph_tree_contract import GraphTreeContract
+
+            data = GraphTreeContract.from_dict(contract["contract"]).to_dict()
+            task_id = contract["task_id"]
+            if task_id not in data["task_ids"]:
+                raise ValueError("Tâche de graphe/arbre absente")
+            actual = data["expected"][task_id]
+        elif kind == "binary":
             value = contract["input"]
             if not isinstance(value, str) or not re.fullmatch(r"[01]{1,64}", value):
                 raise ValueError("Nombre binaire invalide")

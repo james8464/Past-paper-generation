@@ -1,6 +1,6 @@
 # Prix Occitanie 2026 submission pack
 
-Updated 3 October 2026.
+Updated 6 October 2026.
 
 ## Formal requirement
 
@@ -66,7 +66,14 @@ Five additional one-paper diagnostics on 4 October each accepted 0 of 1; their
 raw failures are retained locally. The fourth and fifth exposed exercises that
 passed automated review despite invalid content, so structural acceptance alone
 cannot be claimed as educational readiness. The latest authoring contract has
-not passed a live paper. A source-backed authoring redesign is underway;
+not passed a live paper. The first graph/tree exercise now uses a finite,
+versioned French prose catalogue and selection-only model responses; package,
+checkpoint and PDF checks replay its exact answers and credit clauses. The other
+two exercises remain model-authored and unqualified. The deterministic v12 fixture
+and all four exported PDF profiles passed extraction checks, with visual limits
+recorded in `docs/quality/french-nsi-v12-pdf-verification-2026-10-06.md`;
+this fixture is not live educational evidence. The source-backed redesign is
+implemented but not yet live-qualified;
 the application must present the generator as a prototype, not as a validated
 classroom-ready paper maker.
 

@@ -30,6 +30,327 @@ def make_index(path):
             index.add(document, text, [(1, text)])
 
 
+def test_graph_tree_binding_prints_locked_materials_and_declared_node_api():
+    from Backend.Core.france.graph_tree_binding import canonical_answer
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import _bind_graph_tree_contract
+
+    contract = build_graph_tree_contract(270100, "1")
+    expected = contract.to_dict()["expected"]
+    raw = {
+        "context": "Une équipe étudie ses trajets et les demandes d'intervention.",
+        "materials": [],
+        "questions": [
+            {
+                "id": task_id,
+                "contract_task_id": task_id,
+                "claimed_result": expected[task_id],
+                "prompt": f"Examinez le support `{'arbre' if task_id in ('1e', '1f') else 'reseau'}`.",
+                "answer": canonical_answer(task_id, expected[task_id]),
+                "marking": [
+                    {
+                        "points": "1",
+                        "criterion": canonical_answer(task_id, expected[task_id]),
+                    }
+                ],
+            }
+            for task_id in contract.to_dict()["task_ids"]
+        ],
+    }
+
+    bound, binding = _bind_graph_tree_contract(raw, contract)
+    assert {item["id"] for item in bound["materials"]} == {"reseau", "arbre"}
+    assert "class Noeud:" in bound["context"]
+    assert "self.gauche = None" in bound["context"]
+    assert "def parcours_largeur(reseau, depart):" in bound["context"]
+    assert "if visin not in visites:" in bound["context"]
+    assert binding["contract_sha256"] == contract.digest
+    assert [item["task_id"] for item in binding["questions"]] == contract.to_dict()[
+        "task_ids"
+    ]
+    assert all("claimed_result" not in item for item in bound["questions"])
+    assert (
+        " → ".join(contract.to_dict()["expected"]["1a"]["path"])
+        in bound["questions"][0]["answer"]
+    )
+    assert (
+        " → ".join(contract.to_dict()["expected"]["1d"]["order"])
+        in bound["questions"][3]["answer"]
+    )
+    assert bound["questions"][4]["answer"] == raw["questions"][4]["answer"]
+
+
+def test_graph_tree_binding_rejects_a_missing_graph_edge():
+    from Backend.Core.france.graph_tree_binding import canonical_answer
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import _bind_graph_tree_contract
+
+    contract = build_graph_tree_contract(270100, "1")
+    raw = {
+        "context": "Un réseau de collecte relie les postes.",
+        "materials": [],
+        "questions": [
+            {
+                "id": task_id,
+                "contract_task_id": task_id,
+                "claimed_result": contract.to_dict()["expected"][task_id],
+                "prompt": "Le graphe `reseau` contient l'arête A-F. Calculez son poids."
+                if task_id == "1a"
+                else "Examinez les données.",
+                "answer": canonical_answer(
+                    task_id, contract.to_dict()["expected"][task_id]
+                ),
+                "marking": [
+                    {
+                        "points": "1",
+                        "criterion": canonical_answer(
+                            task_id, contract.to_dict()["expected"][task_id]
+                        ),
+                    }
+                ],
+            }
+            for task_id in contract.to_dict()["task_ids"]
+        ],
+    }
+    with pytest.raises(ValueError, match=r"arête|graphe"):
+        _bind_graph_tree_contract(raw, contract)
+
+
+def test_graph_tree_binding_rejects_false_weight_for_an_existing_edge():
+    """A correct structured claim cannot license a contradictory printed fact."""
+    from Backend.Core.france.graph_tree_binding import canonical_answer
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import _bind_graph_tree_contract
+
+    contract = build_graph_tree_contract(270100, "1")
+    raw = {
+        "context": "Une équipe étudie un réseau de collecte.",
+        "materials": [],
+        "questions": [
+            {
+                "id": task_id,
+                "contract_task_id": task_id,
+                "claimed_result": contract.to_dict()["expected"][task_id],
+                "prompt": "L'arête A-B a un poids de 99. Quel chemin choisir ?"
+                if task_id == "1a"
+                else "Examinez les données fournies.",
+                "answer": canonical_answer(
+                    task_id, contract.to_dict()["expected"][task_id]
+                ),
+                "marking": [
+                    {
+                        "points": "1",
+                        "criterion": canonical_answer(
+                            task_id, contract.to_dict()["expected"][task_id]
+                        ),
+                    }
+                ],
+            }
+            for task_id in contract.to_dict()["task_ids"]
+        ],
+    }
+    with pytest.raises(ValueError, match=r"poids|arête"):
+        _bind_graph_tree_contract(raw, contract)
+
+
+def test_graph_tree_binding_rejects_false_context_weight_even_with_valid_questions():
+    from Backend.Core.france.graph_tree_binding import canonical_answer
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import _bind_graph_tree_contract
+
+    contract = build_graph_tree_contract(270100, "1")
+    expected = contract.to_dict()["expected"]
+    raw = {
+        "context": "L'arête A-B a un poids de 99 dans ce réseau de collecte.",
+        "materials": [],
+        "questions": [
+            {
+                "id": task_id,
+                "contract_task_id": task_id,
+                "claimed_result": expected[task_id],
+                "prompt": "Analysez les données fournies.",
+                "answer": canonical_answer(task_id, expected[task_id]),
+                "marking": [
+                    {
+                        "points": "1",
+                        "criterion": canonical_answer(task_id, expected[task_id]),
+                    }
+                ],
+            }
+            for task_id in contract.to_dict()["task_ids"]
+        ],
+    }
+    with pytest.raises(ValueError, match=r"poids|arête"):
+        _bind_graph_tree_contract(raw, contract)
+
+
+def test_graph_tree_binding_rejects_false_authored_answer_instead_of_replacing_it():
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import _bind_graph_tree_contract
+
+    contract = build_graph_tree_contract(270100, "1")
+    raw = {
+        "context": "Une équipe étudie un réseau de collecte.",
+        "materials": [],
+        "questions": [
+            {
+                "id": task_id,
+                "contract_task_id": task_id,
+                "claimed_result": contract.to_dict()["expected"][task_id],
+                "prompt": "Analysez le support de l'exercice.",
+                "answer": "Le chemin le plus court a un poids total de 99."
+                if task_id == "1a"
+                else "Réponse contextualisée.",
+            }
+            for task_id in contract.to_dict()["task_ids"]
+        ],
+    }
+    with pytest.raises(ValueError, match=r"réponse|Résultat|contrat"):
+        _bind_graph_tree_contract(raw, contract)
+
+
+def test_graph_tree_binding_rejects_generic_credit_with_no_checked_result():
+    from Backend.Core.france.graph_tree_binding import canonical_answer
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import _bind_graph_tree_contract
+
+    contract = build_graph_tree_contract(270100, "1")
+    expected = contract.to_dict()["expected"]
+    raw = {
+        "context": "Une équipe étudie un réseau de collecte.",
+        "materials": [],
+        "questions": [
+            {
+                "id": task_id,
+                "contract_task_id": task_id,
+                "claimed_result": expected[task_id],
+                "prompt": "Analysez le support de l'exercice.",
+                "answer": canonical_answer(task_id, expected[task_id]),
+                "marking": [
+                    {"points": "1", "criterion": "Méthode et résultat corrects."}
+                ],
+            }
+            for task_id in contract.to_dict()["task_ids"]
+        ],
+    }
+    with pytest.raises(ValueError, match=r"barème|critère|résultat"):
+        _bind_graph_tree_contract(raw, contract)
+
+
+def test_graph_tree_binding_rejects_an_incorrect_bfs_claim():
+    from Backend.Core.france.graph_tree_binding import canonical_answer
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import _bind_graph_tree_contract
+
+    contract = build_graph_tree_contract(270100, "1")
+    raw = {
+        "context": "Un réseau de collecte relie les postes.",
+        "materials": [],
+        "questions": [
+            {
+                "id": task_id,
+                "contract_task_id": task_id,
+                "claimed_result": {"order": ["F", "E", "D", "C", "B", "A"]}
+                if task_id == "1d"
+                else contract.to_dict()["expected"][task_id],
+                "prompt": "Examinez les données.",
+                "answer": canonical_answer(
+                    task_id, contract.to_dict()["expected"][task_id]
+                ),
+                "marking": [
+                    {
+                        "points": "1",
+                        "criterion": canonical_answer(
+                            task_id, contract.to_dict()["expected"][task_id]
+                        ),
+                    }
+                ],
+            }
+            for task_id in contract.to_dict()["task_ids"]
+        ],
+    }
+    with pytest.raises(ValueError, match="Résultat déclaré"):
+        _bind_graph_tree_contract(raw, contract)
+
+
+def test_graph_tree_binding_rejects_a_bfs_answer_that_contradicts_its_claim():
+    from Backend.Core.france.graph_tree_binding import canonical_answer
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import _bind_graph_tree_contract
+
+    contract = build_graph_tree_contract(270100, "1")
+    raw = {
+        "context": "Un réseau de collecte relie les postes.",
+        "materials": [],
+        "questions": [
+            {
+                "id": task_id,
+                "contract_task_id": task_id,
+                "claimed_result": contract.to_dict()["expected"][task_id],
+                "prompt": "Examinez les données.",
+                "answer": "Ordre du parcours en largeur : F, E, D, C, B, A."
+                if task_id == "1d"
+                else canonical_answer(task_id, contract.to_dict()["expected"][task_id]),
+                "marking": [
+                    {
+                        "points": "1",
+                        "criterion": canonical_answer(
+                            task_id, contract.to_dict()["expected"][task_id]
+                        ),
+                    }
+                ],
+            }
+            for task_id in contract.to_dict()["task_ids"]
+        ],
+    }
+    with pytest.raises(ValueError, match=r"parcours|réponse"):
+        _bind_graph_tree_contract(raw, contract)
+
+
+def test_graph_tree_candidate_uses_locked_materials_before_all_exercise_checks():
+    from Backend.Core.france.graph_tree_binding import canonical_answer
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import (
+        _prepare_candidate,
+        _prompt,
+        _tasks_for_seed,
+    )
+
+    task = _tasks_for_seed(270100)[0]
+    contract = build_graph_tree_contract(270100, "1")
+    raw = FrenchClient().generate_json(
+        _prompt({**task, "exercise_id": "1"}, [], 270100, 1, "")
+    )
+    raw["materials"] = []
+    raw["context"] = (
+        "Une équipe étudie un réseau de collecte et les demandes associées."
+    )
+    for question in raw["questions"]:
+        task_id = question["id"]
+        material_id = "arbre" if task_id in ("1e", "1f") else "reseau"
+        question["contract_task_id"] = task_id
+        question["claimed_result"] = contract.to_dict()["expected"][task_id]
+        question["material_ids"] = [material_id]
+        question["prompt"] = (
+            f"Examinez le support `{material_id}` et justifiez votre résultat."
+        )
+        question["verification"] = {"kind": "human"}
+        question["answer"] = canonical_answer(
+            task_id, contract.to_dict()["expected"][task_id]
+        )
+        question["marking"] = [
+            {"points": question["points"], "criterion": question["answer"]}
+        ]
+
+    exercise, _, _, checks, _, binding = _prepare_candidate(
+        raw, task, "1", [], [], contract=contract
+    )
+    assert {item.id for item in exercise.materials} == {"reseau", "arbre"}
+    assert "class Noeud:" in exercise.context
+    assert binding["contract_sha256"] == contract.digest
+    assert all(item["state"] != "failed" for item in checks)
+
+
 class FrenchClient:
     provider = "ollama"
     model = "fixture"
@@ -154,6 +475,298 @@ class FrenchClient:
                 for i, plan in enumerate(question_blueprint, start=1)
             ],
         }
+
+
+class ContractFrenchClient(FrenchClient):
+    def __init__(self, stop_on_part=None):
+        super().__init__()
+        self.part_calls = []
+        self.stop_on_part = stop_on_part
+
+    def generate_json(self, prompt):
+        if prompt.startswith("Rédige la partie "):
+            part = prompt[len("Rédige la partie ")]
+            if self.stop_on_part == part:
+                raise KeyboardInterrupt
+            self.part_calls.append(part)
+            self.calls += 1
+            request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+            questions = []
+            for plan in request["question_blueprint"]:
+                material = "arbre" if plan["id"] in {"1e", "1f"} else "reseau"
+                questions.append(
+                    {
+                        "id": plan["id"],
+                        "contract_task_id": plan["id"],
+                        "claimed_result": request["expected"][plan["id"]],
+                        "prompt": f"Pour la tâche {plan['id']}, analysez le support `{material}` et justifiez le résultat.",
+                        "points": plan["points"],
+                        "answer": request["required_answers"][plan["id"]],
+                        "marking": [
+                            {
+                                "points": plan["points"],
+                                "criterion": request["required_answers"][plan["id"]],
+                            }
+                        ],
+                        "material_ids": [material],
+                        "curriculum_codes": [plan["required_curriculum_code"]],
+                        "operation": plan["operation"],
+                        "difficulty": plan["difficulty"],
+                        "estimated_minutes": plan["estimated_minutes"],
+                        "verification": {"kind": "human"},
+                    }
+                )
+            if request["part"] == "A":
+                return {
+                    "title": "Réseau et interventions",
+                    "context": "Une équipe étudie les trajets et les demandes d'intervention.",
+                    "questions": questions,
+                }
+            return {"questions": questions}
+        return super().generate_json(prompt)
+
+
+class ClosedProseFrenchClient(FrenchClient):
+    """Only the external model response is faked; package validation is real."""
+
+    def generate_json(self, prompt):
+        if prompt.startswith("Sélectionne la partie "):
+            request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+            result = {
+                "questions": [
+                    {
+                        "contract_task_id": task_id,
+                        "claimed_result": request["expected"][task_id],
+                        "question_form_id": f"{task_id}-q1",
+                        "rubric_form_id": f"{task_id}-r1",
+                    }
+                    for task_id in request["task_ids"]
+                ]
+            }
+            if request["part"] == "A":
+                result.update(scene_id="service", slots={"activity": "interventions"})
+            return result
+        return super().generate_json(prompt)
+
+
+def test_v12_closed_prose_package_replays_and_binds_catalogue(tmp_path):
+    from Backend.Core.france.graph_tree_prose import (
+        PROSE_CONTRACT_VERSION,
+        prose_catalogue_digest,
+    )
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ClosedProseFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+    )
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v12"
+    assert package["identity"]["prose_contract_version"] == PROSE_CONTRACT_VERSION
+    assert package["identity"]["prose_catalogue_sha256"] == prose_catalogue_digest()
+    assert (
+        package["evidence"][0]["contract_binding"]["prose_contract_version"]
+        == PROSE_CONTRACT_VERSION
+    )
+    assert validate_package(package)["structural_checks"] == "passed"
+
+
+def test_v12_package_rejects_rehashed_printed_text_and_provenance_tampering(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import (
+        digest,
+        generate_assessment,
+        validate_package,
+    )
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ClosedProseFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+    )
+    for mutate in (
+        lambda changed: changed["exercises"][0].update(
+            title="A et F sont directement reliés."
+        ),
+        lambda changed: changed["exercises"][0].update(
+            context="Le graphe est complet."
+        ),
+        lambda changed: changed["exercises"][0]["questions"][0].update(
+            prompt="A et F sont directement reliés."
+        ),
+        lambda changed: changed["exercises"][0]["questions"][0].update(
+            answer="Le poids est 999."
+        ),
+        lambda changed: changed["exercises"][0]["questions"][1]["marking"][0].update(
+            criterion="La clé 999 existe."
+        ),
+        lambda changed: changed["exercises"][0]["questions"][1]["marking"][0].update(
+            points="0.75"
+        ),
+        lambda changed: changed["exercises"][0]["materials"][0]["edges"][0].__setitem__(
+            2, 999
+        ),
+        lambda changed: changed["exercises"][0]["materials"][1]["rows"][0].__setitem__(
+            0, "999"
+        ),
+    ):
+        changed = deepcopy(package)
+        mutate(changed)
+        changed["content_sha256"] = digest(changed["exercises"])
+        changed["evidence"][0]["exercise_sha256"] = digest(changed["exercises"][0])
+        with pytest.raises(ValueError):
+            validate_package(changed)
+    for field in ("prose_contract_version", "prose_catalogue_sha256"):
+        changed = deepcopy(package)
+        changed["identity"][field] = "0" * 64
+        with pytest.raises(ValueError):
+            validate_package(changed)
+    changed = deepcopy(package)
+    del changed["evidence"][0]["part_evidence"]
+    with pytest.raises(ValueError):
+        validate_package(changed)
+
+
+def test_v12_targeted_choice_repair_is_replayed_and_tampering_rejected(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    class RepairingClient(ClosedProseFrenchClient):
+        def __init__(self):
+            super().__init__()
+            self.review_count = 0
+
+        def generate_json(self, prompt):
+            if prompt.startswith("Contrôle indépendant des capacités"):
+                review = super().generate_json(prompt)
+                if self.review_count == 0:
+                    review["questions"][0]["aligned"] = False
+                    review["questions"][0]["issues"] = ["Formulation à préciser"]
+                self.review_count += 1
+                return review
+            if prompt.startswith("Répare une sélection verrouillée"):
+                request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+                replacement = dict(request["question"])
+                replacement["question_form_id"] = "1a-q2"
+                return replacement
+            return super().generate_json(prompt)
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=RepairingClient(),
+        seed=270100,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+    )
+    repairs = package["evidence"][0]["targeted_repairs"]
+    assert len(repairs) == 1
+    assert repairs[0]["question_id"] == "1a"
+    assert validate_package(package)["structural_checks"] == "passed"
+    changed = deepcopy(package)
+    changed["evidence"][0]["targeted_repairs"][0]["replacement"]["question_form_id"] = (
+        "1a-q1"
+    )
+    with pytest.raises(ValueError):
+        validate_package(changed)
+
+
+def test_v11_contract_route_generates_and_replays_three_exercises(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ContractFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v11",
+    )
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v11"
+    assert len(package["exercises"]) == 3
+    assert len(package["evidence"][0]["part_evidence"]["parts"]) == 3
+    assert all(
+        item["state"] == "passed" for item in package["evidence"][0]["deterministic"]
+    )
+    assert validate_package(package)["structural_checks"] == "passed"
+    assert package["status"] == "unreviewed_draft"
+
+
+def test_v11_contract_checkpoint_resumes_only_missing_parts(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "checkpoint.json"
+    client = ContractFrenchClient(stop_on_part="B")
+    with pytest.raises(KeyboardInterrupt):
+        generate_assessment(
+            index_path=index,
+            client=client,
+            seed=270100,
+            checkpoint=checkpoint,
+            contract_graph_tree=True,
+            contract_authoring_version="v11",
+        )
+    assert client.part_calls == ["A"]
+    state = json.loads(checkpoint.read_text())
+    assert state["accepted"] == {}
+    assert state["failed_attempts"][0]["cancelled"] is True
+    client.stop_on_part = None
+    package = generate_assessment(
+        index_path=index,
+        client=client,
+        seed=270100,
+        checkpoint=checkpoint,
+        contract_graph_tree=True,
+        contract_authoring_version="v11",
+    )
+    assert client.part_calls == ["A", "B", "C"]
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v11"
+
+
+def test_v11_contract_package_rejects_stale_digest_and_printed_graph(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import (
+        digest,
+        generate_assessment,
+        validate_package,
+    )
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ContractFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v11",
+    )
+    changed = deepcopy(package)
+    changed["identity"]["graph_tree_contract_sha256"] = "0" * 64
+    with pytest.raises(ValueError, match="contrat"):
+        validate_package(changed)
+    changed = deepcopy(package)
+    changed["exercises"][0]["materials"][0]["edges"][0][2] += 1
+    changed["content_sha256"] = digest(changed["exercises"])
+    changed["evidence"][0]["exercise_sha256"] = digest(changed["exercises"][0])
+    with pytest.raises(ValueError):
+        validate_package(changed)
 
 
 def make_legacy_structural_package(tmp_path, monkeypatch):
@@ -310,7 +923,9 @@ def test_generation_is_french_scoped_and_resume_does_not_repeat_model_work(tmp_p
         validate_package(package)
 
 
-def test_question_alignment_rejects_semantic_mismatch_despite_correct_metadata(tmp_path):
+def test_question_alignment_rejects_semantic_mismatch_despite_correct_metadata(
+    tmp_path,
+):
     from Backend.Core.france.pipeline import generate_assessment
 
     class MisalignedClient(FrenchClient):
@@ -474,7 +1089,9 @@ def test_failed_question_is_repaired_without_reauthoring_accepted_peers(tmp_path
 
 
 @pytest.mark.parametrize("invalid_credit", ["0", "999"])
-def test_invalid_marking_is_repaired_without_changing_the_question(tmp_path, invalid_credit):
+def test_invalid_marking_is_repaired_without_changing_the_question(
+    tmp_path, invalid_credit
+):
     from copy import deepcopy
 
     from Backend.Core.france.pipeline import (
@@ -494,13 +1111,18 @@ def test_invalid_marking_is_repaired_without_changing_the_question(tmp_path, inv
                 self.repairs += 1
                 request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
                 repaired = dict(request["question"])
-                repaired["marking"] = [{
-                    "points": request["planned"]["points"],
-                    "criterion": "Résultat exact et justification correspondante.",
-                }]
+                repaired["marking"] = [
+                    {
+                        "points": request["planned"]["points"],
+                        "criterion": "Résultat exact et justification correspondante.",
+                    }
+                ]
                 return repaired
             result = super().generate_json(prompt)
-            if prompt.startswith("Rédige directement en français académique") and result["id"] == "1":
+            if (
+                prompt.startswith("Rédige directement en français académique")
+                and result["id"] == "1"
+            ):
                 result["questions"][0]["marking"][0]["points"] = invalid_credit
             return result
 
@@ -521,7 +1143,10 @@ def test_invalid_marking_is_repaired_without_changing_the_question(tmp_path, inv
     assert {key: value for key, value in original.items() if key != "marking"} == {
         key: value for key, value in repaired.items() if key != "marking"
     }
-    assert evidence["candidate"]["questions"][1:] == evidence["initial_candidate"]["questions"][1:]
+    assert (
+        evidence["candidate"]["questions"][1:]
+        == evidence["initial_candidate"]["questions"][1:]
+    )
     validate_package(package)
 
     tampered = deepcopy(evidence)
@@ -530,9 +1155,7 @@ def test_invalid_marking_is_repaired_without_changing_the_question(tmp_path, inv
     tampered["targeted_repairs"][0]["replacement"] = changed["questions"][0]
     tampered["targeted_repairs"][0]["after_sha256"] = digest(changed)
     with pytest.raises(ValueError, match="barème"):
-        _replay_targeted_repairs(
-            tampered, changed, package["identity"]["blueprint"][0]
-        )
+        _replay_targeted_repairs(tampered, changed, package["identity"]["blueprint"][0])
     fabricated = deepcopy(evidence)
     fabricated["initial_candidate"]["questions"][0]["marking"] = deepcopy(
         repaired["marking"]
@@ -554,14 +1177,21 @@ def test_marking_repair_cannot_rewrite_the_question(tmp_path):
             if prompt.startswith("Répare uniquement le barème"):
                 request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
                 repaired = dict(request["question"])
-                repaired["prompt"] = "Une autre consigne, qui change la tâche du candidat."
-                repaired["marking"] = [{
-                    "points": request["planned"]["points"],
-                    "criterion": "Justification de la réponse attendue.",
-                }]
+                repaired["prompt"] = (
+                    "Une autre consigne, qui change la tâche du candidat."
+                )
+                repaired["marking"] = [
+                    {
+                        "points": request["planned"]["points"],
+                        "criterion": "Justification de la réponse attendue.",
+                    }
+                ]
                 return repaired
             result = super().generate_json(prompt)
-            if prompt.startswith("Rédige directement en français académique") and result["id"] == "1":
+            if (
+                prompt.startswith("Rédige directement en français académique")
+                and result["id"] == "1"
+            ):
                 result["questions"][0]["marking"][0]["points"] = "0"
             return result
 
@@ -595,7 +1225,10 @@ def test_invalid_marking_repair_is_bounded_and_never_published(tmp_path):
                 request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
                 return request["question"]
             result = super().generate_json(prompt)
-            if prompt.startswith("Rédige directement en français académique") and result["id"] == "1":
+            if (
+                prompt.startswith("Rédige directement en français académique")
+                and result["id"] == "1"
+            ):
                 result["questions"][0]["marking"][0]["points"] = "0"
             return result
 
@@ -631,7 +1264,9 @@ def test_targeted_repair_is_bounded_and_preserves_failed_drafts(tmp_path):
                 self.repairs += 1
                 request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
                 result = dict(request["question"])
-                result["prompt"] = f"Nouvelle version {self.repairs} : " + result["prompt"]
+                result["prompt"] = (
+                    f"Nouvelle version {self.repairs} : " + result["prompt"]
+                )
                 return result
             response = super().generate_json(prompt)
             if prompt.startswith("Contrôle indépendant des capacités"):
@@ -722,9 +1357,7 @@ def test_invalid_repair_response_is_recorded_before_rejection(tmp_path):
         )
     failed = json.loads(checkpoint.read_text())["failed_attempts"]
     assert len(failed) == 3
-    assert all(
-        item["repair_responses"][0]["response"]["id"] == "9z" for item in failed
-    )
+    assert all(item["repair_responses"][0]["response"]["id"] == "9z" for item in failed)
 
 
 def test_repair_invalidates_downstream_solution_dependencies(tmp_path):
@@ -751,9 +1384,9 @@ def test_repair_invalidates_downstream_solution_dependencies(tmp_path):
                     response["questions"][0]["issues"] = ["Capacité non évaluée."]
             if prompt.startswith("Résous indépendamment"):
                 request = json.loads(prompt.split("\n", 1)[1])
-                if request["id"] == "1" and request["questions"][0]["prompt"].startswith(
-                    "Version corrigée"
-                ):
+                if request["id"] == "1" and request["questions"][0][
+                    "prompt"
+                ].startswith("Version corrigée"):
                     response["issues"] = [
                         "La réponse de 1b dépend de l'ancien résultat de 1a."
                     ]
@@ -968,7 +1601,11 @@ def test_empty_material_links_recover_only_exact_declared_identifiers():
         "materials": [{"id": "support_1"}, {"id": "support_2"}],
         "questions": [
             {"id": "1a", "prompt": "Lire `support_1`.", "material_ids": []},
-            {"id": "1b", "prompt": "Comparer support_1 et support_2.", "material_ids": []},
+            {
+                "id": "1b",
+                "prompt": "Comparer support_1 et support_2.",
+                "material_ids": [],
+            },
             {"id": "1c", "prompt": "Lire le tableau.", "material_ids": []},
         ],
     }
@@ -1047,9 +1684,7 @@ def test_duplicate_declared_material_identifier_is_rejected_before_binding():
 
     raw = {
         "materials": [{"id": "support"}, {"id": "support"}],
-        "questions": [
-            {"id": "1a", "prompt": "Lire `support`.", "material_ids": []}
-        ],
+        "questions": [{"id": "1a", "prompt": "Lire `support`.", "material_ids": []}],
     }
     with pytest.raises(ValueError, match="dupliqu"):
         bind_explicit_material_ids(raw)

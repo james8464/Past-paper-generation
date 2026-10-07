@@ -80,6 +80,7 @@ class HostedLLMClient:
         output_budget: int | None = None,
         seed: int | None = None,
         request_function: Any | None = None,
+        strict_json: bool = False,
     ) -> dict[str, object]:
         schema = _ollama_json_schema(prompt) if schema is None else schema
         payload = json.dumps(
@@ -119,6 +120,13 @@ class HostedLLMClient:
             "done": raw_dict.get("done"),
             "output_tokens": raw_dict.get("eval_count"),
         }
+        message = raw_dict.get("message")
+        response_text = message.get("content") if isinstance(message, dict) else None
+        if isinstance(response_text, str):
+            diagnostic["raw_response"] = response_text
+            diagnostic["raw_response_sha256"] = hashlib.sha256(
+                response_text.encode("utf-8")
+            ).hexdigest()
         if raw_dict.get("done") is not True or raw_dict.get("done_reason") not in {
             None,
             "stop",
@@ -126,13 +134,20 @@ class HostedLLMClient:
             raise GenerationEvidenceError(
                 "Ollama returned incomplete structured output.", details=diagnostic
             )
-        message = raw_dict.get("message")
-        response_text = message.get("content") if isinstance(message, dict) else None
         if not isinstance(response_text, str):
             raise GenerationEvidenceError(
                 "Ollama returned no generated JSON text.", details=diagnostic
             )
         try:
+            if strict_json:
+                if len(response_text.encode("utf-8")) > 1_048_576:
+                    raise ValueError("Model response exceeded the 1 MB JSON limit.")
+                parsed = json.loads(
+                    response_text, object_pairs_hook=_unique_json_fields
+                )
+                if not isinstance(parsed, dict):
+                    raise ValueError("Model returned JSON, but not an object.")
+                return parsed
             return parse_json_object(response_text)
         except ValueError as error:
             reason = str(raw_dict.get("done_reason") or "unknown")

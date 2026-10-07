@@ -4,12 +4,13 @@ import pytest
 
 
 @pytest.mark.parametrize("failure", [None, "render", "cancel"])
-def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure):
+@pytest.mark.parametrize("large_print", [False, True])
+def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large_print):
     import json
     from hashlib import sha256
 
     from Backend.Core.france import runtime
-    from tests.test_nsi_pipeline import FrenchClient, make_index
+    from tests.test_nsi_pipeline import ClosedProseFrenchClient, make_index
 
     index = tmp_path / "references.sqlite"
     make_index(index)
@@ -22,10 +23,12 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure):
         model="fixture",
         ollama_url="http://localhost:11434",
         allow_remote=False,
-        large_print=False,
+        large_print=large_print,
     )
     monkeypatch.setattr(runtime, "model_identity", lambda *args: "fixture-digest")
-    monkeypatch.setattr(runtime, "FrenchOllamaClient", lambda **kwargs: FrenchClient())
+    monkeypatch.setattr(
+        runtime, "FrenchOllamaClient", lambda **kwargs: ClosedProseFrenchClient()
+    )
     if failure == "render":
 
         def broken(*args, **kwargs):
@@ -55,16 +58,150 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure):
                 == artifact["sha256"]
             )
         assert manifest["status"] == "unreviewed_draft"
+        assert manifest["identity"]["prompt_version"] == "fr-nsi-written-2027-v12"
         import pymupdf
 
+        package = json.loads((bundles[0] / "assessment.json").read_text())
+        part_evidence = package["evidence"][0]["part_evidence"]
+        assert (
+            part_evidence["contract_sha256"]
+            == manifest["identity"]["graph_tree_contract_sha256"]
+        )
+        from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+        from Backend.Core.france.nsi import NSIExercise
+        from Backend.Core.france.runtime import validate_contract_pdf
+
+        contract = build_graph_tree_contract(args.seed, "1")
+        exercise = NSIExercise.model_validate(package["exercises"][0])
+        validate_contract_pdf(
+            bundles[0] / "sujet.pdf", contract, correction=False, exercise=exercise
+        )
+        validate_contract_pdf(
+            bundles[0] / "corrige.pdf", contract, correction=True, exercise=exercise
+        )
+        import copy
+
+        altered = copy.deepcopy(package["exercises"][0])
+        altered["questions"][0]["prompt"] = "Le graphe contient une arête A-F."
+        with pytest.raises(ValueError):
+            validate_contract_pdf(
+                bundles[0] / "sujet.pdf",
+                contract,
+                correction=False,
+                exercise=NSIExercise.model_validate(altered),
+            )
+        altered = copy.deepcopy(package["exercises"][0])
+        altered["questions"][1]["marking"][0]["points"] = "0.25"
+        altered["questions"][1]["marking"][1]["points"] = "0.75"
+        with pytest.raises(ValueError):
+            validate_contract_pdf(
+                bundles[0] / "corrige.pdf",
+                contract,
+                correction=True,
+                exercise=NSIExercise.model_validate(altered),
+            )
+        original_open = pymupdf.open
+
+        class ExtractedPage:
+            def __init__(self, content):
+                self.content = content
+
+            def get_text(self):
+                return self.content
+
+        class ExtractedDocument:
+            def __init__(self, pages):
+                self.pages = [ExtractedPage(page) for page in pages]
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def __iter__(self):
+                return iter(self.pages)
+
+        def reject_tampered_extraction(role, before, after, *, correction):
+            with original_open(bundles[0] / role) as pdf:
+                pages = [page.get_text() for page in pdf]
+            matching = [index for index, page in enumerate(pages) if before in page]
+            assert len(matching) == 1
+            pages[matching[0]] = pages[matching[0]].replace(before, after, 1)
+            with monkeypatch.context() as patch:
+                patch.setattr(
+                    runtime.pymupdf, "open", lambda _path: ExtractedDocument(pages)
+                )
+                with pytest.raises(ValueError):
+                    validate_contract_pdf(
+                        bundles[0] / role,
+                        contract,
+                        correction=correction,
+                        exercise=exercise,
+                    )
+
+        reject_tampered_extraction(
+            "sujet.pdf",
+            "Réseau pondéré des postes\n7\n",
+            "Réseau pondéré des postes\n8\n",
+            correction=False,
+        )
+        reject_tampered_extraction(
+            "sujet.pdf",
+            "Arbre des identifiants d'intervention — arbre\ncle\ngauche\ndroite\n78\n",
+            "Arbre des identifiants d'intervention — arbre\ncle\ngauche\ndroite\n79\n",
+            correction=False,
+        )
+        reject_tampered_extraction(
+            "sujet.pdf",
+            "Déterminez dans `reseau`",
+            "Consigne manquante",
+            correction=False,
+        )
+        reject_tampered_extraction(
+            "sujet.pdf",
+            "Déterminez dans `reseau`",
+            "Déterminez dans `reseau` " + exercise.questions[0].answer,
+            correction=False,
+        )
+        reject_tampered_extraction(
+            "corrige.pdf",
+            exercise.questions[1].marking[0].criterion,
+            "Critère manquant.",
+            correction=True,
+        )
+        original_manifest = runtime.graph_edge_manifest
+        monkeypatch.setattr(
+            runtime, "graph_edge_manifest", lambda graph: "Arêtes incorrectes"
+        )
+        with pytest.raises(ValueError, match=r"arêtes|Arêtes"):
+            validate_contract_pdf(bundles[0] / "sujet.pdf", contract, correction=False)
+        monkeypatch.setattr(runtime, "graph_edge_manifest", original_manifest)
+        with pytest.raises(ValueError, match=r"contrat|figure|graphe"):
+            validate_contract_pdf(
+                bundles[0] / "sujet.pdf",
+                build_graph_tree_contract(args.seed + 1, "1"),
+                correction=False,
+            )
+        with pymupdf.open(bundles[0] / "sujet.pdf") as question_pdf:
+            question_text = "\n".join(page.get_text() for page in question_pdf)
+            assert (
+                "Sujet d'entraînement" in question_text
+                or "SUJET D’ENTRAÎNEMENT" in question_text
+            )
+            assert "class Noeud:" in question_text
+            assert "self.gauche = None" in question_text
+            assert "Arbre des identifiants" in question_text
+            assert "Réseau pondéré des postes" in question_text
+            assert "Réponse attendue" not in question_text
         with pymupdf.open(bundles[0] / "corrige.pdf") as pdf:
             # Structured resources add space, but every exercise remains present
             # with its final marking entry and no empty trailing page.
-            assert 5 <= len(pdf) <= 8
+            assert 5 <= len(pdf) <= (12 if large_print else 9)
+            last_page = pdf[-1].get_text()
+            assert "3e." in last_page and "3f." in last_page
             text = " ".join(page.get_text() for page in pdf)
-            assert all(
-                f"Exercice {exercise} (" in text for exercise in range(1, 4)
-            )
+            assert all(f"Exercice {exercise} (" in text for exercise in range(1, 4))
             assert text.count("Réponse attendue") == 18
             assert text.count("Barème indicatif") >= 18
             assert pdf[-1].get_text().strip()

@@ -123,3 +123,38 @@ A resumable candidate-model runner now preserves first-pass/repaired status, log
 checkpoints, timing, RSS, hardware, Ollama version and exact model/source/code identity.
 The live matrix remains not run. The exact `ministral-3:8b` and `qwen3:8b` candidates
 must be installed and the source committed before qualification begins.
+
+## 6 October closed-prose engineering checkpoint
+
+The first graph/tree exercise now has a versioned, finite French prose catalogue.
+The model can select supported scene/question/rubric variants but cannot author
+the printed title, instructions, answer or criterion text in this slice. A v12
+checkpoint retains rejected raw responses and their identities; accepted
+selection and catalogue hash are bound to the package. Package replay compares
+the rendered content and exact decimal credits. The published standard and
+large-print PDF pairs are checked against graph weights, tree cells, code/API,
+all six instructions, answers and indicative credits. The old v10/v11 readers
+remain separate, and UK route IDs are unchanged.
+
+The full local backend suite at this checkpoint passed **2,347 tests**, with two
+optional skips and five existing SWIG deprecation warnings. The [visual record](french-nsi-v12-pdf-verification-2026-10-06.md)
+documents every fixture page and the official 2026 comparator. It identifies
+small graph labels, less deliberate page flow and generic fixture content for
+exercises 2–3. No v12 live complete paper, independent French NSI teacher review,
+learner calibration or accessibility approval is evidenced. The new selection
+path is an engineering repair, not a validated product.
+
+Independent review then found three release-blocking defects. The v12 benchmark
+resume gate incorrectly expected a v10 prompt identity; malformed local-model
+responses were not retained across internal retries; and question 1f's answer
+and rubric described infix traversal in place of the ABR ordering invariant.
+Regression tests now cover all three, including evidence retained after a
+successful retry. A second review found that fenced JSON or prose surrounding
+valid JSON was still accepted by the transport; v12 selection and repair now
+require a whole-response JSON object. Each rejected retry records its exact
+raw output, raw hash, prompt hash, error and stop reason, including when a later
+retry succeeds. The closed-prose catalogue was versioned to v2, so old
+catalogue identities do not silently replay. The full local suite passed
+**2,356 tests**, with two optional skips and the same five warnings. This is
+still a fixture/engineering checkpoint, not a successful live paper or human
+review.

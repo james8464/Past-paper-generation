@@ -1,0 +1,487 @@
+import json
+from hashlib import sha256
+
+import pytest
+
+from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+from Backend.Core.france.pipeline import _tasks_for_seed
+
+
+def _question(plan, result):
+    from Backend.Core.france.graph_tree_binding import canonical_answer
+
+    material = "arbre" if plan["id"] in {"1e", "1f"} else "reseau"
+    return {
+        "id": plan["id"],
+        "contract_task_id": plan["id"],
+        "claimed_result": result,
+        "prompt": f"Analysez le support `{material}` et justifiez votre réponse.",
+        "points": plan["points"],
+        "answer": canonical_answer(plan["id"], result),
+        "marking": [
+            {
+                "points": plan["points"], "criterion": canonical_answer(plan["id"], result)}
+        ],
+        "material_ids": [material],
+        "curriculum_codes": [plan["required_curriculum_code"]],
+        "operation": plan["operation"],
+        "difficulty": plan["difficulty"],
+        "estimated_minutes": plan["estimated_minutes"],
+        "verification": {"kind": "human"},
+    }
+
+
+class PartClient:
+    def __init__(self, stop_after=None):
+        self.calls = []
+        self.stop_after = stop_after
+
+    def generate_json(self, prompt):
+        if self.stop_after is not None and len(self.calls) == self.stop_after:
+            raise KeyboardInterrupt
+        request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+        self.calls.append(request)
+        questions = [
+            _question(plan, request["expected"][plan["id"]])
+            for plan in request["question_blueprint"]
+        ]
+        if request["part"] == "A":
+            return {
+                "title": "Réseau et interventions",
+                "context": "Une équipe étudie les trajets et les demandes d'intervention.",
+                "questions": questions,
+            }
+        return {"questions": questions}
+
+
+def _setup():
+    return _tasks_for_seed(270100)[0], build_graph_tree_contract(270100, "1")
+
+
+def _run_identity(model_digest="model-digest-a"):
+    return {
+        "provider": "ollama",
+        "model_digest": model_digest,
+        "implementation_sha256": "a" * 64,
+    }
+
+
+def test_part_authoring_exposes_only_part_facts_and_resumes_after_cancel(tmp_path):
+    from Backend.Core.france.graph_tree_authoring import author_graph_tree_parts
+
+    task, contract = _setup()
+    draft = tmp_path / "draft.json"
+    first = PartClient(stop_after=1)
+    with pytest.raises(KeyboardInterrupt):
+        author_graph_tree_parts(first, task, contract, [], draft, run_identity=_run_identity())
+    saved = json.loads(draft.read_text())
+    assert [item["part"] for item in saved["parts"]] == ["A"]
+    assert saved["contract_sha256"] == contract.digest
+    assert "graph" in first.calls[0]["facts"]
+    assert "tree" not in first.calls[0]["facts"]
+
+    resumed = PartClient()
+    raw, evidence = author_graph_tree_parts(
+        resumed, task, contract, [], draft, run_identity=_run_identity()
+    )
+    assert [item["part"] for item in resumed.calls] == ["B", "C"]
+    assert "tree" not in resumed.calls[0]["facts"]
+    assert "graph" not in resumed.calls[1]["facts"]
+    assert [item["id"] for item in raw["questions"]] == contract.to_dict()["task_ids"]
+    assert evidence["contract_sha256"] == contract.digest
+    assert len(evidence["parts"]) == 3
+    assert all("response_sha256" in item for item in evidence["parts"])
+
+
+def test_student_sees_shortest_path_tie_rule_for_tied_graph():
+    from Backend.Core.france.graph_tree_binding import bind_graph_tree_contract
+
+    task = _tasks_for_seed(4)[0]
+    contract = build_graph_tree_contract(4, "1")
+    raw, _ = author_parts_without_draft(PartClient(), task, contract)
+    bound, _ = bind_graph_tree_contract(raw, contract)
+    assert "poids total" in bound["context"]
+    assert "ordre lexicographique" in bound["context"]
+
+
+def test_student_sees_contract_edge_list_as_graph_alternative():
+    from Backend.Core.france.graph_tree_binding import bind_graph_tree_contract
+
+    task, contract = _setup()
+    raw, _ = author_parts_without_draft(PartClient(), task, contract)
+    bound, _ = bind_graph_tree_contract(raw, contract)
+    first = contract.to_dict()["graph"]["edges"][0]
+    assert "Arêtes du réseau (non orientées)" in bound["context"]
+    assert f"{first[0]}-{first[1]} : {first[2]}" in bound["context"]
+
+
+def test_bounded_repair_rejects_changes_to_locked_fields_and_peers():
+    from Backend.Core.france.graph_tree_authoring import apply_graph_tree_repair
+
+    task, contract = _setup()
+    client = PartClient()
+    raw, _ = author_parts_without_draft(client, task, contract)
+    original = raw["questions"][0]
+    replacement = {
+        **original,
+        "prompt": "Justifiez le résultat à partir du graphe `reseau`.",
+    }
+    revised, record = apply_graph_tree_repair(raw, "1a", replacement, contract)
+    assert revised["questions"][0]["prompt"] == replacement["prompt"]
+    assert raw["questions"][0]["prompt"] == original["prompt"]
+    assert revised["questions"][1:] == raw["questions"][1:]
+    assert record["before_sha256"] != record["after_sha256"]
+    for field, value in (
+        ("claimed_result", {}),
+        ("contract_task_id", "1b"),
+        ("points", "99"),
+        ("id", "1b"),
+    ):
+        with pytest.raises(ValueError):
+            apply_graph_tree_repair(raw, "1a", {**replacement, field: value}, contract)
+    with pytest.raises(ValueError):
+        apply_graph_tree_repair(
+            {**raw, "materials": [{"kind": "table"}]}, "1a", replacement, contract
+        )
+
+
+def author_parts_without_draft(client, task, contract):
+    from Backend.Core.france.graph_tree_authoring import author_graph_tree_parts
+
+    return author_graph_tree_parts(
+        client, task, contract, [], None, run_identity=_run_identity()
+    )
+
+
+def test_part_transport_schema_matches_prompt_and_locks_two_contract_items():
+    from Backend.Core.france.graph_tree_authoring import (
+        part_prompt,
+        part_response_schema,
+    )
+    from Backend.Core.france.provider import response_policy
+
+    task, contract = _setup()
+    for part in "ABC":
+        prompt = part_prompt(part, task, contract, [])
+        schema, budget = response_policy(prompt)
+        embedded = json.loads(
+            prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON", 1)[0]
+        )
+        assert schema == embedded == part_response_schema(part)
+        assert budget >= 3072
+        question = schema["properties"]["questions"]["items"]
+        assert {
+            "contract_task_id",
+            "claimed_result",
+            "material_ids",
+            "verification",
+        } <= set(question["required"])
+        assert schema["properties"]["questions"]["minItems"] == 2
+        assert schema["properties"]["questions"]["maxItems"] == 2
+
+
+def test_bounded_repair_transport_includes_only_target_and_its_locked_facts():
+    from Backend.Core.france.provider import response_policy
+    from Backend.Core.france.question_review import graph_tree_repair_prompt
+
+    task, contract = _setup()
+    raw, _ = author_parts_without_draft(PartClient(), task, contract)
+    prompt = graph_tree_repair_prompt(
+        raw, task, contract, "1e", {"issues": ["ambiguous"]}
+    )
+    schema, _ = response_policy(prompt)
+    request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+    assert request["question"]["id"] == "1e"
+    assert "tree" in request["facts"] and "graph" not in request["facts"]
+    assert "questions" not in request
+    assert "claimed_result" in schema["required"]
+    assert "contract_task_id" in schema["required"]
+
+
+def test_resumed_part_rejects_changed_prompt_or_extra_saved_part(tmp_path):
+    from Backend.Core.france.graph_tree_authoring import author_graph_tree_parts
+
+    task, contract = _setup()
+    draft = tmp_path / "draft.json"
+    author_graph_tree_parts(
+        PartClient(), task, contract, [], draft, run_identity=_run_identity()
+    )
+    saved = json.loads(draft.read_text())
+    original_hash = saved["parts"][0]["prompt_sha256"]
+    saved["parts"][0]["prompt_sha256"] = "0" * 64
+    draft.write_text(json.dumps(saved))
+    with pytest.raises(ValueError, match="Preuve de partie"):
+        author_graph_tree_parts(
+            PartClient(), task, contract, [], draft, run_identity=_run_identity()
+        )
+    saved["parts"][0]["prompt_sha256"] = original_hash
+    saved["parts"].append(saved["parts"][2])
+    draft.write_text(json.dumps(saved))
+    with pytest.raises(ValueError, match="brouillon"):
+        author_graph_tree_parts(
+            PartClient(), task, contract, [], draft, run_identity=_run_identity()
+        )
+
+
+def test_invalid_part_response_is_preserved_with_its_hash(tmp_path):
+    from Backend.Core.france.graph_tree_authoring import author_graph_tree_parts
+
+    class InvalidClient:
+        def generate_json(self, prompt):
+            return {"questions": [], "unexpected": "untrusted response"}
+
+    task, contract = _setup()
+    draft = tmp_path / "draft.json"
+    with pytest.raises(ValueError, match="schéma"):
+        author_graph_tree_parts(
+            InvalidClient(), task, contract, [], draft, run_identity=_run_identity()
+        )
+    saved = json.loads(draft.read_text(encoding="utf-8"))
+    failure = saved["failed_attempts"][0]
+    assert failure["response"] == {
+        "questions": [],
+        "unexpected": "untrusted response",
+    }
+    canonical = json.dumps(
+        failure["response"], ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode()
+    assert failure["response_sha256"] == sha256(canonical).hexdigest()
+    assert saved["parts"] == []
+
+
+def test_failed_attempt_hash_is_checked_on_resume_and_package_replay(tmp_path):
+    from Backend.Core.france.graph_tree_authoring import (
+        author_graph_tree_parts,
+        replay_graph_tree_parts,
+    )
+
+    task, contract = _setup()
+    draft = tmp_path / "draft.json"
+    _, evidence = author_graph_tree_parts(
+        PartClient(), task, contract, [], draft, run_identity=_run_identity()
+    )
+    evidence["failed_attempts"] = [
+        {
+            "part": "A",
+            "error": "invalid response",
+            "response": {"questions": []},
+            "response_sha256": "0" * 64,
+        }
+    ]
+    draft.write_text(json.dumps(evidence), encoding="utf-8")
+    with pytest.raises(ValueError, match=r"échec|Échec|preuve"):
+        replay_graph_tree_parts(
+            task, contract, [], evidence, run_identity=_run_identity()
+        )
+    with pytest.raises(ValueError, match=r"échec|Échec|preuve"):
+        author_graph_tree_parts(
+            PartClient(), task, contract, [], draft, run_identity=_run_identity()
+        )
+
+
+def test_failed_attempt_structure_is_checked_on_package_replay():
+    from Backend.Core.france.graph_tree_authoring import replay_graph_tree_parts
+
+    task, contract = _setup()
+    _, evidence = author_parts_without_draft(PartClient(), task, contract)
+    evidence["failed_attempts"] = [{"part": "D", "error": "invalid"}]
+    with pytest.raises(ValueError, match=r"échec|Échec|preuve"):
+        replay_graph_tree_parts(
+            task, contract, [], evidence, run_identity=_run_identity()
+        )
+
+
+def test_part_resume_rejects_changed_model_identity_before_reusing_part_a(tmp_path):
+    from Backend.Core.france.graph_tree_authoring import author_graph_tree_parts
+
+    task, contract = _setup()
+    draft = tmp_path / "draft.json"
+    with pytest.raises(KeyboardInterrupt):
+        author_graph_tree_parts(
+            PartClient(stop_after=1),
+            task,
+            contract,
+            [],
+            draft,
+            run_identity=_run_identity("model-digest-a"),
+        )
+    with pytest.raises(ValueError, match=r"identité|Identité"):
+        author_graph_tree_parts(
+            PartClient(),
+            task,
+            contract,
+            [],
+            draft,
+            run_identity=_run_identity("model-digest-b"),
+        )
+
+
+class ReviewClient:
+    def __init__(self, corrupt_repair=False):
+        self.alignment_calls = 0
+        self.corrupt_repair = corrupt_repair
+
+    def generate_json(self, prompt):
+        if prompt.startswith("Contrôle indépendant des capacités"):
+            self.alignment_calls += 1
+            request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+            return {
+                "questions": [
+                    {
+                        "question_id": plan["id"],
+                        "objective_code": plan["required_curriculum_code"],
+                        "aligned": self.alignment_calls > 1 or plan["id"] != "1a",
+                        "rationale": "La consigne mobilise la capacité attendue et les données affichées dans l'exercice.",
+                        "issues": ["Préciser la consigne"]
+                        if self.alignment_calls == 1 and plan["id"] == "1a"
+                        else [],
+                    }
+                    for plan in request["question_blueprint"]
+                ]
+            }
+        if prompt.startswith("Répare la question verrouillée"):
+            question = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])["question"]
+            changed = {
+                **question,
+                "prompt": "À partir du support `reseau`, calculez et justifiez le plus court chemin demandé.",
+            }
+            if self.corrupt_repair:
+                changed["points"] = "99"
+            return changed
+        if prompt.startswith("Résous indépendamment"):
+            exercise = json.loads(prompt.split("\n", 1)[1])
+            return {
+                "answers": {
+                    item["id"]: "Résultat contrôlé." for item in exercise["questions"]
+                },
+                "issues": [],
+                "minutes": 70,
+            }
+        if prompt.startswith("Vérifie ce sujet"):
+            exercise = json.loads(prompt.split("\n", 1)[1])["exercise"]
+            return {
+                "correct": True,
+                "native_french": True,
+                "curriculum_aligned": True,
+                "difficulty_appropriate": True,
+                "marking_consistent": True,
+                "context_consistent": True,
+                "issues": [],
+                "rationale": "Chaque question et son barème ont été vérifiés contre les données et la résolution.",
+                "question_ids": [item["id"] for item in exercise["questions"]],
+            }
+        raise AssertionError("Unexpected model prompt")
+
+
+def test_contract_review_rechecks_all_gates_after_one_bounded_repair(monkeypatch):
+    from Backend.Core.france import pipeline
+
+    task, contract = _setup()
+    raw, _ = author_parts_without_draft(PartClient(), task, contract)
+    original = pipeline._prepare_candidate
+    calls = []
+
+    def observe(*args, **kwargs):
+        calls.append(args[0])
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(pipeline, "_prepare_candidate", observe)
+    record = {}
+    client = ReviewClient()
+    exercise, evidence = pipeline.evaluate_graph_tree_draft(
+        raw, task, contract, [], [], client, record
+    )
+    assert client.alignment_calls == 2
+    assert len(calls) == 2
+    assert exercise.questions[0].prompt != raw["questions"][0]["prompt"]
+    assert evidence["contract_binding"]["contract_sha256"] == contract.digest
+    assert len(evidence["targeted_repairs"]) == 1
+    assert evidence["question_alignment"]["review"]["questions"][0]["aligned"]
+    assert len(evidence["deterministic"]) == 6
+    assert all(item["state"] == "passed" for item in evidence["deterministic"])
+    assert all(
+        question.verification["kind"] == "graph_tree" for question in exercise.questions
+    )
+    assert evidence["independent_solution"]["issues"] == []
+
+
+def test_contract_review_preserves_rejected_repair_response():
+    from Backend.Core.france.pipeline import evaluate_graph_tree_draft
+
+    task, contract = _setup()
+    raw, _ = author_parts_without_draft(PartClient(), task, contract)
+    record = {}
+    with pytest.raises(ValueError, match="verrouillé"):
+        evaluate_graph_tree_draft(
+            raw, task, contract, [], [], ReviewClient(True), record
+        )
+    assert record["repair_responses"][0]["response"]["points"] == "99"
+    assert record["candidate"] == raw
+
+
+def test_part_evidence_replay_reconstructs_raw_and_rejects_tampering():
+    from copy import deepcopy
+
+    from Backend.Core.france.graph_tree_authoring import replay_graph_tree_parts
+
+    task, contract = _setup()
+    raw, evidence = author_parts_without_draft(PartClient(), task, contract)
+    assert (
+        replay_graph_tree_parts(
+            task, contract, [], evidence, run_identity=_run_identity()
+        )
+        == raw
+    )
+    changed = deepcopy(evidence)
+    changed["parts"][1]["response"]["questions"][0]["prompt"] = "Question altérée"
+    with pytest.raises(ValueError, match="Preuve de partie"):
+        replay_graph_tree_parts(
+            task, contract, [], changed, run_identity=_run_identity()
+        )
+    changed = deepcopy(evidence)
+    changed["contract_sha256"] = "0" * 64
+    with pytest.raises(ValueError, match="Identité"):
+        replay_graph_tree_parts(
+            task, contract, [], changed, run_identity=_run_identity()
+        )
+
+
+def test_contract_evidence_replay_rejects_stale_material_and_answer():
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import (
+        evaluate_graph_tree_draft,
+        replay_graph_tree_evidence,
+    )
+
+    task, contract = _setup()
+    raw, parts = author_parts_without_draft(PartClient(), task, contract)
+    exercise, evidence = evaluate_graph_tree_draft(
+        raw, task, contract, [], [], ReviewClient(), {}
+    )
+    evidence["part_evidence"] = parts
+    assert replay_graph_tree_evidence(
+        exercise, evidence, task, contract, [], [], _run_identity()
+    )
+
+    bad_evidence = deepcopy(evidence)
+    bad_evidence["contract_binding"]["contract_sha256"] = "0" * 64
+    with pytest.raises(ValueError, match=r"contrat|liaison"):
+        replay_graph_tree_evidence(
+            exercise, bad_evidence, task, contract, [], [], _run_identity()
+        )
+    bad_exercise = exercise.model_copy(
+        update={"context": exercise.context + "\nDonnées modifiées."}
+    )
+    with pytest.raises(ValueError, match=r"assemblage|identique|empreinte"):
+        replay_graph_tree_evidence(
+            bad_exercise, evidence, task, contract, [], [], _run_identity()
+        )
+    bad_evidence = deepcopy(evidence)
+    bad_evidence["part_evidence"]["parts"][0]["response"]["questions"][0]["answer"] = (
+        "Faux"
+    )
+    with pytest.raises(ValueError, match="Preuve de partie"):
+        replay_graph_tree_evidence(
+            exercise, bad_evidence, task, contract, [], [], _run_identity()
+        )

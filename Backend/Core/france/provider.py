@@ -3,9 +3,17 @@
 import json
 from hashlib import sha256
 
+from Backend.Core.france.graph_tree_authoring import (
+    contract_question_schema,
+    french_retry_prompt,
+    part_response_schema,
+    part_selection_schema,
+    question_selection_schema,
+)
 from Backend.Core.france.network import ollama_request
 from Backend.Core.france.nsi import NSIQuestion, authoring_schema
 from Backend.Core.france.pipeline import REVIEW_FLAGS
+from Backend.Core.generation_diagnostics import GenerationEvidenceError
 from Backend.Core.providers import HostedLLMClient
 
 
@@ -17,14 +25,10 @@ class FrenchOllamaClient(HostedLLMClient):
     def generate_json(self, prompt: str, retries: int = 2) -> dict:
         if not 1 <= retries <= 3:
             raise ValueError("Une à trois tentatives sont autorisées")
+        self.last_transport_attempts: list[dict] = []
         schema, budget = response_policy(prompt)
         for attempt in range(retries):
-            current = prompt
-            if attempt:
-                current += (
-                    "\nRéparation : la réponse précédente était incomplète. "
-                    "Renvoyer un objet JSON complet, sans commentaire ni omission."
-                )
+            current = french_retry_prompt(prompt, attempt)
             seed = (
                 int.from_bytes(
                     sha256(
@@ -41,17 +45,81 @@ class FrenchOllamaClient(HostedLLMClient):
                     output_budget=budget,
                     seed=seed,
                     request_function=ollama_request,
+                    strict_json=prompt.startswith(
+                        ("Sélectionne la partie ", "Répare une sélection verrouillée")
+                    ),
                 )
-            except ValueError:
+            except ValueError as error:
+                if isinstance(error, GenerationEvidenceError):
+                    raw = error.details.get("raw_response", "")
+                    if not isinstance(raw, str):
+                        raw = ""
+                    self.last_transport_attempts.append(
+                        {
+                            "attempt": attempt + 1,
+                            "raw_response": raw,
+                            "raw_response_sha256": sha256(
+                                raw.encode("utf-8")
+                            ).hexdigest(),
+                            "prompt_sha256": error.details.get(
+                                "prompt_sha256",
+                                sha256(current.encode("utf-8")).hexdigest(),
+                            ),
+                            "stop_reason": error.details.get("stop_reason"),
+                            "error": str(error),
+                        }
+                    )
                 if attempt == retries - 1:
+                    if self.last_transport_attempts:
+                        raise GenerationEvidenceError(
+                            str(error),
+                            details={"attempts": self.last_transport_attempts},
+                        ) from error
                     raise
         raise AssertionError("Unreachable retry state")
 
 
 def response_policy(prompt: str) -> tuple[dict, int]:
+    if prompt.startswith("Répare une sélection verrouillée"):
+        embedded = json.loads(
+            prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
+        )
+        request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+        schema = question_selection_schema(request["question_id"])
+        if embedded != schema:
+            raise ValueError("Schéma de réparation de sélection incohérent")
+        return schema, 1024
+    if prompt.startswith("Sélectionne la partie "):
+        part = prompt[len("Sélectionne la partie ") : len("Sélectionne la partie ") + 1]
+        schema = part_selection_schema(part)
+        embedded = json.loads(
+            prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
+        )
+        if embedded != schema:
+            raise ValueError("Schéma de sélection incohérent")
+        return schema, 2048
+    if prompt.startswith("Répare la question verrouillée"):
+        schema = contract_question_schema()
+        embedded = json.loads(
+            prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
+        )
+        if embedded != schema:
+            raise ValueError("Schéma de réparation incohérent")
+        return schema, 3072
+    if prompt.startswith("Rédige la partie "):
+        part = prompt[len("Rédige la partie ") : len("Rédige la partie ") + 1]
+        schema = part_response_schema(part)
+        embedded = json.loads(
+            prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
+        )
+        if embedded != schema:
+            raise ValueError("Schéma de partie incohérent")
+        return schema, 4096
     if prompt.startswith("Rédige directement en français académique"):
         return authoring_schema(), 6144
-    if prompt.startswith(("Répare uniquement la question", "Répare uniquement le barème")):
+    if prompt.startswith(
+        ("Répare uniquement la question", "Répare uniquement le barème")
+    ):
         schema = NSIQuestion.model_json_schema()
         schema["required"].extend(["material_ids", "verification"])
         return schema, 3072
@@ -97,7 +165,11 @@ def response_policy(prompt: str) -> tuple[dict, int]:
                 "issues": issues,
             },
             "required": [
-                "question_id", "objective_code", "aligned", "rationale", "issues"
+                "question_id",
+                "objective_code",
+                "aligned",
+                "rationale",
+                "issues",
             ],
             "additionalProperties": False,
         }

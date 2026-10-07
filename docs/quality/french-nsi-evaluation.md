@@ -4,6 +4,38 @@ Status: engineering prototype. The first complete Gemma 4 12B campaign finished
 with zero accepted papers out of ten. No candidate-model or teacher qualification
 is recorded.
 
+## 5 October integrity redesign — draft, not live-qualified
+
+Draft PR #33 replaces the first graph/tree exercise's unconstrained data with
+a seeded, versioned contract. Review of its initial implementation found that
+an invented edge weight could still be printed, model answers were silently
+replaced, the debugging task had no printed faulty program, rejected part
+responses were incompletely preserved, part-resume identity omitted the model,
+and PDF checks did not compare printed facts. The reviewed repair work now
+rejects the reproduced false weight, retains rejected part responses and binds
+part resume to the full run identity. The current unmerged source also prints
+an application-owned faulty BFS program, executes only exact trusted snippets
+against a bounded test graph, rejects answers differing from the canonical
+result, requires the indicative marking to cite it, and compares extracted
+graph/tree/code facts and corrected results in both PDF roles before publication.
+
+Independent re-review of the repaired PR reproduced a false A–F adjacency
+claim that passed when phrased in unrestricted prose. This remains a critical
+merge blocker; neither passing tests nor model agreement prove free-form
+premises true. The review also found missing PDF edge-endpoint evidence,
+unchecked hashes for failed part attempts, and an unstated shortest-path tie
+rule. The current unmerged repair adds a printed edge/weight text alternative
+checked on extraction, validates failed-attempt records during resume and
+replay, and states the lexicographic tie rule. Its remaining factual-prose
+problem must be solved before merging or running a new expensive matrix.
+
+The only generated specimens used for these regressions are fake-client
+fixtures. Their page flow and code presentation still need manual polish. No
+post-redesign live paper has been accepted or manually compared with a
+historical official PDF; no French NSI teacher has approved classroom use.
+PR #33 remains draft. Its changes do not retroactively qualify the failed
+Gemma/Qwen runs below.
+
 ## First complete live campaign (30 September 2026)
 
 The earlier run at

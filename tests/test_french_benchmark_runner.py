@@ -6,7 +6,11 @@ from hashlib import sha256
 import pytest
 
 from Backend.Core.education_context import NSI_2027
-from Backend.Core.france.pipeline import PROMPT_VERSION
+from Backend.Core.france.graph_tree_prose import (
+    PROSE_CONTRACT_VERSION,
+    prose_catalogue_digest,
+)
+from Backend.Core.france.pipeline import CLOSED_PROSE_PROMPT_VERSION
 
 
 def _passed_result(tmp_path):
@@ -21,7 +25,9 @@ def _passed_result(tmp_path):
     bundle.mkdir()
     manifest_identity = {
         "assessment": asdict(NSI_2027),
-        "prompt_version": PROMPT_VERSION,
+        "prompt_version": CLOSED_PROSE_PROMPT_VERSION,
+        "prose_contract_version": PROSE_CONTRACT_VERSION,
+        "prose_catalogue_sha256": prose_catalogue_digest(),
         "implementation_sha256": identity["implementation"],
         "seed": identity["seed"],
         "provider": "ollama",
@@ -100,7 +106,9 @@ def _one_paper_args(tmp_path):
 
 
 def _no_model_call(monkeypatch, benchmark):
-    monkeypatch.setattr(benchmark, "implementation_identity", lambda: "implementation-sha")
+    monkeypatch.setattr(
+        benchmark, "implementation_identity", lambda: "implementation-sha"
+    )
     monkeypatch.setattr(benchmark, "model_identity", lambda *_: "model-sha")
     monkeypatch.setattr(benchmark, "hardware_record", lambda: {})
 
@@ -147,6 +155,30 @@ def test_french_benchmark_resume_requires_exact_identity(tmp_path):
     result, identity, _ = _passed_result(tmp_path)
     assert accepted_result(result, identity)
     assert not accepted_result(result, {**identity, "implementation": "changed"})
+
+
+def test_french_benchmark_resume_rejects_missing_v12_prose_identity(tmp_path):
+    from tools.french_nsi_benchmark import accepted_result
+
+    result, identity, bundle = _passed_result(tmp_path)
+    manifest = bundle / "manifest.json"
+    manifest_value = json.loads(manifest.read_text())
+    manifest_value["identity"].pop("prose_contract_version")
+    manifest.write_text(json.dumps(manifest_value))
+    package = bundle / "assessment.json"
+    package_value = json.loads(package.read_text())
+    package_value["identity"].pop("prose_contract_version")
+    package.write_text(json.dumps(package_value))
+    manifest_value["artifacts"]["assessment_package"]["sha256"] = sha256(
+        package.read_bytes()
+    ).hexdigest()
+    manifest.write_text(json.dumps(manifest_value))
+    result_value = json.loads(result.read_text())
+    result_value["artifacts"]["manifest_sha256"] = sha256(
+        manifest.read_bytes()
+    ).hexdigest()
+    result.write_text(json.dumps(result_value))
+    assert not accepted_result(result, identity)
 
 
 def test_french_benchmark_resume_rejects_modified_artifact(tmp_path):
@@ -364,7 +396,9 @@ def test_french_benchmark_rejects_fresh_invalid_artifacts_before_pass(
     from tools.live_process import BackendRun
 
     args = _one_paper_args(tmp_path)
-    monkeypatch.setattr(benchmark, "implementation_identity", lambda: "implementation-sha")
+    monkeypatch.setattr(
+        benchmark, "implementation_identity", lambda: "implementation-sha"
+    )
     monkeypatch.setattr(benchmark, "model_identity", lambda *_: "model-sha")
     monkeypatch.setattr(benchmark, "hardware_record", lambda: {})
 
@@ -381,12 +415,7 @@ def test_french_benchmark_rejects_fresh_invalid_artifacts_before_pass(
         benchmark.run_plan(args)
 
     result = (
-        args.output
-        / "runs"
-        / "gemma4-12b"
-        / "model-sha"
-        / "270100"
-        / "result.json"
+        args.output / "runs" / "gemma4-12b" / "model-sha" / "270100" / "result.json"
     )
     assert json.loads(result.read_text())["status"] == "failed"
 
