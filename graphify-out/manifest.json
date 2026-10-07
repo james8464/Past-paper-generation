@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791360199.7498856,
-    "ast_hash": "98e0ceec873f46db3ed164a172a7b3ab",
+    "mtime": 1791363690.4715142,
+    "ast_hash": "d3e3d8d8de62e5ce402660e1aeab54e1",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2737,6 +2737,21 @@
   "docs/superpowers/specs/2026-10-07-french-nsi-controlled-network-design.md": {
     "mtime": 1791363520.0888484,
     "ast_hash": "3423293f6586f6e94452382858ebc36d",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/network_binding.py": {
+    "mtime": 1791363803.3515105,
+    "ast_hash": "a1a4498b38f0113ee3aa0d7c71362912",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/network_prose.py": {
+    "mtime": 1791363803.3517938,
+    "ast_hash": "9d6a1181591ed75d7b5e89cda62b9308",
+    "semantic_hash": ""
+  },
+  "tests/test_french_network_prose.py": {
+    "mtime": 1791363811.861534,
+    "ast_hash": "aad438e243a53ab8153dad2d7c35606b",
     "semantic_hash": ""
   }
 }
