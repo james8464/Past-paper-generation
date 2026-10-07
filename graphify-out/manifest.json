@@ -190,8 +190,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
-    "mtime": 1791357686.295858,
-    "ast_hash": "0530d5228a196059d015ce849329d846",
+    "mtime": 1791363942.0714915,
+    "ast_hash": "8b84f9f75c56dedc747c6a7ed33c075a",
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791363690.4715142,
-    "ast_hash": "d3e3d8d8de62e5ce402660e1aeab54e1",
+    "mtime": 1791363845.6514506,
+    "ast_hash": "1e73ae2f3974096924e7079cdcba8d87",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2752,6 +2752,16 @@
   "tests/test_french_network_prose.py": {
     "mtime": 1791363811.861534,
     "ast_hash": "aad438e243a53ab8153dad2d7c35606b",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/network_authoring.py": {
+    "mtime": 1791363942.0711792,
+    "ast_hash": "b8c712400fd5a82f7fe3660ff3c57e63",
+    "semantic_hash": ""
+  },
+  "tests/test_french_network_authoring.py": {
+    "mtime": 1791363883.3270879,
+    "ast_hash": "957c5575d0f78b70c1c5e49e47f4b780",
     "semantic_hash": ""
   }
 }
