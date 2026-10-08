@@ -252,8 +252,8 @@ def render_database_depth_candidate(
     title, lead = _SCENES[selection["scene_id"]]
     context = (
         lead + " Les trois tableaux représentent l'état initial des données. "
-        "Chaque relation possède une clé primaire indiquée par son nom ; dans incident, "
-        "id_agent et id_cat sont des clés étrangères. Toutes les questions, sauf la "
+        "Les contraintes d'intégrité (unicité et références entre relations) "
+        "sont en vigueur. Toutes les questions, sauf la "
         "mise à jour demandée en 2g, portent sur cet état initial. La requête suivante "
         "est erronée :\n\n```sql\n" + data["faulty_sql"] + "\n```\n\n"
         "La fonction suivante est censée compter les incidents clos. Son argument "

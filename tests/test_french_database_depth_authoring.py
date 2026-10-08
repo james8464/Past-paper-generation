@@ -98,6 +98,9 @@ def test_depth_candidate_has_ten_native_french_questions_and_exact_credit(total)
         contract, _selection(), _task(total)["question_blueprint"]
     )
     NSIExercise.model_validate(candidate)
+    assert "id_agent et id_cat sont des clés étrangères" not in candidate["context"]
+    assert "clé primaire indiquée" not in candidate["context"]
+    assert "contraintes d'intégrité" in candidate["context"]
     assert candidate["target_points"] == total
     assert candidate["minutes"] == 70
     assert [q["id"] for q in candidate["questions"]] == [
