@@ -195,13 +195,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1791487882.6599138,
-    "ast_hash": "c328422a9933c7c67d74de1bd18f4df9",
+    "mtime": 1791491186.5307724,
+    "ast_hash": "02b8bf69f18d26eb3f23f8368e0f5e8c",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
-    "mtime": 1791488907.3632278,
-    "ast_hash": "cc84a555dbc7aa78431d2d9f07ef8ab7",
+    "mtime": 1791491025.5735648,
+    "ast_hash": "8606f69eefcb21a1812b5e7d6eca7485",
     "semantic_hash": ""
   },
   "Backend/Core/france/source_identity.py": {
@@ -1680,8 +1680,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_runtime.py": {
-    "mtime": 1791488952.5871801,
-    "ast_hash": "bc82fc7eca8f1c6751d4346099ebc6ec",
+    "mtime": 1791490993.8632812,
+    "ast_hash": "44ba8ae57a1336ae26708bc2b3c60df7",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {

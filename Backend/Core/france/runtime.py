@@ -53,7 +53,10 @@ from Backend.Core.france.pipeline import (
     validate_package,
 )
 from Backend.Core.france.provider import FrenchOllamaClient
-from Backend.Core.france.rendering import render_assessment
+from Backend.Core.france.rendering import (
+    printable_database_criterion,
+    render_assessment,
+)
 from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.generator_registry import assessment_framework
 from Backend.Core.render_transaction import render_pdf_atomically
@@ -467,7 +470,7 @@ def validate_database_depth_contract_pdf(
         if not correction and answer in flat:
             raise ValueError(f"Database depth answer {question.id} leaked into paper")
         for credit in question.marking:
-            criterion = " ".join(credit.criterion.split())
+            criterion = printable_database_criterion(credit.criterion)
             label = credit.points.replace(".", ",")
             unit = "point" if credit.points in {"0.5", "1", "1.0"} else "points"
             if correction and f"{label} {unit} {criterion}" not in flat:

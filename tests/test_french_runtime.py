@@ -569,6 +569,8 @@ def test_runtime_v17_preserves_v16_database_depth_with_locked_pdf_facts(
             text = " ".join(page.get_text() for page in pdf)
             assert "2j." in text
             assert "id_incident" in text
+            if correction:
+                assert "```" not in text, "SQL rubric must not expose Markdown fences"
             assert all(
                 word[0] >= 0
                 and word[2] <= page.rect.width
@@ -843,7 +845,7 @@ def test_network_depth_correction_sets_dijkstra_steps_on_separate_lines(tmp_path
         )
 
 
-def test_network_depth_rubric_continuation_names_its_question(tmp_path):
+def test_network_depth_answer_and_rubric_stay_together(tmp_path):
     import pymupdf
 
     from Backend.Core.france.network_depth_contract import build_network_depth_contract
@@ -878,7 +880,7 @@ def test_network_depth_rubric_continuation_names_its_question(tmp_path):
     credit_page = next(
         index for index, page in enumerate(pages) if final_credit in page
     )
-    assert credit_page > answer_page
+    assert credit_page == answer_page
     assert "Barème indicatif — question 3d" in pages[credit_page]
 
 
