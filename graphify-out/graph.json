@@ -1132,8 +1132,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_assessment_objectives",
-      "community": 173,
-      "community_name": "assessment_package.py",
+      "community": 9,
+      "community_name": "require_difficulty_review",
       "norm_label": "assessment_objectives.py"
     },
     {
@@ -1231,8 +1231,8 @@
       "source_location": "L178",
       "_origin": "ast",
       "id": "backend_core_assessment_objectives_objective_policy_for",
-      "community": 173,
-      "community_name": "assessment_package.py",
+      "community": 9,
+      "community_name": "require_difficulty_review",
       "norm_label": "objective_policy_for()"
     },
     {
@@ -1242,8 +1242,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_assessment_objectives_rationale_1",
-      "community": 173,
-      "community_name": "assessment_package.py",
+      "community": 9,
+      "community_name": "require_difficulty_review",
       "norm_label": "subject meaning for ao labels, independent of item tariffs and renderers."
     },
     {
@@ -1275,8 +1275,8 @@
       "source_location": "L179",
       "_origin": "ast",
       "id": "backend_core_assessment_objectives_rationale_179",
-      "community": 173,
-      "community_name": "assessment_package.py",
+      "community": 9,
+      "community_name": "require_difficulty_review",
       "norm_label": "resolve family ids, subject names or qualification codes."
     },
     {
@@ -2991,8 +2991,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_computer_science_audit",
-      "community": 173,
-      "community_name": "assessment_package.py",
+      "community": 9,
+      "community_name": "require_difficulty_review",
       "norm_label": "computer_science_audit.py"
     },
     {
@@ -3024,8 +3024,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_computer_science_audit_rationale_1",
-      "community": 173,
-      "community_name": "assessment_package.py",
+      "community": 9,
+      "community_name": "require_difficulty_review",
       "norm_label": "cs component policy audit over candidate-answerable paths, not printed totals."
     },
     {
@@ -4718,8 +4718,8 @@
       "source_location": "L170",
       "_origin": "ast",
       "id": "backend_core_document_dsl_reportlab_flowables_ocrquestionheaderfactory_question_table",
-      "community": 69,
-      "community_name": "aqa_section_intro",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": ".question_table()"
     },
     {
@@ -4740,8 +4740,8 @@
       "source_location": "L220",
       "_origin": "ast",
       "id": "backend_core_document_dsl_reportlab_flowables_singlecellpanelfactory_panel",
-      "community": 69,
-      "community_name": "aqa_section_intro",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": ".panel()"
     },
     {
@@ -5774,8 +5774,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "backend_core_exam_pages_exampage",
-      "community": 55,
-      "community_name": "ocrcsgen/render_pdf.py",
+      "community": 24,
+      "community_name": "ocregen/render_pdf.py",
       "norm_label": "exampage"
     },
     {
@@ -5785,8 +5785,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_core_exam_pages_py_flowable",
-      "community": 55,
-      "community_name": "ocrcsgen/render_pdf.py",
+      "community": 24,
+      "community_name": "ocregen/render_pdf.py",
       "norm_label": "flowable"
     },
     {
@@ -5796,8 +5796,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "backend_core_exam_pages_exampage_init",
-      "community": 55,
-      "community_name": "ocrcsgen/render_pdf.py",
+      "community": 24,
+      "community_name": "ocregen/render_pdf.py",
       "norm_label": ".__init__()"
     },
     {
@@ -5840,8 +5840,8 @@
       "source_location": "L79",
       "_origin": "ast",
       "id": "backend_core_exam_pages_exampage_draw",
-      "community": 55,
-      "community_name": "ocrcsgen/render_pdf.py",
+      "community": 24,
+      "community_name": "ocregen/render_pdf.py",
       "norm_label": ".draw()"
     },
     {
@@ -5950,8 +5950,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "backend_core_exam_pages_rationale_31",
-      "community": 55,
-      "community_name": "ocrcsgen/render_pdf.py",
+      "community": 24,
+      "community_name": "ocregen/render_pdf.py",
       "norm_label": "a full-page shell that can also live inside a platypus story."
     },
     {
@@ -9555,7 +9555,7 @@
       "label": "code_listing()",
       "file_type": "code",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L203",
+      "source_location": "L204",
       "_origin": "ast",
       "id": "backend_core_france_rendering_code_listing",
       "community": 31,
@@ -9566,7 +9566,7 @@
       "label": "NumberedCanvas",
       "file_type": "code",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L216",
+      "source_location": "L217",
       "_origin": "ast",
       "id": "backend_core_france_rendering_numberedcanvas",
       "community": 31,
@@ -9588,7 +9588,7 @@
       "label": ".__init__()",
       "file_type": "code",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L217",
+      "source_location": "L218",
       "_origin": "ast",
       "id": "backend_core_france_rendering_numberedcanvas_init",
       "community": 31,
@@ -9599,7 +9599,7 @@
       "label": ".showPage()",
       "file_type": "code",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L221",
+      "source_location": "L222",
       "_origin": "ast",
       "id": "backend_core_france_rendering_numberedcanvas_showpage",
       "community": 31,
@@ -9610,7 +9610,7 @@
       "label": ".save()",
       "file_type": "code",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L225",
+      "source_location": "L226",
       "_origin": "ast",
       "id": "backend_core_france_rendering_numberedcanvas_save",
       "community": 31,
@@ -9621,7 +9621,7 @@
       "label": "draw_cover_page()",
       "file_type": "code",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L239",
+      "source_location": "L240",
       "_origin": "ast",
       "id": "backend_core_france_rendering_draw_cover_page",
       "community": 31,
@@ -9643,7 +9643,7 @@
       "label": "render_assessment()",
       "file_type": "code",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L327",
+      "source_location": "L328",
       "_origin": "ast",
       "id": "backend_core_france_rendering_render_assessment",
       "community": 31,
@@ -9676,9 +9676,9 @@
       "label": "Never rewrite executable text to make it fit a page.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L204",
+      "source_location": "L205",
       "_origin": "ast",
-      "id": "backend_core_france_rendering_rationale_204",
+      "id": "backend_core_france_rendering_rationale_205",
       "community": 31,
       "community_name": "NSIExercise",
       "norm_label": "never rewrite executable text to make it fit a page."
@@ -9687,9 +9687,9 @@
       "label": "Draw the cover from measured 2026 coordinates, with independent branding.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L249",
+      "source_location": "L250",
       "_origin": "ast",
-      "id": "backend_core_france_rendering_rationale_249",
+      "id": "backend_core_france_rendering_rationale_250",
       "community": 31,
       "community_name": "NSIExercise",
       "norm_label": "draw the cover from measured 2026 coordinates, with independent branding."
@@ -19436,8 +19436,8 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "backend_core_subjects_sql_contracts_sqlsourcecontract",
-      "community": 34,
-      "community_name": "sql_contracts.py",
+      "community": 51,
+      "community_name": "Question",
       "norm_label": "sqlsourcecontract"
     },
     {
@@ -19568,8 +19568,8 @@
       "source_location": "L424",
       "_origin": "ast",
       "id": "backend_core_subjects_sql_contracts_finding",
-      "community": 34,
-      "community_name": "sql_contracts.py",
+      "community": 53,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "_finding()"
     },
     {
@@ -20294,8 +20294,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_case_data_nearest_hundred",
-      "community": 20,
-      "community_name": "Paragraph",
+      "community": 204,
+      "community_name": "_written",
       "norm_label": "_nearest_hundred()"
     },
     {
@@ -20712,8 +20712,8 @@
       "source_location": "L488",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_case_data_incomestatementcase_from_chart_values",
-      "community": 20,
-      "community_name": "Paragraph",
+      "community": 204,
+      "community_name": "_written",
       "norm_label": ".from_chart_values()"
     },
     {
@@ -20877,8 +20877,8 @@
       "source_location": "L704",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_case_data_partnershipcase_from_chart_values",
-      "community": 20,
-      "community_name": "Paragraph",
+      "community": 204,
+      "community_name": "_written",
       "norm_label": ".from_chart_values()"
     },
     {
@@ -21031,8 +21031,8 @@
       "source_location": "L1041",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_case_data_noncurrentassetcase_from_chart_values",
-      "community": 20,
-      "community_name": "Paragraph",
+      "community": 204,
+      "community_name": "_written",
       "norm_label": ".from_chart_values()"
     },
     {
@@ -21185,8 +21185,8 @@
       "source_location": "L1223",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_case_data_salesledgercase_from_chart_values",
-      "community": 20,
-      "community_name": "Paragraph",
+      "community": 204,
+      "community_name": "_written",
       "norm_label": ".from_chart_values()"
     },
     {
@@ -21548,8 +21548,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_generator_py_topic",
-      "community": 20,
-      "community_name": "Paragraph",
+      "community": 204,
+      "community_name": "_written",
       "norm_label": "topic"
     },
     {
@@ -21559,8 +21559,8 @@
       "source_location": "L307",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_generator_written",
-      "community": 20,
-      "community_name": "Paragraph",
+      "community": 204,
+      "community_name": "_written",
       "norm_label": "_written()"
     },
     {
@@ -21581,8 +21581,8 @@
       "source_location": "L829",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_generator_levels",
-      "community": 20,
-      "community_name": "Paragraph",
+      "community": 204,
+      "community_name": "_written",
       "norm_label": "_levels()"
     },
     {
@@ -21592,8 +21592,8 @@
       "source_location": "L842",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_generator_decision_levels",
-      "community": 20,
-      "community_name": "Paragraph",
+      "community": 204,
+      "community_name": "_written",
       "norm_label": "_decision_levels()"
     },
     {
@@ -22618,8 +22618,8 @@
       "source_location": "L444",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_tests_test_aqa_accounting_test_locked_calculation_schemes_are_exactly_derived_from_the_case_data",
-      "community": 20,
-      "community_name": "Paragraph",
+      "community": 204,
+      "community_name": "_written",
       "norm_label": "test_locked_calculation_schemes_are_exactly_derived_from_the_case_data()"
     },
     {
@@ -22629,8 +22629,8 @@
       "source_location": "L482",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_tests_test_aqa_accounting_test_locked_calculation_schemes_include_final_answers_and_all_case_numbers",
-      "community": 20,
-      "community_name": "Paragraph",
+      "community": 204,
+      "community_name": "_written",
       "norm_label": "test_locked_calculation_schemes_include_final_answers_and_all_case_numbers()"
     },
     {
@@ -22651,8 +22651,8 @@
       "source_location": "L552",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_tests_test_aqa_accounting_test_company_and_partnership_schemes_expose_complete_working_data",
-      "community": 20,
-      "community_name": "Paragraph",
+      "community": 204,
+      "community_name": "_written",
       "norm_label": "test_company_and_partnership_schemes_expose_complete_working_data()"
     },
     {
@@ -24279,8 +24279,8 @@
       "source_location": "L650",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_render_pdf_paper_one_pages",
-      "community": 47,
-      "community_name": "aqabizgen/render_pdf.py",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": "_paper_one_pages()"
     },
     {
@@ -24290,8 +24290,8 @@
       "source_location": "L723",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_render_pdf_paper_two_pages",
-      "community": 47,
-      "community_name": "aqabizgen/render_pdf.py",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": "_paper_two_pages()"
     },
     {
@@ -24301,8 +24301,8 @@
       "source_location": "L790",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_render_pdf_paper_three_pages",
-      "community": 47,
-      "community_name": "aqabizgen/render_pdf.py",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": "_paper_three_pages()"
     },
     {
@@ -24312,8 +24312,8 @@
       "source_location": "L821",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_render_pdf_choice_prompts",
-      "community": 47,
-      "community_name": "aqabizgen/render_pdf.py",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": "_choice_prompts()"
     },
     {
@@ -24400,8 +24400,8 @@
       "source_location": "L1097",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_render_pdf_no_questions_page",
-      "community": 47,
-      "community_name": "aqabizgen/render_pdf.py",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": "_no_questions_page()"
     },
     {
@@ -24411,8 +24411,8 @@
       "source_location": "L1118",
       "_origin": "ast",
       "id": "resources_business_aqa_generator_aqabizgen_render_pdf_additional_answer_page",
-      "community": 47,
-      "community_name": "aqabizgen/render_pdf.py",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": "_additional_answer_page()"
     },
     {
@@ -25360,8 +25360,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_syllabus",
-      "community": 53,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 51,
+      "community_name": "Question",
       "norm_label": "syllabus"
     },
     {
@@ -25371,8 +25371,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_syllabus_topic_ids",
-      "community": 53,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 51,
+      "community_name": "Question",
       "norm_label": ".topic_ids()"
     },
     {
@@ -25382,8 +25382,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_syllabus_get_topic",
-      "community": 53,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 51,
+      "community_name": "Question",
       "norm_label": ".get_topic()"
     },
     {
@@ -27868,8 +27868,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_validation",
-      "community": 53,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 3,
+      "community_name": "load_syllabus",
       "norm_label": "cspapergen/validation.py"
     },
     {
@@ -27879,8 +27879,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_validation_validate_blueprint",
-      "community": 53,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 3,
+      "community_name": "load_syllabus",
       "norm_label": "validate_blueprint()"
     },
     {
@@ -27890,8 +27890,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_validation_py_paperblueprint",
-      "community": 53,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 3,
+      "community_name": "load_syllabus",
       "norm_label": "paperblueprint"
     },
     {
@@ -27901,8 +27901,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_validation_py_syllabus",
-      "community": 53,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 3,
+      "community_name": "load_syllabus",
       "norm_label": "syllabus"
     },
     {
@@ -27912,8 +27912,8 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_validation_validate_question_bank_identity",
-      "community": 53,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 3,
+      "community_name": "load_syllabus",
       "norm_label": "_validate_question_bank_identity()"
     },
     {
@@ -27923,8 +27923,8 @@
       "source_location": "L135",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_validation_validate_verified_question_contract",
-      "community": 53,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 3,
+      "community_name": "load_syllabus",
       "norm_label": "_validate_verified_question_contract()"
     },
     {
@@ -30038,8 +30038,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_ocr_generator_ocrcsgen_render_pdf_py_flowable",
-      "community": 55,
-      "community_name": "ocrcsgen/render_pdf.py",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": "flowable"
     },
     {
@@ -30082,8 +30082,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_ocr_generator_ocrcsgen_render_pdf_py_table",
-      "community": 55,
-      "community_name": "ocrcsgen/render_pdf.py",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": "table"
     },
     {
@@ -30214,8 +30214,8 @@
       "source_location": "L570",
       "_origin": "ast",
       "id": "resources_computer_science_ocr_generator_ocrcsgen_render_pdf_supplementary_marking_pages",
-      "community": 55,
-      "community_name": "ocrcsgen/render_pdf.py",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": "_supplementary_marking_pages()"
     },
     {
@@ -30225,8 +30225,8 @@
       "source_location": "L644",
       "_origin": "ast",
       "id": "resources_computer_science_ocr_generator_ocrcsgen_render_pdf_annotation_conventions_page",
-      "community": 55,
-      "community_name": "ocrcsgen/render_pdf.py",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": "_annotation_conventions_page()"
     },
     {
@@ -30236,8 +30236,8 @@
       "source_location": "L697",
       "_origin": "ast",
       "id": "resources_computer_science_ocr_generator_ocrcsgen_render_pdf_question_group_pages",
-      "community": 55,
-      "community_name": "ocrcsgen/render_pdf.py",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": "_question_group_pages()"
     },
     {
@@ -30247,8 +30247,8 @@
       "source_location": "L802",
       "_origin": "ast",
       "id": "resources_computer_science_ocr_generator_ocrcsgen_render_pdf_question_block",
-      "community": 47,
-      "community_name": "aqabizgen/render_pdf.py",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": "_question_block()"
     },
     {
@@ -30258,8 +30258,8 @@
       "source_location": "L812",
       "_origin": "ast",
       "id": "resources_computer_science_ocr_generator_ocrcsgen_render_pdf_response_space",
-      "community": 55,
-      "community_name": "ocrcsgen/render_pdf.py",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": "_response_space()"
     },
     {
@@ -30269,8 +30269,8 @@
       "source_location": "L880",
       "_origin": "ast",
       "id": "resources_computer_science_ocr_generator_ocrcsgen_render_pdf_response_table_style",
-      "community": 55,
-      "community_name": "ocrcsgen/render_pdf.py",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": "_response_table_style()"
     },
     {
@@ -30280,8 +30280,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tablestyle",
-      "community": 47,
-      "community_name": "aqabizgen/render_pdf.py",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": "tablestyle"
     },
     {
@@ -30291,8 +30291,8 @@
       "source_location": "L894",
       "_origin": "ast",
       "id": "resources_computer_science_ocr_generator_ocrcsgen_render_pdf_trace_table",
-      "community": 55,
-      "community_name": "ocrcsgen/render_pdf.py",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": "_trace_table()"
     },
     {
@@ -40687,8 +40687,8 @@
       "source_location": "L1643",
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_ocregen_render_pdf_intro",
-      "community": 24,
-      "community_name": "ocregen/render_pdf.py",
+      "community": 20,
+      "community_name": "Paragraph",
       "norm_label": "_intro()"
     },
     {
@@ -42252,8 +42252,8 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_properties_policy",
-      "community": 312,
-      "community_name": "required",
+      "community": 178,
+      "community_name": "properties",
       "norm_label": "policy"
     },
     {
@@ -42263,8 +42263,8 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_policy_type",
-      "community": 312,
-      "community_name": "required",
+      "community": 178,
+      "community_name": "properties",
       "norm_label": "type"
     },
     {
@@ -42274,8 +42274,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_policy_required",
-      "community": 312,
-      "community_name": "required",
+      "community": 178,
+      "community_name": "properties",
       "norm_label": "required"
     },
     {
@@ -42285,8 +42285,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_json_ref_policy_id",
-      "community": 312,
-      "community_name": "required",
+      "community": 178,
+      "community_name": "properties",
       "norm_label": "policy_id"
     },
     {
@@ -42296,8 +42296,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_json_ref_status",
-      "community": 312,
-      "community_name": "required",
+      "community": 178,
+      "community_name": "properties",
       "norm_label": "status"
     },
     {
@@ -42307,8 +42307,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "ref_approved_by_identity_class",
-      "community": 312,
-      "community_name": "required",
+      "community": 178,
+      "community_name": "properties",
       "norm_label": "approved_by_identity_class"
     },
     {
@@ -42318,8 +42318,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "ref_approval_evidence",
-      "community": 312,
-      "community_name": "required",
+      "community": 178,
+      "community_name": "properties",
       "norm_label": "approval_evidence"
     },
     {
@@ -42494,8 +42494,8 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_policy_additionalproperties",
-      "community": 312,
-      "community_name": "required",
+      "community": 178,
+      "community_name": "properties",
       "norm_label": "additionalproperties"
     },
     {
@@ -45772,8 +45772,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_type",
-      "community": 167,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "type"
     },
     {
@@ -46168,8 +46168,8 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_evidence_gaps",
-      "community": 73,
-      "community_name": "properties",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "evidence_gaps"
     },
     {
@@ -46179,8 +46179,8 @@
       "source_location": "L89",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_evidence_gaps_type",
-      "community": 73,
-      "community_name": "properties",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "type"
     },
     {
@@ -46190,8 +46190,8 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_evidence_gaps_items",
-      "community": 167,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "items"
     },
     {
@@ -46762,8 +46762,8 @@
       "source_location": "L258",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_distribution_additionalproperties",
-      "community": 48,
-      "community_name": "type",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "additionalproperties"
     },
     {
@@ -46784,8 +46784,8 @@
       "source_location": "L260",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_additionalproperties_minimum",
-      "community": 48,
-      "community_name": "type",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "minimum"
     },
     {
@@ -46795,8 +46795,8 @@
       "source_location": "L261",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_additionalproperties_maximum",
-      "community": 48,
-      "community_name": "type",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "maximum"
     },
     {
@@ -47136,8 +47136,8 @@
       "source_location": "L306",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_defs_observations",
-      "community": 48,
-      "community_name": "type",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "observations"
     },
     {
@@ -47147,8 +47147,8 @@
       "source_location": "L307",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_observations_additionalproperties",
-      "community": 48,
-      "community_name": "type",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "additionalproperties"
     },
     {
@@ -47411,8 +47411,8 @@
       "source_location": "L368",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_observations_title",
-      "community": 48,
-      "community_name": "type",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "title"
     },
     {
@@ -47422,8 +47422,8 @@
       "source_location": "L369",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_observations_type",
-      "community": 48,
-      "community_name": "type",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "type"
     },
     {
@@ -47895,7 +47895,7 @@
       "source_location": "L439",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_year",
-      "community": 25,
+      "community": 40,
       "community_name": "properties",
       "norm_label": "year"
     },
@@ -47906,7 +47906,7 @@
       "source_location": "L440",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_year_maximum",
-      "community": 25,
+      "community": 40,
       "community_name": "properties",
       "norm_label": "maximum"
     },
@@ -47917,7 +47917,7 @@
       "source_location": "L441",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_year_minimum",
-      "community": 25,
+      "community": 40,
       "community_name": "properties",
       "norm_label": "minimum"
     },
@@ -47928,7 +47928,7 @@
       "source_location": "L442",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_year_title",
-      "community": 25,
+      "community": 40,
       "community_name": "properties",
       "norm_label": "title"
     },
@@ -47939,7 +47939,7 @@
       "source_location": "L443",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_year_type",
-      "community": 25,
+      "community": 40,
       "community_name": "properties",
       "norm_label": "type"
     },
@@ -48137,8 +48137,8 @@
       "source_location": "L481",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_objective_basis_enum",
-      "community": 314,
-      "community_name": "enum",
+      "community": 25,
+      "community_name": "properties",
       "norm_label": "enum"
     },
     {
@@ -48148,8 +48148,8 @@
       "source_location": "L481",
       "_origin": "ast",
       "id": "ref_unknown",
-      "community": 314,
-      "community_name": "enum",
+      "community": 25,
+      "community_name": "properties",
       "norm_label": "unknown"
     },
     {
@@ -48159,8 +48159,8 @@
       "source_location": "L481",
       "_origin": "ast",
       "id": "ref_printed_conflicting",
-      "community": 314,
-      "community_name": "enum",
+      "community": 25,
+      "community_name": "properties",
       "norm_label": "printed-conflicting"
     },
     {
@@ -48577,8 +48577,8 @@
       "source_location": "L603",
       "_origin": "ast",
       "id": "ref_reconciled_published_aggregate",
-      "community": 314,
-      "community_name": "enum",
+      "community": 25,
+      "community_name": "properties",
       "norm_label": "reconciled-published-aggregate"
     },
     {
@@ -48874,8 +48874,8 @@
       "source_location": "L651",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_items",
-      "community": 167,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "items"
     },
     {
@@ -48885,8 +48885,8 @@
       "source_location": "L652",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_items",
-      "community": 167,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "items"
     },
     {
@@ -48896,8 +48896,8 @@
       "source_location": "L655",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_minitems",
-      "community": 167,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "minitems"
     },
     {
@@ -48907,8 +48907,8 @@
       "source_location": "L656",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_title",
-      "community": 167,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "title"
     },
     {
@@ -49270,8 +49270,8 @@
       "source_location": "L748",
       "_origin": "ast",
       "id": "ref_published_item_allocation",
-      "community": 314,
-      "community_name": "enum",
+      "community": 25,
+      "community_name": "properties",
       "norm_label": "published-item-allocation"
     },
     {
@@ -50117,8 +50117,8 @@
       "source_location": "L874",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_defs_sourcepath",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 60,
+      "community_name": "properties",
       "norm_label": "sourcepath"
     },
     {
@@ -50128,8 +50128,8 @@
       "source_location": "L875",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_sourcepath_additionalproperties",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 60,
+      "community_name": "properties",
       "norm_label": "additionalproperties"
     },
     {
@@ -50271,8 +50271,8 @@
       "source_location": "L953",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_sourcepath_title",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 60,
+      "community_name": "properties",
       "norm_label": "title"
     },
     {
@@ -50282,8 +50282,8 @@
       "source_location": "L954",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_sourcepath_type",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 60,
+      "community_name": "properties",
       "norm_label": "type"
     },
     {
@@ -50777,8 +50777,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_application_appcommands",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 78,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "appcommands.swift"
     },
     {
@@ -50800,8 +50800,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "macos_papercreator_application_appcommands_appcommands",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 78,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "appcommands"
     },
     {
@@ -50811,8 +50811,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "commands",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 78,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "commands"
     },
     {
@@ -50833,8 +50833,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration",
-      "community": 185,
-      "community_name": "Foundation",
+      "community": 78,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "appconfiguration.swift"
     },
     {
@@ -50845,8 +50845,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "foundation",
-      "community": 185,
-      "community_name": "Foundation",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "foundation"
     },
     {
@@ -50966,8 +50966,8 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration_appstoragekey",
-      "community": 185,
-      "community_name": "Foundation",
+      "community": 78,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "appstoragekey"
     },
     {
@@ -50977,8 +50977,8 @@
       "source_location": "L111",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration_secretaccount",
-      "community": 185,
-      "community_name": "Foundation",
+      "community": 78,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "secretaccount"
     },
     {
@@ -51033,8 +51033,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_applaunchpolicy",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 29,
+      "community_name": "PaperCreatorTests",
       "norm_label": "applaunchpolicy"
     },
     {
@@ -51044,8 +51044,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_applaunchpolicy_presentsmainwindow",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 29,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".presentsmainwindow()"
     },
     {
@@ -51055,8 +51055,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_swift_string",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 29,
+      "community_name": "PaperCreatorTests",
       "norm_label": "string"
     },
     {
@@ -51066,8 +51066,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_swift_bool",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 29,
+      "community_name": "PaperCreatorTests",
       "norm_label": "bool"
     },
     {
@@ -51077,8 +51077,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_papercreator",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 78,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "papercreator"
     },
     {
@@ -51088,8 +51088,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "app",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 78,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "app"
     },
     {
@@ -51099,8 +51099,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_papercreator_init",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 78,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".init()"
     },
     {
@@ -51110,8 +51110,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "scene",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 78,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "scene"
     },
     {
@@ -51121,8 +51121,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_papercreator_body",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 78,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".body"
     },
     {
@@ -51133,7 +51133,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "nativevisualstyle.swift"
     },
     {
@@ -51144,7 +51144,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "workspacelayoutmode"
     },
     {
@@ -51166,7 +51166,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_compact",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "compact"
     },
     {
@@ -51177,7 +51177,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_standard",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "standard"
     },
     {
@@ -51188,7 +51188,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_expanded",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "expanded"
     },
     {
@@ -51199,7 +51199,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_swift_bool",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "bool"
     },
     {
@@ -51210,7 +51210,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_showssidebar",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".showssidebar"
     },
     {
@@ -51221,7 +51221,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_swift_cgfloat",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "cgfloat"
     },
     {
@@ -51232,7 +51232,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_qualityreviewwidth",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".qualityreviewwidth"
     },
     {
@@ -51243,7 +51243,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutpolicy",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "workspacelayoutpolicy"
     },
     {
@@ -51254,7 +51254,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutpolicy_mode",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".mode()"
     },
     {
@@ -52551,8 +52551,8 @@
       "source_location": "L501",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_ollamastate",
-      "community": 217,
-      "community_name": "ModelCoordinator",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "ollamastate"
     },
     {
@@ -53596,8 +53596,8 @@
       "source_location": "L1215",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_codingkeys_value",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": "value"
     },
     {
@@ -53805,8 +53805,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_domain_assessmentbundleexporter",
-      "community": 29,
-      "community_name": "PaperCreatorTests",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "assessmentbundleexporter.swift"
     },
     {
@@ -53816,8 +53816,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "macos_papercreator_domain_assessmentbundleexporter_assessmentbundleexporter",
-      "community": 29,
-      "community_name": "PaperCreatorTests",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "assessmentbundleexporter"
     },
     {
@@ -53827,8 +53827,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "macos_papercreator_domain_assessmentbundleexporter_assessmentbundleexporter_export",
-      "community": 29,
-      "community_name": "PaperCreatorTests",
+      "community": 78,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".export()"
     },
     {
@@ -53838,8 +53838,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_domain_assessmentbundleexporter_swift_url",
-      "community": 29,
-      "community_name": "PaperCreatorTests",
+      "community": 78,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "url"
     },
     {
@@ -53849,8 +53849,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_domain_frenchassessmentrequest",
-      "community": 185,
-      "community_name": "Foundation",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "frenchassessmentrequest.swift"
     },
     {
@@ -53860,8 +53860,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "macos_papercreator_domain_frenchassessmentrequest_frenchassessmentrequest",
-      "community": 185,
-      "community_name": "Foundation",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "frenchassessmentrequest"
     },
     {
@@ -53871,8 +53871,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_domain_frenchassessmentrequest_swift_url",
-      "community": 185,
-      "community_name": "Foundation",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "url"
     },
     {
@@ -53882,8 +53882,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_domain_frenchassessmentrequest_swift_string",
-      "community": 185,
-      "community_name": "Foundation",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "string"
     },
     {
@@ -53893,8 +53893,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_domain_frenchassessmentrequest_swift_int",
-      "community": 185,
-      "community_name": "Foundation",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "int"
     },
     {
@@ -53904,8 +53904,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_domain_frenchassessmentrequest_swift_bool",
-      "community": 185,
-      "community_name": "Foundation",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "bool"
     },
     {
@@ -53915,8 +53915,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "macos_papercreator_domain_frenchassessmentrequest_frenchassessmentrequest_arguments",
-      "community": 185,
-      "community_name": "Foundation",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": ".arguments"
     },
     {
@@ -54015,7 +54015,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_domain_frenchreviewrequest_frenchreviewrubric_localizationkey",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".localizationkey()"
     },
     {
@@ -54091,8 +54091,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_domain_generationestimator",
-      "community": 156,
-      "community_name": ".initialEstimate",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "generationestimator.swift"
     },
     {
@@ -54102,8 +54102,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "macos_papercreator_domain_generationestimator_estimatetuning",
-      "community": 156,
-      "community_name": ".initialEstimate",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "estimatetuning"
     },
     {
@@ -54729,8 +54729,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": "benchmarkview.swift"
     },
     {
@@ -54741,8 +54741,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "charts",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": "charts"
     },
     {
@@ -54752,8 +54752,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkaccessibility",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": "benchmarkaccessibility"
     },
     {
@@ -54763,8 +54763,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkaccessibility_chartsummary",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": ".chartsummary()"
     },
     {
@@ -54774,8 +54774,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_swift_string",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": "string"
     },
     {
@@ -54785,8 +54785,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_swift_double",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": "double"
     },
     {
@@ -54884,8 +54884,8 @@
       "source_location": "L153",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": "benchmarklivecharts"
     },
     {
@@ -54895,8 +54895,8 @@
       "source_location": "L156",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts_body",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": ".body"
     },
     {
@@ -54906,8 +54906,8 @@
       "source_location": "L190",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts_cpuchart",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": ".cpuchart"
     },
     {
@@ -54917,8 +54917,8 @@
       "source_location": "L194",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts_cputhroughputchart",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": ".cputhroughputchart"
     },
     {
@@ -54928,8 +54928,8 @@
       "source_location": "L198",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts_memorychart",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": ".memorychart"
     },
     {
@@ -54939,8 +54939,8 @@
       "source_location": "L202",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts_memorypressurechart",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": ".memorypressurechart"
     },
     {
@@ -54950,8 +54950,8 @@
       "source_location": "L206",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts_diskwritechart",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": ".diskwritechart"
     },
     {
@@ -54961,8 +54961,8 @@
       "source_location": "L210",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts_networklatencychart",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": ".networklatencychart"
     },
     {
@@ -54972,8 +54972,8 @@
       "source_location": "L214",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts_pdfrenderchart",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": ".pdfrenderchart"
     },
     {
@@ -54983,8 +54983,8 @@
       "source_location": "L218",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts_thermalchart",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": ".thermalchart"
     },
     {
@@ -54994,8 +54994,8 @@
       "source_location": "L223",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkchart",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": "benchmarkchart"
     },
     {
@@ -55005,8 +55005,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "keypath",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": "keypath"
     },
     {
@@ -55027,8 +55027,8 @@
       "source_location": "L274",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkchart_accessibilitysummary",
-      "community": 10,
-      "community_name": "Text",
+      "community": 59,
+      "community_name": "BenchmarkChart",
       "norm_label": ".accessibilitysummary"
     },
     {
@@ -55061,7 +55061,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "documentpreviewview.swift"
     },
     {
@@ -55073,7 +55073,7 @@
       "_origin": "ast",
       "id": "appkit",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "appkit"
     },
     {
@@ -55085,7 +55085,7 @@
       "_origin": "ast",
       "id": "combine",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "combine"
     },
     {
@@ -55097,7 +55097,7 @@
       "_origin": "ast",
       "id": "pdfkit",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "pdfkit"
     },
     {
@@ -55109,7 +55109,7 @@
       "_origin": "ast",
       "id": "quartz",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "quartz"
     },
     {
@@ -55121,7 +55121,7 @@
       "_origin": "ast",
       "id": "uniformtypeidentifiers",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "uniformtypeidentifiers"
     },
     {
@@ -55132,7 +55132,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "documentpreviewview"
     },
     {
@@ -55143,7 +55143,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_swift_string",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "string"
     },
     {
@@ -55154,7 +55154,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview_init",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": ".init()"
     },
     {
@@ -55165,7 +55165,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview_body",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": ".body"
     },
     {
@@ -55176,7 +55176,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_swift_binding",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "binding"
     },
     {
@@ -55187,7 +55187,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview_selectedbinding",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": ".selectedbinding"
     },
     {
@@ -55198,7 +55198,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview_selectedfile",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": ".selectedfile"
     },
     {
@@ -55209,7 +55209,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_swift_generationjobrecord",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "generationjobrecord"
     },
     {
@@ -55220,7 +55220,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview_provenancerecord",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": ".provenancerecord"
     },
     {
@@ -55231,7 +55231,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_swift_bool",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "bool"
     },
     {
@@ -55242,7 +55242,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview_exportalertbinding",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": ".exportalertbinding"
     },
     {
@@ -55253,7 +55253,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview_printselected",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": ".printselected()"
     },
     {
@@ -55264,7 +55264,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview_exportselected",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": ".exportselected()"
     },
     {
@@ -55275,7 +55275,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview_copyprovenance",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": ".copyprovenance()"
     },
     {
@@ -55286,7 +55286,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_pdfdocumentview",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "pdfdocumentview"
     },
     {
@@ -55297,7 +55297,7 @@
       "_origin": "ast",
       "id": "nsviewrepresentable",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "nsviewrepresentable"
     },
     {
@@ -55308,7 +55308,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_swift_url",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "url"
     },
     {
@@ -55319,7 +55319,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_pdfdocumentview_makensview",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": ".makensview()"
     },
     {
@@ -55330,7 +55330,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_swift_context",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "context"
     },
     {
@@ -55341,7 +55341,7 @@
       "_origin": "ast",
       "id": "pdfview",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "pdfview"
     },
     {
@@ -55352,7 +55352,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_pdfdocumentview_updatensview",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": ".updatensview()"
     },
     {
@@ -55363,7 +55363,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_quicklookcoordinator",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "quicklookcoordinator"
     },
     {
@@ -55374,7 +55374,7 @@
       "_origin": "ast",
       "id": "nsobject",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "nsobject"
     },
     {
@@ -55385,7 +55385,7 @@
       "_origin": "ast",
       "id": "observableobject",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "observableobject"
     },
     {
@@ -55396,7 +55396,7 @@
       "_origin": "ast",
       "id": "qlpreviewpaneldatasource",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "qlpreviewpaneldatasource"
     },
     {
@@ -55407,7 +55407,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_quicklookcoordinator_present",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": ".present()"
     },
     {
@@ -55418,7 +55418,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_quicklookcoordinator_numberofpreviewitems",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": ".numberofpreviewitems()"
     },
     {
@@ -55429,7 +55429,7 @@
       "_origin": "ast",
       "id": "qlpreviewpanel",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "qlpreviewpanel"
     },
     {
@@ -55440,7 +55440,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_swift_int",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "int"
     },
     {
@@ -55451,7 +55451,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_quicklookcoordinator_previewpanel",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": ".previewpanel()"
     },
     {
@@ -55462,7 +55462,7 @@
       "_origin": "ast",
       "id": "qlpreviewitem",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "qlpreviewitem"
     },
     {
@@ -55594,7 +55594,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "frenchassessmentworkspace.swift"
     },
     {
@@ -55605,7 +55605,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchworkspacelayoutpolicy",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "frenchworkspacelayoutpolicy"
     },
     {
@@ -55616,7 +55616,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchworkspacelayoutpolicy_contentwidth",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".contentwidth()"
     },
     {
@@ -55627,7 +55627,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_swift_cgfloat",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "cgfloat"
     },
     {
@@ -55638,7 +55638,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchassessmentworkspace",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "frenchassessmentworkspace"
     },
     {
@@ -55649,7 +55649,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchassessmentworkspace_body",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".body"
     },
     {
@@ -55660,7 +55660,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchassessmentworkspace_form",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".form"
     },
     {
@@ -55671,7 +55671,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_swift_bool",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "bool"
     },
     {
@@ -55682,7 +55682,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchassessmentworkspace_cangenerate",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".cangenerate"
     },
     {
@@ -55693,7 +55693,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_swift_string",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "string"
     },
     {
@@ -55704,7 +55704,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchassessmentworkspace_createhelp",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".createhelp"
     },
     {
@@ -55715,7 +55715,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchassessmentworkspace_localizedvalue",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".localizedvalue()"
     },
     {
@@ -55726,7 +55726,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchteacherreviewsheet",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "frenchteacherreviewsheet"
     },
     {
@@ -55737,7 +55737,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchteacherreviewsheet_body",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".body"
     },
     {
@@ -55748,7 +55748,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchteacherreviewsheet_scorebinding",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".scorebinding()"
     },
     {
@@ -55759,7 +55759,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_swift_binding",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "binding"
     },
     {
@@ -55770,7 +55770,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_swift_int",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "int"
     },
     {
@@ -56627,8 +56627,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": "settingspane.swift"
     },
     {
@@ -56638,8 +56638,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspane",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": "settingspane"
     },
     {
@@ -56649,8 +56649,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspane_body",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": ".body"
     },
     {
@@ -56660,8 +56660,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspaneid",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": "settingspaneid"
     },
     {
@@ -56671,8 +56671,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspaneid_ai",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": "ai"
     },
     {
@@ -56682,8 +56682,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspaneid_output",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": "output"
     },
     {
@@ -56693,8 +56693,8 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspaneid_privacy",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": "privacy"
     },
     {
@@ -56704,8 +56704,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspaneid_title",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": ".title"
     },
     {
@@ -56715,8 +56715,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingswindowconfiguration",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": "settingswindowconfiguration"
     },
     {
@@ -56726,8 +56726,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingswindowconfiguration_makensview",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": ".makensview()"
     },
     {
@@ -56737,8 +56737,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_swift_context",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": "context"
     },
     {
@@ -56748,8 +56748,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "nsview",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": "nsview"
     },
     {
@@ -56759,8 +56759,8 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingswindowconfiguration_updatensview",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": ".updatensview()"
     },
     {
@@ -56770,8 +56770,8 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingswindowconfiguration_configure",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": ".configure()"
     },
     {
@@ -56781,8 +56781,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "nswindow",
-      "community": 129,
-      "community_name": ".body",
+      "community": 78,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "nswindow"
     },
     {
@@ -56847,8 +56847,8 @@
       "source_location": "L283",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_privacysettingstab",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": "privacysettingstab"
     },
     {
@@ -56858,8 +56858,8 @@
       "source_location": "L286",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_privacysettingstab_body",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": ".body"
     },
     {
@@ -56869,8 +56869,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview",
-      "community": 129,
-      "community_name": ".body",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": "contentview.swift"
     },
     {
@@ -56880,8 +56880,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentview",
-      "community": 129,
-      "community_name": ".body",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": "contentview"
     },
     {
@@ -56891,8 +56891,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentview_body",
-      "community": 129,
-      "community_name": ".body",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".body"
     },
     {
@@ -56902,8 +56902,8 @@
       "source_location": "L94",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentview_columnvisibility",
-      "community": 129,
-      "community_name": ".body",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".columnvisibility()"
     },
     {
@@ -56913,8 +56913,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_swift_binding",
-      "community": 129,
-      "community_name": ".body",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": "binding"
     },
     {
@@ -56924,8 +56924,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "navigationsplitviewvisibility",
-      "community": 129,
-      "community_name": ".body",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": "navigationsplitviewvisibility"
     },
     {
@@ -56935,8 +56935,8 @@
       "source_location": "L117",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentview_ensuresidebarselection",
-      "community": 129,
-      "community_name": ".body",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".ensuresidebarselection()"
     },
     {
@@ -56946,8 +56946,8 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentview_selectboard",
-      "community": 129,
-      "community_name": ".body",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".selectboard()"
     },
     {
@@ -56957,8 +56957,8 @@
       "source_location": "L135",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentviewpreview",
-      "community": 129,
-      "community_name": ".body",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": "contentviewpreview"
     },
     {
@@ -56968,8 +56968,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "previewprovider",
-      "community": 129,
-      "community_name": ".body",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": "previewprovider"
     },
     {
@@ -56979,8 +56979,8 @@
       "source_location": "L136",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentviewpreview_previews",
-      "community": 129,
-      "community_name": ".body",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".previews"
     },
     {
@@ -57553,7 +57553,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "applicationcoordinator.swift"
     },
     {
@@ -57565,7 +57565,7 @@
       "_origin": "ast",
       "id": "usernotifications",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "usernotifications"
     },
     {
@@ -57872,8 +57872,8 @@
       "source_location": "L172",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_init",
-      "community": 78,
-      "community_name": "ApplicationCoordinator",
+      "community": 140,
+      "community_name": "GeneratedFile",
       "norm_label": ".init()"
     },
     {
@@ -58598,8 +58598,8 @@
       "source_location": "L1115",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_movegeneratedfilestooutputfolderifneeded",
-      "community": 29,
-      "community_name": "PaperCreatorTests",
+      "community": 78,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".movegeneratedfilestooutputfolderifneeded()"
     },
     {
@@ -58609,8 +58609,8 @@
       "source_location": "L1163",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_restorerecentdocuments",
-      "community": 78,
-      "community_name": "ApplicationCoordinator",
+      "community": 140,
+      "community_name": "GeneratedFile",
       "norm_label": ".restorerecentdocuments()"
     },
     {
@@ -58642,8 +58642,8 @@
       "source_location": "L1198",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_begingenerationestimate",
-      "community": 78,
-      "community_name": "ApplicationCoordinator",
+      "community": 156,
+      "community_name": ".initialEstimate",
       "norm_label": ".begingenerationestimate()"
     },
     {
@@ -58653,8 +58653,8 @@
       "source_location": "L1215",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_updategenerationestimate",
-      "community": 78,
-      "community_name": "ApplicationCoordinator",
+      "community": 156,
+      "community_name": ".initialEstimate",
       "norm_label": ".updategenerationestimate()"
     },
     {
@@ -58720,7 +58720,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_notificationpresenter",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "notificationpresenter"
     },
     {
@@ -58731,7 +58731,7 @@
       "_origin": "ast",
       "id": "unusernotificationcenterdelegate",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "unusernotificationcenterdelegate"
     },
     {
@@ -58742,7 +58742,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_notificationpresenter_init",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": ".init()"
     },
     {
@@ -58753,7 +58753,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_notificationpresenter_usernotificationcenter",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": ".usernotificationcenter()"
     },
     {
@@ -58764,7 +58764,7 @@
       "_origin": "ast",
       "id": "unusernotificationcenter",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "unusernotificationcenter"
     },
     {
@@ -58775,7 +58775,7 @@
       "_origin": "ast",
       "id": "unnotification",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "unnotification"
     },
     {
@@ -58786,7 +58786,7 @@
       "_origin": "ast",
       "id": "unnotificationpresentationoptions",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "unnotificationpresentationoptions"
     },
     {
@@ -58851,8 +58851,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator",
-      "community": 185,
-      "community_name": "Foundation",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "benchmarkcoordinator.swift"
     },
     {
@@ -58863,8 +58863,8 @@
       "source_location": "L2",
       "_origin": "ast",
       "id": "observation",
-      "community": 185,
-      "community_name": "Foundation",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "observation"
     },
     {
@@ -59028,8 +59028,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore",
-      "community": 185,
-      "community_name": "Foundation",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "catalogstore.swift"
     },
     {
@@ -59413,8 +59413,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator",
-      "community": 185,
-      "community_name": "Foundation",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "generationcoordinator.swift"
     },
     {
@@ -59534,8 +59534,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_state_modelcoordinator",
-      "community": 185,
-      "community_name": "Foundation",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "modelcoordinator.swift"
     },
     {
@@ -59545,8 +59545,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "macos_papercreator_state_modelcoordinator_modelcoordinator",
-      "community": 217,
-      "community_name": "ModelCoordinator",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "modelcoordinator"
     },
     {
@@ -59556,8 +59556,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_modelcoordinator_swift_string",
-      "community": 217,
-      "community_name": "ModelCoordinator",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "string"
     },
     {
@@ -59567,8 +59567,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_modelcoordinator_swift_date",
-      "community": 217,
-      "community_name": "ModelCoordinator",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "date"
     },
     {
@@ -59578,8 +59578,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_modelcoordinator_swift_timeinterval",
-      "community": 217,
-      "community_name": "ModelCoordinator",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "timeinterval"
     },
     {
@@ -59589,8 +59589,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "macos_papercreator_state_modelcoordinator_modelcoordinator_init",
-      "community": 217,
-      "community_name": "ModelCoordinator",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": ".init()"
     },
     {
@@ -59600,8 +59600,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_modelcoordinator_swift_bool",
-      "community": 217,
-      "community_name": "ModelCoordinator",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "bool"
     },
     {
@@ -59622,8 +59622,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "macos_papercreator_state_modelcoordinator_modelcoordinator_recommendation",
-      "community": 217,
-      "community_name": "ModelCoordinator",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": ".recommendation"
     },
     {
@@ -59633,8 +59633,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "macos_papercreator_state_modelcoordinator_modelcoordinator_modeloptions",
-      "community": 217,
-      "community_name": "ModelCoordinator",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": ".modeloptions"
     },
     {
@@ -59644,8 +59644,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "macos_papercreator_state_modelcoordinator_modelcoordinator_receivemodels",
-      "community": 217,
-      "community_name": "ModelCoordinator",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": ".receivemodels()"
     },
     {
@@ -59655,8 +59655,8 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "macos_papercreator_state_modelcoordinator_modelcoordinator_receiveollamastate",
-      "community": 217,
-      "community_name": "ModelCoordinator",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": ".receiveollamastate()"
     },
     {
@@ -60238,8 +60238,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_state_settingsstore",
-      "community": 185,
-      "community_name": "Foundation",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": "settingsstore.swift"
     },
     {
@@ -60327,7 +60327,7 @@
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "accessibilitytests.swift"
     },
     {
@@ -60339,7 +60339,7 @@
       "_origin": "ast",
       "id": "xctest",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "xctest"
     },
     {
@@ -60351,7 +60351,7 @@
       "_origin": "ast",
       "id": "papercreator",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "papercreator"
     },
     {
@@ -60362,7 +60362,7 @@
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "accessibilitytests"
     },
     {
@@ -60373,7 +60373,7 @@
       "_origin": "ast",
       "id": "xctestcase",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "xctestcase"
     },
     {
@@ -60383,8 +60383,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testreadyworkspacelaysoutinanexpandedwindow",
-      "community": 129,
-      "community_name": ".body",
+      "community": 78,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".testreadyworkspacelaysoutinanexpandedwindow()"
     },
     {
@@ -60395,7 +60395,7 @@
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testworkspacelayoutprotectscompactwindowsfromcolumnoverlap",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".testworkspacelayoutprotectscompactwindowsfromcolumnoverlap()"
     },
     {
@@ -60406,7 +60406,7 @@
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testfrenchteacherformkeepsreadablelinelengthwithoutclippingsmallwindows",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".testfrenchteacherformkeepsreadablelinelengthwithoutclippingsmallwindows()"
     },
     {
@@ -60417,7 +60417,7 @@
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testeveryproviderandhelptopichasspokentextandsymbol",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".testeveryproviderandhelptopichasspokentextandsymbol()"
     },
     {
@@ -60428,7 +60428,7 @@
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testqualificationstatesneverrelyoncolouralone",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".testqualificationstatesneverrelyoncolouralone()"
     },
     {
@@ -60439,7 +60439,7 @@
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testlongpseudolocalisedcopyandrighttoleftlocaleremainavailable",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".testlongpseudolocalisedcopyandrighttoleftlocaleremainavailable()"
     },
     {
@@ -60450,7 +60450,7 @@
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testbenchmarkchartsummaryexposeslatestvalueandrangewithoutvision",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".testbenchmarkchartsummaryexposeslatestvalueandrangewithoutvision()"
     },
     {
@@ -60461,7 +60461,7 @@
       "_origin": "ast",
       "id": "macos_tests_apptests",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "apptests.swift"
     },
     {
@@ -60482,8 +60482,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testapplaunchpolicysuppresseswindowsonlyduringunittests",
-      "community": 59,
-      "community_name": "SettingsPane.swift",
+      "community": 29,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".testapplaunchpolicysuppresseswindowsonlyduringunittests()"
     },
     {
@@ -60493,8 +60493,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testfrenchbundleexportpreservesmanifestandrejectsoverwrite",
-      "community": 29,
-      "community_name": "PaperCreatorTests",
+      "community": 78,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".testfrenchbundleexportpreservesmanifestandrejectsoverwrite()"
     },
     {
@@ -60504,8 +60504,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testfrenchrequestkeepscurriculumseparatefromuilanguage",
-      "community": 185,
-      "community_name": "Foundation",
+      "community": 27,
+      "community_name": "AIProvider",
       "norm_label": ".testfrenchrequestkeepscurriculumseparatefromuilanguage()"
     },
     {
@@ -60802,7 +60802,7 @@
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testfrenchreviewusesenvironmentlocalisablekeys",
       "community": 129,
-      "community_name": ".body",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".testfrenchreviewusesenvironmentlocalisablekeys()"
     },
     {
@@ -60956,7 +60956,7 @@
       "_origin": "ast",
       "id": "macos_tests_coordinatortests",
       "community": 185,
-      "community_name": "Foundation",
+      "community_name": "DocumentPreviewView",
       "norm_label": "coordinatortests.swift"
     },
     {
@@ -64821,8 +64821,8 @@
       "source_location": "L165",
       "_origin": "ast",
       "id": "tests_test_computer_science_objectives_test_sql_credit_matches_six_mark_query_and_independent_row_analysis",
-      "community": 53,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 3,
+      "community_name": "load_syllabus",
       "norm_label": "test_sql_credit_matches_six_mark_query_and_independent_row_analysis()"
     },
     {
@@ -65107,8 +65107,8 @@
       "source_location": "L627",
       "_origin": "ast",
       "id": "tests_test_computer_science_objectives_test_explicit_unqualified_cambridge_identity_does_not_inherit_aqa_ocr_policy",
-      "community": 14,
-      "community_name": "test_computer_science_objectives.py",
+      "community": 9,
+      "community_name": "require_difficulty_review",
       "norm_label": "test_explicit_unqualified_cambridge_identity_does_not_inherit_aqa_ocr_policy()"
     },
     {
@@ -71616,7 +71616,7 @@
       "label": "test_structured_table_requires_rectangular_bounded_data()",
       "file_type": "code",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L274",
+      "source_location": "L300",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_structured_table_requires_rectangular_bounded_data",
       "community": 31,
@@ -71627,7 +71627,7 @@
       "label": "test_sql_relation_identifier_is_visible_and_optional_create_clause_is_valid()",
       "file_type": "code",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L291",
+      "source_location": "L317",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_sql_relation_identifier_is_visible_and_optional_create_clause_is_valid",
       "community": 31,
@@ -71638,7 +71638,7 @@
       "label": "test_question_demand_is_bound_to_official_capabilities_and_time_budget()",
       "file_type": "code",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L330",
+      "source_location": "L356",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_question_demand_is_bound_to_official_capabilities_and_time_budget",
       "community": 31,
@@ -71649,7 +71649,7 @@
       "label": "test_exercise_rejects_flat_low_demand_question_sets()",
       "file_type": "code",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L350",
+      "source_location": "L376",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_exercise_rejects_flat_low_demand_question_sets",
       "community": 31,
@@ -71660,7 +71660,7 @@
       "label": "test_seeded_question_blueprints_make_marks_and_timing_exact_before_ai()",
       "file_type": "code",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L363",
+      "source_location": "L389",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_seeded_question_blueprints_make_marks_and_timing_exact_before_ai",
       "community": 150,
@@ -71671,7 +71671,7 @@
       "label": "test_question_intents_follow_coherent_parts_instead_of_rotating_codes()",
       "file_type": "code",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L384",
+      "source_location": "L410",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_question_intents_follow_coherent_parts_instead_of_rotating_codes",
       "community": 150,
@@ -71682,7 +71682,7 @@
       "label": "test_recorded_v6_blueprint_is_not_rewritten_by_new_archetypes()",
       "file_type": "code",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L427",
+      "source_location": "L453",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_recorded_v6_blueprint_is_not_rewritten_by_new_archetypes",
       "community": 177,
@@ -82806,8 +82806,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_project_analysis_implementation_and_fidelity_report",
-      "community": 204,
-      "community_name": "Implementation and fidelity report",
+      "community": 304,
+      "community_name": "README.md",
       "norm_label": "implementation_and_fidelity_report.md"
     },
     {
@@ -82817,8 +82817,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_project_analysis_implementation_and_fidelity_report_implementation_and_fidelity_report",
-      "community": 204,
-      "community_name": "Implementation and fidelity report",
+      "community": 304,
+      "community_name": "README.md",
       "norm_label": "implementation and fidelity report"
     },
     {
@@ -82828,8 +82828,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "docs_project_analysis_implementation_and_fidelity_report_release_outcome",
-      "community": 204,
-      "community_name": "Implementation and fidelity report",
+      "community": 304,
+      "community_name": "README.md",
       "norm_label": "release outcome"
     },
     {
@@ -82839,8 +82839,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "docs_project_analysis_implementation_and_fidelity_report_implemented_architecture",
-      "community": 204,
-      "community_name": "Implementation and fidelity report",
+      "community": 304,
+      "community_name": "README.md",
       "norm_label": "implemented architecture"
     },
     {
@@ -82850,8 +82850,8 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "docs_project_analysis_implementation_and_fidelity_report_model_guidance",
-      "community": 204,
-      "community_name": "Implementation and fidelity report",
+      "community": 304,
+      "community_name": "README.md",
       "norm_label": "model guidance"
     },
     {
@@ -82861,8 +82861,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "docs_project_analysis_implementation_and_fidelity_report_automated_and_visual_evidence",
-      "community": 204,
-      "community_name": "Implementation and fidelity report",
+      "community": 304,
+      "community_name": "README.md",
       "norm_label": "automated and visual evidence"
     },
     {
@@ -82872,8 +82872,8 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "docs_project_analysis_implementation_and_fidelity_report_live_model_evidence_boundary",
-      "community": 204,
-      "community_name": "Implementation and fidelity report",
+      "community": 304,
+      "community_name": "README.md",
       "norm_label": "live-model evidence boundary"
     },
     {
@@ -82883,8 +82883,8 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "docs_project_analysis_implementation_and_fidelity_report_publication_boundary",
-      "community": 204,
-      "community_name": "Implementation and fidelity report",
+      "community": 304,
+      "community_name": "README.md",
       "norm_label": "publication boundary"
     },
     {
@@ -83213,8 +83213,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_project_analysis_ui_audit",
-      "community": 304,
-      "community_name": "README.md",
+      "community": 251,
+      "community_name": "macOS UI audit",
       "norm_label": "ui_audit.md"
     },
     {
@@ -111091,7 +111091,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L488",
+      "source_location": "L489",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_render_assessment",
@@ -130757,7 +130757,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L338",
+      "source_location": "L339",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_render_assessment",
@@ -130805,7 +130805,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L334",
+      "source_location": "L335",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_render_assessment",
@@ -143573,7 +143573,7 @@
       "context": "generic_arg",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L327",
+      "source_location": "L328",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_render_assessment",
@@ -143994,7 +143994,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L360",
+      "source_location": "L386",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment_test_exercise_rejects_flat_low_demand_question_sets",
@@ -144018,7 +144018,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L342",
+      "source_location": "L368",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment_test_question_demand_is_bound_to_official_capabilities_and_time_budget",
@@ -144042,7 +144042,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L317",
+      "source_location": "L343",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment_test_sql_relation_identifier_is_visible_and_optional_create_clause_is_valid",
@@ -144066,7 +144066,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L288",
+      "source_location": "L314",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment_test_structured_table_requires_rectangular_bounded_data",
@@ -145394,7 +145394,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L428",
+      "source_location": "L454",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment",
@@ -145406,7 +145406,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L430",
+      "source_location": "L456",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment_test_recorded_v6_blueprint_is_not_rewritten_by_new_archetypes",
@@ -145838,7 +145838,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L364",
+      "source_location": "L390",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment",
@@ -145850,7 +145850,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L414",
+      "source_location": "L440",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment_test_question_intents_follow_coherent_parts_instead_of_rotating_codes",
@@ -145862,7 +145862,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L367",
+      "source_location": "L393",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment_test_seeded_question_blueprints_make_marks_and_timing_exact_before_ai",
@@ -146955,7 +146955,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L295",
+      "source_location": "L321",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment",
@@ -146967,7 +146967,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L319",
+      "source_location": "L345",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment_test_sql_relation_identifier_is_visible_and_optional_create_clause_is_valid",
@@ -149839,7 +149839,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L203",
+      "source_location": "L204",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering",
@@ -149850,7 +149850,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L239",
+      "source_location": "L240",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering",
@@ -149872,7 +149872,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L216",
+      "source_location": "L217",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering",
@@ -149883,7 +149883,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L327",
+      "source_location": "L328",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering",
@@ -149929,7 +149929,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L517",
+      "source_location": "L518",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_render_assessment",
@@ -149941,7 +149941,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L521",
+      "source_location": "L522",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_render_assessment",
@@ -149966,7 +149966,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L170",
+      "source_location": "L171",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_structured_material",
@@ -150025,7 +150025,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L320",
+      "source_location": "L346",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment_test_sql_relation_identifier_is_visible_and_optional_create_clause_is_valid",
@@ -150037,7 +150037,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L203",
+      "source_location": "L204",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_code_listing",
@@ -150049,7 +150049,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L340",
+      "source_location": "L341",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_render_assessment",
@@ -150060,10 +150060,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L204",
+      "source_location": "L205",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_rendering_rationale_204",
+      "source": "backend_core_france_rendering_rationale_205",
       "target": "backend_core_france_rendering_code_listing",
       "confidence_score": 1.0
     },
@@ -150095,7 +150095,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L217",
+      "source_location": "L218",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_numberedcanvas",
@@ -150106,7 +150106,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L225",
+      "source_location": "L226",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_numberedcanvas",
@@ -150117,7 +150117,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L221",
+      "source_location": "L222",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_numberedcanvas",
@@ -150128,7 +150128,7 @@
       "relation": "inherits",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L216",
+      "source_location": "L217",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_numberedcanvas",
@@ -150140,7 +150140,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L239",
+      "source_location": "L240",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_draw_cover_page",
@@ -150152,7 +150152,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L235",
+      "source_location": "L236",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_numberedcanvas_save",
@@ -150164,7 +150164,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L239",
+      "source_location": "L240",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_draw_cover_page",
@@ -150175,10 +150175,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L249",
+      "source_location": "L250",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_rendering_rationale_249",
+      "source": "backend_core_france_rendering_rationale_250",
       "target": "backend_core_france_rendering_draw_cover_page",
       "confidence_score": 1.0
     },
@@ -150187,7 +150187,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L403",
+      "source_location": "L404",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_render_assessment",
@@ -150319,7 +150319,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L327",
+      "source_location": "L328",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_render_assessment",
@@ -150332,7 +150332,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L540",
+      "source_location": "L541",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_render_assessment",
@@ -150344,7 +150344,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L490",
+      "source_location": "L491",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_render_assessment",
@@ -320499,7 +320499,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L350",
+      "source_location": "L376",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment",
@@ -320543,7 +320543,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L330",
+      "source_location": "L356",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment",
@@ -320554,7 +320554,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L384",
+      "source_location": "L410",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment",
@@ -320565,7 +320565,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L427",
+      "source_location": "L453",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment",
@@ -320576,7 +320576,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L363",
+      "source_location": "L389",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment",
@@ -320609,7 +320609,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L291",
+      "source_location": "L317",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment",
@@ -320642,7 +320642,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L274",
+      "source_location": "L300",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment",
@@ -320678,7 +320678,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L353",
+      "source_location": "L379",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment_test_exercise_rejects_flat_low_demand_question_sets",
@@ -320702,7 +320702,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L333",
+      "source_location": "L359",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment_test_question_demand_is_bound_to_official_capabilities_and_time_budget",
@@ -320726,7 +320726,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L298",
+      "source_location": "L324",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment_test_sql_relation_identifier_is_visible_and_optional_create_clause_is_valid",
@@ -320750,7 +320750,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_nsi_assessment.py",
-      "source_location": "L277",
+      "source_location": "L303",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_nsi_assessment_test_structured_table_requires_rectangular_bounded_data",
@@ -349513,5 +349513,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "940985d955d71101bcc5fa80a2aa60ee8bd1db9c"
+  "built_at_commit": "9c8f0fdd858372ac4f663258f1663de48a563c00"
 }

@@ -223,7 +223,7 @@ def test_structured_graph_is_bound_to_question_and_deterministic_contract():
 
 
 def test_app_owned_six_node_graph_renders_without_crossed_edges():
-    from reportlab.graphics.shapes import Drawing, Line, Rect
+    from reportlab.graphics.shapes import Circle, Drawing, Line, Rect, String
     from reportlab.lib.styles import ParagraphStyle
 
     from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
@@ -244,6 +244,9 @@ def test_app_owned_six_node_graph_renders_without_crossed_edges():
     drawing = next(item for item in block._content if isinstance(item, Drawing))
     lines = [item for item in drawing.contents if isinstance(item, Line)]
     weight_backings = [item for item in drawing.contents if isinstance(item, Rect)]
+    weight_labels = [item for item in drawing.contents if isinstance(item, String)][
+        : len(material.edges)
+    ]
 
     def crosses(first, second):
         def orient(ax, ay, bx, by, cx, cy):
@@ -264,11 +267,34 @@ def test_app_owned_six_node_graph_renders_without_crossed_edges():
 
     assert len(lines) == len(material.edges)
     assert len(weight_backings) == len(material.edges)
+    assert all(
+        backing.x <= label.x
+        and label.x + label.getBounds()[2] - label.getBounds()[0]
+        <= backing.x + backing.width
+        and backing.y <= label.y <= backing.y + backing.height
+        for backing, label in zip(weight_backings, weight_labels, strict=True)
+    )
     assert not any(
         crosses(first, second)
         for index, first in enumerate(lines)
         for second in lines[index + 1 :]
     )
+
+    other = material.model_copy(update={"id": "other_graph"})
+    other_block = structured_material(
+        other,
+        body=ParagraphStyle("other"),
+        bold_font="Helvetica-Bold",
+        regular_font="Helvetica",
+        available_width=440,
+    )
+    other_drawing = next(
+        item for item in other_block._content if isinstance(item, Drawing)
+    )
+    first_node = next(
+        item for item in other_drawing.contents if isinstance(item, Circle)
+    )
+    assert first_node.cy < other_drawing.height / 2
 
 
 def test_structured_table_requires_rectangular_bounded_data():

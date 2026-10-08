@@ -116,6 +116,7 @@ def structured_material(
     }
     if (
         not material.directed
+        and material.id == "reseau"
         and set(material.nodes) == set("ABCDEF")
         and {tuple(sorted((start, end))) for start, end, _ in material.edges}
         == app_graph_pairs
