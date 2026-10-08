@@ -2773,5 +2773,15 @@
     "mtime": 1791434700.3541613,
     "ast_hash": "4b2708b46eeb0228264d5d21abf15294",
     "semantic_hash": ""
+  },
+  "Backend/Core/france/network_depth_contract.py": {
+    "mtime": 1791438238.2955716,
+    "ast_hash": "48cc2e26b2c262c0dce5e6e3a16b24ff",
+    "semantic_hash": ""
+  },
+  "tests/test_french_network_depth_contract.py": {
+    "mtime": 1791438238.2949977,
+    "ast_hash": "c82cee72ebb5972cb0c85f3930cbdad0",
+    "semantic_hash": ""
   }
 }
