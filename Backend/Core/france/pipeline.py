@@ -2153,6 +2153,30 @@ def validate_package(package: dict):
     legacy_hash = LEGACY_IMPLEMENTATIONS.get(identity["prompt_version"])
     if legacy_hash and identity["implementation_sha256"] != legacy_hash:
         raise ValueError("Identité historique française non reconnue")
+    if identity["prompt_version"] == CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION:
+        v17_identity_fields = {
+            "assessment",
+            "prompt_version",
+            "implementation_sha256",
+            "seed",
+            "provider",
+            "model",
+            "model_digest",
+            "reference_digest",
+            "blueprint",
+            "originality_history_digest",
+            "graph_tree_depth_contract_sha256",
+            "graph_tree_depth_prose_contract_version",
+            "graph_tree_depth_prose_catalogue_sha256",
+            "database_depth_contract_sha256",
+            "database_depth_prose_contract_version",
+            "database_depth_prose_catalogue_sha256",
+            "network_depth_contract_sha256",
+            "network_depth_prose_contract_version",
+            "network_depth_prose_catalogue_sha256",
+        }
+        if set(identity) != v17_identity_fields:
+            raise ValueError("Identité V17 mixte ou incompatible")
     seed = identity.get("seed")
     if identity["prompt_version"] in {
         CONTRACT_PROMPT_VERSION,

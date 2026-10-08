@@ -622,6 +622,7 @@ def test_v17_graph_tree_depth_package_replays_without_changing_v16(tmp_path):
     from copy import deepcopy
     from decimal import Decimal
 
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
     from Backend.Core.france.pipeline import (
         _tasks_for_seed_v17,
         digest,
@@ -662,6 +663,22 @@ def test_v17_graph_tree_depth_package_replays_without_changing_v16(tmp_path):
     mixed = deepcopy(package)
     mixed["identity"]["graph_tree_depth_contract_sha256"] = "0" * 64
     with pytest.raises(ValueError):
+        validate_package(mixed)
+    mixed = deepcopy(package)
+    mixed["identity"]["graph_tree_contract_sha256"] = build_graph_tree_contract(
+        270100, "1"
+    ).digest
+    for item, key in zip(
+        mixed["evidence"],
+        (
+            "graph_tree_depth_selection",
+            "database_depth_selection",
+            "network_depth_selection",
+        ),
+        strict=True,
+    ):
+        item[key]["run_identity_sha256"] = digest(mixed["identity"])
+    with pytest.raises(ValueError, match=r"mixte|incompatible"):
         validate_package(mixed)
 
     old = generate_assessment(

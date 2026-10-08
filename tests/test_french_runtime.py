@@ -502,6 +502,23 @@ def test_runtime_publishes_v17_graph_tree_depth_with_locked_pdf_facts(
             runtime.validate_graph_tree_depth_contract_pdf(
                 bundle / "sujet.pdf", contract, correction=False, exercise=exercise
             )
+    for corrected_fragment in (
+        "if cle < noeud.valeur:",
+        "if  cle < noeud.valeur :",
+        "if voisin not in visites:",
+    ):
+        leaked_fragment = extracted.copy()
+        leaked_fragment[-1] += "\n" + corrected_fragment
+        with monkeypatch.context() as patch:
+            patch.setattr(
+                runtime.pymupdf,
+                "open",
+                lambda _path, pages=leaked_fragment: ExtractedDocument(pages),
+            )
+            with pytest.raises(ValueError, match=r"révélée"):
+                runtime.validate_graph_tree_depth_contract_pdf(
+                    bundle / "sujet.pdf", contract, correction=False, exercise=exercise
+                )
 
 
 @pytest.mark.parametrize("large_print", [False, True])

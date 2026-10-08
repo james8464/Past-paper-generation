@@ -287,6 +287,14 @@ def validate_graph_tree_depth_contract_pdf(
         flat,
     ):
         raise ValueError("Graph/tree depth root or insertion key missing")
+    if not correction and any(
+        re.search(pattern, flat)
+        for pattern in (
+            r"\bif\s+cle\s*<\s*noeud\.valeur\s*:",
+            r"\bif\s+voisin\s+not\s+in\s+visites\s*:",
+        )
+    ):
+        raise ValueError("Correction de code révélée dans le sujet")
     for question in exercise.questions:
         prompt = " ".join(question.prompt.split())
         if flat.count(prompt) != 1:
