@@ -84,6 +84,17 @@ from Backend.Core.france.network_prose import (
     NETWORK_PROSE_VERSION,
     network_catalogue_digest,
 )
+from Backend.Core.france.network_reasoning_authoring import (
+    author_network_reasoning_selection,
+    replay_network_reasoning_selection,
+)
+from Backend.Core.france.network_reasoning_contract import (
+    build_network_reasoning_contract,
+)
+from Backend.Core.france.network_reasoning_prose import (
+    NETWORK_REASONING_PROSE_VERSION,
+    network_reasoning_catalogue_digest,
+)
 from Backend.Core.france.nsi import (
     CURRICULUM_OBJECTIVES,
     LANGUAGE_RUBRIC_2027,
@@ -115,6 +126,7 @@ CONTROLLED_NETWORK_PROMPT_VERSION = "fr-nsi-written-2027-v14"
 CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION = "fr-nsi-written-2027-v15"
 CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION = "fr-nsi-written-2027-v16"
 CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION = "fr-nsi-written-2027-v17"
+CONTROLLED_NETWORK_REASONING_PROMPT_VERSION = "fr-nsi-written-2027-v18"
 # Recorded source identities prevent a newer package dropping its evidence via
 # an earlier prompt-version label. The separate manifest remains the trust root.
 LEGACY_IMPLEMENTATIONS = {
@@ -398,6 +410,62 @@ def _tasks_for_seed_v17(seed: int) -> list[dict]:
                 (f"1{letter}" for letter in "abcdefghij"),
                 minutes,
                 codes,
+                operations,
+                strict=True,
+            )
+        )
+    ]
+    return tasks
+
+
+def _tasks_for_seed_v18(seed: int) -> list[dict]:
+    """Retain V17 E1 and V16 E2; deepen only the third exercise."""
+    tasks = _tasks_for_seed_v17(seed)
+    exercise = tasks[2]
+    total = exercise["technical_points"]
+    if total not in {"5.5", "6", "6.5"}:
+        raise ValueError("Unsupported network reasoning allocation")
+    minutes = (4, 7, 6, 8, 5, 6, 6, 6, 5, 5, 6, 6)
+    operations = (
+        "apply",
+        "analyse",
+        "justify",
+        "analyse",
+        "apply",
+        "analyse",
+        "justify",
+        "justify",
+        "apply",
+        "analyse",
+        "justify",
+        "analyse",
+    )
+    exercise["question_blueprint"] = [
+        {
+            "id": task_id,
+            "points": (
+                "0.25"
+                if total == "5.5" and task_id in {"3a", "3e"}
+                else "0.75"
+                if total == "6.5" and task_id in {"3d", "3l"}
+                else "0.5"
+            ),
+            "estimated_minutes": minute,
+            "operation": operation,
+            "difficulty": 4 if task_id in {"3d", "3l"} else 2,
+            "required_curriculum_code": (
+                "ASR-ROUTAGE"
+                if index < 4
+                else "ASR-PROCESSUS"
+                if index < 8
+                else "ASR-CRYPTO"
+            ),
+            "part_id": "AAAABBBBCCCC"[index],
+        }
+        for index, (task_id, minute, operation) in enumerate(
+            zip(
+                (f"3{letter}" for letter in "abcdefghijkl"),
+                minutes,
                 operations,
                 strict=True,
             )
@@ -1529,6 +1597,7 @@ def generate_assessment(
         "v15",
         "v16",
         "v17",
+        "v18",
     } or (not contract_graph_tree and contract_authoring_version != "v12"):
         raise ValueError("Version de rédaction du contrat inconnue")
     model_digest = getattr(client, "model_digest", "")
@@ -1542,7 +1611,9 @@ def generate_assessment(
     ):
         raise ValueError("Historique d'originalité invalide ou trop volumineux")
     tasks = (
-        _tasks_for_seed_v17(seed)
+        _tasks_for_seed_v18(seed)
+        if contract_authoring_version == "v18"
+        else _tasks_for_seed_v17(seed)
         if contract_authoring_version == "v17"
         else _tasks_for_seed_v16(seed)
         if contract_authoring_version == "v16"
@@ -1569,7 +1640,9 @@ def generate_assessment(
         "assessment": asdict(NSI_2027),
         "prompt_version": (
             (
-                CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION
+                CONTROLLED_NETWORK_REASONING_PROMPT_VERSION
+                if contract_authoring_version == "v18"
+                else CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION
                 if contract_authoring_version == "v17"
                 else CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION
                 if contract_authoring_version == "v16"
@@ -1596,7 +1669,7 @@ def generate_assessment(
         "originality_history_digest": digest(originality_history),
     }
     if contract_graph_tree:
-        if contract_authoring_version == "v17":
+        if contract_authoring_version in {"v17", "v18"}:
             identity["graph_tree_depth_contract_sha256"] = (
                 build_graph_tree_depth_contract(seed).digest
             )
@@ -1617,7 +1690,7 @@ def generate_assessment(
             identity["database_contract_sha256"] = build_database_contract(seed).digest
             identity["database_prose_contract_version"] = DATABASE_PROSE_VERSION
             identity["database_prose_catalogue_sha256"] = database_catalogue_digest()
-        if contract_authoring_version in {"v16", "v17"}:
+        if contract_authoring_version in {"v16", "v17", "v18"}:
             identity["database_depth_contract_sha256"] = build_database_depth_contract(
                 seed
             ).digest
@@ -1641,6 +1714,16 @@ def generate_assessment(
             identity["network_depth_prose_catalogue_sha256"] = (
                 network_depth_catalogue_digest()
             )
+        if contract_authoring_version == "v18":
+            identity["network_reasoning_contract_sha256"] = (
+                build_network_reasoning_contract(seed).digest
+            )
+            identity["network_reasoning_prose_contract_version"] = (
+                NETWORK_REASONING_PROSE_VERSION
+            )
+            identity["network_reasoning_prose_catalogue_sha256"] = (
+                network_reasoning_catalogue_digest()
+            )
     state = {"identity": identity, "accepted": {}, "failed_attempts": []}
     if checkpoint.exists():
         state = json.loads(checkpoint.read_text(encoding="utf-8"))
@@ -1659,7 +1742,7 @@ def generate_assessment(
                     emit(f"Rédaction et vérification de l'exercice {key}/3")
                     if (
                         contract_graph_tree
-                        and contract_authoring_version == "v17"
+                        and contract_authoring_version in {"v17", "v18"}
                         and key == "1"
                     ):
                         contract = build_graph_tree_depth_contract(seed)
@@ -1761,10 +1844,14 @@ def generate_assessment(
                     if (
                         contract_graph_tree
                         and contract_authoring_version
-                        in {"v13", "v14", "v15", "v16", "v17"}
+                        in {"v13", "v14", "v15", "v16", "v17", "v18"}
                         and key == "2"
                     ):
-                        database_depth = contract_authoring_version in {"v16", "v17"}
+                        database_depth = contract_authoring_version in {
+                            "v16",
+                            "v17",
+                            "v18",
+                        }
                         contract = (
                             build_database_depth_contract(seed)
                             if database_depth
@@ -1833,11 +1920,14 @@ def generate_assessment(
                         break
                     if (
                         contract_graph_tree
-                        and contract_authoring_version in {"v14", "v15", "v16", "v17"}
+                        and contract_authoring_version
+                        in {"v14", "v15", "v16", "v17", "v18"}
                         and key == "3"
                     ):
                         contract = (
-                            build_network_depth_contract(seed)
+                            build_network_reasoning_contract(seed)
+                            if contract_authoring_version == "v18"
+                            else build_network_depth_contract(seed)
                             if contract_authoring_version in {"v15", "v16", "v17"}
                             else build_network_contract(seed)
                         )
@@ -1845,7 +1935,9 @@ def generate_assessment(
                             f"{checkpoint.name}.exercise-3.attempt-{attempt}.selection.json"
                         )
                         author_selection = (
-                            author_network_depth_selection
+                            author_network_reasoning_selection
+                            if contract_authoring_version == "v18"
+                            else author_network_depth_selection
                             if contract_authoring_version in {"v15", "v16", "v17"}
                             else author_network_selection
                         )
@@ -1858,7 +1950,9 @@ def generate_assessment(
                             run_identity=identity,
                         )
                         selection_key = (
-                            "network_depth_selection"
+                            "network_reasoning_selection"
+                            if contract_authoring_version == "v18"
+                            else "network_depth_selection"
                             if contract_authoring_version in {"v15", "v16", "v17"}
                             else "network_selection"
                         )
@@ -2142,6 +2236,7 @@ def validate_package(package: dict):
             CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
             CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
             CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
+            CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
             *LEGACY_IMPLEMENTATIONS,
         }
         or not identity.get("model_digest")
@@ -2153,7 +2248,10 @@ def validate_package(package: dict):
     legacy_hash = LEGACY_IMPLEMENTATIONS.get(identity["prompt_version"])
     if legacy_hash and identity["implementation_sha256"] != legacy_hash:
         raise ValueError("Identité historique française non reconnue")
-    if identity["prompt_version"] == CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION:
+    if identity["prompt_version"] in {
+        CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
+        CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
+    }:
         v17_identity_fields = {
             "assessment",
             "prompt_version",
@@ -2175,8 +2273,19 @@ def validate_package(package: dict):
             "network_depth_prose_contract_version",
             "network_depth_prose_catalogue_sha256",
         }
+        if identity["prompt_version"] == CONTROLLED_NETWORK_REASONING_PROMPT_VERSION:
+            v17_identity_fields -= {
+                "network_depth_contract_sha256",
+                "network_depth_prose_contract_version",
+                "network_depth_prose_catalogue_sha256",
+            }
+            v17_identity_fields |= {
+                "network_reasoning_contract_sha256",
+                "network_reasoning_prose_contract_version",
+                "network_reasoning_prose_catalogue_sha256",
+            }
         if set(identity) != v17_identity_fields:
-            raise ValueError("Identité V17 mixte ou incompatible")
+            raise ValueError("Identité V17/V18 mixte ou incompatible")
     seed = identity.get("seed")
     if identity["prompt_version"] in {
         CONTRACT_PROMPT_VERSION,
@@ -2191,7 +2300,10 @@ def validate_package(package: dict):
         != build_graph_tree_contract(seed, "1").digest
     ):
         raise ValueError("Identité du contrat graphe/arbre incompatible")
-    if identity["prompt_version"] == CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION and (
+    if identity["prompt_version"] in {
+        CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
+        CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
+    } and (
         type(seed) is not int
         or identity.get("graph_tree_depth_contract_sha256")
         != build_graph_tree_depth_contract(seed).digest
@@ -2226,6 +2338,7 @@ def validate_package(package: dict):
     if identity["prompt_version"] in {
         CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
         CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
+        CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
     } and (
         identity.get("database_depth_contract_sha256")
         != build_database_depth_contract(seed).digest
@@ -2256,9 +2369,20 @@ def validate_package(package: dict):
         != network_depth_catalogue_digest()
     ):
         raise ValueError("Identité du contrat de réseau approfondi incompatible")
+    if identity["prompt_version"] == CONTROLLED_NETWORK_REASONING_PROMPT_VERSION and (
+        identity.get("network_reasoning_contract_sha256")
+        != build_network_reasoning_contract(seed).digest
+        or identity.get("network_reasoning_prose_contract_version")
+        != NETWORK_REASONING_PROSE_VERSION
+        or identity.get("network_reasoning_prose_catalogue_sha256")
+        != network_reasoning_catalogue_digest()
+    ):
+        raise ValueError("Identité du contrat de raisonnement réseau incompatible")
     expected_blueprint = (
         (
-            _tasks_for_seed_v17(seed)
+            _tasks_for_seed_v18(seed)
+            if identity["prompt_version"] == CONTROLLED_NETWORK_REASONING_PROMPT_VERSION
+            else _tasks_for_seed_v17(seed)
             if identity["prompt_version"] == CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION
             else _tasks_for_seed_v16(seed)
             if identity["prompt_version"] == CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION
@@ -2326,7 +2450,11 @@ def validate_package(package: dict):
         if evidence.get("exercise_sha256") != digest(exercise.model_dump(mode="json")):
             raise ValueError("Exercise evidence hash mismatch")
         if (
-            identity["prompt_version"] == CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION
+            identity["prompt_version"]
+            in {
+                CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
+                CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
+            }
             and exercise.id == "1"
         ):
             raw = replay_graph_tree_depth_selection(
@@ -2381,12 +2509,14 @@ def validate_package(package: dict):
                 CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
                 CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
                 CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
+                CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
             }
             and exercise.id == "2"
         ):
             database_depth = identity["prompt_version"] in {
                 CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
                 CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
+                CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
             }
             replay_selection = (
                 replay_database_depth_selection
@@ -2428,27 +2558,40 @@ def validate_package(package: dict):
                 CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
                 CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
                 CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
+                CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
             }
             and exercise.id == "3"
         ):
+            network_reasoning = (
+                identity["prompt_version"]
+                == CONTROLLED_NETWORK_REASONING_PROMPT_VERSION
+            )
             network_depth = identity["prompt_version"] in {
                 CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
                 CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
                 CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
             }
             replay_selection = (
-                replay_network_depth_selection
+                replay_network_reasoning_selection
+                if network_reasoning
+                else replay_network_depth_selection
                 if network_depth
                 else replay_network_selection
             )
             raw = replay_selection(
                 expected_blueprint[2],
-                build_network_depth_contract(seed)
+                build_network_reasoning_contract(seed)
+                if network_reasoning
+                else build_network_depth_contract(seed)
                 if network_depth
                 else build_network_contract(seed),
                 evidence.get("references"),
                 evidence.get(
-                    "network_depth_selection" if network_depth else "network_selection"
+                    "network_reasoning_selection"
+                    if network_reasoning
+                    else "network_depth_selection"
+                    if network_depth
+                    else "network_selection"
                 ),
                 run_identity=identity,
             )

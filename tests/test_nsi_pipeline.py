@@ -618,6 +618,80 @@ class ControlledGraphTreeDepthFrenchClient(ControlledDatabaseDepthFrenchClient):
         return super().generate_json(prompt)
 
 
+class ControlledNetworkReasoningFrenchClient(ControlledGraphTreeDepthFrenchClient):
+    def generate_json(self, prompt):
+        if prompt.startswith("Sélectionne l'exercice 3 v18"):
+            return {
+                "scene_id": "campus",
+                "question_forms": {
+                    f"3{letter}": f"3{letter}-q1" for letter in "abcdefghijkl"
+                },
+                "rubric_forms": {
+                    f"3{letter}": f"3{letter}-r1" for letter in "abcdefghijkl"
+                },
+            }
+        return super().generate_json(prompt)
+
+
+def test_v18_network_reasoning_blueprint_keeps_exact_technical_allocation():
+    from decimal import Decimal
+
+    from Backend.Core.france.pipeline import _tasks_for_seed_v18
+
+    tasks = _tasks_for_seed_v18(270100)
+    assert [len(task["question_blueprint"]) for task in tasks] == [10, 10, 12]
+    assert [question["id"] for question in tasks[2]["question_blueprint"]] == [
+        f"3{letter}" for letter in "abcdefghijkl"
+    ]
+    assert sum(
+        Decimal(question["points"])
+        for task in tasks
+        for question in task["question_blueprint"]
+    ) == Decimal("18")
+    assert sum(
+        Decimal(question["points"]) for question in tasks[2]["question_blueprint"]
+    ) == Decimal(tasks[2]["technical_points"])
+
+
+def test_v18_network_reasoning_package_replays_and_rejects_mixed_identity(tmp_path):
+    from copy import deepcopy
+    from decimal import Decimal
+
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledNetworkReasoningFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "v18-checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v18",
+    )
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v18"
+    assert [len(item["questions"]) for item in package["exercises"]] == [10, 10, 12]
+    assert sum(Decimal(item["target_points"]) for item in package["exercises"]) == 18
+    assert package["language_points"] == "2"
+    assert package["evidence"][2]["network_reasoning_selection"]["accepted"]
+    assert validate_package(package)["structural_checks"] == "passed"
+
+    mixed = deepcopy(package)
+    mixed["identity"]["network_depth_contract_sha256"] = "0" * 64
+    with pytest.raises(ValueError, match=r"mixte|incompatible"):
+        validate_package(mixed)
+
+    old = generate_assessment(
+        index_path=index,
+        client=ControlledGraphTreeDepthFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "v17-checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v17",
+    )
+    assert validate_package(old)["structural_checks"] == "passed"
+
+
 def test_v17_graph_tree_depth_package_replays_without_changing_v16(tmp_path):
     from copy import deepcopy
     from decimal import Decimal
