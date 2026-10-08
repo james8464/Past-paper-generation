@@ -570,11 +570,86 @@ class ControlledNetworkFrenchClient(ControlledDatabaseFrenchClient):
                 "question_forms": {
                     f"3{letter}": f"3{letter}-q1" for letter in "abcdef"
                 },
-                "rubric_forms": {
-                    f"3{letter}": f"3{letter}-r1" for letter in "abcdef"
-                },
+                "rubric_forms": {f"3{letter}": f"3{letter}-r1" for letter in "abcdef"},
             }
         return super().generate_json(prompt)
+
+
+class ControlledNetworkDepthFrenchClient(ControlledNetworkFrenchClient):
+    def generate_json(self, prompt):
+        if prompt.startswith("Sélectionne la séquence réseau v15"):
+            return {
+                "scene_id": "campus",
+                "question_forms": {
+                    f"3{letter}": f"3{letter}-q1" for letter in "abcdef"
+                },
+                "rubric_forms": {f"3{letter}": f"3{letter}-r1" for letter in "abcdef"},
+            }
+        return super().generate_json(prompt)
+
+
+def test_v15_network_depth_package_has_exact_credit_and_replays(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import (
+        digest,
+        generate_assessment,
+        validate_package,
+    )
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledNetworkDepthFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "v15-checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v15",
+    )
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v15"
+    assert package["identity"]["network_depth_contract_sha256"]
+    assert (
+        sum(float(exercise["target_points"]) for exercise in package["exercises"]) == 18
+    )
+    assert package["language_points"] == "2"
+    assert package["evidence"][2]["network_depth_selection"]["accepted"]["response"]
+    assert validate_package(package)["structural_checks"] == "passed"
+    changed = deepcopy(package)
+    changed["exercises"][2]["questions"][1]["answer"] = "Une autre route."
+    changed["content_sha256"] = digest(changed["exercises"])
+    changed["evidence"][2]["exercise_sha256"] = digest(changed["exercises"][2])
+    with pytest.raises(ValueError):
+        validate_package(changed)
+
+
+def test_v14_checkpoint_is_not_resumed_as_v15_and_old_package_still_replays(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "preserve-v14.json"
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledNetworkFrenchClient(),
+        seed=270100,
+        checkpoint=checkpoint,
+        contract_graph_tree=True,
+        contract_authoring_version="v14",
+    )
+    original = checkpoint.read_bytes()
+    assert validate_package(package)["structural_checks"] == "passed"
+    with pytest.raises(ValueError, match="identité"):
+        generate_assessment(
+            index_path=index,
+            client=ControlledNetworkDepthFrenchClient(),
+            seed=270100,
+            checkpoint=checkpoint,
+            contract_graph_tree=True,
+            contract_authoring_version="v15",
+        )
+    assert checkpoint.read_bytes() == original
+    assert validate_package(package)["structural_checks"] == "passed"
 
 
 def test_v14_controlled_network_package_replays_and_rejects_rehashed_tamper(tmp_path):

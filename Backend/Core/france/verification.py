@@ -261,6 +261,7 @@ def verify_contract(contract: dict) -> dict:
         "graph_tree",
         "database_contract",
         "network_contract",
+        "network_depth_contract",
     }:
         return {
             "state": "unresolved",
@@ -268,7 +269,14 @@ def verify_contract(contract: dict) -> dict:
             "reason": "Vérification humaine nécessaire",
         }
     try:
-        if kind == "network_contract":
+        if kind == "network_depth_contract":
+            from Backend.Core.france.network_depth_contract import NetworkDepthContract
+
+            data = NetworkDepthContract.from_dict(contract["contract"]).to_dict()
+            if contract["task_id"] not in data["task_ids"]:
+                raise ValueError("Tâche de réseau approfondi absente")
+            actual = data["expected"]
+        elif kind == "network_contract":
             from Backend.Core.france.network_contract import NetworkContract
 
             data = NetworkContract.from_dict(contract["contract"]).to_dict()

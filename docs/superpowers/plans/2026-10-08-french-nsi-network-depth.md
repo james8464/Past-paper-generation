@@ -33,14 +33,14 @@
 
 **Files:** Create `Backend/Core/france/network_depth_contract.py`; test `tests/test_french_network_depth_contract.py`.
 
-**Interfaces:** `build_network_depth_contract(seed: int) -> NetworkDepthContract`; `NetworkDepthContract.from_dict(data: dict)` re-derives all facts and expected results. Contract version is `2`. The finite profile is a common integer offset 0–3 over seven positive bidirectional links: Central–R1 2, Central–R2 5, R1–R3 3, R1–R2 4, R2–R3 2, R2–Station 8, R3–Station 4. R1–R3 changes to 12 plus offset. A fresh Dijkstra implementation supplies settled order, tentative-distance trace, unique route and cost before/after; no stored answer is trusted. Fixed process and security premises are printed and validated.
+**Interfaces:** `build_network_depth_contract(seed: int) -> NetworkDepthContract`; `NetworkDepthContract.from_dict(data: dict)` re-derives all facts and expected results. Contract version is `2`. The finite profile is a common integer offset 0–3 over seven positive bidirectional links: Central–R1 2, Central–R2 5, R1–R3 3, R1–R2 4, R2–R3 2, R2–Station 10, R3–Station 4. R1–R3 changes to 12 plus offset. The originally planned R2–Station cost 8 created tied changed routes at offset 2; 10 preserves a unique best route for all four profiles (Task 1 ruling). A fresh Dijkstra implementation supplies settled order, tentative-distance trace, unique route and cost before/after; no stored answer is trusted. Fixed process and security premises are printed and validated.
 
 - [ ] Write tests for all four profiles, independent shortest-path oracle, unique route change, and tampering of each premise/trace; run RED.
 - [ ] Implement the contract and run focused tests GREEN; commit the independently testable contract.
 
 ### Task 2: Deep finite prose, exact credits and selection replay
 
-**Files:** Create `Backend/Core/france/network_depth_prose.py` and `network_depth_authoring.py`; modify `Backend/Core/france/pipeline.py`, `Backend/Core/france/verification.py`; test `tests/test_french_network_depth_prose.py`, `tests/test_french_network_depth_authoring.py`, `tests/test_nsi_pipeline.py`.
+**Files:** Create `Backend/Core/france/network_depth_prose.py` and `network_depth_authoring.py`; modify `Backend/Core/france/pipeline.py`, `Backend/Core/france/verification.py`, and the fail-closed selection response policy in `Backend/Core/france/provider.py`; test `tests/test_french_network_depth_prose.py`, `tests/test_french_network_depth_authoring.py`, `tests/test_nsi_pipeline.py`.
 
 **Interfaces:** `render_network_depth_candidate(contract, selection, task_specs) -> dict`; `author_network_depth_selection(...) -> tuple[dict, dict]`; `replay_network_depth_selection(...) -> dict`. New prompt version `fr-nsi-written-2027-v15` selects only finite scene/question/rubric IDs. Its Exercise 3 point profiles for totals 5.5/6/6.5 are `(0.5,1.5,0.5,1,1,1)`, `(0.5,1.5,0.5,1,1,1.5)`, `(0.5,1.5,1,1,1,1.5)`. Questions 3a–3b use the printed seven-link graph and Dijkstra trace; 3c–3d use a concrete resource state and recovery/prevention sequence; 3e–3f distinguish a session-key protocol from sender authentication and other limits. Credit criteria split wherever multiple independently assessable steps are requested. Keep the v14 code path and catalogue digest unchanged.
 

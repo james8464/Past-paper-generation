@@ -185,13 +185,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1791364121.4722042,
-    "ast_hash": "efbb676487a00cace3160674fa12f98b",
+    "mtime": 1791439774.9345317,
+    "ast_hash": "d3f5d2fe201028f7ebc118094fc10187",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
-    "mtime": 1791363942.0714915,
-    "ast_hash": "8b84f9f75c56dedc747c6a7ed33c075a",
+    "mtime": 1791439690.7575552,
+    "ast_hash": "81d7c3988162ae4ded0d71eea1315200",
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
@@ -215,8 +215,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/verification.py": {
-    "mtime": 1791364018.1842458,
-    "ast_hash": "eaf707cb894dae6d559572ebfd6e07db",
+    "mtime": 1791439628.4487078,
+    "ast_hash": "c84bfa980a6140562b7b5c998a586047",
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791435959.5703325,
-    "ast_hash": "095afb3a55ca84f862039e14b00a498d",
+    "mtime": 1791439916.3213434,
+    "ast_hash": "5ef1675a96a8ad491d2988ba1119caa6",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1780,8 +1780,8 @@
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1791364121.472462,
-    "ast_hash": "0cd5d7b8765a5a864a4e99e2ba4f270b",
+    "mtime": 1791439774.9348764,
+    "ast_hash": "2ed9db59f473b763868f4a8a1aa199c6",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -2770,8 +2770,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-08-french-nsi-network-depth.md": {
-    "mtime": 1791434700.3541613,
-    "ast_hash": "4b2708b46eeb0228264d5d21abf15294",
+    "mtime": 1791439763.8802469,
+    "ast_hash": "22aef774579a7d58d5fee798eda45fad",
     "semantic_hash": ""
   },
   "Backend/Core/france/network_depth_contract.py": {
@@ -2780,8 +2780,28 @@
     "semantic_hash": ""
   },
   "tests/test_french_network_depth_contract.py": {
-    "mtime": 1791438238.2949977,
-    "ast_hash": "c82cee72ebb5972cb0c85f3930cbdad0",
+    "mtime": 1791438369.3359458,
+    "ast_hash": "9257e2cfb0c22d964dde7f0b2c1c8db6",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/network_depth_authoring.py": {
+    "mtime": 1791439774.932715,
+    "ast_hash": "f2406ced309a48b86ce300569c05fc3b",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/network_depth_prose.py": {
+    "mtime": 1791439978.9587612,
+    "ast_hash": "83d13d8d2557207ddb4858013366318b",
+    "semantic_hash": ""
+  },
+  "tests/test_french_network_depth_authoring.py": {
+    "mtime": 1791439774.9328313,
+    "ast_hash": "032fcb9303dc0292243760fa5a4f67aa",
+    "semantic_hash": ""
+  },
+  "tests/test_french_network_depth_prose.py": {
+    "mtime": 1791439967.7534633,
+    "ast_hash": "4e803c4c498827e13f8a65318a949986",
     "semantic_hash": ""
   }
 }

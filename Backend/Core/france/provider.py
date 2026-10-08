@@ -14,6 +14,8 @@ from Backend.Core.france.graph_tree_authoring import (
 )
 from Backend.Core.france.network import ollama_request
 from Backend.Core.france.network_contract import NetworkContract
+from Backend.Core.france.network_depth_contract import NetworkDepthContract
+from Backend.Core.france.network_depth_prose import network_depth_selection_schema
 from Backend.Core.france.network_prose import network_selection_schema
 from Backend.Core.france.nsi import NSIQuestion, authoring_schema
 from Backend.Core.france.pipeline import REVIEW_FLAGS
@@ -89,6 +91,16 @@ class FrenchOllamaClient(HostedLLMClient):
 
 
 def response_policy(prompt: str) -> tuple[dict, int]:
+    if prompt.startswith("Sélectionne la séquence réseau v15"):
+        embedded = json.loads(
+            prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
+        )
+        request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+        contract = NetworkDepthContract.from_dict(request["contract"])
+        schema = network_depth_selection_schema(contract)
+        if embedded != schema or request.get("contract_sha256") != contract.digest:
+            raise ValueError("Network depth selection schema or contract mismatch")
+        return schema, 2048
     if prompt.startswith("Sélectionne l'exercice 3"):
         embedded = json.loads(
             prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
