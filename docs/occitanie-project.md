@@ -1,6 +1,6 @@
 # Occitanie: original French NSI practice papers
 
-Last updated: 2026-10-07. This is an evidence/status record, not a claim of
+Last updated: 2026-10-08. This is an evidence/status record, not a claim of
 educational approval. No teacher, school, Région, examiner or Ministry endorsement
 has been obtained. No prize application has been submitted.
 
