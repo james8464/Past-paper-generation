@@ -603,6 +603,105 @@ class ControlledDatabaseDepthFrenchClient(ControlledNetworkDepthFrenchClient):
         return super().generate_json(prompt)
 
 
+class ControlledGraphTreeDepthFrenchClient(ControlledDatabaseDepthFrenchClient):
+    def generate_json(self, prompt):
+        if prompt.startswith("Sélectionne l'exercice 1 v17"):
+            return {
+                "scene_id": "service",
+                "question_forms": {
+                    f"1{letter}": f"1{letter}-q1" for letter in "abcdefghij"
+                },
+                "rubric_forms": {
+                    f"1{letter}": f"1{letter}-r1" for letter in "abcdefghij"
+                },
+            }
+        return super().generate_json(prompt)
+
+
+def test_v17_graph_tree_depth_package_replays_without_changing_v16(tmp_path):
+    from copy import deepcopy
+    from decimal import Decimal
+
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.pipeline import (
+        _tasks_for_seed_v17,
+        digest,
+        generate_assessment,
+        validate_package,
+    )
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    blueprint = _tasks_for_seed_v17(270100)
+    assert [item["id"] for item in blueprint[0]["question_blueprint"]] == [
+        f"1{letter}" for letter in "abcdefghij"
+    ]
+    assert len(blueprint[1]["question_blueprint"]) == 10
+    assert len(blueprint[2]["question_blueprint"]) == 6
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledGraphTreeDepthFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "v17-checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v17",
+    )
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v17"
+    assert package["identity"]["graph_tree_depth_contract_sha256"]
+    assert [len(item["questions"]) for item in package["exercises"]] == [10, 10, 6]
+    assert sum(Decimal(item["target_points"]) for item in package["exercises"]) == 18
+    assert package["language_points"] == "2"
+    assert package["evidence"][0]["graph_tree_depth_selection"]["accepted"]["response"]
+    assert validate_package(package)["structural_checks"] == "passed"
+
+    changed = deepcopy(package)
+    changed["exercises"][0]["questions"][0]["answer"] = "Réponse inventée."
+    changed["content_sha256"] = digest(changed["exercises"])
+    changed["evidence"][0]["exercise_sha256"] = digest(changed["exercises"][0])
+    with pytest.raises(ValueError):
+        validate_package(changed)
+    mixed = deepcopy(package)
+    mixed["identity"]["graph_tree_depth_contract_sha256"] = "0" * 64
+    with pytest.raises(ValueError):
+        validate_package(mixed)
+    mixed = deepcopy(package)
+    mixed["identity"]["graph_tree_contract_sha256"] = build_graph_tree_contract(
+        270100, "1"
+    ).digest
+    for item, key in zip(
+        mixed["evidence"],
+        (
+            "graph_tree_depth_selection",
+            "database_depth_selection",
+            "network_depth_selection",
+        ),
+        strict=True,
+    ):
+        item[key]["run_identity_sha256"] = digest(mixed["identity"])
+    with pytest.raises(ValueError, match=r"mixte|incompatible"):
+        validate_package(mixed)
+
+    old = generate_assessment(
+        index_path=index,
+        client=ControlledDatabaseDepthFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "v16-checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v16",
+    )
+    assert validate_package(old)["structural_checks"] == "passed"
+    assert len(old["exercises"][0]["questions"]) == 6
+    with pytest.raises(ValueError, match="identité"):
+        generate_assessment(
+            index_path=index,
+            client=ControlledGraphTreeDepthFrenchClient(),
+            seed=270100,
+            checkpoint=tmp_path / "v16-checkpoint.json",
+            contract_graph_tree=True,
+            contract_authoring_version="v17",
+        )
+
+
 def test_v16_database_depth_package_replays_with_exact_credit(tmp_path):
     from copy import deepcopy
 

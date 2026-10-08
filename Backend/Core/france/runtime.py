@@ -29,6 +29,10 @@ from Backend.Core.france.graph_tree_contract import (
     GraphTreeContract,
     build_graph_tree_contract,
 )
+from Backend.Core.france.graph_tree_depth_contract import (
+    GraphTreeDepthContract,
+    build_graph_tree_depth_contract,
+)
 from Backend.Core.france.network import open_ollama_request
 from Backend.Core.france.network_binding import network_materials
 from Backend.Core.france.network_contract import NetworkContract, build_network_contract
@@ -39,6 +43,7 @@ from Backend.Core.france.network_depth_contract import (
 from Backend.Core.france.nsi import NSIExercise
 from Backend.Core.france.pipeline import (
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
+    CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
     atomic_json,
@@ -209,6 +214,108 @@ def validate_contract_pdf(
                     raise ValueError(f"Crédit {question.id} absent du corrigé")
                 if not correction and criterion in flat:
                     raise ValueError(f"Barème {question.id} révélé dans le sujet")
+
+
+def validate_graph_tree_depth_contract_pdf(
+    path: Path,
+    contract: GraphTreeDepthContract,
+    *,
+    correction: bool,
+    exercise: NSIExercise,
+) -> None:
+    """Check every printed V17 graph/tree fact, question and credit."""
+    data = contract.to_dict()
+    if exercise.id != "1" or [q.id for q in exercise.questions] != data["task_ids"]:
+        raise ValueError("Graph/tree depth exercise does not match its contract")
+    with pymupdf.open(path) as pdf:
+        lines = [
+            line.strip()
+            for page in pdf
+            for line in page.get_text().splitlines()
+            if line.strip()
+            and not line.startswith("Paper Creator —")
+            and not line.startswith("Page : ")
+        ]
+    text = "\n".join(lines)
+    flat = " ".join(text.split())
+    heading = f"Exercice 1 ({exercise.target_points.replace('.', ',')} points)"
+    if text.count(heading) != 1:
+        raise ValueError("Graph/tree depth exercise credit differs from blueprint")
+    for task_id in data["task_ids"]:
+        if (
+            sum(
+                bool(re.match(rf"^{re.escape(task_id)}\.(?:\s|$)", line))
+                for line in lines
+            )
+            != 1
+        ):
+            raise ValueError(
+                f"Graph/tree depth question {task_id} missing or duplicated"
+            )
+    graph_header = "Réseau pondéré des postes"
+    tree_header = "Arbre des identifiants — arbre"
+    if text.count(graph_header) != 1 or text.count(tree_header) != 1:
+        raise ValueError("Graph/tree depth figure missing")
+    graph_lines = (
+        text.split(graph_header + "\n", 1)[1]
+        .split("\n" + tree_header, 1)[0]
+        .splitlines()
+    )
+    expected_graph = [str(edge[2]) for edge in data["graph"]["edges"]] + data["graph"][
+        "nodes"
+    ]
+    if graph_lines != expected_graph:
+        raise ValueError("Graph/tree depth figure weights or vertices differ")
+    tree_lines = text.split(tree_header + "\n", 1)[1].split("\n1a.", 1)[0].splitlines()
+    expected_tree = list(data["tree"]["columns"]) + [
+        str(value) if value is not None else "—"
+        for row in data["tree"]["rows"]
+        for value in row
+    ]
+    if tree_lines != expected_tree:
+        raise ValueError("Graph/tree depth table differs from locked facts")
+    for source in (
+        graph_edge_manifest(data["graph"]),
+        data["debug_case"]["faulty_code"],
+        data["node_api"],
+        data["search_code"],
+    ):
+        if " ".join(source.split()) not in flat:
+            raise ValueError("Graph/tree depth source or graph facts missing")
+    if not re.search(
+        rf"racine {data['tree']['root']}\b.*?clé à insérer est {data['tree']['insert_key']}\b",
+        flat,
+    ):
+        raise ValueError("Graph/tree depth root or insertion key missing")
+    if not correction and any(
+        re.search(pattern, flat)
+        for pattern in (
+            r"\bif\s+cle\s*<\s*noeud\.valeur\s*:",
+            r"\bif\s+voisin\s+not\s+in\s+visites\s*:",
+        )
+    ):
+        raise ValueError("Correction de code révélée dans le sujet")
+    for question in exercise.questions:
+        prompt = " ".join(question.prompt.split())
+        if flat.count(prompt) != 1:
+            raise ValueError(
+                f"Graph/tree depth prompt {question.id} missing or duplicated"
+            )
+        answer = " ".join(question.answer.split())
+        if correction and answer not in flat:
+            raise ValueError(f"Graph/tree depth answer {question.id} missing")
+        if not correction and answer in flat:
+            raise ValueError(f"Réponse {question.id} révélée dans le sujet")
+        for credit in question.marking:
+            criterion = " ".join(credit.criterion.split())
+            label = credit.points.replace(".", ",")
+            unit = "point" if Decimal(credit.points) <= 1 else "points"
+            if correction and f"{label} {unit} {criterion}" not in flat:
+                raise ValueError(f"Graph/tree depth credit {question.id} missing")
+            if not correction and criterion in flat:
+                raise ValueError(
+                    f"Graph/tree depth rubric {question.id} revealed in paper"
+                )
 
 
 def validate_database_contract_pdf(
@@ -614,6 +721,7 @@ def network_pdf_contract_version(prompt_version: str) -> str:
     if prompt_version in {
         CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
         CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
+        CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
     }:
         return "v15"
     if prompt_version == CONTROLLED_NETWORK_PROMPT_VERSION:
@@ -622,7 +730,10 @@ def network_pdf_contract_version(prompt_version: str) -> str:
 
 
 def database_pdf_contract_version(prompt_version: str) -> str:
-    if prompt_version == CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION:
+    if prompt_version in {
+        CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
+        CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
+    }:
         return "v2"
     if prompt_version in {
         CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
@@ -670,12 +781,20 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v16",
+            contract_authoring_version="v17",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
         exercises = [NSIExercise.model_validate(item) for item in package["exercises"]]
-        graph_tree_contract = build_graph_tree_contract(args.seed, "1")
+        graph_tree_depth = (
+            package["identity"]["prompt_version"]
+            == CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION
+        )
+        graph_tree_contract = (
+            build_graph_tree_depth_contract(args.seed)
+            if graph_tree_depth
+            else build_graph_tree_contract(args.seed, "1")
+        )
         database_depth = (
             database_pdf_contract_version(package["identity"]["prompt_version"]) == "v2"
         )
@@ -710,7 +829,12 @@ def handle_generate_assessment(args) -> int:
                 language="fr-FR",
             )
             validate_pdf(path)
-            validate_contract_pdf(
+            graph_tree_validator = (
+                validate_graph_tree_depth_contract_pdf
+                if graph_tree_depth
+                else validate_contract_pdf
+            )
+            graph_tree_validator(
                 path,
                 graph_tree_contract,
                 correction=correction,

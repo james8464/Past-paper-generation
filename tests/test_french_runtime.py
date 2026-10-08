@@ -397,7 +397,7 @@ def test_network_pdf_version_dispatch_has_no_implicit_legacy_fallback():
 
 
 @pytest.mark.parametrize("large_print", [False, True])
-def test_runtime_publishes_v16_database_depth_with_locked_pdf_facts(
+def test_runtime_publishes_v17_graph_tree_depth_with_locked_pdf_facts(
     tmp_path, monkeypatch, large_print
 ):
     import json
@@ -405,17 +405,19 @@ def test_runtime_publishes_v16_database_depth_with_locked_pdf_facts(
     import pymupdf
 
     from Backend.Core.france import runtime
-    from Backend.Core.france.database_depth_contract import (
-        build_database_depth_contract,
+    from Backend.Core.france.graph_tree_depth_contract import (
+        build_graph_tree_depth_contract,
     )
     from Backend.Core.france.nsi import NSIExercise
-    from tests.test_nsi_pipeline import ControlledDatabaseDepthFrenchClient, make_index
+    from tests.test_nsi_pipeline import ControlledGraphTreeDepthFrenchClient, make_index
 
     index = tmp_path / "references.sqlite"
     make_index(index)
     monkeypatch.setattr(runtime, "model_identity", lambda *_: "fixture-digest")
     monkeypatch.setattr(
-        runtime, "FrenchOllamaClient", lambda **_: ControlledDatabaseDepthFrenchClient()
+        runtime,
+        "FrenchOllamaClient",
+        lambda **_: ControlledGraphTreeDepthFrenchClient(),
     )
     args = Namespace(
         assessment="fr-bac-general-nsi-written-2027",
@@ -430,7 +432,132 @@ def test_runtime_publishes_v16_database_depth_with_locked_pdf_facts(
     assert runtime.handle_generate_assessment(args) == 0
     (bundle,) = (tmp_path / "output").glob("nsi-*")
     package = json.loads((bundle / "assessment.json").read_text())
-    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v16"
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v17"
+    contract = build_graph_tree_depth_contract(args.seed)
+    exercise = NSIExercise.model_validate(package["exercises"][0])
+    for name, correction in (("sujet.pdf", False), ("corrige.pdf", True)):
+        path = bundle / name
+        runtime.validate_graph_tree_depth_contract_pdf(
+            path, contract, correction=correction, exercise=exercise
+        )
+        with pymupdf.open(path) as pdf:
+            text = " ".join(page.get_text() for page in pdf)
+            assert "1j." in text
+            assert "A–C–E–F" in text
+            assert all(
+                word[0] >= 0
+                and word[2] <= page.rect.width
+                and word[1] >= 0
+                and word[3] <= page.rect.height
+                for page in pdf
+                for word in page.get_text("words")
+            )
+            if correction:
+                page_text = [page.get_text() for page in pdf]
+                if large_print:
+                    assert "0,25\npoint" not in "\n".join(page_text)
+                for task_id in ("1b", "1f", "1j"):
+                    assert any(
+                        f"{task_id}." in page
+                        and f"Barème indicatif — question {task_id}" in page
+                        for page in page_text
+                    ), f"Keep V17 answer and rubric for {task_id} on one page"
+    with pymupdf.open(bundle / "sujet.pdf") as pdf:
+        extracted = [page.get_text() for page in pdf]
+
+    class ExtractedDocument:
+        def __init__(self, pages):
+            self.pages = pages
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def __iter__(self):
+            return (
+                type("Page", (), {"get_text": lambda _self, value=text: value})()
+                for text in self.pages
+            )
+
+    missing = extracted.copy()
+    graph_page = next(
+        i for i, text in enumerate(missing) if "Réseau pondéré des postes" in text
+    )
+    missing[graph_page] = missing[graph_page].replace(
+        "Réseau pondéré des postes", "Réseau absent", 1
+    )
+    with monkeypatch.context() as patch:
+        patch.setattr(runtime.pymupdf, "open", lambda _path: ExtractedDocument(missing))
+        with pytest.raises(ValueError, match=r"figure|Figure|graphe"):
+            runtime.validate_graph_tree_depth_contract_pdf(
+                bundle / "sujet.pdf", contract, correction=False, exercise=exercise
+            )
+    leaked = extracted.copy()
+    leaked[-1] += "\n" + exercise.questions[3].answer
+    with monkeypatch.context() as patch:
+        patch.setattr(runtime.pymupdf, "open", lambda _path: ExtractedDocument(leaked))
+        with pytest.raises(ValueError, match=r"révélée|leaked"):
+            runtime.validate_graph_tree_depth_contract_pdf(
+                bundle / "sujet.pdf", contract, correction=False, exercise=exercise
+            )
+    for corrected_fragment in (
+        "if cle < noeud.valeur:",
+        "if  cle < noeud.valeur :",
+        "if voisin not in visites:",
+    ):
+        leaked_fragment = extracted.copy()
+        leaked_fragment[-1] += "\n" + corrected_fragment
+        with monkeypatch.context() as patch:
+            patch.setattr(
+                runtime.pymupdf,
+                "open",
+                lambda _path, pages=leaked_fragment: ExtractedDocument(pages),
+            )
+            with pytest.raises(ValueError, match=r"révélée"):
+                runtime.validate_graph_tree_depth_contract_pdf(
+                    bundle / "sujet.pdf", contract, correction=False, exercise=exercise
+                )
+
+
+@pytest.mark.parametrize("large_print", [False, True])
+def test_runtime_v17_preserves_v16_database_depth_with_locked_pdf_facts(
+    tmp_path, monkeypatch, large_print
+):
+    import json
+
+    import pymupdf
+
+    from Backend.Core.france import runtime
+    from Backend.Core.france.database_depth_contract import (
+        build_database_depth_contract,
+    )
+    from Backend.Core.france.nsi import NSIExercise
+    from tests.test_nsi_pipeline import ControlledGraphTreeDepthFrenchClient, make_index
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+    monkeypatch.setattr(runtime, "model_identity", lambda *_: "fixture-digest")
+    monkeypatch.setattr(
+        runtime,
+        "FrenchOllamaClient",
+        lambda **_: ControlledGraphTreeDepthFrenchClient(),
+    )
+    args = Namespace(
+        assessment="fr-bac-general-nsi-written-2027",
+        reference_index=index,
+        output=str(tmp_path / "output"),
+        seed=270100,
+        model="fixture",
+        ollama_url="http://localhost:11434",
+        allow_remote=False,
+        large_print=large_print,
+    )
+    assert runtime.handle_generate_assessment(args) == 0
+    (bundle,) = (tmp_path / "output").glob("nsi-*")
+    package = json.loads((bundle / "assessment.json").read_text())
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v17"
     contract = build_database_depth_contract(args.seed)
     exercise = NSIExercise.model_validate(package["exercises"][1])
     for name, correction in (("sujet.pdf", False), ("corrige.pdf", True)):
@@ -502,7 +629,7 @@ def test_runtime_publishes_v16_database_depth_with_locked_pdf_facts(
 
 
 @pytest.mark.parametrize("large_print", [False, True])
-def test_runtime_v16_preserves_v15_network_depth_with_locked_pdf_facts(
+def test_runtime_v17_preserves_v15_network_depth_with_locked_pdf_facts(
     tmp_path, monkeypatch, large_print
 ):
     import json
@@ -512,13 +639,15 @@ def test_runtime_v16_preserves_v15_network_depth_with_locked_pdf_facts(
     from Backend.Core.france import runtime
     from Backend.Core.france.network_depth_contract import build_network_depth_contract
     from Backend.Core.france.nsi import NSIExercise
-    from tests.test_nsi_pipeline import ControlledDatabaseDepthFrenchClient, make_index
+    from tests.test_nsi_pipeline import ControlledGraphTreeDepthFrenchClient, make_index
 
     index = tmp_path / "references.sqlite"
     make_index(index)
     monkeypatch.setattr(runtime, "model_identity", lambda *_: "fixture-digest")
     monkeypatch.setattr(
-        runtime, "FrenchOllamaClient", lambda **_: ControlledDatabaseDepthFrenchClient()
+        runtime,
+        "FrenchOllamaClient",
+        lambda **_: ControlledGraphTreeDepthFrenchClient(),
     )
     args = Namespace(
         assessment="fr-bac-general-nsi-written-2027",
@@ -533,7 +662,7 @@ def test_runtime_v16_preserves_v15_network_depth_with_locked_pdf_facts(
     assert runtime.handle_generate_assessment(args) == 0
     (bundle,) = (tmp_path / "output").glob("nsi-*")
     package = json.loads((bundle / "assessment.json").read_text())
-    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v16"
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v17"
     contract = build_network_depth_contract(args.seed)
     exercise = NSIExercise.model_validate(package["exercises"][2])
     for name, correction in (("sujet.pdf", False), ("corrige.pdf", True)):
@@ -742,9 +871,13 @@ def test_network_depth_rubric_continuation_names_its_question(tmp_path):
     with pymupdf.open(output) as pdf:
         pages = [" ".join(page.get_text().split()) for page in pdf]
     answer_fragment = "P1 obtient B, termine puis libère A et B."
-    answer_page = next(index for index, page in enumerate(pages) if answer_fragment in page)
+    answer_page = next(
+        index for index, page in enumerate(pages) if answer_fragment in page
+    )
     final_credit = "l'ordre commun A avant B empêchant le cycle"
-    credit_page = next(index for index, page in enumerate(pages) if final_credit in page)
+    credit_page = next(
+        index for index, page in enumerate(pages) if final_credit in page
+    )
     assert credit_page > answer_page
     assert "Barème indicatif — question 3d" in pages[credit_page]
 

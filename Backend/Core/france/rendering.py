@@ -546,6 +546,10 @@ def render_assessment(
             )
         final_network_pair_start = None
         for question_index, question in enumerate(exercise.questions):
+            graph_depth_correction = (
+                correction
+                and question.verification.get("kind") == "graph_tree_depth_contract"
+            )
             question_start = len(story)
             if (
                 not correction
@@ -588,7 +592,9 @@ def render_assessment(
                 ]
                 marking_table = Table(
                     marking_rows,
-                    colWidths=[72, doc.width - 72],
+                    colWidths=[100, doc.width - 100]
+                    if large_print
+                    else [72, doc.width - 72],
                     hAlign="LEFT",
                 )
                 marking_table.setStyle(
@@ -604,19 +610,36 @@ def render_assessment(
                             ("VALIGN", (0, 0), (-1, -1), "TOP"),
                             ("LEFTPADDING", (0, 0), (-1, -1), 5),
                             ("RIGHTPADDING", (0, 0), (-1, -1), 5),
-                            ("TOPPADDING", (0, 0), (-1, -1), 3 if correction else 4),
-                            ("BOTTOMPADDING", (0, 0), (-1, -1), 3 if correction else 4),
+                            (
+                                "TOPPADDING",
+                                (0, 0),
+                                (-1, -1),
+                                2
+                                if graph_depth_correction
+                                else (3 if correction else 4),
+                            ),
+                            (
+                                "BOTTOMPADDING",
+                                (0, 0),
+                                (-1, -1),
+                                2
+                                if graph_depth_correction
+                                else (3 if correction else 4),
+                            ),
                         ]
                     )
                 )
                 story.append(marking_table)
-                if question.id == "3f":
+                if question.id == "3f" or (
+                    question.id in {"1b", "1f", "1j"}
+                    and question.verification.get("kind") == "graph_tree_depth_contract"
+                ):
                     story[question_start:] = [KeepTogether(story[question_start:])]
                 if (
                     exercise_index < len(exercises) - 1
                     or question_index < len(exercise.questions) - 1
                 ):
-                    story.append(Spacer(1, 5))
+                    story.append(Spacer(1, 2 if graph_depth_correction else 5))
 
     def cover_page(canvas, built_doc):
         draw_cover_page(

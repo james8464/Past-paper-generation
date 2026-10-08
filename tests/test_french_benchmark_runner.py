@@ -11,6 +11,13 @@ from Backend.Core.france.database_depth_prose import (
     DATABASE_DEPTH_PROSE_VERSION,
     database_depth_catalogue_digest,
 )
+from Backend.Core.france.graph_tree_depth_contract import (
+    build_graph_tree_depth_contract,
+)
+from Backend.Core.france.graph_tree_depth_prose import (
+    GRAPH_TREE_DEPTH_PROSE_VERSION,
+    graph_tree_depth_catalogue_digest,
+)
 from Backend.Core.france.graph_tree_prose import (
     PROSE_CONTRACT_VERSION,
     prose_catalogue_digest,
@@ -27,11 +34,12 @@ from Backend.Core.france.network_prose import (
 )
 from Backend.Core.france.pipeline import (
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
+    CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
 )
 
 
-def _passed_result(tmp_path):
+def _passed_result(tmp_path, *, v17=False):
     identity = {
         "implementation": "implementation-sha",
         "reference_index_sha256": "reference-sha",
@@ -43,9 +51,11 @@ def _passed_result(tmp_path):
     bundle.mkdir()
     manifest_identity = {
         "assessment": asdict(NSI_2027),
-        "prompt_version": CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
-        "prose_contract_version": PROSE_CONTRACT_VERSION,
-        "prose_catalogue_sha256": prose_catalogue_digest(),
+        "prompt_version": (
+            CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION
+            if v17
+            else CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION
+        ),
         "database_depth_contract_sha256": build_database_depth_contract(270100).digest,
         "database_depth_prose_contract_version": DATABASE_DEPTH_PROSE_VERSION,
         "database_depth_prose_catalogue_sha256": database_depth_catalogue_digest(),
@@ -61,6 +71,19 @@ def _passed_result(tmp_path):
         "blueprint": [],
         "originality_history_digest": "history-sha",
     }
+    if v17:
+        manifest_identity.update(
+            graph_tree_depth_contract_sha256=build_graph_tree_depth_contract(
+                270100
+            ).digest,
+            graph_tree_depth_prose_contract_version=GRAPH_TREE_DEPTH_PROSE_VERSION,
+            graph_tree_depth_prose_catalogue_sha256=graph_tree_depth_catalogue_digest(),
+        )
+    else:
+        manifest_identity.update(
+            prose_contract_version=PROSE_CONTRACT_VERSION,
+            prose_catalogue_sha256=prose_catalogue_digest(),
+        )
     artifacts = {}
     for role, filename in (
         ("question_paper", "sujet.pdf"),
@@ -180,6 +203,25 @@ def test_french_benchmark_resume_requires_exact_identity(tmp_path):
     result, identity, _ = _passed_result(tmp_path)
     assert accepted_result(result, identity)
     assert not accepted_result(result, {**identity, "implementation": "changed"})
+
+
+def test_french_benchmark_resume_accepts_v17_and_rejects_missing_graph_identity(
+    tmp_path,
+):
+    from tools.french_nsi_benchmark import accepted_result
+
+    result, identity, bundle = _passed_result(tmp_path, v17=True)
+    assert accepted_result(result, identity)
+    manifest = bundle / "manifest.json"
+    manifest_value = json.loads(manifest.read_text())
+    manifest_value["identity"].pop("graph_tree_depth_contract_sha256")
+    manifest.write_text(json.dumps(manifest_value))
+    result_value = json.loads(result.read_text())
+    result_value["artifacts"]["manifest_sha256"] = sha256(
+        manifest.read_bytes()
+    ).hexdigest()
+    result.write_text(json.dumps(result_value))
+    assert not accepted_result(result, identity)
 
 
 def test_french_benchmark_resume_rejects_missing_v15_network_identity(tmp_path):
