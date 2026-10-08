@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791490204.87893,
-    "ast_hash": "10c743c4ccd66e84c661dc4c6a49ad83",
+    "mtime": 1791491899.4480026,
+    "ast_hash": "34b580321d843b536e73048f5a461ef1",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2887,6 +2887,26 @@
   "docs/quality/french-nsi-v17-graph-tree-depth-live-diagnostic-2026-10-08.md": {
     "mtime": 1791490176.5089011,
     "ast_hash": "55dc24008b36c5dba2e36f621009f80f",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/network_reasoning_contract.py": {
+    "mtime": 1791491890.478409,
+    "ast_hash": "ba14fe9699ebfa0a1ff92d1171c17a18",
+    "semantic_hash": ""
+  },
+  "tests/test_french_network_reasoning_contract.py": {
+    "mtime": 1791491890.478409,
+    "ast_hash": "ee3379b52bc01bcb7c6a476c58b3350c",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-08-french-nsi-network-reasoning-depth.md": {
+    "mtime": 1791491766.9959335,
+    "ast_hash": "8d13fe593684bb90347c0d517c425070",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-08-french-nsi-network-reasoning-design.md": {
+    "mtime": 1791491766.9956765,
+    "ast_hash": "47f7cf10dec075201decfb4622b38060",
     "semantic_hash": ""
   }
 }
