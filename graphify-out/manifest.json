@@ -195,8 +195,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1791445290.4524853,
-    "ast_hash": "5bf448989d51b1b4e4a122afa04913cb",
+    "mtime": 1791452944.4123995,
+    "ast_hash": "f98f0f3174595e1cfb4c3ea8dd4d808d",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791447824.492724,
+    "mtime": 1791452833.4029105,
     "ast_hash": "515ef04d71536a68e86e30dbbde07234",
     "semantic_hash": ""
   },
@@ -1775,8 +1775,8 @@
     "semantic_hash": "248449f6aabd502dc802118071813a95"
   },
   "tests/test_nsi_assessment.py": {
-    "mtime": 1791137170.5150282,
-    "ast_hash": "50d76e0a7f884c1632dbc8ab306d1f3c",
+    "mtime": 1791452935.9537294,
+    "ast_hash": "727ba2b391145fe822b3e9cbd94f4a31",
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
@@ -2285,8 +2285,8 @@
     "semantic_hash": ""
   },
   "docs/occitanie-project.md": {
-    "mtime": 1791447809.9843616,
-    "ast_hash": "987b37148c35cbecce6d2d634a7315f2",
+    "mtime": 1791448292.2951345,
+    "ast_hash": "1dda935e6be3d1108a5405a1935d1c1d",
     "semantic_hash": ""
   },
   "docs/project-analysis/IMPLEMENTATION_AND_FIDELITY_REPORT.md": {
