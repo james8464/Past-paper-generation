@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791465727.860262,
-    "ast_hash": "515ef04d71536a68e86e30dbbde07234",
+    "mtime": 1791466898.5657558,
+    "ast_hash": "12a52540f16bc87577a8ac2b5e1ac1d7",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2807,6 +2807,26 @@
   "docs/quality/french-nsi-v17-live-diagnostic-2026-10-08.md": {
     "mtime": 1791447653.102654,
     "ast_hash": "53efefdd56b4934897033402acdc9030",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/database_depth_contract.py": {
+    "mtime": 1791466867.3536277,
+    "ast_hash": "e7c9bbb440a775a2a2cb59ddf5dac8fc",
+    "semantic_hash": ""
+  },
+  "tests/test_french_database_depth_contract.py": {
+    "mtime": 1791466855.8931963,
+    "ast_hash": "2ff51d80dd3185c8bc286ba555f1a104",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-08-french-nsi-database-depth.md": {
+    "mtime": 1791466629.3744254,
+    "ast_hash": "ce45dad1af010299813660781b7fe401",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-08-french-nsi-database-depth-design.md": {
+    "mtime": 1791466636.4621787,
+    "ast_hash": "ab14919b59ea75554d737a616d30eaa4",
     "semantic_hash": ""
   }
 }
