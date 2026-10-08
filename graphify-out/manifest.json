@@ -190,8 +190,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
-    "mtime": 1791487053.4959881,
-    "ast_hash": "88d4adefe578801fa70f9344fc52db26",
+    "mtime": 1791493418.3121002,
+    "ast_hash": "18bdad8723bc13782d476f88bab7acf9",
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791491899.4480026,
-    "ast_hash": "34b580321d843b536e73048f5a461ef1",
+    "mtime": 1791493479.3006997,
+    "ast_hash": "69f3a0c35faf90c237e5ae94e9edbc05",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2907,6 +2907,21 @@
   "docs/superpowers/specs/2026-10-08-french-nsi-network-reasoning-design.md": {
     "mtime": 1791491766.9956765,
     "ast_hash": "47f7cf10dec075201decfb4622b38060",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/network_reasoning_authoring.py": {
+    "mtime": 1791493464.2661867,
+    "ast_hash": "c87725b8b4c01fa5c4cf0216ad7e76a1",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/network_reasoning_prose.py": {
+    "mtime": 1791493464.2661889,
+    "ast_hash": "8135cfc2e715106915ab4ba0ae9d4a65",
+    "semantic_hash": ""
+  },
+  "tests/test_french_network_reasoning_authoring.py": {
+    "mtime": 1791493464.2661867,
+    "ast_hash": "1b9de6e29007e424cf4783526ad1ce12",
     "semantic_hash": ""
   }
 }

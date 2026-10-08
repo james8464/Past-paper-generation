@@ -23,6 +23,10 @@ from Backend.Core.france.network_contract import NetworkContract
 from Backend.Core.france.network_depth_contract import NetworkDepthContract
 from Backend.Core.france.network_depth_prose import network_depth_selection_schema
 from Backend.Core.france.network_prose import network_selection_schema
+from Backend.Core.france.network_reasoning_contract import NetworkReasoningContract
+from Backend.Core.france.network_reasoning_prose import (
+    network_reasoning_selection_schema,
+)
 from Backend.Core.france.nsi import NSIQuestion, authoring_schema
 from Backend.Core.france.pipeline import REVIEW_FLAGS
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
@@ -98,6 +102,16 @@ class FrenchOllamaClient(HostedLLMClient):
 
 
 def response_policy(prompt: str) -> tuple[dict, int]:
+    if prompt.startswith("Sélectionne l'exercice 3 v18"):
+        embedded = json.loads(
+            prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
+        )
+        request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+        contract = NetworkReasoningContract.from_dict(request["contract"])
+        schema = network_reasoning_selection_schema(contract)
+        if embedded != schema or request.get("contract_sha256") != contract.digest:
+            raise ValueError("Network reasoning selection schema or contract mismatch")
+        return schema, 2048
     if prompt.startswith("Sélectionne l'exercice 1 v17"):
         embedded = json.loads(
             prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
