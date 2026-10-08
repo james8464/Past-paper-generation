@@ -1,6 +1,6 @@
 # Occitanie: original French NSI practice papers
 
-Last updated: 2026-10-07. This is an evidence/status record, not a claim of
+Last updated: 2026-10-08. This is an evidence/status record, not a claim of
 educational approval. No teacher, school, Région, examiner or Ministry endorsement
 has been obtained. No prize application has been submitted.
 
@@ -109,6 +109,14 @@ are not a mandatory template, but the gap requires fuller reasoning sequences
 and teacher time calibration before a submission-readiness claim. Automated
 completion is not subject-matter or teacher validation; the final matrix remains
 on hold.
+
+Protected PR #39 deepened the app-owned network case. A new
+[source-pinned v17 live diagnostic](quality/french-nsi-v17-live-diagnostic-2026-10-08.md)
+passed automated checks on its first attempt, but all seven subject and eleven
+correction pages still led to a **manual fidelity hold**: 18 numbered questions,
+an orphaned final question and presentation/depth gaps against the official
+2026 reference. This is an engineering checkpoint, not model selection or
+educational qualification. Earlier failures and the v15 hold remain retained.
 
 ## Genuine Occitanie scenario — PLANNED
 

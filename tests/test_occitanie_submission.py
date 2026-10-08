@@ -60,6 +60,18 @@ def test_supporting_reports_are_in_english_while_the_application_stays_french() 
     )
 
 
+def test_technical_report_distinguishes_live_engineering_pass_from_fidelity_hold() -> None:
+    technical = Document(build_technical_dossier())
+    text = " ".join(paragraph.text for paragraph in technical.paragraphs).lower()
+
+    assert "all three exercises use app-owned contracts" in text
+    assert "first-attempt live engineering pass" in text
+    assert "manual fidelity hold" in text
+    assert "18 numbered questions across seven subject pages" in text
+    assert "other two exercises remain model-authored" not in text
+    assert "has not passed a live paper" not in text
+
+
 def test_technical_report_shows_and_describes_the_real_mac_workflow() -> None:
     document = Document(build_technical_dossier())
 
@@ -125,3 +137,4 @@ def test_formal_application_uses_readable_milestones_instead_of_split_grids() ->
     assert "Mois 10 à 12" in text
     assert "500 €" in text
     assert "À compléter" in text
+    assert "fidélité pédagogique reste à confirmer" in text
