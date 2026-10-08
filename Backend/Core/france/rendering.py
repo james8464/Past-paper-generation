@@ -393,6 +393,7 @@ def render_assessment(
     code = ParagraphStyle(
         "NSICode", parent=body, fontName=mono, fontSize=size, leading=size * 1.2
     )
+    trace_row = ParagraphStyle("NSITraceRow", parent=body, leftIndent=12, spaceAfter=2)
     credit = ParagraphStyle(
         "NSICredit",
         parent=body,
@@ -440,6 +441,21 @@ def render_assessment(
             else:
                 paragraph(part.strip(), paragraph_style if first_paragraph else body)
                 first_paragraph = False
+
+    def network_depth_trace_answer(answer: str) -> None:
+        marker = (
+            "Après le changement, trace de Dijkstra "
+            "(sommet fixé et distances provisoires) : "
+        )
+        introduction, separator, remainder = answer.partition(marker)
+        trace, ending, conclusion = remainder.partition(". Le nouveau trajet ")
+        rows = trace.split("; ")
+        if not separator or not ending or len(rows) != 5:
+            raise ValueError("Network depth correction trace is incomplete")
+        paragraph(introduction + marker)
+        for index, row in enumerate(rows):
+            paragraph(row + (";" if index < len(rows) - 1 else "."), trace_row)
+        paragraph("Le nouveau trajet " + conclusion)
 
     def question_content(identifier: str, text: str) -> None:
         first_paragraph = True
@@ -534,7 +550,13 @@ def render_assessment(
             if correction:
                 story[-1].keepWithNext = True
                 paragraph("Réponse attendue", credit)
-                content(question.answer)
+                if (
+                    question.id == "3b"
+                    and question.verification.get("kind") == "network_depth_contract"
+                ):
+                    network_depth_trace_answer(question.answer)
+                else:
+                    content(question.answer)
                 paragraph("Barème indicatif", credit)
                 marking_rows = [
                     [
