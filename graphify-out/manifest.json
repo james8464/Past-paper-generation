@@ -190,8 +190,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
-    "mtime": 1791439690.7575552,
-    "ast_hash": "81d7c3988162ae4ded0d71eea1315200",
+    "mtime": 1791469572.0600333,
+    "ast_hash": "5975e6e292a2c8030a99aa73f90c7b3c",
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
@@ -2827,6 +2827,21 @@
   "docs/superpowers/specs/2026-10-08-french-nsi-database-depth-design.md": {
     "mtime": 1791466636.4621787,
     "ast_hash": "ab14919b59ea75554d737a616d30eaa4",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/database_depth_authoring.py": {
+    "mtime": 1791469698.941511,
+    "ast_hash": "5444148e3e259a284575bc0a847bfa32",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/database_depth_prose.py": {
+    "mtime": 1791469711.9834013,
+    "ast_hash": "d93e6d4a8a00877132b923807cf364ca",
+    "semantic_hash": ""
+  },
+  "tests/test_french_database_depth_authoring.py": {
+    "mtime": 1791469722.8356566,
+    "ast_hash": "e1b3cc667d2deca74f962ac417f9a56e",
     "semantic_hash": ""
   }
 }
