@@ -129,6 +129,15 @@ therefore remains **on hold**; neither live pass is a model recommendation or
 teacher validation. The v17 and v15 holds and earlier failed attempts remain
 separate evidence.
 
+Protected PR #47 added an original versioned ten-question graph/tree sequence.
+The next [source-pinned V17 graph/tree live diagnostic](quality/french-nsi-v17-graph-tree-depth-live-diagnostic-2026-10-08.md)
+passed automated checks on its first attempt, but page-by-page comparison kept
+**manual product fidelity on hold**. The eight-page subject has 26 questions
+against 36 in the official 16-page comparator. E1 is deeper, yet E2 and the
+last E3 page remain sparse; the proposed correction separates the 3d rubric
+from its answer and displays literal Markdown fencing in the 2g rubric. This
+engineering result is not a model recommendation or teacher validation.
+
 ## Genuine Occitanie scenario — PLANNED
 
 A teacher generates and checks a paper on a Mac; students receive a PDF through
