@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791469759.5425284,
-    "ast_hash": "58a049417790e908ea37dce56eaa6fa4",
+    "mtime": 1791473378.166059,
+    "ast_hash": "843dc1ccf5cec4d3fb482162a85ca745",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2055,8 +2055,8 @@
     "semantic_hash": ""
   },
   "tools/build_occitanie_submission.py": {
-    "mtime": 1791447972.4240181,
-    "ast_hash": "bd434789bd8fe5f0270fdff58b04e6ee",
+    "mtime": 1791473275.3699405,
+    "ast_hash": "16fa9d6d12b79642be7ea3a882a0c03a",
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
@@ -2255,13 +2255,13 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/README.md": {
-    "mtime": 1791447675.1106749,
-    "ast_hash": "a5b964c642e35a5066defa1c1a89e9d7",
+    "mtime": 1791473109.0812197,
+    "ast_hash": "75984260ccdbbbf6342f37477957467b",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/claims-register.md": {
-    "mtime": 1791447663.7426074,
-    "ast_hash": "ef474400da4db4963f8137f73ecb07e8",
+    "mtime": 1791473091.796848,
+    "ast_hash": "f12af06746f9c8045a7cf3b890541b0f",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/demo-script.md": {
@@ -2285,8 +2285,8 @@
     "semantic_hash": ""
   },
   "docs/occitanie-project.md": {
-    "mtime": 1791448292.2951345,
-    "ast_hash": "1dda935e6be3d1108a5405a1935d1c1d",
+    "mtime": 1791473124.9729097,
+    "ast_hash": "ab5f7e5150e71af3839f8dd912978498",
     "semantic_hash": ""
   },
   "docs/project-analysis/IMPLEMENTATION_AND_FIDELITY_REPORT.md": {
@@ -2555,8 +2555,8 @@
     "semantic_hash": ""
   },
   "tests/test_occitanie_submission.py": {
-    "mtime": 1791447964.6042247,
-    "ast_hash": "df1cf3649e628fec4a5980813ddbc7f6",
+    "mtime": 1791473132.6944385,
+    "ast_hash": "417a0e44ef2296b5ea86bb1e8201c59e",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Assets.xcassets/TutorialFrenchNSI.imageset/TutorialFrenchNSI.png": {
@@ -2842,6 +2842,11 @@
   "tests/test_french_database_depth_authoring.py": {
     "mtime": 1791471026.1768577,
     "ast_hash": "91aff1b4564bfbca50364edcb844aad3",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v16-live-diagnostic-2026-10-08.md": {
+    "mtime": 1791473082.9552329,
+    "ast_hash": "755c0ca10f30a994c74ed2ee79348a69",
     "semantic_hash": ""
   }
 }

@@ -61,11 +61,11 @@ those items as planned qualification work, not achieved approval.
 The first pinned Gemma 4 12B campaign accepted 0 of 10 complete papers. Its
 failures and later failed one-paper diagnostics remain retained evidence, not a
 model recommendation. All three exercises now use app-owned, versioned French
-question, answer and credit contracts. A single pinned v17 paper passed automated
-checks on its first attempt, but [manual comparison with the official 2026 paper](../../quality/french-nsi-v17-live-diagnostic-2026-10-08.md)
-placed it on fidelity hold: the seven-page subject has 18 numbered questions,
+question, answer and credit contracts. A pinned V16 paper passed automated
+checks on its first attempt, but [manual comparison with the official 2026 paper](../../quality/french-nsi-v16-live-diagnostic-2026-10-08.md)
+placed it on fidelity hold: the seven-page subject has 22 numbered questions,
 versus 36 across 16 official pages, and still has layout and reasoning-depth
-gaps. The v12 fixture and earlier v15 live hold remain separate evidence. No
+gaps. The v12 fixture and earlier v15/v17 live holds remain separate evidence. No
 multi-paper model qualification, teacher recommendation or learner calibration
 has been achieved. The application must present the generator as a prototype,
 not a validated classroom-ready paper maker.

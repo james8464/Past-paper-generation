@@ -395,7 +395,7 @@ def build_technical_dossier() -> Path:
         "Technical and user report · Prix Occitanie 2026",
     )
     doc.add_paragraph(
-        "This report explains the prototype, what a teacher can do with it today, and the evidence still needed before classroom recommendation. All three exercises use app-owned contracts for questions, answers and marking clauses. The first complete Gemma 4 12B campaign rejected all ten papers. A later pinned diagnostic achieved a first-attempt live engineering pass, but remains on manual fidelity hold: 18 numbered questions across seven subject pages are substantially less developed than the official 2026 comparison. No French model is recommended. Two independent NSI teacher reviewers and a supervised pilot remain essential."
+        "This report explains the prototype, what a teacher can do with it today, and the evidence still needed before classroom recommendation. All three exercises use app-owned contracts for questions, answers and marking clauses. The first complete Gemma 4 12B campaign rejected all ten papers. A later pinned diagnostic achieved a first-attempt live engineering pass, but remains on manual fidelity hold: 22 numbered questions across seven subject pages are substantially less developed than the official 2026 comparison of 36 questions across 16 pages. No French model is recommended. Two independent NSI teacher reviewers and a supervised pilot remain essential."
     )
     doc.add_heading("The teacher’s task", level=1)
     doc.add_paragraph(
@@ -530,12 +530,12 @@ def build_technical_dossier() -> Path:
     doc.add_page_break()
     doc.add_heading("Qualification evidence", level=1)
     doc.add_paragraph(
-        "The benchmark runner attempts ten complete papers per model—30 exercises per configuration—using fixed seeds. It retains outputs, errors, checkpoints, timing, Ollama version, hardware, model digest, and source identity. A lock prevents duplicate French campaigns. If code or references change, the run stops rather than mixing incompatible evidence."
+        "The runner tests ten papers (30 exercises) per model at fixed seeds. It preserves PDFs, failures, checkpoints, timing, hardware, Ollama and model identities, and source identity. A lock prevents overlapping campaigns; a code or reference change stops the run."
     )
     add_label_paragraph(
         doc,
         "Initial campaign · 0/10 accepted.",
-        "The first Gemma 4 12B campaign did not pass. A later source- and model-pinned single-paper diagnostic passed automated checks on its first attempt, without repairs. Its seven-page subject and eleven-page proposed correction were visually inspected; the subject remains on manual fidelity hold against the 2026 Métropole reference. This is not a ten-paper model qualification or teacher approval.",
+        "Gemma 4 12B passed 0/10 in the first campaign. A source-pinned V16 single-paper diagnostic passed automated checks first try with no repairs. We inspected its seven-page subject and twelve-page proposed correction. Ten database questions fit on one subject page; the final network page is sparse and two correction rubrics cross page breaks. Fidelity remains on hold against the 2026 Métropole paper. This is neither multi-paper model qualification nor teacher approval.",
     )
     add_label_paragraph(
         doc,
