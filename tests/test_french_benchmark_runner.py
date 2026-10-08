@@ -16,11 +16,19 @@ from Backend.Core.france.graph_tree_prose import (
     prose_catalogue_digest,
 )
 from Backend.Core.france.network_contract import build_network_contract
+from Backend.Core.france.network_depth_contract import build_network_depth_contract
+from Backend.Core.france.network_depth_prose import (
+    NETWORK_DEPTH_PROSE_VERSION,
+    network_depth_catalogue_digest,
+)
 from Backend.Core.france.network_prose import (
     NETWORK_PROSE_VERSION,
     network_catalogue_digest,
 )
-from Backend.Core.france.pipeline import CONTROLLED_NETWORK_PROMPT_VERSION
+from Backend.Core.france.pipeline import (
+    CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
+    CONTROLLED_NETWORK_PROMPT_VERSION,
+)
 
 
 def _passed_result(tmp_path):
@@ -35,15 +43,15 @@ def _passed_result(tmp_path):
     bundle.mkdir()
     manifest_identity = {
         "assessment": asdict(NSI_2027),
-        "prompt_version": CONTROLLED_NETWORK_PROMPT_VERSION,
+        "prompt_version": CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
         "prose_contract_version": PROSE_CONTRACT_VERSION,
         "prose_catalogue_sha256": prose_catalogue_digest(),
         "database_contract_sha256": build_database_contract(270100).digest,
         "database_prose_contract_version": DATABASE_PROSE_VERSION,
         "database_prose_catalogue_sha256": database_catalogue_digest(),
-        "network_contract_sha256": build_network_contract(270100).digest,
-        "network_prose_contract_version": NETWORK_PROSE_VERSION,
-        "network_prose_catalogue_sha256": network_catalogue_digest(),
+        "network_depth_contract_sha256": build_network_depth_contract(270100).digest,
+        "network_depth_prose_contract_version": NETWORK_DEPTH_PROSE_VERSION,
+        "network_depth_prose_catalogue_sha256": network_depth_catalogue_digest(),
         "implementation_sha256": identity["implementation"],
         "seed": identity["seed"],
         "provider": "ollama",
@@ -82,6 +90,7 @@ def _passed_result(tmp_path):
                 "assessment": "fr-bac-general-nsi-written-2027",
                 "status": "unreviewed_draft",
                 "identity": manifest_identity,
+                "reference_index_sha256": identity["reference_index_sha256"],
                 "artifacts": artifacts,
                 "large_print": False,
                 "teacher_review": "not_run",
@@ -173,17 +182,17 @@ def test_french_benchmark_resume_requires_exact_identity(tmp_path):
     assert not accepted_result(result, {**identity, "implementation": "changed"})
 
 
-def test_french_benchmark_resume_rejects_missing_v14_network_identity(tmp_path):
+def test_french_benchmark_resume_rejects_missing_v15_network_identity(tmp_path):
     from tools.french_nsi_benchmark import accepted_result
 
     result, identity, bundle = _passed_result(tmp_path)
     manifest = bundle / "manifest.json"
     manifest_value = json.loads(manifest.read_text())
-    manifest_value["identity"].pop("network_contract_sha256")
+    manifest_value["identity"].pop("network_depth_contract_sha256")
     manifest.write_text(json.dumps(manifest_value))
     package = bundle / "assessment.json"
     package_value = json.loads(package.read_text())
-    package_value["identity"].pop("network_contract_sha256")
+    package_value["identity"].pop("network_depth_contract_sha256")
     package.write_text(json.dumps(package_value))
     manifest_value["artifacts"]["assessment_package"]["sha256"] = sha256(
         package.read_bytes()
@@ -195,6 +204,59 @@ def test_french_benchmark_resume_rejects_missing_v14_network_identity(tmp_path):
     ).hexdigest()
     result.write_text(json.dumps(result_value))
     assert not accepted_result(result, identity)
+
+
+def test_french_benchmark_rejects_manifest_from_other_reference_index(tmp_path):
+    from tools.french_nsi_benchmark import accepted_result
+
+    result, identity, bundle = _passed_result(tmp_path)
+    manifest = bundle / "manifest.json"
+    value = json.loads(manifest.read_text())
+    value["reference_index_sha256"] = "different-reference-sha"
+    manifest.write_text(json.dumps(value))
+    result_value = json.loads(result.read_text())
+    result_value["artifacts"]["manifest_sha256"] = sha256(
+        manifest.read_bytes()
+    ).hexdigest()
+    result.write_text(json.dumps(result_value))
+    assert not accepted_result(result, identity)
+
+
+def test_french_benchmark_preserves_v14_as_history_not_v15_pass(tmp_path):
+    from tools.french_nsi_benchmark import accepted_result
+
+    result, identity, bundle = _passed_result(tmp_path)
+    manifest = bundle / "manifest.json"
+    package = bundle / "assessment.json"
+    old_identity = json.loads(manifest.read_text())["identity"]
+    old_identity["prompt_version"] = CONTROLLED_NETWORK_PROMPT_VERSION
+    for key in (
+        "network_depth_contract_sha256",
+        "network_depth_prose_contract_version",
+        "network_depth_prose_catalogue_sha256",
+    ):
+        old_identity.pop(key)
+    old_identity.update(
+        network_contract_sha256=build_network_contract(270100).digest,
+        network_prose_contract_version=NETWORK_PROSE_VERSION,
+        network_prose_catalogue_sha256=network_catalogue_digest(),
+    )
+    package_value = json.loads(package.read_text())
+    package_value["identity"] = old_identity
+    package.write_text(json.dumps(package_value))
+    manifest_value = json.loads(manifest.read_text())
+    manifest_value["identity"] = old_identity
+    manifest_value["artifacts"]["assessment_package"]["sha256"] = sha256(
+        package.read_bytes()
+    ).hexdigest()
+    manifest.write_text(json.dumps(manifest_value))
+    result_value = json.loads(result.read_text())
+    result_value["artifacts"]["manifest_sha256"] = sha256(
+        manifest.read_bytes()
+    ).hexdigest()
+    result.write_text(json.dumps(result_value))
+    assert not accepted_result(result, identity)
+    assert package.is_file() and manifest.is_file()
 
 
 def test_french_benchmark_resume_rejects_modified_artifact(tmp_path):

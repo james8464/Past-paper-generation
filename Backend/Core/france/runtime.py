@@ -6,6 +6,8 @@ import re
 import shutil
 import signal
 import tempfile
+from decimal import Decimal
+from hashlib import sha256
 from pathlib import Path
 from urllib.parse import urlparse
 from urllib.request import Request
@@ -26,8 +28,14 @@ from Backend.Core.france.graph_tree_contract import (
 from Backend.Core.france.network import open_ollama_request
 from Backend.Core.france.network_binding import network_materials
 from Backend.Core.france.network_contract import NetworkContract, build_network_contract
+from Backend.Core.france.network_depth_contract import (
+    NetworkDepthContract,
+    build_network_depth_contract,
+)
 from Backend.Core.france.nsi import NSIExercise
 from Backend.Core.france.pipeline import (
+    CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
+    CONTROLLED_NETWORK_PROMPT_VERSION,
     atomic_json,
     digest,
     exercise_candidate_text,
@@ -360,6 +368,133 @@ def validate_network_contract_pdf(
                 raise ValueError(f"Network rubric {question.id} leaked into paper")
 
 
+def validate_network_depth_contract_pdf(
+    path: Path,
+    contract: NetworkDepthContract,
+    *,
+    correction: bool,
+    exercise: NSIExercise,
+) -> None:
+    """Fail closed if a v15 PDF omits locked facts or exposes an answer."""
+    data = contract.to_dict()
+    if exercise.id != "3" or [q.id for q in exercise.questions] != data["task_ids"]:
+        raise ValueError("Network depth exercise does not match its contract")
+    with pymupdf.open(path) as pdf:
+        lines = [
+            line.strip()
+            for page in pdf
+            for line in page.get_text().splitlines()
+            if line.strip()
+            and not line.startswith("Paper Creator —")
+            and not line.startswith("Page : ")
+        ]
+    text = "\n".join(lines)
+    flat = " ".join(text.split())
+    heading = f"Exercice 3 ({exercise.target_points.replace('.', ',')} points)"
+    if text.count(heading) != 1:
+        raise ValueError("Network depth exercise credit differs from blueprint")
+    titles = (
+        "Sept liaisons bidirectionnelles et coûts initiaux",
+        "État simultané des processus",
+    )
+    if text.count(titles[0]) != 1:
+        raise ValueError("Network depth case material missing")
+    case_context = " ".join(
+        text.split(heading + "\n", 1)[1].split("\n" + titles[0], 1)[0].split()
+    )
+    for task_id in data["task_ids"]:
+        if (
+            sum(
+                bool(re.match(rf"^{re.escape(task_id)}\.(?:\s|$)", line))
+                for line in lines
+            )
+            != 1
+        ):
+            raise ValueError(f"Network depth question {task_id} missing or duplicated")
+    for premise in (
+        f"R1–R3 passe de {data['links'][2][2]} à {data['change']['new_cost']}",
+        "les autres coûts restent inchangés",
+        "P2, qui libère B",
+        "A avant B",
+        "Aucun secret n'est partagé au départ",
+        "clé publique de la station est authentifiée",
+        "clé de session est chiffrée pour elle",
+        "capteur n'appose pas de signature",
+        "observateur est passif",
+    ):
+        if premise not in case_context:
+            raise ValueError("Network depth premise missing from PDF")
+    materials = exercise.materials
+    expected_rows = [
+        [[left, right, str(cost)] for left, right, cost in data["links"]],
+        [
+            [
+                name,
+                data["processes"][name]["holds"],
+                data["processes"][name]["waits_for"],
+            ]
+            for name in ("P1", "P2")
+        ],
+    ]
+    columns = (
+        ("Extrémité 1", "Extrémité 2", "Coût"),
+        ("Processus", "Ressource détenue", "Ressource attendue"),
+    )
+    for index, (material, title, rows) in enumerate(
+        zip(materials, titles, expected_rows, strict=True)
+    ):
+        following = titles[index + 1] if index == 0 else "3a."
+        if (
+            material.title != title
+            or material.columns != columns[index]
+            or [list(row) for row in material.rows] != rows
+            or text.count(title) != 1
+        ):
+            raise ValueError("Network depth material differs from contract")
+        printed = (
+            text.split(title + "\n", 1)[1].split("\n" + following, 1)[0].splitlines()
+        )
+        expected = list(material.columns) + [cell for row in rows for cell in row]
+        if printed != expected:
+            raise ValueError("Network depth table rows differ from contract")
+    for index, question in enumerate(exercise.questions):
+        start = text.index("\n" + question.id + ".")
+        end = (
+            text.index("\n" + exercise.questions[index + 1].id + ".")
+            if index + 1 < len(exercise.questions)
+            else len(text)
+        )
+        question_text = " ".join(text[start:end].split())
+        for label in ("Réponse attendue", "Barème indicatif"):
+            if question_text.count(label) != int(correction):
+                raise ValueError(f"Network depth role label {question.id} invalid")
+        prompt = " ".join(question.prompt.split())
+        answer = " ".join(question.answer.split())
+        if question_text.count(prompt) != 1:
+            raise ValueError(
+                f"Network depth prompt {question.id} missing or duplicated"
+            )
+        if correction and answer not in question_text:
+            raise ValueError(f"Network depth answer {question.id} missing")
+        if not correction and answer in flat:
+            raise ValueError(f"Network depth answer {question.id} leaked")
+        if correction:
+            for points in {credit.points for credit in question.marking}:
+                label = points.replace(".", ",")
+                unit = "point" if Decimal(points) <= 1 else "points"
+                expected_count = sum(
+                    credit.points == points for credit in question.marking
+                )
+                if question_text.count(f"{label} {unit}") != expected_count:
+                    raise ValueError(f"Network depth credit {question.id} missing")
+        for credit in question.marking:
+            criterion = " ".join(credit.criterion.split())
+            if correction and question_text.count(criterion) != 1:
+                raise ValueError(f"Network depth credit {question.id} missing")
+            if not correction and criterion in flat:
+                raise ValueError(f"Network depth rubric {question.id} leaked")
+
+
 def load_originality_history(output: Path) -> list[str]:
     """Read a bounded set of candidate-only text from earlier local bundles."""
     history: list[str] = []
@@ -392,6 +527,15 @@ def load_originality_history(output: Path) -> list[str]:
     return history
 
 
+def network_pdf_contract_version(prompt_version: str) -> str:
+    """Never silently render an unknown French package with an older validator."""
+    if prompt_version == CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION:
+        return "v15"
+    if prompt_version == CONTROLLED_NETWORK_PROMPT_VERSION:
+        return "v14"
+    raise ValueError("Version de contrat réseau incompatible avec le PDF")
+
+
 def handle_generate_assessment(args) -> int:
     staging = None
     previous_handler = None
@@ -407,6 +551,7 @@ def handle_generate_assessment(args) -> int:
             raise ValueError(
                 "Le catalogue de références manque. Préparez les sources françaises avant de créer un sujet."
             )
+        reference_index_sha256 = sha256(args.reference_index.read_bytes()).hexdigest()
         validate_endpoint(
             args.ollama_url, allow_remote=getattr(args, "allow_remote", False)
         )
@@ -429,14 +574,21 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v14",
+            contract_authoring_version="v15",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
         exercises = [NSIExercise.model_validate(item) for item in package["exercises"]]
         graph_tree_contract = build_graph_tree_contract(args.seed, "1")
         database_contract = build_database_contract(args.seed)
-        network_contract = build_network_contract(args.seed)
+        network_depth = (
+            network_pdf_contract_version(package["identity"]["prompt_version"]) == "v15"
+        )
+        network_contract = (
+            build_network_depth_contract(args.seed)
+            if network_depth
+            else build_network_contract(args.seed)
+        )
         paths = {}
         for role, correction, filename in (
             ("question_paper", False, "sujet.pdf"),
@@ -467,7 +619,12 @@ def handle_generate_assessment(args) -> int:
                 correction=correction,
                 exercise=exercises[1],
             )
-            validate_network_contract_pdf(
+            network_validator = (
+                validate_network_depth_contract_pdf
+                if network_depth
+                else validate_network_contract_pdf
+            )
+            network_validator(
                 path,
                 network_contract,
                 correction=correction,
@@ -476,8 +633,6 @@ def handle_generate_assessment(args) -> int:
             paths[role] = path
         atomic_json(staging / "assessment.json", package)
         paths["assessment_package"] = staging / "assessment.json"
-        from hashlib import sha256
-
         artifacts = {
             role: {"file": path.name, "sha256": sha256(path.read_bytes()).hexdigest()}
             for role, path in paths.items()
@@ -490,6 +645,7 @@ def handle_generate_assessment(args) -> int:
                 "status": "unreviewed_draft",
                 "artifacts": artifacts,
                 "identity": package["identity"],
+                "reference_index_sha256": reference_index_sha256,
                 "large_print": args.large_print,
                 "teacher_review": "not_run",
                 "empirical_calibration": "not_run",
@@ -504,6 +660,13 @@ def handle_generate_assessment(args) -> int:
         if implementation_identity() != package["identity"]["implementation_sha256"]:
             raise ValueError(
                 "Le programme a changé pendant la génération; publication refusée"
+            )
+        if (
+            sha256(args.reference_index.read_bytes()).hexdigest()
+            != reference_index_sha256
+        ):
+            raise ValueError(
+                "Les références ont changé pendant la génération; publication refusée"
             )
         destination = output / f"nsi-2027-{args.seed}-{digest(artifacts)[:12]}"
         if destination.exists():

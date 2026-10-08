@@ -10,6 +10,9 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
     from hashlib import sha256
 
     from Backend.Core.france import runtime
+    from Backend.Core.france.pipeline import (
+        generate_assessment as real_generate_assessment,
+    )
     from tests.test_nsi_pipeline import ControlledNetworkFrenchClient, make_index
 
     index = tmp_path / "references.sqlite"
@@ -26,6 +29,13 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
         large_print=large_print,
     )
     monkeypatch.setattr(runtime, "model_identity", lambda *args: "fixture-digest")
+    monkeypatch.setattr(
+        runtime,
+        "generate_assessment",
+        lambda **kwargs: real_generate_assessment(
+            **{**kwargs, "contract_authoring_version": "v14"}
+        ),
+    )
     monkeypatch.setattr(
         runtime, "FrenchOllamaClient", lambda **kwargs: ControlledNetworkFrenchClient()
     )
@@ -58,6 +68,9 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
                 == artifact["sha256"]
             )
         assert manifest["status"] == "unreviewed_draft"
+        assert (
+            manifest["reference_index_sha256"] == sha256(index.read_bytes()).hexdigest()
+        )
         assert manifest["identity"]["prompt_version"] == "fr-nsi-written-2027-v14"
         import pymupdf
 
@@ -102,12 +115,16 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
         network_contract = build_network_contract(args.seed)
         network_exercise = NSIExercise.model_validate(package["exercises"][2])
         validate_network_contract_pdf(
-            bundles[0] / "sujet.pdf", network_contract,
-            correction=False, exercise=network_exercise,
+            bundles[0] / "sujet.pdf",
+            network_contract,
+            correction=False,
+            exercise=network_exercise,
         )
         validate_network_contract_pdf(
-            bundles[0] / "corrige.pdf", network_contract,
-            correction=True, exercise=network_exercise,
+            bundles[0] / "corrige.pdf",
+            network_contract,
+            correction=True,
+            exercise=network_exercise,
         )
         import copy
 
@@ -260,6 +277,7 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
         )
         reject_tampered_database("sujet.pdf", "2e.", "2x.", correction=False)
         reject_tampered_database("corrige.pdf", "2f.", "2x.", correction=True)
+
         def reject_tampered_network(role, before, after, *, correction):
             with original_open(bundles[0] / role) as pdf:
                 pages = [page.get_text() for page in pdf]
@@ -281,19 +299,19 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
         reject_tampered_network(
             "sujet.pdf", "Central\nR1\n4\n", "Central\nR1\n9\n", correction=False
         )
+        reject_tampered_network("sujet.pdf", "C\nB\nA\n", "C\nB\nB\n", correction=False)
         reject_tampered_network(
-            "sujet.pdf", "C\nB\nA\n", "C\nB\nB\n", correction=False
+            "sujet.pdf",
+            "secret partagé initial",
+            "secret partagé certain",
+            correction=False,
         )
+        reject_tampered_network("sujet.pdf", "3e.", "3x.", correction=False)
         reject_tampered_network(
-            "sujet.pdf", "secret partagé initial",
-            "secret partagé certain", correction=False,
-        )
-        reject_tampered_network(
-            "sujet.pdf", "3e.", "3x.", correction=False
-        )
-        reject_tampered_network(
-            "corrige.pdf", "Points accordés pour les limites",
-            "Critère absent", correction=True,
+            "corrige.pdf",
+            "Points accordés pour les limites",
+            "Critère absent",
+            correction=True,
         )
         original_manifest = runtime.graph_edge_manifest
         monkeypatch.setattr(
@@ -361,7 +379,189 @@ def test_runtime_rejects_remote_ollama_without_explicit_consent():
         validate_endpoint("https://key:password@school.example.fr", allow_remote=True)
 
 
-def test_french_pdf_restores_roman_body_after_other_renderer_font_mapping(tmp_path, monkeypatch):
+def test_network_pdf_version_dispatch_has_no_implicit_legacy_fallback():
+    from Backend.Core.france.runtime import network_pdf_contract_version
+
+    assert network_pdf_contract_version("fr-nsi-written-2027-v15") == "v15"
+    assert network_pdf_contract_version("fr-nsi-written-2027-v14") == "v14"
+    with pytest.raises(ValueError, match="Version"):
+        network_pdf_contract_version("fr-nsi-written-2027-v13")
+
+
+@pytest.mark.parametrize("large_print", [False, True])
+def test_runtime_publishes_v15_network_depth_with_locked_pdf_facts(
+    tmp_path, monkeypatch, large_print
+):
+    import json
+
+    import pymupdf
+
+    from Backend.Core.france import runtime
+    from Backend.Core.france.network_depth_contract import build_network_depth_contract
+    from Backend.Core.france.nsi import NSIExercise
+    from tests.test_nsi_pipeline import ControlledNetworkDepthFrenchClient, make_index
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+    monkeypatch.setattr(runtime, "model_identity", lambda *_: "fixture-digest")
+    monkeypatch.setattr(
+        runtime, "FrenchOllamaClient", lambda **_: ControlledNetworkDepthFrenchClient()
+    )
+    args = Namespace(
+        assessment="fr-bac-general-nsi-written-2027",
+        reference_index=index,
+        output=str(tmp_path / "output"),
+        seed=270100,
+        model="fixture",
+        ollama_url="http://localhost:11434",
+        allow_remote=False,
+        large_print=large_print,
+    )
+    assert runtime.handle_generate_assessment(args) == 0
+    (bundle,) = (tmp_path / "output").glob("nsi-*")
+    package = json.loads((bundle / "assessment.json").read_text())
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v15"
+    contract = build_network_depth_contract(args.seed)
+    exercise = NSIExercise.model_validate(package["exercises"][2])
+    for name, correction in (("sujet.pdf", False), ("corrige.pdf", True)):
+        path = bundle / name
+        runtime.validate_network_depth_contract_pdf(
+            path, contract, correction=correction, exercise=exercise
+        )
+        with pymupdf.open(path) as pdf:
+            text = " ".join(page.get_text() for page in pdf)
+            assert "Sept liaisons bidirectionnelles" in text
+            assert "État simultané des processus" in text
+            assert all(
+                word[0] >= 0
+                and word[2] <= page.rect.width
+                and word[1] >= 0
+                and word[3] <= page.rect.height
+                for page in pdf
+                for word in page.get_text("words")
+            )
+            assert ("Accorder pour" in text) == correction
+            if correction:
+                normalized = " ".join(text.split())
+                assert "0,25 point" in normalized
+                assert "0,25 points" not in normalized
+                final_page = pdf[-1].get_text()
+                assert "3f." in final_page
+                assert "Barème indicatif" in final_page
+
+    real_open = pymupdf.open
+
+    class PageText:
+        def __init__(self, value):
+            self.value = value
+
+        def get_text(self):
+            return self.value
+
+    class DocumentText:
+        def __init__(self, values):
+            self.values = values
+
+        def __enter__(self):
+            return [PageText(value) for value in self.values]
+
+        def __exit__(self, *_):
+            return False
+
+    def reject_text_change(filename, old, new, correction):
+        with real_open(bundle / filename) as pdf:
+            pages = [page.get_text() for page in pdf]
+        assert sum(old in page for page in pages) == 1
+        pages = [page.replace(old, new, 1) for page in pages]
+        with monkeypatch.context() as patch:
+            patch.setattr(runtime.pymupdf, "open", lambda _: DocumentText(pages))
+            with pytest.raises(ValueError):
+                runtime.validate_network_depth_contract_pdf(
+                    bundle / filename,
+                    contract,
+                    correction=correction,
+                    exercise=exercise,
+                )
+
+    first_link = contract.to_dict()["links"][0]
+    reject_text_change(
+        "sujet.pdf",
+        f"{first_link[0]}\n{first_link[1]}\n{first_link[2]}\n",
+        f"{first_link[0]}\n{first_link[1]}\n99\n",
+        False,
+    )
+    reject_text_change(
+        "sujet.pdf",
+        "capteur n'appose pas de signature",
+        "capteur signe tous les messages",
+        False,
+    )
+    reject_text_change(
+        "sujet.pdf",
+        "restent inchangés",
+        "changent aussi",
+        False,
+    )
+    reject_text_change(
+        "corrige.pdf",
+        "prévue arrête P2, qui libère B",
+        "prévue arrête P2 sans libération explicite",
+        True,
+    )
+    reject_text_change("sujet.pdf", "3b.", "3x.", False)
+    reject_text_change(
+        "corrige.pdf",
+        "Réponse attendue\nCentral–R1",
+        "Réponse proposée\nCentral–R1",
+        True,
+    )
+    reject_text_change(
+        "sujet.pdf",
+        "3f.",
+        "Barème indicatif\n3f.",
+        False,
+    )
+    reject_text_change(
+        "corrige.pdf",
+        exercise.questions[1].marking[0].criterion,
+        "Crédit absent",
+        True,
+    )
+    with real_open(bundle / "corrige.pdf") as pdf:
+        pages = [page.get_text() for page in pdf]
+    misplaced_answer = exercise.questions[0].answer
+    assert sum(misplaced_answer in page for page in pages) == 1
+    pages = [page.replace(misplaced_answer, "Réponse omise", 1) for page in pages]
+    pages[-1] += "\n" + misplaced_answer
+    with monkeypatch.context() as patch:
+        patch.setattr(runtime.pymupdf, "open", lambda _: DocumentText(pages))
+        with pytest.raises(ValueError, match=r"answer|réponse|Réponse"):
+            runtime.validate_network_depth_contract_pdf(
+                bundle / "corrige.pdf",
+                contract,
+                correction=True,
+                exercise=exercise,
+            )
+    with real_open(bundle / "corrige.pdf") as pdf:
+        pages = [page.get_text() for page in pdf]
+    misplaced_criterion = exercise.questions[1].marking[0].criterion
+    assert sum(misplaced_criterion in page for page in pages) == 1
+    pages = [page.replace(misplaced_criterion, "Critère déplacé", 1) for page in pages]
+    pages[-1] += "\n" + misplaced_criterion
+    with monkeypatch.context() as patch:
+        patch.setattr(runtime.pymupdf, "open", lambda _: DocumentText(pages))
+        with pytest.raises(ValueError, match=r"credit|rubric|barème|Barème"):
+            runtime.validate_network_depth_contract_pdf(
+                bundle / "corrige.pdf",
+                contract,
+                correction=True,
+                exercise=exercise,
+            )
+
+
+def test_french_pdf_restores_roman_body_after_other_renderer_font_mapping(
+    tmp_path, monkeypatch
+):
     import pymupdf
     from reportlab.lib import fonts
 
@@ -380,7 +580,8 @@ def test_french_pdf_restores_roman_body_after_other_renderer_font_mapping(tmp_pa
     }
     exercise = NSIExercise.model_validate(
         render_network_candidate(
-            build_network_contract(270100), selection,
+            build_network_contract(270100),
+            selection,
             _tasks_for_seed(270100)[2]["question_blueprint"],
         )
     )
