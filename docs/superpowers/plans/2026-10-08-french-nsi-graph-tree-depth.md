@@ -49,7 +49,7 @@
 
 **Locked blueprint:** 1a–1j minute estimates `(6,6,8,7,8,7,7,7,7,7)` sum to 70. Every question has 0.5 point; 1c gets +0.5 for all allocations, 1e gets +0.5 at 6 or 6.5, and 1j gets +0.5 at 6.5. Parts are `AAAABBBCCC`; all rubric criteria are exact quarter-point units.
 
-- [ ] Write failing tests for ten stable labels, three parts, exact 5.5/6/6.5 sums and 70-minute total, native French prompts, expected answers, quarter-point rubrics, invalid form IDs, wrong claims, evidence hashes and replay.
+- [ ] Write failing tests for ten stable labels, three parts, exact 5.5/6/6.5 sums and 70-minute total, native French prompts, expected answers, quarter-point rubrics, invalid form IDs, forbidden free-form claims, evidence hashes and replay.
 - [ ] Run focused tests RED.
 - [ ] Implement finite original prose/selection/replay and explicit fixture-provider schema dispatch for V17; never fall back to an older schema.
 - [ ] Run focused tests GREEN, Ruff and review/commit Task 2.

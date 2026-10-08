@@ -31,8 +31,8 @@ The displayed graph remains six vertices and nine weighted edges; the BST
 remains five keys plus an insertion key. The contract derives every expected
 value, including Dijkstra intermediate state, chain cost, BFS queue state,
 insertion and search correction, from these application-owned facts. Model
-output selects only scene and wording IDs and echoes claimed results; it cannot
-invent graph edges, code, marks or correct answers. A full candidate question,
+output selects only scene and wording IDs; it cannot invent graph edges, code,
+marks or correct answers. A full candidate question,
 solution and indicative rubric are rendered by the application. Canonical
 answers are exact and carry quarter-point criteria; their wording is not
 treated as human approval.

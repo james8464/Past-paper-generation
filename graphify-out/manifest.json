@@ -190,8 +190,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
-    "mtime": 1791469572.0600333,
-    "ast_hash": "5975e6e292a2c8030a99aa73f90c7b3c",
+    "mtime": 1791487053.4959881,
+    "ast_hash": "88d4adefe578801fa70f9344fc52db26",
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791473378.166059,
-    "ast_hash": "843dc1ccf5cec4d3fb482162a85ca745",
+    "mtime": 1791486729.0135984,
+    "ast_hash": "e46f0381ff7ba8b766548b2fd9edffc1",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2850,23 +2850,38 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_tree_depth_contract.py": {
-    "mtime": 1791486671.916812,
-    "ast_hash": "3d0475cae5e2a2f1a8cd56ff4d3f2db9",
+    "mtime": 1791486721.2318704,
+    "ast_hash": "4418f994a7f20aa65f7a339eb6656550",
     "semantic_hash": ""
   },
   "tests/test_french_graph_tree_depth_contract.py": {
-    "mtime": 1791486671.9170277,
-    "ast_hash": "7638af98134578240e8c787715bf3791",
+    "mtime": 1791486721.2318792,
+    "ast_hash": "31da9581e0b66819c8627f8248b73b34",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-08-french-nsi-graph-tree-depth.md": {
-    "mtime": 1791486553.5590158,
-    "ast_hash": "29aa9c97797893f1652583a71aeec169",
+    "mtime": 1791486942.4471066,
+    "ast_hash": "3c2db689e9fda8efc9832a0f003a73aa",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-10-08-french-nsi-graph-tree-depth-design.md": {
-    "mtime": 1791486553.5587938,
-    "ast_hash": "7c2406131458fd38e08b6d0c1158baf2",
+    "mtime": 1791486942.4465477,
+    "ast_hash": "a23e46ae1a806c68c722184203b5ea50",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/graph_tree_depth_authoring.py": {
+    "mtime": 1791487069.802812,
+    "ast_hash": "f01c7729123e8bc2cc635981ba30ba36",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/graph_tree_depth_prose.py": {
+    "mtime": 1791487069.8028157,
+    "ast_hash": "8743b4f72fffe3a14dd7520017672ad6",
+    "semantic_hash": ""
+  },
+  "tests/test_french_graph_tree_depth_authoring.py": {
+    "mtime": 1791487069.80287,
+    "ast_hash": "2307326532106f8428f07749b0ae5a74",
     "semantic_hash": ""
   }
 }
