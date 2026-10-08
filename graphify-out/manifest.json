@@ -200,8 +200,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
-    "mtime": 1791365716.5794842,
-    "ast_hash": "b9adfb55bf8c00abb7e6a4529e00e882",
+    "mtime": 1791443914.0267317,
+    "ast_hash": "48264538fd4d2a902ac10eb20496142c",
     "semantic_hash": ""
   },
   "Backend/Core/france/source_identity.py": {
@@ -1680,8 +1680,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_runtime.py": {
-    "mtime": 1791365716.5806937,
-    "ast_hash": "a05e730a37758decd365160e7dff24bd",
+    "mtime": 1791443902.1301703,
+    "ast_hash": "c954a821882029a23c900ceb912d8e9a",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {
@@ -2045,8 +2045,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_benchmark_runner.py": {
-    "mtime": 1791364601.0270743,
-    "ast_hash": "a3a93430ec470688db3f88e0a2dac7ca",
+    "mtime": 1791443592.2914126,
+    "ast_hash": "659bd73928a985f29a1bd0e3707b542f",
     "semantic_hash": ""
   },
   "tests/test_french_originality.py": {
@@ -2060,8 +2060,8 @@
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
-    "mtime": 1791364615.2480075,
-    "ast_hash": "8a531e6afc0f3a2779e1cd1465fe56d4",
+    "mtime": 1791443793.8845372,
+    "ast_hash": "a53855a43712434f73a3bf78e0898b3b",
     "semantic_hash": ""
   },
   "tools/reconcile_french_nsi_archive.py": {
