@@ -315,7 +315,7 @@ def build_application() -> Path:
         doc,
         [
             "Prototype technique : parcours français distinct, génération locale, références filtrées, points décimaux exacts, contrôles de réponses et PDF standard ou agrandi.",
-            "Qualité non qualifiée : 79 annales officielles 2021–2026 sont réconciliées et 13 réservées à l’évaluation. La première campagne a rejeté dix sujets complets sur dix ; le modèle testé ne peut pas encore être recommandé.",
+            "Qualité non qualifiée : 79 annales officielles 2021–2026 sont réconciliées et 13 réservées à l’évaluation. La première campagne a rejeté dix sujets sur dix. Un diagnostic ultérieur a passé les contrôles automatiques, mais sa fidélité pédagogique reste à confirmer ; aucun modèle n’est recommandé.",
             "Validation humaine à organiser : aucun partenariat régional ni avis d’enseignant français n’est revendiqué. Le prix financerait l’amélioration et l’évaluation indépendante.",
         ],
     )
@@ -395,7 +395,7 @@ def build_technical_dossier() -> Path:
         "Technical and user report · Prix Occitanie 2026",
     )
     doc.add_paragraph(
-        "This report explains the prototype, what a teacher can do with it today, and the evidence still needed before it can be recommended for classroom practice. A controlled-language graph/tree exercise now prevents the model from inventing its questions, answers or marking clauses; the other two exercises remain model-authored. The first complete Gemma 4 12B campaign rejected all ten papers, and the redesigned route has not passed a live paper. No French model is recommended. Two independent NSI teacher reviewers and a supervised pilot remain essential."
+        "This report explains the prototype, what a teacher can do with it today, and the evidence still needed before classroom recommendation. All three exercises use app-owned contracts for questions, answers and marking clauses. The first complete Gemma 4 12B campaign rejected all ten papers. A later pinned diagnostic achieved a first-attempt live engineering pass, but remains on manual fidelity hold: 18 numbered questions across seven subject pages are substantially less developed than the official 2026 comparison. No French model is recommended. Two independent NSI teacher reviewers and a supervised pilot remain essential."
     )
     doc.add_heading("The teacher’s task", level=1)
     doc.add_paragraph(
@@ -491,7 +491,7 @@ def build_technical_dossier() -> Path:
 
     doc.add_heading("Question quality", level=1)
     doc.add_paragraph(
-        "The model receives a constrained plan, not a vague request. For the first graph/tree exercise, it now selects from a finite French-language catalogue: the engine renders every instruction, answer and exact-credit clause from locked graph and tree data. The selection and catalogue digest are bound to the checkpoint, package and exported PDFs. Database and protocol exercises still use separately checked model-authored text; a passing structural check is not proof that those questions are correct."
+        "The model receives a constrained plan, not a vague request. For the first graph/tree exercise, it selects from a finite French-language catalogue: the engine renders every instruction, answer and exact-credit clause from locked data. Database and network exercises also use app-owned data, prompts, answers and exact-credit contracts. Versioned selections and source identity are bound to checkpoints, packages and exported PDFs. A passing structural check is not proof that the questions are educationally sound."
     )
     doc.add_paragraph(
         "A difficulty label from a model is not proof of difficulty. The schema rejects recall-only sequences and requires progression towards analysis, design, debugging, or justification. Final calibration must compare drafts with held-out past papers and observed learner timings."
@@ -534,8 +534,8 @@ def build_technical_dossier() -> Path:
     )
     add_label_paragraph(
         doc,
-        "Automated · 0/10 accepted.",
-        "The first Gemma 4 12B campaign did not pass. The new graph/tree contract passes deterministic fixture and PDF-integrity tests, but has no accepted live complete paper. A source-pinned run and independent subject review are still required.",
+        "Initial campaign · 0/10 accepted.",
+        "The first Gemma 4 12B campaign did not pass. A later source- and model-pinned single-paper diagnostic passed automated checks on its first attempt, without repairs. Its seven-page subject and eleven-page proposed correction were visually inspected; the subject remains on manual fidelity hold against the 2026 Métropole reference. This is not a ten-paper model qualification or teacher approval.",
     )
     add_label_paragraph(
         doc,

@@ -73,6 +73,20 @@ live item review remains a separate requirement.
 
 ## Live matrix integrity
 
+### French NSI diagnostic — 8 October 2026
+
+Protected PR #39 merged the versioned seven-link French network exercise. A
+single pinned `gemma4:12b` seed 270100 run on that merged source passed automated
+checks on its first attempt, with no repairs. Its seven-page subject and
+eleven-page proposed correction were inspected page by page. The subject still
+has 18 numbered questions, an orphaned final question, crossed graph labels
+and substantially less developed sequences than the official 2026 Métropole
+paper's 36 questions across 16 pages. This is a **manual fidelity hold**, not a
+qualified model, classroom-ready paper or final shared-source matrix. Full
+model, source, reference, artifact hashes, timings and visual findings are in
+[the v17 diagnostic](french-nsi-v17-live-diagnostic-2026-10-08.md). Preserve the
+earlier v15 automated pass/manual hold and all v12–v14 failed attempts.
+
 The first live Accounting Paper 1 attempt exposed a genuine source-scope defect
 at question 14.2. The independent solver received a generic option extract
 containing staff turnover of 19%, while that page's specialist renderer printed

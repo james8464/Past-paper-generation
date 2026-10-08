@@ -1,6 +1,6 @@
 # Prix Occitanie 2026 submission pack
 
-Updated 6 October 2026.
+Updated 8 October 2026.
 
 ## Formal requirement
 
@@ -54,28 +54,21 @@ The French NSI path is a working prototype. The official 2021–2026 archive is
 reconciled locally (79 canonical papers, 13 holdouts, 43 recorded accessibility
 representations, two duplicate-content groups), and automated controls, measured PDF
 geometry and a resumable local-model benchmark are implemented. A complete accepted
-live French benchmark, two independent French NSI teacher recommendations and a
+qualifying multi-paper French benchmark, two independent French NSI teacher recommendations and a
 supervised learner pilot are not yet complete. The application therefore describes
 those items as planned qualification work, not achieved approval.
 
-The pinned Gemma 4 12B live campaign accepted 0 of 10 complete papers; it is
-failure evidence, not a successful qualification or a model recommendation. A
-teacher-approved practice release still requires a revised generation approach,
-new live evidence and independent human review.
-Five additional one-paper diagnostics on 4 October each accepted 0 of 1; their
-raw failures are retained locally. The fourth and fifth exposed exercises that
-passed automated review despite invalid content, so structural acceptance alone
-cannot be claimed as educational readiness. The latest authoring contract has
-not passed a live paper. The first graph/tree exercise now uses a finite,
-versioned French prose catalogue and selection-only model responses; package,
-checkpoint and PDF checks replay its exact answers and credit clauses. The other
-two exercises remain model-authored and unqualified. The deterministic v12 fixture
-and all four exported PDF profiles passed extraction checks, with visual limits
-recorded in `docs/quality/french-nsi-v12-pdf-verification-2026-10-06.md`;
-this fixture is not live educational evidence. The source-backed redesign is
-implemented but not yet live-qualified;
-the application must present the generator as a prototype, not as a validated
-classroom-ready paper maker.
+The first pinned Gemma 4 12B campaign accepted 0 of 10 complete papers. Its
+failures and later failed one-paper diagnostics remain retained evidence, not a
+model recommendation. All three exercises now use app-owned, versioned French
+question, answer and credit contracts. A single pinned v17 paper passed automated
+checks on its first attempt, but [manual comparison with the official 2026 paper](../../quality/french-nsi-v17-live-diagnostic-2026-10-08.md)
+placed it on fidelity hold: the seven-page subject has 18 numbered questions,
+versus 36 across 16 official pages, and still has layout and reasoning-depth
+gaps. The v12 fixture and earlier v15 live hold remain separate evidence. No
+multi-paper model qualification, teacher recommendation or learner calibration
+has been achieved. The application must present the generator as a prototype,
+not a validated classroom-ready paper maker.
 
 The project does not claim endorsement by the Ministry, the Région Occitanie, the Toulouse or Montpellier academies, CentraleSupélec or any examination board. Generated files remain independently branded and marked non-official.
 

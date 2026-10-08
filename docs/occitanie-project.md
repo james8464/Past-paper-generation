@@ -110,6 +110,14 @@ and teacher time calibration before a submission-readiness claim. Automated
 completion is not subject-matter or teacher validation; the final matrix remains
 on hold.
 
+Protected PR #39 deepened the app-owned network case. A new
+[source-pinned v17 live diagnostic](quality/french-nsi-v17-live-diagnostic-2026-10-08.md)
+passed automated checks on its first attempt, but all seven subject and eleven
+correction pages still led to a **manual fidelity hold**: 18 numbered questions,
+an orphaned final question and presentation/depth gaps against the official
+2026 reference. This is an engineering checkpoint, not model selection or
+educational qualification. Earlier failures and the v15 hold remain retained.
+
 ## Genuine Occitanie scenario — PLANNED
 
 A teacher generates and checks a paper on a Mac; students receive a PDF through
