@@ -448,6 +448,10 @@ def test_runtime_publishes_v15_network_depth_with_locked_pdf_facts(
                 final_page = pdf[-1].get_text()
                 assert "3f." in final_page
                 assert "Barème indicatif" in final_page
+            else:
+                final_page = pdf[-1].get_text()
+                assert "3e." in final_page
+                assert "3f." in final_page
 
     real_open = pymupdf.open
 

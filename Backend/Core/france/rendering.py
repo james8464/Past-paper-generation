@@ -544,9 +544,25 @@ def render_assessment(
                     show_id=exercise.id != "3",
                 )
             )
+        final_network_pair_start = None
         for question_index, question in enumerate(exercise.questions):
             question_start = len(story)
+            if (
+                not correction
+                and question.id == "3e"
+                and question.verification.get("kind") == "network_depth_contract"
+            ):
+                final_network_pair_start = question_start
             question_content(question.id, question.prompt)
+            if (
+                not correction
+                and question.id == "3f"
+                and question.verification.get("kind") == "network_depth_contract"
+                and final_network_pair_start is not None
+            ):
+                story[final_network_pair_start:] = [
+                    KeepTogether(story[final_network_pair_start:])
+                ]
             if correction:
                 story[-1].keepWithNext = True
                 paragraph("Réponse attendue", credit)
