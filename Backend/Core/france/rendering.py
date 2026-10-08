@@ -36,6 +36,11 @@ PRESERVED_SCOPE_INITIALS = frozenset(
 )
 
 
+def printable_database_criterion(criterion: str) -> str:
+    """Remove source Markdown delimiters without mutating replayable rubric data."""
+    return " ".join(re.sub(r"```(?:sql|python)?", " ", criterion).split())
+
+
 def exercise_scope_text(title: str) -> str:
     scope = title.strip().rstrip(".")
     if scope.lower().startswith("cet exercice"):
@@ -586,7 +591,15 @@ def render_assessment(
                 marking_rows = [
                     [
                         Paragraph(escape(point_label(item.points)), body),
-                        Paragraph(escape(item.criterion), body),
+                        Paragraph(
+                            escape(
+                                printable_database_criterion(item.criterion)
+                                if question.verification.get("kind")
+                                == "database_depth_contract"
+                                else item.criterion
+                            ),
+                            body,
+                        ),
                     ]
                     for item in question.marking
                 ]
@@ -630,9 +643,18 @@ def render_assessment(
                     )
                 )
                 story.append(marking_table)
-                if question.id == "3f" or (
-                    question.id in {"1b", "1f", "1j"}
-                    and question.verification.get("kind") == "graph_tree_depth_contract"
+                if (
+                    question.id == "3f"
+                    or (
+                        question.id == "3d"
+                        and question.verification.get("kind")
+                        == "network_depth_contract"
+                    )
+                    or (
+                        question.id in {"1b", "1f", "1j"}
+                        and question.verification.get("kind")
+                        == "graph_tree_depth_contract"
+                    )
                 ):
                     story[question_start:] = [KeepTogether(story[question_start:])]
                 if (
