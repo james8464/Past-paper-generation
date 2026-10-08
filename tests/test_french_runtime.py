@@ -714,6 +714,41 @@ def test_network_depth_correction_sets_dijkstra_steps_on_separate_lines(tmp_path
         )
 
 
+def test_network_depth_rubric_continuation_names_its_question(tmp_path):
+    import pymupdf
+
+    from Backend.Core.france.network_depth_contract import build_network_depth_contract
+    from Backend.Core.france.network_depth_prose import render_network_depth_candidate
+    from Backend.Core.france.nsi import NSIExercise
+    from Backend.Core.france.pipeline import _tasks_for_seed_v15
+    from Backend.Core.france.rendering import render_assessment
+
+    seed = 270100
+    selection = {
+        "scene_id": "terrain",
+        "question_forms": {f"3{letter}": f"3{letter}-q1" for letter in "abcdef"},
+        "rubric_forms": {f"3{letter}": f"3{letter}-r1" for letter in "abcdef"},
+    }
+    exercise = NSIExercise.model_validate(
+        render_network_depth_candidate(
+            build_network_depth_contract(seed),
+            selection,
+            _tasks_for_seed_v15(seed)[2]["question_blueprint"],
+        )
+    )
+    output = tmp_path / "network-correction.pdf"
+    render_assessment(output, [exercise], correction=True)
+
+    with pymupdf.open(output) as pdf:
+        pages = [" ".join(page.get_text().split()) for page in pdf]
+    answer_fragment = "P1 obtient B, termine puis libère A et B."
+    answer_page = next(index for index, page in enumerate(pages) if answer_fragment in page)
+    final_credit = "l'ordre commun A avant B empêchant le cycle"
+    credit_page = next(index for index, page in enumerate(pages) if final_credit in page)
+    assert credit_page > answer_page
+    assert "Barème indicatif — question 3d" in pages[credit_page]
+
+
 def test_french_pdf_restores_roman_body_after_other_renderer_font_mapping(
     tmp_path, monkeypatch
 ):

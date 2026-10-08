@@ -578,7 +578,7 @@ def render_assessment(
                     network_depth_trace_answer(question.answer)
                 else:
                     content(question.answer)
-                paragraph("Barème indicatif", credit)
+                paragraph(f"Barème indicatif — question {question.id}", credit)
                 marking_rows = [
                     [
                         Paragraph(escape(point_label(item.points)), body),
