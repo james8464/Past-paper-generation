@@ -6,7 +6,7 @@ from math import atan2, cos, pi, sin
 from pathlib import Path
 from xml.sax.saxutils import escape
 
-from reportlab.graphics.shapes import Circle, Drawing, Line, Polygon, String
+from reportlab.graphics.shapes import Circle, Drawing, Line, Polygon, Rect, String
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
@@ -100,13 +100,47 @@ def structured_material(
     drawing = Drawing(width, height)
     centre_x, centre_y = width / 2, height / 2
     radius = min(width * 0.34, height * 0.34)
-    positions = {
-        node: (
-            centre_x + radius * cos(-pi / 2 + 2 * pi * index / len(material.nodes)),
-            centre_y + radius * sin(-pi / 2 + 2 * pi * index / len(material.nodes)),
+    app_graph_pairs = {
+        tuple(sorted(pair))
+        for pair in (
+            ("A", "B"),
+            ("B", "C"),
+            ("C", "D"),
+            ("D", "E"),
+            ("E", "F"),
+            ("A", "C"),
+            ("B", "D"),
+            ("C", "E"),
+            ("D", "F"),
         )
-        for index, node in enumerate(material.nodes)
     }
+    if (
+        not material.directed
+        and set(material.nodes) == set("ABCDEF")
+        and {tuple(sorted((start, end))) for start, end, _ in material.edges}
+        == app_graph_pairs
+    ):
+        # The app-owned E1 graph is a ladder, not a cycle. Two rows keep all
+        # nine edges visible without the crossings produced by circular order.
+        positions = {
+            node: (width * x, height * y)
+            for node, x, y in (
+                ("A", 0.15, 0.75),
+                ("B", 0.15, 0.25),
+                ("C", 0.50, 0.75),
+                ("D", 0.50, 0.25),
+                ("E", 0.85, 0.75),
+                ("F", 0.85, 0.25),
+            )
+        }
+    else:
+        positions = {
+            node: (
+                centre_x + radius * cos(-pi / 2 + 2 * pi * index / len(material.nodes)),
+                centre_y + radius * sin(-pi / 2 + 2 * pi * index / len(material.nodes)),
+            )
+            for index, node in enumerate(material.nodes)
+        }
     for start, end, weight in material.edges:
         x1, y1 = positions[start]
         x2, y2 = positions[end]
@@ -129,11 +163,24 @@ def structured_material(
                     strokeColor=colors.black,
                 )
             )
+        label = str(weight)
+        label_x = (x1 + x2) / 2 + 5
+        label_y = (y1 + y2) / 2 + 5
+        drawing.add(
+            Rect(
+                label_x - 3,
+                label_y - 3,
+                stringWidth(label, regular_font, 9) + 6,
+                12,
+                fillColor=colors.white,
+                strokeColor=None,
+            )
+        )
         drawing.add(
             String(
-                (x1 + x2) / 2 + 5,
-                (y1 + y2) / 2 + 5,
-                str(weight),
+                label_x,
+                label_y,
+                label,
                 fontName=regular_font,
                 fontSize=9,
             )

@@ -222,6 +222,55 @@ def test_structured_graph_is_bound_to_question_and_deterministic_contract():
         NSIExercise.model_validate(raw)
 
 
+def test_app_owned_six_node_graph_renders_without_crossed_edges():
+    from reportlab.graphics.shapes import Drawing, Line, Rect
+    from reportlab.lib.styles import ParagraphStyle
+
+    from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
+    from Backend.Core.france.nsi import NSIWeightedGraphMaterial
+    from Backend.Core.france.rendering import structured_material
+
+    graph = build_graph_tree_contract(270100, "1").to_dict()["graph"]
+    material = NSIWeightedGraphMaterial.model_validate(
+        {"kind": "weighted_graph", "title": "Réseau", **graph}
+    )
+    block = structured_material(
+        material,
+        body=ParagraphStyle("body"),
+        bold_font="Helvetica-Bold",
+        regular_font="Helvetica",
+        available_width=440,
+    )
+    drawing = next(item for item in block._content if isinstance(item, Drawing))
+    lines = [item for item in drawing.contents if isinstance(item, Line)]
+    weight_backings = [item for item in drawing.contents if isinstance(item, Rect)]
+
+    def crosses(first, second):
+        def orient(ax, ay, bx, by, cx, cy):
+            return (bx - ax) * (cy - ay) - (by - ay) * (cx - ax)
+
+        endpoints = ((first.x1, first.y1), (first.x2, first.y2))
+        other = ((second.x1, second.y1), (second.x2, second.y2))
+        if set(endpoints) & set(other):
+            return False
+        return (
+            orient(*endpoints[0], *endpoints[1], *other[0])
+            * orient(*endpoints[0], *endpoints[1], *other[1])
+            < 0
+            and orient(*other[0], *other[1], *endpoints[0])
+            * orient(*other[0], *other[1], *endpoints[1])
+            < 0
+        )
+
+    assert len(lines) == len(material.edges)
+    assert len(weight_backings) == len(material.edges)
+    assert not any(
+        crosses(first, second)
+        for index, first in enumerate(lines)
+        for second in lines[index + 1 :]
+    )
+
+
 def test_structured_table_requires_rectangular_bounded_data():
     from Backend.Core.france.nsi import NSIExercise
 
