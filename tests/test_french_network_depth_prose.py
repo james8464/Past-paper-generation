@@ -81,11 +81,44 @@ def test_routing_answers_and_marks_separate_trace_path_and_cost():
     assert "R3=7" in changed.answer
     assert "Station=15" in changed.answer
     assert "Station=11" in changed.answer
-    assert [credit.points for credit in changed.marking] == ["0.5", "0.5", "0.5"]
+    assert [credit.points for credit in changed.marking] == ["0.25"] * 6
+    assert sum("trace" in credit.criterion for credit in changed.marking) >= 3
     assert all(credit.criterion.strip() for credit in changed.marking)
     assert "P2" in exercise.questions[3].answer
     assert "A avant B" in exercise.questions[3].answer
     assert "n'authentifie pas" in exercise.questions[5].answer
+
+
+@pytest.mark.parametrize("seed", [270100, 270101, 270102])
+def test_network_rubric_splits_independent_steps_without_losing_credit(seed):
+    task = _tasks_for_seed_v15(seed)[2]
+    exercise = NSIExercise.model_validate(
+        render_network_depth_candidate(
+            build_network_depth_contract(seed), _selection(), task["question_blueprint"]
+        )
+    )
+    for question in exercise.questions:
+        assert all(credit.points == "0.25" for credit in question.marking)
+        assert all(" ; " not in credit.criterion for credit in question.marking)
+        assert sum(
+            (Decimal(credit.points) for credit in question.marking), Decimal()
+        ) == Decimal(question.points)
+
+
+def test_network_limit_question_requests_each_awarded_limit():
+    contract = build_network_depth_contract(270101)
+    task = _tasks_for_seed_v15(270101)[2]
+    for form in ("3f-q1", "3f-q2"):
+        selection = _selection()
+        selection["question_forms"]["3f"] = form
+        exercise = NSIExercise.model_validate(
+            render_network_depth_candidate(
+                contract, selection, task["question_blueprint"]
+            )
+        )
+        prompt = exercise.questions[-1].prompt.lower()
+        assert "station" in prompt
+        assert "terminal compromis" in prompt
 
 
 def test_selection_and_credit_tampering_are_rejected():

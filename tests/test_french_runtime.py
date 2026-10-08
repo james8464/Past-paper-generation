@@ -441,6 +441,13 @@ def test_runtime_publishes_v15_network_depth_with_locked_pdf_facts(
                 for word in page.get_text("words")
             )
             assert ("Accorder pour" in text) == correction
+            if correction:
+                normalized = " ".join(text.split())
+                assert "0,25 point" in normalized
+                assert "0,25 points" not in normalized
+                final_page = pdf[-1].get_text()
+                assert "3f." in final_page
+                assert "Barème indicatif" in final_page
 
     real_open = pymupdf.open
 
@@ -520,6 +527,36 @@ def test_runtime_publishes_v15_network_depth_with_locked_pdf_facts(
         "Crédit absent",
         True,
     )
+    with real_open(bundle / "corrige.pdf") as pdf:
+        pages = [page.get_text() for page in pdf]
+    misplaced_answer = exercise.questions[0].answer
+    assert sum(misplaced_answer in page for page in pages) == 1
+    pages = [page.replace(misplaced_answer, "Réponse omise", 1) for page in pages]
+    pages[-1] += "\n" + misplaced_answer
+    with monkeypatch.context() as patch:
+        patch.setattr(runtime.pymupdf, "open", lambda _: DocumentText(pages))
+        with pytest.raises(ValueError, match=r"answer|réponse|Réponse"):
+            runtime.validate_network_depth_contract_pdf(
+                bundle / "corrige.pdf",
+                contract,
+                correction=True,
+                exercise=exercise,
+            )
+    with real_open(bundle / "corrige.pdf") as pdf:
+        pages = [page.get_text() for page in pdf]
+    misplaced_criterion = exercise.questions[1].marking[0].criterion
+    assert sum(misplaced_criterion in page for page in pages) == 1
+    pages = [page.replace(misplaced_criterion, "Critère déplacé", 1) for page in pages]
+    pages[-1] += "\n" + misplaced_criterion
+    with monkeypatch.context() as patch:
+        patch.setattr(runtime.pymupdf, "open", lambda _: DocumentText(pages))
+        with pytest.raises(ValueError, match=r"credit|rubric|barème|Barème"):
+            runtime.validate_network_depth_contract_pdf(
+                bundle / "corrige.pdf",
+                contract,
+                correction=True,
+                exercise=exercise,
+            )
 
 
 def test_french_pdf_restores_roman_body_after_other_renderer_font_mapping(

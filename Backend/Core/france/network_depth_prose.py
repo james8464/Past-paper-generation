@@ -44,8 +44,8 @@ _QUESTIONS = {
         "Proposez les étapes de partage d'une clé de session sans secret préalable, puis son emploi pour les messages.",
     ),
     "3f": (
-        "Expliquez ce que protège ce protocole contre l'observateur passif et ce qu'il ne garantit pas sur l'identité de l'émetteur et les métadonnées.",
-        "Distinguez confidentialité des messages, authentification de l'émetteur et visibilité des métadonnées dans le cas donné.",
+        "Expliquez la confidentialité face à l'observateur passif, l'authentification de la station mais pas de l'émetteur, puis les limites concernant les métadonnées et un terminal compromis.",
+        "Distinguez confidentialité, authentification de la station et de l'émetteur, visibilité des métadonnées et effet d'un terminal compromis dans le cas donné.",
     ),
 }
 
@@ -167,35 +167,53 @@ def _answer(task_id: str, facts: dict) -> str:
 
 def _rubric(task_id: str, points: str, variant: int) -> list[dict]:
     criteria = {
-        "3a": ("les deux distances provisoires calculées depuis Central",),
+        "3a": (
+            "la distance provisoire Central–R1",
+            "la distance provisoire Central–R2",
+        ),
         "3b": (
             "la route initiale et son coût",
-            "la trace des distances provisoires après modification",
-            "la nouvelle route, son coût et la comparaison",
+            "la trace après fixation de Central",
+            "la trace après fixation de R1 et R2",
+            "la trace après fixation de R3 et Station",
+            "la nouvelle route minimale",
+            "son coût et la comparaison avec l'ancien trajet",
         ),
         "3c": ("les ressources détenues et attendues", "le cycle d'attente bloquant"),
         "3d": (
-            "l'arrêt de P2 et la reprise de P1",
-            "l'ordre A avant B empêchant le cycle",
+            "l'arrêt de P2 et la libération de B",
+            "la reprise et la fin de P1",
+            "le redémarrage possible de P2",
+            "l'ordre commun A avant B empêchant le cycle",
         ),
         "3e": (
-            "la clé publique authentifiée et le transport de la clé de session",
-            "le déchiffrement et l'emploi symétrique",
+            "la vérification de la clé publique authentifiée",
+            "la création d'une clé de session aléatoire",
+            "son chiffrement et son transport vers la station",
+            "son déchiffrement puis l'emploi symétrique",
         ),
         "3f": (
-            "la confidentialité face à l'observateur passif",
+            "la confidentialité de la clé de session face à l'observateur passif",
+            "la confidentialité des messages face à l'observateur passif",
             "l'absence d'authentification de l'émetteur",
-            "les métadonnées visibles et la limite du terminal compromis",
+            "la visibilité des métadonnées",
+            "la limite du terminal compromis",
+            "l'authentification de la station par sa clé publique",
         ),
     }[task_id]
-    if task_id == "3c" and points == "0.5":
-        criteria = (" ; ".join(criteria),)
+    if task_id == "3c" and points == "1":
+        criteria = (
+            "la ressource A détenue par P1",
+            "la ressource B détenue par P2",
+            "la ressource attendue par chaque processus",
+            "le cycle d'attente bloquant",
+        )
     elif task_id == "3f" and points == "1":
-        criteria = (criteria[0], criteria[1] + " ; " + criteria[2])
-    if len(criteria) != int(Decimal(points) * 2):
+        criteria = criteria[:4]
+    if len(criteria) != int(Decimal(points) * 4):
         raise ValueError("Network depth rubric and credit disagree")
     prefix = "Vérifier " if variant == 2 else "Accorder pour "
-    return [{"points": "0.5", "criterion": prefix + item} for item in criteria]
+    return [{"points": "0.25", "criterion": prefix + item} for item in criteria]
 
 
 def render_network_depth_candidate(

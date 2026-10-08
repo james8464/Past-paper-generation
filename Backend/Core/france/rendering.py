@@ -1,6 +1,7 @@
 """Provisional French paper layout measured from the 2026 Métropole NSI paper."""
 
 import re
+from decimal import Decimal
 from math import atan2, cos, pi, sin
 from pathlib import Path
 from xml.sax.saxutils import escape
@@ -222,8 +223,15 @@ def draw_cover_page(
     )
     centred("Durée de l’épreuve : 3 heures 30", 447, 11, regular_font)
     if correction:
-        centred("Document de travail pour la relecture pédagogique.", 515, 11, italic_font)
-        centred("Réponses et crédits à vérifier avant toute évaluation.", 560, 11, regular_font)
+        centred(
+            "Document de travail pour la relecture pédagogique.", 515, 11, italic_font
+        )
+        centred(
+            "Réponses et crédits à vérifier avant toute évaluation.",
+            560,
+            11,
+            regular_font,
+        )
     else:
         centred("L’usage de la calculatrice n’est pas autorisé.", 515, 11, italic_font)
         centred(
@@ -246,14 +254,16 @@ def draw_cover_page(
     )
     centred(
         "Trois exercices indépendants - corrigé proposé."
-        if correction else "Le sujet est composé de trois exercices indépendants.",
+        if correction
+        else "Le sujet est composé de trois exercices indépendants.",
         650,
         15,
         bold_font,
     )
     centred(
         "Barème et variantes à confirmer par un enseignant."
-        if correction else "Le candidat traite les trois exercices.",
+        if correction
+        else "Le candidat traite les trois exercices.",
         678,
         15,
         bold_font,
@@ -261,7 +271,8 @@ def draw_cover_page(
 
     canvas.setTitle(
         "NSI - corrigé proposé et barème indicatif"
-        if correction else "NSI - sujet d'entraînement non officiel"
+        if correction
+        else "NSI - sujet d'entraînement non officiel"
     )
     canvas.setAuthor("Paper Creator")
 
@@ -280,7 +291,10 @@ def render_assessment(
     mono = register_font("AQACourier", fallback="Courier")
     size = 16 if large_print else 12
     body = ParagraphStyle(
-        "NSIBody", fontName=regular, fontSize=size, leading=size * 1.25,
+        "NSIBody",
+        fontName=regular,
+        fontSize=size,
+        leading=size * 1.25,
         spaceAfter=6 if correction else 10,
     )
     heading = ParagraphStyle(
@@ -348,7 +362,8 @@ def render_assessment(
         bottomMargin=65,
         title=(
             "NSI - corrigé proposé et barème indicatif"
-            if correction else "NSI - sujet d'entraînement non officiel"
+            if correction
+            else "NSI - sujet d'entraînement non officiel"
         ),
         author="Paper Creator",
         pageCompression=1,
@@ -402,9 +417,7 @@ def render_assessment(
 
     def point_label(value: str) -> str:
         numeric = value.replace(".", ",")
-        return (
-            f"{numeric} point" if value in {"0.5", "1", "1.0"} else f"{numeric} points"
-        )
+        return f"{numeric} point" if Decimal(value) <= 1 else f"{numeric} points"
 
     if correction:
         paragraph("Consignes générales de correction", heading)
@@ -468,6 +481,7 @@ def render_assessment(
                 )
             )
         for question_index, question in enumerate(exercise.questions):
+            question_start = len(story)
             question_content(question.id, question.prompt)
             if correction:
                 story[-1].keepWithNext = True
@@ -505,6 +519,8 @@ def render_assessment(
                     )
                 )
                 story.append(marking_table)
+                if question.id == "3f":
+                    story[question_start:] = [KeepTogether(story[question_start:])]
                 if (
                     exercise_index < len(exercises) - 1
                     or question_index < len(exercise.questions) - 1

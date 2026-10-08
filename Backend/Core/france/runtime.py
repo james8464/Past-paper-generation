@@ -6,6 +6,7 @@ import re
 import shutil
 import signal
 import tempfile
+from decimal import Decimal
 from hashlib import sha256
 from pathlib import Path
 from urllib.parse import urlparse
@@ -469,19 +470,26 @@ def validate_network_depth_contract_pdf(
                 raise ValueError(f"Network depth role label {question.id} invalid")
         prompt = " ".join(question.prompt.split())
         answer = " ".join(question.answer.split())
-        if flat.count(prompt) != 1:
+        if question_text.count(prompt) != 1:
             raise ValueError(
                 f"Network depth prompt {question.id} missing or duplicated"
             )
-        if correction and answer not in flat:
+        if correction and answer not in question_text:
             raise ValueError(f"Network depth answer {question.id} missing")
         if not correction and answer in flat:
             raise ValueError(f"Network depth answer {question.id} leaked")
+        if correction:
+            for points in {credit.points for credit in question.marking}:
+                label = points.replace(".", ",")
+                unit = "point" if Decimal(points) <= 1 else "points"
+                expected_count = sum(
+                    credit.points == points for credit in question.marking
+                )
+                if question_text.count(f"{label} {unit}") != expected_count:
+                    raise ValueError(f"Network depth credit {question.id} missing")
         for credit in question.marking:
             criterion = " ".join(credit.criterion.split())
-            label = credit.points.replace(".", ",")
-            unit = "point" if credit.points in {"0.5", "1", "1.0"} else "points"
-            if correction and f"{label} {unit} {criterion}" not in flat:
+            if correction and question_text.count(criterion) != 1:
                 raise ValueError(f"Network depth credit {question.id} missing")
             if not correction and criterion in flat:
                 raise ValueError(f"Network depth rubric {question.id} leaked")

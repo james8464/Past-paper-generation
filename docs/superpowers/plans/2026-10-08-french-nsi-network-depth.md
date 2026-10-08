@@ -53,6 +53,8 @@
 
 **Interfaces:** Runtime defaults to v15. `validate_network_depth_contract_pdf(...)` checks every app-owned edge, change, process/security premise, question/credit label and role-specific rubric; v14 validator remains available. Benchmark pins v15 contract, prose, model, source and artifact identities, while accepting preserved v14 records as historical evidence, never as a v15 pass.
 
+**Fidelity ruling (8 October):** In the official 2026 Métropole written paper, `Exercice 1 (6 points)` carries the exercise credit, while its numbered questions do not print individual tariffs. Keep the candidate's exercise-level total and question identifiers in that pattern; print exact per-criterion credit in the proposed correction. “Question/credit label” here means those two role-appropriate checks, not adding per-question tariffs to the candidate PDF.
+
 - [ ] Write RED tests for runtime dispatch, actual normal/large-print PDF text and bounds, no leaked rubric, benchmark identity and old package replay.
 - [ ] Implement dispatch and checks; run focused tests GREEN, full pytest, Python lint, macOS build/tests where affected; visually inspect every generated test PDF with the PDF skill; commit.
 
