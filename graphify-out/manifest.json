@@ -2848,5 +2848,25 @@
     "mtime": 1791473082.9552329,
     "ast_hash": "755c0ca10f30a994c74ed2ee79348a69",
     "semantic_hash": ""
+  },
+  "Backend/Core/france/graph_tree_depth_contract.py": {
+    "mtime": 1791486671.916812,
+    "ast_hash": "3d0475cae5e2a2f1a8cd56ff4d3f2db9",
+    "semantic_hash": ""
+  },
+  "tests/test_french_graph_tree_depth_contract.py": {
+    "mtime": 1791486671.9170277,
+    "ast_hash": "7638af98134578240e8c787715bf3791",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-08-french-nsi-graph-tree-depth.md": {
+    "mtime": 1791486553.5590158,
+    "ast_hash": "29aa9c97797893f1652583a71aeec169",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-08-french-nsi-graph-tree-depth-design.md": {
+    "mtime": 1791486553.5587938,
+    "ast_hash": "7c2406131458fd38e08b6d0c1158baf2",
+    "semantic_hash": ""
   }
 }

@@ -36,7 +36,7 @@
 
 **Interfaces:** `GraphTreeDepthContract.from_dict(data: dict) -> GraphTreeDepthContract`, `build_graph_tree_depth_contract(seed: int) -> GraphTreeDepthContract`, `to_dict() -> dict`, `digest -> str`. The canonical JSON has `version: 3`, `seed`, `exercise_id: "1"`, `task_ids: [1a…1j]`, base graph/tree and fixed faulty BFS/BST-search code, and deterministic `expected` keyed by all ten IDs. `from_dict` recomputes from seed and rejects changed content.
 
-- [ ] Write failing tests for seed determinism, ten IDs, hand-checked chain sum, Dijkstra first two settled rows/predecessors, BFS first two queue states, typo and insertion/inorder/search correction, and tampered content/seed rejection.
+- [ ] Write failing tests for seed determinism, ten IDs, hand-checked A–C–E–F detour sum, Dijkstra first two settled rows/predecessors, BFS first two queue states, typo and insertion/inorder/search correction, and tampered content/seed rejection.
 - [ ] Run focused tests RED.
 - [ ] Implement the V3 constructor using only fixed app-owned snippets and algorithms; leave the V2 contract untouched.
 - [ ] Run focused tests GREEN and existing V2 tests; review and commit Task 1.

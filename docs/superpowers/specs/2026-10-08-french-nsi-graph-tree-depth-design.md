@@ -23,9 +23,9 @@ for package replay. V17 alone uses ten questions, `1a`–`1j`, in three parts:
 
 | Part | Questions | Required reasoning |
 |---|---|---|
-| A · weighted graph | 1a–1d | Read neighbours/degree and incident costs; add the weights of the displayed chain A–B–C–D–E–F; trace initial Dijkstra relaxations with predecessors; derive and justify the minimum A–F route. |
+| A · weighted graph | 1a–1d | Read neighbours/degree and incident costs; add the weights of the displayed detour A–C–E–F; trace initial Dijkstra relaxations with predecessors; derive and justify the minimum A–F route. |
 | B · breadth-first traversal | 1e–1g | Show queue/visited state after two dequeues; identify and repair the fixed `visin` NameError; give the corrected full visit order and explain why marking visited before enqueue prevents repeats. |
-| C · binary search tree | 1h–1j | Trace insertion and identify the child position; compute inorder after insertion; correct a fixed one-line comparison error in an app-owned BST search function and explain the ordering invariant. |
+| C · binary search tree | 1h–1j | Trace insertion and identify the child position; compute inorder after insertion; correct a fixed one-line comparison error in an app-owned BST search function, then trace a search for the inserted key and explain the ordering invariant. |
 
 The displayed graph remains six vertices and nine weighted edges; the BST
 remains five keys plus an insertion key. The contract derives every expected
