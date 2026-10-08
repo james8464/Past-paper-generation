@@ -556,6 +556,11 @@ def render_assessment(
             question_content(question.id, question.prompt)
             if (
                 not correction
+                and question.verification.get("kind") == "database_depth_contract"
+            ):
+                story[question_start:] = [KeepTogether(story[question_start:])]
+            if (
+                not correction
                 and question.id == "3f"
                 and question.verification.get("kind") == "network_depth_contract"
                 and final_network_pair_start is not None

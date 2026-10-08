@@ -453,6 +453,14 @@ def test_runtime_publishes_v16_database_depth_with_locked_pdf_facts(
     subject = bundle / "sujet.pdf"
     with pymupdf.open(subject) as pdf:
         extracted = [page.get_text() for page in pdf]
+    if large_print:
+        prompt_words = exercise.questions[4].prompt.split()
+        opening = " ".join(prompt_words[:5])
+        ending = " ".join(prompt_words[-5:])
+        normalized_pages = [" ".join(page.split()) for page in extracted]
+        assert any(opening in page and ending in page for page in normalized_pages), (
+            "Question 2e must not split across large-print pages"
+        )
 
     class ExtractedDocument:
         def __init__(self, pages):
