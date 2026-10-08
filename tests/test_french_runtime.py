@@ -559,6 +559,44 @@ def test_runtime_publishes_v15_network_depth_with_locked_pdf_facts(
             )
 
 
+def test_network_depth_correction_sets_dijkstra_steps_on_separate_lines(tmp_path):
+    import re
+
+    import pymupdf
+
+    from Backend.Core.france.network_depth_contract import build_network_depth_contract
+    from Backend.Core.france.network_depth_prose import render_network_depth_candidate
+    from Backend.Core.france.nsi import NSIExercise
+    from Backend.Core.france.pipeline import _tasks_for_seed_v15
+    from Backend.Core.france.rendering import render_assessment
+    from Backend.Core.france.runtime import validate_network_depth_contract_pdf
+
+    seed = 270100
+    contract = build_network_depth_contract(seed)
+    selection = {
+        "scene_id": "terrain",
+        "question_forms": {f"3{letter}": f"3{letter}-q1" for letter in "abcdef"},
+        "rubric_forms": {f"3{letter}": f"3{letter}-r1" for letter in "abcdef"},
+    }
+    exercise = NSIExercise.model_validate(
+        render_network_depth_candidate(
+            contract, selection, _tasks_for_seed_v15(seed)[2]["question_blueprint"]
+        )
+    )
+    path = tmp_path / "correction.pdf"
+    render_assessment(path, [exercise], correction=True)
+    validate_network_depth_contract_pdf(
+        path, contract, correction=True, exercise=exercise
+    )
+    with pymupdf.open(path) as pdf:
+        text = "\n".join(page.get_text() for page in pdf)
+    for step in contract.to_dict()["expected"]["after"]["trace"]:
+        assert re.search(
+            rf"(?m)^{re.escape(step['settled'])}\({step['distance']}\):",
+            text,
+        )
+
+
 def test_french_pdf_restores_roman_body_after_other_renderer_font_mapping(
     tmp_path, monkeypatch
 ):
