@@ -118,6 +118,17 @@ an orphaned final question and presentation/depth gaps against the official
 2026 reference. This is an engineering checkpoint, not model selection or
 educational qualification. Earlier failures and the v15 hold remain retained.
 
+Protected PR #44 added a versioned ten-question database sequence. The next
+[source-pinned V16 live diagnostic](quality/french-nsi-v16-live-diagnostic-2026-10-08.md)
+passed automated checks on its first attempt, and every page of its seven-page
+subject and twelve-page proposed correction was inspected. The subject now has
+22 questions, but the database questions occupy one page and the final network
+page remains sparse, versus 36 questions across 16 pages in the official 2026
+comparator. Two correction rubrics also break onto the next page. Product fidelity
+therefore remains **on hold**; neither live pass is a model recommendation or
+teacher validation. The v17 and v15 holds and earlier failed attempts remain
+separate evidence.
+
 ## Genuine Occitanie scenario — PLANNED
 
 A teacher generates and checks a paper on a Mac; students receive a PDF through
