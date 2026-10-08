@@ -114,6 +114,8 @@ def _accepted_payload(
     if (
         manifest.get("assessment") != ASSESSMENT
         or manifest.get("status") != "unreviewed_draft"
+        or manifest.get("reference_index_sha256")
+        != identity.get("reference_index_sha256")
     ):
         return False
     manifest_identity = manifest.get("identity")

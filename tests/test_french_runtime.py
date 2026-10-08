@@ -68,6 +68,9 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
                 == artifact["sha256"]
             )
         assert manifest["status"] == "unreviewed_draft"
+        assert (
+            manifest["reference_index_sha256"] == sha256(index.read_bytes()).hexdigest()
+        )
         assert manifest["identity"]["prompt_version"] == "fr-nsi-written-2027-v14"
         import pymupdf
 
@@ -486,7 +489,31 @@ def test_runtime_publishes_v15_network_depth_with_locked_pdf_facts(
         "capteur signe tous les messages",
         False,
     )
+    reject_text_change(
+        "sujet.pdf",
+        "restent inchangés",
+        "changent aussi",
+        False,
+    )
+    reject_text_change(
+        "corrige.pdf",
+        "prévue arrête P2, qui libère B",
+        "prévue arrête P2 sans libération explicite",
+        True,
+    )
     reject_text_change("sujet.pdf", "3b.", "3x.", False)
+    reject_text_change(
+        "corrige.pdf",
+        "Réponse attendue\nCentral–R1",
+        "Réponse proposée\nCentral–R1",
+        True,
+    )
+    reject_text_change(
+        "sujet.pdf",
+        "3f.",
+        "Barème indicatif\n3f.",
+        False,
+    )
     reject_text_change(
         "corrige.pdf",
         exercise.questions[1].marking[0].criterion,

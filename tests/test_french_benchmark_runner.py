@@ -90,6 +90,7 @@ def _passed_result(tmp_path):
                 "assessment": "fr-bac-general-nsi-written-2027",
                 "status": "unreviewed_draft",
                 "identity": manifest_identity,
+                "reference_index_sha256": identity["reference_index_sha256"],
                 "artifacts": artifacts,
                 "large_print": False,
                 "teacher_review": "not_run",
@@ -197,6 +198,22 @@ def test_french_benchmark_resume_rejects_missing_v15_network_identity(tmp_path):
         package.read_bytes()
     ).hexdigest()
     manifest.write_text(json.dumps(manifest_value))
+    result_value = json.loads(result.read_text())
+    result_value["artifacts"]["manifest_sha256"] = sha256(
+        manifest.read_bytes()
+    ).hexdigest()
+    result.write_text(json.dumps(result_value))
+    assert not accepted_result(result, identity)
+
+
+def test_french_benchmark_rejects_manifest_from_other_reference_index(tmp_path):
+    from tools.french_nsi_benchmark import accepted_result
+
+    result, identity, bundle = _passed_result(tmp_path)
+    manifest = bundle / "manifest.json"
+    value = json.loads(manifest.read_text())
+    value["reference_index_sha256"] = "different-reference-sha"
+    manifest.write_text(json.dumps(value))
     result_value = json.loads(result.read_text())
     result_value["artifacts"]["manifest_sha256"] = sha256(
         manifest.read_bytes()

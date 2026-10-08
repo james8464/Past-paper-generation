@@ -6,6 +6,7 @@ import re
 import shutil
 import signal
 import tempfile
+from hashlib import sha256
 from pathlib import Path
 from urllib.parse import urlparse
 from urllib.request import Request
@@ -391,6 +392,15 @@ def validate_network_depth_contract_pdf(
     heading = f"Exercice 3 ({exercise.target_points.replace('.', ',')} points)"
     if text.count(heading) != 1:
         raise ValueError("Network depth exercise credit differs from blueprint")
+    titles = (
+        "Sept liaisons bidirectionnelles et coûts initiaux",
+        "État simultané des processus",
+    )
+    if text.count(titles[0]) != 1:
+        raise ValueError("Network depth case material missing")
+    case_context = " ".join(
+        text.split(heading + "\n", 1)[1].split("\n" + titles[0], 1)[0].split()
+    )
     for task_id in data["task_ids"]:
         if (
             sum(
@@ -402,6 +412,7 @@ def validate_network_depth_contract_pdf(
             raise ValueError(f"Network depth question {task_id} missing or duplicated")
     for premise in (
         f"R1–R3 passe de {data['links'][2][2]} à {data['change']['new_cost']}",
+        "les autres coûts restent inchangés",
         "P2, qui libère B",
         "A avant B",
         "Aucun secret n'est partagé au départ",
@@ -410,7 +421,7 @@ def validate_network_depth_contract_pdf(
         "capteur n'appose pas de signature",
         "observateur est passif",
     ):
-        if premise not in flat:
+        if premise not in case_context:
             raise ValueError("Network depth premise missing from PDF")
     materials = exercise.materials
     expected_rows = [
@@ -424,10 +435,6 @@ def validate_network_depth_contract_pdf(
             for name in ("P1", "P2")
         ],
     ]
-    titles = (
-        "Sept liaisons bidirectionnelles et coûts initiaux",
-        "État simultané des processus",
-    )
     columns = (
         ("Extrémité 1", "Extrémité 2", "Coût"),
         ("Processus", "Ressource détenue", "Ressource attendue"),
@@ -449,7 +456,17 @@ def validate_network_depth_contract_pdf(
         expected = list(material.columns) + [cell for row in rows for cell in row]
         if printed != expected:
             raise ValueError("Network depth table rows differ from contract")
-    for question in exercise.questions:
+    for index, question in enumerate(exercise.questions):
+        start = text.index("\n" + question.id + ".")
+        end = (
+            text.index("\n" + exercise.questions[index + 1].id + ".")
+            if index + 1 < len(exercise.questions)
+            else len(text)
+        )
+        question_text = " ".join(text[start:end].split())
+        for label in ("Réponse attendue", "Barème indicatif"):
+            if question_text.count(label) != int(correction):
+                raise ValueError(f"Network depth role label {question.id} invalid")
         prompt = " ".join(question.prompt.split())
         answer = " ".join(question.answer.split())
         if flat.count(prompt) != 1:
@@ -526,6 +543,7 @@ def handle_generate_assessment(args) -> int:
             raise ValueError(
                 "Le catalogue de références manque. Préparez les sources françaises avant de créer un sujet."
             )
+        reference_index_sha256 = sha256(args.reference_index.read_bytes()).hexdigest()
         validate_endpoint(
             args.ollama_url, allow_remote=getattr(args, "allow_remote", False)
         )
@@ -556,8 +574,7 @@ def handle_generate_assessment(args) -> int:
         graph_tree_contract = build_graph_tree_contract(args.seed, "1")
         database_contract = build_database_contract(args.seed)
         network_depth = (
-            network_pdf_contract_version(package["identity"]["prompt_version"])
-            == "v15"
+            network_pdf_contract_version(package["identity"]["prompt_version"]) == "v15"
         )
         network_contract = (
             build_network_depth_contract(args.seed)
@@ -608,8 +625,6 @@ def handle_generate_assessment(args) -> int:
             paths[role] = path
         atomic_json(staging / "assessment.json", package)
         paths["assessment_package"] = staging / "assessment.json"
-        from hashlib import sha256
-
         artifacts = {
             role: {"file": path.name, "sha256": sha256(path.read_bytes()).hexdigest()}
             for role, path in paths.items()
@@ -622,6 +637,7 @@ def handle_generate_assessment(args) -> int:
                 "status": "unreviewed_draft",
                 "artifacts": artifacts,
                 "identity": package["identity"],
+                "reference_index_sha256": reference_index_sha256,
                 "large_print": args.large_print,
                 "teacher_review": "not_run",
                 "empirical_calibration": "not_run",
@@ -636,6 +652,13 @@ def handle_generate_assessment(args) -> int:
         if implementation_identity() != package["identity"]["implementation_sha256"]:
             raise ValueError(
                 "Le programme a changé pendant la génération; publication refusée"
+            )
+        if (
+            sha256(args.reference_index.read_bytes()).hexdigest()
+            != reference_index_sha256
+        ):
+            raise ValueError(
+                "Les références ont changé pendant la génération; publication refusée"
             )
         destination = output / f"nsi-2027-{args.seed}-{digest(artifacts)[:12]}"
         if destination.exists():
