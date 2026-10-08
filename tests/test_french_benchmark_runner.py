@@ -6,10 +6,10 @@ from hashlib import sha256
 import pytest
 
 from Backend.Core.education_context import NSI_2027
-from Backend.Core.france.database_contract import build_database_contract
-from Backend.Core.france.database_prose import (
-    DATABASE_PROSE_VERSION,
-    database_catalogue_digest,
+from Backend.Core.france.database_depth_contract import build_database_depth_contract
+from Backend.Core.france.database_depth_prose import (
+    DATABASE_DEPTH_PROSE_VERSION,
+    database_depth_catalogue_digest,
 )
 from Backend.Core.france.graph_tree_prose import (
     PROSE_CONTRACT_VERSION,
@@ -26,7 +26,7 @@ from Backend.Core.france.network_prose import (
     network_catalogue_digest,
 )
 from Backend.Core.france.pipeline import (
-    CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
+    CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
 )
 
@@ -43,12 +43,12 @@ def _passed_result(tmp_path):
     bundle.mkdir()
     manifest_identity = {
         "assessment": asdict(NSI_2027),
-        "prompt_version": CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
+        "prompt_version": CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
         "prose_contract_version": PROSE_CONTRACT_VERSION,
         "prose_catalogue_sha256": prose_catalogue_digest(),
-        "database_contract_sha256": build_database_contract(270100).digest,
-        "database_prose_contract_version": DATABASE_PROSE_VERSION,
-        "database_prose_catalogue_sha256": database_catalogue_digest(),
+        "database_depth_contract_sha256": build_database_depth_contract(270100).digest,
+        "database_depth_prose_contract_version": DATABASE_DEPTH_PROSE_VERSION,
+        "database_depth_prose_catalogue_sha256": database_depth_catalogue_digest(),
         "network_depth_contract_sha256": build_network_depth_contract(270100).digest,
         "network_depth_prose_contract_version": NETWORK_DEPTH_PROSE_VERSION,
         "network_depth_prose_catalogue_sha256": network_depth_catalogue_digest(),

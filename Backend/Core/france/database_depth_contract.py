@@ -41,9 +41,12 @@ _CORRECT_SQL = (
     _SELECT_PREFIX + "incident.id_cat = categorie.id_cat\nORDER BY incident.id_incident"
 )
 _GROUP_SQL = (
-    "SELECT categorie.id_cat, categorie.libelle, COUNT(incident.id_incident)\n"
-    "FROM categorie LEFT JOIN incident ON incident.id_cat = categorie.id_cat\n"
-    "GROUP BY categorie.id_cat, categorie.libelle\nORDER BY categorie.id_cat"
+    "SELECT categorie.id_cat, categorie.libelle,\n"
+    "       COUNT(incident.id_incident)\n"
+    "FROM categorie\nLEFT JOIN incident\n"
+    "    ON incident.id_cat = categorie.id_cat\n"
+    "GROUP BY categorie.id_cat, categorie.libelle\n"
+    "ORDER BY categorie.id_cat"
 )
 _UPDATE_SQL = "UPDATE incident SET statut = 'clos'\nWHERE id_incident = 101"
 _FAULTY_PYTHON = (

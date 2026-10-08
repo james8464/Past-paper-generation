@@ -20,6 +20,10 @@ from Backend.Core.france.database_contract import (
     DatabaseContract,
     build_database_contract,
 )
+from Backend.Core.france.database_depth_contract import (
+    DatabaseDepthContract,
+    build_database_depth_contract,
+)
 from Backend.Core.france.graph_tree_binding import canonical_answer, graph_edge_manifest
 from Backend.Core.france.graph_tree_contract import (
     GraphTreeContract,
@@ -34,6 +38,7 @@ from Backend.Core.france.network_depth_contract import (
 )
 from Backend.Core.france.nsi import NSIExercise
 from Backend.Core.france.pipeline import (
+    CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
     atomic_json,
@@ -289,6 +294,83 @@ def validate_database_contract_pdf(
                 raise ValueError(f"Database rubric {question.id} leaked into paper")
 
 
+def validate_database_depth_contract_pdf(
+    path: Path,
+    contract: DatabaseDepthContract,
+    *,
+    correction: bool,
+    exercise: NSIExercise,
+) -> None:
+    """Fail closed on missing V2 facts, ten tasks, answers or rubric credits."""
+    data = contract.to_dict()
+    if exercise.id != "2" or [q.id for q in exercise.questions] != data["task_ids"]:
+        raise ValueError("Database depth exercise does not match its contract")
+    with pymupdf.open(path) as pdf:
+        lines = [
+            line.strip()
+            for page in pdf
+            for line in page.get_text().splitlines()
+            if line.strip()
+            and not line.startswith("Paper Creator —")
+            and not line.startswith("Page : ")
+        ]
+    text = "\n".join(lines)
+    flat = " ".join(text.split())
+    heading = f"Exercice 2 ({exercise.target_points.replace('.', ',')} points)"
+    if text.count(heading) != 1:
+        raise ValueError("Database depth exercise credit differs from blueprint")
+    for task_id in data["task_ids"]:
+        if (
+            sum(
+                bool(re.match(rf"^{re.escape(task_id)}\.(?:\s|$)", line))
+                for line in lines
+            )
+            != 1
+        ):
+            raise ValueError(
+                f"Database depth question label {task_id} missing or duplicated"
+            )
+    materials = database_materials(contract)
+    headers = [f"{item['title']} — {item['id']}" for item in materials]
+    for index, material in enumerate(materials):
+        header = headers[index]
+        following = headers[index + 1] if index < 2 else "2a."
+        if text.count(header) != 1 or following not in text:
+            raise ValueError("Database depth table heading missing")
+        printed = (
+            text.split(header + "\n", 1)[1].split("\n" + following, 1)[0].splitlines()
+        )
+        expected = list(material["columns"]) + [
+            cell for row in material["rows"] for cell in row
+        ]
+        if printed != expected:
+            raise ValueError("Database depth table rows differ from locked facts")
+    for source in (data["faulty_sql"], data["faulty_python"]):
+        if " ".join(source.split()) not in flat:
+            raise ValueError("Database depth SQL or Python source missing")
+    for question in exercise.questions:
+        prompt = " ".join(question.prompt.split())
+        if flat.count(prompt) != 1:
+            raise ValueError(
+                f"Database depth prompt {question.id} missing or duplicated"
+            )
+        answer = " ".join(re.sub(r"```(?:sql|python)?", " ", question.answer).split())
+        if correction and answer not in flat:
+            raise ValueError(f"Database depth answer {question.id} missing")
+        if not correction and answer in flat:
+            raise ValueError(f"Database depth answer {question.id} leaked into paper")
+        for credit in question.marking:
+            criterion = " ".join(credit.criterion.split())
+            label = credit.points.replace(".", ",")
+            unit = "point" if credit.points in {"0.5", "1", "1.0"} else "points"
+            if correction and f"{label} {unit} {criterion}" not in flat:
+                raise ValueError(f"Database depth credit {question.id} missing")
+            if not correction and criterion in flat:
+                raise ValueError(
+                    f"Database depth rubric {question.id} leaked into paper"
+                )
+
+
 def validate_network_contract_pdf(
     path: Path,
     contract: NetworkContract,
@@ -529,11 +611,25 @@ def load_originality_history(output: Path) -> list[str]:
 
 def network_pdf_contract_version(prompt_version: str) -> str:
     """Never silently render an unknown French package with an older validator."""
-    if prompt_version == CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION:
+    if prompt_version in {
+        CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
+        CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
+    }:
         return "v15"
     if prompt_version == CONTROLLED_NETWORK_PROMPT_VERSION:
         return "v14"
     raise ValueError("Version de contrat réseau incompatible avec le PDF")
+
+
+def database_pdf_contract_version(prompt_version: str) -> str:
+    if prompt_version == CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION:
+        return "v2"
+    if prompt_version in {
+        CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
+        CONTROLLED_NETWORK_PROMPT_VERSION,
+    }:
+        return "v1"
+    raise ValueError("Version de contrat de base de données incompatible avec le PDF")
 
 
 def handle_generate_assessment(args) -> int:
@@ -574,13 +670,20 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v15",
+            contract_authoring_version="v16",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
         exercises = [NSIExercise.model_validate(item) for item in package["exercises"]]
         graph_tree_contract = build_graph_tree_contract(args.seed, "1")
-        database_contract = build_database_contract(args.seed)
+        database_depth = (
+            database_pdf_contract_version(package["identity"]["prompt_version"]) == "v2"
+        )
+        database_contract = (
+            build_database_depth_contract(args.seed)
+            if database_depth
+            else build_database_contract(args.seed)
+        )
         network_depth = (
             network_pdf_contract_version(package["identity"]["prompt_version"]) == "v15"
         )
@@ -613,7 +716,12 @@ def handle_generate_assessment(args) -> int:
                 correction=correction,
                 exercise=exercises[0],
             )
-            validate_database_contract_pdf(
+            database_validator = (
+                validate_database_depth_contract_pdf
+                if database_depth
+                else validate_database_contract_pdf
+            )
+            database_validator(
                 path,
                 database_contract,
                 correction=correction,

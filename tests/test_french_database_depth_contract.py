@@ -44,6 +44,17 @@ def test_database_depth_case_has_ten_tasks_and_hand_checked_sql_facts():
     assert data["expected"]["closed_after_update"] == 3
     assert data["expected"]["empty_closed_count"] == 0
     assert data["expected"]["faulty_join"] != data["expected"]["correct_join"]
+    assert all(
+        max(map(len, data[field].splitlines())) <= 46
+        for field in (
+            "faulty_sql",
+            "correct_sql",
+            "group_sql",
+            "update_sql",
+            "faulty_python",
+            "correct_python",
+        )
+    )
 
 
 def test_database_depth_seed_and_canonical_digest_are_stable():
@@ -81,3 +92,19 @@ def test_database_depth_rejects_non_integer_seed_and_wrong_exercise():
         build_database_depth_contract(True)
     with pytest.raises(ValueError):
         build_database_depth_contract(270100, "1")
+
+
+def test_database_depth_deterministic_verifier_rejects_changed_expected_result():
+    from Backend.Core.france.verification import verify_contract
+
+    data = build_database_depth_contract(270100).to_dict()
+    claim = {
+        "kind": "database_depth_contract",
+        "contract": data,
+        "task_id": "2f",
+        "expected": data["expected"],
+    }
+    assert verify_contract(claim)["state"] == "passed"
+    tampered = deepcopy(claim)
+    tampered["expected"]["closed_before"] = 99
+    assert verify_contract(tampered)["state"] == "failed"

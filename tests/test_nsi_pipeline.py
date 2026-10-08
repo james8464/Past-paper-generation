@@ -588,6 +588,94 @@ class ControlledNetworkDepthFrenchClient(ControlledNetworkFrenchClient):
         return super().generate_json(prompt)
 
 
+class ControlledDatabaseDepthFrenchClient(ControlledNetworkDepthFrenchClient):
+    def generate_json(self, prompt):
+        if prompt.startswith("Sélectionne l'exercice 2 v16"):
+            return {
+                "scene_id": "atelier",
+                "question_forms": {
+                    f"2{letter}": f"2{letter}-q1" for letter in "abcdefghij"
+                },
+                "rubric_forms": {
+                    f"2{letter}": f"2{letter}-r1" for letter in "abcdefghij"
+                },
+            }
+        return super().generate_json(prompt)
+
+
+def test_v16_database_depth_package_replays_with_exact_credit(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import (
+        _tasks_for_seed_v16,
+        digest,
+        generate_assessment,
+        validate_package,
+    )
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    blueprint = _tasks_for_seed_v16(270100)
+    assert [item["id"] for item in blueprint[1]["question_blueprint"]] == [
+        f"2{letter}" for letter in "abcdefghij"
+    ]
+    assert (
+        sum(item["estimated_minutes"] for item in blueprint[1]["question_blueprint"])
+        == 70
+    )
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledDatabaseDepthFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "v16-checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v16",
+    )
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v16"
+    assert package["identity"]["database_depth_contract_sha256"]
+    assert len(package["exercises"][1]["questions"]) == 10
+    assert (
+        sum(float(exercise["target_points"]) for exercise in package["exercises"]) == 18
+    )
+    assert package["language_points"] == "2"
+    assert package["evidence"][1]["database_depth_selection"]["accepted"]["response"]
+    assert validate_package(package)["structural_checks"] == "passed"
+    changed = deepcopy(package)
+    changed["exercises"][1]["questions"][0]["answer"] = "Une réponse inventée."
+    changed["content_sha256"] = digest(changed["exercises"])
+    changed["evidence"][1]["exercise_sha256"] = digest(changed["exercises"][1])
+    with pytest.raises(ValueError):
+        validate_package(changed)
+
+
+def test_v15_checkpoint_cannot_resume_as_v16_and_old_package_still_replays(tmp_path):
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "preserve-v15.json"
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledNetworkDepthFrenchClient(),
+        seed=270100,
+        checkpoint=checkpoint,
+        contract_graph_tree=True,
+        contract_authoring_version="v15",
+    )
+    original = checkpoint.read_bytes()
+    with pytest.raises(ValueError, match="identité"):
+        generate_assessment(
+            index_path=index,
+            client=ControlledDatabaseDepthFrenchClient(),
+            seed=270100,
+            checkpoint=checkpoint,
+            contract_graph_tree=True,
+            contract_authoring_version="v16",
+        )
+    assert checkpoint.read_bytes() == original
+    assert validate_package(package)["structural_checks"] == "passed"
+
+
 def test_v15_network_depth_package_has_exact_credit_and_replays(tmp_path):
     from copy import deepcopy
 
