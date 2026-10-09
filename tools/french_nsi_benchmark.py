@@ -35,6 +35,10 @@ from Backend.Core.france.database_depth_prose import (  # noqa: E402
     DATABASE_DEPTH_PROSE_VERSION,
     database_depth_catalogue_digest,
 )
+from Backend.Core.france.database_reasoning_prose import (  # noqa: E402
+    DATABASE_REASONING_PROSE_VERSION,
+    database_reasoning_catalogue_digest,
+)
 from Backend.Core.france.graph_tree_depth_contract import (  # noqa: E402
     build_graph_tree_depth_contract,
 )
@@ -62,6 +66,7 @@ from Backend.Core.france.network_reasoning_prose import (  # noqa: E402
 )
 from Backend.Core.france.pipeline import (  # noqa: E402
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
+    CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
 )
@@ -154,20 +159,42 @@ def _accepted_payload(
             CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
             CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
             CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
+            CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
         }
         or manifest_identity.get("database_depth_contract_sha256")
         != build_database_depth_contract(identity["seed"]).digest
-        or manifest_identity.get("database_depth_prose_contract_version")
-        != DATABASE_DEPTH_PROSE_VERSION
-        or manifest_identity.get("database_depth_prose_catalogue_sha256")
-        != database_depth_catalogue_digest()
         or manifest_identity.get("provider") != "ollama"
     ):
         return False
     if (
         manifest_identity["prompt_version"]
-        == CONTROLLED_NETWORK_REASONING_PROMPT_VERSION
+        == CONTROLLED_DATABASE_REASONING_PROMPT_VERSION
     ):
+        if (
+            manifest_identity.get("database_reasoning_prose_contract_version")
+            != DATABASE_REASONING_PROSE_VERSION
+            or manifest_identity.get("database_reasoning_prose_catalogue_sha256")
+            != database_reasoning_catalogue_digest()
+            or any(
+                field in manifest_identity
+                for field in (
+                    "database_depth_prose_contract_version",
+                    "database_depth_prose_catalogue_sha256",
+                )
+            )
+        ):
+            return False
+    elif (
+        manifest_identity.get("database_depth_prose_contract_version")
+        != DATABASE_DEPTH_PROSE_VERSION
+        or manifest_identity.get("database_depth_prose_catalogue_sha256")
+        != database_depth_catalogue_digest()
+    ):
+        return False
+    if manifest_identity["prompt_version"] in {
+        CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
+        CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
+    }:
         if (
             manifest_identity.get("network_reasoning_contract_sha256")
             != build_network_reasoning_contract(identity["seed"]).digest
@@ -197,6 +224,7 @@ def _accepted_payload(
     if manifest_identity["prompt_version"] in {
         CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
         CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
+        CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
     }:
         if (
             manifest_identity.get("graph_tree_depth_contract_sha256")

@@ -11,6 +11,10 @@ from Backend.Core.france.database_depth_prose import (
     DATABASE_DEPTH_PROSE_VERSION,
     database_depth_catalogue_digest,
 )
+from Backend.Core.france.database_reasoning_prose import (
+    DATABASE_REASONING_PROSE_VERSION,
+    database_reasoning_catalogue_digest,
+)
 from Backend.Core.france.graph_tree_depth_contract import (
     build_graph_tree_depth_contract,
 )
@@ -41,13 +45,14 @@ from Backend.Core.france.network_reasoning_prose import (
 )
 from Backend.Core.france.pipeline import (
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
+    CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
     CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
 )
 
 
-def _passed_result(tmp_path, *, v17=False, v18=False):
+def _passed_result(tmp_path, *, v17=False, v18=False, v19=False):
     identity = {
         "implementation": "implementation-sha",
         "reference_index_sha256": "reference-sha",
@@ -60,7 +65,9 @@ def _passed_result(tmp_path, *, v17=False, v18=False):
     manifest_identity = {
         "assessment": asdict(NSI_2027),
         "prompt_version": (
-            CONTROLLED_NETWORK_REASONING_PROMPT_VERSION
+            CONTROLLED_DATABASE_REASONING_PROMPT_VERSION
+            if v19
+            else CONTROLLED_NETWORK_REASONING_PROMPT_VERSION
             if v18
             else CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION
             if v17
@@ -78,7 +85,14 @@ def _passed_result(tmp_path, *, v17=False, v18=False):
         "blueprint": [],
         "originality_history_digest": "history-sha",
     }
-    if v18:
+    if v19:
+        del manifest_identity["database_depth_prose_contract_version"]
+        del manifest_identity["database_depth_prose_catalogue_sha256"]
+        manifest_identity.update(
+            database_reasoning_prose_contract_version=DATABASE_REASONING_PROSE_VERSION,
+            database_reasoning_prose_catalogue_sha256=database_reasoning_catalogue_digest(),
+        )
+    if v18 or v19:
         manifest_identity.update(
             network_reasoning_contract_sha256=build_network_reasoning_contract(
                 270100
@@ -92,7 +106,7 @@ def _passed_result(tmp_path, *, v17=False, v18=False):
             network_depth_prose_contract_version=NETWORK_DEPTH_PROSE_VERSION,
             network_depth_prose_catalogue_sha256=network_depth_catalogue_digest(),
         )
-    if v17 or v18:
+    if v17 or v18 or v19:
         manifest_identity.update(
             graph_tree_depth_contract_sha256=build_graph_tree_depth_contract(
                 270100
@@ -256,6 +270,30 @@ def test_french_benchmark_accepts_only_exact_v18_network_identity(tmp_path):
     package_value = json.loads(package.read_text())
     for value in (manifest_value, package_value):
         value["identity"]["network_reasoning_contract_sha256"] = "0" * 64
+    package.write_text(json.dumps(package_value))
+    manifest_value["artifacts"]["assessment_package"]["sha256"] = sha256(
+        package.read_bytes()
+    ).hexdigest()
+    manifest.write_text(json.dumps(manifest_value))
+    result_value = json.loads(result.read_text())
+    result_value["artifacts"]["manifest_sha256"] = sha256(
+        manifest.read_bytes()
+    ).hexdigest()
+    result.write_text(json.dumps(result_value))
+    assert not accepted_result(result, identity)
+
+
+def test_french_benchmark_accepts_only_exact_v19_database_reasoning_identity(tmp_path):
+    from tools.french_nsi_benchmark import accepted_result
+
+    result, identity, bundle = _passed_result(tmp_path, v19=True)
+    assert accepted_result(result, identity)
+    manifest = bundle / "manifest.json"
+    package = bundle / "assessment.json"
+    manifest_value = json.loads(manifest.read_text())
+    package_value = json.loads(package.read_text())
+    for value in (manifest_value, package_value):
+        value["identity"]["database_reasoning_prose_catalogue_sha256"] = "0" * 64
     package.write_text(json.dumps(package_value))
     manifest_value["artifacts"]["assessment_package"]["sha256"] = sha256(
         package.read_bytes()
