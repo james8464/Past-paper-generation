@@ -85,9 +85,51 @@ def test_v18_candidate_has_twelve_connected_french_questions_and_exact_credit(to
     assert "R1–R3" in exercise.context
     assert [item.id for item in exercise.materials] == [
         "links",
+        "route_working",
         "process_initial",
         "message_cards",
+        "threat_working",
     ]
+    assert [row[0] for row in exercise.materials[1].rows] == [
+        "Central",
+        "R1",
+        "R2",
+        "R3",
+        "Station",
+    ]
+    assert all(
+        cell == "à compléter" for row in exercise.materials[1].rows for cell in row[1:]
+    )
+    assert [row[0] for row in exercise.materials[2].rows] == [
+        "t0",
+        "t1",
+        "t2",
+        "t3",
+    ]
+    assert all(
+        cell == "à compléter"
+        for row in exercise.materials[2].rows[2:]
+        for cell in row[1:]
+    )
+    assert [row[0] for row in exercise.materials[4].rows] == [
+        "Observateur passif",
+        "Authentification",
+        "Métadonnées",
+        "Terminal compromis",
+    ]
+    assert all(row[1] == "à compléter" for row in exercise.materials[4].rows)
+    assert all(
+        question.material_ids == ("links", "route_working")
+        for question in exercise.questions[:4]
+    )
+    assert all(
+        question.material_ids == ("process_initial",)
+        for question in exercise.questions[4:8]
+    )
+    assert all(
+        question.material_ids == ("message_cards", "threat_working")
+        for question in exercise.questions[8:]
+    )
     assert sum(question.estimated_minutes for question in exercise.questions) == 70
     assert sum(Decimal(question.points) for question in exercise.questions) == Decimal(
         total
@@ -136,6 +178,45 @@ def test_v18_correction_keeps_answer_with_its_rubric(tmp_path, large_print):
             if f"Barème indicatif — question {question.id}" in page
         ]
         assert answer_pages == rubric_pages, question.id
+
+
+@pytest.mark.parametrize("large_print", [False, True])
+@pytest.mark.parametrize("correction", [False, True])
+def test_v18_materials_remain_near_dependent_questions(
+    tmp_path, large_print, correction
+):
+    import pymupdf
+
+    from Backend.Core.france.network_reasoning_prose import (
+        render_network_reasoning_candidate,
+    )
+    from Backend.Core.france.rendering import render_assessment
+
+    exercise = NSIExercise.model_validate(
+        render_network_reasoning_candidate(
+            build_network_reasoning_contract(270100),
+            _selection(),
+            _task("5.5")["question_blueprint"],
+        )
+    )
+    output = tmp_path / "paper.pdf"
+    render_assessment(
+        output, [exercise], correction=correction, large_print=large_print
+    )
+    with pymupdf.open(output) as pdf:
+        pages = [page.get_text() for page in pdf]
+
+    for title, question_id in (
+        ("Tableau de travail Dijkstra avant et après la hausse", "3a"),
+        ("États simultanés et reprise à compléter", "3e"),
+        ("Situations de sécurité à analyser", "3i"),
+    ):
+        material_pages = [i for i, page in enumerate(pages) if title in page]
+        question_pages = [
+            i for i, page in enumerate(pages) if f"{question_id}." in page
+        ]
+        assert len(material_pages) == len(question_pages) == 1
+        assert 0 <= question_pages[0] - material_pages[0] <= 1
 
 
 def test_v18_schema_rejects_free_text_and_incomplete_forms():

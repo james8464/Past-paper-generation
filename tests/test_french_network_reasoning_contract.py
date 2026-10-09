@@ -62,6 +62,17 @@ def test_network_reasoning_contract_is_deterministic_with_unique_changed_route(s
 def test_network_reasoning_process_and_security_states_are_bounded():
     data = _build().to_dict()
 
+    assert data["working_surfaces"] == {
+        "route_nodes": ["Central", "R1", "R2", "R3", "Station"],
+        "process_steps": ["t0", "t1", "t2", "t3"],
+        "threat_scenarios": [
+            "Observateur passif",
+            "Authentification",
+            "Métadonnées",
+            "Terminal compromis",
+        ],
+    }
+
     assert data["process_schedule"] == [
         {"step": "t0", "P1": "détient A", "P2": "détient B"},
         {"step": "t1", "P1": "attend B", "P2": "attend A"},
@@ -96,7 +107,7 @@ def test_network_reasoning_process_and_security_states_are_bounded():
     }
 
 
-@pytest.mark.parametrize("mutation", ["cost", "state", "threat", "extra"])
+@pytest.mark.parametrize("mutation", ["cost", "state", "threat", "working", "extra"])
 def test_network_reasoning_contract_rejects_tampering(mutation):
     from Backend.Core.france.network_reasoning_contract import NetworkReasoningContract
 
@@ -108,6 +119,8 @@ def test_network_reasoning_contract_rejects_tampering(mutation):
         data["process_schedule"][1]["P1"] = "attend A"
     elif mutation == "threat":
         data["expected"]["threats"]["sender_authenticated"] = True
+    elif mutation == "working":
+        data["working_surfaces"]["route_nodes"].append("Other")
     else:
         data["unexpected"] = "not part of the locked case"
     with pytest.raises(ValueError):

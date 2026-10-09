@@ -60,12 +60,46 @@ def test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles(
         )
         with pymupdf.open(path) as pdf:
             pages = [page.get_text() for page in pdf]
+            lower, upper = (
+                (18, 25)
+                if correction and large_print
+                else (13, 18)
+                if correction
+                else (10, 15)
+                if large_print
+                else (8, 12)
+            )
+            assert lower <= len(pdf) <= upper
             assert all(
                 0 <= word[0] <= word[2] <= page.rect.width
                 and 0 <= word[1] <= word[3] <= page.rect.height
                 for page in pdf
                 for word in page.get_text("words")
             )
+            for title, task_id in (
+                ("Tableau de travail Dijkstra avant et après la hausse", "3a"),
+                ("États simultanés et reprise à compléter", "3e"),
+                ("Situations de sécurité à analyser", "3i"),
+            ):
+                material_page = next(i for i, page in enumerate(pages) if title in page)
+                question_page = next(
+                    i for i, page in enumerate(pages) if f"{task_id}." in page
+                )
+                assert 0 <= question_page - material_page <= 1
+            if correction:
+                for exercise in exercises:
+                    for question in exercise.questions:
+                        question_pages = [
+                            i
+                            for i, page in enumerate(pages)
+                            if f"{question.id}." in page
+                        ]
+                        rubric_pages = [
+                            i
+                            for i, page in enumerate(pages)
+                            if f"Barème indicatif — question {question.id}" in page
+                        ]
+                        assert question_pages == rubric_pages, question.id
 
         class PageText:
             def __init__(self, value):

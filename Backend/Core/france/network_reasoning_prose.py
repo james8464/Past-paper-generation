@@ -319,12 +319,30 @@ def render_network_reasoning_candidate(
         },
         {
             "kind": "table",
+            "id": "route_working",
+            "title": "Tableau de travail Dijkstra avant et après la hausse",
+            "columns": [
+                "Sommet",
+                "Avant : coût / prédécesseur",
+                "Après : coût / prédécesseur",
+            ],
+            "rows": [
+                [node, "à compléter", "à compléter"]
+                for node in facts["working_surfaces"]["route_nodes"]
+            ],
+        },
+        {
+            "kind": "table",
             "id": "process_initial",
-            "title": "Deux états simultanés avant l'intervention",
+            "title": "États simultanés et reprise à compléter",
             "columns": ["Moment", "P1", "P2"],
             "rows": [
                 [item["step"], item["P1"], item["P2"]]
                 for item in facts["process_schedule"][:2]
+            ]
+            + [
+                [step, "à compléter", "à compléter"]
+                for step in facts["working_surfaces"]["process_steps"][2:]
             ],
         },
         {
@@ -336,6 +354,16 @@ def render_network_reasoning_candidate(
                 ["M1", cards[2]["sender"], cards[2]["content"]],
                 ["M2", cards[0]["sender"], cards[0]["content"]],
                 ["M3", cards[1]["sender"], cards[1]["content"]],
+            ],
+        },
+        {
+            "kind": "table",
+            "id": "threat_working",
+            "title": "Situations de sécurité à analyser",
+            "columns": ["Situation", "Conclusion et justification"],
+            "rows": [
+                [situation, "à compléter"]
+                for situation in facts["working_surfaces"]["threat_scenarios"]
             ],
         },
     ]
@@ -350,11 +378,11 @@ def render_network_reasoning_candidate(
                 "points": plan["points"],
                 "answer": _answer(task_id, facts),
                 "marking": _rubric(task_id, plan["points"], rubric_form, facts),
-                "material_ids": ["links"]
+                "material_ids": ["links", "route_working"]
                 if index < 4
                 else ["process_initial"]
                 if index < 8
-                else ["message_cards"],
+                else ["message_cards", "threat_working"],
                 "curriculum_codes": [plan["required_curriculum_code"]],
                 "operation": plan["operation"],
                 "difficulty": plan["difficulty"],

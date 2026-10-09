@@ -717,8 +717,10 @@ def validate_network_reasoning_contract_pdf(
     heading = f"Exercice 3 ({exercise.target_points.replace('.', ',')} points)"
     titles = (
         "Sept liaisons et coûts initiaux",
-        "Deux états simultanés avant l'intervention",
+        "Tableau de travail Dijkstra avant et après la hausse",
+        "États simultanés et reprise à compléter",
         "Cartes de messages à remettre dans l'ordre",
+        "Situations de sécurité à analyser",
     )
     if text.count(heading) != 1 or any(text.count(title) != 1 for title in titles):
         raise ValueError("Network reasoning heading or material missing")
@@ -727,7 +729,7 @@ def validate_network_reasoning_contract_pdf(
     )
     if " ".join(exercise.context.split()) not in context:
         raise ValueError("Network reasoning premise differs from exercise")
-    if len(exercise.materials) != 3:
+    if len(exercise.materials) != 5:
         raise ValueError("Network reasoning materials incomplete")
     for task_id in data["task_ids"]:
         if (
@@ -744,23 +746,44 @@ def validate_network_reasoning_contract_pdf(
     expected_rows = (
         [[left, right, str(cost)] for left, right, cost in data["links"]],
         [
+            [node, "à compléter", "à compléter"]
+            for node in data["working_surfaces"]["route_nodes"]
+        ],
+        [
             [item["step"], item["P1"], item["P2"]]
             for item in data["process_schedule"][:2]
+        ]
+        + [
+            [step, "à compléter", "à compléter"]
+            for step in data["working_surfaces"]["process_steps"][2:]
         ],
         [
             ["M1", cards[2]["sender"], cards[2]["content"]],
             ["M2", cards[0]["sender"], cards[0]["content"]],
             ["M3", cards[1]["sender"], cards[1]["content"]],
         ],
+        [
+            [situation, "à compléter"]
+            for situation in data["working_surfaces"]["threat_scenarios"]
+        ],
     )
     columns = (
         ("Extrémité 1", "Extrémité 2", "Coût"),
+        ("Sommet", "Avant : coût / prédécesseur", "Après : coût / prédécesseur"),
         ("Moment", "P1", "P2"),
         ("Carte", "Émetteur", "Contenu"),
+        ("Situation", "Conclusion et justification"),
+    )
+    following_titles = (
+        titles[1],
+        "3a.",
+        "3e.",
+        titles[4],
+        "3i.",
     )
     for index, material in enumerate(exercise.materials):
         title = titles[index]
-        following = titles[index + 1] if index < 2 else "3a."
+        following = following_titles[index]
         rows = expected_rows[index]
         if (
             material.title != title

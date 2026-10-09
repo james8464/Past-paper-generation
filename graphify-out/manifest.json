@@ -195,13 +195,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1791531143.2158632,
-    "ast_hash": "235bb0c781b0d39bbe9876487775f7fd",
+    "mtime": 1791546533.3125572,
+    "ast_hash": "43b26d200a8943e02a9f9ba3d6f73ee8",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
-    "mtime": 1791530096.070482,
-    "ast_hash": "298b235881082c10946cbf31a93ab6a9",
+    "mtime": 1791544765.0820282,
+    "ast_hash": "1377ecc547954ac5f2509c237536b4ca",
     "semantic_hash": ""
   },
   "Backend/Core/france/source_identity.py": {
@@ -1680,8 +1680,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_runtime.py": {
-    "mtime": 1791531097.009434,
-    "ast_hash": "f7802a9f3b07528be60c3726ea7ae71f",
+    "mtime": 1791546383.4343357,
+    "ast_hash": "7eafdc3f1e785ea34f52e5490ef02cdf",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {
@@ -2890,13 +2890,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/network_reasoning_contract.py": {
-    "mtime": 1791491890.478409,
-    "ast_hash": "ba14fe9699ebfa0a1ff92d1171c17a18",
+    "mtime": 1791544046.815861,
+    "ast_hash": "693798434be679f325811a5ef8f15456",
     "semantic_hash": ""
   },
   "tests/test_french_network_reasoning_contract.py": {
-    "mtime": 1791491890.478409,
-    "ast_hash": "ee3379b52bc01bcb7c6a476c58b3350c",
+    "mtime": 1791546539.964041,
+    "ast_hash": "5e031e830b01f5e208cc9fa31688e620",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-08-french-nsi-network-reasoning-depth.md": {
@@ -2915,13 +2915,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/network_reasoning_prose.py": {
-    "mtime": 1791493464.2661889,
-    "ast_hash": "8135cfc2e715106915ab4ba0ae9d4a65",
+    "mtime": 1791546539.9640434,
+    "ast_hash": "d898e1e15b08355608137682bb5eceb4",
     "semantic_hash": ""
   },
   "tests/test_french_network_reasoning_authoring.py": {
-    "mtime": 1791530907.0313451,
-    "ast_hash": "222b39864b4ff1c2ffa663b23b39298d",
+    "mtime": 1791546539.9640412,
+    "ast_hash": "ed8109e48ce079e5260490c20f494aa8",
     "semantic_hash": ""
   }
 }

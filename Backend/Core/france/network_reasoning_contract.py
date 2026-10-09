@@ -87,6 +87,16 @@ def _facts(seed: int) -> dict:
         "process_schedule": list(_PROCESS_SCHEDULE),
         "security": security,
         "security_messages": list(_SECURITY_MESSAGES),
+        "working_surfaces": {
+            "route_nodes": list(_NODES),
+            "process_steps": [state["step"] for state in _PROCESS_SCHEDULE],
+            "threat_scenarios": [
+                "Observateur passif",
+                "Authentification",
+                "Métadonnées",
+                "Terminal compromis",
+            ],
+        },
         "expected": {
             "before": _route_with_working(links, old["expected"]["before"]),
             "after": _route_with_working(changed, old["expected"]["after"]),
