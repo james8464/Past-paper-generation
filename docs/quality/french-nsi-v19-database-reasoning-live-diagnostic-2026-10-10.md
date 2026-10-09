@@ -28,7 +28,7 @@ The page-level inspection log below compares the generated **subject** with the 
 | Subject page | Observed content and official comparison |
 |---:|---|
 | 1 | Cover: exam hierarchy and duration are comparable to official page 1; independent branding and “non officiel” are deliberate differences. |
-| 2 | E1 context and two code fragments occupy the page without questions; the official E1 develops its context across pages 2–5. The French scope line omits an article. |
+| 2 | E1 context and three code fragments occupy the page without questions; the official E1 develops its context across pages 2–5. The French scope line omits an article. |
 | 3 | E1 graph, tree table and 1a–1f fit together; no obscured labels were seen, but six prompts share one page of the three-page E1 span. |
 | 4 | Only 1g–1j appear in the upper part of the page, with a large blank remainder; the official E1 uses its fourth page for continuing task material. |
 | 5 | E2 context, faulty SQL/Python and two small tables are legible; official E2 spans pages 6–10 with more staged material. The scope line says “sur étude”. |
