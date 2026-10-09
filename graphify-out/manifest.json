@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791579318.4829679,
-    "ast_hash": "67ffd6ef7ee881dbcd1f15a00cfa4bde",
+    "mtime": 1791579624.455882,
+    "ast_hash": "50a366407049d1df2e3fa15f2ca85f34",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2937,6 +2937,16 @@
   "docs/superpowers/specs/2026-10-09-french-nsi-database-reasoning-v19-design.md": {
     "mtime": 1791579252.062295,
     "ast_hash": "920010ca3de8d50202b46a6a68c4e9d5",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/database_reasoning_prose.py": {
+    "mtime": 1791579573.2102041,
+    "ast_hash": "256f3d4687b81e851db14171b088c886",
+    "semantic_hash": ""
+  },
+  "tests/test_french_database_reasoning_prose.py": {
+    "mtime": 1791579562.671858,
+    "ast_hash": "8e60a8d61d15aa06d97237d974c5a8fb",
     "semantic_hash": ""
   }
 }
