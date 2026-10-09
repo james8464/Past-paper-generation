@@ -40,12 +40,17 @@ from Backend.Core.france.network_depth_contract import (
     NetworkDepthContract,
     build_network_depth_contract,
 )
+from Backend.Core.france.network_reasoning_contract import (
+    NetworkReasoningContract,
+    build_network_reasoning_contract,
+)
 from Backend.Core.france.nsi import NSIExercise
 from Backend.Core.france.pipeline import (
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
+    CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
     atomic_json,
     digest,
     exercise_candidate_text,
@@ -687,6 +692,146 @@ def validate_network_depth_contract_pdf(
                 raise ValueError(f"Network depth rubric {question.id} leaked")
 
 
+def validate_network_reasoning_contract_pdf(
+    path: Path,
+    contract: NetworkReasoningContract,
+    *,
+    correction: bool,
+    exercise: NSIExercise,
+) -> None:
+    """Reject V18 PDFs whose case facts or per-question roles do not print."""
+    data = contract.to_dict()
+    if exercise.id != "3" or [q.id for q in exercise.questions] != data["task_ids"]:
+        raise ValueError("Network reasoning exercise differs from contract")
+    with pymupdf.open(path) as pdf:
+        lines = [
+            line.strip()
+            for page in pdf
+            for line in page.get_text().splitlines()
+            if line.strip()
+            and not line.startswith("Paper Creator —")
+            and not line.startswith("Page : ")
+        ]
+    text = "\n".join(lines)
+    flat = " ".join(text.split())
+    heading = f"Exercice 3 ({exercise.target_points.replace('.', ',')} points)"
+    titles = (
+        "Sept liaisons et coûts initiaux",
+        "Tableau de travail Dijkstra avant et après la hausse",
+        "États simultanés et reprise à compléter",
+        "Cartes de messages à remettre dans l'ordre",
+        "Situations de sécurité à analyser",
+    )
+    if text.count(heading) != 1 or any(text.count(title) != 1 for title in titles):
+        raise ValueError("Network reasoning heading or material missing")
+    context = " ".join(
+        text.split(heading + "\n", 1)[1].split("\n" + titles[0], 1)[0].split()
+    )
+    if " ".join(exercise.context.split()) not in context:
+        raise ValueError("Network reasoning premise differs from exercise")
+    if len(exercise.materials) != 5:
+        raise ValueError("Network reasoning materials incomplete")
+    for task_id in data["task_ids"]:
+        if (
+            sum(
+                bool(re.match(rf"^{re.escape(task_id)}\.(?:\s|$)", line))
+                for line in lines
+            )
+            != 1
+        ):
+            raise ValueError(
+                f"Network reasoning question {task_id} missing or duplicated"
+            )
+    cards = data["security_messages"]
+    expected_rows = (
+        [[left, right, str(cost)] for left, right, cost in data["links"]],
+        [
+            [node, "à compléter", "à compléter"]
+            for node in data["working_surfaces"]["route_nodes"]
+        ],
+        [
+            [item["step"], item["P1"], item["P2"]]
+            for item in data["process_schedule"][:2]
+        ]
+        + [
+            [step, "à compléter", "à compléter"]
+            for step in data["working_surfaces"]["process_steps"][2:]
+        ],
+        [
+            ["M1", cards[2]["sender"], cards[2]["content"]],
+            ["M2", cards[0]["sender"], cards[0]["content"]],
+            ["M3", cards[1]["sender"], cards[1]["content"]],
+        ],
+        [
+            [situation, "à compléter"]
+            for situation in data["working_surfaces"]["threat_scenarios"]
+        ],
+    )
+    columns = (
+        ("Extrémité 1", "Extrémité 2", "Coût"),
+        ("Sommet", "Avant : coût / prédécesseur", "Après : coût / prédécesseur"),
+        ("Moment", "P1", "P2"),
+        ("Carte", "Émetteur", "Contenu"),
+        ("Situation", "Conclusion et justification"),
+    )
+    following_titles = (
+        titles[1],
+        "3a.",
+        "3e.",
+        titles[4],
+        "3i.",
+    )
+    for index, material in enumerate(exercise.materials):
+        title = titles[index]
+        following = following_titles[index]
+        rows = expected_rows[index]
+        if (
+            material.title != title
+            or material.columns != columns[index]
+            or [list(row) for row in material.rows] != rows
+        ):
+            raise ValueError("Network reasoning material differs from contract")
+        printed = text.split(title + "\n", 1)[1].split("\n" + following, 1)[0]
+        expected = " ".join(
+            [*material.columns, *(cell for row in rows for cell in row)]
+        )
+        if " ".join(printed.split()) != expected:
+            raise ValueError("Network reasoning printed table differs from contract")
+    for index, question in enumerate(exercise.questions):
+        start = text.index("\n" + question.id + ".")
+        end = (
+            text.index("\n" + exercise.questions[index + 1].id + ".")
+            if index + 1 < len(exercise.questions)
+            else len(text)
+        )
+        question_text = " ".join(text[start:end].split())
+        for label in ("Réponse attendue", "Barème indicatif"):
+            if question_text.count(label) != int(correction):
+                raise ValueError(f"Network reasoning role label {question.id} invalid")
+        if question_text.count(" ".join(question.prompt.split())) != 1:
+            raise ValueError(f"Network reasoning prompt {question.id} missing")
+        answer = " ".join(question.answer.split())
+        if correction and answer not in question_text:
+            raise ValueError(f"Network reasoning answer {question.id} missing")
+        if not correction and answer in flat:
+            raise ValueError(f"Network reasoning answer {question.id} leaked")
+        if correction:
+            for credit_points in {credit.points for credit in question.marking}:
+                unit = "point" if Decimal(credit_points) <= 1 else "points"
+                label = f"{credit_points.replace('.', ',')} {unit}"
+                expected_count = sum(
+                    credit.points == credit_points for credit in question.marking
+                )
+                if question_text.count(label) != expected_count:
+                    raise ValueError(f"Network reasoning credit {question.id} missing")
+        for credit in question.marking:
+            criterion = " ".join(credit.criterion.split())
+            if correction and question_text.count(criterion) != 1:
+                raise ValueError(f"Network reasoning rubric {question.id} missing")
+            if not correction and criterion in flat:
+                raise ValueError(f"Network reasoning rubric {question.id} leaked")
+
+
 def load_originality_history(output: Path) -> list[str]:
     """Read a bounded set of candidate-only text from earlier local bundles."""
     history: list[str] = []
@@ -721,6 +866,8 @@ def load_originality_history(output: Path) -> list[str]:
 
 def network_pdf_contract_version(prompt_version: str) -> str:
     """Never silently render an unknown French package with an older validator."""
+    if prompt_version == CONTROLLED_NETWORK_REASONING_PROMPT_VERSION:
+        return "v18"
     if prompt_version in {
         CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
         CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
@@ -736,6 +883,7 @@ def database_pdf_contract_version(prompt_version: str) -> str:
     if prompt_version in {
         CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
         CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
+        CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
     }:
         return "v2"
     if prompt_version in {
@@ -784,15 +932,15 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v17",
+            contract_authoring_version="v18",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
         exercises = [NSIExercise.model_validate(item) for item in package["exercises"]]
-        graph_tree_depth = (
-            package["identity"]["prompt_version"]
-            == CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION
-        )
+        graph_tree_depth = package["identity"]["prompt_version"] in {
+            CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
+            CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
+        }
         graph_tree_contract = (
             build_graph_tree_depth_contract(args.seed)
             if graph_tree_depth
@@ -806,11 +954,15 @@ def handle_generate_assessment(args) -> int:
             if database_depth
             else build_database_contract(args.seed)
         )
-        network_depth = (
-            network_pdf_contract_version(package["identity"]["prompt_version"]) == "v15"
+        network_pdf_version = network_pdf_contract_version(
+            package["identity"]["prompt_version"]
         )
+        network_reasoning = network_pdf_version == "v18"
+        network_depth = network_pdf_version == "v15"
         network_contract = (
-            build_network_depth_contract(args.seed)
+            build_network_reasoning_contract(args.seed)
+            if network_reasoning
+            else build_network_depth_contract(args.seed)
             if network_depth
             else build_network_contract(args.seed)
         )
@@ -855,7 +1007,9 @@ def handle_generate_assessment(args) -> int:
                 exercise=exercises[1],
             )
             network_validator = (
-                validate_network_depth_contract_pdf
+                validate_network_reasoning_contract_pdf
+                if network_reasoning
+                else validate_network_depth_contract_pdf
                 if network_depth
                 else validate_network_contract_pdf
             )

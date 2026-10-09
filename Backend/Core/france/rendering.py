@@ -529,6 +529,11 @@ def render_assessment(
         paragraph(
             "Profil indicatif du logiciel, non barème officiel : retenir une appréciation globale à partir des quatre dimensions officielles (orthographe, syntaxe, lexique et organisation du raisonnement)."
         )
+    v18_paper = any(
+        question.verification.get("kind") == "network_reasoning_contract"
+        for exercise in exercises
+        for question in exercise.questions
+    )
     for exercise_index, exercise in enumerate(exercises):
         if correction or exercise_index:
             story.append(PageBreak())
@@ -538,7 +543,13 @@ def render_assessment(
         )
         paragraph(exercise_scope_text(exercise.title), exercise_scope)
         content(exercise.context)
-        for material in exercise.materials:
+        staged_network_materials = bool(exercise.questions) and all(
+            question.verification.get("kind") == "network_reasoning_contract"
+            for question in exercise.questions
+        )
+        staged_material_ids: set[str] = set()
+
+        def add_material(material, *, show_id=exercise.id != "3"):
             story.append(
                 structured_material(
                     material,
@@ -546,11 +557,23 @@ def render_assessment(
                     bold_font=bold,
                     regular_font=regular,
                     available_width=doc.width,
-                    show_id=exercise.id != "3",
+                    show_id=show_id,
                 )
             )
+
+        if not staged_network_materials:
+            for material in exercise.materials:
+                add_material(material)
         final_network_pair_start = None
         for question_index, question in enumerate(exercise.questions):
+            if staged_network_materials:
+                for material in exercise.materials:
+                    if (
+                        material.id in question.material_ids
+                        and material.id not in staged_material_ids
+                    ):
+                        add_material(material)
+                        staged_material_ids.add(material.id)
             graph_depth_correction = (
                 correction
                 and question.verification.get("kind") == "graph_tree_depth_contract"
@@ -644,14 +667,16 @@ def render_assessment(
                 )
                 story.append(marking_table)
                 if (
-                    question.id == "3f"
+                    v18_paper
+                    or question.verification.get("kind") == "network_reasoning_contract"
+                    or question.id == "3f"
                     or (
                         question.id == "3d"
                         and question.verification.get("kind")
                         == "network_depth_contract"
                     )
                     or (
-                        question.id in {"1b", "1f", "1j"}
+                        question.id in {"1b", "1e", "1f", "1h", "1j"}
                         and question.verification.get("kind")
                         == "graph_tree_depth_contract"
                     )

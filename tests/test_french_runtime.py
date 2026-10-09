@@ -3,6 +3,208 @@ from argparse import Namespace
 import pytest
 
 
+def _pin_v17_generation(monkeypatch, runtime):
+    generate = runtime.generate_assessment
+    monkeypatch.setattr(
+        runtime,
+        "generate_assessment",
+        lambda **kwargs: generate(**{**kwargs, "contract_authoring_version": "v17"}),
+    )
+
+
+@pytest.mark.parametrize("large_print", [False, True])
+def test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles(
+    tmp_path, monkeypatch, large_print
+):
+    import pymupdf
+
+    from Backend.Core.france import runtime
+    from Backend.Core.france.network_reasoning_contract import (
+        build_network_reasoning_contract,
+    )
+    from Backend.Core.france.nsi import NSIExercise
+    from Backend.Core.france.pipeline import generate_assessment
+    from Backend.Core.france.rendering import render_assessment
+    from tests.test_nsi_pipeline import (
+        ControlledNetworkReasoningFrenchClient,
+        make_index,
+    )
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledNetworkReasoningFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v18",
+    )
+    exercises = [NSIExercise.model_validate(raw) for raw in package["exercises"]]
+    contract = build_network_reasoning_contract(270100)
+    assert (
+        runtime.network_pdf_contract_version(package["identity"]["prompt_version"])
+        == "v18"
+    )
+    assert (
+        runtime.database_pdf_contract_version(package["identity"]["prompt_version"])
+        == "v2"
+    )
+    for correction in (False, True):
+        path = tmp_path / ("correction.pdf" if correction else "subject.pdf")
+        render_assessment(
+            path, exercises, correction=correction, large_print=large_print
+        )
+        runtime.validate_network_reasoning_contract_pdf(
+            path, contract, correction=correction, exercise=exercises[2]
+        )
+        with pymupdf.open(path) as pdf:
+            pages = [page.get_text() for page in pdf]
+            lower, upper = (
+                (18, 25)
+                if correction and large_print
+                else (13, 18)
+                if correction
+                else (10, 15)
+                if large_print
+                else (8, 12)
+            )
+            assert lower <= len(pdf) <= upper
+            assert all(
+                0 <= word[0] <= word[2] <= page.rect.width
+                and 0 <= word[1] <= word[3] <= page.rect.height
+                for page in pdf
+                for word in page.get_text("words")
+            )
+            for title, task_id in (
+                ("Tableau de travail Dijkstra avant et après la hausse", "3a"),
+                ("États simultanés et reprise à compléter", "3e"),
+                ("Situations de sécurité à analyser", "3i"),
+            ):
+                material_page = next(i for i, page in enumerate(pages) if title in page)
+                question_page = next(
+                    i for i, page in enumerate(pages) if f"{task_id}." in page
+                )
+                assert 0 <= question_page - material_page <= 1
+            if correction:
+                for exercise in exercises:
+                    for question in exercise.questions:
+                        question_pages = [
+                            i
+                            for i, page in enumerate(pages)
+                            if f"{question.id}." in page
+                        ]
+                        rubric_pages = [
+                            i
+                            for i, page in enumerate(pages)
+                            if f"Barème indicatif — question {question.id}" in page
+                        ]
+                        assert question_pages == rubric_pages, question.id
+
+        class PageText:
+            def __init__(self, value):
+                self.value = value
+
+            def get_text(self):
+                return self.value
+
+        class DocumentText:
+            def __init__(self, values):
+                self.values = values
+
+            def __enter__(self):
+                return [PageText(value) for value in self.values]
+
+            def __exit__(self, *_):
+                return False
+
+        with monkeypatch.context() as patch:
+            patch.setattr(
+                runtime.pymupdf, "open", lambda _, values=pages: DocumentText(values)
+            )
+            original = pages[:]
+            pages[:] = [page.replace("M2", "M4", 1) for page in original]
+            with pytest.raises(ValueError):
+                runtime.validate_network_reasoning_contract_pdf(
+                    path, contract, correction=correction, exercise=exercises[2]
+                )
+            pages[:] = [
+                page.replace(
+                    "Central\nR1\n5\nCentral\nR2\n8",
+                    "Central\nR1\n8\nCentral\nR2\n5",
+                    1,
+                )
+                for page in original
+            ]
+            assert pages != original
+            with pytest.raises(ValueError):
+                runtime.validate_network_reasoning_contract_pdf(
+                    path, contract, correction=correction, exercise=exercises[2]
+                )
+            pages[:] = [page.replace("3l.", "3k.", 1) for page in original]
+            with pytest.raises(ValueError):
+                runtime.validate_network_reasoning_contract_pdf(
+                    path, contract, correction=correction, exercise=exercises[2]
+                )
+            pages[:] = original[:]
+            pages[-1] += "\n3a."
+            with pytest.raises(ValueError):
+                runtime.validate_network_reasoning_contract_pdf(
+                    path, contract, correction=correction, exercise=exercises[2]
+                )
+            if correction:
+                pages[:] = [
+                    page.replace(
+                        "0,25 point\nAccorder pour les deux coûts directs",
+                        "0,20 point\nAccorder pour les deux coûts directs",
+                        1,
+                    )
+                    for page in original
+                ]
+                assert pages != original
+                with pytest.raises(ValueError):
+                    runtime.validate_network_reasoning_contract_pdf(
+                        path, contract, correction=True, exercise=exercises[2]
+                    )
+
+
+def test_runtime_publishes_v18_with_locked_network_pdf_dispatch(tmp_path, monkeypatch):
+    import json
+
+    from Backend.Core.france import runtime
+    from tests.test_nsi_pipeline import (
+        ControlledNetworkReasoningFrenchClient,
+        make_index,
+    )
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+    monkeypatch.setattr(runtime, "model_identity", lambda *_: "fixture-digest")
+    monkeypatch.setattr(
+        runtime,
+        "FrenchOllamaClient",
+        lambda **_: ControlledNetworkReasoningFrenchClient(),
+    )
+    args = Namespace(
+        assessment="fr-bac-general-nsi-written-2027",
+        reference_index=index,
+        output=str(tmp_path / "output"),
+        seed=270100,
+        model="fixture",
+        ollama_url="http://localhost:11434",
+        allow_remote=False,
+        large_print=False,
+    )
+    args.contract_authoring_version = "v17"  # Caller cannot downgrade new publication.
+    assert runtime.handle_generate_assessment(args) == 0
+    (bundle,) = (tmp_path / "output").glob("nsi-*")
+    package = json.loads((bundle / "assessment.json").read_text())
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v18"
+    assert len(package["exercises"][2]["questions"]) == 12
+    assert (bundle / "sujet.pdf").is_file()
+    assert (bundle / "corrige.pdf").is_file()
+
+
 @pytest.mark.parametrize("failure", [None, "render", "cancel"])
 @pytest.mark.parametrize("large_print", [False, True])
 def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large_print):
@@ -429,6 +631,7 @@ def test_runtime_publishes_v17_graph_tree_depth_with_locked_pdf_facts(
         allow_remote=False,
         large_print=large_print,
     )
+    _pin_v17_generation(monkeypatch, runtime)
     assert runtime.handle_generate_assessment(args) == 0
     (bundle,) = (tmp_path / "output").glob("nsi-*")
     package = json.loads((bundle / "assessment.json").read_text())
@@ -456,7 +659,7 @@ def test_runtime_publishes_v17_graph_tree_depth_with_locked_pdf_facts(
                 page_text = [page.get_text() for page in pdf]
                 if large_print:
                     assert "0,25\npoint" not in "\n".join(page_text)
-                for task_id in ("1b", "1f", "1j"):
+                for task_id in ("1b", "1e", "1f", "1h", "1j"):
                     assert any(
                         f"{task_id}." in page
                         and f"Barème indicatif — question {task_id}" in page
@@ -554,6 +757,7 @@ def test_runtime_v17_preserves_v16_database_depth_with_locked_pdf_facts(
         allow_remote=False,
         large_print=large_print,
     )
+    _pin_v17_generation(monkeypatch, runtime)
     assert runtime.handle_generate_assessment(args) == 0
     (bundle,) = (tmp_path / "output").glob("nsi-*")
     package = json.loads((bundle / "assessment.json").read_text())
@@ -661,6 +865,7 @@ def test_runtime_v17_preserves_v15_network_depth_with_locked_pdf_facts(
         allow_remote=False,
         large_print=large_print,
     )
+    _pin_v17_generation(monkeypatch, runtime)
     assert runtime.handle_generate_assessment(args) == 0
     (bundle,) = (tmp_path / "output").glob("nsi-*")
     package = json.loads((bundle / "assessment.json").read_text())
