@@ -506,6 +506,30 @@ def validate_database_reasoning_pdf(
         question = next(q for q in exercise.questions if q.id == task_id)
         if phase not in question.prompt or flat.count(phase) != 1:
             raise ValueError(f"Database reasoning phase {phase} missing or duplicated")
+    if not correction:
+        update_sql = " ".join(contract.to_dict()["update_sql"].split())
+        if update_sql in flat:
+            raise ValueError("Database reasoning update answer leaked")
+        for question in exercise.questions:
+            # The old whole-answer check cannot see a leaked result or trace step.
+            # These finite V19 answer-value patterns do not occur in the source
+            # tables or prompts, so each is a safe candidate-facing rejection.
+            answer = " ".join(question.answer.split())
+            fragments = re.findall(
+                r"\b(?:10[1-9]\s*:\s*[A-Za-zÀ-ÿ]+(?:\s*\(id_cat\s*=\s*\d+\))?"
+                r"|[A-Za-zÀ-ÿ]+\s*:\s*\d+\b"
+                r"|catégorie\s+\d+\s*:\s*\d+\b"
+                r"|(?:Avant|après)\s*:\s*\d+\s+incidents clos"
+                r"|incident\.id_cat\s*=\s*categorie\.id_cat"
+                r"|assert\s+nombre_clos\(incidents\)\s*==\s*\d+"
+                r"|incident\['statut'\]\s*==\s*'clos'"
+                r"|renvoie\s+\d+\b)",
+                answer,
+                flags=re.IGNORECASE,
+            )
+            fragments.extend(re.findall(r"\b\d+\s+incidents clos\b", answer))
+            if any(" ".join(fragment.split()) in flat for fragment in fragments):
+                raise ValueError(f"Database reasoning answer {question.id} leaked")
     if correction:
         raw = "\n".join(raw_pages)
         matches = [
@@ -530,6 +554,14 @@ def validate_database_reasoning_pdf(
                 raise ValueError(
                     f"Database reasoning answer/rubric for {question.id} separated"
                 )
+            for credit in question.marking:
+                label = credit.points.replace(".", ",")
+                unit = "point" if Decimal(credit.points) <= 1 else "points"
+                criterion = printable_database_criterion(credit.criterion)
+                if f"{label} {unit} {criterion}" not in section:
+                    raise ValueError(
+                        f"Database reasoning credit {question.id} misplaced"
+                    )
 
 
 def validate_network_contract_pdf(

@@ -492,6 +492,36 @@ def test_french_benchmark_stops_before_model_call_for_corrupt_passed_result(
         benchmark.run_plan(args)
 
 
+def test_v19_benchmark_does_not_count_historical_v18_pass_as_current(
+    tmp_path, monkeypatch
+):
+    from tools import french_nsi_benchmark as benchmark
+
+    args = _one_paper_args(tmp_path)
+    item_root = args.output / "runs" / "gemma4-12b" / "model-sha" / "270100"
+    item_root.mkdir(parents=True)
+    result, _, bundle = _passed_result(item_root, v18=True)
+    value = json.loads(result.read_text())
+    value["identity"]["reference_index_sha256"] = sha256(
+        args.reference_index.read_bytes()
+    ).hexdigest()
+    manifest = bundle / "manifest.json"
+    manifest_value = json.loads(manifest.read_text())
+    manifest_value["reference_index_sha256"] = value["identity"][
+        "reference_index_sha256"
+    ]
+    manifest.write_text(json.dumps(manifest_value))
+    value["artifacts"]["manifest_sha256"] = sha256(manifest.read_bytes()).hexdigest()
+    result.write_text(json.dumps(value))
+    assert benchmark.accepted_result(result, value["identity"])
+    _write_session(args)
+    _no_model_call(monkeypatch, benchmark)
+
+    with pytest.raises(ValueError, match=r"preuve.*intégrité|version"):
+        benchmark.run_plan(args)
+    assert result.read_text() == json.dumps(value)
+
+
 def test_french_benchmark_preserves_malformed_session_before_model_call(
     tmp_path, monkeypatch
 ):
