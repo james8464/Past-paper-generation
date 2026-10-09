@@ -106,6 +106,38 @@ def test_v18_candidate_has_twelve_connected_french_questions_and_exact_credit(to
     assert all(question.prompt.endswith("?") for question in exercise.questions)
 
 
+@pytest.mark.parametrize("large_print", [False, True])
+def test_v18_correction_keeps_answer_with_its_rubric(tmp_path, large_print):
+    import pymupdf
+
+    from Backend.Core.france.network_reasoning_prose import (
+        render_network_reasoning_candidate,
+    )
+    from Backend.Core.france.rendering import render_assessment
+
+    exercise = NSIExercise.model_validate(
+        render_network_reasoning_candidate(
+            build_network_reasoning_contract(270100),
+            _selection(),
+            _task("5.5")["question_blueprint"],
+        )
+    )
+    output = tmp_path / "correction.pdf"
+    render_assessment(output, [exercise], correction=True, large_print=large_print)
+    with pymupdf.open(output) as pdf:
+        pages = [" ".join(page.get_text().split()) for page in pdf]
+
+    for question in exercise.questions:
+        answer_fragment = " ".join(question.answer.split())[:42]
+        answer_pages = [i for i, page in enumerate(pages) if answer_fragment in page]
+        rubric_pages = [
+            i
+            for i, page in enumerate(pages)
+            if f"Barème indicatif — question {question.id}" in page
+        ]
+        assert answer_pages == rubric_pages, question.id
+
+
 def test_v18_schema_rejects_free_text_and_incomplete_forms():
     from Backend.Core.france.network_reasoning_prose import (
         network_reasoning_selection_schema,

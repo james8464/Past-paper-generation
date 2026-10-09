@@ -644,7 +644,8 @@ def render_assessment(
                 )
                 story.append(marking_table)
                 if (
-                    question.id == "3f"
+                    question.verification.get("kind") == "network_reasoning_contract"
+                    or question.id == "3f"
                     or (
                         question.id == "3d"
                         and question.verification.get("kind")
