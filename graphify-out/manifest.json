@@ -185,13 +185,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1791493844.4121466,
-    "ast_hash": "4acc9c060aff8ab69a8922ca6e2a9c7e",
+    "mtime": 1791579899.569257,
+    "ast_hash": "4d0a9471fb1fa617b5d3a29cae2f8681",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
-    "mtime": 1791493418.3121002,
-    "ast_hash": "18bdad8723bc13782d476f88bab7acf9",
+    "mtime": 1791579816.4120247,
+    "ast_hash": "794c2f09ab10027b025eb6d9d91ae25d",
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
@@ -1780,8 +1780,8 @@
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1791493840.910448,
-    "ast_hash": "bb1d3bc670118b282910c9385699efa1",
+    "mtime": 1791579881.7130506,
+    "ast_hash": "f5d2f87cdb16034278cf934dba22074a",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -2947,6 +2947,16 @@
   "tests/test_french_database_reasoning_prose.py": {
     "mtime": 1791579562.671858,
     "ast_hash": "8e60a8d61d15aa06d97237d974c5a8fb",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/database_reasoning_authoring.py": {
+    "mtime": 1791579899.5674858,
+    "ast_hash": "89329de24bcf6623a08fbc3b186fe366",
+    "semantic_hash": ""
+  },
+  "tests/test_french_database_reasoning_authoring.py": {
+    "mtime": 1791579899.5674858,
+    "ast_hash": "1262cb7741bf42e7e1b85590e8a414b5",
     "semantic_hash": ""
   }
 }
