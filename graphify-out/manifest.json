@@ -2915,13 +2915,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/network_reasoning_prose.py": {
-    "mtime": 1791546539.9640434,
-    "ast_hash": "d898e1e15b08355608137682bb5eceb4",
+    "mtime": 1791547036.3659143,
+    "ast_hash": "cea6b96bc8f81e69061899f66c044d53",
     "semantic_hash": ""
   },
   "tests/test_french_network_reasoning_authoring.py": {
-    "mtime": 1791546539.9640412,
-    "ast_hash": "ed8109e48ce079e5260490c20f494aa8",
+    "mtime": 1791547067.4427056,
+    "ast_hash": "35090bdd123a23fae5982fe0a8d898c2",
     "semantic_hash": ""
   }
 }

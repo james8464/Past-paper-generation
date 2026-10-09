@@ -228,9 +228,9 @@ def _criteria(task_id: str, facts: dict) -> tuple[str, ...]:
         "3b": ("R2 et son prédécesseur", "R3 et son prédécesseur"),
         "3c": ("la route initiale", f"l'addition donnant {before['cost']}"),
         "3d": (
-            "la distance provisoire après R2",
+            "la distance provisoire après R2 puis après R3",
             "la nouvelle route et son coût",
-            f"la comparaison avec le coût initial {before['cost']} et le coût changé {after['cost']}",
+            f"la comparaison avec la route initiale de coût {before['cost']} et le coût changé {after['cost']}",
         ),
         "3e": (
             "P1 et ses ressources détenue/attendue",
@@ -265,6 +265,8 @@ def _rubric(task_id: str, points: str, variant: int, facts: dict) -> list[dict]:
         criteria = ("les deux coûts directs et Central fixé en premier",)
     if count == 1 and task_id == "3e":
         criteria = ("P1 et P2 avec leurs ressources détenues et attendues",)
+    if count == 2 and task_id == "3d":
+        criteria = (criteria[0], criteria[1] + " et " + criteria[2])
     prefix = "Vérifier " if variant == 2 else "Accorder pour "
     return [{"points": "0.25", "criterion": prefix + item} for item in criteria[:count]]
 
@@ -303,8 +305,9 @@ def render_network_reasoning_candidate(
         + str(facts["links"][2][2])
         + " à "
         + str(facts["change"]["new_cost"])
-        + "; tous les autres coûts restent inchangés. Les états t0 et t1 sont "
-        + "simultanés. Pour 3g, P2 est arrêté et libère B. Une station possède "
+        + "; tous les autres coûts restent inchangés. P1 et P2 sont simultanés à chaque instant "
+        + "du tableau ; les ressources restent détenues jusqu'à leur libération. "
+        + "Pour 3g, P2 est arrêté et libère B. Une station possède "
         + "une clé publique authentifiée ; le capteur ne signe pas ses messages. "
         + "L'observateur indiqué est passif."
     )

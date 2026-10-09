@@ -83,6 +83,8 @@ def test_v18_candidate_has_twelve_connected_french_questions_and_exact_credit(to
     assert exercise.id == "3"
     assert [question.id for question in exercise.questions] == _IDS
     assert "R1–R3" in exercise.context
+    assert "P1 et P2 sont simultanés à chaque instant" in exercise.context
+    assert "ressources restent détenues jusqu'à leur libération" in exercise.context
     assert [item.id for item in exercise.materials] == [
         "links",
         "route_working",
@@ -118,6 +120,11 @@ def test_v18_candidate_has_twelve_connected_french_questions_and_exact_credit(to
         "Terminal compromis",
     ]
     assert all(row[1] == "à compléter" for row in exercise.materials[4].rows)
+    route_credits = [item.criterion for item in exercise.questions[3].marking]
+    assert any("après R2 puis après R3" in item for item in route_credits)
+    assert any(
+        "comparaison" in item and "route initiale" in item for item in route_credits
+    )
     assert all(
         question.material_ids == ("links", "route_working")
         for question in exercise.questions[:4]
