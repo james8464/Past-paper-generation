@@ -149,6 +149,17 @@ pages with more sustained multi-step work. **Manual product fidelity remains
 on hold.** This single paper does not select a model or provide teacher or
 learner validation. Earlier checkpoints and failures remain preserved.
 
+Protected PR #52 added a version-isolated ten-question database reasoning
+sequence. Its [pinned V19 live diagnostic](quality/french-nsi-v19-database-reasoning-live-diagnostic-2026-10-10.md)
+passed automation on the first attempt, with no repairs. All nine subject and
+sixteen proposed-correction pages were visually inspected against all sixteen
+pages of the official 2026 Métropole comparator. The subject still has 32
+questions across nine pages: E2's ten prompts fit on one page, and the final
+E1/E3 pages are sparse. Some French scope lines need native-language copy
+editing. **Manual product fidelity remains on hold.** This single paper does
+not select a model or provide teacher or learner validation; previous live
+holds and failed attempts remain preserved.
+
 ## Genuine Occitanie scenario — PLANNED
 
 A teacher generates and checks a paper on a Mac; students receive a PDF through
