@@ -1,6 +1,6 @@
 # Competition claims register
 
-Updated 9 October 2026. The status labels are deliberately strict.
+Updated 10 October 2026. The status labels are deliberately strict.
 
 | Claim | Status | Evidence or next gate |
 |---|---|---|
