@@ -652,7 +652,7 @@ def render_assessment(
                         == "network_depth_contract"
                     )
                     or (
-                        question.id in {"1b", "1f", "1j"}
+                        question.id in {"1b", "1e", "1f", "1h", "1j"}
                         and question.verification.get("kind")
                         == "graph_tree_depth_contract"
                     )

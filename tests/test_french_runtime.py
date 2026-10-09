@@ -625,7 +625,7 @@ def test_runtime_publishes_v17_graph_tree_depth_with_locked_pdf_facts(
                 page_text = [page.get_text() for page in pdf]
                 if large_print:
                     assert "0,25\npoint" not in "\n".join(page_text)
-                for task_id in ("1b", "1f", "1j"):
+                for task_id in ("1b", "1e", "1f", "1h", "1j"):
                     assert any(
                         f"{task_id}." in page
                         and f"Barème indicatif — question {task_id}" in page
