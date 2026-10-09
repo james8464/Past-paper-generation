@@ -215,3 +215,14 @@ This is a **manual fidelity hold after automated pass**, not educational
 qualification. Preserve the passing engineering checkpoint and prior failures;
 expand the original task progression and obtain teacher time and marking review
 before the final shared-source matrix or any validated-product claim.
+
+The later [V18 network-reasoning live diagnostic](french-nsi-v18-network-reasoning-live-diagnostic-2026-10-09.md)
+is another single-paper, pinned first-attempt automated pass, not a model
+qualification. Every page was visually inspected against the official 2026
+Métropole source. Its nine-page subject has 32 numbered questions versus 36
+across 16 official pages; the ten database questions occupy one page and final
+E1/E3 pages are sparse. The deeper app-owned network working tables improve
+engineering coverage, but the **manual fidelity hold remains**. Its package,
+PDF, manifest and failed-run predecessors retain separate identities and
+hashes. Teacher review, learner calibration, rights and accessibility remain
+external gates; the expensive shared-route matrix stays deferred.

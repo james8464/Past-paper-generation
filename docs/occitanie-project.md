@@ -1,6 +1,6 @@
 # Occitanie: original French NSI practice papers
 
-Last updated: 2026-10-08. This is an evidence/status record, not a claim of
+Last updated: 2026-10-09. This is an evidence/status record, not a claim of
 educational approval. No teacher, school, Région, examiner or Ministry endorsement
 has been obtained. No prize application has been submitted.
 
@@ -137,6 +137,17 @@ against 36 in the official 16-page comparator. E1 is deeper, yet E2 and the
 last E3 page remain sparse; the proposed correction separates the 3d rubric
 from its answer and displays literal Markdown fencing in the 2g rubric. This
 engineering result is not a model recommendation or teacher validation.
+
+Protected PR #50 added a version-isolated twelve-question network, process and
+security sequence with candidate working tables. Its [pinned V18 live diagnostic](quality/french-nsi-v18-network-reasoning-live-diagnostic-2026-10-09.md)
+passed automation on the first attempt with no repairs. All nine subject and
+fifteen proposed-correction pages were visually inspected against all sixteen
+pages of the official 2026 Métropole comparator. The subject now has 32
+questions, but E2 still places ten questions on one page and the final E1/E3
+pages remain sparse; the official reference has 36 questions over sixteen
+pages with more sustained multi-step work. **Manual product fidelity remains
+on hold.** This single paper does not select a model or provide teacher or
+learner validation. Earlier checkpoints and failures remain preserved.
 
 ## Genuine Occitanie scenario — PLANNED
 
