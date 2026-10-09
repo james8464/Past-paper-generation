@@ -35,6 +35,10 @@ from Backend.Core.france.database_depth_prose import (  # noqa: E402
     DATABASE_DEPTH_PROSE_VERSION,
     database_depth_catalogue_digest,
 )
+from Backend.Core.france.database_reasoning_prose import (  # noqa: E402
+    DATABASE_REASONING_PROSE_VERSION,
+    database_reasoning_catalogue_digest,
+)
 from Backend.Core.france.graph_tree_depth_contract import (  # noqa: E402
     build_graph_tree_depth_contract,
 )
@@ -62,6 +66,7 @@ from Backend.Core.france.network_reasoning_prose import (  # noqa: E402
 )
 from Backend.Core.france.pipeline import (  # noqa: E402
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
+    CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
 )
@@ -100,12 +105,20 @@ def _load_json(path: Path) -> dict[str, Any] | None:
         return None
 
 
-def accepted_result(path: Path, identity: dict[str, Any]) -> bool:
-    return _accepted_payload(_load_json(path), path, identity)
+def accepted_result(
+    path: Path, identity: dict[str, Any], *, expected_prompt_version: str | None = None
+) -> bool:
+    return _accepted_payload(
+        _load_json(path), path, identity, expected_prompt_version=expected_prompt_version
+    )
 
 
 def _accepted_payload(
-    value: dict[str, Any] | None, path: Path, identity: dict[str, Any]
+    value: dict[str, Any] | None,
+    path: Path,
+    identity: dict[str, Any],
+    *,
+    expected_prompt_version: str | None = None,
 ) -> bool:
     if (
         not value
@@ -149,25 +162,51 @@ def _accepted_payload(
         return False
     if (
         manifest_identity.get("assessment") != asdict(NSI_2027)
+        or (
+            expected_prompt_version is not None
+            and manifest_identity.get("prompt_version") != expected_prompt_version
+        )
         or manifest_identity.get("prompt_version")
         not in {
             CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
             CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
             CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
+            CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
         }
         or manifest_identity.get("database_depth_contract_sha256")
         != build_database_depth_contract(identity["seed"]).digest
-        or manifest_identity.get("database_depth_prose_contract_version")
-        != DATABASE_DEPTH_PROSE_VERSION
-        or manifest_identity.get("database_depth_prose_catalogue_sha256")
-        != database_depth_catalogue_digest()
         or manifest_identity.get("provider") != "ollama"
     ):
         return False
     if (
         manifest_identity["prompt_version"]
-        == CONTROLLED_NETWORK_REASONING_PROMPT_VERSION
+        == CONTROLLED_DATABASE_REASONING_PROMPT_VERSION
     ):
+        if (
+            manifest_identity.get("database_reasoning_prose_contract_version")
+            != DATABASE_REASONING_PROSE_VERSION
+            or manifest_identity.get("database_reasoning_prose_catalogue_sha256")
+            != database_reasoning_catalogue_digest()
+            or any(
+                field in manifest_identity
+                for field in (
+                    "database_depth_prose_contract_version",
+                    "database_depth_prose_catalogue_sha256",
+                )
+            )
+        ):
+            return False
+    elif (
+        manifest_identity.get("database_depth_prose_contract_version")
+        != DATABASE_DEPTH_PROSE_VERSION
+        or manifest_identity.get("database_depth_prose_catalogue_sha256")
+        != database_depth_catalogue_digest()
+    ):
+        return False
+    if manifest_identity["prompt_version"] in {
+        CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
+        CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
+    }:
         if (
             manifest_identity.get("network_reasoning_contract_sha256")
             != build_network_reasoning_contract(identity["seed"]).digest
@@ -197,6 +236,7 @@ def _accepted_payload(
     if manifest_identity["prompt_version"] in {
         CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
         CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
+        CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
     }:
         if (
             manifest_identity.get("graph_tree_depth_contract_sha256")
@@ -431,7 +471,11 @@ def run_plan(args: argparse.Namespace) -> int:
             raise ValueError("Le résultat a perdu son intégrité; conserver le dossier")
         if previous is None and item_root.exists() and any(item_root.iterdir()):
             raise ValueError("Le résultat a perdu son intégrité; conserver le dossier")
-        if accepted_result(result_path, identity):
+        if accepted_result(
+            result_path,
+            identity,
+            expected_prompt_version=CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
+        ):
             results.append(previous)
             continue
         if previous is not None and previous.get("status") == "passed":
@@ -500,7 +544,10 @@ def run_plan(args: argparse.Namespace) -> int:
             "completed_at": datetime.now(UTC).isoformat(),
         }
         if result["status"] == "passed" and not _accepted_payload(
-            result, result_path, identity
+            result,
+            result_path,
+            identity,
+            expected_prompt_version=CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
         ):
             result["status"] = "failed"
             result["error"] = "L'intégrité des artefacts publiés est invalide"

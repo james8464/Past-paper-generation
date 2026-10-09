@@ -13,6 +13,168 @@ def _pin_v17_generation(monkeypatch, runtime):
 
 
 @pytest.mark.parametrize("large_print", [False, True])
+def test_v19_publication_prints_locked_database_reasoning_and_keeps_its_phases(
+    tmp_path, monkeypatch, large_print
+):
+    import json
+    import re
+
+    import pymupdf
+
+    from Backend.Core.france import runtime
+    from Backend.Core.france.database_depth_contract import (
+        build_database_depth_contract,
+    )
+    from Backend.Core.france.nsi import NSIExercise
+    from tests.test_nsi_pipeline import (
+        ControlledDatabaseReasoningFrenchClient,
+        make_index,
+    )
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+    monkeypatch.setattr(runtime, "model_identity", lambda *_: "fixture-digest")
+    monkeypatch.setattr(
+        runtime,
+        "FrenchOllamaClient",
+        lambda **_: ControlledDatabaseReasoningFrenchClient(),
+    )
+    args = Namespace(
+        assessment="fr-bac-general-nsi-written-2027",
+        reference_index=index,
+        output=str(tmp_path / "output"),
+        seed=270100,
+        model="fixture",
+        ollama_url="http://localhost:11434",
+        allow_remote=False,
+        large_print=large_print,
+    )
+    assert runtime.handle_generate_assessment(args) == 0
+    (bundle,) = (tmp_path / "output").glob("nsi-*")
+    package = json.loads((bundle / "assessment.json").read_text())
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v19"
+    exercise = NSIExercise.model_validate(package["exercises"][1])
+    contract = build_database_depth_contract(args.seed)
+    assert (
+        runtime.database_pdf_contract_version(package["identity"]["prompt_version"])
+        == "v19"
+    )
+    for name, correction in (("sujet.pdf", False), ("corrige.pdf", True)):
+        path = bundle / name
+        runtime.validate_database_reasoning_pdf(
+            path, contract, correction=correction, exercise=exercise
+        )
+        with pymupdf.open(path) as pdf:
+            pages = [page.get_text() for page in pdf]
+            assert all(
+                0 <= word[0] <= word[2] <= page.rect.width
+                and 0 <= word[1] <= word[3] <= page.rect.height
+                for page in pdf
+                for word in page.get_text("words")
+            )
+            assert 8 <= len(pdf) <= (24 if large_print and correction else 19)
+            flat = " ".join(" ".join(pages).split())
+            for phase in ("Partie A", "Partie B", "Partie C"):
+                assert phase in flat
+            for question in exercise.questions:
+                assert flat.count(" ".join(question.prompt.split())) == 1
+                for credit in question.marking:
+                    assert (credit.criterion in flat) == correction
+        class ExtractedDocument:
+            def __init__(self, values):
+                self.values = values
+
+            def __enter__(self):
+                return [
+                    type("Page", (), {"get_text": lambda _self, text=text: text})()
+                    for text in self.values
+                ]
+
+            def __exit__(self, *_):
+                return False
+
+        if correction:
+            swapped = [
+                page.replace("Barème indicatif — question 2a", "SWAP-RUBRIC")
+                .replace(
+                    "Barème indicatif — question 2b", "Barème indicatif — question 2a"
+                )
+                .replace("SWAP-RUBRIC", "Barème indicatif — question 2b")
+                for page in pages
+            ]
+            assert swapped != pages
+
+            with monkeypatch.context() as patch:
+                patch.setattr(
+                    runtime.pymupdf,
+                    "open",
+                    lambda _, values=swapped: ExtractedDocument(values),
+                )
+                with pytest.raises(ValueError, match=r"rubric|answer"):
+                    runtime.validate_database_reasoning_pdf(
+                        path, contract, correction=True, exercise=exercise
+                    )
+            first = exercise.questions[0].marking[0].criterion
+            second = exercise.questions[1].marking[0].criterion
+
+            def swap_credits(page, first_criterion, second_criterion):
+                first_pattern = r"\s+".join(map(re.escape, first_criterion.split()))
+                second_pattern = r"\s+".join(map(re.escape, second_criterion.split()))
+                page = re.sub(first_pattern, "SWAP-CREDIT", page)
+                page = re.sub(second_pattern, first_criterion, page)
+                return page.replace("SWAP-CREDIT", second_criterion)
+
+            swapped_credits = [
+                swap_credits(page, first, second) for page in pages
+            ]
+            assert swapped_credits != pages
+            with monkeypatch.context() as patch:
+                patch.setattr(
+                    runtime.pymupdf,
+                    "open",
+                    lambda _, values=swapped_credits: ExtractedDocument(values),
+                )
+                runtime.validate_database_depth_contract_pdf(
+                    path, contract, correction=True, exercise=exercise
+                )
+                with pytest.raises(ValueError, match=r"credit|rubric"):
+                    runtime.validate_database_reasoning_pdf(
+                        path, contract, correction=True, exercise=exercise
+                    )
+        else:
+            leaked_result = exercise.questions[2].answer.split(" ; ")[0].split(": ", 1)[1]
+            for leak in (
+                leaked_result,
+                "incident.id_cat = categorie.id_cat",
+                "assert nombre_clos(incidents) == 2",
+                "incident['statut'] == 'clos'",
+                "2 incidents clos",
+                contract.to_dict()["update_sql"],
+            ):
+                assert leak in " ".join(question.answer for question in exercise.questions)
+                assert " ".join(leak.split()) not in " ".join(" ".join(pages).split())
+                leaked_pages = [*pages]
+                leaked_pages[-1] += "\n" + leak + "\n"
+                with monkeypatch.context() as patch:
+                    patch.setattr(
+                        runtime.pymupdf,
+                        "open",
+                        lambda _, values=leaked_pages: ExtractedDocument(values),
+                    )
+                    runtime.validate_database_depth_contract_pdf(
+                        path, contract, correction=False, exercise=exercise
+                    )
+                    try:
+                        runtime.validate_database_reasoning_pdf(
+                            path, contract, correction=False, exercise=exercise
+                        )
+                    except ValueError as exc:
+                        assert "leak" in str(exc) or "answer" in str(exc)
+                    else:
+                        pytest.fail(f"V19 subject accepted leaked answer value: {leak}")
+
+
+@pytest.mark.parametrize("large_print", [False, True])
 def test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles(
     tmp_path, monkeypatch, large_print
 ):
@@ -168,12 +330,14 @@ def test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles(
                     )
 
 
-def test_runtime_publishes_v18_with_locked_network_pdf_dispatch(tmp_path, monkeypatch):
+def test_runtime_publishes_v19_even_if_caller_requests_older_contract(
+    tmp_path, monkeypatch
+):
     import json
 
     from Backend.Core.france import runtime
     from tests.test_nsi_pipeline import (
-        ControlledNetworkReasoningFrenchClient,
+        ControlledDatabaseReasoningFrenchClient,
         make_index,
     )
 
@@ -183,7 +347,7 @@ def test_runtime_publishes_v18_with_locked_network_pdf_dispatch(tmp_path, monkey
     monkeypatch.setattr(
         runtime,
         "FrenchOllamaClient",
-        lambda **_: ControlledNetworkReasoningFrenchClient(),
+        lambda **_: ControlledDatabaseReasoningFrenchClient(),
     )
     args = Namespace(
         assessment="fr-bac-general-nsi-written-2027",
@@ -199,7 +363,7 @@ def test_runtime_publishes_v18_with_locked_network_pdf_dispatch(tmp_path, monkey
     assert runtime.handle_generate_assessment(args) == 0
     (bundle,) = (tmp_path / "output").glob("nsi-*")
     package = json.loads((bundle / "assessment.json").read_text())
-    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v18"
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v19"
     assert len(package["exercises"][2]["questions"]) == 12
     assert (bundle / "sujet.pdf").is_file()
     assert (bundle / "corrige.pdf").is_file()

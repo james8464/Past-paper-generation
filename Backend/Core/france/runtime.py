@@ -47,6 +47,7 @@ from Backend.Core.france.network_reasoning_contract import (
 from Backend.Core.france.nsi import NSIExercise
 from Backend.Core.france.pipeline import (
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
+    CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
@@ -477,13 +478,90 @@ def validate_database_depth_contract_pdf(
         for credit in question.marking:
             criterion = printable_database_criterion(credit.criterion)
             label = credit.points.replace(".", ",")
-            unit = "point" if credit.points in {"0.5", "1", "1.0"} else "points"
+            unit = "point" if Decimal(credit.points) <= 1 else "points"
             if correction and f"{label} {unit} {criterion}" not in flat:
                 raise ValueError(f"Database depth credit {question.id} missing")
             if not correction and criterion in flat:
                 raise ValueError(
                     f"Database depth rubric {question.id} leaked into paper"
                 )
+
+
+def validate_database_reasoning_pdf(
+    path: Path,
+    contract: DatabaseDepthContract,
+    *,
+    correction: bool,
+    exercise: NSIExercise,
+) -> None:
+    """Require V2 facts and each V19 reasoning phase in its intended role."""
+    validate_database_depth_contract_pdf(
+        path, contract, correction=correction, exercise=exercise
+    )
+    with pymupdf.open(path) as pdf:
+        raw_pages = [page.get_text() for page in pdf]
+    pages = [" ".join(page.split()) for page in raw_pages]
+    flat = " ".join(pages)
+    for phase, task_id in (("Partie A", "2a"), ("Partie B", "2e"), ("Partie C", "2g")):
+        question = next(q for q in exercise.questions if q.id == task_id)
+        if phase not in question.prompt or flat.count(phase) != 1:
+            raise ValueError(f"Database reasoning phase {phase} missing or duplicated")
+    if not correction:
+        update_sql = " ".join(contract.to_dict()["update_sql"].split())
+        if update_sql in flat:
+            raise ValueError("Database reasoning update answer leaked")
+        for question in exercise.questions:
+            # The old whole-answer check cannot see a leaked result or trace step.
+            # These finite V19 answer-value patterns do not occur in the source
+            # tables or prompts, so each is a safe candidate-facing rejection.
+            answer = " ".join(question.answer.split())
+            fragments = re.findall(
+                r"\b(?:10[1-9]\s*:\s*[A-Za-zÀ-ÿ]+(?:\s*\(id_cat\s*=\s*\d+\))?"
+                r"|[A-Za-zÀ-ÿ]+\s*:\s*\d+\b"
+                r"|catégorie\s+\d+\s*:\s*\d+\b"
+                r"|(?:Avant|après)\s*:\s*\d+\s+incidents clos"
+                r"|incident\.id_cat\s*=\s*categorie\.id_cat"
+                r"|assert\s+nombre_clos\(incidents\)\s*==\s*\d+"
+                r"|incident\['statut'\]\s*==\s*'clos'"
+                r"|renvoie\s+\d+\b)",
+                answer,
+                flags=re.IGNORECASE,
+            )
+            fragments.extend(re.findall(r"\b\d+\s+incidents clos\b", answer))
+            if any(" ".join(fragment.split()) in flat for fragment in fragments):
+                raise ValueError(f"Database reasoning answer {question.id} leaked")
+    if correction:
+        raw = "\n".join(raw_pages)
+        matches = [
+            re.search(rf"(?m)^{re.escape(question.id)}\.(?:\s|$)", raw)
+            for question in exercise.questions
+        ]
+        if any(match is None for match in matches):
+            raise ValueError("Database reasoning question section missing")
+        for index, question in enumerate(exercise.questions):
+            start = matches[index].start()
+            end = matches[index + 1].start() if index + 1 < len(matches) else len(raw)
+            section = " ".join(raw[start:end].split())
+            answer = " ".join(
+                re.sub(r"```(?:sql|python)?", " ", question.answer).split()
+            )
+            rubric = f"Barème indicatif — question {question.id}"
+            if (
+                answer not in section
+                or section.count(rubric) != 1
+                or not any(answer in page and rubric in page for page in pages)
+            ):
+                raise ValueError(
+                    f"Database reasoning answer/rubric for {question.id} separated"
+                )
+            for credit in question.marking:
+                label = credit.points.replace(".", ",")
+                unit = "point" if Decimal(credit.points) <= 1 else "points"
+                criterion = printable_database_criterion(credit.criterion)
+                if f"{label} {unit} {criterion}" not in section:
+                    raise ValueError(
+                        f"Database reasoning credit {question.id} misplaced"
+                    )
 
 
 def validate_network_contract_pdf(
@@ -866,7 +944,10 @@ def load_originality_history(output: Path) -> list[str]:
 
 def network_pdf_contract_version(prompt_version: str) -> str:
     """Never silently render an unknown French package with an older validator."""
-    if prompt_version == CONTROLLED_NETWORK_REASONING_PROMPT_VERSION:
+    if prompt_version in {
+        CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
+        CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
+    }:
         return "v18"
     if prompt_version in {
         CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
@@ -880,6 +961,8 @@ def network_pdf_contract_version(prompt_version: str) -> str:
 
 
 def database_pdf_contract_version(prompt_version: str) -> str:
+    if prompt_version == CONTROLLED_DATABASE_REASONING_PROMPT_VERSION:
+        return "v19"
     if prompt_version in {
         CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
         CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
@@ -932,7 +1015,7 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v18",
+            contract_authoring_version="v19",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
@@ -940,15 +1023,17 @@ def handle_generate_assessment(args) -> int:
         graph_tree_depth = package["identity"]["prompt_version"] in {
             CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
             CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
+            CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
         }
         graph_tree_contract = (
             build_graph_tree_depth_contract(args.seed)
             if graph_tree_depth
             else build_graph_tree_contract(args.seed, "1")
         )
-        database_depth = (
-            database_pdf_contract_version(package["identity"]["prompt_version"]) == "v2"
+        database_pdf_version = database_pdf_contract_version(
+            package["identity"]["prompt_version"]
         )
+        database_depth = database_pdf_version in {"v2", "v19"}
         database_contract = (
             build_database_depth_contract(args.seed)
             if database_depth
@@ -996,7 +1081,9 @@ def handle_generate_assessment(args) -> int:
                 exercise=exercises[0],
             )
             database_validator = (
-                validate_database_depth_contract_pdf
+                validate_database_reasoning_pdf
+                if database_pdf_version == "v19"
+                else validate_database_depth_contract_pdf
                 if database_depth
                 else validate_database_contract_pdf
             )

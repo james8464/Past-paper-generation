@@ -633,6 +633,58 @@ class ControlledNetworkReasoningFrenchClient(ControlledGraphTreeDepthFrenchClien
         return super().generate_json(prompt)
 
 
+class ControlledDatabaseReasoningFrenchClient(ControlledNetworkReasoningFrenchClient):
+    def generate_json(self, prompt):
+        if prompt.startswith("Sélectionne l'exercice 2 v19"):
+            return {
+                "scene_id": "atelier",
+                "question_forms": {
+                    f"2{letter}": f"2{letter}-q1" for letter in "abcdefghij"
+                },
+                "rubric_forms": {
+                    f"2{letter}": f"2{letter}-r1" for letter in "abcdefghij"
+                },
+            }
+        return super().generate_json(prompt)
+
+
+def test_v19_database_reasoning_package_replays_and_preserves_v18(tmp_path):
+    from copy import deepcopy
+    from decimal import Decimal
+
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledDatabaseReasoningFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "v19-checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v19",
+    )
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v19"
+    assert [len(item["questions"]) for item in package["exercises"]] == [10, 10, 12]
+    assert sum(Decimal(item["target_points"]) for item in package["exercises"]) == 18
+    assert package["language_points"] == "2"
+    assert package["exercises"][1]["minutes"] == 70
+    assert validate_package(package)["structural_checks"] == "passed"
+    changed = deepcopy(package)
+    changed["identity"]["database_reasoning_prose_catalogue_sha256"] = "0" * 64
+    with pytest.raises(ValueError):
+        validate_package(changed)
+    old = generate_assessment(
+        index_path=index,
+        client=ControlledNetworkReasoningFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "v18-checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v18",
+    )
+    assert validate_package(old)["structural_checks"] == "passed"
+
+
 def test_v18_network_reasoning_blueprint_keeps_exact_technical_allocation():
     from decimal import Decimal
 
