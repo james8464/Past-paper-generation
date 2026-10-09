@@ -32,14 +32,22 @@ from Backend.Core.france.network_prose import (
     NETWORK_PROSE_VERSION,
     network_catalogue_digest,
 )
+from Backend.Core.france.network_reasoning_contract import (
+    build_network_reasoning_contract,
+)
+from Backend.Core.france.network_reasoning_prose import (
+    NETWORK_REASONING_PROSE_VERSION,
+    network_reasoning_catalogue_digest,
+)
 from Backend.Core.france.pipeline import (
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
+    CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
 )
 
 
-def _passed_result(tmp_path, *, v17=False):
+def _passed_result(tmp_path, *, v17=False, v18=False):
     identity = {
         "implementation": "implementation-sha",
         "reference_index_sha256": "reference-sha",
@@ -52,16 +60,15 @@ def _passed_result(tmp_path, *, v17=False):
     manifest_identity = {
         "assessment": asdict(NSI_2027),
         "prompt_version": (
-            CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION
+            CONTROLLED_NETWORK_REASONING_PROMPT_VERSION
+            if v18
+            else CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION
             if v17
             else CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION
         ),
         "database_depth_contract_sha256": build_database_depth_contract(270100).digest,
         "database_depth_prose_contract_version": DATABASE_DEPTH_PROSE_VERSION,
         "database_depth_prose_catalogue_sha256": database_depth_catalogue_digest(),
-        "network_depth_contract_sha256": build_network_depth_contract(270100).digest,
-        "network_depth_prose_contract_version": NETWORK_DEPTH_PROSE_VERSION,
-        "network_depth_prose_catalogue_sha256": network_depth_catalogue_digest(),
         "implementation_sha256": identity["implementation"],
         "seed": identity["seed"],
         "provider": "ollama",
@@ -71,7 +78,21 @@ def _passed_result(tmp_path, *, v17=False):
         "blueprint": [],
         "originality_history_digest": "history-sha",
     }
-    if v17:
+    if v18:
+        manifest_identity.update(
+            network_reasoning_contract_sha256=build_network_reasoning_contract(
+                270100
+            ).digest,
+            network_reasoning_prose_contract_version=NETWORK_REASONING_PROSE_VERSION,
+            network_reasoning_prose_catalogue_sha256=network_reasoning_catalogue_digest(),
+        )
+    else:
+        manifest_identity.update(
+            network_depth_contract_sha256=build_network_depth_contract(270100).digest,
+            network_depth_prose_contract_version=NETWORK_DEPTH_PROSE_VERSION,
+            network_depth_prose_catalogue_sha256=network_depth_catalogue_digest(),
+        )
+    if v17 or v18:
         manifest_identity.update(
             graph_tree_depth_contract_sha256=build_graph_tree_depth_contract(
                 270100
@@ -215,6 +236,30 @@ def test_french_benchmark_resume_accepts_v17_and_rejects_missing_graph_identity(
     manifest = bundle / "manifest.json"
     manifest_value = json.loads(manifest.read_text())
     manifest_value["identity"].pop("graph_tree_depth_contract_sha256")
+    manifest.write_text(json.dumps(manifest_value))
+    result_value = json.loads(result.read_text())
+    result_value["artifacts"]["manifest_sha256"] = sha256(
+        manifest.read_bytes()
+    ).hexdigest()
+    result.write_text(json.dumps(result_value))
+    assert not accepted_result(result, identity)
+
+
+def test_french_benchmark_accepts_only_exact_v18_network_identity(tmp_path):
+    from tools.french_nsi_benchmark import accepted_result
+
+    result, identity, bundle = _passed_result(tmp_path, v18=True)
+    assert accepted_result(result, identity)
+    manifest = bundle / "manifest.json"
+    package = bundle / "assessment.json"
+    manifest_value = json.loads(manifest.read_text())
+    package_value = json.loads(package.read_text())
+    for value in (manifest_value, package_value):
+        value["identity"]["network_reasoning_contract_sha256"] = "0" * 64
+    package.write_text(json.dumps(package_value))
+    manifest_value["artifacts"]["assessment_package"]["sha256"] = sha256(
+        package.read_bytes()
+    ).hexdigest()
     manifest.write_text(json.dumps(manifest_value))
     result_value = json.loads(result.read_text())
     result_value["artifacts"]["manifest_sha256"] = sha256(
