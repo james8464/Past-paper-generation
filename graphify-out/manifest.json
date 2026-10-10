@@ -2055,8 +2055,8 @@
     "semantic_hash": ""
   },
   "tools/build_occitanie_submission.py": {
-    "mtime": 1791586487.8705447,
-    "ast_hash": "10b256799f6f8220b504afed6a247e09",
+    "mtime": 1791641384.9091697,
+    "ast_hash": "ff8959c54ff272d8d08ecf8cda58271a",
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
@@ -2255,13 +2255,13 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/README.md": {
-    "mtime": 1791586471.554568,
-    "ast_hash": "f967b8ba0607b27ef007f6c2c546aaca",
+    "mtime": 1791641462.6548147,
+    "ast_hash": "5f6e6f41fded196e09472dcb3fd31797",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/claims-register.md": {
-    "mtime": 1791586960.148785,
-    "ast_hash": "49881a29ff95540763d1aa308cb4a719",
+    "mtime": 1791641423.6400845,
+    "ast_hash": "d092397f87b354efa5485b2cd3f12c3f",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/demo-script.md": {
@@ -2285,8 +2285,8 @@
     "semantic_hash": ""
   },
   "docs/occitanie-project.md": {
-    "mtime": 1791586471.5547419,
-    "ast_hash": "20df436b83dfb1e26dccb767c560abb4",
+    "mtime": 1791641442.844976,
+    "ast_hash": "3a170f2ec0473bba6e865ae4863cfa0f",
     "semantic_hash": ""
   },
   "docs/project-analysis/IMPLEMENTATION_AND_FIDELITY_REPORT.md": {
@@ -2555,8 +2555,8 @@
     "semantic_hash": ""
   },
   "tests/test_occitanie_submission.py": {
-    "mtime": 1791586562.1949513,
-    "ast_hash": "03f5464a0be15dfc8b0cfa5172173a5e",
+    "mtime": 1791641350.8380978,
+    "ast_hash": "c2438daf3d733d17d572f3e7a889c816",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Assets.xcassets/TutorialFrenchNSI.imageset/TutorialFrenchNSI.png": {
@@ -3002,6 +3002,11 @@
   "tests/test_french_graph_resilience_authoring.py": {
     "mtime": 1791597841.930269,
     "ast_hash": "ec053380dcd4afdde1e8a7d185fa5516",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v20-graph-resilience-live-diagnostic-2026-10-10.md": {
+    "mtime": 1791641417.0509515,
+    "ast_hash": "3512b142c149ae0e9e385593a489c278",
     "semantic_hash": ""
   }
 }

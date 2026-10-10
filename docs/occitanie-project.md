@@ -160,6 +160,20 @@ editing. **Manual product fidelity remains on hold.** This single paper does
 not select a model or provide teacher or learner validation; previous live
 holds and failed attempts remain preserved.
 
+Protected PR #54 corrected the specific scope lines observed in V19; native
+French teacher review is still required. Protected PR #55 added a
+version-isolated graph-link-outage reasoning sequence. Its
+[pinned V20 live diagnostic](quality/french-nsi-v20-graph-resilience-live-diagnostic-2026-10-10.md)
+passed automation on the first attempt, with no repairs. Every page of the
+eight-page subject and seventeen-page proposed correction was inspected,
+alongside all sixteen official 2026 Métropole pages. There are still 32
+questions versus the official 36: E1 and E2 each put ten questions on one
+dense page, while the last E3 page is sparse. The graph outage increases E1
+substance but does not supply enough sustained reasoning or usable working
+space. **Manual product fidelity remains on hold.** This single-paper result
+does not select a model or establish teacher, learner or examiner validation.
+Earlier live holds and failed attempts remain preserved.
+
 ## Genuine Occitanie scenario — PLANNED
 
 A teacher generates and checks a paper on a Mac; students receive a PDF through

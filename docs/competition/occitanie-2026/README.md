@@ -1,6 +1,6 @@
 # Prix Occitanie 2026 submission pack
 
-Updated 8 October 2026.
+Updated 10 October 2026.
 
 ## Formal requirement
 
@@ -61,12 +61,13 @@ those items as planned qualification work, not achieved approval.
 The first pinned Gemma 4 12B campaign accepted 0 of 10 complete papers. Its
 failures and later failed one-paper diagnostics remain retained evidence, not a
 model recommendation. All three exercises now use app-owned, versioned French
-question, answer and credit contracts. A pinned V19 paper passed automated
+question, answer and credit contracts. A pinned V20 paper passed automated
 checks on its first attempt, but
-[manual comparison with the official 2026 paper](../../quality/french-nsi-v19-database-reasoning-live-diagnostic-2026-10-10.md)
-kept fidelity on hold: the nine-page subject has 32 numbered questions,
-versus 36 across 16 official pages, with a sparse final network page and
-insufficient sustained multi-step depth. The V18, V17, V16 and V15 live holds and
+[manual comparison with the official 2026 paper](../../quality/french-nsi-v20-graph-resilience-live-diagnostic-2026-10-10.md)
+kept fidelity on hold: the eight-page subject has 32 numbered questions,
+versus 36 across 16 official pages. E1 and E2 each crowd ten questions onto
+one page; the final network page is sparse, and sustained multi-step depth
+and learner working space remain insufficient. The V19–V15 live holds and
 v12–v14 failures remain separate evidence. No
 multi-paper model qualification, teacher recommendation or learner calibration
 has been achieved. The application must present the generator as a prototype,
