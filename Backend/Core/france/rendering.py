@@ -532,7 +532,8 @@ def render_assessment(
         paragraph(exercise_scope_text(exercise.title), exercise_scope)
         content(exercise.context)
         staged_network_materials = bool(exercise.questions) and all(
-            question.verification.get("kind") == "network_reasoning_contract"
+            question.verification.get("kind")
+            in {"network_reasoning_contract", "graph_resilience_contract"}
             for question in exercise.questions
         )
         staged_material_ids: set[str] = set()
@@ -656,6 +657,7 @@ def render_assessment(
                 story.append(marking_table)
                 if (
                     v18_paper
+                    or question.verification.get("kind") == "graph_resilience_contract"
                     or question.verification.get("kind") == "network_reasoning_contract"
                     or question.id == "3f"
                     or (

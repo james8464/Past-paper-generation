@@ -24,6 +24,10 @@ from Backend.Core.france.database_depth_contract import (
     DatabaseDepthContract,
     build_database_depth_contract,
 )
+from Backend.Core.france.graph_resilience_contract import (
+    GraphResilienceContract,
+    build_graph_resilience_contract,
+)
 from Backend.Core.france.graph_tree_binding import canonical_answer, graph_edge_manifest
 from Backend.Core.france.graph_tree_contract import (
     GraphTreeContract,
@@ -48,6 +52,7 @@ from Backend.Core.france.nsi import NSIExercise
 from Backend.Core.france.pipeline import (
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
     CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
+    CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
@@ -325,6 +330,116 @@ def validate_graph_tree_depth_contract_pdf(
                 raise ValueError(
                     f"Graph/tree depth rubric {question.id} revealed in paper"
                 )
+
+
+def validate_graph_resilience_pdf(
+    path: Path,
+    contract: GraphResilienceContract,
+    *,
+    correction: bool,
+    exercise: NSIExercise,
+) -> None:
+    """Fail closed on V20 printed facts, staging, answers and exact credit."""
+    data = contract.to_dict()
+    if exercise.id != "1" or [q.id for q in exercise.questions] != data["task_ids"]:
+        raise ValueError("Graph resilience exercise differs from locked contract")
+    with pymupdf.open(path) as pdf:
+        lines = [
+            line.strip()
+            for page in pdf
+            for line in page.get_text().splitlines()
+            if line.strip()
+            and not line.startswith("Paper Creator —")
+            and not line.startswith("Page : ")
+        ]
+    text = "\n".join(lines)
+    flat = " ".join(text.split())
+    heading = f"Exercice 1 ({exercise.target_points.replace('.', ',')} points)"
+    if text.count(heading) != 1:
+        raise ValueError("Graph resilience exercise credit differs from blueprint")
+    positions = {}
+    for task_id in data["task_ids"]:
+        matches = [
+            index
+            for index, line in enumerate(lines)
+            if re.match(rf"^{re.escape(task_id)}\.(?:\s|$)", line)
+        ]
+        if len(matches) != 1:
+            raise ValueError(
+                f"Graph resilience question {task_id} missing or duplicated"
+            )
+        positions[task_id] = matches[0]
+    graph_header = "Réseau pondéré des postes"
+    tree_header = "Arbre des identifiants — arbre"
+    if lines.count(graph_header) != 1 or lines.count(tree_header) != 1:
+        raise ValueError("Graph resilience materials missing or duplicated")
+    graph_at, tree_at = lines.index(graph_header), lines.index(tree_header)
+    if not (graph_at < positions["1a"] < positions["1g"] < tree_at < positions["1h"]):
+        raise ValueError("Graph resilience material is not staged by its questions")
+    graph_lines = lines[graph_at + 1 : positions["1a"]]
+    expected_graph = [str(edge[2]) for edge in data["graph"]["edges"]] + data["graph"][
+        "nodes"
+    ]
+    if graph_lines != expected_graph:
+        raise ValueError("Graph resilience figure differs from locked facts")
+    tree_lines = lines[tree_at + 1 : positions["1h"]]
+    expected_tree = list(data["tree"]["columns"]) + [
+        str(value) if value is not None else "—"
+        for row in data["tree"]["rows"]
+        for value in row
+    ]
+    if tree_lines != expected_tree:
+        raise ValueError("Graph resilience tree table differs from locked facts")
+    for source in (
+        graph_edge_manifest(data["graph"]),
+        data["debug_case"]["faulty_code"],
+        data["search_code"],
+    ):
+        if " ".join(source.split()) not in flat:
+            raise ValueError("Graph resilience source or working facts missing")
+    if not correction and any(
+        re.search(pattern, flat)
+        for pattern in (
+            r"\bif\s+cle\s*<\s*noeud\.valeur\s*:",
+            r"\bif\s+voisin\s+not\s+in\s+visites\s*:",
+        )
+    ):
+        raise ValueError("Graph resilience corrected code revealed in paper")
+    for question_index, question in enumerate(exercise.questions):
+        prompt_text = (
+            question.prompt.partition("\n\n```")[0]
+            if question.id == "1j"
+            else question.prompt
+        )
+        prompt = " ".join(prompt_text.split())
+        if flat.count(prompt) != 1:
+            raise ValueError(f"Graph resilience prompt {question.id} missing")
+        answer = " ".join(question.answer.split())
+        next_position = (
+            positions[exercise.questions[question_index + 1].id]
+            if question_index + 1 < len(exercise.questions)
+            else next(
+                (
+                    index
+                    for index in range(positions[question.id] + 1, len(lines))
+                    if lines[index].startswith("Exercice 2 (")
+                ),
+                len(lines),
+            )
+        )
+        section = " ".join(lines[positions[question.id] : next_position])
+        if correction and answer not in section:
+            raise ValueError(f"Graph resilience answer {question.id} missing")
+        if not correction and answer in flat:
+            raise ValueError(f"Graph resilience answer {question.id} leaked")
+        for credit in question.marking:
+            criterion = " ".join(credit.criterion.split())
+            label = credit.points.replace(".", ",")
+            unit = "point" if Decimal(credit.points) <= 1 else "points"
+            if correction and f"{label} {unit} {criterion}" not in section:
+                raise ValueError(f"Graph resilience credit {question.id} missing")
+            if not correction and criterion in flat:
+                raise ValueError(f"Graph resilience rubric {question.id} leaked")
 
 
 def validate_database_contract_pdf(
@@ -945,6 +1060,7 @@ def load_originality_history(output: Path) -> list[str]:
 def network_pdf_contract_version(prompt_version: str) -> str:
     """Never silently render an unknown French package with an older validator."""
     if prompt_version in {
+        CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
         CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
         CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
     }:
@@ -961,7 +1077,10 @@ def network_pdf_contract_version(prompt_version: str) -> str:
 
 
 def database_pdf_contract_version(prompt_version: str) -> str:
-    if prompt_version == CONTROLLED_DATABASE_REASONING_PROMPT_VERSION:
+    if prompt_version in {
+        CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
+        CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
+    }:
         return "v19"
     if prompt_version in {
         CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
@@ -1015,18 +1134,24 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v19",
+            contract_authoring_version="v20",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
         exercises = [NSIExercise.model_validate(item) for item in package["exercises"]]
+        graph_resilience = (
+            package["identity"]["prompt_version"]
+            == CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION
+        )
         graph_tree_depth = package["identity"]["prompt_version"] in {
             CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
             CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
             CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
         }
         graph_tree_contract = (
-            build_graph_tree_depth_contract(args.seed)
+            build_graph_resilience_contract(args.seed)
+            if graph_resilience
+            else build_graph_tree_depth_contract(args.seed)
             if graph_tree_depth
             else build_graph_tree_contract(args.seed, "1")
         )
@@ -1070,7 +1195,9 @@ def handle_generate_assessment(args) -> int:
             )
             validate_pdf(path)
             graph_tree_validator = (
-                validate_graph_tree_depth_contract_pdf
+                validate_graph_resilience_pdf
+                if graph_resilience
+                else validate_graph_tree_depth_contract_pdf
                 if graph_tree_depth
                 else validate_contract_pdf
             )

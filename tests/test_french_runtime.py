@@ -12,6 +12,111 @@ def _pin_v17_generation(monkeypatch, runtime):
     )
 
 
+def _pin_v19_generation(monkeypatch, runtime):
+    generate = runtime.generate_assessment
+    monkeypatch.setattr(
+        runtime,
+        "generate_assessment",
+        lambda **kwargs: generate(**{**kwargs, "contract_authoring_version": "v19"}),
+    )
+
+
+@pytest.mark.parametrize("large_print", [False, True])
+def test_v20_runtime_stages_graph_and_tree_and_validates_pdf(
+    tmp_path, monkeypatch, large_print
+):
+    import json
+
+    import pymupdf
+
+    from Backend.Core.france import runtime
+    from Backend.Core.france.graph_resilience_contract import (
+        build_graph_resilience_contract,
+    )
+    from Backend.Core.france.nsi import NSIExercise
+    from tests.test_nsi_pipeline import (
+        ControlledGraphResilienceFrenchClient,
+        make_index,
+    )
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+    monkeypatch.setattr(runtime, "model_identity", lambda *_: "fixture-digest")
+    monkeypatch.setattr(
+        runtime,
+        "FrenchOllamaClient",
+        lambda **_: ControlledGraphResilienceFrenchClient(),
+    )
+    args = Namespace(
+        assessment="fr-bac-general-nsi-written-2027",
+        reference_index=index,
+        output=str(tmp_path / "output"),
+        seed=270100,
+        model="fixture",
+        ollama_url="http://localhost:11434",
+        allow_remote=False,
+        large_print=large_print,
+    )
+    assert runtime.handle_generate_assessment(args) == 0
+    (bundle,) = (tmp_path / "output").glob("nsi-*")
+    package = json.loads((bundle / "assessment.json").read_text())
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v20"
+    exercise = NSIExercise.model_validate(package["exercises"][0])
+    contract = build_graph_resilience_contract(args.seed)
+    for name, correction in (("sujet.pdf", False), ("corrige.pdf", True)):
+        path = bundle / name
+        runtime.validate_graph_resilience_pdf(
+            path, contract, correction=correction, exercise=exercise
+        )
+        with pymupdf.open(path) as pdf:
+            pages = [page.get_text() for page in pdf]
+            assert all(
+                0 <= word[0] <= word[2] <= page.rect.width
+                and 0 <= word[1] <= word[3] <= page.rect.height
+                for page in pdf
+                for word in page.get_text("words")
+            )
+        flat = " ".join(" ".join(pages).split())
+        assert flat.index("Réseau pondéré des postes") < flat.index("1a.")
+        assert flat.index("1g.") < flat.index("Arbre des identifiants — arbre")
+        assert flat.index("Arbre des identifiants — arbre") < flat.index("1h.")
+        assert ("La liaison fermée est exclue" in flat) == correction
+        if correction:
+            first_answer = exercise.questions[0].answer
+            assert sum(page.count(first_answer) for page in pages) == 1
+            shifted = [page.replace(first_answer, "", 1) for page in pages]
+            for index, page in enumerate(shifted):
+                if "1b." in page:
+                    shifted[index] = page.replace("1b.", "1b. " + first_answer, 1)
+                    break
+
+            class ExtractedDocument:
+                def __init__(self, values):
+                    self.values = values
+
+                def __enter__(self):
+                    return [
+                        type(
+                            "Page", (), {"get_text": lambda _self, value=text: value}
+                        )()
+                        for text in self.values
+                    ]
+
+                def __exit__(self, *_):
+                    return False
+
+            with monkeypatch.context() as patch:
+                patch.setattr(
+                    runtime.pymupdf,
+                    "open",
+                    lambda _, values=shifted: ExtractedDocument(values),
+                )
+                with pytest.raises(ValueError, match="answer 1a"):
+                    runtime.validate_graph_resilience_pdf(
+                        path, contract, correction=True, exercise=exercise
+                    )
+
+
 @pytest.mark.parametrize("large_print", [False, True])
 def test_v19_publication_prints_locked_database_reasoning_and_keeps_its_phases(
     tmp_path, monkeypatch, large_print
@@ -30,6 +135,8 @@ def test_v19_publication_prints_locked_database_reasoning_and_keeps_its_phases(
         ControlledDatabaseReasoningFrenchClient,
         make_index,
     )
+
+    _pin_v19_generation(monkeypatch, runtime)
 
     index = tmp_path / "references.sqlite"
     make_index(index)
@@ -80,6 +187,7 @@ def test_v19_publication_prints_locked_database_reasoning_and_keeps_its_phases(
                 assert flat.count(" ".join(question.prompt.split())) == 1
                 for credit in question.marking:
                     assert (credit.criterion in flat) == correction
+
         class ExtractedDocument:
             def __init__(self, values):
                 self.values = values
@@ -124,9 +232,7 @@ def test_v19_publication_prints_locked_database_reasoning_and_keeps_its_phases(
                 page = re.sub(second_pattern, first_criterion, page)
                 return page.replace("SWAP-CREDIT", second_criterion)
 
-            swapped_credits = [
-                swap_credits(page, first, second) for page in pages
-            ]
+            swapped_credits = [swap_credits(page, first, second) for page in pages]
             assert swapped_credits != pages
             with monkeypatch.context() as patch:
                 patch.setattr(
@@ -142,7 +248,9 @@ def test_v19_publication_prints_locked_database_reasoning_and_keeps_its_phases(
                         path, contract, correction=True, exercise=exercise
                     )
         else:
-            leaked_result = exercise.questions[2].answer.split(" ; ")[0].split(": ", 1)[1]
+            leaked_result = (
+                exercise.questions[2].answer.split(" ; ")[0].split(": ", 1)[1]
+            )
             for leak in (
                 leaked_result,
                 "incident.id_cat = categorie.id_cat",
@@ -151,7 +259,9 @@ def test_v19_publication_prints_locked_database_reasoning_and_keeps_its_phases(
                 "2 incidents clos",
                 contract.to_dict()["update_sql"],
             ):
-                assert leak in " ".join(question.answer for question in exercise.questions)
+                assert leak in " ".join(
+                    question.answer for question in exercise.questions
+                )
                 assert " ".join(leak.split()) not in " ".join(" ".join(pages).split())
                 leaked_pages = [*pages]
                 leaked_pages[-1] += "\n" + leak + "\n"
@@ -330,14 +440,14 @@ def test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles(
                     )
 
 
-def test_runtime_publishes_v19_even_if_caller_requests_older_contract(
+def test_runtime_publishes_v20_even_if_caller_requests_older_contract(
     tmp_path, monkeypatch
 ):
     import json
 
     from Backend.Core.france import runtime
     from tests.test_nsi_pipeline import (
-        ControlledDatabaseReasoningFrenchClient,
+        ControlledGraphResilienceFrenchClient,
         make_index,
     )
 
@@ -347,7 +457,7 @@ def test_runtime_publishes_v19_even_if_caller_requests_older_contract(
     monkeypatch.setattr(
         runtime,
         "FrenchOllamaClient",
-        lambda **_: ControlledDatabaseReasoningFrenchClient(),
+        lambda **_: ControlledGraphResilienceFrenchClient(),
     )
     args = Namespace(
         assessment="fr-bac-general-nsi-written-2027",
@@ -363,7 +473,7 @@ def test_runtime_publishes_v19_even_if_caller_requests_older_contract(
     assert runtime.handle_generate_assessment(args) == 0
     (bundle,) = (tmp_path / "output").glob("nsi-*")
     package = json.loads((bundle / "assessment.json").read_text())
-    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v19"
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v20"
     assert len(package["exercises"][2]["questions"]) == 12
     assert (bundle / "sujet.pdf").is_file()
     assert (bundle / "corrige.pdf").is_file()
