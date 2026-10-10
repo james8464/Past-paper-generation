@@ -39,6 +39,13 @@ from Backend.Core.france.database_reasoning_prose import (  # noqa: E402
     DATABASE_REASONING_PROSE_VERSION,
     database_reasoning_catalogue_digest,
 )
+from Backend.Core.france.graph_resilience_contract import (  # noqa: E402
+    build_graph_resilience_contract,
+)
+from Backend.Core.france.graph_resilience_prose import (  # noqa: E402
+    GRAPH_RESILIENCE_PROSE_VERSION,
+    graph_resilience_catalogue_digest,
+)
 from Backend.Core.france.graph_tree_depth_contract import (  # noqa: E402
     build_graph_tree_depth_contract,
 )
@@ -67,6 +74,7 @@ from Backend.Core.france.network_reasoning_prose import (  # noqa: E402
 from Backend.Core.france.pipeline import (  # noqa: E402
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
     CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
+    CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
 )
@@ -109,7 +117,10 @@ def accepted_result(
     path: Path, identity: dict[str, Any], *, expected_prompt_version: str | None = None
 ) -> bool:
     return _accepted_payload(
-        _load_json(path), path, identity, expected_prompt_version=expected_prompt_version
+        _load_json(path),
+        path,
+        identity,
+        expected_prompt_version=expected_prompt_version,
     )
 
 
@@ -172,16 +183,17 @@ def _accepted_payload(
             CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
             CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
             CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
+            CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
         }
         or manifest_identity.get("database_depth_contract_sha256")
         != build_database_depth_contract(identity["seed"]).digest
         or manifest_identity.get("provider") != "ollama"
     ):
         return False
-    if (
-        manifest_identity["prompt_version"]
-        == CONTROLLED_DATABASE_REASONING_PROMPT_VERSION
-    ):
+    if manifest_identity["prompt_version"] in {
+        CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
+        CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
+    }:
         if (
             manifest_identity.get("database_reasoning_prose_contract_version")
             != DATABASE_REASONING_PROSE_VERSION
@@ -206,6 +218,7 @@ def _accepted_payload(
     if manifest_identity["prompt_version"] in {
         CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
         CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
+        CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
     }:
         if (
             manifest_identity.get("network_reasoning_contract_sha256")
@@ -233,7 +246,28 @@ def _accepted_payload(
         != network_depth_catalogue_digest()
     ):
         return False
-    if manifest_identity["prompt_version"] in {
+    if (
+        manifest_identity["prompt_version"]
+        == CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION
+    ):
+        if (
+            manifest_identity.get("graph_resilience_contract_sha256")
+            != build_graph_resilience_contract(identity["seed"]).digest
+            or manifest_identity.get("graph_resilience_prose_contract_version")
+            != GRAPH_RESILIENCE_PROSE_VERSION
+            or manifest_identity.get("graph_resilience_prose_catalogue_sha256")
+            != graph_resilience_catalogue_digest()
+            or any(
+                field in manifest_identity
+                for field in (
+                    "graph_tree_depth_contract_sha256",
+                    "graph_tree_depth_prose_contract_version",
+                    "graph_tree_depth_prose_catalogue_sha256",
+                )
+            )
+        ):
+            return False
+    elif manifest_identity["prompt_version"] in {
         CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
         CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
         CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
@@ -474,7 +508,7 @@ def run_plan(args: argparse.Namespace) -> int:
         if accepted_result(
             result_path,
             identity,
-            expected_prompt_version=CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
+            expected_prompt_version=CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
         ):
             results.append(previous)
             continue
@@ -547,7 +581,7 @@ def run_plan(args: argparse.Namespace) -> int:
             result,
             result_path,
             identity,
-            expected_prompt_version=CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
+            expected_prompt_version=CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
         ):
             result["status"] = "failed"
             result["error"] = "L'intégrité des artefacts publiés est invalide"
