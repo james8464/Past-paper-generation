@@ -527,14 +527,14 @@ def validate_graph_route_trace_pdf(
         raise ValueError("Route trace figure differs from locked graph")
     for start, end in ((before_at, positions["1c"]), (after_at, positions["1g"])):
         table = lines[start + 1 : end]
-        if table[:3] != ["Fixation", "Distances A–F", "Prédécesseurs"] or table[3:] != [
-            "1re",
-            "À compléter",
-            "À compléter",
-            "2e",
-            "À compléter",
-            "À compléter",
-        ]:
+        expected_table = [
+            "Fixation / donnée", *"ABCDEF",
+            "1re distance (fixé : ___)", *(["_____"] * 6),
+            "1re préd.", *(["_____"] * 6),
+            "2e distance (fixé : ___)", *(["_____"] * 6),
+            "2e préd.", *(["_____"] * 6),
+        ]
+        if " ".join(" ".join(table).split()) != " ".join(expected_table):
             raise ValueError("Route trace working table is altered or filled")
     expected_tree = list(data["tree"]["columns"]) + [
         str(value) if value is not None else "—"

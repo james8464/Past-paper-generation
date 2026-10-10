@@ -54,7 +54,9 @@ def graph_route_trace_catalogue_digest() -> str:
         "base_catalogue_digest": graph_resilience_catalogue_digest(),
         "questions": (_QUESTION_1C, _QUESTION_1E, _QUESTION_1F, _QUESTION_1G),
         "criteria_1g": _CRITERIA_1G,
-        "table_columns": ("Fixation", "Distances A–F", "Prédécesseurs"),
+        "table_columns": ("Fixation / donnée", *"ABCDEF"),
+        "table_rows": ("1re distance (fixé : ___)", "1re préd.",
+                       "2e distance (fixé : ___)", "2e préd."),
     }
     return sha256(
         json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
@@ -76,10 +78,12 @@ def _working_table(identifier: str, title: str) -> dict:
         "kind": "table",
         "id": identifier,
         "title": title,
-        "columns": ["Fixation", "Distances A–F", "Prédécesseurs"],
+        "columns": ["Fixation / donnée", *"ABCDEF"],
         "rows": [
-            ["1re", "À compléter", "À compléter"],
-            ["2e", "À compléter", "À compléter"],
+            ["1re distance (fixé : ___)", *(["_____"] * 6)],
+            ["1re préd.", *(["_____"] * 6)],
+            ["2e distance (fixé : ___)", *(["_____"] * 6)],
+            ["2e préd.", *(["_____"] * 6)],
         ],
     }
 

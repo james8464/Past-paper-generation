@@ -17,6 +17,29 @@ def _canonical(data: dict) -> str:
     return json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
+def _independent_shortest(edges: list[list]) -> dict:
+    """Enumerate simple paths as an oracle separate from Dijkstra's trace."""
+    adjacent: dict[str, list[tuple[str, int]]] = {node: [] for node in "ABCDEF"}
+    for left, right, weight in edges:
+        adjacent[left].append((right, weight))
+        adjacent[right].append((left, weight))
+    routes: list[tuple[int, tuple[str, ...]]] = []
+
+    def visit(node: str, path: tuple[str, ...], cost: int) -> None:
+        if node == "F":
+            routes.append((cost, path))
+            return
+        for neighbour, weight in adjacent[node]:
+            if neighbour not in path:
+                visit(neighbour, (*path, neighbour), cost + weight)
+
+    visit("A", ("A",), 0)
+    if not routes:
+        raise ValueError("No surviving graph route")
+    cost, path = min(routes)
+    return {"path": list(path), "weight": cost}
+
+
 def _facts(seed: int) -> dict:
     if type(seed) is not int:
         raise ValueError("Unsupported graph route-trace seed")
@@ -34,6 +57,11 @@ def _facts(seed: int) -> dict:
     outage_steps, outage_route = _dijkstra_steps(
         _adjacency({"edges": surviving_edges})
     )
+    if (
+        baseline_route != _independent_shortest(data["graph"]["edges"])
+        or outage_route != _independent_shortest(surviving_edges)
+    ):
+        raise ValueError("Route trace disagrees with independent shortest-path check")
     if (
         baseline_route != before
         or baseline_steps != data["expected"]["1c"]["steps"]

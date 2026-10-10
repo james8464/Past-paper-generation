@@ -67,9 +67,20 @@ def structured_material(
                 for row in material.rows
             ],
         ]
+        route_trace_table = material.id in ("trace_initial", "trace_fermeture")
+        column_widths = (
+            [available_width * 0.3, *([available_width * 0.7 / 6] * 6)]
+            if route_trace_table
+            else [available_width / len(material.columns)] * len(material.columns)
+        )
         table = Table(
             rows,
-            colWidths=[available_width / len(material.columns)] * len(material.columns),
+            colWidths=column_widths,
+            rowHeights=(
+                [None, *([body.leading * 2 + 8] * 4)]
+                if route_trace_table
+                else None
+            ),
             repeatRows=1,
         )
         table.setStyle(

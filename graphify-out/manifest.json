@@ -195,13 +195,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1791666832.496196,
-    "ast_hash": "a6aa2a6847a14fb4d813479a0a66d940",
+    "mtime": 1791667428.9561322,
+    "ast_hash": "d2ac7ca04397b051b0e5f931cecac19e",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
-    "mtime": 1791666318.4086134,
-    "ast_hash": "8dac640d650909fcda6c666940f3efb1",
+    "mtime": 1791667460.4502766,
+    "ast_hash": "d971fd4e4d4324dabdc90902dc391c55",
     "semantic_hash": ""
   },
   "Backend/Core/france/source_identity.py": {
@@ -1680,8 +1680,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_runtime.py": {
-    "mtime": 1791667111.7099261,
-    "ast_hash": "eb1d6daf83a1112513daa3e8b472ca08",
+    "mtime": 1791667428.9568741,
+    "ast_hash": "052afd16ebfe066a57b144e01ebf2c00",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {
@@ -3065,23 +3065,23 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_route_trace_contract.py": {
-    "mtime": 1791664633.2406425,
-    "ast_hash": "cfb8605e9b83abcfa31bc278969bbc63",
+    "mtime": 1791667428.9556308,
+    "ast_hash": "3b414b640ee4126d690b247d4d9987dc",
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_route_trace_prose.py": {
-    "mtime": 1791664987.866771,
-    "ast_hash": "3da5a1efb3eeaacc946b3eebae4e5c18",
+    "mtime": 1791667428.9558623,
+    "ast_hash": "e2542cefe753ccea60a2a754bf98d00e",
     "semantic_hash": ""
   },
   "tests/test_french_graph_route_trace_contract.py": {
-    "mtime": 1791664778.1328037,
-    "ast_hash": "c43742a7f19390259affa66683b8802c",
+    "mtime": 1791667519.1085656,
+    "ast_hash": "fbfc10d7f1b783281c3535b3ea5a5224",
     "semantic_hash": ""
   },
   "tests/test_french_graph_route_trace_prose.py": {
-    "mtime": 1791664972.6068444,
-    "ast_hash": "5962862bbdb8291c9794896a4108976b",
+    "mtime": 1791667645.705785,
+    "ast_hash": "1462c862beb459b7e8b9b9b299b6003f",
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_route_trace_authoring.py": {

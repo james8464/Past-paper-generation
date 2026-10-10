@@ -62,8 +62,14 @@ def test_v22_candidate_has_staged_before_after_work_and_exact_credit(total: str)
     for phase in ("trace_initial", "trace_fermeture"):
         table = materials[phase]
         assert table["kind"] == "table"
-        assert len(table["rows"]) == 2
-        assert all("À compléter" in row for row in table["rows"])
+        assert table["columns"] == ["Fixation / donnée", *"ABCDEF"]
+        assert len(table["rows"]) == 4
+        assert all(len(row) == 7 for row in table["rows"])
+        assert [row[0] for row in table["rows"]] == [
+            "1re distance (fixé : ___)", "1re préd.",
+            "2e distance (fixé : ___)", "2e préd.",
+        ]
+        assert all(row[1:] == ["_____" for _ in "ABCDEF"] for row in table["rows"])
         assert all("A=0" not in " ".join(row) for row in table["rows"])
     assert "A–B" in materials["trace_fermeture"]["title"]
     questions = {question["id"]: question for question in candidate["questions"]}
@@ -103,6 +109,34 @@ def test_v22_selection_rejects_free_form_and_catalogue_is_bound() -> None:
     invalid["claimed_distance"] = 1
     with pytest.raises(ValueError):
         validate_graph_route_trace_selection(contract, invalid)
+
+
+@pytest.mark.parametrize("size,leading", [(12, 15), (16, 20)])
+def test_v22_working_table_allocates_per_node_writing_height(
+    size: int, leading: int
+) -> None:
+    from reportlab.lib.styles import ParagraphStyle
+
+    from Backend.Core.france.nsi import NSITableMaterial
+    from Backend.Core.france.rendering import structured_material
+
+    candidate = render_graph_route_trace_candidate(
+        build_graph_route_trace_contract(270100), _selection(), _specs("6")
+    )
+    material = NSITableMaterial.model_validate(
+        next(item for item in candidate["materials"] if item["id"] == "trace_initial")
+    )
+    flowable = structured_material(
+        material,
+        body=ParagraphStyle("test", fontSize=size, leading=leading),
+        bold_font="Helvetica-Bold",
+        regular_font="Helvetica",
+        available_width=460,
+    )
+    table = next(item for item in flowable._content if hasattr(item, "_rowHeights"))
+    assert len(table._rowHeights) == 5
+    assert table._rowHeights[1:] == [leading * 2 + 8] * 4
+    assert len(table._colWidths) == 7
 
 
 def test_v22_rejects_wrong_profile_or_unrequested_rubric() -> None:

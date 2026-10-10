@@ -154,7 +154,7 @@ def test_v22_route_trace_pdf_validator_binds_stage_and_answer(
         for original, changed in (
             ("Trace de Dijkstra avant fermeture", "Trace absente"),
             ("Trace de Dijkstra avant fermeture", "Trace de Dijkstra après fermeture"),
-            ("À compléter", "A=0"),
+            ("_____", "A=0"),
             ("1e.", "1f."),
         ):
             altered = [page.replace(original, changed, 1) for page in pages]

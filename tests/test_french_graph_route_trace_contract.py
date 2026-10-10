@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from unittest.mock import patch
 
 import pytest
 
@@ -56,6 +57,27 @@ def test_v22_first_route_edge_closure_changes_the_first_trace_row() -> None:
         "D": "C",
         "E": "C",
     }
+
+
+def test_v22_rejects_a_shared_dijkstra_route_error() -> None:
+    from Backend.Core.france import graph_route_trace_contract as module
+
+    real = module._dijkstra_steps
+    calls = 0
+
+    def wrong_after(adjacency):
+        nonlocal calls
+        calls += 1
+        steps, route = real(adjacency)
+        if calls % 2 == 0:
+            route = {**route, "weight": route["weight"] + 1}
+        return steps, route
+
+    with (
+        patch.object(module, "_dijkstra_steps", side_effect=wrong_after),
+        pytest.raises(ValueError, match="independent"),
+    ):
+        build_graph_route_trace_contract(270100)
 
 
 @pytest.mark.parametrize("seed", range(270100, 270150))
