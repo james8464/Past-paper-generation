@@ -191,7 +191,7 @@ def validate_database_audit_selection(
             raise ValueError("Unknown incident-audit wording ID")
 
 
-def _working_materials() -> list[dict]:
+def database_audit_working_materials() -> list[dict]:
     return [
         {
             "kind": "table",
@@ -340,7 +340,7 @@ def render_database_audit_candidate(
         "topics": ["bases-donnees", "langages-programmation"],
         "minutes": 70,
         "target_points": total,
-        "materials": database_materials(contract) + _working_materials(),
+        "materials": database_materials(contract) + database_audit_working_materials(),
         "questions": questions,
     }
     NSIExercise.model_validate(candidate)

@@ -533,7 +533,11 @@ def render_assessment(
         content(exercise.context)
         staged_network_materials = bool(exercise.questions) and all(
             question.verification.get("kind")
-            in {"network_reasoning_contract", "graph_resilience_contract"}
+            in {
+                "network_reasoning_contract",
+                "graph_resilience_contract",
+                "database_audit_contract",
+            }
             for question in exercise.questions
         )
         staged_material_ids: set[str] = set()

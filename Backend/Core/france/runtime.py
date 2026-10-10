@@ -15,6 +15,11 @@ from urllib.request import Request
 import pymupdf
 
 from Backend.Core.events import emit, emit_progress
+from Backend.Core.france.database_audit_contract import (
+    DatabaseAuditContract,
+    build_database_audit_contract,
+)
+from Backend.Core.france.database_audit_prose import database_audit_working_materials
 from Backend.Core.france.database_binding import database_materials
 from Backend.Core.france.database_contract import (
     DatabaseContract,
@@ -50,6 +55,7 @@ from Backend.Core.france.network_reasoning_contract import (
 )
 from Backend.Core.france.nsi import NSIExercise
 from Backend.Core.france.pipeline import (
+    CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
     CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
     CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
@@ -691,6 +697,128 @@ def validate_database_reasoning_pdf(
                     )
 
 
+def validate_database_audit_pdf(
+    path: Path,
+    contract: DatabaseAuditContract,
+    *,
+    correction: bool,
+    exercise: NSIExercise,
+) -> None:
+    """Bind V21 printed incident facts, staged working tables and exact credit."""
+    data = contract.to_dict()
+    if exercise.id != "2" or [q.id for q in exercise.questions] != data["task_ids"]:
+        raise ValueError("Incident-audit exercise differs from locked contract")
+    with pymupdf.open(path) as pdf:
+        raw_pages = [page.get_text() for page in pdf]
+    raw = "\n".join(raw_pages)
+    lines = [
+        line.strip()
+        for line in raw.splitlines()
+        if line.strip()
+        and not line.startswith("Paper Creator —")
+        and not line.startswith("Page : ")
+    ]
+    flat = " ".join(raw.split())
+    positions = {}
+    for task_id in data["task_ids"]:
+        matches = [
+            i
+            for i, line in enumerate(lines)
+            if re.match(rf"^{task_id}\.(?:\s|$)", line)
+        ]
+        if len(matches) != 1:
+            raise ValueError(f"Incident-audit question {task_id} missing or duplicated")
+        positions[task_id] = matches[0]
+    if list(positions.values()) != sorted(positions.values()):
+        raise ValueError("Incident-audit questions out of order")
+    expected_materials = (
+        database_materials(contract) + database_audit_working_materials()
+    )
+    if [
+        material.model_dump(mode="json") for material in exercise.materials
+    ] != expected_materials:
+        raise ValueError("Incident-audit material differs from contract")
+    materials = {material.id: material for material in exercise.materials}
+    stages = {
+        "audit_jointure": ("2b", "2c"),
+        "audit_etats": ("2f", "2g"),
+        "audit_trace": ("2g", "2h"),
+    }
+    for material_id, material in materials.items():
+        title = material.title
+        matches = [i for i, line in enumerate(lines) if line.startswith(title)]
+        if len(matches) != 1:
+            raise ValueError(
+                f"Incident-audit material {material_id} missing or duplicated"
+            )
+        at = matches[0]
+        if material_id in stages:
+            before, after = stages[material_id]
+            if not positions[before] < at < positions[after]:
+                raise ValueError(
+                    f"Incident-audit material {material_id} at wrong phase"
+                )
+        elif at > positions["2a"]:
+            raise ValueError("Incident-audit source tables not before first task")
+        expected = list(material.columns) + [
+            cell for row in material.rows for cell in row
+        ]
+        if lines[at + 1 : at + 1 + len(expected)] != expected:
+            raise ValueError(
+                f"Incident-audit material {material_id} differs from contract"
+            )
+    faulty_sql = " ".join(data["faulty_sql"].split())
+    faulty_python = " ".join(data["faulty_python"].split())
+    if flat.count(faulty_sql) != 1 or flat.count(faulty_python) != 1:
+        raise ValueError("Incident-audit faulty source missing or duplicated")
+    exercise_start = next(
+        (index for index, line in enumerate(lines) if line.startswith("Exercice 2 (")),
+        None,
+    )
+    if exercise_start is None:
+        raise ValueError("Incident-audit exercise heading missing")
+    before_2a = " ".join(lines[exercise_start : positions["2a"]])
+    in_2h = " ".join(lines[positions["2h"] : positions["2i"]])
+    if faulty_sql not in before_2a or faulty_python not in in_2h:
+        raise ValueError("Incident-audit faulty source outside intended phase")
+    if not correction:
+        for source in (data["correct_sql"], data["group_sql"], data["correct_python"]):
+            if " ".join(source.split()) in flat:
+                raise ValueError("Incident-audit answer leaked into subject")
+    for index, question in enumerate(exercise.questions):
+        end = (
+            positions[exercise.questions[index + 1].id]
+            if index + 1 < len(exercise.questions)
+            else len(lines)
+        )
+        section = " ".join(lines[positions[question.id] : end])
+        prompt = " ".join(re.sub(r"```(?:sql|python)?", " ", question.prompt).split())
+        if prompt not in section:
+            raise ValueError(f"Incident-audit prompt {question.id} missing")
+        answer = " ".join(re.sub(r"```(?:sql|python)?", " ", question.answer).split())
+        if correction:
+            rubric = f"Barème indicatif — question {question.id}"
+            if answer not in section or rubric not in section:
+                raise ValueError(
+                    f"Incident-audit answer/rubric {question.id} misplaced"
+                )
+            if not any(
+                answer in " ".join(page.split()) and rubric in page
+                for page in raw_pages
+            ):
+                raise ValueError(
+                    f"Incident-audit answer/rubric {question.id} separated"
+                )
+            for credit in question.marking:
+                label = credit.points.replace(".", ",")
+                unit = "point" if Decimal(credit.points) <= 1 else "points"
+                criterion = printable_database_criterion(credit.criterion)
+                if f"{label} {unit} {criterion}" not in section:
+                    raise ValueError(f"Incident-audit credit {question.id} misplaced")
+        elif answer in flat:
+            raise ValueError(f"Incident-audit answer {question.id} leaked")
+
+
 def validate_network_contract_pdf(
     path: Path,
     contract: NetworkContract,
@@ -1072,6 +1200,7 @@ def load_originality_history(output: Path) -> list[str]:
 def network_pdf_contract_version(prompt_version: str) -> str:
     """Never silently render an unknown French package with an older validator."""
     if prompt_version in {
+        CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
         CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
         CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
         CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
@@ -1089,6 +1218,8 @@ def network_pdf_contract_version(prompt_version: str) -> str:
 
 
 def database_pdf_contract_version(prompt_version: str) -> str:
+    if prompt_version == CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION:
+        return "v21"
     if prompt_version in {
         CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
         CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
@@ -1146,15 +1277,15 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v20",
+            contract_authoring_version="v21",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
         exercises = [NSIExercise.model_validate(item) for item in package["exercises"]]
-        graph_resilience = (
-            package["identity"]["prompt_version"]
-            == CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION
-        )
+        graph_resilience = package["identity"]["prompt_version"] in {
+            CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
+            CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
+        }
         graph_tree_depth = package["identity"]["prompt_version"] in {
             CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
             CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
@@ -1172,7 +1303,9 @@ def handle_generate_assessment(args) -> int:
         )
         database_depth = database_pdf_version in {"v2", "v19"}
         database_contract = (
-            build_database_depth_contract(args.seed)
+            build_database_audit_contract(args.seed)
+            if database_pdf_version == "v21"
+            else build_database_depth_contract(args.seed)
             if database_depth
             else build_database_contract(args.seed)
         )
@@ -1220,7 +1353,9 @@ def handle_generate_assessment(args) -> int:
                 exercise=exercises[0],
             )
             database_validator = (
-                validate_database_reasoning_pdf
+                validate_database_audit_pdf
+                if database_pdf_version == "v21"
+                else validate_database_reasoning_pdf
                 if database_pdf_version == "v19"
                 else validate_database_depth_contract_pdf
                 if database_depth

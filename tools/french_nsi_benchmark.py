@@ -28,6 +28,13 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from Backend.Core.education_context import NSI_2027  # noqa: E402
+from Backend.Core.france.database_audit_contract import (  # noqa: E402
+    build_database_audit_contract,
+)
+from Backend.Core.france.database_audit_prose import (  # noqa: E402
+    DATABASE_AUDIT_PROSE_VERSION,
+    database_audit_catalogue_digest,
+)
 from Backend.Core.france.database_depth_contract import (  # noqa: E402
     build_database_depth_contract,
 )
@@ -72,6 +79,7 @@ from Backend.Core.france.network_reasoning_prose import (  # noqa: E402
     network_reasoning_catalogue_digest,
 )
 from Backend.Core.france.pipeline import (  # noqa: E402
+    CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
     CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
     CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
@@ -184,13 +192,36 @@ def _accepted_payload(
             CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
             CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
             CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
+            CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
         }
-        or manifest_identity.get("database_depth_contract_sha256")
-        != build_database_depth_contract(identity["seed"]).digest
+        or (
+            manifest_identity.get("database_audit_contract_sha256")
+            != build_database_audit_contract(identity["seed"]).digest
+            if manifest_identity.get("prompt_version")
+            == CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION
+            else manifest_identity.get("database_depth_contract_sha256")
+            != build_database_depth_contract(identity["seed"]).digest
+        )
         or manifest_identity.get("provider") != "ollama"
     ):
         return False
-    if manifest_identity["prompt_version"] in {
+    if manifest_identity["prompt_version"] == CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION:
+        if (
+            manifest_identity.get("database_audit_prose_contract_version")
+            != DATABASE_AUDIT_PROSE_VERSION
+            or manifest_identity.get("database_audit_prose_catalogue_sha256")
+            != database_audit_catalogue_digest()
+            or any(
+                field in manifest_identity
+                for field in (
+                    "database_depth_contract_sha256",
+                    "database_reasoning_prose_contract_version",
+                    "database_reasoning_prose_catalogue_sha256",
+                )
+            )
+        ):
+            return False
+    elif manifest_identity["prompt_version"] in {
         CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
         CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
     }:
@@ -219,6 +250,7 @@ def _accepted_payload(
         CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
         CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
         CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
+        CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
     }:
         if (
             manifest_identity.get("network_reasoning_contract_sha256")
@@ -246,10 +278,10 @@ def _accepted_payload(
         != network_depth_catalogue_digest()
     ):
         return False
-    if (
-        manifest_identity["prompt_version"]
-        == CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION
-    ):
+    if manifest_identity["prompt_version"] in {
+        CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
+        CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
+    }:
         if (
             manifest_identity.get("graph_resilience_contract_sha256")
             != build_graph_resilience_contract(identity["seed"]).digest
@@ -508,7 +540,7 @@ def run_plan(args: argparse.Namespace) -> int:
         if accepted_result(
             result_path,
             identity,
-            expected_prompt_version=CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
+            expected_prompt_version=CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
         ):
             results.append(previous)
             continue
@@ -581,7 +613,7 @@ def run_plan(args: argparse.Namespace) -> int:
             result,
             result_path,
             identity,
-            expected_prompt_version=CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
+            expected_prompt_version=CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
         ):
             result["status"] = "failed"
             result["error"] = "L'intégrité des artefacts publiés est invalide"
