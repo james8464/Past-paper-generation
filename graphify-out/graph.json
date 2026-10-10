@@ -9734,8 +9734,8 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "backend_core_france_network_prose_network_catalogue_digest",
-      "community": 132,
-      "community_name": "_tasks_for_seed",
+      "community": 124,
+      "community_name": "test_french_benchmark_runner.py",
       "norm_label": "network_catalogue_digest()"
     },
     {
@@ -11810,7 +11810,7 @@
       "label": "validate_network_contract_pdf()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L864",
+      "source_location": "L880",
       "_origin": "ast",
       "id": "backend_core_france_runtime_validate_network_contract_pdf",
       "community": 11,
@@ -11821,7 +11821,7 @@
       "label": "validate_network_depth_contract_pdf()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L943",
+      "source_location": "L959",
       "_origin": "ast",
       "id": "backend_core_france_runtime_validate_network_depth_contract_pdf",
       "community": 11,
@@ -11832,7 +11832,7 @@
       "label": "validate_network_reasoning_contract_pdf()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1070",
+      "source_location": "L1086",
       "_origin": "ast",
       "id": "backend_core_france_runtime_validate_network_reasoning_contract_pdf",
       "community": 11,
@@ -11843,7 +11843,7 @@
       "label": "load_originality_history()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1210",
+      "source_location": "L1226",
       "_origin": "ast",
       "id": "backend_core_france_runtime_load_originality_history",
       "community": 11,
@@ -11854,7 +11854,7 @@
       "label": "network_pdf_contract_version()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1242",
+      "source_location": "L1258",
       "_origin": "ast",
       "id": "backend_core_france_runtime_network_pdf_contract_version",
       "community": 11,
@@ -11865,7 +11865,7 @@
       "label": "database_pdf_contract_version()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1262",
+      "source_location": "L1278",
       "_origin": "ast",
       "id": "backend_core_france_runtime_database_pdf_contract_version",
       "community": 11,
@@ -11876,7 +11876,7 @@
       "label": "handle_generate_assessment()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1284",
+      "source_location": "L1300",
       "_origin": "ast",
       "id": "backend_core_france_runtime_handle_generate_assessment",
       "community": 11,
@@ -11975,9 +11975,9 @@
       "label": "Require exact app-owned network evidence in each published PDF role.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L871",
+      "source_location": "L887",
       "_origin": "ast",
-      "id": "backend_core_france_runtime_rationale_871",
+      "id": "backend_core_france_runtime_rationale_887",
       "community": 11,
       "community_name": "NSIExercise",
       "norm_label": "require exact app-owned network evidence in each published pdf role."
@@ -11986,9 +11986,9 @@
       "label": "Fail closed if a v15 PDF omits locked facts or exposes an answer.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L950",
+      "source_location": "L966",
       "_origin": "ast",
-      "id": "backend_core_france_runtime_rationale_950",
+      "id": "backend_core_france_runtime_rationale_966",
       "community": 11,
       "community_name": "NSIExercise",
       "norm_label": "fail closed if a v15 pdf omits locked facts or exposes an answer."
@@ -11997,9 +11997,9 @@
       "label": "Reject V18 PDFs whose case facts or per-question roles do not print.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1077",
+      "source_location": "L1093",
       "_origin": "ast",
-      "id": "backend_core_france_runtime_rationale_1077",
+      "id": "backend_core_france_runtime_rationale_1093",
       "community": 11,
       "community_name": "NSIExercise",
       "norm_label": "reject v18 pdfs whose case facts or per-question roles do not print."
@@ -12008,9 +12008,9 @@
       "label": "Read a bounded set of candidate-only text from earlier local bundles.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1211",
+      "source_location": "L1227",
       "_origin": "ast",
-      "id": "backend_core_france_runtime_rationale_1211",
+      "id": "backend_core_france_runtime_rationale_1227",
       "community": 11,
       "community_name": "NSIExercise",
       "norm_label": "read a bounded set of candidate-only text from earlier local bundles."
@@ -12019,9 +12019,9 @@
       "label": "Never silently render an unknown French package with an older validator.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1243",
+      "source_location": "L1259",
       "_origin": "ast",
-      "id": "backend_core_france_runtime_rationale_1243",
+      "id": "backend_core_france_runtime_rationale_1259",
       "community": 11,
       "community_name": "NSIExercise",
       "norm_label": "never silently render an unknown french package with an older validator."
@@ -34568,8 +34568,8 @@
       "source_location": "L218",
       "_origin": "ast",
       "id": "resources_economics_aqa_generator_tests_test_aqa_economics_test_written_diagram_renderer_prints_the_declared_economic_structure",
-      "community": 98,
-      "community_name": "reference-demand-profile.schema.json",
+      "community": 319,
+      "community_name": "items",
       "norm_label": "test_written_diagram_renderer_prints_the_declared_economic_structure()"
     },
     {
@@ -39576,8 +39576,8 @@
       "source_location": "L289",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_mark_scheme_layout_test_mark_scheme_rows_fit_within_single_page_after_long_extracts",
-      "community": 7,
-      "community_name": "build_paper_blueprint",
+      "community": 74,
+      "community_name": "test_mark_scheme_layout.py",
       "norm_label": "test_mark_scheme_rows_fit_within_single_page_after_long_extracts()"
     },
     {
@@ -42051,8 +42051,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_validation",
-      "community": 12,
-      "community_name": "pastpapergen/cli.py",
+      "community": 7,
+      "community_name": "build_paper_blueprint",
       "norm_label": "test_validation.py"
     },
     {
@@ -42062,8 +42062,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_validation_test_validate_blueprint_accepts_generated_paper",
-      "community": 12,
-      "community_name": "pastpapergen/cli.py",
+      "community": 7,
+      "community_name": "build_paper_blueprint",
       "norm_label": "test_validate_blueprint_accepts_generated_paper()"
     },
     {
@@ -42073,8 +42073,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_validation_test_validate_blueprint_rejects_topic_outside_paper_themes",
-      "community": 12,
-      "community_name": "pastpapergen/cli.py",
+      "community": 7,
+      "community_name": "build_paper_blueprint",
       "norm_label": "test_validate_blueprint_rejects_topic_outside_paper_themes()"
     },
     {
@@ -42084,8 +42084,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_validation_test_validate_blueprint_rejects_unstructured_mcq",
-      "community": 12,
-      "community_name": "pastpapergen/cli.py",
+      "community": 7,
+      "community_name": "build_paper_blueprint",
       "norm_label": "test_validate_blueprint_rejects_unstructured_mcq()"
     },
     {
@@ -42095,8 +42095,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_validation_test_validate_blueprint_rejects_llm_mark_text_in_prompt",
-      "community": 12,
-      "community_name": "pastpapergen/cli.py",
+      "community": 7,
+      "community_name": "build_paper_blueprint",
       "norm_label": "test_validate_blueprint_rejects_llm_mark_text_in_prompt()"
     },
     {
@@ -47851,8 +47851,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_profiles",
-      "community": 98,
-      "community_name": "reference-demand-profile.schema.json",
+      "community": 319,
+      "community_name": "items",
       "norm_label": "profiles"
     },
     {
@@ -47862,8 +47862,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_profiles_type",
-      "community": 98,
-      "community_name": "reference-demand-profile.schema.json",
+      "community": 319,
+      "community_name": "items",
       "norm_label": "type"
     },
     {
@@ -47873,8 +47873,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_profiles_minitems",
-      "community": 98,
-      "community_name": "reference-demand-profile.schema.json",
+      "community": 319,
+      "community_name": "items",
       "norm_label": "minitems"
     },
     {
@@ -47884,8 +47884,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_profiles_items",
-      "community": 98,
-      "community_name": "reference-demand-profile.schema.json",
+      "community": 319,
+      "community_name": "items",
       "norm_label": "items"
     },
     {
@@ -47895,8 +47895,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_type",
-      "community": 143,
-      "community_name": "paths",
+      "community": 319,
+      "community_name": "items",
       "norm_label": "type"
     },
     {
@@ -47906,8 +47906,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_additionalproperties",
-      "community": 98,
-      "community_name": "reference-demand-profile.schema.json",
+      "community": 319,
+      "community_name": "items",
       "norm_label": "additionalproperties"
     },
     {
@@ -48291,8 +48291,8 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_evidence_gaps",
-      "community": 143,
-      "community_name": "paths",
+      "community": 73,
+      "community_name": "properties",
       "norm_label": "evidence_gaps"
     },
     {
@@ -48302,8 +48302,8 @@
       "source_location": "L89",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_evidence_gaps_type",
-      "community": 143,
-      "community_name": "paths",
+      "community": 73,
+      "community_name": "properties",
       "norm_label": "type"
     },
     {
@@ -48313,8 +48313,8 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_evidence_gaps_items",
-      "community": 143,
-      "community_name": "paths",
+      "community": 319,
+      "community_name": "items",
       "norm_label": "items"
     },
     {
@@ -48786,8 +48786,8 @@
       "source_location": "L172",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_allof",
-      "community": 98,
-      "community_name": "reference-demand-profile.schema.json",
+      "community": 319,
+      "community_name": "items",
       "norm_label": "allof"
     },
     {
@@ -48885,8 +48885,8 @@
       "source_location": "L258",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_distribution_additionalproperties",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 48,
+      "community_name": "type",
       "norm_label": "additionalproperties"
     },
     {
@@ -48907,8 +48907,8 @@
       "source_location": "L260",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_additionalproperties_minimum",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 48,
+      "community_name": "type",
       "norm_label": "minimum"
     },
     {
@@ -48918,8 +48918,8 @@
       "source_location": "L261",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_additionalproperties_maximum",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 48,
+      "community_name": "type",
       "norm_label": "maximum"
     },
     {
@@ -49259,8 +49259,8 @@
       "source_location": "L306",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_defs_observations",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 48,
+      "community_name": "type",
       "norm_label": "observations"
     },
     {
@@ -49270,8 +49270,8 @@
       "source_location": "L307",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_observations_additionalproperties",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 48,
+      "community_name": "type",
       "norm_label": "additionalproperties"
     },
     {
@@ -49534,8 +49534,8 @@
       "source_location": "L368",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_observations_title",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 48,
+      "community_name": "type",
       "norm_label": "title"
     },
     {
@@ -49545,8 +49545,8 @@
       "source_location": "L369",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_observations_type",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 48,
+      "community_name": "type",
       "norm_label": "type"
     },
     {
@@ -49556,7 +49556,7 @@
       "source_location": "L371",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_defs_pathoption",
-      "community": 319,
+      "community": 76,
       "community_name": "id",
       "norm_label": "pathoption"
     },
@@ -49567,7 +49567,7 @@
       "source_location": "L372",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathoption_additionalproperties",
-      "community": 319,
+      "community": 76,
       "community_name": "id",
       "norm_label": "additionalproperties"
     },
@@ -49578,7 +49578,7 @@
       "source_location": "L373",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathoption_properties",
-      "community": 319,
+      "community": 76,
       "community_name": "id",
       "norm_label": "properties"
     },
@@ -49589,7 +49589,7 @@
       "source_location": "L374",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_id",
-      "community": 319,
+      "community": 76,
       "community_name": "id",
       "norm_label": "id"
     },
@@ -49600,7 +49600,7 @@
       "source_location": "L375",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_id_minlength",
-      "community": 319,
+      "community": 76,
       "community_name": "id",
       "norm_label": "minlength"
     },
@@ -49611,7 +49611,7 @@
       "source_location": "L376",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_id_title",
-      "community": 319,
+      "community": 76,
       "community_name": "id",
       "norm_label": "title"
     },
@@ -49622,7 +49622,7 @@
       "source_location": "L377",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_id_type",
-      "community": 319,
+      "community": 76,
       "community_name": "id",
       "norm_label": "type"
     },
@@ -49634,7 +49634,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_item_ids",
       "community": 319,
-      "community_name": "id",
+      "community_name": "items",
       "norm_label": "item_ids"
     },
     {
@@ -49645,7 +49645,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_items",
       "community": 319,
-      "community_name": "id",
+      "community_name": "items",
       "norm_label": "items"
     },
     {
@@ -49656,7 +49656,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_minitems",
       "community": 319,
-      "community_name": "id",
+      "community_name": "items",
       "norm_label": "minitems"
     },
     {
@@ -49667,7 +49667,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_title",
       "community": 319,
-      "community_name": "id",
+      "community_name": "items",
       "norm_label": "title"
     },
     {
@@ -49678,7 +49678,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_type",
       "community": 319,
-      "community_name": "id",
+      "community_name": "items",
       "norm_label": "type"
     },
     {
@@ -49721,7 +49721,7 @@
       "source_location": "L392",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathoption_title",
-      "community": 319,
+      "community": 76,
       "community_name": "id",
       "norm_label": "title"
     },
@@ -49732,7 +49732,7 @@
       "source_location": "L393",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathoption_type",
-      "community": 319,
+      "community": 76,
       "community_name": "id",
       "norm_label": "type"
     },
@@ -49743,8 +49743,8 @@
       "source_location": "L395",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_defs_pathsection",
-      "community": 76,
-      "community_name": "PathSection",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "pathsection"
     },
     {
@@ -49754,8 +49754,8 @@
       "source_location": "L396",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_additionalproperties",
-      "community": 76,
-      "community_name": "PathSection",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "additionalproperties"
     },
     {
@@ -49766,7 +49766,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_properties",
       "community": 76,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "properties"
     },
     {
@@ -49777,7 +49777,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_answer_options",
       "community": 76,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "answer_options"
     },
     {
@@ -49788,7 +49788,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_answer_options_exclusiveminimum",
       "community": 76,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "exclusiveminimum"
     },
     {
@@ -49799,7 +49799,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_answer_options_title",
       "community": 76,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "title"
     },
     {
@@ -49810,7 +49810,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_answer_options_type",
       "community": 76,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "type"
     },
     {
@@ -49821,7 +49821,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_candidate_marks",
       "community": 76,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "candidate_marks"
     },
     {
@@ -49832,7 +49832,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_candidate_marks_exclusiveminimum",
       "community": 76,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "exclusiveminimum"
     },
     {
@@ -49843,7 +49843,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_candidate_marks_title",
       "community": 76,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "title"
     },
     {
@@ -49854,7 +49854,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_candidate_marks_type",
       "community": 76,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "type"
     },
     {
@@ -49865,7 +49865,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_options",
       "community": 76,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "options"
     },
     {
@@ -49887,7 +49887,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_options_minitems",
       "community": 76,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "minitems"
     },
     {
@@ -49898,7 +49898,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_options_title",
       "community": 76,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "title"
     },
     {
@@ -49909,7 +49909,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_options_type",
       "community": 76,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "type"
     },
     {
@@ -49919,8 +49919,8 @@
       "source_location": "L422",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_required",
-      "community": 76,
-      "community_name": "PathSection",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "required"
     },
     {
@@ -49930,8 +49930,8 @@
       "source_location": "L422",
       "_origin": "ast",
       "id": "ref_answer_options",
-      "community": 76,
-      "community_name": "PathSection",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "answer_options"
     },
     {
@@ -49941,8 +49941,8 @@
       "source_location": "L422",
       "_origin": "ast",
       "id": "ref_candidate_marks",
-      "community": 76,
-      "community_name": "PathSection",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "candidate_marks"
     },
     {
@@ -49952,8 +49952,8 @@
       "source_location": "L422",
       "_origin": "ast",
       "id": "ref_options",
-      "community": 76,
-      "community_name": "PathSection",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "options"
     },
     {
@@ -49963,8 +49963,8 @@
       "source_location": "L428",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_title",
-      "community": 76,
-      "community_name": "PathSection",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "title"
     },
     {
@@ -49974,8 +49974,8 @@
       "source_location": "L429",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_type",
-      "community": 76,
-      "community_name": "PathSection",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "type"
     },
     {
@@ -49985,8 +49985,8 @@
       "source_location": "L431",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_defs_quarantinedform",
-      "community": 260,
-      "community_name": "required",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "quarantinedform"
     },
     {
@@ -49996,8 +49996,8 @@
       "source_location": "L432",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_quarantinedform_additionalproperties",
-      "community": 260,
-      "community_name": "required",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "additionalproperties"
     },
     {
@@ -50491,7 +50491,7 @@
       "source_location": "L532",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_quarantinedform_required",
-      "community": 260,
+      "community": 21,
       "community_name": "required",
       "norm_label": "required"
     },
@@ -50502,7 +50502,7 @@
       "source_location": "L532",
       "_origin": "ast",
       "id": "ref_year",
-      "community": 260,
+      "community": 21,
       "community_name": "required",
       "norm_label": "year"
     },
@@ -50513,7 +50513,7 @@
       "source_location": "L532",
       "_origin": "ast",
       "id": "ref_source_sha256",
-      "community": 260,
+      "community": 21,
       "community_name": "required",
       "norm_label": "source_sha256"
     },
@@ -50524,7 +50524,7 @@
       "source_location": "L532",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_json_ref_status",
-      "community": 260,
+      "community": 21,
       "community_name": "required",
       "norm_label": "status"
     },
@@ -50535,7 +50535,7 @@
       "source_location": "L532",
       "_origin": "ast",
       "id": "ref_objective_basis",
-      "community": 260,
+      "community": 21,
       "community_name": "required",
       "norm_label": "objective_basis"
     },
@@ -50546,7 +50546,7 @@
       "source_location": "L532",
       "_origin": "ast",
       "id": "ref_paths",
-      "community": 260,
+      "community": 21,
       "community_name": "required",
       "norm_label": "paths"
     },
@@ -50557,8 +50557,8 @@
       "source_location": "L540",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_quarantinedform_title",
-      "community": 260,
-      "community_name": "required",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "title"
     },
     {
@@ -50568,8 +50568,8 @@
       "source_location": "L541",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_quarantinedform_type",
-      "community": 260,
-      "community_name": "required",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "type"
     },
     {
@@ -50755,8 +50755,8 @@
       "source_location": "L615",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_comparable_metrics",
-      "community": 109,
-      "community_name": "required",
+      "community": 25,
+      "community_name": "properties",
       "norm_label": "comparable_metrics"
     },
     {
@@ -50777,8 +50777,8 @@
       "source_location": "L623",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_non_comparable_features",
-      "community": 21,
-      "community_name": "required",
+      "community": 260,
+      "community_name": "non_comparable_features",
       "norm_label": "non_comparable_features"
     },
     {
@@ -50788,8 +50788,8 @@
       "source_location": "L624",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_non_comparable_features_additionalproperties",
-      "community": 21,
-      "community_name": "required",
+      "community": 260,
+      "community_name": "non_comparable_features",
       "norm_label": "additionalproperties"
     },
     {
@@ -50799,8 +50799,8 @@
       "source_location": "L625",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_additionalproperties_const",
-      "community": 21,
-      "community_name": "required",
+      "community": 260,
+      "community_name": "non_comparable_features",
       "norm_label": "const"
     },
     {
@@ -50810,8 +50810,8 @@
       "source_location": "L628",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_non_comparable_features_propertynames",
-      "community": 21,
-      "community_name": "required",
+      "community": 260,
+      "community_name": "non_comparable_features",
       "norm_label": "propertynames"
     },
     {
@@ -50865,8 +50865,8 @@
       "source_location": "L635",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_non_comparable_features_title",
-      "community": 21,
-      "community_name": "required",
+      "community": 260,
+      "community_name": "non_comparable_features",
       "norm_label": "title"
     },
     {
@@ -50876,8 +50876,8 @@
       "source_location": "L636",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_non_comparable_features_type",
-      "community": 21,
-      "community_name": "required",
+      "community": 260,
+      "community_name": "non_comparable_features",
       "norm_label": "type"
     },
     {
@@ -50997,8 +50997,8 @@
       "source_location": "L651",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_items",
-      "community": 143,
-      "community_name": "paths",
+      "community": 319,
+      "community_name": "items",
       "norm_label": "items"
     },
     {
@@ -51008,8 +51008,8 @@
       "source_location": "L652",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_items",
-      "community": 143,
-      "community_name": "paths",
+      "community": 319,
+      "community_name": "items",
       "norm_label": "items"
     },
     {
@@ -51019,8 +51019,8 @@
       "source_location": "L655",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_minitems",
-      "community": 143,
-      "community_name": "paths",
+      "community": 319,
+      "community_name": "items",
       "norm_label": "minitems"
     },
     {
@@ -51030,8 +51030,8 @@
       "source_location": "L656",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_title",
-      "community": 143,
-      "community_name": "paths",
+      "community": 319,
+      "community_name": "items",
       "norm_label": "title"
     },
     {
@@ -51052,7 +51052,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_sourceform_required",
-      "community": 260,
+      "community": 21,
       "community_name": "required",
       "norm_label": "required"
     },
@@ -51063,7 +51063,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "ref_extraction_policy",
-      "community": 260,
+      "community": 21,
       "community_name": "required",
       "norm_label": "extraction_policy"
     },
@@ -51074,7 +51074,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "ref_feature_basis",
-      "community": 260,
+      "community": 21,
       "community_name": "required",
       "norm_label": "feature_basis"
     },
@@ -51085,7 +51085,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "ref_weighting_basis",
-      "community": 260,
+      "community": 21,
       "community_name": "required",
       "norm_label": "weighting_basis"
     },
@@ -51096,7 +51096,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "ref_comparable_metrics",
-      "community": 260,
+      "community": 21,
       "community_name": "required",
       "norm_label": "comparable_metrics"
     },
@@ -51107,7 +51107,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "ref_non_comparable_features",
-      "community": 260,
+      "community": 21,
       "community_name": "required",
       "norm_label": "non_comparable_features"
     },
@@ -51118,7 +51118,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "ref_topology",
-      "community": 260,
+      "community": 21,
       "community_name": "required",
       "norm_label": "topology"
     },
@@ -51129,7 +51129,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "ref_topology_fingerprint",
-      "community": 260,
+      "community": 21,
       "community_name": "required",
       "norm_label": "topology_fingerprint"
     },
@@ -51140,7 +51140,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "ref_printed_marks",
-      "community": 260,
+      "community": 21,
       "community_name": "required",
       "norm_label": "printed_marks"
     },
@@ -51151,7 +51151,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_json_ref_items",
-      "community": 260,
+      "community": 21,
       "community_name": "required",
       "norm_label": "items"
     },
@@ -52274,7 +52274,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_minlength",
       "community": 319,
-      "community_name": "id",
+      "community_name": "items",
       "norm_label": "minlength"
     },
     {
@@ -52968,8 +52968,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "foundation",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": "foundation"
     },
     {
@@ -53256,7 +53256,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "nativevisualstyle.swift"
     },
     {
@@ -53267,7 +53267,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "workspacelayoutmode"
     },
     {
@@ -53289,7 +53289,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_compact",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "compact"
     },
     {
@@ -53300,7 +53300,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_standard",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "standard"
     },
     {
@@ -53311,7 +53311,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_expanded",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "expanded"
     },
     {
@@ -53322,7 +53322,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_swift_bool",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "bool"
     },
     {
@@ -53333,7 +53333,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_showssidebar",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".showssidebar"
     },
     {
@@ -53344,7 +53344,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_swift_cgfloat",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "cgfloat"
     },
     {
@@ -53355,7 +53355,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_qualityreviewwidth",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".qualityreviewwidth"
     },
     {
@@ -53366,7 +53366,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutpolicy",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "workspacelayoutpolicy"
     },
     {
@@ -53377,7 +53377,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutpolicy_mode",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".mode()"
     },
     {
@@ -53618,8 +53618,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "identifiable",
-      "community": 63,
-      "community_name": "BackendEvent",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": "identifiable"
     },
     {
@@ -55719,8 +55719,8 @@
       "source_location": "L1215",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_codingkeys_value",
-      "community": 2,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": "value"
     },
     {
@@ -55928,8 +55928,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_domain_assessmentbundleexporter",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": "assessmentbundleexporter.swift"
     },
     {
@@ -55939,8 +55939,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "macos_papercreator_domain_assessmentbundleexporter_assessmentbundleexporter",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": "assessmentbundleexporter"
     },
     {
@@ -55972,8 +55972,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_domain_frenchassessmentrequest",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": "frenchassessmentrequest.swift"
     },
     {
@@ -55983,8 +55983,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "macos_papercreator_domain_frenchassessmentrequest_frenchassessmentrequest",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": "frenchassessmentrequest"
     },
     {
@@ -55994,8 +55994,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_domain_frenchassessmentrequest_swift_url",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": "url"
     },
     {
@@ -56005,8 +56005,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_domain_frenchassessmentrequest_swift_string",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": "string"
     },
     {
@@ -56016,8 +56016,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_domain_frenchassessmentrequest_swift_int",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": "int"
     },
     {
@@ -56027,8 +56027,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_domain_frenchassessmentrequest_swift_bool",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": "bool"
     },
     {
@@ -56038,8 +56038,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "macos_papercreator_domain_frenchassessmentrequest_frenchassessmentrequest_arguments",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": ".arguments"
     },
     {
@@ -56137,8 +56137,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "macos_papercreator_domain_frenchreviewrequest_frenchreviewrubric_localizationkey",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".localizationkey()"
     },
     {
@@ -56214,8 +56214,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_domain_generationestimator",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": "generationestimator.swift"
     },
     {
@@ -56225,8 +56225,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "macos_papercreator_domain_generationestimator_estimatetuning",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": "estimatetuning"
     },
     {
@@ -56886,8 +56886,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkaccessibility_chartsummary",
-      "community": 2,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".chartsummary()"
     },
     {
@@ -56897,8 +56897,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_swift_string",
-      "community": 2,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": "string"
     },
     {
@@ -56908,8 +56908,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_swift_double",
-      "community": 2,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": "double"
     },
     {
@@ -56963,8 +56963,8 @@
       "source_location": "L110",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkverdictsummary",
-      "community": 10,
-      "community_name": "Text",
+      "community": 63,
+      "community_name": "BackendEvent",
       "norm_label": "benchmarkverdictsummary"
     },
     {
@@ -56974,8 +56974,8 @@
       "source_location": "L113",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkverdictsummary_body",
-      "community": 10,
-      "community_name": "Text",
+      "community": 63,
+      "community_name": "BackendEvent",
       "norm_label": ".body"
     },
     {
@@ -56985,8 +56985,8 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkverdictsummary_scoregauge",
-      "community": 10,
-      "community_name": "Text",
+      "community": 63,
+      "community_name": "BackendEvent",
       "norm_label": ".scoregauge"
     },
     {
@@ -56996,8 +56996,8 @@
       "source_location": "L141",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkverdictsummary_verdicttext",
-      "community": 10,
-      "community_name": "Text",
+      "community": 63,
+      "community_name": "BackendEvent",
       "norm_label": ".verdicttext"
     },
     {
@@ -57007,8 +57007,8 @@
       "source_location": "L153",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts",
-      "community": 2,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": "benchmarklivecharts"
     },
     {
@@ -57018,8 +57018,8 @@
       "source_location": "L156",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts_body",
-      "community": 2,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".body"
     },
     {
@@ -57029,8 +57029,8 @@
       "source_location": "L190",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts_cpuchart",
-      "community": 2,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".cpuchart"
     },
     {
@@ -57040,8 +57040,8 @@
       "source_location": "L194",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts_cputhroughputchart",
-      "community": 2,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".cputhroughputchart"
     },
     {
@@ -57051,8 +57051,8 @@
       "source_location": "L198",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts_memorychart",
-      "community": 2,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".memorychart"
     },
     {
@@ -57062,8 +57062,8 @@
       "source_location": "L202",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts_memorypressurechart",
-      "community": 2,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".memorypressurechart"
     },
     {
@@ -57073,8 +57073,8 @@
       "source_location": "L206",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts_diskwritechart",
-      "community": 2,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".diskwritechart"
     },
     {
@@ -57084,8 +57084,8 @@
       "source_location": "L210",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts_networklatencychart",
-      "community": 2,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".networklatencychart"
     },
     {
@@ -57095,8 +57095,8 @@
       "source_location": "L214",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts_pdfrenderchart",
-      "community": 2,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".pdfrenderchart"
     },
     {
@@ -57106,8 +57106,8 @@
       "source_location": "L218",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarklivecharts_thermalchart",
-      "community": 2,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".thermalchart"
     },
     {
@@ -57117,8 +57117,8 @@
       "source_location": "L223",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkchart",
-      "community": 2,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": "benchmarkchart"
     },
     {
@@ -57128,8 +57128,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "keypath",
-      "community": 2,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": "keypath"
     },
     {
@@ -57150,8 +57150,8 @@
       "source_location": "L274",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkchart_accessibilitysummary",
-      "community": 2,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".accessibilitysummary"
     },
     {
@@ -57184,7 +57184,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "documentpreviewview.swift"
     },
     {
@@ -57196,7 +57196,7 @@
       "_origin": "ast",
       "id": "appkit",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "appkit"
     },
     {
@@ -57208,7 +57208,7 @@
       "_origin": "ast",
       "id": "combine",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "combine"
     },
     {
@@ -57220,7 +57220,7 @@
       "_origin": "ast",
       "id": "pdfkit",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "pdfkit"
     },
     {
@@ -57232,7 +57232,7 @@
       "_origin": "ast",
       "id": "quartz",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "quartz"
     },
     {
@@ -57244,7 +57244,7 @@
       "_origin": "ast",
       "id": "uniformtypeidentifiers",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "uniformtypeidentifiers"
     },
     {
@@ -57255,7 +57255,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "documentpreviewview"
     },
     {
@@ -57266,7 +57266,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_swift_string",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "string"
     },
     {
@@ -57277,7 +57277,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview_init",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": ".init()"
     },
     {
@@ -57288,7 +57288,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview_body",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": ".body"
     },
     {
@@ -57299,7 +57299,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_swift_binding",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "binding"
     },
     {
@@ -57310,7 +57310,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview_selectedbinding",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": ".selectedbinding"
     },
     {
@@ -57321,7 +57321,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview_selectedfile",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": ".selectedfile"
     },
     {
@@ -57332,7 +57332,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_swift_generationjobrecord",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "generationjobrecord"
     },
     {
@@ -57343,7 +57343,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview_provenancerecord",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": ".provenancerecord"
     },
     {
@@ -57354,7 +57354,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_swift_bool",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "bool"
     },
     {
@@ -57365,7 +57365,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview_exportalertbinding",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": ".exportalertbinding"
     },
     {
@@ -57376,7 +57376,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview_printselected",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": ".printselected()"
     },
     {
@@ -57387,7 +57387,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview_exportselected",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": ".exportselected()"
     },
     {
@@ -57398,7 +57398,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_documentpreviewview_copyprovenance",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": ".copyprovenance()"
     },
     {
@@ -57409,7 +57409,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_pdfdocumentview",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "pdfdocumentview"
     },
     {
@@ -57420,7 +57420,7 @@
       "_origin": "ast",
       "id": "nsviewrepresentable",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "nsviewrepresentable"
     },
     {
@@ -57431,7 +57431,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_swift_url",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "url"
     },
     {
@@ -57442,7 +57442,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_pdfdocumentview_makensview",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": ".makensview()"
     },
     {
@@ -57453,7 +57453,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_swift_context",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "context"
     },
     {
@@ -57464,7 +57464,7 @@
       "_origin": "ast",
       "id": "pdfview",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "pdfview"
     },
     {
@@ -57475,7 +57475,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_pdfdocumentview_updatensview",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": ".updatensview()"
     },
     {
@@ -57486,7 +57486,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_quicklookcoordinator",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "quicklookcoordinator"
     },
     {
@@ -57497,7 +57497,7 @@
       "_origin": "ast",
       "id": "nsobject",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "nsobject"
     },
     {
@@ -57508,7 +57508,7 @@
       "_origin": "ast",
       "id": "observableobject",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "observableobject"
     },
     {
@@ -57519,7 +57519,7 @@
       "_origin": "ast",
       "id": "qlpreviewpaneldatasource",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "qlpreviewpaneldatasource"
     },
     {
@@ -57530,7 +57530,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_quicklookcoordinator_present",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": ".present()"
     },
     {
@@ -57541,7 +57541,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_quicklookcoordinator_numberofpreviewitems",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": ".numberofpreviewitems()"
     },
     {
@@ -57552,7 +57552,7 @@
       "_origin": "ast",
       "id": "qlpreviewpanel",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "qlpreviewpanel"
     },
     {
@@ -57563,7 +57563,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_swift_int",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "int"
     },
     {
@@ -57574,7 +57574,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_documentpreviewview_quicklookcoordinator_previewpanel",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": ".previewpanel()"
     },
     {
@@ -57585,7 +57585,7 @@
       "_origin": "ast",
       "id": "qlpreviewitem",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "qlpreviewitem"
     },
     {
@@ -57716,8 +57716,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "frenchassessmentworkspace.swift"
     },
     {
@@ -57727,8 +57727,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchworkspacelayoutpolicy",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "frenchworkspacelayoutpolicy"
     },
     {
@@ -57738,8 +57738,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchworkspacelayoutpolicy_contentwidth",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".contentwidth()"
     },
     {
@@ -57749,8 +57749,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_swift_cgfloat",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "cgfloat"
     },
     {
@@ -57760,8 +57760,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchassessmentworkspace",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "frenchassessmentworkspace"
     },
     {
@@ -57771,8 +57771,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchassessmentworkspace_body",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".body"
     },
     {
@@ -57782,8 +57782,8 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchassessmentworkspace_form",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".form"
     },
     {
@@ -57793,8 +57793,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_swift_bool",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "bool"
     },
     {
@@ -57804,8 +57804,8 @@
       "source_location": "L123",
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchassessmentworkspace_cangenerate",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".cangenerate"
     },
     {
@@ -57815,8 +57815,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_swift_string",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "string"
     },
     {
@@ -57826,8 +57826,8 @@
       "source_location": "L129",
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchassessmentworkspace_createhelp",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".createhelp"
     },
     {
@@ -57837,8 +57837,8 @@
       "source_location": "L139",
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchassessmentworkspace_localizedvalue",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".localizedvalue()"
     },
     {
@@ -57848,8 +57848,8 @@
       "source_location": "L149",
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchteacherreviewsheet",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "frenchteacherreviewsheet"
     },
     {
@@ -57859,8 +57859,8 @@
       "source_location": "L159",
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchteacherreviewsheet_body",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".body"
     },
     {
@@ -57870,8 +57870,8 @@
       "source_location": "L218",
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_frenchteacherreviewsheet_scorebinding",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".scorebinding()"
     },
     {
@@ -57881,8 +57881,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_swift_binding",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "binding"
     },
     {
@@ -57892,8 +57892,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_frenchassessmentworkspace_swift_int",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "int"
     },
     {
@@ -59026,7 +59026,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentview_columnvisibility",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".columnvisibility()"
     },
     {
@@ -59037,7 +59037,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_swift_binding",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "binding"
     },
     {
@@ -59048,7 +59048,7 @@
       "_origin": "ast",
       "id": "navigationsplitviewvisibility",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "navigationsplitviewvisibility"
     },
     {
@@ -59676,7 +59676,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "applicationcoordinator.swift"
     },
     {
@@ -59688,7 +59688,7 @@
       "_origin": "ast",
       "id": "usernotifications",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "usernotifications"
     },
     {
@@ -60843,7 +60843,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_notificationpresenter",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "notificationpresenter"
     },
     {
@@ -60854,7 +60854,7 @@
       "_origin": "ast",
       "id": "unusernotificationcenterdelegate",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "unusernotificationcenterdelegate"
     },
     {
@@ -60865,7 +60865,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_notificationpresenter_init",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": ".init()"
     },
     {
@@ -60876,7 +60876,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_notificationpresenter_usernotificationcenter",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": ".usernotificationcenter()"
     },
     {
@@ -60887,7 +60887,7 @@
       "_origin": "ast",
       "id": "unusernotificationcenter",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "unusernotificationcenter"
     },
     {
@@ -60898,7 +60898,7 @@
       "_origin": "ast",
       "id": "unnotification",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "unnotification"
     },
     {
@@ -60909,7 +60909,7 @@
       "_origin": "ast",
       "id": "unnotificationpresentationoptions",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "unnotificationpresentationoptions"
     },
     {
@@ -60974,8 +60974,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": "benchmarkcoordinator.swift"
     },
     {
@@ -60986,8 +60986,8 @@
       "source_location": "L2",
       "_origin": "ast",
       "id": "observation",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": "observation"
     },
     {
@@ -61151,8 +61151,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": "catalogstore.swift"
     },
     {
@@ -61382,8 +61382,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "macos_papercreator_state_coordinatordependencies_appclock",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 88,
+      "community_name": "AIProvider",
       "norm_label": "appclock"
     },
     {
@@ -61536,8 +61536,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": "generationcoordinator.swift"
     },
     {
@@ -61580,8 +61580,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_generationcoordinator_init",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 88,
+      "community_name": "AIProvider",
       "norm_label": ".init()"
     },
     {
@@ -61657,8 +61657,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_state_modelcoordinator",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": "modelcoordinator.swift"
     },
     {
@@ -61734,8 +61734,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "macos_papercreator_state_modelcoordinator_modelcoordinator_ismodelliststale",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 88,
+      "community_name": "AIProvider",
       "norm_label": ".ismodelliststale"
     },
     {
@@ -62361,8 +62361,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_state_settingsstore",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": "settingsstore.swift"
     },
     {
@@ -62450,7 +62450,7 @@
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "accessibilitytests.swift"
     },
     {
@@ -62462,7 +62462,7 @@
       "_origin": "ast",
       "id": "xctest",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "xctest"
     },
     {
@@ -62474,7 +62474,7 @@
       "_origin": "ast",
       "id": "papercreator",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "papercreator"
     },
     {
@@ -62485,7 +62485,7 @@
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "accessibilitytests"
     },
     {
@@ -62496,7 +62496,7 @@
       "_origin": "ast",
       "id": "xctestcase",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": "xctestcase"
     },
     {
@@ -62518,7 +62518,7 @@
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testworkspacelayoutprotectscompactwindowsfromcolumnoverlap",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".testworkspacelayoutprotectscompactwindowsfromcolumnoverlap()"
     },
     {
@@ -62528,8 +62528,8 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testfrenchteacherformkeepsreadablelinelengthwithoutclippingsmallwindows",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".testfrenchteacherformkeepsreadablelinelengthwithoutclippingsmallwindows()"
     },
     {
@@ -62540,7 +62540,7 @@
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testeveryproviderandhelptopichasspokentextandsymbol",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".testeveryproviderandhelptopichasspokentextandsymbol()"
     },
     {
@@ -62551,7 +62551,7 @@
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testqualificationstatesneverrelyoncolouralone",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".testqualificationstatesneverrelyoncolouralone()"
     },
     {
@@ -62562,7 +62562,7 @@
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testlongpseudolocalisedcopyandrighttoleftlocaleremainavailable",
       "community": 2,
-      "community_name": "BenchmarkChart",
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".testlongpseudolocalisedcopyandrighttoleftlocaleremainavailable()"
     },
     {
@@ -62572,8 +62572,8 @@
       "source_location": "L102",
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testbenchmarkchartsummaryexposeslatestvalueandrangewithoutvision",
-      "community": 2,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".testbenchmarkchartsummaryexposeslatestvalueandrangewithoutvision()"
     },
     {
@@ -62584,7 +62584,7 @@
       "_origin": "ast",
       "id": "macos_tests_apptests",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "apptests.swift"
     },
     {
@@ -62627,8 +62627,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testfrenchrequestkeepscurriculumseparatefromuilanguage",
-      "community": 88,
-      "community_name": "AIProvider",
+      "community": 185,
+      "community_name": "Foundation",
       "norm_label": ".testfrenchrequestkeepscurriculumseparatefromuilanguage()"
     },
     {
@@ -62924,8 +62924,8 @@
       "source_location": "L461",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testfrenchreviewusesenvironmentlocalisablekeys",
-      "community": 317,
-      "community_name": "FrenchAssessmentWorkspace",
+      "community": 2,
+      "community_name": "WorkspaceLayoutMode",
       "norm_label": ".testfrenchreviewusesenvironmentlocalisablekeys()"
     },
     {
@@ -63079,7 +63079,7 @@
       "_origin": "ast",
       "id": "macos_tests_coordinatortests",
       "community": 185,
-      "community_name": "DocumentPreviewView",
+      "community_name": "Foundation",
       "norm_label": "coordinatortests.swift"
     },
     {
@@ -63232,8 +63232,8 @@
       "source_location": "L157",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testmodelcoordinatorexpiresstalemodellist",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 88,
+      "community_name": "AIProvider",
       "norm_label": ".testmodelcoordinatorexpiresstalemodellist()"
     },
     {
@@ -63441,8 +63441,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_swift_date",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 88,
+      "community_name": "AIProvider",
       "norm_label": "date"
     },
     {
@@ -63452,8 +63452,8 @@
       "source_location": "L495",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_testclock",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 88,
+      "community_name": "AIProvider",
       "norm_label": "testclock"
     },
     {
@@ -63463,8 +63463,8 @@
       "source_location": "L498",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_testclock_init",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 88,
+      "community_name": "AIProvider",
       "norm_label": ".init()"
     },
     {
@@ -73101,7 +73101,7 @@
       "label": "test_v20_runtime_stages_graph_and_tree_and_validates_pdf()",
       "file_type": "code",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L267",
+      "source_location": "L269",
       "_origin": "ast",
       "id": "tests_test_french_runtime_test_v20_runtime_stages_graph_and_tree_and_validates_pdf",
       "community": 11,
@@ -73112,7 +73112,7 @@
       "label": "test_v19_publication_prints_locked_database_reasoning_and_keeps_its_phases()",
       "file_type": "code",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L401",
+      "source_location": "L403",
       "_origin": "ast",
       "id": "tests_test_french_runtime_test_v19_publication_prints_locked_database_reasoning_and_keeps_its_phases",
       "community": 11,
@@ -73123,7 +73123,7 @@
       "label": "test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles()",
       "file_type": "code",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L568",
+      "source_location": "L570",
       "_origin": "ast",
       "id": "tests_test_french_runtime_test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles",
       "community": 11,
@@ -73134,7 +73134,7 @@
       "label": "test_runtime_publishes_v21_even_if_caller_requests_older_contract()",
       "file_type": "code",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L723",
+      "source_location": "L725",
       "_origin": "ast",
       "id": "tests_test_french_runtime_test_runtime_publishes_v21_even_if_caller_requests_older_contract",
       "community": 11,
@@ -73145,7 +73145,7 @@
       "label": "test_publication_is_complete_or_absent()",
       "file_type": "code",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L764",
+      "source_location": "L766",
       "_origin": "ast",
       "id": "tests_test_french_runtime_test_publication_is_complete_or_absent",
       "community": 11,
@@ -73156,7 +73156,7 @@
       "label": "test_runtime_rejects_remote_ollama_without_explicit_consent()",
       "file_type": "code",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1127",
+      "source_location": "L1129",
       "_origin": "ast",
       "id": "tests_test_french_runtime_test_runtime_rejects_remote_ollama_without_explicit_consent",
       "community": 11,
@@ -73167,7 +73167,7 @@
       "label": "test_network_pdf_version_dispatch_has_no_implicit_legacy_fallback()",
       "file_type": "code",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1138",
+      "source_location": "L1140",
       "_origin": "ast",
       "id": "tests_test_french_runtime_test_network_pdf_version_dispatch_has_no_implicit_legacy_fallback",
       "community": 11,
@@ -73178,7 +73178,7 @@
       "label": "test_runtime_publishes_v17_graph_tree_depth_with_locked_pdf_facts()",
       "file_type": "code",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1156",
+      "source_location": "L1158",
       "_origin": "ast",
       "id": "tests_test_french_runtime_test_runtime_publishes_v17_graph_tree_depth_with_locked_pdf_facts",
       "community": 11,
@@ -73189,7 +73189,7 @@
       "label": "test_runtime_v17_preserves_v16_database_depth_with_locked_pdf_facts()",
       "file_type": "code",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1282",
+      "source_location": "L1284",
       "_origin": "ast",
       "id": "tests_test_french_runtime_test_runtime_v17_preserves_v16_database_depth_with_locked_pdf_facts",
       "community": 11,
@@ -73200,7 +73200,7 @@
       "label": "test_runtime_v17_preserves_v15_network_depth_with_locked_pdf_facts()",
       "file_type": "code",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1392",
+      "source_location": "L1394",
       "_origin": "ast",
       "id": "tests_test_french_runtime_test_runtime_v17_preserves_v15_network_depth_with_locked_pdf_facts",
       "community": 11,
@@ -73211,7 +73211,7 @@
       "label": "test_network_depth_correction_sets_dijkstra_steps_on_separate_lines()",
       "file_type": "code",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1569",
+      "source_location": "L1571",
       "_origin": "ast",
       "id": "tests_test_french_runtime_test_network_depth_correction_sets_dijkstra_steps_on_separate_lines",
       "community": 11,
@@ -73222,7 +73222,7 @@
       "label": "test_network_depth_answer_and_rubric_stay_together()",
       "file_type": "code",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1607",
+      "source_location": "L1609",
       "_origin": "ast",
       "id": "tests_test_french_runtime_test_network_depth_answer_and_rubric_stay_together",
       "community": 11,
@@ -73233,7 +73233,7 @@
       "label": "test_french_pdf_restores_roman_body_after_other_renderer_font_mapping()",
       "file_type": "code",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1646",
+      "source_location": "L1648",
       "_origin": "ast",
       "id": "tests_test_french_runtime_test_french_pdf_restores_roman_body_after_other_renderer_font_mapping",
       "community": 11,
@@ -73244,7 +73244,7 @@
       "label": "test_missing_sources_fail_before_model_and_leave_no_output()",
       "file_type": "code",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1691",
+      "source_location": "L1693",
       "_origin": "ast",
       "id": "tests_test_french_runtime_test_missing_sources_fail_before_model_and_leave_no_output",
       "community": 11,
@@ -73255,7 +73255,7 @@
       "label": "test_originality_history_reads_only_bounded_valid_local_bundles()",
       "file_type": "code",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1710",
+      "source_location": "L1712",
       "_origin": "ast",
       "id": "tests_test_french_runtime_test_originality_history_reads_only_bounded_valid_local_bundles",
       "community": 11,
@@ -86964,8 +86964,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_project_analysis_implementation_and_fidelity_report",
-      "community": 320,
-      "community_name": "Implementation and fidelity report",
+      "community": 304,
+      "community_name": "README.md",
       "norm_label": "implementation_and_fidelity_report.md"
     },
     {
@@ -86975,8 +86975,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_project_analysis_implementation_and_fidelity_report_implementation_and_fidelity_report",
-      "community": 320,
-      "community_name": "Implementation and fidelity report",
+      "community": 304,
+      "community_name": "README.md",
       "norm_label": "implementation and fidelity report"
     },
     {
@@ -86986,8 +86986,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "docs_project_analysis_implementation_and_fidelity_report_release_outcome",
-      "community": 320,
-      "community_name": "Implementation and fidelity report",
+      "community": 304,
+      "community_name": "README.md",
       "norm_label": "release outcome"
     },
     {
@@ -86997,8 +86997,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "docs_project_analysis_implementation_and_fidelity_report_implemented_architecture",
-      "community": 320,
-      "community_name": "Implementation and fidelity report",
+      "community": 304,
+      "community_name": "README.md",
       "norm_label": "implemented architecture"
     },
     {
@@ -87008,8 +87008,8 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "docs_project_analysis_implementation_and_fidelity_report_model_guidance",
-      "community": 320,
-      "community_name": "Implementation and fidelity report",
+      "community": 304,
+      "community_name": "README.md",
       "norm_label": "model guidance"
     },
     {
@@ -87019,8 +87019,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "docs_project_analysis_implementation_and_fidelity_report_automated_and_visual_evidence",
-      "community": 320,
-      "community_name": "Implementation and fidelity report",
+      "community": 304,
+      "community_name": "README.md",
       "norm_label": "automated and visual evidence"
     },
     {
@@ -87030,8 +87030,8 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "docs_project_analysis_implementation_and_fidelity_report_live_model_evidence_boundary",
-      "community": 320,
-      "community_name": "Implementation and fidelity report",
+      "community": 304,
+      "community_name": "README.md",
       "norm_label": "live-model evidence boundary"
     },
     {
@@ -87041,8 +87041,8 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "docs_project_analysis_implementation_and_fidelity_report_publication_boundary",
-      "community": 320,
-      "community_name": "Implementation and fidelity report",
+      "community": 304,
+      "community_name": "README.md",
       "norm_label": "publication boundary"
     },
     {
@@ -87371,8 +87371,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_project_analysis_ui_audit",
-      "community": 304,
-      "community_name": "README.md",
+      "community": 251,
+      "community_name": "macOS UI audit",
       "norm_label": "ui_audit.md"
     },
     {
@@ -122766,7 +122766,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1471",
+      "source_location": "L1487",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -123006,7 +123006,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1319",
+      "source_location": "L1335",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -136203,7 +136203,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1652",
+      "source_location": "L1654",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -136215,7 +136215,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1659",
+      "source_location": "L1661",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_french_pdf_restores_roman_body_after_other_renderer_font_mapping",
@@ -138162,7 +138162,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1348",
+      "source_location": "L1364",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -140128,7 +140128,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1352",
+      "source_location": "L1368",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -140356,7 +140356,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L839",
+      "source_location": "L841",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -140369,7 +140369,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L857",
+      "source_location": "L859",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_publication_is_complete_or_absent",
@@ -141875,7 +141875,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1350",
+      "source_location": "L1366",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -142139,7 +142139,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L410",
+      "source_location": "L412",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -142152,7 +142152,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1319",
+      "source_location": "L1321",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_v17_preserves_v16_database_depth_with_locked_pdf_facts",
@@ -142164,7 +142164,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L444",
+      "source_location": "L446",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v19_publication_prints_locked_database_reasoning_and_keeps_its_phases",
@@ -144972,7 +144972,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1337",
+      "source_location": "L1353",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -145152,7 +145152,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L275",
+      "source_location": "L277",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -145165,7 +145165,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L309",
+      "source_location": "L311",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v20_runtime_stages_graph_and_tree_and_validates_pdf",
@@ -148536,7 +148536,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L278",
+      "source_location": "L280",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -148549,7 +148549,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L374",
+      "source_location": "L376",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v20_runtime_stages_graph_and_tree_and_validates_pdf",
@@ -149373,7 +149373,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1341",
+      "source_location": "L1357",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -149649,7 +149649,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L840",
+      "source_location": "L842",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -149662,7 +149662,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L849",
+      "source_location": "L851",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_publication_is_complete_or_absent",
@@ -150997,7 +150997,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1339",
+      "source_location": "L1355",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -151189,7 +151189,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1164",
+      "source_location": "L1166",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -151202,7 +151202,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1193",
+      "source_location": "L1195",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_publishes_v17_graph_tree_depth_with_locked_pdf_facts",
@@ -153268,7 +153268,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L909",
+      "source_location": "L925",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_contract_pdf",
@@ -153690,7 +153690,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L864",
+      "source_location": "L880",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_contract_pdf",
@@ -153858,7 +153858,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1364",
+      "source_location": "L1380",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -154038,7 +154038,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L841",
+      "source_location": "L843",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -154050,7 +154050,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1667",
+      "source_location": "L1669",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_french_pdf_restores_roman_body_after_other_renderer_font_mapping",
@@ -154063,7 +154063,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L871",
+      "source_location": "L873",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_publication_is_complete_or_absent",
@@ -155112,7 +155112,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L943",
+      "source_location": "L959",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_depth_contract_pdf",
@@ -155292,7 +155292,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1362",
+      "source_location": "L1378",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -155508,7 +155508,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1400",
+      "source_location": "L1402",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -155520,7 +155520,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1624",
+      "source_location": "L1626",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_network_depth_answer_and_rubric_stay_together",
@@ -155532,7 +155532,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1582",
+      "source_location": "L1584",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_network_depth_correction_sets_dijkstra_steps_on_separate_lines",
@@ -155545,7 +155545,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1427",
+      "source_location": "L1429",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_v17_preserves_v15_network_depth_with_locked_pdf_facts",
@@ -156017,7 +156017,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1575",
+      "source_location": "L1577",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -156029,7 +156029,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1623",
+      "source_location": "L1625",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_network_depth_answer_and_rubric_stay_together",
@@ -156041,7 +156041,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1589",
+      "source_location": "L1591",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_network_depth_correction_sets_dijkstra_steps_on_separate_lines",
@@ -156395,7 +156395,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1654",
+      "source_location": "L1656",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -156407,7 +156407,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1666",
+      "source_location": "L1668",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_french_pdf_restores_roman_body_after_other_renderer_font_mapping",
@@ -157397,7 +157397,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1070",
+      "source_location": "L1086",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_reasoning_contract_pdf",
@@ -157541,7 +157541,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1360",
+      "source_location": "L1376",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -157697,7 +157697,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L574",
+      "source_location": "L576",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -157710,7 +157710,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L596",
+      "source_location": "L598",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles",
@@ -159126,7 +159126,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1326",
+      "source_location": "L1342",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -159138,7 +159138,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1234",
+      "source_location": "L1250",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_load_originality_history",
@@ -159233,7 +159233,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L864",
+      "source_location": "L880",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_contract_pdf",
@@ -159245,7 +159245,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L943",
+      "source_location": "L959",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_depth_contract_pdf",
@@ -159257,7 +159257,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1070",
+      "source_location": "L1086",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_reasoning_contract_pdf",
@@ -159675,7 +159675,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1665",
+      "source_location": "L1667",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_french_pdf_restores_roman_body_after_other_renderer_font_mapping",
@@ -159687,7 +159687,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1622",
+      "source_location": "L1624",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_network_depth_answer_and_rubric_stay_together",
@@ -159699,7 +159699,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1588",
+      "source_location": "L1590",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_network_depth_correction_sets_dijkstra_steps_on_separate_lines",
@@ -159711,7 +159711,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L850",
+      "source_location": "L852",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_publication_is_complete_or_absent",
@@ -159723,7 +159723,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1194",
+      "source_location": "L1196",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_publishes_v17_graph_tree_depth_with_locked_pdf_facts",
@@ -159735,7 +159735,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1428",
+      "source_location": "L1430",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_v17_preserves_v15_network_depth_with_locked_pdf_facts",
@@ -159747,7 +159747,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1320",
+      "source_location": "L1322",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_v17_preserves_v16_database_depth_with_locked_pdf_facts",
@@ -159759,7 +159759,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L595",
+      "source_location": "L597",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles",
@@ -159771,7 +159771,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L443",
+      "source_location": "L445",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v19_publication_prints_locked_database_reasoning_and_keeps_its_phases",
@@ -159783,7 +159783,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L308",
+      "source_location": "L310",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v20_runtime_stages_graph_and_tree_and_validates_pdf",
@@ -161939,7 +161939,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1656",
+      "source_location": "L1658",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -161951,7 +161951,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1669",
+      "source_location": "L1671",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_french_pdf_restores_roman_body_after_other_renderer_font_mapping",
@@ -162202,7 +162202,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1577",
+      "source_location": "L1579",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -162214,7 +162214,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1626",
+      "source_location": "L1628",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_network_depth_answer_and_rubric_stay_together",
@@ -162226,7 +162226,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1590",
+      "source_location": "L1592",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_network_depth_correction_sets_dijkstra_steps_on_separate_lines",
@@ -163000,7 +163000,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1463",
+      "source_location": "L1479",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -164210,7 +164210,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1426",
+      "source_location": "L1442",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -164462,7 +164462,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1234",
+      "source_location": "L1250",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_load_originality_history",
@@ -165070,7 +165070,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1314",
+      "source_location": "L1330",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -165095,7 +165095,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L587",
+      "source_location": "L589",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles",
@@ -165814,7 +165814,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1324",
+      "source_location": "L1340",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -166347,7 +166347,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1309",
+      "source_location": "L1325",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -167186,7 +167186,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L816",
+      "source_location": "L832",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_audit_pdf",
@@ -167672,7 +167672,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1374",
+      "source_location": "L1390",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -167780,7 +167780,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1676",
+      "source_location": "L1678",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_french_pdf_restores_roman_body_after_other_renderer_font_mapping",
@@ -167792,7 +167792,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1630",
+      "source_location": "L1632",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_network_depth_answer_and_rubric_stay_together",
@@ -167804,7 +167804,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1594",
+      "source_location": "L1596",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_network_depth_correction_sets_dijkstra_steps_on_separate_lines",
@@ -167817,7 +167817,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L607",
+      "source_location": "L609",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles",
@@ -167863,7 +167863,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1262",
+      "source_location": "L1278",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -167874,7 +167874,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1284",
+      "source_location": "L1300",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -167885,7 +167885,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1210",
+      "source_location": "L1226",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -167907,7 +167907,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1242",
+      "source_location": "L1258",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -168006,7 +168006,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L864",
+      "source_location": "L880",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -168017,7 +168017,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L943",
+      "source_location": "L959",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -168028,7 +168028,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1070",
+      "source_location": "L1086",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -168158,7 +168158,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1300",
+      "source_location": "L1316",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -168170,7 +168170,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1128",
+      "source_location": "L1130",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -168182,7 +168182,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1130",
+      "source_location": "L1132",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_rejects_remote_ollama_without_explicit_consent",
@@ -168194,7 +168194,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1303",
+      "source_location": "L1319",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -168230,7 +168230,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1383",
+      "source_location": "L1399",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -168254,7 +168254,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1304",
+      "source_location": "L1320",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -168266,7 +168266,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1210",
+      "source_location": "L1226",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_load_originality_history",
@@ -168362,7 +168362,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L864",
+      "source_location": "L880",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_contract_pdf",
@@ -168374,7 +168374,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L943",
+      "source_location": "L959",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_depth_contract_pdf",
@@ -168386,7 +168386,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1070",
+      "source_location": "L1086",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_reasoning_contract_pdf",
@@ -168409,7 +168409,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L843",
+      "source_location": "L845",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -168422,7 +168422,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L851",
+      "source_location": "L853",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_publication_is_complete_or_absent",
@@ -168445,7 +168445,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1197",
+      "source_location": "L1199",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_publishes_v17_graph_tree_depth_with_locked_pdf_facts",
@@ -168468,7 +168468,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L312",
+      "source_location": "L314",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v20_runtime_stages_graph_and_tree_and_validates_pdf",
@@ -168490,7 +168490,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L843",
+      "source_location": "L845",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -168503,7 +168503,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L859",
+      "source_location": "L861",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_publication_is_complete_or_absent",
@@ -168538,7 +168538,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1323",
+      "source_location": "L1325",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_v17_preserves_v16_database_depth_with_locked_pdf_facts",
@@ -168550,7 +168550,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L523",
+      "source_location": "L525",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v19_publication_prints_locked_database_reasoning_and_keeps_its_phases",
@@ -168573,7 +168573,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L451",
+      "source_location": "L453",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v19_publication_prints_locked_database_reasoning_and_keeps_its_phases",
@@ -168608,7 +168608,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L208",
+      "source_location": "L210",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v21_pdf_rejects_missing_shifted_or_leaked_material",
@@ -168630,10 +168630,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L871",
+      "source_location": "L887",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_runtime_rationale_871",
+      "source": "backend_core_france_runtime_rationale_887",
       "target": "backend_core_france_runtime_validate_network_contract_pdf",
       "confidence_score": 1.0
     },
@@ -168642,7 +168642,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L843",
+      "source_location": "L845",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -168655,7 +168655,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L873",
+      "source_location": "L875",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_publication_is_complete_or_absent",
@@ -168665,10 +168665,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L950",
+      "source_location": "L966",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_runtime_rationale_950",
+      "source": "backend_core_france_runtime_rationale_966",
       "target": "backend_core_france_runtime_validate_network_depth_contract_pdf",
       "confidence_score": 1.0
     },
@@ -168677,7 +168677,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1579",
+      "source_location": "L1581",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -168689,7 +168689,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1595",
+      "source_location": "L1597",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_network_depth_correction_sets_dijkstra_steps_on_separate_lines",
@@ -168702,7 +168702,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1431",
+      "source_location": "L1433",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_v17_preserves_v15_network_depth_with_locked_pdf_facts",
@@ -168712,10 +168712,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1077",
+      "source_location": "L1093",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_runtime_rationale_1077",
+      "source": "backend_core_france_runtime_rationale_1093",
       "target": "backend_core_france_runtime_validate_network_reasoning_contract_pdf",
       "confidence_score": 1.0
     },
@@ -168725,7 +168725,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L610",
+      "source_location": "L612",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles",
@@ -168736,7 +168736,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1320",
+      "source_location": "L1336",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -168747,10 +168747,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1211",
+      "source_location": "L1227",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_runtime_rationale_1211",
+      "source": "backend_core_france_runtime_rationale_1227",
       "target": "backend_core_france_runtime_load_originality_history",
       "confidence_score": 1.0
     },
@@ -168759,7 +168759,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1713",
+      "source_location": "L1715",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -168771,7 +168771,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1729",
+      "source_location": "L1731",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_originality_history_reads_only_bounded_valid_local_bundles",
@@ -168783,7 +168783,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1354",
+      "source_location": "L1370",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -168794,10 +168794,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1243",
+      "source_location": "L1259",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_runtime_rationale_1243",
+      "source": "backend_core_france_runtime_rationale_1259",
       "target": "backend_core_france_runtime_network_pdf_contract_version",
       "confidence_score": 1.0
     },
@@ -168806,7 +168806,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1139",
+      "source_location": "L1141",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -168818,7 +168818,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1144",
+      "source_location": "L1146",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_network_pdf_version_dispatch_has_no_implicit_legacy_fallback",
@@ -168831,7 +168831,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L598",
+      "source_location": "L600",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles",
@@ -168842,7 +168842,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1343",
+      "source_location": "L1359",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -168854,7 +168854,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1139",
+      "source_location": "L1141",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -168866,7 +168866,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1147",
+      "source_location": "L1149",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_network_pdf_version_dispatch_has_no_implicit_legacy_fallback",
@@ -168879,7 +168879,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L602",
+      "source_location": "L604",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles",
@@ -168891,7 +168891,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L446",
+      "source_location": "L448",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v19_publication_prints_locked_database_reasoning_and_keeps_its_phases",
@@ -168914,7 +168914,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1452",
+      "source_location": "L1468",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -168926,7 +168926,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1294",
+      "source_location": "L1310",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -168938,7 +168938,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1372",
+      "source_location": "L1388",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -168950,7 +168950,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1692",
+      "source_location": "L1694",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -168962,7 +168962,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1705",
+      "source_location": "L1707",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_missing_sources_fail_before_model_and_leave_no_output",
@@ -168975,7 +168975,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L811",
+      "source_location": "L813",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_publication_is_complete_or_absent",
@@ -168987,7 +168987,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1189",
+      "source_location": "L1191",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_publishes_v17_graph_tree_depth_with_locked_pdf_facts",
@@ -168999,7 +168999,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L753",
+      "source_location": "L755",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_publishes_v21_even_if_caller_requests_older_contract",
@@ -169011,7 +169011,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1423",
+      "source_location": "L1425",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_v17_preserves_v15_network_depth_with_locked_pdf_facts",
@@ -169023,7 +169023,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1315",
+      "source_location": "L1317",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_v17_preserves_v16_database_depth_with_locked_pdf_facts",
@@ -169035,7 +169035,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L439",
+      "source_location": "L441",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v19_publication_prints_locked_database_reasoning_and_keeps_its_phases",
@@ -169047,7 +169047,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L304",
+      "source_location": "L306",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v20_runtime_stages_graph_and_tree_and_validates_pdf",
@@ -337227,7 +337227,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1646",
+      "source_location": "L1648",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337238,7 +337238,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1691",
+      "source_location": "L1693",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337249,7 +337249,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1607",
+      "source_location": "L1609",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337260,7 +337260,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1569",
+      "source_location": "L1571",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337271,7 +337271,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1138",
+      "source_location": "L1140",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337282,7 +337282,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1710",
+      "source_location": "L1712",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337293,7 +337293,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L764",
+      "source_location": "L766",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337304,7 +337304,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1156",
+      "source_location": "L1158",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337315,7 +337315,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L723",
+      "source_location": "L725",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337326,7 +337326,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1127",
+      "source_location": "L1129",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337337,7 +337337,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1392",
+      "source_location": "L1394",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337348,7 +337348,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1282",
+      "source_location": "L1284",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337359,7 +337359,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L568",
+      "source_location": "L570",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337370,7 +337370,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L401",
+      "source_location": "L403",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337381,7 +337381,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L267",
+      "source_location": "L269",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337426,7 +337426,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1714",
+      "source_location": "L1716",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337450,7 +337450,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L414",
+      "source_location": "L416",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337462,7 +337462,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L280",
+      "source_location": "L282",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337474,7 +337474,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1168",
+      "source_location": "L1170",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337486,7 +337486,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L772",
+      "source_location": "L774",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337498,7 +337498,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L580",
+      "source_location": "L582",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime",
@@ -337522,7 +337522,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1188",
+      "source_location": "L1190",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_publishes_v17_graph_tree_depth_with_locked_pdf_facts",
@@ -337534,7 +337534,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1422",
+      "source_location": "L1424",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_v17_preserves_v15_network_depth_with_locked_pdf_facts",
@@ -337546,7 +337546,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1314",
+      "source_location": "L1316",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_v17_preserves_v16_database_depth_with_locked_pdf_facts",
@@ -337558,7 +337558,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L419",
+      "source_location": "L421",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v19_publication_prints_locked_database_reasoning_and_keeps_its_phases",
@@ -337570,7 +337570,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L287",
+      "source_location": "L289",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v20_runtime_stages_graph_and_tree_and_validates_pdf",
@@ -337581,7 +337581,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L763",
+      "source_location": "L765",
       "weight": 1.0,
       "context": "decorator",
       "_origin": "ast",
@@ -337593,7 +337593,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1155",
+      "source_location": "L1157",
       "weight": 1.0,
       "context": "decorator",
       "_origin": "ast",
@@ -337605,7 +337605,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1391",
+      "source_location": "L1393",
       "weight": 1.0,
       "context": "decorator",
       "_origin": "ast",
@@ -337617,7 +337617,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1281",
+      "source_location": "L1283",
       "weight": 1.0,
       "context": "decorator",
       "_origin": "ast",
@@ -337629,7 +337629,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L567",
+      "source_location": "L569",
       "weight": 1.0,
       "context": "decorator",
       "_origin": "ast",
@@ -337641,7 +337641,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L400",
+      "source_location": "L402",
       "weight": 1.0,
       "context": "decorator",
       "_origin": "ast",
@@ -337653,7 +337653,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L266",
+      "source_location": "L268",
       "weight": 1.0,
       "context": "decorator",
       "_origin": "ast",
@@ -337751,7 +337751,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L292",
+      "source_location": "L294",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v20_runtime_stages_graph_and_tree_and_validates_pdf",
@@ -337763,7 +337763,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L286",
+      "source_location": "L288",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v20_runtime_stages_graph_and_tree_and_validates_pdf",
@@ -337775,7 +337775,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L427",
+      "source_location": "L429",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v19_publication_prints_locked_database_reasoning_and_keeps_its_phases",
@@ -337787,7 +337787,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L422",
+      "source_location": "L424",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v19_publication_prints_locked_database_reasoning_and_keeps_its_phases",
@@ -337799,7 +337799,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L589",
+      "source_location": "L591",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles",
@@ -337811,7 +337811,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L586",
+      "source_location": "L588",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles",
@@ -337822,7 +337822,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L740",
+      "source_location": "L742",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_publishes_v21_even_if_caller_requests_older_contract",
@@ -337834,7 +337834,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L735",
+      "source_location": "L737",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_publishes_v21_even_if_caller_requests_older_contract",
@@ -337847,7 +337847,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L796",
+      "source_location": "L798",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_publication_is_complete_or_absent",
@@ -337859,7 +337859,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L775",
+      "source_location": "L777",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_publication_is_complete_or_absent",
@@ -337871,7 +337871,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1176",
+      "source_location": "L1178",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_publishes_v17_graph_tree_depth_with_locked_pdf_facts",
@@ -337883,7 +337883,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1171",
+      "source_location": "L1173",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_publishes_v17_graph_tree_depth_with_locked_pdf_facts",
@@ -337895,7 +337895,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1302",
+      "source_location": "L1304",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_v17_preserves_v16_database_depth_with_locked_pdf_facts",
@@ -337907,7 +337907,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1297",
+      "source_location": "L1299",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_v17_preserves_v16_database_depth_with_locked_pdf_facts",
@@ -337919,7 +337919,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1410",
+      "source_location": "L1412",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_v17_preserves_v15_network_depth_with_locked_pdf_facts",
@@ -337931,7 +337931,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1405",
+      "source_location": "L1407",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_runtime_v17_preserves_v15_network_depth_with_locked_pdf_facts",
@@ -337942,7 +337942,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_runtime.py",
-      "source_location": "L1722",
+      "source_location": "L1724",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_runtime_test_originality_history_reads_only_bounded_valid_local_bundles",
@@ -372487,5 +372487,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "f274d98b56083542b83044c5480e1dd054630fb9"
+  "built_at_commit": "2c77e59b7f3030714ecc0c7b0f913d2c65bbf628"
 }

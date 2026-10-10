@@ -812,6 +812,22 @@ def validate_database_audit_pdf(
         ):
             if fragment in flat:
                 raise ValueError("Incident-audit derived answer leaked")
+        candidate_source = " ".join(
+            [exercise.context, *(question.prompt for question in exercise.questions)]
+        )
+        candidate_source = " ".join(candidate_source.split())
+        for question in exercise.questions:
+            answer_prose = re.sub(
+                r"```(?:sql|python)?[\s\S]*?```", "; ", question.answer
+            )
+            for clause in re.split(r";\s+|(?<=\.)\s+", answer_prose):
+                fragment = " ".join(clause.split()).strip(" .")
+                if (
+                    len(fragment) >= 20
+                    and fragment not in candidate_source
+                    and fragment in flat
+                ):
+                    raise ValueError("Incident-audit answer clause leaked into subject")
         if any(
             printable_database_criterion(credit.criterion) in flat
             for question in exercise.questions

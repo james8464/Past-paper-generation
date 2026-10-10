@@ -198,6 +198,8 @@ def test_v21_pdf_rejects_missing_shifted_or_leaked_material(tmp_path, monkeypatc
         original + "\nBarème indicatif — question 2a",
         original + "\nS0, S1, S2 : 3, 4, 5",
         original + "\nincident.id_cat = categorie.id_cat",
+        original + "\n" + exercises[1].questions[2].answer.split("; ")[0],
+        original + "\nEffectifs par catégorie : 2, 3, 2, 1.",
     )
     for index, mutated in enumerate(mutants):
         with monkeypatch.context() as patch:
