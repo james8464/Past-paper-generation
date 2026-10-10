@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791657649.271098,
-    "ast_hash": "fafec1b9cf257538d7f4a1b31b8e60e6",
+    "mtime": 1791664933.2272174,
+    "ast_hash": "36dc5ec8598c76ff41dc01ea6aa34abb",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3052,6 +3052,36 @@
   "docs/quality/french-nsi-v21-incident-audit-live-diagnostic-2026-10-10.md": {
     "mtime": 1791657470.660683,
     "ast_hash": "769f27515aae41b87e579f9ca5581770",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-10-french-nsi-route-trace-v22.md": {
+    "mtime": 1791664214.6423013,
+    "ast_hash": "e2a2de80a5fd07de113a6e549eb89f05",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-10-french-nsi-route-trace-v22-design.md": {
+    "mtime": 1791664163.9766393,
+    "ast_hash": "c5aa8a6f5f48e83058a938a1d34ab9e4",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/graph_route_trace_contract.py": {
+    "mtime": 1791664633.2406425,
+    "ast_hash": "cfb8605e9b83abcfa31bc278969bbc63",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/graph_route_trace_prose.py": {
+    "mtime": 1791664987.866771,
+    "ast_hash": "3da5a1efb3eeaacc946b3eebae4e5c18",
+    "semantic_hash": ""
+  },
+  "tests/test_french_graph_route_trace_contract.py": {
+    "mtime": 1791664778.1328037,
+    "ast_hash": "c43742a7f19390259affa66683b8802c",
+    "semantic_hash": ""
+  },
+  "tests/test_french_graph_route_trace_prose.py": {
+    "mtime": 1791664972.6068444,
+    "ast_hash": "5962862bbdb8291c9794896a4108976b",
     "semantic_hash": ""
   }
 }
