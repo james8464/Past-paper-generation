@@ -31,6 +31,149 @@ def _pin_v20_generation(monkeypatch, runtime):
 
 
 @pytest.mark.parametrize("large_print", [False, True])
+def test_v22_route_trace_paper_stages_each_blank_table_by_its_question(
+    tmp_path, large_print
+):
+    import pymupdf
+
+    from Backend.Core.france.nsi import NSIExercise
+    from Backend.Core.france.pipeline import generate_assessment
+    from Backend.Core.france.rendering import render_assessment
+    from tests.test_nsi_pipeline import ControlledRouteTraceFrenchClient, make_index
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledRouteTraceFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v22",
+    )
+    exercises = [NSIExercise.model_validate(raw) for raw in package["exercises"]]
+    for correction in (False, True):
+        path = tmp_path / ("correction.pdf" if correction else "subject.pdf")
+        render_assessment(
+            path, exercises, correction=correction, large_print=large_print
+        )
+        with pymupdf.open(path) as pdf:
+            pages = [page.get_text() for page in pdf]
+            lower, upper = (
+                (23, 29)
+                if correction and large_print
+                else (16, 21)
+                if correction
+                else (12, 16)
+                if large_print
+                else (9, 12)
+            )
+            assert lower <= len(pdf) <= upper
+            raw = "\n".join(pages)
+            assert raw.index("1b.") < raw.index("Trace de Dijkstra avant fermeture")
+            assert raw.index("Trace de Dijkstra avant fermeture") < raw.index("1c.")
+            assert raw.index("1f.") < raw.index("Trace de Dijkstra après fermeture")
+            assert raw.index("Trace de Dijkstra après fermeture") < raw.index("1g.")
+            if correction:
+                for question_id in ("1c", "1g"):
+                    assert any(
+                        f"{question_id}." in page
+                        and f"Barème indicatif — question {question_id}" in page
+                        for page in pages
+                    )
+            assert all(
+                0 <= word[0] <= word[2] <= page.rect.width
+                and 0 <= word[1] <= word[3] <= page.rect.height
+                for page in pdf
+                for word in page.get_text("words")
+            )
+
+
+@pytest.mark.parametrize("large_print", [False, True])
+def test_v22_route_trace_pdf_validator_binds_stage_and_answer(
+    tmp_path, monkeypatch, large_print
+):
+    import pymupdf
+
+    from Backend.Core.france import runtime
+    from Backend.Core.france.graph_route_trace_contract import (
+        build_graph_route_trace_contract,
+    )
+    from Backend.Core.france.nsi import NSIExercise
+    from Backend.Core.france.pipeline import generate_assessment
+    from Backend.Core.france.rendering import render_assessment
+    from tests.test_nsi_pipeline import ControlledRouteTraceFrenchClient, make_index
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledRouteTraceFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v22",
+    )
+    exercises = [NSIExercise.model_validate(raw) for raw in package["exercises"]]
+    contract = build_graph_route_trace_contract(270100)
+
+    class ExtractedDocument:
+        def __init__(self, values):
+            self.values = values
+
+        def __enter__(self):
+            return [
+                type("Page", (), {"get_text": lambda _self, value=text: value})()
+                for text in self.values
+            ]
+
+        def __exit__(self, *_):
+            return False
+
+    for correction in (False, True):
+        path = tmp_path / ("correction.pdf" if correction else "subject.pdf")
+        render_assessment(
+            path, exercises, correction=correction, large_print=large_print
+        )
+        runtime.validate_graph_route_trace_pdf(
+            path, contract, correction=correction, exercise=exercises[0]
+        )
+        with pymupdf.open(path) as pdf:
+            pages = [page.get_text() for page in pdf]
+        for original, changed in (
+            ("Trace de Dijkstra avant fermeture", "Trace absente"),
+            ("Trace de Dijkstra avant fermeture", "Trace de Dijkstra après fermeture"),
+            ("À compléter", "A=0"),
+            ("1e.", "1f."),
+        ):
+            altered = [page.replace(original, changed, 1) for page in pages]
+            with monkeypatch.context() as patch:
+                patch.setattr(
+                    runtime.pymupdf,
+                    "open",
+                    lambda _, values=altered: ExtractedDocument(values),
+                )
+                with pytest.raises(ValueError):
+                    runtime.validate_graph_route_trace_pdf(
+                        path, contract, correction=correction, exercise=exercises[0]
+                    )
+        if correction:
+            altered = [
+                page.replace("Fixation 1 :", "Réponse déplacée") for page in pages
+            ]
+            with monkeypatch.context() as patch:
+                patch.setattr(
+                    runtime.pymupdf,
+                    "open",
+                    lambda _, values=altered: ExtractedDocument(values),
+                )
+                with pytest.raises(ValueError):
+                    runtime.validate_graph_route_trace_pdf(
+                        path, contract, correction=True, exercise=exercises[0]
+                    )
+
+
+@pytest.mark.parametrize("large_print", [False, True])
 def test_v21_audit_pdf_stages_work_tables_and_uses_explicit_dispatch(
     tmp_path, large_print
 ):
@@ -103,8 +246,7 @@ def test_v21_audit_pdf_stages_work_tables_and_uses_explicit_dispatch(
                     for page in pages
                 )
                 assert any(
-                    "2i." in page and "clos + ouverts = huit." in page
-                    for page in pages
+                    "2i." in page and "clos + ouverts = huit." in page for page in pages
                 )
 
 
@@ -733,14 +875,14 @@ def test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles(
                     )
 
 
-def test_runtime_publishes_v21_even_if_caller_requests_older_contract(
+def test_runtime_publishes_v22_even_if_caller_requests_older_contract(
     tmp_path, monkeypatch
 ):
     import json
 
     from Backend.Core.france import runtime
     from tests.test_nsi_pipeline import (
-        ControlledDatabaseAuditFrenchClient,
+        ControlledRouteTraceFrenchClient,
         make_index,
     )
 
@@ -750,7 +892,7 @@ def test_runtime_publishes_v21_even_if_caller_requests_older_contract(
     monkeypatch.setattr(
         runtime,
         "FrenchOllamaClient",
-        lambda **_: ControlledDatabaseAuditFrenchClient(),
+        lambda **_: ControlledRouteTraceFrenchClient(),
     )
     args = Namespace(
         assessment="fr-bac-general-nsi-written-2027",
@@ -766,7 +908,7 @@ def test_runtime_publishes_v21_even_if_caller_requests_older_contract(
     assert runtime.handle_generate_assessment(args) == 0
     (bundle,) = (tmp_path / "output").glob("nsi-*")
     package = json.loads((bundle / "assessment.json").read_text())
-    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v21"
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v22"
     assert len(package["exercises"][2]["questions"]) == 12
     assert (bundle / "sujet.pdf").is_file()
     assert (bundle / "corrige.pdf").is_file()

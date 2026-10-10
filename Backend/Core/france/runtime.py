@@ -33,6 +33,10 @@ from Backend.Core.france.graph_resilience_contract import (
     GraphResilienceContract,
     build_graph_resilience_contract,
 )
+from Backend.Core.france.graph_route_trace_contract import (
+    GraphRouteTraceContract,
+    build_graph_route_trace_contract,
+)
 from Backend.Core.france.graph_tree_binding import canonical_answer, graph_edge_manifest
 from Backend.Core.france.graph_tree_contract import (
     GraphTreeContract,
@@ -59,6 +63,7 @@ from Backend.Core.france.pipeline import (
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
     CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
     CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
+    CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
@@ -458,6 +463,132 @@ def validate_graph_resilience_pdf(
                 raise ValueError(f"Graph resilience credit {question.id} missing")
             if not correction and criterion in flat:
                 raise ValueError(f"Graph resilience rubric {question.id} leaked")
+
+
+def validate_graph_route_trace_pdf(
+    path: Path,
+    contract: GraphRouteTraceContract,
+    *,
+    correction: bool,
+    exercise: NSIExercise,
+) -> None:
+    """Bind every V22 printed stage and credit to its immutable route facts."""
+    data = contract.to_dict()
+    if exercise.id != "1" or [q.id for q in exercise.questions] != data["task_ids"]:
+        raise ValueError("Route trace exercise differs from locked contract")
+    with pymupdf.open(path) as pdf:
+        lines = [
+            line.strip()
+            for page in pdf
+            for line in page.get_text().splitlines()
+            if line.strip()
+            and not line.startswith("Paper Creator —")
+            and not line.startswith("Page : ")
+        ]
+    flat = " ".join(" ".join(lines).split())
+    heading = f"Exercice 1 ({exercise.target_points.replace('.', ',')} points)"
+    if lines.count(heading) != 1:
+        raise ValueError("Route trace exercise heading or credit missing")
+    positions = {}
+    for task_id in data["task_ids"]:
+        matches = [
+            index
+            for index, line in enumerate(lines)
+            if re.match(rf"^{re.escape(task_id)}\.(?:\s|$)", line)
+        ]
+        if len(matches) != 1:
+            raise ValueError(f"Route trace question {task_id} missing or repeated")
+        positions[task_id] = matches[0]
+    if list(positions.values()) != sorted(positions.values()):
+        raise ValueError("Route trace questions are out of order")
+    titles = (
+        "Réseau pondéré des postes",
+        "Trace de Dijkstra avant fermeture — trace_initial",
+        "Trace de Dijkstra après fermeture de "
+        + "–".join(data["closed_edge"])
+        + " — trace_fermeture",
+        "Arbre des identifiants — arbre",
+    )
+    if any(lines.count(title) != 1 for title in titles):
+        raise ValueError("Route trace working material missing or duplicated")
+    graph_at, before_at, after_at, tree_at = (lines.index(title) for title in titles)
+    if not (
+        graph_at < positions["1a"]
+        and positions["1b"] < before_at < positions["1c"]
+        and positions["1f"] < after_at < positions["1g"]
+        and positions["1g"] < tree_at < positions["1h"]
+    ):
+        raise ValueError("Route trace working material is outside its phase")
+    graph_lines = lines[graph_at + 1 : positions["1a"]]
+    expected_graph = [str(edge[2]) for edge in data["graph"]["edges"]] + data["graph"][
+        "nodes"
+    ]
+    if graph_lines != expected_graph:
+        raise ValueError("Route trace figure differs from locked graph")
+    for start, end in ((before_at, positions["1c"]), (after_at, positions["1g"])):
+        table = lines[start + 1 : end]
+        if table[:3] != ["Fixation", "Distances A–F", "Prédécesseurs"] or table[3:] != [
+            "1re",
+            "À compléter",
+            "À compléter",
+            "2e",
+            "À compléter",
+            "À compléter",
+        ]:
+            raise ValueError("Route trace working table is altered or filled")
+    expected_tree = list(data["tree"]["columns"]) + [
+        str(value) if value is not None else "—"
+        for row in data["tree"]["rows"]
+        for value in row
+    ]
+    if lines[tree_at + 1 : positions["1h"]] != expected_tree:
+        raise ValueError("Route trace tree differs from locked facts")
+    exercise_at = lines.index(heading)
+    before_1a = " ".join(lines[exercise_at : positions["1a"]])
+    after_1j = next(
+        (
+            index
+            for index in range(positions["1j"] + 1, len(lines))
+            if lines[index].startswith("Exercice 2 (")
+        ),
+        len(lines),
+    )
+    for source, section in (
+        (graph_edge_manifest(data["graph"]), before_1a),
+        (
+            data["debug_case"]["faulty_code"],
+            " ".join(lines[positions["1e"] : positions["1f"]]),
+        ),
+        (data["search_code"], " ".join(lines[positions["1j"] : after_1j])),
+    ):
+        normalised = " ".join(source.split())
+        if section.count(normalised) != 1 or flat.count(normalised) != 1:
+            raise ValueError("Route trace source code or graph facts outside phase")
+    if not correction and "if voisin not in visites:" in flat:
+        raise ValueError("Route trace corrected code revealed to candidate")
+    for index, question in enumerate(exercise.questions):
+        prompt = " ".join(question.prompt.partition("\n\n```")[0].split())
+        if flat.count(prompt) != 1:
+            raise ValueError(f"Route trace prompt {question.id} missing")
+        next_position = (
+            positions[exercise.questions[index + 1].id]
+            if index + 1 < len(exercise.questions)
+            else after_1j
+        )
+        section = " ".join(lines[positions[question.id] : next_position])
+        answer = " ".join(question.answer.split())
+        if correction and answer not in section:
+            raise ValueError(f"Route trace answer {question.id} missing")
+        if not correction and answer in flat:
+            raise ValueError(f"Route trace answer {question.id} leaked")
+        for credit in question.marking:
+            criterion = " ".join(credit.criterion.split())
+            label = credit.points.replace(".", ",")
+            unit = "point" if Decimal(credit.points) <= 1 else "points"
+            if correction and f"{label} {unit} {criterion}" not in section:
+                raise ValueError(f"Route trace credit {question.id} missing")
+            if not correction and criterion in flat:
+                raise ValueError(f"Route trace rubric {question.id} leaked")
 
 
 def validate_database_contract_pdf(
@@ -1258,6 +1389,7 @@ def load_originality_history(output: Path) -> list[str]:
 def network_pdf_contract_version(prompt_version: str) -> str:
     """Never silently render an unknown French package with an older validator."""
     if prompt_version in {
+        CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
         CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
         CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
         CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
@@ -1276,7 +1408,10 @@ def network_pdf_contract_version(prompt_version: str) -> str:
 
 
 def database_pdf_contract_version(prompt_version: str) -> str:
-    if prompt_version == CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION:
+    if prompt_version in {
+        CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
+        CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
+    }:
         return "v21"
     if prompt_version in {
         CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
@@ -1335,11 +1470,15 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v21",
+            contract_authoring_version="v22",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
         exercises = [NSIExercise.model_validate(item) for item in package["exercises"]]
+        graph_route_trace = (
+            package["identity"]["prompt_version"]
+            == CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION
+        )
         graph_resilience = package["identity"]["prompt_version"] in {
             CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
             CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
@@ -1350,7 +1489,9 @@ def handle_generate_assessment(args) -> int:
             CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
         }
         graph_tree_contract = (
-            build_graph_resilience_contract(args.seed)
+            build_graph_route_trace_contract(args.seed)
+            if graph_route_trace
+            else build_graph_resilience_contract(args.seed)
             if graph_resilience
             else build_graph_tree_depth_contract(args.seed)
             if graph_tree_depth
@@ -1398,7 +1539,9 @@ def handle_generate_assessment(args) -> int:
             )
             validate_pdf(path)
             graph_tree_validator = (
-                validate_graph_resilience_pdf
+                validate_graph_route_trace_pdf
+                if graph_route_trace
+                else validate_graph_resilience_pdf
                 if graph_resilience
                 else validate_graph_tree_depth_contract_pdf
                 if graph_tree_depth

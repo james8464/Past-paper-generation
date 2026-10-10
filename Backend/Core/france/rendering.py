@@ -536,6 +536,7 @@ def render_assessment(
             in {
                 "network_reasoning_contract",
                 "graph_resilience_contract",
+                "graph_route_trace_contract",
                 "database_audit_contract",
             }
             for question in exercise.questions
