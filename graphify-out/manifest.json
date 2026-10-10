@@ -185,13 +185,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1791579899.569257,
-    "ast_hash": "4d0a9471fb1fa617b5d3a29cae2f8681",
+    "mtime": 1791597841.932351,
+    "ast_hash": "9b587f7420e3065822ed4cc924d4ab86",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
-    "mtime": 1791579816.4120247,
-    "ast_hash": "794c2f09ab10027b025eb6d9d91ae25d",
+    "mtime": 1791597836.9076293,
+    "ast_hash": "8dc9eb414c0bd20651b427f2fcdd95c7",
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
@@ -215,8 +215,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/verification.py": {
-    "mtime": 1791493844.3711178,
-    "ast_hash": "536fe0484f8b860e702871ea38857421",
+    "mtime": 1791597732.1771119,
+    "ast_hash": "758cf002a9e12a7d3c27c60b0939ebe5",
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791594589.3521106,
-    "ast_hash": "1c0f285ef13f94fe71d9c493d9382348",
+    "mtime": 1791597851.684965,
+    "ast_hash": "30ef9529cc9e915798162082d321ab2e",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1780,8 +1780,8 @@
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1791579881.7130506,
-    "ast_hash": "f5d2f87cdb16034278cf934dba22074a",
+    "mtime": 1791597702.941065,
+    "ast_hash": "497390ce6ad4673c995bfb47bed7b063",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -2992,6 +2992,16 @@
   "docs/superpowers/specs/2026-10-10-french-nsi-graph-resilience-v20-design.md": {
     "mtime": 1791594191.550425,
     "ast_hash": "e6215e9bbbdd64748da6f6de154a2f57",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/graph_resilience_authoring.py": {
+    "mtime": 1791597836.9075372,
+    "ast_hash": "729bb98d9fa5f1f835e28f3aef0a540e",
+    "semantic_hash": ""
+  },
+  "tests/test_french_graph_resilience_authoring.py": {
+    "mtime": 1791597841.930269,
+    "ast_hash": "ec053380dcd4afdde1e8a7d185fa5516",
     "semantic_hash": ""
   }
 }

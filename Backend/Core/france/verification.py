@@ -260,6 +260,7 @@ def verify_contract(contract: dict) -> dict:
         "shortest_path",
         "graph_tree",
         "graph_tree_depth_contract",
+        "graph_resilience_contract",
         "database_contract",
         "database_depth_contract",
         "network_contract",
@@ -272,7 +273,17 @@ def verify_contract(contract: dict) -> dict:
             "reason": "Vérification humaine nécessaire",
         }
     try:
-        if kind == "network_reasoning_contract":
+        if kind == "graph_resilience_contract":
+            from Backend.Core.france.graph_resilience_contract import (
+                GraphResilienceContract,
+            )
+
+            data = GraphResilienceContract.from_dict(contract["contract"]).to_dict()
+            task_id = contract["task_id"]
+            if task_id not in data["task_ids"]:
+                raise ValueError("Tâche de résilience graphe absente")
+            actual = data["expected"][task_id]
+        elif kind == "network_reasoning_contract":
             from Backend.Core.france.network_reasoning_contract import (
                 NetworkReasoningContract,
             )
