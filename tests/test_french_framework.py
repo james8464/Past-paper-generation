@@ -2,6 +2,33 @@ import pymupdf
 import pytest
 
 
+@pytest.mark.parametrize(
+    ("title", "expected"),
+    [
+        ("les réseaux.", "Thème de l'exercice : « les réseaux »."),
+        (
+            "Parcours d'un réseau et recherche dans un arbre",
+            "Thème de l'exercice : « Parcours d'un réseau et recherche dans un arbre ».",
+        ),
+        (
+            "Étude d'un registre d'incidents",
+            "Thème de l'exercice : « Étude d'un registre d'incidents ».",
+        ),
+        (
+            "Liaisons d'une station",
+            "Thème de l'exercice : « Liaisons d'une station ».",
+        ),
+        ("Cet exercice porte sur Python", "Cet exercice porte sur Python."),
+        ("On étudie les réseaux.", "Thème de l'exercice : « On étudie les réseaux »."),
+        ("Le réseau est saturé.", "Thème de l'exercice : « Le réseau est saturé »."),
+    ],
+)
+def test_french_exercise_scope_reads_naturally_for_titles_and_sentences(title, expected):
+    from Backend.Core.france.rendering import exercise_scope_text
+
+    assert exercise_scope_text(title) == expected
+
+
 def test_code_listings_never_silently_wrap_or_change_indentation():
     from reportlab.lib.styles import ParagraphStyle
 
@@ -267,10 +294,10 @@ def test_french_pdf_uses_measured_bac_page_geometry(tmp_path):
         scope = next(
             span
             for span in exercise_spans
-            if span["text"].startswith("Cet exercice porte sur")
+            if span["text"].startswith("Thème de l'exercice")
         )
         assert scope["flags"] & 2
-        assert scope["text"].startswith("Cet exercice porte sur les réseaux")
+        assert scope["text"].startswith("Thème de l'exercice : « Les réseaux")
         assert 96 <= scope["bbox"][1] <= 112
         number = exercise_by_text["1."]
         assert 80 <= number["bbox"][0] <= 86

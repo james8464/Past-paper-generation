@@ -31,10 +31,6 @@ from Backend.Core.france.nsi import (
     NSIWeightedGraphMaterial,
 )
 
-PRESERVED_SCOPE_INITIALS = frozenset(
-    {"HTTP", "IP", "JavaScript", "Python", "SQL", "TCP", "Unicode"}
-)
-
 
 def printable_database_criterion(criterion: str) -> str:
     """Remove source Markdown delimiters without mutating replayable rubric data."""
@@ -45,15 +41,7 @@ def exercise_scope_text(title: str) -> str:
     scope = title.strip().rstrip(".")
     if scope.lower().startswith("cet exercice"):
         return f"{scope}."
-    first_word = re.match(r"[^\s,;:]+", scope)
-    if (
-        scope
-        and first_word
-        and first_word.group() not in PRESERVED_SCOPE_INITIALS
-        and not first_word.group().isupper()
-    ):
-        scope = scope[0].lower() + scope[1:]
-    return f"Cet exercice porte sur {scope}."
+    return f"Thème de l'exercice : « {scope} »."
 
 
 def structured_material(
