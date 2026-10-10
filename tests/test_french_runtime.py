@@ -81,6 +81,17 @@ def test_v22_route_trace_paper_stages_each_blank_table_by_its_question(
                         and f"Barème indicatif — question {question_id}" in page
                         for page in pages
                     )
+            else:
+                assert any(
+                    "Arbre des identifiants" in page
+                    and "1h." in page
+                    and "l'absence d'enfant" in page
+                    for page in pages
+                )
+                assert any(
+                    "1j." in page and "return contient(noeud.droite, cle)" in page
+                    for page in pages
+                )
             assert all(
                 0 <= word[0] <= word[2] <= page.rect.width
                 and 0 <= word[1] <= word[3] <= page.rect.height

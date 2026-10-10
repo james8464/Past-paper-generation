@@ -583,6 +583,13 @@ def render_assessment(
             question_content(question.id, question.prompt)
             if (
                 not correction
+                and question.verification.get("kind") == "graph_route_trace_contract"
+                and question.id in {"1h", "1j"}
+            ):
+                start = material_start if question.id == "1h" else question_start
+                story[start:] = [KeepTogether(story[start:])]
+            if (
+                not correction
                 and question.verification.get("kind") == "database_audit_contract"
             ):
                 start = material_start if question.id == "2g" else question_start
