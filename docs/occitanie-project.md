@@ -186,6 +186,17 @@ insufficient. **Manual product fidelity remains on hold.** This single-paper
 result does not select a model or establish teacher, learner or examiner
 validation; prior live holds and failed attempts remain preserved.
 
+Protected PR #59 added a version-isolated before/after Dijkstra route trace
+with writable per-node tables. Its [pinned V22 live diagnostic](quality/french-nsi-v22-route-trace-live-diagnostic-2026-10-10.md)
+passed automation on the first attempt without repairs. Every page of the
+eleven-page subject and eighteen-page proposed correction was inspected
+beside all sixteen official 2026 Métropole pages. The subject has 32 numbered
+questions versus 36 in the comparator. E1 working tables improve candidate
+space, but E2 remains compact, E3 ends sparsely, and sustained reasoning and
+working-space flow are still insufficient. **Manual product fidelity remains
+on hold.** This is not model selection or teacher, learner or examiner
+validation; prior live holds and failed attempts remain preserved.
+
 ## Genuine Occitanie scenario — PLANNED
 
 A teacher generates and checks a paper on a Mac; students receive a PDF through
