@@ -53,13 +53,16 @@ from Backend.Core.france.pipeline import (
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
     CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
     CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
+    CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
     CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
 )
 
 
-def _passed_result(tmp_path, *, v17=False, v18=False, v19=False, v20=False, v21=False):
+def _passed_result(
+    tmp_path, *, v17=False, v18=False, v19=False, v20=False, v21=False, v22=False
+):
     identity = {
         "implementation": "implementation-sha",
         "reference_index_sha256": "reference-sha",
@@ -72,7 +75,9 @@ def _passed_result(tmp_path, *, v17=False, v18=False, v19=False, v20=False, v21=
     manifest_identity = {
         "assessment": asdict(NSI_2027),
         "prompt_version": (
-            CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION
+            CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION
+            if v22
+            else CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION
             if v21
             else CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION
             if v20
@@ -95,7 +100,7 @@ def _passed_result(tmp_path, *, v17=False, v18=False, v19=False, v20=False, v21=
         "blueprint": [],
         "originality_history_digest": "history-sha",
     }
-    if v21:
+    if v21 or v22:
         manifest_identity.update(
             database_audit_contract_sha256=build_database_audit_contract(270100).digest,
             database_audit_prose_contract_version=DATABASE_AUDIT_PROSE_VERSION,
@@ -105,15 +110,15 @@ def _passed_result(tmp_path, *, v17=False, v18=False, v19=False, v20=False, v21=
         manifest_identity["database_depth_contract_sha256"] = (
             build_database_depth_contract(270100).digest
         )
-    if v19 or v20 or v21:
+    if v19 or v20 or v21 or v22:
         del manifest_identity["database_depth_prose_contract_version"]
         del manifest_identity["database_depth_prose_catalogue_sha256"]
-        if not v21:
+        if not (v21 or v22):
             manifest_identity.update(
                 database_reasoning_prose_contract_version=DATABASE_REASONING_PROSE_VERSION,
                 database_reasoning_prose_catalogue_sha256=database_reasoning_catalogue_digest(),
             )
-    if v18 or v19 or v20 or v21:
+    if v18 or v19 or v20 or v21 or v22:
         manifest_identity.update(
             network_reasoning_contract_sha256=build_network_reasoning_contract(
                 270100
@@ -127,7 +132,23 @@ def _passed_result(tmp_path, *, v17=False, v18=False, v19=False, v20=False, v21=
             network_depth_prose_contract_version=NETWORK_DEPTH_PROSE_VERSION,
             network_depth_prose_catalogue_sha256=network_depth_catalogue_digest(),
         )
-    if v20 or v21:
+    if v22:
+        from Backend.Core.france.graph_route_trace_contract import (
+            build_graph_route_trace_contract,
+        )
+        from Backend.Core.france.graph_route_trace_prose import (
+            GRAPH_ROUTE_TRACE_PROSE_VERSION,
+            graph_route_trace_catalogue_digest,
+        )
+
+        manifest_identity.update(
+            graph_route_trace_contract_sha256=build_graph_route_trace_contract(
+                270100
+            ).digest,
+            graph_route_trace_prose_contract_version=GRAPH_ROUTE_TRACE_PROSE_VERSION,
+            graph_route_trace_prose_catalogue_sha256=graph_route_trace_catalogue_digest(),
+        )
+    elif v20 or v21:
         from Backend.Core.france.graph_resilience_contract import (
             build_graph_resilience_contract,
         )
@@ -379,6 +400,30 @@ def test_french_benchmark_accepts_only_exact_v21_audit_identity(tmp_path):
     package_value = json.loads(package.read_text())
     for value in (manifest_value, package_value):
         value["identity"]["database_audit_contract_sha256"] = "0" * 64
+    package.write_text(json.dumps(package_value))
+    manifest_value["artifacts"]["assessment_package"]["sha256"] = sha256(
+        package.read_bytes()
+    ).hexdigest()
+    manifest.write_text(json.dumps(manifest_value))
+    result_value = json.loads(result.read_text())
+    result_value["artifacts"]["manifest_sha256"] = sha256(
+        manifest.read_bytes()
+    ).hexdigest()
+    result.write_text(json.dumps(result_value))
+    assert not accepted_result(result, identity)
+
+
+def test_french_benchmark_accepts_only_exact_v22_route_trace_identity(tmp_path):
+    from tools.french_nsi_benchmark import accepted_result
+
+    result, identity, bundle = _passed_result(tmp_path, v22=True)
+    assert accepted_result(result, identity)
+    manifest = bundle / "manifest.json"
+    package = bundle / "assessment.json"
+    manifest_value = json.loads(manifest.read_text())
+    package_value = json.loads(package.read_text())
+    for value in (manifest_value, package_value):
+        value["identity"]["graph_route_trace_contract_sha256"] = "0" * 64
     package.write_text(json.dumps(package_value))
     manifest_value["artifacts"]["assessment_package"]["sha256"] = sha256(
         package.read_bytes()

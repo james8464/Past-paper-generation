@@ -14,6 +14,10 @@ from Backend.Core.france.database_reasoning_prose import (
 )
 from Backend.Core.france.graph_resilience_contract import GraphResilienceContract
 from Backend.Core.france.graph_resilience_prose import graph_resilience_selection_schema
+from Backend.Core.france.graph_route_trace_contract import GraphRouteTraceContract
+from Backend.Core.france.graph_route_trace_prose import (
+    graph_route_trace_selection_schema,
+)
 from Backend.Core.france.graph_tree_authoring import (
     contract_question_schema,
     french_retry_prompt,
@@ -76,6 +80,7 @@ class FrenchOllamaClient(HostedLLMClient):
                             "Sélectionne l'exercice 3",
                             "Sélectionne l'exercice 1 v17",
                             "Sélectionne l'exercice 1 v20",
+                            "Sélectionne l'exercice 1 v22",
                         )
                     ),
                 )
@@ -110,6 +115,16 @@ class FrenchOllamaClient(HostedLLMClient):
 
 
 def response_policy(prompt: str) -> tuple[dict, int]:
+    if prompt.startswith("Sélectionne l'exercice 1 v22"):
+        embedded = json.loads(
+            prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
+        )
+        request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+        contract = GraphRouteTraceContract.from_dict(request["contract"])
+        schema = graph_route_trace_selection_schema(contract)
+        if embedded != schema or request.get("contract_sha256") != contract.digest:
+            raise ValueError("Graph route-trace schema or contract mismatch")
+        return schema, 2048
     if prompt.startswith("Sélectionne l'exercice 2 v21"):
         embedded = json.loads(
             prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]

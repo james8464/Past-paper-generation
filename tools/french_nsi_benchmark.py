@@ -53,6 +53,13 @@ from Backend.Core.france.graph_resilience_prose import (  # noqa: E402
     GRAPH_RESILIENCE_PROSE_VERSION,
     graph_resilience_catalogue_digest,
 )
+from Backend.Core.france.graph_route_trace_contract import (  # noqa: E402
+    build_graph_route_trace_contract,
+)
+from Backend.Core.france.graph_route_trace_prose import (  # noqa: E402
+    GRAPH_ROUTE_TRACE_PROSE_VERSION,
+    graph_route_trace_catalogue_digest,
+)
 from Backend.Core.france.graph_tree_depth_contract import (  # noqa: E402
     build_graph_tree_depth_contract,
 )
@@ -83,6 +90,7 @@ from Backend.Core.france.pipeline import (  # noqa: E402
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
     CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
     CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
+    CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
 )
@@ -116,6 +124,15 @@ _V21_IDENTITY_KEYS = frozenset(
         "seed",
     }
 )
+_V22_IDENTITY_KEYS = _V21_IDENTITY_KEYS - {
+    "graph_resilience_contract_sha256",
+    "graph_resilience_prose_catalogue_sha256",
+    "graph_resilience_prose_contract_version",
+} | {
+    "graph_route_trace_contract_sha256",
+    "graph_route_trace_prose_catalogue_sha256",
+    "graph_route_trace_prose_contract_version",
+}
 
 
 @dataclass(frozen=True)
@@ -210,6 +227,7 @@ def _accepted_payload(
         )
         or manifest_identity.get("prompt_version")
         not in {
+            CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
             CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
             CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
             CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
@@ -221,16 +239,28 @@ def _accepted_payload(
             manifest_identity.get("database_audit_contract_sha256")
             != build_database_audit_contract(identity["seed"]).digest
             if manifest_identity.get("prompt_version")
-            == CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION
+            in {
+                CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
+                CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
+            }
             else manifest_identity.get("database_depth_contract_sha256")
             != build_database_depth_contract(identity["seed"]).digest
         )
         or manifest_identity.get("provider") != "ollama"
     ):
         return False
-    if manifest_identity["prompt_version"] == CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION:
+    if manifest_identity["prompt_version"] in {
+        CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
+        CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
+    }:
         if (
-            set(manifest_identity) != _V21_IDENTITY_KEYS
+            set(manifest_identity)
+            != (
+                _V22_IDENTITY_KEYS
+                if manifest_identity["prompt_version"]
+                == CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION
+                else _V21_IDENTITY_KEYS
+            )
             or manifest_identity.get("database_audit_prose_contract_version")
             != DATABASE_AUDIT_PROSE_VERSION
             or manifest_identity.get("database_audit_prose_catalogue_sha256")
@@ -273,6 +303,7 @@ def _accepted_payload(
     ):
         return False
     if manifest_identity["prompt_version"] in {
+        CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
         CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
         CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
         CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
@@ -305,16 +336,47 @@ def _accepted_payload(
     ):
         return False
     if manifest_identity["prompt_version"] in {
+        CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
         CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
         CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
     }:
         if (
-            manifest_identity.get("graph_resilience_contract_sha256")
-            != build_graph_resilience_contract(identity["seed"]).digest
-            or manifest_identity.get("graph_resilience_prose_contract_version")
-            != GRAPH_RESILIENCE_PROSE_VERSION
-            or manifest_identity.get("graph_resilience_prose_catalogue_sha256")
-            != graph_resilience_catalogue_digest()
+            manifest_identity.get(
+                "graph_route_trace_contract_sha256"
+                if manifest_identity["prompt_version"]
+                == CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION
+                else "graph_resilience_contract_sha256"
+            )
+            != (
+                build_graph_route_trace_contract(identity["seed"]).digest
+                if manifest_identity["prompt_version"]
+                == CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION
+                else build_graph_resilience_contract(identity["seed"]).digest
+            )
+            or manifest_identity.get(
+                "graph_route_trace_prose_contract_version"
+                if manifest_identity["prompt_version"]
+                == CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION
+                else "graph_resilience_prose_contract_version"
+            )
+            != (
+                GRAPH_ROUTE_TRACE_PROSE_VERSION
+                if manifest_identity["prompt_version"]
+                == CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION
+                else GRAPH_RESILIENCE_PROSE_VERSION
+            )
+            or manifest_identity.get(
+                "graph_route_trace_prose_catalogue_sha256"
+                if manifest_identity["prompt_version"]
+                == CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION
+                else "graph_resilience_prose_catalogue_sha256"
+            )
+            != (
+                graph_route_trace_catalogue_digest()
+                if manifest_identity["prompt_version"]
+                == CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION
+                else graph_resilience_catalogue_digest()
+            )
             or any(
                 field in manifest_identity
                 for field in (
@@ -566,7 +628,7 @@ def run_plan(args: argparse.Namespace) -> int:
         if accepted_result(
             result_path,
             identity,
-            expected_prompt_version=CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
+            expected_prompt_version=CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
         ):
             results.append(previous)
             continue
@@ -639,7 +701,7 @@ def run_plan(args: argparse.Namespace) -> int:
             result,
             result_path,
             identity,
-            expected_prompt_version=CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
+            expected_prompt_version=CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
         ):
             result["status"] = "failed"
             result["error"] = "L'intégrité des artefacts publiés est invalide"
