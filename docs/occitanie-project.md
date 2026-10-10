@@ -174,6 +174,18 @@ space. **Manual product fidelity remains on hold.** This single-paper result
 does not select a model or establish teacher, learner or examiner validation.
 Earlier live holds and failed attempts remain preserved.
 
+Protected PR #57 added a version-isolated eight-incident database audit.
+Its [pinned V21 live diagnostic](quality/french-nsi-v21-incident-audit-live-diagnostic-2026-10-10.md)
+passed automation on the first attempt, with no repairs. Every page of the
+nine-page subject and eighteen-page proposed correction was inspected beside
+all sixteen official 2026 Métropole pages. E2 material spans three candidate
+pages, with its ten questions across two pages and staged tables. The subject still has 32
+questions versus 36 in the official comparator. E1 remains dense, the final
+E3 page is sparse, and sustained reasoning and learner working space remain
+insufficient. **Manual product fidelity remains on hold.** This single-paper
+result does not select a model or establish teacher, learner or examiner
+validation; prior live holds and failed attempts remain preserved.
+
 ## Genuine Occitanie scenario — PLANNED
 
 A teacher generates and checks a paper on a Mac; students receive a PDF through

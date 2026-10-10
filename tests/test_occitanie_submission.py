@@ -69,9 +69,10 @@ def test_technical_report_distinguishes_live_engineering_pass_from_fidelity_hold
     assert "all three exercises use app-owned contracts" in text
     assert "first-attempt live engineering pass" in text
     assert "manual fidelity hold" in text
-    assert "32 numbered questions across eight subject pages" in text
-    assert "v20 single-paper diagnostic" in text
-    assert "seventeen-page proposed correction" in text
+    assert "32 numbered questions across nine subject pages" in text
+    assert "v21 single-paper diagnostic" in text
+    assert "eighteen-page proposed correction" in text
+    assert "ten questions across two pages" in text
     assert "18 numbered questions across seven subject pages" not in text
     assert "eleven-page proposed correction" not in text
     assert "other two exercises remain model-authored" not in text
