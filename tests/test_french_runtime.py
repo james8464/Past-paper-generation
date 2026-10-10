@@ -197,6 +197,7 @@ def test_v21_pdf_rejects_missing_shifted_or_leaked_material(tmp_path, monkeypatc
         original + "\nRéponse attendue",
         original + "\nBarème indicatif — question 2a",
         original + "\nS0, S1, S2 : 3, 4, 5",
+        original + "\nincident.id_cat = categorie.id_cat",
     )
     for index, mutated in enumerate(mutants):
         with monkeypatch.context() as patch:
@@ -239,6 +240,24 @@ def test_v21_pdf_rejects_missing_shifted_or_leaked_material(tmp_path, monkeypatc
             ),
         )
         with pytest.raises(ValueError, match=r"credit.*separated"):
+            runtime.validate_database_audit_pdf(
+                correction_path, contract, correction=True, exercise=exercises[1]
+            )
+    question_2a = correction_text.index("\n2a.")
+    answer_start = correction_text.index("Réponse attendue\n", question_2a) + len(
+        "Réponse attendue\n"
+    )
+    answer_end = correction_text.index("Barème indicatif — question 2a", answer_start)
+    answer_block = correction_text[answer_start:answer_end]
+    reordered = correction_text.replace(answer_block, "", 1).replace(
+        "Barème indicatif — question 2a\n",
+        "Barème indicatif — question 2a\n" + answer_block,
+        1,
+    )
+    assert reordered != correction_text
+    with monkeypatch.context() as patch:
+        patch.setattr(runtime.pymupdf, "open", lambda _: TextDocument(reordered))
+        with pytest.raises(ValueError, match=r"answer/rubric.*order"):
             runtime.validate_database_audit_pdf(
                 correction_path, contract, correction=True, exercise=exercises[1]
             )

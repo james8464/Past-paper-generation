@@ -93,6 +93,29 @@ from tools.live_process import BackendRun, run_backend  # noqa: E402
 
 ASSESSMENT = "fr-bac-general-nsi-written-2027"
 DEFAULT_MODELS = ("gemma4:12b", "ministral-3:8b", "qwen3:8b")
+_V21_IDENTITY_KEYS = frozenset(
+    {
+        "assessment",
+        "blueprint",
+        "database_audit_contract_sha256",
+        "database_audit_prose_catalogue_sha256",
+        "database_audit_prose_contract_version",
+        "graph_resilience_contract_sha256",
+        "graph_resilience_prose_catalogue_sha256",
+        "graph_resilience_prose_contract_version",
+        "implementation_sha256",
+        "model",
+        "model_digest",
+        "network_reasoning_contract_sha256",
+        "network_reasoning_prose_catalogue_sha256",
+        "network_reasoning_prose_contract_version",
+        "originality_history_digest",
+        "prompt_version",
+        "provider",
+        "reference_digest",
+        "seed",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -207,7 +230,8 @@ def _accepted_payload(
         return False
     if manifest_identity["prompt_version"] == CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION:
         if (
-            manifest_identity.get("database_audit_prose_contract_version")
+            set(manifest_identity) != _V21_IDENTITY_KEYS
+            or manifest_identity.get("database_audit_prose_contract_version")
             != DATABASE_AUDIT_PROSE_VERSION
             or manifest_identity.get("database_audit_prose_catalogue_sha256")
             != database_audit_catalogue_digest()

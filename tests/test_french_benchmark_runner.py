@@ -397,6 +397,7 @@ def test_french_benchmark_accepts_only_exact_v21_audit_identity(tmp_path):
     (
         "database_depth_prose_contract_version",
         "database_depth_prose_catalogue_sha256",
+        "network_contract_sha256",
     ),
 )
 def test_french_benchmark_rejects_mixed_v21_legacy_identity(tmp_path, legacy_field):

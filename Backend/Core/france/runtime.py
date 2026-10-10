@@ -782,7 +782,21 @@ def validate_database_audit_pdf(
     if faulty_sql not in before_2a or faulty_python not in in_2h:
         raise ValueError("Incident-audit faulty source outside intended phase")
     if not correction:
-        for source in (data["correct_sql"], data["group_sql"], data["correct_python"]):
+        corrected_join = next(
+            line.strip()
+            for line in data["correct_sql"].splitlines()
+            if "incident.id_cat = categorie.id_cat" in line
+        )
+        for source in (
+            data["correct_sql"],
+            data["group_sql"],
+            data["correct_python"],
+            data["update_sql_1"],
+            data["update_sql_2"],
+            corrected_join,
+            "COUNT(incident.id_incident)",
+            "if incident['statut'] == 'clos':",
+        ):
             if " ".join(source.split()) in flat:
                 raise ValueError("Incident-audit answer leaked into subject")
         if "Réponse attendue" in flat or "Barème indicatif — question 2" in flat:
@@ -827,6 +841,10 @@ def validate_database_audit_pdf(
             if len(rubric_pages) != 1 or answer not in rubric_pages[0]:
                 raise ValueError(
                     f"Incident-audit answer/rubric {question.id} separated"
+                )
+            if rubric_pages[0].index(answer) > rubric_pages[0].index(rubric):
+                raise ValueError(
+                    f"Incident-audit answer/rubric {question.id} out of order"
                 )
             for credit in question.marking:
                 label = credit.points.replace(".", ",")
