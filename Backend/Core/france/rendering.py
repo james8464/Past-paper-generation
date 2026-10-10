@@ -533,7 +533,11 @@ def render_assessment(
         content(exercise.context)
         staged_network_materials = bool(exercise.questions) and all(
             question.verification.get("kind")
-            in {"network_reasoning_contract", "graph_resilience_contract"}
+            in {
+                "network_reasoning_contract",
+                "graph_resilience_contract",
+                "database_audit_contract",
+            }
             for question in exercise.questions
         )
         staged_material_ids: set[str] = set()
@@ -555,6 +559,7 @@ def render_assessment(
                 add_material(material)
         final_network_pair_start = None
         for question_index, question in enumerate(exercise.questions):
+            material_start = len(story)
             if staged_network_materials:
                 for material in exercise.materials:
                     if (
@@ -575,6 +580,12 @@ def render_assessment(
             ):
                 final_network_pair_start = question_start
             question_content(question.id, question.prompt)
+            if (
+                not correction
+                and question.verification.get("kind") == "database_audit_contract"
+            ):
+                start = material_start if question.id == "2g" else question_start
+                story[start:] = [KeepTogether(story[start:])]
             if (
                 not correction
                 and question.verification.get("kind") == "database_depth_contract"

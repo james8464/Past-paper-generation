@@ -21,6 +21,261 @@ def _pin_v19_generation(monkeypatch, runtime):
     )
 
 
+def _pin_v20_generation(monkeypatch, runtime):
+    generate = runtime.generate_assessment
+    monkeypatch.setattr(
+        runtime,
+        "generate_assessment",
+        lambda **kwargs: generate(**{**kwargs, "contract_authoring_version": "v20"}),
+    )
+
+
+@pytest.mark.parametrize("large_print", [False, True])
+def test_v21_audit_pdf_stages_work_tables_and_uses_explicit_dispatch(
+    tmp_path, large_print
+):
+    import pymupdf
+
+    from Backend.Core.france import runtime
+    from Backend.Core.france.database_audit_contract import (
+        build_database_audit_contract,
+    )
+    from Backend.Core.france.nsi import NSIExercise
+    from Backend.Core.france.pipeline import generate_assessment
+    from Backend.Core.france.rendering import render_assessment
+    from tests.test_nsi_pipeline import ControlledDatabaseAuditFrenchClient, make_index
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledDatabaseAuditFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v21",
+    )
+    exercises = [NSIExercise.model_validate(raw) for raw in package["exercises"]]
+    contract = build_database_audit_contract(270100)
+    assert (
+        runtime.database_pdf_contract_version(package["identity"]["prompt_version"])
+        == "v21"
+    )
+    for correction in (False, True):
+        path = tmp_path / ("correction.pdf" if correction else "subject.pdf")
+        render_assessment(
+            path, exercises, correction=correction, large_print=large_print
+        )
+        runtime.validate_database_audit_pdf(
+            path, contract, correction=correction, exercise=exercises[1]
+        )
+        with pymupdf.open(path) as pdf:
+            pages = [page.get_text() for page in pdf]
+            lower, upper = (
+                (21, 28)
+                if correction and large_print
+                else (15, 21)
+                if correction
+                else (10, 14)
+                if large_print
+                else (8, 11)
+            )
+            assert lower <= len(pdf) <= upper
+            assert all(
+                0 <= word[0] <= word[2] <= page.rect.width
+                and 0 <= word[1] <= word[3] <= page.rect.height
+                for page in pdf
+                for word in page.get_text("words")
+            )
+            raw = "\n".join(pages)
+            for title, task_id, previous_id in (
+                ("Table de travail — jointures (2c–2e)", "2c", "2b"),
+                ("Table de travail — états (2g–2h)", "2g", "2f"),
+                ("Table de travail — fonction (2i)", "2h", "2g"),
+            ):
+                assert raw.index(f"\n{previous_id}.") < raw.index(title)
+                assert raw.index(title) < raw.index(f"\n{task_id}.")
+            if large_print and not correction:
+                assert any(
+                    "Table de travail — états (2g–2h)" in page
+                    and "2g." in page
+                    and "chaque état." in page
+                    for page in pages
+                )
+                assert any(
+                    "2i." in page and "clos + ouverts = huit." in page
+                    for page in pages
+                )
+
+
+def test_v21_pdf_rejects_mutated_incident_and_working_tables(tmp_path):
+    from Backend.Core.france import runtime
+    from Backend.Core.france.database_audit_contract import (
+        build_database_audit_contract,
+    )
+    from Backend.Core.france.nsi import NSIExercise
+    from Backend.Core.france.pipeline import generate_assessment
+    from Backend.Core.france.rendering import render_assessment
+    from tests.test_nsi_pipeline import ControlledDatabaseAuditFrenchClient, make_index
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledDatabaseAuditFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v21",
+    )
+    exercises = [NSIExercise.model_validate(raw) for raw in package["exercises"]]
+    for material_id, changed_cell in (("incident", "901"), ("audit_jointure", "102")):
+        materials = []
+        for material in exercises[1].materials:
+            if material.id == material_id:
+                rows = [list(row) for row in material.rows]
+                rows[0][0] = changed_cell
+                material = material.model_copy(
+                    update={"rows": tuple(tuple(row) for row in rows)}
+                )
+            materials.append(material)
+        altered = exercises[1].model_copy(update={"materials": materials})
+        path = tmp_path / f"{material_id}.pdf"
+        render_assessment(path, [exercises[0], altered, exercises[2]], correction=False)
+        with pytest.raises(ValueError, match="differs from contract"):
+            runtime.validate_database_audit_pdf(
+                path,
+                build_database_audit_contract(270100),
+                correction=False,
+                exercise=altered,
+            )
+
+
+def test_v21_pdf_rejects_missing_shifted_or_leaked_material(tmp_path, monkeypatch):
+    import pymupdf
+
+    from Backend.Core.france import runtime
+    from Backend.Core.france.database_audit_contract import (
+        build_database_audit_contract,
+    )
+    from Backend.Core.france.nsi import NSIExercise
+    from Backend.Core.france.pipeline import generate_assessment
+    from Backend.Core.france.rendering import render_assessment
+    from tests.test_nsi_pipeline import ControlledDatabaseAuditFrenchClient, make_index
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledDatabaseAuditFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v21",
+    )
+    exercises = [NSIExercise.model_validate(raw) for raw in package["exercises"]]
+    contract = build_database_audit_contract(270100)
+    path = tmp_path / "subject.pdf"
+    render_assessment(path, exercises, correction=False)
+    with pymupdf.open(path) as pdf:
+        pages = [page.get_text() for page in pdf]
+
+    class TextDocument:
+        def __init__(self, text):
+            self.pages = text if isinstance(text, list) else [text]
+
+        def __enter__(self):
+            return [
+                type("Page", (), {"get_text": lambda self, value=text: value})()
+                for text in self.pages
+            ]
+
+        def __exit__(self, *_):
+            return False
+
+    original = "\n".join(pages)
+    title = "Table de travail — états (2g–2h)"
+    assert title in original
+    faulty_sql = contract.to_dict()["faulty_sql"]
+    faulty_python = contract.to_dict()["faulty_python"]
+    assert faulty_sql in original and faulty_python in original
+    mutants = (
+        original.replace(title, "Table absente", 1),
+        original.replace(title, "Table absente", 1) + "\n" + title,
+        original + "\n" + " ".join(contract.to_dict()["correct_sql"].split()),
+        original.replace(faulty_sql, "", 1) + "\n" + faulty_sql,
+        original.replace(faulty_python, "", 1) + "\n" + faulty_python,
+        original + "\nRéponse attendue",
+        original + "\nBarème indicatif — question 2a",
+        original + "\nS0, S1, S2 : 3, 4, 5",
+        original + "\nincident.id_cat = categorie.id_cat",
+        original + "\n" + exercises[1].questions[2].answer.split("; ")[0],
+        original + "\nEffectifs par catégorie : 2, 3, 2, 1.",
+    )
+    for index, mutated in enumerate(mutants):
+        with monkeypatch.context() as patch:
+            patch.setattr(
+                runtime.pymupdf, "open", lambda _, text=mutated: TextDocument(text)
+            )
+            try:
+                runtime.validate_database_audit_pdf(
+                    path, contract, correction=False, exercise=exercises[1]
+                )
+            except ValueError:
+                continue
+            pytest.fail(f"Subject mutation {index} passed the V21 PDF gate")
+    correction_path = tmp_path / "correction.pdf"
+    render_assessment(correction_path, exercises, correction=True)
+    with pymupdf.open(correction_path) as pdf:
+        correction_text = "\n".join(page.get_text() for page in pdf)
+    changed = correction_text.replace(
+        "Barème indicatif — question 2a", "Barème indicatif — question 2b", 1
+    )
+    assert changed != correction_text
+    with monkeypatch.context() as patch:
+        patch.setattr(runtime.pymupdf, "open", lambda _: TextDocument(changed))
+        with pytest.raises(ValueError, match="answer/rubric"):
+            runtime.validate_database_audit_pdf(
+                correction_path, contract, correction=True, exercise=exercises[1]
+            )
+    split_after_rubric = correction_text.index(
+        "Barème indicatif — question 2a\n"
+    ) + len("Barème indicatif — question 2a\n")
+    with monkeypatch.context() as patch:
+        patch.setattr(
+            runtime.pymupdf,
+            "open",
+            lambda _: TextDocument(
+                [
+                    correction_text[:split_after_rubric],
+                    correction_text[split_after_rubric:],
+                ]
+            ),
+        )
+        with pytest.raises(ValueError, match=r"credit.*separated"):
+            runtime.validate_database_audit_pdf(
+                correction_path, contract, correction=True, exercise=exercises[1]
+            )
+    question_2a = correction_text.index("\n2a.")
+    answer_start = correction_text.index("Réponse attendue\n", question_2a) + len(
+        "Réponse attendue\n"
+    )
+    answer_end = correction_text.index("Barème indicatif — question 2a", answer_start)
+    answer_block = correction_text[answer_start:answer_end]
+    reordered = correction_text.replace(answer_block, "", 1).replace(
+        "Barème indicatif — question 2a\n",
+        "Barème indicatif — question 2a\n" + answer_block,
+        1,
+    )
+    assert reordered != correction_text
+    with monkeypatch.context() as patch:
+        patch.setattr(runtime.pymupdf, "open", lambda _: TextDocument(reordered))
+        with pytest.raises(ValueError, match=r"answer/rubric.*order"):
+            runtime.validate_database_audit_pdf(
+                correction_path, contract, correction=True, exercise=exercises[1]
+            )
+
+
 @pytest.mark.parametrize("large_print", [False, True])
 def test_v20_runtime_stages_graph_and_tree_and_validates_pdf(
     tmp_path, monkeypatch, large_print
@@ -42,6 +297,7 @@ def test_v20_runtime_stages_graph_and_tree_and_validates_pdf(
 
     index = tmp_path / "references.sqlite"
     make_index(index)
+    _pin_v20_generation(monkeypatch, runtime)
     monkeypatch.setattr(runtime, "model_identity", lambda *_: "fixture-digest")
     monkeypatch.setattr(
         runtime,
@@ -477,14 +733,14 @@ def test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles(
                     )
 
 
-def test_runtime_publishes_v20_even_if_caller_requests_older_contract(
+def test_runtime_publishes_v21_even_if_caller_requests_older_contract(
     tmp_path, monkeypatch
 ):
     import json
 
     from Backend.Core.france import runtime
     from tests.test_nsi_pipeline import (
-        ControlledGraphResilienceFrenchClient,
+        ControlledDatabaseAuditFrenchClient,
         make_index,
     )
 
@@ -494,7 +750,7 @@ def test_runtime_publishes_v20_even_if_caller_requests_older_contract(
     monkeypatch.setattr(
         runtime,
         "FrenchOllamaClient",
-        lambda **_: ControlledGraphResilienceFrenchClient(),
+        lambda **_: ControlledDatabaseAuditFrenchClient(),
     )
     args = Namespace(
         assessment="fr-bac-general-nsi-written-2027",
@@ -510,7 +766,7 @@ def test_runtime_publishes_v20_even_if_caller_requests_older_contract(
     assert runtime.handle_generate_assessment(args) == 0
     (bundle,) = (tmp_path / "output").glob("nsi-*")
     package = json.loads((bundle / "assessment.json").read_text())
-    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v20"
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v21"
     assert len(package["exercises"][2]["questions"]) == 12
     assert (bundle / "sujet.pdf").is_file()
     assert (bundle / "corrige.pdf").is_file()

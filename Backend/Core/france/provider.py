@@ -3,6 +3,8 @@
 import json
 from hashlib import sha256
 
+from Backend.Core.france.database_audit_contract import DatabaseAuditContract
+from Backend.Core.france.database_audit_prose import database_audit_selection_schema
 from Backend.Core.france.database_contract import DatabaseContract
 from Backend.Core.france.database_depth_contract import DatabaseDepthContract
 from Backend.Core.france.database_depth_prose import database_depth_selection_schema
@@ -108,6 +110,16 @@ class FrenchOllamaClient(HostedLLMClient):
 
 
 def response_policy(prompt: str) -> tuple[dict, int]:
+    if prompt.startswith("Sélectionne l'exercice 2 v21"):
+        embedded = json.loads(
+            prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
+        )
+        request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+        contract = DatabaseAuditContract.from_dict(request["contract"])
+        schema = database_audit_selection_schema(contract)
+        if embedded != schema or request.get("contract_sha256") != contract.digest:
+            raise ValueError("Incident-audit schema or contract mismatch")
+        return schema, 2048
     if prompt.startswith("Sélectionne l'exercice 1 v20"):
         embedded = json.loads(
             prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]

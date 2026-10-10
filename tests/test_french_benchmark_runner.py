@@ -6,6 +6,11 @@ from hashlib import sha256
 import pytest
 
 from Backend.Core.education_context import NSI_2027
+from Backend.Core.france.database_audit_contract import build_database_audit_contract
+from Backend.Core.france.database_audit_prose import (
+    DATABASE_AUDIT_PROSE_VERSION,
+    database_audit_catalogue_digest,
+)
 from Backend.Core.france.database_depth_contract import build_database_depth_contract
 from Backend.Core.france.database_depth_prose import (
     DATABASE_DEPTH_PROSE_VERSION,
@@ -44,6 +49,7 @@ from Backend.Core.france.network_reasoning_prose import (
     network_reasoning_catalogue_digest,
 )
 from Backend.Core.france.pipeline import (
+    CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
     CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
     CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
@@ -53,7 +59,7 @@ from Backend.Core.france.pipeline import (
 )
 
 
-def _passed_result(tmp_path, *, v17=False, v18=False, v19=False, v20=False):
+def _passed_result(tmp_path, *, v17=False, v18=False, v19=False, v20=False, v21=False):
     identity = {
         "implementation": "implementation-sha",
         "reference_index_sha256": "reference-sha",
@@ -66,7 +72,9 @@ def _passed_result(tmp_path, *, v17=False, v18=False, v19=False, v20=False):
     manifest_identity = {
         "assessment": asdict(NSI_2027),
         "prompt_version": (
-            CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION
+            CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION
+            if v21
+            else CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION
             if v20
             else CONTROLLED_DATABASE_REASONING_PROMPT_VERSION
             if v19
@@ -76,7 +84,6 @@ def _passed_result(tmp_path, *, v17=False, v18=False, v19=False, v20=False):
             if v17
             else CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION
         ),
-        "database_depth_contract_sha256": build_database_depth_contract(270100).digest,
         "database_depth_prose_contract_version": DATABASE_DEPTH_PROSE_VERSION,
         "database_depth_prose_catalogue_sha256": database_depth_catalogue_digest(),
         "implementation_sha256": identity["implementation"],
@@ -88,14 +95,25 @@ def _passed_result(tmp_path, *, v17=False, v18=False, v19=False, v20=False):
         "blueprint": [],
         "originality_history_digest": "history-sha",
     }
-    if v19 or v20:
+    if v21:
+        manifest_identity.update(
+            database_audit_contract_sha256=build_database_audit_contract(270100).digest,
+            database_audit_prose_contract_version=DATABASE_AUDIT_PROSE_VERSION,
+            database_audit_prose_catalogue_sha256=database_audit_catalogue_digest(),
+        )
+    else:
+        manifest_identity["database_depth_contract_sha256"] = (
+            build_database_depth_contract(270100).digest
+        )
+    if v19 or v20 or v21:
         del manifest_identity["database_depth_prose_contract_version"]
         del manifest_identity["database_depth_prose_catalogue_sha256"]
-        manifest_identity.update(
-            database_reasoning_prose_contract_version=DATABASE_REASONING_PROSE_VERSION,
-            database_reasoning_prose_catalogue_sha256=database_reasoning_catalogue_digest(),
-        )
-    if v18 or v19 or v20:
+        if not v21:
+            manifest_identity.update(
+                database_reasoning_prose_contract_version=DATABASE_REASONING_PROSE_VERSION,
+                database_reasoning_prose_catalogue_sha256=database_reasoning_catalogue_digest(),
+            )
+    if v18 or v19 or v20 or v21:
         manifest_identity.update(
             network_reasoning_contract_sha256=build_network_reasoning_contract(
                 270100
@@ -109,7 +127,7 @@ def _passed_result(tmp_path, *, v17=False, v18=False, v19=False, v20=False):
             network_depth_prose_contract_version=NETWORK_DEPTH_PROSE_VERSION,
             network_depth_prose_catalogue_sha256=network_depth_catalogue_digest(),
         )
-    if v20:
+    if v20 or v21:
         from Backend.Core.france.graph_resilience_contract import (
             build_graph_resilience_contract,
         )
@@ -337,6 +355,62 @@ def test_french_benchmark_accepts_only_exact_v20_graph_resilience_identity(tmp_p
     package_value = json.loads(package.read_text())
     for value in (manifest_value, package_value):
         value["identity"]["graph_resilience_contract_sha256"] = "0" * 64
+    package.write_text(json.dumps(package_value))
+    manifest_value["artifacts"]["assessment_package"]["sha256"] = sha256(
+        package.read_bytes()
+    ).hexdigest()
+    manifest.write_text(json.dumps(manifest_value))
+    result_value = json.loads(result.read_text())
+    result_value["artifacts"]["manifest_sha256"] = sha256(
+        manifest.read_bytes()
+    ).hexdigest()
+    result.write_text(json.dumps(result_value))
+    assert not accepted_result(result, identity)
+
+
+def test_french_benchmark_accepts_only_exact_v21_audit_identity(tmp_path):
+    from tools.french_nsi_benchmark import accepted_result
+
+    result, identity, bundle = _passed_result(tmp_path, v21=True)
+    assert accepted_result(result, identity)
+    manifest = bundle / "manifest.json"
+    package = bundle / "assessment.json"
+    manifest_value = json.loads(manifest.read_text())
+    package_value = json.loads(package.read_text())
+    for value in (manifest_value, package_value):
+        value["identity"]["database_audit_contract_sha256"] = "0" * 64
+    package.write_text(json.dumps(package_value))
+    manifest_value["artifacts"]["assessment_package"]["sha256"] = sha256(
+        package.read_bytes()
+    ).hexdigest()
+    manifest.write_text(json.dumps(manifest_value))
+    result_value = json.loads(result.read_text())
+    result_value["artifacts"]["manifest_sha256"] = sha256(
+        manifest.read_bytes()
+    ).hexdigest()
+    result.write_text(json.dumps(result_value))
+    assert not accepted_result(result, identity)
+
+
+@pytest.mark.parametrize(
+    "legacy_field",
+    (
+        "database_depth_prose_contract_version",
+        "database_depth_prose_catalogue_sha256",
+        "network_contract_sha256",
+    ),
+)
+def test_french_benchmark_rejects_mixed_v21_legacy_identity(tmp_path, legacy_field):
+    from tools.french_nsi_benchmark import accepted_result
+
+    result, identity, bundle = _passed_result(tmp_path, v21=True)
+    assert accepted_result(result, identity)
+    manifest = bundle / "manifest.json"
+    package = bundle / "assessment.json"
+    manifest_value = json.loads(manifest.read_text())
+    package_value = json.loads(package.read_text())
+    for value in (manifest_value, package_value):
+        value["identity"][legacy_field] = "legacy-value"
     package.write_text(json.dumps(package_value))
     manifest_value["artifacts"]["assessment_package"]["sha256"] = sha256(
         package.read_bytes()
