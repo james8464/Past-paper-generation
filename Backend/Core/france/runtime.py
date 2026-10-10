@@ -390,13 +390,25 @@ def validate_graph_resilience_pdf(
     ]
     if tree_lines != expected_tree:
         raise ValueError("Graph resilience tree table differs from locked facts")
-    for source in (
-        graph_edge_manifest(data["graph"]),
-        data["debug_case"]["faulty_code"],
-        data["search_code"],
+    exercise_at = lines.index(heading)
+    before_1a = " ".join(lines[exercise_at : positions["1a"]])
+    after_1j = next(
+        (
+            index
+            for index in range(positions["1j"] + 1, len(lines))
+            if lines[index].startswith("Exercice 2 (")
+        ),
+        len(lines),
+    )
+    in_1j = " ".join(lines[positions["1j"] : after_1j])
+    for source, staged_text in (
+        (graph_edge_manifest(data["graph"]), before_1a),
+        (data["debug_case"]["faulty_code"], before_1a),
+        (data["search_code"], in_1j),
     ):
-        if " ".join(source.split()) not in flat:
-            raise ValueError("Graph resilience source or working facts missing")
+        normalised = " ".join(source.split())
+        if staged_text.count(normalised) != 1 or flat.count(normalised) != 1:
+            raise ValueError("Graph resilience source or working facts outside stage")
     if not correction and any(
         re.search(pattern, flat)
         for pattern in (

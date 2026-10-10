@@ -108,3 +108,27 @@ def test_v20_equal_cost_answer_does_not_claim_an_increase():
     answer = candidate["questions"][6]["answer"]
     assert "égal" in answer
     assert "supérieur" not in answer
+
+
+@pytest.mark.parametrize("total", ["5.5", "6", "6.5"])
+def test_v20_route_and_search_prompts_match_credited_evidence(total):
+    candidate = render_graph_resilience_candidate(
+        build_graph_resilience_contract(270100), _selection(), _specs(total)
+    )
+    questions = {question["id"]: question for question in candidate["questions"]}
+    route = questions["1d"]
+    assert "liaisons parcourues" in route["prompt"]
+    assert "+" in route["answer"]
+    assert any("liaisons" in mark["criterion"] for mark in route["marking"])
+
+    search = questions["1j"]
+    if total == "6.5":
+        assert "tracez" in search["prompt"]
+        assert "justifiez" in search["prompt"]
+        assert any("chemin" in mark["criterion"] for mark in search["marking"])
+        assert any("justification" in mark["criterion"] for mark in search["marking"])
+    else:
+        assert "tracez" in search["prompt"]
+        assert "justifiez" not in search["prompt"]
+        assert any("chemin" in mark["criterion"] for mark in search["marking"])
+        assert all("justification" not in mark["criterion"] for mark in search["marking"])

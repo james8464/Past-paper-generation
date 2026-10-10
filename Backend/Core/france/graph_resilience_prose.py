@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from decimal import Decimal
 from hashlib import sha256
+from itertools import pairwise
 
 from Backend.Core.france.graph_resilience_contract import GraphResilienceContract
 from Backend.Core.france.graph_tree_binding import graph_edge_manifest
@@ -69,7 +70,10 @@ _CRITERIA = {
         "les distances après la deuxième fixation",
         "les prédécesseurs après la deuxième fixation",
     ),
-    "1d": ("les sommets d'un chemin minimal", "son poids total correct"),
+    "1d": (
+        "les sommets d'un chemin minimal",
+        "l'addition des poids des liaisons parcourues",
+    ),
     "1f": ("l'exception NameError causée par `visin`", "le nom corrigé `voisin`"),
     "1g": (
         "l'exclusion de la liaison fermée",
@@ -170,6 +174,21 @@ def _profile(total: str) -> tuple[str, ...]:
 def _answer(task_id: str, result: dict, facts: dict) -> str:
     if task_id == "1a":
         return f"Le degré de A est {result['degree']}."
+    if task_id == "1d":
+        weights = {
+            frozenset((left, right)): weight
+            for left, right, weight in facts["graph"]["edges"]
+        }
+        path = result["path"]
+        addition = " + ".join(
+            str(weights[frozenset((left, right))])
+            for left, right in pairwise(path)
+        )
+        return (
+            "Le chemin minimal est "
+            + " → ".join(path)
+            + f" ; son poids est {addition} = {result['weight']}."
+        )
     if task_id == "1e":
         states = result["states"]
         return (
@@ -208,7 +227,10 @@ def _criteria(task_id: str, points: str) -> tuple[str, ...]:
             )
         )
     if task_id == "1j" and points == "0.5":
-        return ("la comparaison corrigée", "la recherche réussie de la clé insérée")
+        return (
+            "la comparaison corrigée",
+            "le chemin de recherche menant à la clé insérée",
+        )
     return _CRITERIA[task_id]
 
 
@@ -277,6 +299,12 @@ def render_graph_resilience_candidate(
                 "Après correction, donnez l'ordre complet du parcours en largeur et la file après le retrait de A."
                 if plan["points"] == "0.5"
                 else "Après correction, donnez l'ordre complet du parcours en largeur, la file après les retraits de A et B et les sommets découverts après B."
+            )
+        if task_id == "1j" and plan["points"] == "0.5":
+            prompt = (
+                "Corrigez la comparaison fautive dans `contient`, puis tracez "
+                "la recherche de {insert_key} après insertion et donnez son résultat."
+                "\n\n```python\n{search_code}\n```"
             )
         prompt = prompt.format(
             closed="–".join(facts["closed_edge"]),

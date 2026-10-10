@@ -33,6 +33,7 @@ def test_v20_runtime_stages_graph_and_tree_and_validates_pdf(
     from Backend.Core.france.graph_resilience_contract import (
         build_graph_resilience_contract,
     )
+    from Backend.Core.france.graph_tree_binding import graph_edge_manifest
     from Backend.Core.france.nsi import NSIExercise
     from tests.test_nsi_pipeline import (
         ControlledGraphResilienceFrenchClient,
@@ -76,7 +77,58 @@ def test_v20_runtime_stages_graph_and_tree_and_validates_pdf(
                 for page in pdf
                 for word in page.get_text("words")
             )
+
+        class ExtractedDocument:
+            def __init__(self, values):
+                self.values = values
+
+            def __enter__(self):
+                return [
+                    type("Page", (), {"get_text": lambda _self, value=text: value})()
+                    for text in self.values
+                ]
+
+            def __exit__(self, *_):
+                return False
+
+        facts = contract.to_dict()
+        for source in (
+            facts["debug_case"]["faulty_code"],
+            facts["search_code"],
+        ):
+            assert sum(page.count(source) for page in pages) == 1
+            shifted = [page.replace(source, "", 1) for page in pages]
+            shifted[-1] += "\n" + source
+            with monkeypatch.context() as patch:
+                patch.setattr(
+                    runtime.pymupdf,
+                    "open",
+                    lambda _, values=shifted: ExtractedDocument(values),
+                )
+                with pytest.raises(ValueError, match="source or working facts"):
+                    runtime.validate_graph_resilience_pdf(
+                        path, contract, correction=correction, exercise=exercise
+                    )
+        search_code = facts["search_code"]
+        shifted = [page.replace(search_code, "", 1) for page in pages]
+        first_question_page = next(
+            index for index, page in enumerate(shifted) if "1a." in page
+        )
+        shifted[first_question_page] = shifted[first_question_page].replace(
+            "1a.", "1a.\n" + search_code, 1
+        )
+        with monkeypatch.context() as patch:
+            patch.setattr(
+                runtime.pymupdf,
+                "open",
+                lambda _, values=shifted: ExtractedDocument(values),
+            )
+            with pytest.raises(ValueError, match="source or working facts"):
+                runtime.validate_graph_resilience_pdf(
+                    path, contract, correction=correction, exercise=exercise
+                )
         flat = " ".join(" ".join(pages).split())
+        assert " ".join(graph_edge_manifest(facts["graph"]).split()) in flat
         assert flat.index("Réseau pondéré des postes") < flat.index("1a.")
         assert flat.index("1g.") < flat.index("Arbre des identifiants — arbre")
         assert flat.index("Arbre des identifiants — arbre") < flat.index("1h.")
@@ -89,21 +141,6 @@ def test_v20_runtime_stages_graph_and_tree_and_validates_pdf(
                 if "1b." in page:
                     shifted[index] = page.replace("1b.", "1b. " + first_answer, 1)
                     break
-
-            class ExtractedDocument:
-                def __init__(self, values):
-                    self.values = values
-
-                def __enter__(self):
-                    return [
-                        type(
-                            "Page", (), {"get_text": lambda _self, value=text: value}
-                        )()
-                        for text in self.values
-                    ]
-
-                def __exit__(self, *_):
-                    return False
 
             with monkeypatch.context() as patch:
                 patch.setattr(

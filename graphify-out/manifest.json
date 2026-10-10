@@ -200,8 +200,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
-    "mtime": 1791607018.1259906,
-    "ast_hash": "41aba8ebc11251ac97a24132afc87548",
+    "mtime": 1791633813.2318432,
+    "ast_hash": "f5967b24d3e6845e4a0beb1e5ef97f41",
     "semantic_hash": ""
   },
   "Backend/Core/france/source_identity.py": {
@@ -1680,8 +1680,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_runtime.py": {
-    "mtime": 1791612576.0186477,
-    "ast_hash": "1d7c870414149cadff456595e74db95a",
+    "mtime": 1791633946.190832,
+    "ast_hash": "b4eb9b9555f1a9b0d24cf6e6b91071e1",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {
@@ -2970,8 +2970,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_resilience_prose.py": {
-    "mtime": 1791594864.1115148,
-    "ast_hash": "037f5dadce043d009797c4d37b7bb128",
+    "mtime": 1791634253.6939254,
+    "ast_hash": "a6b2a24f8f7c365580b137f5e61ba037",
     "semantic_hash": ""
   },
   "tests/test_french_graph_resilience_contract.py": {
@@ -2980,8 +2980,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_graph_resilience_prose.py": {
-    "mtime": 1791594856.6298347,
-    "ast_hash": "25424807ec1793f457dad4aed649c12b",
+    "mtime": 1791634029.2848186,
+    "ast_hash": "cf482bfbe09bc5a05b698a987e7f1bc7",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-10-french-nsi-graph-resilience-v20.md": {
