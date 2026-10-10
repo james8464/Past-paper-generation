@@ -98,6 +98,15 @@ def test_prompts_answers_and_rubrics_track_locked_phases() -> None:
     )
     questions = {q["id"]: q for q in candidate["questions"]}
     assert "999" in questions["2b"]["prompt"]
+    assert "existant" in questions["2b"]["prompt"]
+    assert "id_agent = 1" in questions["2b"]["answer"]
+    assert questions["2a"]["prompt"].startswith("Partie A")
+    assert questions["2e"]["prompt"].startswith("Partie B")
+    assert questions["2g"]["prompt"].startswith("Partie C")
+    assert "def nombre_clos" not in candidate["context"]
+    assert "def nombre_clos" in questions["2h"]["prompt"]
+    assert "audit_trace" in questions["2h"]["material_ids"]
+    assert "5, 4, 3" in questions["2h"]["answer"]
     assert "101" in questions["2c"]["prompt"]
     assert "108" in questions["2c"]["prompt"]
     assert "2, 3, 2, 1" in questions["2f"]["answer"]
@@ -110,6 +119,8 @@ def test_prompts_answers_and_rubrics_track_locked_phases() -> None:
         assert sum(Decimal(c["points"]) for c in question["marking"]) == Decimal(
             question["points"]
         )
+        assert len(question["marking"]) == int(Decimal(question["points"]) * 4)
+        assert all(Decimal(c["points"]) == Decimal("0.25") for c in question["marking"])
         assert all(c["criterion"] for c in question["marking"])
         assert question["verification"]["contract"] == contract.to_dict()
 

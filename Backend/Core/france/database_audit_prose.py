@@ -34,36 +34,36 @@ _QUESTIONS = {
         "Partie A — intégrité. Repérez les clés de chaque table et les deux références de incident ; que garantit une clé étrangère ?",
     ),
     "2b": (
-        "On propose, sans l'ajouter à l'état initial, l'incident 109 avec id_agent = 999 et id_cat = 1. Pourquoi l'insertion est-elle refusée ?",
-        "L'incident hypothétique 109 désigne l'agent 999 et la catégorie 1. Justifiez le refus de cette nouvelle ligne.",
+        "On propose, sans l'ajouter à l'état initial, l'incident 109 avec id_agent = 999 et id_cat = 1. Pourquoi l'insertion est-elle refusée ? Proposez une clé d'agent existant qui rendrait cette référence valide.",
+        "L'incident hypothétique 109 désigne l'agent 999 et la catégorie 1. Justifiez le refus de cette nouvelle ligne et donnez une clé d'agent existant qui conviendrait.",
     ),
     "2c": (
-        "Partie B — jointures. Complétez la table de travail pour 101, 102, 107 et 108 : id_cat, libellé réel, puis libellé obtenu avec la jointure fautive affichée.",
-        "Partie B — jointures. Comparez, dans la table de travail, les catégories correctes et fautives des incidents 101, 102, 107 et 108.",
+        "Complétez la table de travail pour 101, 102, 107 et 108 : id_cat, libellé réel, puis libellé obtenu avec la jointure fautive affichée.",
+        "Comparez, dans la table de travail, les catégories correctes et fautives des incidents 101, 102, 107 et 108.",
     ),
     "2d": (
         "À partir de deux écarts constatés en 2c, expliquez l'erreur de clé et écrivez la condition de jointure correcte.",
         "Quels contre-exemples de 2c révèlent le défaut ? Corrigez la condition ON en citant les deux attributs liés.",
     ),
     "2e": (
-        "Écrivez une requête donnant identifiant et libellé réel de chacun des huit incidents, triés par identifiant ; justifiez les huit lignes.",
-        "Construisez la jointure corrigée, ordonnée par identifiant d'incident, et expliquez sa cardinalité sur les huit lignes initiales.",
+        "Partie B — requêtes. Écrivez une requête donnant identifiant et libellé réel de chacun des huit incidents, triés par identifiant ; justifiez les huit lignes.",
+        "Partie B — requêtes. Construisez la jointure corrigée, ordonnée par identifiant d'incident, et expliquez sa cardinalité sur les huit lignes initiales.",
     ),
     "2f": (
-        "Partie C — agrégation. Écrivez une requête donnant l'effectif par catégorie et calculez les quatre effectifs. Dans une hypothèse séparée, la catégorie 5 sans incident doit aussi figurer avec zéro : justifiez le type de jointure et le COUNT choisi.",
-        "Partie C — agrégation. Comptez les incidents de chaque catégorie initiale. Si une catégorie 5 vide était créée séparément, comment la conserver dans le résultat avec un effectif nul ?",
+        "Écrivez une requête donnant l'effectif par catégorie et calculez les quatre effectifs. Dans une hypothèse séparée, la catégorie 5 sans incident doit aussi figurer avec zéro : justifiez le type de jointure et le COUNT choisi.",
+        "Comptez les incidents de chaque catégorie initiale. Si une catégorie 5 vide était créée séparément, comment la conserver dans le résultat avec un effectif nul ?",
     ),
     "2g": (
-        "Partie D — états. Sur une copie de l'état initial S0, clôturez seulement 101 pour former S1, puis seulement 105 pour former S2. Écrivez les deux UPDATE et complétez la table de travail : identifiants modifiés et nombre de clos à chaque état.",
-        "Partie D — états. Construisez S1 en clôturant 101, puis S2 en clôturant 105 sur S1. Donnez chaque UPDATE ciblé, son nombre de lignes modifiées et les trois comptes clos.",
+        "Partie C — états et débogage. Sur une copie de l'état initial S0, clôturez seulement 101 pour former S1, puis seulement 105 pour former S2. Écrivez les deux UPDATE et complétez la table de travail : identifiants modifiés et nombre de clos à chaque état.",
+        "Partie C — états et débogage. Construisez S1 en clôturant 101, puis S2 en clôturant 105 sur S1. Donnez chaque UPDATE ciblé, son nombre de lignes modifiées et les trois comptes clos.",
     ),
     "2h": (
-        "Vérifiez qu'aucun autre incident n'a changé entre S0, S1 et S2. Comparez les comptes ouverts et clos de chaque état et expliquez pourquoi leur somme reste huit.",
-        "Contrôlez les deux mises à jour : pour chaque état, donnez ouverts et clos, puis justifiez l'invariant de huit incidents.",
+        "La fonction ci-dessous est censée compter les incidents clos :\n```python\n{faulty_python}\n```\nComplétez sa trace fautive sur S0, S1 et S2. Quelle assertion sur S0 révèle le défaut ?",
+        "Tracez la fonction ci-dessous sur les trois états :\n```python\n{faulty_python}\n```\nÉcrivez une assertion sur S0 qui échoue et expliquez pourquoi.",
     ),
     "2i": (
-        "Partie E — débogage. La fonction fournie est censée compter les clos. Complétez sa trace fautive sur S0, S1 et S2, puis corrigez la condition et complétez la trace corrigée. Quelle assertion échoue sur S0 ?",
-        "Partie E — débogage. Tracez le code affiché puis le code corrigé sur les trois états. Indiquez la condition à remplacer et un test par assertion révélant le défaut initial.",
+        "Corrigez la condition de nombre_clos et complétez la trace corrigée sur S0, S1 et S2. Vérifiez que, dans chaque état, clos + ouverts = huit.",
+        "Quelle condition faut-il remplacer dans nombre_clos ? Calculez son retour corrigé sur les trois états et justifiez l'invariant de huit incidents.",
     ),
     "2j": (
         "Que renvoie la fonction corrigée sur une liste vide ? Justifiez que la boucle n'accède à aucun élément absent.",
@@ -71,16 +71,48 @@ _QUESTIONS = {
     ),
 }
 _CRITERIA = {
-    "2a": "Les trois clés primaires et les deux références sont identifiées ; l'intégrité est expliquée.",
-    "2b": "L'absence de l'agent 999 et la clé étrangère expliquent le refus sans ajouter 109 à S0.",
-    "2c": "Les quatre lignes comparent id_cat, libellé réel et libellé fautif exacts.",
-    "2d": "Deux contre-exemples motivent incident.id_cat = categorie.id_cat.",
-    "2e": "La requête joint par id_cat, trie et explique les huit résultats.",
-    "2f": "LEFT JOIN, COUNT sur l'identifiant, les quatre effectifs et le zéro hypothétique sont justifiés.",
-    "2g": "Deux UPDATE ciblés modifient chacun une ligne ; les comptes clos sont 3, 4, 5.",
-    "2h": "Les comptes ouverts 5, 4, 3 et l'invariant huit sont vérifiés.",
-    "2i": "Les traces 5, 4, 3 et 3, 4, 5, la condition corrigée et l'assertion sont cohérentes.",
-    "2j": "Le résultat nul et la sûreté de la boucle vide sont expliqués.",
+    "2a": ("Les clés et leur garantie d'intégrité sont identifiées.",),
+    "2b": (
+        "La référence à l'agent 999 est refusée.",
+        "Une clé d'agent existante est proposée sans modifier S0.",
+    ),
+    "2c": (
+        "Les id_cat des quatre incidents sont exacts.",
+        "Les quatre libellés réels sont exacts.",
+        "Les quatre libellés fautifs sont exacts.",
+    ),
+    "2d": (
+        "Deux contre-exemples sont cités.",
+        "La condition correcte lie les deux id_cat.",
+        "La clé fautive id_agent est identifiée.",
+    ),
+    "2e": (
+        "La jointure SQL utilise les id_cat.",
+        "Le tri par id_incident est écrit.",
+        "Les huit lignes sont justifiées.",
+    ),
+    "2f": (
+        "La jointure gauche est écrite.",
+        "COUNT porte sur l'identifiant d'incident.",
+        "Les quatre effectifs 2, 3, 2, 1 sont exacts.",
+        "Le zéro de la catégorie 5 hypothétique est expliqué.",
+    ),
+    "2g": (
+        "UPDATE cible seulement 101.",
+        "UPDATE cible seulement 105 après S1.",
+        "Une ligne est modifiée à chaque étape et les comptes clos 3, 4, 5 sont exacts.",
+    ),
+    "2h": (
+        "La trace fautive donne 5, 4, 3.",
+        "Une assertion de trois clos sur S0 échoue.",
+        "Le défaut est relié au test sur ouvert.",
+    ),
+    "2i": (
+        "La condition est corrigée vers clos.",
+        "La trace corrigée donne 3, 4, 5.",
+        "L'invariant ouvert + clos = huit est justifié.",
+    ),
+    "2j": ("Le résultat zéro et la boucle vide sûre sont justifiés.",),
 }
 _MATERIAL_IDS = {
     "2a": ["agent", "categorie", "incident"],
@@ -90,7 +122,7 @@ _MATERIAL_IDS = {
     "2e": ["audit_jointure"],
     "2f": ["categorie", "incident"],
     "2g": ["audit_etats"],
-    "2h": ["audit_etats"],
+    "2h": ["audit_etats", "audit_trace"],
     "2i": ["audit_trace"],
     "2j": ["audit_trace"],
 }
@@ -190,7 +222,7 @@ def _answer(task_id: str, data: dict) -> str:
     if task_id == "2a":
         return "Clés primaires : agent.id_agent, categorie.id_cat, incident.id_incident. Les références incident.id_agent et incident.id_cat empêchent les références absentes."
     if task_id == "2b":
-        return "L'agent 999 n'existe pas : sa clé étrangère est invalide. L'insertion de 109 est refusée et ne change pas S0."
+        return "L'agent 999 n'existe pas : sa clé étrangère est invalide. Une référence id_agent = 1 serait valide. L'insertion de 109 est refusée et ne change pas S0."
     if task_id == "2c":
         return "; ".join(
             f"{incident} : id_cat={category}, réel={labels[category]}, fautif={labels[agent]}"
@@ -217,11 +249,11 @@ def _answer(task_id: str, data: dict) -> str:
             "Une ligne modifiée par UPDATE : 101 puis 105 ; incidents clos S0, S1, S2 : 3, 4, 5."
         )
     if task_id == "2h":
-        return "Incidents ouverts S0, S1, S2 : 5, 4, 3 ; clos : 3, 4, 5. À chaque état, ouvert + clos = 8 ; seules 101 puis 105 changent."
+        return "La fonction fautive compte les incidents ouverts : S0, S1, S2 donnent 5, 4, 3. Sur S0, assert nombre_clos(incidents) == 3 échoue."
     if task_id == "2i":
         return (
-            "La fonction fautive compte les ouverts : 5, 4, 3. Remplacer la condition par statut == 'clos' : "
-            "la fonction corrigée renvoie 3, 4, 5. Sur S0, assert nombre_clos(incidents) == 3 échoue avec le code fautif."
+            "Remplacer la condition par statut == 'clos' : la fonction corrigée renvoie 3, 4, 5. "
+            "Les ouverts sont 5, 4, 3 ; dans chaque état, ouverts + clos = huit."
         )
     if task_id == "2j":
         return "Sur une liste vide, la fonction corrigée renvoie 0 : aucune itération n'accède à un élément absent."
@@ -257,30 +289,37 @@ def render_database_audit_candidate(
         "S1 et S2 sont deux copies successives, obtenues par les mises à jour demandées en 2g. "
         "Sauf indication contraire, répondez à partir de S0. La requête suivante est fautive :\n\n```sql\n"
         + data["faulty_sql"]
-        + "\n```\n\nLa fonction suivante est censée compter les incidents clos ; "
-        "incidents désigne une liste reconstruite pour chaque état :\n\n```python\n"
-        + data["faulty_python"]
-        + "\n```"
+        + "\n```\n\nPour la fonction de la partie C, "
+        "incidents désigne une liste reconstruite pour chaque état."
     )
     questions = []
     for task_id, plan in zip(_IDS, task_specs, strict=True):
         question_variant = int(selection["question_forms"][task_id][-1]) - 1
         rubric_variant = int(selection["rubric_forms"][task_id][-1])
+        criteria = _CRITERIA[task_id]
+        quarters = int(Decimal(plan["points"]) * 4)
+        if quarters < 1 or quarters > len(criteria):
+            raise ValueError("Incident-audit rubric cannot allocate quarter-points")
+        prefix = "Points pour " if rubric_variant == 1 else "Vérifier "
+        marking = [
+            {"points": "0.25", "criterion": prefix + criterion}
+            for criterion in criteria[: quarters - 1]
+        ]
+        marking.append(
+            {
+                "points": "0.25",
+                "criterion": prefix + " ".join(criteria[quarters - 1 :]),
+            }
+        )
         questions.append(
             {
                 "id": task_id,
-                "prompt": _QUESTIONS[task_id][question_variant],
+                "prompt": _QUESTIONS[task_id][question_variant].replace(
+                    "{faulty_python}", data["faulty_python"]
+                ),
                 "points": plan["points"],
                 "answer": _answer(task_id, data),
-                "marking": [
-                    {
-                        "points": plan["points"],
-                        "criterion": (
-                            "Points pour " if rubric_variant == 1 else "Vérifier "
-                        )
-                        + _CRITERIA[task_id],
-                    }
-                ],
+                "marking": marking,
                 "material_ids": _MATERIAL_IDS[task_id],
                 "curriculum_codes": [plan["required_curriculum_code"]],
                 "operation": plan["operation"],

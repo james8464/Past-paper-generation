@@ -185,13 +185,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1791597841.932351,
-    "ast_hash": "9b587f7420e3065822ed4cc924d4ab86",
+    "mtime": 1791649838.6706548,
+    "ast_hash": "b5116d12976163682f3f5c774e7fd27d",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
-    "mtime": 1791597836.9076293,
-    "ast_hash": "8dc9eb414c0bd20651b427f2fcdd95c7",
+    "mtime": 1791649830.0809872,
+    "ast_hash": "56e5b84829d9cd52e40324b3b7237817",
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
@@ -215,8 +215,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/verification.py": {
-    "mtime": 1791597732.1771119,
-    "ast_hash": "758cf002a9e12a7d3c27c60b0939ebe5",
+    "mtime": 1791649805.8311384,
+    "ast_hash": "9d84c1037ddb339fbe557c2be31cf18f",
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791646630.319894,
-    "ast_hash": "be82dc31f7d212f640d4f5b199911408",
+    "mtime": 1791649957.3020957,
+    "ast_hash": "7d7defc9c4dbb879563fbd850c1a1bb0",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1780,8 +1780,8 @@
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1791597702.941065,
-    "ast_hash": "497390ce6ad4673c995bfb47bed7b063",
+    "mtime": 1791649838.67065,
+    "ast_hash": "7fc6198ab59b3873ceb0e414da120668",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -3015,18 +3015,18 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/database_audit_prose.py": {
-    "mtime": 1791646705.144718,
-    "ast_hash": "014800bafafa08dad57c2092296e8330",
+    "mtime": 1791649937.6588843,
+    "ast_hash": "fd5b7480dba6773c0985138892098866",
     "semantic_hash": ""
   },
   "tests/test_french_database_audit_contract.py": {
-    "mtime": 1791646705.1447182,
-    "ast_hash": "50de8d1623dc555ac60bc186c0979d4f",
+    "mtime": 1791649793.877911,
+    "ast_hash": "76ac1df6ed0b8da7ced2d7f3ef8702e3",
     "semantic_hash": ""
   },
   "tests/test_french_database_audit_prose.py": {
-    "mtime": 1791646705.144718,
-    "ast_hash": "d85936549c197f9d309119416eb49691",
+    "mtime": 1791649851.708318,
+    "ast_hash": "ec24b63706718057ea63728d53f91612",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-10-french-nsi-incident-audit-v21.md": {
@@ -3037,6 +3037,16 @@
   "docs/superpowers/specs/2026-10-10-french-nsi-incident-audit-v21-design.md": {
     "mtime": 1791646133.6608288,
     "ast_hash": "5ff711f775b8dd7e6a8c9755f51485b7",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/database_audit_authoring.py": {
+    "mtime": 1791649838.66887,
+    "ast_hash": "ae493a78c400aef7841d3921fe707690",
+    "semantic_hash": ""
+  },
+  "tests/test_french_database_audit_authoring.py": {
+    "mtime": 1791649838.6690137,
+    "ast_hash": "d6bdb41c760f870682ac5d62c585e808",
     "semantic_hash": ""
   }
 }

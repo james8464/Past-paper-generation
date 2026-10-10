@@ -101,3 +101,19 @@ def test_non_integer_seed_and_wrong_exercise_fail_closed() -> None:
         module.build_database_audit_contract(True)
     with pytest.raises(ValueError):
         module.build_database_audit_contract(270100, "1")
+
+
+def test_deterministic_verifier_accepts_only_exact_v21_facts() -> None:
+    from Backend.Core.france.verification import verify_contract
+
+    data = _audit_module().build_database_audit_contract(270100).to_dict()
+    record = {
+        "kind": "database_audit_contract",
+        "contract": data,
+        "task_id": "2g",
+        "expected": data["expected"],
+    }
+    assert verify_contract(record)["state"] == "passed"
+    changed = copy.deepcopy(record)
+    changed["expected"]["closed_by_state"][1] = 9
+    assert verify_contract(changed)["state"] != "passed"
