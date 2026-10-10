@@ -533,6 +533,11 @@ def render_assessment(
         for exercise in exercises
         for question in exercise.questions
     )
+    v22_paper = any(
+        question.verification.get("kind") == "graph_route_trace_contract"
+        for exercise in exercises
+        for question in exercise.questions
+    )
     for exercise_index, exercise in enumerate(exercises):
         if correction or exercise_index:
             story.append(PageBreak())
@@ -570,6 +575,7 @@ def render_assessment(
             for material in exercise.materials:
                 add_material(material)
         final_network_pair_start = None
+        security_case_start = None
         for question_index, question in enumerate(exercise.questions):
             material_start = len(story)
             if staged_network_materials:
@@ -587,11 +593,27 @@ def render_assessment(
             question_start = len(story)
             if (
                 not correction
+                and not large_print
+                and v22_paper
+                and question.id == "3i"
+                and question.verification.get("kind") == "network_reasoning_contract"
+            ):
+                security_case_start = material_start
+            if (
+                not correction
                 and question.id == "3e"
                 and question.verification.get("kind") == "network_depth_contract"
             ):
                 final_network_pair_start = question_start
             question_content(question.id, question.prompt)
+            if (
+                question.id == "3l"
+                and security_case_start is not None
+                and question.verification.get("kind") == "network_reasoning_contract"
+            ):
+                story[security_case_start:] = [
+                    KeepTogether(story[security_case_start:])
+                ]
             if (
                 not correction
                 and question.verification.get("kind") == "graph_route_trace_contract"

@@ -195,8 +195,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1791667428.9561322,
-    "ast_hash": "d2ac7ca04397b051b0e5f931cecac19e",
+    "mtime": 1791675365.726003,
+    "ast_hash": "966897f1cb2ad888209716995b80e5e9",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791665704.6678402,
-    "ast_hash": "6dd5fdf0545a6202ee0cfb363bba82b2",
+    "mtime": 1791675602.8529403,
+    "ast_hash": "0fc621a59bf4ffed73c3d1d9f2b23881",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1680,8 +1680,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_runtime.py": {
-    "mtime": 1791667428.9568741,
-    "ast_hash": "052afd16ebfe066a57b144e01ebf2c00",
+    "mtime": 1791675737.06534,
+    "ast_hash": "5673f3cbc8c20bd4df30701aad8a904a",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {
