@@ -215,6 +215,8 @@ def _accepted_payload(
                 field in manifest_identity
                 for field in (
                     "database_depth_contract_sha256",
+                    "database_depth_prose_contract_version",
+                    "database_depth_prose_catalogue_sha256",
                     "database_reasoning_prose_contract_version",
                     "database_reasoning_prose_catalogue_sha256",
                 )

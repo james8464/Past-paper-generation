@@ -171,11 +171,12 @@ def test_v21_pdf_rejects_missing_shifted_or_leaked_material(tmp_path, monkeypatc
 
     class TextDocument:
         def __init__(self, text):
-            self.text = text
+            self.pages = text if isinstance(text, list) else [text]
 
         def __enter__(self):
             return [
-                type("Page", (), {"get_text": lambda self, value=self.text: value})()
+                type("Page", (), {"get_text": lambda self, value=text: value})()
+                for text in self.pages
             ]
 
         def __exit__(self, *_):
@@ -193,16 +194,22 @@ def test_v21_pdf_rejects_missing_shifted_or_leaked_material(tmp_path, monkeypatc
         original + "\n" + " ".join(contract.to_dict()["correct_sql"].split()),
         original.replace(faulty_sql, "", 1) + "\n" + faulty_sql,
         original.replace(faulty_python, "", 1) + "\n" + faulty_python,
+        original + "\nRéponse attendue",
+        original + "\nBarème indicatif — question 2a",
+        original + "\nS0, S1, S2 : 3, 4, 5",
     )
-    for mutated in mutants:
+    for index, mutated in enumerate(mutants):
         with monkeypatch.context() as patch:
             patch.setattr(
                 runtime.pymupdf, "open", lambda _, text=mutated: TextDocument(text)
             )
-            with pytest.raises(ValueError):
+            try:
                 runtime.validate_database_audit_pdf(
                     path, contract, correction=False, exercise=exercises[1]
                 )
+            except ValueError:
+                continue
+            pytest.fail(f"Subject mutation {index} passed the V21 PDF gate")
     correction_path = tmp_path / "correction.pdf"
     render_assessment(correction_path, exercises, correction=True)
     with pymupdf.open(correction_path) as pdf:
@@ -214,6 +221,24 @@ def test_v21_pdf_rejects_missing_shifted_or_leaked_material(tmp_path, monkeypatc
     with monkeypatch.context() as patch:
         patch.setattr(runtime.pymupdf, "open", lambda _: TextDocument(changed))
         with pytest.raises(ValueError, match="answer/rubric"):
+            runtime.validate_database_audit_pdf(
+                correction_path, contract, correction=True, exercise=exercises[1]
+            )
+    split_after_rubric = correction_text.index(
+        "Barème indicatif — question 2a\n"
+    ) + len("Barème indicatif — question 2a\n")
+    with monkeypatch.context() as patch:
+        patch.setattr(
+            runtime.pymupdf,
+            "open",
+            lambda _: TextDocument(
+                [
+                    correction_text[:split_after_rubric],
+                    correction_text[split_after_rubric:],
+                ]
+            ),
+        )
+        with pytest.raises(ValueError, match=r"credit.*separated"):
             runtime.validate_database_audit_pdf(
                 correction_path, contract, correction=True, exercise=exercises[1]
             )

@@ -392,6 +392,37 @@ def test_french_benchmark_accepts_only_exact_v21_audit_identity(tmp_path):
     assert not accepted_result(result, identity)
 
 
+@pytest.mark.parametrize(
+    "legacy_field",
+    (
+        "database_depth_prose_contract_version",
+        "database_depth_prose_catalogue_sha256",
+    ),
+)
+def test_french_benchmark_rejects_mixed_v21_legacy_identity(tmp_path, legacy_field):
+    from tools.french_nsi_benchmark import accepted_result
+
+    result, identity, bundle = _passed_result(tmp_path, v21=True)
+    assert accepted_result(result, identity)
+    manifest = bundle / "manifest.json"
+    package = bundle / "assessment.json"
+    manifest_value = json.loads(manifest.read_text())
+    package_value = json.loads(package.read_text())
+    for value in (manifest_value, package_value):
+        value["identity"][legacy_field] = "legacy-value"
+    package.write_text(json.dumps(package_value))
+    manifest_value["artifacts"]["assessment_package"]["sha256"] = sha256(
+        package.read_bytes()
+    ).hexdigest()
+    manifest.write_text(json.dumps(manifest_value))
+    result_value = json.loads(result.read_text())
+    result_value["artifacts"]["manifest_sha256"] = sha256(
+        manifest.read_bytes()
+    ).hexdigest()
+    result.write_text(json.dumps(result_value))
+    assert not accepted_result(result, identity)
+
+
 def test_french_benchmark_resume_rejects_missing_v15_network_identity(tmp_path):
     from tools.french_nsi_benchmark import accepted_result
 

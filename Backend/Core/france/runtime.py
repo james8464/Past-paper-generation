@@ -785,6 +785,25 @@ def validate_database_audit_pdf(
         for source in (data["correct_sql"], data["group_sql"], data["correct_python"]):
             if " ".join(source.split()) in flat:
                 raise ValueError("Incident-audit answer leaked into subject")
+        if "Réponse attendue" in flat or "Barème indicatif — question 2" in flat:
+            raise ValueError("Incident-audit answer or rubric role leaked")
+        closed = ", ".join(str(value) for value in data["expected"]["closed_by_state"])
+        faulty = ", ".join(
+            str(value) for value in data["expected"]["faulty_python_by_state"]
+        )
+        for fragment in (
+            f"S0, S1, S2 : {closed}",
+            f"S0, S1, S2 donnent {faulty}",
+            f"renvoie {closed}",
+        ):
+            if fragment in flat:
+                raise ValueError("Incident-audit derived answer leaked")
+        if any(
+            printable_database_criterion(credit.criterion) in flat
+            for question in exercise.questions
+            for credit in question.marking
+        ):
+            raise ValueError("Incident-audit credit leaked into subject")
     for index, question in enumerate(exercise.questions):
         end = (
             positions[exercise.questions[index + 1].id]
@@ -802,10 +821,10 @@ def validate_database_audit_pdf(
                 raise ValueError(
                     f"Incident-audit answer/rubric {question.id} misplaced"
                 )
-            if not any(
-                answer in " ".join(page.split()) and rubric in page
-                for page in raw_pages
-            ):
+            rubric_pages = [
+                " ".join(page.split()) for page in raw_pages if rubric in page
+            ]
+            if len(rubric_pages) != 1 or answer not in rubric_pages[0]:
                 raise ValueError(
                     f"Incident-audit answer/rubric {question.id} separated"
                 )
@@ -813,8 +832,13 @@ def validate_database_audit_pdf(
                 label = credit.points.replace(".", ",")
                 unit = "point" if Decimal(credit.points) <= 1 else "points"
                 criterion = printable_database_criterion(credit.criterion)
-                if f"{label} {unit} {criterion}" not in section:
+                printed_credit = f"{label} {unit} {criterion}"
+                if printed_credit not in section:
                     raise ValueError(f"Incident-audit credit {question.id} misplaced")
+                if printed_credit not in rubric_pages[0] or rubric_pages[0].index(
+                    printed_credit
+                ) < rubric_pages[0].index(rubric):
+                    raise ValueError(f"Incident-audit credit {question.id} separated")
         elif answer in flat:
             raise ValueError(f"Incident-audit answer {question.id} leaked")
 
