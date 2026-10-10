@@ -95,6 +95,17 @@ def test_v21_audit_pdf_stages_work_tables_and_uses_explicit_dispatch(
             ):
                 assert raw.index(f"\n{previous_id}.") < raw.index(title)
                 assert raw.index(title) < raw.index(f"\n{task_id}.")
+            if large_print and not correction:
+                assert any(
+                    "Table de travail — états (2g–2h)" in page
+                    and "2g." in page
+                    and "chaque état." in page
+                    for page in pages
+                )
+                assert any(
+                    "2i." in page and "clos + ouverts = huit." in page
+                    for page in pages
+                )
 
 
 def test_v21_pdf_rejects_mutated_incident_and_working_tables(tmp_path):
