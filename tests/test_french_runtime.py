@@ -82,6 +82,21 @@ def test_v22_route_trace_paper_stages_each_blank_table_by_its_question(
                         for page in pages
                     )
             else:
+                if not large_print:
+                    assert any(
+                        all(
+                            label in page
+                            for label in (
+                                "Cartes de messages à remettre dans l'ordre",
+                                "Situations de sécurité à analyser",
+                                "3i.",
+                                "3j.",
+                                "3k.",
+                                "3l.",
+                            )
+                        )
+                        for page in pages
+                    ), "The security materials and dependent questions must stay together"
                 assert any(
                     "Arbre des identifiants" in page
                     and "1h." in page
