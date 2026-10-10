@@ -395,7 +395,7 @@ def build_technical_dossier() -> Path:
         "Technical and user report · Prix Occitanie 2026",
     )
     doc.add_paragraph(
-        "This report explains the prototype, what a teacher can do with it today, and the evidence still needed before classroom recommendation. All three exercises use app-owned contracts for questions, answers and marking clauses. The first complete Gemma 4 12B campaign rejected all ten papers. A later pinned V19 diagnostic achieved a first-attempt live engineering pass, but remains on manual fidelity hold: 32 numbered questions across nine subject pages are less developed than the official 2026 comparison of 36 questions across 16 pages. No French model is recommended. Two independent NSI teacher reviewers and a supervised pilot remain essential."
+        "This report explains the prototype, what a teacher can do with it today, and the evidence still needed before classroom recommendation. All three exercises use app-owned contracts for questions, answers and marking clauses. The first complete Gemma 4 12B campaign rejected all ten papers. A later pinned V20 diagnostic achieved a first-attempt live engineering pass, but remains on manual fidelity hold: 32 numbered questions across eight subject pages are less developed than the official 2026 comparison of 36 questions across 16 pages. No French model is recommended. Two independent NSI teacher reviewers and a supervised pilot remain essential."
     )
     doc.add_heading("The teacher’s task", level=1)
     doc.add_paragraph(
@@ -535,7 +535,7 @@ def build_technical_dossier() -> Path:
     add_label_paragraph(
         doc,
         "Initial campaign · 0/10 accepted.",
-        "Gemma 4 12B passed 0/10 in the first campaign. A source-pinned V19 single-paper diagnostic passed automated checks first try with no repairs. We inspected its nine-page subject and sixteen-page proposed correction. All ten database questions still fit on one subject page; the final graph and network pages are sparse, and some French scope lines need copy editing. Fidelity remains on hold against the 2026 Métropole paper. This is neither multi-paper model qualification nor teacher approval.",
+        "Gemma 4 12B passed 0/10 in the first campaign. A source-pinned V20 single-paper diagnostic passed automated checks first try with no repairs. We inspected its eight-page subject and seventeen-page proposed correction. All ten database questions still fit on one subject page; the graph questions are dense, the final network page is sparse, and learner working space is limited. Fidelity remains on hold against the 2026 Métropole paper. This is neither multi-paper model qualification nor teacher approval.",
     )
     add_label_paragraph(
         doc,
