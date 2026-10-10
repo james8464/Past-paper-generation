@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791652065.9297376,
-    "ast_hash": "7d7defc9c4dbb879563fbd850c1a1bb0",
+    "mtime": 1791657649.271098,
+    "ast_hash": "fafec1b9cf257538d7f4a1b31b8e60e6",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2055,8 +2055,8 @@
     "semantic_hash": ""
   },
   "tools/build_occitanie_submission.py": {
-    "mtime": 1791641384.9091697,
-    "ast_hash": "ff8959c54ff272d8d08ecf8cda58271a",
+    "mtime": 1791657827.2519488,
+    "ast_hash": "290777289aca99e3a8c853da17fe7dbe",
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
@@ -2255,13 +2255,13 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/README.md": {
-    "mtime": 1791641462.6548147,
-    "ast_hash": "5f6e6f41fded196e09472dcb3fd31797",
+    "mtime": 1791657492.4488914,
+    "ast_hash": "e7c516bde5c4263bb3ba5d09f40d7a56",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/claims-register.md": {
-    "mtime": 1791641423.6400845,
-    "ast_hash": "d092397f87b354efa5485b2cd3f12c3f",
+    "mtime": 1791657492.4483497,
+    "ast_hash": "c9f853291481228f040fa77ae8ec968f",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/demo-script.md": {
@@ -2285,8 +2285,8 @@
     "semantic_hash": ""
   },
   "docs/occitanie-project.md": {
-    "mtime": 1791641442.844976,
-    "ast_hash": "3a170f2ec0473bba6e865ae4863cfa0f",
+    "mtime": 1791657827.251624,
+    "ast_hash": "3cc7678bd0fcda37d84b24439fbbdf31",
     "semantic_hash": ""
   },
   "docs/project-analysis/IMPLEMENTATION_AND_FIDELITY_REPORT.md": {
@@ -2555,8 +2555,8 @@
     "semantic_hash": ""
   },
   "tests/test_occitanie_submission.py": {
-    "mtime": 1791641350.8380978,
-    "ast_hash": "c2438daf3d733d17d572f3e7a889c816",
+    "mtime": 1791657838.3342738,
+    "ast_hash": "9e072a19688436ffef431a8e49e9ebde",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Assets.xcassets/TutorialFrenchNSI.imageset/TutorialFrenchNSI.png": {
@@ -3047,6 +3047,11 @@
   "tests/test_french_database_audit_authoring.py": {
     "mtime": 1791649838.6690137,
     "ast_hash": "d6bdb41c760f870682ac5d62c585e808",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v21-incident-audit-live-diagnostic-2026-10-10.md": {
+    "mtime": 1791657470.660683,
+    "ast_hash": "769f27515aae41b87e579f9ca5581770",
     "semantic_hash": ""
   }
 }
