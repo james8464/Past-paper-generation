@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791675602.8529403,
-    "ast_hash": "0fc621a59bf4ffed73c3d1d9f2b23881",
+    "mtime": 1791683014.4234746,
+    "ast_hash": "c194051f6b576eee9388ffa562d7382f",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3097,6 +3097,11 @@
   "docs/quality/french-nsi-v22-route-trace-live-diagnostic-2026-10-10.md": {
     "mtime": 1791668651.1276321,
     "ast_hash": "d6313dba4b109cb3c7b064e658c83094",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-corpus-rights-audit-2026-10-11.md": {
+    "mtime": 1791683116.682574,
+    "ast_hash": "abf5c935d3d5cc470d3fc5012344ef4a",
     "semantic_hash": ""
   }
 }
