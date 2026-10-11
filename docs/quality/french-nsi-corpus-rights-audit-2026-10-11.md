@@ -1,0 +1,15 @@
+# French NSI Corpus and Rights Audit — 11 October 2026
+
+The local French NSI corpus is reconciled for **reference use**, not cleared for redistribution. The [official annales archive](https://eduscol.education.gouv.fr/5199/annales-des-epreuves-du-baccalaureat-des-voies-generale-et-technologique) yielded 79 paper records from 2021–2026. The source register also contains the Terminale NSI programme and the [2027 French-language assessment annex](https://www.education.gouv.fr/sites/default/files/document/annexe-attendus-et-observables-redactionnels-520693.pdf): 81 documents in total. Forty-three enlarged-print or Braille links are recorded as alternative representations, not additional retrieval sources.
+
+## Local content and holdouts
+
+All 81 registered local files were present on 11 October, and their bytes matched the SHA-256 values in the local manifest. Register IDs, hashes, splits and rights matched the manifest; its 79 marked-indexed entries matched SQLite. The local index SHA-256 was `ec2339e6dffeba485f94d33d8e6f868e24cd2c40ad32830621201496ca32d594`; the manifest SHA-256 was `4d62e19d5ced71101ce80ce990e1f901d52833cb2727c4bbea26d77ce8335113`. Two byte-identical 2022 Nouvelle-Calédonie paper pairs are recorded but each second copy is omitted from the index; neither pair crosses the holdout boundary. The resulting index contains 77 distinct paper contents and two foundational documents: 66 reference sources and 13 holdout sources. Its 1,084 page chunks comprise 903 reference and 181 holdout chunks. No orphan chunk, duplicate source/page pair, blank chunk or indexed metadata mismatch was found in this local audit.
+
+Holdouts remain in the local index for evaluation, but the retrieval path builds its search table only from sources with the requested French scope and curriculum, `split="reference"`, and the permitted category. It does not rank holdout chunks or fall back to a UK index. The [2027 examination rule](https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N) and its language annex remain separately pinned as primary sources; historical papers do not override the session-2027 policy.
+
+## Distribution boundary
+
+Every registered document remains `reference-only`; no official PDF is tracked in Git or bundled with the app. [Éduscol's legal notice](https://eduscol.education.gouv.fr/4656/mentions-legales) describes reuse of downloadable documents while excluding third-party text, illustration and audio where applicable. The [education ministry's 2016–2019 examination-material protocol](https://www.education.gouv.fr/bo/16/Hebdo35/MENE1600684X.htm) addressed publication of examination subjects containing third-party works; it is not current clearance to redistribute sources inside this app. Per-document embedded-content and licence review, and permission where needed, remain open before any bundling. This audit did not establish redistribution rights or re-download and re-hash each remote PDF.
+
+These checks establish local provenance and isolation, not paper fidelity, teacher approval, learner calibration, accessibility approval or permission to distribute the source PDFs.
