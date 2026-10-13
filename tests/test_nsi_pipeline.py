@@ -693,6 +693,77 @@ class ControlledRouteTraceFrenchClient(ControlledDatabaseAuditFrenchClient):
         return super().generate_json(prompt)
 
 
+class ControlledIncidentFrenchClient(ControlledRouteTraceFrenchClient):
+    def generate_json(self, prompt):
+        if prompt.startswith("Sélectionne l'exercice 3 v23"):
+            return {
+                "scene_id": "station",
+                "question_forms": {
+                    f"3{letter}": f"3{letter}-q1" for letter in "abcdefghijkl"
+                },
+                "rubric_forms": {
+                    f"3{letter}": f"3{letter}-r1" for letter in "abcdefghijkl"
+                },
+            }
+        return super().generate_json(prompt)
+
+
+def test_v23_incident_package_replays_without_changing_v22_and_rejects_mixed_identity(
+    tmp_path,
+):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "v23-checkpoint.json"
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledIncidentFrenchClient(),
+        seed=270100,
+        checkpoint=checkpoint,
+        contract_graph_tree=True,
+        contract_authoring_version="v23",
+    )
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v23"
+    assert [len(item["questions"]) for item in package["exercises"]] == [10, 10, 12]
+    assert sum(Decimal(item["target_points"]) for item in package["exercises"]) == 18
+    assert package["language_points"] == "2"
+    assert validate_package(package)["structural_checks"] == "passed"
+    assert (
+        validate_package(
+            generate_assessment(
+                index_path=index,
+                client=ControlledIncidentFrenchClient(),
+                seed=270100,
+                checkpoint=checkpoint,
+                contract_graph_tree=True,
+                contract_authoring_version="v23",
+            )
+        )["structural_checks"]
+        == "passed"
+    )
+    for field in (
+        "network_incident_contract_sha256",
+        "network_incident_prose_catalogue_sha256",
+    ):
+        changed = deepcopy(package)
+        changed["identity"][field] = "0" * 64
+        with pytest.raises(ValueError):
+            validate_package(changed)
+    mixed = deepcopy(package)
+    mixed["identity"]["network_reasoning_contract_sha256"] = "0" * 64
+    with pytest.raises(ValueError):
+        validate_package(mixed)
+    changed = deepcopy(package)
+    changed["evidence"][2]["network_incident_selection"]["accepted"]["response"][
+        "scene_id"
+    ] = "invented"
+    with pytest.raises(ValueError):
+        validate_package(changed)
+
+
 def test_v22_route_trace_package_replays_and_rejects_mixed_identity(tmp_path):
     from copy import deepcopy
 

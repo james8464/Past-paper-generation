@@ -81,3 +81,19 @@ def test_v23_contract_rejects_bool_seed_and_prior_version():
         bad["version"] = version
         with pytest.raises(ValueError):
             NetworkIncidentContract.from_dict(bad)
+
+
+def test_v23_question_verification_fails_closed_on_changed_expected_state():
+    from Backend.Core.france.verification import verify_contract
+
+    facts = _contract().to_dict()
+    verification = {
+        "kind": "network_incident_contract",
+        "contract": facts,
+        "task_id": "3d",
+        "expected": facts["expected"],
+    }
+    assert verify_contract(verification)["state"] == "passed"
+    tampered = deepcopy(verification)
+    tampered["expected"]["packet"]["late_by"] = 0
+    assert verify_contract(tampered)["state"] != "passed"

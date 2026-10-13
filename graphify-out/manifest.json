@@ -185,13 +185,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1791665540.3626149,
-    "ast_hash": "8669e746d530e7a48757943dc3863a0d",
+    "mtime": 1791884245.3326933,
+    "ast_hash": "c571b02bd92cb65c1e6dfceaf11fd607",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
-    "mtime": 1791665262.0332174,
-    "ast_hash": "2f9a10501096bb46e51f78207498fd61",
+    "mtime": 1791884025.2113118,
+    "ast_hash": "5d8d035d00306c12c26c5a0ccba8c39d",
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
@@ -215,8 +215,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/verification.py": {
-    "mtime": 1791665338.8638499,
-    "ast_hash": "0396c2a29b573a10f204f0d9ca45514e",
+    "mtime": 1791884072.9427598,
+    "ast_hash": "dd92b1c4e039341f4c2e47e1f9e2f6c5",
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791883585.2962935,
+    "mtime": 1791883736.7631066,
     "ast_hash": "eb920db1ed7730de55d55a9dbb0e17a3",
     "semantic_hash": ""
   },
@@ -1780,8 +1780,8 @@
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1791665540.3624158,
-    "ast_hash": "a975bb43437cdc7494586649c31ffa31",
+    "mtime": 1791884245.332991,
+    "ast_hash": "95cdc83dcf8e39cd0c7bb648003122a7",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -3115,8 +3115,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_network_incident_contract.py": {
-    "mtime": 1791883447.4427383,
-    "ast_hash": "a243e34543253d410a6b28bdb99f39d7",
+    "mtime": 1791884058.3978534,
+    "ast_hash": "2be18e68fca49a44442b92aae1fcfa52",
     "semantic_hash": ""
   },
   "tests/test_french_network_incident_prose.py": {
@@ -3132,6 +3132,16 @@
   "docs/superpowers/specs/2026-10-13-french-nsi-network-incident-v23-design.md": {
     "mtime": 1791883349.9023507,
     "ast_hash": "931429808a31fa0bc44f91ab7c4001b1",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/network_incident_authoring.py": {
+    "mtime": 1791884000.4056284,
+    "ast_hash": "d3ef8ba9a549c4dda3adbbfe26a7604d",
+    "semantic_hash": ""
+  },
+  "tests/test_french_network_incident_authoring.py": {
+    "mtime": 1791884245.3290815,
+    "ast_hash": "286702319d3623dee09cd247358977c5",
     "semantic_hash": ""
   }
 }
