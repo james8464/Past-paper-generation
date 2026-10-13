@@ -53,6 +53,13 @@ from Backend.Core.france.network_depth_contract import (
     NetworkDepthContract,
     build_network_depth_contract,
 )
+from Backend.Core.france.network_incident_contract import (
+    NetworkIncidentContract,
+    build_network_incident_contract,
+)
+from Backend.Core.france.network_incident_prose import (
+    validate_network_incident_exercise,
+)
 from Backend.Core.france.network_reasoning_contract import (
     NetworkReasoningContract,
     build_network_reasoning_contract,
@@ -66,6 +73,7 @@ from Backend.Core.france.pipeline import (
     CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
+    CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
     CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
     atomic_json,
@@ -528,11 +536,16 @@ def validate_graph_route_trace_pdf(
     for start, end in ((before_at, positions["1c"]), (after_at, positions["1g"])):
         table = lines[start + 1 : end]
         expected_table = [
-            "Fixation / donnée", *"ABCDEF",
-            "1re distance (fixé : ___)", *(["_____"] * 6),
-            "1re préd.", *(["_____"] * 6),
-            "2e distance (fixé : ___)", *(["_____"] * 6),
-            "2e préd.", *(["_____"] * 6),
+            "Fixation / donnée",
+            *"ABCDEF",
+            "1re distance (fixé : ___)",
+            *(["_____"] * 6),
+            "1re préd.",
+            *(["_____"] * 6),
+            "2e distance (fixé : ___)",
+            *(["_____"] * 6),
+            "2e préd.",
+            *(["_____"] * 6),
         ]
         if " ".join(" ".join(table).split()) != " ".join(expected_table):
             raise ValueError("Route trace working table is altered or filled")
@@ -1354,6 +1367,185 @@ def validate_network_reasoning_contract_pdf(
                 raise ValueError(f"Network reasoning rubric {question.id} leaked")
 
 
+def validate_network_incident_pdf(
+    path: Path,
+    contract: NetworkIncidentContract,
+    *,
+    correction: bool,
+    exercise: NSIExercise,
+) -> None:
+    """Bind V23's three displayed incident stages and answer/credit roles."""
+    data = contract.to_dict()
+    if exercise.id != "3" or [q.id for q in exercise.questions] != data["task_ids"]:
+        raise ValueError("Network incident exercise differs from contract")
+    from Backend.Core.france.pipeline import _tasks_for_seed_v23
+
+    validate_network_incident_exercise(
+        contract, exercise, _tasks_for_seed_v23(data["seed"])[2]["question_blueprint"]
+    )
+    titles = (
+        "Liaisons et coûts initiaux",
+        "Routes : tableau de travail avant et après la hausse",
+        "Échéance du paquet M-27",
+        "Ressources et reprise à compléter",
+        "Cartes après la reprise, à ordonner",
+        "Situations à analyser",
+    )
+    if len(exercise.materials) != len(titles):
+        raise ValueError("Network incident materials incomplete")
+    expected_rows = (
+        [[left, right, str(cost)] for left, right, cost in data["links"]],
+        [
+            [node, "à compléter", "à compléter"]
+            for node in data["working_surfaces"]["route_nodes"]
+        ],
+        [["t=0", f"t={data['packet']['deadline']} min", "à calculer / à calculer"]],
+        [
+            [
+                "arrivée",
+                "détient A ; attend B ; M-27 en attente",
+                "détient B ; attend A",
+            ],
+            ["après arrêt P2", "à compléter", "libère B"],
+            ["après fin P1", "à compléter", "à compléter"],
+            ["après redémarrage", "à compléter", "à compléter"],
+        ],
+        [list(card) for card in data["security"]["messages"]],
+        [
+            [scenario, "à compléter"]
+            for scenario in data["working_surfaces"]["threat_scenarios"]
+        ],
+    )
+    expected_columns = (
+        ("Extrémité 1", "Extrémité 2", "Minutes"),
+        ("Sommet", "Avant : coût / prédécesseur", "Après : coût / prédécesseur"),
+        ("Départ", "Échéance", "Arrivée avant/après hausse"),
+        ("Moment", "P1 : ingestion M-27", "P2 : maintenance"),
+        ("Carte", "Émetteur", "Contenu"),
+        ("Situation", "Conclusion et justification"),
+    )
+    expected_ids = (
+        "links",
+        "route_working",
+        "packet_card",
+        "process_initial",
+        "message_cards",
+        "threat_working",
+    )
+    for material, title, material_id, columns, rows in zip(
+        exercise.materials,
+        titles,
+        expected_ids,
+        expected_columns,
+        expected_rows,
+        strict=True,
+    ):
+        if (
+            material.id != material_id
+            or material.title != title
+            or material.columns != columns
+            or [list(row) for row in material.rows] != rows
+        ):
+            raise ValueError(f"Network incident material {material_id} differs")
+    if (
+        f"t={data['packet']['deadline']} min" not in exercise.context
+        or "P2 est arrêté et libère B" not in exercise.context
+        or "clé publique de Central est authentifiée" not in exercise.context
+    ):
+        raise ValueError("Network incident premise differs from contract")
+    with pymupdf.open(path) as pdf:
+        pages = [page.get_text() for page in pdf]
+        lines = [
+            line.strip()
+            for page in pages
+            for line in page.splitlines()
+            if line.strip() and not line.startswith(("Paper Creator —", "Page : "))
+        ]
+    text = "\n".join(lines)
+    flat = " ".join(text.split())
+    heading = f"Exercice 3 ({exercise.target_points.replace('.', ',')} points)"
+    if text.count(heading) != 1 or any(text.count(title) != 1 for title in titles):
+        raise ValueError("Network incident heading or material missing")
+    displayed_context = " ".join(
+        text.split(heading + "\n", 1)[1].split("\n" + titles[0], 1)[0].split()
+    )
+    if " ".join(exercise.context.split()) not in displayed_context:
+        raise ValueError("Network incident printed premise differs")
+    following = (titles[1], titles[2], "3a.", "3e.", titles[5], "3i.")
+    for material, next_marker in zip(exercise.materials, following, strict=True):
+        printed = text.split(material.title + "\n", 1)[1].split("\n" + next_marker, 1)[
+            0
+        ]
+        expected = " ".join(
+            [*material.columns, *(cell for row in material.rows for cell in row)]
+        )
+        if " ".join(printed.split()) != expected:
+            raise ValueError(f"Network incident printed table {material.id} differs")
+    for title, question_id in ((titles[0], "3a"), (titles[3], "3e"), (titles[4], "3i")):
+        material_pages = [i for i, page in enumerate(pages) if title in page]
+        question_pages = [
+            i for i, page in enumerate(pages) if f"{question_id}." in page
+        ]
+        if (
+            len(material_pages) != 1
+            or len(question_pages) != 1
+            or not 0 <= question_pages[0] - material_pages[0] <= 1
+        ):
+            raise ValueError(f"Network incident stage {question_id} is separated")
+    for index, question in enumerate(exercise.questions):
+        if (
+            question.verification.get("kind") != "network_incident_contract"
+            or question.verification.get("contract") != data
+            or question.verification.get("task_id") != question.id
+            or question.verification.get("expected") != data["expected"]
+        ):
+            raise ValueError(f"Network incident question {question.id} unbound")
+        expected_material_ids = (
+            expected_ids[:3]
+            if index < 4
+            else (expected_ids[2], expected_ids[3])
+            if index < 8
+            else (expected_ids[2], expected_ids[4], expected_ids[5])
+        )
+        if question.material_ids != expected_material_ids:
+            raise ValueError(f"Network incident evidence {question.id} interchanged")
+        if (
+            sum(bool(re.match(rf"^{question.id}\.(?:\s|$)", line)) for line in lines)
+            != 1
+        ):
+            raise ValueError(f"Network incident question {question.id} missing")
+        start = text.index("\n" + question.id + ".")
+        end = (
+            text.index("\n" + exercise.questions[index + 1].id + ".")
+            if index + 1 < len(exercise.questions)
+            else len(text)
+        )
+        segment = " ".join(text[start:end].split())
+        if segment.count(" ".join(question.prompt.split())) != 1:
+            raise ValueError(f"Network incident prompt {question.id} differs")
+        if segment.count("Réponse attendue") != int(correction) or segment.count(
+            f"Barème indicatif — question {question.id}"
+        ) != int(correction):
+            raise ValueError(f"Network incident answer role {question.id} invalid")
+        answer = " ".join(question.answer.split())
+        if correction and answer not in segment:
+            raise ValueError(f"Network incident answer {question.id} missing")
+        if not correction and answer in flat:
+            raise ValueError(f"Network incident answer {question.id} leaked")
+        for credit in question.marking:
+            criterion = " ".join(credit.criterion.split())
+            if correction and segment.count(criterion) != 1:
+                raise ValueError(f"Network incident criterion {question.id} missing")
+            if not correction and criterion in flat:
+                raise ValueError(f"Network incident criterion {question.id} leaked")
+        if correction:
+            expected_credit_count = sum(
+                item.points == "0.25" for item in question.marking
+            )
+            if segment.count("0,25 point") != expected_credit_count:
+                raise ValueError(f"Network incident credit {question.id} missing")
+
+
 def load_originality_history(output: Path) -> list[str]:
     """Read a bounded set of candidate-only text from earlier local bundles."""
     history: list[str] = []
@@ -1388,6 +1580,8 @@ def load_originality_history(output: Path) -> list[str]:
 
 def network_pdf_contract_version(prompt_version: str) -> str:
     """Never silently render an unknown French package with an older validator."""
+    if prompt_version == CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION:
+        return "v23"
     if prompt_version in {
         CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
         CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
@@ -1411,6 +1605,7 @@ def database_pdf_contract_version(prompt_version: str) -> str:
     if prompt_version in {
         CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
         CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
+        CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
     }:
         return "v21"
     if prompt_version in {
@@ -1470,15 +1665,15 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v22",
+            contract_authoring_version="v23",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
         exercises = [NSIExercise.model_validate(item) for item in package["exercises"]]
-        graph_route_trace = (
-            package["identity"]["prompt_version"]
-            == CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION
-        )
+        graph_route_trace = package["identity"]["prompt_version"] in {
+            CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
+            CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
+        }
         graph_resilience = package["identity"]["prompt_version"] in {
             CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
             CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
@@ -1511,10 +1706,13 @@ def handle_generate_assessment(args) -> int:
         network_pdf_version = network_pdf_contract_version(
             package["identity"]["prompt_version"]
         )
+        network_incident = network_pdf_version == "v23"
         network_reasoning = network_pdf_version == "v18"
         network_depth = network_pdf_version == "v15"
         network_contract = (
-            build_network_reasoning_contract(args.seed)
+            build_network_incident_contract(args.seed)
+            if network_incident
+            else build_network_reasoning_contract(args.seed)
             if network_reasoning
             else build_network_depth_contract(args.seed)
             if network_depth
@@ -1569,7 +1767,9 @@ def handle_generate_assessment(args) -> int:
                 exercise=exercises[1],
             )
             network_validator = (
-                validate_network_reasoning_contract_pdf
+                validate_network_incident_pdf
+                if network_incident
+                else validate_network_reasoning_contract_pdf
                 if network_reasoning
                 else validate_network_depth_contract_pdf
                 if network_depth

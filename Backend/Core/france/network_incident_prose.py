@@ -364,3 +364,51 @@ def render_network_incident_candidate(
         "materials": materials,
         "questions": questions,
     }
+
+
+def validate_network_incident_exercise(
+    contract: NetworkIncidentContract, exercise, task_specs: list[dict]
+) -> None:
+    """Reject mutated candidate facts, answers or credits before PDF inspection."""
+    raw = exercise.model_dump(mode="json")
+    scene = next(
+        (key for key, (title, _) in _SCENES.items() if title == raw.get("title")),
+        None,
+    )
+    if scene is None:
+        raise ValueError("Unknown network incident scene")
+    selection = {
+        "scene_id": scene,
+        "question_forms": {q: f"{q}-q1" for q in _IDS},
+        "rubric_forms": {q: f"{q}-r1" for q in _IDS},
+    }
+    expected = render_network_incident_candidate(contract, selection, task_specs)
+    if {key: value for key, value in raw.items() if key != "questions"} != {
+        key: value for key, value in expected.items() if key != "questions"
+    }:
+        raise ValueError("Network incident candidate premise or materials differ")
+    if len(raw["questions"]) != len(_IDS):
+        raise ValueError("Network incident question count differs")
+    for question, canonical in zip(
+        raw["questions"], expected["questions"], strict=True
+    ):
+        q = canonical["id"]
+        if (
+            {
+                key: value
+                for key, value in question.items()
+                if key not in {"prompt", "marking"}
+            }
+            != {
+                key: value
+                for key, value in canonical.items()
+                if key not in {"prompt", "marking"}
+            }
+            or question.get("prompt") not in _QUESTIONS[q]
+            or question.get("marking")
+            not in (
+                _rubric(q, canonical["points"], 1),
+                _rubric(q, canonical["points"], 2),
+            )
+        ):
+            raise ValueError(f"Network incident question {q} differs from catalogue")

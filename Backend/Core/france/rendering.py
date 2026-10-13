@@ -77,9 +77,7 @@ def structured_material(
             rows,
             colWidths=column_widths,
             rowHeights=(
-                [None, *([body.leading * 2 + 8] * 4)]
-                if route_trace_table
-                else None
+                [None, *([body.leading * 2 + 8] * 4)] if route_trace_table else None
             ),
             repeatRows=1,
         )
@@ -529,7 +527,8 @@ def render_assessment(
             "Profil indicatif du logiciel, non barème officiel : retenir une appréciation globale à partir des quatre dimensions officielles (orthographe, syntaxe, lexique et organisation du raisonnement)."
         )
     v18_paper = any(
-        question.verification.get("kind") == "network_reasoning_contract"
+        question.verification.get("kind")
+        in {"network_reasoning_contract", "network_incident_contract"}
         for exercise in exercises
         for question in exercise.questions
     )
@@ -551,6 +550,7 @@ def render_assessment(
             question.verification.get("kind")
             in {
                 "network_reasoning_contract",
+                "network_incident_contract",
                 "graph_resilience_contract",
                 "graph_route_trace_contract",
                 "database_audit_contract",
@@ -711,6 +711,7 @@ def render_assessment(
                     v18_paper
                     or question.verification.get("kind") == "graph_resilience_contract"
                     or question.verification.get("kind") == "network_reasoning_contract"
+                    or question.verification.get("kind") == "network_incident_contract"
                     or question.id == "3f"
                     or (
                         question.id == "3d"

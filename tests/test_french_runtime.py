@@ -96,7 +96,9 @@ def test_v22_route_trace_paper_stages_each_blank_table_by_its_question(
                             )
                         )
                         for page in pages
-                    ), "The security materials and dependent questions must stay together"
+                    ), (
+                        "The security materials and dependent questions must stay together"
+                    )
                 assert any(
                     "Arbre des identifiants" in page
                     and "1h." in page
@@ -901,14 +903,14 @@ def test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles(
                     )
 
 
-def test_runtime_publishes_v22_even_if_caller_requests_older_contract(
+def test_runtime_publishes_v23_even_if_caller_requests_older_contract(
     tmp_path, monkeypatch
 ):
     import json
 
     from Backend.Core.france import runtime
     from tests.test_nsi_pipeline import (
-        ControlledRouteTraceFrenchClient,
+        ControlledIncidentFrenchClient,
         make_index,
     )
 
@@ -918,7 +920,7 @@ def test_runtime_publishes_v22_even_if_caller_requests_older_contract(
     monkeypatch.setattr(
         runtime,
         "FrenchOllamaClient",
-        lambda **_: ControlledRouteTraceFrenchClient(),
+        lambda **_: ControlledIncidentFrenchClient(),
     )
     args = Namespace(
         assessment="fr-bac-general-nsi-written-2027",
@@ -934,7 +936,7 @@ def test_runtime_publishes_v22_even_if_caller_requests_older_contract(
     assert runtime.handle_generate_assessment(args) == 0
     (bundle,) = (tmp_path / "output").glob("nsi-*")
     package = json.loads((bundle / "assessment.json").read_text())
-    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v22"
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v23"
     assert len(package["exercises"][2]["questions"]) == 12
     assert (bundle / "sujet.pdf").is_file()
     assert (bundle / "corrige.pdf").is_file()
