@@ -39,6 +39,32 @@ def test_v23_hand_checked_route_deadline_and_recovery():
     assert facts["expected"]["threats"]["sender_authenticated"] is False
 
 
+@pytest.mark.parametrize("field", ["predecessor", "tentative"])
+def test_v23_rejects_inherited_route_working_that_disagrees_with_independent_oracle(
+    monkeypatch, field
+):
+    import Backend.Core.france.network_incident_contract as incident
+    from Backend.Core.france.network_reasoning_contract import (
+        build_network_reasoning_contract,
+    )
+
+    old = deepcopy(build_network_reasoning_contract(270100).to_dict())
+    if field == "predecessor":
+        old["expected"]["before"]["predecessors"]["R3"] = "R2"
+    else:
+        old["expected"]["after"]["trace"][1]["tentative"]["R3"] = 999
+
+    class CorruptedContract:
+        def to_dict(self):
+            return old
+
+    monkeypatch.setattr(
+        incident, "build_network_reasoning_contract", lambda seed: CorruptedContract()
+    )
+    with pytest.raises(ValueError, match="oracle disagrees"):
+        incident.build_network_incident_contract(270100)
+
+
 @pytest.mark.parametrize("seed", range(270100, 270116))
 def test_v23_every_seed_changes_route_and_misses_derived_deadline(seed):
     first = _contract(seed)

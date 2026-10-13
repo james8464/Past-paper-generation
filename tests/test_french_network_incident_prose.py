@@ -62,11 +62,33 @@ def test_v23_candidate_has_staged_evidence_causal_answers_exact_credit(
     assert str(deadline) in exercise.context
     assert str(deadline + 1) in exercise.questions[3].answer
     assert "retard" in exercise.questions[3].answer.lower()
+    assert "prédécesseur" in exercise.questions[3].answer.lower()
+    assert any(
+        "tableau" in credit.criterion.lower()
+        for credit in exercise.questions[3].marking
+    )
     assert "paquet" in exercise.questions[7].answer.lower()
     assert "non authentifi" in exercise.questions[10].answer.lower()
-    criteria_3k = " ".join(credit.criterion for credit in exercise.questions[10].marking)
+    criteria_3k = " ".join(
+        credit.criterion for credit in exercise.questions[10].marking
+    )
     assert "Central authentifié" in criteria_3k
     assert "Station authentifiée" not in criteria_3k
+
+
+def test_v23_catalogue_digest_covers_selectable_rubric_wording(monkeypatch):
+    import Backend.Core.france.network_incident_prose as prose
+
+    original = prose.network_incident_catalogue_digest()
+    real_criteria = prose._criteria
+    monkeypatch.setattr(
+        prose,
+        "_criteria",
+        lambda question_id: (
+            ("changed rubric",) if question_id == "3a" else real_criteria(question_id)
+        ),
+    )
+    assert prose.network_incident_catalogue_digest() != original
 
 
 def test_v23_route_calculation_and_low_credit_rubrics_cover_all_requested_steps():

@@ -40,8 +40,8 @@ _QUESTIONS = {
         "Quelle route initiale est minimale vers Station ? Montrez le calcul de son coût.",
     ),
     "3d": (
-        "Après le changement de coût, complétez la route et son coût ; comparez l'arrivée de M-27 à l'échéance, avant puis après le changement.",
-        "Recalculez la route après la hausse ; à partir des coûts avant/après, M-27 respecte-t-il encore l'échéance ? Quantifiez l'écart.",
+        "Après le changement de coût, complétez la colonne Après du tableau (coût et prédécesseur de chaque sommet), puis la route et son coût ; comparez l'arrivée de M-27 à l'échéance avant et après.",
+        "Recalculez les coûts et prédécesseurs de la colonne Après ; donnez la route et dites si M-27 respecte encore l'échéance. Quantifiez l'écart.",
     ),
     "3e": (
         "À l'arrivée de M-27, donnez pour P1 et P2 la ressource détenue et celle attendue ; indiquez l'état de M-27.",
@@ -85,6 +85,9 @@ def network_incident_catalogue_digest() -> str:
                 "version": NETWORK_INCIDENT_PROSE_VERSION,
                 "scenes": _SCENES,
                 "questions": _QUESTIONS,
+                "rubrics": {
+                    question_id: _criteria(question_id) for question_id in _IDS
+                },
             },
             ensure_ascii=False,
             sort_keys=True,
@@ -164,8 +167,20 @@ def _answer(q: str, facts: dict) -> str:
             + f" : {' + '.join(map(str, costs))} = {before['cost']} minutes."
         )
     if q == "3d":
+        after_working = "; ".join(
+            f"{node}={after['trace'][-1]['tentative'][node]}"
+            + (
+                f" (prédécesseur {after['predecessors'][node]})"
+                if after["predecessors"][node] is not None
+                else " (source)"
+            )
+            for node in facts["working_surfaces"]["route_nodes"]
+        )
         return (
-            "–".join(after["path"])
+            "Colonne Après : "
+            + after_working
+            + ". Route "
+            + "–".join(after["path"])
             + f" coûte {after['cost']} minutes. M-27 arrivait à {packet['before_arrival']} min "
             f"avant la hausse (à l'heure), puis à {packet['after_arrival']} min : retard de {packet['late_by']} min "
             f"sur l'échéance de {facts['packet']['deadline']} min."
@@ -195,7 +210,7 @@ def _criteria(q: str) -> tuple[str, ...]:
         "3b": ("R2 et son prédécesseur", "R3 et son prédécesseur"),
         "3c": ("la route initiale", "l'addition des coûts"),
         "3d": (
-            "la route après la hausse",
+            "le tableau Après : coûts et prédécesseurs cohérents avec la nouvelle route",
             "les deux arrivées comparées à l'échéance et le retard chiffré",
             "l'interprétation du changement pour M-27",
         ),

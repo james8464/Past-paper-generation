@@ -18,10 +18,10 @@ def _canonical(value: dict) -> str:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
-def _independent_shortest_path(
+def _enumerated_paths(
     links: list[list], source: str, target: str
-) -> tuple[list[str], int]:
-    """Enumerate simple paths, independently of the Dijkstra trace used in V18."""
+) -> list[tuple[int, list[str]]]:
+    """List simple paths without using the inherited route-working algorithm."""
     adjacent: dict[str, list[tuple[str, int]]] = {}
     for left, right, cost in links:
         adjacent.setdefault(left, []).append((right, cost))
@@ -37,13 +37,67 @@ def _independent_shortest_path(
                 walk(neighbour, [*route, neighbour], cost + weight)
 
     walk(source, [source], 0)
+    paths.sort(key=lambda item: (item[0], item[1]))
+    return paths
+
+
+def _independent_shortest_path(
+    links: list[list], source: str, target: str
+) -> tuple[list[str], int]:
+    """Select a unique shortest path by exhaustive enumeration."""
+    paths = _enumerated_paths(links, source, target)
     if not paths:
         raise ValueError("Network incident route is disconnected")
-    paths.sort(key=lambda item: (item[0], item[1]))
     if len(paths) > 1 and paths[0][0] == paths[1][0]:
         raise ValueError("Network incident route is ambiguous")
     cost, route = paths[0]
     return route, cost
+
+
+def _independent_route_working(links: list[list]) -> dict:
+    """Derive all per-node predecessors and provisional states by path search."""
+    nodes = ("Central", "R1", "R2", "R3", "Station")
+    routes = {
+        node: (["Central"], 0)
+        if node == "Central"
+        else _independent_shortest_path(links, "Central", node)
+        for node in nodes
+    }
+    settled_order = sorted(nodes, key=lambda node: (routes[node][1], node))
+    predecessors = {
+        node: route[-2] if len(route) > 1 else None
+        for node, (route, _) in routes.items()
+    }
+    trace = []
+    for count, settled in enumerate(settled_order, start=1):
+        visited = set(settled_order[:count])
+        tentative = {}
+        for node in nodes:
+            if node == "Central":
+                tentative[node] = 0
+                continue
+            reachable = [
+                cost
+                for cost, route in _enumerated_paths(links, "Central", node)
+                if set(route[1:-1]) <= visited
+            ]
+            tentative[node] = min(reachable) if reachable else None
+        trace.append(
+            {
+                "settled": settled,
+                "distance": routes[settled][1],
+                "tentative": tentative,
+            }
+        )
+    target_path, target_cost = routes["Station"]
+    return {
+        "path": target_path,
+        "cost": target_cost,
+        "settled_order": settled_order,
+        "trace": trace,
+        "predecessors": predecessors,
+        "unique": True,
+    }
 
 
 def _facts(seed: int) -> dict:
@@ -51,17 +105,13 @@ def _facts(seed: int) -> dict:
     links = old["links"]
     changed = [edge.copy() for edge in links]
     changed[2][2] = old["change"]["new_cost"]
-    before_path, before_cost = _independent_shortest_path(links, "Central", "Station")
-    after_path, after_cost = _independent_shortest_path(changed, "Central", "Station")
-    if (before_path, before_cost) != (
-        old["expected"]["before"]["path"],
-        old["expected"]["before"]["cost"],
-    ):
+    before_working = _independent_route_working(links)
+    after_working = _independent_route_working(changed)
+    before_cost = before_working["cost"]
+    after_cost = after_working["cost"]
+    if before_working != old["expected"]["before"]:
         raise ValueError("Network incident baseline oracle disagrees")
-    if (after_path, after_cost) != (
-        old["expected"]["after"]["path"],
-        old["expected"]["after"]["cost"],
-    ):
+    if after_working != old["expected"]["after"]:
         raise ValueError("Network incident changed oracle disagrees")
     deadline = before_cost + 1
     if after_cost <= deadline:
@@ -121,8 +171,8 @@ def _facts(seed: int) -> dict:
             ],
         },
         "expected": {
-            "before": old["expected"]["before"],
-            "after": old["expected"]["after"],
+            "before": before_working,
+            "after": after_working,
             "packet": {
                 "before_arrival": before_cost,
                 "after_arrival": after_cost,
