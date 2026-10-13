@@ -724,6 +724,86 @@
         }
       }
     },
+    "Reference files available" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fichiers de référence disponibles"
+          }
+        }
+      }
+    },
+    "Check Ollama before creating a draft." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifiez Ollama avant de créer un brouillon."
+          }
+        }
+      }
+    },
+    "Check Ollama" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifier Ollama"
+          }
+        }
+      }
+    },
+    "Get Ollama" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obtenir Ollama"
+          }
+        }
+      }
+    },
+    "Download selected model" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Télécharger le modèle choisi"
+          }
+        }
+      }
+    },
+    "Install Ollama before creating a draft." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installez Ollama avant de créer un brouillon."
+          }
+        }
+      }
+    },
+    "Start Ollama before creating a draft." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démarrez Ollama avant de créer un brouillon."
+          }
+        }
+      }
+    },
+    "Install the selected Ollama model before creating a draft." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installez le modèle Ollama choisi avant de créer un brouillon."
+          }
+        }
+      }
+    },
     "References and privacy" : {
       "localizations" : {
         "fr" : {
@@ -760,6 +840,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Le corpus initial est incomplet. Sa présence ne garantit pas la couverture de chaque thème ou session."
+          }
+        }
+      }
+    },
+    "More options" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autres options"
           }
         }
       }

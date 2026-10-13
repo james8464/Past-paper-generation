@@ -1,5 +1,16 @@
 import SwiftUI
 
+enum SidebarExpansionPolicy {
+    static func isExpanded(
+        subjectID: String,
+        savedExpandedIDs: Set<String>,
+        searchText: String
+    ) -> Bool {
+        !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            || savedExpandedIDs.contains(subjectID)
+    }
+}
+
 struct Sidebar: View {
     @Binding var selection: SidebarItem?
     @EnvironmentObject private var application: ApplicationCoordinator
@@ -93,8 +104,17 @@ private struct CatalogSidebarSections: View {
 
     private func expansionBinding(for subjectID: String) -> Binding<Bool> {
         Binding(
-            get: { expandedSubjects.contains(subjectID) },
+            get: {
+                SidebarExpansionPolicy.isExpanded(
+                    subjectID: subjectID,
+                    savedExpandedIDs: expandedSubjects,
+                    searchText: store.searchText
+                )
+            },
             set: { expanded in
+                guard store.searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                    return
+                }
                 var values = expandedSubjects
                 if expanded {
                     values.insert(subjectID)

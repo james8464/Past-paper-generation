@@ -2,8 +2,36 @@ import SwiftUI
 
 enum FrenchWorkspaceLayoutPolicy {
     static func contentWidth(for availableWidth: CGFloat) -> CGFloat {
-        max(0, min(availableWidth - 32, 840))
+        max(0, min(availableWidth - 32, 720))
     }
+}
+
+struct FrenchWorkspacePresentation {
+    let hasReferences: Bool
+    let model: String
+    let isRunning: Bool
+    let ollamaState: OllamaState
+    let availableModels: [String]
+    let hasLoadedModels: Bool
+
+    var showsPrepareReferences: Bool { !hasReferences }
+
+    var blocker: String? {
+        guard !isRunning else { return nil }
+        if !hasReferences { return "Prepare French references first." }
+        if model.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return "Choose a local Ollama model first."
+        }
+        if ollamaState.message == "Not checked" { return "Check Ollama before creating a draft." }
+        if !ollamaState.installed { return "Install Ollama before creating a draft." }
+        if !ollamaState.running { return "Start Ollama before creating a draft." }
+        if hasLoadedModels && !availableModels.contains(model) {
+            return "Install the selected Ollama model before creating a draft."
+        }
+        return nil
+    }
+
+    var canGenerate: Bool { !isRunning && blocker == nil }
 }
 
 struct FrenchAssessmentWorkspace: View {
@@ -13,6 +41,8 @@ struct FrenchAssessmentWorkspace: View {
     @State private var showDownloadConsent = false
     @State private var showDeleteReferences = false
     @State private var showTeacherReview = false
+    @State private var showMoreOptions = false
+    @State private var showReferenceGuidance = false
 
     var body: some View {
         GeometryReader { geometry in
@@ -32,6 +62,7 @@ struct FrenchAssessmentWorkspace: View {
                     .buttonStyle(.borderedProminent)
                     .disabled(!canGenerate)
                     .help(createHelp)
+                    .accessibilityHint(createHelp)
                 }
             }
         }
@@ -64,7 +95,6 @@ struct FrenchAssessmentWorkspace: View {
                     .font(.title2.weight(.semibold))
                 Text("Original, non-official drafts for teachers to review before classroom use.")
                     .foregroundStyle(.secondary)
-                LabeledContent("Programme", value: "Baccalauréat général · Terminale · NSI")
                 LabeledContent("Written exam") {
                     Text(localizedValue("2027 · 3 h 30 · 3 independent exercises"))
                 }
@@ -72,39 +102,66 @@ struct FrenchAssessmentWorkspace: View {
                     Text(localizedValue("18 technical + 2 French language = 20"))
                 }
             }
-            Section("References and privacy") {
-                Text("Official sources are downloaded with your permission. French generation uses Ollama on this Mac, with no cloud fallback.")
-                Button("Prepare French references") { showDownloadConsent = true }
+            Section("Create a draft") {
+                if presentation.showsPrepareReferences {
+                    Label("Prepare French references first.", systemImage: "exclamationmark.circle")
+                    Button("Prepare French references") { showDownloadConsent = true }
+                        .disabled(application.isRunning)
+                } else {
+                    Label("Reference files available", systemImage: "checkmark.circle")
+                    Text("The reference corpus is incomplete; its presence does not prove topic coverage.")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
+                TextField("Local Ollama model", text: $application.selectedModel)
                     .disabled(application.isRunning)
-                if application.hasFrenchReferences {
-                    Button("Delete downloaded French references", role: .destructive) {
-                        showDeleteReferences = true
+                Text("Gemma 4 12B is the comparison baseline, not a validated French recommendation. Results with all models require review.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                Toggle("Enlarged print", isOn: $largePrint)
+                    .disabled(application.isRunning)
+                DisclosureGroup("More options", isExpanded: $showMoreOptions) {
+                    Picker("Interface language", selection: $interfaceLanguage) {
+                        Text("System").tag("system")
+                        Text("English").tag("en")
+                        Text("Français").tag("fr")
                     }
                     .disabled(application.isRunning)
+                    LabeledContent("Save to", value: application.outputFolder.lastPathComponent)
+                    Button("Choose output folder", action: application.chooseOutputFolder)
+                        .disabled(application.isRunning)
                 }
-                Text("The reference corpus is incomplete; its presence does not prove topic coverage.")
-                    .font(.callout).foregroundStyle(.secondary)
-            }
-            Section("Create a draft") {
-                TextField("Local Ollama model", text: $application.selectedModel)
-                Text("No French model is yet qualified. Gemma 4 12B is a comparison baseline, not a recommendation.")
-                    .font(.callout).foregroundStyle(.secondary)
-                Toggle("Enlarged print", isOn: $largePrint)
-                Picker("Interface language", selection: $interfaceLanguage) {
-                    Text("System").tag("system")
-                    Text("English").tag("en")
-                    Text("Français").tag("fr")
+                if let blocker = presentation.blocker,
+                   !presentation.showsPrepareReferences {
+                    Text(localizedValue(blocker))
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                    if blocker == "Check Ollama before creating a draft." {
+                        Button("Check Ollama", action: application.refreshOllama)
+                    } else if blocker == "Install Ollama before creating a draft." {
+                        Button("Get Ollama", action: application.openOllamaDownload)
+                    } else if blocker == "Install the selected Ollama model before creating a draft.",
+                              application.distributionMode.canManageOllama {
+                        Button("Download selected model", action: application.pullSelectedModel)
+                    }
                 }
-                LabeledContent("Save to", value: application.outputFolder.lastPathComponent)
-                Button("Choose output folder", action: application.chooseOutputFolder)
             }
             Section("Review and guidance") {
                 Text("Check both PDFs, the validation record, difficulty and timing. Automated checks do not replace an NSI teacher.")
                 Button("Record a teacher review") { showTeacherReview = true }
                     .disabled(application.isRunning)
-                Link("Official NSI examination rules", destination: URL(string: "https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N")!)
-                Button("Open the French NSI help guide") {
-                    application.showHelpGuide(topic: .frenchBaccalaureat)
+                DisclosureGroup("References and privacy", isExpanded: $showReferenceGuidance) {
+                    Text("Official sources are downloaded with your permission. French generation uses Ollama on this Mac, with no cloud fallback.")
+                    if application.hasFrenchReferences {
+                        Button("Delete downloaded French references", role: .destructive) {
+                            showDeleteReferences = true
+                        }
+                        .disabled(application.isRunning)
+                    }
+                    Link("Official NSI examination rules", destination: URL(string: "https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N")!)
+                    Button("Open the French NSI help guide") {
+                        application.showHelpGuide(topic: .frenchBaccalaureat)
+                    }
                 }
             }
             if application.isRunning {
@@ -121,19 +178,22 @@ struct FrenchAssessmentWorkspace: View {
     }
 
     private var canGenerate: Bool {
-        !application.isRunning
-            && application.hasFrenchReferences
-            && !application.selectedModel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        presentation.canGenerate
+    }
+
+    private var presentation: FrenchWorkspacePresentation {
+        FrenchWorkspacePresentation(
+            hasReferences: application.hasFrenchReferences,
+            model: application.selectedModel,
+            isRunning: application.isRunning,
+            ollamaState: application.ollamaState,
+            availableModels: application.availableModels,
+            hasLoadedModels: application.hasLoadedOllamaModels
+        )
     }
 
     private var createHelp: String {
-        if !application.hasFrenchReferences {
-            return localizedValue("Prepare French references first.")
-        }
-        if application.selectedModel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return localizedValue("Choose a local Ollama model first.")
-        }
-        return localizedValue("Create a non-official draft for teacher review.")
+        localizedValue(presentation.blocker ?? "Create a non-official draft for teacher review.")
     }
 
     private func localizedValue(_ key: String) -> String {
