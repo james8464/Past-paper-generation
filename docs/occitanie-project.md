@@ -197,6 +197,18 @@ working-space flow are still insufficient. **Manual product fidelity remains
 on hold.** This is not model selection or teacher, learner or examiner
 validation; prior live holds and failed attempts remain preserved.
 
+Protected PR #63 added a version-isolated network incident linking a changed
+route and missed packet deadline to process deadlock, recovery and secure
+reporting. Its [pinned V23 live diagnostic](quality/french-nsi-v23-network-incident-live-diagnostic-2026-10-13.md)
+passed automation on the first attempt without repairs. Every page of the
+eleven-page subject, eighteen-page proposed correction and sixteen-page
+official 2026 comparator was inspected. The subject still has 32 numbered
+questions versus 36 officially. E3's causal sequence and working tables
+improve the case, but the final E3 page is sparse, E2 remains compact and
+whole-paper sustained depth and working-space flow remain insufficient.
+**Manual product fidelity remains on hold.** No French model is selected;
+teacher, learner, rights and accessibility gates remain external.
+
 ## Genuine Occitanie scenario — PLANNED
 
 A teacher generates and checks a paper on a Mac; students receive a PDF through

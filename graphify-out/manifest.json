@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791886203.1661339,
+    "mtime": 1791887518.3406057,
     "ast_hash": "e97ba4a4de674f942597ebe90fe46896",
     "semantic_hash": ""
   },
@@ -2055,8 +2055,8 @@
     "semantic_hash": ""
   },
   "tools/build_occitanie_submission.py": {
-    "mtime": 1791668667.5266302,
-    "ast_hash": "0206fccd2139695ac05b23963fbb7fd3",
+    "mtime": 1791890510.1823764,
+    "ast_hash": "2302807ecabc0a9962fc10a4d3488ef9",
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
@@ -2255,13 +2255,13 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/README.md": {
-    "mtime": 1791668659.1820717,
-    "ast_hash": "59963c1969f9155e46902c0a2f1095cb",
+    "mtime": 1791890482.432962,
+    "ast_hash": "39123bf80a624558b6c07553a3e6d5fd",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/claims-register.md": {
-    "mtime": 1791668659.181415,
-    "ast_hash": "ec6042eaa30f609a56dc554efc8e30dc",
+    "mtime": 1791890474.6170259,
+    "ast_hash": "ceb9319ff6939ee71852f3a7acb64f21",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/demo-script.md": {
@@ -2285,8 +2285,8 @@
     "semantic_hash": ""
   },
   "docs/occitanie-project.md": {
-    "mtime": 1791668659.1824734,
-    "ast_hash": "3eb8bd6d3d2733360a210171800fbd9b",
+    "mtime": 1791890490.864834,
+    "ast_hash": "b3b75a7037f51bf56d0a3f0c0bafaa85",
     "semantic_hash": ""
   },
   "docs/project-analysis/IMPLEMENTATION_AND_FIDELITY_REPORT.md": {
@@ -2555,8 +2555,8 @@
     "semantic_hash": ""
   },
   "tests/test_occitanie_submission.py": {
-    "mtime": 1791668676.068872,
-    "ast_hash": "515e9363102d5fb1b3d683e9af1fafad",
+    "mtime": 1791890371.3261254,
+    "ast_hash": "9889789bbbbc78ada821d3852701f03f",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Assets.xcassets/TutorialFrenchNSI.imageset/TutorialFrenchNSI.png": {
@@ -3147,6 +3147,11 @@
   "tests/test_french_network_incident_pdf.py": {
     "mtime": 1791884984.782494,
     "ast_hash": "f307dfc16ce92384f0b39fbf452d50bc",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v23-network-incident-live-diagnostic-2026-10-13.md": {
+    "mtime": 1791890417.205761,
+    "ast_hash": "89033f6092a5a1871345687e25e7bdaa",
     "semantic_hash": ""
   }
 }

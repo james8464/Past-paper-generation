@@ -70,9 +70,10 @@ def test_technical_report_distinguishes_live_engineering_pass_from_fidelity_hold
     assert "first-attempt live engineering pass" in text
     assert "manual fidelity hold" in text
     assert "32 numbered questions across eleven subject pages" in text
-    assert "v22 single-paper diagnostic" in text
+    assert "v23 single-paper diagnostic" in text
     assert "eighteen-page proposed correction" in text
     assert "writable before/after route tables" in text
+    assert "linked routing, process recovery and security case" in text
     assert "18 numbered questions across seven subject pages" not in text
     assert "eleven-page proposed correction" not in text
     assert "other two exercises remain model-authored" not in text
