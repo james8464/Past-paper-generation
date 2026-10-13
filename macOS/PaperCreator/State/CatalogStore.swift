@@ -44,7 +44,18 @@ final class CatalogStore {
 
     var filteredSubjects: [CatalogSubject] {
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !query.isEmpty else { return subjects }
+        guard !query.isEmpty else {
+            return subjects.compactMap { subject in
+                let boards = subject.boards.filter { $0.isReady || $0.id == selectedBoardID }
+                guard !boards.isEmpty else { return nil }
+                return CatalogSubject(
+                    id: subject.id,
+                    title: subject.title,
+                    systemImage: subject.systemImage,
+                    boards: boards
+                )
+            }
+        }
         return subjects.compactMap { subject in
             let subjectMatches = subject.title.localizedCaseInsensitiveContains(query)
             let boards = subject.boards.filter {

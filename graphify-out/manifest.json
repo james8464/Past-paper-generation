@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791887518.3406057,
-    "ast_hash": "e97ba4a4de674f942597ebe90fe46896",
+    "mtime": 1791895960.1117902,
+    "ast_hash": "1c20b03a7b19c5ea870aaf8d3c4e9021",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1355,8 +1355,8 @@
     "semantic_hash": "c1ad220248a752267979a93dd5206942"
   },
   "macOS/PaperCreator/Features/Generation/FrenchAssessmentWorkspace.swift": {
-    "mtime": 1791129181.5865667,
-    "ast_hash": "57e0522f14258870bc1d1f9eb26444c7",
+    "mtime": 1791896154.8714273,
+    "ast_hash": "f82639ef6891ee512f25f583d88ebb81",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Generation/GeneratorWorkspaceView.swift": {
@@ -1385,9 +1385,9 @@
     "semantic_hash": "372035cd44ff5ea3cdfd23409396ef42"
   },
   "macOS/PaperCreator/Navigation/SidebarView.swift": {
-    "mtime": 1791129181.5873995,
-    "ast_hash": "ceb818d08917432f47ba8b6f80d8a372",
-    "semantic_hash": "ceb818d08917432f47ba8b6f80d8a372"
+    "mtime": 1791895377.2321818,
+    "ast_hash": "90bc4e64b21a217bbb93d88883715a8b",
+    "semantic_hash": ""
   },
   "macOS/PaperCreator/Services/BackendClient.swift": {
     "mtime": 1791129181.5877767,
@@ -1410,9 +1410,9 @@
     "semantic_hash": "eb77202211c03d7792abf48b89b851bc"
   },
   "macOS/PaperCreator/State/CatalogStore.swift": {
-    "mtime": 1791129181.588501,
-    "ast_hash": "ff646ea558e7c77a4ebbb9c1292869f9",
-    "semantic_hash": "ff646ea558e7c77a4ebbb9c1292869f9"
+    "mtime": 1791894762.2956595,
+    "ast_hash": "be823651790d344187dd2c2592c054b0",
+    "semantic_hash": ""
   },
   "macOS/PaperCreator/State/CoordinatorDependencies.swift": {
     "mtime": 1791129181.588572,
@@ -1440,8 +1440,8 @@
     "semantic_hash": "5bf232a55ba6ea284e0c08a72096456f"
   },
   "macOS/Tests/AccessibilityTests.swift": {
-    "mtime": 1791129181.5892267,
-    "ast_hash": "911c7a0af20ec3abee1c30976009d043",
+    "mtime": 1791896144.375922,
+    "ast_hash": "58c26ed8fa324cd6c655f261d3a866cc",
     "semantic_hash": ""
   },
   "macOS/Tests/AppTests.swift": {
@@ -1450,9 +1450,9 @@
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
-    "mtime": 1791129181.5894487,
-    "ast_hash": "ecad504b4486d5891f905b4b5c34c88e",
-    "semantic_hash": "ecad504b4486d5891f905b4b5c34c88e"
+    "mtime": 1791896214.256643,
+    "ast_hash": "5a5d4bbe8cf45a864dc007251bbe917c",
+    "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
     "mtime": 1791129181.589745,
@@ -3152,6 +3152,16 @@
   "docs/quality/french-nsi-v23-network-incident-live-diagnostic-2026-10-13.md": {
     "mtime": 1791890417.205761,
     "ast_hash": "89033f6092a5a1871345687e25e7bdaa",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-13-native-workflow-clarity.md": {
+    "mtime": 1791894432.4889889,
+    "ast_hash": "6b160ee81bfaa94bcf71d0f8958b4481",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-13-native-workflow-clarity-design.md": {
+    "mtime": 1791895887.5987277,
+    "ast_hash": "2f8da79d5b4b6b0ab26bd016e4f7658b",
     "semantic_hash": ""
   }
 }

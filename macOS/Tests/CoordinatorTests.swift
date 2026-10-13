@@ -190,6 +190,49 @@ final class CoordinatorTests: XCTestCase {
     }
 
     @MainActor
+    func testSidebarDefaultsToAvailableBoardsButSearchRevealsPlannedBoards() throws {
+        let suite = "PaperCreatorSidebarFocusTests-\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let store = CatalogStore(subjects: ExamCatalog.subjects, defaults: defaults)
+
+        XCTAssertFalse(store.filteredSubjects.isEmpty)
+        XCTAssertTrue(store.filteredSubjects.allSatisfy { subject in
+            !subject.boards.isEmpty && subject.boards.allSatisfy(\.isReady)
+        })
+
+        store.searchText = "Biology"
+        XCTAssertTrue(store.filteredSubjects.contains { subject in
+            subject.title == "Biology"
+                && subject.boards.contains { $0.status == .placeholder }
+        })
+
+        let plannedBoard = try XCTUnwrap(ExamCatalog.board(id: "biology-aqa"))
+        XCTAssertTrue(store.selectBoard(plannedBoard, isLocked: false))
+        store.searchText = ""
+        XCTAssertTrue(store.filteredSubjects.contains { subject in
+            subject.boards.contains { $0.id == plannedBoard.id }
+        })
+        let restored = CatalogStore(subjects: ExamCatalog.subjects, defaults: defaults)
+        XCTAssertEqual(restored.sidebarSelection, .board(plannedBoard.id))
+        XCTAssertTrue(restored.filteredSubjects.contains { subject in
+            subject.boards.contains { $0.id == plannedBoard.id }
+        })
+    }
+
+    func testSidebarSearchExpandsMatchingSubjectWithoutChangingSavedDisclosureState() {
+        XCTAssertFalse(SidebarExpansionPolicy.isExpanded(
+            subjectID: "biology", savedExpandedIDs: [], searchText: " "
+        ))
+        XCTAssertTrue(SidebarExpansionPolicy.isExpanded(
+            subjectID: "biology", savedExpandedIDs: [], searchText: "biology"
+        ))
+        XCTAssertTrue(SidebarExpansionPolicy.isExpanded(
+            subjectID: "biology", savedExpandedIDs: ["biology"], searchText: ""
+        ))
+    }
+
+    @MainActor
     func testCatalogStoreOwnsAndRestoresValidSelection() throws {
         let suite = "PaperCreatorCatalogSelectionTests-\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
