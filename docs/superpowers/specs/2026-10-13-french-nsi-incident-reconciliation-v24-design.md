@@ -14,11 +14,15 @@ The V4 incident rows are fixed before seeded names: `(id_incident, id_agent, id_
 
 Twelve questions `2a`–`2l` are staged as integrity, report reconstruction, query/aggregate, and algorithm/state verification. The subject supplies the original rows, faulty SQL, a comparison-work table with eight blank rows, a query-result/count work table, the faulty Python function, and a state/trace table. Working surfaces sit beside their dependent questions in normal and large print; no pre-filled answer or rubric leaks into the subject. The correction keeps each answer with its technical-credit criteria. Avoid an orphaned instruction or a page containing only the tail of one table.
 
+Question roles are fixed: `2a` keys, `2b` invalid insert, `2c` all eight comparison rows, `2d` six mismatches and the false join key, `2e` corrected ordered SQL, `2f` grouped counts and hypothetical empty category, `2g` faulty Python trace on S0, `2h` predicate repair, `2i` two targeted updates, `2j` faulty/correct S1/S2 trace, `2k` explain why S2 agreement is insufficient, and `2l` empty-input result and loop safety. The state table exposes S0/S1/S2 and the function trace without supplying their answers.
+
 ## Immutable facts and model boundary
 
 `fr-nsi-written-2027-v24` owns a new canonical V4 database contract and finite French prose catalogue. It records the seeded agent/category names, eight incident rows, SQL text, faulty and corrected Python text, ordered updates, hypothetical fifth category and invalid insert, expected query rows, six mismatch IDs, aggregate counts, category-2 function traces and state counts. An independent SQLite oracle computes query/state results; a separate Python oracle checks the function traces, including the diagnostic divergence/convergence. Deserialization rejects missing, edited, mixed-version or inconsistent facts. The model selects only registered scene/question/rubric wording IDs; it cannot supply facts, marks, code, answers or unrestricted prose. No model-supplied code runs.
 
 Exercise 2 retains the existing 5.5/6/6.5 technical-point profiles within exactly 18 technical paper points plus a distinct two-point indicative French-language component. Twelve question credits use quarter-point units tied to evidence and conclusions actually requested. The complete paper remains three independent Terminale NSI written exercises and 210 estimated minutes; Exercise 2 receives 70 estimated minutes. These are engineering estimates pending teacher review and a supervised learner trial.
+
+For `2a`–`2l`, quarter-point profiles are exactly `5.5: (1,2,2,2,2,3,2,2,2,2,1,1)`, `6: (1,2,3,2,2,4,2,2,2,2,1,1)` and `6.5: (1,2,3,2,2,4,3,2,2,3,1,1)`. Estimated minutes are `(4,5,8,6,7,8,6,6,6,6,4,4)`. A quarter-point awarded for an intermediate table or trace must name the requested value or reasoning step, not merely a final number.
 
 ## Dispatch, replay and gates
 
