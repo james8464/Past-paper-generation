@@ -64,6 +64,9 @@ def test_v23_candidate_has_staged_evidence_causal_answers_exact_credit(
     assert "retard" in exercise.questions[3].answer.lower()
     assert "paquet" in exercise.questions[7].answer.lower()
     assert "non authentifi" in exercise.questions[10].answer.lower()
+    criteria_3k = " ".join(credit.criterion for credit in exercise.questions[10].marking)
+    assert "Central authentifié" in criteria_3k
+    assert "Station authentifiée" not in criteria_3k
 
 
 def test_v23_route_calculation_and_low_credit_rubrics_cover_all_requested_steps():

@@ -211,7 +211,7 @@ def _criteria(q: str) -> tuple[str, ...]:
         "3h": ("l'ordre A avant B cassant ce cycle", "sa portée limitée pour M-27"),
         "3i": ("l'ordre M2–M3–M1", "le rôle de M3"),
         "3j": ("la clé et les mesures illisibles", "les métadonnées visibles"),
-        "3k": ("Station authentifiée", "le capteur non authentifié sans signature"),
+        "3k": ("Central authentifié", "Station non authentifiée sans signature"),
         "3l": (
             "le retard non réparé",
             "les métadonnées visibles et le terminal compromis hors protection",

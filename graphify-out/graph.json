@@ -9702,7 +9702,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_authoring",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "network_depth_authoring.py"
     },
     {
@@ -9713,7 +9713,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_authoring_hash",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "_hash()"
     },
     {
@@ -9724,7 +9724,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_authoring_identity",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "_identity()"
     },
     {
@@ -9735,7 +9735,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_authoring_network_depth_selection_prompt",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "network_depth_selection_prompt()"
     },
     {
@@ -9746,7 +9746,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_authoring_save",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "_save()"
     },
     {
@@ -9757,7 +9757,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_authoring_py_path",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "path"
     },
     {
@@ -9768,7 +9768,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_authoring_validate_failures",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "_validate_failures()"
     },
     {
@@ -9779,7 +9779,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_authoring_replay_network_depth_selection",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "replay_network_depth_selection()"
     },
     {
@@ -9790,7 +9790,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_authoring_author_network_depth_selection",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "author_network_depth_selection()"
     },
     {
@@ -9801,7 +9801,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_authoring_rationale_1",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "hash-bound, selection-only authoring for the deeper french network case."
     },
     {
@@ -9812,7 +9812,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_contract",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "network_depth_contract.py"
     },
     {
@@ -9823,7 +9823,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_contract_route",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "_route()"
     },
     {
@@ -9834,7 +9834,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_contract_facts",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "_facts()"
     },
     {
@@ -9845,7 +9845,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_contract_canonical",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "_canonical()"
     },
     {
@@ -9856,7 +9856,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_contract_networkdepthcontract",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "networkdepthcontract"
     },
     {
@@ -9867,7 +9867,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_contract_networkdepthcontract_to_dict",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": ".to_dict()"
     },
     {
@@ -9878,7 +9878,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_contract_networkdepthcontract_digest",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": ".digest()"
     },
     {
@@ -9889,7 +9889,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_contract_networkdepthcontract_from_dict",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": ".from_dict()"
     },
     {
@@ -9900,7 +9900,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_contract_build_network_depth_contract",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "build_network_depth_contract()"
     },
     {
@@ -9911,7 +9911,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_contract_rationale_1",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "version-two app-owned facts for the french written network exercise. this..."
     },
     {
@@ -9922,7 +9922,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_contract_rationale_39",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "recompute an auditable dijkstra trace; reject ambiguous best routes."
     },
     {
@@ -9933,7 +9933,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_prose",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "network_depth_prose.py"
     },
     {
@@ -9944,7 +9944,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_prose_network_depth_catalogue_digest",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "network_depth_catalogue_digest()"
     },
     {
@@ -9955,7 +9955,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_prose_network_depth_selection_schema",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "network_depth_selection_schema()"
     },
     {
@@ -9966,7 +9966,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_prose_validate_network_depth_selection",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "validate_network_depth_selection()"
     },
     {
@@ -9977,7 +9977,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_prose_answer",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "_answer()"
     },
     {
@@ -9988,7 +9988,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_prose_rubric",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "_rubric()"
     },
     {
@@ -9999,7 +9999,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_prose_render_network_depth_candidate",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "render_network_depth_candidate()"
     },
     {
@@ -10010,7 +10010,7 @@
       "_origin": "ast",
       "id": "backend_core_france_network_depth_prose_rationale_1",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "finite, original french wording for the version-two nsi network case."
     },
     {
@@ -10867,8 +10867,8 @@
       "source_location": "L187",
       "_origin": "ast",
       "id": "backend_core_france_nsi_nsiweightedgraphmaterial",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "nsiweightedgraphmaterial"
     },
     {
@@ -10878,8 +10878,8 @@
       "source_location": "L197",
       "_origin": "ast",
       "id": "backend_core_france_nsi_nsiweightedgraphmaterial_valid_graph",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": ".valid_graph()"
     },
     {
@@ -10966,8 +10966,8 @@
       "source_location": "L338",
       "_origin": "ast",
       "id": "backend_core_france_nsi_nsiexercise_candidate_view",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": ".candidate_view()"
     },
     {
@@ -10999,8 +10999,8 @@
       "source_location": "L377",
       "_origin": "ast",
       "id": "backend_core_france_nsi_solver_prompt",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "solver_prompt()"
     },
     {
@@ -11153,8 +11153,8 @@
       "source_location": "L258",
       "_origin": "ast",
       "id": "backend_core_france_pipeline_question_blueprint",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 120,
+      "community_name": "pipeline.py",
       "norm_label": "_question_blueprint()"
     },
     {
@@ -11164,8 +11164,8 @@
       "source_location": "L283",
       "_origin": "ast",
       "id": "backend_core_france_pipeline_legacy_tasks_for_seed",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 120,
+      "community_name": "pipeline.py",
       "norm_label": "_legacy_tasks_for_seed()"
     },
     {
@@ -11187,7 +11187,7 @@
       "_origin": "ast",
       "id": "backend_core_france_pipeline_tasks_for_seed_v15",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "_tasks_for_seed_v15()"
     },
     {
@@ -11274,8 +11274,8 @@
       "source_location": "L628",
       "_origin": "ast",
       "id": "backend_core_france_pipeline_tasks_for_seed_v23",
-      "community": 120,
-      "community_name": "pipeline.py",
+      "community": 38,
+      "community_name": "build_network_incident_contract",
       "norm_label": "_tasks_for_seed_v23()"
     },
     {
@@ -11417,8 +11417,8 @@
       "source_location": "L923",
       "_origin": "ast",
       "id": "backend_core_france_pipeline_require_declared_relations",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "require_declared_relations()"
     },
     {
@@ -11660,7 +11660,7 @@
       "_origin": "ast",
       "id": "backend_core_france_pipeline_rationale_347",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "preserve old blueprints while reallocating the deeper third exercise."
     },
     {
@@ -11747,8 +11747,8 @@
       "source_location": "L629",
       "_origin": "ast",
       "id": "backend_core_france_pipeline_rationale_629",
-      "community": 120,
-      "community_name": "pipeline.py",
+      "community": 38,
+      "community_name": "build_network_incident_contract",
       "norm_label": "keep v22 e1/v21 e2 credit and replace only e3 facts and wording."
     },
     {
@@ -11824,8 +11824,8 @@
       "source_location": "L924",
       "_origin": "ast",
       "id": "backend_core_france_pipeline_rationale_924",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "sql must name only relations actually printed as structured materials."
     },
     {
@@ -12396,8 +12396,8 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "backend_core_france_runtime_model_identity",
-      "community": 11,
-      "community_name": "NSIExercise",
+      "community": 124,
+      "community_name": "test_french_benchmark_runner.py",
       "norm_label": "model_identity()"
     },
     {
@@ -12770,8 +12770,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_france_source_identity",
-      "community": 11,
-      "community_name": "NSIExercise",
+      "community": 124,
+      "community_name": "test_french_benchmark_runner.py",
       "norm_label": "source_identity.py"
     },
     {
@@ -12781,8 +12781,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "backend_core_france_source_identity_implementation_identity",
-      "community": 11,
-      "community_name": "NSIExercise",
+      "community": 124,
+      "community_name": "test_french_benchmark_runner.py",
       "norm_label": "implementation_identity()"
     },
     {
@@ -12792,8 +12792,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_france_source_identity_rationale_1",
-      "community": 11,
-      "community_name": "NSIExercise",
+      "community": 124,
+      "community_name": "test_french_benchmark_runner.py",
       "norm_label": "bind resumable work to the executable implementation, not merely a version..."
     },
     {
@@ -12891,7 +12891,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_france_verification",
-      "community": 67,
+      "community": 13,
       "community_name": "verify_contract",
       "norm_label": "verification.py"
     },
@@ -12902,7 +12902,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "backend_core_france_verification_trace",
-      "community": 67,
+      "community": 13,
       "community_name": "verify_contract",
       "norm_label": "_trace()"
     },
@@ -12913,7 +12913,7 @@
       "source_location": "L137",
       "_origin": "ast",
       "id": "backend_core_france_verification_sql",
-      "community": 67,
+      "community": 13,
       "community_name": "verify_contract",
       "norm_label": "_sql()"
     },
@@ -12924,7 +12924,7 @@
       "source_location": "L220",
       "_origin": "ast",
       "id": "backend_core_france_verification_shortest_path",
-      "community": 67,
+      "community": 13,
       "community_name": "verify_contract",
       "norm_label": "_shortest_path()"
     },
@@ -12935,7 +12935,7 @@
       "source_location": "L254",
       "_origin": "ast",
       "id": "backend_core_france_verification_verify_contract",
-      "community": 67,
+      "community": 13,
       "community_name": "verify_contract",
       "norm_label": "verify_contract()"
     },
@@ -12946,7 +12946,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_france_verification_rationale_1",
-      "community": 67,
+      "community": 13,
       "community_name": "verify_contract",
       "norm_label": "small, bounded verification contracts. never execute model-supplied python."
     },
@@ -22406,8 +22406,8 @@
       "source_location": "L396",
       "_origin": "ast",
       "id": "backend_core_subjects_sql_contracts_validate_sql_response",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "validate_sql_response()"
     },
     {
@@ -22846,8 +22846,8 @@
       "source_location": "L402",
       "_origin": "ast",
       "id": "backend_core_subjects_sql_contracts_rationale_402",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "validate the answer and every model-presented full statement separately."
     },
     {
@@ -23000,8 +23000,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_topic_task_contract",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "topic_task_contract.py"
     },
     {
@@ -23011,8 +23011,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "backend_core_topic_task_contract_referencetaskcontract",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "referencetaskcontract"
     },
     {
@@ -23022,8 +23022,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_core_topic_task_contract_py_basemodel",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "basemodel"
     },
     {
@@ -23033,8 +23033,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "backend_core_topic_task_contract_derive_task_semantics",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "derive_task_semantics()"
     },
     {
@@ -23044,8 +23044,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_core_topic_task_contract_py_any",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "any"
     },
     {
@@ -23055,8 +23055,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "taskoperation",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "taskoperation"
     },
     {
@@ -23066,8 +23066,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "responsemode",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "responsemode"
     },
     {
@@ -23077,8 +23077,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_topic_task_contract_rationale_1",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "strict, deterministic task contracts for aqa cs topic-reference evidence."
     },
     {
@@ -23088,8 +23088,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "backend_core_topic_task_contract_rationale_37",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "the serialised summary is valid only when it agrees with the question."
     },
     {
@@ -23099,8 +23099,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "backend_core_topic_task_contract_rationale_56",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "derive the comparison form from printed question data, never its hint."
     },
     {
@@ -28000,8 +28000,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "cspapergen/generator.py"
     },
     {
@@ -28055,8 +28055,8 @@
       "source_location": "L489",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_repartition_paper2_question",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "_repartition_paper2_question()"
     },
     {
@@ -28066,8 +28066,8 @@
       "source_location": "L597",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_paper2_sql_task",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "_paper2_sql_task()"
     },
     {
@@ -28088,8 +28088,8 @@
       "source_location": "L684",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_build_paper1_context",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "_build_paper1_context()"
     },
     {
@@ -28099,8 +28099,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_py_random",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "random"
     },
     {
@@ -28110,8 +28110,8 @@
       "source_location": "L803",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_build_paper1_questions",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "_build_paper1_questions()"
     },
     {
@@ -28121,8 +28121,8 @@
       "source_location": "L1005",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_align_paper1_structure",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "_align_paper1_structure()"
     },
     {
@@ -28132,8 +28132,8 @@
       "source_location": "L1236",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_paper1_question",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "_paper1_question()"
     },
     {
@@ -28143,8 +28143,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_py_questionpart",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "questionpart"
     },
     {
@@ -28154,8 +28154,8 @@
       "source_location": "L1256",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_paper1_part",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "_paper1_part()"
     },
     {
@@ -28165,8 +28165,8 @@
       "source_location": "L598",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_rationale_598",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "six marks for the compound query; finite row analysis replaces two writes."
     },
     {
@@ -28176,8 +28176,8 @@
       "source_location": "L1010",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_generator_rationale_1010",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "match the recurring 7517/1 sub-question and mark pattern."
     },
     {
@@ -28187,8 +28187,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "cspapergen/models.py"
     },
     {
@@ -28198,8 +28198,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_syllabustopic",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "syllabustopic"
     },
     {
@@ -28209,8 +28209,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_py_basemodel",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "basemodel"
     },
     {
@@ -28220,8 +28220,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_syllabus",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "syllabus"
     },
     {
@@ -28231,8 +28231,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_syllabus_topic_ids",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": ".topic_ids()"
     },
     {
@@ -28242,8 +28242,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_syllabus_get_topic",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": ".get_topic()"
     },
     {
@@ -28253,8 +28253,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_multiplechoiceoption",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "multiplechoiceoption"
     },
     {
@@ -28308,8 +28308,8 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_questionpart",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "questionpart"
     },
     {
@@ -28319,8 +28319,8 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_questionpart_set_closed_answers",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": ".set_closed_answers()"
     },
     {
@@ -28352,8 +28352,8 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_paperblueprint",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "paperblueprint"
     },
     {
@@ -28363,8 +28363,8 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_paper1context",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "paper1context"
     },
     {
@@ -28374,8 +28374,8 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_rationale_91",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "attach the immutable marking key separately from candidate slot ids."
     },
     {
@@ -28473,8 +28473,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_objective_calibration",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "objective_calibration.py"
     },
     {
@@ -28484,8 +28484,8 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_objective_calibration_reference_task_contract",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "_reference_task_contract()"
     },
     {
@@ -28495,8 +28495,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_objective_calibration_py_questionpart",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "questionpart"
     },
     {
@@ -28506,8 +28506,8 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_objective_calibration_calibrate_blueprint",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "calibrate_blueprint()"
     },
     {
@@ -28517,8 +28517,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_objective_calibration_py_paperblueprint",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "paperblueprint"
     },
     {
@@ -28528,8 +28528,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_objective_calibration_rationale_1",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "original task allocations calibrated to aqa 7517, not tariff-based guessing...."
     },
     {
@@ -28616,8 +28616,8 @@
       "source_location": "L198",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_ollama_client_review_blueprint_difficulty",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "review_blueprint_difficulty()"
     },
     {
@@ -28649,8 +28649,8 @@
       "source_location": "L263",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_ollama_client_difficulty_solution",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "_difficulty_solution()"
     },
     {
@@ -28704,8 +28704,8 @@
       "source_location": "L380",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_ollama_client_part_solver_projection",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "_part_solver_projection()"
     },
     {
@@ -28726,8 +28726,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_ollama_client_py_evidencerecord",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "evidencerecord"
     },
     {
@@ -28891,8 +28891,8 @@
       "source_location": "L264",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_ollama_client_rationale_264",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "keep independent work for demand review, never its private cpu contract."
     },
     {
@@ -30255,8 +30255,8 @@
       "source_location": "L1462",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_render_pdf_draw_classification_diagram",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 6,
+      "community_name": "cspapergen/render_pdf.py",
       "norm_label": "_draw_classification_diagram()"
     },
     {
@@ -30662,8 +30662,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_topic_bank",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "topic_bank.py"
     },
     {
@@ -30673,8 +30673,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_topic_bank_part",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "_part()"
     },
     {
@@ -30684,8 +30684,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_topic_bank_question",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "_question()"
     },
     {
@@ -30695,8 +30695,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_topic_bank_build_reference_bank_questions",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "build_reference_bank_questions()"
     },
     {
@@ -30706,8 +30706,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_topic_bank_py_random",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "random"
     },
     {
@@ -30717,8 +30717,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_topic_bank_rationale_1",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "original, source-comparable topic-bank tasks. full-paper templates are..."
     },
     {
@@ -30728,8 +30728,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_validation",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 44,
+      "community_name": "generate_package",
       "norm_label": "cspapergen/validation.py"
     },
     {
@@ -32139,8 +32139,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_sql_answer_verification.py"
     },
     {
@@ -32150,8 +32150,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_sql_question",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "_sql_question()"
     },
     {
@@ -32161,8 +32161,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_contract_and_intent",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "_contract_and_intent()"
     },
     {
@@ -32172,8 +32172,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_replay",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "replay"
     },
     {
@@ -32183,8 +32183,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_replay_init",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": ".__init__()"
     },
     {
@@ -32194,8 +32194,8 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_replay_generate_json",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": ".generate_json()"
     },
     {
@@ -32205,8 +32205,8 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_response",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "_response()"
     },
     {
@@ -32216,8 +32216,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_py_parametrize",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "parametrize"
     },
     {
@@ -32227,8 +32227,8 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_actual_object_mark_point_shapes_fail_the_raw_solver_envelope",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_actual_object_mark_point_shapes_fail_the_raw_solver_envelope()"
     },
     {
@@ -32238,8 +32238,8 @@
       "source_location": "L148",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_public_sql_contract_is_one_render_solver_export_and_hash_source",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_public_sql_contract_is_one_render_solver_export_and_hash_source()"
     },
     {
@@ -32249,8 +32249,8 @@
       "source_location": "L208",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_sql_source_intent_and_linked_closed_analysis_mutations_stale_review_identity",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_sql_source_intent_and_linked_closed_analysis_mutations_stale_review_identity()"
     },
     {
@@ -32260,8 +32260,8 @@
       "source_location": "L234",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_select_accepts_only_supported_alias_join_count_threshold_and_order_variants",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_select_accepts_only_supported_alias_join_count_threshold_and_order_variants()"
     },
     {
@@ -32271,8 +32271,8 @@
       "source_location": "L242",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_count_credit_uses_candidate_visible_nullability_only",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_count_credit_uses_candidate_visible_nullability_only()"
     },
     {
@@ -32282,8 +32282,8 @@
       "source_location": "L273",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_select_rejects_wrong_group_join_identifier_count_predicate_or_order",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_select_rejects_wrong_group_join_identifier_count_predicate_or_order()"
     },
     {
@@ -32293,8 +32293,8 @@
       "source_location": "L289",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_select_rejects_distinct_extra_projection_and_missing_or_changed_join",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_select_rejects_distinct_extra_projection_and_missing_or_changed_join()"
     },
     {
@@ -32304,8 +32304,8 @@
       "source_location": "L304",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_parser_consumes_the_whole_bounded_input_and_rejects_suffixes",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_parser_consumes_the_whole_bounded_input_and_rejects_suffixes()"
     },
     {
@@ -32315,8 +32315,8 @@
       "source_location": "L319",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_insert_accepts_reordered_columns_and_preserves_literal_values",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_insert_accepts_reordered_columns_and_preserves_literal_values()"
     },
     {
@@ -32326,8 +32326,8 @@
       "source_location": "L336",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_insert_rejects_wrong_target_map_literals_and_incomplete_or_extra_input",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_insert_rejects_wrong_target_map_literals_and_incomplete_or_extra_input()"
     },
     {
@@ -32337,8 +32337,8 @@
       "source_location": "L353",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_insert_rejects_extra_rows_substituted_statements_and_incomplete_or_changed_escaping",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_insert_rejects_extra_rows_substituted_statements_and_incomplete_or_changed_escaping()"
     },
     {
@@ -32348,8 +32348,8 @@
       "source_location": "L358",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_answer_and_each_full_sql_mark_point_are_validated_without_overwrite",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_answer_and_each_full_sql_mark_point_are_validated_without_overwrite()"
     },
     {
@@ -32359,8 +32359,8 @@
       "source_location": "L379",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_every_executable_looking_mark_point_is_validated_without_prefix_discard",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_every_executable_looking_mark_point_is_validated_without_prefix_discard()"
     },
     {
@@ -32370,8 +32370,8 @@
       "source_location": "L398",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_only_bounded_non_executable_labels_or_fences_may_wrap_a_mark_point",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_only_bounded_non_executable_labels_or_fences_may_wrap_a_mark_point()"
     },
     {
@@ -32381,8 +32381,8 @@
       "source_location": "L423",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_label_plus_one_fence_never_hides_wrong_or_multiple_sql",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_label_plus_one_fence_never_hides_wrong_or_multiple_sql()"
     },
     {
@@ -32392,8 +32392,8 @@
       "source_location": "L449",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_explicit_sql_wrapper_never_hides_an_incomplete_statement",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_explicit_sql_wrapper_never_hides_an_incomplete_statement()"
     },
     {
@@ -32403,8 +32403,8 @@
       "source_location": "L470",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_natural_language_sql_imperatives_remain_semantic_prose",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_natural_language_sql_imperatives_remain_semantic_prose()"
     },
     {
@@ -32414,8 +32414,8 @@
       "source_location": "L481",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_select_rejects_count_alias_collision_with_projected_output_name",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_select_rejects_count_alias_collision_with_projected_output_name()"
     },
     {
@@ -32425,8 +32425,8 @@
       "source_location": "L502",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_real_solver_projection_rejects_mutated_select_contract_relationships",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_real_solver_projection_rejects_mutated_select_contract_relationships()"
     },
     {
@@ -32436,8 +32436,8 @@
       "source_location": "L537",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_raw_select_contract_requires_the_exact_supported_v1_relationship",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_raw_select_contract_requires_the_exact_supported_v1_relationship()"
     },
     {
@@ -32447,8 +32447,8 @@
       "source_location": "L546",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_projection_rejects_source_intent_mutation_and_blind_prompt_has_no_private_query",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_projection_rejects_source_intent_mutation_and_blind_prompt_has_no_private_query()"
     },
     {
@@ -32458,8 +32458,8 @@
       "source_location": "L577",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_one_structured_solver_correction_preserves_first_failure_and_stops_if_still_wrong",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_one_structured_solver_correction_preserves_first_failure_and_stops_if_still_wrong()"
     },
     {
@@ -32469,8 +32469,8 @@
       "source_location": "L618",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_actual_captured_count_table_response_is_unsupported_not_silently_accepted",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_actual_captured_count_table_response_is_unsupported_not_silently_accepted()"
     },
     {
@@ -32480,8 +32480,8 @@
       "source_location": "L642",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_real_difficulty_adapter_rejects_sql_failures_before_difficulty",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_real_difficulty_adapter_rejects_sql_failures_before_difficulty()"
     },
     {
@@ -32491,8 +32491,8 @@
       "source_location": "L675",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_difficulty_payload",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "_difficulty_payload()"
     },
     {
@@ -32502,8 +32502,8 @@
       "source_location": "L695",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_taxonomylimiteddifficultyclient",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "taxonomylimiteddifficultyclient"
     },
     {
@@ -32513,8 +32513,8 @@
       "source_location": "L696",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_taxonomylimiteddifficultyclient_init",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": ".__init__()"
     },
     {
@@ -32524,8 +32524,8 @@
       "source_location": "L701",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_taxonomylimiteddifficultyclient_generate_json",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": ".generate_json()"
     },
     {
@@ -32535,8 +32535,8 @@
       "source_location": "L739",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_real_pipeline_persists_model_and_public_task_operation_sources",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_real_pipeline_persists_model_and_public_task_operation_sources()"
     },
     {
@@ -32546,8 +32546,8 @@
       "source_location": "L804",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_test_demand_guidance_balances_declarative_construction_and_supplied_query_analysis",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_demand_guidance_balances_declarative_construction_and_supplied_query_analysis()"
     },
     {
@@ -32557,8 +32557,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_sql_answer_verification_rationale_1",
-      "community": 128,
-      "community_name": "test_sql_answer_verification.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "candidate-grounded verification for the bounded aqa sql construction tasks."
     },
     {
@@ -33759,8 +33759,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "resources_configured_generators_generator_configuredgen_cli_generate_package",
-      "community": 173,
-      "community_name": "assessment_package.py",
+      "community": 67,
+      "community_name": "test_configured_family.py",
       "norm_label": "generate_package()"
     },
     {
@@ -33770,8 +33770,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_configured_generators_generator_configuredgen_cli_py_path",
-      "community": 173,
-      "community_name": "assessment_package.py",
+      "community": 67,
+      "community_name": "test_configured_family.py",
       "norm_label": "path"
     },
     {
@@ -34023,8 +34023,8 @@
       "source_location": "L79",
       "_origin": "ast",
       "id": "resources_configured_generators_generator_configuredgen_models_load_syllabus",
-      "community": 173,
-      "community_name": "assessment_package.py",
+      "community": 67,
+      "community_name": "test_configured_family.py",
       "norm_label": "load_syllabus()"
     },
     {
@@ -34034,8 +34034,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_configured_generators_generator_configuredgen_models_py_path",
-      "community": 173,
-      "community_name": "assessment_package.py",
+      "community": 67,
+      "community_name": "test_configured_family.py",
       "norm_label": "path"
     },
     {
@@ -37285,8 +37285,8 @@
       "source_location": "L412",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_solverprojection",
-      "community": 34,
-      "community_name": "cspapergen/ollama_client.py",
+      "community": 29,
+      "community_name": "cspapergen/generator.py",
       "norm_label": "_solverprojection"
     },
     {
@@ -48632,8 +48632,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_type",
-      "community": 143,
-      "community_name": "paths",
+      "community": 76,
+      "community_name": "id",
       "norm_label": "type"
     },
     {
@@ -49028,8 +49028,8 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_evidence_gaps",
-      "community": 73,
-      "community_name": "properties",
+      "community": 76,
+      "community_name": "id",
       "norm_label": "evidence_gaps"
     },
     {
@@ -49039,8 +49039,8 @@
       "source_location": "L89",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_evidence_gaps_type",
-      "community": 73,
-      "community_name": "properties",
+      "community": 76,
+      "community_name": "id",
       "norm_label": "type"
     },
     {
@@ -49050,8 +49050,8 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_evidence_gaps_items",
-      "community": 143,
-      "community_name": "paths",
+      "community": 76,
+      "community_name": "id",
       "norm_label": "items"
     },
     {
@@ -50370,8 +50370,8 @@
       "source_location": "L379",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_item_ids",
-      "community": 143,
-      "community_name": "paths",
+      "community": 76,
+      "community_name": "id",
       "norm_label": "item_ids"
     },
     {
@@ -50381,8 +50381,8 @@
       "source_location": "L380",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_items",
-      "community": 143,
-      "community_name": "paths",
+      "community": 76,
+      "community_name": "id",
       "norm_label": "items"
     },
     {
@@ -50392,8 +50392,8 @@
       "source_location": "L383",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_minitems",
-      "community": 143,
-      "community_name": "paths",
+      "community": 76,
+      "community_name": "id",
       "norm_label": "minitems"
     },
     {
@@ -50403,8 +50403,8 @@
       "source_location": "L384",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_title",
-      "community": 143,
-      "community_name": "paths",
+      "community": 76,
+      "community_name": "id",
       "norm_label": "title"
     },
     {
@@ -50414,8 +50414,8 @@
       "source_location": "L385",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_type",
-      "community": 143,
-      "community_name": "paths",
+      "community": 76,
+      "community_name": "id",
       "norm_label": "type"
     },
     {
@@ -50480,8 +50480,8 @@
       "source_location": "L395",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_defs_pathsection",
-      "community": 76,
-      "community_name": "id",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "pathsection"
     },
     {
@@ -50491,8 +50491,8 @@
       "source_location": "L396",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_additionalproperties",
-      "community": 76,
-      "community_name": "id",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "additionalproperties"
     },
     {
@@ -50502,8 +50502,8 @@
       "source_location": "L397",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_properties",
-      "community": 76,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "properties"
     },
     {
@@ -50513,8 +50513,8 @@
       "source_location": "L403",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_answer_options",
-      "community": 76,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "answer_options"
     },
     {
@@ -50524,8 +50524,8 @@
       "source_location": "L404",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_answer_options_exclusiveminimum",
-      "community": 76,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "exclusiveminimum"
     },
     {
@@ -50535,8 +50535,8 @@
       "source_location": "L405",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_answer_options_title",
-      "community": 76,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "title"
     },
     {
@@ -50546,8 +50546,8 @@
       "source_location": "L406",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_answer_options_type",
-      "community": 76,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "type"
     },
     {
@@ -50557,8 +50557,8 @@
       "source_location": "L408",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_candidate_marks",
-      "community": 76,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "candidate_marks"
     },
     {
@@ -50568,8 +50568,8 @@
       "source_location": "L409",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_candidate_marks_exclusiveminimum",
-      "community": 76,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "exclusiveminimum"
     },
     {
@@ -50579,8 +50579,8 @@
       "source_location": "L410",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_candidate_marks_title",
-      "community": 76,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "title"
     },
     {
@@ -50590,8 +50590,8 @@
       "source_location": "L411",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_candidate_marks_type",
-      "community": 76,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "type"
     },
     {
@@ -50601,8 +50601,8 @@
       "source_location": "L413",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_options",
-      "community": 76,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "options"
     },
     {
@@ -50623,8 +50623,8 @@
       "source_location": "L417",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_options_minitems",
-      "community": 76,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "minitems"
     },
     {
@@ -50634,8 +50634,8 @@
       "source_location": "L418",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_options_title",
-      "community": 76,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "title"
     },
     {
@@ -50645,8 +50645,8 @@
       "source_location": "L419",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_options_type",
-      "community": 76,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "type"
     },
     {
@@ -50656,8 +50656,8 @@
       "source_location": "L422",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_required",
-      "community": 76,
-      "community_name": "id",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "required"
     },
     {
@@ -50667,8 +50667,8 @@
       "source_location": "L422",
       "_origin": "ast",
       "id": "ref_answer_options",
-      "community": 76,
-      "community_name": "id",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "answer_options"
     },
     {
@@ -50678,8 +50678,8 @@
       "source_location": "L422",
       "_origin": "ast",
       "id": "ref_candidate_marks",
-      "community": 76,
-      "community_name": "id",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "candidate_marks"
     },
     {
@@ -50689,8 +50689,8 @@
       "source_location": "L422",
       "_origin": "ast",
       "id": "ref_options",
-      "community": 76,
-      "community_name": "id",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "options"
     },
     {
@@ -50700,8 +50700,8 @@
       "source_location": "L428",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_title",
-      "community": 76,
-      "community_name": "id",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "title"
     },
     {
@@ -50711,8 +50711,8 @@
       "source_location": "L429",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_type",
-      "community": 76,
-      "community_name": "id",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "type"
     },
     {
@@ -51734,8 +51734,8 @@
       "source_location": "L651",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_items",
-      "community": 143,
-      "community_name": "paths",
+      "community": 76,
+      "community_name": "id",
       "norm_label": "items"
     },
     {
@@ -51745,8 +51745,8 @@
       "source_location": "L652",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_items",
-      "community": 143,
-      "community_name": "paths",
+      "community": 76,
+      "community_name": "id",
       "norm_label": "items"
     },
     {
@@ -51756,8 +51756,8 @@
       "source_location": "L655",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_minitems",
-      "community": 143,
-      "community_name": "paths",
+      "community": 76,
+      "community_name": "id",
       "norm_label": "minitems"
     },
     {
@@ -51767,8 +51767,8 @@
       "source_location": "L656",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_title",
-      "community": 143,
-      "community_name": "paths",
+      "community": 76,
+      "community_name": "id",
       "norm_label": "title"
     },
     {
@@ -51954,7 +51954,7 @@
       "source_location": "L702",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_learner_demand",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "learner_demand"
     },
@@ -51965,7 +51965,7 @@
       "source_location": "L703",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_learner_demand_title",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "title"
     },
@@ -51976,7 +51976,7 @@
       "source_location": "L704",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_learner_demand_type",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "type"
     },
@@ -51987,7 +51987,7 @@
       "source_location": "L706",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_observed_minutes",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "observed_minutes"
     },
@@ -51998,7 +51998,7 @@
       "source_location": "L707",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_observed_minutes_title",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "title"
     },
@@ -52009,7 +52009,7 @@
       "source_location": "L708",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_observed_minutes_type",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "type"
     },
@@ -52020,7 +52020,7 @@
       "source_location": "L710",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_reasoning_steps",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "reasoning_steps"
     },
@@ -52031,7 +52031,7 @@
       "source_location": "L711",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_reasoning_steps_title",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "title"
     },
@@ -52042,7 +52042,7 @@
       "source_location": "L712",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_reasoning_steps_type",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "type"
     },
@@ -52053,7 +52053,7 @@
       "source_location": "L719",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_marks",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "marks"
     },
@@ -52064,7 +52064,7 @@
       "source_location": "L720",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_marks_exclusiveminimum",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "exclusiveminimum"
     },
@@ -52075,7 +52075,7 @@
       "source_location": "L721",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_marks_title",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "title"
     },
@@ -52086,7 +52086,7 @@
       "source_location": "L722",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_marks_type",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "type"
     },
@@ -52603,8 +52603,8 @@
       "source_location": "L804",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_historical_engineering_demand_proxy",
-      "community": 60,
-      "community_name": "properties",
+      "community": 128,
+      "community_name": "enum",
       "norm_label": "historical_engineering_demand_proxy"
     },
     {
@@ -52614,8 +52614,8 @@
       "source_location": "L805",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_historical_engineering_demand_proxy_enum",
-      "community": 60,
-      "community_name": "properties",
+      "community": 128,
+      "community_name": "enum",
       "norm_label": "enum"
     },
     {
@@ -52625,8 +52625,8 @@
       "source_location": "L805",
       "_origin": "ast",
       "id": "ref_low",
-      "community": 60,
-      "community_name": "properties",
+      "community": 128,
+      "community_name": "enum",
       "norm_label": "low"
     },
     {
@@ -52636,8 +52636,8 @@
       "source_location": "L805",
       "_origin": "ast",
       "id": "ref_standard",
-      "community": 60,
-      "community_name": "properties",
+      "community": 128,
+      "community_name": "enum",
       "norm_label": "standard"
     },
     {
@@ -52647,8 +52647,8 @@
       "source_location": "L805",
       "_origin": "ast",
       "id": "ref_high",
-      "community": 60,
-      "community_name": "properties",
+      "community": 128,
+      "community_name": "enum",
       "norm_label": "high"
     },
     {
@@ -52658,8 +52658,8 @@
       "source_location": "L810",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_historical_engineering_demand_proxy_title",
-      "community": 60,
-      "community_name": "properties",
+      "community": 128,
+      "community_name": "enum",
       "norm_label": "title"
     },
     {
@@ -52669,8 +52669,8 @@
       "source_location": "L811",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_historical_engineering_demand_proxy_type",
-      "community": 60,
-      "community_name": "properties",
+      "community": 128,
+      "community_name": "enum",
       "norm_label": "type"
     },
     {
@@ -52977,7 +52977,7 @@
       "source_location": "L874",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_defs_sourcepath",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "sourcepath"
     },
@@ -52988,7 +52988,7 @@
       "source_location": "L875",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_sourcepath_additionalproperties",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "additionalproperties"
     },
@@ -52999,7 +52999,7 @@
       "source_location": "L876",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_sourcepath_properties",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "properties"
     },
@@ -53010,8 +53010,8 @@
       "source_location": "L896",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_minlength",
-      "community": 143,
-      "community_name": "paths",
+      "community": 76,
+      "community_name": "id",
       "norm_label": "minlength"
     },
     {
@@ -53021,7 +53021,7 @@
       "source_location": "L931",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_observed",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "observed"
     },
@@ -53032,7 +53032,7 @@
       "source_location": "L932",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_observed_ref",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "$ref"
     },
@@ -53043,7 +53043,7 @@
       "source_location": "L934",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_section_features",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "section_features"
     },
@@ -53054,7 +53054,7 @@
       "source_location": "L935",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_section_features_additionalproperties",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "additionalproperties"
     },
@@ -53065,7 +53065,7 @@
       "source_location": "L936",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_additionalproperties_ref",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "$ref"
     },
@@ -53076,7 +53076,7 @@
       "source_location": "L938",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_section_features_title",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "title"
     },
@@ -53087,7 +53087,7 @@
       "source_location": "L939",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_section_features_type",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "type"
     },
@@ -53131,7 +53131,7 @@
       "source_location": "L953",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_sourcepath_title",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "title"
     },
@@ -53142,7 +53142,7 @@
       "source_location": "L954",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_sourcepath_type",
-      "community": 40,
+      "community": 60,
       "community_name": "properties",
       "norm_label": "type"
     },
@@ -53186,8 +53186,8 @@
       "source_location": "L982",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_paper",
-      "community": 324,
-      "community_name": "paper",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "paper"
     },
     {
@@ -53197,8 +53197,8 @@
       "source_location": "L983",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_paper_enum",
-      "community": 324,
-      "community_name": "paper",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "enum"
     },
     {
@@ -53208,8 +53208,8 @@
       "source_location": "L983",
       "_origin": "ast",
       "id": "ref_1",
-      "community": 324,
-      "community_name": "paper",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "1"
     },
     {
@@ -53219,8 +53219,8 @@
       "source_location": "L983",
       "_origin": "ast",
       "id": "ref_2",
-      "community": 324,
-      "community_name": "paper",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "2"
     },
     {
@@ -53230,8 +53230,8 @@
       "source_location": "L987",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_paper_title",
-      "community": 324,
-      "community_name": "paper",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "title"
     },
     {
@@ -53241,8 +53241,8 @@
       "source_location": "L988",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_paper_type",
-      "community": 324,
-      "community_name": "paper",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "type"
     },
     {
@@ -53340,8 +53340,8 @@
       "source_location": "L1000",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_topic_id",
-      "community": 315,
-      "community_name": "topic_id",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "topic_id"
     },
     {
@@ -53351,8 +53351,8 @@
       "source_location": "L1001",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_topic_id_enum",
-      "community": 315,
-      "community_name": "topic_id",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "enum"
     },
     {
@@ -53362,8 +53362,8 @@
       "source_location": "L1001",
       "_origin": "ast",
       "id": "ref_4_2",
-      "community": 315,
-      "community_name": "topic_id",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "4.2"
     },
     {
@@ -53373,8 +53373,8 @@
       "source_location": "L1001",
       "_origin": "ast",
       "id": "ref_4_10",
-      "community": 315,
-      "community_name": "topic_id",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "4.10"
     },
     {
@@ -53384,8 +53384,8 @@
       "source_location": "L1001",
       "_origin": "ast",
       "id": "ref_4_12",
-      "community": 315,
-      "community_name": "topic_id",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "4.12"
     },
     {
@@ -53395,8 +53395,8 @@
       "source_location": "L1006",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_topic_id_title",
-      "community": 315,
-      "community_name": "topic_id",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "title"
     },
     {
@@ -53406,8 +53406,8 @@
       "source_location": "L1007",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_topic_id_type",
-      "community": 315,
-      "community_name": "topic_id",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "type"
     },
     {
@@ -53461,8 +53461,8 @@
       "source_location": "L1014",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_stratum",
-      "community": 316,
-      "community_name": "stratum",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "stratum"
     },
     {
@@ -53472,8 +53472,8 @@
       "source_location": "L1015",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_stratum_enum",
-      "community": 316,
-      "community_name": "stratum",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "enum"
     },
     {
@@ -53483,8 +53483,8 @@
       "source_location": "L1015",
       "_origin": "ast",
       "id": "ref_core",
-      "community": 316,
-      "community_name": "stratum",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "core"
     },
     {
@@ -53494,8 +53494,8 @@
       "source_location": "L1015",
       "_origin": "ast",
       "id": "ref_mixed",
-      "community": 316,
-      "community_name": "stratum",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "mixed"
     },
     {
@@ -53505,8 +53505,8 @@
       "source_location": "L1015",
       "_origin": "ast",
       "id": "ref_context_incomplete",
-      "community": 316,
-      "community_name": "stratum",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "context-incomplete"
     },
     {
@@ -53516,8 +53516,8 @@
       "source_location": "L1020",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_stratum_title",
-      "community": 316,
-      "community_name": "stratum",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "title"
     },
     {
@@ -53527,8 +53527,8 @@
       "source_location": "L1021",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_stratum_type",
-      "community": 316,
-      "community_name": "stratum",
+      "community": 40,
+      "community_name": "properties",
       "norm_label": "type"
     },
     {
@@ -54015,7 +54015,7 @@
       "_origin": "ast",
       "id": "equatable",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "equatable"
     },
     {
@@ -54290,7 +54290,7 @@
       "_origin": "ast",
       "id": "codable",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "codable"
     },
     {
@@ -54553,8 +54553,8 @@
       "source_location": "L127",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_examcatalog",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "examcatalog"
     },
     {
@@ -54564,8 +54564,8 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_examcatalog_readyboards",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".readyboards"
     },
     {
@@ -54806,8 +54806,8 @@
       "source_location": "L317",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_codingkeys_qualification",
-      "community": 2,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "qualification"
     },
     {
@@ -54906,7 +54906,7 @@
       "_origin": "ast",
       "id": "localizederror",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "localizederror"
     },
     {
@@ -55466,8 +55466,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_swift_date",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "date"
     },
     {
@@ -55587,8 +55587,8 @@
       "source_location": "L601",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_generatedfile",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "generatedfile"
     },
     {
@@ -55598,8 +55598,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_swift_uuid",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "uuid"
     },
     {
@@ -55609,8 +55609,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_swift_url",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "url"
     },
     {
@@ -55620,8 +55620,8 @@
       "source_location": "L609",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_generatedfile_init",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".init()"
     },
     {
@@ -55631,8 +55631,8 @@
       "source_location": "L625",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_generatedfile_exists",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".exists"
     },
     {
@@ -55642,8 +55642,8 @@
       "source_location": "L629",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_generatedfile_title",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".title"
     },
     {
@@ -55653,8 +55653,8 @@
       "source_location": "L644",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_generatedfile_paperdescription",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".paperdescription"
     },
     {
@@ -55708,8 +55708,8 @@
       "source_location": "L655",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_savedpackageidentity",
-      "community": 2,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "savedpackageidentity"
     },
     {
@@ -55719,8 +55719,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_swift_int",
-      "community": 2,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "int"
     },
     {
@@ -55730,8 +55730,8 @@
       "source_location": "L665",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_authoringprovenancekind",
-      "community": 2,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "authoringprovenancekind"
     },
     {
@@ -55741,8 +55741,8 @@
       "source_location": "L666",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_authoringprovenancekind_reviewedfixedonly",
-      "community": 2,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "reviewedfixedonly"
     },
     {
@@ -55752,8 +55752,8 @@
       "source_location": "L667",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_authoringprovenancekind_aiauthoredonly",
-      "community": 2,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "aiauthoredonly"
     },
     {
@@ -55763,8 +55763,8 @@
       "source_location": "L668",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_authoringprovenancekind_mixed",
-      "community": 2,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "mixed"
     },
     {
@@ -55774,8 +55774,8 @@
       "source_location": "L669",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_authoringprovenancekind_unreviewed",
-      "community": 2,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "unreviewed"
     },
     {
@@ -55785,8 +55785,8 @@
       "source_location": "L670",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_authoringprovenancekind_unknown",
-      "community": 2,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "unknown"
     },
     {
@@ -55796,8 +55796,8 @@
       "source_location": "L673",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_authoringprovenancesummary",
-      "community": 2,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "authoringprovenancesummary"
     },
     {
@@ -55906,8 +55906,8 @@
       "source_location": "L721",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_generationqualityreport",
-      "community": 2,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "generationqualityreport"
     },
     {
@@ -55917,8 +55917,8 @@
       "source_location": "L754",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_generationqualityreport_load",
-      "community": 2,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": ".load()"
     },
     {
@@ -55928,8 +55928,8 @@
       "source_location": "L829",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_generationqualityreport_decodeauthoringprovenance",
-      "community": 2,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": ".decodeauthoringprovenance()"
     },
     {
@@ -55939,8 +55939,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_swift_any",
-      "community": 2,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "any"
     },
     {
@@ -55950,8 +55950,8 @@
       "source_location": "L868",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_generationqualityreport_nonempty",
-      "community": 2,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": ".nonempty()"
     },
     {
@@ -55961,8 +55961,8 @@
       "source_location": "L875",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_generationqualitypolicy",
-      "community": 2,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "generationqualitypolicy"
     },
     {
@@ -55983,8 +55983,8 @@
       "source_location": "L984",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_generationqualitypolicy_provenancedetail",
-      "community": 2,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": ".provenancedetail()"
     },
     {
@@ -55994,8 +55994,8 @@
       "source_location": "L1003",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_generationqualitypolicy_validateditemreview",
-      "community": 2,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": ".validateditemreview()"
     },
     {
@@ -57932,8 +57932,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "appkit",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "appkit"
     },
     {
@@ -58333,7 +58333,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "jobhistoryview.swift"
     },
     {
@@ -58344,7 +58344,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_jobhistoryview",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "jobhistoryview"
     },
     {
@@ -58355,7 +58355,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_swift_generationjobrecord",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "generationjobrecord"
     },
     {
@@ -58366,7 +58366,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_jobhistoryview_body",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".body"
     },
     {
@@ -58377,7 +58377,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_jobhistoryview_selectedrecord",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".selectedrecord"
     },
     {
@@ -58388,7 +58388,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_swift_set",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "set"
     },
     {
@@ -58399,7 +58399,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_jobhistoryview_boardtitle",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".boardtitle()"
     },
     {
@@ -58410,7 +58410,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_swift_string",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "string"
     },
     {
@@ -58421,7 +58421,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_generationjobstate",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "generationjobstate"
     },
     {
@@ -58432,7 +58432,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_generationjobstate_title",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".title"
     },
     {
@@ -58443,7 +58443,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_generationjobstate_systemimage",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".systemimage"
     },
     {
@@ -58728,8 +58728,8 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "macos_papercreator_features_generation_generatorworkspaceview_paperconfiguration_body",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".body"
     },
     {
@@ -59487,8 +59487,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane",
-      "community": 10,
-      "community_name": "Text",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "settingspane.swift"
     },
     {
@@ -59509,8 +59509,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspane_body",
-      "community": 10,
-      "community_name": "Text",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".body"
     },
     {
@@ -59520,8 +59520,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspaneid",
-      "community": 10,
-      "community_name": "Text",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "settingspaneid"
     },
     {
@@ -59531,8 +59531,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspaneid_ai",
-      "community": 10,
-      "community_name": "Text",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "ai"
     },
     {
@@ -59542,8 +59542,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspaneid_output",
-      "community": 10,
-      "community_name": "Text",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "output"
     },
     {
@@ -59553,8 +59553,8 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspaneid_privacy",
-      "community": 10,
-      "community_name": "Text",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "privacy"
     },
     {
@@ -59564,8 +59564,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_settingspaneid_title",
-      "community": 10,
-      "community_name": "Text",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".title"
     },
     {
@@ -59641,8 +59641,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "nswindow",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "nswindow"
     },
     {
@@ -59652,8 +59652,8 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_aisettingstab",
-      "community": 10,
-      "community_name": "Text",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "aisettingstab"
     },
     {
@@ -59685,8 +59685,8 @@
       "source_location": "L216",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_outputsettingstab",
-      "community": 10,
-      "community_name": "Text",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "outputsettingstab"
     },
     {
@@ -59696,8 +59696,8 @@
       "source_location": "L219",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_outputsettingstab_body",
-      "community": 10,
-      "community_name": "Text",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".body"
     },
     {
@@ -59707,8 +59707,8 @@
       "source_location": "L283",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_privacysettingstab",
-      "community": 10,
-      "community_name": "Text",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "privacysettingstab"
     },
     {
@@ -59718,8 +59718,8 @@
       "source_location": "L286",
       "_origin": "ast",
       "id": "macos_papercreator_features_settings_settingspane_privacysettingstab_body",
-      "community": 10,
-      "community_name": "Text",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".body"
     },
     {
@@ -60733,7 +60733,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_init",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".init()"
     },
     {
@@ -60886,8 +60886,8 @@
       "source_location": "L386",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_selectboard",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".selectboard()"
     },
     {
@@ -60897,8 +60897,8 @@
       "source_location": "L393",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_selectpaperid",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".selectpaperid()"
     },
     {
@@ -60908,8 +60908,8 @@
       "source_location": "L399",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_selectassessmentkind",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".selectassessmentkind()"
     },
     {
@@ -61007,8 +61007,8 @@
       "source_location": "L461",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_duplicateconfiguration",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".duplicateconfiguration()"
     },
     {
@@ -61018,8 +61018,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_swift_generationjobrecord",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "generationjobrecord"
     },
     {
@@ -61029,8 +61029,8 @@
       "source_location": "L465",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_createagainwithnewseed",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".createagainwithnewseed()"
     },
     {
@@ -61040,8 +61040,8 @@
       "source_location": "L473",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_applyconfiguration",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".applyconfiguration()"
     },
     {
@@ -61293,8 +61293,8 @@
       "source_location": "L864",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_setdryrun",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".setdryrun()"
     },
     {
@@ -61470,7 +61470,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_restorerecentdocuments",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".restorerecentdocuments()"
     },
     {
@@ -62284,8 +62284,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_generationcoordinator",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "generationcoordinator"
     },
     {
@@ -62295,8 +62295,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_swift_generationjobrecord",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "generationjobrecord"
     },
     {
@@ -62306,8 +62306,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_swift_double",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "double"
     },
     {
@@ -62328,8 +62328,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_generationcoordinator_begin",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".begin()"
     },
     {
@@ -62339,8 +62339,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_generationcoordinator_receive",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".receive()"
     },
     {
@@ -62350,8 +62350,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_generationcoordinator_complete",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".complete()"
     },
     {
@@ -62361,8 +62361,8 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_generationcoordinator_cancel",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".cancel()"
     },
     {
@@ -62372,8 +62372,8 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_generationcoordinator_fail",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".fail()"
     },
     {
@@ -62383,8 +62383,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_generationcoordinator_swift_string",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "string"
     },
     {
@@ -62527,7 +62527,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "recentdocumentstore.swift"
     },
     {
@@ -62538,7 +62538,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_generationjobstate",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "generationjobstate"
     },
     {
@@ -62549,7 +62549,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_generationjobstate_pending",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "pending"
     },
     {
@@ -62560,7 +62560,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_generationjobstate_running",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "running"
     },
     {
@@ -62571,7 +62571,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_generationjobstate_completed",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "completed"
     },
     {
@@ -62582,7 +62582,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_generationjobstate_cancelled",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "cancelled"
     },
     {
@@ -62593,7 +62593,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_generationjobstate_failed",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "failed"
     },
     {
@@ -62604,7 +62604,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_generationjobstate_interrupted",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "interrupted"
     },
     {
@@ -62615,7 +62615,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_generationjobstate_missingartifacts",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "missingartifacts"
     },
     {
@@ -62626,7 +62626,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_generationconfiguration",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "generationconfiguration"
     },
     {
@@ -62637,7 +62637,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_swift_int",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "int"
     },
     {
@@ -62648,7 +62648,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_swift_bool",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "bool"
     },
     {
@@ -62659,7 +62659,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_generationprovenance",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "generationprovenance"
     },
     {
@@ -62670,7 +62670,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_qualificationsnapshot",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "qualificationsnapshot"
     },
     {
@@ -62681,7 +62681,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_generationjobrecord",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "generationjobrecord"
     },
     {
@@ -62692,7 +62692,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_swift_uuid",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "uuid"
     },
     {
@@ -62703,7 +62703,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_swift_date",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "date"
     },
     {
@@ -62714,7 +62714,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_generationjobrecord_init",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".init()"
     },
     {
@@ -62835,7 +62835,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_swift_decoder",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "decoder"
     },
     {
@@ -62846,7 +62846,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_generationjobrecord_missingartifactcount",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".missingartifactcount"
     },
     {
@@ -62868,7 +62868,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_recentdocumentstoreerror",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "recentdocumentstoreerror"
     },
     {
@@ -62879,7 +62879,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_recentdocumentstoreerror_unsupportedschema",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "unsupportedschema"
     },
     {
@@ -62890,7 +62890,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_recentdocumentstoreerror_errordescription",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".errordescription"
     },
     {
@@ -62901,7 +62901,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_recentdocumentstore",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "recentdocumentstore"
     },
     {
@@ -62912,7 +62912,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_recentdocumentstore_retentionlimit",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".retentionlimit"
     },
     {
@@ -62923,7 +62923,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_swift_url",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "url"
     },
     {
@@ -62934,7 +62934,7 @@
       "_origin": "ast",
       "id": "filemanager",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "filemanager"
     },
     {
@@ -62945,7 +62945,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_recentdocumentstore_init",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".init()"
     },
     {
@@ -62956,7 +62956,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_recentdocumentstore_load",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".load()"
     },
     {
@@ -62966,8 +62966,8 @@
       "source_location": "L200",
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_recentdocumentstore_save",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".save()"
     },
     {
@@ -62978,7 +62978,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_recentdocumentstore_remove",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".remove()"
     },
     {
@@ -62989,7 +62989,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_recentdocumentstore_duplicateconfiguration",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".duplicateconfiguration()"
     },
     {
@@ -63000,7 +63000,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_recentdocumentstore_write",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".write()"
     },
     {
@@ -63011,7 +63011,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_recentdocumentstore_enforceretention",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".enforceretention()"
     },
     {
@@ -63022,7 +63022,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_recentdocumentstore_quarantine",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".quarantine()"
     },
     {
@@ -63033,7 +63033,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_recentdocumentstore_fileurl",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".fileurl()"
     },
     {
@@ -63044,7 +63044,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_recentdocumentstore_newestfirst",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".newestfirst()"
     },
     {
@@ -63055,7 +63055,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_jsonencoder",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "jsonencoder"
     },
     {
@@ -63066,7 +63066,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_jsonencoder_papercreator",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".papercreator"
     },
     {
@@ -63077,7 +63077,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_jsondecoder",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "jsondecoder"
     },
     {
@@ -63088,7 +63088,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_recentdocumentstore_jsondecoder_papercreator",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".papercreator"
     },
     {
@@ -63186,8 +63186,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "accessibilitytests.swift"
     },
     {
@@ -63198,8 +63198,8 @@
       "source_location": "L2",
       "_origin": "ast",
       "id": "xctest",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "xctest"
     },
     {
@@ -63210,8 +63210,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "papercreator",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "papercreator"
     },
     {
@@ -63221,8 +63221,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "accessibilitytests"
     },
     {
@@ -63232,8 +63232,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "xctestcase",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "xctestcase"
     },
     {
@@ -63243,8 +63243,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testreadyworkspacelaysoutinanexpandedwindow",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testreadyworkspacelaysoutinanexpandedwindow()"
     },
     {
@@ -63276,8 +63276,8 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testeveryproviderandhelptopichasspokentextandsymbol",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testeveryproviderandhelptopichasspokentextandsymbol()"
     },
     {
@@ -63287,8 +63287,8 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testqualificationstatesneverrelyoncolouralone",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testqualificationstatesneverrelyoncolouralone()"
     },
     {
@@ -63298,8 +63298,8 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testlongpseudolocalisedcopyandrighttoleftlocaleremainavailable",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testlongpseudolocalisedcopyandrighttoleftlocaleremainavailable()"
     },
     {
@@ -63320,8 +63320,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_tests_apptests",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "apptests.swift"
     },
     {
@@ -63705,8 +63705,8 @@
       "source_location": "L493",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testpreviewmodepreferencepersists",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".testpreviewmodepreferencepersists()"
     },
     {
@@ -63793,8 +63793,8 @@
       "source_location": "L662",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testaigeneratorrequiresollamacheck",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".testaigeneratorrequiresollamacheck()"
     },
     {
@@ -63804,8 +63804,8 @@
       "source_location": "L684",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testrecentdocumentmetadataroundtrips",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".testrecentdocumentmetadataroundtrips()"
     },
     {
@@ -63815,8 +63815,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "coordinatortests.swift"
     },
     {
@@ -63826,8 +63826,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "coordinatortests"
     },
     {
@@ -63837,8 +63837,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_swift_url",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "url"
     },
     {
@@ -63848,8 +63848,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_setupwitherror",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".setupwitherror()"
     },
     {
@@ -63859,8 +63859,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_teardownwitherror",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".teardownwitherror()"
     },
     {
@@ -63870,8 +63870,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_qualityreport",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".qualityreport()"
     },
     {
@@ -63882,7 +63882,7 @@
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testhistorypersistsversionedjobandrestoresafterrelaunch",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testhistorypersistsversionedjobandrestoresafterrelaunch()"
     },
     {
@@ -63892,8 +63892,8 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testcompletionrecordsexportedartifactlocations",
-      "community": 14,
-      "community_name": "GeneratedFile",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".testcompletionrecordsexportedartifactlocations()"
     },
     {
@@ -63904,7 +63904,7 @@
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testrunningjobbecomesinterruptedafterrelaunch",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testrunningjobbecomesinterruptedafterrelaunch()"
     },
     {
@@ -63914,8 +63914,8 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testschemazerohistorymigrateswithoutlosingconfiguration",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testschemazerohistorymigrateswithoutlosingconfiguration()"
     },
     {
@@ -63926,7 +63926,7 @@
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testcancelledjobremainscancelledafterrelaunch",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testcancelledjobremainscancelledafterrelaunch()"
     },
     {
@@ -63937,7 +63937,7 @@
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testcorrupthistoryisquarantinedwithoutdiscardingvalidjobs",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testcorrupthistoryisquarantinedwithoutdiscardingvalidjobs()"
     },
     {
@@ -63948,7 +63948,7 @@
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testcompletedjobwithmissingartifactismarkedactionably",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testcompletedjobwithmissingartifactismarkedactionably()"
     },
     {
@@ -63959,7 +63959,7 @@
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testretentionisboundedandduplicateconfigurationgetsnewidentity",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testretentionisboundedandduplicateconfigurationgetsnewidentity()"
     },
     {
@@ -63969,8 +63969,8 @@
       "source_location": "L157",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testmodelcoordinatorexpiresstalemodellist",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testmodelcoordinatorexpiresstalemodellist()"
     },
     {
@@ -63980,8 +63980,8 @@
       "source_location": "L168",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testcatalogstorefiltersandpersistsfavouritesandrecentconfigurations",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testcatalogstorefiltersandpersistsfavouritesandrecentconfigurations()"
     },
     {
@@ -64002,8 +64002,8 @@
       "source_location": "L211",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testcatalogstorerestoresnonboardnavigationdestination",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testcatalogstorerestoresnonboardnavigationdestination()"
     },
     {
@@ -64014,7 +64014,7 @@
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testsettingsstorepersistspreferencesanddelegatessecrets",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testsettingsstorepersistspreferencesanddelegatessecrets()"
     },
     {
@@ -64024,8 +64024,8 @@
       "source_location": "L244",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testapplicationcoordinatorownsfocusedcoordinators",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testapplicationcoordinatorownsfocusedcoordinators()"
     },
     {
@@ -64035,8 +64035,8 @@
       "source_location": "L256",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testsavedreportclearsonlyforacceptedtargetchanges",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testsavedreportclearsonlyforacceptedtargetchanges()"
     },
     {
@@ -64046,8 +64046,8 @@
       "source_location": "L280",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testmodetoggleandartifactonlyrelaunchdonotinventorchangesavedfacts",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".testmodetoggleandartifactonlyrelaunchdonotinventorchangesavedfacts()"
     },
     {
@@ -64057,8 +64057,8 @@
       "source_location": "L297",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testassessmentkindchangeclearssavedreportonacceptednewtarget",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testassessmentkindchangeclearssavedreportonacceptednewtarget()"
     },
     {
@@ -64068,8 +64068,8 @@
       "source_location": "L314",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testduplicateconfigurationrestoresselectionsandseed",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testduplicateconfigurationrestoresselectionsandseed()"
     },
     {
@@ -64091,7 +64091,7 @@
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testfrenchhistorypreservescontextwithoutukboardlookup",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testfrenchhistorypreservescontextwithoutukboardlookup()"
     },
     {
@@ -64101,8 +64101,8 @@
       "source_location": "L362",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testinvalidconfigurationdoesnotclearsavedreportorchangetarget",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testinvalidconfigurationdoesnotclearsavedreportorchangetarget()"
     },
     {
@@ -64112,8 +64112,8 @@
       "source_location": "L395",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testapplyinghistoryconfigurationusesacceptedtargetchangepolicy",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testapplyinghistoryconfigurationusesacceptedtargetchangepolicy()"
     },
     {
@@ -64123,8 +64123,8 @@
       "source_location": "L431",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testcreateagainusesdifferentseedandpreviewopensdocuments",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testcreateagainusesdifferentseedandpreviewopensdocuments()"
     },
     {
@@ -64134,8 +64134,8 @@
       "source_location": "L448",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_coordinatortests_testcopiedprovenanceidentifiesconfigurationandqualification",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".testcopiedprovenanceidentifiesconfigurationandqualification()"
     },
     {
@@ -64145,8 +64145,8 @@
       "source_location": "L461",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_generationjobrecord",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "generationjobrecord"
     },
     {
@@ -64156,8 +64156,8 @@
       "source_location": "L462",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_generationjobrecord_fixture",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".fixture()"
     },
     {
@@ -64167,8 +64167,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "generationjobstate",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "generationjobstate"
     },
     {
@@ -64178,8 +64178,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_swift_date",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "date"
     },
     {
@@ -64189,8 +64189,8 @@
       "source_location": "L495",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_testclock",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "testclock"
     },
     {
@@ -64200,8 +64200,8 @@
       "source_location": "L498",
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_testclock_init",
-      "community": 29,
-      "community_name": "CoordinatorTests",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".init()"
     },
     {
@@ -64212,7 +64212,7 @@
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_memorysecrets",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "memorysecrets"
     },
     {
@@ -64223,7 +64223,7 @@
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_swift_string",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": "string"
     },
     {
@@ -64234,7 +64234,7 @@
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_memorysecrets_read",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".read()"
     },
     {
@@ -64245,7 +64245,7 @@
       "_origin": "ast",
       "id": "macos_tests_coordinatortests_memorysecrets_save",
       "community": 14,
-      "community_name": "GeneratedFile",
+      "community_name": "RecentDocumentStore",
       "norm_label": ".save()"
     },
     {
@@ -67868,8 +67868,8 @@
       "source_location": "L490",
       "_origin": "ast",
       "id": "tests_test_computer_science_objectives_test_cs_candidate_paths_count_selected_options_only",
-      "community": 173,
-      "community_name": "assessment_package.py",
+      "community": 58,
+      "community_name": "test_computer_science_objectives.py",
       "norm_label": "test_cs_candidate_paths_count_selected_options_only()"
     },
     {
@@ -68198,8 +68198,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_configured_family",
-      "community": 173,
-      "community_name": "assessment_package.py",
+      "community": 67,
+      "community_name": "test_configured_family.py",
       "norm_label": "test_configured_family.py"
     },
     {
@@ -68209,8 +68209,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "tests_test_configured_family_syllabus",
-      "community": 173,
-      "community_name": "assessment_package.py",
+      "community": 67,
+      "community_name": "test_configured_family.py",
       "norm_label": "_syllabus()"
     },
     {
@@ -68220,8 +68220,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_test_configured_family_py_path",
-      "community": 173,
-      "community_name": "assessment_package.py",
+      "community": 67,
+      "community_name": "test_configured_family.py",
       "norm_label": "path"
     },
     {
@@ -68231,8 +68231,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "tests_test_configured_family_family_syllabus",
-      "community": 173,
-      "community_name": "assessment_package.py",
+      "community": 67,
+      "community_name": "test_configured_family.py",
       "norm_label": "_family_syllabus()"
     },
     {
@@ -68242,8 +68242,8 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "tests_test_configured_family_test_cambridge_economics_preview_covers_all_official_components",
-      "community": 173,
-      "community_name": "assessment_package.py",
+      "community": 67,
+      "community_name": "test_configured_family.py",
       "norm_label": "test_cambridge_economics_preview_covers_all_official_components()"
     },
     {
@@ -68253,8 +68253,8 @@
       "source_location": "L132",
       "_origin": "ast",
       "id": "tests_test_configured_family_test_cambridge_computer_science_preview_covers_theory_and_practical_roles",
-      "community": 173,
-      "community_name": "assessment_package.py",
+      "community": 67,
+      "community_name": "test_configured_family.py",
       "norm_label": "test_cambridge_computer_science_preview_covers_theory_and_practical_roles()"
     },
     {
@@ -68264,8 +68264,8 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "tests_test_configured_family_test_aqa_mathematics_preview_covers_pure_mechanics_and_statistics",
-      "community": 173,
-      "community_name": "assessment_package.py",
+      "community": 67,
+      "community_name": "test_configured_family.py",
       "norm_label": "test_aqa_mathematics_preview_covers_pure_mechanics_and_statistics()"
     },
     {
@@ -73226,7 +73226,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_authoring",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "test_french_network_depth_authoring.py"
     },
     {
@@ -73237,7 +73237,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_authoring_selection",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "_selection()"
     },
     {
@@ -73248,7 +73248,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_authoring_identity",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "_identity()"
     },
     {
@@ -73259,7 +73259,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_authoring_selectionclient",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "selectionclient"
     },
     {
@@ -73270,7 +73270,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_authoring_selectionclient_init",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": ".__init__()"
     },
     {
@@ -73281,7 +73281,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_authoring_selectionclient_generate_json",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": ".generate_json()"
     },
     {
@@ -73292,7 +73292,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_authoring_test_v15_selection_prompt_is_finite_and_replayable",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "test_v15_selection_prompt_is_finite_and_replayable()"
     },
     {
@@ -73303,7 +73303,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_authoring_test_v15_selection_rejects_free_text_and_preserves_failed_attempt",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "test_v15_selection_rejects_free_text_and_preserves_failed_attempt()"
     },
     {
@@ -73314,7 +73314,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_authoring_test_v15_replay_rejects_forged_contract_and_failure_history",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "test_v15_replay_rejects_forged_contract_and_failure_history()"
     },
     {
@@ -73325,7 +73325,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_authoring_rationale_1",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "versioned network selections preserve failures and replay only exact identities."
     },
     {
@@ -73336,7 +73336,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_contract",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "test_french_network_depth_contract.py"
     },
     {
@@ -73347,7 +73347,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_contract_all_routes",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "_all_routes()"
     },
     {
@@ -73358,7 +73358,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_contract_test_all_four_profiles_have_unique_changed_shortest_routes",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "test_all_four_profiles_have_unique_changed_shortest_routes()"
     },
     {
@@ -73369,7 +73369,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_contract_test_dijkstra_trace_is_explicit_and_recomputed",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "test_dijkstra_trace_is_explicit_and_recomputed()"
     },
     {
@@ -73380,7 +73380,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_contract_test_forged_seeded_facts_or_derived_trace_fail_closed",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "test_forged_seeded_facts_or_derived_trace_fail_closed()"
     },
     {
@@ -73391,7 +73391,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_contract_test_fixed_process_and_security_premises_are_sealed",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "test_fixed_process_and_security_premises_are_sealed()"
     },
     {
@@ -73402,7 +73402,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_contract_rationale_1",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "the deeper network case is deterministic, independently checkable, and sealed."
     },
     {
@@ -73413,7 +73413,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_contract_rationale_24",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "independent exhaustive oracle, not the production dijkstra method."
     },
     {
@@ -73424,7 +73424,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_prose",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "test_french_network_depth_prose.py"
     },
     {
@@ -73435,7 +73435,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_prose_selection",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "_selection()"
     },
     {
@@ -73446,7 +73446,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_prose_py_parametrize",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "parametrize"
     },
     {
@@ -73457,7 +73457,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_prose_test_v15_finite_case_prints_all_premises_and_exact_credit",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "test_v15_finite_case_prints_all_premises_and_exact_credit()"
     },
     {
@@ -73468,7 +73468,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_prose_test_routing_answers_and_marks_separate_trace_path_and_cost",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "test_routing_answers_and_marks_separate_trace_path_and_cost()"
     },
     {
@@ -73479,7 +73479,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_prose_test_network_rubric_splits_independent_steps_without_losing_credit",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "test_network_rubric_splits_independent_steps_without_losing_credit()"
     },
     {
@@ -73490,7 +73490,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_prose_test_network_limit_question_requests_each_awarded_limit",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "test_network_limit_question_requests_each_awarded_limit()"
     },
     {
@@ -73501,7 +73501,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_prose_test_selection_and_credit_tampering_are_rejected",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "test_selection_and_credit_tampering_are_rejected()"
     },
     {
@@ -73512,7 +73512,7 @@
       "_origin": "ast",
       "id": "tests_test_french_network_depth_prose_rationale_1",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "the v15 network case prints every needed fact and awards exact, separable..."
     },
     {
@@ -73838,7 +73838,7 @@
       "label": "test_v23_route_calculation_and_low_credit_rubrics_cover_all_requested_steps()",
       "file_type": "code",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L69",
+      "source_location": "L72",
       "_origin": "ast",
       "id": "tests_test_french_network_incident_prose_test_v23_route_calculation_and_low_credit_rubrics_cover_all_requested_steps",
       "community": 38,
@@ -73849,7 +73849,7 @@
       "label": "test_v23_recovery_action_is_printed_as_premise_not_awarded_as_work()",
       "file_type": "code",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L93",
+      "source_location": "L96",
       "_origin": "ast",
       "id": "tests_test_french_network_incident_prose_test_v23_recovery_action_is_printed_as_premise_not_awarded_as_work",
       "community": 38,
@@ -73860,7 +73860,7 @@
       "label": "test_v23_finite_selection_and_blueprint_tampering_fail_closed()",
       "file_type": "code",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L114",
+      "source_location": "L117",
       "_origin": "ast",
       "id": "tests_test_french_network_incident_prose_test_v23_finite_selection_and_blueprint_tampering_fail_closed",
       "community": 38,
@@ -74678,7 +74678,7 @@
       "_origin": "ast",
       "id": "tests_test_french_runtime_test_network_depth_answer_and_rubric_stay_together",
       "community": 13,
-      "community_name": "build_network_depth_contract",
+      "community_name": "verify_contract",
       "norm_label": "test_network_depth_answer_and_rubric_stay_together()"
     },
     {
@@ -76855,8 +76855,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "test_nsi_assessment.py"
     },
     {
@@ -76866,8 +76866,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_exercise",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "exercise()"
     },
     {
@@ -76877,8 +76877,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_exercise_credit_is_exact_and_duplicate_labels_rejected",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "test_exercise_credit_is_exact_and_duplicate_labels_rejected()"
     },
     {
@@ -76888,8 +76888,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_exercise_credit_must_match_its_explicit_blueprint_allocation",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "test_exercise_credit_must_match_its_explicit_blueprint_allocation()"
     },
     {
@@ -76899,8 +76899,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_language_rubric_is_officially_structured_but_numerically_indicative",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "test_language_rubric_is_officially_structured_but_numerically_indicative()"
     },
     {
@@ -76910,8 +76910,8 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_marking_must_credit_each_question_exactly",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "test_marking_must_credit_each_question_exactly()"
     },
     {
@@ -76921,7 +76921,7 @@
       "source_location": "L86",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_deterministic_verifier_does_not_trust_expected_answer",
-      "community": 67,
+      "community": 13,
       "community_name": "verify_contract",
       "norm_label": "test_deterministic_verifier_does_not_trust_expected_answer()"
     },
@@ -76932,7 +76932,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_py_parametrize",
-      "community": 67,
+      "community": 13,
       "community_name": "verify_contract",
       "norm_label": "parametrize"
     },
@@ -76943,7 +76943,7 @@
       "source_location": "L101",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_sql_verification_checks_results_and_disallows_external_access",
-      "community": 67,
+      "community": 13,
       "community_name": "verify_contract",
       "norm_label": "test_sql_verification_checks_results_and_disallows_external_access()"
     },
@@ -76954,7 +76954,7 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_python_trace_has_no_imports_file_access_or_unbounded_loops",
-      "community": 67,
+      "community": 13,
       "community_name": "verify_contract",
       "norm_label": "test_python_trace_has_no_imports_file_access_or_unbounded_loops()"
     },
@@ -76965,7 +76965,7 @@
       "source_location": "L168",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_shortest_path_checks_real_graph_and_missing_nodes",
-      "community": 67,
+      "community": 13,
       "community_name": "verify_contract",
       "norm_label": "test_shortest_path_checks_real_graph_and_missing_nodes()"
     },
@@ -76976,8 +76976,8 @@
       "source_location": "L183",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_solver_prompt_does_not_leak_solution_or_marking",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "test_solver_prompt_does_not_leak_solution_or_marking()"
     },
     {
@@ -76987,8 +76987,8 @@
       "source_location": "L195",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_structured_graph_is_bound_to_question_and_deterministic_contract",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "test_structured_graph_is_bound_to_question_and_deterministic_contract()"
     },
     {
@@ -76998,8 +76998,8 @@
       "source_location": "L225",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_app_owned_six_node_graph_renders_without_crossed_edges",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "test_app_owned_six_node_graph_renders_without_crossed_edges()"
     },
     {
@@ -77009,8 +77009,8 @@
       "source_location": "L300",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_structured_table_requires_rectangular_bounded_data",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "test_structured_table_requires_rectangular_bounded_data()"
     },
     {
@@ -77020,8 +77020,8 @@
       "source_location": "L317",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_sql_relation_identifier_is_visible_and_optional_create_clause_is_valid",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "test_sql_relation_identifier_is_visible_and_optional_create_clause_is_valid()"
     },
     {
@@ -77031,8 +77031,8 @@
       "source_location": "L356",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_question_demand_is_bound_to_official_capabilities_and_time_budget",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "test_question_demand_is_bound_to_official_capabilities_and_time_budget()"
     },
     {
@@ -77042,8 +77042,8 @@
       "source_location": "L376",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_exercise_rejects_flat_low_demand_question_sets",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "test_exercise_rejects_flat_low_demand_question_sets()"
     },
     {
@@ -77053,8 +77053,8 @@
       "source_location": "L389",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_seeded_question_blueprints_make_marks_and_timing_exact_before_ai",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "test_seeded_question_blueprints_make_marks_and_timing_exact_before_ai()"
     },
     {
@@ -77064,8 +77064,8 @@
       "source_location": "L410",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_question_intents_follow_coherent_parts_instead_of_rotating_codes",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 11,
+      "community_name": "NSIExercise",
       "norm_label": "test_question_intents_follow_coherent_parts_instead_of_rotating_codes()"
     },
     {
@@ -77075,8 +77075,8 @@
       "source_location": "L453",
       "_origin": "ast",
       "id": "tests_test_nsi_assessment_test_recorded_v6_blueprint_is_not_rewritten_by_new_archetypes",
-      "community": 67,
-      "community_name": "verify_contract",
+      "community": 120,
+      "community_name": "pipeline.py",
       "norm_label": "test_recorded_v6_blueprint_is_not_rewritten_by_new_archetypes()"
     },
     {
@@ -87360,8 +87360,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "readme",
-      "community": 169,
-      "community_name": "occitanie-project.md",
+      "community": 47,
+      "community_name": "README.md",
       "norm_label": "readme.md"
     },
     {
@@ -87492,8 +87492,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_architecture",
-      "community": 220,
-      "community_name": "Architecture",
+      "community": 47,
+      "community_name": "README.md",
       "norm_label": "architecture.md"
     },
     {
@@ -87624,8 +87624,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_assessment_quality",
-      "community": 193,
-      "community_name": "Assessment quality and originality",
+      "community": 47,
+      "community_name": "README.md",
       "norm_label": "assessment_quality.md"
     },
     {
@@ -88219,7 +88219,7 @@
       "_origin": "ast",
       "id": "docs_french_baccalaureat",
       "community": 47,
-      "community_name": "French NSI prototype: architecture and operation",
+      "community_name": "README.md",
       "norm_label": "french-baccalaureat.md"
     },
     {
@@ -88230,7 +88230,7 @@
       "_origin": "ast",
       "id": "docs_french_baccalaureat_french_nsi_prototype_architecture_and_operation",
       "community": 47,
-      "community_name": "French NSI prototype: architecture and operation",
+      "community_name": "README.md",
       "norm_label": "french nsi prototype: architecture and operation"
     },
     {
@@ -88241,7 +88241,7 @@
       "_origin": "ast",
       "id": "docs_french_baccalaureat_data_flow",
       "community": 47,
-      "community_name": "French NSI prototype: architecture and operation",
+      "community_name": "README.md",
       "norm_label": "data flow"
     },
     {
@@ -88252,7 +88252,7 @@
       "_origin": "ast",
       "id": "docs_french_baccalaureat_developer_commands",
       "community": 47,
-      "community_name": "French NSI prototype: architecture and operation",
+      "community_name": "README.md",
       "norm_label": "developer commands"
     },
     {
@@ -88263,7 +88263,7 @@
       "_origin": "ast",
       "id": "docs_french_baccalaureat_storage_and_privacy",
       "community": 47,
-      "community_name": "French NSI prototype: architecture and operation",
+      "community_name": "README.md",
       "norm_label": "storage and privacy"
     },
     {
@@ -88274,7 +88274,7 @@
       "_origin": "ast",
       "id": "docs_french_baccalaureat_adding_another_framework",
       "community": 47,
-      "community_name": "French NSI prototype: architecture and operation",
+      "community_name": "README.md",
       "norm_label": "adding another framework"
     },
     {
@@ -88285,7 +88285,7 @@
       "_origin": "ast",
       "id": "docs_french_baccalaureat_current_limitations",
       "community": 47,
-      "community_name": "French NSI prototype: architecture and operation",
+      "community_name": "README.md",
       "norm_label": "current limitations"
     },
     {
@@ -88570,8 +88570,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_project_analysis_project_analysis",
-      "community": 164,
-      "community_name": "Paper creator: deep project analysis",
+      "community": 47,
+      "community_name": "README.md",
       "norm_label": "project_analysis.md"
     },
     {
@@ -88889,8 +88889,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_project_analysis_ui_audit",
-      "community": 251,
-      "community_name": "macOS UI audit",
+      "community": 47,
+      "community_name": "README.md",
       "norm_label": "ui_audit.md"
     },
     {
@@ -89989,8 +89989,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_quality_french_nsi_v12_pdf_verification_2026_10_06_french_nsi_v12_extracted_pdf_and_visual_check_6_october_2026",
-      "community": 326,
-      "community_name": "French NSI v12 extracted-PDF and visual check \u2014 6 October 2026",
+      "community": 169,
+      "community_name": "occitanie-project.md",
       "norm_label": "french nsi v12 extracted-pdf and visual check \u2014 6 october 2026"
     },
     {
@@ -90000,8 +90000,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "docs_quality_french_nsi_v12_pdf_verification_2026_10_06_pinned_comparison",
-      "community": 326,
-      "community_name": "French NSI v12 extracted-PDF and visual check \u2014 6 October 2026",
+      "community": 169,
+      "community_name": "occitanie-project.md",
       "norm_label": "pinned comparison"
     },
     {
@@ -90011,8 +90011,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "docs_quality_french_nsi_v12_pdf_verification_2026_10_06_page_level_observations",
-      "community": 326,
-      "community_name": "French NSI v12 extracted-PDF and visual check \u2014 6 October 2026",
+      "community": 169,
+      "community_name": "occitanie-project.md",
       "norm_label": "page-level observations"
     },
     {
@@ -90022,8 +90022,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "docs_quality_french_nsi_v12_pdf_verification_2026_10_06_publication_gate_and_remaining_gaps",
-      "community": 326,
-      "community_name": "French NSI v12 extracted-PDF and visual check \u2014 6 October 2026",
+      "community": 169,
+      "community_name": "occitanie-project.md",
       "norm_label": "publication gate and remaining gaps"
     },
     {
@@ -161312,7 +161312,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L124",
+      "source_location": "L127",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose_test_v23_finite_selection_and_blueprint_tampering_fail_closed",
@@ -161324,7 +161324,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L102",
+      "source_location": "L105",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose_test_v23_recovery_action_is_printed_as_premise_not_awarded_as_work",
@@ -161336,7 +161336,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L79",
+      "source_location": "L82",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose_test_v23_route_calculation_and_low_credit_rubrics_cover_all_requested_steps",
@@ -161687,7 +161687,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L118",
+      "source_location": "L121",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose",
@@ -161699,7 +161699,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L125",
+      "source_location": "L128",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose_test_v23_finite_selection_and_blueprint_tampering_fail_closed",
@@ -161723,7 +161723,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L118",
+      "source_location": "L121",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose",
@@ -161735,7 +161735,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L135",
+      "source_location": "L138",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose_test_v23_finite_selection_and_blueprint_tampering_fail_closed",
@@ -161855,7 +161855,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L139",
+      "source_location": "L142",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose_test_v23_finite_selection_and_blueprint_tampering_fail_closed",
@@ -161867,7 +161867,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L101",
+      "source_location": "L104",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose_test_v23_recovery_action_is_printed_as_premise_not_awarded_as_work",
@@ -161879,7 +161879,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L78",
+      "source_location": "L81",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose_test_v23_route_calculation_and_low_credit_rubrics_cover_all_requested_steps",
@@ -169276,7 +169276,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L136",
+      "source_location": "L139",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose_test_v23_finite_selection_and_blueprint_tampering_fail_closed",
@@ -169288,7 +169288,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L104",
+      "source_location": "L107",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose_test_v23_recovery_action_is_printed_as_premise_not_awarded_as_work",
@@ -169300,7 +169300,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L77",
+      "source_location": "L80",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose_test_v23_route_calculation_and_low_credit_rubrics_cover_all_requested_steps",
@@ -344655,7 +344655,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L114",
+      "source_location": "L117",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose",
@@ -344666,7 +344666,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L93",
+      "source_location": "L96",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose",
@@ -344677,7 +344677,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L69",
+      "source_location": "L72",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose",
@@ -344712,7 +344712,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L127",
+      "source_location": "L130",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose_test_v23_finite_selection_and_blueprint_tampering_fail_closed",
@@ -344724,7 +344724,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L103",
+      "source_location": "L106",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose_test_v23_recovery_action_is_printed_as_premise_not_awarded_as_work",
@@ -344736,7 +344736,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "tests/test_french_network_incident_prose.py",
-      "source_location": "L80",
+      "source_location": "L83",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_test_french_network_incident_prose_test_v23_route_calculation_and_low_credit_rubrics_cover_all_requested_steps",
@@ -381449,5 +381449,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "5aecec8ba388d61b5319ed3a1efc427c1e729777"
+  "built_at_commit": "9dde896ee11c097dde504f0a144f043cdd0258e0"
 }
