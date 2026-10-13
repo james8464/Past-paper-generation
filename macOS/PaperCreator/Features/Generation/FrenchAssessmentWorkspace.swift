@@ -19,19 +19,30 @@ struct FrenchWorkspacePresentation {
     var blocker: String? {
         guard !isRunning else { return nil }
         if !hasReferences { return "Prepare French references first." }
-        if model.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        let selectedModel = model.trimmingCharacters(in: .whitespacesAndNewlines)
+        if selectedModel.isEmpty {
             return "Choose a local Ollama model first."
         }
         if ollamaState.message == "Not checked" { return "Check Ollama before creating a draft." }
         if !ollamaState.installed { return "Install Ollama before creating a draft." }
         if !ollamaState.running { return "Start Ollama before creating a draft." }
-        if hasLoadedModels && !availableModels.contains(model) {
+        if hasLoadedModels && !availableModels.contains(selectedModel) {
             return "Install the selected Ollama model before creating a draft."
         }
         return nil
     }
 
     var canGenerate: Bool { !isRunning && blocker == nil }
+
+    var showsOllamaRecheck: Bool {
+        guard let blocker else { return false }
+        return [
+            "Check Ollama before creating a draft.",
+            "Install Ollama before creating a draft.",
+            "Start Ollama before creating a draft.",
+            "Install the selected Ollama model before creating a draft."
+        ].contains(blocker)
+    }
 }
 
 struct FrenchAssessmentWorkspace: View {
@@ -136,13 +147,18 @@ struct FrenchAssessmentWorkspace: View {
                     Text(localizedValue(blocker))
                         .font(.callout)
                         .foregroundStyle(.secondary)
-                    if blocker == "Check Ollama before creating a draft." {
-                        Button("Check Ollama", action: application.refreshOllama)
-                    } else if blocker == "Install Ollama before creating a draft." {
+                    if blocker == "Install Ollama before creating a draft." {
                         Button("Get Ollama", action: application.openOllamaDownload)
                     } else if blocker == "Install the selected Ollama model before creating a draft.",
                               application.distributionMode.canManageOllama {
                         Button("Download selected model", action: application.pullSelectedModel)
+                    } else if blocker == "Install the selected Ollama model before creating a draft." {
+                        Text("Install this model in Ollama, then check again.")
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
+                    }
+                    if presentation.showsOllamaRecheck {
+                        Button("Check Ollama", action: application.refreshOllama)
                     }
                 }
             }

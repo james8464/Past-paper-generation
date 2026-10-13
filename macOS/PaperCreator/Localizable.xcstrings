@@ -804,6 +804,16 @@
         }
       }
     },
+    "Install this model in Ollama, then check again." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installez ce modèle dans Ollama, puis vérifiez à nouveau."
+          }
+        }
+      }
+    },
     "References and privacy" : {
       "localizations" : {
         "fr" : {

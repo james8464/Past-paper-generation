@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791890785.3206935,
-    "ast_hash": "b11cc58569c49c1511c4fdb111c1aed9",
+    "mtime": 1791895960.1117902,
+    "ast_hash": "1c20b03a7b19c5ea870aaf8d3c4e9021",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1355,8 +1355,8 @@
     "semantic_hash": "c1ad220248a752267979a93dd5206942"
   },
   "macOS/PaperCreator/Features/Generation/FrenchAssessmentWorkspace.swift": {
-    "mtime": 1791895506.065062,
-    "ast_hash": "4019bdcdd74cd93f600bd78326974603",
+    "mtime": 1791896154.8714273,
+    "ast_hash": "f82639ef6891ee512f25f583d88ebb81",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Generation/GeneratorWorkspaceView.swift": {
@@ -1440,8 +1440,8 @@
     "semantic_hash": "5bf232a55ba6ea284e0c08a72096456f"
   },
   "macOS/Tests/AccessibilityTests.swift": {
-    "mtime": 1791895569.401354,
-    "ast_hash": "7c1312b4c82f8c2f7b33dd8e505af646",
+    "mtime": 1791896144.375922,
+    "ast_hash": "58c26ed8fa324cd6c655f261d3a866cc",
     "semantic_hash": ""
   },
   "macOS/Tests/AppTests.swift": {
@@ -1450,8 +1450,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
-    "mtime": 1791895355.593755,
-    "ast_hash": "2cd971f0a987e29f7a34b7b49beb2ddd",
+    "mtime": 1791896214.256643,
+    "ast_hash": "5a5d4bbe8cf45a864dc007251bbe917c",
     "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
@@ -3160,8 +3160,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-10-13-native-workflow-clarity-design.md": {
-    "mtime": 1791894432.4888268,
-    "ast_hash": "6351ad0aa59f5a69114ffc62378857b2",
+    "mtime": 1791895887.5987277,
+    "ast_hash": "2f8da79d5b4b6b0ab26bd016e4f7658b",
     "semantic_hash": ""
   }
 }

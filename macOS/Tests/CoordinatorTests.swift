@@ -206,6 +206,18 @@ final class CoordinatorTests: XCTestCase {
             subject.title == "Biology"
                 && subject.boards.contains { $0.status == .placeholder }
         })
+
+        let plannedBoard = try XCTUnwrap(ExamCatalog.board(id: "biology-aqa"))
+        XCTAssertTrue(store.selectBoard(plannedBoard, isLocked: false))
+        store.searchText = ""
+        XCTAssertTrue(store.filteredSubjects.contains { subject in
+            subject.boards.contains { $0.id == plannedBoard.id }
+        })
+        let restored = CatalogStore(subjects: ExamCatalog.subjects, defaults: defaults)
+        XCTAssertEqual(restored.sidebarSelection, .board(plannedBoard.id))
+        XCTAssertTrue(restored.filteredSubjects.contains { subject in
+            subject.boards.contains { $0.id == plannedBoard.id }
+        })
     }
 
     func testSidebarSearchExpandsMatchingSubjectWithoutChangingSavedDisclosureState() {
