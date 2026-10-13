@@ -33,6 +33,10 @@ from Backend.Core.france.network import ollama_request
 from Backend.Core.france.network_contract import NetworkContract
 from Backend.Core.france.network_depth_contract import NetworkDepthContract
 from Backend.Core.france.network_depth_prose import network_depth_selection_schema
+from Backend.Core.france.network_incident_contract import NetworkIncidentContract
+from Backend.Core.france.network_incident_prose import (
+    network_incident_selection_schema,
+)
 from Backend.Core.france.network_prose import network_selection_schema
 from Backend.Core.france.network_reasoning_contract import NetworkReasoningContract
 from Backend.Core.france.network_reasoning_prose import (
@@ -115,6 +119,16 @@ class FrenchOllamaClient(HostedLLMClient):
 
 
 def response_policy(prompt: str) -> tuple[dict, int]:
+    if prompt.startswith("Sélectionne l'exercice 3 v23"):
+        embedded = json.loads(
+            prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
+        )
+        request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+        contract = NetworkIncidentContract.from_dict(request["contract"])
+        schema = network_incident_selection_schema(contract)
+        if embedded != schema or request.get("contract_sha256") != contract.digest:
+            raise ValueError("Network incident schema or contract mismatch")
+        return schema, 2048
     if prompt.startswith("Sélectionne l'exercice 1 v22"):
         embedded = json.loads(
             prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
