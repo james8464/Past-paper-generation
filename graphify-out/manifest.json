@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1791683014.4234746,
-    "ast_hash": "c194051f6b576eee9388ffa562d7382f",
+    "mtime": 1791883585.2962935,
+    "ast_hash": "eb920db1ed7730de55d55a9dbb0e17a3",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3102,6 +3102,36 @@
   "docs/quality/french-nsi-corpus-rights-audit-2026-10-11.md": {
     "mtime": 1791683116.682574,
     "ast_hash": "abf5c935d3d5cc470d3fc5012344ef4a",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/network_incident_contract.py": {
+    "mtime": 1791883671.0254097,
+    "ast_hash": "699f18b87abd84fb2652cedcd4eec881",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/network_incident_prose.py": {
+    "mtime": 1791883690.3806882,
+    "ast_hash": "5335965d79ed36102b0ed89f64d31688",
+    "semantic_hash": ""
+  },
+  "tests/test_french_network_incident_contract.py": {
+    "mtime": 1791883447.4427383,
+    "ast_hash": "a243e34543253d410a6b28bdb99f39d7",
+    "semantic_hash": ""
+  },
+  "tests/test_french_network_incident_prose.py": {
+    "mtime": 1791883645.663307,
+    "ast_hash": "27938120aba7dba20919bbb93e941827",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-13-french-nsi-network-incident-v23.md": {
+    "mtime": 1791882980.0380695,
+    "ast_hash": "b40789ea01e951a438fe1c7e6eb36d10",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-13-french-nsi-network-incident-v23-design.md": {
+    "mtime": 1791883349.9023507,
+    "ast_hash": "931429808a31fa0bc44f91ab7c4001b1",
     "semantic_hash": ""
   }
 }
