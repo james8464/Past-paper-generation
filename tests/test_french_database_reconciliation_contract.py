@@ -50,7 +50,10 @@ def test_eight_rows_make_the_join_and_algorithm_defects_observable() -> None:
 def test_seeded_facts_round_trip_with_the_same_digest(seed: int) -> None:
     module = _module()
     contract = module.build_database_reconciliation_contract(seed)
-    assert module.DatabaseReconciliationContract.from_dict(contract.to_dict()).digest == contract.digest
+    assert (
+        module.DatabaseReconciliationContract.from_dict(contract.to_dict()).digest
+        == contract.digest
+    )
     assert contract.digest == module.build_database_reconciliation_contract(seed).digest
 
 
@@ -70,7 +73,9 @@ def test_seeded_facts_round_trip_with_the_same_digest(seed: int) -> None:
 )
 def test_contract_rejects_tampered_or_mixed_facts(mutate) -> None:
     module = _module()
-    data = copy.deepcopy(module.build_database_reconciliation_contract(270100).to_dict())
+    data = copy.deepcopy(
+        module.build_database_reconciliation_contract(270100).to_dict()
+    )
     mutate(data)
     with pytest.raises(ValueError):
         module.DatabaseReconciliationContract.from_dict(data)

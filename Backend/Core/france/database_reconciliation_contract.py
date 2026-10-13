@@ -112,8 +112,12 @@ def _expected(tables: dict) -> dict:
         correct_join = [list(row) for row in connection.execute(_CORRECT_SQL)]
         faulty_labels = dict(faulty_join)
         correct_labels = dict(correct_join)
-        mismatch_ids = [i for i in correct_labels if faulty_labels[i] != correct_labels[i]]
-        matching_ids = [i for i in correct_labels if faulty_labels[i] == correct_labels[i]]
+        mismatch_ids = [
+            i for i in correct_labels if faulty_labels[i] != correct_labels[i]
+        ]
+        matching_ids = [
+            i for i in correct_labels if faulty_labels[i] == correct_labels[i]
+        ]
         category_counts = [row[1] for row in connection.execute(_GROUP_SQL)]
         invalid_insert_rejected = False
         try:
@@ -128,9 +132,12 @@ def _expected(tables: dict) -> dict:
         correct_python_by_state = []
 
         def capture() -> None:
-            rows = [list(row) for row in connection.execute(
-                "SELECT id_incident, id_agent, id_cat, statut FROM incident ORDER BY id_incident"
-            )]
+            rows = [
+                list(row)
+                for row in connection.execute(
+                    "SELECT id_incident, id_agent, id_cat, statut FROM incident ORDER BY id_incident"
+                )
+            ]
             faulty, correct = _python_counts(rows)
             sql_correct = connection.execute(
                 "SELECT COUNT(*) FROM incident WHERE id_cat = 2 AND statut = 'clos'"
@@ -193,9 +200,17 @@ class DatabaseReconciliationContract:
     @classmethod
     def from_dict(cls, data: dict) -> DatabaseReconciliationContract:
         required = {
-            "version", "seed", "exercise_id", "task_ids", "tables", *_SOURCE,
+            "version",
+            "seed",
+            "exercise_id",
+            "task_ids",
+            "tables",
+            *_SOURCE,
         }
-        if not isinstance(data, dict) or set(data) not in (required, required | {"expected"}):
+        if not isinstance(data, dict) or set(data) not in (
+            required,
+            required | {"expected"},
+        ):
             raise ValueError("Invalid incident-reconciliation contract fields")
         if (
             type(data["version"]) is not int
@@ -211,7 +226,11 @@ class DatabaseReconciliationContract:
         if "expected" in data and data["expected"] != expected:
             raise ValueError("Incident-reconciliation expected result mismatch")
         canonical = {**data, "expected": expected}
-        return cls(json.dumps(canonical, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+        return cls(
+            json.dumps(
+                canonical, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+            )
+        )
 
 
 def build_database_reconciliation_contract(
@@ -219,11 +238,13 @@ def build_database_reconciliation_contract(
 ) -> DatabaseReconciliationContract:
     if type(seed) is not int or exercise_id != "2":
         raise ValueError("Unsupported incident-reconciliation seed or exercise")
-    return DatabaseReconciliationContract.from_dict({
-        "version": 4,
-        "seed": seed,
-        "exercise_id": exercise_id,
-        "task_ids": _TASK_IDS,
-        "tables": _tables(seed),
-        **_SOURCE,
-    })
+    return DatabaseReconciliationContract.from_dict(
+        {
+            "version": 4,
+            "seed": seed,
+            "exercise_id": exercise_id,
+            "task_ids": _TASK_IDS,
+            "tables": _tables(seed),
+            **_SOURCE,
+        }
+    )
