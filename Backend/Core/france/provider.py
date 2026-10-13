@@ -12,6 +12,12 @@ from Backend.Core.france.database_prose import database_selection_schema
 from Backend.Core.france.database_reasoning_prose import (
     database_reasoning_selection_schema,
 )
+from Backend.Core.france.database_reconciliation_contract import (
+    DatabaseReconciliationContract,
+)
+from Backend.Core.france.database_reconciliation_prose import (
+    database_reconciliation_selection_schema,
+)
 from Backend.Core.france.graph_resilience_contract import GraphResilienceContract
 from Backend.Core.france.graph_resilience_prose import graph_resilience_selection_schema
 from Backend.Core.france.graph_route_trace_contract import GraphRouteTraceContract
@@ -119,6 +125,16 @@ class FrenchOllamaClient(HostedLLMClient):
 
 
 def response_policy(prompt: str) -> tuple[dict, int]:
+    if prompt.startswith("Sélectionne l'exercice 2 v24"):
+        embedded = json.loads(
+            prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
+        )
+        request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+        contract = DatabaseReconciliationContract.from_dict(request["contract"])
+        schema = database_reconciliation_selection_schema(contract)
+        if embedded != schema or request.get("contract_sha256") != contract.digest:
+            raise ValueError("Incident-reconciliation schema or contract mismatch")
+        return schema, 2048
     if prompt.startswith("Sélectionne l'exercice 3 v23"):
         embedded = json.loads(
             prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
