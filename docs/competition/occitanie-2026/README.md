@@ -1,6 +1,6 @@
 # Prix Occitanie 2026 submission pack
 
-Updated 10 October 2026.
+Updated 15 October 2026.
 
 ## Formal requirement
 
@@ -61,15 +61,16 @@ those items as planned qualification work, not achieved approval.
 The first pinned Gemma 4 12B campaign accepted 0 of 10 complete papers. Its
 failures and later failed one-paper diagnostics remain retained evidence, not a
 model recommendation. All three exercises now use app-owned, versioned French
-question, answer and credit contracts. A pinned V23 paper passed automated
+question, answer and credit contracts. A pinned V24 paper passed automated
 checks on its first attempt, but
-[manual comparison with the official 2026 paper](../../quality/french-nsi-v23-network-incident-live-diagnostic-2026-10-13.md)
-kept fidelity on hold: the eleven-page subject has 32 numbered questions,
-versus 36 across 16 official pages. E1 has writable before/after route tables
-and E3 now links routing, process recovery and security, but E2 remains compact,
-the final network page is sparse, and sustained multi-step depth and learner
-working-space flow remain insufficient. The V22–V15 live holds and
-v12–v14 failures remain separate evidence. No
+[manual comparison with the official 2026 paper](../../quality/french-nsi-v24-incident-reconciliation-live-diagnostic-2026-10-15.md)
+kept fidelity on hold: the twelve-page subject has 34 numbered questions,
+versus 36 across 16 official pages. E1 retains writable before/after route
+tables, E2 reconciliation now sustains linked SQL and algorithm reasoning, and
+E3 links routing, process recovery and security. E1 page 4, E2 page 9 and the
+final E3 page remain sparse, with insufficient sustained depth and learner
+working-space flow. The V23–V15 live holds and V12–V14 failures remain
+separate evidence. No
 multi-paper model qualification, teacher recommendation or learner calibration
 has been achieved. The application must present the generator as a prototype,
 not a validated classroom-ready paper maker.

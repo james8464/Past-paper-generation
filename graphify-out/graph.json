@@ -769,8 +769,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "backend_core_assessment_checkpoints_identity_for_blueprint",
-      "community": 58,
-      "community_name": "test_computer_science_objectives.py",
+      "community": 3,
+      "community_name": "load_syllabus",
       "norm_label": "identity_for_blueprint()"
     },
     {
@@ -2607,7 +2607,7 @@
       "_origin": "ast",
       "id": "backend_core_candidate_identity_candidate_content_identity",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "candidate_content_identity()"
     },
     {
@@ -3431,8 +3431,8 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "backend_core_document_dsl_components_cover",
-      "community": 167,
-      "community_name": "components.py",
+      "community": 176,
+      "community_name": "configuredgen/render_pdf.py",
       "norm_label": "cover"
     },
     {
@@ -3541,8 +3541,8 @@
       "source_location": "L155",
       "_origin": "ast",
       "id": "backend_core_document_dsl_components_answerspace",
-      "community": 176,
-      "community_name": "configuredgen/render_pdf.py",
+      "community": 167,
+      "community_name": "components.py",
       "norm_label": "answerspace"
     },
     {
@@ -3552,8 +3552,8 @@
       "source_location": "L161",
       "_origin": "ast",
       "id": "backend_core_document_dsl_components_answerspace_post_init",
-      "community": 176,
-      "community_name": "configuredgen/render_pdf.py",
+      "community": 167,
+      "community_name": "components.py",
       "norm_label": ".__post_init__()"
     },
     {
@@ -3783,8 +3783,8 @@
       "source_location": "L300",
       "_origin": "ast",
       "id": "backend_core_document_dsl_components_schemegrid_column_weights",
-      "community": 167,
-      "community_name": "components.py",
+      "community": 148,
+      "community_name": "Size",
       "norm_label": ".column_weights()"
     },
     {
@@ -5202,8 +5202,8 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "backend_core_exam_blueprints_sectionrule",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "sectionrule"
     },
     {
@@ -5213,8 +5213,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_core_exam_blueprints_py_model_validator",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "model_validator"
     },
     {
@@ -5224,8 +5224,8 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "backend_core_exam_blueprints_sectionrule_valid_question_overrides",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": ".valid_question_overrides()"
     },
     {
@@ -5235,8 +5235,8 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "backend_core_exam_blueprints_sectionrule_candidate_marks",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": ".candidate_marks()"
     },
     {
@@ -5301,8 +5301,8 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "backend_core_exam_blueprints_generatedsection_bind_selection_context",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": ".bind_selection_context()"
     },
     {
@@ -5477,8 +5477,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "backend_core_exam_cover_questionpapercover_component",
-      "community": 167,
-      "community_name": "components.py",
+      "community": 176,
+      "community_name": "configuredgen/render_pdf.py",
       "norm_label": ".component()"
     },
     {
@@ -5741,8 +5741,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "backend_core_exam_cover_rationale_56",
-      "community": 167,
-      "community_name": "components.py",
+      "community": 176,
+      "community_name": "configuredgen/render_pdf.py",
       "norm_label": "return the renderer-neutral representation used for qualification."
     },
     {
@@ -22736,8 +22736,8 @@
       "source_location": "L281",
       "_origin": "ast",
       "id": "backend_core_subjects_sql_contracts_render_sql_schema",
-      "community": 29,
-      "community_name": "Question",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "render_sql_schema()"
     },
     {
@@ -23187,8 +23187,8 @@
       "source_location": "L282",
       "_origin": "ast",
       "id": "backend_core_subjects_sql_contracts_rationale_282",
-      "community": 29,
-      "community_name": "Question",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "render only public schema facts; no worked query is present."
     },
     {
@@ -28264,8 +28264,8 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_cli_generate_package",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 323,
+      "community_name": "generate_package",
       "norm_label": "generate_package()"
     },
     {
@@ -28649,8 +28649,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_py_model_validator",
-      "community": 29,
-      "community_name": "Question",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "model_validator"
     },
     {
@@ -28660,8 +28660,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_models_stimulus_sql_source_is_derived_from_contract",
-      "community": 29,
-      "community_name": "Question",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": ".sql_source_is_derived_from_contract()"
     },
     {
@@ -28968,8 +28968,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_ollama_client_py_paperblueprint",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "paperblueprint"
     },
     {
@@ -29012,8 +29012,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_ollama_client_py_questionpart",
-      "community": 58,
-      "community_name": "test_computer_science_objectives.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "questionpart"
     },
     {
@@ -29034,8 +29034,8 @@
       "source_location": "L271",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_ollama_client_prompt",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "_prompt()"
     },
     {
@@ -29045,8 +29045,8 @@
       "source_location": "L343",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_ollama_client_part_demand_item",
-      "community": 58,
-      "community_name": "test_computer_science_objectives.py",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "_part_demand_item()"
     },
     {
@@ -29188,8 +29188,8 @@
       "source_location": "L543",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_ollama_client_uses_scenario_only_generation",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "_uses_scenario_only_generation()"
     },
     {
@@ -31102,8 +31102,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_validation",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 58,
+      "community_name": "test_computer_science_objectives.py",
       "norm_label": "cspapergen/validation.py"
     },
     {
@@ -31113,8 +31113,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_validation_validate_blueprint",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 58,
+      "community_name": "test_computer_science_objectives.py",
       "norm_label": "validate_blueprint()"
     },
     {
@@ -31124,8 +31124,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_validation_py_paperblueprint",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 58,
+      "community_name": "test_computer_science_objectives.py",
       "norm_label": "paperblueprint"
     },
     {
@@ -31135,8 +31135,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_validation_py_syllabus",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 58,
+      "community_name": "test_computer_science_objectives.py",
       "norm_label": "syllabus"
     },
     {
@@ -31146,8 +31146,8 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_validation_validate_question_bank_identity",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 58,
+      "community_name": "test_computer_science_objectives.py",
       "norm_label": "_validate_question_bank_identity()"
     },
     {
@@ -31157,8 +31157,8 @@
       "source_location": "L135",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_cspapergen_validation_validate_verified_question_contract",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 58,
+      "community_name": "test_computer_science_objectives.py",
       "norm_label": "_validate_verified_question_contract()"
     },
     {
@@ -31721,8 +31721,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_cli_pdf",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 323,
+      "community_name": "generate_package",
       "norm_label": "test_cli_pdf.py"
     },
     {
@@ -31732,8 +31732,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_cli_pdf_test_generate_package_writes_rendered_and_assessment_outputs",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 323,
+      "community_name": "generate_package",
       "norm_label": "test_generate_package_writes_rendered_and_assessment_outputs()"
     },
     {
@@ -31743,8 +31743,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_cli_pdf_test_generate_package_writes_data_structures_question_bank",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 323,
+      "community_name": "generate_package",
       "norm_label": "test_generate_package_writes_data_structures_question_bank()"
     },
     {
@@ -31754,8 +31754,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_cli_pdf_test_generated_pdfs_are_a4",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 323,
+      "community_name": "generate_package",
       "norm_label": "test_generated_pdfs_are_a4()"
     },
     {
@@ -31765,8 +31765,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_cli_pdf_test_question_paper_uses_realistic_aqa_page_count",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 323,
+      "community_name": "generate_package",
       "norm_label": "test_question_paper_uses_realistic_aqa_page_count()"
     },
     {
@@ -31776,8 +31776,8 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_cli_pdf_test_final_additional_answer_page_reserves_independent_notice",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 323,
+      "community_name": "generate_package",
       "norm_label": "test_final_additional_answer_page_reserves_independent_notice()"
     },
     {
@@ -31787,8 +31787,8 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_cli_pdf_test_question_cover_includes_the_independent_wordmark",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 323,
+      "community_name": "generate_package",
       "norm_label": "test_question_cover_includes_the_independent_wordmark()"
     },
     {
@@ -31798,8 +31798,8 @@
       "source_location": "L107",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_cli_pdf_test_paper_two_transition_leaf_uses_do_not_write_diagonal",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 323,
+      "community_name": "generate_package",
       "norm_label": "test_paper_two_transition_leaf_uses_do_not_write_diagonal()"
     },
     {
@@ -31831,8 +31831,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_closed_response_integrity_test_figure_exposes_same_maintenance_evidence_to_reader_and_solver",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_figure_exposes_same_maintenance_evidence_to_reader_and_solver()"
     },
     {
@@ -31897,8 +31897,8 @@
       "source_location": "L166",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_closed_response_integrity_test_old_figure_review_is_not_current_evidence",
-      "community": 58,
-      "community_name": "test_computer_science_objectives.py",
+      "community": 3,
+      "community_name": "load_syllabus",
       "norm_label": "test_old_figure_review_is_not_current_evidence()"
     },
     {
@@ -32315,8 +32315,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_paper1",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 323,
+      "community_name": "generate_package",
       "norm_label": "test_paper1.py"
     },
     {
@@ -32359,8 +32359,8 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_paper1_test_paper1_package_contains_all_on_screen_exam_artifacts",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 323,
+      "community_name": "generate_package",
       "norm_label": "test_paper1_package_contains_all_on_screen_exam_artifacts()"
     },
     {
@@ -32370,8 +32370,8 @@
       "source_location": "L89",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_paper1_test_paper1_rendered_documents_use_correct_identity",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 323,
+      "community_name": "generate_package",
       "norm_label": "test_paper1_rendered_documents_use_correct_identity()"
     },
     {
@@ -32381,8 +32381,8 @@
       "source_location": "L123",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_paper1_test_paper1_finite_state_question_includes_diagram_and_table",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 323,
+      "community_name": "generate_package",
       "norm_label": "test_paper1_finite_state_question_includes_diagram_and_table()"
     },
     {
@@ -32392,8 +32392,8 @@
       "source_location": "L161",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_paper1_test_electronic_answer_document_has_one_fillable_field_per_part",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 323,
+      "community_name": "generate_package",
       "norm_label": "test_electronic_answer_document_has_one_fillable_field_per_part()"
     },
     {
@@ -32403,8 +32403,8 @@
       "source_location": "L178",
       "_origin": "ast",
       "id": "resources_computer_science_aqa_generator_tests_test_paper1_test_paper1_artifacts_change_between_seeds",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 323,
+      "community_name": "generate_package",
       "norm_label": "test_paper1_artifacts_change_between_seeds()"
     },
     {
@@ -33019,8 +33019,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_computer_science_ocr_generator_ocrcsgen_configs",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "ocrcsgen/configs.py"
     },
     {
@@ -33030,8 +33030,8 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "resources_computer_science_ocr_generator_ocrcsgen_configs_question",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "_question()"
     },
     {
@@ -33041,8 +33041,8 @@
       "source_location": "L119",
       "_origin": "ast",
       "id": "resources_computer_science_ocr_generator_ocrcsgen_configs_sections",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "_sections()"
     },
     {
@@ -34166,8 +34166,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_configured_generators_generator_configuredgen_generator",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "configuredgen/generator.py"
     },
     {
@@ -34177,8 +34177,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "resources_configured_generators_generator_configuredgen_generator_build_paper",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "build_paper()"
     },
     {
@@ -34188,8 +34188,8 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "resources_configured_generators_generator_configuredgen_generator_question",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "_question()"
     },
     {
@@ -34199,8 +34199,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_configured_generators_generator_configuredgen_generator_py_topic",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "topic"
     },
     {
@@ -34210,8 +34210,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_configured_generators_generator_configuredgen_generator_py_random",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "random"
     },
     {
@@ -34221,8 +34221,8 @@
       "source_location": "L252",
       "_origin": "ast",
       "id": "resources_configured_generators_generator_configuredgen_generator_mathematics_question",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "_mathematics_question()"
     },
     {
@@ -34232,8 +34232,8 @@
       "source_location": "L437",
       "_origin": "ast",
       "id": "resources_configured_generators_generator_configuredgen_generator_prompt",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "_prompt()"
     },
     {
@@ -34243,8 +34243,8 @@
       "source_location": "L466",
       "_origin": "ast",
       "id": "resources_configured_generators_generator_configuredgen_generator_section_instruction",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "_section_instruction()"
     },
     {
@@ -34254,8 +34254,8 @@
       "source_location": "L476",
       "_origin": "ast",
       "id": "resources_configured_generators_generator_configuredgen_generator_stimulus",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "_stimulus()"
     },
     {
@@ -34265,8 +34265,8 @@
       "source_location": "L485",
       "_origin": "ast",
       "id": "resources_configured_generators_generator_configuredgen_generator_scheme_lines",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "_scheme_lines()"
     },
     {
@@ -34276,8 +34276,8 @@
       "source_location": "L516",
       "_origin": "ast",
       "id": "resources_configured_generators_generator_configuredgen_generator_structured_points",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "_structured_points()"
     },
     {
@@ -34287,8 +34287,8 @@
       "source_location": "L549",
       "_origin": "ast",
       "id": "resources_configured_generators_generator_configuredgen_generator_answer_form",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "_answer_form()"
     },
     {
@@ -34298,8 +34298,8 @@
       "source_location": "L560",
       "_origin": "ast",
       "id": "resources_configured_generators_generator_configuredgen_generator_uses_levels",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "_uses_levels()"
     },
     {
@@ -34320,8 +34320,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "resources_configured_generators_generator_configuredgen_models_topic",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "topic"
     },
     {
@@ -37142,7 +37142,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_models_syllabustopic",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "syllabustopic"
     },
@@ -37296,7 +37296,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_models_questionblueprint",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "questionblueprint"
     },
@@ -37527,7 +37527,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "pastpapergen/ollama_client.py"
     },
@@ -37538,7 +37538,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_build_question_prompt",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "build_question_prompt()"
     },
@@ -37549,7 +37549,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_py_syllabustopic",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "syllabustopic"
     },
@@ -37560,7 +37560,7 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_parts_for_prompt",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_parts_for_prompt()"
     },
@@ -37572,7 +37572,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_generate_questions_with_ollama",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "generate_questions_with_ollama()"
     },
     {
@@ -37582,7 +37582,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_py_paperblueprint",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "paperblueprint"
     },
@@ -37593,7 +37593,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_py_syllabus",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "syllabus"
     },
@@ -37604,7 +37604,7 @@
       "source_location": "L323",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_review_blueprint_difficulty",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "review_blueprint_difficulty()"
     },
@@ -37615,7 +37615,7 @@
       "source_location": "L384",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_normalise_profile_paper_id",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_normalise_profile_paper_id()"
     },
@@ -37638,7 +37638,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_py_questionpart",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "questionpart"
     },
     {
@@ -37649,7 +37649,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_difficulty_candidate",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_difficulty_candidate()"
     },
     {
@@ -37671,7 +37671,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_assert_public_stimulus",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_assert_public_stimulus()"
     },
     {
@@ -37682,7 +37682,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_validate_solver_projection",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_validate_solver_projection()"
     },
     {
@@ -37693,7 +37693,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_py_evidencerecord",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "evidencerecord"
     },
     {
@@ -37704,7 +37704,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_question_solver_projection",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_question_solver_projection()"
     },
     {
@@ -37714,7 +37714,7 @@
       "source_location": "L527",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_question_demand_items",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_question_demand_items()"
     },
@@ -37725,7 +37725,7 @@
       "source_location": "L557",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_multipart_review_view",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_multipart_review_view()"
     },
@@ -37736,7 +37736,7 @@
       "source_location": "L571",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_review_specification",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_review_specification()"
     },
@@ -37747,7 +37747,7 @@
       "source_location": "L586",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_stimulus_description",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_stimulus_description()"
     },
@@ -37758,7 +37758,7 @@
       "source_location": "L595",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_merge_parts",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_merge_parts()"
     },
@@ -37769,7 +37769,7 @@
       "source_location": "L629",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_merge_text_list",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_merge_text_list()"
     },
@@ -37780,7 +37780,7 @@
       "source_location": "L636",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_clean_prompt",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_clean_prompt()"
     },
@@ -37791,7 +37791,7 @@
       "source_location": "L652",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_merge_part_prompt",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_merge_part_prompt()"
     },
@@ -37803,7 +37803,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_validate_ai_question",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "_validate_ai_question()"
     },
     {
@@ -37813,7 +37813,7 @@
       "source_location": "L830",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_validate_content_lists",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_validate_content_lists()"
     },
@@ -37824,7 +37824,7 @@
       "source_location": "L851",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_strip_part_label",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_strip_part_label()"
     },
@@ -37835,7 +37835,7 @@
       "source_location": "L870",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_required_scope_terms",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_required_scope_terms()"
     },
@@ -37847,7 +37847,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_merge_question_text",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "_merge_question_text()"
     },
     {
@@ -37857,7 +37857,7 @@
       "source_location": "L900",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_uses_review_only_generation",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_uses_review_only_generation()"
     },
@@ -37868,7 +37868,7 @@
       "source_location": "L905",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_restore_source_reference",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_restore_source_reference()"
     },
@@ -37879,7 +37879,7 @@
       "source_location": "L921",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_has_word_starts",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_has_word_starts()"
     },
@@ -37890,7 +37890,7 @@
       "source_location": "L930",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_matches_expected_question_style",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_matches_expected_question_style()"
     },
@@ -37902,7 +37902,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_merge_source_text",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "_merge_source_text()"
     },
     {
@@ -37912,7 +37912,7 @@
       "source_location": "L329",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_rationale_329",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "run an independent demand-only gate over every rendered question item."
     },
@@ -37923,7 +37923,7 @@
       "source_location": "L558",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_rationale_558",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "keep a multipart review focused on the rendered part-level guidance."
     },
@@ -37934,7 +37934,7 @@
       "source_location": "L901",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_rationale_901",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "keep calibrated section a stimuli aligned with rendered assessment data."
     },
@@ -37990,7 +37990,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_py_paperblueprint",
       "community": 128,
-      "community_name": "Canvas",
+      "community_name": "PaperBlueprint",
       "norm_label": "paperblueprint"
     },
     {
@@ -38012,7 +38012,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_count_pages",
       "community": 128,
-      "community_name": "Canvas",
+      "community_name": "PaperBlueprint",
       "norm_label": "_count_pages()"
     },
     {
@@ -38044,8 +38044,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_py_canvas",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "canvas"
     },
     {
@@ -38099,8 +38099,8 @@
       "source_location": "L381",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_front_section",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 100,
+      "community_name": "render_source_booklet",
       "norm_label": "_draw_front_section()"
     },
     {
@@ -38155,7 +38155,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_question_pages",
       "community": 128,
-      "community_name": "Canvas",
+      "community_name": "PaperBlueprint",
       "norm_label": "_draw_question_pages()"
     },
     {
@@ -38166,7 +38166,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_paper_3_pages",
       "community": 128,
-      "community_name": "Canvas",
+      "community_name": "PaperBlueprint",
       "norm_label": "_draw_paper_3_pages()"
     },
     {
@@ -38176,8 +38176,8 @@
       "source_location": "L613",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_paper_3_source_page",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_paper_3_source_page()"
     },
     {
@@ -38187,8 +38187,8 @@
       "source_location": "L759",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_case_source_figure",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_case_source_figure()"
     },
     {
@@ -38198,8 +38198,8 @@
       "source_location": "L783",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_paper_3_extract",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_paper_3_extract()"
     },
     {
@@ -38209,8 +38209,8 @@
       "source_location": "L812",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_paper_3_values",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_paper_3_values()"
     },
     {
@@ -38220,8 +38220,8 @@
       "source_location": "L818",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_paper_3_line_figure",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_paper_3_line_figure()"
     },
     {
@@ -38231,8 +38231,8 @@
       "source_location": "L868",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_paper_3_bar_figure",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_paper_3_bar_figure()"
     },
     {
@@ -38242,8 +38242,8 @@
       "source_location": "L916",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_paper_3_series",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_paper_3_series()"
     },
     {
@@ -38253,8 +38253,8 @@
       "source_location": "L938",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_paper_3_table_figure",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_paper_3_table_figure()"
     },
     {
@@ -38264,8 +38264,8 @@
       "source_location": "L978",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_paper_3_question_summary",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_paper_3_question_summary()"
     },
     {
@@ -38275,8 +38275,8 @@
       "source_location": "L1001",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_paper_3_choice_header",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_paper_3_choice_header()"
     },
     {
@@ -38286,8 +38286,8 @@
       "source_location": "L1043",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_paper_3_choice_prompt",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_paper_3_choice_prompt()"
     },
     {
@@ -38298,7 +38298,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_trailing_blank_pages",
       "community": 128,
-      "community_name": "Canvas",
+      "community_name": "PaperBlueprint",
       "norm_label": "_draw_trailing_blank_pages()"
     },
     {
@@ -38308,8 +38308,8 @@
       "source_location": "L1076",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_force_new_page_after_question",
-      "community": 84,
-      "community_name": "pastpapergen/render_pdf.py",
+      "community": 128,
+      "community_name": "PaperBlueprint",
       "norm_label": "_force_new_page_after_question()"
     },
     {
@@ -38319,8 +38319,8 @@
       "source_location": "L1084",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_extra_answer_pages",
-      "community": 84,
-      "community_name": "pastpapergen/render_pdf.py",
+      "community": 128,
+      "community_name": "PaperBlueprint",
       "norm_label": "_extra_answer_pages()"
     },
     {
@@ -38330,8 +38330,8 @@
       "source_location": "L1096",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_section_b_prompt_page",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_section_b_prompt_page()"
     },
     {
@@ -38342,7 +38342,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_section_b_source_pages",
       "community": 128,
-      "community_name": "Canvas",
+      "community_name": "PaperBlueprint",
       "norm_label": "_draw_section_b_source_pages()"
     },
     {
@@ -38352,8 +38352,8 @@
       "source_location": "L1150",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_section_b_extracts",
-      "community": 84,
-      "community_name": "pastpapergen/render_pdf.py",
+      "community": 128,
+      "community_name": "PaperBlueprint",
       "norm_label": "_section_b_extracts()"
     },
     {
@@ -38363,8 +38363,8 @@
       "source_location": "L1159",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_section_b_extract_block",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_section_b_extract_block()"
     },
     {
@@ -38374,8 +38374,8 @@
       "source_location": "L1197",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_section_c_choice_page",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_section_c_choice_page()"
     },
     {
@@ -38386,7 +38386,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_section_c_answer_pages",
       "community": 128,
-      "community_name": "Canvas",
+      "community_name": "PaperBlueprint",
       "norm_label": "_draw_section_c_answer_pages()"
     },
     {
@@ -38397,7 +38397,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_continuation_lines",
       "community": 128,
-      "community_name": "Canvas",
+      "community_name": "PaperBlueprint",
       "norm_label": "_draw_continuation_lines()"
     },
     {
@@ -38408,7 +38408,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_answer_page_header",
       "community": 128,
-      "community_name": "Canvas",
+      "community_name": "PaperBlueprint",
       "norm_label": "_draw_answer_page_header()"
     },
     {
@@ -38419,7 +38419,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_watermark",
       "community": 128,
-      "community_name": "Canvas",
+      "community_name": "PaperBlueprint",
       "norm_label": "_draw_watermark()"
     },
     {
@@ -38430,7 +38430,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_prepare_answer_page",
       "community": 128,
-      "community_name": "Canvas",
+      "community_name": "PaperBlueprint",
       "norm_label": "_prepare_answer_page()"
     },
     {
@@ -38440,8 +38440,8 @@
       "source_location": "L1311",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_do_not_write_rail",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_do_not_write_rail()"
     },
     {
@@ -38451,8 +38451,8 @@
       "source_location": "L1335",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_staple_marks",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_staple_marks()"
     },
     {
@@ -38462,8 +38462,8 @@
       "source_location": "L1347",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_hatched_rail",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_hatched_rail()"
     },
     {
@@ -38474,7 +38474,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_question_footer",
       "community": 128,
-      "community_name": "Canvas",
+      "community_name": "PaperBlueprint",
       "norm_label": "_draw_question_footer()"
     },
     {
@@ -38485,7 +38485,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_section_intro",
       "community": 128,
-      "community_name": "Canvas",
+      "community_name": "PaperBlueprint",
       "norm_label": "_draw_section_intro()"
     },
     {
@@ -38495,8 +38495,8 @@
       "source_location": "L1407",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_centred_instruction_line",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_centred_instruction_line()"
     },
     {
@@ -38529,7 +38529,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_question",
       "community": 128,
-      "community_name": "Canvas",
+      "community_name": "PaperBlueprint",
       "norm_label": "_draw_question()"
     },
     {
@@ -38539,8 +38539,8 @@
       "source_location": "L1495",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_question_prompt",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_question_prompt()"
     },
     {
@@ -38550,8 +38550,8 @@
       "source_location": "L1514",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_split_subquestion_number",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_split_subquestion_number()"
     },
     {
@@ -38771,7 +38771,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_answer_lines_until",
       "community": 128,
-      "community_name": "Canvas",
+      "community_name": "PaperBlueprint",
       "norm_label": "_draw_answer_lines_until()"
     },
     {
@@ -38781,8 +38781,8 @@
       "source_location": "L1956",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_answer_line_count",
-      "community": 84,
-      "community_name": "pastpapergen/render_pdf.py",
+      "community": 128,
+      "community_name": "PaperBlueprint",
       "norm_label": "_answer_line_count()"
     },
     {
@@ -38804,7 +38804,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_candidate_stimulus_data",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "candidate_stimulus_data()"
     },
     {
@@ -38859,7 +38859,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_table_rows",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "_table_rows()"
     },
     {
@@ -38892,7 +38892,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_bar_chart_data",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "_bar_chart_data()"
     },
     {
@@ -38957,8 +38957,8 @@
       "source_location": "L2362",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_wrap",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_wrap()"
     },
     {
@@ -39079,7 +39079,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_set_pdf_metadata",
       "community": 128,
-      "community_name": "Canvas",
+      "community_name": "PaperBlueprint",
       "norm_label": "_set_pdf_metadata()"
     },
     {
@@ -39111,8 +39111,8 @@
       "source_location": "L2699",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_ms_blank_page",
-      "community": 339,
-      "community_name": "_draw_ms_row",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_ms_blank_page()"
     },
     {
@@ -39122,8 +39122,8 @@
       "source_location": "L2715",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_mark_scheme_qualification_page",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 100,
+      "community_name": "render_source_booklet",
       "norm_label": "_draw_mark_scheme_qualification_page()"
     },
     {
@@ -39133,8 +39133,8 @@
       "source_location": "L2768",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_ms_table_header",
-      "community": 339,
-      "community_name": "_draw_ms_row",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_ms_table_header()"
     },
     {
@@ -39221,8 +39221,8 @@
       "source_location": "L3098",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_split_mark_scheme_row",
-      "community": 339,
-      "community_name": "_draw_ms_row",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_split_mark_scheme_row()"
     },
     {
@@ -39408,8 +39408,8 @@
       "source_location": "L3627",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_ms_row",
-      "community": 339,
-      "community_name": "_draw_ms_row",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_ms_row()"
     },
     {
@@ -39419,8 +39419,8 @@
       "source_location": "L3685",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_draw_ms_header_box",
-      "community": 339,
-      "community_name": "_draw_ms_row",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_draw_ms_header_box()"
     },
     {
@@ -39430,8 +39430,8 @@
       "source_location": "L3698",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_ms_row_height",
-      "community": 339,
-      "community_name": "_draw_ms_row",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_ms_row_height()"
     },
     {
@@ -39441,8 +39441,8 @@
       "source_location": "L3713",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_ms_wrap_width",
-      "community": 339,
-      "community_name": "_draw_ms_row",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_ms_wrap_width()"
     },
     {
@@ -39452,8 +39452,8 @@
       "source_location": "L3717",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_ms_centered_line",
-      "community": 339,
-      "community_name": "_draw_ms_row",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_ms_centered_line()"
     },
     {
@@ -39463,8 +39463,8 @@
       "source_location": "L3721",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_ms_italic_line",
-      "community": 339,
-      "community_name": "_draw_ms_row",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_ms_italic_line()"
     },
     {
@@ -39474,8 +39474,8 @@
       "source_location": "L3726",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_ms_bold_line",
-      "community": 339,
-      "community_name": "_draw_ms_row",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "_ms_bold_line()"
     },
     {
@@ -39496,8 +39496,8 @@
       "source_location": "L760",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_rationale_760",
-      "community": 128,
-      "community_name": "Canvas",
+      "community": 84,
+      "community_name": "pastpapergen/render_pdf.py",
       "norm_label": "a figure is a view of source cells, never a random hash illustration."
     },
     {
@@ -39508,7 +39508,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_rationale_2010",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "expose the same source values and dispatch rules used to draw a figure."
     },
     {
@@ -39530,7 +39530,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_render_pdf_rationale_2675",
       "community": 128,
-      "community_name": "Canvas",
+      "community_name": "PaperBlueprint",
       "norm_label": "attach stable, searchable metadata to every released pdf role."
     },
     {
@@ -39761,7 +39761,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_stimulus_data",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "stimulus_data.py"
     },
     {
@@ -39772,7 +39772,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_stimulus_data_line_chart_data",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "line_chart_data()"
     },
     {
@@ -39783,7 +39783,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_stimulus_data_line_chart_values",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "line_chart_values()"
     },
     {
@@ -39794,7 +39794,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_stimulus_data_table_rows",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "table_rows()"
     },
     {
@@ -40886,7 +40886,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "test_ollama_generation.py"
     },
     {
@@ -40908,7 +40908,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_py_parametrize",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "parametrize"
     },
     {
@@ -40941,7 +40941,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_test_review_stimulus_uses_rendered_defaults",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "test_review_stimulus_uses_rendered_defaults()"
     },
     {
@@ -40952,7 +40952,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_blueprintawareclient",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "blueprintawareclient"
     },
     {
@@ -40963,7 +40963,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_blueprintawareclient_generate_json",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": ".generate_json()"
     },
     {
@@ -40974,7 +40974,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_emptyclient",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "emptyclient"
     },
     {
@@ -40985,7 +40985,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_emptyclient_generate_json",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": ".generate_json()"
     },
     {
@@ -40996,7 +40996,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_rejectingreviewerclient",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "rejectingreviewerclient"
     },
     {
@@ -41007,7 +41007,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_rejectingreviewerclient_generate_json",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": ".generate_json()"
     },
     {
@@ -41018,7 +41018,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_line",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "_line()"
     },
     {
@@ -41029,7 +41029,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_new_question",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "_new_question()"
     },
     {
@@ -41040,7 +41040,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_paper",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "_paper()"
     },
     {
@@ -41051,7 +41051,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_test_generation_reviews_fixed_stimuli_and_reauthors_extended_questions",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "test_generation_reviews_fixed_stimuli_and_reauthors_extended_questions()"
     },
     {
@@ -41062,7 +41062,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_test_generation_resumes_family_questions_from_checkpoint",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "test_generation_resumes_family_questions_from_checkpoint()"
     },
     {
@@ -41084,7 +41084,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_test_resume_validation_rejects_changed_verified_marking_data",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "test_resume_validation_rejects_changed_verified_marking_data()"
     },
     {
@@ -41095,7 +41095,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_test_generated_stem_cannot_exceed_reference_word_budget",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "test_generated_stem_cannot_exceed_reference_word_budget()"
     },
     {
@@ -41106,7 +41106,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_test_generated_stem_preserves_required_specification_scope",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "test_generated_stem_preserves_required_specification_scope()"
     },
     {
@@ -41128,7 +41128,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_test_generated_stem_repairs_singular_possessive_article",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "test_generated_stem_repairs_singular_possessive_article()"
     },
     {
@@ -41139,7 +41139,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_test_generation_rejects_unchanged_template_fallback",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "test_generation_rejects_unchanged_template_fallback()"
     },
     {
@@ -41150,7 +41150,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_test_generation_rejects_failed_second_pass_review",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "test_generation_rejects_failed_second_pass_review()"
     },
     {
@@ -41161,7 +41161,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_test_local_generation_retries_only_the_rejected_question",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "test_local_generation_retries_only_the_rejected_question()"
     },
     {
@@ -41172,7 +41172,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_test_local_generation_stops_before_queued_question_after_failure",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "test_local_generation_stops_before_queued_question_after_failure()"
     },
     {
@@ -41194,7 +41194,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_test_local_paper_one_uses_reviewed_source_bound_fallback_after_paraphrases",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "test_local_paper_one_uses_reviewed_source_bound_fallback_after_paraphrases()"
     },
     {
@@ -41205,7 +41205,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_test_local_generation_uses_reviewed_fallback_after_scope_drift",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "test_local_generation_uses_reviewed_fallback_after_scope_drift()"
     },
     {
@@ -41216,7 +41216,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_test_multipart_question_keeps_verified_stem_and_source_separate",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "test_multipart_question_keeps_verified_stem_and_source_separate()"
     },
     {
@@ -41238,7 +41238,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_test_section_a_context_and_stem_remain_bound_to_rendered_source",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "test_section_a_context_and_stem_remain_bound_to_rendered_source()"
     },
     {
@@ -41260,7 +41260,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_test_source_length_guard_keeps_layout_safe_fallback",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "test_source_length_guard_keeps_layout_safe_fallback()"
     },
     {
@@ -41270,7 +41270,7 @@
       "source_location": "L724",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_generation_test_prompt_cleaning_removes_renderer_owned_marks_and_figure_labels",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_prompt_cleaning_removes_renderer_owned_marks_and_figure_labels()"
     },
@@ -41292,7 +41292,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_prompt",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_ollama_prompt.py"
     },
@@ -41303,7 +41303,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_prompt_test_ollama_prompt_limits_generation_to_syllabus_topic",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_ollama_prompt_limits_generation_to_syllabus_topic()"
     },
@@ -41314,7 +41314,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_ollama_prompt_test_ollama_prompt_includes_uploaded_notes_context_for_topic",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_ollama_prompt_includes_uploaded_notes_context_for_topic()"
     },
@@ -41611,7 +41611,7 @@
       "source_location": "L535",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_question_styles_test_mcq_shuffle_preserves_the_economically_correct_option",
-      "community": 35,
+      "community": 0,
       "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_mcq_shuffle_preserves_the_economically_correct_option()"
     },
@@ -42107,7 +42107,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_render_pdf_test_new_section_a_visual_stimuli_have_renderer_rows",
       "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community_name": "test_ollama_generation.py",
       "norm_label": "test_new_section_a_visual_stimuli_have_renderer_rows()"
     },
     {
@@ -42657,7 +42657,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_solver_source_adapter.py"
     },
     {
@@ -42668,7 +42668,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_paper",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "_paper()"
     },
     {
@@ -42679,7 +42679,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_replay",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "replay"
     },
     {
@@ -42690,7 +42690,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_replay_init",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": ".__init__()"
     },
     {
@@ -42701,7 +42701,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_replay_generate_json",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": ".generate_json()"
     },
     {
@@ -42712,7 +42712,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_test_actual_paper_three_partial_solver_shape_is_rejected_before_review",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_actual_paper_three_partial_solver_shape_is_rejected_before_review()"
     },
     {
@@ -42723,7 +42723,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_test_edexcel_identity_binds_selected_source_key_credit_and_contract",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_edexcel_identity_binds_selected_source_key_credit_and_contract()"
     },
     {
@@ -42734,7 +42734,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_test_edexcel_typed_source_provenance_is_live_visible_and_identity_bearing",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_edexcel_typed_source_provenance_is_live_visible_and_identity_bearing()"
     },
     {
@@ -42745,7 +42745,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_test_edexcel_saved_review_rejects_changed_typed_source_provenance",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_edexcel_saved_review_rejects_changed_typed_source_provenance()"
     },
     {
@@ -42756,7 +42756,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_test_edexcel_multipart_parent_credit_is_not_duplicated_in_part_identity",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_edexcel_multipart_parent_credit_is_not_duplicated_in_part_identity()"
     },
     {
@@ -42767,7 +42767,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_py_parametrize",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "parametrize"
     },
     {
@@ -42778,7 +42778,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_test_edexcel_export_recomputes_standalone_and_multipart_identity",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_edexcel_export_recomputes_standalone_and_multipart_identity()"
     },
     {
@@ -42789,7 +42789,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_test_edexcel_export_identity_binds_typed_source_provenance",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_edexcel_export_identity_binds_typed_source_provenance()"
     },
     {
@@ -42800,7 +42800,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_test_actual_recorded_responses_cross_the_real_source_and_choice_boundary",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_actual_recorded_responses_cross_the_real_source_and_choice_boundary()"
     },
     {
@@ -42811,7 +42811,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_test_blind_projection_uses_one_public_source_without_private_credit_or_key",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_blind_projection_uses_one_public_source_without_private_credit_or_key()"
     },
     {
@@ -42833,7 +42833,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_test_genuinely_source_free_item_keeps_empty_evidence_and_empty_citations",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_genuinely_source_free_item_keeps_empty_evidence_and_empty_citations()"
     },
     {
@@ -42844,7 +42844,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_test_source_projection_rejects_foreign_stale_duplicate_or_private_evidence",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_source_projection_rejects_foreign_stale_duplicate_or_private_evidence()"
     },
     {
@@ -42855,7 +42855,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_test_solver_still_rejects_invented_and_mixed_citation_ids",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_solver_still_rejects_invented_and_mixed_citation_ids()"
     },
     {
@@ -42866,7 +42866,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_test_projection_rejects_empty_source_or_non_unique_choice_identity",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_projection_rejects_empty_source_or_non_unique_choice_identity()"
     },
     {
@@ -42877,7 +42877,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_test_reordered_choice_resolves_one_key_and_wrong_key_still_fails_reconciliation",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "test_reordered_choice_resolves_one_key_and_wrong_key_still_fails_reconciliation()"
     },
     {
@@ -42888,7 +42888,7 @@
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_solver_source_adapter_rationale_1",
       "community": 0,
-      "community_name": "test_solver_source_adapter.py",
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "edexcel's public-source and selected-answer handoff to the shared solver."
     },
     {
@@ -45486,8 +45486,8 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_properties_policy",
-      "community": 178,
-      "community_name": "properties",
+      "community": 339,
+      "community_name": "required",
       "norm_label": "policy"
     },
     {
@@ -45497,8 +45497,8 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_policy_type",
-      "community": 178,
-      "community_name": "properties",
+      "community": 339,
+      "community_name": "required",
       "norm_label": "type"
     },
     {
@@ -45508,8 +45508,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_policy_required",
-      "community": 178,
-      "community_name": "properties",
+      "community": 339,
+      "community_name": "required",
       "norm_label": "required"
     },
     {
@@ -45519,8 +45519,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_json_ref_policy_id",
-      "community": 178,
-      "community_name": "properties",
+      "community": 339,
+      "community_name": "required",
       "norm_label": "policy_id"
     },
     {
@@ -45530,8 +45530,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_json_ref_status",
-      "community": 178,
-      "community_name": "properties",
+      "community": 339,
+      "community_name": "required",
       "norm_label": "status"
     },
     {
@@ -45541,8 +45541,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "ref_approved_by_identity_class",
-      "community": 178,
-      "community_name": "properties",
+      "community": 339,
+      "community_name": "required",
       "norm_label": "approved_by_identity_class"
     },
     {
@@ -45552,8 +45552,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "ref_approval_evidence",
-      "community": 178,
-      "community_name": "properties",
+      "community": 339,
+      "community_name": "required",
       "norm_label": "approval_evidence"
     },
     {
@@ -45728,8 +45728,8 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_policy_additionalproperties",
-      "community": 178,
-      "community_name": "properties",
+      "community": 339,
+      "community_name": "required",
       "norm_label": "additionalproperties"
     },
     {
@@ -49006,8 +49006,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_type",
-      "community": 324,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "type"
     },
     {
@@ -49402,8 +49402,8 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_evidence_gaps",
-      "community": 73,
-      "community_name": "properties",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "evidence_gaps"
     },
     {
@@ -49413,8 +49413,8 @@
       "source_location": "L89",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_evidence_gaps_type",
-      "community": 73,
-      "community_name": "properties",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "type"
     },
     {
@@ -49424,8 +49424,8 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_evidence_gaps_items",
-      "community": 324,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "items"
     },
     {
@@ -52108,8 +52108,8 @@
       "source_location": "L651",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_items",
-      "community": 324,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "items"
     },
     {
@@ -52119,8 +52119,8 @@
       "source_location": "L652",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_items",
-      "community": 324,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "items"
     },
     {
@@ -52130,8 +52130,8 @@
       "source_location": "L655",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_minitems",
-      "community": 324,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "minitems"
     },
     {
@@ -52141,8 +52141,8 @@
       "source_location": "L656",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_title",
-      "community": 324,
-      "community_name": "id",
+      "community": 143,
+      "community_name": "paths",
       "norm_label": "title"
     },
     {
@@ -54011,8 +54011,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_application_appcommands",
-      "community": 49,
-      "community_name": "ApplicationCoordinator",
+      "community": 53,
+      "community_name": "SettingsPane.swift",
       "norm_label": "appcommands.swift"
     },
     {
@@ -54034,8 +54034,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "macos_papercreator_application_appcommands_appcommands",
-      "community": 49,
-      "community_name": "ApplicationCoordinator",
+      "community": 53,
+      "community_name": "SettingsPane.swift",
       "norm_label": "appcommands"
     },
     {
@@ -54045,8 +54045,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "commands",
-      "community": 49,
-      "community_name": "ApplicationCoordinator",
+      "community": 53,
+      "community_name": "SettingsPane.swift",
       "norm_label": "commands"
     },
     {
@@ -54067,8 +54067,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration",
-      "community": 49,
-      "community_name": "ApplicationCoordinator",
+      "community": 88,
+      "community_name": "AIProvider",
       "norm_label": "appconfiguration.swift"
     },
     {
@@ -54200,8 +54200,8 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration_appstoragekey",
-      "community": 49,
-      "community_name": "ApplicationCoordinator",
+      "community": 88,
+      "community_name": "AIProvider",
       "norm_label": "appstoragekey"
     },
     {
@@ -54211,8 +54211,8 @@
       "source_location": "L111",
       "_origin": "ast",
       "id": "macos_papercreator_application_appconfiguration_secretaccount",
-      "community": 49,
-      "community_name": "ApplicationCoordinator",
+      "community": 88,
+      "community_name": "AIProvider",
       "norm_label": "secretaccount"
     },
     {
@@ -54366,8 +54366,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": "nativevisualstyle.swift"
     },
     {
@@ -54377,8 +54377,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": "workspacelayoutmode"
     },
     {
@@ -54399,8 +54399,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_compact",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": "compact"
     },
     {
@@ -54410,8 +54410,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_standard",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": "standard"
     },
     {
@@ -54421,8 +54421,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_expanded",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": "expanded"
     },
     {
@@ -54432,8 +54432,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_swift_bool",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": "bool"
     },
     {
@@ -54443,8 +54443,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_showssidebar",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": ".showssidebar"
     },
     {
@@ -54454,8 +54454,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_swift_cgfloat",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": "cgfloat"
     },
     {
@@ -54465,8 +54465,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutmode_qualityreviewwidth",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": ".qualityreviewwidth"
     },
     {
@@ -54476,8 +54476,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutpolicy",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": "workspacelayoutpolicy"
     },
     {
@@ -54487,8 +54487,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "macos_papercreator_components_nativevisualstyle_workspacelayoutpolicy_mode",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": ".mode()"
     },
     {
@@ -54652,8 +54652,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_assessmentkind",
-      "community": 28,
-      "community_name": "ExamBoardOption",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "assessmentkind"
     },
     {
@@ -54674,8 +54674,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "hashable",
-      "community": 28,
-      "community_name": "ExamBoardOption",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "hashable"
     },
     {
@@ -54685,8 +54685,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_assessmentkind_fullpaper",
-      "community": 28,
-      "community_name": "ExamBoardOption",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "fullpaper"
     },
     {
@@ -54696,8 +54696,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_assessmentkind_questionbank",
-      "community": 28,
-      "community_name": "ExamBoardOption",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "questionbank"
     },
     {
@@ -54707,8 +54707,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_assessmentkind_title",
-      "community": 28,
-      "community_name": "ExamBoardOption",
+      "community": 4,
+      "community_name": "String",
       "norm_label": ".title"
     },
     {
@@ -54718,8 +54718,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_paperoption",
-      "community": 28,
-      "community_name": "ExamBoardOption",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "paperoption"
     },
     {
@@ -54740,8 +54740,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_paperoption_init",
-      "community": 28,
-      "community_name": "ExamBoardOption",
+      "community": 4,
+      "community_name": "String",
       "norm_label": ".init()"
     },
     {
@@ -54751,8 +54751,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_qualificationreadiness",
-      "community": 28,
-      "community_name": "ExamBoardOption",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "qualificationreadiness"
     },
     {
@@ -54773,8 +54773,8 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_qualificationreadiness_highestleveltitle",
-      "community": 28,
-      "community_name": "ExamBoardOption",
+      "community": 4,
+      "community_name": "String",
       "norm_label": ".highestleveltitle"
     },
     {
@@ -54971,8 +54971,8 @@
       "source_location": "L148",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_catalogloader",
-      "community": 302,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "catalogloader"
     },
     {
@@ -54982,8 +54982,8 @@
       "source_location": "L149",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_catalogloader_load",
-      "community": 302,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": ".load()"
     },
     {
@@ -54993,8 +54993,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_swift_bundle",
-      "community": 302,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "bundle"
     },
     {
@@ -55004,8 +55004,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_swift_data",
-      "community": 302,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "data"
     },
     {
@@ -55015,8 +55015,8 @@
       "source_location": "L248",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_catalogloader_implementationkey",
-      "community": 302,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": ".implementationkey()"
     },
     {
@@ -55268,8 +55268,8 @@
       "source_location": "L354",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_catalogloaderror",
-      "community": 302,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "catalogloaderror"
     },
     {
@@ -55290,8 +55290,8 @@
       "source_location": "L355",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_catalogloaderror_missingresource",
-      "community": 302,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "missingresource"
     },
     {
@@ -55301,8 +55301,8 @@
       "source_location": "L356",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_catalogloaderror_qualificationmismatch",
-      "community": 302,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "qualificationmismatch"
     },
     {
@@ -55312,8 +55312,8 @@
       "source_location": "L357",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_catalogloaderror_duplicateimplementation",
-      "community": 302,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "duplicateimplementation"
     },
     {
@@ -55323,8 +55323,8 @@
       "source_location": "L358",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_catalogloaderror_emptyimplementation",
-      "community": 302,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "emptyimplementation"
     },
     {
@@ -55334,8 +55334,8 @@
       "source_location": "L359",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_catalogloaderror_duplicateboard",
-      "community": 302,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "duplicateboard"
     },
     {
@@ -55345,8 +55345,8 @@
       "source_location": "L360",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_catalogloaderror_implementationmissingfromcatalog",
-      "community": 302,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "implementationmissingfromcatalog"
     },
     {
@@ -55356,8 +55356,8 @@
       "source_location": "L361",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_catalogloaderror_unknownprovider",
-      "community": 302,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": "unknownprovider"
     },
     {
@@ -55367,8 +55367,8 @@
       "source_location": "L363",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_catalogloaderror_errordescription",
-      "community": 302,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": ".errordescription"
     },
     {
@@ -55818,8 +55818,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_swift_double",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "double"
     },
     {
@@ -55895,8 +55895,8 @@
       "source_location": "L548",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_benchmarksample",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "benchmarksample"
     },
     {
@@ -55906,8 +55906,8 @@
       "source_location": "L566",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_benchmarksample_networklatencydisplayms",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".networklatencydisplayms"
     },
     {
@@ -55917,8 +55917,8 @@
       "source_location": "L570",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_benchmarksample_thermalspeedlimitdisplaypercent",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".thermalspeedlimitdisplaypercent"
     },
     {
@@ -55928,8 +55928,8 @@
       "source_location": "L575",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_benchmarkmetric",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "benchmarkmetric"
     },
     {
@@ -55939,8 +55939,8 @@
       "source_location": "L583",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_benchmarkmetric_displayvalue",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".displayvalue"
     },
     {
@@ -55950,8 +55950,8 @@
       "source_location": "L595",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_benchmarkverdict",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "benchmarkverdict"
     },
     {
@@ -56379,8 +56379,8 @@
       "source_location": "L1030",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "backendevent"
     },
     {
@@ -56390,8 +56390,8 @@
       "source_location": "L1031",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_hello",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "hello"
     },
     {
@@ -56401,8 +56401,8 @@
       "source_location": "L1032",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_progress",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "progress"
     },
     {
@@ -56412,8 +56412,8 @@
       "source_location": "L1033",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_file",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "file"
     },
     {
@@ -56423,8 +56423,8 @@
       "source_location": "L1034",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_done",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "done"
     },
     {
@@ -56434,8 +56434,8 @@
       "source_location": "L1035",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_error",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "error"
     },
     {
@@ -56445,8 +56445,8 @@
       "source_location": "L1036",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_models",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "models"
     },
     {
@@ -56456,8 +56456,8 @@
       "source_location": "L1037",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_ollamastatus",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "ollamastatus"
     },
     {
@@ -56467,8 +56467,8 @@
       "source_location": "L1038",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_benchmarkmetric",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "benchmarkmetric"
     },
     {
@@ -56478,8 +56478,8 @@
       "source_location": "L1039",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_benchmarksample",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "benchmarksample"
     },
     {
@@ -56489,8 +56489,8 @@
       "source_location": "L1040",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_benchmarkdone",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "benchmarkdone"
     },
     {
@@ -56500,8 +56500,8 @@
       "source_location": "L1042",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_init",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".init()"
     },
     {
@@ -58074,8 +58074,8 @@
       "source_location": "L110",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkverdictsummary",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "benchmarkverdictsummary"
     },
     {
@@ -58085,8 +58085,8 @@
       "source_location": "L113",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkverdictsummary_body",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".body"
     },
     {
@@ -58096,8 +58096,8 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkverdictsummary_scoregauge",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".scoregauge"
     },
     {
@@ -58107,8 +58107,8 @@
       "source_location": "L141",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkverdictsummary_verdicttext",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".verdicttext"
     },
     {
@@ -58706,8 +58706,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview",
-      "community": 323,
-      "community_name": ".body",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "jobhistoryview.swift"
     },
     {
@@ -58717,8 +58717,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_jobhistoryview",
-      "community": 323,
-      "community_name": ".body",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "jobhistoryview"
     },
     {
@@ -58728,8 +58728,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_swift_generationjobrecord",
-      "community": 323,
-      "community_name": ".body",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "generationjobrecord"
     },
     {
@@ -58739,8 +58739,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_jobhistoryview_body",
-      "community": 323,
-      "community_name": ".body",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".body"
     },
     {
@@ -58750,8 +58750,8 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_jobhistoryview_selectedrecord",
-      "community": 323,
-      "community_name": ".body",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".selectedrecord"
     },
     {
@@ -58761,8 +58761,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_swift_set",
-      "community": 323,
-      "community_name": ".body",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "set"
     },
     {
@@ -58772,8 +58772,8 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_jobhistoryview_boardtitle",
-      "community": 323,
-      "community_name": ".body",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".boardtitle()"
     },
     {
@@ -58783,8 +58783,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_swift_string",
-      "community": 323,
-      "community_name": ".body",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "string"
     },
     {
@@ -58794,8 +58794,8 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_generationjobstate",
-      "community": 323,
-      "community_name": ".body",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "generationjobstate"
     },
     {
@@ -58805,8 +58805,8 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_generationjobstate_title",
-      "community": 323,
-      "community_name": ".body",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".title"
     },
     {
@@ -58816,8 +58816,8 @@
       "source_location": "L104",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_generationjobstate_systemimage",
-      "community": 323,
-      "community_name": ".body",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".systemimage"
     },
     {
@@ -60081,8 +60081,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "nswindow",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": "nswindow"
     },
     {
@@ -60169,8 +60169,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": "contentview.swift"
     },
     {
@@ -60180,8 +60180,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentview",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": "contentview"
     },
     {
@@ -60191,8 +60191,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentview_body",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": ".body"
     },
     {
@@ -60202,8 +60202,8 @@
       "source_location": "L94",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentview_columnvisibility",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": ".columnvisibility()"
     },
     {
@@ -60213,8 +60213,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_swift_binding",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": "binding"
     },
     {
@@ -60224,8 +60224,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "navigationsplitviewvisibility",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": "navigationsplitviewvisibility"
     },
     {
@@ -60235,8 +60235,8 @@
       "source_location": "L117",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentview_ensuresidebarselection",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": ".ensuresidebarselection()"
     },
     {
@@ -60246,8 +60246,8 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentview_selectboard",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": ".selectboard()"
     },
     {
@@ -60257,8 +60257,8 @@
       "source_location": "L135",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentviewpreview",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": "contentviewpreview"
     },
     {
@@ -60268,8 +60268,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "previewprovider",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": "previewprovider"
     },
     {
@@ -60279,8 +60279,8 @@
       "source_location": "L136",
       "_origin": "ast",
       "id": "macos_papercreator_navigation_contentview_contentviewpreview_previews",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": ".previews"
     },
     {
@@ -61480,8 +61480,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_swift_generationjobrecord",
-      "community": 49,
-      "community_name": "ApplicationCoordinator",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": "generationjobrecord"
     },
     {
@@ -61491,8 +61491,8 @@
       "source_location": "L465",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_createagainwithnewseed",
-      "community": 49,
-      "community_name": "ApplicationCoordinator",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".createagainwithnewseed()"
     },
     {
@@ -61502,8 +61502,8 @@
       "source_location": "L473",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_applyconfiguration",
-      "community": 49,
-      "community_name": "ApplicationCoordinator",
+      "community": 14,
+      "community_name": "RecentDocumentStore",
       "norm_label": ".applyconfiguration()"
     },
     {
@@ -61766,8 +61766,8 @@
       "source_location": "L871",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_startbenchmark",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".startbenchmark()"
     },
     {
@@ -61777,8 +61777,8 @@
       "source_location": "L878",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_cancelbenchmark",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".cancelbenchmark()"
     },
     {
@@ -61964,8 +61964,8 @@
       "source_location": "L1198",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_begingenerationestimate",
-      "community": 107,
-      "community_name": ".initialEstimate",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".begingenerationestimate()"
     },
     {
@@ -61975,8 +61975,8 @@
       "source_location": "L1215",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_updategenerationestimate",
-      "community": 107,
-      "community_name": ".initialEstimate",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".updategenerationestimate()"
     },
     {
@@ -62118,8 +62118,8 @@
       "source_location": "L1309",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_runningoperation",
-      "community": 49,
-      "community_name": "ApplicationCoordinator",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": "runningoperation"
     },
     {
@@ -62129,8 +62129,8 @@
       "source_location": "L1310",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_runningoperation_none",
-      "community": 49,
-      "community_name": "ApplicationCoordinator",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": "none"
     },
     {
@@ -62140,8 +62140,8 @@
       "source_location": "L1311",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_runningoperation_generation",
-      "community": 49,
-      "community_name": "ApplicationCoordinator",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": "generation"
     },
     {
@@ -62151,8 +62151,8 @@
       "source_location": "L1312",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_runningoperation_modelpull",
-      "community": 49,
-      "community_name": "ApplicationCoordinator",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": "modelpull"
     },
     {
@@ -62162,8 +62162,8 @@
       "source_location": "L1313",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_runningoperation_mlxsetup",
-      "community": 49,
-      "community_name": "ApplicationCoordinator",
+      "community": 185,
+      "community_name": "DocumentPreviewView",
       "norm_label": "mlxsetup"
     },
     {
@@ -62196,8 +62196,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "benchmarkcoordinator"
     },
     {
@@ -62207,8 +62207,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_double",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "double"
     },
     {
@@ -62218,8 +62218,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_string",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "string"
     },
     {
@@ -62229,8 +62229,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_process",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "process"
     },
     {
@@ -62240,8 +62240,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator_init",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".init()"
     },
     {
@@ -62251,8 +62251,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator_start",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".start()"
     },
     {
@@ -62262,8 +62262,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_bool",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "bool"
     },
     {
@@ -62273,8 +62273,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator_begin",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".begin()"
     },
     {
@@ -62284,8 +62284,8 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator_receive",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".receive()"
     },
     {
@@ -62295,8 +62295,8 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator_cancel",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".cancel()"
     },
     {
@@ -62306,8 +62306,8 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator_finish",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".finish()"
     },
     {
@@ -62317,8 +62317,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_result",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "result"
     },
     {
@@ -62328,8 +62328,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_int32",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "int32"
     },
     {
@@ -62339,8 +62339,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_error",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": "error"
     },
     {
@@ -62460,8 +62460,8 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_catalogstore_selectedpaper",
-      "community": 28,
-      "community_name": "ExamBoardOption",
+      "community": 4,
+      "community_name": "String",
       "norm_label": ".selectedpaper"
     },
     {
@@ -63705,8 +63705,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testreadyworkspacelaysoutinanexpandedwindow",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": ".testreadyworkspacelaysoutinanexpandedwindow()"
     },
     {
@@ -63716,8 +63716,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testworkspacelayoutprotectscompactwindowsfromcolumnoverlap",
-      "community": 323,
-      "community_name": ".body",
+      "community": 28,
+      "community_name": "ExamBoardOption",
       "norm_label": ".testworkspacelayoutprotectscompactwindowsfromcolumnoverlap()"
     },
     {
@@ -63892,8 +63892,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testqualificationreadinesskeepsthreeevidencelevelsindependent",
-      "community": 28,
-      "community_name": "ExamBoardOption",
+      "community": 4,
+      "community_name": "String",
       "norm_label": ".testqualificationreadinesskeepsthreeevidencelevelsindependent()"
     },
     {
@@ -63903,8 +63903,8 @@
       "source_location": "L84",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testlegacyregistrygatesmigratewithoutfalseempiricalcalibration",
-      "community": 302,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": ".testlegacyregistrygatesmigratewithoutfalseempiricalcalibration()"
     },
     {
@@ -63914,8 +63914,8 @@
       "source_location": "L100",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testcatalogexposesquestionbanksasaseparateassessmentkind",
-      "community": 302,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": ".testcatalogexposesquestionbanksasaseparateassessmentkind()"
     },
     {
@@ -63925,8 +63925,8 @@
       "source_location": "L118",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testbackendhandshakedecodesprotocolcapabilities",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".testbackendhandshakedecodesprotocolcapabilities()"
     },
     {
@@ -63936,8 +63936,8 @@
       "source_location": "L132",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testbackendprogresseventdecodes",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".testbackendprogresseventdecodes()"
     },
     {
@@ -63947,8 +63947,8 @@
       "source_location": "L137",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testbackendmlxcachemisspreservesrecoverycode",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".testbackendmlxcachemisspreservesrecoverycode()"
     },
     {
@@ -63958,8 +63958,8 @@
       "source_location": "L147",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testbackendfileeventdecodes",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".testbackendfileeventdecodes()"
     },
     {
@@ -64112,8 +64112,8 @@
       "source_location": "L375",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testbenchmarksampleeventdecodes",
-      "community": 4,
-      "community_name": "String",
+      "community": 302,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".testbenchmarksampleeventdecodes()"
     },
     {
@@ -64277,8 +64277,8 @@
       "source_location": "L640",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testbundledcatalogloadsfromcanonicalresources",
-      "community": 302,
-      "community_name": "PaperCreatorTests",
+      "community": 4,
+      "community_name": "String",
       "norm_label": ".testbundledcatalogloadsfromcanonicalresources()"
     },
     {
@@ -66768,8 +66768,8 @@
       "source_location": "L126",
       "_origin": "ast",
       "id": "tests_test_assessment_checkpoints_test_blueprint_identity_changes_when_immutable_blueprint_changes",
-      "community": 58,
-      "community_name": "test_computer_science_objectives.py",
+      "community": 3,
+      "community_name": "load_syllabus",
       "norm_label": "test_blueprint_identity_changes_when_immutable_blueprint_changes()"
     },
     {
@@ -68209,8 +68209,8 @@
       "source_location": "L165",
       "_origin": "ast",
       "id": "tests_test_computer_science_objectives_test_sql_credit_matches_six_mark_query_and_independent_row_analysis",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 58,
+      "community_name": "test_computer_science_objectives.py",
       "norm_label": "test_sql_credit_matches_six_mark_query_and_independent_row_analysis()"
     },
     {
@@ -68418,8 +68418,8 @@
       "source_location": "L536",
       "_origin": "ast",
       "id": "tests_test_computer_science_objectives_test_aqa_programming_requires_implementation_and_authoring_knows_cs_policy",
-      "community": 3,
-      "community_name": "load_syllabus",
+      "community": 34,
+      "community_name": "cspapergen/ollama_client.py",
       "norm_label": "test_aqa_programming_requires_implementation_and_authoring_knows_cs_policy()"
     },
     {
@@ -68572,8 +68572,8 @@
       "source_location": "L732",
       "_origin": "ast",
       "id": "tests_test_computer_science_objectives_csreviewclient",
-      "community": 58,
-      "community_name": "test_computer_science_objectives.py",
+      "community": 3,
+      "community_name": "load_syllabus",
       "norm_label": "csreviewclient"
     },
     {
@@ -68583,8 +68583,8 @@
       "source_location": "L735",
       "_origin": "ast",
       "id": "tests_test_computer_science_objectives_csreviewclient_init",
-      "community": 58,
-      "community_name": "test_computer_science_objectives.py",
+      "community": 3,
+      "community_name": "load_syllabus",
       "norm_label": ".__init__()"
     },
     {
@@ -68594,8 +68594,8 @@
       "source_location": "L740",
       "_origin": "ast",
       "id": "tests_test_computer_science_objectives_csreviewclient_generate_json",
-      "community": 58,
-      "community_name": "test_computer_science_objectives.py",
+      "community": 3,
+      "community_name": "load_syllabus",
       "norm_label": ".generate_json()"
     },
     {
@@ -68605,8 +68605,8 @@
       "source_location": "L748",
       "_origin": "ast",
       "id": "tests_test_computer_science_objectives_test_aqa_fixed_source_transaction_reviews_without_authorship_and_resumes",
-      "community": 58,
-      "community_name": "test_computer_science_objectives.py",
+      "community": 3,
+      "community_name": "load_syllabus",
       "norm_label": "test_aqa_fixed_source_transaction_reviews_without_authorship_and_resumes()"
     },
     {
@@ -68616,8 +68616,8 @@
       "source_location": "L783",
       "_origin": "ast",
       "id": "tests_test_computer_science_objectives_test_aqa_immutable_resume_and_export_reject_stale_reviewed_content",
-      "community": 58,
-      "community_name": "test_computer_science_objectives.py",
+      "community": 3,
+      "community_name": "load_syllabus",
       "norm_label": "test_aqa_immutable_resume_and_export_reject_stale_reviewed_content()"
     },
     {
@@ -68649,8 +68649,8 @@
       "source_location": "L860",
       "_origin": "ast",
       "id": "tests_test_computer_science_objectives_test_aqa_fixed_content_rejection_never_saves_an_approved_checkpoint",
-      "community": 58,
-      "community_name": "test_computer_science_objectives.py",
+      "community": 3,
+      "community_name": "load_syllabus",
       "norm_label": "test_aqa_fixed_content_rejection_never_saves_an_approved_checkpoint()"
     },
     {
@@ -69342,8 +69342,8 @@
       "source_location": "L182",
       "_origin": "ast",
       "id": "tests_test_document_dsl_test_scheme_grid_prioritises_guidance_column",
-      "community": 167,
-      "community_name": "components.py",
+      "community": 81,
+      "community_name": "test_document_dsl.py",
       "norm_label": "test_scheme_grid_prioritises_guidance_column()"
     },
     {
@@ -83444,8 +83444,8 @@
       "source_location": "L257",
       "_origin": "ast",
       "id": "tests_test_task_source_demand_test_rule_override_cannot_change_slot_identity_or_tariff",
-      "community": 135,
-      "community_name": "GeneratedPaper",
+      "community": 201,
+      "community_name": "exam_blueprints.py",
       "norm_label": "test_rule_override_cannot_change_slot_identity_or_tariff()"
     },
     {
@@ -88963,7 +88963,7 @@
       "label": "Official sources",
       "file_type": "document",
       "source_file": "docs/competition/occitanie-2026/README.md",
-      "source_location": "L81",
+      "source_location": "L82",
       "_origin": "ast",
       "id": "docs_competition_occitanie_2026_readme_official_sources",
       "community": 261,
@@ -89901,8 +89901,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_project_analysis_ui_audit",
-      "community": 47,
-      "community_name": "README.md",
+      "community": 251,
+      "community_name": "macOS UI audit",
       "norm_label": "ui_audit.md"
     },
     {
@@ -91287,8 +91287,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_quality_french_nsi_v23_network_incident_live_diagnostic_2026_10_13",
-      "community": 261,
-      "community_name": "Prix Occitanie 2026 submission pack",
+      "community": 169,
+      "community_name": "occitanie-project.md",
       "norm_label": "french-nsi-v23-network-incident-live-diagnostic-2026-10-13.md"
     },
     {
@@ -91298,8 +91298,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_quality_french_nsi_v23_network_incident_live_diagnostic_2026_10_13_french_nsi_v23_network_incident_live_diagnostic_13_october_2026",
-      "community": 261,
-      "community_name": "Prix Occitanie 2026 submission pack",
+      "community": 169,
+      "community_name": "occitanie-project.md",
       "norm_label": "french nsi v23 network-incident live diagnostic \u2014 13 october 2026"
     },
     {
@@ -91309,8 +91309,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_quality_french_nsi_v24_incident_reconciliation_live_diagnostic_2026_10_15",
-      "community": 169,
-      "community_name": "occitanie-project.md",
+      "community": 261,
+      "community_name": "Prix Occitanie 2026 submission pack",
       "norm_label": "french-nsi-v24-incident-reconciliation-live-diagnostic-2026-10-15.md"
     },
     {
@@ -91320,8 +91320,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_quality_french_nsi_v24_incident_reconciliation_live_diagnostic_2026_10_15_french_nsi_v24_incident_reconciliation_live_diagnostic_15_october_2026",
-      "community": 169,
-      "community_name": "occitanie-project.md",
+      "community": 261,
+      "community_name": "Prix Occitanie 2026 submission pack",
       "norm_label": "french nsi v24 incident-reconciliation live diagnostic \u2014 15 october 2026"
     },
     {
@@ -379765,7 +379765,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "docs/competition/occitanie-2026/README.md",
-      "source_location": "L79",
+      "source_location": "L80",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_competition_occitanie_2026_readme",
@@ -379791,7 +379791,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_competition_occitanie_2026_readme",
-      "target": "docs_quality_french_nsi_v23_network_incident_live_diagnostic_2026_10_13",
+      "target": "docs_quality_french_nsi_v24_incident_reconciliation_live_diagnostic_2026_10_15",
       "confidence_score": 1.0
     },
     {
@@ -379842,7 +379842,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/competition/occitanie-2026/README.md",
-      "source_location": "L81",
+      "source_location": "L82",
       "weight": 1.0,
       "_origin": "ast",
       "source": "docs_competition_occitanie_2026_readme_prix_occitanie_2026_submission_pack",
@@ -386572,5 +386572,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "d8cfa8be2e1285c0a663455745c27bbd70fb01aa"
+  "built_at_commit": "4060a8ff8b16cdb62c32e48df5a7f7d98be29065"
 }
