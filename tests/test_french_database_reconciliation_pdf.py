@@ -60,11 +60,11 @@ def test_v24_pdf_keeps_staged_materials_and_exact_credit(tmp_path, large_print):
         with pymupdf.open(path) as pdf:
             pages = [page.get_text() for page in pdf]
             lower, upper = (
-                (26, 28)
+                (27, 30)
                 if correction and large_print
                 else (18, 20)
                 if correction
-                else (13, 15)
+                else (15, 17)
                 if large_print
                 else (11, 13)
             )
@@ -76,6 +76,11 @@ def test_v24_pdf_keeps_staged_materials_and_exact_credit(tmp_path, large_print):
                 for word in page.get_text("words")
             )
             raw = "\n".join(pages)
+            if large_print and not correction:
+                assert any(
+                    "def parcours_largeur" in page and "return ordre" in page
+                    for page in pages
+                ), "A complete candidate code block must stay on one large-print page"
             for title, before, after in (
                 ("Table de travail — rapport comparé (2c–2e)", "2b", "2c"),
                 ("Table de travail — effectifs (2f)", "2e", "2f"),

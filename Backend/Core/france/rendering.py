@@ -467,7 +467,13 @@ def render_assessment(
             if not part.strip():
                 continue
             if position % 2:
-                story.append(code_listing(part.strip("\n"), code, doc.width - 42))
+                source = part.strip("\n")
+                listing = code_listing(source, code, doc.width - 42)
+                story.append(
+                    KeepTogether([listing])
+                    if large_print and len(source.splitlines()) <= 24
+                    else listing
+                )
             else:
                 value = escape(part.strip()).replace("\n", "<br/>")
                 story.append(
