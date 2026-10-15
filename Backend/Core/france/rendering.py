@@ -68,6 +68,7 @@ def structured_material(
             ],
         ]
         route_trace_table = material.id in ("trace_initial", "trace_fermeture")
+        two_outage_table = material.id == "route_double_fermeture"
         column_widths = (
             [available_width * 0.3, *([available_width * 0.7 / 6] * 6)]
             if route_trace_table
@@ -77,7 +78,11 @@ def structured_material(
             rows,
             colWidths=column_widths,
             rowHeights=(
-                [None, *([body.leading * 2 + 8] * 4)] if route_trace_table else None
+                [None, *([body.leading * 2 + 8] * 4)]
+                if route_trace_table
+                else [None, body.leading * 4 + 12]
+                if two_outage_table
+                else None
             ),
             repeatRows=1,
         )
@@ -559,6 +564,7 @@ def render_assessment(
                 "network_incident_contract",
                 "graph_resilience_contract",
                 "graph_route_trace_contract",
+                "graph_two_outage_contract",
                 "database_audit_contract",
                 "database_reconciliation_contract",
             }
@@ -623,10 +629,20 @@ def render_assessment(
                 ]
             if (
                 not correction
-                and question.verification.get("kind") == "graph_route_trace_contract"
-                and question.id in {"1h", "1j"}
+                and question.verification.get("kind")
+                in {"graph_route_trace_contract", "graph_two_outage_contract"}
+                and question.id
+                in (
+                    {"1f", "1g", "1h", "1j"}
+                    if question.verification.get("kind") == "graph_two_outage_contract"
+                    else {"1h", "1j"}
+                )
             ):
-                start = material_start if question.id == "1h" else question_start
+                start = (
+                    material_start
+                    if question.id in {"1f", "1g", "1h"}
+                    else question_start
+                )
                 story[start:] = [KeepTogether(story[start:])]
             if not correction and question.verification.get("kind") in {
                 "database_audit_contract",

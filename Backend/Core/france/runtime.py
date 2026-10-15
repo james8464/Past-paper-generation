@@ -53,6 +53,10 @@ from Backend.Core.france.graph_tree_depth_contract import (
     GraphTreeDepthContract,
     build_graph_tree_depth_contract,
 )
+from Backend.Core.france.graph_two_outage_contract import (
+    GraphTwoOutageContract,
+    build_graph_two_outage_contract,
+)
 from Backend.Core.france.network import open_ollama_request
 from Backend.Core.france.network_binding import network_materials
 from Backend.Core.france.network_contract import NetworkContract, build_network_contract
@@ -80,6 +84,7 @@ from Backend.Core.france.pipeline import (
     CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
     CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
+    CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
     CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
@@ -610,6 +615,189 @@ def validate_graph_route_trace_pdf(
                 raise ValueError(f"Route trace credit {question.id} missing")
             if not correction and criterion in flat:
                 raise ValueError(f"Route trace rubric {question.id} leaked")
+
+
+def validate_graph_two_outage_pdf(
+    path: Path,
+    contract: GraphTwoOutageContract,
+    *,
+    correction: bool,
+    exercise: NSIExercise,
+) -> None:
+    """Bind V25's two ordered outages, working surfaces, answers and credit."""
+    data = contract.to_dict()
+    if exercise.id != "1" or [q.id for q in exercise.questions] != data["task_ids"]:
+        raise ValueError("Two-outage exercise differs from locked contract")
+    with pymupdf.open(path) as pdf:
+        page_lines = [
+            [
+                line.strip()
+                for line in page.get_text().splitlines()
+                if line.strip()
+                and not line.startswith("Paper Creator —")
+                and not line.startswith("Page : ")
+            ]
+            for page in pdf
+        ]
+    lines = [line for page in page_lines for line in page]
+    page_by_line = [index for index, page in enumerate(page_lines) for _line in page]
+    flat = " ".join(" ".join(lines).split())
+    heading = f"Exercice 1 ({exercise.target_points.replace('.', ',')} points)"
+    if lines.count(heading) != 1:
+        raise ValueError("Two-outage heading or credit missing")
+    positions = {}
+    for task_id in data["task_ids"]:
+        matches = [
+            index
+            for index, line in enumerate(lines)
+            if re.match(rf"^{re.escape(task_id)}\.(?:\s|$)", line)
+        ]
+        if len(matches) != 1:
+            raise ValueError(f"Two-outage question {task_id} missing or repeated")
+        positions[task_id] = matches[0]
+    if list(positions.values()) != sorted(positions.values()):
+        raise ValueError("Two-outage questions out of order")
+    titles = (
+        "Réseau pondéré des postes",
+        "Trace de Dijkstra avant fermeture — trace_initial",
+        "Trace de Dijkstra après fermeture de "
+        + "–".join(data["closed_edge"])
+        + " — trace_fermeture",
+        "Trajet après fermeture de "
+        + "–".join(data["closed_edge_second"])
+        + " — route_double_fermeture",
+        "Arbre des identifiants — arbre",
+    )
+    if any(lines.count(title) != 1 for title in titles):
+        raise ValueError("Two-outage working material missing or duplicated")
+    graph_at, before_at, first_at, second_at, tree_at = (
+        lines.index(title) for title in titles
+    )
+    if not (
+        graph_at < positions["1a"]
+        and positions["1b"] < before_at < positions["1c"]
+        and positions["1e"] < first_at < positions["1f"]
+        and positions["1f"] < second_at < positions["1g"]
+        and positions["1g"] < tree_at < positions["1h"]
+    ):
+        raise ValueError("Two-outage working material outside its phase")
+    if not correction and (
+        page_by_line[first_at] != page_by_line[positions["1f"]]
+        or page_by_line[second_at] != page_by_line[positions["1g"]]
+    ):
+        raise ValueError("Two-outage working surface orphaned from question")
+    if (
+        lines[graph_at + 1 : positions["1a"]]
+        != [str(edge[2]) for edge in data["graph"]["edges"]] + data["graph"]["nodes"]
+    ):
+        raise ValueError("Two-outage graph differs from locked facts")
+    expected_trace = [
+        "Fixation / donnée",
+        *"ABCDEF",
+        "1re distance (fixé : ___)",
+        *(["_____"] * 6),
+        "1re préd.",
+        *(["_____"] * 6),
+        "2e distance (fixé : ___)",
+        *(["_____"] * 6),
+        "2e préd.",
+        *(["_____"] * 6),
+    ]
+    for start, end in ((before_at, positions["1c"]), (first_at, positions["1f"])):
+        if " ".join(" ".join(lines[start + 1 : end]).split()) != " ".join(
+            expected_trace
+        ):
+            raise ValueError("Two-outage Dijkstra surface altered or filled")
+    if " ".join(" ".join(lines[second_at + 1 : positions["1g"]]).split()) != " ".join(
+        ["Trajet restant", "Somme des poids", "Coût", "Comparaison", *(["_____"] * 4)]
+    ):
+        raise ValueError("Two-outage route surface altered or filled")
+    expected_tree = list(data["tree"]["columns"]) + [
+        str(value) if value is not None else "—"
+        for row in data["tree"]["rows"]
+        for value in row
+    ]
+    if lines[tree_at + 1 : positions["1h"]] != expected_tree:
+        raise ValueError("Two-outage tree differs from locked facts")
+    after_1j = next(
+        (
+            index
+            for index in range(positions["1j"] + 1, len(lines))
+            if lines[index].startswith("Exercice 2 (")
+        ),
+        len(lines),
+    )
+    for source, section in (
+        (
+            graph_edge_manifest(data["graph"]),
+            " ".join(lines[lines.index(heading) : positions["1a"]]),
+        ),
+        (
+            data["debug_case"]["faulty_code"],
+            " ".join(lines[positions["1e"] : positions["1f"]]),
+        ),
+        (data["search_code"], " ".join(lines[positions["1j"] : after_1j])),
+    ):
+        normalised = " ".join(source.split())
+        if section.count(normalised) != 1 or flat.count(normalised) != 1:
+            raise ValueError("Two-outage source code or graph facts outside phase")
+    if not correction and "if voisin not in visites:" in flat:
+        raise ValueError("Two-outage corrected code revealed to candidate")
+    if not correction:
+        candidate_answers = flat
+        for question in exercise.questions:
+            prompt = " ".join(question.prompt.partition("\n\n```")[0].split())
+            candidate_answers = candidate_answers.replace(prompt, "", 1)
+        second_result = data["expected"]["1g"]
+        second_cost = second_result["cost_after"]
+        route_pattern = (
+            r"\b"
+            + r"\s*(?:→|->|[-–—>,])\s*".join(
+                re.escape(node) for node in second_result["route_after"]
+            )
+            + r"\b"
+        )
+        cost_pattern = (
+            r"\b(?:co[uû]t|poids|distance)\s*"
+            r"(?:(?:total(?:e)?|minimal(?:e)?|gagnant|du trajet(?: restant)?|de la route)\s*)?"
+            r"(?:(?:est|vaut)\s*)?(?:de\s*)?(?:[:=]\s*)?"
+            + re.escape(str(second_cost))
+            + r"\b"
+        )
+        if re.search(route_pattern, candidate_answers, re.IGNORECASE) or re.search(
+            cost_pattern, candidate_answers, re.IGNORECASE
+        ):
+            raise ValueError("Two-outage route or cost revealed to candidate")
+    first = "–".join(data["closed_edge"])
+    second = "–".join(data["closed_edge_second"])
+    if (
+        flat.count(f"La liaison {first} est fermée.") != 1
+        or flat.count(f"la liaison {second} est à son tour fermée.") != 1
+    ):
+        raise ValueError("Two-outage closure sequence differs from locked facts")
+    for index, question in enumerate(exercise.questions):
+        prompt = " ".join(question.prompt.partition("\n\n```")[0].split())
+        if flat.count(prompt) != 1:
+            raise ValueError(f"Two-outage prompt {question.id} missing")
+        next_position = (
+            positions[exercise.questions[index + 1].id]
+            if index + 1 < len(exercise.questions)
+            else after_1j
+        )
+        section = " ".join(lines[positions[question.id] : next_position])
+        answer = " ".join(question.answer.split())
+        if correction and answer not in section:
+            raise ValueError(f"Two-outage answer {question.id} missing")
+        if not correction and answer in flat:
+            raise ValueError(f"Two-outage answer {question.id} leaked")
+        for credit in question.marking:
+            criterion = " ".join(credit.criterion.split())
+            label = credit.points.replace(".", ",")
+            unit = "point" if Decimal(credit.points) <= 1 else "points"
+            if correction and f"{label} {unit} {criterion}" not in section:
+                raise ValueError(f"Two-outage credit {question.id} missing")
+            if not correction and criterion in flat:
+                raise ValueError(f"Two-outage rubric {question.id} leaked")
 
 
 def validate_database_contract_pdf(
@@ -1734,6 +1922,7 @@ def network_pdf_contract_version(prompt_version: str) -> str:
     if prompt_version in {
         CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
         CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
+        CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
     }:
         return "v23"
     if prompt_version in {
@@ -1756,7 +1945,10 @@ def network_pdf_contract_version(prompt_version: str) -> str:
 
 
 def database_pdf_contract_version(prompt_version: str) -> str:
-    if prompt_version == CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION:
+    if prompt_version in {
+        CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
+        CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
+    }:
         return "v24"
     if prompt_version in {
         CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
@@ -1821,7 +2013,7 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v24",
+            contract_authoring_version="v25",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
@@ -1831,6 +2023,10 @@ def handle_generate_assessment(args) -> int:
             CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
             CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
         }
+        graph_two_outage = (
+            package["identity"]["prompt_version"]
+            == CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION
+        )
         graph_resilience = package["identity"]["prompt_version"] in {
             CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
             CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
@@ -1841,7 +2037,9 @@ def handle_generate_assessment(args) -> int:
             CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
         }
         graph_tree_contract = (
-            build_graph_route_trace_contract(args.seed)
+            build_graph_two_outage_contract(args.seed)
+            if graph_two_outage
+            else build_graph_route_trace_contract(args.seed)
             if graph_route_trace
             else build_graph_resilience_contract(args.seed)
             if graph_resilience
@@ -1896,7 +2094,9 @@ def handle_generate_assessment(args) -> int:
             )
             validate_pdf(path)
             graph_tree_validator = (
-                validate_graph_route_trace_pdf
+                validate_graph_two_outage_pdf
+                if graph_two_outage
+                else validate_graph_route_trace_pdf
                 if graph_route_trace
                 else validate_graph_resilience_pdf
                 if graph_resilience

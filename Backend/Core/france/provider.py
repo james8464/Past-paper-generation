@@ -35,6 +35,10 @@ from Backend.Core.france.graph_tree_depth_contract import GraphTreeDepthContract
 from Backend.Core.france.graph_tree_depth_prose import (
     graph_tree_depth_selection_schema,
 )
+from Backend.Core.france.graph_two_outage_contract import GraphTwoOutageContract
+from Backend.Core.france.graph_two_outage_prose import (
+    graph_two_outage_selection_schema,
+)
 from Backend.Core.france.network import ollama_request
 from Backend.Core.france.network_contract import NetworkContract
 from Backend.Core.france.network_depth_contract import NetworkDepthContract
@@ -125,6 +129,16 @@ class FrenchOllamaClient(HostedLLMClient):
 
 
 def response_policy(prompt: str) -> tuple[dict, int]:
+    if prompt.startswith("Sélectionne l'exercice 1 v25"):
+        embedded = json.loads(
+            prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]
+        )
+        request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])
+        contract = GraphTwoOutageContract.from_dict(request["contract"])
+        schema = graph_two_outage_selection_schema(contract)
+        if embedded != schema or request.get("contract_sha256") != contract.digest:
+            raise ValueError("Graph two-outage schema or contract mismatch")
+        return schema, 2048
     if prompt.startswith("Sélectionne l'exercice 2 v24"):
         embedded = json.loads(
             prompt.split("schéma :\n", 1)[1].split("\nDONNÉES_JSON\n", 1)[0]

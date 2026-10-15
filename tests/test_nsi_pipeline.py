@@ -723,6 +723,62 @@ class ControlledReconciliationFrenchClient(ControlledIncidentFrenchClient):
         return super().generate_json(prompt)
 
 
+class ControlledTwoOutageFrenchClient(ControlledReconciliationFrenchClient):
+    def generate_json(self, prompt):
+        if prompt.startswith("Sélectionne l'exercice 1 v25"):
+            return {
+                "scene_id": "service",
+                "question_forms": {
+                    f"1{letter}": f"1{letter}-q1" for letter in "abcdefghij"
+                },
+                "rubric_forms": {
+                    f"1{letter}": f"1{letter}-r1" for letter in "abcdefghij"
+                },
+            }
+        return super().generate_json(prompt)
+
+
+def test_v25_two_outage_package_replays_and_rejects_mixed_identity(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledTwoOutageFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "v25-checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v25",
+    )
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v25"
+    assert [len(item["questions"]) for item in package["exercises"]] == [10, 12, 12]
+    assert sum(Decimal(item["target_points"]) for item in package["exercises"]) == 18
+    assert package["language_points"] == "2"
+    assert validate_package(package)["structural_checks"] == "passed"
+    assert "graph_two_outage_contract_sha256" in package["identity"]
+    assert "database_reconciliation_contract_sha256" in package["identity"]
+    assert "network_incident_contract_sha256" in package["identity"]
+    for field in (
+        "graph_two_outage_contract_sha256",
+        "graph_two_outage_prose_catalogue_sha256",
+    ):
+        changed = deepcopy(package)
+        changed["identity"][field] = "0" * 64
+        with pytest.raises(ValueError):
+            validate_package(changed)
+    mixed = deepcopy(package)
+    mixed["identity"]["graph_route_trace_contract_sha256"] = "0" * 64
+    with pytest.raises(ValueError):
+        validate_package(mixed)
+    changed = deepcopy(package)
+    changed["evidence"][0]["graph_two_outage_selection"]["accepted"]["response"]["scene_id"] = "invented"
+    with pytest.raises(ValueError):
+        validate_package(changed)
+
+
 def test_v24_reconciliation_package_replays_and_rejects_mixed_identity(tmp_path):
     from copy import deepcopy
 
