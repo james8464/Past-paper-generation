@@ -539,7 +539,11 @@ def render_assessment(
         )
     v18_paper = any(
         question.verification.get("kind")
-        in {"network_reasoning_contract", "network_incident_contract"}
+        in {
+            "network_reasoning_contract",
+            "network_incident_contract",
+            "network_incident_timeline_contract",
+        }
         for exercise in exercises
         for question in exercise.questions
     )
@@ -562,6 +566,7 @@ def render_assessment(
             in {
                 "network_reasoning_contract",
                 "network_incident_contract",
+                "network_incident_timeline_contract",
                 "graph_resilience_contract",
                 "graph_route_trace_contract",
                 "graph_two_outage_contract",
@@ -735,6 +740,8 @@ def render_assessment(
                     or question.verification.get("kind") == "graph_resilience_contract"
                     or question.verification.get("kind") == "network_reasoning_contract"
                     or question.verification.get("kind") == "network_incident_contract"
+                    or question.verification.get("kind")
+                    == "network_incident_timeline_contract"
                     or question.id == "3f"
                     or (
                         question.id == "3d"

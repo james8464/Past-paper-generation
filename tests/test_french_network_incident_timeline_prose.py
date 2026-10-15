@@ -60,6 +60,29 @@ def test_v26_candidate_requires_computed_recovery_and_report_times():
     )
 
 
+@pytest.mark.parametrize("seed", [270100, 270101, 270102])
+@pytest.mark.parametrize("form", [1, 2])
+def test_v26_all_credit_profiles_and_wording_forms_validate(seed, form):
+    contract = build_network_incident_timeline_contract(seed)
+    selection = _selection()
+    selection["scene_id"] = "observatoire" if form == 2 else "station"
+    selection["question_forms"] = {
+        q: f"{q}-q{form}" for q in selection["question_forms"]
+    }
+    selection["rubric_forms"] = {q: f"{q}-r{form}" for q in selection["rubric_forms"]}
+    raw = render_network_incident_timeline_candidate(contract, selection, _specs(seed))
+    assert sum(float(item["points"]) for item in raw["questions"]) == float(
+        raw["target_points"]
+    )
+    assert all(
+        sum(float(mark["points"]) for mark in item["marking"]) == float(item["points"])
+        for item in raw["questions"]
+    )
+    validate_network_incident_timeline_exercise(
+        contract, NSIExercise.model_validate(raw), _specs(seed)
+    )
+
+
 @pytest.mark.parametrize("field", ["context", "table", "answer", "credit"])
 def test_v26_rejects_tampered_candidate_timeline(field):
     contract = build_network_incident_timeline_contract(270100)

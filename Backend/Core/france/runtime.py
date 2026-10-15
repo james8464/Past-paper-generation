@@ -71,6 +71,13 @@ from Backend.Core.france.network_incident_contract import (
 from Backend.Core.france.network_incident_prose import (
     validate_network_incident_exercise,
 )
+from Backend.Core.france.network_incident_timeline_contract import (
+    NetworkIncidentTimelineContract,
+    build_network_incident_timeline_contract,
+)
+from Backend.Core.france.network_incident_timeline_prose import (
+    validate_network_incident_timeline_exercise,
+)
 from Backend.Core.france.network_reasoning_contract import (
     NetworkReasoningContract,
     build_network_reasoning_contract,
@@ -87,6 +94,7 @@ from Backend.Core.france.pipeline import (
     CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
     CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
     CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
+    CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
     CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
     atomic_json,
@@ -1885,6 +1893,146 @@ def validate_network_incident_pdf(
                 raise ValueError(f"Network incident credit {question.id} missing")
 
 
+def validate_network_incident_timeline_pdf(
+    path: Path,
+    contract: NetworkIncidentTimelineContract,
+    *,
+    correction: bool,
+    exercise: NSIExercise,
+) -> None:
+    """Bind V26's printed chronology, questions and correction credits."""
+    from Backend.Core.france.pipeline import _tasks_for_seed_v26
+
+    data = contract.to_dict()
+    validate_network_incident_timeline_exercise(
+        contract, exercise, _tasks_for_seed_v26(data["seed"])[2]["question_blueprint"]
+    )
+    titles = tuple(material.title for material in exercise.materials)
+    expected_ids = (
+        "links",
+        "route_working",
+        "packet_card",
+        "process_initial",
+        "message_cards",
+        "threat_working",
+    )
+    if (
+        len(titles) != 6
+        or tuple(item.id for item in exercise.materials) != expected_ids
+    ):
+        raise ValueError("Network incident timeline materials incomplete")
+    if (
+        f"t={data['packet']['deadline']} min" not in exercise.context
+        or f"t={data['timeline']['report_deadline']} min" not in exercise.context
+    ):
+        raise ValueError("Network incident timeline premises differ")
+    with pymupdf.open(path) as pdf:
+        pages = [page.get_text() for page in pdf]
+    lines = [
+        line.strip()
+        for page in pages
+        for line in page.splitlines()
+        if line.strip() and not line.startswith(("Paper Creator —", "Page : "))
+    ]
+    text = "\n".join(lines)
+    flat = " ".join(text.split())
+    heading = f"Exercice 3 ({exercise.target_points.replace('.', ',')} points)"
+    if text.count(heading) != 1 or any(text.count(title) != 1 for title in titles):
+        raise ValueError("Network incident timeline heading or material missing")
+    displayed_context = " ".join(
+        text.split(heading + "\n", 1)[1].split("\n" + titles[0], 1)[0].split()
+    )
+    if " ".join(exercise.context.split()) not in displayed_context:
+        raise ValueError("Network incident timeline printed premise differs")
+    following = (titles[1], titles[2], "3a.", "3e.", titles[5], "3i.")
+    for material, next_marker in zip(exercise.materials, following, strict=True):
+        printed = text.split(material.title + "\n", 1)[1].split("\n" + next_marker, 1)[
+            0
+        ]
+        expected = " ".join(
+            [*material.columns, *(cell for row in material.rows for cell in row)]
+        )
+        if " ".join(printed.split()) != expected:
+            raise ValueError(f"Network incident timeline table {material.id} differs")
+    for title, question_id in ((titles[0], "3a"), (titles[3], "3e"), (titles[4], "3i")):
+        material_pages = [i for i, page in enumerate(pages) if title in page]
+        question_pages = [
+            i for i, page in enumerate(pages) if f"{question_id}." in page
+        ]
+        if (
+            len(material_pages) != 1
+            or len(question_pages) != 1
+            or not 0 <= question_pages[0] - material_pages[0] <= 1
+        ):
+            raise ValueError(f"Network incident timeline stage {question_id} separated")
+    for index, question in enumerate(exercise.questions):
+        if (
+            question.verification.get("kind") != "network_incident_timeline_contract"
+            or question.verification.get("contract") != data
+            or question.verification.get("task_id") != question.id
+            or question.verification.get("expected") != data["expected"]
+        ):
+            raise ValueError(
+                f"Network incident timeline question {question.id} unbound"
+            )
+        expected_material_ids = (
+            expected_ids[:3]
+            if index < 4
+            else (expected_ids[2], expected_ids[3])
+            if index < 8
+            else (expected_ids[2], expected_ids[4], expected_ids[5])
+        )
+        if question.material_ids != expected_material_ids:
+            raise ValueError(
+                f"Network incident timeline evidence {question.id} changed"
+            )
+        if (
+            sum(bool(re.match(rf"^{question.id}\.(?:\s|$)", line)) for line in lines)
+            != 1
+        ):
+            raise ValueError(
+                f"Network incident timeline question {question.id} missing"
+            )
+        start = text.index("\n" + question.id + ".")
+        end = (
+            text.index("\n" + exercise.questions[index + 1].id + ".")
+            if index + 1 < len(exercise.questions)
+            else len(text)
+        )
+        segment = " ".join(text[start:end].split())
+        if segment.count(" ".join(question.prompt.split())) != 1:
+            raise ValueError(f"Network incident timeline prompt {question.id} differs")
+        if segment.count("Réponse attendue") != int(correction) or segment.count(
+            f"Barème indicatif — question {question.id}"
+        ) != int(correction):
+            raise ValueError(
+                f"Network incident timeline answer role {question.id} invalid"
+            )
+        answer = " ".join(question.answer.split())
+        if correction and answer not in segment:
+            raise ValueError(f"Network incident timeline answer {question.id} missing")
+        if not correction and answer in flat:
+            raise ValueError(f"Network incident timeline answer {question.id} leaked")
+        for credit in question.marking:
+            criterion = " ".join(credit.criterion.split())
+            if correction and segment.count(criterion) != 1:
+                raise ValueError(
+                    f"Network incident timeline criterion {question.id} missing"
+                )
+            if not correction and criterion in flat:
+                raise ValueError(
+                    f"Network incident timeline criterion {question.id} leaked"
+                )
+        if correction:
+            expected_credit_count = sum(
+                item.points == "0.25" for item in question.marking
+            )
+            if segment.count("0,25 point") != expected_credit_count:
+                raise ValueError(
+                    f"Network incident timeline credit {question.id} missing"
+                )
+
+
 def load_originality_history(output: Path) -> list[str]:
     """Read a bounded set of candidate-only text from earlier local bundles."""
     history: list[str] = []
@@ -1919,6 +2067,8 @@ def load_originality_history(output: Path) -> list[str]:
 
 def network_pdf_contract_version(prompt_version: str) -> str:
     """Never silently render an unknown French package with an older validator."""
+    if prompt_version == CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION:
+        return "v26"
     if prompt_version in {
         CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
         CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
@@ -1948,6 +2098,7 @@ def database_pdf_contract_version(prompt_version: str) -> str:
     if prompt_version in {
         CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
         CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
+        CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     }:
         return "v24"
     if prompt_version in {
@@ -2013,7 +2164,7 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v25",
+            contract_authoring_version="v26",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
@@ -2023,10 +2174,10 @@ def handle_generate_assessment(args) -> int:
             CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
             CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
         }
-        graph_two_outage = (
-            package["identity"]["prompt_version"]
-            == CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION
-        )
+        graph_two_outage = package["identity"]["prompt_version"] in {
+            CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
+            CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
+        }
         graph_resilience = package["identity"]["prompt_version"] in {
             CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
             CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
@@ -2063,11 +2214,14 @@ def handle_generate_assessment(args) -> int:
         network_pdf_version = network_pdf_contract_version(
             package["identity"]["prompt_version"]
         )
+        network_timeline = network_pdf_version == "v26"
         network_incident = network_pdf_version == "v23"
         network_reasoning = network_pdf_version == "v18"
         network_depth = network_pdf_version == "v15"
         network_contract = (
-            build_network_incident_contract(args.seed)
+            build_network_incident_timeline_contract(args.seed)
+            if network_timeline
+            else build_network_incident_contract(args.seed)
             if network_incident
             else build_network_reasoning_contract(args.seed)
             if network_reasoning
@@ -2128,7 +2282,9 @@ def handle_generate_assessment(args) -> int:
                 exercise=exercises[1],
             )
             network_validator = (
-                validate_network_incident_pdf
+                validate_network_incident_timeline_pdf
+                if network_timeline
+                else validate_network_incident_pdf
                 if network_incident
                 else validate_network_reasoning_contract_pdf
                 if network_reasoning

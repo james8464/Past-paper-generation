@@ -92,8 +92,13 @@ def render_network_incident_timeline_candidate(
     facts = contract.to_dict()
     timeline = facts["timeline"]
     events = facts["expected"]["timeline"]
+    raw["context"] = (
+        raw["context"]
+        .replace("À son arrivée après la hausse", "\nÀ son arrivée après la hausse")
+        .replace("Après traitement, Station", "\nAprès traitement, Station")
+    )
     raw["context"] += (
-        " Pour cette seconde échéance indépendante, l'arrêt de P2 et la libération de B prennent "
+        "\nPour cette seconde échéance indépendante, l'arrêt de P2 et la libération de B prennent "
         f"{timeline['stop_and_release_minutes']} min après l'arrivée effective de M-27 ; le traitement par P1 prend ensuite "
         f"{timeline['processing_minutes']} min. P2 redémarre à la fin du traitement. "
         f"L'échange sécurisé et la transmission du compte rendu prennent encore {timeline['secure_report_minutes']} min ; "

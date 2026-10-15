@@ -51,6 +51,13 @@ from Backend.Core.france.network_incident_prose import (
     NETWORK_INCIDENT_PROSE_VERSION,
     network_incident_catalogue_digest,
 )
+from Backend.Core.france.network_incident_timeline_contract import (
+    build_network_incident_timeline_contract,
+)
+from Backend.Core.france.network_incident_timeline_prose import (
+    NETWORK_INCIDENT_TIMELINE_PROSE_VERSION,
+    network_incident_timeline_catalogue_digest,
+)
 from Backend.Core.france.network_prose import (
     NETWORK_PROSE_VERSION,
     network_catalogue_digest,
@@ -72,6 +79,7 @@ from Backend.Core.france.pipeline import (
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
     CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
     CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
+    CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
     CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
 )
@@ -89,6 +97,7 @@ def _passed_result(
     v23=False,
     v24=False,
     v25=False,
+    v26=False,
 ):
     identity = {
         "implementation": "implementation-sha",
@@ -102,7 +111,9 @@ def _passed_result(
     manifest_identity = {
         "assessment": asdict(NSI_2027),
         "prompt_version": (
-            CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION
+            CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION
+            if v26
+            else CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION
             if v25
             else CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION
             if v24
@@ -133,7 +144,7 @@ def _passed_result(
         "blueprint": [],
         "originality_history_digest": "history-sha",
     }
-    if v24 or v25:
+    if v24 or v25 or v26:
         manifest_identity.update(
             database_reconciliation_contract_sha256=build_database_reconciliation_contract(
                 270100
@@ -151,15 +162,23 @@ def _passed_result(
         manifest_identity["database_depth_contract_sha256"] = (
             build_database_depth_contract(270100).digest
         )
-    if v19 or v20 or v21 or v22 or v23 or v24 or v25:
+    if v19 or v20 or v21 or v22 or v23 or v24 or v25 or v26:
         del manifest_identity["database_depth_prose_contract_version"]
         del manifest_identity["database_depth_prose_catalogue_sha256"]
-        if not (v21 or v22 or v23 or v24 or v25):
+        if not (v21 or v22 or v23 or v24 or v25 or v26):
             manifest_identity.update(
                 database_reasoning_prose_contract_version=DATABASE_REASONING_PROSE_VERSION,
                 database_reasoning_prose_catalogue_sha256=database_reasoning_catalogue_digest(),
             )
-    if v23 or v24 or v25:
+    if v26:
+        manifest_identity.update(
+            network_incident_timeline_contract_sha256=build_network_incident_timeline_contract(
+                270100
+            ).digest,
+            network_incident_timeline_prose_contract_version=NETWORK_INCIDENT_TIMELINE_PROSE_VERSION,
+            network_incident_timeline_prose_catalogue_sha256=network_incident_timeline_catalogue_digest(),
+        )
+    elif v23 or v24 or v25:
         manifest_identity.update(
             network_incident_contract_sha256=build_network_incident_contract(
                 270100
@@ -181,7 +200,7 @@ def _passed_result(
             network_depth_prose_contract_version=NETWORK_DEPTH_PROSE_VERSION,
             network_depth_prose_catalogue_sha256=network_depth_catalogue_digest(),
         )
-    if v25:
+    if v25 or v26:
         from Backend.Core.france.graph_two_outage_contract import (
             build_graph_two_outage_contract,
         )
@@ -587,6 +606,42 @@ def test_french_benchmark_v25_rejects_mixed_or_wrong_graph_identity(
         result,
         identity,
         expected_prompt_version=CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
+    )
+    manifest = bundle / "manifest.json"
+    package = bundle / "assessment.json"
+    manifest_value = json.loads(manifest.read_text())
+    package_value = json.loads(package.read_text())
+    for value in (manifest_value, package_value):
+        value["identity"][wrong_field] = "wrong-version"
+    package.write_text(json.dumps(package_value))
+    manifest_value["artifacts"]["assessment_package"]["sha256"] = sha256(
+        package.read_bytes()
+    ).hexdigest()
+    manifest.write_text(json.dumps(manifest_value))
+    result_value = json.loads(result.read_text())
+    result_value["artifacts"]["manifest_sha256"] = sha256(
+        manifest.read_bytes()
+    ).hexdigest()
+    result.write_text(json.dumps(result_value))
+    assert not accepted_result(result, identity)
+
+
+@pytest.mark.parametrize(
+    "wrong_field",
+    (
+        "network_incident_timeline_contract_sha256",
+        "network_incident_timeline_prose_contract_version",
+        "network_incident_timeline_prose_catalogue_sha256",
+    ),
+)
+def test_french_benchmark_v26_rejects_wrong_timeline_identity(tmp_path, wrong_field):
+    from tools.french_nsi_benchmark import accepted_result
+
+    result, identity, bundle = _passed_result(tmp_path, v26=True)
+    assert accepted_result(
+        result,
+        identity,
+        expected_prompt_version=CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     )
     manifest = bundle / "manifest.json"
     package = bundle / "assessment.json"

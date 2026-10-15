@@ -99,6 +99,13 @@ from Backend.Core.france.network_incident_prose import (  # noqa: E402
     NETWORK_INCIDENT_PROSE_VERSION,
     network_incident_catalogue_digest,
 )
+from Backend.Core.france.network_incident_timeline_contract import (  # noqa: E402
+    build_network_incident_timeline_contract,
+)
+from Backend.Core.france.network_incident_timeline_prose import (  # noqa: E402
+    NETWORK_INCIDENT_TIMELINE_PROSE_VERSION,
+    network_incident_timeline_catalogue_digest,
+)
 from Backend.Core.france.network_reasoning_contract import (  # noqa: E402
     build_network_reasoning_contract,
 )
@@ -116,6 +123,7 @@ from Backend.Core.france.pipeline import (  # noqa: E402
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
     CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
     CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
+    CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
 )
 from Backend.Core.france.runtime import model_identity  # noqa: E402
@@ -183,6 +191,15 @@ _V25_IDENTITY_KEYS = _V24_IDENTITY_KEYS - {
     "graph_two_outage_contract_sha256",
     "graph_two_outage_prose_catalogue_sha256",
     "graph_two_outage_prose_contract_version",
+}
+_V26_IDENTITY_KEYS = _V25_IDENTITY_KEYS - {
+    "network_incident_contract_sha256",
+    "network_incident_prose_catalogue_sha256",
+    "network_incident_prose_contract_version",
+} | {
+    "network_incident_timeline_contract_sha256",
+    "network_incident_timeline_prose_catalogue_sha256",
+    "network_incident_timeline_prose_contract_version",
 }
 
 
@@ -278,6 +295,7 @@ def _accepted_payload(
         )
         or manifest_identity.get("prompt_version")
         not in {
+            CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
             CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
             CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
             CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
@@ -294,6 +312,7 @@ def _accepted_payload(
             != build_database_reconciliation_contract(identity["seed"]).digest
             if manifest_identity.get("prompt_version")
             in {
+                CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
                 CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                 CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
             }
@@ -312,6 +331,7 @@ def _accepted_payload(
     ):
         return False
     if manifest_identity["prompt_version"] in {
+        CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
         CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
         CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
@@ -321,12 +341,16 @@ def _accepted_payload(
         if (
             set(manifest_identity)
             != (
-                _V25_IDENTITY_KEYS
+                _V26_IDENTITY_KEYS
+                if manifest_identity["prompt_version"]
+                == CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION
+                else _V25_IDENTITY_KEYS
                 if manifest_identity["prompt_version"]
                 == CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION
                 else _V24_IDENTITY_KEYS
                 if manifest_identity["prompt_version"]
                 in {
+                    CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
                     CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                     CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
                 }
@@ -347,6 +371,7 @@ def _accepted_payload(
                 != database_reconciliation_catalogue_digest()
                 if manifest_identity["prompt_version"]
                 in {
+                    CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
                     CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                     CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
                 }
@@ -392,7 +417,30 @@ def _accepted_payload(
         != database_depth_catalogue_digest()
     ):
         return False
-    if manifest_identity["prompt_version"] in {
+    if (
+        manifest_identity["prompt_version"]
+        == CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION
+    ):
+        if (
+            manifest_identity.get("network_incident_timeline_contract_sha256")
+            != build_network_incident_timeline_contract(identity["seed"]).digest
+            or manifest_identity.get("network_incident_timeline_prose_contract_version")
+            != NETWORK_INCIDENT_TIMELINE_PROSE_VERSION
+            or manifest_identity.get("network_incident_timeline_prose_catalogue_sha256")
+            != network_incident_timeline_catalogue_digest()
+            or any(
+                field in manifest_identity
+                for field in (
+                    "network_incident_contract_sha256",
+                    "network_incident_prose_contract_version",
+                    "network_incident_prose_catalogue_sha256",
+                    "network_reasoning_contract_sha256",
+                    "network_depth_contract_sha256",
+                )
+            )
+        ):
+            return False
+    elif manifest_identity["prompt_version"] in {
         CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
         CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
@@ -448,10 +496,10 @@ def _accepted_payload(
         != network_depth_catalogue_digest()
     ):
         return False
-    if (
-        manifest_identity["prompt_version"]
-        == CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION
-    ):
+    if manifest_identity["prompt_version"] in {
+        CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
+        CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
+    }:
         if (
             manifest_identity.get("graph_two_outage_contract_sha256")
             != build_graph_two_outage_contract(identity["seed"]).digest
@@ -788,7 +836,7 @@ def run_plan(args: argparse.Namespace) -> int:
         if accepted_result(
             result_path,
             identity,
-            expected_prompt_version=CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
+            expected_prompt_version=CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
         ):
             results.append(previous)
             continue
@@ -861,7 +909,7 @@ def run_plan(args: argparse.Namespace) -> int:
             result,
             result_path,
             identity,
-            expected_prompt_version=CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
+            expected_prompt_version=CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
         ):
             result["status"] = "failed"
             result["error"] = "L'intégrité des artefacts publiés est invalide"

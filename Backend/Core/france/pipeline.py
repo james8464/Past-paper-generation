@@ -153,6 +153,17 @@ from Backend.Core.france.network_incident_prose import (
     NETWORK_INCIDENT_PROSE_VERSION,
     network_incident_catalogue_digest,
 )
+from Backend.Core.france.network_incident_timeline_authoring import (
+    author_network_incident_timeline_selection,
+    replay_network_incident_timeline_selection,
+)
+from Backend.Core.france.network_incident_timeline_contract import (
+    build_network_incident_timeline_contract,
+)
+from Backend.Core.france.network_incident_timeline_prose import (
+    NETWORK_INCIDENT_TIMELINE_PROSE_VERSION,
+    network_incident_timeline_catalogue_digest,
+)
 from Backend.Core.france.network_prose import (
     NETWORK_PROSE_VERSION,
     network_catalogue_digest,
@@ -207,6 +218,7 @@ CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION = "fr-nsi-written-2027-v22"
 CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION = "fr-nsi-written-2027-v23"
 CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION = "fr-nsi-written-2027-v24"
 CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION = "fr-nsi-written-2027-v25"
+CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION = "fr-nsi-written-2027-v26"
 # Recorded source identities prevent a newer package dropping its evidence via
 # an earlier prompt-version label. The separate manifest remains the trust root.
 LEGACY_IMPLEMENTATIONS = {
@@ -722,6 +734,15 @@ def _tasks_for_seed_v25(seed: int) -> list[dict]:
         item["estimated_minutes"] = minutes[index]
     blueprint[5].update(points="1", operation="analyse", difficulty=4)
     blueprint[6].update(points="0.5", operation="justify", difficulty=4)
+    return tasks
+
+
+def _tasks_for_seed_v26(seed: int) -> list[dict]:
+    """Keep V25 E1/V24 E2 and credit the causal E3 chronology."""
+    tasks = _tasks_for_seed_v25(seed)
+    blueprint = tasks[2]["question_blueprint"]
+    blueprint[6].update(points="0.75", estimated_minutes=8, difficulty=4)
+    blueprint[9].update(points="0.25", estimated_minutes=3)
     return tasks
 
 
@@ -1856,6 +1877,7 @@ def generate_assessment(
         "v23",
         "v24",
         "v25",
+        "v26",
     } or (not contract_graph_tree and contract_authoring_version != "v12"):
         raise ValueError("Version de rédaction du contrat inconnue")
     model_digest = getattr(client, "model_digest", "")
@@ -1869,7 +1891,9 @@ def generate_assessment(
     ):
         raise ValueError("Historique d'originalité invalide ou trop volumineux")
     tasks = (
-        _tasks_for_seed_v25(seed)
+        _tasks_for_seed_v26(seed)
+        if contract_authoring_version == "v26"
+        else _tasks_for_seed_v25(seed)
         if contract_authoring_version == "v25"
         else _tasks_for_seed_v24(seed)
         if contract_authoring_version == "v24"
@@ -1912,7 +1936,9 @@ def generate_assessment(
         "assessment": asdict(NSI_2027),
         "prompt_version": (
             (
-                CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION
+                CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION
+                if contract_authoring_version == "v26"
+                else CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION
                 if contract_authoring_version == "v25"
                 else CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION
                 if contract_authoring_version == "v24"
@@ -1955,7 +1981,7 @@ def generate_assessment(
         "originality_history_digest": digest(originality_history),
     }
     if contract_graph_tree:
-        if contract_authoring_version == "v25":
+        if contract_authoring_version in {"v25", "v26"}:
             identity["graph_two_outage_contract_sha256"] = (
                 build_graph_two_outage_contract(seed).digest
             )
@@ -2040,7 +2066,7 @@ def generate_assessment(
             identity["database_audit_prose_catalogue_sha256"] = (
                 database_audit_catalogue_digest()
             )
-        if contract_authoring_version in {"v24", "v25"}:
+        if contract_authoring_version in {"v24", "v25", "v26"}:
             identity["database_reconciliation_contract_sha256"] = (
                 build_database_reconciliation_contract(seed).digest
             )
@@ -2080,6 +2106,16 @@ def generate_assessment(
             identity["network_incident_prose_catalogue_sha256"] = (
                 network_incident_catalogue_digest()
             )
+        if contract_authoring_version == "v26":
+            identity["network_incident_timeline_contract_sha256"] = (
+                build_network_incident_timeline_contract(seed).digest
+            )
+            identity["network_incident_timeline_prose_contract_version"] = (
+                NETWORK_INCIDENT_TIMELINE_PROSE_VERSION
+            )
+            identity["network_incident_timeline_prose_catalogue_sha256"] = (
+                network_incident_timeline_catalogue_digest()
+            )
     state = {"identity": identity, "accepted": {}, "failed_attempts": []}
     if checkpoint.exists():
         state = json.loads(checkpoint.read_text(encoding="utf-8"))
@@ -2098,7 +2134,7 @@ def generate_assessment(
                     emit(f"Rédaction et vérification de l'exercice {key}/3")
                     if (
                         contract_graph_tree
-                        and contract_authoring_version == "v25"
+                        and contract_authoring_version in {"v25", "v26"}
                         and key == "1"
                     ):
                         contract = build_graph_two_outage_contract(seed)
@@ -2122,7 +2158,9 @@ def generate_assessment(
                             for question in exercise.questions
                         ]
                         if any(check["state"] != "passed" for check in checks):
-                            raise ValueError("Contrat déterministe de double fermeture refusé")
+                            raise ValueError(
+                                "Contrat déterministe de double fermeture refusé"
+                            )
                         originality = _originality(
                             exercise, references[position], originality_history
                         )
@@ -2351,6 +2389,7 @@ def generate_assessment(
                             "v23",
                             "v24",
                             "v25",
+                            "v26",
                         }
                         and key == "2"
                     ):
@@ -2363,7 +2402,7 @@ def generate_assessment(
                         }
                         contract = (
                             build_database_reconciliation_contract(seed)
-                            if contract_authoring_version in {"v24", "v25"}
+                            if contract_authoring_version in {"v24", "v25", "v26"}
                             else build_database_audit_contract(seed)
                             if contract_authoring_version in {"v21", "v22", "v23"}
                             else build_database_depth_contract(seed)
@@ -2375,7 +2414,7 @@ def generate_assessment(
                         )
                         author_selection = (
                             author_database_reconciliation_selection
-                            if contract_authoring_version in {"v24", "v25"}
+                            if contract_authoring_version in {"v24", "v25", "v26"}
                             else author_database_audit_selection
                             if contract_authoring_version in {"v21", "v22", "v23"}
                             else author_database_reasoning_selection
@@ -2394,7 +2433,7 @@ def generate_assessment(
                         )
                         selection_key = (
                             "database_reconciliation_selection"
-                            if contract_authoring_version in {"v24", "v25"}
+                            if contract_authoring_version in {"v24", "v25", "v26"}
                             else "database_audit_selection"
                             if contract_authoring_version in {"v21", "v22", "v23"}
                             else "database_reasoning_selection"
@@ -2459,11 +2498,14 @@ def generate_assessment(
                             "v23",
                             "v24",
                             "v25",
+                            "v26",
                         }
                         and key == "3"
                     ):
                         contract = (
-                            build_network_incident_contract(seed)
+                            build_network_incident_timeline_contract(seed)
+                            if contract_authoring_version == "v26"
+                            else build_network_incident_contract(seed)
                             if contract_authoring_version in {"v23", "v24", "v25"}
                             else build_network_reasoning_contract(seed)
                             if contract_authoring_version
@@ -2476,7 +2518,9 @@ def generate_assessment(
                             f"{checkpoint.name}.exercise-3.attempt-{attempt}.selection.json"
                         )
                         author_selection = (
-                            author_network_incident_selection
+                            author_network_incident_timeline_selection
+                            if contract_authoring_version == "v26"
+                            else author_network_incident_selection
                             if contract_authoring_version in {"v23", "v24", "v25"}
                             else author_network_reasoning_selection
                             if contract_authoring_version
@@ -2494,7 +2538,9 @@ def generate_assessment(
                             run_identity=identity,
                         )
                         selection_key = (
-                            "network_incident_selection"
+                            "network_incident_timeline_selection"
+                            if contract_authoring_version == "v26"
+                            else "network_incident_selection"
                             if contract_authoring_version in {"v23", "v24", "v25"}
                             else "network_reasoning_selection"
                             if contract_authoring_version
@@ -2791,6 +2837,7 @@ def validate_package(package: dict):
             CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
             CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
             CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
+            CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
             *LEGACY_IMPLEMENTATIONS,
         }
         or not identity.get("model_digest")
@@ -2997,6 +3044,33 @@ def validate_package(package: dict):
         }
         if set(identity) != v25_fields:
             raise ValueError("Identité V25 mixte ou incompatible")
+    if (
+        identity["prompt_version"]
+        == CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION
+    ):
+        v26_fields = {
+            "assessment",
+            "prompt_version",
+            "implementation_sha256",
+            "seed",
+            "provider",
+            "model",
+            "model_digest",
+            "reference_digest",
+            "blueprint",
+            "originality_history_digest",
+            "graph_two_outage_contract_sha256",
+            "graph_two_outage_prose_contract_version",
+            "graph_two_outage_prose_catalogue_sha256",
+            "database_reconciliation_contract_sha256",
+            "database_reconciliation_prose_contract_version",
+            "database_reconciliation_prose_catalogue_sha256",
+            "network_incident_timeline_contract_sha256",
+            "network_incident_timeline_prose_contract_version",
+            "network_incident_timeline_prose_catalogue_sha256",
+        }
+        if set(identity) != v26_fields:
+            raise ValueError("Identité V26 mixte ou incompatible")
     seed = identity.get("seed")
     if identity["prompt_version"] in {
         CONTRACT_PROMPT_VERSION,
@@ -3052,7 +3126,10 @@ def validate_package(package: dict):
         != graph_route_trace_catalogue_digest()
     ):
         raise ValueError("Identité de trace des trajets incompatible")
-    if identity["prompt_version"] == CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION and (
+    if identity["prompt_version"] in {
+        CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
+        CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
+    } and (
         type(seed) is not int
         or identity.get("graph_two_outage_contract_sha256")
         != build_graph_two_outage_contract(seed).digest
@@ -3127,6 +3204,7 @@ def validate_package(package: dict):
     if identity["prompt_version"] in {
         CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
         CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
+        CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     } and (
         identity.get("database_reconciliation_contract_sha256")
         != build_database_reconciliation_contract(seed).digest
@@ -3184,9 +3262,24 @@ def validate_package(package: dict):
         != network_incident_catalogue_digest()
     ):
         raise ValueError("Identité du contrat d'incident réseau incompatible")
+    if identity[
+        "prompt_version"
+    ] == CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION and (
+        type(seed) is not int
+        or identity.get("network_incident_timeline_contract_sha256")
+        != build_network_incident_timeline_contract(seed).digest
+        or identity.get("network_incident_timeline_prose_contract_version")
+        != NETWORK_INCIDENT_TIMELINE_PROSE_VERSION
+        or identity.get("network_incident_timeline_prose_catalogue_sha256")
+        != network_incident_timeline_catalogue_digest()
+    ):
+        raise ValueError("Identité de chronologie d'incident réseau incompatible")
     expected_blueprint = (
         (
-            _tasks_for_seed_v25(seed)
+            _tasks_for_seed_v26(seed)
+            if identity["prompt_version"]
+            == CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION
+            else _tasks_for_seed_v25(seed)
             if identity["prompt_version"] == CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION
             else _tasks_for_seed_v24(seed)
             if identity["prompt_version"]
@@ -3272,7 +3365,11 @@ def validate_package(package: dict):
         if evidence.get("exercise_sha256") != digest(exercise.model_dump(mode="json")):
             raise ValueError("Exercise evidence hash mismatch")
         if (
-            identity["prompt_version"] == CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION
+            identity["prompt_version"]
+            in {
+                CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
+                CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
+            }
             and exercise.id == "1"
         ):
             raw = replay_graph_two_outage_selection(
@@ -3427,6 +3524,7 @@ def validate_package(package: dict):
                 CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
                 CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                 CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
+                CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
             }
             and exercise.id == "2"
         ):
@@ -3443,6 +3541,7 @@ def validate_package(package: dict):
                 in {
                     CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                     CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
+                    CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
                 }
                 else replay_database_audit_selection
                 if identity["prompt_version"]
@@ -3468,6 +3567,7 @@ def validate_package(package: dict):
                 in {
                     CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                     CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
+                    CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
                 }
                 else build_database_audit_contract(seed)
                 if identity["prompt_version"]
@@ -3486,6 +3586,7 @@ def validate_package(package: dict):
                     in {
                         CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                         CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
+                        CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
                     }
                     else "database_audit_selection"
                     if identity["prompt_version"]
@@ -3536,6 +3637,7 @@ def validate_package(package: dict):
                 CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
                 CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                 CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
+                CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
             }
             and exercise.id == "3"
         ):
@@ -3557,7 +3659,10 @@ def validate_package(package: dict):
                 CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
             }
             replay_selection = (
-                replay_network_incident_selection
+                replay_network_incident_timeline_selection
+                if identity["prompt_version"]
+                == CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION
+                else replay_network_incident_selection
                 if network_incident
                 else replay_network_reasoning_selection
                 if network_reasoning
@@ -3567,7 +3672,10 @@ def validate_package(package: dict):
             )
             raw = replay_selection(
                 expected_blueprint[2],
-                build_network_incident_contract(seed)
+                build_network_incident_timeline_contract(seed)
+                if identity["prompt_version"]
+                == CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION
+                else build_network_incident_contract(seed)
                 if network_incident
                 else build_network_reasoning_contract(seed)
                 if network_reasoning
@@ -3576,7 +3684,10 @@ def validate_package(package: dict):
                 else build_network_contract(seed),
                 evidence.get("references"),
                 evidence.get(
-                    "network_incident_selection"
+                    "network_incident_timeline_selection"
+                    if identity["prompt_version"]
+                    == CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION
+                    else "network_incident_selection"
                     if network_incident
                     else "network_reasoning_selection"
                     if network_reasoning
