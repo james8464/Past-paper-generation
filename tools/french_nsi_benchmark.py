@@ -46,6 +46,13 @@ from Backend.Core.france.database_reasoning_prose import (  # noqa: E402
     DATABASE_REASONING_PROSE_VERSION,
     database_reasoning_catalogue_digest,
 )
+from Backend.Core.france.database_reconciliation_contract import (  # noqa: E402
+    build_database_reconciliation_contract,
+)
+from Backend.Core.france.database_reconciliation_prose import (  # noqa: E402
+    DATABASE_RECONCILIATION_PROSE_VERSION,
+    database_reconciliation_catalogue_digest,
+)
 from Backend.Core.france.graph_resilience_contract import (  # noqa: E402
     build_graph_resilience_contract,
 )
@@ -96,6 +103,7 @@ from Backend.Core.france.pipeline import (  # noqa: E402
     CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
     CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
+    CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
     CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
     CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
@@ -149,6 +157,15 @@ _V23_IDENTITY_KEYS = _V22_IDENTITY_KEYS - {
     "network_incident_contract_sha256",
     "network_incident_prose_catalogue_sha256",
     "network_incident_prose_contract_version",
+}
+_V24_IDENTITY_KEYS = _V23_IDENTITY_KEYS - {
+    "database_audit_contract_sha256",
+    "database_audit_prose_catalogue_sha256",
+    "database_audit_prose_contract_version",
+} | {
+    "database_reconciliation_contract_sha256",
+    "database_reconciliation_prose_catalogue_sha256",
+    "database_reconciliation_prose_contract_version",
 }
 
 
@@ -244,6 +261,7 @@ def _accepted_payload(
         )
         or manifest_identity.get("prompt_version")
         not in {
+            CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
             CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
             CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
             CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
@@ -254,7 +272,11 @@ def _accepted_payload(
             CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
         }
         or (
-            manifest_identity.get("database_audit_contract_sha256")
+            manifest_identity.get("database_reconciliation_contract_sha256")
+            != build_database_reconciliation_contract(identity["seed"]).digest
+            if manifest_identity.get("prompt_version")
+            == CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION
+            else manifest_identity.get("database_audit_contract_sha256")
             != build_database_audit_contract(identity["seed"]).digest
             if manifest_identity.get("prompt_version")
             in {
@@ -269,6 +291,7 @@ def _accepted_payload(
     ):
         return False
     if manifest_identity["prompt_version"] in {
+        CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
         CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
         CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
@@ -276,7 +299,10 @@ def _accepted_payload(
         if (
             set(manifest_identity)
             != (
-                _V23_IDENTITY_KEYS
+                _V24_IDENTITY_KEYS
+                if manifest_identity["prompt_version"]
+                == CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION
+                else _V23_IDENTITY_KEYS
                 if manifest_identity["prompt_version"]
                 == CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION
                 else _V22_IDENTITY_KEYS
@@ -284,10 +310,20 @@ def _accepted_payload(
                 == CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION
                 else _V21_IDENTITY_KEYS
             )
-            or manifest_identity.get("database_audit_prose_contract_version")
-            != DATABASE_AUDIT_PROSE_VERSION
-            or manifest_identity.get("database_audit_prose_catalogue_sha256")
-            != database_audit_catalogue_digest()
+            or (
+                manifest_identity.get("database_reconciliation_prose_contract_version")
+                != DATABASE_RECONCILIATION_PROSE_VERSION
+                or manifest_identity.get(
+                    "database_reconciliation_prose_catalogue_sha256"
+                )
+                != database_reconciliation_catalogue_digest()
+                if manifest_identity["prompt_version"]
+                == CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION
+                else manifest_identity.get("database_audit_prose_contract_version")
+                != DATABASE_AUDIT_PROSE_VERSION
+                or manifest_identity.get("database_audit_prose_catalogue_sha256")
+                != database_audit_catalogue_digest()
+            )
             or any(
                 field in manifest_identity
                 for field in (
@@ -325,10 +361,10 @@ def _accepted_payload(
         != database_depth_catalogue_digest()
     ):
         return False
-    if (
-        manifest_identity["prompt_version"]
-        == CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION
-    ):
+    if manifest_identity["prompt_version"] in {
+        CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
+        CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
+    }:
         if (
             manifest_identity.get("network_incident_contract_sha256")
             != build_network_incident_contract(identity["seed"]).digest
@@ -381,6 +417,7 @@ def _accepted_payload(
     ):
         return False
     if manifest_identity["prompt_version"] in {
+        CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
         CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
         CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
@@ -391,6 +428,7 @@ def _accepted_payload(
                 "graph_route_trace_contract_sha256"
                 if manifest_identity["prompt_version"]
                 in {
+                    CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                     CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
                     CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
                 }
@@ -400,6 +438,7 @@ def _accepted_payload(
                 build_graph_route_trace_contract(identity["seed"]).digest
                 if manifest_identity["prompt_version"]
                 in {
+                    CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                     CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
                     CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
                 }
@@ -409,6 +448,7 @@ def _accepted_payload(
                 "graph_route_trace_prose_contract_version"
                 if manifest_identity["prompt_version"]
                 in {
+                    CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                     CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
                     CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
                 }
@@ -418,6 +458,7 @@ def _accepted_payload(
                 GRAPH_ROUTE_TRACE_PROSE_VERSION
                 if manifest_identity["prompt_version"]
                 in {
+                    CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                     CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
                     CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
                 }
@@ -427,6 +468,7 @@ def _accepted_payload(
                 "graph_route_trace_prose_catalogue_sha256"
                 if manifest_identity["prompt_version"]
                 in {
+                    CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                     CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
                     CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
                 }
@@ -436,6 +478,7 @@ def _accepted_payload(
                 graph_route_trace_catalogue_digest()
                 if manifest_identity["prompt_version"]
                 in {
+                    CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                     CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
                     CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
                 }
@@ -692,7 +735,7 @@ def run_plan(args: argparse.Namespace) -> int:
         if accepted_result(
             result_path,
             identity,
-            expected_prompt_version=CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
+            expected_prompt_version=CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
         ):
             results.append(previous)
             continue
@@ -765,7 +808,7 @@ def run_plan(args: argparse.Namespace) -> int:
             result,
             result_path,
             identity,
-            expected_prompt_version=CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
+            expected_prompt_version=CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
         ):
             result["status"] = "failed"
             result["error"] = "L'intégrité des artefacts publiés est invalide"

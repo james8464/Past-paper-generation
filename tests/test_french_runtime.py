@@ -201,6 +201,25 @@ def test_v22_route_trace_pdf_validator_binds_stage_and_answer(
                     )
 
 
+def test_v24_runtime_routes_reconciliation_without_downgrading_network():
+    from Backend.Core.france.pipeline import (
+        CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
+    )
+    from Backend.Core.france.runtime import (
+        database_pdf_contract_version,
+        network_pdf_contract_version,
+    )
+
+    assert (
+        database_pdf_contract_version(CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION)
+        == "v24"
+    )
+    assert (
+        network_pdf_contract_version(CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION)
+        == "v23"
+    )
+
+
 @pytest.mark.parametrize("large_print", [False, True])
 def test_v21_audit_pdf_stages_work_tables_and_uses_explicit_dispatch(
     tmp_path, large_print
@@ -903,14 +922,14 @@ def test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles(
                     )
 
 
-def test_runtime_publishes_v23_even_if_caller_requests_older_contract(
+def test_runtime_publishes_v24_even_if_caller_requests_older_contract(
     tmp_path, monkeypatch
 ):
     import json
 
     from Backend.Core.france import runtime
     from tests.test_nsi_pipeline import (
-        ControlledIncidentFrenchClient,
+        ControlledReconciliationFrenchClient,
         make_index,
     )
 
@@ -920,7 +939,7 @@ def test_runtime_publishes_v23_even_if_caller_requests_older_contract(
     monkeypatch.setattr(
         runtime,
         "FrenchOllamaClient",
-        lambda **_: ControlledIncidentFrenchClient(),
+        lambda **_: ControlledReconciliationFrenchClient(),
     )
     args = Namespace(
         assessment="fr-bac-general-nsi-written-2027",
@@ -936,7 +955,8 @@ def test_runtime_publishes_v23_even_if_caller_requests_older_contract(
     assert runtime.handle_generate_assessment(args) == 0
     (bundle,) = (tmp_path / "output").glob("nsi-*")
     package = json.loads((bundle / "assessment.json").read_text())
-    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v23"
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v24"
+    assert len(package["exercises"][1]["questions"]) == 12
     assert len(package["exercises"][2]["questions"]) == 12
     assert (bundle / "sujet.pdf").is_file()
     assert (bundle / "corrige.pdf").is_file()

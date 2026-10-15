@@ -467,7 +467,13 @@ def render_assessment(
             if not part.strip():
                 continue
             if position % 2:
-                story.append(code_listing(part.strip("\n"), code, doc.width - 42))
+                source = part.strip("\n")
+                listing = code_listing(source, code, doc.width - 42)
+                story.append(
+                    KeepTogether([listing])
+                    if large_print and len(source.splitlines()) <= 24
+                    else listing
+                )
             else:
                 value = escape(part.strip()).replace("\n", "<br/>")
                 story.append(
@@ -554,6 +560,7 @@ def render_assessment(
                 "graph_resilience_contract",
                 "graph_route_trace_contract",
                 "database_audit_contract",
+                "database_reconciliation_contract",
             }
             for question in exercise.questions
         )
@@ -621,10 +628,10 @@ def render_assessment(
             ):
                 start = material_start if question.id == "1h" else question_start
                 story[start:] = [KeepTogether(story[start:])]
-            if (
-                not correction
-                and question.verification.get("kind") == "database_audit_contract"
-            ):
+            if not correction and question.verification.get("kind") in {
+                "database_audit_contract",
+                "database_reconciliation_contract",
+            }:
                 start = material_start if question.id == "2g" else question_start
                 story[start:] = [KeepTogether(story[start:])]
             if (

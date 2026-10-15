@@ -708,6 +708,62 @@ class ControlledIncidentFrenchClient(ControlledRouteTraceFrenchClient):
         return super().generate_json(prompt)
 
 
+class ControlledReconciliationFrenchClient(ControlledIncidentFrenchClient):
+    def generate_json(self, prompt):
+        if prompt.startswith("Sélectionne l'exercice 2 v24"):
+            return {
+                "scene_id": "atelier",
+                "question_forms": {
+                    f"2{letter}": f"2{letter}-q1" for letter in "abcdefghijkl"
+                },
+                "rubric_forms": {
+                    f"2{letter}": f"2{letter}-r1" for letter in "abcdefghijkl"
+                },
+            }
+        return super().generate_json(prompt)
+
+
+def test_v24_reconciliation_package_replays_and_rejects_mixed_identity(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    checkpoint = tmp_path / "v24-checkpoint.json"
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledReconciliationFrenchClient(),
+        seed=270100,
+        checkpoint=checkpoint,
+        contract_graph_tree=True,
+        contract_authoring_version="v24",
+    )
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v24"
+    assert [len(item["questions"]) for item in package["exercises"]] == [10, 12, 12]
+    assert sum(Decimal(item["target_points"]) for item in package["exercises"]) == 18
+    assert package["language_points"] == "2"
+    assert validate_package(package)["structural_checks"] == "passed"
+    for field in (
+        "database_reconciliation_contract_sha256",
+        "database_reconciliation_prose_catalogue_sha256",
+    ):
+        changed = deepcopy(package)
+        changed["identity"][field] = "0" * 64
+        with pytest.raises(ValueError):
+            validate_package(changed)
+    mixed = deepcopy(package)
+    mixed["identity"]["database_audit_contract_sha256"] = "0" * 64
+    with pytest.raises(ValueError):
+        validate_package(mixed)
+    changed = deepcopy(package)
+    changed["evidence"][1]["database_reconciliation_selection"]["accepted"]["response"][
+        "scene_id"
+    ] = "invented"
+    with pytest.raises(ValueError):
+        validate_package(changed)
+
+
 def test_v23_incident_package_replays_without_changing_v22_and_rejects_mixed_identity(
     tmp_path,
 ):

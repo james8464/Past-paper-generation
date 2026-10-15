@@ -265,6 +265,7 @@ def verify_contract(contract: dict) -> dict:
         "database_contract",
         "database_depth_contract",
         "database_audit_contract",
+        "database_reconciliation_contract",
         "network_contract",
         "network_depth_contract",
         "network_reasoning_contract",
@@ -337,6 +338,17 @@ def verify_contract(contract: dict) -> dict:
             data = NetworkContract.from_dict(contract["contract"]).to_dict()
             if contract["task_id"] not in data["task_ids"]:
                 raise ValueError("Tâche de réseau absente")
+            actual = data["expected"]
+        elif kind == "database_reconciliation_contract":
+            from Backend.Core.france.database_reconciliation_contract import (
+                DatabaseReconciliationContract,
+            )
+
+            data = DatabaseReconciliationContract.from_dict(
+                contract["contract"]
+            ).to_dict()
+            if contract["task_id"] not in data["task_ids"]:
+                raise ValueError("Tâche de réconciliation d'incidents absente")
             actual = data["expected"]
         elif kind == "database_audit_contract":
             from Backend.Core.france.database_audit_contract import (

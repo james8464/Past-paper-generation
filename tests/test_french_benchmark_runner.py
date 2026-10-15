@@ -20,6 +20,13 @@ from Backend.Core.france.database_reasoning_prose import (
     DATABASE_REASONING_PROSE_VERSION,
     database_reasoning_catalogue_digest,
 )
+from Backend.Core.france.database_reconciliation_contract import (
+    build_database_reconciliation_contract,
+)
+from Backend.Core.france.database_reconciliation_prose import (
+    DATABASE_RECONCILIATION_PROSE_VERSION,
+    database_reconciliation_catalogue_digest,
+)
 from Backend.Core.france.graph_tree_depth_contract import (
     build_graph_tree_depth_contract,
 )
@@ -59,6 +66,7 @@ from Backend.Core.france.pipeline import (
     CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
     CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
+    CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
     CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
     CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
@@ -78,6 +86,7 @@ def _passed_result(
     v21=False,
     v22=False,
     v23=False,
+    v24=False,
 ):
     identity = {
         "implementation": "implementation-sha",
@@ -91,7 +100,9 @@ def _passed_result(
     manifest_identity = {
         "assessment": asdict(NSI_2027),
         "prompt_version": (
-            CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION
+            CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION
+            if v24
+            else CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION
             if v23
             else CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION
             if v22
@@ -118,7 +129,15 @@ def _passed_result(
         "blueprint": [],
         "originality_history_digest": "history-sha",
     }
-    if v21 or v22 or v23:
+    if v24:
+        manifest_identity.update(
+            database_reconciliation_contract_sha256=build_database_reconciliation_contract(
+                270100
+            ).digest,
+            database_reconciliation_prose_contract_version=DATABASE_RECONCILIATION_PROSE_VERSION,
+            database_reconciliation_prose_catalogue_sha256=database_reconciliation_catalogue_digest(),
+        )
+    elif v21 or v22 or v23:
         manifest_identity.update(
             database_audit_contract_sha256=build_database_audit_contract(270100).digest,
             database_audit_prose_contract_version=DATABASE_AUDIT_PROSE_VERSION,
@@ -128,15 +147,15 @@ def _passed_result(
         manifest_identity["database_depth_contract_sha256"] = (
             build_database_depth_contract(270100).digest
         )
-    if v19 or v20 or v21 or v22 or v23:
+    if v19 or v20 or v21 or v22 or v23 or v24:
         del manifest_identity["database_depth_prose_contract_version"]
         del manifest_identity["database_depth_prose_catalogue_sha256"]
-        if not (v21 or v22 or v23):
+        if not (v21 or v22 or v23 or v24):
             manifest_identity.update(
                 database_reasoning_prose_contract_version=DATABASE_REASONING_PROSE_VERSION,
                 database_reasoning_prose_catalogue_sha256=database_reasoning_catalogue_digest(),
             )
-    if v23:
+    if v23 or v24:
         manifest_identity.update(
             network_incident_contract_sha256=build_network_incident_contract(
                 270100
@@ -158,7 +177,7 @@ def _passed_result(
             network_depth_prose_contract_version=NETWORK_DEPTH_PROSE_VERSION,
             network_depth_prose_catalogue_sha256=network_depth_catalogue_digest(),
         )
-    if v22 or v23:
+    if v22 or v23 or v24:
         from Backend.Core.france.graph_route_trace_contract import (
             build_graph_route_trace_contract,
         )
@@ -478,6 +497,45 @@ def test_french_benchmark_accepts_v23_incident_but_rejects_mixed_v22_network(tmp
     package_value = json.loads(package.read_text())
     for value in (manifest_value, package_value):
         value["identity"]["network_reasoning_contract_sha256"] = "0" * 64
+    package.write_text(json.dumps(package_value))
+    manifest_value["artifacts"]["assessment_package"]["sha256"] = sha256(
+        package.read_bytes()
+    ).hexdigest()
+    manifest.write_text(json.dumps(manifest_value))
+    result_value = json.loads(result.read_text())
+    result_value["artifacts"]["manifest_sha256"] = sha256(
+        manifest.read_bytes()
+    ).hexdigest()
+    result.write_text(json.dumps(result_value))
+    assert not accepted_result(result, identity)
+
+
+@pytest.mark.parametrize(
+    "wrong_field",
+    (
+        "database_reconciliation_contract_sha256",
+        "database_reconciliation_prose_contract_version",
+        "database_reconciliation_prose_catalogue_sha256",
+        "database_audit_contract_sha256",
+    ),
+)
+def test_french_benchmark_v24_rejects_mixed_or_wrong_database_identity(
+    tmp_path, wrong_field
+):
+    from tools.french_nsi_benchmark import accepted_result
+
+    result, identity, bundle = _passed_result(tmp_path, v24=True)
+    assert accepted_result(
+        result,
+        identity,
+        expected_prompt_version=CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
+    )
+    manifest = bundle / "manifest.json"
+    package = bundle / "assessment.json"
+    manifest_value = json.loads(manifest.read_text())
+    package_value = json.loads(package.read_text())
+    for value in (manifest_value, package_value):
+        value["identity"][wrong_field] = "wrong-version"
     package.write_text(json.dumps(package_value))
     manifest_value["artifacts"]["assessment_package"]["sha256"] = sha256(
         package.read_bytes()
