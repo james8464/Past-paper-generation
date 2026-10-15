@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1792059874.1020932,
-    "ast_hash": "8d9be38db13eb39dee726362c9b27435",
+    "mtime": 1792074777.8192012,
+    "ast_hash": "7228fe5b866379ab489c614be7ffa3f1",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3212,6 +3212,36 @@
   "docs/quality/french-nsi-v24-incident-reconciliation-live-diagnostic-2026-10-15.md": {
     "mtime": 1792056836.6312218,
     "ast_hash": "98862c04d2e15d19d6571c34eff47941",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/graph_two_outage_contract.py": {
+    "mtime": 1792074736.1468391,
+    "ast_hash": "526d10485f76696d9ae9669edd8e57e5",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/graph_two_outage_prose.py": {
+    "mtime": 1792074804.170525,
+    "ast_hash": "07670fb322652a5af5dac61e7108753a",
+    "semantic_hash": ""
+  },
+  "tests/test_french_graph_two_outage_contract.py": {
+    "mtime": 1792074630.163126,
+    "ast_hash": "bbb06dba125a4ff88f902e867c013aa5",
+    "semantic_hash": ""
+  },
+  "tests/test_french_graph_two_outage_prose.py": {
+    "mtime": 1792074679.6100516,
+    "ast_hash": "0330ca19e8761f0b28aef72c9643ef58",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-15-french-nsi-two-outage-e1-v25.md": {
+    "mtime": 1792074542.8420389,
+    "ast_hash": "5007d7c74759512d1d4536a1881efda9",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-15-french-nsi-two-outage-e1-v25-design.md": {
+    "mtime": 1792074542.8418353,
+    "ast_hash": "f185cbb15e3043418b5a00ab131161e1",
     "semantic_hash": ""
   }
 }
