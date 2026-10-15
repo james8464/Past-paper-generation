@@ -629,14 +629,18 @@ def validate_graph_two_outage_pdf(
     if exercise.id != "1" or [q.id for q in exercise.questions] != data["task_ids"]:
         raise ValueError("Two-outage exercise differs from locked contract")
     with pymupdf.open(path) as pdf:
-        lines = [
-            line.strip()
+        page_lines = [
+            [
+                line.strip()
+                for line in page.get_text().splitlines()
+                if line.strip()
+                and not line.startswith("Paper Creator —")
+                and not line.startswith("Page : ")
+            ]
             for page in pdf
-            for line in page.get_text().splitlines()
-            if line.strip()
-            and not line.startswith("Paper Creator —")
-            and not line.startswith("Page : ")
         ]
+    lines = [line for page in page_lines for line in page]
+    page_by_line = [index for index, page in enumerate(page_lines) for _line in page]
     flat = " ".join(" ".join(lines).split())
     heading = f"Exercice 1 ({exercise.target_points.replace('.', ',')} points)"
     if lines.count(heading) != 1:
@@ -677,6 +681,11 @@ def validate_graph_two_outage_pdf(
         and positions["1g"] < tree_at < positions["1h"]
     ):
         raise ValueError("Two-outage working material outside its phase")
+    if not correction and (
+        page_by_line[first_at] != page_by_line[positions["1f"]]
+        or page_by_line[second_at] != page_by_line[positions["1g"]]
+    ):
+        raise ValueError("Two-outage working surface orphaned from question")
     if (
         lines[graph_at + 1 : positions["1a"]]
         != [str(edge[2]) for edge in data["graph"]["edges"]] + data["graph"]["nodes"]
@@ -734,6 +743,21 @@ def validate_graph_two_outage_pdf(
             raise ValueError("Two-outage source code or graph facts outside phase")
     if not correction and "if voisin not in visites:" in flat:
         raise ValueError("Two-outage corrected code revealed to candidate")
+    if not correction:
+        e1_subject = " ".join(lines[lines.index(heading) : after_1j])
+        second_result = data["expected"]["1g"]
+        second_route = " → ".join(second_result["route_after"])
+        second_cost = second_result["cost_after"]
+        if any(
+            fragment in e1_subject
+            for fragment in (
+                second_route,
+                f"= {second_cost}",
+                f"coût {second_cost}",
+                f"poids {second_cost}",
+            )
+        ):
+            raise ValueError("Two-outage route or cost revealed to candidate")
     first = "–".join(data["closed_edge"])
     second = "–".join(data["closed_edge_second"])
     if (

@@ -631,9 +631,18 @@ def render_assessment(
                 not correction
                 and question.verification.get("kind")
                 in {"graph_route_trace_contract", "graph_two_outage_contract"}
-                and question.id in {"1h", "1j"}
+                and question.id
+                in (
+                    {"1f", "1g", "1h", "1j"}
+                    if question.verification.get("kind") == "graph_two_outage_contract"
+                    else {"1h", "1j"}
+                )
             ):
-                start = material_start if question.id == "1h" else question_start
+                start = (
+                    material_start
+                    if question.id in {"1f", "1g", "1h"}
+                    else question_start
+                )
                 story[start:] = [KeepTogether(story[start:])]
             if not correction and question.verification.get("kind") in {
                 "database_audit_contract",

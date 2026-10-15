@@ -3,9 +3,10 @@
 import pytest
 
 
+@pytest.mark.parametrize("seed", [270100, 270102])
 @pytest.mark.parametrize("large_print", [False, True])
 def test_v25_two_outage_pdf_stages_work_and_rejects_mutations(
-    tmp_path, monkeypatch, large_print
+    tmp_path, monkeypatch, large_print, seed
 ):
     import pymupdf
 
@@ -23,13 +24,13 @@ def test_v25_two_outage_pdf_stages_work_and_rejects_mutations(
     package = generate_assessment(
         index_path=index,
         client=ControlledTwoOutageFrenchClient(),
-        seed=270100,
+        seed=seed,
         checkpoint=tmp_path / "checkpoint.json",
         contract_graph_tree=True,
         contract_authoring_version="v25",
     )
     exercises = [NSIExercise.model_validate(raw) for raw in package["exercises"]]
-    contract = build_graph_two_outage_contract(270100)
+    contract = build_graph_two_outage_contract(seed)
     first = "–".join(contract.to_dict()["closed_edge"])
     second = "–".join(contract.to_dict()["closed_edge_second"])
 
@@ -74,6 +75,15 @@ def test_v25_two_outage_pdf_stages_work_and_rejects_mutations(
             < raw.index(f"Trajet après fermeture de {second}")
             < raw.index("1g.")
         )
+        if not correction:
+            assert any(
+                "Trace de Dijkstra après fermeture" in page and "1f." in page
+                for page in pages
+            )
+            assert any(
+                f"Trajet après fermeture de {second}" in page and "1g." in page
+                for page in pages
+            )
         for before, after in (
             (f"Trajet après fermeture de {second}", "Trajet absent"),
             (
@@ -94,3 +104,43 @@ def test_v25_two_outage_pdf_stages_work_and_rejects_mutations(
                     runtime.validate_graph_two_outage_pdf(
                         path, contract, correction=correction, exercise=exercises[0]
                     )
+        if not correction:
+            winning_route = " → ".join(
+                contract.to_dict()["expected"]["1g"]["route_after"]
+            )
+            winning_cost = contract.to_dict()["expected"]["1g"]["cost_after"]
+            for leaked in (
+                f"Trajet gagnant : {winning_route}",
+                f"Coût gagnant = {winning_cost}",
+            ):
+                altered = [
+                    page + "\n" + leaked if "1g." in page else page for page in pages
+                ]
+                with monkeypatch.context() as patch:
+                    patch.setattr(
+                        runtime.pymupdf,
+                        "open",
+                        lambda _, values=altered: ExtractedDocument(values),
+                    )
+                    with pytest.raises(ValueError):
+                        runtime.validate_graph_two_outage_pdf(
+                            path, contract, correction=False, exercise=exercises[0]
+                        )
+            for task_id in ("1f", "1g"):
+                altered = []
+                for page in pages:
+                    if task_id + "." in page:
+                        before, after = page.split(task_id + ".", 1)
+                        altered.extend((before, task_id + "." + after))
+                    else:
+                        altered.append(page)
+                with monkeypatch.context() as patch:
+                    patch.setattr(
+                        runtime.pymupdf,
+                        "open",
+                        lambda _, values=altered: ExtractedDocument(values),
+                    )
+                    with pytest.raises(ValueError):
+                        runtime.validate_graph_two_outage_pdf(
+                            path, contract, correction=False, exercise=exercises[0]
+                        )
