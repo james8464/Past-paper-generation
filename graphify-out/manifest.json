@@ -185,13 +185,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1791911878.1777737,
-    "ast_hash": "bf059e854be45dbb1f567be843b57544",
+    "mtime": 1792075316.5185056,
+    "ast_hash": "06dcd8a0a0aa3c9f24ab5d46cb722290",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
-    "mtime": 1791908177.0035796,
-    "ast_hash": "7313c342a17282d9433d73759e1a76ce",
+    "mtime": 1792075316.514855,
+    "ast_hash": "0be08c20bc888e88b4bc03cd0379a7f2",
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
@@ -215,8 +215,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/verification.py": {
-    "mtime": 1791911864.1448889,
-    "ast_hash": "bf28e2a32a26d261e34221622429607e",
+    "mtime": 1792075230.8597088,
+    "ast_hash": "2f360b61ad62fedaf01633781809a423",
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
@@ -1780,8 +1780,8 @@
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1791911878.1773822,
-    "ast_hash": "b0793f1fd62ba268346f427a62b4099e",
+    "mtime": 1792075137.1891475,
+    "ast_hash": "820aa3232795b9d29717c7ce7b78a215",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -3220,8 +3220,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_two_outage_prose.py": {
-    "mtime": 1792074804.170525,
-    "ast_hash": "07670fb322652a5af5dac61e7108753a",
+    "mtime": 1792075111.3050807,
+    "ast_hash": "31029d8ee5723eb25361b94fbe6b4600",
     "semantic_hash": ""
   },
   "tests/test_french_graph_two_outage_contract.py": {
@@ -3230,8 +3230,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_graph_two_outage_prose.py": {
-    "mtime": 1792074679.6100516,
-    "ast_hash": "0330ca19e8761f0b28aef72c9643ef58",
+    "mtime": 1792075098.8474102,
+    "ast_hash": "c812d7efb77ea0a16347b442c61bf526",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-15-french-nsi-two-outage-e1-v25.md": {
@@ -3242,6 +3242,16 @@
   "docs/superpowers/specs/2026-10-15-french-nsi-two-outage-e1-v25-design.md": {
     "mtime": 1792074542.8418353,
     "ast_hash": "f185cbb15e3043418b5a00ab131161e1",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/graph_two_outage_authoring.py": {
+    "mtime": 1792075041.84458,
+    "ast_hash": "233b6bf78b5746ca002605e420b8512e",
+    "semantic_hash": ""
+  },
+  "tests/test_french_graph_two_outage_authoring.py": {
+    "mtime": 1792075218.4632306,
+    "ast_hash": "4970cf7e5fbc803950e0055c05ad55ef",
     "semantic_hash": ""
   }
 }

@@ -262,6 +262,7 @@ def verify_contract(contract: dict) -> dict:
         "graph_tree_depth_contract",
         "graph_resilience_contract",
         "graph_route_trace_contract",
+        "graph_two_outage_contract",
         "database_contract",
         "database_depth_contract",
         "database_audit_contract",
@@ -286,6 +287,16 @@ def verify_contract(contract: dict) -> dict:
             if contract["task_id"] not in data["task_ids"]:
                 raise ValueError("Tâche d'incident réseau absente")
             actual = data["expected"]
+        elif kind == "graph_two_outage_contract":
+            from Backend.Core.france.graph_two_outage_contract import (
+                GraphTwoOutageContract,
+            )
+
+            data = GraphTwoOutageContract.from_dict(contract["contract"]).to_dict()
+            task_id = contract["task_id"]
+            if task_id not in data["task_ids"]:
+                raise ValueError("Tâche de double fermeture absente")
+            actual = data["expected"][task_id]
         elif kind == "graph_route_trace_contract":
             from Backend.Core.france.graph_route_trace_contract import (
                 GraphRouteTraceContract,

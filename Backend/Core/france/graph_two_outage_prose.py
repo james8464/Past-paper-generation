@@ -78,7 +78,14 @@ def _validate_specs(task_specs: list[dict]) -> None:
     }
     points = tuple(item.get("points") for item in task_specs)
     minutes = tuple(item.get("estimated_minutes") for item in task_specs)
-    if points not in totals.values() or minutes != _MINUTES:
+    if (
+        points not in totals.values()
+        or minutes != _MINUTES
+        or task_specs[5].get("operation") != "analyse"
+        or task_specs[5].get("difficulty") != 4
+        or task_specs[6].get("operation") != "justify"
+        or task_specs[6].get("difficulty") != 4
+    ):
         raise ValueError("V25 graph credit or timing differs")
 
 
@@ -91,6 +98,9 @@ def render_graph_two_outage_candidate(
     legacy_specs = deepcopy(task_specs)
     legacy_specs[5]["points"] = "0.5"
     legacy_specs[6]["points"] = "1"
+    legacy_specs[5]["operation"] = "debug"
+    legacy_specs[5]["difficulty"] = 2
+    legacy_specs[6]["difficulty"] = 2
     for index, item in enumerate(legacy_specs):
         item["estimated_minutes"] = (6, 6, 8, 7, 8, 7, 7, 7, 7, 7)[index]
     old = build_graph_route_trace_contract(facts["seed"])
@@ -149,6 +159,8 @@ def render_graph_two_outage_candidate(
     for index, question in enumerate(candidate["questions"]):
         question["points"] = task_specs[index]["points"]
         question["estimated_minutes"] = task_specs[index]["estimated_minutes"]
+        question["operation"] = task_specs[index]["operation"]
+        question["difficulty"] = task_specs[index]["difficulty"]
         question["verification"] = {
             "kind": "graph_two_outage_contract",
             "contract": facts,

@@ -28,6 +28,8 @@ def _specs(total: str) -> list[dict]:
     for index, item in enumerate(specs):
         item["points"] = _BASE[index]
         item["estimated_minutes"] = _MINUTES[index]
+    specs[5].update(operation="analyse", difficulty=4)
+    specs[6].update(operation="justify", difficulty=4)
     if total in ("6", "6.5"):
         specs[4]["points"] = "1"
     if total == "6.5":
@@ -77,6 +79,9 @@ def test_v25_stages_two_outages_with_exact_credit_and_no_answer_leak(total: str)
     assert "A → C → D → F" in questions["1g"]["answer"]
     assert "14 + 2 + 14 = 30" in questions["1g"]["answer"]
     assert questions["1g"]["points"] == "0.5"
+    assert questions["1f"]["operation"] == "analyse"
+    assert questions["1f"]["difficulty"] == 4
+    assert questions["1g"]["difficulty"] == 4
     assert len(questions["1g"]["marking"]) == 2
     assert all(mark["points"] == "0.25" for mark in questions["1g"]["marking"])
     assert all(
