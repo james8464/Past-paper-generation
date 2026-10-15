@@ -117,7 +117,7 @@ _CRITERIA = {
         "Le retour corrigé vaut 0 sur S0.",
     ),
     "2i": (
-        "UPDATE cible seulement 101.",
+        "Le premier UPDATE cible seulement 101 et modifie une ligne.",
         "Le second UPDATE cible seulement 104 et modifie une ligne.",
     ),
     "2j": (

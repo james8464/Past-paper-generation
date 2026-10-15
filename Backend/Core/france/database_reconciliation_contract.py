@@ -213,12 +213,10 @@ class DatabaseReconciliationContract:
             "exercise_id",
             "task_ids",
             "tables",
+            "expected",
             *_SOURCE,
         }
-        if not isinstance(data, dict) or set(data) not in (
-            required,
-            required | {"expected"},
-        ):
+        if not isinstance(data, dict) or set(data) != required:
             raise ValueError("Invalid incident-reconciliation contract fields")
         if (
             type(data["version"]) is not int
@@ -227,11 +225,14 @@ class DatabaseReconciliationContract:
             or data["exercise_id"] != "2"
             or data["task_ids"] != _TASK_IDS
             or any(data[name] != value for name, value in _SOURCE.items())
-            or data["tables"] != _tables(data["seed"])
+            or json.dumps(data["tables"], sort_keys=True)
+            != json.dumps(_tables(data["seed"]), sort_keys=True)
         ):
             raise ValueError("Incident-reconciliation facts or source identity changed")
         expected = _expected(data["tables"])
-        if "expected" in data and data["expected"] != expected:
+        if json.dumps(data["expected"], sort_keys=True) != json.dumps(
+            expected, sort_keys=True
+        ):
             raise ValueError("Incident-reconciliation expected result mismatch")
         canonical = {**data, "expected": expected}
         return cls(
@@ -246,13 +247,15 @@ def build_database_reconciliation_contract(
 ) -> DatabaseReconciliationContract:
     if type(seed) is not int or exercise_id != "2":
         raise ValueError("Unsupported incident-reconciliation seed or exercise")
+    tables = _tables(seed)
     return DatabaseReconciliationContract.from_dict(
         {
             "version": 4,
             "seed": seed,
             "exercise_id": exercise_id,
             "task_ids": _TASK_IDS,
-            "tables": _tables(seed),
+            "tables": tables,
+            "expected": _expected(tables),
             **_SOURCE,
         }
     )

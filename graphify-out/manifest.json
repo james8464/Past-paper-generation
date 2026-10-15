@@ -3165,13 +3165,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/database_reconciliation_contract.py": {
-    "mtime": 1792050888.1069512,
-    "ast_hash": "53be9e39c774219fc34cda4d0ca8564e",
+    "mtime": 1792053441.358374,
+    "ast_hash": "023dfd4e9c04b0e56542c5e77e87d898",
     "semantic_hash": ""
   },
   "tests/test_french_database_reconciliation_contract.py": {
-    "mtime": 1791904945.9302087,
-    "ast_hash": "a21f85f24f827ce45a7908920557663a",
+    "mtime": 1792053421.0137918,
+    "ast_hash": "77dd2b9af6858c3328cc5a36faef0ea4",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-13-french-nsi-incident-reconciliation-v24.md": {
@@ -3185,13 +3185,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/database_reconciliation_prose.py": {
-    "mtime": 1791905126.1517096,
-    "ast_hash": "9b1711723378f24bcd078b7abf87f49b",
+    "mtime": 1792053486.4948022,
+    "ast_hash": "a2812213f502684206db9f12558bdad2",
     "semantic_hash": ""
   },
   "tests/test_french_database_reconciliation_prose.py": {
-    "mtime": 1791905103.6323416,
-    "ast_hash": "ad9e26c2956b5a8c677a4ba533be46a0",
+    "mtime": 1792053516.6455624,
+    "ast_hash": "6e3d1f1f6d0fd7ef08861b027e2acebb",
     "semantic_hash": ""
   },
   "Backend/Core/france/database_reconciliation_authoring.py": {

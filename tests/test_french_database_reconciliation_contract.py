@@ -67,7 +67,10 @@ def test_seeded_facts_round_trip_with_the_same_digest(seed: int) -> None:
         lambda d: d.update(faulty_sql="SELECT 1"),
         lambda d: d.update(faulty_python="def f(): return 2"),
         lambda d: d["expected"]["correct_python_by_state"].__setitem__(1, 2),
+        lambda d: d["expected"]["category_counts"].__setitem__(0, True),
         lambda d: d["expected"]["mismatch_ids"].pop(),
+        lambda d: d.pop("expected"),
+        lambda d: d["tables"]["incident"]["rows"][0].__setitem__(1, True),
         lambda d: d.pop("correct_sql"),
     ],
 )

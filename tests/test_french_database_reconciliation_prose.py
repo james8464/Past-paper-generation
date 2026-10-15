@@ -115,6 +115,9 @@ def test_prompts_answers_and_criteria_cover_the_dependent_trace() -> None:
     assert "id_cat" in questions["2h"]["answer"]
     assert "101" in questions["2i"]["answer"]
     assert "104" in questions["2i"]["answer"]
+    assert all(
+        "modifie une ligne" in mark["criterion"] for mark in questions["2i"]["marking"]
+    )
     assert "0, 1, 2" in questions["2j"]["answer"]
     assert "2, 2, 2" in questions["2j"]["answer"]
     assert "S2" in questions["2k"]["prompt"]
