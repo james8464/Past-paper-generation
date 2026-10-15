@@ -52,7 +52,8 @@ def _consents(count: int) -> list[ConsentRecord]:
 
 
 def test_store_encrypts_rows_and_exports_only_encrypted_data(tmp_path: Path) -> None:
-    store = CalibrationStore(tmp_path / "store", key=Fernet.generate_key())
+    key = Fernet.generate_key()
+    store = CalibrationStore(tmp_path / "store", key=key)
     dataset_id = store.import_csv(
         _csv(tmp_path / "responses.csv"),
         metadata=_metadata(),
@@ -60,8 +61,11 @@ def test_store_encrypts_rows_and_exports_only_encrypted_data(tmp_path: Path) -> 
     )
 
     encrypted = store.dataset_path(dataset_id).read_bytes()
-    assert b"p-0" not in encrypted
-    assert b"candidate_id" not in encrypted
+    plaintext = Fernet(key).decrypt(encrypted)
+    assert encrypted != plaintext
+    document = json.loads(plaintext)
+    assert document["responses"][0]["candidate_id"] == "p-0"
+    assert document["dataset_id"] == dataset_id
     exported = store.export_encrypted(dataset_id, tmp_path / "export.pcal")
     assert exported.read_bytes() == encrypted
 
