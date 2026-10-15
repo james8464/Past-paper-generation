@@ -112,9 +112,28 @@ def test_v25_two_outage_pdf_stages_work_and_rejects_mutations(
             for leaked in (
                 f"Trajet gagnant : {winning_route}",
                 f"Coût gagnant = {winning_cost}",
+                f"Le trajet minimal restant est {'-'.join(contract.to_dict()['expected']['1g']['route_after'])}, de coût total {winning_cost}.",
             ):
                 altered = [
                     page + "\n" + leaked if "1g." in page else page for page in pages
+                ]
+                with monkeypatch.context() as patch:
+                    patch.setattr(
+                        runtime.pymupdf,
+                        "open",
+                        lambda _, values=altered: ExtractedDocument(values),
+                    )
+                    with pytest.raises(ValueError):
+                        runtime.validate_graph_two_outage_pdf(
+                            path, contract, correction=False, exercise=exercises[0]
+                        )
+            for leaked in (
+                "Trajet gagnant : " + winning_route,
+                f"Le coût total est de {winning_cost}.",
+            ):
+                altered = [
+                    page + "\n" + leaked if "Exercice 2 (" in page else page
+                    for page in pages
                 ]
                 with monkeypatch.context() as patch:
                     patch.setattr(

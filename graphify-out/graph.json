@@ -2695,7 +2695,7 @@
       "_origin": "ast",
       "id": "backend_core_candidate_paths",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "candidate_paths.py"
     },
     {
@@ -2706,7 +2706,7 @@
       "_origin": "ast",
       "id": "backend_core_candidate_paths_identity",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "identity()"
     },
     {
@@ -2717,7 +2717,7 @@
       "_origin": "ast",
       "id": "backend_core_candidate_paths_py_any",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "any"
     },
     {
@@ -2728,7 +2728,7 @@
       "_origin": "ast",
       "id": "backend_core_candidate_paths_pathoption",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "pathoption"
     },
     {
@@ -2739,7 +2739,7 @@
       "_origin": "ast",
       "id": "backend_core_candidate_paths_py_basemodel",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "basemodel"
     },
     {
@@ -2750,7 +2750,7 @@
       "_origin": "ast",
       "id": "backend_core_candidate_paths_pathsection",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "pathsection"
     },
     {
@@ -2761,7 +2761,7 @@
       "_origin": "ast",
       "id": "backend_core_candidate_paths_py_model_validator",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "model_validator"
     },
     {
@@ -2772,7 +2772,7 @@
       "_origin": "ast",
       "id": "backend_core_candidate_paths_pathsection_valid_selection",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": ".valid_selection()"
     },
     {
@@ -2783,7 +2783,7 @@
       "_origin": "ast",
       "id": "backend_core_candidate_paths_candidatetopology",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "candidatetopology"
     },
     {
@@ -2794,7 +2794,7 @@
       "_origin": "ast",
       "id": "backend_core_candidate_paths_candidatetopology_valid_membership",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": ".valid_membership()"
     },
     {
@@ -2805,7 +2805,7 @@
       "_origin": "ast",
       "id": "backend_core_candidate_paths_candidatetopology_fingerprint",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": ".fingerprint()"
     },
     {
@@ -2816,7 +2816,7 @@
       "_origin": "ast",
       "id": "backend_core_candidate_paths_candidatepath",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "candidatepath"
     },
     {
@@ -2827,7 +2827,7 @@
       "_origin": "ast",
       "id": "backend_core_candidate_paths_enumerate_candidate_paths",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "enumerate_candidate_paths()"
     },
     {
@@ -2838,7 +2838,7 @@
       "_origin": "ast",
       "id": "backend_core_candidate_paths_topology_from_blueprint",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "topology_from_blueprint()"
     },
     {
@@ -2849,7 +2849,7 @@
       "_origin": "ast",
       "id": "backend_core_candidate_paths_path_metrics",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "path_metrics()"
     },
     {
@@ -2860,7 +2860,7 @@
       "_origin": "ast",
       "id": "backend_core_candidate_paths_audit_candidate_paths",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "audit_candidate_paths()"
     },
     {
@@ -2871,7 +2871,7 @@
       "_origin": "ast",
       "id": "backend_core_candidate_paths_rationale_1",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "bounded candidate-answerable paths; printed alternatives remain reviewable...."
     },
     {
@@ -13119,7 +13119,7 @@
       "label": "validate_database_contract_pdf()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L793",
+      "source_location": "L803",
       "_origin": "ast",
       "id": "backend_core_france_runtime_validate_database_contract_pdf",
       "community": 165,
@@ -13130,7 +13130,7 @@
       "label": "validate_database_depth_contract_pdf()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L876",
+      "source_location": "L886",
       "_origin": "ast",
       "id": "backend_core_france_runtime_validate_database_depth_contract_pdf",
       "community": 165,
@@ -13141,7 +13141,7 @@
       "label": "validate_database_reasoning_pdf()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L953",
+      "source_location": "L963",
       "_origin": "ast",
       "id": "backend_core_france_runtime_validate_database_reasoning_pdf",
       "community": 165,
@@ -13152,7 +13152,7 @@
       "label": "validate_database_reconciliation_pdf()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1030",
+      "source_location": "L1040",
       "_origin": "ast",
       "id": "backend_core_france_runtime_validate_database_reconciliation_pdf",
       "community": 165,
@@ -13163,7 +13163,7 @@
       "label": "validate_database_audit_pdf()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1173",
+      "source_location": "L1183",
       "_origin": "ast",
       "id": "backend_core_france_runtime_validate_database_audit_pdf",
       "community": 165,
@@ -13174,7 +13174,7 @@
       "label": "validate_network_contract_pdf()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1353",
+      "source_location": "L1363",
       "_origin": "ast",
       "id": "backend_core_france_runtime_validate_network_contract_pdf",
       "community": 132,
@@ -13185,7 +13185,7 @@
       "label": "validate_network_depth_contract_pdf()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1432",
+      "source_location": "L1442",
       "_origin": "ast",
       "id": "backend_core_france_runtime_validate_network_depth_contract_pdf",
       "community": 165,
@@ -13196,7 +13196,7 @@
       "label": "validate_network_reasoning_contract_pdf()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1559",
+      "source_location": "L1569",
       "_origin": "ast",
       "id": "backend_core_france_runtime_validate_network_reasoning_contract_pdf",
       "community": 165,
@@ -13207,7 +13207,7 @@
       "label": "validate_network_incident_pdf()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1699",
+      "source_location": "L1709",
       "_origin": "ast",
       "id": "backend_core_france_runtime_validate_network_incident_pdf",
       "community": 80,
@@ -13218,7 +13218,7 @@
       "label": "load_originality_history()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1878",
+      "source_location": "L1888",
       "_origin": "ast",
       "id": "backend_core_france_runtime_load_originality_history",
       "community": 165,
@@ -13229,7 +13229,7 @@
       "label": "network_pdf_contract_version()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1910",
+      "source_location": "L1920",
       "_origin": "ast",
       "id": "backend_core_france_runtime_network_pdf_contract_version",
       "community": 165,
@@ -13240,7 +13240,7 @@
       "label": "database_pdf_contract_version()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1937",
+      "source_location": "L1947",
       "_origin": "ast",
       "id": "backend_core_france_runtime_database_pdf_contract_version",
       "community": 165,
@@ -13251,7 +13251,7 @@
       "label": "handle_generate_assessment()",
       "file_type": "code",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1968",
+      "source_location": "L1978",
       "_origin": "ast",
       "id": "backend_core_france_runtime_handle_generate_assessment",
       "community": 165,
@@ -13328,9 +13328,9 @@
       "label": "Check that both PDF roles print the exact locked database exercise.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L800",
+      "source_location": "L810",
       "_origin": "ast",
-      "id": "backend_core_france_runtime_rationale_800",
+      "id": "backend_core_france_runtime_rationale_810",
       "community": 165,
       "community_name": "NSIExercise",
       "norm_label": "check that both pdf roles print the exact locked database exercise."
@@ -13339,9 +13339,9 @@
       "label": "Fail closed on missing V2 facts, ten tasks, answers or rubric credits.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L883",
+      "source_location": "L893",
       "_origin": "ast",
-      "id": "backend_core_france_runtime_rationale_883",
+      "id": "backend_core_france_runtime_rationale_893",
       "community": 165,
       "community_name": "NSIExercise",
       "norm_label": "fail closed on missing v2 facts, ten tasks, answers or rubric credits."
@@ -13350,9 +13350,9 @@
       "label": "Require V2 facts and each V19 reasoning phase in its intended role.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L960",
+      "source_location": "L970",
       "_origin": "ast",
-      "id": "backend_core_france_runtime_rationale_960",
+      "id": "backend_core_france_runtime_rationale_970",
       "community": 165,
       "community_name": "NSIExercise",
       "norm_label": "require v2 facts and each v19 reasoning phase in its intended role."
@@ -13361,9 +13361,9 @@
       "label": "Bind V24 printed facts, staged working surfaces and exact correction credit.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1037",
+      "source_location": "L1047",
       "_origin": "ast",
-      "id": "backend_core_france_runtime_rationale_1037",
+      "id": "backend_core_france_runtime_rationale_1047",
       "community": 165,
       "community_name": "NSIExercise",
       "norm_label": "bind v24 printed facts, staged working surfaces and exact correction credit."
@@ -13372,9 +13372,9 @@
       "label": "Bind V21 printed incident facts, staged working tables and exact credit.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1180",
+      "source_location": "L1190",
       "_origin": "ast",
-      "id": "backend_core_france_runtime_rationale_1180",
+      "id": "backend_core_france_runtime_rationale_1190",
       "community": 165,
       "community_name": "NSIExercise",
       "norm_label": "bind v21 printed incident facts, staged working tables and exact credit."
@@ -13383,9 +13383,9 @@
       "label": "Require exact app-owned network evidence in each published PDF role.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1360",
+      "source_location": "L1370",
       "_origin": "ast",
-      "id": "backend_core_france_runtime_rationale_1360",
+      "id": "backend_core_france_runtime_rationale_1370",
       "community": 132,
       "community_name": "build_network_contract",
       "norm_label": "require exact app-owned network evidence in each published pdf role."
@@ -13394,9 +13394,9 @@
       "label": "Fail closed if a v15 PDF omits locked facts or exposes an answer.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1439",
+      "source_location": "L1449",
       "_origin": "ast",
-      "id": "backend_core_france_runtime_rationale_1439",
+      "id": "backend_core_france_runtime_rationale_1449",
       "community": 165,
       "community_name": "NSIExercise",
       "norm_label": "fail closed if a v15 pdf omits locked facts or exposes an answer."
@@ -13405,9 +13405,9 @@
       "label": "Reject V18 PDFs whose case facts or per-question roles do not print.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1566",
+      "source_location": "L1576",
       "_origin": "ast",
-      "id": "backend_core_france_runtime_rationale_1566",
+      "id": "backend_core_france_runtime_rationale_1576",
       "community": 165,
       "community_name": "NSIExercise",
       "norm_label": "reject v18 pdfs whose case facts or per-question roles do not print."
@@ -13416,9 +13416,9 @@
       "label": "Bind V23's three displayed incident stages and answer/credit roles.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1706",
+      "source_location": "L1716",
       "_origin": "ast",
-      "id": "backend_core_france_runtime_rationale_1706",
+      "id": "backend_core_france_runtime_rationale_1716",
       "community": 80,
       "community_name": "build_network_incident_contract",
       "norm_label": "bind v23's three displayed incident stages and answer/credit roles."
@@ -13427,9 +13427,9 @@
       "label": "Read a bounded set of candidate-only text from earlier local bundles.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1879",
+      "source_location": "L1889",
       "_origin": "ast",
-      "id": "backend_core_france_runtime_rationale_1879",
+      "id": "backend_core_france_runtime_rationale_1889",
       "community": 165,
       "community_name": "NSIExercise",
       "norm_label": "read a bounded set of candidate-only text from earlier local bundles."
@@ -13438,9 +13438,9 @@
       "label": "Never silently render an unknown French package with an older validator.",
       "file_type": "rationale",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1911",
+      "source_location": "L1921",
       "_origin": "ast",
-      "id": "backend_core_france_runtime_rationale_1911",
+      "id": "backend_core_france_runtime_rationale_1921",
       "community": 165,
       "community_name": "NSIExercise",
       "norm_label": "never silently render an unknown french package with an older validator."
@@ -19161,7 +19161,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_core_reference_demand_py_basemodel",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "basemodel"
     },
@@ -19173,7 +19173,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_demand_referencedemandprofile_comparison_fingerprint",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": ".comparison_fingerprint()"
     },
     {
@@ -19216,7 +19216,7 @@
       "source_location": "L100",
       "_origin": "ast",
       "id": "backend_core_reference_demand_referencedemanddocument",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "referencedemanddocument"
     },
@@ -19227,7 +19227,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_core_reference_demand_py_model_validator",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "model_validator"
     },
@@ -19238,7 +19238,7 @@
       "source_location": "L110",
       "_origin": "ast",
       "id": "backend_core_reference_demand_referencedemanddocument_version_specific_fields",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": ".version_specific_fields()"
     },
@@ -19249,7 +19249,7 @@
       "source_location": "L126",
       "_origin": "ast",
       "id": "backend_core_reference_demand_referencedemanddocument_unique_profiles",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": ".unique_profiles()"
     },
@@ -19271,8 +19271,8 @@
       "source_location": "L167",
       "_origin": "ast",
       "id": "backend_core_reference_demand_load_reference_demand_document",
-      "community": 336,
-      "community_name": "profile_for",
+      "community": 201,
+      "community_name": "test_reference_evidence_validation.py",
       "norm_label": "load_reference_demand_document()"
     },
     {
@@ -19282,8 +19282,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_core_reference_demand_py_path",
-      "community": 336,
-      "community_name": "profile_for",
+      "community": 201,
+      "community_name": "test_reference_evidence_validation.py",
       "norm_label": "path"
     },
     {
@@ -19602,7 +19602,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_demand_distribution_distance",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "_distribution_distance()"
     },
     {
@@ -19679,7 +19679,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "reference_evidence.py"
     },
     {
@@ -19690,7 +19690,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_strictevidence",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "strictevidence"
     },
     {
@@ -19701,7 +19701,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_py_basemodel",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "basemodel"
     },
     {
@@ -19712,7 +19712,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_unknownlearnerfeatures",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "unknownlearnerfeatures"
     },
     {
@@ -19723,7 +19723,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_observations",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "observations"
     },
     {
@@ -19734,7 +19734,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_py_model_validator",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "model_validator"
     },
     {
@@ -19745,7 +19745,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_observations_distributions",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": ".distributions()"
     },
     {
@@ -19756,7 +19756,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_sourceitem",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "sourceitem"
     },
     {
@@ -19767,7 +19767,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_sourceitem_objective_credit",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": ".objective_credit()"
     },
     {
@@ -19778,7 +19778,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_sourcepath",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "sourcepath"
     },
     {
@@ -19789,7 +19789,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_sourceidentity",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "sourceidentity"
     },
     {
@@ -19800,7 +19800,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_sourceidentity_scheme_identity",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": ".scheme_identity()"
     },
     {
@@ -19811,7 +19811,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_qualitativeexaminerevidence",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "qualitativeexaminerevidence"
     },
     {
@@ -19822,7 +19822,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_sourceform",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "sourceform"
     },
     {
@@ -19833,7 +19833,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_sourceform_reconcile",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": ".reconcile()"
     },
     {
@@ -19844,7 +19844,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_quarantinedform",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "quarantinedform"
     },
     {
@@ -19855,7 +19855,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_quarantinedform_quarantine_reason",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": ".quarantine_reason()"
     },
     {
@@ -19866,7 +19866,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_topicrecord",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "topicrecord"
     },
     {
@@ -19877,7 +19877,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_topicrecord_identities",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": ".identities()"
     },
     {
@@ -19899,7 +19899,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_validate_profile_evidence",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "validate_profile_evidence()"
     },
     {
@@ -19909,7 +19909,7 @@
       "source_location": "L383",
       "_origin": "ast",
       "id": "backend_core_reference_evidence_validate_profile_payload",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "validate_profile_payload()"
     },
@@ -19921,7 +19921,7 @@
       "_origin": "ast",
       "id": "backend_core_reference_evidence_rationale_1",
       "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community_name": "reference_evidence.py",
       "norm_label": "strict h3 source evidence boundaries; aggregate-v2 is not path qualification."
     },
     {
@@ -21889,8 +21889,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "economics_contracts.py"
     },
     {
@@ -21900,8 +21900,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_sourcecell",
-      "community": 64,
-      "community_name": "generator/tests/test_assessment_contracts.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "sourcecell"
     },
     {
@@ -21911,8 +21911,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_py_basemodel",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "basemodel"
     },
     {
@@ -21922,8 +21922,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_py_model_validator",
-      "community": 64,
-      "community_name": "generator/tests/test_assessment_contracts.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "model_validator"
     },
     {
@@ -21933,8 +21933,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_sourcecell_coherent",
-      "community": 64,
-      "community_name": "generator/tests/test_assessment_contracts.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": ".coherent()"
     },
     {
@@ -21944,8 +21944,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_sourcecell_printed",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": ".printed()"
     },
     {
@@ -21955,8 +21955,8 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_economicssource",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "economicssource"
     },
     {
@@ -21966,8 +21966,8 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_economicssource_coherent",
-      "community": 64,
-      "community_name": "generator/tests/test_assessment_contracts.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": ".coherent()"
     },
     {
@@ -21977,8 +21977,8 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_economicssource_fingerprint",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": ".fingerprint()"
     },
     {
@@ -21988,8 +21988,8 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_economicssource_cell",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": ".cell()"
     },
     {
@@ -21999,8 +21999,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_py_decimal",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "decimal"
     },
     {
@@ -22010,8 +22010,8 @@
       "source_location": "L129",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_calculation_prompt",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "calculation_prompt()"
     },
     {
@@ -22021,8 +22021,8 @@
       "source_location": "L175",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_validate_calculation_source",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "_validate_calculation_source()"
     },
     {
@@ -22032,8 +22032,8 @@
       "source_location": "L267",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_calculation_label",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "calculation_label()"
     },
     {
@@ -22043,8 +22043,8 @@
       "source_location": "L295",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_three_largest_shares",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "_three_largest_shares()"
     },
     {
@@ -22054,8 +22054,8 @@
       "source_location": "L313",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_calculation_working",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "calculation_working()"
     },
     {
@@ -22065,8 +22065,8 @@
       "source_location": "L360",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_calculation",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "calculation()"
     },
     {
@@ -22076,8 +22076,8 @@
       "source_location": "L459",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_solve_economics_contract",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "solve_economics_contract()"
     },
     {
@@ -22087,8 +22087,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_rationale_1",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "candidate data and bounded edexcel calculations, never draft answer keys."
     },
     {
@@ -22098,8 +22098,8 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_rationale_130",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "code-owned requested operation, not a draft/model-provided instruction."
     },
     {
@@ -22109,8 +22109,8 @@
       "source_location": "L314",
       "_origin": "ast",
       "id": "backend_core_subjects_economics_contracts_rationale_314",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "show substituted inputs without inventing unchecked intermediate outputs."
     },
     {
@@ -24969,8 +24969,8 @@
       "source_location": "L136",
       "_origin": "ast",
       "id": "resources_accounting_aqa_generator_aqaaccountgen_configs_load_rule",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "load_rule()"
     },
     {
@@ -35987,8 +35987,8 @@
       "source_location": "L218",
       "_origin": "ast",
       "id": "resources_economics_aqa_generator_tests_test_aqa_economics_test_written_diagram_renderer_prints_the_declared_economic_structure",
-      "community": 128,
-      "community_name": "items",
+      "community": 98,
+      "community_name": "reference-demand-profile.schema.json",
       "norm_label": "test_written_diagram_renderer_prints_the_declared_economic_structure()"
     },
     {
@@ -36339,8 +36339,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_assessment_contracts",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "pastpapergen/assessment_contracts.py"
     },
     {
@@ -36350,8 +36350,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_assessment_contracts_source_instance",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "source_instance()"
     },
     {
@@ -36361,8 +36361,8 @@
       "source_location": "L242",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_assessment_contracts_objective_budget",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "objective_budget()"
     },
     {
@@ -36372,8 +36372,8 @@
       "source_location": "L263",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_assessment_contracts_bind_question",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "bind_question()"
     },
     {
@@ -36394,8 +36394,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_assessment_contracts_rationale_1",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "one instance supplies the paper's source, credit, solver and review views."
     },
     {
@@ -36515,8 +36515,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_credit_contracts",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "credit_contracts.py"
     },
     {
@@ -36526,8 +36526,8 @@
       "source_location": "L178",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_credit_contracts_drawing_contract",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "drawing_contract()"
     },
     {
@@ -36537,8 +36537,8 @@
       "source_location": "L323",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_credit_contracts_clean_points",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "clean_points()"
     },
     {
@@ -36548,8 +36548,8 @@
       "source_location": "L338",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_credit_contracts_short_credit",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "short_credit()"
     },
     {
@@ -36559,8 +36559,8 @@
       "source_location": "L492",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_credit_contracts_knowledge_pair",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "_knowledge_pair()"
     },
     {
@@ -36570,8 +36570,8 @@
       "source_location": "L496",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_credit_contracts_extended_credit",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "extended_credit()"
     },
     {
@@ -36581,8 +36581,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_credit_contracts_rationale_1",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "task-specific credit projections; examples never add to a tariff twice."
     },
     {
@@ -36647,8 +36647,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_extended_scenarios",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "extended_scenarios.py"
     },
     {
@@ -36658,8 +36658,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_extended_scenarios_scenario",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "scenario"
     },
     {
@@ -36669,8 +36669,8 @@
       "source_location": "L514",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_extended_scenarios_concrete_fallback",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "concrete_fallback()"
     },
     {
@@ -36680,8 +36680,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_extended_scenarios_rationale_1",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "concrete authored scenarios for formerly topic-note-only extended tasks. each..."
     },
     {
@@ -36691,8 +36691,8 @@
       "source_location": "L515",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_extended_scenarios_rationale_515",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "replace only a task whose old credit was generated topic-note boilerplate."
     },
     {
@@ -37890,8 +37890,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_py_paperblueprint",
-      "community": 0,
-      "community_name": "test_ollama_generation.py",
+      "community": 35,
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "paperblueprint"
     },
     {
@@ -37901,8 +37901,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_py_syllabus",
-      "community": 0,
-      "community_name": "test_ollama_generation.py",
+      "community": 35,
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "syllabus"
     },
     {
@@ -37912,8 +37912,8 @@
       "source_location": "L323",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_review_blueprint_difficulty",
-      "community": 0,
-      "community_name": "test_ollama_generation.py",
+      "community": 35,
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "review_blueprint_difficulty()"
     },
     {
@@ -38220,8 +38220,8 @@
       "source_location": "L329",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_ollama_client_rationale_329",
-      "community": 0,
-      "community_name": "test_ollama_generation.py",
+      "community": 35,
+      "community_name": "pastpapergen/ollama_client.py",
       "norm_label": "run an independent demand-only gate over every rendered question item."
     },
     {
@@ -39903,8 +39903,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_selection_contracts",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "selection_contracts.py"
     },
     {
@@ -39914,8 +39914,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_selection_contracts_selection_contract",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "selection_contract()"
     },
     {
@@ -39925,8 +39925,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_selection_contracts_rationale_1",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "source-reading repairs; not a generic selected-response demand policy."
     },
     {
@@ -40035,8 +40035,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_source_credit",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "source_credit.py"
     },
     {
@@ -40046,8 +40046,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_source_credit_source_bound_points",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "source_bound_points()"
     },
     {
@@ -40057,8 +40057,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_pastpapergen_source_credit_rationale_1",
-      "community": 35,
-      "community_name": "pastpapergen/ollama_client.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "p3 credit built from the selected source's roles, not legacy example text...."
     },
     {
@@ -43316,8 +43316,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_source_credit_integrity",
-      "community": 64,
-      "community_name": "generator/tests/test_assessment_contracts.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "test_source_credit_integrity.py"
     },
     {
@@ -43327,8 +43327,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_source_credit_integrity_paper",
-      "community": 64,
-      "community_name": "generator/tests/test_assessment_contracts.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "paper()"
     },
     {
@@ -43338,8 +43338,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_source_credit_integrity_py_parametrize",
-      "community": 64,
-      "community_name": "generator/tests/test_assessment_contracts.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "parametrize"
     },
     {
@@ -43349,8 +43349,8 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_source_credit_integrity_test_blind_solver_never_receives_private_credit_but_reviews_keep_it",
-      "community": 64,
-      "community_name": "generator/tests/test_assessment_contracts.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "test_blind_solver_never_receives_private_credit_but_reviews_keep_it()"
     },
     {
@@ -43360,8 +43360,8 @@
       "source_location": "L121",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_source_credit_integrity_test_all_eight_selected_case_variants_bind_credit_to_both_source_groups",
-      "community": 64,
-      "community_name": "generator/tests/test_assessment_contracts.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "test_all_eight_selected_case_variants_bind_credit_to_both_source_groups()"
     },
     {
@@ -43371,8 +43371,8 @@
       "source_location": "L177",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_source_credit_integrity_test_actual_exported_and_printed_credit_contains_selected_instance_facts",
-      "community": 64,
-      "community_name": "generator/tests/test_assessment_contracts.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "test_actual_exported_and_printed_credit_contains_selected_instance_facts()"
     },
     {
@@ -43382,8 +43382,8 @@
       "source_location": "L202",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_source_credit_integrity_concentration_item",
-      "community": 64,
-      "community_name": "generator/tests/test_assessment_contracts.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "concentration_item()"
     },
     {
@@ -43393,8 +43393,8 @@
       "source_location": "L232",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_source_credit_integrity_test_candidate_boundary_selects_three_largest_valid_shares",
-      "community": 64,
-      "community_name": "generator/tests/test_assessment_contracts.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "test_candidate_boundary_selects_three_largest_valid_shares()"
     },
     {
@@ -43404,8 +43404,8 @@
       "source_location": "L255",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_source_credit_integrity_test_concentration_candidate_boundary_rejects_malformed_or_stale_inputs",
-      "community": 64,
-      "community_name": "generator/tests/test_assessment_contracts.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "test_concentration_candidate_boundary_rejects_malformed_or_stale_inputs()"
     },
     {
@@ -43415,8 +43415,8 @@
       "source_location": "L291",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_source_credit_integrity_test_all_paper_three_source_page_headings_are_inside_frame",
-      "community": 64,
-      "community_name": "generator/tests/test_assessment_contracts.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "test_all_paper_three_source_page_headings_are_inside_frame()"
     },
     {
@@ -43426,8 +43426,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "resources_economics_edexcel_a_generator_tests_test_source_credit_integrity_rationale_1",
-      "community": 64,
-      "community_name": "generator/tests/test_assessment_contracts.py",
+      "community": 86,
+      "community_name": "test_source_credit_integrity.py",
       "norm_label": "candidate-source, selected-credit and printed-source integrity regressions."
     },
     {
@@ -45794,8 +45794,8 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_properties_policy",
-      "community": 178,
-      "community_name": "properties",
+      "community": 326,
+      "community_name": "required",
       "norm_label": "policy"
     },
     {
@@ -45805,8 +45805,8 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_policy_type",
-      "community": 178,
-      "community_name": "properties",
+      "community": 326,
+      "community_name": "required",
       "norm_label": "type"
     },
     {
@@ -45816,8 +45816,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_policy_required",
-      "community": 178,
-      "community_name": "properties",
+      "community": 326,
+      "community_name": "required",
       "norm_label": "required"
     },
     {
@@ -45827,8 +45827,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_json_ref_policy_id",
-      "community": 178,
-      "community_name": "properties",
+      "community": 326,
+      "community_name": "required",
       "norm_label": "policy_id"
     },
     {
@@ -45838,8 +45838,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_json_ref_status",
-      "community": 178,
-      "community_name": "properties",
+      "community": 326,
+      "community_name": "required",
       "norm_label": "status"
     },
     {
@@ -45849,8 +45849,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "ref_approved_by_identity_class",
-      "community": 178,
-      "community_name": "properties",
+      "community": 326,
+      "community_name": "required",
       "norm_label": "approved_by_identity_class"
     },
     {
@@ -45860,8 +45860,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "ref_approval_evidence",
-      "community": 178,
-      "community_name": "properties",
+      "community": 326,
+      "community_name": "required",
       "norm_label": "approval_evidence"
     },
     {
@@ -46036,8 +46036,8 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_policy_additionalproperties",
-      "community": 178,
-      "community_name": "properties",
+      "community": 326,
+      "community_name": "required",
       "norm_label": "additionalproperties"
     },
     {
@@ -49270,8 +49270,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_profiles",
-      "community": 128,
-      "community_name": "items",
+      "community": 98,
+      "community_name": "reference-demand-profile.schema.json",
       "norm_label": "profiles"
     },
     {
@@ -49281,8 +49281,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_profiles_type",
-      "community": 128,
-      "community_name": "items",
+      "community": 98,
+      "community_name": "reference-demand-profile.schema.json",
       "norm_label": "type"
     },
     {
@@ -49292,8 +49292,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_profiles_minitems",
-      "community": 128,
-      "community_name": "items",
+      "community": 98,
+      "community_name": "reference-demand-profile.schema.json",
       "norm_label": "minitems"
     },
     {
@@ -49303,8 +49303,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_profiles_items",
-      "community": 128,
-      "community_name": "items",
+      "community": 98,
+      "community_name": "reference-demand-profile.schema.json",
       "norm_label": "items"
     },
     {
@@ -49315,7 +49315,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_type",
       "community": 128,
-      "community_name": "items",
+      "community_name": "id",
       "norm_label": "type"
     },
     {
@@ -49325,8 +49325,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_additionalproperties",
-      "community": 128,
-      "community_name": "items",
+      "community": 98,
+      "community_name": "reference-demand-profile.schema.json",
       "norm_label": "additionalproperties"
     },
     {
@@ -49710,8 +49710,8 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_evidence_gaps",
-      "community": 128,
-      "community_name": "items",
+      "community": 73,
+      "community_name": "properties",
       "norm_label": "evidence_gaps"
     },
     {
@@ -49721,8 +49721,8 @@
       "source_location": "L89",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_evidence_gaps_type",
-      "community": 128,
-      "community_name": "items",
+      "community": 73,
+      "community_name": "properties",
       "norm_label": "type"
     },
     {
@@ -49733,7 +49733,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_evidence_gaps_items",
       "community": 128,
-      "community_name": "items",
+      "community_name": "id",
       "norm_label": "items"
     },
     {
@@ -50205,8 +50205,8 @@
       "source_location": "L172",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_allof",
-      "community": 128,
-      "community_name": "items",
+      "community": 98,
+      "community_name": "reference-demand-profile.schema.json",
       "norm_label": "allof"
     },
     {
@@ -50304,8 +50304,8 @@
       "source_location": "L258",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_distribution_additionalproperties",
-      "community": 48,
-      "community_name": "type",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "additionalproperties"
     },
     {
@@ -50326,8 +50326,8 @@
       "source_location": "L260",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_additionalproperties_minimum",
-      "community": 48,
-      "community_name": "type",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "minimum"
     },
     {
@@ -50337,8 +50337,8 @@
       "source_location": "L261",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_additionalproperties_maximum",
-      "community": 48,
-      "community_name": "type",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "maximum"
     },
     {
@@ -50678,8 +50678,8 @@
       "source_location": "L306",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_defs_observations",
-      "community": 48,
-      "community_name": "type",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "observations"
     },
     {
@@ -50689,8 +50689,8 @@
       "source_location": "L307",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_observations_additionalproperties",
-      "community": 48,
-      "community_name": "type",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "additionalproperties"
     },
     {
@@ -50953,8 +50953,8 @@
       "source_location": "L368",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_observations_title",
-      "community": 48,
-      "community_name": "type",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "title"
     },
     {
@@ -50964,8 +50964,8 @@
       "source_location": "L369",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_observations_type",
-      "community": 48,
-      "community_name": "type",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "type"
     },
     {
@@ -50975,7 +50975,7 @@
       "source_location": "L371",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_defs_pathoption",
-      "community": 129,
+      "community": 128,
       "community_name": "id",
       "norm_label": "pathoption"
     },
@@ -50986,7 +50986,7 @@
       "source_location": "L372",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathoption_additionalproperties",
-      "community": 129,
+      "community": 128,
       "community_name": "id",
       "norm_label": "additionalproperties"
     },
@@ -50997,7 +50997,7 @@
       "source_location": "L373",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathoption_properties",
-      "community": 129,
+      "community": 128,
       "community_name": "id",
       "norm_label": "properties"
     },
@@ -51008,7 +51008,7 @@
       "source_location": "L374",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_id",
-      "community": 129,
+      "community": 128,
       "community_name": "id",
       "norm_label": "id"
     },
@@ -51019,7 +51019,7 @@
       "source_location": "L375",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_id_minlength",
-      "community": 129,
+      "community": 128,
       "community_name": "id",
       "norm_label": "minlength"
     },
@@ -51030,7 +51030,7 @@
       "source_location": "L376",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_id_title",
-      "community": 129,
+      "community": 128,
       "community_name": "id",
       "norm_label": "title"
     },
@@ -51041,7 +51041,7 @@
       "source_location": "L377",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_id_type",
-      "community": 129,
+      "community": 128,
       "community_name": "id",
       "norm_label": "type"
     },
@@ -51053,7 +51053,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_item_ids",
       "community": 128,
-      "community_name": "items",
+      "community_name": "id",
       "norm_label": "item_ids"
     },
     {
@@ -51064,7 +51064,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_items",
       "community": 128,
-      "community_name": "items",
+      "community_name": "id",
       "norm_label": "items"
     },
     {
@@ -51075,7 +51075,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_minitems",
       "community": 128,
-      "community_name": "items",
+      "community_name": "id",
       "norm_label": "minitems"
     },
     {
@@ -51086,7 +51086,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_title",
       "community": 128,
-      "community_name": "items",
+      "community_name": "id",
       "norm_label": "title"
     },
     {
@@ -51097,7 +51097,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_type",
       "community": 128,
-      "community_name": "items",
+      "community_name": "id",
       "norm_label": "type"
     },
     {
@@ -51140,7 +51140,7 @@
       "source_location": "L392",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathoption_title",
-      "community": 129,
+      "community": 128,
       "community_name": "id",
       "norm_label": "title"
     },
@@ -51151,7 +51151,7 @@
       "source_location": "L393",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathoption_type",
-      "community": 129,
+      "community": 128,
       "community_name": "id",
       "norm_label": "type"
     },
@@ -51163,7 +51163,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_defs_pathsection",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "pathsection"
     },
     {
@@ -51174,7 +51174,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_additionalproperties",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "additionalproperties"
     },
     {
@@ -51185,7 +51185,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_properties",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "properties"
     },
     {
@@ -51196,7 +51196,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_answer_options",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "answer_options"
     },
     {
@@ -51207,7 +51207,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_answer_options_exclusiveminimum",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "exclusiveminimum"
     },
     {
@@ -51218,7 +51218,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_answer_options_title",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "title"
     },
     {
@@ -51229,7 +51229,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_answer_options_type",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "type"
     },
     {
@@ -51240,7 +51240,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_candidate_marks",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "candidate_marks"
     },
     {
@@ -51251,7 +51251,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_candidate_marks_exclusiveminimum",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "exclusiveminimum"
     },
     {
@@ -51262,7 +51262,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_candidate_marks_title",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "title"
     },
     {
@@ -51273,7 +51273,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_candidate_marks_type",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "type"
     },
     {
@@ -51284,7 +51284,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_options",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "options"
     },
     {
@@ -51306,7 +51306,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_options_minitems",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "minitems"
     },
     {
@@ -51317,7 +51317,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_options_title",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "title"
     },
     {
@@ -51328,7 +51328,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_options_type",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "type"
     },
     {
@@ -51339,7 +51339,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_required",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "required"
     },
     {
@@ -51350,7 +51350,7 @@
       "_origin": "ast",
       "id": "ref_answer_options",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "answer_options"
     },
     {
@@ -51361,7 +51361,7 @@
       "_origin": "ast",
       "id": "ref_candidate_marks",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "candidate_marks"
     },
     {
@@ -51372,7 +51372,7 @@
       "_origin": "ast",
       "id": "ref_options",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "options"
     },
     {
@@ -51383,7 +51383,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_title",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "title"
     },
     {
@@ -51394,7 +51394,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_type",
       "community": 129,
-      "community_name": "id",
+      "community_name": "PathSection",
       "norm_label": "type"
     },
     {
@@ -51404,8 +51404,8 @@
       "source_location": "L431",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_defs_quarantinedform",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 305,
+      "community_name": "required",
       "norm_label": "quarantinedform"
     },
     {
@@ -51415,8 +51415,8 @@
       "source_location": "L432",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_quarantinedform_additionalproperties",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 305,
+      "community_name": "required",
       "norm_label": "additionalproperties"
     },
     {
@@ -51910,7 +51910,7 @@
       "source_location": "L532",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_quarantinedform_required",
-      "community": 21,
+      "community": 305,
       "community_name": "required",
       "norm_label": "required"
     },
@@ -51921,7 +51921,7 @@
       "source_location": "L532",
       "_origin": "ast",
       "id": "ref_year",
-      "community": 21,
+      "community": 305,
       "community_name": "required",
       "norm_label": "year"
     },
@@ -51932,7 +51932,7 @@
       "source_location": "L532",
       "_origin": "ast",
       "id": "ref_source_sha256",
-      "community": 21,
+      "community": 305,
       "community_name": "required",
       "norm_label": "source_sha256"
     },
@@ -51943,7 +51943,7 @@
       "source_location": "L532",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_json_ref_status",
-      "community": 21,
+      "community": 305,
       "community_name": "required",
       "norm_label": "status"
     },
@@ -51954,7 +51954,7 @@
       "source_location": "L532",
       "_origin": "ast",
       "id": "ref_objective_basis",
-      "community": 21,
+      "community": 305,
       "community_name": "required",
       "norm_label": "objective_basis"
     },
@@ -51965,7 +51965,7 @@
       "source_location": "L532",
       "_origin": "ast",
       "id": "ref_paths",
-      "community": 21,
+      "community": 305,
       "community_name": "required",
       "norm_label": "paths"
     },
@@ -51976,8 +51976,8 @@
       "source_location": "L540",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_quarantinedform_title",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 305,
+      "community_name": "required",
       "norm_label": "title"
     },
     {
@@ -51987,8 +51987,8 @@
       "source_location": "L541",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_quarantinedform_type",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 305,
+      "community_name": "required",
       "norm_label": "type"
     },
     {
@@ -52196,8 +52196,8 @@
       "source_location": "L623",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_non_comparable_features",
-      "community": 86,
-      "community_name": "non_comparable_features",
+      "community": 21,
+      "community_name": "required",
       "norm_label": "non_comparable_features"
     },
     {
@@ -52207,8 +52207,8 @@
       "source_location": "L624",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_non_comparable_features_additionalproperties",
-      "community": 86,
-      "community_name": "non_comparable_features",
+      "community": 21,
+      "community_name": "required",
       "norm_label": "additionalproperties"
     },
     {
@@ -52218,8 +52218,8 @@
       "source_location": "L625",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_additionalproperties_const",
-      "community": 86,
-      "community_name": "non_comparable_features",
+      "community": 21,
+      "community_name": "required",
       "norm_label": "const"
     },
     {
@@ -52229,8 +52229,8 @@
       "source_location": "L628",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_non_comparable_features_propertynames",
-      "community": 86,
-      "community_name": "non_comparable_features",
+      "community": 21,
+      "community_name": "required",
       "norm_label": "propertynames"
     },
     {
@@ -52284,8 +52284,8 @@
       "source_location": "L635",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_non_comparable_features_title",
-      "community": 86,
-      "community_name": "non_comparable_features",
+      "community": 21,
+      "community_name": "required",
       "norm_label": "title"
     },
     {
@@ -52295,8 +52295,8 @@
       "source_location": "L636",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_non_comparable_features_type",
-      "community": 86,
-      "community_name": "non_comparable_features",
+      "community": 21,
+      "community_name": "required",
       "norm_label": "type"
     },
     {
@@ -52417,7 +52417,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_items",
       "community": 128,
-      "community_name": "items",
+      "community_name": "id",
       "norm_label": "items"
     },
     {
@@ -52428,7 +52428,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_items",
       "community": 128,
-      "community_name": "items",
+      "community_name": "id",
       "norm_label": "items"
     },
     {
@@ -52439,7 +52439,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_minitems",
       "community": 128,
-      "community_name": "items",
+      "community_name": "id",
       "norm_label": "minitems"
     },
     {
@@ -52450,7 +52450,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_title",
       "community": 128,
-      "community_name": "items",
+      "community_name": "id",
       "norm_label": "title"
     },
     {
@@ -52471,7 +52471,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_sourceform_required",
-      "community": 21,
+      "community": 305,
       "community_name": "required",
       "norm_label": "required"
     },
@@ -52482,7 +52482,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "ref_extraction_policy",
-      "community": 21,
+      "community": 305,
       "community_name": "required",
       "norm_label": "extraction_policy"
     },
@@ -52493,7 +52493,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "ref_feature_basis",
-      "community": 21,
+      "community": 305,
       "community_name": "required",
       "norm_label": "feature_basis"
     },
@@ -52504,7 +52504,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "ref_weighting_basis",
-      "community": 21,
+      "community": 305,
       "community_name": "required",
       "norm_label": "weighting_basis"
     },
@@ -52515,7 +52515,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "ref_comparable_metrics",
-      "community": 21,
+      "community": 305,
       "community_name": "required",
       "norm_label": "comparable_metrics"
     },
@@ -52526,7 +52526,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "ref_non_comparable_features",
-      "community": 21,
+      "community": 305,
       "community_name": "required",
       "norm_label": "non_comparable_features"
     },
@@ -52537,7 +52537,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "ref_topology",
-      "community": 21,
+      "community": 305,
       "community_name": "required",
       "norm_label": "topology"
     },
@@ -52548,7 +52548,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "ref_topology_fingerprint",
-      "community": 21,
+      "community": 305,
       "community_name": "required",
       "norm_label": "topology_fingerprint"
     },
@@ -52559,7 +52559,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "ref_printed_marks",
-      "community": 21,
+      "community": 305,
       "community_name": "required",
       "norm_label": "printed_marks"
     },
@@ -52570,7 +52570,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_json_ref_items",
-      "community": 21,
+      "community": 305,
       "community_name": "required",
       "norm_label": "items"
     },
@@ -53693,7 +53693,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_minlength",
       "community": 128,
-      "community_name": "items",
+      "community_name": "id",
       "norm_label": "minlength"
     },
     {
@@ -54319,8 +54319,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_application_appcommands",
-      "community": 53,
-      "community_name": "SettingsPane.swift",
+      "community": 67,
+      "community_name": "PaperCreatorTests",
       "norm_label": "appcommands.swift"
     },
     {
@@ -54342,8 +54342,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "macos_papercreator_application_appcommands_appcommands",
-      "community": 53,
-      "community_name": "SettingsPane.swift",
+      "community": 67,
+      "community_name": "PaperCreatorTests",
       "norm_label": "appcommands"
     },
     {
@@ -54353,8 +54353,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "commands",
-      "community": 53,
-      "community_name": "SettingsPane.swift",
+      "community": 67,
+      "community_name": "PaperCreatorTests",
       "norm_label": "commands"
     },
     {
@@ -54552,8 +54552,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp",
-      "community": 53,
-      "community_name": "SettingsPane.swift",
+      "community": 67,
+      "community_name": "PaperCreatorTests",
       "norm_label": "papercreatorapp.swift"
     },
     {
@@ -54564,8 +54564,8 @@
       "source_location": "L2",
       "_origin": "ast",
       "id": "tipkit",
-      "community": 53,
-      "community_name": "SettingsPane.swift",
+      "community": 67,
+      "community_name": "PaperCreatorTests",
       "norm_label": "tipkit"
     },
     {
@@ -54575,8 +54575,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_applaunchpolicy",
-      "community": 53,
-      "community_name": "SettingsPane.swift",
+      "community": 67,
+      "community_name": "PaperCreatorTests",
       "norm_label": "applaunchpolicy"
     },
     {
@@ -54586,8 +54586,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_applaunchpolicy_presentsmainwindow",
-      "community": 53,
-      "community_name": "SettingsPane.swift",
+      "community": 67,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".presentsmainwindow()"
     },
     {
@@ -54597,8 +54597,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_swift_string",
-      "community": 53,
-      "community_name": "SettingsPane.swift",
+      "community": 67,
+      "community_name": "PaperCreatorTests",
       "norm_label": "string"
     },
     {
@@ -54608,8 +54608,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_swift_bool",
-      "community": 53,
-      "community_name": "SettingsPane.swift",
+      "community": 67,
+      "community_name": "PaperCreatorTests",
       "norm_label": "bool"
     },
     {
@@ -54619,8 +54619,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_papercreator",
-      "community": 53,
-      "community_name": "SettingsPane.swift",
+      "community": 67,
+      "community_name": "PaperCreatorTests",
       "norm_label": "papercreator"
     },
     {
@@ -54630,8 +54630,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "app",
-      "community": 53,
-      "community_name": "SettingsPane.swift",
+      "community": 67,
+      "community_name": "PaperCreatorTests",
       "norm_label": "app"
     },
     {
@@ -54641,8 +54641,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_papercreator_init",
-      "community": 53,
-      "community_name": "SettingsPane.swift",
+      "community": 67,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".init()"
     },
     {
@@ -54652,8 +54652,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "scene",
-      "community": 53,
-      "community_name": "SettingsPane.swift",
+      "community": 67,
+      "community_name": "PaperCreatorTests",
       "norm_label": "scene"
     },
     {
@@ -54663,8 +54663,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "macos_papercreator_application_papercreatorapp_papercreator_body",
-      "community": 53,
-      "community_name": "SettingsPane.swift",
+      "community": 67,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".body"
     },
     {
@@ -54839,8 +54839,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "macos_papercreator_components_sharedviews_generatedfilestable",
-      "community": 49,
-      "community_name": "ApplicationCoordinator",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": "generatedfilestable"
     },
     {
@@ -55037,8 +55037,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "identifiable",
-      "community": 4,
-      "community_name": "String",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "identifiable"
     },
     {
@@ -55224,8 +55224,8 @@
       "source_location": "L120",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_catalogsubject",
-      "community": 4,
-      "community_name": "String",
+      "community": 28,
+      "community_name": "CatalogStore",
       "norm_label": "catalogsubject"
     },
     {
@@ -56126,8 +56126,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_swift_double",
-      "community": 4,
-      "community_name": "String",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": "double"
     },
     {
@@ -56203,8 +56203,8 @@
       "source_location": "L548",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_benchmarksample",
-      "community": 4,
-      "community_name": "String",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": "benchmarksample"
     },
     {
@@ -56214,8 +56214,8 @@
       "source_location": "L566",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_benchmarksample_networklatencydisplayms",
-      "community": 4,
-      "community_name": "String",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": ".networklatencydisplayms"
     },
     {
@@ -56225,8 +56225,8 @@
       "source_location": "L570",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_benchmarksample_thermalspeedlimitdisplaypercent",
-      "community": 4,
-      "community_name": "String",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": ".thermalspeedlimitdisplaypercent"
     },
     {
@@ -56236,8 +56236,8 @@
       "source_location": "L575",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_benchmarkmetric",
-      "community": 4,
-      "community_name": "String",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": "benchmarkmetric"
     },
     {
@@ -56247,8 +56247,8 @@
       "source_location": "L583",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_benchmarkmetric_displayvalue",
-      "community": 4,
-      "community_name": "String",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": ".displayvalue"
     },
     {
@@ -56258,8 +56258,8 @@
       "source_location": "L595",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_benchmarkverdict",
-      "community": 100,
-      "community_name": "BenchmarkChart",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": "benchmarkverdict"
     },
     {
@@ -56687,8 +56687,8 @@
       "source_location": "L1030",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent",
-      "community": 67,
-      "community_name": "PaperCreatorTests",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": "backendevent"
     },
     {
@@ -56698,8 +56698,8 @@
       "source_location": "L1031",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_hello",
-      "community": 67,
-      "community_name": "PaperCreatorTests",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": "hello"
     },
     {
@@ -56709,8 +56709,8 @@
       "source_location": "L1032",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_progress",
-      "community": 67,
-      "community_name": "PaperCreatorTests",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": "progress"
     },
     {
@@ -56720,8 +56720,8 @@
       "source_location": "L1033",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_file",
-      "community": 67,
-      "community_name": "PaperCreatorTests",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": "file"
     },
     {
@@ -56731,8 +56731,8 @@
       "source_location": "L1034",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_done",
-      "community": 67,
-      "community_name": "PaperCreatorTests",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": "done"
     },
     {
@@ -56742,8 +56742,8 @@
       "source_location": "L1035",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_error",
-      "community": 67,
-      "community_name": "PaperCreatorTests",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": "error"
     },
     {
@@ -56753,8 +56753,8 @@
       "source_location": "L1036",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_models",
-      "community": 67,
-      "community_name": "PaperCreatorTests",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": "models"
     },
     {
@@ -56764,8 +56764,8 @@
       "source_location": "L1037",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_ollamastatus",
-      "community": 67,
-      "community_name": "PaperCreatorTests",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": "ollamastatus"
     },
     {
@@ -56775,8 +56775,8 @@
       "source_location": "L1038",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_benchmarkmetric",
-      "community": 67,
-      "community_name": "PaperCreatorTests",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": "benchmarkmetric"
     },
     {
@@ -56786,8 +56786,8 @@
       "source_location": "L1039",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_benchmarksample",
-      "community": 67,
-      "community_name": "PaperCreatorTests",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": "benchmarksample"
     },
     {
@@ -56797,8 +56797,8 @@
       "source_location": "L1040",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_benchmarkdone",
-      "community": 67,
-      "community_name": "PaperCreatorTests",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": "benchmarkdone"
     },
     {
@@ -56808,8 +56808,8 @@
       "source_location": "L1042",
       "_origin": "ast",
       "id": "macos_papercreator_domain_appmodels_backendevent_init",
-      "community": 4,
-      "community_name": "String",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": ".init()"
     },
     {
@@ -58338,8 +58338,8 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkworkspace",
-      "community": 100,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": "benchmarkworkspace"
     },
     {
@@ -58349,8 +58349,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkworkspace_body",
-      "community": 100,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".body"
     },
     {
@@ -58360,8 +58360,8 @@
       "source_location": "L79",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkoverviewpanel",
-      "community": 100,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": "benchmarkoverviewpanel"
     },
     {
@@ -58371,8 +58371,8 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkoverviewpanel_body",
-      "community": 100,
-      "community_name": "BenchmarkChart",
+      "community": 10,
+      "community_name": "Text",
       "norm_label": ".body"
     },
     {
@@ -58382,8 +58382,8 @@
       "source_location": "L110",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkverdictsummary",
-      "community": 100,
-      "community_name": "BenchmarkChart",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": "benchmarkverdictsummary"
     },
     {
@@ -58393,8 +58393,8 @@
       "source_location": "L113",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkverdictsummary_body",
-      "community": 100,
-      "community_name": "BenchmarkChart",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": ".body"
     },
     {
@@ -58404,8 +58404,8 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkverdictsummary_scoregauge",
-      "community": 100,
-      "community_name": "BenchmarkChart",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": ".scoregauge"
     },
     {
@@ -58415,8 +58415,8 @@
       "source_location": "L141",
       "_origin": "ast",
       "id": "macos_papercreator_features_benchmark_benchmarkview_benchmarkverdictsummary_verdicttext",
-      "community": 100,
-      "community_name": "BenchmarkChart",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": ".verdicttext"
     },
     {
@@ -59014,8 +59014,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview",
-      "community": 28,
-      "community_name": "CatalogStore",
+      "community": 324,
+      "community_name": "JobHistoryView",
       "norm_label": "jobhistoryview.swift"
     },
     {
@@ -59025,8 +59025,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_jobhistoryview",
-      "community": 28,
-      "community_name": "CatalogStore",
+      "community": 324,
+      "community_name": "JobHistoryView",
       "norm_label": "jobhistoryview"
     },
     {
@@ -59036,8 +59036,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_swift_generationjobrecord",
-      "community": 28,
-      "community_name": "CatalogStore",
+      "community": 324,
+      "community_name": "JobHistoryView",
       "norm_label": "generationjobrecord"
     },
     {
@@ -59047,8 +59047,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_jobhistoryview_body",
-      "community": 28,
-      "community_name": "CatalogStore",
+      "community": 324,
+      "community_name": "JobHistoryView",
       "norm_label": ".body"
     },
     {
@@ -59058,8 +59058,8 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_jobhistoryview_selectedrecord",
-      "community": 28,
-      "community_name": "CatalogStore",
+      "community": 324,
+      "community_name": "JobHistoryView",
       "norm_label": ".selectedrecord"
     },
     {
@@ -59069,8 +59069,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_swift_set",
-      "community": 28,
-      "community_name": "CatalogStore",
+      "community": 324,
+      "community_name": "JobHistoryView",
       "norm_label": "set"
     },
     {
@@ -59080,8 +59080,8 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_jobhistoryview_boardtitle",
-      "community": 28,
-      "community_name": "CatalogStore",
+      "community": 324,
+      "community_name": "JobHistoryView",
       "norm_label": ".boardtitle()"
     },
     {
@@ -59091,8 +59091,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_swift_string",
-      "community": 28,
-      "community_name": "CatalogStore",
+      "community": 324,
+      "community_name": "JobHistoryView",
       "norm_label": "string"
     },
     {
@@ -59102,8 +59102,8 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_generationjobstate",
-      "community": 28,
-      "community_name": "CatalogStore",
+      "community": 324,
+      "community_name": "JobHistoryView",
       "norm_label": "generationjobstate"
     },
     {
@@ -59113,8 +59113,8 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_generationjobstate_title",
-      "community": 28,
-      "community_name": "CatalogStore",
+      "community": 324,
+      "community_name": "JobHistoryView",
       "norm_label": ".title"
     },
     {
@@ -59124,8 +59124,8 @@
       "source_location": "L104",
       "_origin": "ast",
       "id": "macos_papercreator_features_documents_jobhistoryview_generationjobstate_systemimage",
-      "community": 28,
-      "community_name": "CatalogStore",
+      "community": 324,
+      "community_name": "JobHistoryView",
       "norm_label": ".systemimage"
     },
     {
@@ -60389,8 +60389,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "nswindow",
-      "community": 309,
-      "community_name": "AccessibilityTests",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": "nswindow"
     },
     {
@@ -60830,7 +60830,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "backendclient.swift"
     },
     {
@@ -60841,7 +60841,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_backendclienterror",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "backendclienterror"
     },
     {
@@ -60852,7 +60852,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_backendclienterror_backendmissing",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "backendmissing"
     },
     {
@@ -60863,7 +60863,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_backendclienterror_pythonmissing",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "pythonmissing"
     },
     {
@@ -60874,7 +60874,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_backendclienterror_pythonvenvunreadable",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "pythonvenvunreadable"
     },
     {
@@ -60885,7 +60885,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_swift_string",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "string"
     },
     {
@@ -60896,7 +60896,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_backendclienterror_errordescription",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": ".errordescription"
     },
     {
@@ -60907,7 +60907,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_backendclient",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "backendclient"
     },
     {
@@ -60918,7 +60918,7 @@
       "_origin": "ast",
       "id": "sendable",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "sendable"
     },
     {
@@ -60929,7 +60929,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_backendfile",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "backendfile"
     },
     {
@@ -60940,7 +60940,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_backendclient_run",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": ".run()"
     },
     {
@@ -60951,7 +60951,7 @@
       "_origin": "ast",
       "id": "mainactor",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "mainactor"
     },
     {
@@ -60962,7 +60962,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_swift_process",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "process"
     },
     {
@@ -60973,7 +60973,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_backendclient_collect",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": ".collect()"
     },
     {
@@ -60984,7 +60984,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_launchconfiguration",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "launchconfiguration"
     },
     {
@@ -60995,7 +60995,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_swift_url",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "url"
     },
     {
@@ -61006,7 +61006,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_backendclient_launchconfiguration",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": ".launchconfiguration()"
     },
     {
@@ -61017,7 +61017,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_backendclient_emitline",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": ".emitline()"
     },
     {
@@ -61028,7 +61028,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_backendclient_repositoryroot",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": ".repositoryroot()"
     },
     {
@@ -61039,7 +61039,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_backendclient_pythonexecutable",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": ".pythonexecutable()"
     },
     {
@@ -61050,7 +61050,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_backendclient_hasbackendscript",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": ".hasbackendscript()"
     },
     {
@@ -61061,7 +61061,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_swift_bool",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "bool"
     },
     {
@@ -61072,7 +61072,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_backendclient_executable",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": ".executable()"
     },
     {
@@ -61083,7 +61083,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_services_backendclient_backendclient_displaymessage",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": ".displaymessage()"
     },
     {
@@ -61513,8 +61513,8 @@
       "source_location": "L220",
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_refreshollama",
-      "community": 49,
-      "community_name": "ApplicationCoordinator",
+      "community": 28,
+      "community_name": "CatalogStore",
       "norm_label": ".refreshollama()"
     },
     {
@@ -62075,7 +62075,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_startbenchmark",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": ".startbenchmark()"
     },
     {
@@ -62086,7 +62086,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_applicationcoordinator_applicationcoordinator_cancelbenchmark",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": ".cancelbenchmark()"
     },
     {
@@ -62505,7 +62505,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "benchmarkcoordinator"
     },
     {
@@ -62516,7 +62516,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_double",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "double"
     },
     {
@@ -62527,7 +62527,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_string",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "string"
     },
     {
@@ -62538,7 +62538,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_process",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "process"
     },
     {
@@ -62549,7 +62549,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator_init",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": ".init()"
     },
     {
@@ -62560,7 +62560,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator_start",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": ".start()"
     },
     {
@@ -62571,7 +62571,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_bool",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "bool"
     },
     {
@@ -62582,7 +62582,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator_begin",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": ".begin()"
     },
     {
@@ -62593,7 +62593,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator_receive",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": ".receive()"
     },
     {
@@ -62604,7 +62604,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator_cancel",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": ".cancel()"
     },
     {
@@ -62615,7 +62615,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_benchmarkcoordinator_finish",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": ".finish()"
     },
     {
@@ -62626,7 +62626,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_result",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "result"
     },
     {
@@ -62637,7 +62637,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_int32",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "int32"
     },
     {
@@ -62648,7 +62648,7 @@
       "_origin": "ast",
       "id": "macos_papercreator_state_benchmarkcoordinator_swift_error",
       "community": 2,
-      "community_name": "BackendClient",
+      "community_name": "BackendEvent",
       "norm_label": "error"
     },
     {
@@ -62746,8 +62746,8 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "macos_papercreator_state_catalogstore_catalogstore_filteredsubjects",
-      "community": 4,
-      "community_name": "String",
+      "community": 28,
+      "community_name": "CatalogStore",
       "norm_label": ".filteredsubjects"
     },
     {
@@ -64013,8 +64013,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "macos_tests_accessibilitytests_accessibilitytests_testreadyworkspacelaysoutinanexpandedwindow",
-      "community": 309,
-      "community_name": "AccessibilityTests",
+      "community": 49,
+      "community_name": "ApplicationCoordinator",
       "norm_label": ".testreadyworkspacelaysoutinanexpandedwindow()"
     },
     {
@@ -64156,8 +64156,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testapplaunchpolicysuppresseswindowsonlyduringunittests",
-      "community": 53,
-      "community_name": "SettingsPane.swift",
+      "community": 67,
+      "community_name": "PaperCreatorTests",
       "norm_label": ".testapplaunchpolicysuppresseswindowsonlyduringunittests()"
     },
     {
@@ -64233,8 +64233,8 @@
       "source_location": "L118",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testbackendhandshakedecodesprotocolcapabilities",
-      "community": 67,
-      "community_name": "PaperCreatorTests",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": ".testbackendhandshakedecodesprotocolcapabilities()"
     },
     {
@@ -64244,8 +64244,8 @@
       "source_location": "L132",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testbackendprogresseventdecodes",
-      "community": 67,
-      "community_name": "PaperCreatorTests",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": ".testbackendprogresseventdecodes()"
     },
     {
@@ -64255,8 +64255,8 @@
       "source_location": "L137",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testbackendmlxcachemisspreservesrecoverycode",
-      "community": 67,
-      "community_name": "PaperCreatorTests",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": ".testbackendmlxcachemisspreservesrecoverycode()"
     },
     {
@@ -64266,8 +64266,8 @@
       "source_location": "L147",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testbackendfileeventdecodes",
-      "community": 67,
-      "community_name": "PaperCreatorTests",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": ".testbackendfileeventdecodes()"
     },
     {
@@ -64420,8 +64420,8 @@
       "source_location": "L375",
       "_origin": "ast",
       "id": "macos_tests_apptests_papercreatortests_testbenchmarksampleeventdecodes",
-      "community": 67,
-      "community_name": "PaperCreatorTests",
+      "community": 2,
+      "community_name": "BackendEvent",
       "norm_label": ".testbenchmarksampleeventdecodes()"
     },
     {
@@ -65558,8 +65558,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "test_accounting_objectives.py"
     },
     {
@@ -65569,8 +65569,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives_paper_for",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "paper_for()"
     },
     {
@@ -65580,8 +65580,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives_py_parametrize",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "parametrize"
     },
     {
@@ -65591,8 +65591,8 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives_test_accounting_uses_official_item_budgets_and_component_totals",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "test_accounting_uses_official_item_budgets_and_component_totals()"
     },
     {
@@ -65602,8 +65602,8 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives_test_accounting_does_not_offer_unallocated_objectives_in_guidance",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "test_accounting_does_not_offer_unallocated_objectives_in_guidance()"
     },
     {
@@ -65613,8 +65613,8 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives_test_accounting_rejects_invalid_ao_even_if_marks_still_add_up",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "test_accounting_rejects_invalid_ao_even_if_marks_still_add_up()"
     },
     {
@@ -65624,8 +65624,8 @@
       "source_location": "L111",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives_test_accounting_rule_cannot_fall_back_to_generic_allocation",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "test_accounting_rule_cannot_fall_back_to_generic_allocation()"
     },
     {
@@ -65635,8 +65635,8 @@
       "source_location": "L118",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives_test_authoring_and_editor_prompts_use_accounting_objective_semantics",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "test_authoring_and_editor_prompts_use_accounting_objective_semantics()"
     },
     {
@@ -65646,8 +65646,8 @@
       "source_location": "L137",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives_test_accounting_ao3_short_analysis_does_not_imply_judgement",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "test_accounting_ao3_short_analysis_does_not_imply_judgement()"
     },
     {
@@ -65657,8 +65657,8 @@
       "source_location": "L157",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives_test_pre_policy_saved_difficulty_review_is_not_current_after_relabel",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "test_pre_policy_saved_difficulty_review_is_not_current_after_relabel()"
     },
     {
@@ -65668,8 +65668,8 @@
       "source_location": "L179",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives_test_saved_accounting_package_rejects_unsupported_objective",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "test_saved_accounting_package_rejects_unsupported_objective()"
     },
     {
@@ -65679,8 +65679,8 @@
       "source_location": "L212",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives_test_other_subjects_retain_separate_evaluation_objective",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "test_other_subjects_retain_separate_evaluation_objective()"
     },
     {
@@ -65690,8 +65690,8 @@
       "source_location": "L226",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives_test_printed_accounting_scheme_has_three_objectives_and_actual_item_budgets",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "test_printed_accounting_scheme_has_three_objectives_and_actual_item_budgets()"
     },
     {
@@ -65701,8 +65701,8 @@
       "source_location": "L246",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives_test_renderer_rejects_unsupported_indicative_label",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "test_renderer_rejects_unsupported_indicative_label()"
     },
     {
@@ -65712,8 +65712,8 @@
       "source_location": "L255",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives_test_variance_followups_use_the_material_price_source_not_the_labour_source",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "test_variance_followups_use_the_material_price_source_not_the_labour_source()"
     },
     {
@@ -65723,8 +65723,8 @@
       "source_location": "L270",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives_test_current_difficulty_evidence_is_bound_to_the_accounting_budget",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "test_current_difficulty_evidence_is_bound_to_the_accounting_budget()"
     },
     {
@@ -65734,8 +65734,8 @@
       "source_location": "L334",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives_test_applied_review_receives_the_visible_prior_question_data",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "test_applied_review_receives_the_visible_prior_question_data()"
     },
     {
@@ -65745,8 +65745,8 @@
       "source_location": "L354",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives_test_exported_quality_totals_follow_accounting_credit",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "test_exported_quality_totals_follow_accounting_credit()"
     },
     {
@@ -65767,8 +65767,8 @@
       "source_location": "L421",
       "_origin": "ast",
       "id": "tests_test_accounting_objectives_test_rendered_award_cells_distinguish_guidance_from_zero_level",
-      "community": 201,
-      "community_name": "test_accounting_objectives.py",
+      "community": 57,
+      "community_name": "exam_blueprints.py",
       "norm_label": "test_rendered_award_cells_distinguish_guidance_from_zero_level()"
     },
     {
@@ -82586,7 +82586,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "test_reference_evidence_validation.py"
     },
@@ -82597,7 +82597,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_document",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "document()"
     },
@@ -82608,7 +82608,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_test_schema_three_rejects_both_review_reproductions",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "test_schema_three_rejects_both_review_reproductions()"
     },
@@ -82619,7 +82619,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_py_parametrize",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "parametrize"
     },
@@ -82630,7 +82630,7 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_test_h3_nested_evidence_rejects_stale_partial_or_unknown_data",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "test_h3_nested_evidence_rejects_stale_partial_or_unknown_data()"
     },
@@ -82641,7 +82641,7 @@
       "source_location": "L94",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_test_explicit_legacy_still_loads_but_never_qualifies_unknown_paths",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "test_explicit_legacy_still_loads_but_never_qualifies_unknown_paths()"
     },
@@ -82652,7 +82652,7 @@
       "source_location": "L131",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_test_checked_in_h3_profiles_are_valid",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "test_checked_in_h3_profiles_are_valid()"
     },
@@ -82663,7 +82663,7 @@
       "source_location": "L148",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_test_mutated_unknown_policy_cannot_bypass_direct_audit",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "test_mutated_unknown_policy_cannot_bypass_direct_audit()"
     },
@@ -82674,8 +82674,8 @@
       "source_location": "L187",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_test_direct_profile_cannot_qualify_after_private_version_marker_mutation",
-      "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community": 336,
+      "community_name": "profile_for",
       "norm_label": "test_direct_profile_cannot_qualify_after_private_version_marker_mutation()"
     },
     {
@@ -82685,7 +82685,7 @@
       "source_location": "L218",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_test_model_copied_document_cannot_promote_a_valid_profile_to_schema_three",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "test_model_copied_document_cannot_promote_a_valid_profile_to_schema_three()"
     },
@@ -82696,7 +82696,7 @@
       "source_location": "L278",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_test_direct_document_validator_cannot_qualify_a_forged_h3_document",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "test_direct_document_validator_cannot_qualify_a_forged_h3_document()"
     },
@@ -82729,7 +82729,7 @@
       "source_location": "L360",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_test_public_context_accessors_cannot_be_used_to_inject_a_forged_profile",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "test_public_context_accessors_cannot_be_used_to_inject_a_forged_profile()"
     },
@@ -82740,7 +82740,7 @@
       "source_location": "L369",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_test_profile_list_mutation_invalidates_a_schema_three_document_attestation",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "test_profile_list_mutation_invalidates_a_schema_three_document_attestation()"
     },
@@ -82751,7 +82751,7 @@
       "source_location": "L415",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_test_schema_two_document_rejects_copied_h3_source_evidence",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "test_schema_two_document_rejects_copied_h3_source_evidence()"
     },
@@ -82762,7 +82762,7 @@
       "source_location": "L434",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_test_outer_reference_document_rejects_unknown_fields",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "test_outer_reference_document_rejects_unknown_fields()"
     },
@@ -82773,8 +82773,8 @@
       "source_location": "L188",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_rationale_188",
-      "community": 126,
-      "community_name": "test_reference_evidence_validation.py",
+      "community": 336,
+      "community_name": "profile_for",
       "norm_label": "only membership in a validated schema-3 document may qualify h3 evidence."
     },
     {
@@ -82784,7 +82784,7 @@
       "source_location": "L219",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_rationale_219",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "`model_copy(update=...)` does not re-run schema-three evidence validation."
     },
@@ -82795,7 +82795,7 @@
       "source_location": "L279",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_rationale_279",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "calling a public pydantic validator is not evidence of canonical loading."
     },
@@ -82828,7 +82828,7 @@
       "source_location": "L361",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_rationale_361",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "public accessors cannot qualify content absent from the source record."
     },
@@ -82839,7 +82839,7 @@
       "source_location": "L370",
       "_origin": "ast",
       "id": "tests_test_reference_evidence_validation_rationale_370",
-      "community": 126,
+      "community": 201,
       "community_name": "test_reference_evidence_validation.py",
       "norm_label": "qualification cannot survive a post-validation profile-list mutation."
     },
@@ -90660,8 +90660,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_project_analysis_ui_audit",
-      "community": 47,
-      "community_name": "README.md",
+      "community": 251,
+      "community_name": "macOS UI audit",
       "norm_label": "ui_audit.md"
     },
     {
@@ -126924,7 +126924,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2181",
+      "source_location": "L2191",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -127164,7 +127164,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2003",
+      "source_location": "L2013",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -142212,7 +142212,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1173",
+      "source_location": "L1183",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_audit_pdf",
@@ -142320,7 +142320,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2047",
+      "source_location": "L2057",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -142877,7 +142877,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1208",
+      "source_location": "L1218",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_audit_pdf",
@@ -143755,7 +143755,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1208",
+      "source_location": "L1218",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_audit_pdf",
@@ -143767,7 +143767,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L837",
+      "source_location": "L847",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_contract_pdf",
@@ -143779,7 +143779,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L912",
+      "source_location": "L922",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_depth_contract_pdf",
@@ -143791,7 +143791,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1042",
+      "source_location": "L1052",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_reconciliation_pdf",
@@ -144154,7 +144154,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L793",
+      "source_location": "L803",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_contract_pdf",
@@ -144334,7 +144334,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2051",
+      "source_location": "L2061",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -146321,7 +146321,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L876",
+      "source_location": "L886",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_depth_contract_pdf",
@@ -146333,7 +146333,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L953",
+      "source_location": "L963",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_reasoning_pdf",
@@ -146477,7 +146477,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2049",
+      "source_location": "L2059",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -149218,7 +149218,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1030",
+      "source_location": "L1040",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_reconciliation_pdf",
@@ -149326,7 +149326,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2045",
+      "source_location": "L2055",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -149847,7 +149847,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1042",
+      "source_location": "L1052",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_reconciliation_pdf",
@@ -151052,7 +151052,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2034",
+      "source_location": "L2044",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -153093,7 +153093,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2032",
+      "source_location": "L2042",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -157518,7 +157518,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2038",
+      "source_location": "L2048",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -159202,7 +159202,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2036",
+      "source_location": "L2046",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -161213,7 +161213,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2030",
+      "source_location": "L2040",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -162737,7 +162737,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1398",
+      "source_location": "L1408",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_contract_pdf",
@@ -163159,7 +163159,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1353",
+      "source_location": "L1363",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_contract_pdf",
@@ -163327,7 +163327,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2066",
+      "source_location": "L2076",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -164581,7 +164581,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1432",
+      "source_location": "L1442",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_depth_contract_pdf",
@@ -164761,7 +164761,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2064",
+      "source_location": "L2074",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -166628,7 +166628,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1699",
+      "source_location": "L1709",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_incident_pdf",
@@ -166772,7 +166772,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2060",
+      "source_location": "L2070",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -167554,7 +167554,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1712",
+      "source_location": "L1722",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_incident_pdf",
@@ -168910,7 +168910,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1559",
+      "source_location": "L1569",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_reasoning_contract_pdf",
@@ -169054,7 +169054,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2062",
+      "source_location": "L2072",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -170723,7 +170723,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2010",
+      "source_location": "L2020",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -170735,7 +170735,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1902",
+      "source_location": "L1912",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_load_originality_history",
@@ -170758,7 +170758,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1173",
+      "source_location": "L1183",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_audit_pdf",
@@ -170770,7 +170770,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L793",
+      "source_location": "L803",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_contract_pdf",
@@ -170782,7 +170782,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L876",
+      "source_location": "L886",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_depth_contract_pdf",
@@ -170794,7 +170794,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L953",
+      "source_location": "L963",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_reasoning_pdf",
@@ -170806,7 +170806,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1030",
+      "source_location": "L1040",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_reconciliation_pdf",
@@ -170866,7 +170866,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1353",
+      "source_location": "L1363",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_contract_pdf",
@@ -170878,7 +170878,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1432",
+      "source_location": "L1442",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_depth_contract_pdf",
@@ -170890,7 +170890,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1699",
+      "source_location": "L1709",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_incident_pdf",
@@ -170902,7 +170902,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1559",
+      "source_location": "L1569",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_reasoning_contract_pdf",
@@ -175257,7 +175257,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1710",
+      "source_location": "L1720",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -175269,7 +175269,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1713",
+      "source_location": "L1723",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_incident_pdf",
@@ -175567,7 +175567,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2173",
+      "source_location": "L2183",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -176777,7 +176777,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2136",
+      "source_location": "L2146",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -177029,7 +177029,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1902",
+      "source_location": "L1912",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_load_originality_history",
@@ -177637,7 +177637,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1998",
+      "source_location": "L2008",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -178513,7 +178513,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2008",
+      "source_location": "L2018",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -179094,7 +179094,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1993",
+      "source_location": "L2003",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -180041,7 +180041,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1305",
+      "source_location": "L1315",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_audit_pdf",
@@ -180053,7 +180053,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L942",
+      "source_location": "L952",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_depth_contract_pdf",
@@ -180065,7 +180065,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1023",
+      "source_location": "L1033",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_reasoning_pdf",
@@ -180077,7 +180077,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1163",
+      "source_location": "L1173",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_reconciliation_pdf",
@@ -180563,7 +180563,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2076",
+      "source_location": "L2086",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -180886,7 +180886,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1937",
+      "source_location": "L1947",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -180897,7 +180897,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1968",
+      "source_location": "L1978",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -180908,7 +180908,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1878",
+      "source_location": "L1888",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -180930,7 +180930,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1910",
+      "source_location": "L1920",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -180952,7 +180952,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1173",
+      "source_location": "L1183",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -180963,7 +180963,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L793",
+      "source_location": "L803",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -180974,7 +180974,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L876",
+      "source_location": "L886",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -180985,7 +180985,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L953",
+      "source_location": "L963",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -180996,7 +180996,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1030",
+      "source_location": "L1040",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -181062,7 +181062,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1353",
+      "source_location": "L1363",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -181073,7 +181073,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1432",
+      "source_location": "L1442",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -181084,7 +181084,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1699",
+      "source_location": "L1709",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -181095,7 +181095,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1559",
+      "source_location": "L1569",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime",
@@ -181249,7 +181249,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1984",
+      "source_location": "L1994",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -181285,7 +181285,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1987",
+      "source_location": "L1997",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -181321,7 +181321,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2085",
+      "source_location": "L2095",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -181345,7 +181345,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1988",
+      "source_location": "L1998",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -181357,7 +181357,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1878",
+      "source_location": "L1888",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_load_originality_history",
@@ -181381,7 +181381,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1173",
+      "source_location": "L1183",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_audit_pdf",
@@ -181393,7 +181393,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L793",
+      "source_location": "L803",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_contract_pdf",
@@ -181405,7 +181405,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L876",
+      "source_location": "L886",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_depth_contract_pdf",
@@ -181417,7 +181417,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L953",
+      "source_location": "L963",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_reasoning_pdf",
@@ -181429,7 +181429,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1030",
+      "source_location": "L1040",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_reconciliation_pdf",
@@ -181489,7 +181489,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1353",
+      "source_location": "L1363",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_contract_pdf",
@@ -181501,7 +181501,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1432",
+      "source_location": "L1442",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_depth_contract_pdf",
@@ -181513,7 +181513,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1699",
+      "source_location": "L1709",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_incident_pdf",
@@ -181525,7 +181525,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1559",
+      "source_location": "L1569",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_network_reasoning_contract_pdf",
@@ -181663,10 +181663,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L800",
+      "source_location": "L810",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_runtime_rationale_800",
+      "source": "backend_core_france_runtime_rationale_810",
       "target": "backend_core_france_runtime_validate_database_contract_pdf",
       "confidence_score": 1.0
     },
@@ -181698,10 +181698,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L883",
+      "source_location": "L893",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_runtime_rationale_883",
+      "source": "backend_core_france_runtime_rationale_893",
       "target": "backend_core_france_runtime_validate_database_depth_contract_pdf",
       "confidence_score": 1.0
     },
@@ -181710,7 +181710,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L961",
+      "source_location": "L971",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_validate_database_reasoning_pdf",
@@ -181745,10 +181745,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L960",
+      "source_location": "L970",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_runtime_rationale_960",
+      "source": "backend_core_france_runtime_rationale_970",
       "target": "backend_core_france_runtime_validate_database_reasoning_pdf",
       "confidence_score": 1.0
     },
@@ -181768,10 +181768,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1037",
+      "source_location": "L1047",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_runtime_rationale_1037",
+      "source": "backend_core_france_runtime_rationale_1047",
       "target": "backend_core_france_runtime_validate_database_reconciliation_pdf",
       "confidence_score": 1.0
     },
@@ -181815,10 +181815,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1180",
+      "source_location": "L1190",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_runtime_rationale_1180",
+      "source": "backend_core_france_runtime_rationale_1190",
       "target": "backend_core_france_runtime_validate_database_audit_pdf",
       "confidence_score": 1.0
     },
@@ -181862,10 +181862,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1360",
+      "source_location": "L1370",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_runtime_rationale_1360",
+      "source": "backend_core_france_runtime_rationale_1370",
       "target": "backend_core_france_runtime_validate_network_contract_pdf",
       "confidence_score": 1.0
     },
@@ -181897,10 +181897,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1439",
+      "source_location": "L1449",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_runtime_rationale_1439",
+      "source": "backend_core_france_runtime_rationale_1449",
       "target": "backend_core_france_runtime_validate_network_depth_contract_pdf",
       "confidence_score": 1.0
     },
@@ -181944,10 +181944,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1566",
+      "source_location": "L1576",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_runtime_rationale_1566",
+      "source": "backend_core_france_runtime_rationale_1576",
       "target": "backend_core_france_runtime_validate_network_reasoning_contract_pdf",
       "confidence_score": 1.0
     },
@@ -181967,10 +181967,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1706",
+      "source_location": "L1716",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_runtime_rationale_1706",
+      "source": "backend_core_france_runtime_rationale_1716",
       "target": "backend_core_france_runtime_validate_network_incident_pdf",
       "confidence_score": 1.0
     },
@@ -182027,7 +182027,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2004",
+      "source_location": "L2014",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -182038,10 +182038,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1879",
+      "source_location": "L1889",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_runtime_rationale_1879",
+      "source": "backend_core_france_runtime_rationale_1889",
       "target": "backend_core_france_runtime_load_originality_history",
       "confidence_score": 1.0
     },
@@ -182074,7 +182074,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2053",
+      "source_location": "L2063",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -182085,10 +182085,10 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1911",
+      "source_location": "L1921",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "backend_core_france_runtime_rationale_1911",
+      "source": "backend_core_france_runtime_rationale_1921",
       "target": "backend_core_france_runtime_network_pdf_contract_version",
       "confidence_score": 1.0
     },
@@ -182181,7 +182181,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2040",
+      "source_location": "L2050",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -182301,7 +182301,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2162",
+      "source_location": "L2172",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -182313,7 +182313,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L1978",
+      "source_location": "L1988",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -182325,7 +182325,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/runtime.py",
-      "source_location": "L2074",
+      "source_location": "L2084",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_runtime_handle_generate_assessment",
@@ -390522,5 +390522,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "77fe352b0205bbe85db53ee3bd3cabcc052901d7"
+  "built_at_commit": "59176f4d190b7c96ca90acfe284d443d3bdad2e0"
 }

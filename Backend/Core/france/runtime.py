@@ -744,18 +744,28 @@ def validate_graph_two_outage_pdf(
     if not correction and "if voisin not in visites:" in flat:
         raise ValueError("Two-outage corrected code revealed to candidate")
     if not correction:
-        e1_subject = " ".join(lines[lines.index(heading) : after_1j])
+        candidate_answers = flat
+        for question in exercise.questions:
+            prompt = " ".join(question.prompt.partition("\n\n```")[0].split())
+            candidate_answers = candidate_answers.replace(prompt, "", 1)
         second_result = data["expected"]["1g"]
-        second_route = " → ".join(second_result["route_after"])
         second_cost = second_result["cost_after"]
-        if any(
-            fragment in e1_subject
-            for fragment in (
-                second_route,
-                f"= {second_cost}",
-                f"coût {second_cost}",
-                f"poids {second_cost}",
+        route_pattern = (
+            r"\b"
+            + r"\s*(?:→|->|[-–—>,])\s*".join(
+                re.escape(node) for node in second_result["route_after"]
             )
+            + r"\b"
+        )
+        cost_pattern = (
+            r"\b(?:co[uû]t|poids|distance)\s*"
+            r"(?:(?:total(?:e)?|minimal(?:e)?|gagnant|du trajet(?: restant)?|de la route)\s*)?"
+            r"(?:(?:est|vaut)\s*)?(?:de\s*)?(?:[:=]\s*)?"
+            + re.escape(str(second_cost))
+            + r"\b"
+        )
+        if re.search(route_pattern, candidate_answers, re.IGNORECASE) or re.search(
+            cost_pattern, candidate_answers, re.IGNORECASE
         ):
             raise ValueError("Two-outage route or cost revealed to candidate")
     first = "–".join(data["closed_edge"])
