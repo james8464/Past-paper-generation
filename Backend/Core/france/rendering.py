@@ -554,6 +554,7 @@ def render_assessment(
                 "graph_resilience_contract",
                 "graph_route_trace_contract",
                 "database_audit_contract",
+                "database_reconciliation_contract",
             }
             for question in exercise.questions
         )
@@ -621,10 +622,10 @@ def render_assessment(
             ):
                 start = material_start if question.id == "1h" else question_start
                 story[start:] = [KeepTogether(story[start:])]
-            if (
-                not correction
-                and question.verification.get("kind") == "database_audit_contract"
-            ):
+            if not correction and question.verification.get("kind") in {
+                "database_audit_contract",
+                "database_reconciliation_contract",
+            }:
                 start = material_start if question.id == "2g" else question_start
                 story[start:] = [KeepTogether(story[start:])]
             if (

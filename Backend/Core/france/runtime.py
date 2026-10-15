@@ -29,6 +29,13 @@ from Backend.Core.france.database_depth_contract import (
     DatabaseDepthContract,
     build_database_depth_contract,
 )
+from Backend.Core.france.database_reconciliation_contract import (
+    DatabaseReconciliationContract,
+    build_database_reconciliation_contract,
+)
+from Backend.Core.france.database_reconciliation_prose import (
+    database_reconciliation_working_materials,
+)
 from Backend.Core.france.graph_resilience_contract import (
     GraphResilienceContract,
     build_graph_resilience_contract,
@@ -69,6 +76,7 @@ from Backend.Core.france.pipeline import (
     CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
     CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
+    CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
     CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
     CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
@@ -841,6 +849,149 @@ def validate_database_reasoning_pdf(
                     )
 
 
+def validate_database_reconciliation_pdf(
+    path: Path,
+    contract: DatabaseReconciliationContract,
+    *,
+    correction: bool,
+    exercise: NSIExercise,
+) -> None:
+    """Bind V24 printed facts, staged working surfaces and exact correction credit."""
+    data = contract.to_dict()
+    if exercise.id != "2" or [q.id for q in exercise.questions] != data["task_ids"]:
+        raise ValueError("Incident-reconciliation exercise differs from contract")
+    if [item.model_dump(mode="json") for item in exercise.materials] != (
+        database_materials(contract) + database_reconciliation_working_materials()
+    ):
+        raise ValueError("Incident-reconciliation material differs from contract")
+    with pymupdf.open(path) as pdf:
+        pages = [page.get_text() for page in pdf]
+    lines = [
+        line.strip()
+        for page in pages
+        for line in page.splitlines()
+        if line.strip()
+        and not line.startswith("Paper Creator —")
+        and not line.startswith("Page : ")
+    ]
+    flat = " ".join(lines)
+    heading = f"Exercice 2 ({exercise.target_points.replace('.', ',')} points)"
+    if lines.count(heading) != 1:
+        raise ValueError("Incident-reconciliation heading or credit mismatch")
+    positions = {}
+    for task_id in data["task_ids"]:
+        matches = [
+            i
+            for i, line in enumerate(lines)
+            if re.match(rf"^{task_id}\.(?:\s|$)", line)
+        ]
+        if len(matches) != 1:
+            raise ValueError(f"Incident-reconciliation question {task_id} missing")
+        positions[task_id] = matches[0]
+    if list(positions.values()) != sorted(positions.values()):
+        raise ValueError("Incident-reconciliation questions out of order")
+    phases = {
+        "recon_jointure": ("2b", "2c"),
+        "recon_effectifs": ("2e", "2f"),
+        "recon_etats": ("2h", "2i"),
+    }
+    for material in exercise.materials:
+        matches = [i for i, line in enumerate(lines) if line.startswith(material.title)]
+        if len(matches) != 1:
+            raise ValueError(f"Incident-reconciliation material {material.id} missing")
+        at = matches[0]
+        if material.id in phases:
+            before, after = phases[material.id]
+            if not positions[before] < at < positions[after]:
+                raise ValueError(
+                    f"Incident-reconciliation material {material.id} misplaced"
+                )
+        elif at > positions["2a"]:
+            raise ValueError(f"Incident-reconciliation source {material.id} misplaced")
+        expected = list(material.columns) + [
+            cell for row in material.rows for cell in row
+        ]
+        expected_tokens = " ".join(expected).split()
+        actual_tokens = " ".join(lines[at + 1 :]).split()[: len(expected_tokens)]
+        if actual_tokens != expected_tokens:
+            raise ValueError(f"Incident-reconciliation material {material.id} altered")
+    if " ".join(data["faulty_sql"].split()) not in flat:
+        raise ValueError("Incident-reconciliation faulty source missing")
+    if not correction:
+        for source in (
+            data["correct_sql"],
+            data["group_sql"],
+            data["correct_python"],
+            data["update_sql_1"],
+            data["update_sql_2"],
+        ):
+            if " ".join(source.split()) in flat:
+                raise ValueError("Incident-reconciliation answer leaked")
+        if "Réponse attendue" in flat or "Barème indicatif — question 2" in flat:
+            raise ValueError("Incident-reconciliation correction leaked")
+    next_exercise = next(
+        (i for i, line in enumerate(lines) if line.startswith("Exercice 3 (")),
+        len(lines),
+    )
+    for index, question in enumerate(exercise.questions):
+        if (
+            question.verification.get("kind") != "database_reconciliation_contract"
+            or question.verification.get("contract") != data
+            or question.verification.get("task_id") != question.id
+            or question.verification.get("expected") != data["expected"]
+        ):
+            raise ValueError(
+                f"Incident-reconciliation verification {question.id} changed"
+            )
+        end = (
+            positions[exercise.questions[index + 1].id]
+            if index + 1 < len(exercise.questions)
+            else next_exercise
+        )
+        section = " ".join(lines[positions[question.id] : end])
+        prompt = " ".join(re.sub(r"```(?:sql|python)?", " ", question.prompt).split())
+        if prompt not in section:
+            raise ValueError(f"Incident-reconciliation prompt {question.id} missing")
+        answer = " ".join(re.sub(r"```(?:sql|python)?", " ", question.answer).split())
+        if correction:
+            rubric = f"Barème indicatif — question {question.id}"
+            matching_pages = [
+                " ".join(page.split()) for page in pages if rubric in page
+            ]
+            if (
+                answer not in section
+                or len(matching_pages) != 1
+                or answer not in matching_pages[0]
+                or "Réponse attendue" not in section
+                or not section.index("Réponse attendue")
+                < section.index(answer)
+                < section.index(rubric)
+            ):
+                raise ValueError(
+                    f"Incident-reconciliation answer/rubric {question.id} separated"
+                )
+            credit_text = section.split(rubric, 1)[1]
+            if len(
+                re.findall(r"(?<!\w)\d+(?:,\d+)?\s+points?(?!\w)", credit_text)
+            ) != len(question.marking):
+                raise ValueError(
+                    f"Incident-reconciliation credit {question.id} altered"
+                )
+            previous_credit = -1
+            for credit in question.marking:
+                label = credit.points.replace(".", ",")
+                unit = "point" if Decimal(credit.points) <= 1 else "points"
+                expected_credit = (
+                    f"{label} {unit} {printable_database_criterion(credit.criterion)}"
+                )
+                at = credit_text.find(expected_credit)
+                if at <= previous_credit:
+                    raise ValueError(
+                        f"Incident-reconciliation credit {question.id} missing"
+                    )
+                previous_credit = at
+
+
 def validate_database_audit_pdf(
     path: Path,
     contract: DatabaseAuditContract,
@@ -1580,7 +1731,10 @@ def load_originality_history(output: Path) -> list[str]:
 
 def network_pdf_contract_version(prompt_version: str) -> str:
     """Never silently render an unknown French package with an older validator."""
-    if prompt_version == CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION:
+    if prompt_version in {
+        CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
+        CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
+    }:
         return "v23"
     if prompt_version in {
         CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
@@ -1602,6 +1756,8 @@ def network_pdf_contract_version(prompt_version: str) -> str:
 
 
 def database_pdf_contract_version(prompt_version: str) -> str:
+    if prompt_version == CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION:
+        return "v24"
     if prompt_version in {
         CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
         CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
@@ -1665,7 +1821,7 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v23",
+            contract_authoring_version="v24",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
@@ -1673,6 +1829,7 @@ def handle_generate_assessment(args) -> int:
         graph_route_trace = package["identity"]["prompt_version"] in {
             CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
             CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
+            CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
         }
         graph_resilience = package["identity"]["prompt_version"] in {
             CONTROLLED_GRAPH_RESILIENCE_PROMPT_VERSION,
@@ -1697,7 +1854,9 @@ def handle_generate_assessment(args) -> int:
         )
         database_depth = database_pdf_version in {"v2", "v19"}
         database_contract = (
-            build_database_audit_contract(args.seed)
+            build_database_reconciliation_contract(args.seed)
+            if database_pdf_version == "v24"
+            else build_database_audit_contract(args.seed)
             if database_pdf_version == "v21"
             else build_database_depth_contract(args.seed)
             if database_depth
@@ -1752,7 +1911,9 @@ def handle_generate_assessment(args) -> int:
                 exercise=exercises[0],
             )
             database_validator = (
-                validate_database_audit_pdf
+                validate_database_reconciliation_pdf
+                if database_pdf_version == "v24"
+                else validate_database_audit_pdf
                 if database_pdf_version == "v21"
                 else validate_database_reasoning_pdf
                 if database_pdf_version == "v19"

@@ -39,17 +39,25 @@ _CORRECT_SQL = (
     _JOIN_PREFIX + "incident.id_cat = categorie.id_cat\nORDER BY incident.id_incident"
 )
 _GROUP_SQL = (
-    "SELECT categorie.id_cat, COUNT(incident.id_incident)\n"
-    "FROM categorie LEFT JOIN incident ON incident.id_cat = categorie.id_cat\n"
-    "GROUP BY categorie.id_cat ORDER BY categorie.id_cat"
+    "SELECT categorie.id_cat,\n"
+    "       COUNT(incident.id_incident)\n"
+    "FROM categorie LEFT JOIN incident\n"
+    "ON incident.id_cat = categorie.id_cat\n"
+    "GROUP BY categorie.id_cat\n"
+    "ORDER BY categorie.id_cat"
 )
-_UPDATE_SQL_1 = "UPDATE incident SET statut = 'clos' WHERE id_incident = 101"
-_UPDATE_SQL_2 = "UPDATE incident SET statut = 'clos' WHERE id_incident = 104"
+_UPDATE_SQL_1 = "UPDATE incident SET statut = 'clos'\nWHERE id_incident = 101"
+_UPDATE_SQL_2 = "UPDATE incident SET statut = 'clos'\nWHERE id_incident = 104"
 _FAULTY_PYTHON = (
-    "def nombre_clos_categorie(incidents, id_cat):\n"
+    "def nombre_clos_categorie(\n"
+    "    incidents, id_cat\n"
+    "):\n"
     "    total = 0\n"
     "    for incident in incidents:\n"
-    "        if incident['id_agent'] == id_cat and incident['statut'] == 'clos':\n"
+    "        if (\n"
+    "            incident['id_agent'] == id_cat\n"
+    "            and incident['statut'] == 'clos'\n"
+    "        ):\n"
     "            total += 1\n"
     "    return total"
 )
