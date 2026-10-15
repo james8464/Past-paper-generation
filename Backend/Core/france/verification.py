@@ -271,6 +271,7 @@ def verify_contract(contract: dict) -> dict:
         "network_depth_contract",
         "network_reasoning_contract",
         "network_incident_contract",
+        "network_incident_timeline_contract",
     }:
         return {
             "state": "unresolved",
@@ -278,7 +279,18 @@ def verify_contract(contract: dict) -> dict:
             "reason": "Vérification humaine nécessaire",
         }
     try:
-        if kind == "network_incident_contract":
+        if kind == "network_incident_timeline_contract":
+            from Backend.Core.france.network_incident_timeline_contract import (
+                NetworkIncidentTimelineContract,
+            )
+
+            data = NetworkIncidentTimelineContract.from_dict(
+                contract["contract"]
+            ).to_dict()
+            if contract["task_id"] not in data["task_ids"]:
+                raise ValueError("Tâche de chronologie d'incident réseau absente")
+            actual = data["expected"]
+        elif kind == "network_incident_contract":
             from Backend.Core.france.network_incident_contract import (
                 NetworkIncidentContract,
             )

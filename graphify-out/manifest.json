@@ -215,8 +215,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/verification.py": {
-    "mtime": 1792075230.8597088,
-    "ast_hash": "2f360b61ad62fedaf01633781809a423",
+    "mtime": 1792107293.5630999,
+    "ast_hash": "59b51b095f4f79dad7420eb4c9fd77ed",
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1792081654.4333403,
-    "ast_hash": "2707c1f5e2852762a39e348b7b32ac8b",
+    "mtime": 1792107322.2445781,
+    "ast_hash": "0caf4093154d3faa601a49346266b13e",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3262,6 +3262,26 @@
   "docs/quality/french-nsi-v25-two-outage-live-diagnostic-2026-10-15.md": {
     "mtime": 1792081561.472594,
     "ast_hash": "4aca2c01c0110355229680b7a4110dd0",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/network_incident_timeline_contract.py": {
+    "mtime": 1792107219.5020726,
+    "ast_hash": "9ccde53db647c01f8a6c9a0992369c36",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/network_incident_timeline_prose.py": {
+    "mtime": 1792107219.5020669,
+    "ast_hash": "ea6cd2d6be66a28a2953d816bf2747c3",
+    "semantic_hash": ""
+  },
+  "tests/test_french_network_incident_timeline_contract.py": {
+    "mtime": 1792107284.8503575,
+    "ast_hash": "df4c7bde78a6c9ad5516c858fd3fdd86",
+    "semantic_hash": ""
+  },
+  "tests/test_french_network_incident_timeline_prose.py": {
+    "mtime": 1792107219.5020697,
+    "ast_hash": "aa25401760a17d122ad3b218ce9c199d",
     "semantic_hash": ""
   }
 }
