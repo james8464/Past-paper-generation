@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1792051615.4578772,
-    "ast_hash": "7f8b1a9908ee7e5449d4033034e24551",
+    "mtime": 1792059874.1020932,
+    "ast_hash": "8d9be38db13eb39dee726362c9b27435",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2055,8 +2055,8 @@
     "semantic_hash": ""
   },
   "tools/build_occitanie_submission.py": {
-    "mtime": 1791890510.1823764,
-    "ast_hash": "2302807ecabc0a9962fc10a4d3488ef9",
+    "mtime": 1792063784.6706333,
+    "ast_hash": "311c0e5934d53d8fc2ae4c794548755a",
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
@@ -2260,8 +2260,8 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/claims-register.md": {
-    "mtime": 1791890474.6170259,
-    "ast_hash": "ceb9319ff6939ee71852f3a7acb64f21",
+    "mtime": 1792063393.1345255,
+    "ast_hash": "9f04ffa5776c0cb1b60ab51ef5704cf9",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/demo-script.md": {
@@ -2285,8 +2285,8 @@
     "semantic_hash": ""
   },
   "docs/occitanie-project.md": {
-    "mtime": 1791890490.864834,
-    "ast_hash": "b3b75a7037f51bf56d0a3f0c0bafaa85",
+    "mtime": 1792063393.135158,
+    "ast_hash": "8af908d8f21db25ff5b10223bfdc4739",
     "semantic_hash": ""
   },
   "docs/project-analysis/IMPLEMENTATION_AND_FIDELITY_REPORT.md": {
@@ -2555,8 +2555,8 @@
     "semantic_hash": ""
   },
   "tests/test_occitanie_submission.py": {
-    "mtime": 1791890371.3261254,
-    "ast_hash": "9889789bbbbc78ada821d3852701f03f",
+    "mtime": 1792063364.4587226,
+    "ast_hash": "0176d2bec3cd4a9db88cdf17dfbe1bc1",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Assets.xcassets/TutorialFrenchNSI.imageset/TutorialFrenchNSI.png": {
@@ -3207,6 +3207,11 @@
   "tests/test_french_database_reconciliation_pdf.py": {
     "mtime": 1792052918.096513,
     "ast_hash": "d1ba49934fe33b442402a36c8b8e58ca",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v24-incident-reconciliation-live-diagnostic-2026-10-15.md": {
+    "mtime": 1792056836.6312218,
+    "ast_hash": "98862c04d2e15d19d6571c34eff47941",
     "semantic_hash": ""
   }
 }

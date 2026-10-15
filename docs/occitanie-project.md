@@ -209,6 +209,17 @@ whole-paper sustained depth and working-space flow remain insufficient.
 **Manual product fidelity remains on hold.** No French model is selected;
 teacher, learner, rights and accessibility gates remain external.
 
+Protected PR #66 added version-isolated E2 reconciliation across a faulty join,
+corrected SQL, category-versus-agent algorithm trace and two copied database
+states. Its [pinned V24 live diagnostic](quality/french-nsi-v24-incident-reconciliation-live-diagnostic-2026-10-15.md)
+passed automated checks on the first attempt without repairs. Every page of the
+twelve-page subject and nineteen-page proposed correction was inspected against
+the already-reviewed sixteen-page official 2026 comparator. The subject now has
+34 numbered questions versus 36 officially, but E1 page 4, E2 page 9 and the
+final E3 page remain sparse, with insufficient sustained depth and candidate
+working-space flow. **Manual product fidelity remains on hold.** This is not
+model selection or external teacher, learner, rights or accessibility approval.
+
 ## Genuine Occitanie scenario — PLANNED
 
 A teacher generates and checks a paper on a Mac; students receive a PDF through
